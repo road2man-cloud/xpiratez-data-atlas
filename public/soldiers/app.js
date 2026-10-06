@@ -14,8 +14,12 @@ async function load(){
   if(!res.ok)throw new Error("병종 데이터 HTTP "+res.status);
   DATA=await res.json();
   try{
-    const prog=await fetch("../data/progression.json");
+    const [prog,research]=await Promise.all([
+      fetch("../data/progression.json"),
+      fetch("../data/progression-research.json")
+    ]);
     if(prog.ok)PROG=await prog.json();
+    if(research.ok)RESEARCH_TOPICS=(await research.json()).topics||[];
   }catch(err){console.warn("Progression data is not published yet.",err)}
   renderSummary();
   render();
@@ -220,10 +224,11 @@ function openDetail(encoded){
 }
 function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
 function planById(id){return PROG?.plans?.[id]||null}
+function topicByIndex(i){return Number.isInteger(i)?RESEARCH_TOPICS?.[i]:i}
 function planSummary(plan,title="해금 연구 트리"){
   if(!plan)return'<div class="route-card muted">연구 경로 없음</div>';
-  const roots=(plan.roots||[]).map(x=>'<span class="tag">'+esc(x.koName||x.id)+'</span>').join(" ");
-  const gates=(plan.branchGates||[]).map(x=>'<span class="trait">'+esc(x.koName||x.id)+'</span>').join(" ");
+  const roots=(plan.roots||[]).map(topicByIndex).filter(Boolean).map(x=>'<span class="tag">'+esc(x.koName||x.id)+'</span>').join(" ");
+  const gates=(plan.branchGates||[]).map(topicByIndex).filter(Boolean).map(x=>'<span class="trait">'+esc(x.koName||x.id)+'</span>').join(" ");
   return '<div class="route-card"><strong>'+title+'</strong><div class="route-metrics"><span>명목 누적 연구량 <b>'+fmt(plan.totalCost)+'</b></span><span>연구 노드 <b>'+fmt(plan.topicCount)+'</b></span><span>표본 조건 <b>'+fmt(plan.needItemCount)+'</b></span></div><div class="route-line"><small>루트 시작</small> '+roots+'</div>'+(gates?'<div class="route-line warn"><small>분기 연구</small> '+gates+'</div>':'')+'<button class="plan-load" data-plan="'+plan.id+'">전체 연구 노드 보기</button><div class="plan-body" data-plan-body="'+plan.id+'"></div></div>';
 }
 async function loadPlan(id){

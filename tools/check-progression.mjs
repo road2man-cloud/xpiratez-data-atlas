@@ -20,9 +20,18 @@ if(!progression.recipes||!progression.events||!progression.plans)throw new Error
 if(Object.keys(progression.plans).length!==progression.researchPlanCount)throw new Error("Plan summary catalog count mismatch");
 if(!Array.isArray(research.topics)||research.topics.length!==4612)throw new Error("Expected 4612 research topics");
 
-const maxFile=10*1024*1024;
+const maxCoreFile=2*1024*1024;
+const maxPlanFile=512*1024;
 for(const p of [progressionPath,researchPath]){
-  if(fs.statSync(p).size>maxFile)throw new Error("Progression file exceeds 10 MiB: "+path.basename(p));
+  if(fs.statSync(p).size>maxCoreFile)throw new Error("Progression core file exceeds 2 MiB: "+path.basename(p));
+}
+for(const [id,plan] of Object.entries(progression.plans)){
+  for(const key of ["roots","branchGates"]){
+    const refs=plan[key]||[];
+    if(!Array.isArray(refs)||refs.some(x=>!Number.isInteger(x)||x<0||x>=research.topics.length)){
+      throw new Error("Invalid compact "+key+" in plan "+id);
+    }
+  }
 }
 
 for(const s of Object.values(progression.soldiers))for(const p of s.acquisitionPaths||[]){
@@ -48,7 +57,7 @@ let planCount=0;
 for(const b of "0123456789abcdef"){
   const p=file("progression-plans",b+".json");
   if(!fs.existsSync(p))continue;
-  if(fs.statSync(p).size>maxFile)throw new Error("Progression plan bucket exceeds 10 MiB: "+b);
+  if(fs.statSync(p).size>maxPlanFile)throw new Error("Progression plan bucket exceeds 512 KiB: "+b);
   const plans=read(p).plans||{};
   for(const [id,plan] of Object.entries(plans)){
     planCount++;

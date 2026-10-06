@@ -534,9 +534,11 @@ const progressionTopics=researchList.map(r=>{
 });
 const progressionTopicIndex=new Map(progressionTopics.map((x,i)=>[x.id,i]));
 const progressionPlanSummaries=Object.fromEntries(Object.entries(researchPlanStore).map(([id,plan])=>[id,{
-  id,roots:plan.roots,totalCost:plan.totalCost,topicCount:plan.topicCount,unknownCostCount:plan.unknownCostCount,
-  branchGates:plan.branchGates.map(x=>({id:x.id,koName:x.koName,enName:x.enName})),
-  needItemCount:plan.needItems.length,baseFuncs:plan.baseFuncs,note:plan.note
+  id,
+  roots:plan.roots.map(x=>progressionTopicIndex.get(x.id)).filter(Number.isInteger),
+  totalCost:plan.totalCost,topicCount:plan.topicCount,unknownCostCount:plan.unknownCostCount,
+  branchGates:plan.branchGates.map(x=>progressionTopicIndex.get(x.id)).filter(Number.isInteger),
+  needItemCount:plan.needItems.length,baseFuncs:plan.baseFuncs
 }]));
 const progressionEvents={},progressionRecipes={};
 const progressionPlanId=ref=>ref?.id||null;
