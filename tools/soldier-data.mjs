@@ -380,21 +380,58 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   }
 
   const enhancementBuildSets=[],enhancementSetBySignature=new Map();
-  for(const profile of profiles){
-    const prior=Object.entries(profile.previousTransformations||{}).filter(([,v])=>v).map(([k])=>k).sort();
-    const signature=profile.soldierType+"|"+prior.join(",");
+  function getEnhancementBuildSet(soldierType,previousTransformations){
+    const prior=Object.entries(previousTransformations||{}).filter(([,v])=>v).map(([k])=>k).sort();
+    const signature=soldierType+"|"+prior.join(",");
     let set=enhancementSetBySignature.get(signature);
     if(!set){
       set={
         id:"E"+enhancementBuildSets.length,
-        soldierType:profile.soldierType,
+        soldierType,
         previousTransformations:prior,
-        combinations:buildEnhancementBuildSet(profile.soldierType,profile.previousTransformations)
+        combinations:buildEnhancementBuildSet(soldierType,previousTransformations)
       };
       enhancementSetBySignature.set(signature,set);
       enhancementBuildSets.push(set);
     }
-    profile.enhancementBuildSetId=set.id;
+    return set;
+  }
+
+  function conversionRoutesFor(profile){
+    const startPrior=new Set(Object.entries(profile.previousTransformations||{}).filter(([,v])=>v).map(([k])=>k));
+    const routes=[],seen=new Set();
+    function walk(currentType,prior,sequence){
+      for(const t of transformationIndex){
+        if(!t.producedSoldierType||t.createsClone||sequence.includes(t.id)||prior.has(t.id))continue;
+        if(t.allowedSoldierTypes.length&&!t.allowedSoldierTypes.includes(currentType))continue;
+        if(t.forbiddenSoldierTypes.includes(currentType))continue;
+        if(t.requiredPreviousTransformations.some(x=>!prior.has(x)))continue;
+        if(t.forbiddenPreviousTransformations.some(x=>prior.has(x)))continue;
+        const nextPrior=new Set(prior);
+        for(const id of t.removeTransformations||[])nextPrior.delete(id);
+        nextPrior.add(t.id);
+        const nextType=t.producedSoldierType;
+        const nextSequence=[...sequence,t.id];
+        const key=nextType+"|"+nextSequence.join("|")+"|"+[...nextPrior].sort().join(",");
+        if(seen.has(key))continue;
+        seen.add(key);
+        const priorObject=Object.fromEntries([...nextPrior].map(id=>[id,1]));
+        const set=getEnhancementBuildSet(nextType,priorObject);
+        routes.push({
+          id:"C"+routes.length,
+          transformationIds:nextSequence,
+          finalSoldierType:nextType,
+          enhancementBuildSetId:set.id
+        });
+      }
+    }
+    walk(profile.soldierType,startPrior,[]);
+    return routes;
+  }
+
+  for(const profile of profiles){
+    profile.enhancementBuildSetId=getEnhancementBuildSet(profile.soldierType,profile.previousTransformations).id;
+    profile.conversionRoutes=conversionRoutesFor(profile);
   }
 
   const bonusIndex=bonuses.map(b=>({
@@ -415,6 +452,10 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,
     soldiers,profiles,transformations:transformationIndex,enhancementBuildSets,bonuses:bonusIndex,profileCounts,resourceDetails,
-    counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierEnhancementBuildSets:enhancementBuildSets.length,soldierFinalBuilds:profiles.reduce((n,p)=>n+(enhancementBuildSets.find(x=>x.id===p.enhancementBuildSetId)?.combinations.length||0),0),soldierBonuses:bonusIndex.length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
+    counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierEnhancementBuildSets:enhancementBuildSets.length,soldierFinalBuilds:profiles.reduce((n,p)=>{
+      const base=enhancementBuildSets.find(x=>x.id===p.enhancementBuildSetId)?.combinations.length||0;
+      const converted=(p.conversionRoutes||[]).reduce((m,r)=>m+(enhancementBuildSets.find(x=>x.id===r.enhancementBuildSetId)?.combinations.length||0),0);
+      return n+base+converted;
+    },0),soldierBonuses:bonusIndex.length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
   };
 }

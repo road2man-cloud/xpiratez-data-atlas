@@ -51,9 +51,34 @@ for(const p of d.profiles){
   if(!set)throw new Error("Missing enhancement build set for "+p.id);
   if(set.soldierType!==p.soldierType)throw new Error("Enhancement build set soldier type mismatch "+p.id);
   finalBuildRows+=set.combinations.length;
+
+  for(const route of p.conversionRoutes||[]){
+    const routeSet=buildSetById.get(route.enhancementBuildSetId);
+    if(!routeSet)throw new Error("Missing converted enhancement build set for "+p.id+" "+route.id);
+    let currentType=p.soldierType;
+    const applied=new Set(Object.entries(p.previousTransformations||{}).filter(([,v])=>v).map(([id])=>id));
+    for(const id of route.transformationIds||[]){
+      const t=transformById.get(id);
+      if(!t?.producedSoldierType)throw new Error("Non-conversion transformation in conversion route "+p.id+" "+id);
+      if(t.allowedSoldierTypes?.length&&!t.allowedSoldierTypes.includes(currentType))throw new Error("Conversion not allowed for current soldier type "+p.id+" "+id);
+      if(t.forbiddenSoldierTypes?.includes(currentType))throw new Error("Forbidden soldier type in conversion route "+p.id+" "+id);
+      for(const req of t.requiredPreviousTransformations||[])if(!applied.has(req))throw new Error(`Missing previous transformation ${req} before conversion ${id} in ${p.id}`);
+      for(const forbid of t.forbiddenPreviousTransformations||[])if(applied.has(forbid))throw new Error(`Forbidden previous transformation ${forbid} before conversion ${id} in ${p.id}`);
+      for(const removed of t.removeTransformations||[])applied.delete(removed);
+      applied.add(id);
+      currentType=t.producedSoldierType;
+    }
+    if(currentType!==route.finalSoldierType)throw new Error("Conversion route final soldier type mismatch "+p.id+" "+route.id);
+    if(routeSet.soldierType!==route.finalSoldierType)throw new Error("Converted enhancement build set soldier type mismatch "+p.id+" "+route.id);
+    finalBuildRows+=routeSet.combinations.length;
+  }
 }
-if(d.enhancementBuildSets.length!==48)throw new Error(`Expected enhancement build sets=48, got ${d.enhancementBuildSets.length}`);
-if(finalBuildRows!==1841)throw new Error(`Expected final enhancement rows=1841, got ${finalBuildRows}`);
+const hasConversionRoutes=d.profiles.some(p=>(p.conversionRoutes||[]).length);
+const expectedBuildSets=hasConversionRoutes?84:48;
+const expectedFinalRows=hasConversionRoutes?2512:1841;
+if(d.enhancementBuildSets.length!==expectedBuildSets)throw new Error(`Expected enhancement build sets=${expectedBuildSets}, got ${d.enhancementBuildSets.length}`);
+if(finalBuildRows!==expectedFinalRows)throw new Error(`Expected final enhancement rows=${expectedFinalRows}, got ${finalBuildRows}`);
+if(hasConversionRoutes&&!d.profiles.some(p=>(p.conversionRoutes||[]).some(r=>r.finalSoldierType==="STR_SOLDIER_W"&&(r.transformationIds||[]).includes("STR_WEIRDGAL_TRANSFORMATION"))))throw new Error("No Weirdgal conversion route exposed in final builds");
 
 for(const set of d.enhancementBuildSets){
   if(!Array.isArray(set.combinations)||!set.combinations.length)throw new Error("Empty enhancement build set "+set.id);
