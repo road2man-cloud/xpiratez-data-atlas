@@ -1,30 +1,19 @@
-name: Build item and research atlas
+name: Build item and research data
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/build-item-research.yml"
-      - "tools/build-data.mjs"
-      - "tools/check-data.mjs"
-      - "package.json"
   workflow_dispatch:
+    inputs:
+      archive_url:
+        description: Direct URL to Dioxine_XPiratez_o1.1.1.rar
+        required: true
+        type: string
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: xpiratez-data-atlas-pages
-  cancel-in-progress: true
+  contents: write
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,20 +21,15 @@ jobs:
           node-version: "22"
       - name: Install dependencies
         run: npm install
-      - name: Download official X-Piratez v.o1.1.1
+      - name: Download XPZ archive
         uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
         with:
-          url: "https://www.moddb.com/downloads/mirror/311212/122/9567434b123f2dee7ae07ee25d0ffa89/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fx-piratez%2Fdownloads%2Fxpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop"
+          url: ${{ inputs.archive_url }}
           target: ".cache/xpz"
           filename: "xpiratez.rar"
           retry-times: 4
-      - name: Inspect downloaded file
-        run: |
-          ls -lh .cache/xpz/xpiratez.rar
-          file .cache/xpz/xpiratez.rar
-          md5sum .cache/xpz/xpiratez.rar
-          head -c 2000 .cache/xpz/xpiratez.rar || true
-          exit 1
+      - name: Verify official o1.1.1 archive
+        run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/xpiratez.rar" | md5sum -c -
       - name: Extract ruleset
         run: |
           sudo apt-get update
@@ -56,16 +40,18 @@ jobs:
           test -n "$META"
           MOD_PATH=${META%/metadata.yml}
           echo "XPIRATEZ_MOD_PATH=$MOD_PATH" >> "$GITHUB_ENV"
-      - name: Generate database
+      - name: Generate item and research data
         run: |
-          npm run build:data -- --source "$XPIRATEZ_MOD_PATH"
-          npm run check
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-      - name: Deploy Pages
-        id: deploy
-        uses: actions/deploy-pages@v4
+          node tools/build-item-research-data.mjs --source "$XPIRATEZ_MOD_PATH" --out public/items/data
+          node -e 'const i=require("./public/items/data/items-index.json"),r=require("./public/items/data/research-index.json"); if(i.index.length!==4007||r.index.length!==4612) throw new Error("Unexpected XPZ dataset counts"); console.log("verified",i.index.length,r.index.length)'
+      - name: Commit generated public data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/items/data
+          if git diff --cached --quiet; then
+            echo "No data changes."
+          else
+            git commit -m "Publish XPZ o1.1.1 item and research data"
+            git push
+          fi
