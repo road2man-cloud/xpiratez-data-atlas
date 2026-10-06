@@ -31,12 +31,13 @@ jobs:
         run: npm install
 
       - name: Download official X-Piratez v.o1.1.1
-        uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
-        with:
-          url: "https://fmt2.dl.dbolical.com/dl/2026/06/19/Dioxine_XPiratez_o1.1.1.rar?st=CpMXcJI0pm2DqaPkDSyLgQ==&e=1791233932"
-          target: ".cache/xpz"
-          filename: "Dioxine_XPiratez_o1.1.1.rar"
-          retry-times: 4
+        run: |
+          mkdir -p .cache/xpz
+          curl -fL --retry 4 --connect-timeout 20 \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/141 Safari/537.36" \
+            -e "https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop" \
+            "https://www.moddb.com/downloads/mirror/311212/129/e401cf49784caffcd0ce43a27a30929a/?referer=https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop" \
+            -o .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
 
       - name: Verify official archive
         run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
