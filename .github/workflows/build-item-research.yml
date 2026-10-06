@@ -1,4 +1,4 @@
-name: Publish item and research data
+name: Verify item and research data
 
 on:
   push:
@@ -9,21 +9,16 @@ on:
       - "tools/data-normalize.mjs"
       - "tools/check-item-research-data.mjs"
       - "package.json"
-  release:
-    types: [published]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  build:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.release.tag_name == 'xpz-o1.1.1-source'
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -55,22 +50,12 @@ jobs:
           MOD_PATH=${META%/metadata.yml}
           echo "XPIRATEZ_MOD_PATH=$MOD_PATH" >> "$GITHUB_ENV"
 
-      - name: Generate public item and research DB
+      - name: Generate normalized item and research DB
         run: |
-          node tools/build-item-research-data.mjs             --source "$XPIRATEZ_MOD_PATH"             --out public/items/data
+          rm -rf .cache/item-research-data
+          node tools/build-item-research-data.mjs \
+            --source "$XPIRATEZ_MOD_PATH" \
+            --out .cache/item-research-data
 
       - name: Verify generated DB
-        run: node tools/check-item-research-data.mjs --data public/items/data
-
-      - name: Commit generated database
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/items/data
-          if git diff --cached --quiet; then
-            echo "No data changes."
-            exit 0
-          fi
-          git commit -m "Publish XPZ o1.1.1 item and research data"
-          git pull --rebase origin main
-          git push origin HEAD:main
+        run: node tools/check-item-research-data.mjs --data .cache/item-research-data
