@@ -35,7 +35,7 @@ jobs:
       - name: Download official X-Piratez v.o1.1.1
         uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
         with:
-          url: "https://www.indiedb.com/downloads/mirror/311212/122/9567434b123f2dee7ae07ee25d0ffa89"
+          url: "https://www.moddb.com/downloads/mirror/311212/122/9567434b123f2dee7ae07ee25d0ffa89/?referer=https%3A%2F%2Fwww.moddb.com%2Fmods%2Fx-piratez%2Fdownloads%2Fxpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop"
           target: ".cache/xpz"
           filename: "xpiratez.rar"
           retry-times: 4
