@@ -1,114 +1,40 @@
-name: Publish progression data
+name: Verify progression data
 
 on:
   push:
     branches: [main]
     paths:
       - ".github/workflows/publish-progression.yml"
+      - "public/data/progression.json"
+      - "public/data/progression-research.json"
+      - "public/data/progression-plans/**"
+      - "public/soldiers/**"
+      - "public/crafts/**"
       - "tools/build-data.mjs"
-      - "tools/soldier-data.mjs"
-      - "tools/armor-data.mjs"
-      - "tools/data-normalize.mjs"
       - "tools/check-progression.mjs"
-      - "package.json"
-      - "package-lock.json"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: xpiratez-progression-publish
+  group: xpiratez-progression-verify
   cancel-in-progress: true
 
 jobs:
-  publish:
+  verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout latest main
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
 
-      - name: Install generator dependencies
-        run: npm install --no-package-lock
-
-      - name: Resolve and download official X-Piratez v.o1.1.1
-        shell: bash
+      - name: Verify compact progression data
         run: |
-          set -euo pipefail
-          mkdir -p .cache/xpz
-          START_URL="https://www.moddb.com/downloads/start/311212"
-          REFERER="https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop"
-          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/141 Safari/537.36"
-
-          curl -fL --retry 4 --connect-timeout 20 -A "$UA" -e "$REFERER" "$START_URL" -o .cache/xpz/start.html
-
-          MIRROR_PATH="$(node -e 'const fs=require("fs"); const s=fs.readFileSync(".cache/xpz/start.html","utf8"); const m=s.match(/href="([^"]*\/downloads\/mirror\/311212\/[^"]+)"/); if(!m){console.error("Could not resolve the current ModDB mirror URL"); process.exit(2)} console.log(m[1].replaceAll("&amp;","&"));')"
-          if [[ "$MIRROR_PATH" == http* ]]; then
-            MIRROR_URL="$MIRROR_PATH"
-          else
-            MIRROR_URL="https://www.moddb.com$MIRROR_PATH"
-          fi
-          echo "Resolved ModDB mirror endpoint: $MIRROR_URL"
-
-          curl -fL --retry 4 --connect-timeout 20 -A "$UA" -e "$START_URL" "$MIRROR_URL" -o .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
-
-      - name: Verify official archive
-        run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
-
-      - name: Extract X-Piratez ruleset
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y unar
-          rm -rf .cache/unpacked
-          mkdir -p .cache/unpacked
-          unar -q -o .cache/unpacked .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
-          META=$(find .cache/unpacked -type f -path "*/user/mods/Piratez/metadata.yml" -print -quit)
-          test -n "$META"
-          MOD_PATH=${META%/metadata.yml}
-          echo "XPIRATEZ_MOD_PATH=$MOD_PATH" >> "$GITHUB_ENV"
-
-      - name: Generate normalized progression data
-        run: |
-          rm -rf .cache/progression-build
-          node tools/build-data.mjs --source "$XPIRATEZ_MOD_PATH" --out .cache/progression-build
-          node tools/check-progression.mjs --data .cache/progression-build
-
-      - name: Reject stale generator output
-        run: |
-          git fetch origin main
-          CHANGED=$(git diff --name-only HEAD..origin/main -- \
-            tools/build-data.mjs tools/soldier-data.mjs tools/armor-data.mjs \
-            tools/data-normalize.mjs tools/check-progression.mjs package.json)
-          if [ -n "$CHANGED" ]; then
-            echo "Generator inputs changed while this job was running:"
-            echo "$CHANGED"
-            exit 1
-          fi
-
-      - name: Publish only progression artifacts
-        run: |
-          rm -rf public/data/progression.json public/data/progression-research.json public/data/progression-plans
-          cp .cache/progression-build/progression.json public/data/
-          cp .cache/progression-build/progression-research.json public/data/
-          cp -r .cache/progression-build/progression-plans public/data/
           node tools/check-progression.mjs --data public/data
-
-      - name: Commit generated progression data
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/progression.json public/data/progression-research.json public/data/progression-plans
-          if git diff --cached --quiet; then
-            echo "No progression data changes."
-            exit 0
-          fi
-          git commit -m "Publish normalized soldier and craft progression data"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          node --check public/soldiers/app.js
+          node --check public/crafts/app.js

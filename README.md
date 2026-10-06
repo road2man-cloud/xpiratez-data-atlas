@@ -53,7 +53,7 @@ npm run check:item-research -- --data public/items/data
 
 ## 배포
 
-`public/` 폴더가 완성된 정적 사이트입니다. `.github/workflows/pages.yml`은 main 브랜치 push 시 저장소의 정적 산출물을 검증해 GitHub Pages에 배포합니다. 병종/탈것 progression은 별도 `.github/workflows/publish-progression.yml`이 공식 X-Piratez v.o1.1.1 archive의 checksum을 확인한 뒤 생성하고, `public/data/progression*` 파일만 갱신합니다. 따라서 Pages 배포 단계가 외부 다운로드에 의존하지 않고 다른 정적 DB도 덮어쓰지 않습니다.
+`public/` 폴더가 완성된 정적 사이트입니다. `.github/workflows/pages.yml`은 main 브랜치 push 시 저장소의 정적 산출물을 검증해 GitHub Pages에 배포합니다. 병종/탈것 progression도 공식 X-Piratez v.o1.1.1 원본으로 로컬 생성·검증한 정규화 JSON을 `public/data/progression*`에 보존하므로 Pages 배포는 외부 다운로드에 의존하지 않습니다. GitHub-hosted runner에서는 ModDB가 403을 반환하므로 `.github/workflows/publish-progression.yml`은 외부 다운로드/자동 재생성 대신 체크인된 compact progression의 구조·크기·smoke test를 검증합니다.
 
 ## 권리
 
