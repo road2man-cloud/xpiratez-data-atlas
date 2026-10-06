@@ -31,34 +31,7 @@ const columns=[
   {key:"codexGray",label:"회색 코덱스",group:"Codex 상호배타",type:"codex",color:"Gray"}
 ];
 
-const rows=[
- {id:"jackass",name:"?무모한 선장?",code:"JACKASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 무모한",colors:["Gold","Red","Gray"],ev:60386,evText:"≈+$60.4k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"yes",necro:"no",bunker:"no",tactical:"no",treasure:"yes",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"yes",summary:"돈보다 탐험·공격적 콘텐츠. JackSore/JackDumb/JackLazy를 동시에 열어 방사탑·전사문화·보물사냥·지하감옥에 접근한다.",notes:["현재 활성화되는 기본·성향·색·결손색·Flaw·Double 반복 이벤트를 합친 현금성 EV는 약 +$60.4k/월.","후기 4색 완성 시 혼돈의 성자 가능.","보물사냥은 기지가 있는 각 지역에서 월 21% 판정으로 Lootbox 기회를 만든다."]},
- {id:"dumbass",name:"?멍청한 선장?",code:"DUMBASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 멍청한",colors:["Gold","Green","Red"],ev:82267,evText:"≈+$82.3k",hotel:"no",vip:"yes",nonprofit:"no",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"yes",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"yes",saint:"late",saintReinf:"late",orthodox:"late",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"초반 현금 EV가 기본 4선장 중 가장 높고, 벙커·전사문화·VIP·댄스훈련·Saint 특수병까지 연결되는 다재다능형.",notes:["현재 활성화되는 전체 반복 이벤트 현금성 EV 약 +$82.3k/월.","VIP Club: 건설 $1.35m, 월수익 +$500k, Lab+1/Training16/Mana+8.","Dumbass+Saint이면 별도 7%/월로 정통파 마법사 영애 + $100k 이벤트."]},
- {id:"lazyass",name:"?게으른 선장?",code:"LAZYASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 게으른",colors:["Gold","Green","Gray"],ev:8543,evText:"≈+$8.5k",hotel:"yes",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"yes",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"호텔과 네크로방어가 핵심. 전투 고유성보다는 현금흐름·기지 편의가 강하다.",notes:["현재 활성화되는 전체 반복 이벤트 현금성 EV 약 +$8.5k/월.","호텔: $1.2m, 월 +$360k, 인원+25/훈련12/저장50/Mana+9.","네크로방어는 Flak Tower Kit를 25mm 기관포 대신 Necroplane Parts 25개로 생산."]},
- {id:"soreass",name:"?소심한 선장?",code:"SOREASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 소심한",colors:["Green","Red","Gray"],ev:37236,evText:"≈+$37.2k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"yes",ultimateCash:"no",irradiator:"warn",necro:"yes",bunker:"yes",tactical:"yes",treasure:"no",boot:"yes",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"방어·탐지·병사 기본육성의 종합형. JackSore+LazySore+SoreDumb 세 방어 성향을 한 번에 보존하는 유일한 초기 선장.",notes:["방사탑 + 네크로방어 + 벙커 + 전술센터 + 신병훈련을 모두 보존.","방사탑 1기당 부상회복 속도 1.00→0.65/day(다른 치료보너스 없을 때).","암살 이벤트의 위험 결과를 안전 결과가 약 50% 대체."]},
- {id:"pussy",name:"?위와는 다른 선장?",code:"PUSSY",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 위와는 다른",colors:[],ev:0,evText:"≈$0",hotel:"no",vip:"no",nonprofit:"late",scamming:"late",bulk:"no",ultimateCash:"late",irradiator:"late",necro:"late",bunker:"late",tactical:"no",treasure:"no",boot:"late",military:"late",bread:"late",warrior:"late",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"late",xlarge:"late",capsule:"late",doubleJail:"late",dungeon:"no",summary:"즉시 완성형이 아니라 분기용 입구. 2/1 PUSSY_UP 이후 클래스 선택, 3/1 무직 분기, 4/1 Pure 분기로 확장된다.",notes:["혼돈의 성자 조건에서 CAPTAIN_PUSSY:false라 Saint는 영구 포기.","대신 초대형 저장고와 여러 PUSSY 전용 인프라 경로가 열린다."]},
-
- {id:"thief",name:"?도둑 계급 선장?",code:"THIEF",stage:"class",stageName:"PUSSY 2단계",from:"최단 2/1",route:"PUSSY → 도둑",colors:["Gold","Green","Gray"],ev:43611,evText:"≈+$43.6k",hotel:"no",vip:"no",nonprofit:"no",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"no",doubleJail:"no",dungeon:"no",summary:"사기 제조와 Gold 계열 경제 이벤트를 챙기는 PUSSY 경제 클래스.",notes:["Scamming 기대 산출물 약 $2,656/회, Govt Corpse 판매 기회비용과 제조비를 뺀 평균 순익 약 $2,431/20 worker-hours.","초대형 저장고(저장3000 + 작업공간50) 접근."]},
- {id:"priest",name:"?사제 계급 선장?",code:"PRIEST",stage:"class",stageName:"PUSSY 2단계",from:"최단 2/1",route:"PUSSY → 사제",colors:["Gold","Green","Red"],ev:42609,evText:"≈+$42.6k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"yes",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"yes",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"no",doubleJail:"no",dungeon:"no",summary:"벙커 + 건강미 훈련. 사격 성장보다 체력·기력·근력 탱커 육성에 특화.",notes:["건강미 훈련: 기본 기력+25/체력+15/근력+10/투척+5 + 보너스 장갑+1/체력+8/기력+6/근력+4/Mana+6.","군사훈련과 상호배타."]},
- {id:"mage",name:"?마법사 계급 선장?",code:"MAGE",stage:"class",stageName:"PUSSY 2단계",from:"최단 2/1",route:"PUSSY → 마법사",colors:["Gold","Red","Gray"],ev:17274,evText:"≈+$17.3k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"warn",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"yes",xlarge:"yes",capsule:"no",doubleJail:"no",dungeon:"no",summary:"방사탑과 후기 변신술/마법 테크를 얻는 PSI·마법 특화 클래스.",notes:["Mage는 YESGRAY_NORED 태그도 있지만 동시에 CAPTAIN_RED를 열어 NONPROFIT_LAB을 disable하므로 비영리 연구실은 불가.","변신술 의식은 매우 후기(오컬트/매지텍/PSION 선행)."]},
- {id:"ruler",name:"?지도자 계급 선장?",code:"RULER",stage:"class",stageName:"PUSSY 2단계",from:"최단 2/1",route:"PUSSY → 지도자",colors:["Green","Red","Gray"],ev:-6496,evText:"≈-$6.5k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"warn",necro:"no",bunker:"yes",tactical:"no",treasure:"no",boot:"yes",military:"yes",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"no",doubleJail:"yes",dungeon:"no",summary:"정규병 확정 육성 최강. JackSore+SoreDumb를 동시에 얻어 방사탑·벙커·신병훈련에 군사훈련까지 연결.",notes:["기본총기→신병훈련→군사훈련의 정규 성장 사슬.","군사훈련: TU+5/기력+10/체력+5/용기+10/반응+5/사격+5/투척+5/근접+5/Mana+10/PsiStr+15.","Saint 특수병 공급을 포기하는 대가가 큼."]},
- {id:"unclassedGate",name:"?이 게임을 좋아하지 않는 선장?",code:"UNCLASSED_UP",stage:"class",stageName:"PUSSY 2단계",from:"최단 2/1 → 3/1 해금",route:"PUSSY → 무직 게이트",colors:[],ev:0,evText:"분기용",hotel:"no",vip:"no",nonprofit:"late",scamming:"late",bulk:"no",ultimateCash:"late",irradiator:"late",necro:"late",bunker:"late",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"late",dungeon:"no",summary:"3/1 성격검사 3을 열기 위한 게이트. 이후 6개 혼합형 또는 Pure로 분기.",notes:["이 선택 자체보다 다음 단계가 핵심.","UNCLASSED_UP 태그가 남으므로 후기 캡슐 숙소 조건의 기반이 된다."]},
-
- {id:"dumblazy",name:"?멋지고 버릇없는 선장?",code:"DUMBLAZY_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1",route:"PUSSY → 무직 → DumbLazy",colors:["Gold","Green"],ev:8661,evText:"≈+$8.7k",hotel:"no",vip:"no",nonprofit:"no",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"Gold+Green 및 사기 제조를 갖는 경제 혼합형.",notes:["YESGOLD_NOGRAY를 직접 열어 Scamming 가능.","Capsule Quarters는 현재 색 조합으로는 불가하지만 Codex로 Green+Gray를 맞추면 후기 가능."]},
- {id:"lazysore",name:"?합리적 선장?",code:"LAZYSORE_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1",route:"PUSSY → 무직 → LazySore",colors:["Green","Gray"],ev:-7145,evText:"≈-$7.1k",hotel:"no",vip:"no",nonprofit:"yes",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"yes",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"yes",doubleJail:"no",dungeon:"no",summary:"현금 이벤트는 약하지만 인프라 최강 후보. 비영리 연구실+네크로방어+Scamming+캡슐숙소+초대형 저장고.",notes:["비영리 연구실: $750k, 월 +$150k, Labs+3/Workshop+15/SHOP.","Capsule Quarters: 인원+50, Mana+3/day, 대신 Lab-1/Workshop-10.","Scamming도 가능."]},
- {id:"soredumb",name:"?보수적인 선장?",code:"SOREDUMB_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1",route:"PUSSY → 무직 → SoreDumb",colors:["Green","Red"],ev:13369,evText:"≈+$13.4k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"yes",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"yes",dungeon:"no",summary:"벙커와 2배 감옥을 챙기는 보수적 기지방어/수용 혼합형.",notes:["SoreDumb 태그로 벙커 접근.","YESRED_NOGRAY로 2배 감옥 접근."]},
- {id:"jacksore",name:"?두려운 선장?",code:"JACKSORE_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1",route:"PUSSY → 무직 → JackSore",colors:["Red","Gray"],ev:11254,evText:"≈+$11.3k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"warn",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"방사탑 하나를 선택적으로 가져가는 방어 혼합형.",notes:["방사탑의 기지방어 화력은 강하지만 치료 페널티 때문에 도배는 비추천."]},
- {id:"jackdumb",name:"?대담한 선장?",code:"JACKDUMB_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1",route:"PUSSY → 무직 → JackDumb",colors:["Gold","Red"],ev:67207,evText:"≈+$67.2k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"yes",dungeon:"no",summary:"이벤트 현금 EV가 높은 혼합형이며 전사문화+2배 감옥을 얻는다.",notes:["JackDumb 태그가 WARRIOR_CULTURE_PREQ를 직접 열어 줌.","PUSSY 계열이므로 Saint는 불가."]},
- {id:"jacklazy",name:"?진보하는 선장?",code:"JACKLAZY_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1",route:"PUSSY → 무직 → JackLazy",colors:["Gold","Gray"],ev:20287,evText:"≈+$20.3k",hotel:"no",vip:"no",nonprofit:"yes",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"비영리 연구실을 쓸 수 있는 두 대표 혼합형 중 하나. LazySore보다 이벤트 현금은 높지만 네크로방어/캡슐의 즉시 조합은 없다.",notes:["YESGRAY_NORED를 열고 Red 자체는 얻지 않아 Nonprofit Lab이 살아 있다."]},
- {id:"pureGate",name:"?혼자 있고 싶은 선장?",code:"PURE_UP",stage:"unclassed",stageName:"무직 3단계",from:"최단 3/1 → 4/1 해금",route:"PUSSY → 무직 → Pure 게이트",colors:[],ev:0,evText:"분기용",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"late",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"4/1 성격검사 4 뒤 Gold/Green/Red/Gray/Ultimate 중 하나를 고르기 위한 최종 게이트.",notes:["Ultimate를 택하면 네 색을 모두 비운 상태로 666k 이벤트에 진입."]},
-
- {id:"pureGold",name:"?고귀한 영혼의 선장?",code:"GOLD_UP",stage:"pure",stageName:"Pure 최종",from:"최단 4/1",route:"PUSSY → 무직 → Pure → Gold",colors:["Gold"],ev:116583,evText:"≈+$116.6k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"Pure 계열 중 이벤트 현금이 매우 높은 축. DoubleGold 이벤트를 함께 사용.",notes:["초기 $500k Taking a Loan은 Government Fine×5가 붙으므로 순이익으로 계산하지 않음."]},
- {id:"pureGreen",name:"?현명한 선장?",code:"GREEN_UP",stage:"pure",stageName:"Pure 최종",from:"최단 4/1",route:"PUSSY → 무직 → Pure → Green",colors:["Green"],ev:57513,evText:"≈+$57.5k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"Green/자연·회복 계열 Pure 선택. 현금보다는 색상 이벤트 성격이 중심.",notes:["PUSSY 계열이므로 색을 나중에 채워도 Saint는 불가."]},
- {id:"pureRed",name:"?강한 전사 선장?",code:"RED_UP",stage:"pure",stageName:"Pure 최종",from:"최단 4/1",route:"PUSSY → 무직 → Pure → Red",colors:["Red"],ev:61724,evText:"≈+$61.7k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"Pure 중 전사문화 직행형. 자랑스러운 전사 육성을 원하는 PUSSY 최종 분기.",notes:["RED_UP이 WARRIOR_CULTURE_PREQ를 직접 unlock."]},
- {id:"pureGray",name:"?위대한 몽상가 선장?",code:"GRAY_UP",stage:"pure",stageName:"Pure 최종",from:"최단 4/1",route:"PUSSY → 무직 → Pure → Gray",colors:["Gray"],ev:116246,evText:"≈+$116.2k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"Pure Gold와 함께 이벤트 현금 EV가 높은 최종색 선택.",notes:["돈은 강하지만 고유 방어/병사강화 테크는 적다."]},
- {id:"ultimate",name:"?이 모두를 가진 선장!?",code:"ULTIMATE",stage:"pure",stageName:"Pure 최종",from:"최단 4/1 · 첫 지급판정 5/1",route:"PUSSY → 무직 → Pure → Ultimate",colors:[],ev:579129,evText:"≈+$579.1k*",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"yes",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"경제 특화 최종분기. 매월 63%로 $666k+666점. 무색 상태의 기타 이벤트까지 포함하면 약 +$579k/월.",notes:["666k 이벤트 자체 기대값은 0.63×666,000 = $419,580/월.","리스크·아이템소모·부채 없음. 다만 지금 19(1).sav에서는 최단 첫 판정이 5/1.","*+$579.1k는 NO COLOR/PAIR 이벤트를 함께 평균낸 무색 Ultimate 상태. Codex로 색을 채우면 일부 추가 EV가 사라짐."]}
-];
-
+const rows=window.CAPTAIN_ROWS;
 
 const captainTraits={
   jackass:["jackSore","jackDumb","jackLazy"],
@@ -78,27 +51,26 @@ const captainTraits={
 const saintCodexTarget={jackass:"Green",dumbass:"Gray",lazyass:"Red",soreass:"Gold"};
 const codexInfo={
   Gold:{
-    ko:"금색", direct:"장교봉 · 화염포 보고서", awakened:"Porn ×36 + Captain Gold",
+    ko:"금색", direct:"장교의 채찍 · 화염포(결과보고)", awakened:"웃긴 동인지 ×36 (매각합계 $21.6k) + Captain Gold",
     baseGods:["G1"], synergy:{dumbLazy:"G2A",jackLazy:"G8A"},
-    reward:"G1 과찬의 선물(Prince's Gift); DumbLazy면 G2A 케이크×3; JackLazy면 G8A Glamour×33"
+    reward:"G1 사상 최고의 선물; DumbLazy면 G2A 마법 케이크×3; JackLazy면 G8A 글래머×33"
   },
   Green:{
-    ko:"녹색", direct:"바이오플라즈마 프로젝터 보고서", awakened:"활성 차원 보관함 ×3 + Captain Green",
+    ko:"녹색", direct:"생체플라스마 투사기(보고)", awakened:"초차원 사물함(작동중) ×3 (+150 저장공간 또는 매각 $1.2m) + Captain Green",
     baseGods:["G3"], synergy:{dumbLazy:"G2B",soreDumb:"G4B"},
-    reward:"G3 영혼의 선물(Sivalinga); DumbLazy면 G2B 케이크×3; SoreDumb면 G4B +300점"
+    reward:"G3 시발링가 돌; DumbLazy면 G2B 마법 케이크×3; SoreDumb면 G4B +300점"
   },
   Red:{
-    ko:"적색", direct:"Little Ilya 보고서", awakened:"Living Brimstone ×4 + 200점 + Captain Red",
+    ko:"적색", direct:"리틀'일리야(결과보고)", awakened:"살아있는 유황 ×4 (매각합계 $800k) + 200점 + Captain Red",
     baseGods:["G5"], synergy:{soreDumb:"G4A",jackSore:"G6A"},
-    reward:"G5 피의 선물(Bloodoge 특수병); SoreDumb면 G4A +300점; JackSore면 G6A Mad Scribblings"
+    reward:"G5 전쟁의 축복 블러드하운드; SoreDumb면 G4A +300점; JackSore면 G6A 광기의 기록물"
   },
   Gray:{
-    ko:"회색", direct:"Conversion Launcher 보고서", awakened:"Esoterica ×7 + Captain Gray",
+    ko:"회색", direct:"컨버전 발사기(결과보고)", awakened:"비전서 ×7 (총 매각 $105k; 1개는 연구용) + Captain Gray",
     baseGods:["G7"], synergy:{jackSore:"G6B",jackLazy:"G8B"},
-    reward:"G7 요술 선물(Arcane Book / Demonic Essence×13 / Poltergeist 가중추첨); JackSore면 G6B Mad Scribblings; JackLazy면 G8B Glamour×33"
+    reward:"G7 비전의 고서 / 악마의 정수×13 / 시끄러운 유령 가중추첨; JackSore면 G6B 광기의 기록물; JackLazy면 G8B 글래머×33"
   }
 };
-
 const colorMonthlyEV={Gold:7188.49,Green:-1912.16,Red:10237.50,Gray:3363.66};
 const noColorMonthlyEV={Gold:69.13,Green:165.00,Red:-1776.92,Gray:0};
 const pureColorMonthlyEV={Gold:3763.64,Green:0,Red:4279.27,Gray:0};
@@ -107,7 +79,9 @@ const purePairMonthlyEV=[
   {missing:["Red","Green"],ev:53000.00},{missing:["Gold","Gray"],ev:0},
   {missing:["Gold","Green"],ev:291.96},{missing:["Green","Gray"],ev:46666.67}
 ];
-const godMonthlyEV={G1:27600,G2A:8280,G2B:8280,G3:23000,G4A:0,G4B:0,G5:0,G6A:2300,G6B:2300,G7:7997.73,G8A:22770,G8B:22770};
+const godMonthlyEV={G1:27600,G2A:8280,G2B:8280,G3:23000,G4A:0,G4B:0,G5:0,G6A:2300,G6B:2300,G7:0,G8A:22770,G8B:22770};
+const g7ImmediateAwardEV=7997.73;
+const g7PoltergeistMonthlyChance=0.23*77/242;
 const saintPoolMonthly={cashEquivalentBeforeStatue:21924.18,cashEquivalentAfterStatue:10962.09,directFundsBeforeStatue:-2444.51,directFundsAfterStatue:-1222.25};
 function pairPoolEV(colors){const have=new Set(colors);return purePairMonthlyEV.reduce((sum,pair)=>sum+(pair.missing.every(c=>!have.has(c))?pair.ev:0),0);}
 function pureSinglePoolEV(colors){return colors.length===1?(pureColorMonthlyEV[colors[0]]||0):0;}
@@ -140,30 +114,33 @@ function codexCell(r,color){
   let godHtml='';
   if(eco&&eco.godsEv)godHtml=eco.saint?'<small class="codex-gods off">신들 '+money(eco.godsEv)+'/월 · Saint 후 정지</small>':'<small class="codex-gods">신들 완성 '+money(eco.godsEv)+'/월 → '+money(eco.withGods)+'</small>';
   else if(eco&&eco.saint)godHtml='<small class="codex-gods off">Saint 전환 후 Codex 신들 보너스 정지</small>';
-  const title=info.ko+" 코덱스 선택 시 나머지 3 Codex 연구 영구 disable. 월 EV는 직접 funds + 양수 판매가 지급품의 기대환금가치.";
+  if(eco&&gods.includes("G7"))godHtml+='<small class="codex-gods risk">G7 지급품 양수 판매가 환산 '+money(g7ImmediateAwardEV)+'/월 상당 · '+CaptainGlossary.explain("시끄러운 유령")+' 약 '+(g7PoltergeistMonthlyChance*100).toFixed(2)+'%/월</small>';
+  const title=info.ko+" 코덱스. 4색 중 하나를 고르는 선택입니다. 월 EV는 직접 funds + 양수 판매가 지급품의 기대환금가치.";
   return '<span class="'+cls+'" title="'+title+'"><strong>'+head+'</strong>'+evHtml+'<small>'+gods.join(" · ")+'</small>'+godHtml+'</span>';
 }
 function codexDetailHtml(r){
-  return '<h3>Codex 상호배타 분기 · 월 수입 비교</h3><p class="muted">월 EV는 직접 현금 + 양수 판매가 지급품의 기대환금가치입니다. 연구·임무·병사의 전투가치는 0원으로 둡니다. Codex 각성으로 색이 늘면 해당 색 이벤트 풀이 켜지고 결손색/일부 Pure 풀이 꺼집니다.</p>'+
+  return '<h3>Codex 선택 · 월 수입 비교</h3><p class="muted">4색 중 하나를 고르는 분기입니다. 월 EV는 직접 현금 + 양수 판매가 지급품의 기대환금가치이며 연구·임무·병사의 전투가치는 0원으로 둡니다.</p>'+
     '<div class="codex-detail-grid">'+Object.keys(codexInfo).map(color=>{
       const i=codexInfo[color],eco=codexEconomy(r,color);let extra='';
       if(eco){
         extra='<p><b>반복 EV:</b> '+money(eco.before)+' → <b>'+money(eco.post)+'</b> /월 ('+money(eco.delta)+')</p>';
         if(eco.godsEv)extra+='<p><b>신들 보너스 만개:</b> '+(eco.saint?'Saint 전 한시 ':'')+money(eco.godsEv)+'/월'+(eco.saint?' → Saint 후 정지':' → 합계 '+money(eco.withGods)+'/월')+'</p>';
-        if(eco.saint)extra+='<p><b>Saint 풀:</b> 조각상 전 기대환금가치 약 '+money(saintPoolMonthly.cashEquivalentBeforeStatue)+'/월. 단 병사 아이템 판매가를 돈으로 센 값이며, 이벤트의 직접 funds만 보면 '+money(saintPoolMonthly.directFundsBeforeStatue)+'/월입니다.</p>';
+        if(eco.saint)extra+='<p><b>Saint 풀:</b> 조각상 전 기대환금가치 약 '+money(saintPoolMonthly.cashEquivalentBeforeStatue)+'/월. 병사 아이템 판매가를 돈으로 센 값이며 직접 funds만 보면 '+money(saintPoolMonthly.directFundsBeforeStatue)+'/월입니다.</p>';
+        if(eco.gods.includes("G7"))extra+='<p class="risk-note"><b>G7 주의:</b> 지급품의 양수 판매가만 평균내면 '+money(g7ImmediateAwardEV)+'/월 상당이지만, '+CaptainGlossary.explain("시끄러운 유령")+'이 약 '+(g7PoltergeistMonthlyChance*100).toFixed(2)+'%/월로 발생할 수 있어 안정적 월수입에 더하지 않습니다.</p>';
       }
-      return '<div class="detail-box">'+codexCell(r,color)+extra+'<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p></div>';
+      return '<div class="detail-box">'+codexCell(r,color)+extra+'<p><b>고유 테크:</b> '+CaptainGlossary.explain(i.direct)+'</p><p><b>승천 보상:</b> '+CaptainGlossary.explain(i.awakened)+'</p><p><b>신들 보상:</b> '+CaptainGlossary.explain(i.reward)+'</p></div>';
     }).join("")+'</div>';
 }
 function renderCodexCards(){
   const el=document.querySelector("#codexCards"); if(!el)return;
   el.innerHTML=Object.entries(codexInfo).map(([color,i])=>
     '<article class="codex-card card"><p class="eyebrow">'+i.ko+' CODEX</p><h3>'+i.ko+' 코덱스</h3>'+
-    '<p><b>상호배타:</b> 선택 연구에서 이미 다른 3색 선택을 막고, 실제 Codex 연구에서도 다시 다른 3 Codex를 막는다.</p>'+
-    '<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p><p><b>신들:</b> '+i.reward+'</p></article>'
+    '<p><b>선택:</b> Gold / Green / Red / Gray 중 하나.</p>'+
+    '<p><b>고유 테크:</b> '+CaptainGlossary.explain(i.direct)+'</p>'+
+    '<p><b>승천 보상:</b> '+CaptainGlossary.explain(i.awakened)+'</p>'+
+    '<p><b>신들 보상:</b> '+CaptainGlossary.explain(i.reward)+'</p></article>'
   ).join("");
 }
-
 
 function renderCodexEconomyTable(){
   const root=document.querySelector("#codexEconomyTable"); if(!root)return;
@@ -251,22 +228,6 @@ const captainCodexInteractionRows=[
  ["Lab Accident +1","Gray Codex + Schooling + Basic Electronics + Captain Green 없음","13%","-$250k 실험실 사고 추가 판정"],
  ["Gambling Night","Gambling + Hierarchy + Gray Codex 없음 + SoreAss 아님","13%","승리 전리품 또는 -$100k; Gray/SoreAss는 이 이벤트를 봉쇄"]
 ];
-function prettyRule(id){return '<span class="rule-chip"><b>'+(researchLabels[id]||id.replace(/^STR_/,""))+'</b><small>'+id+'</small></span>'}
-
-const choiceStageMeta=[
-  {key:"initial",title:"1단계 · 기본 선장 성격",hint:"게임 전체의 큰 방향을 정하는 첫 선택",accent:"처음부터 5개 중 1개만 선택"},
-  {key:"class",title:"2단계 · PUSSY 직업",hint:"‘위와는 다른 선장’을 골랐을 때만 등장",accent:"5개 중 1개 선택"},
-  {key:"unclassed",title:"3단계 · 무직 혼합형",hint:"무직 게이트를 선택했을 때 열리는 혼합 성향",accent:"7개 중 1개 선택"},
-  {key:"pure",title:"4단계 · Pure 최종",hint:"Pure 게이트를 선택했을 때의 최종 성향",accent:"5개 중 1개 선택"}
-];
-
-function stageOptionIds(stage){
-  return stage.rows.map(([id])=>id);
-}
-function humanExtraLosses(stage,id,blocks){
-  const peers=new Set(stageOptionIds(stage));
-  return blocks.filter(x=>!peers.has(x)&&x!==id);
-}
 function rowForResearchId(id){
   const map={
     STR_CAPTAIN_DUMBASS:"dumbass",STR_CAPTAIN_JACKASS:"jackass",STR_CAPTAIN_LAZYASS:"lazyass",STR_CAPTAIN_SOREASS:"soreass",STR_CAPTAIN_PUSSY:"pussy",
@@ -277,60 +238,66 @@ function rowForResearchId(id){
   };
   return rows.find(r=>r.id===map[id]);
 }
+const choiceStageMeta=[
+  {title:"1단계 · 기본 선장 성격",hint:"게임 전체의 큰 방향을 정합니다."},
+  {title:"2단계 · PUSSY 직업",hint:"‘위와는 다른 선장’을 선택했을 때만 열립니다."},
+  {title:"3단계 · 무직 혼합형",hint:"무직 게이트를 선택했을 때 열리는 3단계입니다."},
+  {title:"4단계 · Pure 최종",hint:"Pure 게이트를 선택했을 때의 최종 선택입니다."}
+];
+function humanExtraLosses(stage,id,blocks){
+  const peers=new Set(stage.rows.map(([peerId])=>peerId));
+  return blocks.filter(x=>!peers.has(x)&&x!==id);
+}
+function humanFeatureName(id){
+  return researchLabels[id]||id.replace(/^STR_/,"").replaceAll("_"," ");
+}
 function choiceOptionCard(stage,id,blocks){
   const r=rowForResearchId(id);
-  const peerCount=Math.max(0,stageOptionIds(stage).length-1);
   const extras=humanExtraLosses(stage,id,blocks);
-  const summary=r?.summary||"이 분기의 다른 선택지와 상호배타입니다.";
+  const summary=r?.summary||"";
   const ev=r?.evText||"";
   const colorsHtml=r?colors(r):"";
-  const extraHtml=extras.length
-    ? '<div class="choice-loss"><span>추가로 포기</span><div>'+extras.map(x=>'<b>'+(researchLabels[x]||x.replace(/^STR_/,""))+'</b>').join("")+'</div></div>'
-    : '<div class="choice-loss clean"><span>추가 고유 손실</span><b>없음</b></div>';
+  const constraint=extras.length?'<p class="choice-consequence"><b>고유 제약:</b> '+extras.map(humanFeatureName).join(" · ")+'</p>':'';
   return '<article class="choice-option">'+
     '<div class="choice-option-head"><div><strong>'+(researchLabels[id]||id)+'</strong>'+(ev?'<small>'+ev+' /월</small>':'')+'</div>'+colorsHtml+'</div>'+
-    '<p>'+summary+'</p>'+
-    '<div class="choice-lock"><span>이걸 고르면</span><b>같은 단계의 다른 '+peerCount+'개 선택 자동 잠금</b></div>'+
-    extraHtml+
-    '<details class="engine-details"><summary>엔진 규칙 보기</summary><code>'+id+'</code><div class="rule-list">'+blocks.map(prettyRule).join("")+'</div></details>'+
+    (summary?'<p>'+summary+'</p>':'')+
+    constraint+
     '</article>';
 }
 function renderChoiceStage(stage,index){
-  const meta=choiceStageMeta[index]||{title:stage.title,hint:"",accent:(stage.rows.length+"개 중 1개 선택")};
+  const meta=choiceStageMeta[index]||{title:stage.title,hint:""};
   return '<article class="choice-stage card">'+
-    '<div class="choice-stage-head"><div><p class="eyebrow">ONE-OF-'+stage.rows.length+'</p><h3>'+meta.title+'</h3><p>'+meta.hint+'</p></div><span class="one-choice-badge">'+meta.accent+'</span></div>'+
-    '<div class="choice-rule"><span class="choice-dot">1</span><strong>하나를 확정하면</strong><span class="choice-arrow">→</span><span class="choice-dot muted-dot">'+(stage.rows.length-1)+'</span><strong>나머지 선택지는 자동 잠금</strong></div>'+
+    '<div class="choice-stage-head"><div><p class="eyebrow">선택 '+(index+1)+'</p><h3>'+meta.title+'</h3><p>'+meta.hint+'</p></div><span class="one-choice-badge">아래 '+stage.rows.length+'개 중 1개 선택</span></div>'+
     '<div class="choice-grid">'+stage.rows.map(([id,blocks])=>choiceOptionCard(stage,id,blocks)).join("")+'</div>'+
     '</article>';
 }
 function renderCodexChoice(){
   const opts=[
-    ["Gold","금색 코덱스","장교봉 · 화염포","소심이면 네 번째 색 → Saint"],
-    ["Green","녹색 코덱스","바이오플라즈마","무모면 네 번째 색 → Saint"],
-    ["Red","적색 코덱스","Little Ilya","게으른이면 네 번째 색 → Saint"],
-    ["Gray","회색 코덱스","Conversion Launcher","멍청이면 네 번째 색 → Saint"]
+    ["Gold","금색 코덱스","장교의 채찍 · 화염포","소심이면 네 번째 색 → Saint"],
+    ["Green","녹색 코덱스","생체플라스마 투사기","무모면 네 번째 색 → Saint"],
+    ["Red","적색 코덱스","리틀'일리야","게으른이면 네 번째 색 → Saint"],
+    ["Gray","회색 코덱스","컨버전 발사기","멍청이면 네 번째 색 → Saint"]
   ];
   return '<article class="choice-stage card codex-choice-stage">'+
-    '<div class="choice-stage-head"><div><p class="eyebrow">ONE-OF-4 · IRREVERSIBLE</p><h3>Codex 색상 선택</h3><p>화면상 ‘색 선택 연구’와 실제 Codex 연구에서 같은 잠금이 두 번 확인되지만, 플레이어 관점에서는 <b>4색 중 하나를 확정하는 단일 선택</b>입니다.</p></div><span class="one-choice-badge">4색 중 1색만</span></div>'+
-    '<div class="choice-rule"><span class="choice-dot">1</span><strong>한 색 선택</strong><span class="choice-arrow">→</span><span class="choice-dot muted-dot">3</span><strong>다른 Codex 영구 잠금</strong></div>'+
-    '<div class="choice-grid codex-choice-grid">'+opts.map(([color,name,tech,saint])=>{const i=codexInfo[color];return '<article class="choice-option codex-human '+color.toLowerCase()+'">'+
-      '<div class="choice-option-head"><div><strong>'+name+'</strong><small>'+tech+'</small></div><span class="color-pill">'+color+'</span></div>'+
-      '<p>'+saint+'</p><div class="choice-lock"><span>선택 효과</span><b>Captain '+color+' 획득 가능 · 나머지 3 Codex 포기</b></div>'+
-      '<details class="engine-details"><summary>엔진 규칙 보기</summary><p><code>STR_CHOOSE_'+color.toUpperCase()+'_QUERY</code> → <code>STR_CODEX_'+color.toUpperCase()+'</code></p><p>'+i.awakened+'</p></details>'+
-      '</article>';}).join("")+'</div>'+
+    '<div class="choice-stage-head"><div><p class="eyebrow">Codex 선택</p><h3>Codex 색상</h3><p>플레이어 관점에서는 단순한 4지선다입니다.</p></div><span class="one-choice-badge">아래 4색 중 1개 선택</span></div>'+
+    '<div class="choice-grid codex-choice-grid">'+opts.map(([color,name,tech,saint])=>'<article class="choice-option codex-human '+color.toLowerCase()+'">'+
+      '<div class="choice-option-head"><div><strong>'+name+'</strong><small>'+CaptainGlossary.explain(tech)+'</small></div><span class="color-pill">'+color+'</span></div>'+
+      '<p>'+saint+'</p>'+
+      '</article>').join("")+'</div>'+
     '</article>';
 }
 function renderExclusiveRules(){
   const insight=document.querySelector("#soreassGoldInsight");
-  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>아래는 더 이상 “disable 목록”이 아닙니다. 각 상자는 <b>한 번의 선택 묶음</b>입니다. 카드 하나를 고르면 같은 상자의 다른 카드가 잠깁니다. 카드 안의 “추가로 포기”만 그 선택이 특별히 더 막는 시설·기능입니다.</p>';
+  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>각 상자에서 <b>하나만 고르면 됩니다.</b> 같은 묶음의 다른 선택지가 비활성화된다는 사실은 별도 목록으로 반복하지 않습니다. 선택마다 정말 별개의 기능 손실이 있을 때만 <b>고유 제약</b>으로 표시합니다.</p>';
   const root=document.querySelector("#exclusiveRules"); if(!root)return;
   root.innerHTML=exclusiveStages.map((g,i)=>renderChoiceStage(g,i)).join("")+renderCodexChoice();
 }
+
 function renderCaptainCodexInteractions(){
   const root=document.querySelector("#captainCodexInteractions"); if(!root)return;
-  root.innerHTML='<div class="interaction-note"><b>중요:</b> G1~G8 Codex 보너스는 모두 <code>STR_CAPTAIN_SAINT:false</code>를 요구합니다. 즉 <b>Saint가 된 뒤에는 이 신들 보너스 풀은 정지</b>합니다. Saint는 보너스를 단순 추가하는 상위호환이 아닙니다.</div>'+
-    '<div class="table-scroll"><table class="exclusive-table"><thead><tr><th>이벤트</th><th>조건</th><th>실행확률</th><th>효과 / 봉쇄</th></tr></thead><tbody>'+
-    captainCodexInteractionRows.map(r=>'<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>').join("")+
+  root.innerHTML='<div class="interaction-note"><b>중요:</b> G1~G8 Codex 보너스는 모두 Saint 이전에만 작동합니다. Saint가 되면 이 신들 보너스 풀은 정지하므로 단순 상위호환이 아닙니다.</div>'+
+    '<div class="table-scroll"><table class="exclusive-table"><thead><tr><th>이벤트</th><th>조건</th><th>실행확률</th><th>실제 효과</th></tr></thead><tbody>'+
+    captainCodexInteractionRows.map(r=>'<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+CaptainGlossary.explain(r[3])+'</td></tr>').join("")+
     '</tbody></table></div>';
 }
 
@@ -406,5 +373,19 @@ const deep=[
  {title:"전술센터",tag:"전지구 탐지",body:"공격시설이 아니라 정보망. 범위 10800, 매시간 4% 탐지 판정을 제공한다. 한 번 추적된 표적은 범위 내 레이더가 있으면 유지된다.",rows:[["건설/유지","$600k / $50k월"],["재료","개인 자료 50"],["24시간 노출 시","단순 독립가정 약 62.5% 이상 1회 탐지"],["소심 전용","CAPTAIN_SOREASS 직접 요구"]]},
  {title:"네크로방어",tag:"Flak 보급 우회",body:"새 포탑이 아니라 Flak Tower Kit 대체 제작법. 귀한 25mm 기관포와 탄약 대신 네크로비행기 부품을 태운다.",rows:[["일반 Kit","1000 worker-h + 소형기관포4 + 50발상자12"],["Necro Kit","2500 worker-h + Necroplane Parts25"],["완성 Flak","방어225 / 명중65% / 인원+5 / 저장+50"]]},
  {title:"신병→군사 훈련",tag:"정규병 확정 성장",body:"소심과 Ruler는 신병훈련을 열 수 있고, Ruler만 거기서 군사훈련까지 간다. 성장한 스탯 일부를 감산하는 diminishing-return 구조라 신병일수록 효율이 좋다.",rows:[["신병훈련","기력+10 용기+10 반응+5 사격+15 투척+5 근력+10 근접+5 Mana+10"],["군사훈련","TU+5 기력+10 체력+5 용기+10 반응+5 사격+5 투척+5 근접+5 Mana+10 PsiStr+15"],["군사훈련 조건","Ruler + Boot Camp 선행 + DOJO"]]},
+ {title:"건강미 / 자랑스러운 전사",tag:"대체 육성",body:"Priest는 탱커형 건강미 훈련, JackDumb·Pure Red·Saint는 전사문화의 자랑스러운 전사에 강점. 군사훈련과 일부 상호배타라 한 병사에 전부 쌓는 구조가 아니다.",rows:[["건강미 총효과 핵심","기력≈+31 체력≈+23 근력≈+14 장갑+1"],["자랑스러운 전사 핵심","기력≈+17 체력+6 용기+10 근접+10 투척+10 장갑+1"],["Charmy Dance","TU+10 체력 총+15 반응 총+15 등"]]},
+ {title:"혼돈의 성자 지원군",tag:"기본 4선장 장기 보상",body:"PUSSY 계열은 영구 불가. 기본 4선장이 4색을 모두 맞추면 Saint가 가능하고, 도마뱀 조각상 전 기준 특수인력 기대 획득량이 약 0.652명/월이다.",rows:[["평균 간격","약 1.53개월/지원군"],["주요 대박","전쟁공주, 외톨이 클론, 농부 소녀 안내인, 얼음부인, 인간 영웅, 황혼의 신봉자"],["Dumbass 추가","Saint 상태에서 7%/월 정통파 마법사 영애 + $100k"]]},
+ {title:"궁극의 선장",tag:"후불 경제 엔진",body:"$666k 이벤트 자체는 소모·부채·전투 없이 매월 63% 판정. 다만 현재 19(1).sav에서는 최단 4/1에 Ultimate 선택, 첫 월초 판정은 5/1.",rows:[["이벤트 1회","+$666,000 + 666점"],["핵심 월 EV","+$419,580"],["무색 전체 EV","약 +$579,129/월"],["대가","Saint·전술센터·호텔·대량채굴·지하감옥 마스터 포기"]]}
+];
+function renderDeep(){
+ document.querySelector("#deepDiveCards").innerHTML=deep.map(d=>'<article class="deep-card card"><p class="eyebrow">'+d.tag+'</p><h3>'+d.title+'</h3><p>'+d.body+'</p><table><tbody>'+d.rows.map(x=>'<tr><th>'+x[0]+'</th><td>'+x[1]+'</td></tr>').join("")+'</tbody></table></article>').join("");
+}
 
-[Showing lines 1-408 of 425 (50.0KB limit). Use offset=409 to continue.]
+document.querySelector("#search").addEventListener("input",renderRows);
+document.querySelector("#stageFilter").addEventListener("change",renderRows);
+document.querySelector("#onlyAvailable").addEventListener("change",renderRows);
+document.querySelector("#resetBtn").addEventListener("click",()=>{document.querySelector("#search").value="";document.querySelector("#stageFilter").value="all";document.querySelector("#onlyAvailable").checked=false;sortState={key:"stage",dir:1};renderRows()});
+document.querySelector("#dialogClose").addEventListener("click",()=>document.querySelector("#detailDialog").close());
+document.querySelector("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
+
+renderHead();renderRows();renderCodexEconomyTable();renderCodexCards();renderExclusiveRules();renderCaptainCodexInteractions();CaptainGlossary.render();renderTimeline();renderDeep();
