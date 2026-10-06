@@ -93,7 +93,7 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
     }
     roots.forEach(dfs);
     const totalCost=nodeIds.reduce((s,id)=>{const c=researchCatalog[id]?.cost;return s+(Number.isFinite(Number(c))?Number(c):0)},0);
-    return{roots,nodeIds,totalCost,totalTimeOneScientist:formatHours(totalCost),totalTimeTenScientists:formatHours(Math.ceil(totalCost/10))};
+    return{roots,nodeIds,totalCost};
   }
 
   function manufactureProduces(m,itemId){
@@ -134,7 +134,17 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
   const storeIds=new Set(armorList.map(a=>a.storeItem).filter(x=>typeof x==="string"));
   const refs=buildTargetRefs(effectiveMerged,storeIds);
   const damageTypes=damageKeys.map((key,id)=>({id,key,ko:tr(key,"ko"),en:tr(key,"en")}));
-  const acquisitionCatalog={research:researchCatalog,manufacture:{},buy:{},researchRewards:{},events:{}};
+  const acquisitionCatalog={
+    research:researchCatalog,
+    researchModel:{
+      costUnit:"scientist-days",
+      progressTickDays:1,
+      progressPerTick:"assignedScientists",
+      randomizedCostPercent:{min:50,max:150},
+      note:"OXCE 8.6 creates each project at 50-150% of RuleResearch.cost, then adds assigned scientists once per game day."
+    },
+    manufacture:{},buy:{},researchRewards:{},events:{}
+  };
 
   const index=[],details={},rawDetails={},resourceDetails={};
   for(const a of armorList){
@@ -168,10 +178,11 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
     if(storeItemId&&!acquisitionKinds.length)acquisitionKinds.push("전리품/특수");
     if(!storeItemId)acquisitionKinds.push("유닛 전용/비장비");
 
-    const shortestManufacture=manufacture.slice().sort((x,y)=>num(x.research.totalCost)+num(x.time)-num(y.research.totalCost)-num(y.time))[0]||null;
-    const mainResearchCost=shortestManufacture?.research.totalCost??buy?.research.totalCost??equipResearch.totalCost??0;
-    const mainManufactureTime=shortestManufacture?.time??null;
-    const mainAcquireHours=shortestManufacture?(num(shortestManufacture.research.totalCost)+num(shortestManufacture.time)):buy?.transferTime??null;
+    const representativeManufacture=manufacture.slice().sort((x,y)=>
+      num(x.research.totalCost)-num(y.research.totalCost)||num(x.time)-num(y.time)
+    )[0]||null;
+    const mainResearchCost=representativeManufacture?.research.totalCost??buy?.research.totalCost??equipResearch.totalCost??0;
+    const mainManufactureTime=representativeManufacture?.time??null;
 
     const rawSplit=splitPresentationResources(a);
     const detail={
@@ -193,7 +204,7 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
         eventIds:events.map(x=>x.id),
         equipRequires:equipRequires.map(id=>named(id,tr)),equipResearch
       },
-      mainResearchCost,mainManufactureTime,mainAcquireHours,
+      mainResearchCost,mainManufactureTime,
       sourceFiles:sourceHistory["type:"+id]||[],resourceFieldCount:rawSplit.resources.length
     };
     rawDetails[id]={id,bucket,raw:rawSplit.core,references};
@@ -205,7 +216,7 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
       tu:stats.tu,stamina:stats.stamina,health:stats.health,bravery:stats.bravery,reactions:stats.reactions,firing:stats.firing,throwing:stats.throwing,strength:stats.strength,melee:stats.melee,
       ap:damageModifier[1]??1,incendiary:damageModifier[2]??1,he:damageModifier[3]??1,laser:damageModifier[4]??1,plasma:damageModifier[5]??1,stun:damageModifier[6]??1,meleeResist:damageModifier[7]??1,acid:damageModifier[8]??1,dt16:damageModifier[16]??1,
       manufactureCount:manufacture.length,buyable:Boolean(buy),researchRewardCount:rewardResearch.length,eventRefCount:events.length,
-      acquisitionKinds,mainResearchCost,mainManufactureTime,mainAcquireHours,
+      acquisitionKinds,mainResearchCost,mainManufactureTime,
       costBuy:item?.costBuy??null,costSell:item?.costSell??null
     });
   }

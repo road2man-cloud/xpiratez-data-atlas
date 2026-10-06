@@ -33,13 +33,26 @@ jobs:
       - name: Install generator dependencies
         run: npm install
 
-      - name: Download official X-Piratez v.o1.1.1
-        uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
-        with:
-          url: "https://fra1.dl.dbolical.com/dl/2026/06/19/Dioxine_XPiratez_o1.1.1.rar"
-          target: ".cache/xpz"
-          filename: "Dioxine_XPiratez_o1.1.1.rar"
-          retry-times: 4
+      - name: Resolve and download official X-Piratez v.o1.1.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .cache/xpz
+          START_URL="https://www.moddb.com/downloads/start/311212"
+          REFERER="https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop"
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/141 Safari/537.36"
+
+          curl -fL --retry 4 --connect-timeout 20 -A "$UA" -e "$REFERER" "$START_URL" -o .cache/xpz/start.html
+
+          MIRROR_PATH="$(node -e 'const fs=require("fs"); const s=fs.readFileSync(".cache/xpz/start.html","utf8"); const m=s.match(/href="([^"]*\/downloads\/mirror\/311212\/[^"]+)"/); if(!m){console.error("Could not resolve the current ModDB mirror URL"); process.exit(2)} console.log(m[1].replaceAll("&amp;","&"));')"
+          if [[ "$MIRROR_PATH" == http* ]]; then
+            MIRROR_URL="$MIRROR_PATH"
+          else
+            MIRROR_URL="https://www.moddb.com$MIRROR_PATH"
+          fi
+          echo "Resolved ModDB mirror endpoint: $MIRROR_URL"
+
+          curl -fL --retry 4 --connect-timeout 20 -A "$UA" -e "$START_URL" "$MIRROR_URL" -o .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
 
       - name: Verify official archive
         run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
@@ -60,6 +73,10 @@ jobs:
 
       - name: Verify armor database
         run: node tools/check-armors.mjs
+
+      - name: Verify canonical official source
+        run: |
+          node -e 'const x=require("./public/data/armors-index.json"); const names=new Set(x.meta.source.rules.map(r=>r.file)); const bad=["000_Ratling_Visibility.rul","Shotguns_Rebalance.rul"].filter(x=>names.has(x)); if(bad.length) throw new Error("Local custom rules leaked into canonical armor data: "+bad.join(", "));'
 
       - name: Commit generated armor database
         run: |

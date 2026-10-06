@@ -12,6 +12,8 @@ for(const [k,v] of Object.entries(expected))if(armors.counts?.[k]!==v)throw new 
 
 const routes=JSON.parse(fs.readFileSync(file("armor-routes","base.json"),"utf8"));
 if(!routes.research||!routes.buy||!routes.researchRewards||!routes.events)throw new Error("Incomplete armor route catalog");
+if(routes.researchModel?.costUnit!=="scientist-days"||routes.researchModel?.progressTickDays!==1)throw new Error("Invalid OXCE research unit model");
+if(routes.researchModel?.randomizedCostPercent?.min!==50||routes.researchModel?.randomizedCostPercent?.max!==150)throw new Error("Invalid OXCE research randomization model");
 const manufactureCache={};
 function manufactureRoute(ref){
   if(!ref?.id||!ref?.bucket)return null;

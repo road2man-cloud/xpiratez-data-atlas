@@ -52,7 +52,7 @@ function resist(v){
 }
 function render(){
   const head=[
-    th("방어구","name"),'<th>획득</th>',th("선행 연구량","mainResearchCost","scientist-hours"),th("제조시간","mainManufactureTime","engineer-hours"),
+    th("방어구","name"),'<th>획득</th>',th("선행 연구량","mainResearchCost","OXCE 명목 연구량 · scientist-days"),th("제조시간","mainManufactureTime","engineer-hours"),
     th("전","frontArmor"),th("좌","leftArmor"),th("우","rightArmor"),th("후","rearArmor"),th("하","underArmor"),th("무게","weight"),
     th("TU","tu"),th("기력","stamina"),th("체력","health"),th("반응","reactions"),th("사격","firing"),th("근접","melee"),
     th("AP","ap","일반 탄환/Armor Piercing 저항 배율"),th("화염","incendiary"),th("HE","he"),th("레이저","laser"),th("플라즈마","plasma"),th("근접","meleeResist"),th("DT16","dt16")
@@ -106,12 +106,15 @@ function chips(obj){
 function researchBlock(r){
   if(!r)return '<span class="muted">없음</span>';
   const nodes=(r.nodeIds||[]).map(id=>ROUTES?.research?.[id]).filter(Boolean);
+  const model=ROUTES?.researchModel||{};
+  const range=model.randomizedCostPercent||{min:50,max:150};
   return '<div class="route-metrics">'+
-    kv("명목 누적 연구량",fmt(r.totalCost)+" scientist-hours")+
-    kv("1명 연속 연구",esc(r.totalTimeOneScientist||"—"))+
-    kv("10명 환산",esc(r.totalTimeTenScientists||"—"))+
+    kv("명목 누적 연구량",fmt(r.totalCost)+" scientist-days")+
+    kv("실제 프로젝트 cost","각 연구 시작 시 "+fmt(range.min)+"~"+fmt(range.max)+"%")+
+    kv("진행 방식","매 게임일 배정 과학자 수만큼 진행")+
     '</div>'+
-    '<div class="research-chain">'+nodes.map(x=>'<div class="research-node"><b>'+esc(x.koName)+'</b><small>'+esc(x.id)+'</small><span>'+fmt(x.cost)+' h'+(x.needItem?' · 표본 필요'+(x.destroyItem?'·소모':''):'')+'</span></div>').join("")+'</div>';
+    '<p class="muted">RuleResearch.cost는 시간(hour)이 아니라 명목 연구 작업량입니다. 실제 달력시간은 각 연구의 난수화된 cost, 배정 과학자 수, 표본·분기·선행조건에 따라 달라집니다.</p>'+
+    '<div class="research-chain">'+nodes.map(x=>'<div class="research-node"><b>'+esc(x.koName)+'</b><small>'+esc(x.id)+'</small><span>'+fmt(x.cost)+' scientist-days (명목)'+(x.needItem?' · 표본 필요'+(x.destroyItem?'·소모':''):'')+'</span></div>').join("")+'</div>';
 }
 function manufactureBlock(m){
   return '<article class="route-card"><h4>'+esc(m.koName)+'</h4>'+
@@ -132,7 +135,7 @@ async function openDetail(id,bucket){
   html+='<h3>피해유형별 저항 배율</h3><div class="resist-grid">'+(DATA.damageTypes||[]).map((x,i)=>'<div class="statbox"><small>'+esc(x.ko||x.key)+'</small><b>'+resist(d.damageModifier[i])+'</b></div>').join("")+'</div>';
   html+='<h3>회피·회복·시야</h3><div class="detail-grid">'+kv("근접 회피 공식",'<code>'+esc(JSON.stringify(d.meleeDodge||{}))+'</code>')+kv("회복 규칙",'<code>'+esc(JSON.stringify(d.recovery||{}))+'</code>')+kv("시야/위장",'야간 '+fmt(d.visibilityAtDark)+' · 주간 '+fmt(d.visibilityAtDay)+' · 위장 '+fmt(d.camouflageAtDark)+'/'+fmt(d.camouflageAtDay))+'</div>';
 
-  html+='<h3>획득 방법과 시간</h3>';
+  html+='<h3>획득 방법과 작업량</h3>';
   const buy=d.acquisition.buyKey?ROUTES.buy?.[d.acquisition.buyKey]:null;
   if(buy){
     const b=buy;

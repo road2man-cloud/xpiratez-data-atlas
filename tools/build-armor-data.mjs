@@ -120,6 +120,7 @@ for(const [id,x] of Object.entries(armorData.acquisitionCatalog.manufacture)){
 writeChunks("armor-routes/manufacture",manufactureWithBuckets);
 fs.writeFileSync(path.join(routeDir,"base.json"),JSON.stringify({
   research:armorData.acquisitionCatalog.research,
+  researchModel:armorData.acquisitionCatalog.researchModel,
   buy:armorData.acquisitionCatalog.buy,
   researchRewards:armorData.acquisitionCatalog.researchRewards,
   events:armorData.acquisitionCatalog.events
