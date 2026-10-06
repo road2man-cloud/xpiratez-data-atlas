@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -20,9 +20,6 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -50,11 +47,22 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish static site
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin gh-pages
+          rm -rf .pages-publish
+          git worktree add --detach .pages-publish origin/gh-pages
+          find .pages-publish -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a public/. .pages-publish/
+          cd .pages-publish
+          git add -A
+          if git diff --cached --quiet; then
+            echo "gh-pages already matches public/"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Publish Data Atlas from ${GITHUB_SHA}"
+          git push origin HEAD:gh-pages
