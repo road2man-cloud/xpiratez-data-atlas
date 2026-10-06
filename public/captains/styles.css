@@ -103,3 +103,29 @@ html{scroll-behavior:smooth}
 .choice-consequence b{color:#f5d0dc}
 .codex-gods.risk,.risk-note{color:#fbbf24!important;border-left:3px solid #a16207;padding-left:7px}
 @media(max-width:760px){.glossary-grid{grid-template-columns:1fr}.term-link small{max-width:150px}}
+
+/* Human-readable captain effect summaries */
+.feature-head{min-width:150px;max-width:190px;vertical-align:bottom}
+.feature-head .col-title{display:block;font-weight:900;color:#dbe8ff;line-height:1.18}
+.feature-head .col-effect{display:block;margin-top:5px;color:#8fa6ca;font-size:.62rem;line-height:1.28;font-weight:650;white-space:normal}
+.choice-effects-wrap{margin-top:10px;padding-top:10px;border-top:1px solid #2a3b59}
+.choice-effects-title{display:block;margin-bottom:6px;color:#8fb7ee;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.choice-effect-list{display:grid;gap:6px}
+.choice-effect{display:grid;gap:2px;padding:8px 9px;border:1px solid #31513f;background:#11251c;border-radius:9px}
+.choice-effect.warn-effect{border-color:#704153;background:#2a1720}
+.choice-effect b{font-size:.75rem;color:#a7f3d0}
+.choice-effect.warn-effect b{color:#fecdd3}
+.choice-effect span{font-size:.7rem;line-height:1.35;color:#bdc9dc}
+.choice-late{margin-top:7px!important;padding:7px 8px;border-left:3px solid #a08422;background:#211f13;color:#d8ca83!important;font-size:.72rem!important}
+.choice-no-direct{margin:0!important;padding:8px 9px;border:1px dashed #40526d;border-radius:9px;color:#98a9c4!important;font-size:.72rem!important}
+.effect-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 18px}
+.effect-card{padding:13px;border:1px solid #2f4467;border-radius:12px;background:#121d31}
+.effect-card.effect-yes{border-color:#2e6249;background:#10251d}
+.effect-card.effect-warn{border-color:#774252;background:#291820}
+.effect-card.effect-late{border-color:#6e6128;background:#211e13}
+.effect-card-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:6px}
+.effect-card-head b{font-size:.84rem}
+.effect-card-head span{font-size:.64rem;color:#8fa4c5;white-space:nowrap}
+.effect-card>strong{display:block;color:#bcd7ff;font-size:.78rem;line-height:1.35;margin-bottom:5px}
+.effect-card p{margin:0;color:#b6c3d8;font-size:.74rem;line-height:1.5}
+@media(max-width:760px){.effect-card-grid{grid-template-columns:1fr}.feature-head{min-width:138px}}
