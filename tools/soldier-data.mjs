@@ -15,6 +15,13 @@ function readStats(x){
   }
   return out;
 }
+function readMaxRequirementStats(x){
+  const out=Object.fromEntries(SOLDIER_STAT_KEYS.map(k=>[k,9999]));
+  if(x&&typeof x==="object")for(const k of SOLDIER_STAT_KEYS){
+    const v=Number(x[k]);if(Number.isFinite(v))out[k]=v;
+  }
+  return out;
+}
 function addStats(a,b){
   const out={};
   for(const k of SOLDIER_STAT_KEYS)out[k]=(Number(a?.[k])||0)+(Number(b?.[k])||0);
@@ -36,15 +43,17 @@ function baseRange(rule){
   max.psiSkill=min.psiSkill;
   return{min,avg:averageRange(min,max),max};
 }
-function templateCurrentRange(rule,template){
+function templateRange(rule,template,key){
   const range=baseRange(rule);
-  const current=template?.currentStats&&typeof template.currentStats==="object"?template.currentStats:{};
+  const current=template?.[key]&&typeof template[key]==="object"?template[key]:{};
   for(const k of SOLDIER_STAT_KEYS){
     const v=Number(current[k]);
     if(Number.isFinite(v)){range.min[k]=v;range.avg[k]=v;range.max[k]=v;}
   }
   return range;
 }
+function templateCurrentRange(rule,template){return templateRange(rule,template,"currentStats");}
+function templateInitialRange(rule,template){return templateRange(rule,template,"initialStats");}
 function effectiveCapStats(rule,bonus){
   const raw=readStats(rule.statCaps),effective=addStats(raw,bonus);
   for(const k of SOLDIER_STAT_KEYS)effective[k]=Math.max(0,Number(effective[k])||0);
@@ -138,6 +147,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   function spawnProfile(sourceType,sourceId,entry){
     const soldier=soldierByType.get(entry.spawnedPersonType); if(!soldier)return null;
     const template=entry.spawnedSoldier&&typeof entry.spawnedSoldier==="object"?entry.spawnedSoldier:{};
+    const initial=templateInitialRange(soldier,template);
     const current=templateCurrentRange(soldier,template);
     const traitNames=bonusNames(template),traitStats=bonusStats(traitNames);
     const effective=applyBonuses(current,traitStats);
@@ -156,7 +166,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       monthlyBuyLimit:direct?(soldier.monthlyBuyLimit??null):null,
       requires:Array.isArray(entry.requires)?entry.requires:[],
       requiresBaseFunc:Array.isArray(entry.requiresBaseFunc)?entry.requiresBaseFunc:[],
-      currentStatsBeforeTraits:current,traitNames,traits:bonusDetails(traitNames),traitStats,
+      initialStats:initial,currentStatsBeforeTraits:current,traitNames,traits:bonusDetails(traitNames),traitStats,
       effectiveStats:effective,rawStatCaps:caps.raw,effectiveStatCaps:caps.effective,trainingStatCaps:readStats(soldier.trainingStatCaps),
       initialStatsOverride:template.initialStats??null,currentStatsOverride:template.currentStats??null,
       previousTransformations:template.previousTransformations??{},
@@ -184,12 +194,12 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   }
   profiles.sort((a,b)=>(a.soldierKoName+a.sourceKoName).localeCompare(b.soldierKoName+b.sourceKoName,"ko"));
 
-  const transformationIndex=transformations.map(t=>{
+  const transformationIndex=transformations.map((t,ruleOrder)=>{
     const flat=readStats(t.flatOverallStatChange);
     const trait=t.soldierBonusType&&bonusByName.has(t.soldierBonusType)?t.soldierBonusType:null;
     const traitStats=trait?readStats(bonusByName.get(trait).stats):zeroStats();
     return{
-      id:t.name,koName:tr(t.name,"ko"),enName:tr(t.name,"en"),
+      id:t.name,koName:tr(t.name,"ko"),enName:tr(t.name,"en"),ruleOrder,
       requires:Array.isArray(t.requires)?t.requires:[],
       requiresBaseFunc:Array.isArray(t.requiresBaseFunc)?t.requiresBaseFunc:[],
       allowedSoldierTypes:Array.isArray(t.allowedSoldierTypes)?t.allowedSoldierTypes:[],
@@ -199,13 +209,193 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       producedSoldierType:t.producedSoldierType??null,
       soldierBonusType:trait,
       flatOverallStatChange:flat,
+      flatMin:readStats(t.flatMin),flatMax:readStats(t.flatMax),
+      percentOverallStatChange:readStats(t.percentOverallStatChange),
+      percentMin:readStats(t.percentMin),percentMax:readStats(t.percentMax),
       percentGainedStatChange:readStats(t.percentGainedStatChange),
+      percentGainedMin:readStats(t.percentGainedMin),percentGainedMax:readStats(t.percentGainedMax),
+      requiredMinStats:readStats(t.requiredMinStats),requiredMaxStats:readMaxRequirementStats(t.requiredMaxStats),
+      lowerBoundAtMinStats:t.lowerBoundAtMinStats!==false,
+      upperBoundAtMaxStats:Boolean(t.upperBoundAtMaxStats),
+      upperBoundAtStatCaps:Boolean(t.upperBoundAtStatCaps),
+      upperBoundType:Number.isFinite(Number(t.upperBoundType))?Number(t.upperBoundType):0,
+      includeBonusesForMinStats:Boolean(t.includeBonusesForMinStats),
+      includeBonusesForMaxStats:Boolean(t.includeBonusesForMaxStats),
+      rerollStats:readStats(t.rerollStats),
+      reset:Boolean(t.reset),removeTransformations:Array.isArray(t.removeTransformations)?t.removeTransformations:[],
       traitStats,
       fixedEffectiveDelta:addStats(flat,traitStats),
       cost:t.cost??0,recoveryTime:t.recoveryTime??0,createsClone:t.createsClone??false,
       sourceFiles:sourceHistory["name:"+t.name]||["Piratez_Transformations.rul"]
     };
   }).sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
+
+
+  const transformationById=new Map(transformationIndex.map(t=>[t.id,t]));
+  const hasPositiveStat=x=>SOLDIER_STAT_KEYS.some(k=>(Number(x?.[k])||0)>0);
+  const hasAnyStat=x=>SOLDIER_STAT_KEYS.some(k=>(Number(x?.[k])||0)!==0);
+  const isOneShot=t=>t.forbiddenPreviousTransformations.includes(t.id);
+  const isEnhancementTarget=t=>!t.producedSoldierType&&!t.createsClone&&(
+    t.soldierBonusType||(isOneShot(t)&&(hasPositiveStat(t.fixedEffectiveDelta)||hasPositiveStat(t.percentGainedStatChange)))
+  );
+  const transformationAppliesTo=(soldierType,t)=>
+    !t.producedSoldierType&&!t.createsClone&&
+    (!t.allowedSoldierTypes.length||t.allowedSoldierTypes.includes(soldierType))&&
+    !t.forbiddenSoldierTypes.includes(soldierType);
+
+  function buildEnhancementBuildSet(soldierType,previousTransformations){
+    const prior=new Set(Object.entries(previousTransformations||{}).filter(([,v])=>v).map(([k])=>k));
+
+    function prerequisiteClosure(id,trail=new Set()){
+      if(prior.has(id))return new Set();
+      if(trail.has(id))return null;
+      const t=transformationById.get(id);
+      if(!t||!transformationAppliesTo(soldierType,t))return null;
+      if(t.forbiddenPreviousTransformations.some(x=>prior.has(x)))return null;
+      const nextTrail=new Set(trail);nextTrail.add(id);
+      const out=new Set([id]);
+      for(const req of t.requiredPreviousTransformations){
+        if(prior.has(req))continue;
+        const c=prerequisiteClosure(req,nextTrail);
+        if(!c)return null;
+        for(const x of c)out.add(x);
+      }
+      return out;
+    }
+
+    const targets=[];
+    for(const t of transformationIndex){
+      if(!isEnhancementTarget(t)||!transformationAppliesTo(soldierType,t)||prior.has(t.id))continue;
+      const closure=prerequisiteClosure(t.id);
+      if(closure)targets.push({id:t.id,closure});
+    }
+    const targetById=new Map(targets.map(x=>[x.id,x]));
+    const sequenceCache=new Map();
+
+    function unionClosures(ids){
+      const out=new Set();
+      for(const id of ids)for(const x of targetById.get(id)?.closure||[])out.add(x);
+      return out;
+    }
+
+    function sequenceFor(transformSet){
+      const ids=[...transformSet].sort();
+      const key=ids.join("|");
+      if(sequenceCache.has(key))return sequenceCache.get(key);
+      const pending=new Set(ids),applied=new Set(prior),bad=new Set();
+
+      function dfs(order){
+        if(!pending.size)return order;
+        const state=[...pending].sort().join("|");
+        if(bad.has(state))return null;
+        const choices=[...pending].filter(id=>{
+          const t=transformationById.get(id);
+          return t&&
+            t.requiredPreviousTransformations.every(r=>applied.has(r))&&
+            !t.forbiddenPreviousTransformations.some(f=>applied.has(f));
+        }).sort();
+        for(const id of choices){
+          pending.delete(id);applied.add(id);
+          const result=dfs([...order,id]);
+          if(result)return result;
+          applied.delete(id);pending.add(id);
+        }
+        bad.add(state);return null;
+      }
+
+      const result=dfs([]);
+      sequenceCache.set(key,result);
+      return result;
+    }
+
+    if(!targets.length)return[{id:"B0",targetIds:[],transformationIds:[],traitIds:[],fixedDelta:zeroStats(),capDelta:zeroStats(),percentGainedChange:zeroStats(),growthSensitive:false,cost:0,recoveryTime:0}];
+
+    const neighbors=new Map(targets.map(x=>[x.id,new Set()]));
+    for(let i=0;i<targets.length;i++)for(let j=i+1;j<targets.length;j++){
+      const a=targets[i].id,b=targets[j].id;
+      if(sequenceFor(unionClosures([a,b]))){neighbors.get(a).add(b);neighbors.get(b).add(a);}
+    }
+
+    const cliques=[];
+    function bronKerbosch(r,p,x){
+      if(!p.size&&!x.size){cliques.push([...r]);return;}
+      let pivot=null,pivotCount=-1;
+      for(const u of new Set([...p,...x])){
+        let n=0;for(const v of p)if(neighbors.get(u)?.has(v))n++;
+        if(n>pivotCount){pivot=u;pivotCount=n;}
+      }
+      const candidates=[...p].filter(v=>!neighbors.get(pivot)?.has(v));
+      for(const v of candidates){
+        const nv=neighbors.get(v)||new Set();
+        bronKerbosch(
+          new Set([...r,v]),
+          new Set([...p].filter(y=>nv.has(y))),
+          new Set([...x].filter(y=>nv.has(y)))
+        );
+        p.delete(v);x.add(v);
+      }
+    }
+    bronKerbosch(new Set(),new Set(targets.map(x=>x.id)),new Set());
+
+    const valid=[],seenTargetSets=new Set();
+    function salvage(ids){
+      const sorted=[...ids].sort(),key=sorted.join("|");
+      if(seenTargetSets.has(key))return;
+      seenTargetSets.add(key);
+      const transforms=unionClosures(sorted);
+      const sequence=sequenceFor(transforms);
+      if(sequence){valid.push({targets:sorted,transforms:[...transforms].sort(),sequence});return;}
+      if(sorted.length<=1)return;
+      for(let i=0;i<sorted.length;i++)salvage(sorted.filter((_,j)=>j!==i));
+    }
+    for(const clique of cliques)salvage(clique);
+
+    const maximal=valid.filter((x,i)=>!valid.some((y,j)=>
+      i!==j&&x.targets.length<y.targets.length&&x.targets.every(id=>y.targets.includes(id))
+    ));
+    const unique=[...new Map(maximal.map(x=>[x.transforms.join("|"),x])).values()];
+
+    function summarize(x,index){
+      let fixed=zeroStats(),capDelta=zeroStats(),percent=zeroStats(),cost=0,recoveryTime=0;
+      const traitIds=[];
+      for(const id of x.sequence){
+        const t=transformationById.get(id);if(!t)continue;
+        fixed=addStats(fixed,t.fixedEffectiveDelta);
+        capDelta=addStats(capDelta,t.traitStats);
+        percent=addStats(percent,t.percentGainedStatChange);
+        cost+=Number(t.cost)||0;recoveryTime+=Number(t.recoveryTime)||0;
+        if(t.soldierBonusType&&!traitIds.includes(t.soldierBonusType))traitIds.push(t.soldierBonusType);
+      }
+      return{
+        id:"B"+index,targetIds:x.targets,transformationIds:x.sequence,traitIds,
+        fixedDelta:fixed,capDelta,percentGainedChange:percent,growthSensitive:hasAnyStat(percent),
+        cost,recoveryTime
+      };
+    }
+    return unique.map(summarize).sort((a,b)=>
+      b.targetIds.length-a.targetIds.length||
+      b.transformationIds.length-a.transformationIds.length||
+      a.transformationIds.join("|").localeCompare(b.transformationIds.join("|"),"en")
+    ).map((x,i)=>({...x,id:"B"+i}));
+  }
+
+  const enhancementBuildSets=[],enhancementSetBySignature=new Map();
+  for(const profile of profiles){
+    const prior=Object.entries(profile.previousTransformations||{}).filter(([,v])=>v).map(([k])=>k).sort();
+    const signature=profile.soldierType+"|"+prior.join(",");
+    let set=enhancementSetBySignature.get(signature);
+    if(!set){
+      set={
+        id:"E"+enhancementBuildSets.length,
+        soldierType:profile.soldierType,
+        previousTransformations:prior,
+        combinations:buildEnhancementBuildSet(profile.soldierType,profile.previousTransformations)
+      };
+      enhancementSetBySignature.set(signature,set);
+      enhancementBuildSets.push(set);
+    }
+    profile.enhancementBuildSetId=set.id;
+  }
 
   const bonusIndex=bonuses.map(b=>({
     id:b.name,koName:tr(b.name,"ko"),enName:tr(b.name,"en"),stats:readStats(b.stats),
@@ -224,7 +414,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
 
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,
-    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,
-    counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierBonuses:bonusIndex.length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
+    soldiers,profiles,transformations:transformationIndex,enhancementBuildSets,bonuses:bonusIndex,profileCounts,resourceDetails,
+    counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierEnhancementBuildSets:enhancementBuildSets.length,soldierFinalBuilds:profiles.reduce((n,p)=>n+(enhancementBuildSets.find(x=>x.id===p.enhancementBuildSetId)?.combinations.length||0),0),soldierBonuses:bonusIndex.length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
   };
 }

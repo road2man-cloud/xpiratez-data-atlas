@@ -1,9 +1,10 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261006-2300";
+const ASSET_VERSION="soldiers-20261007-finalbuilds2";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
-const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map();
-let RESEARCH_TOPICS=null;
-let sort={key:"firing",dir:-1};
+const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
+let RESEARCH_TOPICS=null,FINAL_ROWS=[];
+let sort={key:"firing",dir:-1},finalPage=0;
+const FINAL_PAGE_SIZE=200;
 
 const $=q=>document.querySelector(q);
 const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:1});
@@ -15,6 +16,11 @@ async function load(){
   const res=await fetch(versioned("../data/soldiers-index.json"));
   if(!res.ok)throw new Error("병종 데이터 HTTP "+res.status);
   DATA=await res.json();
+  for(const t of DATA.transformations||[])TRANSFORM_BY_ID.set(t.id,t);
+  for(const s of DATA.enhancementBuildSets||[])BUILD_SET_BY_ID.set(s.id,s);
+  for(const b of DATA.bonuses||[])BONUS_BY_ID.set(b.id,b);
+  for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
+  FINAL_ROWS=buildFinalRows();
   try{
     const [prog,research]=await Promise.all([
       fetch(versioned("../data/progression.json")),
@@ -32,11 +38,163 @@ function renderSummary(){
     ["실제 획득형",DATA.profiles.length+"개","직접 "+(pc.direct||0)+" · 제조 "+(pc.manufacture||0)+" · 이벤트 "+(pc.event||0)],
     ["기본 바디 규칙",DATA.soldiers.length+"종","내부 RuleSoldier / 성장 규칙"],
     ["Saint 지원군",pc.saintUnique+"종","고유 결과 · 가중 슬롯 "+pc.saintSlots+"칸"],
-    ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"]
+    ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"],
+    ["최종 강화 조합",FINAL_ROWS.length+"개","상호배타·선행순서 검증 완료"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
+}
+function addStatsObj(a,b){
+  const out={};
+  for(const k of statOrder)out[k]=(Number(a?.[k])||0)+(Number(b?.[k])||0);
+  return out;
+}
+function obeyMinimum(stats){
+  const out={};
+  for(const k of statOrder)out[k]=Math.max(k==="health"?1:0,Number(stats?.[k])||0);
+  return out;
+}
+function randomBand(a,b,band,k){
+  const x=Number(a?.[k])||0,y=Number(b?.[k])||0,lo=Math.min(x,y),hi=Math.max(x,y);
+  return band==="min"?lo:band==="max"?hi:(lo+hi)/2;
+}
+function percentInt(base,percent){return Math.trunc((Number(base)||0)*(Number(percent)||0)/100);}
+function transformDelta(rawCurrent,rawInitial,t,band,soldier){
+  const out={};
+  for(const k of statOrder){
+    let change=(Number(t.flatOverallStatChange?.[k])||0)+randomBand(t.flatMin,t.flatMax,band,k);
+    const overallPct=(Number(t.percentOverallStatChange?.[k])||0)+randomBand(t.percentMin,t.percentMax,band,k);
+    const gainedPct=(Number(t.percentGainedStatChange?.[k])||0)+randomBand(t.percentGainedMin,t.percentGainedMax,band,k);
+    change+=percentInt(rawCurrent?.[k],overallPct);
+    change+=percentInt((Number(rawCurrent?.[k])||0)-(Number(rawInitial?.[k])||0),gainedPct);
+    if(k==="bravery"){
+      const sign=change<0?-1:1;
+      change=Math.trunc((change+sign*5)/10)*10;
+    }
+    if(t.lowerBoundAtMinStats){
+      change=Math.max(change,(Number(soldier?.minStats?.[k])||0)-(Number(rawCurrent?.[k])||0));
+    }
+    if(t.upperBoundAtMaxStats||t.upperBoundAtStatCaps){
+      const upper=t.upperBoundAtMaxStats?(Number(soldier?.maxStats?.[k])||0):(Number(soldier?.statCaps?.[k])||0);
+      const soft=Number(t.upperBoundType??0)!==2;
+      if(soft){
+        if(change>0)change=(Number(rawCurrent?.[k])||0)<=upper?Math.min(change,upper-(Number(rawCurrent?.[k])||0)):0;
+      }else change=Math.min(change,upper-(Number(rawCurrent?.[k])||0));
+    }
+    out[k]=change;
+  }
+  return out;
+}
+function uniqueBonusIds(profile,combo){
+  const ids=[...(profile.traitNames||[])];
+  for(const id of combo.transformationIds||[]){
+    const b=TRANSFORM_BY_ID.get(id)?.soldierBonusType;
+    if(b&&!ids.includes(b))ids.push(b);
+  }
+  return ids;
+}
+function bonusStatsFor(ids){
+  let out={};
+  for(const id of new Set(ids||[]))out=addStatsObj(out,BONUS_BY_ID.get(id)?.stats||{});
+  return out;
+}
+function effectiveStats(raw,bonusIds){
+  const out=obeyMinimum(addStatsObj(raw,bonusStatsFor(bonusIds)));
+  if((Number(raw?.psiSkill)||0)<=0&&out.psiSkill>0)out.psiSkill=Number(raw?.psiSkill)||0;
+  return out;
+}
+function capForBonusIds(profile,bonusIds){
+  const raw=profile.rawStatCaps||{},bonus=bonusStatsFor(bonusIds),out={};
+  for(const k of statOrder){
+    out[k]=Math.max(0,(Number(raw[k])||0)+(Number(bonus[k])||0));
+    if(k==="psiSkill"&&(Number(raw[k])||0)<=0)out[k]=Number(raw[k])||0;
+  }
+  return out;
+}
+function finalCapFor(profile,combo){return capForBonusIds(profile,uniqueBonusIds(profile,combo));}
+function simulateFinalStats(profile,combo,band){
+  const soldier=SOLDIER_BY_ID.get(profile.soldierType);
+  const initial={...(profile.initialStats?.[band]||profile.currentStatsBeforeTraits?.[band]||{})};
+  let raw={...(profile.currentStatsBeforeTraits?.[band]||{})};
+  const bonusIds=[...(profile.traitNames||[])],preGrowth=Object.fromEntries(statOrder.map(k=>[k,0]));
+  for(const id of combo.transformationIds||[]){
+    const t=TRANSFORM_BY_ID.get(id);if(!t)continue;
+    const minCheck=t.includeBonusesForMinStats?effectiveStats(raw,bonusIds):raw;
+    const rawCap=profile.rawStatCaps||{};
+    for(const k of statOrder){
+      const req=Number(t.requiredMinStats?.[k])||0;
+      if(k==="psiSkill"&&req===0)continue;
+      const cur=Number(minCheck?.[k])||0;
+      if(cur>=req)continue;
+      const need=req-cur,growCeiling=Math.max(Number(raw?.[k])||0,Number(rawCap?.[k])||0);
+      if((Number(raw?.[k])||0)+need>growCeiling)return{valid:false,failedAt:id,failedStat:k,required:req,current:cur};
+      raw[k]=(Number(raw[k])||0)+need;
+      preGrowth[k]=(Number(preGrowth[k])||0)+need;
+    }
+    const maxCheck=t.includeBonusesForMaxStats?effectiveStats(raw,bonusIds):raw;
+    for(const k of statOrder){
+      const max=Number(t.requiredMaxStats?.[k]);
+      if(Number.isFinite(max)&&(Number(maxCheck?.[k])||0)>max)return{valid:false,failedAt:id,failedStat:k,requiredMax:max,current:Number(maxCheck?.[k])||0};
+    }
+    raw=addStatsObj(raw,transformDelta(raw,initial,t,band,soldier));
+    if(t.soldierBonusType&&!bonusIds.includes(t.soldierBonusType))bonusIds.push(t.soldierBonusType);
+  }
+  return{valid:true,raw,effective:effectiveStats(raw,bonusIds),bonusIds,preGrowth};
+}
+function buildFinalRows(){
+  const rows=[];
+  for(const profile of DATA.profiles||[]){
+    const set=BUILD_SET_BY_ID.get(profile.enhancementBuildSetId);if(!set)continue;
+    for(const combo of set.combinations||[]){
+      const transformations=(combo.transformationIds||[]).map(id=>TRANSFORM_BY_ID.get(id)).filter(Boolean);
+      const enhancementNames=transformations.map(t=>t.koName);
+      const timingSensitive=transformations.some(t=>statOrder.some(k=>
+        (Number(t.percentOverallStatChange?.[k])||0)||(Number(t.percentGainedStatChange?.[k])||0)||
+        (Number(t.percentMin?.[k])||0)||(Number(t.percentMax?.[k])||0)||
+        (Number(t.percentGainedMin?.[k])||0)||(Number(t.percentGainedMax?.[k])||0)
+      )||t.upperBoundAtMaxStats||t.upperBoundAtStatCaps);
+      const randomSensitive=transformations.some(t=>statOrder.some(k=>
+        (Number(t.flatMin?.[k])||0)!==(Number(t.flatMax?.[k])||0)||
+        (Number(t.percentMin?.[k])||0)!==(Number(t.percentMax?.[k])||0)||
+        (Number(t.percentGainedMin?.[k])||0)!==(Number(t.percentGainedMax?.[k])||0)
+      ));
+      const addedTraitIds=[...new Set(combo.traitIds||[])];
+      const addedTraitNames=addedTraitIds.map(id=>BONUS_BY_ID.get(id)?.koName||id);
+      const startTraitNames=profile.traits?.map(t=>t.koName)||[];
+      const finalTraitNames=[...new Set([...startTraitNames,...addedTraitNames])];
+      const simulations={
+        min:simulateFinalStats(profile,combo,"min"),
+        avg:simulateFinalStats(profile,combo,"avg"),
+        max:simulateFinalStats(profile,combo,"max")
+      };
+      if(Object.values(simulations).some(x=>!x.valid))continue;
+      const finalStats={min:simulations.min.effective,avg:simulations.avg.effective,max:simulations.max.effective};
+      const preGrowthByBand={min:simulations.min.preGrowth,avg:simulations.avg.preGrowth,max:simulations.max.preGrowth};
+      const preGrowthTotal=statOrder.reduce((n,k)=>n+(Number(preGrowthByBand.avg?.[k])||0),0);
+      const base=profile.effectiveStats||{};
+      const deltaByBand={};
+      for(const band of ["min","avg","max"]){
+        deltaByBand[band]={};
+        for(const k of statOrder)deltaByBand[band][k]=(Number(finalStats[band]?.[k])||0)-(Number(base[band]?.[k])||0);
+      }
+      rows.push({
+        id:"final:"+profile.id+":"+set.id+":"+combo.id,_mode:"final",
+        _name:profile.soldierKoName,_id:profile.soldierType,
+        _route:[profile.sourceKoName,...enhancementNames].join(" "),
+        profile,combo,enhancementNames,addedTraitNames,finalTraitNames,
+        finalStats,finalCap:finalCapFor(profile,combo),deltaByBand,preGrowthByBand,preGrowthTotal,
+        enhancementCount:combo.transformationIds?.length||0,
+        targetCount:combo.targetIds?.length||0,
+        totalTraitCount:finalTraitNames.length,
+        cost:combo.cost||0,recoveryTime:combo.recoveryTime||0,
+        growthSensitive:!!combo.growthSensitive,timingSensitive:timingSensitive||preGrowthTotal>0,randomSensitive,
+        sourceId:profile.sourceId,sourceEnName:profile.sourceEnName
+      });
+    }
+  }
+  return rows;
 }
 function dataset(){
   const mode=$("#dataset").value;
+  if(mode==="final")return FINAL_ROWS;
   if(mode==="soldiers"){
     return DATA.soldiers.map(x=>({...x,_mode:"soldier",_name:x.koName,_id:x.id,_route:(x.requires||[]).join(", ")}));
   }
@@ -49,12 +207,14 @@ function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
 function statValue(row,key,band){
   if(row._mode==="soldier")return row["base"+cap(band)+"_"+key];
   if(row._mode==="profile")return row["effective"+cap(band)+"_"+key];
+  if(row._mode==="final")return row.finalStats?.[band]?.[key]??0;
   if(row._mode==="transformation")return row.fixedEffectiveDelta?.[key]??0;
   return 0;
 }
 function growthCapValue(row,key){
   if(row._mode==="soldier")return row.statCaps?.[key]??0;
   if(row._mode==="profile")return row.effectiveStatCaps?.[key]??row.rawStatCaps?.[key]??0;
+  if(row._mode==="final")return row.finalCap?.[key]??0;
   return 0;
 }
 function sortValue(row,key,band){
@@ -67,12 +227,12 @@ function searchBlob(row){
     row._name,row._id,row._route,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
     ...(row.traitNames||[]),...(row.traits||[]).flatMap(t=>[t.koName,t.enName,t.id]),
     ...(row.requires||[]),...(row.allowedSoldierTypes||[]),...(row.requiredPreviousTransformations||[]),
-    ...(row.forbiddenPreviousTransformations||[])
+    ...(row.forbiddenPreviousTransformations||[]),...(row.enhancementNames||[]),...(row.addedTraitNames||[]),...(row.finalTraitNames||[])
   ].filter(Boolean).join(" ").toLowerCase();
 }
 function filtered(){
   const q=$("#search").value.trim().toLowerCase();
-  const traitsOnly=$("#traitsOnly").checked;
+  const traitsOnly=!$("#traitsOnly").disabled&&$("#traitsOnly").checked;
   let a=dataset().filter(r=>(!q||searchBlob(r).includes(q))&&(!traitsOnly||r._mode==="profile"&&r.traitNames.length));
   const band=$("#band").value;
   a.sort((x,y)=>{
@@ -97,6 +257,7 @@ function render(){
   $("#sortMetric").disabled=mode==="transformations";
   $("#tableTitle").textContent=
     mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
+    mode==="final"?"최종 강화 조합 — 상호배타 규칙·선행 순서 적용":
     mode==="soldiers"?"기본 바디 규칙 — 내부 RuleSoldier 29종":
     "변신·훈련 루트 — 고정 변화량";
   let head;
@@ -104,6 +265,11 @@ function render(){
     head=[
       th("획득형","name"),'<th>획득 루트·자동 특성</th>',th("비용","cost"),th("시간","time"),
       ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
+    ].join("");
+  }else if(mode==="final"){
+    head=[
+      th("획득형","name"),'<th>유효 최종 강화 조합</th>',th("특성","totalTraitCount"),th("강화비용","cost"),
+      ...statOrder.map(k=>th(DATA.statLabels[k],k,"최종 / 성장캡"))
     ].join("");
   }else if(mode==="soldiers"){
     head=[
@@ -118,12 +284,20 @@ function render(){
   }
   $("#soldierTable thead").innerHTML="<tr>"+head+"</tr>";
   const rows=filtered();
-  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 고정 변화량(Flat + SoldierBonus)":" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
-  $("#soldierTable tbody").innerHTML=rows.map(r=>rowHtml(r,band)).join("");
+  let shown=rows;
+  if(mode==="final"){
+    const pages=Math.max(1,Math.ceil(rows.length/FINAL_PAGE_SIZE));
+    finalPage=Math.max(0,Math.min(finalPage,pages-1));
+    shown=rows.slice(finalPage*FINAL_PAGE_SIZE,(finalPage+1)*FINAL_PAGE_SIZE);
+    $("#pager").innerHTML='<button data-page="'+(finalPage-1)+'" '+(finalPage<=0?"disabled":"")+'>← 이전</button><span>'+(finalPage+1)+' / '+pages+'</span><button data-page="'+(finalPage+1)+'" '+(finalPage>=pages-1?"disabled":"")+'>다음 →</button>';
+    $("#pager").querySelectorAll("button[data-page]").forEach(b=>b.addEventListener("click",()=>{finalPage=Number(b.dataset.page)||0;render()}));
+  }else $("#pager").innerHTML="";
+  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 고정 변화량(Flat + SoldierBonus)":mode==="final"?" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 기준 · "+($("#sortMetric").value==="cap"?"성장캡":"최종 능력치")+" 정렬 · 페이지 "+(finalPage+1):" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
+  $("#soldierTable tbody").innerHTML=shown.map(r=>rowHtml(r,band)).join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
     const key=el.dataset.sort;
     if(sort.key===key)sort.dir*=-1;else sort={key,dir:key==="name"?1:-1};
-    render();
+    finalPage=0;render();
   }));
   document.querySelectorAll("tbody tr").forEach(el=>el.addEventListener("click",()=>openDetail(el.dataset.row)));
 }
@@ -139,6 +313,12 @@ function rowHtml(r,band){
     const traits=(r.traits||[]).map(t=>'<span class="trait">'+t.koName+'</span>').join("");
     second=sourceBadges(r)+'<br><span class="route">'+r.sourceKoName+'</span><br>'+traits;
     c1=fmt(r.cost);c2=fmt(r.time);
+  }else if(r._mode==="final"){
+    const shown=(r.enhancementNames||[]).slice(0,8).map(x=>'<span class="trait">'+esc(x)+'</span>').join("");
+    const more=(r.enhancementNames||[]).length>8?' <span class="tag">+'+((r.enhancementNames||[]).length-8)+'개</span>':"";
+    const growth=r.timingSensitive?' <span class="tag growth-warn">적용 시점 영향</span>':"";
+    second=sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more+growth;
+    c1=fmt(r.totalTraitCount);c2=fmt(r.cost);
   }else if(r._mode==="soldier"){
     second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
     c1=fmt(r.costBuy);c2=fmt(r.costSalary);
@@ -157,9 +337,10 @@ function rowHtml(r,band){
         return '<td><span class="'+cls+'">'+shown+'</span></td>';
       }
       const capV=growthCapValue(r,k);
-      const d=r._mode==="profile"?(r.traitStats?.[k]||0):0;
+      const d=r._mode==="profile"?(r.traitStats?.[k]||0):r._mode==="final"?(r.deltaByBand?.[band]?.[k]||0):0;
       const over=Number(v)>Number(capV)?" over-cap":"";
-      const dc=d>0?'<small class="delta-pos">특성 +'+fmt(d)+'</small>':d<0?'<small class="delta-neg">특성 '+fmt(d)+'</small>':'';
+      const prefix=r._mode==="final"?"강화 ":"특성 ";
+      const dc=d>0?'<small class="delta-pos">'+prefix+'+'+fmt(d)+'</small>':d<0?'<small class="delta-neg">'+prefix+fmt(d)+'</small>':'';
       return '<td><div class="stat-pair'+over+'"><span class="stat-current">'+fmt(v)+'</span><span class="stat-slash">/</span><span class="stat-cap">'+fmt(capV)+'</span></div>'+dc+'</td>';
     }).join("")+'</tr>';
 }
@@ -189,6 +370,15 @@ function statsCapGrid(title,row){
     return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(eff)+'</b><small>본체 성장캡 '+fmt(raw)+' · 훈련캡 '+fmt(training)+(trait?' · 특성 '+(trait>0?'+':'')+fmt(trait):'')+'</small></div>';
   }).join("")+'</div><p class="muted">앞 숫자는 선택한 생성값, 뒤 숫자는 자동 특성까지 포함한 실효 성장캡입니다. 시작값이 캡보다 높은 특수 생성형은 그대로 유지되지만 일반 성장으로 더 오르지는 않습니다.</p>';
 }
+function finalStatsGrid(row){
+  const band=$("#band").value,current=row.finalStats?.[band]||{},base=row.profile?.effectiveStats?.[band]||{};
+  return '<h3>최종 강화 능력치 / 성장캡</h3><div class="stats-grid">'+statOrder.map(k=>{
+    const cur=current[k]??0,capV=row.finalCap?.[k]??0,delta=(Number(cur)||0)-(Number(base[k])||0);
+    const over=Number(cur)>Number(capV)?' over-cap':'';
+    const dc=delta>0?'<small class="delta-pos">강화 +'+fmt(delta)+'</small>':delta<0?'<small class="delta-neg">강화 '+fmt(delta)+'</small>':'';
+    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(capV)+'</b>'+dc+'</div>';
+  }).join("")+'</div>';
+}
 function deltaGrid(title,stats){
   return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
     const v=stats?.[k]||0;
@@ -198,13 +388,24 @@ function deltaGrid(title,stats){
 }
 function openDetail(encoded){
   const r=findRow(encoded);if(!r)return;
-  let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 획득형":r._mode==="soldier"?"기본 바디 규칙":"변신·훈련 루트")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
+  let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 획득형":r._mode==="final"?"최종 강화 조합":r._mode==="soldier"?"기본 바디 규칙":"변신·훈련 루트")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
   if(r._mode==="profile"){
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
     html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
     html+=statsCapGrid("자동 특성 포함 능력치 / 성장캡",r);
     html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
     html+='<h3>획득 템플릿</h3><div class="detail-grid"><div class="box"><strong>currentStats 덮어쓰기</strong><pre>'+esc(JSON.stringify(r.currentStatsOverride,null,2))+'</pre></div><div class="box"><strong>이전 변환</strong><pre>'+esc(JSON.stringify(r.previousTransformations,null,2))+'</pre></div><div class="box"><strong>필요 연구/조건</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
+  }else if(r._mode==="final"){
+    const p=r.profile;
+    html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(p)+'<br>'+esc(p.sourceKoName)+'<br><small>'+esc(p.sourceId)+'</small></div><div class="box"><strong>최종 특성 / 추가 강화</strong>'+fmt(r.totalTraitCount)+' / '+fmt(r.enhancementCount)+'</div><div class="box"><strong>추가 비용 / 회복 합계</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div></div>';
+    html+='<div class="compat-ok"><strong>공존 검증 통과</strong><span>requiredPreviousTransformations와 forbiddenPreviousTransformations를 실제 실행 순서대로 검사한 조합입니다.</span></div>';
+    html+=finalStatsGrid(r);
+    if(r.preGrowthTotal>0)html+=deltaGrid("강화 조건 충족을 위한 최소 선성장 (평균 생성값 기준)",r.preGrowthByBand?.avg);
+    html+='<h3>시작 시 자동 특성</h3><div class="traits">'+((p.traits||[]).length?(p.traits||[]).map(t=>'<div class="trait-card"><strong>'+esc(t.koName)+'</strong><small>'+esc(t.id)+'</small></div>').join(""):'<span class="muted">없음</span>')+'</div>';
+    html+='<h3>추가 강화 실행 순서</h3><div class="traits">'+((r.combo.transformationIds||[]).length?(r.combo.transformationIds||[]).map((id,i)=>{const t=TRANSFORM_BY_ID.get(id);if(!t)return"";const bonus=t.soldierBonusType?(BONUS_BY_ID.get(t.soldierBonusType)?.koName||t.soldierBonusType):"특성 없음";const changes=statOrder.filter(k=>t.fixedEffectiveDelta?.[k]).map(k=>DATA.statLabels[k]+" "+(t.fixedEffectiveDelta[k]>0?"+":"")+fmt(t.fixedEffectiveDelta[k])).join(" · ");return '<div class="trait-card"><strong>'+(i+1)+'. '+esc(t.koName)+'</strong><small>'+esc(id)+' · '+esc(bonus)+'</small><div>'+(changes||'<span class="muted">고정 능력치 변화 없음</span>')+'</div></div>'}).join(""):'<span class="muted">추가 강화 없음</span>')+'</div>';
+    html+='<div class="growth-note"><strong>OXCE 실제 변환식 기준</strong><span>각 단계의 requiredMinStats를 만족하지 못하면 현재 성장캡 안에서 필요한 최소치만큼 먼저 성장한 뒤 강화합니다. 이후 Flat 변화, 현재값 비례 변화, 성장분 비례 변화, 랜덤 범위, min/max/statCaps 상·하한을 OXCE 순서대로 적용합니다. 성장캡으로 요구조건에 도달할 수 없는 조합은 표에서 제외합니다.</span></div>';
+    if(r.growthSensitive)html+=deltaGrid("성장분 비례 변화 합계",r.combo.percentGainedChange);
+    if(r.randomSensitive)html+='<p class="muted">랜덤 변화 범위가 있는 강화가 포함되어 최소/평균/최대 탭의 결과가 달라집니다.</p>';
   }else if(r._mode==="soldier"){
     html+='<div class="detail-grid"><div class="box"><strong>구매 / 월급</strong>'+fmt(r.costBuy)+' / '+fmt(r.costSalary)+'</div><div class="box"><strong>월 고용 제한</strong>'+fmt(r.monthlyBuyLimit)+'</div><div class="box"><strong>기본 장갑</strong>'+String(r.armor||"—")+'</div></div>';
     html+=statsGrid("기본 생성 최소", {min:r.minStats,avg:r.minStats,max:r.minStats});
@@ -290,7 +491,7 @@ function renderProgression(soldierId){
   return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3><div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div><div class="routes">'+((p.acquisitionPaths||[]).map(acquisitionHtml).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>')+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
 }
 
-["search","dataset","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",render));
+["search","dataset","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",async e=>{
   if(e.target.id==="detailDialog"){e.currentTarget.close();return}
