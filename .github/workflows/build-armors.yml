@@ -1,0 +1,75 @@
+name: Publish armor database
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-armors.yml"
+      - "tools/build-armor-data.mjs"
+      - "tools/armor-data.mjs"
+      - "tools/data-normalize.mjs"
+      - "tools/check-armors.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xpiratez-armor-data
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install generator dependencies
+        run: npm install
+
+      - name: Download official X-Piratez v.o1.1.1
+        uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
+        with:
+          url: "https://fra1.dl.dbolical.com/dl/2026/06/19/Dioxine_XPiratez_o1.1.1.rar"
+          target: ".cache/xpz"
+          filename: "Dioxine_XPiratez_o1.1.1.rar"
+          retry-times: 4
+
+      - name: Verify official archive
+        run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
+
+      - name: Extract X-Piratez ruleset
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unar
+          mkdir -p .cache/unpacked
+          unar -q -o .cache/unpacked .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
+          META=$(find .cache/unpacked -type f -path "*/user/mods/Piratez/metadata.yml" -print -quit)
+          test -n "$META"
+          MOD_PATH=${META%/metadata.yml}
+          echo "XPIRATEZ_MOD_PATH=$MOD_PATH" >> "$GITHUB_ENV"
+
+      - name: Generate armor database
+        run: node tools/build-armor-data.mjs --source "$XPIRATEZ_MOD_PATH"
+
+      - name: Verify armor database
+        run: node tools/check-armors.mjs
+
+      - name: Commit generated armor database
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data/armors-index.json public/data/armor-chunks public/data/resource-chunks/armors
+          if git diff --cached --quiet; then
+            echo "No armor data changes."
+            exit 0
+          fi
+          git commit -m "Publish XPZ o1.1.1 armor data"
+          git pull --rebase origin main
+          git push origin HEAD:main
