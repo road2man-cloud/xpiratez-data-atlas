@@ -27,6 +27,8 @@ X-Piratez 아이템·연구·방어구·병종·탈것을 **검색·정렬·비�
 
 선장 선택 매트릭스는 초기 5선장부터 PUSSY 클래스·Unclassed 혼합형·Pure/Ultimate까지의 분기를 한 표에서 비교합니다. 반복 이벤트 현금 기대값, Hotel/VIP/Nonprofit/Scamming 같은 경제 옵션, 방사탑·네크로방어·벙커·전술센터 같은 방어/탐지 옵션, Boot Camp·Military Drill·Bread & Fishes·Warrior Culture·Charmy Dance 같은 병사 강화, Chaos Saint 특수병 공급과 인프라 해금을 함께 보여줍니다. 정적 모듈은 `public/captains/`에 있습니다.
 
+선장 페이지는 각 단계의 실제 `disables`를 전수 표시하며, Codex의 선택 연구와 실물 Codex 연구에서 발생하는 2중 4색 상호배타도 따로 보여줍니다. 기본 4선장의 Saint 보완색(무모→Green, 멍청→Gray, 게으름→Red, 소심→Gold), G1~G8 Captain×Codex 보너스, Saint 진입 시 중단되는 보너스, Gray/Sore-Ass 등으로 봉쇄되는 부정·도박 이벤트까지 교차표로 정리합니다.
+
 병종/탈것의 **명목 누적 연구량**은 표시된 해금 루트의 `dependencies`와 `requires`를 중복 제거해 합산합니다. OXCE는 이미 비활성화된 선행 연구를 검사에서 제외할 수 있고 `unlocks`, `getOneFree`, 이벤트 직접 지급으로 우회하는 경우가 있으므로, 실제 플레이에서 필요한 연구량은 이 명목값보다 작을 수 있습니다. 페이지는 분기 연구·실물 표본·필요 기지기능·이벤트 조건을 함께 표시해 실제 경로를 따로 판단할 수 있게 합니다.
 
 ## 로컬에서 데이터 갱신
