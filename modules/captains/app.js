@@ -24,7 +24,11 @@ const columns=[
   {key:"xlarge",label:"초대형 저장고",group:"인프라"},
   {key:"capsule",label:"캡슐 숙소",group:"인프라"},
   {key:"doubleJail",label:"2배 감옥",group:"인프라"},
-  {key:"dungeon",label:"지하감옥 마스터",group:"인프라"}
+  {key:"dungeon",label:"지하감옥 마스터",group:"인프라"},
+  {key:"codexGold",label:"금색 코덱스",group:"Codex 상호배타",type:"codex",color:"Gold"},
+  {key:"codexGreen",label:"녹색 코덱스",group:"Codex 상호배타",type:"codex",color:"Green"},
+  {key:"codexRed",label:"적색 코덱스",group:"Codex 상호배타",type:"codex",color:"Red"},
+  {key:"codexGray",label:"회색 코덱스",group:"Codex 상호배타",type:"codex",color:"Gray"}
 ];
 
 const rows=[
@@ -55,7 +59,85 @@ const rows=[
  {id:"ultimate",name:"?이 모두를 가진 선장!?",code:"ULTIMATE",stage:"pure",stageName:"Pure 최종",from:"최단 4/1 · 첫 지급판정 5/1",route:"PUSSY → 무직 → Pure → Ultimate",colors:[],ev:579129,evText:"≈+$579.1k*",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"yes",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"late",doubleJail:"no",dungeon:"no",summary:"경제 특화 최종분기. 매월 63%로 $666k+666점. 무색 상태의 기타 이벤트까지 포함하면 약 +$579k/월.",notes:["666k 이벤트 자체 기대값은 0.63×666,000 = $419,580/월.","리스크·아이템소모·부채 없음. 다만 지금 19(1).sav에서는 최단 첫 판정이 5/1.","*+$579.1k는 NO COLOR/PAIR 이벤트를 함께 평균낸 무색 Ultimate 상태. Codex로 색을 채우면 일부 추가 EV가 사라짐."]}
 ];
 
-const featureNames=Object.fromEntries(columns.filter(c=>c.type!=="ev").map(c=>[c.key,c.label]));
+
+const captainTraits={
+  jackass:["jackSore","jackDumb","jackLazy"],
+  dumbass:["dumbLazy","jackDumb","soreDumb"],
+  lazyass:["dumbLazy","lazySore","jackLazy"],
+  soreass:["jackSore","lazySore","soreDumb"],
+  pussy:[],
+  thief:["jackLazy","dumbLazy"],
+  priest:["soreDumb","dumbLazy"],
+  mage:["jackLazy","jackSore"],
+  ruler:["jackSore","soreDumb"],
+  unclassedGate:[],
+  dumblazy:["dumbLazy"], lazysore:["lazySore"], soredumb:["soreDumb"],
+  jacksore:["jackSore"], jackdumb:["jackDumb"], jacklazy:["jackLazy"],
+  pureGate:[], pureGold:[], pureGreen:[], pureRed:[], pureGray:[], ultimate:[]
+};
+const saintCodexTarget={jackass:"Green",dumbass:"Gray",lazyass:"Red",soreass:"Gold"};
+const codexInfo={
+  Gold:{
+    ko:"금색", direct:"장교봉 · 화염포 보고서", awakened:"Porn ×36 + Captain Gold",
+    baseGods:["G1"], synergy:{dumbLazy:"G2A",jackLazy:"G8A"},
+    reward:"G1 과찬의 선물(Prince's Gift); DumbLazy면 G2A 케이크×3; JackLazy면 G8A Glamour×33"
+  },
+  Green:{
+    ko:"녹색", direct:"바이오플라즈마 프로젝터 보고서", awakened:"활성 차원 보관함 ×3 + Captain Green",
+    baseGods:["G3"], synergy:{dumbLazy:"G2B",soreDumb:"G4B"},
+    reward:"G3 영혼의 선물(Sivalinga); DumbLazy면 G2B 케이크×3; SoreDumb면 G4B +300점"
+  },
+  Red:{
+    ko:"적색", direct:"Little Ilya 보고서", awakened:"Living Brimstone ×4 + 200점 + Captain Red",
+    baseGods:["G5"], synergy:{soreDumb:"G4A",jackSore:"G6A"},
+    reward:"G5 피의 선물(Bloodoge 특수병); SoreDumb면 G4A +300점; JackSore면 G6A Mad Scribblings"
+  },
+  Gray:{
+    ko:"회색", direct:"Conversion Launcher 보고서", awakened:"Esoterica ×7 + Captain Gray",
+    baseGods:["G7"], synergy:{jackSore:"G6B",jackLazy:"G8B"},
+    reward:"G7 요술 선물(Arcane Book / Demonic Essence×13 / Poltergeist 가중추첨); JackSore면 G6B Mad Scribblings; JackLazy면 G8B Glamour×33"
+  }
+};
+function codexGods(r,color){
+  const info=codexInfo[color], traits=captainTraits[r.id]||[];
+  const gods=[...info.baseGods];
+  for(const [trait,g] of Object.entries(info.synergy)) if(traits.includes(trait)) gods.push(g);
+  return gods;
+}
+function codexCell(r,color){
+  const info=codexInfo[color], gods=codexGods(r,color);
+  const target=saintCodexTarget[r.id];
+  let head="", cls="codex-cell";
+  if(target){
+    if(target===color){head="★ 성자";cls+=" codex-saint";}
+    else {head="⚠ 성자봉쇄";cls+=" codex-block";}
+  }else if(r.id==="ultimate"){
+    head="⚠ EV↓ +"+info.ko; cls+=" codex-warn";
+  }else if(r.colors.includes(color)){
+    head="중복 "+info.ko; cls+=" codex-dup";
+  }else{
+    head="+"+info.ko; cls+=" codex-new";
+  }
+  const title=info.ko+" 코덱스 선택 시 나머지 3 Codex 연구 영구 disable. 직접 테크: "+info.direct+". 승천: "+info.awakened+". 신들 보너스: "+info.reward;
+  return '<span class="'+cls+'" title="'+title+'"><strong>'+head+'</strong><small>'+gods.join(" · ")+'</small></span>';
+}
+function codexDetailHtml(r){
+  return '<h3>Codex 상호배타 분기</h3><p class="muted">Codex 하나를 연구하면 나머지 3개가 즉시 disable됩니다. 승천하면 해당 Captain 색 태그를 얻습니다.</p>'+
+    '<div class="codex-detail-grid">'+Object.keys(codexInfo).map(color=>{
+      const i=codexInfo[color];
+      return '<div class="detail-box">'+codexCell(r,color)+'<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p></div>';
+    }).join("")+'</div>';
+}
+function renderCodexCards(){
+  const el=document.querySelector("#codexCards"); if(!el)return;
+  el.innerHTML=Object.entries(codexInfo).map(([color,i])=>
+    '<article class="codex-card card"><p class="eyebrow">'+i.ko+' CODEX</p><h3>'+i.ko+' 코덱스</h3>'+
+    '<p><b>상호배타:</b> 선택 즉시 다른 3 Codex 연구 봉쇄</p>'+
+    '<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p><p><b>신들:</b> '+i.reward+'</p></article>'
+  ).join("");
+}
+
+const featureNames=Object.fromEntries(columns.filter(c=>c.type!=="ev"&&c.type!=="codex").map(c=>[c.key,c.label]));
 const stageOrder={initial:0,class:1,unclassed:2,pure:3};
 let sortState={key:"stage",dir:1};
 
@@ -87,7 +169,7 @@ function filteredRows(){
     if(stage!=="all"&&r.stage!==stage)return false;
     const blob=[r.name,r.code,r.route,r.summary,...r.notes,...Object.entries(r).filter(([k,v])=>v==="yes"||v==="warn").map(([k])=>featureNames[k]||"")].join(" ").toLowerCase();
     if(q&&!blob.includes(q))return false;
-    if(only&&!columns.some(c=>c.type!=="ev"&&(r[c.key]==="yes"||r[c.key]==="warn")))return false;
+    if(only&&!columns.some(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn")))return false;
     return true;
   });
   out.sort((a,b)=>{
@@ -98,16 +180,16 @@ function filteredRows(){
 }
 function renderRows(){
   const tbody=document.querySelector("#matrixTable tbody");
-  tbody.innerHTML=filteredRows().map(r=>'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):statusCell(r[c.key]))+'</td>').join("")+'</tr>').join("");
+  tbody.innerHTML=filteredRows().map(r=>'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key]))+'</td>').join("")+'</tr>').join("");
   tbody.querySelectorAll("tr").forEach(tr=>tr.addEventListener("click",()=>openDetail(tr.dataset.id)));
 }
 function openDetail(id){
   const r=rows.find(x=>x.id===id); if(!r)return;
-  const avail=columns.filter(c=>c.type!=="ev"&&(r[c.key]==="yes"||r[c.key]==="warn"||r[c.key]==="late"));
+  const avail=columns.filter(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn"||r[c.key]==="late"));
   document.querySelector("#dialogBody").innerHTML='<p class="eyebrow">'+r.stageName+'</p><h2>'+r.name+'</h2><p class="muted">'+r.route+' · '+r.from+'</p><p>'+r.summary+'</p>'+
   '<div class="detail-grid"><div class="detail-box"><strong>반복 이벤트 월 EV</strong>'+r.evText+'</div><div class="detail-box"><strong>색 태그</strong>'+colors(r)+'</div></div>'+
   '<h3>접근 가능한 주요 옵션</h3><div class="feature-list">'+avail.map(c=>'<span class="feature-chip">'+S[r[c.key]]+' '+c.label+'</span>').join("")+'</div>'+
-  '<h3>주의 / 해설</h3><ul>'+r.notes.map(n=>'<li>'+n+'</li>').join("")+'</ul>';
+  codexDetailHtml(r)+'<h3>주의 / 해설</h3><ul>'+r.notes.map(n=>'<li>'+n+'</li>').join("")+'</ul>';
   document.querySelector("#detailDialog").showModal();
 }
 
@@ -142,4 +224,4 @@ document.querySelector("#resetBtn").addEventListener("click",()=>{document.query
 document.querySelector("#dialogClose").addEventListener("click",()=>document.querySelector("#detailDialog").close());
 document.querySelector("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
 
-renderHead();renderRows();renderTimeline();renderDeep();
+renderHead();renderRows();renderCodexCards();renderTimeline();renderDeep();
