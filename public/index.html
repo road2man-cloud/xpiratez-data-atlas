@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez Data Atlas</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;color-scheme:dark}
+body{margin:0;background:#0b1020;color:#edf3ff;line-height:1.55}
+main{width:min(1100px,calc(100% - 32px));margin:auto;padding:72px 0}
+.eyebrow{color:#7fb4ff;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.74rem}
+h1{font-size:clamp(3rem,8vw,6rem);line-height:.92;letter-spacing:-.06em;margin:.35rem 0 1.2rem}
+p{color:#b9c7df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:36px}
+.card{display:block;text-decoration:none;color:inherit;background:linear-gradient(160deg,#172743,#111a2e);border:1px solid #2b3e62;border-radius:18px;padding:22px}
+.card:hover{border-color:#60a5fa;transform:translateY(-2px)}.card strong{font-size:1.3rem}.tag{display:inline-block;padding:3px 8px;border:1px solid #3c537d;border-radius:999px;color:#93c5fd;font-size:.72rem;margin-bottom:10px}
+</style>
+</head>
+<body><main>
+<p class="eyebrow">Ruleset-backed reference</p>
+<h1>XPiratez<br>Data Atlas</h1>
+<p>아이템·연구·이벤트·선장·시설·전투 시스템을 실제 XPiratez 룰셋과 OXCE 엔진 동작을 기준으로 정리하는 데이터 아틀라스.</p>
+<div class="grid">
+<a class="card" href="./captains/"><span class="tag">LIVE MODULE</span><br><strong>선장 선택 매트릭스</strong><p>모든 선장 분기, 경제 기대값, 방어시설, 병사 성장, 특수병, 인프라를 O/X 표와 상세 설명으로 비교.</p></a>
+<div class="card"><span class="tag">PLANNED</span><br><strong>아이템 아틀라스</strong><p>무기·방어구·소모품·재료·판매가·연구/제조 연결.</p></div>
+<div class="card"><span class="tag">PLANNED</span><br><strong>연구·이벤트 그래프</strong><p>연구 선행, unlock/disable, 반복 이벤트와 보상 루트.</p></div>
+</div>
+</main></body></html>
