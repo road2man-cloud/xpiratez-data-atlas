@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-finalbuilds2";
+const ASSET_VERSION="soldiers-20261007-finalbuilds3-type-conversions";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -101,24 +101,35 @@ function effectiveStats(raw,bonusIds){
   if((Number(raw?.psiSkill)||0)<=0&&out.psiSkill>0)out.psiSkill=Number(raw?.psiSkill)||0;
   return out;
 }
-function capForBonusIds(profile,bonusIds){
-  const raw=profile.rawStatCaps||{},bonus=bonusStatsFor(bonusIds),out={};
+function finalSoldierTypeFor(profile,combo){
+  let type=profile.soldierType;
+  for(const id of combo.transformationIds||[]){
+    const t=TRANSFORM_BY_ID.get(id);
+    if(t?.producedSoldierType)type=t.producedSoldierType;
+  }
+  return type;
+}
+function capForBonusIds(profile,bonusIds,soldierType=profile.soldierType){
+  const raw=SOLDIER_BY_ID.get(soldierType)?.statCaps||profile.rawStatCaps||{},bonus=bonusStatsFor(bonusIds),out={};
   for(const k of statOrder){
     out[k]=Math.max(0,(Number(raw[k])||0)+(Number(bonus[k])||0));
     if(k==="psiSkill"&&(Number(raw[k])||0)<=0)out[k]=Number(raw[k])||0;
   }
   return out;
 }
-function finalCapFor(profile,combo){return capForBonusIds(profile,uniqueBonusIds(profile,combo));}
+function finalCapFor(profile,combo){return capForBonusIds(profile,uniqueBonusIds(profile,combo),finalSoldierTypeFor(profile,combo));}
 function simulateFinalStats(profile,combo,band){
-  const soldier=SOLDIER_BY_ID.get(profile.soldierType);
+  let currentSoldierType=profile.soldierType;
+  let soldier=SOLDIER_BY_ID.get(currentSoldierType);
   const initial={...(profile.initialStats?.[band]||profile.currentStatsBeforeTraits?.[band]||{})};
   let raw={...(profile.currentStatsBeforeTraits?.[band]||{})};
   const bonusIds=[...(profile.traitNames||[])],preGrowth=Object.fromEntries(statOrder.map(k=>[k,0]));
   for(const id of combo.transformationIds||[]){
     const t=TRANSFORM_BY_ID.get(id);if(!t)continue;
+    if(t.allowedSoldierTypes?.length&&!t.allowedSoldierTypes.includes(currentSoldierType))return{valid:false,failedAt:id,failedType:currentSoldierType};
+    if(t.forbiddenSoldierTypes?.includes(currentSoldierType))return{valid:false,failedAt:id,failedType:currentSoldierType};
     const minCheck=t.includeBonusesForMinStats?effectiveStats(raw,bonusIds):raw;
-    const rawCap=profile.rawStatCaps||{};
+    const rawCap=soldier?.statCaps||profile.rawStatCaps||{};
     for(const k of statOrder){
       const req=Number(t.requiredMinStats?.[k])||0;
       if(k==="psiSkill"&&req===0)continue;
@@ -136,58 +147,248 @@ function simulateFinalStats(profile,combo,band){
     }
     raw=addStatsObj(raw,transformDelta(raw,initial,t,band,soldier));
     if(t.soldierBonusType&&!bonusIds.includes(t.soldierBonusType))bonusIds.push(t.soldierBonusType);
+    if(t.producedSoldierType){
+      currentSoldierType=t.producedSoldierType;
+      soldier=SOLDIER_BY_ID.get(currentSoldierType)||soldier;
+    }
   }
-  return{valid:true,raw,effective:effectiveStats(raw,bonusIds),bonusIds,preGrowth};
+  return{valid:true,raw,effective:effectiveStats(raw,bonusIds),bonusIds,preGrowth,finalSoldierType:currentSoldierType};
+}
+const DYNAMIC_BUILD_SET_CACHE=new Map();
+function dynamicEnhancementBuildSet(soldierType,previousTransformations={}){
+  const prior=new Set(Object.entries(previousTransformations||{}).filter(([,v])=>v).map(([id])=>id));
+  const cacheKey=soldierType+"|"+[...prior].sort().join(",");
+  if(DYNAMIC_BUILD_SET_CACHE.has(cacheKey))return DYNAMIC_BUILD_SET_CACHE.get(cacheKey);
+  const transformations=DATA.transformations||[];
+  const hasPositiveStat=x=>statOrder.some(k=>(Number(x?.[k])||0)>0);
+  const isOneShot=t=>(t.forbiddenPreviousTransformations||[]).includes(t.id);
+  const isEnhancementTarget=t=>!t.producedSoldierType&&!t.createsClone&&(
+    t.soldierBonusType||(isOneShot(t)&&(hasPositiveStat(t.fixedEffectiveDelta)||hasPositiveStat(t.percentGainedStatChange)))
+  );
+  const applies=t=>!t.producedSoldierType&&!t.createsClone&&
+    (!(t.allowedSoldierTypes||[]).length||(t.allowedSoldierTypes||[]).includes(soldierType))&&
+    !(t.forbiddenSoldierTypes||[]).includes(soldierType);
+
+  function prerequisiteClosure(id,trail=new Set()){
+    if(prior.has(id))return new Set();
+    if(trail.has(id))return null;
+    const t=TRANSFORM_BY_ID.get(id);
+    if(!t||!applies(t))return null;
+    if((t.forbiddenPreviousTransformations||[]).some(x=>prior.has(x)))return null;
+    const nextTrail=new Set(trail);nextTrail.add(id);
+    const out=new Set([id]);
+    for(const req of t.requiredPreviousTransformations||[]){
+      if(prior.has(req))continue;
+      const c=prerequisiteClosure(req,nextTrail);
+      if(!c)return null;
+      for(const x of c)out.add(x);
+    }
+    return out;
+  }
+
+  const targets=[];
+  for(const t of transformations){
+    if(!isEnhancementTarget(t)||!applies(t)||prior.has(t.id))continue;
+    const closure=prerequisiteClosure(t.id);
+    if(closure)targets.push({id:t.id,closure});
+  }
+  const targetById=new Map(targets.map(x=>[x.id,x]));
+  const sequenceCache=new Map();
+  function unionClosures(ids){
+    const out=new Set();
+    for(const id of ids)for(const x of targetById.get(id)?.closure||[])out.add(x);
+    return out;
+  }
+  function sequenceFor(transformSet){
+    const ids=[...transformSet].sort(),key=ids.join("|");
+    if(sequenceCache.has(key))return sequenceCache.get(key);
+    const pending=new Set(ids),applied=new Set(prior),bad=new Set();
+    function dfs(order){
+      if(!pending.size)return order;
+      const state=[...pending].sort().join("|");
+      if(bad.has(state))return null;
+      const choices=[...pending].filter(id=>{
+        const t=TRANSFORM_BY_ID.get(id);
+        return t&&
+          (t.requiredPreviousTransformations||[]).every(req=>applied.has(req))&&
+          !(t.forbiddenPreviousTransformations||[]).some(f=>applied.has(f));
+      }).sort();
+      for(const id of choices){
+        pending.delete(id);applied.add(id);
+        const result=dfs([...order,id]);
+        if(result)return result;
+        applied.delete(id);pending.add(id);
+      }
+      bad.add(state);return null;
+    }
+    const result=dfs([]);
+    sequenceCache.set(key,result);
+    return result;
+  }
+
+  let combinations;
+  if(!targets.length){
+    combinations=[{id:"B0",targetIds:[],transformationIds:[],traitIds:[],fixedDelta:{},capDelta:{},percentGainedChange:{},growthSensitive:false,cost:0,recoveryTime:0}];
+  }else{
+    const neighbors=new Map(targets.map(x=>[x.id,new Set()]));
+    for(let i=0;i<targets.length;i++)for(let j=i+1;j<targets.length;j++){
+      const a=targets[i].id,b=targets[j].id;
+      if(sequenceFor(unionClosures([a,b]))){neighbors.get(a).add(b);neighbors.get(b).add(a);}
+    }
+    const cliques=[];
+    function bronKerbosch(r,p,x){
+      if(!p.size&&!x.size){cliques.push([...r]);return;}
+      let pivot=null,pivotCount=-1;
+      for(const u of new Set([...p,...x])){
+        let n=0;for(const v of p)if(neighbors.get(u)?.has(v))n++;
+        if(n>pivotCount){pivot=u;pivotCount=n;}
+      }
+      const candidates=[...p].filter(v=>!neighbors.get(pivot)?.has(v));
+      for(const v of candidates){
+        const nv=neighbors.get(v)||new Set();
+        bronKerbosch(
+          new Set([...r,v]),
+          new Set([...p].filter(y=>nv.has(y))),
+          new Set([...x].filter(y=>nv.has(y)))
+        );
+        p.delete(v);x.add(v);
+      }
+    }
+    bronKerbosch(new Set(),new Set(targets.map(x=>x.id)),new Set());
+    const valid=[],seenTargetSets=new Set();
+    function salvage(ids){
+      const sorted=[...ids].sort(),key=sorted.join("|");
+      if(seenTargetSets.has(key))return;
+      seenTargetSets.add(key);
+      const transforms=unionClosures(sorted),sequence=sequenceFor(transforms);
+      if(sequence){valid.push({targets:sorted,transforms:[...transforms].sort(),sequence});return;}
+      if(sorted.length<=1)return;
+      for(let i=0;i<sorted.length;i++)salvage(sorted.filter((_,j)=>j!==i));
+    }
+    for(const clique of cliques)salvage(clique);
+    const maximal=valid.filter((x,i)=>!valid.some((y,j)=>
+      i!==j&&x.targets.length<y.targets.length&&x.targets.every(id=>y.targets.includes(id))
+    ));
+    const unique=[...new Map(maximal.map(x=>[x.transforms.join("|"),x])).values()];
+    combinations=unique.map((x,index)=>{
+      const tx=x.sequence.map(id=>TRANSFORM_BY_ID.get(id)).filter(Boolean);
+      const traitIds=[...new Set(tx.map(t=>t.soldierBonusType).filter(Boolean))];
+      const sumField=field=>tx.reduce((out,t)=>addStatsObj(out,t[field]||{}),{});
+      return{
+        id:"B"+index,targetIds:x.targets,transformationIds:x.sequence,traitIds,
+        fixedDelta:sumField("fixedEffectiveDelta"),capDelta:sumField("traitStats"),
+        percentGainedChange:sumField("percentGainedStatChange"),
+        growthSensitive:tx.some(t=>statOrder.some(k=>(Number(t.percentGainedStatChange?.[k])||0)!==0)),
+        cost:tx.reduce((n,t)=>n+(Number(t.cost)||0),0),
+        recoveryTime:tx.reduce((n,t)=>n+(Number(t.recoveryTime)||0),0)
+      };
+    }).sort((a,b)=>b.targetIds.length-a.targetIds.length||b.transformationIds.length-a.transformationIds.length||
+      a.transformationIds.join("|").localeCompare(b.transformationIds.join("|"),"en")
+    ).map((x,i)=>({...x,id:"B"+i}));
+  }
+  const set={id:"DYN:"+cacheKey,soldierType,previousTransformations:[...prior].sort(),combinations};
+  DYNAMIC_BUILD_SET_CACHE.set(cacheKey,set);
+  return set;
+}
+function dynamicConversionRoutes(profile){
+  const prior=new Set(Object.entries(profile.previousTransformations||{}).filter(([,v])=>v).map(([id])=>id));
+  const routes=[];
+  for(const t of DATA.transformations||[]){
+    if(!t.producedSoldierType||t.createsClone||prior.has(t.id))continue;
+    if((t.allowedSoldierTypes||[]).length&&!(t.allowedSoldierTypes||[]).includes(profile.soldierType))continue;
+    if((t.forbiddenSoldierTypes||[]).includes(profile.soldierType))continue;
+    if((t.requiredPreviousTransformations||[]).some(x=>!prior.has(x)))continue;
+    if((t.forbiddenPreviousTransformations||[]).some(x=>prior.has(x)))continue;
+    const nextPrior=new Set(prior);
+    for(const id of t.removeTransformations||[])nextPrior.delete(id);
+    nextPrior.add(t.id);
+    const previousTransformations=Object.fromEntries([...nextPrior].map(id=>[id,1]));
+    routes.push({
+      id:"DYN-C"+routes.length,
+      transformationIds:[t.id],
+      finalSoldierType:t.producedSoldierType,
+      dynamicBuildSet:dynamicEnhancementBuildSet(t.producedSoldierType,previousTransformations)
+    });
+  }
+  return routes;
 }
 function buildFinalRows(){
   const rows=[];
+  function materializeCombo(prefixIds,baseCombo,routeId){
+    const transformationIds=[...(prefixIds||[]),...(baseCombo.transformationIds||[])];
+    const transformations=transformationIds.map(id=>TRANSFORM_BY_ID.get(id)).filter(Boolean);
+    const traitIds=[...new Set(transformations.map(t=>t.soldierBonusType).filter(Boolean))];
+    const sumField=field=>transformations.reduce((out,t)=>addStatsObj(out,t[field]||{}),{});
+    return{
+      ...baseCombo,
+      id:routeId+":"+baseCombo.id,
+      transformationIds,
+      targetIds:[...new Set([...(prefixIds||[]),...(baseCombo.targetIds||[])])],
+      traitIds,
+      fixedDelta:sumField("fixedEffectiveDelta"),
+      capDelta:sumField("traitStats"),
+      percentGainedChange:sumField("percentGainedStatChange"),
+      growthSensitive:transformations.some(t=>statOrder.some(k=>(Number(t.percentGainedStatChange?.[k])||0)!==0)),
+      cost:transformations.reduce((n,t)=>n+(Number(t.cost)||0),0),
+      recoveryTime:transformations.reduce((n,t)=>n+(Number(t.recoveryTime)||0),0)
+    };
+  }
   for(const profile of DATA.profiles||[]){
-    const set=BUILD_SET_BY_ID.get(profile.enhancementBuildSetId);if(!set)continue;
-    for(const combo of set.combinations||[]){
-      const transformations=(combo.transformationIds||[]).map(id=>TRANSFORM_BY_ID.get(id)).filter(Boolean);
-      const enhancementNames=transformations.map(t=>t.koName);
-      const timingSensitive=transformations.some(t=>statOrder.some(k=>
-        (Number(t.percentOverallStatChange?.[k])||0)||(Number(t.percentGainedStatChange?.[k])||0)||
-        (Number(t.percentMin?.[k])||0)||(Number(t.percentMax?.[k])||0)||
-        (Number(t.percentGainedMin?.[k])||0)||(Number(t.percentGainedMax?.[k])||0)
-      )||t.upperBoundAtMaxStats||t.upperBoundAtStatCaps);
-      const randomSensitive=transformations.some(t=>statOrder.some(k=>
-        (Number(t.flatMin?.[k])||0)!==(Number(t.flatMax?.[k])||0)||
-        (Number(t.percentMin?.[k])||0)!==(Number(t.percentMax?.[k])||0)||
-        (Number(t.percentGainedMin?.[k])||0)!==(Number(t.percentGainedMax?.[k])||0)
-      ));
-      const addedTraitIds=[...new Set(combo.traitIds||[])];
-      const addedTraitNames=addedTraitIds.map(id=>BONUS_BY_ID.get(id)?.koName||id);
-      const startTraitNames=profile.traits?.map(t=>t.koName)||[];
-      const finalTraitNames=[...new Set([...startTraitNames,...addedTraitNames])];
-      const simulations={
-        min:simulateFinalStats(profile,combo,"min"),
-        avg:simulateFinalStats(profile,combo,"avg"),
-        max:simulateFinalStats(profile,combo,"max")
-      };
-      if(Object.values(simulations).some(x=>!x.valid))continue;
-      const finalStats={min:simulations.min.effective,avg:simulations.avg.effective,max:simulations.max.effective};
-      const preGrowthByBand={min:simulations.min.preGrowth,avg:simulations.avg.preGrowth,max:simulations.max.preGrowth};
-      const preGrowthTotal=statOrder.reduce((n,k)=>n+(Number(preGrowthByBand.avg?.[k])||0),0);
-      const base=profile.effectiveStats||{};
-      const deltaByBand={};
-      for(const band of ["min","avg","max"]){
-        deltaByBand[band]={};
-        for(const k of statOrder)deltaByBand[band][k]=(Number(finalStats[band]?.[k])||0)-(Number(base[band]?.[k])||0);
+    const routes=[
+      {id:"BASE",transformationIds:[],finalSoldierType:profile.soldierType,enhancementBuildSetId:profile.enhancementBuildSetId},
+      ...((profile.conversionRoutes||[]).length?profile.conversionRoutes:dynamicConversionRoutes(profile))
+    ];
+    for(const route of routes){
+      const set=BUILD_SET_BY_ID.get(route.enhancementBuildSetId)||route.dynamicBuildSet;if(!set)continue;
+      for(const baseCombo of set.combinations||[]){
+        const combo=materializeCombo(route.transformationIds,baseCombo,route.id);
+        const transformations=(combo.transformationIds||[]).map(id=>TRANSFORM_BY_ID.get(id)).filter(Boolean);
+        const enhancementNames=transformations.map(t=>t.koName);
+        const timingSensitive=transformations.some(t=>statOrder.some(k=>
+          (Number(t.percentOverallStatChange?.[k])||0)||(Number(t.percentGainedStatChange?.[k])||0)||
+          (Number(t.percentMin?.[k])||0)||(Number(t.percentMax?.[k])||0)||
+          (Number(t.percentGainedMin?.[k])||0)||(Number(t.percentGainedMax?.[k])||0)
+        )||t.upperBoundAtMaxStats||t.upperBoundAtStatCaps);
+        const randomSensitive=transformations.some(t=>statOrder.some(k=>
+          (Number(t.flatMin?.[k])||0)!==(Number(t.flatMax?.[k])||0)||
+          (Number(t.percentMin?.[k])||0)!==(Number(t.percentMax?.[k])||0)||
+          (Number(t.percentGainedMin?.[k])||0)!==(Number(t.percentGainedMax?.[k])||0)
+        ));
+        const addedTraitIds=[...new Set(combo.traitIds||[])];
+        const addedTraitNames=addedTraitIds.map(id=>BONUS_BY_ID.get(id)?.koName||id);
+        const startTraitNames=profile.traits?.map(t=>t.koName)||[];
+        const finalTraitNames=[...new Set([...startTraitNames,...addedTraitNames])];
+        const simulations={
+          min:simulateFinalStats(profile,combo,"min"),
+          avg:simulateFinalStats(profile,combo,"avg"),
+          max:simulateFinalStats(profile,combo,"max")
+        };
+        if(Object.values(simulations).some(x=>!x.valid))continue;
+        const finalType=simulations.avg.finalSoldierType||route.finalSoldierType||profile.soldierType;
+        const finalSoldier=SOLDIER_BY_ID.get(finalType);
+        const finalStats={min:simulations.min.effective,avg:simulations.avg.effective,max:simulations.max.effective};
+        const preGrowthByBand={min:simulations.min.preGrowth,avg:simulations.avg.preGrowth,max:simulations.max.preGrowth};
+        const preGrowthTotal=statOrder.reduce((n,k)=>n+(Number(preGrowthByBand.avg?.[k])||0),0);
+        const base=profile.effectiveStats||{};
+        const deltaByBand={};
+        for(const band of ["min","avg","max"]){
+          deltaByBand[band]={};
+          for(const k of statOrder)deltaByBand[band][k]=(Number(finalStats[band]?.[k])||0)-(Number(base[band]?.[k])||0);
+        }
+        rows.push({
+          id:"final:"+profile.id+":"+route.id+":"+set.id+":"+baseCombo.id,_mode:"final",
+          _name:finalSoldier?.koName||profile.soldierKoName,_id:finalType,
+          _route:[profile.sourceKoName,...enhancementNames].join(" "),
+          profile,combo,enhancementNames,addedTraitNames,finalTraitNames,finalSoldierType:finalType,
+          finalStats,finalCap:finalCapFor(profile,combo),deltaByBand,preGrowthByBand,preGrowthTotal,
+          enhancementCount:combo.transformationIds?.length||0,
+          targetCount:combo.targetIds?.length||0,
+          totalTraitCount:finalTraitNames.length,
+          cost:combo.cost||0,recoveryTime:combo.recoveryTime||0,
+          growthSensitive:!!combo.growthSensitive,timingSensitive:timingSensitive||preGrowthTotal>0,randomSensitive,
+          sourceId:profile.sourceId,sourceEnName:profile.sourceEnName
+        });
       }
-      rows.push({
-        id:"final:"+profile.id+":"+set.id+":"+combo.id,_mode:"final",
-        _name:profile.soldierKoName,_id:profile.soldierType,
-        _route:[profile.sourceKoName,...enhancementNames].join(" "),
-        profile,combo,enhancementNames,addedTraitNames,finalTraitNames,
-        finalStats,finalCap:finalCapFor(profile,combo),deltaByBand,preGrowthByBand,preGrowthTotal,
-        enhancementCount:combo.transformationIds?.length||0,
-        targetCount:combo.targetIds?.length||0,
-        totalTraitCount:finalTraitNames.length,
-        cost:combo.cost||0,recoveryTime:combo.recoveryTime||0,
-        growthSensitive:!!combo.growthSensitive,timingSensitive:timingSensitive||preGrowthTotal>0,randomSensitive,
-        sourceId:profile.sourceId,sourceEnName:profile.sourceEnName
-      });
     }
   }
   return rows;
