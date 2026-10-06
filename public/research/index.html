@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>XPiratez Research DB</title>
+  <link rel="stylesheet" href="../items/styles.css">
+</head>
+<body data-mode="research" data-data-base="../items/data">
+<header class="hero">
+  <div>
+    <p class="eyebrow">RULESET-BACKED DATABASE</p>
+    <h1>연구 DB</h1>
+    <p id="metaLine" class="muted">데이터 확인 중…</p>
+  </div>
+  <div><a class="ghost" href="../items/">아이템 DB</a> <a class="ghost" href="../">전체 아틀라스</a></div>
+</header>
+
+<main>
+  <nav class="tabs">
+    <button class="tab active" data-mode="research">연구 <span id="researchCount"></span></button>
+    <span id="itemCount" hidden></span>
+  </nav>
+
+  <section class="toolbar">
+    <label class="search"><span>검색</span><input id="search" type="search" placeholder="한글명 · 영문명 · STR_ID"></label>
+    <div id="filters" class="filters"></div>
+    <label><span>정렬</span><select id="sort"></select></label>
+    <button id="direction" class="ghost" title="정렬 방향">↑</button>
+    <button id="compare" class="ghost" disabled>비교 <span id="compareCount">0</span>/4</button>
+  </section>
+
+  <div class="status">
+    <div id="statusText">—</div>
+    <div class="muted">정렬 선택 · 행 클릭 = 상세 · 체크 = 비교</div>
+  </div>
+
+  <section class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div id="pager" class="pager"></div>
+  </section>
+
+  <section class="about">
+    <h2>표시 방식</h2>
+    <p>연구량, 직접 선행, 후속 연구, 실물 표본 필요/소모, 명시 해금, 아이템 및 제조 연결을 독립적으로 검색·정렬합니다.</p>
+    <p class="muted">아이템과의 관계는 연구 상세 내부에서 역참조하며, 긴 UFOPEDIA 서술문은 공개판에 재배포하지 않습니다.</p>
+  </section>
+</main>
+
+<aside id="drawer" class="drawer" aria-hidden="true">
+  <div class="drawerbar"><button id="closeDrawer" class="ghost">닫기</button></div>
+  <div id="detail" class="drawerbody"></div>
+</aside>
+<div id="backdrop" class="backdrop" hidden></div>
+
+<dialog id="compareDialog">
+  <div class="dialogbar"><h2>연구 비교</h2><button id="closeCompare" class="ghost">닫기</button></div>
+  <div id="compareBody"></div>
+</dialog>
+
+<script type="module" src="../items/app.js"></script>
+</body>
+</html>
