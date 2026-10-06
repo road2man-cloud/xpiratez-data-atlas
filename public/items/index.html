@@ -4,24 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>XPiratez Item & Research Atlas</title>
+  <title>XPiratez Item DB</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body data-mode="items" data-data-base="./data">
 <header class="hero">
   <div>
     <p class="eyebrow">RULESET-BACKED DATABASE</p>
-    <h1>아이템 · 연구 아틀라스</h1>
+    <h1>아이템 DB</h1>
     <p id="metaLine" class="muted">데이터 확인 중…</p>
   </div>
-  <a class="ghost" href="../">전체 아틀라스</a>
+  <div><a class="ghost" href="../research/">연구 DB</a> <a class="ghost" href="../">전체 아틀라스</a></div>
 </header>
 
 <main>
-  <nav class="tabs">
-    <button class="tab active" data-mode="items">아이템 <span id="itemCount"></span></button>
-    <button class="tab" data-mode="research">연구 <span id="researchCount"></span></button>
-  </nav>
+  <nav class="tabs"><button class="tab active" data-mode="items">아이템 <span id="itemCount"></span></button><span id="researchCount" hidden></span></nav>
 
   <section class="toolbar">
     <label class="search"><span>검색</span><input id="search" type="search" placeholder="한글명 · 영문명 · STR_ID"></label>
@@ -48,7 +45,7 @@
 
   <section class="about">
     <h2>표시 방식</h2>
-    <p>아이템은 <strong>refNode 상속</strong>을 펼친 규칙과 OXCE 기본값, X-Piratez 전역값을 구분합니다. 연구·제조·이벤트·유닛 등 다른 룰에서 해당 ID를 참조하는 위치도 역추적합니다.</p>
+    <p>아이템은 <strong>refNode 상속</strong>을 펼친 규칙과 OXCE 기본값, X-Piratez 전역값을 구분합니다. 연구·제조·이벤트·유닛 등 다른 룰에서 해당 아이템 ID를 참조하는 위치도 역추적합니다.</p>
     <p class="muted">긴 UFOPEDIA 서술문은 공개판에 재배포하지 않고, 수치·관계·해금 구조를 중심으로 제공합니다.</p>
   </section>
 </main>
