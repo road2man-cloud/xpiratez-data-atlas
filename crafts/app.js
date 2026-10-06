@@ -5,6 +5,28 @@ let RESEARCH_TOPICS=null;
 const $=q=>document.querySelector(q);
 const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:1});
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
+const ROLE_LABELS={attack:"공격",tractor:"견인/포획",defense:"방어/회피",sensor:"탐지/사격지원",mobility:"기동/연료"};
+const CRAFT_WEAPON_TYPE_META={"0":{"label":"소형 무장/지원","count":4,"roles":["attack","tractor","defense"],"damage":[0,4],"range":[10,30],"accuracy":[0,45],"ammo":[0,400],"samples":["14mm 탈것용 체인건(소형)","소형 견인 광선 방사기","소형 방어막 생성기","탈것용 용비늘 장갑"]},"1":{"label":"중·대형 무장","count":20,"roles":["attack","tractor","defense","sensor"],"damage":[0,200],"range":[10,55],"accuracy":[0,90],"ammo":[0,999],"samples":["4연장 기관포","개틀링 라스캐논","견인 광선 방사기","대형 방어막 생성기","램제트 포","리틀'일리야 로켓 포드"]},"2":{"label":"미사일","count":17,"roles":["attack","defense","mobility","sensor"],"damage":[15,600],"range":[10,65],"accuracy":[35,200],"ammo":[1,24],"samples":["급강하 폭탄 발사기(미사일)","다축방향 추진기","랜서 발사기","메두사 발사기","미티어 발사기","스팅레이 발사기"]},"3":{"label":"무장창/중폭장","count":6,"roles":["attack","defense"],"damage":[90,800],"range":[10,50],"accuracy":[15,75],"ammo":[2,48],"samples":["급강하 폭탄 발사기(무장창)","내파 폭탄 발사기","대형 방어막 생성기","아발란치 무장창","중형 폭탄 발사기(무장창)","헬 폭탄 발사기(무장창)"]},"4":{"label":"폭격","count":5,"roles":["attack"],"damage":[30,240],"range":[10,10],"accuracy":[25,45],"ammo":[4,20],"samples":["고블린 발사기","급강하 폭탄 발사기(폭격)","에어볼 발사기(폭격)","중형 폭탄 발사기(폭격)","헬 폭탄 발사기(폭격)"]},"5":{"label":"차량/경무장","count":11,"roles":["attack","defense"],"damage":[1,40],"range":[10,40],"accuracy":[20,70],"ammo":[4,300],"samples":["14mm 탈것용 체인건","25mm 기관포","게코 거치대","경기관총","래틀스네이크 발사기","로토건"]},"6":{"label":"대공/전자","count":7,"roles":["attack","defense","sensor"],"damage":[3,110],"range":[15,60],"accuracy":[35,100],"ammo":[10,800],"samples":["14mm 탈것용 대공포탑","50mm 2연장 대공포","고르곤 대공 미사일 발사기","차저 라스터렛","탈것용 전투 레이더","하이퍼웨이브 조준기"]},"7":{"label":"주력 무장/지원","count":9,"roles":["attack","mobility","sensor","tractor","defense"],"damage":[0,200],"range":[10,50],"accuracy":[0,70],"ammo":[0,1500],"samples":["4연장 기관포 주력","바실리스크 포 주력","빔 레이저 주력","오로라의 지휘 쉘","오블리터레이터 포 주력","주력 견인 광선 방사기"]},"8":{"label":"휴대 화기","count":5,"roles":["attack"],"damage":[4,30],"range":[10,20],"accuracy":[15,70],"ammo":[4,24],"samples":["게코 거치대","돌격대포","유탄발사기","RPG","로켓 발사기"]},"9":{"label":"어둠기술","count":21,"roles":["attack","defense","mobility","sensor"],"damage":[0,120],"range":[0,20],"accuracy":[0,100],"ammo":[0,72],"samples":["공간 변위장치","공간 변위장치 X","공간 변위장치+","무결성 필드","무결성 필드 X","무결성 필드+"]},"10":{"label":"은폐","count":1,"roles":["defense"],"damage":null,"range":[75,75],"accuracy":[100,100],"ammo":null,"samples":["은폐 장치"]},"11":{"label":"특수 화기","count":4,"roles":["attack"],"damage":[6,130],"range":[10,50],"accuracy":[45,85],"ammo":[3,150],"samples":["25mm 기관포","시걸 발사기","자사나 포"]},"21":{"label":"전기 보조","count":5,"roles":["mobility","defense","sensor"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["전기장치용 엔진 과충전기","전기장치용 회피 장치","탈것용 보조 전지","해적 라디오","헬레리움 초전지"]},"22":{"label":"기계 보조","count":3,"roles":["mobility","defense","sensor"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["초압축기","탈것용 용비늘 장갑","해적 라디오"]},"23":{"label":"소형 지원","count":9,"roles":["defense","sensor"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["방어막 축전기","소형 방어막 생성기","전투 스캐너","추가 선체 장갑판","탈것용 용비늘 장갑","탈것용 전투 레이더"]},"24":{"label":"엔진/장갑 보조","count":2,"roles":["defense","mobility"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["니트로 부스터","탈것용 추가 장갑"]},"25":{"label":"회피/전지 보조","count":2,"roles":["defense","mobility"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["전기장치용 회피 장치","헬레리움 초전지"]},"26":{"label":"연료/장갑 보조","count":3,"roles":["mobility","defense"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["고압 화학 연료 탱크","탈것용 추가 장갑","화학 연료 탱크"]},"27":{"label":"대형 연료 보조","count":2,"roles":["mobility","defense"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["고압 화학 연료 탱크","화학 연료 탱크"]},"28":{"label":"보강 엔진","count":1,"roles":["defense","mobility"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["보강된 엔진"]},"29":{"label":"소형 화학연료","count":2,"roles":["mobility","defense"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["고압 화학 연료 탱크","화학 연료 탱크"]},"30":{"label":"대형 화학연료","count":2,"roles":["mobility","defense"],"damage":null,"range":null,"accuracy":null,"ammo":null,"samples":["고압 화학 연료 탱크","화학 연료 탱크"]}};
+function slotAllowedTypes(v){const raw=v?.id??v;return [...new Set((Array.isArray(raw)?raw:[raw]).flat(Infinity).filter(x=>x!=null).map(Number).filter(Number.isFinite))]}
+function craftSlots(x){return (x.weaponTypes||[]).slice(0,Number(x.weapons)||0).map((v,i)=>({slot:i+1,allowedTypes:slotAllowedTypes(v)}))}
+function typeMeta(t){return CRAFT_WEAPON_TYPE_META[String(t)]||null}
+function craftRoles(x){return [...new Set(craftSlots(x).flatMap(s=>s.allowedTypes.flatMap(t=>typeMeta(t)?.roles||[])))]}
+function roleBadges(roles){return (roles||[]).map(r=>'<span class="role role-'+esc(r)+'">'+esc(ROLE_LABELS[r]||r)+'</span>').join(" ")||'<span class="muted">비무장/미분류</span>'}
+function rangeText(v){return Array.isArray(v)?(v[0]===v[1]?fmt(v[0]):fmt(v[0])+"–"+fmt(v[1])):"—"}
+function usageText(m){if(!m)return"미분류";const attack=m.roles.includes("attack"),support=m.roles.some(r=>r!=="attack");return attack&&support?"공격+지원 혼합":attack?"공격용":"지원용"}
+function slotTypeTable(x){
+ const slots=craftSlots(x);
+ if(!slots.length)return'<div class="slot-card"><strong>장비 슬롯 없음</strong><p class="muted">이 기체는 기체용 장비 슬롯이 없습니다.</p></div>';
+ return slots.map(s=>{
+  const rows=s.allowedTypes.map(t=>{
+   const m=typeMeta(t);
+   if(!m)return'<tr><td>Type '+esc(t)+'</td><td>미분류</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>원본 메타 없음</td></tr>';
+   return'<tr><td><b>'+esc(m.label)+'</b><span class="id">weaponType '+esc(t)+'</span></td><td>'+esc(usageText(m))+'</td><td>'+roleBadges(m.roles)+'</td><td>'+fmt(m.count)+'종</td><td>'+rangeText(m.damage)+'</td><td>'+rangeText(m.range)+'</td><td>'+rangeText(m.accuracy)+'</td><td>'+rangeText(m.ammo)+'</td><td class="sample-cell">'+m.samples.map(esc).join(" · ")+'</td></tr>';
+  }).join("");
+  return'<section class="slot-card"><div class="slot-head"><strong>슬롯 '+fmt(s.slot)+'</strong><span class="muted">허용 타입 '+esc(s.allowedTypes.join(", ")||"미지정")+'</span></div><div class="weapon-table"><table><thead><tr><th>장비 계열</th><th>용도</th><th>역할</th><th>호환 장비</th><th>위력</th><th>사거리</th><th>명중</th><th>탄약</th><th>대표 장비</th></tr></thead><tbody>'+rows+'</tbody></table></div></section>';
+ }).join("");
+}
+
 async function load(){
   const [r,research]=await Promise.all([
     fetch("../data/progression.json"),
@@ -21,7 +43,7 @@ function renderSummary(){
   $("#summary").innerHTML=[
     ["전체",crafts.length+"종","Ruleset crafts 전체"],
     ["병력 수송",crafts.filter(x=>(x.soldiers||0)>0).length+"종","soldiers > 0"],
-    ["10명 이상",crafts.filter(x=>(x.soldiers||0)>=10).length+"종","대형 수송"],
+    ["장비 슬롯",crafts.filter(x=>(x.weapons||0)>0).length+"종","공격 무장·방어·지원 슬롯 포함"],
     ["분기 전용",crafts.filter(x=>(x.summary?.commonBranchGates||[]).length).length+"종","모든 확인 경로가 같은 분기를 공유"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
@@ -33,7 +55,8 @@ function searchBlob(x){
     const r=DATA?.recipes?.[p.recipeId];if(!r)return[];
     return[r.koName,r.enName,r.id,...(r.eventVariants||[]).flatMap(v=>{const e=eventById(v.eventId);return[e?.koName,e?.enName,e?.id]})];
   });
-  return [x.koName,x.enName,x.id,...(x.aliases||[]),...(x.summary?.commonBranchGates||[]).flatMap(g=>[g.koName,g.enName,g.id]),...routeBits]
+  const weaponBits=craftSlots(x).flatMap(s=>s.allowedTypes.flatMap(t=>{const m=typeMeta(t);return[m?.label,...(m?.samples||[]),...(m?.roles||[])].filter(Boolean)}));
+  return [x.koName,x.enName,x.id,...(x.aliases||[]),...(x.summary?.commonBranchGates||[]).flatMap(g=>[g.koName,g.enName,g.id]),...routeBits,...weaponBits]
     .filter(Boolean).join(" ").toLowerCase();
 }
 function filtered(){
@@ -58,9 +81,9 @@ function th(label,key){const on=sort.key===key?" sort-on":"";const arrow=sort.ke
 function render(){
   const rows=filtered();$("#rowCount").textContent=rows.length+"개";
   $("#craftTable thead").innerHTML="<tr>"+[
-    th("탈것/기체","name"),th("병력","soldiers"),th("조종사","pilots"),th("속도","speedMax"),th("연료","fuelMax"),th("내구","damageMax"),th("무장","weapons"),th("레이더","radarRange"),th("구매","costBuy"),th("임대/유지","costRent"),th("명목 연구량*","research"),"<th>루트</th>"
+    th("탈것/기체","name"),th("병력","soldiers"),th("조종사","pilots"),th("속도","speedMax"),th("연료","fuelMax"),th("내구","damageMax"),th("장비 슬롯","weapons"),"<th>슬롯 성격</th>",th("레이더","radarRange"),th("구매","costBuy"),th("임대/유지","costRent"),th("명목 연구량*","research"),"<th>루트</th>"
   ].join("")+"</tr>";
-  $("#craftTable tbody").innerHTML=rows.map(x=>'<tr data-id="'+esc(x.id)+'"><td><span class="name">'+esc(x.koName)+'</span><span class="id">'+esc(x.enName)+' · '+esc(x.id)+'</span></td><td>'+fmt(x.soldiers)+'</td><td>'+fmt(x.pilots)+'</td><td>'+fmt(x.speedMax)+'</td><td>'+fmt(x.fuelMax)+'</td><td>'+fmt(x.damageMax)+'</td><td>'+fmt(x.weapons)+'</td><td>'+fmt(x.radarRange)+'</td><td>'+fmt(x.costBuy)+'</td><td>'+fmt(x.costRent)+'</td><td>'+fmt(x.summary?.nominalMinResearch)+'</td><td>'+((x.summary?.commonBranchGates||[]).map(g=>'<span class="trait">'+esc(g.koName)+'</span>').join("")||"—")+'</td></tr>').join("");
+  $("#craftTable tbody").innerHTML=rows.map(x=>'<tr data-id="'+esc(x.id)+'"><td><span class="name">'+esc(x.koName)+'</span><span class="id">'+esc(x.enName)+' · '+esc(x.id)+'</span></td><td>'+fmt(x.soldiers)+'</td><td>'+fmt(x.pilots)+'</td><td>'+fmt(x.speedMax)+'</td><td>'+fmt(x.fuelMax)+'</td><td>'+fmt(x.damageMax)+'</td><td>'+fmt(x.weapons)+'</td><td class="role-cell">'+roleBadges(craftRoles(x))+'</td><td>'+fmt(x.radarRange)+'</td><td>'+fmt(x.costBuy)+'</td><td>'+fmt(x.costRent)+'</td><td>'+fmt(x.summary?.nominalMinResearch)+'</td><td>'+((x.summary?.commonBranchGates||[]).map(g=>'<span class="trait">'+esc(g.koName)+'</span>').join("")||"—")+'</td></tr>').join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{const k=el.dataset.sort;if(sort.key===k)sort.dir*=-1;else sort={key:k,dir:k==="name"?1:-1};render()}));
   document.querySelectorAll("tbody tr").forEach(el=>el.addEventListener("click",()=>openDetail(el.dataset.id)));
 }
@@ -109,7 +132,8 @@ function openDetail(id){
   const gates=(x.summary?.commonBranchGates||[]).map(g=>'<span class="trait">'+esc(g.koName)+'</span>').join(" ")||"없음";
   const paths=(x.acquisitionPaths||[]).map(p=>p.kind==="buy"?'<div class="acq-card"><strong>직접 구매</strong><span>비용 '+fmt(p.cost)+'</span>'+planSummary(planById(p.researchPlanId),"구매 해금 연구")+'</div>':recipeHtml(DATA?.recipes?.[p.recipeId]||{})).join("")||'<span class="muted">직접 추적 가능한 구매/제조 경로 없음</span>';
   $("#detailBody").innerHTML='<p class="eyebrow">탈것 / 기체</p><h2>'+esc(x.koName)+'</h2><p class="muted">'+esc(x.enName)+' · '+esc(x.id)+'</p>'+
-  '<div class="detail-grid"><div class="box"><strong>탑승 병력 / 조종사</strong>'+fmt(x.soldiers)+' / '+fmt(x.pilots)+'</div><div class="box"><strong>속도 / 연료</strong>'+fmt(x.speedMax)+' / '+fmt(x.fuelMax)+'</div><div class="box"><strong>내구 / 무장</strong>'+fmt(x.damageMax)+' / '+fmt(x.weapons)+'</div><div class="box"><strong>레이더</strong>'+fmt(x.radarRange)+' @ '+fmt(x.radarChance)+'%</div><div class="box"><strong>구매 / 판매</strong>'+fmt(x.costBuy)+' / '+fmt(x.costSell)+'</div><div class="box"><strong>임대·유지비</strong>'+fmt(x.costRent)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(x.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+gates+'</div></div>'+
+  '<div class="detail-grid"><div class="box"><strong>탑승 병력 / 조종사</strong>'+fmt(x.soldiers)+' / '+fmt(x.pilots)+'</div><div class="box"><strong>속도 / 연료</strong>'+fmt(x.speedMax)+' / '+fmt(x.fuelMax)+'</div><div class="box"><strong>내구 / 장비 슬롯</strong>'+fmt(x.damageMax)+' / '+fmt(x.weapons)+'</div><div class="box"><strong>슬롯 성격</strong>'+roleBadges(craftRoles(x))+'</div><div class="box"><strong>레이더</strong>'+fmt(x.radarRange)+' @ '+fmt(x.radarChance)+'%</div><div class="box"><strong>구매 / 판매</strong>'+fmt(x.costBuy)+' / '+fmt(x.costSell)+'</div><div class="box"><strong>임대·유지비</strong>'+fmt(x.costRent)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(x.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+gates+'</div></div>'+
+  '<h3>장비 슬롯·무장 용도 상세</h3><div class="weapon-note"><b>읽는 법:</b> Ruleset의 <code>weapons</code>는 현재 장착 무기 수가 아니라 장비 슬롯 수입니다. 아래는 각 슬롯이 허용하는 <code>weaponType</code> 계열의 용도와 v.o1.1.1 기체장비 정의에서의 수치 범위입니다. 공격 수치가 없는 계열은 방어·기동·탐지 같은 지원용입니다.</div>'+slotTypeTable(x)+
   '<h3>획득·구매·제조 방식</h3><div class="routes">'+paths+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. 이벤트/무료해금으로 실제 최소는 더 작을 수 있습니다.</p>';
   $("#detailDialog").showModal();
 }
