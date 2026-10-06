@@ -1,4 +1,6 @@
-let DATA=null;
+let DATA=null,PROG=null;
+const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map();
+let RESEARCH_TOPICS=null;
 let sort={key:"firing",dir:-1};
 
 const $=q=>document.querySelector(q);
@@ -9,7 +11,12 @@ const sourceLabel={direct:"직접 고용",manufacture:"제조/Recruitment",event
 
 async function load(){
   const res=await fetch("../data/soldiers-index.json");
+  if(!res.ok)throw new Error("병종 데이터 HTTP "+res.status);
   DATA=await res.json();
+  try{
+    const prog=await fetch("../data/progression.json");
+    if(prog.ok)PROG=await prog.json();
+  }catch(err){console.warn("Progression data is not published yet.",err)}
   renderSummary();
   render();
 }
@@ -207,12 +214,86 @@ function openDetail(encoded){
     deltaGrid("percentGainedStatChange",r.percentGainedStatChange);
     html+='<div class="detail-grid"><div class="box"><strong>필요 연구</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>필수 이전 변환</strong>'+(r.requiredPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>금지 이전 변환</strong>'+(r.forbiddenPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
   }
+  html+=renderProgression(r._id);
   $("#detailBody").innerHTML=html;
   $("#detailDialog").showModal();
 }
 function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
+function planById(id){return PROG?.plans?.[id]||null}
+function planSummary(plan,title="해금 연구 트리"){
+  if(!plan)return'<div class="route-card muted">연구 경로 없음</div>';
+  const roots=(plan.roots||[]).map(x=>'<span class="tag">'+esc(x.koName||x.id)+'</span>').join(" ");
+  const gates=(plan.branchGates||[]).map(x=>'<span class="trait">'+esc(x.koName||x.id)+'</span>').join(" ");
+  return '<div class="route-card"><strong>'+title+'</strong><div class="route-metrics"><span>명목 누적 연구량 <b>'+fmt(plan.totalCost)+'</b></span><span>연구 노드 <b>'+fmt(plan.topicCount)+'</b></span><span>표본 조건 <b>'+fmt(plan.needItemCount)+'</b></span></div><div class="route-line"><small>루트 시작</small> '+roots+'</div>'+(gates?'<div class="route-line warn"><small>분기 연구</small> '+gates+'</div>':'')+'<button class="plan-load" data-plan="'+plan.id+'">전체 연구 노드 보기</button><div class="plan-body" data-plan-body="'+plan.id+'"></div></div>';
+}
+async function loadPlan(id){
+  if(PLAN_CACHE.has(id))return PLAN_CACHE.get(id);
+  const b=id[0];
+  if(!PLAN_BUCKETS.has(b)){
+    const r=await fetch("../data/progression-plans/"+b+".json");
+    PLAN_BUCKETS.set(b,(await r.json()).plans);
+  }
+  if(!RESEARCH_TOPICS){
+    const r=await fetch("../data/progression-research.json");
+    RESEARCH_TOPICS=(await r.json()).topics||[];
+  }
+  const compact=PLAN_BUCKETS.get(b)[id]||{topics:[]};
+  const p={...compact,topics:(compact.topics||[]).map(i=>RESEARCH_TOPICS[i]).filter(Boolean)};
+  PLAN_CACHE.set(id,p);return p;
+}
+function entityLabel(x){return esc(typeof x==="string"?x:(x?.koName||x?.enName||x?.id||"—"))}
+function compactValue(v){
+  if(Array.isArray(v))return v.map(compactValue).join(", ");
+  if(v&&typeof v==="object")return Object.entries(v).filter(([,x])=>x!==false&&x!=null).map(([k,x])=>x===true?k:(k+"="+compactValue(x))).join(", ");
+  return String(v);
+}
+function eventConditions(s){
+  const c=s?.conditions||{},bits=[],labels={firstMonth:"시작 월",lastMonth:"종료 월",minDifficulty:"최소 난이도",maxDifficulty:"최대 난이도",executionOdds:"발생 확률",minFunds:"최소 자금",maxFunds:"최대 자금",minScore:"최소 점수",maxScore:"최대 점수"};
+  for(const [k,label] of Object.entries(labels))if(c[k]!=null)bits.push(label+" "+esc(compactValue(c[k])));
+  for(const [k,v] of Object.entries(c))if(/Triggers$/.test(k)&&k!=="researchTriggers")bits.push(esc(k)+" "+esc(compactValue(v)));
+  if((s?.researchTriggers||[]).length)bits.push("필요 연구 "+s.researchTriggers.map(entityLabel).join(", "));
+  return bits.length?'<div class="route-line"><small>이벤트 조건</small> '+bits.join(" · ")+'</div>':'<div class="route-line"><small>이벤트 조건</small> 추가 조건 없음</div>';
+}
+function planTable(p){
+  const rows=(p.topics||[]).map(t=>'<tr><td>'+esc(t.koName)+'</td><td>'+fmt(t.cost)+'</td><td>'+((t.prerequisites||[]).map(x=>esc(DATA?.researchNames?.[x]||x)).join("<br>")||"—")+'</td><td>'+(t.needItem?(t.destroyItem?"필요·소모":"필요"):"—")+'</td><td>'+((t.requiresBaseFunc||[]).join(", ")||"—")+'</td><td>'+((t.disables||[]).map(entityLabel).join("<br>")||"—")+'</td></tr>').join("");
+  return '<div class="plan-table"><table><thead><tr><th>연구</th><th>량</th><th>직접 선행</th><th>표본</th><th>기지 기능</th><th>이 선택으로 닫히는 연구/루트</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function eventById(id){return PROG?.events?.[id]||null}
+function eventScript(eventId,scriptId){return (eventById(eventId)?.scripts||[]).find(s=>s.id===scriptId)||null}
+function acquisitionHtml(p){
+  if(p.kind==="buy")return '<div class="acq-card"><strong>직접 고용</strong><span>비용 '+fmt(p.cost)+'</span>'+planSummary(planById(p.researchPlanId))+'</div>';
+  if(p.kind==="event"){
+    const e=eventById(p.eventId);if(!e)return"";
+    const variants=(p.variants||[]).map(v=>'<details><summary>이벤트 발생 조건과 전체 연구 루트</summary>'+eventConditions(eventScript(p.eventId,v.scriptId))+planSummary(planById(v.researchPlanId),"이벤트 포함 연구 트리")+'</details>').join("");
+    return '<div class="acq-card"><strong>이벤트 획득 · '+esc(e.koName)+'</strong><span class="id">'+esc(e.id)+' · 생성 '+fmt(p.spawnedPersons)+'명</span>'+planSummary(planById(p.baseResearchPlanId),"이벤트 기본 연구 조건")+variants+'</div>';
+  }
+  const r=PROG?.recipes?.[p.recipeId];if(!r)return"";
+  const items=(r.requiredItems||[]).map(i=>'<div class="req-item"><b>'+esc(i.koName)+'</b> × '+fmt(i.qty)+(i.eventSources||[]).map(src=>{const ev=eventById(src.eventId);return ev?'<div class="event-box"><span class="tag">이벤트</span> '+esc(ev.koName)+' '+(ev.scripts||[]).map(s=>eventConditions(s)).join("")+'</div>':""}).join("")+'</div>').join("");
+  const variants=(r.eventVariants||[]).map(v=>{const ev=eventById(v.eventId);return '<details><summary>'+esc(ev?.koName||v.eventId)+' 경유 실제 루트</summary>'+eventConditions(eventScript(v.eventId,v.scriptId))+planSummary(planById(v.researchPlanId),"이벤트 포함 연구 트리")+'</details>'}).join("");
+  return '<div class="acq-card"><strong>'+esc(r.koName)+'</strong><span>비용 '+fmt(r.cost)+' · 시간 '+fmt(r.time)+' · 작업장 '+fmt(r.space)+'</span>'+planSummary(planById(r.baseResearchPlanId),"기본 제조/전환 연구")+(items?'<h4>필요 아이템</h4>'+items:'')+variants+'</div>';
+}
+function trainingHtml(t){
+  const stats={...(t.bonus?.stats||{}),...(t.flatOverallStatChange||{})};
+  const bonuses=Object.entries(stats).filter(([,v])=>v).map(([k,v])=>'<span class="trait">'+esc(DATA.statLabels[k]||k)+' '+(v>0?"+":"")+fmt(v)+'</span>').join(" ");
+  return '<div class="acq-card"><strong>'+esc(t.koName)+'</strong><span class="id">'+esc(t.id)+'</span><div>'+bonuses+'</div>'+planSummary(planById(t.researchPlanId),"훈련 해금 연구")+'</div>';
+}
+function renderProgression(soldierId){
+  const p=PROG?.soldiers?.[soldierId];if(!p)return"";
+  const gates=(p.summary?.commonBranchGates||[]).map(x=>'<span class="trait">'+esc(x.koName)+'</span>').join(" ");
+  return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3><div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div><div class="routes">'+((p.acquisitionPaths||[]).map(acquisitionHtml).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>')+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
+}
 
 ["search","dataset","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
+$("#detailDialog").addEventListener("click",async e=>{
+  if(e.target.id==="detailDialog"){e.currentTarget.close();return}
+  const b=e.target.closest(".plan-load");if(!b)return;
+  b.disabled=true;b.textContent="불러오는 중…";
+  try{
+    const p=await loadPlan(b.dataset.plan);
+    const target=b.closest(".route-card")?.querySelector('[data-plan-body="'+b.dataset.plan+'"]');
+    if(target)target.innerHTML=planTable(p);
+    b.remove();
+  }catch(err){b.disabled=false;b.textContent="연구트리 로드 실패";console.error(err)}
+});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+err.message+'</span></article>';console.error(err)});

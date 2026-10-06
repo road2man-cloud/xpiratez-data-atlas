@@ -21,7 +21,7 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 
 방어구 탭은 957개 Armor 룰을 전/좌/우/후/하 방어력, 무게, 능력치 보정, 피해유형별 저항 배율, 근접 회피, 회복·위장 값으로 정렬·비교합니다. `storeItem`을 따라 실제 장비 아이템으로 연결하고 구매·제조·연구 보상·이벤트 참조를 역추적합니다. 제조법은 재료, 시설, 비용, engineer-hours를 표시하고, 선행 연구는 중복 제거한 명목 scientist-hours와 1명/10명 환산 시간을 함께 보여줍니다.
 
-병종 탭의 기본 단위는 내부 `RuleSoldier` 29개가 아니라 **실제 획득형 72개**입니다. 직접 고용 15개, 제조/Recruitment 48개, 이벤트 생성 9개를 각각 별도 행으로 추적하고, 같은 Soldier Type이라도 `spawnedSoldier.currentStats`나 생성 시 `transformationBonuses`가 다르면 서로 다른 획득형으로 분리합니다. 자동 특성의 soldierBonus `stats`를 OXCE 엔진과 같은 순서로 합산한 **실전 생성 능력치**를 TU·기력·체력·용기·반응·사격·투척·근력·Psi·근접·Mana별 최소/평균/최대로 정렬할 수 있습니다. 29개 RuleSoldier는 내부 바디/성장 규칙 참고 탭으로 따로 두며, 초기 획득 이후의 변신·훈련은 83개 루트를 별도 탭으로 제공합니다. Saint 지원군은 31칸 가중표지만 고유 결과는 15개이며, 각 획득형에 슬롯 수와 확률을 표시합니다. Psi Skill은 기본 0이면 특성만으로 잠금 해제되지 않는 OXCE 예외도 반영합니다.
+병종 탭의 기본 단위는 내부 `RuleSoldier` 29개가 아니라 **실제 획득형 72개**입니다. 직접 고용 15개, 제조/Recruitment 48개, 이벤트 생성 9개를 각각 별도 행으로 추적하고, 같은 Soldier Type이라도 `spawnedSoldier.currentStats`나 생성 시 `transformationBonuses`가 다르면 서로 다른 획득형으로 분리합니다. 자동 특성의 soldierBonus `stats`를 OXCE 엔진과 같은 순서로 합산한 **실전 생성 능력치**를 TU·기력·체력·용기·반응·사격·투척·근력·Psi·근접·Mana별 최소/평균/최대로 정렬할 수 있습니다. 29개 RuleSoldier는 내부 바디/성장 규칙 참고 탭으로 따로 두며, 초기 획득 이후의 변신·훈련은 83개 루트를 별도 탭으로 제공합니다. Saint 지원군은 31칸 가중표지만 고유 결과는 15개이며, 각 획득형에 슬롯 수와 확률을 표시합니다. Psi Skill은 기본 0이면 특성만으로 잠금 해제되지 않는 OXCE 예외도 반영합니다. 상세창에는 직접 고용·제조/Recruitment·이벤트 획득 방식, 분기 전용 여부, 명목 누적 연구량, Destructor 같은 특수 훈련의 전체 선행 연구트리를 연결합니다.
 
 탈것/기체 탭은 탑승 병력·조종사·속도·연료·내구·무장·레이더·비용을 비교하고, 직접 구매/제조법과 핵심 재료의 이벤트 획득원을 연결합니다. 예를 들어 Schoolbus처럼 특정 이벤트 재료가 필요한 기체는 이벤트의 연구 트리거, 월 제한, 난이도, 기타 트리거까지 함께 표시합니다.
 
@@ -47,13 +47,13 @@ npm run check:item-research -- --data public/items/data
 
 개인 로컬 용도로 UFOPEDIA 본문까지 포함하려면 `--include-lore`를 추가할 수 있습니다. 공개 저장소에는 기본 생성물만 커밋하는 것을 권장합니다.
 
-생성기는 Ruleset의 `*.rul` 파일을 읽고 같은 ID의 규칙을 순서대로 병합한 뒤 `refNode` 상속을 펼칩니다. 상세 DB는 16개 청크로 나뉘어 필요한 청크만 브라우저가 가져옵니다.
+생성기는 Ruleset의 `*.rul` 파일을 읽고 같은 ID의 규칙을 순서대로 병합한 뒤 `refNode` 상속을 펼칩니다. 상세 DB는 청크로 나뉘어 필요한 데이터만 브라우저가 가져옵니다. 병종/탈것 progression은 연구 노드를 `progression-research.json`에 한 번만 저장하고, 연구 경로는 숫자 인덱스 배열, 제조법·이벤트는 ID 참조로 정규화해 동일 정보의 반복 저장을 피합니다.
 
 아이템/연구 공개 DB는 정보 손실 없이 중복을 정규화합니다. 반복되는 한·영 이름은 `entities.json`에 한 번만 저장하고, 연구·제조·역참조는 ID와 경로를 중심으로 연결합니다. `effectiveCoreSources`와 전역 기본값처럼 모든 아이템에 반복되던 메타데이터도 스키마로 이동합니다. 표현 리소스 필드는 `resource-chunks/` sidecar로 분리하며 원본 JSON pointer와 값을 보존하므로 다시 합치면 원본 룰 객체를 복원할 수 있습니다. v.o1.1.1 기준 기존 공개용 생성물 약 58 MiB가 약 30 MiB로 줄며, 검증기는 단일 생성 파일이 50 MiB를 넘으면 실패하도록 막습니다.
 
 ## 배포
 
-`public/` 폴더가 완성된 정적 사이트입니다. `.github/workflows/pages.yml`은 main 브랜치 push 시 GitHub Pages에 배포합니다.
+`public/` 폴더가 완성된 정적 사이트입니다. `.github/workflows/pages.yml`은 main 브랜치 push 시 저장소의 정적 산출물을 검증해 GitHub Pages에 배포합니다. 병종/탈것 progression은 별도 `.github/workflows/publish-progression.yml`이 공식 X-Piratez v.o1.1.1 archive의 checksum을 확인한 뒤 생성하고, `public/data/progression*` 파일만 갱신합니다. 따라서 Pages 배포 단계가 외부 다운로드에 의존하지 않고 다른 정적 DB도 덮어쓰지 않습니다.
 
 ## 권리
 

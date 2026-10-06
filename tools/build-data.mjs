@@ -325,6 +325,178 @@ for(const r of researchList){
 }
 researchIndex.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
 
+const listify=v=>Array.isArray(v)?v:(v==null?[]:[v]);
+const unique=v=>[...new Set(v)];
+const craftList=(Array.isArray(effectiveMerged.crafts)?effectiveMerged.crafts:[]).filter(x=>x&&typeof x.type==="string");
+const soldierList=(Array.isArray(effectiveMerged.soldiers)?effectiveMerged.soldiers:[]).filter(x=>x&&typeof x.type==="string");
+const eventList=(Array.isArray(effectiveMerged.events)?effectiveMerged.events:[]).filter(x=>x&&typeof x.name==="string");
+const eventScripts=Array.isArray(effectiveMerged.eventScripts)?effectiveMerged.eventScripts:[];
+const transformations=(Array.isArray(effectiveMerged.soldierTransformation)?effectiveMerged.soldierTransformation:[]).filter(x=>x&&typeof x.name==="string");
+const soldierBonuses=(Array.isArray(effectiveMerged.soldierBonuses)?effectiveMerged.soldierBonuses:[]).filter(x=>x&&typeof x.name==="string");
+const bonusByName=new Map(soldierBonuses.map(x=>[x.name,x]));
+
+const researchPlanCache=new Map(),researchPlanStore={};
+function researchPlan(rootIds){
+  const roots=unique(listify(rootIds)).filter(x=>researchIds.has(x)).sort();
+  const cacheKey=roots.join("|");
+  if(researchPlanCache.has(cacheKey))return researchPlanCache.get(cacheKey);
+  const seen=new Set(),topics=[];
+  function visit(id){
+    if(seen.has(id))return;seen.add(id);
+    const r=researchByName.get(id);if(!r)return;
+    const prerequisites=unique([...listify(r.dependencies),...listify(r.requires)]).filter(x=>researchIds.has(x));
+    const disables=listify(r.disables).filter(x=>typeof x==="string").map(entity);
+    topics.push({
+      id,koName:tr(id,"ko"),enName:tr(id,"en"),cost:r.cost??null,points:r.points??null,
+      prerequisites,needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
+      requiresBaseFunc:listify(r.requiresBaseFunc),
+      disables
+    });
+    prerequisites.forEach(visit);
+  }
+  roots.forEach(visit);
+  const full={
+    id:crypto.createHash("sha1").update(cacheKey||"(none)").digest("hex"),
+    roots:roots.map(entity),topics,totalCost:topics.reduce((n,x)=>n+(typeof x.cost==="number"?x.cost:0),0),
+    topicCount:topics.length,unknownCostCount:topics.filter(x=>x.cost==null).length,
+    branchGates:topics.filter(x=>x.disables.length).map(x=>({id:x.id,koName:x.koName,enName:x.enName,disables:x.disables})),
+    needItems:topics.filter(x=>x.needItem).map(x=>({id:x.id,koName:x.koName,destroyItem:x.destroyItem,item:itemIds.has(x.id)?entity(x.id):null})),
+    baseFuncs:unique(topics.flatMap(x=>x.requiresBaseFunc)),
+    note:"명목 누적 연구량은 dependencies+requires를 중복 제거해 합산합니다. unlocks/getOneFree/이벤트 직접 지급 등으로 실제 최소 연구량은 더 작을 수 있습니다."
+  };
+  researchPlanStore[full.id]=full;
+  const ref={id:full.id,roots:full.roots,totalCost:full.totalCost,topicCount:full.topicCount,unknownCostCount:full.unknownCostCount,branchGates:full.branchGates.map(x=>({id:x.id,koName:x.koName,enName:x.enName})),needItemCount:full.needItems.length,baseFuncs:full.baseFuncs,note:full.note};
+  researchPlanCache.set(cacheKey,ref);
+  return ref;
+}
+function objectContains(v,id){
+  if(v===id)return true;
+  if(Array.isArray(v))return v.some(x=>objectContains(x,id));
+  if(v&&typeof v==="object")return Object.entries(v).some(([k,x])=>k===id||objectContains(x,id));
+  return false;
+}
+const awardFields=["everyItemList","everyMultiItemList","randomItemList","randomMultiItemList","weightedItemList"];
+function scriptForEvent(eventName){
+  return eventScripts.filter(s=>objectContains(s,eventName)).map((s,i)=>{
+    const conditions={};
+    for(const k of ["firstMonth","lastMonth","minDifficulty","maxDifficulty","executionOdds","minFunds","maxFunds","minScore","maxScore"])if(s[k]!=null)conditions[k]=s[k];
+    for(const [k,v] of Object.entries(s))if(/Triggers$/.test(k))conditions[k]=v;
+    const rr=s.researchTriggers&&typeof s.researchTriggers==="object"?s.researchTriggers:{};
+    const roots=Object.entries(rr).filter(([,v])=>v===true).map(([k])=>k).filter(x=>researchIds.has(x));
+    return{id:ownerId(s,i),type:s.type||null,conditions,researchTriggers:roots.map(entity),researchPlan:researchPlan(roots)};
+  });
+}
+function eventSourcesForItem(id){
+  return eventList.filter(e=>awardFields.some(k=>objectContains(e[k],id))).map(e=>({
+    id:e.name,koName:tr(e.name,"ko"),enName:tr(e.name,"en"),
+    fields:awardFields.filter(k=>objectContains(e[k],id)),
+    scripts:scriptForEvent(e.name)
+  }));
+}
+function requiredItemsForRecipe(m){
+  return Object.entries(m.requiredItems||{}).map(([id,qty])=>({
+    id,koName:tr(id,"ko"),enName:tr(id,"en"),qty,
+    eventSources:eventSourcesForItem(id)
+  }));
+}
+function acquisitionRecipe(m,extraRoots=[]){
+  const roots=unique([...listify(m.requires),...extraRoots]).filter(x=>researchIds.has(x));
+  const requiredItems=requiredItemsForRecipe(m);
+  const baseResearchPlan=researchPlan(roots);
+  const eventVariants=[];
+  for(const item of requiredItems)for(const ev of item.eventSources)for(const script of ev.scripts){
+    const eventRoots=script.researchPlan.roots.map(x=>x.id);
+    eventVariants.push({
+      itemId:item.id,eventId:ev.id,eventKoName:ev.koName,scriptId:script.id,conditions:script.conditions,researchTriggers:script.researchTriggers,
+      researchPlan:researchPlan([...roots,...eventRoots])
+    });
+  }
+  return{
+    id:m.name,koName:tr(m.name,"ko"),enName:tr(m.name,"en"),category:m.category||null,
+    time:m.time??null,cost:m.cost??null,space:m.space??null,requiresBaseFunc:listify(m.requiresBaseFunc),
+    requiredItems,baseResearchPlan,eventVariants
+  };
+}
+function acquisitionEvent(e,extraRoots=[]){
+  const roots=unique([...listify(e.requires),...extraRoots]).filter(x=>researchIds.has(x));
+  const baseResearchPlan=researchPlan(roots);
+  const scripts=scriptForEvent(e.name);
+  const variants=scripts.map(script=>({
+    scriptId:script.id,conditions:script.conditions,researchTriggers:script.researchTriggers,
+    researchPlan:researchPlan([...roots,...script.researchPlan.roots.map(x=>x.id)])
+  }));
+  return{
+    id:e.name,koName:tr(e.name,"ko"),enName:tr(e.name,"en"),
+    spawnedPersons:e.spawnedPersons??1,requiresBaseFunc:listify(e.requiresBaseFunc),
+    baseResearchPlan,scripts,variants
+  };
+}
+function routeSummary(paths){
+  const plans=[];
+  for(const p of paths){
+    if(p.kind==="buy")plans.push(p.researchPlan);
+    if(p.kind==="manufacture"){
+      if(p.recipe.eventVariants.length)p.recipe.eventVariants.forEach(v=>plans.push(v.researchPlan));
+      else plans.push(p.recipe.baseResearchPlan);
+    }
+    if(p.kind==="event"){
+      if(p.event.variants.length)p.event.variants.forEach(v=>plans.push(v.researchPlan));
+      else plans.push(p.event.baseResearchPlan);
+    }
+  }
+  const costs=plans.map(p=>p.totalCost).filter(Number.isFinite);
+  let common=null;
+  for(const p of plans){
+    const ids=new Set(p.branchGates.map(x=>x.id));
+    common=common==null?ids:new Set([...common].filter(x=>ids.has(x)));
+  }
+  return{
+    nominalMinResearch:costs.length?Math.min(...costs):null,
+    commonBranchGates:[...(common||[])].map(entity),
+    pathCount:paths.length
+  };
+}
+function trainingRoutesForSoldier(id){
+  return transformations.filter(t=>listify(t.allowedSoldierTypes).includes(id)).map(t=>{
+    const bonus=t.soldierBonusType?bonusByName.get(t.soldierBonusType):null;
+    return{
+      id:t.name,koName:tr(t.name,"ko"),enName:tr(t.name,"en"),
+      researchPlan:researchPlan(listify(t.requires)),
+      soldierBonusType:t.soldierBonusType||null,
+      bonus:bonus?{stats:bonus.stats||{},frontArmor:bonus.frontArmor??null,sideArmor:bonus.sideArmor??null,rearArmor:bonus.rearArmor??null,underArmor:bonus.underArmor??null,recovery:bonus.recovery||null}:null,
+      requiredItems:t.requiredItems||{},requiredCommendations:t.requiredCommendations||{},
+      cost:t.cost??null,transferTime:t.transferTime??null,flatOverallStatChange:t.flatOverallStatChange||{}
+    };
+  });
+}
+const soldierProgression={};
+for(const s of soldierList){
+  const paths=[],roots=listify(s.requires).filter(x=>researchIds.has(x));
+  if(typeof s.costBuy==="number"&&!roots.includes("STR_UNAVAILABLE"))paths.push({kind:"buy",cost:s.costBuy,researchPlan:researchPlan(roots)});
+  manufactureList.filter(m=>m.spawnedPersonType===s.type).forEach(m=>paths.push({kind:"manufacture",recipe:acquisitionRecipe(m)}));
+  eventList.filter(e=>e.spawnedPersonType===s.type&&(e.spawnedPersons??1)>0).forEach(e=>paths.push({kind:"event",event:acquisitionEvent(e)}));
+  soldierProgression[s.type]={
+    id:s.type,koName:tr(s.type,"ko"),enName:tr(s.type,"en"),
+    acquisitionPaths:paths,summary:routeSummary(paths),trainingRoutes:trainingRoutesForSoldier(s.type)
+  };
+}
+const craftProgression=[];
+for(const c of craftList){
+  const roots=listify(c.requires).filter(x=>researchIds.has(x)),paths=[];
+  if(typeof c.costBuy==="number"&&c.costBuy>0&&!roots.includes("STR_UNAVAILABLE"))paths.push({kind:"buy",cost:c.costBuy,researchPlan:researchPlan(roots)});
+  manufactureList.filter(m=>m.name===c.type&&m.category==="STR_CRAFT").forEach(m=>paths.push({kind:"manufacture",recipe:acquisitionRecipe(m,roots)}));
+  const summary=routeSummary(paths);
+  craftProgression.push({
+    id:c.type,koName:tr(c.type,"ko"),enName:tr(c.type,"en"),aliases:c.type==="STR_SCHOOLBUS"?["스쿨버스","Schoolbus"]:[],
+    soldiers:c.soldiers??null,pilots:c.pilots??null,vehicles:c.vehicles??null,maxLargeUnits:c.maxLargeUnits??null,
+    speedMax:c.speedMax??null,fuelMax:c.fuelMax??null,refuelRate:c.refuelRate??null,damageMax:c.damageMax??null,
+    weapons:c.weapons??null,weaponTypes:listify(c.weaponTypes).map(entity),radarRange:c.radarRange??null,radarChance:c.radarChance??null,
+    costBuy:c.costBuy??null,costSell:c.costSell??null,costRent:c.costRent??null,transferTime:c.transferTime??null,
+    acquisitionPaths:paths,summary
+  });
+}
+craftProgression.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
+
 const soldierData=buildSoldierData({effectiveMerged,sourceHistory,tr});
 const armorData=buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys});
 
@@ -348,13 +520,98 @@ const manifest={
   generatedAt:new Date().toISOString(),
   mod:{name:META.name||"X-Piratez",version:META.version||"unknown",id:META.id||"piratez",requiredExtendedVersion:META.requiredExtendedVersion||null},
   source:{metadataSha256:sha256(metadataPath),rules:ruleFiles.map(file=>({file,sha256:sha256(path.join(rulesDir,file))})),languages:["ko.yml","en-US.yml"].filter(f=>fs.existsSync(path.join(langDir,f))).map(file=>({file,sha256:sha256(path.join(langDir,file))}))},
-  counts:{items:itemIndex.length,research:researchIndex.length,armors:armorData.counts.armors,equipableArmors:armorData.counts.equipable,manufacturableArmors:armorData.counts.manufacturable,buyableArmors:armorData.counts.buyable,soldiers:soldierData.counts.soldiers,soldierProfiles:soldierData.counts.soldierProfiles,soldierBonuses:soldierData.counts.soldierBonuses,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
+  counts:{items:itemIndex.length,research:researchIndex.length,armors:armorData.counts.armors,equipableArmors:armorData.counts.equipable,manufacturableArmors:armorData.counts.manufacturable,buyableArmors:armorData.counts.buyable,soldiers:soldierData.counts.soldiers,soldierProfiles:soldierData.counts.soldierProfiles,soldierBonuses:soldierData.counts.soldierBonuses,crafts:craftProgression.length,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
   loreIncluded:includeLore
 };
+const progressionTopics=researchList.map(r=>{
+  const prerequisites=unique([...listify(r.dependencies),...listify(r.requires)]).filter(x=>researchIds.has(x));
+  return{
+    id:r.name,koName:tr(r.name,"ko"),enName:tr(r.name,"en"),cost:r.cost??null,points:r.points??null,
+    prerequisites,needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
+    requiresBaseFunc:listify(r.requiresBaseFunc),
+    disables:listify(r.disables).filter(x=>typeof x==="string").map(entity)
+  };
+});
+const progressionTopicIndex=new Map(progressionTopics.map((x,i)=>[x.id,i]));
+const progressionPlanSummaries=Object.fromEntries(Object.entries(researchPlanStore).map(([id,plan])=>[id,{
+  id,roots:plan.roots,totalCost:plan.totalCost,topicCount:plan.topicCount,unknownCostCount:plan.unknownCostCount,
+  branchGates:plan.branchGates.map(x=>({id:x.id,koName:x.koName,enName:x.enName})),
+  needItemCount:plan.needItems.length,baseFuncs:plan.baseFuncs,note:plan.note
+}]));
+const progressionEvents={},progressionRecipes={};
+const progressionPlanId=ref=>ref?.id||null;
+function registerProgressionEvent(ev){
+  const id=ev.id;
+  if(!progressionEvents[id]){
+    progressionEvents[id]={
+      id,koName:ev.koName||tr(id,"ko"),enName:ev.enName||tr(id,"en"),
+      scripts:(ev.scripts||[]).map(s=>({
+        id:s.id,type:s.type||null,conditions:s.conditions||{},
+        researchTriggers:s.researchTriggers||[]
+      }))
+    };
+  }
+  return id;
+}
+function registerProgressionRecipe(r){
+  if(progressionRecipes[r.id])return r.id;
+  const requiredItems=(r.requiredItems||[]).map(i=>({
+    id:i.id,koName:i.koName,enName:i.enName,qty:i.qty,
+    eventSources:(i.eventSources||[]).map(ev=>({eventId:registerProgressionEvent(ev),fields:ev.fields||[]}))
+  }));
+  progressionRecipes[r.id]={
+    id:r.id,koName:r.koName,enName:r.enName,category:r.category,
+    time:r.time,cost:r.cost,space:r.space,requiresBaseFunc:r.requiresBaseFunc,
+    requiredItems,baseResearchPlanId:progressionPlanId(r.baseResearchPlan),
+    eventVariants:(r.eventVariants||[]).map(v=>({
+      itemId:v.itemId,eventId:v.eventId,scriptId:v.scriptId,researchPlanId:progressionPlanId(v.researchPlan)
+    }))
+  };
+  return r.id;
+}
+function normalizeProgressionPath(p){
+  if(p.kind==="buy")return{kind:"buy",cost:p.cost,researchPlanId:progressionPlanId(p.researchPlan)};
+  if(p.kind==="manufacture")return{kind:"manufacture",recipeId:registerProgressionRecipe(p.recipe)};
+  if(p.kind==="event"){
+    const eventId=registerProgressionEvent(p.event);
+    return{
+      kind:"event",eventId,spawnedPersons:p.event.spawnedPersons,
+      requiresBaseFunc:p.event.requiresBaseFunc,baseResearchPlanId:progressionPlanId(p.event.baseResearchPlan),
+      variants:(p.event.variants||[]).map(v=>({scriptId:v.scriptId,researchPlanId:progressionPlanId(v.researchPlan)}))
+    };
+  }
+  return p;
+}
+function normalizeTrainingRoute(t){
+  const {researchPlan,...rest}=t;
+  return{...rest,researchPlanId:progressionPlanId(researchPlan)};
+}
+const normalizedSoldierProgression=Object.fromEntries(Object.entries(soldierProgression).map(([id,s])=>[id,{
+  ...s,acquisitionPaths:(s.acquisitionPaths||[]).map(normalizeProgressionPath),
+  trainingRoutes:(s.trainingRoutes||[]).map(normalizeTrainingRoute)
+}]));
+const normalizedCraftProgression=craftProgression.map(c=>({
+  ...c,acquisitionPaths:(c.acquisitionPaths||[]).map(normalizeProgressionPath)
+}));
+const normalizedPlanBuckets={};
+for(const [id,plan] of Object.entries(researchPlanStore)){
+  const b=id[0];
+  (normalizedPlanBuckets[b]||={})[id]={
+    topics:plan.topics.map(t=>progressionTopicIndex.get(t.id)).filter(Number.isInteger)
+  };
+}
 if(!armorOnly){
   fs.writeFileSync(path.join(outDir,"items-index.json"),JSON.stringify({meta:manifest,index:itemIndex}));
   fs.writeFileSync(path.join(outDir,"research-index.json"),JSON.stringify({meta:manifest,index:researchIndex}));
   fs.writeFileSync(path.join(outDir,"soldiers-index.json"),JSON.stringify({meta:manifest,...soldierData}));
+  fs.writeFileSync(path.join(outDir,"progression.json"),JSON.stringify({
+    meta:manifest,soldiers:normalizedSoldierProgression,crafts:normalizedCraftProgression,
+    recipes:progressionRecipes,events:progressionEvents,plans:progressionPlanSummaries,
+    researchPlanCount:Object.keys(researchPlanStore).length
+  }));
+  fs.writeFileSync(path.join(outDir,"progression-research.json"),JSON.stringify({topics:progressionTopics}));
+  const planDir=path.join(outDir,"progression-plans");fs.mkdirSync(planDir,{recursive:true});
+  for(const [b,plans] of Object.entries(normalizedPlanBuckets))fs.writeFileSync(path.join(planDir,b+".json"),JSON.stringify({plans}));
   fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
   fs.writeFileSync(path.join(outDir,"manifest.json"),JSON.stringify(manifest,null,2));
 }

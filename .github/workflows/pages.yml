@@ -37,10 +37,12 @@ jobs:
         run: |
           node tools/check-item-research-data.mjs --data public/items/data
           node tools/check-soldiers.mjs --data public/data
+          if [ -f public/data/progression.json ]; then node tools/check-progression.mjs --data public/data; fi
           node tools/check-armors.mjs
           node tools/check-weapons.mjs
           node --check public/items/app.js
           node --check public/soldiers/app.js
+          node --check public/crafts/app.js
           node --check public/armors/app.js
           node --check public/captains/app.js
           node --check public/weapons/app.js
