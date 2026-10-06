@@ -80,8 +80,23 @@ for(const id of ["STR_SAILOR_UNIFORM_UC","STR_LEATHER_ARMOR_UC","STR_BASIC_ARMOR
 }
 const sailor=cache[armors.index.find(x=>x.id==="STR_SAILOR_UNIFORM_UC").bucket].STR_SAILOR_UNIFORM_UC;
 const sailorM=manufactureRoute(sailor.acquisition.manufactureRefs[0]);
-if(sailorM.time!==100||sailorM.requiredItems?.STR_RAIDER_CORPSE!==1)throw new Error("Sailor Uniform acquisition smoke test failed");
+if(sailorM.time!==100||sailorM.requiredItems?.STR_RAIDER_CORPSE!==1||sailorM.research?.totalCost!==1||sailorM.research?.hasUnlockBypassCandidates)throw new Error("Sailor Uniform acquisition smoke test failed");
+if(!sailorM.requiredItemDetails?.some(x=>x.id==="STR_RAIDER_CORPSE"&&x.qty===1))throw new Error("Missing human-friendly Sailor material details");
 const leather=cache[armors.index.find(x=>x.id==="STR_LEATHER_ARMOR_UC").bucket].STR_LEATHER_ARMOR_UC;
 const leatherM=manufactureRoute(leather.acquisition.manufactureRefs[0]);
-if(leatherM.requiredItems?.STR_GUILD_CORPSE!==3)throw new Error("Durathread Armor acquisition smoke test failed");
-console.log(`OK: ${armors.index.length} armors, ${armors.counts.equipable} equipable, ${armors.counts.manufacturable} manufacturable, ${armors.counts.buyable} buyable`);
+if(leatherM.requiredItems?.STR_GUILD_CORPSE!==3||leatherM.research?.totalCost!==49||leatherM.research?.hasUnlockBypassCandidates)throw new Error("Durathread Armor acquisition smoke test failed");
+const basic=cache[armors.index.find(x=>x.id==="STR_BASIC_ARMOR_UC").bucket].STR_BASIC_ARMOR_UC;
+const basicM=manufactureRoute(basic.acquisition.manufactureRefs[0]);
+if(basicM.requiredItems?.STR_SCRAP_METAL!==5||basicM.research?.totalCost!==99||basicM.research?.hasUnlockBypassCandidates)throw new Error("Basic Armor acquisition smoke test failed");
+
+const manufactureRoutes=Object.values(manufactureCache).flatMap(x=>Object.values(x));
+if(!manufactureRoutes.some(x=>x.research?.hasUnlockBypassCandidates))throw new Error("Research unlock-bypass semantics were not captured");
+for(const m of manufactureRoutes){
+  if(!Array.isArray(m.requiredItemDetails)||!Array.isArray(m.baseFunctionDetails))throw new Error("Missing human-friendly manufacture route details "+m.id);
+  for(const rid of m.research?.nodeIds||[]){
+    const rr=routes.research[rid];
+    if(!rr)throw new Error("Missing research catalog node "+rid);
+    for(const key of ["dependencies","requires","unlocks","incomingUnlocks","disables","reenables","requiresBaseFunc"])if(!Array.isArray(rr[key]))throw new Error(`Missing ${key} semantics for ${rid}`);
+  }
+}
+console.log(`OK: ${armors.index.length} armors, ${armors.counts.equipable} equipable, ${armors.counts.manufacturable} manufacturable, ${armors.counts.buyable} buyable, ${manufactureRoutes.filter(x=>x.research?.hasUnlockBypassCandidates).length} manufacture routes with unlock-bypass candidates`);

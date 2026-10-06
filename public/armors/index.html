@@ -34,6 +34,14 @@
         <option value="전리품/특수">전리품/특수</option>
       </select>
     </div>
+    <div class="field compact">
+      <label for="scientists">과학자</label>
+      <input id="scientists" type="number" min="1" max="999" step="1" value="10" inputmode="numeric">
+    </div>
+    <div class="field compact">
+      <label for="engineers">엔지니어</label>
+      <input id="engineers" type="number" min="1" max="999" step="1" value="10" inputmode="numeric">
+    </div>
     <label class="check"><input id="equipableOnly" type="checkbox" checked> 실제 장비 아이템만</label>
     <label class="check"><input id="manufacturableOnly" type="checkbox"> 제조 가능만</label>
   </section>
@@ -41,7 +49,8 @@
   <section class="explain card">
     <strong>표 읽는 법</strong>
     <span><b>저항 배율은 낮을수록 좋습니다.</b> 0.70×이면 해당 피해가 방어력 차감 전에 70%로 줄고, 1.20×이면 20% 더 받습니다.</span>
-    <span>연구의 <code>RuleResearch.cost</code>는 OXCE 8.6에서 <b>scientist-days(인·일)</b> 단위의 명목 작업량입니다. 각 연구를 시작할 때 실제 cost가 50~150%로 정해지고, 매 게임일 배정 과학자 수만큼 진행됩니다. 제조 작업량은 <b>engineer-hours</b>입니다. 표본·이벤트·분기·시설 조건 때문에 실제 달력시간은 별도입니다.</span>
+    <span>연구의 <code>RuleResearch.cost</code>는 OXCE 8.6에서 <b>scientist-days(인·일)</b> 단위의 명목 작업량입니다. 각 연구 시작 시 실제 cost는 50~150%로 정해지고, 매 게임일 배정 과학자 수만큼 진행됩니다. 제조는 매 시간 배정 엔지니어 수만큼 진행됩니다. 위 인원수를 바꾸면 상세창의 순수 작업시간 환산도 즉시 바뀝니다.</span>
+    <span><b>연구량*</b>은 선언된 <code>dependencies + requires</code> closure의 합계입니다. 표에 ⚠가 붙은 경로는 다른 연구의 <code>unlocks</code>로 dependency를 우회할 수 있어 이 숫자가 최단 연구량은 아닙니다.</span>
   </section>
 
   <section class="table-card card">

@@ -71,15 +71,39 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
   const researchById=new Map(researchList.map(x=>[x.name,x]));
   const manufactureById=new Map(manufactureList.map(x=>[x.name,x]));
 
-  const directDeps=new Map(),researchCatalog={};
+  const directDeps=new Map(),dependenciesById=new Map(),requiresById=new Map(),incomingUnlocks=new Map(),researchCatalog={};
   for(const r of researchList){
-    const deps=uniq([...arr(r.dependencies),...arr(r.requires)].filter(x=>researchById.has(x)));
-    directDeps.set(r.name,deps);
+    const dependencies=uniq(arr(r.dependencies).filter(x=>researchById.has(x)));
+    const requires=uniq(arr(r.requires).filter(x=>researchById.has(x)));
+    dependenciesById.set(r.name,dependencies);
+    requiresById.set(r.name,requires);
+    directDeps.set(r.name,uniq([...dependencies,...requires]));
+    for(const unlocked of arr(r.unlocks).filter(x=>researchById.has(x))){
+      const incoming=incomingUnlocks.get(unlocked)||[];
+      incoming.push(r.name);
+      incomingUnlocks.set(unlocked,uniq(incoming));
+    }
   }
   function catalogResearch(id){
     if(researchCatalog[id])return researchCatalog[id];
     const rule=researchById.get(id)||{};
-    return researchCatalog[id]={id,koName:tr(id,"ko"),enName:tr(id,"en"),cost:rule.cost??null,points:rule.points??null,needItem:Boolean(rule.needItem),destroyItem:Boolean(rule.destroyItem)};
+    const needItem=Boolean(rule.needItem);
+    const neededItemId=needItem?(typeof rule.neededItem==="string"?rule.neededItem:id):null;
+    const requiresBaseFunc=arr(rule.requiresBaseFunc);
+    return researchCatalog[id]={
+      id,koName:tr(id,"ko"),enName:tr(id,"en"),cost:rule.cost??null,points:rule.points??null,
+      needItem,destroyItem:Boolean(rule.destroyItem),
+      neededItemId,
+      neededItem:neededItemId?named(neededItemId,tr):null,
+      dependencies:dependenciesById.get(id)||[],
+      requires:requiresById.get(id)||[],
+      unlocks:uniq(arr(rule.unlocks).filter(x=>researchById.has(x))),
+      incomingUnlocks:incomingUnlocks.get(id)||[],
+      disables:uniq(arr(rule.disables).filter(x=>researchById.has(x))),
+      reenables:uniq(arr(rule.reenables).filter(x=>researchById.has(x))),
+      requiresBaseFunc,
+      baseFunctionDetails:requiresBaseFunc.map(id=>named(id,tr))
+    };
   }
 
   function researchClosure(rootIds){
@@ -93,7 +117,25 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
     }
     roots.forEach(dfs);
     const totalCost=nodeIds.reduce((s,id)=>{const c=researchCatalog[id]?.cost;return s+(Number.isFinite(Number(c))?Number(c):0)},0);
-    return{roots,nodeIds,totalCost};
+    const unlockBypassNodeIds=nodeIds.filter(id=>{
+      const r=researchCatalog[id];
+      return Boolean(r?.dependencies?.length&&r?.incomingUnlocks?.length);
+    });
+    const sampleGateNodeIds=nodeIds.filter(id=>researchCatalog[id]?.needItem);
+    const protectedGateNodeIds=nodeIds.filter(id=>researchCatalog[id]?.requires?.length);
+    const branchEffectNodeIds=nodeIds.filter(id=>{
+      const r=researchCatalog[id];
+      return Boolean(r?.disables?.length||r?.reenables?.length);
+    });
+    return{
+      roots,nodeIds,totalCost,
+      costInterpretation:unlockBypassNodeIds.length?"conservative-dependency-closure":"declared-prerequisite-closure",
+      hasUnlockBypassCandidates:Boolean(unlockBypassNodeIds.length),
+      unlockBypassNodeIds,
+      sampleGateNodeIds,
+      protectedGateNodeIds,
+      branchEffectNodeIds
+    };
   }
 
   function manufactureProduces(m,itemId){
@@ -108,11 +150,16 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
       const requires=arr(m.requires).filter(x=>typeof x==="string");
       const research=researchClosure(requires);
       const producedQty=m.producedItems&&typeof m.producedItems==="object"&&!Array.isArray(m.producedItems)?m.producedItems[itemId]??1:1;
+      const requiredItems=obj(m.requiredItems);
+      const requiresBaseFunc=arr(m.requiresBaseFunc);
       return{
         id:m.name,koName:tr(m.name,"ko"),enName:tr(m.name,"en"),
         time:m.time??null,timeOneEngineer:formatHours(m.time??null),timeTenEngineers:m.time==null?null:formatHours(Math.ceil(num(m.time)/10)),
         cost:m.cost??null,space:m.space??null,producedQty,
-        requiredItems:obj(m.requiredItems),requires,requiresBaseFunc:arr(m.requiresBaseFunc),
+        requiredItems,
+        requiredItemDetails:Object.entries(requiredItems).map(([id,qty])=>({...named(id,tr),qty})),
+        requires,requiresBaseFunc,
+        baseFunctionDetails:requiresBaseFunc.map(id=>named(id,tr)),
         research,sourceFiles:sourceHistory["name:"+m.name]||[]
       };
     });
@@ -156,11 +203,17 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
       return v==null?1:num(v,1);
     });
     const manufacture=storeItemId?manufactureRoutes(storeItemId):[];
-    const buy=item&&num(item.costBuy)>0?{
-      costBuy:num(item.costBuy),transferTime:item.transferTime??24,
-      requires:arr(item.requiresBuy),requiresCountry:item.requiresBuyCountry??null,requiresBaseFunc:arr(item.requiresBuyBaseFunc),
-      research:researchClosure(arr(item.requiresBuy))
-    }:null;
+    const buy=item&&num(item.costBuy)>0?(()=>{
+      const requires=arr(item.requiresBuy);
+      const requiresBaseFunc=arr(item.requiresBuyBaseFunc);
+      return{
+        costBuy:num(item.costBuy),transferTime:item.transferTime??24,
+        requires,requiresDetails:requires.map(id=>named(id,tr)),
+        requiresCountry:item.requiresBuyCountry??null,
+        requiresBaseFunc,baseFunctionDetails:requiresBaseFunc.map(id=>named(id,tr)),
+        research:researchClosure(requires)
+      };
+    })():null;
     const equipRequires=typeof a.requires==="string"?[a.requires]:arr(a.requires).filter(x=>typeof x==="string");
     const equipResearch=researchClosure(equipRequires);
     const rewardResearch=storeItemId?researchRewardRoutes(storeItemId):[];
@@ -181,7 +234,9 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
     const representativeManufacture=manufacture.slice().sort((x,y)=>
       num(x.research.totalCost)-num(y.research.totalCost)||num(x.time)-num(y.time)
     )[0]||null;
-    const mainResearchCost=representativeManufacture?.research.totalCost??buy?.research.totalCost??equipResearch.totalCost??0;
+    const mainResearch=representativeManufacture?.research??buy?.research??equipResearch;
+    const mainResearchCost=mainResearch?.totalCost??0;
+    const mainResearchHasUnlockBypassCandidates=Boolean(mainResearch?.hasUnlockBypassCandidates);
     const mainManufactureTime=representativeManufacture?.time??null;
 
     const rawSplit=splitPresentationResources(a);
@@ -204,7 +259,7 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
         eventIds:events.map(x=>x.id),
         equipRequires:equipRequires.map(id=>named(id,tr)),equipResearch
       },
-      mainResearchCost,mainManufactureTime,
+      mainResearchCost,mainResearchHasUnlockBypassCandidates,mainManufactureTime,
       sourceFiles:sourceHistory["type:"+id]||[],resourceFieldCount:rawSplit.resources.length
     };
     rawDetails[id]={id,bucket,raw:rawSplit.core,references};
@@ -216,7 +271,7 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
       tu:stats.tu,stamina:stats.stamina,health:stats.health,bravery:stats.bravery,reactions:stats.reactions,firing:stats.firing,throwing:stats.throwing,strength:stats.strength,melee:stats.melee,
       ap:damageModifier[1]??1,incendiary:damageModifier[2]??1,he:damageModifier[3]??1,laser:damageModifier[4]??1,plasma:damageModifier[5]??1,stun:damageModifier[6]??1,meleeResist:damageModifier[7]??1,acid:damageModifier[8]??1,dt16:damageModifier[16]??1,
       manufactureCount:manufacture.length,buyable:Boolean(buy),researchRewardCount:rewardResearch.length,eventRefCount:events.length,
-      acquisitionKinds,mainResearchCost,mainManufactureTime,
+      acquisitionKinds,mainResearchCost,mainResearchHasUnlockBypassCandidates,mainManufactureTime,
       costBuy:item?.costBuy??null,costSell:item?.costSell??null
     });
   }
