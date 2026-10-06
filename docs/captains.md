@@ -153,3 +153,50 @@ Core monthly cash EV: 419,580.
 The larger ~579k/month figure shown in the matrix includes other no-color / missing-color-pair events while Ultimate remains colorless; adding Codex colors disables some of those extra event pools.
 
 For the referenced 2601-01-26 save, the shortest personality-test timeline makes the first Ultimate monthly payout roll occur on 2601-05-01.
+
+## Codex: second mutually-exclusive axis
+
+The four base Codex researches are an explicit one-of-four choice.
+
+- Gold Codex disables Gray / Green / Red Codex.
+- Green Codex disables Gray / Red / Gold Codex.
+- Red Codex disables Gray / Green / Gold Codex.
+- Gray Codex disables Red / Green / Gold Codex.
+
+Awakening the chosen Codex unlocks the matching captain color:
+
+- Gold Awakening -> `STR_CAPTAIN_GOLD`
+- Green Awakening -> `STR_CAPTAIN_GREEN`
+- Red Awakening -> `STR_CAPTAIN_RED`
+- Gray Awakening -> `STR_CAPTAIN_GRAY`
+
+For the four non-PUSSY starting captains, the missing color has no other reachable supplier on that captain route. Therefore choosing the wrong Codex permanently closes the Codex route to Chaos Saint:
+
+- Jackass starts Gold + Red + Gray -> choose **Green Codex**
+- Dumbass starts Gold + Green + Red -> choose **Gray Codex**
+- Lazyass starts Gold + Green + Gray -> choose **Red Codex**
+- Soreass starts Green + Red + Gray -> choose **Gold Codex**
+
+PUSSY-derived routes cannot become Chaos Saint regardless because the Saint trigger explicitly requires `STR_CAPTAIN_PUSSY: false`.
+
+### Codex direct tech and awakening rewards
+
+| Codex | Direct tech | Awakening reward | Base god-gift branch |
+|---|---|---|---|
+| Gold | Officer's Baton, Flame Cannon Report | Porn x36 + Captain Gold | G1 |
+| Green | Bioplasma Projector Report | Active Transdimensional Locker x3 + Captain Green | G3 |
+| Red | Little Ilya Report | Living Brimstone x4 + 200 score + Captain Red | G5 |
+| Gray | Conversion Launcher Report | Esoterica x7 + Captain Gray | G7 |
+
+Captain hybrid tags add extra god-gift branches:
+
+- DumbLazy: Gold G2A / Green G2B
+- SoreDumb: Red G4A / Green G4B
+- JackSore: Red G6A / Gray G6B
+- JackLazy: Gold G8A / Gray G8B
+
+The captain matrix renders these as the final four columns of the same table, so captain and Codex exclusivity can be evaluated together.
+
+### Ultimate interaction
+
+Ultimate is colorless initially. Awakening any Codex adds one captain color. The core Ultimate event (+666,000 at 63% monthly probability) remains, but some no-color / missing-color-pair event pools disappear, so the larger colorless ~579k/month aggregate EV declines after taking a Codex color.
