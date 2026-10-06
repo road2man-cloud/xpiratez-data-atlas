@@ -1,6 +1,6 @@
 const S={yes:"✅",late:"◇",no:"❌",warn:"⚠"};
 const columns=[
-  {key:"ev",label:"반복 이벤트 월 EV",group:"경제",type:"ev"},
+  {key:"ev",label:"총 반복 현금성 EV/월",group:"경제",type:"ev"},
   {key:"hotel",label:"호텔 +360k/월",group:"경제"},
   {key:"vip",label:"VIP +500k/월",group:"경제"},
   {key:"nonprofit",label:"비영리 연구실 +150k/월",group:"경제"},
@@ -32,10 +32,10 @@ const columns=[
 ];
 
 const rows=[
- {id:"jackass",name:"?무모한 선장?",code:"JACKASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 무모한",colors:["Gold","Red","Gray"],ev:-5846,evText:"-$5.8k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"yes",necro:"no",bunker:"no",tactical:"no",treasure:"yes",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"yes",summary:"돈보다 탐험·공격적 콘텐츠. JackSore/JackDumb/JackLazy를 동시에 열어 방사탑·전사문화·보물사냥·지하감옥에 접근한다.",notes:["기본 반복 이벤트 EV는 약 -$5.8k/월.","후기 4색 완성 시 혼돈의 성자 가능.","보물사냥은 기지가 있는 각 지역에서 월 21% 판정으로 Lootbox 기회를 만든다."]},
- {id:"dumbass",name:"?멍청한 선장?",code:"DUMBASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 멍청한",colors:["Gold","Green","Red"],ev:37270,evText:"+$37.3k",hotel:"no",vip:"yes",nonprofit:"no",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"yes",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"yes",saint:"late",saintReinf:"late",orthodox:"late",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"초반 현금 EV가 기본 4선장 중 가장 높고, 벙커·전사문화·VIP·댄스훈련·Saint 특수병까지 연결되는 다재다능형.",notes:["기본 반복 이벤트 EV 약 +$37.3k/월.","VIP Club: 건설 $1.35m, 월수익 +$500k, Lab+1/Training16/Mana+8.","Dumbass+Saint이면 별도 7%/월로 정통파 마법사 영애 + $100k 이벤트."]},
- {id:"lazyass",name:"?게으른 선장?",code:"LAZYASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 게으른",colors:["Gold","Green","Gray"],ev:5190,evText:"+$5.2k",hotel:"yes",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"yes",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"호텔과 네크로방어가 핵심. 전투 고유성보다는 현금흐름·기지 편의가 강하다.",notes:["기본 반복 이벤트 EV 약 +$5.2k/월.","호텔: $1.2m, 월 +$360k, 인원+25/훈련12/저장50/Mana+9.","네크로방어는 Flak Tower Kit를 25mm 기관포 대신 Necroplane Parts 25개로 생산."]},
- {id:"soreass",name:"?소심한 선장?",code:"SOREASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 소심한",colors:["Green","Red","Gray"],ev:3319,evText:"+$3.3k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"yes",ultimateCash:"no",irradiator:"warn",necro:"yes",bunker:"yes",tactical:"yes",treasure:"no",boot:"yes",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"방어·탐지·병사 기본육성의 종합형. JackSore+LazySore+SoreDumb 세 방어 성향을 한 번에 보존하는 유일한 초기 선장.",notes:["방사탑 + 네크로방어 + 벙커 + 전술센터 + 신병훈련을 모두 보존.","방사탑 1기당 부상회복 속도 1.00→0.65/day(다른 치료보너스 없을 때).","암살 이벤트의 위험 결과를 안전 결과가 약 50% 대체."]},
+ {id:"jackass",name:"?무모한 선장?",code:"JACKASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 무모한",colors:["Gold","Red","Gray"],ev:60386,evText:"≈+$60.4k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"yes",necro:"no",bunker:"no",tactical:"no",treasure:"yes",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"yes",summary:"돈보다 탐험·공격적 콘텐츠. JackSore/JackDumb/JackLazy를 동시에 열어 방사탑·전사문화·보물사냥·지하감옥에 접근한다.",notes:["현재 활성화되는 기본·성향·색·결손색·Flaw·Double 반복 이벤트를 합친 현금성 EV는 약 +$60.4k/월.","후기 4색 완성 시 혼돈의 성자 가능.","보물사냥은 기지가 있는 각 지역에서 월 21% 판정으로 Lootbox 기회를 만든다."]},
+ {id:"dumbass",name:"?멍청한 선장?",code:"DUMBASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 멍청한",colors:["Gold","Green","Red"],ev:82267,evText:"≈+$82.3k",hotel:"no",vip:"yes",nonprofit:"no",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"yes",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"yes",charmy:"yes",saint:"late",saintReinf:"late",orthodox:"late",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"초반 현금 EV가 기본 4선장 중 가장 높고, 벙커·전사문화·VIP·댄스훈련·Saint 특수병까지 연결되는 다재다능형.",notes:["현재 활성화되는 전체 반복 이벤트 현금성 EV 약 +$82.3k/월.","VIP Club: 건설 $1.35m, 월수익 +$500k, Lab+1/Training16/Mana+8.","Dumbass+Saint이면 별도 7%/월로 정통파 마법사 영애 + $100k 이벤트."]},
+ {id:"lazyass",name:"?게으른 선장?",code:"LAZYASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 게으른",colors:["Gold","Green","Gray"],ev:8543,evText:"≈+$8.5k",hotel:"yes",vip:"no",nonprofit:"no",scamming:"no",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"yes",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"호텔과 네크로방어가 핵심. 전투 고유성보다는 현금흐름·기지 편의가 강하다.",notes:["현재 활성화되는 전체 반복 이벤트 현금성 EV 약 +$8.5k/월.","호텔: $1.2m, 월 +$360k, 인원+25/훈련12/저장50/Mana+9.","네크로방어는 Flak Tower Kit를 25mm 기관포 대신 Necroplane Parts 25개로 생산."]},
+ {id:"soreass",name:"?소심한 선장?",code:"SOREASS",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 소심한",colors:["Green","Red","Gray"],ev:37236,evText:"≈+$37.2k",hotel:"no",vip:"no",nonprofit:"no",scamming:"no",bulk:"yes",ultimateCash:"no",irradiator:"warn",necro:"yes",bunker:"yes",tactical:"yes",treasure:"no",boot:"yes",military:"no",bread:"no",warrior:"late",charmy:"no",saint:"late",saintReinf:"late",orthodox:"no",transfig:"no",xlarge:"no",capsule:"no",doubleJail:"no",dungeon:"no",summary:"방어·탐지·병사 기본육성의 종합형. JackSore+LazySore+SoreDumb 세 방어 성향을 한 번에 보존하는 유일한 초기 선장.",notes:["방사탑 + 네크로방어 + 벙커 + 전술센터 + 신병훈련을 모두 보존.","방사탑 1기당 부상회복 속도 1.00→0.65/day(다른 치료보너스 없을 때).","암살 이벤트의 위험 결과를 안전 결과가 약 50% 대체."]},
  {id:"pussy",name:"?위와는 다른 선장?",code:"PUSSY",stage:"initial",stageName:"초기",from:"지금(1/26)",route:"초기 성격검사 → 위와는 다른",colors:[],ev:0,evText:"≈$0",hotel:"no",vip:"no",nonprofit:"late",scamming:"late",bulk:"no",ultimateCash:"late",irradiator:"late",necro:"late",bunker:"late",tactical:"no",treasure:"no",boot:"late",military:"late",bread:"late",warrior:"late",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"late",xlarge:"late",capsule:"late",doubleJail:"late",dungeon:"no",summary:"즉시 완성형이 아니라 분기용 입구. 2/1 PUSSY_UP 이후 클래스 선택, 3/1 무직 분기, 4/1 Pure 분기로 확장된다.",notes:["혼돈의 성자 조건에서 CAPTAIN_PUSSY:false라 Saint는 영구 포기.","대신 초대형 저장고와 여러 PUSSY 전용 인프라 경로가 열린다."]},
 
  {id:"thief",name:"?도둑 계급 선장?",code:"THIEF",stage:"class",stageName:"PUSSY 2단계",from:"최단 2/1",route:"PUSSY → 도둑",colors:["Gold","Green","Gray"],ev:43611,evText:"≈+$43.6k",hotel:"no",vip:"no",nonprofit:"no",scamming:"yes",bulk:"no",ultimateCash:"no",irradiator:"no",necro:"no",bunker:"no",tactical:"no",treasure:"no",boot:"no",military:"no",bread:"no",warrior:"no",charmy:"no",saint:"no",saintReinf:"no",orthodox:"no",transfig:"no",xlarge:"yes",capsule:"no",doubleJail:"no",dungeon:"no",summary:"사기 제조와 Gold 계열 경제 이벤트를 챙기는 PUSSY 경제 클래스.",notes:["Scamming 기대 산출물 약 $2,656/회, Govt Corpse 판매 기회비용과 제조비를 뺀 평균 순익 약 $2,431/20 worker-hours.","초대형 저장고(저장3000 + 작업공간50) 접근."]},
@@ -98,43 +98,183 @@ const codexInfo={
     reward:"G7 요술 선물(Arcane Book / Demonic Essence×13 / Poltergeist 가중추첨); JackSore면 G6B Mad Scribblings; JackLazy면 G8B Glamour×33"
   }
 };
+
+const colorMonthlyEV={Gold:7188.49,Green:-1912.16,Red:10237.50,Gray:3363.66};
+const noColorMonthlyEV={Gold:69.13,Green:165.00,Red:-1776.92,Gray:0};
+const pureColorMonthlyEV={Gold:3763.64,Green:0,Red:4279.27,Gray:0};
+const purePairMonthlyEV=[
+  {missing:["Red","Gold"],ev:55300.00},{missing:["Red","Gray"],ev:5833.33},
+  {missing:["Red","Green"],ev:53000.00},{missing:["Gold","Gray"],ev:0},
+  {missing:["Gold","Green"],ev:291.96},{missing:["Green","Gray"],ev:46666.67}
+];
+const godMonthlyEV={G1:27600,G2A:8280,G2B:8280,G3:23000,G4A:0,G4B:0,G5:0,G6A:2300,G6B:2300,G7:7997.73,G8A:22770,G8B:22770};
+const saintPoolMonthly={cashEquivalentBeforeStatue:21924.18,cashEquivalentAfterStatue:10962.09,directFundsBeforeStatue:-2444.51,directFundsAfterStatue:-1222.25};
+function pairPoolEV(colors){const have=new Set(colors);return purePairMonthlyEV.reduce((sum,pair)=>sum+(pair.missing.every(c=>!have.has(c))?pair.ev:0),0);}
+function pureSinglePoolEV(colors){return colors.length===1?(pureColorMonthlyEV[colors[0]]||0):0;}
+function money(v){if(!Number.isFinite(Number(v)))return "—";const n=Number(v),sign=n>0?"+":n<0?"-":"";return sign+"$"+(Math.abs(n)/1000).toFixed(1)+"k";}
+
 function codexGods(r,color){
   const info=codexInfo[color], traits=captainTraits[r.id]||[];
   const gods=[...info.baseGods];
   for(const [trait,g] of Object.entries(info.synergy)) if(traits.includes(trait)) gods.push(g);
   return gods;
 }
+function codexEconomy(r,color){
+  if(["pussy","unclassedGate","pureGate"].includes(r.id))return null;
+  const before=[...r.colors],after=before.includes(color)?before:[...before,color];
+  let delta=0;
+  if(!before.includes(color))delta+=(colorMonthlyEV[color]||0)-(noColorMonthlyEV[color]||0);
+  if(r.stage==="pure"){delta+=pairPoolEV(after)-pairPoolEV(before);delta+=pureSinglePoolEV(after)-pureSinglePoolEV(before);}
+  const post=r.ev+delta,gods=codexGods(r,color),godsEv=gods.reduce((sum,g)=>sum+(godMonthlyEV[g]||0),0);
+  const saint=saintCodexTarget[r.id]===color;
+  return{before:r.ev,post,delta,gods,godsEv,withGods:post+godsEv,saint};
+}
 function codexCell(r,color){
-  const info=codexInfo[color], gods=codexGods(r,color);
-  const target=saintCodexTarget[r.id];
-  let head="", cls="codex-cell";
-  if(target){
-    if(target===color){head="★ 성자";cls+=" codex-saint";}
-    else {head="⚠ 성자봉쇄";cls+=" codex-block";}
-  }else if(r.id==="ultimate"){
-    head="⚠ EV↓ +"+info.ko; cls+=" codex-warn";
-  }else if(r.colors.includes(color)){
-    head="중복 "+info.ko; cls+=" codex-dup";
-  }else{
-    head="+"+info.ko; cls+=" codex-new";
-  }
-  const title=info.ko+" 코덱스 선택 시 나머지 3 Codex 연구 영구 disable. 직접 테크: "+info.direct+". 승천: "+info.awakened+". 신들 보너스: "+info.reward;
-  return '<span class="'+cls+'" title="'+title+'"><strong>'+head+'</strong><small>'+gods.join(" · ")+'</small></span>';
+  const info=codexInfo[color],gods=codexGods(r,color),eco=codexEconomy(r,color),target=saintCodexTarget[r.id];
+  let head="",cls="codex-cell";
+  if(target){if(target===color){head="★ 성자";cls+=" codex-saint";}else{head="⚠ 성자봉쇄";cls+=" codex-block";}}
+  else if(r.id==="ultimate"){head="⚠ EV변화 +"+info.ko;cls+=" codex-warn";}
+  else if(r.colors.includes(color)){head="중복 "+info.ko;cls+=" codex-dup";}
+  else{head="+"+info.ko;cls+=" codex-new";}
+  const evHtml=eco?'<span class="codex-ev"><b>'+money(eco.before)+'</b> → <b>'+money(eco.post)+'</b><em>'+money(eco.delta)+'</em></span>':'<span class="codex-ev muted">분기 확정 후 계산</span>';
+  let godHtml='';
+  if(eco&&eco.godsEv)godHtml=eco.saint?'<small class="codex-gods off">신들 '+money(eco.godsEv)+'/월 · Saint 후 정지</small>':'<small class="codex-gods">신들 완성 '+money(eco.godsEv)+'/월 → '+money(eco.withGods)+'</small>';
+  else if(eco&&eco.saint)godHtml='<small class="codex-gods off">Saint 전환 후 Codex 신들 보너스 정지</small>';
+  const title=info.ko+" 코덱스 선택 시 나머지 3 Codex 연구 영구 disable. 월 EV는 직접 funds + 양수 판매가 지급품의 기대환금가치.";
+  return '<span class="'+cls+'" title="'+title+'"><strong>'+head+'</strong>'+evHtml+'<small>'+gods.join(" · ")+'</small>'+godHtml+'</span>';
 }
 function codexDetailHtml(r){
-  return '<h3>Codex 상호배타 분기</h3><p class="muted">Codex 하나를 연구하면 나머지 3개가 즉시 disable됩니다. 승천하면 해당 Captain 색 태그를 얻습니다.</p>'+
+  return '<h3>Codex 상호배타 분기 · 월 수입 비교</h3><p class="muted">월 EV는 직접 현금 + 양수 판매가 지급품의 기대환금가치입니다. 연구·임무·병사의 전투가치는 0원으로 둡니다. Codex 각성으로 색이 늘면 해당 색 이벤트 풀이 켜지고 결손색/일부 Pure 풀이 꺼집니다.</p>'+
     '<div class="codex-detail-grid">'+Object.keys(codexInfo).map(color=>{
-      const i=codexInfo[color];
-      return '<div class="detail-box">'+codexCell(r,color)+'<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p></div>';
+      const i=codexInfo[color],eco=codexEconomy(r,color);let extra='';
+      if(eco){
+        extra='<p><b>반복 EV:</b> '+money(eco.before)+' → <b>'+money(eco.post)+'</b> /월 ('+money(eco.delta)+')</p>';
+        if(eco.godsEv)extra+='<p><b>신들 보너스 만개:</b> '+(eco.saint?'Saint 전 한시 ':'')+money(eco.godsEv)+'/월'+(eco.saint?' → Saint 후 정지':' → 합계 '+money(eco.withGods)+'/월')+'</p>';
+        if(eco.saint)extra+='<p><b>Saint 풀:</b> 조각상 전 기대환금가치 약 '+money(saintPoolMonthly.cashEquivalentBeforeStatue)+'/월. 단 병사 아이템 판매가를 돈으로 센 값이며, 이벤트의 직접 funds만 보면 '+money(saintPoolMonthly.directFundsBeforeStatue)+'/월입니다.</p>';
+      }
+      return '<div class="detail-box">'+codexCell(r,color)+extra+'<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p></div>';
     }).join("")+'</div>';
 }
 function renderCodexCards(){
   const el=document.querySelector("#codexCards"); if(!el)return;
   el.innerHTML=Object.entries(codexInfo).map(([color,i])=>
     '<article class="codex-card card"><p class="eyebrow">'+i.ko+' CODEX</p><h3>'+i.ko+' 코덱스</h3>'+
-    '<p><b>상호배타:</b> 선택 즉시 다른 3 Codex 연구 봉쇄</p>'+
+    '<p><b>상호배타:</b> 선택 연구에서 이미 다른 3색 선택을 막고, 실제 Codex 연구에서도 다시 다른 3 Codex를 막는다.</p>'+
     '<p><b>고유 테크:</b> '+i.direct+'</p><p><b>승천:</b> '+i.awakened+'</p><p><b>신들:</b> '+i.reward+'</p></article>'
   ).join("");
+}
+
+
+function renderCodexEconomyTable(){
+  const root=document.querySelector("#codexEconomyTable"); if(!root)return;
+  const captains=rows.filter(r=>["jackass","dumbass","lazyass","soreass"].includes(r.id));
+  const colors=["Gold","Green","Red","Gray"];
+  root.innerHTML='<div class="table-head"><div><p class="eyebrow">초기 4선장 × Codex</p><h3>월 현금성 EV 직접 비교</h3></div><p class="muted">선장 단독 → Codex 각성 후. 신들 보너스는 Saint 이전에만 별도 가산.</p></div>'+
+    '<div class="table-scroll"><table class="exclusive-table codex-money-table"><thead><tr><th>선장</th><th>Codex 전</th>'+
+    colors.map(c=>'<th>'+codexInfo[c].ko+' Codex</th>').join('')+'</tr></thead><tbody>'+
+    captains.map(r=>'<tr><td><b>'+r.name+'</b><small>'+r.code+'</small></td><td><b>'+money(r.ev)+'</b></td>'+
+      colors.map(c=>{
+        const e=codexEconomy(r,c), saint=e?.saint;
+        const god=e?.godsEv||0;
+        const godLine=god?(saint?'Saint 전 신들 '+money(god)+'<br><span class="muted">Saint 후 정지</span>':'신들 만개 '+money(e.withGods)):'';
+        const saintLine=saint?'<br><span class="saint-mark">★ Saint</span>':'';
+        return '<td><b>'+money(e.post)+'</b><br><span class="'+(e.delta>=0?'ev-pos':'ev-neg')+'">'+money(e.delta)+'</span>'+saintLine+(godLine?'<br><small>'+godLine+'</small>':'')+'</td>';
+      }).join('')+'</tr>').join('')+
+    '</tbody></table></div>'+
+    '<div class="interaction-note"><b>소심 + Gold 예:</b> '+money(rows.find(r=>r.id==="soreass").ev)+' → <b>'+money(codexEconomy(rows.find(r=>r.id==="soreass"),"Gold").post)+'</b>/월, 즉 <b>'+money(codexEconomy(rows.find(r=>r.id==="soreass"),"Gold").delta)+'/월</b> 증가. 이후 Saint가 되면 G1 신들 보너스는 정지하고 Saint 지원군 풀이 대신 켜집니다.</div>';
+}
+
+const researchLabels={
+  STR_CAPTAIN_DUMBASS:"멍청한 선장",STR_CAPTAIN_JACKASS:"무모한 선장",STR_CAPTAIN_LAZYASS:"게으른 선장",STR_CAPTAIN_SOREASS:"소심한 선장",STR_CAPTAIN_PUSSY:"위와는 다른 선장",
+  STR_CAPTAIN_THIEF:"도둑 계급",STR_CAPTAIN_PRIEST:"사제 계급",STR_CAPTAIN_MAGE:"마법사 계급",STR_CAPTAIN_RULER:"지도자 계급",STR_CAPTAIN_UNCLASSED_UP:"무직 게이트",
+  STR_CAPTAIN_DUMBLAZY_UP:"멋지고 버릇없는",STR_CAPTAIN_JACKDUMB_UP:"대담한",STR_CAPTAIN_JACKLAZY_UP:"진보하는",STR_CAPTAIN_JACKSORE_UP:"두려운",STR_CAPTAIN_LAZYSORE_UP:"합리적",STR_CAPTAIN_SOREDUMB_UP:"보수적인",STR_CAPTAIN_PURE_UP:"Pure 게이트",
+  STR_CAPTAIN_GOLD_UP:"고귀한 영혼",STR_CAPTAIN_GREEN_UP:"현명한",STR_CAPTAIN_RED_UP:"강한 전사",STR_CAPTAIN_GRAY_UP:"위대한 몽상가",STR_CAPTAIN_ULTIMATE:"궁극의 선장",
+  STR_SCAMMING:"사기 제조",STR_BULK_EXCAVATION:"덩어리 캐내기",STR_DUNGEON_MASTER:"지하감옥 마스터",STR_HOTEL:"호텔",STR_STUDY_ROOM:"학습실",STR_JAIL_DOUBLE:"2배 감옥",STR_GENERAL_STORES_XLARGE:"초대형 저장고",STR_CAPSULE_QUARTERS:"캡슐 숙소",STR_TACTICAL_CENTER:"전술센터",
+  STR_CAPTAIN_DOUBLEGOLD:"특성: 다면성",STR_CAPTAIN_DOUBLEGRAY:"특성: 활달함",STR_CAPTAIN_DOUBLERED:"특성: 힘이 넘침",STR_CAPTAIN_DOUBLEGREEN:"특성: 불굴"
+};
+const exclusiveStages=[
+ {title:"1단계 · 기본 성격",rows:[
+  ["STR_CAPTAIN_DUMBASS",["STR_CAPTAIN_JACKASS","STR_CAPTAIN_LAZYASS","STR_CAPTAIN_SOREASS","STR_CAPTAIN_PUSSY","STR_BULK_EXCAVATION","STR_DUNGEON_MASTER","STR_HOTEL","STR_STUDY_ROOM","STR_JAIL_DOUBLE","STR_GENERAL_STORES_XLARGE","STR_CAPSULE_QUARTERS","STR_TACTICAL_CENTER"]],
+  ["STR_CAPTAIN_JACKASS",["STR_CAPTAIN_DUMBASS","STR_CAPTAIN_LAZYASS","STR_CAPTAIN_SOREASS","STR_CAPTAIN_PUSSY","STR_SCAMMING","STR_BULK_EXCAVATION","STR_HOTEL","STR_JAIL_DOUBLE","STR_GENERAL_STORES_XLARGE","STR_CAPSULE_QUARTERS","STR_TACTICAL_CENTER"]],
+  ["STR_CAPTAIN_LAZYASS",["STR_CAPTAIN_JACKASS","STR_CAPTAIN_DUMBASS","STR_CAPTAIN_SOREASS","STR_CAPTAIN_PUSSY","STR_SCAMMING","STR_BULK_EXCAVATION","STR_DUNGEON_MASTER","STR_JAIL_DOUBLE","STR_GENERAL_STORES_XLARGE","STR_CAPSULE_QUARTERS","STR_TACTICAL_CENTER"]],
+  ["STR_CAPTAIN_SOREASS",["STR_CAPTAIN_JACKASS","STR_CAPTAIN_DUMBASS","STR_CAPTAIN_LAZYASS","STR_CAPTAIN_PUSSY","STR_SCAMMING","STR_DUNGEON_MASTER","STR_HOTEL","STR_JAIL_DOUBLE","STR_GENERAL_STORES_XLARGE","STR_CAPSULE_QUARTERS"]],
+  ["STR_CAPTAIN_PUSSY",["STR_CAPTAIN_JACKASS","STR_CAPTAIN_DUMBASS","STR_CAPTAIN_LAZYASS","STR_CAPTAIN_SOREASS","STR_BULK_EXCAVATION","STR_DUNGEON_MASTER","STR_TACTICAL_CENTER","STR_HOTEL"]]
+ ]},
+ {title:"2단계 · PUSSY 직업",rows:[
+  ["STR_CAPTAIN_THIEF",["STR_CAPTAIN_PRIEST","STR_CAPTAIN_MAGE","STR_CAPTAIN_RULER","STR_CAPTAIN_UNCLASSED_UP"]],
+  ["STR_CAPTAIN_PRIEST",["STR_CAPTAIN_THIEF","STR_CAPTAIN_MAGE","STR_CAPTAIN_RULER","STR_CAPTAIN_UNCLASSED_UP"]],
+  ["STR_CAPTAIN_MAGE",["STR_CAPTAIN_THIEF","STR_CAPTAIN_PRIEST","STR_CAPTAIN_RULER","STR_CAPTAIN_UNCLASSED_UP"]],
+  ["STR_CAPTAIN_RULER",["STR_CAPTAIN_THIEF","STR_CAPTAIN_PRIEST","STR_CAPTAIN_MAGE","STR_CAPTAIN_UNCLASSED_UP"]],
+  ["STR_CAPTAIN_UNCLASSED_UP",["STR_CAPTAIN_THIEF","STR_CAPTAIN_PRIEST","STR_CAPTAIN_MAGE","STR_CAPTAIN_RULER"]]
+ ]},
+ {title:"3단계 · 무직 혼합형",rows:[
+  ["STR_CAPTAIN_DUMBLAZY_UP",["STR_CAPTAIN_LAZYSORE_UP","STR_CAPTAIN_SOREDUMB_UP","STR_CAPTAIN_JACKSORE_UP","STR_CAPTAIN_JACKDUMB_UP","STR_CAPTAIN_JACKLAZY_UP","STR_CAPTAIN_PURE_UP"]],
+  ["STR_CAPTAIN_JACKDUMB_UP",["STR_CAPTAIN_DUMBLAZY_UP","STR_CAPTAIN_LAZYSORE_UP","STR_CAPTAIN_SOREDUMB_UP","STR_CAPTAIN_JACKSORE_UP","STR_CAPTAIN_JACKLAZY_UP","STR_CAPTAIN_PURE_UP"]],
+  ["STR_CAPTAIN_JACKLAZY_UP",["STR_CAPTAIN_DUMBLAZY_UP","STR_CAPTAIN_LAZYSORE_UP","STR_CAPTAIN_SOREDUMB_UP","STR_CAPTAIN_JACKSORE_UP","STR_CAPTAIN_JACKDUMB_UP","STR_CAPTAIN_DOUBLEGOLD","STR_CAPTAIN_DOUBLEGRAY","STR_CAPTAIN_PURE_UP"]],
+  ["STR_CAPTAIN_JACKSORE_UP",["STR_CAPTAIN_DUMBLAZY_UP","STR_CAPTAIN_LAZYSORE_UP","STR_CAPTAIN_SOREDUMB_UP","STR_CAPTAIN_JACKDUMB_UP","STR_CAPTAIN_JACKLAZY_UP","STR_CAPTAIN_DOUBLERED","STR_CAPTAIN_DOUBLEGRAY","STR_CAPTAIN_PURE_UP"]],
+  ["STR_CAPTAIN_LAZYSORE_UP",["STR_CAPTAIN_DUMBLAZY_UP","STR_CAPTAIN_SOREDUMB_UP","STR_CAPTAIN_JACKSORE_UP","STR_CAPTAIN_JACKDUMB_UP","STR_CAPTAIN_JACKLAZY_UP","STR_CAPTAIN_PURE_UP"]],
+  ["STR_CAPTAIN_SOREDUMB_UP",["STR_CAPTAIN_DUMBLAZY_UP","STR_CAPTAIN_LAZYSORE_UP","STR_CAPTAIN_JACKSORE_UP","STR_CAPTAIN_JACKDUMB_UP","STR_CAPTAIN_JACKLAZY_UP","STR_CAPTAIN_DOUBLEGREEN","STR_CAPTAIN_DOUBLERED","STR_CAPTAIN_PURE_UP"]],
+  ["STR_CAPTAIN_PURE_UP",["STR_CAPTAIN_DUMBLAZY_UP","STR_CAPTAIN_LAZYSORE_UP","STR_CAPTAIN_SOREDUMB_UP","STR_CAPTAIN_JACKSORE_UP","STR_CAPTAIN_JACKDUMB_UP","STR_CAPTAIN_JACKLAZY_UP"]]
+ ]},
+ {title:"4단계 · Pure 최종",rows:[
+  ["STR_CAPTAIN_GOLD_UP",["STR_CAPTAIN_GOLD_UP","STR_CAPTAIN_GRAY_UP","STR_CAPTAIN_GREEN_UP","STR_CAPTAIN_RED_UP","STR_CAPTAIN_ULTIMATE"]],
+  ["STR_CAPTAIN_GREEN_UP",["STR_CAPTAIN_GOLD_UP","STR_CAPTAIN_GRAY_UP","STR_CAPTAIN_RED_UP","STR_CAPTAIN_ULTIMATE"]],
+  ["STR_CAPTAIN_RED_UP",["STR_CAPTAIN_GOLD_UP","STR_CAPTAIN_GRAY_UP","STR_CAPTAIN_GREEN_UP","STR_CAPTAIN_ULTIMATE"]],
+  ["STR_CAPTAIN_GRAY_UP",["STR_CAPTAIN_GOLD_UP","STR_CAPTAIN_GREEN_UP","STR_CAPTAIN_RED_UP","STR_CAPTAIN_ULTIMATE"]],
+  ["STR_CAPTAIN_ULTIMATE",["STR_CAPTAIN_GOLD_UP","STR_CAPTAIN_GRAY_UP","STR_CAPTAIN_GREEN_UP","STR_CAPTAIN_RED_UP"]]
+ ]}
+];
+const codexExclusive=[
+ ["?금색 코덱스 선택?","STR_CHOOSE_GOLD_QUERY",["STR_CHOOSE_GREEN_QUERY","STR_CHOOSE_GRAY_QUERY","STR_CHOOSE_RED_QUERY"]],
+ ["?녹색 코덱스 선택?","STR_CHOOSE_GREEN_QUERY",["STR_CHOOSE_GRAY_QUERY","STR_CHOOSE_RED_QUERY","STR_CHOOSE_GOLD_QUERY"]],
+ ["?적색 코덱스 선택?","STR_CHOOSE_RED_QUERY",["STR_CHOOSE_GREEN_QUERY","STR_CHOOSE_GRAY_QUERY","STR_CHOOSE_GOLD_QUERY"]],
+ ["?회색 코덱스 선택?","STR_CHOOSE_GRAY_QUERY",["STR_CHOOSE_GREEN_QUERY","STR_CHOOSE_RED_QUERY","STR_CHOOSE_GOLD_QUERY"]],
+ ["금색 코덱스 연구","STR_CODEX_GOLD",["STR_CODEX_GRAY","STR_CODEX_GREEN","STR_CODEX_RED"]],
+ ["녹색 코덱스 연구","STR_CODEX_GREEN",["STR_CODEX_GRAY","STR_CODEX_RED","STR_CODEX_GOLD"]],
+ ["적색 코덱스 연구","STR_CODEX_RED",["STR_CODEX_GRAY","STR_CODEX_GREEN","STR_CODEX_GOLD"]],
+ ["회색 코덱스 연구","STR_CODEX_GRAY",["STR_CODEX_RED","STR_CODEX_GREEN","STR_CODEX_GOLD"]]
+];
+const captainCodexInteractionRows=[
+ ["G1","Gold Awakened + GODS E1 + Saint 아님","23%","Prince's Gift"],
+ ["G2A","DumbLazy + Gold Awakened + GODS E2 + Saint 아님","23%","Cake ×3 + 50점"],
+ ["G2B","DumbLazy + Green Awakened + GODS E2 + Saint 아님","23%","Cake ×3 + 50점"],
+ ["G3","Green Awakened + GODS E3 + Saint 아님","23%","Sivalinga"],
+ ["G4A","SoreDumb + Red Awakened + GODS E4 + Saint 아님","23%","+300점"],
+ ["G4B","SoreDumb + Green Awakened + GODS E4 + Saint 아님","23%","+300점"],
+ ["G5","Red Awakened + GODS E5 + Saint 아님","23%","Bloodoge 특수병 1명 + 전쟁 축복"],
+ ["G6A","JackSore + Red Awakened + GODS E6 + Saint 아님","23%","Mad Scribblings"],
+ ["G6B","JackSore + Gray Awakened + GODS E6 + Saint 아님","23%","Mad Scribblings"],
+ ["G7","Gray Awakened + GODS E7 + Saint 아님","23%","Arcane Book / Demonic Essence×13 / Poltergeist 가중 추첨"],
+ ["G8A","JackLazy + Gold Awakened + GODS E8 + Saint 아님","23%","Glamour ×33"],
+ ["G8B","JackLazy + Gray Awakened + GODS E8 + Saint 아님","23%","Glamour ×33"],
+ ["Lab Accident +1","Gray Codex + Schooling + Basic Electronics + Captain Red 없음","13%","-$250k 실험실 사고 추가 판정"],
+ ["Lab Accident +1","Gray Codex + Schooling + Basic Electronics + Captain Green 없음","13%","-$250k 실험실 사고 추가 판정"],
+ ["Gambling Night","Gambling + Hierarchy + Gray Codex 없음 + SoreAss 아님","13%","승리 전리품 또는 -$100k; Gray/SoreAss는 이 이벤트를 봉쇄"]
+];
+function prettyRule(id){return '<span class="rule-chip"><b>'+(researchLabels[id]||id.replace(/^STR_/,""))+'</b><small>'+id+'</small></span>'}
+function renderExclusiveRules(){
+  const insight=document.querySelector("#soreassGoldInsight");
+  if(insight) insight.innerHTML='<strong>소심한 선장 + Gold Codex 경제 비교</strong>'+
+   '<p><b>Codex 전:</b> 소심의 현재 활성 기본·성향·색·결손색·Flaw·Double 반복 이벤트를 모두 합치면 현금성 EV는 약 <b>+$37.2k/월</b>입니다.</p>'+
+   '<p><b>Gold 각성 후:</b> Gold 색 이벤트가 +$7.19k/월 켜지고 기존 NO_GOLD 풀이 약 +$0.07k/월 사라져 순증은 약 <b>+$7.12k/월</b>. 따라서 <b>+$44.4k/월</b>로 올라갑니다.</p>'+
+   '<p><b>Saint 전 신들 단계:</b> GODS E1까지 열리면 G1의 현금성 EV가 약 <b>+$27.6k/월</b> 추가되어 잠시 <b>+$72.0k/월</b> 수준까지 갈 수 있습니다. 하지만 Gold가 네 번째 색이므로 Saint가 성립하면 G1~G8 Codex 보너스는 <code>STR_CAPTAIN_SAINT:false</code> 조건 때문에 정지합니다.</p>'+
+   '<p><b>Saint 후:</b> 기본/색 반복 EV 약 +$44.4k/월은 유지되고 Saint 전용 풀이 켜집니다. 그 Saint 풀을 지급 병사·아이템의 판매가까지 환금가치로 치면 조각상 전 약 <b>+$21.9k/월</b>이지만, 이벤트의 직접 funds만 보면 약 <b>-$2.44k/월</b>입니다. 즉 Saint의 핵심 보상은 현금보다 특수병 공급입니다.</p>'+
+   '<p><b>별도 일회성:</b> 소심+밀수업자 접촉의 Gold Trade는 $3m → 금괴 100개이며 즉시 매각 시 $4m, 순현금 약 <b>+$1m</b>입니다. 이건 월 반복 EV와 별도로 봐야 합니다.</p>';
+  const root=document.querySelector("#exclusiveRules"); if(!root)return;
+  const stageHtml=exclusiveStages.map(g=>'<article class="card exclusive-card"><h3>'+g.title+'</h3><div class="table-scroll"><table class="exclusive-table"><thead><tr><th>선택</th><th>완료 시 실제 disables</th></tr></thead><tbody>'+
+    g.rows.map(([id,blocks])=>'<tr><td>'+prettyRule(id)+'</td><td><div class="rule-list">'+blocks.map(prettyRule).join("")+'</div></td></tr>').join("")+
+    '</tbody></table></div></article>').join("");
+  const codexHtml='<article class="card exclusive-card"><h3>Codex · 2중 상호배타</h3><p class="muted">드릴 조사 뒤 색을 <b>선택하는 1포인트 연구</b>에서 한 번, 실제 Codex 연구에서 다시 한 번 다른 3색을 disable합니다.</p><div class="table-scroll"><table class="exclusive-table"><thead><tr><th>선택/연구</th><th>내부 ID</th><th>disable</th></tr></thead><tbody>'+
+    codexExclusive.map(([name,id,blocks])=>'<tr><td><b>'+name+'</b></td><td><code>'+id+'</code></td><td><div class="rule-list">'+blocks.map(prettyRule).join("")+'</div></td></tr>').join("")+
+    '</tbody></table></div></article>';
+  root.innerHTML=stageHtml+codexHtml;
+}
+function renderCaptainCodexInteractions(){
+  const root=document.querySelector("#captainCodexInteractions"); if(!root)return;
+  root.innerHTML='<div class="interaction-note"><b>중요:</b> G1~G8 Codex 보너스는 모두 <code>STR_CAPTAIN_SAINT:false</code>를 요구합니다. 즉 <b>Saint가 된 뒤에는 이 신들 보너스 풀은 정지</b>합니다. Saint는 보너스를 단순 추가하는 상위호환이 아닙니다.</div>'+
+    '<div class="table-scroll"><table class="exclusive-table"><thead><tr><th>이벤트</th><th>조건</th><th>실행확률</th><th>효과 / 봉쇄</th></tr></thead><tbody>'+
+    captainCodexInteractionRows.map(r=>'<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>').join("")+
+    '</tbody></table></div>';
 }
 
 const featureNames=Object.fromEntries(columns.filter(c=>c.type!=="ev"&&c.type!=="codex").map(c=>[c.key,c.label]));
@@ -224,4 +364,4 @@ document.querySelector("#resetBtn").addEventListener("click",()=>{document.query
 document.querySelector("#dialogClose").addEventListener("click",()=>document.querySelector("#detailDialog").close());
 document.querySelector("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
 
-renderHead();renderRows();renderCodexCards();renderTimeline();renderDeep();
+renderHead();renderRows();renderCodexEconomyTable();renderCodexCards();renderExclusiveRules();renderCaptainCodexInteractions();renderTimeline();renderDeep();
