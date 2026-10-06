@@ -2,6 +2,7 @@ import fs from "node:fs";
 const items=JSON.parse(fs.readFileSync("public/data/items-index.json","utf8"));
 const research=JSON.parse(fs.readFileSync("public/data/research-index.json","utf8"));
 const schema=JSON.parse(fs.readFileSync("public/data/schema.json","utf8"));
+const soldiers=JSON.parse(fs.readFileSync("public/data/soldiers-index.json","utf8"));
 if(!items.index.length)throw new Error("No items generated");
 if(!research.index.length)throw new Error("No research generated");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
@@ -18,4 +19,8 @@ for(const x of research.index){
   if(!rc[x.bucket][x.id])throw new Error("Missing research detail "+x.id);
 }
 if(!schema.sortableItemFields?.length)throw new Error("No sortable fields");
-console.log(`OK: ${items.index.length} items, ${research.index.length} research, ${schema.sortableItemFields.length} sortable item fields`);
+if(!soldiers.soldiers?.length)throw new Error("No soldiers generated");
+if(!soldiers.profiles?.length)throw new Error("No soldier spawn profiles generated");
+if(soldiers.soldiers.length!==new Set(soldiers.soldiers.map(x=>x.id)).size)throw new Error("Duplicate soldier ids");
+for(const p of soldiers.profiles){if(!p.effectiveStats?.avg||!p.currentStatsBeforeTraits?.avg)throw new Error("Incomplete soldier profile "+p.id); for(const k of soldiers.statKeys||[]){if(!Number.isFinite(Number(p.effectiveStats.avg[k])))throw new Error("Bad effective stat "+p.id+" "+k)}}
+console.log(`OK: ${items.index.length} items, ${research.index.length} research, ${soldiers.soldiers.length} soldiers, ${soldiers.profiles.length} spawn profiles, ${schema.sortableItemFields.length} sortable item fields`);
