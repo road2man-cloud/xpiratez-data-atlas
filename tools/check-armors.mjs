@@ -5,6 +5,31 @@ const file=(...parts)=>path.join(dataDir,...parts);
 
 const armors=JSON.parse(fs.readFileSync(file("armors-index.json"),"utf8"));
 if(!armors.index?.length)throw new Error("No armors generated");
+
+const canonicalMetadataSha="b2f262211bc83e1d78e0cd4431b50736935881cb399eb0d083f147ee22521c14";
+const canonicalRules={
+  "HitFX-basic.rul":"bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+  "Piratez.rul":"9e590f54431e03f1bfaaaf2d8ab3168ecfa44ff48b52840db1d61c061da0bd33",
+  "Piratez_Armors.rul":"6cce3e4db270763350a51e2ad271badd44e0a5cbe742013dfec36bbf178dabeb",
+  "Piratez_BaseNames.rul":"d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+  "Piratez_Bonuses.rul":"23e0de08b8aa647fb16ebdb250a0dd2b2566e4efc71cc866541653f88d189ca1",
+  "Piratez_Events.rul":"491d8e88df45fe21cbcf55b1b538a253b7be770a365f9b2f245d71fa0cdc7ff3",
+  "Piratez_Factions.rul":"6d7d44235557e61919194c743f3ad1d01c5d80c664b7022d3752671a034484ce",
+  "Piratez_Globals.rul":"5edc38fb8e0fccb52247b25ce2bb3fce3528a18eeaa0adcd26efcfd69cb0cd71",
+  "Piratez_Mapscripts.rul":"de72f5752d4ad320abff3a414efd919cb9181d0ad51d5555d1ba86e10d3744cb",
+  "Piratez_Planet.rul":"d1b2b2645284784b9468f5443130e66eef4bf047496a252a5d751552a50a0fce",
+  "Piratez_Resources.rul":"080c8a0478443eb0a1696964972d89641eeda571263b920b8e03fc2f4d693892",
+  "Piratez_Transformations.rul":"18fed01d0e134aa67b309b1ff820be4f4515b0f84d760ef8fb2864fe2ac9a1f4",
+  "Piratez_Wardrobe.rul":"cf6ce9cfc4c0a7f1b339a400c89bc1ab1e48a9229303474cb391b8f1e1a0736a",
+  "Recolr.rul":"d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+  "Shotguns_Rebalance.rul":"2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+  "Yankes_Scripts.rul":"4e35b8f5d4d3176736a6e2ded0476a0e2fc40d382a81936e92b4e7456bfc5eb1"
+};
+if(armors.meta?.source?.metadataSha256!==canonicalMetadataSha)throw new Error("Armor data is not from canonical XPZ o1.1.1 metadata");
+const actualRules=Object.fromEntries((armors.meta?.source?.rules||[]).map(x=>[x.file,x.sha256]));
+if(Object.keys(actualRules).length!==Object.keys(canonicalRules).length)throw new Error("Unexpected canonical rule count");
+for(const [name,sha] of Object.entries(canonicalRules))if(actualRules[name]!==sha)throw new Error(`Canonical rule mismatch: ${name}`);
+for(const name of Object.keys(actualRules))if(!(name in canonicalRules))throw new Error(`Non-canonical rule leaked into armor data: ${name}`);
 if(armors.index.length!==new Set(armors.index.map(x=>x.id)).size)throw new Error("Duplicate armor ids");
 if(!armors.counts?.equipable)throw new Error("No equipable armors generated");
 const expected={armors:957,equipable:496,manufacturable:303,buyable:46};
