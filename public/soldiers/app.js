@@ -3,7 +3,9 @@ let sort={key:"firing",dir:-1};
 
 const $=q=>document.querySelector(q);
 const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:1});
+const pct=n=>n==null?"—":(Number(n)*100).toFixed(2)+"%";
 const statOrder=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
+const sourceLabel={direct:"직접 고용",manufacture:"제조/Recruitment",event:"이벤트"};
 
 async function load(){
   const res=await fetch("../data/soldiers-index.json");
@@ -12,11 +14,12 @@ async function load(){
   render();
 }
 function renderSummary(){
+  const pc=DATA.profileCounts||{};
   $("#summary").innerHTML=[
-    ["기본 병종",DATA.soldiers.length+"종","Ruleset soldiers 전체"],
-    ["실제 생성 프로필",DATA.profiles.length+"개","제조·이벤트 모집 루트"],
-    ["특성 정의",DATA.bonuses.length+"개","soldierBonuses 전체"],
-    ["특성 보유 생성",DATA.profiles.filter(x=>x.traitNames.length).length+"개","자동 특성 합산 대상"]
+    ["실제 획득형",DATA.profiles.length+"개","직접 "+(pc.direct||0)+" · 제조 "+(pc.manufacture||0)+" · 이벤트 "+(pc.event||0)],
+    ["기본 바디 규칙",DATA.soldiers.length+"종","내부 RuleSoldier / 성장 규칙"],
+    ["Saint 지원군",pc.saintUnique+"종","고유 결과 · 가중 슬롯 "+pc.saintSlots+"칸"],
+    ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
 function dataset(){
@@ -24,17 +27,24 @@ function dataset(){
   if(mode==="soldiers"){
     return DATA.soldiers.map(x=>({...x,_mode:"soldier",_name:x.koName,_id:x.id,_route:(x.requires||[]).join(", ")}));
   }
+  if(mode==="transformations"){
+    return (DATA.transformations||[]).map(x=>({...x,_mode:"transformation",_name:x.koName,_id:x.id,_route:(x.allowedSoldierTypes||[]).join(", ")}));
+  }
   return DATA.profiles.map(x=>({...x,_mode:"profile",_name:x.soldierKoName,_id:x.soldierType,_route:x.sourceKoName}));
 }
-function statValue(row,key,band){
-  return row._mode==="soldier"?row["base"+cap(band)+"_"+key]:row["effective"+cap(band)+"_"+key];
-}
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function statValue(row,key,band){
+  if(row._mode==="soldier")return row["base"+cap(band)+"_"+key];
+  if(row._mode==="profile")return row["effective"+cap(band)+"_"+key];
+  if(row._mode==="transformation")return row.fixedEffectiveDelta?.[key]??0;
+  return 0;
+}
 function searchBlob(row){
   return [
-    row._name,row._id,row._route,row.sourceId,row.sourceEnName,
+    row._name,row._id,row._route,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
     ...(row.traitNames||[]),...(row.traits||[]).flatMap(t=>[t.koName,t.enName,t.id]),
-    ...(row.requires||[])
+    ...(row.requires||[]),...(row.allowedSoldierTypes||[]),...(row.requiredPreviousTransformations||[]),
+    ...(row.forbiddenPreviousTransformations||[])
   ].filter(Boolean).join(" ").toLowerCase();
 }
 function filtered(){
@@ -59,18 +69,32 @@ function th(label,key){
 function render(){
   if(!DATA)return;
   const mode=$("#dataset").value,band=$("#band").value;
-  $("#traitsOnly").disabled=mode==="soldiers";
-  $("#tableTitle").textContent=mode==="soldiers"?"기본 병종 29종":"실제 생성 프로필 — 특성 포함 실전 스펙";
-  const head=[
-    th("병종","name"),
-    '<th>'+(mode==="soldiers"?"고용/해금":"생성 루트·자동 특성")+'</th>',
-    mode==="soldiers"?th("구매가","costBuy"):th("비용","cost"),
-    mode==="soldiers"?th("월급","costSalary"):th("시간","time"),
-    ...statOrder.map(k=>th(DATA.statLabels[k],k))
-  ].join("");
+  $("#traitsOnly").disabled=mode!=="profiles";
+  $("#band").disabled=mode==="transformations";
+  $("#tableTitle").textContent=
+    mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
+    mode==="soldiers"?"기본 바디 규칙 — 내부 RuleSoldier 29종":
+    "변신·훈련 루트 — 고정 변화량";
+  let head;
+  if(mode==="profiles"){
+    head=[
+      th("획득형","name"),'<th>획득 루트·자동 특성</th>',th("비용","cost"),th("시간","time"),
+      ...statOrder.map(k=>th(DATA.statLabels[k],k))
+    ].join("");
+  }else if(mode==="soldiers"){
+    head=[
+      th("기본 바디","name"),'<th>해금 조건</th>',th("구매가","costBuy"),th("월급","costSalary"),
+      ...statOrder.map(k=>th(DATA.statLabels[k],k))
+    ].join("");
+  }else{
+    head=[
+      th("변신/훈련","name"),'<th>적용 대상·특성</th>',th("비용","cost"),th("회복","recoveryTime"),
+      ...statOrder.map(k=>th("Δ "+DATA.statLabels[k],k))
+    ].join("");
+  }
   $("#soldierTable thead").innerHTML="<tr>"+head+"</tr>";
   const rows=filtered();
-  $("#rowCount").textContent=rows.length+"개 · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 기준";
+  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 고정 변화량(Flat + SoldierBonus)":" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 기준");
   $("#soldierTable tbody").innerHTML=rows.map(r=>rowHtml(r,band)).join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
     const key=el.dataset.sort;
@@ -79,23 +103,35 @@ function render(){
   }));
   document.querySelectorAll("tbody tr").forEach(el=>el.addEventListener("click",()=>openDetail(el.dataset.row)));
 }
+function sourceBadges(r){
+  let s='<span class="tag">'+(sourceLabel[r.sourceType]||r.sourceType)+'</span>';
+  if(r.saintSlots>0)s+=' <span class="tag saint">Saint '+r.saintSlots+'/31 · '+pct(r.saintProbability)+'</span>';
+  return s;
+}
 function rowHtml(r,band){
   const id=encodeURIComponent(r.id);
   let second,c1,c2;
   if(r._mode==="profile"){
     const traits=(r.traits||[]).map(t=>'<span class="trait">'+t.koName+'</span>').join("");
-    second='<span class="route">'+r.sourceKoName+'</span><br>'+traits;
+    second=sourceBadges(r)+'<br><span class="route">'+r.sourceKoName+'</span><br>'+traits;
     c1=fmt(r.cost);c2=fmt(r.time);
-  }else{
-    second=(r.requires||[]).length?'<span class="route">'+r.requires.map(x=>x).join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
+  }else if(r._mode==="soldier"){
+    second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
     c1=fmt(r.costBuy);c2=fmt(r.costSalary);
+  }else{
+    const trait=r.soldierBonusType?'<span class="trait">'+r.soldierBonusType+'</span>':'';
+    const produced=r.producedSoldierType?'<span class="tag">→ '+r.producedSoldierType+'</span>':'';
+    second='<span class="route">적용 '+(r.allowedSoldierTypes?.length||0)+'종</span><br>'+trait+' '+produced;
+    c1=fmt(r.cost);c2=fmt(r.recoveryTime);
   }
   return '<tr data-row="'+id+'"><td><span class="name">'+r._name+'</span><span class="id">'+r._id+'</span></td><td>'+second+'</td><td>'+c1+'</td><td>'+c2+'</td>'+
     statOrder.map(k=>{
       const v=statValue(r,k,band);
       const d=r._mode==="profile"?(r.traitStats?.[k]||0):0;
-      const dc=d>0?' <span class="delta-pos">+'+fmt(d)+'</span>':d<0?' <span class="delta-neg">'+fmt(d)+'</span>':'';
-      return '<td><span class="stat-main">'+fmt(v)+'</span>'+dc+'</td>';
+      const dc=d>0?' <span class="delta-pos">특성 +'+fmt(d)+'</span>':d<0?' <span class="delta-neg">특성 '+fmt(d)+'</span>':'';
+      const cls=r._mode==="transformation"?(v>0?"delta-pos":v<0?"delta-neg":""):"stat-main";
+      const shown=r._mode==="transformation"&&v>0?"+"+fmt(v):fmt(v);
+      return '<td><span class="'+cls+'">'+shown+'</span>'+dc+'</td>';
     }).join("")+'</tr>';
 }
 function findRow(encoded){
@@ -111,21 +147,36 @@ function statsGrid(title,range,bonus=null){
     return '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(vals[k])+'</b>'+delta+'</div>';
   }).join("")+'</div>';
 }
+function deltaGrid(title,stats){
+  return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
+    const v=stats?.[k]||0;
+    const cls=v>0?"delta-pos":v<0?"delta-neg":"muted";
+    return '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b class="'+cls+'">'+(v>0?"+":"")+fmt(v)+'</b></div>';
+  }).join("")+'</div>';
+}
 function openDetail(encoded){
   const r=findRow(encoded);if(!r)return;
-  let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 생성 프로필":"기본 병종")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
+  let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 획득형":r._mode==="soldier"?"기본 바디 규칙":"변신·훈련 루트")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
   if(r._mode==="profile"){
-    html+='<div class="detail-grid"><div class="box"><strong>생성 루트</strong>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>장갑</strong>'+String(r.armor||"—")+'</div></div>';
-    html+=statsGrid("특성 적용 전 currentStats",r.currentStatsBeforeTraits);
-    html+=statsGrid("특성 포함 실제 생성 스펙",r.effectiveStats,r.traitStats);
-    html+='<h3>자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
-    html+='<h3>생성 템플릿</h3><div class="detail-grid"><div class="box"><strong>현재치 덮어쓰기</strong><pre>'+esc(JSON.stringify(r.currentStatsOverride,null,2))+'</pre></div><div class="box"><strong>이전 변환</strong><pre>'+esc(JSON.stringify(r.previousTransformations,null,2))+'</pre></div><div class="box"><strong>필요 연구/조건</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
-  }else{
+    html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
+    html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
+    html+=statsGrid("자동 특성 포함 실제 생성 스펙",r.effectiveStats,r.traitStats);
+    html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
+    html+='<h3>획득 템플릿</h3><div class="detail-grid"><div class="box"><strong>currentStats 덮어쓰기</strong><pre>'+esc(JSON.stringify(r.currentStatsOverride,null,2))+'</pre></div><div class="box"><strong>이전 변환</strong><pre>'+esc(JSON.stringify(r.previousTransformations,null,2))+'</pre></div><div class="box"><strong>필요 연구/조건</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
+  }else if(r._mode==="soldier"){
     html+='<div class="detail-grid"><div class="box"><strong>구매 / 월급</strong>'+fmt(r.costBuy)+' / '+fmt(r.costSalary)+'</div><div class="box"><strong>월 고용 제한</strong>'+fmt(r.monthlyBuyLimit)+'</div><div class="box"><strong>기본 장갑</strong>'+String(r.armor||"—")+'</div></div>';
-    html+=statsGrid("기본 생성 범위 — 최소", {min:r.minStats,avg:r.minStats,max:r.minStats});
-    html+=statsGrid("기본 생성 범위 — 평균", {min:r.avgStats,avg:r.avgStats,max:r.avgStats});
-    html+=statsGrid("기본 생성 범위 — 최대", {min:r.maxStats,avg:r.maxStats,max:r.maxStats});
+    html+=statsGrid("기본 생성 최소", {min:r.minStats,avg:r.minStats,max:r.minStats});
+    html+=statsGrid("기본 생성 평균", {min:r.avgStats,avg:r.avgStats,max:r.avgStats});
+    html+=statsGrid("기본 생성 최대", {min:r.maxStats,avg:r.maxStats,max:r.maxStats});
     html+='<h3>성장 상한</h3><div class="stats-grid">'+statOrder.map(k=>'<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(r.statCaps[k])+'</b><small>훈련 '+fmt(r.trainingStatCaps[k])+'</small></div>').join("")+'</div>';
+  }else{
+    html+='<div class="detail-grid"><div class="box"><strong>비용 / 회복</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div><div class="box"><strong>적용 병종</strong>'+(r.allowedSoldierTypes||[]).length+'종</div><div class="box"><strong>생산 Soldier Type</strong>'+String(r.producedSoldierType||"유지")+'</div></div>';
+    deltaGrid("직접 Flat 스탯 변화",r.flatOverallStatChange);
+    deltaGrid("부여 특성의 스탯",r.traitStats);
+    deltaGrid("고정 실효 변화량 합계",r.fixedEffectiveDelta);
+    html+='<h3>성장분 비례 변화</h3><p class="muted">아래 percentGainedStatChange는 현재 총 스탯이 아니라 “초기치 이후 성장한 양”에 적용되므로 실제 최종 변화량은 병사마다 다릅니다.</p>';
+    deltaGrid("percentGainedStatChange",r.percentGainedStatChange);
+    html+='<div class="detail-grid"><div class="box"><strong>필요 연구</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>필수 이전 변환</strong>'+(r.requiredPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>금지 이전 변환</strong>'+(r.forbiddenPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
   }
   $("#detailBody").innerHTML=html;
   $("#detailDialog").showModal();
