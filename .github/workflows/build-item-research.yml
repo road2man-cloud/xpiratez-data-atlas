@@ -1,57 +1,84 @@
-name: Build item and research data
+name: Publish item and research data
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
-    inputs:
-      archive_url:
-        description: Direct URL to Dioxine_XPiratez_o1.1.1.rar
-        required: true
-        type: string
 
 permissions:
   contents: write
 
 jobs:
   build:
+    if: github.event_name == 'workflow_dispatch' || github.event.release.tag_name == 'xpz-o1.1.1-source'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Install dependencies
+
+      - name: Install generator dependencies
         run: npm install
-      - name: Download XPZ archive
-        uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
-        with:
-          url: ${{ inputs.archive_url }}
-          target: ".cache/xpz"
-          filename: "xpiratez.rar"
-          retry-times: 4
-      - name: Verify official o1.1.1 archive
-        run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/xpiratez.rar" | md5sum -c -
-      - name: Extract ruleset
+
+      - name: Download source release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p .cache/xpz
+          gh release download xpz-o1.1.1-source             --pattern 'Dioxine_XPiratez_o1.1.1.rar'             --dir .cache/xpz
+
+      - name: Verify official archive
+        run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
+
+      - name: Extract X-Piratez ruleset
         run: |
           sudo apt-get update
           sudo apt-get install -y unar
           mkdir -p .cache/unpacked
-          unar -q -o .cache/unpacked .cache/xpz/xpiratez.rar
+          unar -q -o .cache/unpacked .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
           META=$(find .cache/unpacked -type f -path "*/user/mods/Piratez/metadata.yml" -print -quit)
           test -n "$META"
           MOD_PATH=${META%/metadata.yml}
           echo "XPIRATEZ_MOD_PATH=$MOD_PATH" >> "$GITHUB_ENV"
-      - name: Generate item and research data
+
+      - name: Generate public item and research DB
         run: |
-          node tools/build-item-research-data.mjs --source "$XPIRATEZ_MOD_PATH" --out public/items/data
-          node -e 'const i=require("./public/items/data/items-index.json"),r=require("./public/items/data/research-index.json"); if(i.index.length!==4007||r.index.length!==4612) throw new Error("Unexpected XPZ dataset counts"); console.log("verified",i.index.length,r.index.length)'
-      - name: Commit generated public data
+          node tools/build-item-research-data.mjs             --source "$XPIRATEZ_MOD_PATH"             --out public/items/data
+
+      - name: Verify generated DB
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const base='public/items/data';
+          const items=JSON.parse(fs.readFileSync(base+'/items-index.json','utf8'));
+          const research=JSON.parse(fs.readFileSync(base+'/research-index.json','utf8'));
+          if(items.index.length!==4007) throw new Error('Expected 4007 items, got '+items.index.length);
+          if(research.index.length!==4612) throw new Error('Expected 4612 research topics, got '+research.index.length);
+          const u=items.index.find(x=>x.id==='STR_UAC_CARBINE');
+          if(!u) throw new Error('Missing STR_UAC_CARBINE');
+          const d=JSON.parse(fs.readFileSync(base+'/chunks/'+u.bucket+'.json','utf8')).details.STR_UAC_CARBINE;
+          if(d.raw.costBuy!==4500 || d.raw.costSell!==1500 || d.raw.weight!==6 ||
+             d.raw.accuracyAuto!==50 || d.raw.tuAuto!==27 ||
+             d.raw.accuracySnap!==70 || d.raw.tuSnap!==21 ||
+             d.raw.accuracyAimed!==100 || d.raw.tuAimed!==45) {
+            throw new Error('UAC Carbine smoke test failed');
+          }
+          console.log('Verified',items.index.length,'items and',research.index.length,'research topics');
+          NODE
+
+      - name: Commit generated database
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/items/data
           if git diff --cached --quiet; then
             echo "No data changes."
-          else
-            git commit -m "Publish XPZ o1.1.1 item and research data"
-            git push
+            exit 0
           fi
+          git commit -m "Publish XPZ o1.1.1 item and research data"
+          git pull --rebase origin main
+          git push origin HEAD:main
