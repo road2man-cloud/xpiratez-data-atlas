@@ -32,6 +32,27 @@ export function splitPresentationResources(value){
   return{core:walk(value),resources};
 }
 
+function decodePointerPart(x){
+  return String(x).replaceAll("~1","/").replaceAll("~0","~");
+}
+
+export function restorePresentationResources(core,resources=[]){
+  const out=structuredClone(core);
+  for(const [ptr,value] of resources){
+    if(typeof ptr!=="string"||!ptr.startsWith("/"))throw new Error("Invalid resource JSON pointer: "+ptr);
+    const parts=ptr.slice(1).split("/").map(decodePointerPart);
+    let target=out;
+    for(let i=0;i<parts.length-1;i++){
+      const key=Array.isArray(target)?Number(parts[i]):parts[i];
+      if(target[key]==null)target[key]=/^\d+$/.test(parts[i+1])?[]:{};
+      target=target[key];
+    }
+    const last=Array.isArray(target)?Number(parts.at(-1)):parts.at(-1);
+    target[last]=structuredClone(value);
+  }
+  return out;
+}
+
 export function hasPresentationResourceKey(value){
   if(Array.isArray(value))return value.some(hasPresentationResourceKey);
   if(value&&typeof value==="object"){
