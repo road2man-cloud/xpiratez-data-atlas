@@ -53,7 +53,31 @@ jobs:
           git fetch origin gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          TREE=$(git rev-parse HEAD:public)
+
+          # Keep canonical item/research data only under public/items/data in main,
+          # but publish legacy /data aliases so stale cached clients keep working.
+          INDEX=$(mktemp)
+          rm -f "$INDEX"
+          trap 'rm -f "$INDEX"' EXIT
+          export GIT_INDEX_FILE="$INDEX"
+          git read-tree HEAD:public
+          for name in items-index.json research-index.json entities.json schema.json manifest.json; do
+            BLOB=$(git rev-parse "HEAD:public/items/data/$name")
+            git update-index --add --cacheinfo 100644 "$BLOB" "data/$name"
+          done
+          git read-tree --prefix=data/chunks/ HEAD:public/items/data/chunks
+          git read-tree --prefix=data/research-chunks/ HEAD:public/items/data/research-chunks
+          git read-tree --prefix=data/resource-chunks/items/ HEAD:public/items/data/resource-chunks/items
+          TREE=$(git write-tree)
+
+          # Guard both the compatibility aliases and unrelated shared data.
+          test "$(git rev-parse "$TREE:data/items-index.json")" = "$(git rev-parse HEAD:public/items/data/items-index.json)"
+          test "$(git rev-parse "$TREE:data/research-index.json")" = "$(git rev-parse HEAD:public/items/data/research-index.json)"
+          test "$(git rev-parse "$TREE:data/chunks")" = "$(git rev-parse HEAD:public/items/data/chunks)"
+          test "$(git rev-parse "$TREE:data/research-chunks")" = "$(git rev-parse HEAD:public/items/data/research-chunks)"
+          test "$(git rev-parse "$TREE:data/resource-chunks/items")" = "$(git rev-parse HEAD:public/items/data/resource-chunks/items)"
+          test "$(git rev-parse "$TREE:data/resource-chunks/armors")" = "$(git rev-parse HEAD:public/data/resource-chunks/armors)"
+
           PARENT=$(git rev-parse origin/gh-pages)
           COMMIT=$(echo "Publish public atlas from $GITHUB_SHA" | git commit-tree "$TREE" -p "$PARENT")
           git push origin "$COMMIT":refs/heads/gh-pages
