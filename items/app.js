@@ -7,7 +7,9 @@ const sections={research:"연구",manufacture:"제조",items:"아이템",events:
 const pathNames={dependencies:"선행 연구",requires:"필요 조건",unlocks:"해금",requiresBuy:"구매 해금",requiredItems:"제조 재료",producedItems:"제조 결과",getOneFree:"무료 획득",compatibleAmmo:"호환 탄약",spawnUnit:"생성 유닛"};
 const sourceLabel=v=>v==="engineDefault"?"OXCE 기본값":v==="modGlobal"?"XPZ 전역값":v==="ruleset"?"아이템 룰":"";
 const pageMode=document.body.dataset.mode||"items";
-const dataBase=document.body.dataset.dataBase||"./data";
+const configuredDataBase=document.body.dataset.dataBase||"";
+const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
+const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
 const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
 
