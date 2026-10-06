@@ -1,4 +1,4 @@
-name: Deploy Data Atlas
+name: Sync Data Atlas Pages
 
 on:
   push:
@@ -11,19 +11,19 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: xpiratez-data-atlas-pages
+  group: xpiratez-data-atlas-pages-sync
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -44,25 +44,12 @@ jobs:
           node --check public/captains/app.js
           node --check public/weapons/app.js
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Publish static site
-        shell: bash
+      - name: Publish public tree to gh-pages
         run: |
-          set -euo pipefail
           git fetch origin gh-pages
-          rm -rf .pages-publish
-          git worktree add --detach .pages-publish origin/gh-pages
-          find .pages-publish -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp -a public/. .pages-publish/
-          cd .pages-publish
-          git add -A
-          if git diff --cached --quiet; then
-            echo "gh-pages already matches public/"
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Publish Data Atlas from ${GITHUB_SHA}"
-          git push origin HEAD:gh-pages
+          TREE=$(git rev-parse HEAD:public)
+          PARENT=$(git rev-parse origin/gh-pages)
+          COMMIT=$(echo "Publish public atlas from $GITHUB_SHA" | git commit-tree "$TREE" -p "$PARENT")
+          git push origin "$COMMIT":refs/heads/gh-pages
