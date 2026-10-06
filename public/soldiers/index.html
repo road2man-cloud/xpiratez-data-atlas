@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez 병종 DB</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <a class="back" href="../">← Data Atlas</a>
+    <p class="eyebrow">XPiratez v.o1.1.1 · OXCE 8.6</p>
+    <h1>병종 DB</h1>
+    <p class="lede">모든 병종의 기본 생성 범위와 실제 모집·이벤트 생성 프로필을 비교합니다. 생성 시 자동으로 붙는 특성의 능력치 보너스를 실제 스펙에 합산합니다.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="summary" class="summary"></section>
+
+  <section class="toolbar card">
+    <div class="field grow">
+      <label for="search">검색</label>
+      <input id="search" type="search" placeholder="병종, 모집 루트, 특성 이름…">
+    </div>
+    <div class="field">
+      <label for="dataset">표</label>
+      <select id="dataset">
+        <option value="profiles">실제 생성 프로필</option>
+        <option value="soldiers">기본 병종 29종</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="band">능력치 기준</label>
+      <select id="band">
+        <option value="avg">평균</option>
+        <option value="min">최소</option>
+        <option value="max">최대</option>
+      </select>
+    </div>
+    <label class="check"><input id="traitsOnly" type="checkbox"> 특성 보너스 있는 생성만</label>
+  </section>
+
+  <section class="explain card">
+    <strong>실전 생성 능력치 계산</strong>
+    <span>병종 기본 랜덤 생성치 → 모집/이벤트의 <code>currentStats</code> 덮어쓰기 → <code>transformationBonuses</code>의 <code>stats</code> 합산 → OXCE 고정 최소치 적용.</span>
+    <span>Psi 기술은 기본값이 0이면 특성만으로 해금되지 않는 OXCE 예외를 반영합니다. 방어구 능력치는 포함하지 않습니다.</span>
+  </section>
+
+  <section class="table-card card">
+    <div class="table-head">
+      <div><p class="eyebrow">정렬 가능</p><h2 id="tableTitle">실제 생성 프로필</h2></div>
+      <p id="rowCount" class="muted"></p>
+    </div>
+    <div class="table-shell">
+      <table id="soldierTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </section>
+</main>
+
+<dialog id="detailDialog">
+  <button id="closeDialog" class="close" aria-label="닫기">×</button>
+  <div id="detailBody"></div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
