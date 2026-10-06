@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="XPiratez v.o1.1.1 선장 선택지 전체 비교표: 경제, 방어, 병사 훈련, 특수병, 인프라, 후기 루트." />
   <title>XPiratez 선장 선택 매트릭스</title>
-  <link rel="stylesheet" href="styles.css?v=codex-20261006" />
+  <link rel="stylesheet" href="styles.css?v=branch-20261006" />
 </head>
 <body>
   <header class="hero">
@@ -28,9 +28,9 @@
   <main>
     <section class="summary-grid">
       <article class="card accent">
-        <span class="kicker">현재 19(1).sav 기준</span>
-        <strong>2601-01-26</strong>
-        <p>PUSSY 계열 2단계는 2/1, 무직 3단계는 3/1, Pure 최종은 4/1부터 최단 접근.</p>
+        <span class="kicker">규칙셋 기준 최단 분기</span>
+        <strong>1단계 → 4단계</strong>
+        <p>초기 성격 → PUSSY 클래스 → 무직 혼합형 → Pure 최종. 현재 세이브 날짜와 무관하게 룰의 상호배타 구조를 비교합니다.</p>
       </article>
       <article class="card">
         <span class="kicker">방어 종합</span>
@@ -100,6 +100,29 @@
       <div id="codexCards" class="codex-grid"></div>
     </section>
 
+    <section class="exclusivity-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">원본 disables 전수</p>
+          <h2>선장·Codex 상호배타 규칙 전체</h2>
+        </div>
+        <p class="muted">화면에서 보이는 장단점이 아니라 실제 연구 룰의 <code>disables</code>를 그대로 정리합니다.</p>
+      </div>
+      <div id="soreassGoldInsight" class="card codex-alert"></div>
+      <div id="exclusiveRules"></div>
+    </section>
+
+    <section class="interaction-section">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Captain × Codex</p>
+          <h2>교차 이벤트·보상·봉쇄</h2>
+        </div>
+        <p class="muted">특정 선장 성향과 특정 Codex를 동시에 요구하거나, 반대로 특정 색/선장을 FALSE로 요구하는 이벤트입니다.</p>
+      </div>
+      <div id="captainCodexInteractions" class="table-shell card"></div>
+    </section>
+
     <section class="timeline-section">
       <div class="section-heading">
         <div>
@@ -140,6 +163,6 @@
     <div id="dialogBody"></div>
   </dialog>
 
-  <script src="app.js?v=codex-20261006"></script>
+  <script src="app.js?v=branch-20261006"></script>
 </body>
 </html>
