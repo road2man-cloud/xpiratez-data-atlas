@@ -292,7 +292,8 @@ function choiceEffectSummary(r){
   const late=lateEffectsForRow(r);
   const directHtml=direct.length?'<div class="choice-effect-list">'+direct.map(c=>{
     const i=featureInfo[c.key];
-    return '<div class="choice-effect '+(r[c.key]==="warn"?"warn-effect":"")+'"><b>'+S[r[c.key]]+' '+c.label+'</b><span>'+(i?.short||"")+'</span></div>';
+    const full=c.key==="transfig"&&i?.detail?'<small class="choice-effect-detail">'+i.detail+'</small>':'';
+    return '<div class="choice-effect '+(r[c.key]==="warn"?"warn-effect":"")+'"><b>'+S[r[c.key]]+' '+c.label+'</b><span>'+(i?.short||"")+'</span>'+full+'</div>';
   }).join("")+'</div>':'<p class="choice-no-direct">이 단계 선택 자체의 즉시 고유효과는 없음. 다음 분기를 여는 게 핵심.</p>';
   const lateHtml=late.length?'<p class="choice-late"><b>후기/추가조건:</b> '+late.map(c=>c.label).join(" · ")+'</p>':'';
   return '<div class="choice-effects-wrap"><span class="choice-effects-title">실제 효과</span>'+directHtml+lateHtml+'</div>';
