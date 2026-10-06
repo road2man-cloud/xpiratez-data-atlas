@@ -8,3 +8,12 @@ dialog{width:min(980px,calc(100% - 24px));max-height:90vh;overflow:auto;border:1
 @media(max-width:900px){.summary{grid-template-columns:repeat(2,1fr)}.detail-grid,.stats-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.summary,.detail-grid,.stats-grid{grid-template-columns:1fr}.toolbar{top:0;border-radius:0}}
 
 .tag.saint{border-color:#8b6f28;background:#2b2412;color:#fde68a;font-weight:800} pre{white-space:pre-wrap;word-break:break-word;color:#c3d2ec;font-size:.75rem}
+
+.th-sub{display:block;margin-top:2px;font-size:.61rem;color:#8fa5c8;font-weight:600}
+.stat-pair{display:flex;align-items:baseline;justify-content:center;gap:4px;font-variant-numeric:tabular-nums}
+.stat-current{font-weight:900;color:#f8fbff}
+.stat-slash{color:#607492}
+.stat-cap{font-weight:800;color:#93c5fd}
+.stat-pair.over-cap .stat-current,.statbox.over-cap b{color:#fda4af}
+.stat-pair.over-cap .stat-cap{color:#fbbf24}
+.statbox.over-cap{border-color:#7f4b57;background:#241823}
