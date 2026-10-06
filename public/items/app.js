@@ -6,17 +6,19 @@ const kinds={weapon:"총기",ammo:"탄약",melee:"근접",grenade:"투척/폭발
 const sections={research:"연구",manufacture:"제조",items:"아이템",events:"이벤트",eventScripts:"이벤트 스크립트",units:"유닛",soldiers:"병종",crafts:"기체",facilities:"시설",armors:"방어구",factions:"세력",missionScripts:"미션 스크립트",alienMissions:"미션",alienDeployments:"전투 배치",terrains:"지형",ufopaedia:"UFOPEDIA"};
 const pathNames={dependencies:"선행 연구",requires:"필요 조건",unlocks:"해금",requiresBuy:"구매 해금",requiredItems:"제조 재료",producedItems:"제조 결과",getOneFree:"무료 획득",compatibleAmmo:"호환 탄약",spawnUnit:"생성 유닛"};
 const sourceLabel=v=>v==="engineDefault"?"OXCE 기본값":v==="modGlobal"?"XPZ 전역값":v==="ruleset"?"아이템 룰":"";
-const state={mode:"items",query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},detail:null};
+const pageMode=document.body.dataset.mode||"items";
+const dataBase=document.body.dataset.dataBase||"./data";
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},itemMap=new Map(),researchMap=new Map();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
 async function init(){
   try{
-    const [ii,ri,s,m]=await Promise.all([json("./data/items-index.json"),json("./data/research-index.json"),json("./data/schema.json"),json("./data/manifest.json")]);
+    const [ii,ri,s,m]=await Promise.all([json(`${dataBase}/items-index.json`),json(`${dataBase}/research-index.json`),json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`)]);
     itemIndex=ii.index;researchIndex=ri.index;schema=s;manifest=m;
     itemMap=new Map(itemIndex.map(x=>[x.id,x]));researchMap=new Map(researchIndex.map(x=>[x.id,x]));
-    $("#itemCount").textContent="("+fmt(itemIndex.length)+")";$("#researchCount").textContent="("+fmt(researchIndex.length)+")";
-    $("#metaLine").textContent=`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 아이템 ${fmt(itemIndex.length)} · 연구 ${fmt(researchIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`;
+    if($("#itemCount"))$("#itemCount").textContent="("+fmt(itemIndex.length)+")";if($("#researchCount"))$("#researchCount").textContent="("+fmt(researchIndex.length)+")";
+    $("#metaLine").textContent=pageMode==="items"?`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 아이템 ${fmt(itemIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`:`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 연구 ${fmt(researchIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`;
     bind();renderControls();render();route();
   }catch(e){
     $("#statusText").innerHTML=`<span class="error">데이터가 아직 배포되지 않았습니다: ${esc(e.message)}</span>`;
@@ -88,7 +90,7 @@ function render(){
 async function detail(mode,id){
   const map=mode==="items"?itemMap:researchMap,row=map.get(id);if(!row)throw new Error("대상을 찾지 못했습니다: "+id);
   const cache=state.cache[mode],dir=mode==="items"?"chunks":"research-chunks";
-  if(!cache.has(row.bucket))cache.set(row.bucket,(await json(`./data/${dir}/${row.bucket}.json`)).details);
+  if(!cache.has(row.bucket))cache.set(row.bucket,(await json(`${dataBase}/${dir}/${row.bucket}.json`)).details);
   return cache.get(row.bucket)[id];
 }
 function entity(id){const x=itemMap.get(id)||researchMap.get(id),kind=itemMap.has(id)?"items":researchMap.has(id)?"research":"";return kind?`<button class="chip" data-kind="${kind}" data-open="${esc(id)}">${esc(x.koName)}<span class="sub">${esc(x.enName)}</span></button>`:`<span class="badge">${esc(id)}</span>`}
