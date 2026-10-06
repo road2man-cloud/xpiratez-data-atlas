@@ -1,3 +1,5 @@
+import {splitPresentationResources} from "./data-normalize.mjs";
+
 export const SOLDIER_STAT_KEYS=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
 
 export const SOLDIER_STAT_LABELS={
@@ -43,6 +45,12 @@ function templateCurrentRange(rule,template){
   }
   return range;
 }
+function effectiveCapStats(rule,bonus){
+  const raw=readStats(rule.statCaps),effective=addStats(raw,bonus);
+  for(const k of SOLDIER_STAT_KEYS)effective[k]=Math.max(0,Number(effective[k])||0);
+  if((Number(raw.psiSkill)||0)<=0)effective.psiSkill=raw.psiSkill;
+  return{raw,effective};
+}
 function flatRange(prefix,range){
   const out={};
   for(const k of SOLDIER_STAT_KEYS){
@@ -54,6 +62,7 @@ function flatRange(prefix,range){
 }
 
 export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
+  const resourceDetails={};
   const soldierList=(Array.isArray(effectiveMerged.soldiers)?effectiveMerged.soldiers:[]).filter(x=>x&&typeof x.type==="string");
   const soldierByType=new Map(soldierList.map(x=>[x.type,x]));
   const soldierIds=new Set(soldierByType.keys());
@@ -103,7 +112,8 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     });
   }
   function baseRecord(rule){
-    const range=baseRange(rule);
+    const range=baseRange(rule),rawSplit=splitPresentationResources(rule);
+    if(rawSplit.resources.length)resourceDetails[rule.type]={id:rule.type,effective:rawSplit.resources};
     return{
       id:rule.type,koName:tr(rule.type,"ko"),enName:tr(rule.type,"en"),
       minStats:range.min,avgStats:range.avg,maxStats:range.max,
@@ -111,7 +121,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       costBuy:rule.costBuy??0,costSalary:rule.costSalary??0,monthlyBuyLimit:rule.monthlyBuyLimit??null,
       transferTime:rule.transferTime??null,requires:Array.isArray(rule.requires)?rule.requires:[],
       armor:rule.armor??null,allowPromotion:rule.allowPromotion??true,
-      sourceFiles:sourceHistory["type:"+rule.type]||["Piratez.rul"],raw:rule,
+      sourceFiles:sourceHistory["type:"+rule.type]||["Piratez.rul"],raw:rawSplit.core,resourceFieldCount:rawSplit.resources.length,
       ...flatRange("base",range)
     };
   }
@@ -131,6 +141,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     const current=templateCurrentRange(soldier,template);
     const traitNames=bonusNames(template),traitStats=bonusStats(traitNames);
     const effective=applyBonuses(current,traitStats);
+    const caps=effectiveCapStats(soldier,traitStats);
     const saint=saintMeta(sourceId);
     const direct=sourceType==="direct";
     return{
@@ -146,7 +157,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       requires:Array.isArray(entry.requires)?entry.requires:[],
       requiresBaseFunc:Array.isArray(entry.requiresBaseFunc)?entry.requiresBaseFunc:[],
       currentStatsBeforeTraits:current,traitNames,traits:bonusDetails(traitNames),traitStats,
-      effectiveStats:effective,
+      effectiveStats:effective,rawStatCaps:caps.raw,effectiveStatCaps:caps.effective,trainingStatCaps:readStats(soldier.trainingStatCaps),
       initialStatsOverride:template.initialStats??null,currentStatsOverride:template.currentStats??null,
       previousTransformations:template.previousTransformations??{},
       armor:template.armor??soldier.armor??null,rank:template.rank??0,nationality:template.nationality??null,
@@ -213,7 +224,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
 
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,
-    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,
-    counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierBonuses:bonusIndex.length}
+    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,
+    counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierBonuses:bonusIndex.length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
   };
 }
