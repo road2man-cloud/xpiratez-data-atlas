@@ -1,0 +1,13 @@
+{
+  "name": "xpiratez-data-atlas",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:data": "node tools/build-data.mjs",
+    "check": "node tools/check-data.mjs"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
