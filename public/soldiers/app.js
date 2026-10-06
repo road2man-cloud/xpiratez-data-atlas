@@ -39,6 +39,16 @@ function statValue(row,key,band){
   if(row._mode==="transformation")return row.fixedEffectiveDelta?.[key]??0;
   return 0;
 }
+function growthCapValue(row,key){
+  if(row._mode==="soldier")return row.statCaps?.[key]??0;
+  if(row._mode==="profile")return row.effectiveStatCaps?.[key]??row.rawStatCaps?.[key]??0;
+  return 0;
+}
+function sortValue(row,key,band){
+  if(!statOrder.includes(key))return row[key]??0;
+  if(row._mode==="transformation")return statValue(row,key,band);
+  return $("#sortMetric").value==="cap"?growthCapValue(row,key):statValue(row,key,band);
+}
 function searchBlob(row){
   return [
     row._name,row._id,row._route,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
@@ -54,23 +64,24 @@ function filtered(){
   const band=$("#band").value;
   a.sort((x,y)=>{
     let av,bv;
-    if(statOrder.includes(sort.key)){av=statValue(x,sort.key,band);bv=statValue(y,sort.key,band)}
+    if(statOrder.includes(sort.key)){av=sortValue(x,sort.key,band);bv=sortValue(y,sort.key,band)}
     else if(sort.key==="name"){return x._name.localeCompare(y._name,"ko")*sort.dir}
     else{av=x[sort.key]??0;bv=y[sort.key]??0}
     return ((Number(av)||0)-(Number(bv)||0))*sort.dir;
   });
   return a;
 }
-function th(label,key){
+function th(label,key,sub=""){
   const on=sort.key===key?" sort-on":"";
   const arrow=sort.key===key?(sort.dir>0?" ▲":" ▼"):"";
-  return '<th data-sort="'+key+'" class="'+on+'">'+label+arrow+'</th>';
+  return '<th data-sort="'+key+'" class="'+on+'">'+label+arrow+(sub?'<small class="th-sub">'+sub+'</small>':'')+'</th>';
 }
 function render(){
   if(!DATA)return;
   const mode=$("#dataset").value,band=$("#band").value;
   $("#traitsOnly").disabled=mode!=="profiles";
   $("#band").disabled=mode==="transformations";
+  $("#sortMetric").disabled=mode==="transformations";
   $("#tableTitle").textContent=
     mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
     mode==="soldiers"?"기본 바디 규칙 — 내부 RuleSoldier 29종":
@@ -79,12 +90,12 @@ function render(){
   if(mode==="profiles"){
     head=[
       th("획득형","name"),'<th>획득 루트·자동 특성</th>',th("비용","cost"),th("시간","time"),
-      ...statOrder.map(k=>th(DATA.statLabels[k],k))
+      ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
     ].join("");
   }else if(mode==="soldiers"){
     head=[
       th("기본 바디","name"),'<th>해금 조건</th>',th("구매가","costBuy"),th("월급","costSalary"),
-      ...statOrder.map(k=>th(DATA.statLabels[k],k))
+      ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
     ].join("");
   }else{
     head=[
@@ -94,7 +105,7 @@ function render(){
   }
   $("#soldierTable thead").innerHTML="<tr>"+head+"</tr>";
   const rows=filtered();
-  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 고정 변화량(Flat + SoldierBonus)":" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 기준");
+  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 고정 변화량(Flat + SoldierBonus)":" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
   $("#soldierTable tbody").innerHTML=rows.map(r=>rowHtml(r,band)).join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
     const key=el.dataset.sort;
@@ -127,11 +138,16 @@ function rowHtml(r,band){
   return '<tr data-row="'+id+'"><td><span class="name">'+r._name+'</span><span class="id">'+r._id+'</span></td><td>'+second+'</td><td>'+c1+'</td><td>'+c2+'</td>'+
     statOrder.map(k=>{
       const v=statValue(r,k,band);
+      if(r._mode==="transformation"){
+        const cls=v>0?"delta-pos":v<0?"delta-neg":"";
+        const shown=v>0?"+"+fmt(v):fmt(v);
+        return '<td><span class="'+cls+'">'+shown+'</span></td>';
+      }
+      const capV=growthCapValue(r,k);
       const d=r._mode==="profile"?(r.traitStats?.[k]||0):0;
-      const dc=d>0?' <span class="delta-pos">특성 +'+fmt(d)+'</span>':d<0?' <span class="delta-neg">특성 '+fmt(d)+'</span>':'';
-      const cls=r._mode==="transformation"?(v>0?"delta-pos":v<0?"delta-neg":""):"stat-main";
-      const shown=r._mode==="transformation"&&v>0?"+"+fmt(v):fmt(v);
-      return '<td><span class="'+cls+'">'+shown+'</span>'+dc+'</td>';
+      const over=Number(v)>Number(capV)?" over-cap":"";
+      const dc=d>0?'<small class="delta-pos">특성 +'+fmt(d)+'</small>':d<0?'<small class="delta-neg">특성 '+fmt(d)+'</small>':'';
+      return '<td><div class="stat-pair'+over+'"><span class="stat-current">'+fmt(v)+'</span><span class="stat-slash">/</span><span class="stat-cap">'+fmt(capV)+'</span></div>'+dc+'</td>';
     }).join("")+'</tr>';
 }
 function findRow(encoded){
@@ -147,6 +163,19 @@ function statsGrid(title,range,bonus=null){
     return '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(vals[k])+'</b>'+delta+'</div>';
   }).join("")+'</div>';
 }
+function statsCapGrid(title,row){
+  const band=$("#band").value;
+  const current=row.effectiveStats?.[band]||{};
+  return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
+    const cur=current[k]??0;
+    const raw=row.rawStatCaps?.[k]??0;
+    const training=row.trainingStatCaps?.[k]??0;
+    const trait=row.traitStats?.[k]??0;
+    const eff=row.effectiveStatCaps?.[k]??raw;
+    const over=Number(cur)>Number(eff)?' over-cap':'';
+    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(eff)+'</b><small>본체 성장캡 '+fmt(raw)+' · 훈련캡 '+fmt(training)+(trait?' · 특성 '+(trait>0?'+':'')+fmt(trait):'')+'</small></div>';
+  }).join("")+'</div><p class="muted">앞 숫자는 선택한 생성값, 뒤 숫자는 자동 특성까지 포함한 실효 성장캡입니다. 시작값이 캡보다 높은 특수 생성형은 그대로 유지되지만 일반 성장으로 더 오르지는 않습니다.</p>';
+}
 function deltaGrid(title,stats){
   return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
     const v=stats?.[k]||0;
@@ -160,7 +189,7 @@ function openDetail(encoded){
   if(r._mode==="profile"){
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
     html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
-    html+=statsGrid("자동 특성 포함 실제 생성 스펙",r.effectiveStats,r.traitStats);
+    html+=statsCapGrid("자동 특성 포함 능력치 / 성장캡",r);
     html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
     html+='<h3>획득 템플릿</h3><div class="detail-grid"><div class="box"><strong>currentStats 덮어쓰기</strong><pre>'+esc(JSON.stringify(r.currentStatsOverride,null,2))+'</pre></div><div class="box"><strong>이전 변환</strong><pre>'+esc(JSON.stringify(r.previousTransformations,null,2))+'</pre></div><div class="box"><strong>필요 연구/조건</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
   }else if(r._mode==="soldier"){
@@ -183,7 +212,7 @@ function openDetail(encoded){
 }
 function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
 
-["search","dataset","band","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",render));
+["search","dataset","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+err.message+'</span></article>';console.error(err)});
