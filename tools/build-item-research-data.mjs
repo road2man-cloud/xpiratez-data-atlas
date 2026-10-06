@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import yaml from "js-yaml";
+import {isPresentationResourceKey,splitPresentationResources} from "./data-normalize.mjs";
 
 const args=process.argv.slice(2);
 const arg=(name,fallback=null)=>{const i=args.indexOf(name);return i>=0&&i+1<args.length?args[i+1]:fallback};
@@ -132,16 +133,19 @@ function buildRefs(idSet){
   return refs;
 }
 const itemRefs=buildRefs(itemIds), researchRefs=buildRefs(researchIds);
+const entityNameIds=new Set();
+for(const value of Object.values(effectiveMerged))if(Array.isArray(value))value.forEach((entry,i)=>{const id=ownerId(entry,i);if(!id.startsWith("#"))entityNameIds.add(id)});
 
 function groupRefs(refMap,id,excludeSection=null){
   const groups=new Map();
   for(const r of refMap[id]||[]){
     if(excludeSection&&r.section===excludeSection&&r.owner===id)continue;
     const key=r.section+"\u0000"+r.owner;
-    const g=groups.get(key)||{section:r.section,owner:r.owner,id:r.owner,koName:tr(r.owner,"ko"),enName:tr(r.owner,"en"),paths:[]};
+    const g=groups.get(key)||{section:r.section,id:r.owner,paths:[]};
     if(!g.paths.includes(r.path))g.paths.push(r.path);groups.set(key,g);
+    if(!r.owner.startsWith("#"))entityNameIds.add(r.owner);
   }
-  return [...groups.values()].sort((a,b)=>(a.section+a.owner).localeCompare(b.section+b.owner));
+  return [...groups.values()].sort((a,b)=>(a.section+a.id).localeCompare(b.section+b.id));
 }
 function containsId(v,id){
   if(v===id)return true;
@@ -155,16 +159,16 @@ const manufactureByName=new Map(manufactureList.map(x=>[x.name,x]));
 
 function researchRelationsForItem(id){
   return groupRefs(itemRefs,id,"items").filter(x=>x.section==="research").map(g=>{
-    const x=researchByName.get(g.owner)||{};
-    return {...g,cost:x.cost??null,points:x.points??null,needItem:x.needItem??null,destroyItem:x.destroyItem??null,sourceFile:(sourceHistory["name:"+g.owner]||[]).at(-1)||null};
+    const x=researchByName.get(g.id)||{};
+    return {id:g.id,paths:g.paths,cost:x.cost??null,points:x.points??null,needItem:x.needItem??null,destroyItem:x.destroyItem??null,sourceFile:(sourceHistory["name:"+g.id]||[]).at(-1)||null};
   });
 }
 function manufactureRelationsForItem(id){
   return groupRefs(itemRefs,id,"items").filter(x=>x.section==="manufacture").map(g=>{
-    const x=manufactureByName.get(g.owner)||{};
+    const x=manufactureByName.get(g.id)||{};
     const requiredQty=x.requiredItems&&typeof x.requiredItems==="object"?x.requiredItems[id]??null:null;
     const producedQty=x.producedItems&&typeof x.producedItems==="object"?x.producedItems[id]??null:null;
-    return {...g,time:x.time??null,cost:x.cost??null,category:x.category??null,requiredQty,producedQty,sourceFile:(sourceHistory["name:"+g.owner]||[]).at(-1)||null};
+    return {id:g.id,paths:g.paths,time:x.time??null,cost:x.cost??null,category:x.category??null,requiredQty,producedQty,sourceFile:(sourceHistory["name:"+g.id]||[]).at(-1)||null};
   });
 }
 function articleFor(id){
@@ -224,6 +228,9 @@ function coreStats(item){
   put("psiRequired",item.psiRequired!==undefined?item.psiRequired:bt===9,item.psiRequired!==undefined?"ruleset":"engineDefault");
   return{values:out,sources};
 }
+const effectiveCoreFields=Object.keys(coreStats({}).values);
+const coreSourceLegend={r:"ruleset",e:"engineDefault",m:"modGlobal"};
+function coreSourceCodes(sources){return effectiveCoreFields.map(k=>sources[k]==="ruleset"?"r":sources[k]==="modGlobal"?"m":"e").join("")}
 function humanSummary(item){
   const bits=[];
   bits.push(battleTypeLabels[item.battleType]||kindOf(item));
@@ -256,25 +263,34 @@ function genericDesc(k,label){
   if(/requires|categories|tags/i.test(k))return label+". 해금·분류·사용 조건입니다.";
   return label+". X-Piratez/OXCE 원본 아이템 규칙 값입니다.";
 }
-const fieldMeta=Object.fromEntries(allItemKeys.map(k=>{const label=itemFieldLabels[k]||k;return[k,{label,description:genericDesc(k,label)}]}));
+const fieldMeta=Object.fromEntries(allItemKeys.map(k=>{const label=itemFieldLabels[k]||k;return[k,{label,description:genericDesc(k,label),separatedResource:isPresentationResourceKey(k)}]}));
 
+const promotedSortableFields=new Set(["type","battleType","weight","size","costBuy","costSell","monthlySalary","monthlyMaintenance","power","damageType","clipSize","armor","accuracyAuto","accuracySnap","accuracyAimed","tuAuto","tuSnap","tuAimed","tuMelee","autoRange","snapRange","aimRange","oneHandedPenalty"]);
 const sortableItemFieldSet=new Set();
-const scalarFields=o=>Object.fromEntries(Object.entries(o).filter(([,v])=>["string","number","boolean"].includes(typeof v)));
-const itemDetails={},itemIndex=[];
+const scalarFields=o=>Object.fromEntries(Object.entries(o).filter(([k,v])=>!isPresentationResourceKey(k)&&["string","number","boolean"].includes(typeof v)));
+const itemDetails={},itemIndex=[],itemResourceDetails={};
 for(const item of itemList){
-  const id=item.type,core=coreStats(item),sortable=scalarFields(item);Object.keys(sortable).forEach(k=>sortableItemFieldSet.add(k));
+  const id=item.type,core=coreStats(item),allSortable=scalarFields(item);Object.keys(allSortable).forEach(k=>sortableItemFieldSet.add(k));
+  const sortable=Object.fromEntries(Object.entries(allSortable).filter(([k])=>!promotedSortableFields.has(k)));
   const dKey=Number.isInteger(item.damageType)?damageKeys[item.damageType]:null;
   const research=researchRelationsForItem(id),manufacture=manufactureRelationsForItem(id);
   const refs=groupRefs(itemRefs,id,"items");
+  const bucket=crypto.createHash("sha1").update(id).digest("hex")[0];
+  const effectiveSplit=splitPresentationResources(item),declared=declaredItemById.get(id)||item;
+  const inheritedViaRefNode=Boolean(declaredItemById.get(id)?.refNode);
+  const declaredSplit=inheritedViaRefNode?splitPresentationResources(declared):null;
+  const resourceFieldCount=effectiveSplit.resources.length+(declaredSplit?.resources.length||0);
   const detail={
-    id,koName:tr(id,"ko"),enName:tr(id,"en"),kind:kindOf(item),battleType:item.battleType??0,battleTypeLabel:battleTypeLabels[item.battleType]||"기타",
+    id,bucket,koName:tr(id,"ko"),enName:tr(id,"en"),kind:kindOf(item),battleType:item.battleType??0,battleTypeLabel:battleTypeLabels[item.battleType]||"기타",
     summaryKo:humanSummary(item),sourceFiles:sourceHistory["type:"+id]||["Piratez.rul"],sourceFile:(sourceHistory["type:"+id]||["Piratez.rul"]).at(-1),
     damageType:item.damageType??null,damageTypeKey:dKey,damageTypeKo:dKey?tr(dKey,"ko"):null,damageTypeEn:dKey?tr(dKey,"en"):null,
-    effectiveCore:core.values,effectiveCoreSources:core.sources,globalItemDefaults:globals,fireModes:fireModes(item),
-    compatibleAmmo:item.compatibleAmmo||[],usedByWeapons:reverseAmmo[id]||[],research,manufacture,references:refs,ufopaedia:articleFor(id),
-    raw:item,rawDeclared:declaredItemById.get(id)||item,inheritedViaRefNode:Boolean(declaredItemById.get(id)?.refNode)
+    effectiveCore:core.values,effectiveCoreSourceCodes:coreSourceCodes(core.sources),fireModes:fireModes(item),
+    compatibleAmmo:item.compatibleAmmo||[],usedByWeapons:reverseAmmo[id]||[],research,manufacture,otherReferences:refs.filter(x=>x.section!=="research"&&x.section!=="manufacture"),ufopaedia:articleFor(id),
+    raw:effectiveSplit.core,inheritedViaRefNode,resourceFieldCount
   };
-  const bucket=crypto.createHash("sha1").update(id).digest("hex")[0];detail.bucket=bucket;itemDetails[id]=detail;
+  if(inheritedViaRefNode)detail.rawDeclared=declaredSplit.core;
+  if(resourceFieldCount)itemResourceDetails[id]={id,bucket,effective:effectiveSplit.resources,...(declaredSplit?.resources.length?{declared:declaredSplit.resources}:{})};
+  itemDetails[id]=detail;
   itemIndex.push({
     id,bucket,koName:detail.koName,enName:detail.enName,kind:detail.kind,battleType:detail.battleType,battleTypeLabel:detail.battleTypeLabel,
     categories:(item.categories||[]).map(c=>tr(c,"ko")),categoryIds:item.categories||[],
@@ -283,7 +299,7 @@ for(const item of itemList){
     accuracyAuto:item.accuracyAuto??null,accuracySnap:item.accuracySnap??null,accuracyAimed:item.accuracyAimed??null,
     tuAuto:item.tuAuto??null,tuSnap:item.tuSnap??null,tuAimed:item.tuAimed??null,tuMelee:item.tuMelee??null,
     autoRange:item.autoRange??null,snapRange:item.snapRange??null,aimRange:item.aimRange??null,oneHandedPenalty:core.values.oneHandedPenalty,
-    researchCount:research.length,manufactureCount:manufacture.length,referenceCount:refs.length,hasUfopaedia:detail.ufopaedia.length>0,sortable
+    researchCount:research.length,manufactureCount:manufacture.length,referenceCount:refs.length,hasUfopaedia:detail.ufopaedia.length>0,resourceFieldCount,sortable
   });
 }
 itemIndex.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
@@ -298,21 +314,22 @@ for(const r of researchList){
 }
 const allResearchKeys=[...new Set(researchList.flatMap(x=>Object.keys(x)))].sort();
 const researchFieldMeta=Object.fromEntries(allResearchKeys.map(k=>[k,{label:({name:"내부 연구 ID",cost:"연구량",points:"완료 점수",dependencies:"직접 선행",requires:"필요 조건",unlocks:"명시 해금",needItem:"실물 표본 필요",destroyItem:"표본 소모",getOneFree:"무료 획득",getOneFreeProtected:"조건부 무료 획득"}[k]||k),description:"X-Piratez 연구 규칙의 원본 필드입니다."}]));
-function entity(id){return{id,koName:tr(id,"ko"),enName:tr(id,"en")}}
-const researchDetails={},researchIndex=[];
+const researchDetails={},researchIndex=[],researchResourceDetails={};
 for(const r of researchList){
   const id=r.name,bucket=crypto.createHash("sha1").update(id).digest("hex")[0],refs=groupRefs(researchRefs,id,"research");
   const deps=directDeps.get(id)||[],reqBy=[...new Set(requiredBy.get(id)||[])],unlocks=explicitUnlocks.get(id)||[];
   const items=refs.filter(x=>x.section==="items"),mans=refs.filter(x=>x.section==="manufacture"),others=refs.filter(x=>x.section!=="items"&&x.section!=="manufacture");
+  const rawSplit=splitPresentationResources(r);
   const detail={
     id,bucket,koName:tr(id,"ko"),enName:tr(id,"en"),
     summaryKo:tr(id,"ko")+": 연구량 "+(r.cost??"—")+" · 완료 점수 "+(r.points??"—")+(r.needItem?" · 실물 표본 "+(r.destroyItem?"필요·소모":"필요"):""),
     cost:r.cost??null,points:r.points??null,needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
-    dependencies:deps.map(entity),requiredBy:reqBy.map(entity),unlocks:unlocks.map(entity),
-    itemReferences:items,manufactureReferences:mans,otherReferences:others,references:refs,
-    getOneFree:(r.getOneFree||[]).map(entity),getOneFreeProtected:r.getOneFreeProtected||{},
-    sourceFiles:sourceHistory["name:"+id]||["Piratez.rul"],raw:r
+    dependencies:deps,requiredBy:reqBy,unlocks,
+    itemReferences:items,manufactureReferences:mans,otherReferences:others,
+    getOneFree:r.getOneFree||[],getOneFreeProtected:r.getOneFreeProtected||{},
+    sourceFiles:sourceHistory["name:"+id]||["Piratez.rul"],raw:rawSplit.core,resourceFieldCount:rawSplit.resources.length
   };
+  if(rawSplit.resources.length)researchResourceDetails[id]={id,bucket,effective:rawSplit.resources};
   researchDetails[id]=detail;
   researchIndex.push({
     id,bucket,koName:detail.koName,enName:detail.enName,cost:detail.cost,points:detail.points,needItem:detail.needItem,destroyItem:detail.destroyItem,
@@ -322,7 +339,10 @@ for(const r of researchList){
 }
 researchIndex.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
 
-const sortableItemFields=[...sortableItemFieldSet].filter(k=>k!=="type").sort((a,b)=>(fieldMeta[a]?.label||a).localeCompare(fieldMeta[b]?.label||b,"ko")).map(k=>({key:k,label:fieldMeta[k]?.label||k}));
+const sortableItemFields=[...sortableItemFieldSet].filter(k=>k!=="type").sort((a,b)=>(fieldMeta[a]?.label||a).localeCompare(fieldMeta[b]?.label||b,"ko")).map(k=>({key:k,label:fieldMeta[k]?.label||k,storage:promotedSortableFields.has(k)?"topLevel":"sortable"}));
+const entityNames=Object.fromEntries([...entityNameIds].sort().map(id=>[id,[tr(id,"ko"),tr(id,"en")]]));
+const resourceCount=x=>Object.values(x).reduce((s,v)=>s+(v.effective?.length||0)+(v.declared?.length||0),0);
+const itemResourceFields=resourceCount(itemResourceDetails),researchResourceFields=resourceCount(researchResourceDetails);
 
 fs.rmSync(outDir,{recursive:true,force:true});fs.mkdirSync(outDir,{recursive:true});
 function writeChunks(dir,details){
@@ -331,16 +351,19 @@ function writeChunks(dir,details){
   for(const [b,v] of Object.entries(buckets))fs.writeFileSync(path.join(d,b+".json"),JSON.stringify({details:v}));
 }
 writeChunks("chunks",itemDetails);writeChunks("research-chunks",researchDetails);
+writeChunks("resource-chunks/items",itemResourceDetails);writeChunks("resource-chunks/research",researchResourceDetails);
 
 const manifest={
   generatedAt:new Date().toISOString(),
   mod:{name:META.name||"X-Piratez",version:META.version||"unknown",id:META.id||"piratez",requiredExtendedVersion:META.requiredExtendedVersion||null},
   source:{metadataSha256:sha256(metadataPath),rules:ruleFiles.map(file=>({file,sha256:sha256(path.join(rulesDir,file))})),languages:["ko.yml","en-US.yml"].filter(f=>fs.existsSync(path.join(langDir,f))).map(file=>({file,sha256:sha256(path.join(langDir,file))}))},
-  counts:{items:itemIndex.length,research:researchIndex.length,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
+  counts:{items:itemIndex.length,research:researchIndex.length,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length,entityNames:Object.keys(entityNames).length,itemResourceFields,researchResourceFields,separatedResourceFields:itemResourceFields+researchResourceFields},
+  normalization:{entityNames:"entities.json",presentationResources:"resource-chunks/<kind>/<bucket>.json",resourceKinds:["items","research"],rawDeclaredStoredOnlyWhenInherited:true,itemReferenceUnionDerived:true,researchReferenceUnionDerived:true},
   loreIncluded:includeLore
 };
 fs.writeFileSync(path.join(outDir,"items-index.json"),JSON.stringify({meta:manifest,index:itemIndex}));
 fs.writeFileSync(path.join(outDir,"research-index.json"),JSON.stringify({meta:manifest,index:researchIndex}));
-fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
+fs.writeFileSync(path.join(outDir,"entities.json"),JSON.stringify({names:entityNames}));
+fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,effectiveCoreFields,coreSourceLegend,globalItemDefaults:globals,resourceStorage:{separated:true,path:"resource-chunks/<kind>/<bucket>.json",entryFormat:"[jsonPointer,value]"},damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
 fs.writeFileSync(path.join(outDir,"manifest.json"),JSON.stringify(manifest,null,2));
 console.log(JSON.stringify(manifest.counts));

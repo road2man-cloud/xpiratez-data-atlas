@@ -6,6 +6,8 @@ on:
     paths:
       - ".github/workflows/build-item-research.yml"
       - "tools/build-item-research-data.mjs"
+      - "tools/data-normalize.mjs"
+      - "tools/check-item-research-data.mjs"
       - "package.json"
   release:
     types: [published]
@@ -58,25 +60,7 @@ jobs:
           node tools/build-item-research-data.mjs             --source "$XPIRATEZ_MOD_PATH"             --out public/items/data
 
       - name: Verify generated DB
-        run: |
-          node - <<'NODE'
-          const fs=require('fs');
-          const base='public/items/data';
-          const items=JSON.parse(fs.readFileSync(base+'/items-index.json','utf8'));
-          const research=JSON.parse(fs.readFileSync(base+'/research-index.json','utf8'));
-          if(items.index.length!==4007) throw new Error('Expected 4007 items, got '+items.index.length);
-          if(research.index.length!==4612) throw new Error('Expected 4612 research topics, got '+research.index.length);
-          const u=items.index.find(x=>x.id==='STR_UAC_CARBINE');
-          if(!u) throw new Error('Missing STR_UAC_CARBINE');
-          const d=JSON.parse(fs.readFileSync(base+'/chunks/'+u.bucket+'.json','utf8')).details.STR_UAC_CARBINE;
-          if(d.raw.costBuy!==4500 || d.raw.costSell!==1500 || d.raw.weight!==6 ||
-             d.raw.accuracyAuto!==50 || d.raw.tuAuto!==27 ||
-             d.raw.accuracySnap!==70 || d.raw.tuSnap!==21 ||
-             d.raw.accuracyAimed!==100 || d.raw.tuAimed!==45) {
-            throw new Error('UAC Carbine smoke test failed');
-          }
-          console.log('Verified',items.index.length,'items and',research.index.length,'research topics');
-          NODE
+        run: node tools/check-item-research-data.mjs --data public/items/data
 
       - name: Commit generated database
         run: |
