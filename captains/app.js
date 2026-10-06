@@ -334,11 +334,76 @@ function renderCodexChoice(){
       '</article>').join("")+'</div>'+
     '</article>';
 }
+
+const divergingPathOptions=[
+  {
+    name:"슈퍼변이체 계집이 최고다",
+    query:"?슈퍼변이체 계집이 최고다?",
+    cost:"연구량 24",
+    gate:"갈라지는 길",
+    score:"완료 시 점수 -250",
+    payoff:"용사 고용 · 슈퍼 노예 · 라미아 연계",
+    detail:"여성/강화병 중심 분기. 이후 용사 고용과 Super Slave 계열에 연결되지만 완료 점수 -250이라는 명시적 페널티가 있다."
+  },
+  {
+    name:"남성 병사",
+    query:"?우리는 남자가 필요해?",
+    cost:"연구량 3",
+    gate:"갈라지는 길",
+    score:"선택 연구 완료 점수 +25",
+    payoff:"노예병 연구 즉시 획득 · Bonding/SS 작전 연계",
+    detail:"가장 싼 진입 비용. 선택 연구에서 '노예병' 연구를 공짜로 얻고, 이후 Bonding Ceremony · SS Operations · School of Hard Knocks · ANZUG 축으로 이어진다."
+  },
+  {
+    name:"농부 혁명!",
+    query:"?농부 혁명?",
+    cost:"연구량 9",
+    gate:"갈라지는 길 + 농부 고용",
+    score:"본 연구 완료 시 점수 +100",
+    payoff:"혁명 훈련 · 청소부 접촉 · 라미아 연계",
+    detail:"농부/혁명 계열의 장기 분기. Revolutionary Training과 Contacts: Scavengers의 핵심 선행이며 라미아 고용 선행도 만족시킨다."
+  },
+  {
+    name:"삶은 혼종이다",
+    query:"?삶은 혼종이다?",
+    cost:"연구량 20",
+    gate:"갈라지는 길 + '섹토위드 어디서 사'",
+    score:"본 연구 완료 시 점수 +20",
+    payoff:"레티큘란 · 버그아이 · 마고스 · 전용 장비/탈것 축",
+    detail:"선택 순간 레티큘란 연구를 공짜로 얻고 레티큘란 접촉 축을 연다. 본 연구 뒤에는 Hiver 특성, 마고스 졸업→버그아이 사이코너트, 버그아이 고용 연계, 레티큘란 플라스마 차저, 정찰/소형 수송기, 버그아이 반항아 갑옷·Technician Suit가 연결된다. 단, 버그아이 고용 자체는 Mutant Alliance·Human-Reticulan Alliance·Hybrid of Twilight 등 별도 선행까지 필요해 즉시 고용은 아니다."
+  },
+  {
+    name:"고양이와 함께 살기",
+    query:"?고양이와 함께 살기?",
+    cost:"연구량 32",
+    gate:"갈라지는 길 + 외계인 기원 + 통신",
+    score:"본 연구 완료 시 점수 +20",
+    payoff:"네코미미 병종 · 네트워크 · 파티/의식/고용 연계",
+    detail:"선택 연구에서 네코미미 연구를 공짜로 얻는다. 본 연구 뒤 Soldier: Nekomimi와 Nekomimi Network, Party/Ceremony/Recruitment 연관 연구 및 세속의 도덕 축이 열린다."
+  }
+];
+function renderDivergingPathsChoice(){
+  return '<article class="choice-stage card">'+
+    '<div class="choice-stage-head"><div><p class="eyebrow">장기 사회·병종 분기</p><h3>갈라지는 길</h3><p><b>STR_DIVERGING_PATHS</b> 뒤에 등장하는 별도의 영구 5지선다. 선장 성격/Codex와는 다른 선택축입니다.</p></div><span class="one-choice-badge">아래 5개 중 1개 선택</span></div>'+
+    '<div class="choice-grid">'+divergingPathOptions.map(o=>'<article class="choice-option">'+
+      '<div class="choice-option-head"><div><strong>'+o.name+'</strong><small>'+o.query+' · '+o.cost+'</small></div></div>'+
+      '<p>'+o.detail+'</p>'+
+      '<div class="choice-effects-wrap"><span class="choice-effects-title">실제 효과</span>'+
+        '<div class="choice-effect-list">'+
+          '<div class="choice-effect"><b>선행</b><span>'+o.gate+'</span></div>'+
+          '<div class="choice-effect"><b>핵심 이득</b><span>'+o.payoff+'</span></div>'+
+          '<div class="choice-effect"><b>점수</b><span>'+o.score+'</span></div>'+
+        '</div>'+
+      '</div>'+
+    '</article>').join("")+'</div>'+
+    '<p class="choice-late"><b>중요:</b> 여기서 하나를 고르면 나머지 네 갈래는 함께 선택할 수 없습니다. 카드마다 disable ID를 반복 표기하지 않고, 플레이어 관점의 5지선다로 표시합니다.</p>'+
+  '</article>';
+}
 function renderExclusiveRules(){
   const insight=document.querySelector("#soreassGoldInsight");
   if(insight) insight.innerHTML='<strong>읽는 법</strong><p>각 상자에서 <b>하나만 고르면 됩니다.</b> 카드 안의 <b>실제 효과</b>에는 수치와 기능을 바로 표시합니다. ✅는 자연 접근, ⚠는 큰 페널티가 있는 접근, ◇는 후기/추가조건입니다. 같은 묶음의 다른 선택지가 비활성화되는 사실은 반복하지 않고 별개의 기능 손실만 <b>고유 제약</b>으로 표시합니다.</p>';
   const root=document.querySelector("#exclusiveRules"); if(!root)return;
-  root.innerHTML=exclusiveStages.map((g,i)=>renderChoiceStage(g,i)).join("")+renderCodexChoice();
+  root.innerHTML=exclusiveStages.map((g,i)=>renderChoiceStage(g,i)).join("")+renderCodexChoice()+renderDivergingPathsChoice();
 }
 
 function renderCaptainCodexInteractions(){
