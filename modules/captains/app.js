@@ -252,22 +252,79 @@ const captainCodexInteractionRows=[
  ["Gambling Night","Gambling + Hierarchy + Gray Codex 없음 + SoreAss 아님","13%","승리 전리품 또는 -$100k; Gray/SoreAss는 이 이벤트를 봉쇄"]
 ];
 function prettyRule(id){return '<span class="rule-chip"><b>'+(researchLabels[id]||id.replace(/^STR_/,""))+'</b><small>'+id+'</small></span>'}
+
+const choiceStageMeta=[
+  {key:"initial",title:"1단계 · 기본 선장 성격",hint:"게임 전체의 큰 방향을 정하는 첫 선택",accent:"처음부터 5개 중 1개만 선택"},
+  {key:"class",title:"2단계 · PUSSY 직업",hint:"‘위와는 다른 선장’을 골랐을 때만 등장",accent:"5개 중 1개 선택"},
+  {key:"unclassed",title:"3단계 · 무직 혼합형",hint:"무직 게이트를 선택했을 때 열리는 혼합 성향",accent:"7개 중 1개 선택"},
+  {key:"pure",title:"4단계 · Pure 최종",hint:"Pure 게이트를 선택했을 때의 최종 성향",accent:"5개 중 1개 선택"}
+];
+
+function stageOptionIds(stage){
+  return stage.rows.map(([id])=>id);
+}
+function humanExtraLosses(stage,id,blocks){
+  const peers=new Set(stageOptionIds(stage));
+  return blocks.filter(x=>!peers.has(x)&&x!==id);
+}
+function rowForResearchId(id){
+  const map={
+    STR_CAPTAIN_DUMBASS:"dumbass",STR_CAPTAIN_JACKASS:"jackass",STR_CAPTAIN_LAZYASS:"lazyass",STR_CAPTAIN_SOREASS:"soreass",STR_CAPTAIN_PUSSY:"pussy",
+    STR_CAPTAIN_THIEF:"thief",STR_CAPTAIN_PRIEST:"priest",STR_CAPTAIN_MAGE:"mage",STR_CAPTAIN_RULER:"ruler",STR_CAPTAIN_UNCLASSED_UP:"unclassedGate",
+    STR_CAPTAIN_DUMBLAZY_UP:"dumblazy",STR_CAPTAIN_JACKDUMB_UP:"jackdumb",STR_CAPTAIN_JACKLAZY_UP:"jacklazy",STR_CAPTAIN_JACKSORE_UP:"jacksore",
+    STR_CAPTAIN_LAZYSORE_UP:"lazysore",STR_CAPTAIN_SOREDUMB_UP:"soredumb",STR_CAPTAIN_PURE_UP:"pureGate",
+    STR_CAPTAIN_GOLD_UP:"pureGold",STR_CAPTAIN_GREEN_UP:"pureGreen",STR_CAPTAIN_RED_UP:"pureRed",STR_CAPTAIN_GRAY_UP:"pureGray",STR_CAPTAIN_ULTIMATE:"ultimate"
+  };
+  return rows.find(r=>r.id===map[id]);
+}
+function choiceOptionCard(stage,id,blocks){
+  const r=rowForResearchId(id);
+  const peerCount=Math.max(0,stageOptionIds(stage).length-1);
+  const extras=humanExtraLosses(stage,id,blocks);
+  const summary=r?.summary||"이 분기의 다른 선택지와 상호배타입니다.";
+  const ev=r?.evText||"";
+  const colorsHtml=r?colors(r):"";
+  const extraHtml=extras.length
+    ? '<div class="choice-loss"><span>추가로 포기</span><div>'+extras.map(x=>'<b>'+(researchLabels[x]||x.replace(/^STR_/,""))+'</b>').join("")+'</div></div>'
+    : '<div class="choice-loss clean"><span>추가 고유 손실</span><b>없음</b></div>';
+  return '<article class="choice-option">'+
+    '<div class="choice-option-head"><div><strong>'+(researchLabels[id]||id)+'</strong>'+(ev?'<small>'+ev+' /월</small>':'')+'</div>'+colorsHtml+'</div>'+
+    '<p>'+summary+'</p>'+
+    '<div class="choice-lock"><span>이걸 고르면</span><b>같은 단계의 다른 '+peerCount+'개 선택 자동 잠금</b></div>'+
+    extraHtml+
+    '<details class="engine-details"><summary>엔진 규칙 보기</summary><code>'+id+'</code><div class="rule-list">'+blocks.map(prettyRule).join("")+'</div></details>'+
+    '</article>';
+}
+function renderChoiceStage(stage,index){
+  const meta=choiceStageMeta[index]||{title:stage.title,hint:"",accent:(stage.rows.length+"개 중 1개 선택")};
+  return '<article class="choice-stage card">'+
+    '<div class="choice-stage-head"><div><p class="eyebrow">ONE-OF-'+stage.rows.length+'</p><h3>'+meta.title+'</h3><p>'+meta.hint+'</p></div><span class="one-choice-badge">'+meta.accent+'</span></div>'+
+    '<div class="choice-rule"><span class="choice-dot">1</span><strong>하나를 확정하면</strong><span class="choice-arrow">→</span><span class="choice-dot muted-dot">'+(stage.rows.length-1)+'</span><strong>나머지 선택지는 자동 잠금</strong></div>'+
+    '<div class="choice-grid">'+stage.rows.map(([id,blocks])=>choiceOptionCard(stage,id,blocks)).join("")+'</div>'+
+    '</article>';
+}
+function renderCodexChoice(){
+  const opts=[
+    ["Gold","금색 코덱스","장교봉 · 화염포","소심이면 네 번째 색 → Saint"],
+    ["Green","녹색 코덱스","바이오플라즈마","무모면 네 번째 색 → Saint"],
+    ["Red","적색 코덱스","Little Ilya","게으른이면 네 번째 색 → Saint"],
+    ["Gray","회색 코덱스","Conversion Launcher","멍청이면 네 번째 색 → Saint"]
+  ];
+  return '<article class="choice-stage card codex-choice-stage">'+
+    '<div class="choice-stage-head"><div><p class="eyebrow">ONE-OF-4 · IRREVERSIBLE</p><h3>Codex 색상 선택</h3><p>화면상 ‘색 선택 연구’와 실제 Codex 연구에서 같은 잠금이 두 번 확인되지만, 플레이어 관점에서는 <b>4색 중 하나를 확정하는 단일 선택</b>입니다.</p></div><span class="one-choice-badge">4색 중 1색만</span></div>'+
+    '<div class="choice-rule"><span class="choice-dot">1</span><strong>한 색 선택</strong><span class="choice-arrow">→</span><span class="choice-dot muted-dot">3</span><strong>다른 Codex 영구 잠금</strong></div>'+
+    '<div class="choice-grid codex-choice-grid">'+opts.map(([color,name,tech,saint])=>{const i=codexInfo[color];return '<article class="choice-option codex-human '+color.toLowerCase()+'">'+
+      '<div class="choice-option-head"><div><strong>'+name+'</strong><small>'+tech+'</small></div><span class="color-pill">'+color+'</span></div>'+
+      '<p>'+saint+'</p><div class="choice-lock"><span>선택 효과</span><b>Captain '+color+' 획득 가능 · 나머지 3 Codex 포기</b></div>'+
+      '<details class="engine-details"><summary>엔진 규칙 보기</summary><p><code>STR_CHOOSE_'+color.toUpperCase()+'_QUERY</code> → <code>STR_CODEX_'+color.toUpperCase()+'</code></p><p>'+i.awakened+'</p></details>'+
+      '</article>';}).join("")+'</div>'+
+    '</article>';
+}
 function renderExclusiveRules(){
   const insight=document.querySelector("#soreassGoldInsight");
-  if(insight) insight.innerHTML='<strong>소심한 선장 + Gold Codex 경제 비교</strong>'+
-   '<p><b>Codex 전:</b> 소심의 현재 활성 기본·성향·색·결손색·Flaw·Double 반복 이벤트를 모두 합치면 현금성 EV는 약 <b>+$37.2k/월</b>입니다.</p>'+
-   '<p><b>Gold 각성 후:</b> Gold 색 이벤트가 +$7.19k/월 켜지고 기존 NO_GOLD 풀이 약 +$0.07k/월 사라져 순증은 약 <b>+$7.12k/월</b>. 따라서 <b>+$44.4k/월</b>로 올라갑니다.</p>'+
-   '<p><b>Saint 전 신들 단계:</b> GODS E1까지 열리면 G1의 현금성 EV가 약 <b>+$27.6k/월</b> 추가되어 잠시 <b>+$72.0k/월</b> 수준까지 갈 수 있습니다. 하지만 Gold가 네 번째 색이므로 Saint가 성립하면 G1~G8 Codex 보너스는 <code>STR_CAPTAIN_SAINT:false</code> 조건 때문에 정지합니다.</p>'+
-   '<p><b>Saint 후:</b> 기본/색 반복 EV 약 +$44.4k/월은 유지되고 Saint 전용 풀이 켜집니다. 그 Saint 풀을 지급 병사·아이템의 판매가까지 환금가치로 치면 조각상 전 약 <b>+$21.9k/월</b>이지만, 이벤트의 직접 funds만 보면 약 <b>-$2.44k/월</b>입니다. 즉 Saint의 핵심 보상은 현금보다 특수병 공급입니다.</p>'+
-   '<p><b>별도 일회성:</b> 소심+밀수업자 접촉의 Gold Trade는 $3m → 금괴 100개이며 즉시 매각 시 $4m, 순현금 약 <b>+$1m</b>입니다. 이건 월 반복 EV와 별도로 봐야 합니다.</p>';
+  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>아래는 더 이상 “disable 목록”이 아닙니다. 각 상자는 <b>한 번의 선택 묶음</b>입니다. 카드 하나를 고르면 같은 상자의 다른 카드가 잠깁니다. 카드 안의 “추가로 포기”만 그 선택이 특별히 더 막는 시설·기능입니다.</p>';
   const root=document.querySelector("#exclusiveRules"); if(!root)return;
-  const stageHtml=exclusiveStages.map(g=>'<article class="card exclusive-card"><h3>'+g.title+'</h3><div class="table-scroll"><table class="exclusive-table"><thead><tr><th>선택</th><th>완료 시 실제 disables</th></tr></thead><tbody>'+
-    g.rows.map(([id,blocks])=>'<tr><td>'+prettyRule(id)+'</td><td><div class="rule-list">'+blocks.map(prettyRule).join("")+'</div></td></tr>').join("")+
-    '</tbody></table></div></article>').join("");
-  const codexHtml='<article class="card exclusive-card"><h3>Codex · 2중 상호배타</h3><p class="muted">드릴 조사 뒤 색을 <b>선택하는 1포인트 연구</b>에서 한 번, 실제 Codex 연구에서 다시 한 번 다른 3색을 disable합니다.</p><div class="table-scroll"><table class="exclusive-table"><thead><tr><th>선택/연구</th><th>내부 ID</th><th>disable</th></tr></thead><tbody>'+
-    codexExclusive.map(([name,id,blocks])=>'<tr><td><b>'+name+'</b></td><td><code>'+id+'</code></td><td><div class="rule-list">'+blocks.map(prettyRule).join("")+'</div></td></tr>').join("")+
-    '</tbody></table></div></article>';
-  root.innerHTML=stageHtml+codexHtml;
+  root.innerHTML=exclusiveStages.map((g,i)=>renderChoiceStage(g,i)).join("")+renderCodexChoice();
 }
 function renderCaptainCodexInteractions(){
   const root=document.querySelector("#captainCodexInteractions"); if(!root)return;
@@ -349,19 +406,5 @@ const deep=[
  {title:"전술센터",tag:"전지구 탐지",body:"공격시설이 아니라 정보망. 범위 10800, 매시간 4% 탐지 판정을 제공한다. 한 번 추적된 표적은 범위 내 레이더가 있으면 유지된다.",rows:[["건설/유지","$600k / $50k월"],["재료","개인 자료 50"],["24시간 노출 시","단순 독립가정 약 62.5% 이상 1회 탐지"],["소심 전용","CAPTAIN_SOREASS 직접 요구"]]},
  {title:"네크로방어",tag:"Flak 보급 우회",body:"새 포탑이 아니라 Flak Tower Kit 대체 제작법. 귀한 25mm 기관포와 탄약 대신 네크로비행기 부품을 태운다.",rows:[["일반 Kit","1000 worker-h + 소형기관포4 + 50발상자12"],["Necro Kit","2500 worker-h + Necroplane Parts25"],["완성 Flak","방어225 / 명중65% / 인원+5 / 저장+50"]]},
  {title:"신병→군사 훈련",tag:"정규병 확정 성장",body:"소심과 Ruler는 신병훈련을 열 수 있고, Ruler만 거기서 군사훈련까지 간다. 성장한 스탯 일부를 감산하는 diminishing-return 구조라 신병일수록 효율이 좋다.",rows:[["신병훈련","기력+10 용기+10 반응+5 사격+15 투척+5 근력+10 근접+5 Mana+10"],["군사훈련","TU+5 기력+10 체력+5 용기+10 반응+5 사격+5 투척+5 근접+5 Mana+10 PsiStr+15"],["군사훈련 조건","Ruler + Boot Camp 선행 + DOJO"]]},
- {title:"건강미 / 자랑스러운 전사",tag:"대체 육성",body:"Priest는 탱커형 건강미 훈련, JackDumb·Pure Red·Saint는 전사문화의 자랑스러운 전사에 강점. 군사훈련과 일부 상호배타라 한 병사에 전부 쌓는 구조가 아니다.",rows:[["건강미 총효과 핵심","기력≈+31 체력≈+23 근력≈+14 장갑+1"],["자랑스러운 전사 핵심","기력≈+17 체력+6 용기+10 근접+10 투척+10 장갑+1"],["Charmy Dance","TU+10 체력 총+15 반응 총+15 등"]]},
- {title:"혼돈의 성자 지원군",tag:"기본 4선장 장기 보상",body:"PUSSY 계열은 영구 불가. 기본 4선장이 4색을 모두 맞추면 Saint가 가능하고, 도마뱀 조각상 전 기준 특수인력 기대 획득량이 약 0.652명/월이다.",rows:[["평균 간격","약 1.53개월/지원군"],["주요 대박","전쟁공주, 외톨이 클론, 농부 소녀 안내인, 얼음부인, 인간 영웅, 황혼의 신봉자"],["Dumbass 추가","Saint 상태에서 7%/월 정통파 마법사 영애 + $100k"]]},
- {title:"궁극의 선장",tag:"후불 경제 엔진",body:"$666k 이벤트 자체는 소모·부채·전투 없이 매월 63% 판정. 다만 현재 19(1).sav에서는 최단 4/1에 Ultimate 선택, 첫 월초 판정은 5/1.",rows:[["이벤트 1회","+$666,000 + 666점"],["핵심 월 EV","+$419,580"],["무색 전체 EV","약 +$579,129/월"],["대가","Saint·전술센터·호텔·대량채굴·지하감옥 마스터 포기"]]}
-];
-function renderDeep(){
- document.querySelector("#deepDiveCards").innerHTML=deep.map(d=>'<article class="deep-card card"><p class="eyebrow">'+d.tag+'</p><h3>'+d.title+'</h3><p>'+d.body+'</p><table><tbody>'+d.rows.map(x=>'<tr><th>'+x[0]+'</th><td>'+x[1]+'</td></tr>').join("")+'</tbody></table></article>').join("");
-}
 
-document.querySelector("#search").addEventListener("input",renderRows);
-document.querySelector("#stageFilter").addEventListener("change",renderRows);
-document.querySelector("#onlyAvailable").addEventListener("change",renderRows);
-document.querySelector("#resetBtn").addEventListener("click",()=>{document.querySelector("#search").value="";document.querySelector("#stageFilter").value="all";document.querySelector("#onlyAvailable").checked=false;sortState={key:"stage",dir:1};renderRows()});
-document.querySelector("#dialogClose").addEventListener("click",()=>document.querySelector("#detailDialog").close());
-document.querySelector("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
-
-renderHead();renderRows();renderCodexEconomyTable();renderCodexCards();renderExclusiveRules();renderCaptainCodexInteractions();renderTimeline();renderDeep();
+[Showing lines 1-408 of 425 (50.0KB limit). Use offset=409 to continue.]
