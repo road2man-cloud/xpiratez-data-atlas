@@ -1,4 +1,6 @@
 let DATA=null,PROG=null;
+const ASSET_VERSION="soldiers-20261006-2300";
+const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map();
 let RESEARCH_TOPICS=null;
 let sort={key:"firing",dir:-1};
@@ -10,13 +12,13 @@ const statOrder=["tu","stamina","health","bravery","reactions","firing","throwin
 const sourceLabel={direct:"직접 고용",manufacture:"제조/Recruitment",event:"이벤트"};
 
 async function load(){
-  const res=await fetch("../data/soldiers-index.json");
+  const res=await fetch(versioned("../data/soldiers-index.json"));
   if(!res.ok)throw new Error("병종 데이터 HTTP "+res.status);
   DATA=await res.json();
   try{
     const [prog,research]=await Promise.all([
-      fetch("../data/progression.json"),
-      fetch("../data/progression-research.json")
+      fetch(versioned("../data/progression.json")),
+      fetch(versioned("../data/progression-research.json"))
     ]);
     if(prog.ok)PROG=await prog.json();
     if(research.ok)RESEARCH_TOPICS=(await research.json()).topics||[];
@@ -235,11 +237,11 @@ async function loadPlan(id){
   if(PLAN_CACHE.has(id))return PLAN_CACHE.get(id);
   const b=id[0];
   if(!PLAN_BUCKETS.has(b)){
-    const r=await fetch("../data/progression-plans/"+b+".json");
+    const r=await fetch(versioned("../data/progression-plans/"+b+".json"));
     PLAN_BUCKETS.set(b,(await r.json()).plans);
   }
   if(!RESEARCH_TOPICS){
-    const r=await fetch("../data/progression-research.json");
+    const r=await fetch(versioned("../data/progression-research.json"));
     RESEARCH_TOPICS=(await r.json()).topics||[];
   }
   const compact=PLAN_BUCKETS.get(b)[id]||{topics:[]};
