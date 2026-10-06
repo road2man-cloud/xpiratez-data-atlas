@@ -5,6 +5,8 @@ on:
     branches: ["main"]
     paths:
       - "public/**"
+      - "tools/**"
+      - "package.json"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -27,10 +29,67 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install generator dependencies
+        run: npm install
+
+      - name: Download official X-Piratez v.o1.1.1
+        run: |
+          mkdir -p .cache/xpz
+          curl -fL --retry 4 --connect-timeout 20 \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/141 Safari/537.36" \
+            -e "https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop" \
+            "https://www.moddb.com/downloads/mirror/311212/129/e401cf49784caffcd0ce43a27a30929a/?referer=https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop" \
+            -o .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
+
+      - name: Verify official archive
+        run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
+
+      - name: Extract X-Piratez ruleset
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unar
+          mkdir -p .cache/unpacked
+          unar -q -o .cache/unpacked .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
+          META=$(find .cache/unpacked -type f -path "*/user/mods/Piratez/metadata.yml" -print -quit)
+          test -n "$META"
+          MOD_PATH=${META%/metadata.yml}
+          echo "XPIRATEZ_MOD_PATH=$MOD_PATH" >> "$GITHUB_ENV"
+
+      - name: Build normalized item and research data
+        run: |
+          rm -rf public/data .cache/full-data
+          node tools/build-item-research-data.mjs \
+            --source "$XPIRATEZ_MOD_PATH" \
+            --out public/data
+
+      - name: Build soldier and armor data
+        run: |
+          node tools/build-data.mjs \
+            --source "$XPIRATEZ_MOD_PATH" \
+            --out .cache/full-data
+          cp .cache/full-data/soldiers-index.json public/data/
+          cp .cache/full-data/armors-index.json public/data/
+          rm -rf public/data/armor-chunks public/data/resource-chunks/armors
+          cp -r .cache/full-data/armor-chunks public/data/armor-chunks
+          mkdir -p public/data/resource-chunks
+          cp -r .cache/full-data/resource-chunks/armors public/data/resource-chunks/armors
+
+      - name: Verify generated atlas data
+        run: |
+          node tools/check-data.mjs --data public/data
+          node tools/check-armors.mjs
+          node --check public/items/app.js
+          node --check public/soldiers/app.js
+          node --check public/armors/app.js
+          node --check public/captains/app.js
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload site
         uses: actions/upload-pages-artifact@v3
