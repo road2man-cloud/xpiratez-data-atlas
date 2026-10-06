@@ -1,6 +1,6 @@
-let DATA=null;
+let DATA=null,ROUTES=null,ROUTES_PROMISE=null;
 let sort={key:"frontArmor",dir:-1};
-const DETAIL_CACHE={};
+const DETAIL_CACHE={},RAW_CACHE={},MANUFACTURE_BUCKET_CACHE={};
 
 const $=q=>document.querySelector(q);
 const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:2});
@@ -77,6 +77,27 @@ async function detail(id,bucket){
   const json=await res.json();
   return DETAIL_CACHE[id]=json.details[id];
 }
+async function routes(){
+  if(ROUTES)return ROUTES;
+  ROUTES_PROMISE??=fetch("../data/armor-routes/base.json").then(r=>r.json()).then(x=>ROUTES=x);
+  return ROUTES_PROMISE;
+}
+async function manufactureRoute(ref){
+  if(!ref?.id||!ref?.bucket)return null;
+  if(!MANUFACTURE_BUCKET_CACHE[ref.bucket]){
+    const res=await fetch("../data/armor-routes/manufacture/"+ref.bucket+".json");
+    if(!res.ok)throw new Error("제조 경로 청크를 불러오지 못했습니다.");
+    MANUFACTURE_BUCKET_CACHE[ref.bucket]=(await res.json()).details||{};
+  }
+  return MANUFACTURE_BUCKET_CACHE[ref.bucket][ref.id]||null;
+}
+async function rawDetail(id,bucket){
+  if(RAW_CACHE[id])return RAW_CACHE[id];
+  const res=await fetch("../data/armor-raw-chunks/"+bucket+".json");
+  if(!res.ok)throw new Error("원본 룰 청크를 불러오지 못했습니다.");
+  const json=await res.json();
+  return RAW_CACHE[id]=json.details[id];
+}
 function kv(label,value){return '<div class="box"><strong>'+label+'</strong><span>'+value+'</span></div>'}
 function chips(obj){
   const entries=Object.entries(obj||{});
@@ -84,7 +105,7 @@ function chips(obj){
 }
 function researchBlock(r){
   if(!r)return '<span class="muted">없음</span>';
-  const nodes=r.nodes||[];
+  const nodes=(r.nodeIds||[]).map(id=>ROUTES?.research?.[id]).filter(Boolean);
   return '<div class="route-metrics">'+
     kv("명목 누적 연구량",fmt(r.totalCost)+" scientist-hours")+
     kv("1명 연속 연구",esc(r.totalTimeOneScientist||"—"))+
@@ -101,7 +122,7 @@ function manufactureBlock(m){
 }
 async function openDetail(id,bucket){
   $("#detailBody").innerHTML='<p class="muted">상세 데이터 불러오는 중…</p>';$("#detailDialog").showModal();
-  const d=await detail(id,bucket);
+  const [d]=await Promise.all([detail(id,bucket),routes()]);
   if(!d){$("#detailBody").innerHTML="<p>상세 데이터 없음</p>";return}
   let html='<p class="eyebrow">Armor detail</p><h2>'+esc(d.koName)+'</h2><p class="muted">'+esc(d.id)+(d.storeItemId?' · item '+esc(d.storeItemId):'')+'</p>';
   html+='<div class="detail-grid">'+
@@ -112,24 +133,32 @@ async function openDetail(id,bucket){
   html+='<h3>회피·회복·시야</h3><div class="detail-grid">'+kv("근접 회피 공식",'<code>'+esc(JSON.stringify(d.meleeDodge||{}))+'</code>')+kv("회복 규칙",'<code>'+esc(JSON.stringify(d.recovery||{}))+'</code>')+kv("시야/위장",'야간 '+fmt(d.visibilityAtDark)+' · 주간 '+fmt(d.visibilityAtDay)+' · 위장 '+fmt(d.camouflageAtDark)+'/'+fmt(d.camouflageAtDay))+'</div>';
 
   html+='<h3>획득 방법과 시간</h3>';
-  if(d.acquisition.buy){
-    const b=d.acquisition.buy;
+  const buy=d.acquisition.buyKey?ROUTES.buy?.[d.acquisition.buyKey]:null;
+  if(buy){
+    const b=buy;
     html+='<article class="route-card"><h4>구매</h4><div class="route-metrics">'+kv("가격",fmt(b.costBuy))+kv("배송/이전시간",fmt(b.transferTime)+" h")+kv("필요 국가",esc(b.requiresCountry||"—"))+'</div><p><b>구매 조건:</b> '+(b.requires||[]).map(x=>'<span class="tag">'+esc(x)+'</span>').join(" ")+'</p>'+researchBlock(b.research)+'</article>';
   }
-  html+=(d.acquisition.manufacture||[]).map(manufactureBlock).join("");
-  if(d.acquisition.researchRewards?.length){
-    html+='<article class="route-card"><h4>연구 보상</h4>'+d.acquisition.researchRewards.map(x=>'<p><b>'+esc(x.koName)+'</b> <small>'+esc(x.id)+'</small></p>'+researchBlock(x.path)).join("")+'</article>';
+  const manufacture=(await Promise.all((d.acquisition.manufactureRefs||[]).map(manufactureRoute))).filter(Boolean);
+  html+=manufacture.map(manufactureBlock).join("");
+  const rewards=d.acquisition.researchRewardKey?(ROUTES.researchRewards?.[d.acquisition.researchRewardKey]||[]):[];
+  if(rewards.length){
+    html+='<article class="route-card"><h4>연구 보상</h4>'+rewards.map(x=>'<p><b>'+esc(x.koName)+'</b> <small>'+esc(x.id)+'</small></p>'+researchBlock(x.path)).join("")+'</article>';
   }
-  if(d.acquisition.events?.length){
-    html+='<article class="route-card"><h4>이벤트 참조</h4><p class="muted">이 항목들은 해당 아이템이 이벤트 규칙 안에 직접 참조된 경우입니다. 참조가 항상 확정 보상을 뜻하는 것은 아닙니다.</p>'+d.acquisition.events.map(x=>'<span class="tag">'+esc(x.koName)+' ('+esc(x.id)+')</span>').join(" ")+'</article>';
+  const events=(d.acquisition.eventIds||[]).map(id=>ROUTES.events?.[id]).filter(Boolean);
+  if(events.length){
+    html+='<article class="route-card"><h4>이벤트 참조</h4><p class="muted">이 항목들은 해당 아이템이 이벤트 규칙 안에 직접 참조된 경우입니다. 참조가 항상 확정 보상을 뜻하는 것은 아닙니다.</p>'+events.map(x=>'<span class="tag">'+esc(x.koName)+' ('+esc(x.id)+')</span>').join(" ")+'</article>';
   }
-  if(!d.acquisition.buy&&!d.acquisition.manufacture?.length&&!d.acquisition.researchRewards?.length&&!d.acquisition.events?.length){
+  if(!buy&&!manufacture.length&&!rewards.length&&!events.length){
     html+='<p class="muted">직접 구매/제조/연구보상 경로가 없습니다. 적 장비·전리품·변환·특수 스크립트 획득일 수 있습니다.</p>';
   }
 
-  html+='<details><summary>모든 룰 역참조 ('+(d.acquisition.references?.length||0)+')</summary><div class="refs">'+(d.acquisition.references||[]).map(r=>'<div><b>'+esc(r.section)+'</b> · '+esc(r.koName)+' <small>'+esc(r.owner)+'</small><br><code>'+esc(r.paths.join(", "))+'</code></div>').join("")+'</div></details>';
-  html+='<details><summary>원본 Armor 룰</summary><pre>'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>';
+  html+='<details><summary>원본 Armor 룰 · 별도 저장</summary><div class="raw-load"><button id="loadRawRule" type="button">원본 룰 불러오기</button><div id="rawRuleBody" class="muted">화면/음향 리소스와 분리된 핵심 룰을 필요할 때만 불러옵니다.</div></div></details>';
   $("#detailBody").innerHTML=html;
+  $("#loadRawRule").onclick=async()=>{
+    const body=$("#rawRuleBody");body.textContent="불러오는 중…";
+    try{const raw=await rawDetail(id,bucket);body.innerHTML='<pre>'+esc(JSON.stringify(raw?.raw||{},null,2))+'</pre>';}
+    catch(err){body.textContent=err.message;}
+  };
 }
 ["search"].forEach(id=>$("#"+id).addEventListener("input",render));
 ["acquire","equipableOnly","manufacturableOnly"].forEach(id=>$("#"+id).addEventListener("change",render));

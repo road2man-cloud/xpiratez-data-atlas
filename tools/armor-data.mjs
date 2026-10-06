@@ -71,26 +71,29 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
   const researchById=new Map(researchList.map(x=>[x.name,x]));
   const manufactureById=new Map(manufactureList.map(x=>[x.name,x]));
 
-  const directDeps=new Map();
+  const directDeps=new Map(),researchCatalog={};
   for(const r of researchList){
     const deps=uniq([...arr(r.dependencies),...arr(r.requires)].filter(x=>researchById.has(x)));
     directDeps.set(r.name,deps);
   }
+  function catalogResearch(id){
+    if(researchCatalog[id])return researchCatalog[id];
+    const rule=researchById.get(id)||{};
+    return researchCatalog[id]={id,koName:tr(id,"ko"),enName:tr(id,"en"),cost:rule.cost??null,points:rule.points??null,needItem:Boolean(rule.needItem),destroyItem:Boolean(rule.destroyItem)};
+  }
 
   function researchClosure(rootIds){
     const roots=uniq(rootIds.filter(x=>researchById.has(x)));
-    const seen=new Set(),visiting=new Set(),nodes=[];
-    function dfs(id,depth){
+    const seen=new Set(),visiting=new Set(),nodeIds=[];
+    function dfs(id){
       if(seen.has(id)||visiting.has(id))return;
       visiting.add(id);
-      for(const d of directDeps.get(id)||[])dfs(d,depth+1);
-      visiting.delete(id);seen.add(id);
-      const rule=researchById.get(id)||{};
-      nodes.push({id,koName:tr(id,"ko"),enName:tr(id,"en"),cost:rule.cost??null,points:rule.points??null,needItem:Boolean(rule.needItem),destroyItem:Boolean(rule.destroyItem),depth});
+      for(const d of directDeps.get(id)||[])dfs(d);
+      visiting.delete(id);seen.add(id);catalogResearch(id);nodeIds.push(id);
     }
-    roots.forEach(id=>dfs(id,0));
-    const totalCost=nodes.reduce((s,x)=>s+(Number.isFinite(Number(x.cost))?Number(x.cost):0),0);
-    return{roots:roots.map(id=>named(id,tr)),nodes,totalCost,totalTimeOneScientist:formatHours(totalCost),totalTimeTenScientists:formatHours(Math.ceil(totalCost/10))};
+    roots.forEach(dfs);
+    const totalCost=nodeIds.reduce((s,id)=>{const c=researchCatalog[id]?.cost;return s+(Number.isFinite(Number(c))?Number(c):0)},0);
+    return{roots,nodeIds,totalCost,totalTimeOneScientist:formatHours(totalCost),totalTimeTenScientists:formatHours(Math.ceil(totalCost/10))};
   }
 
   function manufactureProduces(m,itemId){
@@ -131,8 +134,9 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
   const storeIds=new Set(armorList.map(a=>a.storeItem).filter(x=>typeof x==="string"));
   const refs=buildTargetRefs(effectiveMerged,storeIds);
   const damageTypes=damageKeys.map((key,id)=>({id,key,ko:tr(key,"ko"),en:tr(key,"en")}));
+  const acquisitionCatalog={research:researchCatalog,manufacture:{},buy:{},researchRewards:{},events:{}};
 
-  const index=[],details={},resourceDetails={};
+  const index=[],details={},rawDetails={},resourceDetails={};
   for(const a of armorList){
     const id=a.type,bucket=crypto.createHash("sha1").update(id).digest("hex")[0],storeItemId=typeof a.storeItem==="string"?a.storeItem:null,item=storeItemId?itemById.get(storeItemId):null;
     const front=num(a.frontArmor),right=num(a.sideArmor),left=right+num(a.leftArmorDiff),rear=num(a.rearArmor),under=num(a.underArmor);
@@ -152,6 +156,10 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
     const rewardResearch=storeItemId?researchRewardRoutes(storeItemId):[];
     const events=storeItemId?eventRoutes(storeItemId):[];
     const references=storeItemId?groupRefs(refs,storeItemId,tr):[];
+    for(const m of manufacture)acquisitionCatalog.manufacture[m.id]=m;
+    if(buy&&storeItemId)acquisitionCatalog.buy[storeItemId]=buy;
+    if(rewardResearch.length&&storeItemId)acquisitionCatalog.researchRewards[storeItemId]=rewardResearch;
+    for(const ev of events)acquisitionCatalog.events[ev.id]=ev;
     const acquisitionKinds=[];
     if(manufacture.length)acquisitionKinds.push("제조");
     if(buy)acquisitionKinds.push("구매");
@@ -177,10 +185,18 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
       allowsRunning:a.allowsRunning??null,allowsStrafing:a.allowsStrafing??null,allowsSneaking:a.allowsSneaking??null,allowsKneeling:a.allowsKneeling??null,
       builtInWeapons:arr(a.builtInWeapons),units:arr(a.units),specialWeapon:a.specialWeapon??null,
       item:item?{id:item.type}:null,
-      acquisition:{kinds:acquisitionKinds,buy,manufacture,researchRewards:rewardResearch,events,references,equipRequires:equipRequires.map(id=>named(id,tr)),equipResearch},
+      acquisition:{
+        kinds:acquisitionKinds,
+        buyKey:buy&&storeItemId?storeItemId:null,
+        manufactureRefs:manufacture.map(x=>({id:x.id,bucket:crypto.createHash("sha1").update(x.id).digest("hex")[0]})),
+        researchRewardKey:rewardResearch.length&&storeItemId?storeItemId:null,
+        eventIds:events.map(x=>x.id),
+        equipRequires:equipRequires.map(id=>named(id,tr)),equipResearch
+      },
       mainResearchCost,mainManufactureTime,mainAcquireHours,
-      sourceFiles:sourceHistory["type:"+id]||[],raw:rawSplit.core,resourceFieldCount:rawSplit.resources.length
+      sourceFiles:sourceHistory["type:"+id]||[],resourceFieldCount:rawSplit.resources.length
     };
+    rawDetails[id]={id,bucket,raw:rawSplit.core,references};
     if(rawSplit.resources.length)resourceDetails[id]={id,bucket,effective:rawSplit.resources};
     details[id]=detail;
     index.push({
@@ -196,7 +212,7 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
 
   index.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
   return{
-    statKeys:ARMOR_STAT_KEYS,damageTypes,index,details,resourceDetails,
+    statKeys:ARMOR_STAT_KEYS,damageTypes,index,details,rawDetails,resourceDetails,acquisitionCatalog,
     counts:{armors:index.length,equipable:index.filter(x=>x.hasStoreItem).length,armorItems:index.filter(x=>x.isArmorItem).length,manufacturable:index.filter(x=>x.manufactureCount>0).length,buyable:index.filter(x=>x.buyable).length,resourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
   };
 }

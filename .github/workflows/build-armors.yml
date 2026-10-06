@@ -65,7 +65,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/data/armors-index.json public/data/armor-chunks public/data/resource-chunks/armors
+          git add public/data/armors-index.json public/data/armor-routes public/data/armor-chunks public/data/armor-raw-chunks public/data/resource-chunks/armors
           if git diff --cached --quiet; then
             echo "No armor data changes."
             exit 0

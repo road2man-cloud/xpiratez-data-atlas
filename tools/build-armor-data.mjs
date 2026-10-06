@@ -99,6 +99,8 @@ const damageKeys=[
 const armorData=buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys});
 fs.mkdirSync(outDir,{recursive:true});
 fs.rmSync(path.join(outDir,"armor-chunks"),{recursive:true,force:true});
+fs.rmSync(path.join(outDir,"armor-raw-chunks"),{recursive:true,force:true});
+fs.rmSync(path.join(outDir,"armor-routes"),{recursive:true,force:true});
 fs.rmSync(path.join(outDir,"resource-chunks","armors"),{recursive:true,force:true});
 
 function writeChunks(dir,details){
@@ -108,7 +110,20 @@ function writeChunks(dir,details){
   for(const [b,v] of Object.entries(buckets))fs.writeFileSync(path.join(d,b+".json"),JSON.stringify({details:v}));
 }
 writeChunks("armor-chunks",armorData.details);
+writeChunks("armor-raw-chunks",armorData.rawDetails);
 writeChunks("resource-chunks/armors",armorData.resourceDetails);
+const routeDir=path.join(outDir,"armor-routes");fs.mkdirSync(routeDir,{recursive:true});
+const manufactureWithBuckets={};
+for(const [id,x] of Object.entries(armorData.acquisitionCatalog.manufacture)){
+  manufactureWithBuckets[id]={...x,bucket:crypto.createHash("sha1").update(id).digest("hex")[0]};
+}
+writeChunks("armor-routes/manufacture",manufactureWithBuckets);
+fs.writeFileSync(path.join(routeDir,"base.json"),JSON.stringify({
+  research:armorData.acquisitionCatalog.research,
+  buy:armorData.acquisitionCatalog.buy,
+  researchRewards:armorData.acquisitionCatalog.researchRewards,
+  events:armorData.acquisitionCatalog.events
+}));
 
 const manifest={
   generatedAt:new Date().toISOString(),
