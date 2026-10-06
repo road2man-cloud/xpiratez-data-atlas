@@ -24,12 +24,13 @@ jobs:
       - name: Install generator dependencies
         run: npm install
 
-      - name: Download source release asset
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p .cache/xpz
-          gh release download xpz-o1.1.1-source             --pattern 'Dioxine_XPiratez_o1.1.1.rar'             --dir .cache/xpz
+      - name: Download official X-Piratez v.o1.1.1
+        uses: suisei-cn/actions-download-file@9f75b8c2dad5ccced7509c44a3b881c5613abde2
+        with:
+          url: "https://fra1.dl.dbolical.com/dl/2026/06/19/Dioxine_XPiratez_o1.1.1.rar"
+          target: ".cache/xpz"
+          filename: "Dioxine_XPiratez_o1.1.1.rar"
+          retry-times: 4
 
       - name: Verify official archive
         run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
