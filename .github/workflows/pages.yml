@@ -37,14 +37,35 @@ jobs:
       - name: Install generator dependencies
         run: npm install
 
-      - name: Download official X-Piratez v.o1.1.1
+      - name: Resolve and download official X-Piratez v.o1.1.1
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p .cache/xpz
-          curl -fL --retry 4 --connect-timeout 20 \
-            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/141 Safari/537.36" \
-            -e "https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop" \
-            "https://www.moddb.com/downloads/mirror/311212/129/e401cf49784caffcd0ce43a27a30929a/?referer=https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop" \
-            -o .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
+          START_URL="https://www.moddb.com/downloads/start/311212"
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/141 Safari/537.36"
+
+          curl -fL --retry 4 --connect-timeout 20 -A "$UA"             -e "https://www.moddb.com/mods/x-piratez/downloads/xpz-o1-19-jun-2026-reincarnated-in-another-world-but-everything-here-is-ai-slop"             "$START_URL" -o .cache/xpz/start.html
+
+          MIRROR_PATH="$(python - <<'PY'
+import html
+import re
+from pathlib import Path
+text=Path(".cache/xpz/start.html").read_text(encoding="utf-8",errors="replace")
+m=re.search(r'href="([^"]*/downloads/mirror/311212/[^"]+)"',text)
+if not m:
+    raise SystemExit("Could not resolve the current ModDB mirror URL")
+print(html.unescape(m.group(1)))
+PY
+)"
+          if [[ "$MIRROR_PATH" == http* ]]; then
+            MIRROR_URL="$MIRROR_PATH"
+          else
+            MIRROR_URL="https://www.moddb.com$MIRROR_PATH"
+          fi
+          echo "Resolved ModDB mirror endpoint: $MIRROR_URL"
+
+          curl -fL --retry 4 --connect-timeout 20 -A "$UA"             -e "$START_URL"             "$MIRROR_URL"             -o .cache/xpz/Dioxine_XPiratez_o1.1.1.rar
 
       - name: Verify official archive
         run: echo "79c89ba604606b86614dcfeb0f376061  .cache/xpz/Dioxine_XPiratez_o1.1.1.rar" | md5sum -c -
@@ -63,15 +84,11 @@ jobs:
       - name: Build normalized item and research data
         run: |
           rm -rf public/data .cache/full-data
-          node tools/build-item-research-data.mjs \
-            --source "$XPIRATEZ_MOD_PATH" \
-            --out public/data
+          node tools/build-item-research-data.mjs             --source "$XPIRATEZ_MOD_PATH"             --out public/data
 
       - name: Build soldier and armor data
         run: |
-          node tools/build-data.mjs \
-            --source "$XPIRATEZ_MOD_PATH" \
-            --out .cache/full-data
+          node tools/build-data.mjs             --source "$XPIRATEZ_MOD_PATH"             --out .cache/full-data
           cp .cache/full-data/soldiers-index.json public/data/
           cp .cache/full-data/armors-index.json public/data/
           rm -rf public/data/armor-chunks public/data/resource-chunks/armors
@@ -79,13 +96,19 @@ jobs:
           mkdir -p public/data/resource-chunks
           cp -r .cache/full-data/resource-chunks/armors public/data/resource-chunks/armors
 
+      - name: Build weapon comparison data
+        run: |
+          node tools/build-weapons.mjs             --source "$XPIRATEZ_MOD_PATH"             --out public/data/weapons-index.json
+
       - name: Verify generated atlas data
         run: |
           node tools/check-data.mjs --data public/data
           node tools/check-armors.mjs
+          node tools/check-weapons.mjs public/data/weapons-index.json
           node --check public/items/app.js
           node --check public/soldiers/app.js
           node --check public/armors/app.js
+          node --check public/weapons/app.js
           node --check public/captains/app.js
 
       - name: Configure Pages
