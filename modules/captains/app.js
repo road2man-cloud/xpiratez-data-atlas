@@ -1,24 +1,24 @@
 const S={yes:"✅",late:"◇",no:"❌",warn:"⚠"};
 const columns=[
   {key:"ev",label:"총 반복 현금성 EV/월",group:"경제",type:"ev"},
-  {key:"hotel",label:"호텔 +360k/월",group:"경제"},
-  {key:"vip",label:"VIP +500k/월",group:"경제"},
-  {key:"nonprofit",label:"비영리 연구실 +150k/월",group:"경제"},
+  {key:"hotel",label:"호텔",group:"경제"},
+  {key:"vip",label:"VIP Club",group:"경제"},
+  {key:"nonprofit",label:"비영리 연구실",group:"경제"},
   {key:"scamming",label:"사기 제조",group:"경제"},
-  {key:"bulk",label:"덩어리 캐내기",group:"경제"},
-  {key:"ultimateCash",label:"666k 이벤트",group:"경제"},
+  {key:"bulk",label:"대량 채굴",group:"경제"},
+  {key:"ultimateCash",label:"666k 반복 이벤트",group:"경제"},
   {key:"irradiator",label:"방사탑",group:"방어·탐지"},
-  {key:"necro",label:"네크로방어",group:"방어·탐지"},
-  {key:"bunker",label:"벙커",group:"방어·탐지"},
-  {key:"tactical",label:"전술센터",group:"방어·탐지"},
-  {key:"treasure",label:"보물 사냥",group:"방어·탐지"},
-  {key:"boot",label:"신병 훈련",group:"병사 강화"},
-  {key:"military",label:"군사 훈련",group:"병사 강화"},
+  {key:"necro",label:"네크로 Flak 우회",group:"방어·탐지"},
+  {key:"bunker",label:"벙커 + 14mm 포탑",group:"방어·탐지"},
+  {key:"tactical",label:"전술센터 탐지",group:"방어·탐지"},
+  {key:"treasure",label:"보물사냥 이벤트",group:"방어·탐지"},
+  {key:"boot",label:"신병훈련",group:"병사 강화"},
+  {key:"military",label:"군사훈련",group:"병사 강화"},
   {key:"bread",label:"건강미 훈련",group:"병사 강화"},
-  {key:"warrior",label:"전사 문화",group:"병사 강화"},
-  {key:"charmy",label:"Charmy Dance",group:"병사 강화"},
-  {key:"saint",label:"혼돈의 성자",group:"특수병·마법"},
-  {key:"saintReinf",label:"성자 지원군",group:"특수병·마법"},
+  {key:"warrior",label:"전사문화 훈련",group:"병사 강화"},
+  {key:"charmy",label:"Charmy Dance 훈련",group:"병사 강화"},
+  {key:"saint",label:"혼돈의 성자 루트",group:"특수병·마법"},
+  {key:"saintReinf",label:"성자 특수병 지원",group:"특수병·마법"},
   {key:"orthodox",label:"정통파 마법사 영애",group:"특수병·마법"},
   {key:"transfig",label:"변신술 의식",group:"특수병·마법"},
   {key:"xlarge",label:"초대형 저장고",group:"인프라"},
@@ -30,6 +30,33 @@ const columns=[
   {key:"codexRed",label:"적색 코덱스",group:"Codex 상호배타",type:"codex",color:"Red"},
   {key:"codexGray",label:"회색 코덱스",group:"Codex 상호배타",type:"codex",color:"Gray"}
 ];
+
+const featureInfo={
+  hotel:{short:"+$360k/월 · 인원25 · 훈련12 · 저장50",detail:"호텔 시설. 건설 $1.2m / 28일, 월 유지비가 -$360k라 실제로는 매월 $360k 수입. 인원 +25, 훈련 12, 저장 50, Mana +9/day, 포로수용 50."},
+  vip:{short:"+$500k/월 · Lab+1 · 훈련16 · Mana+8",detail:"VIP Club 시설. 건설 $1.35m / 20일, Glamour×240 필요, 매월 $500k 수입. Lab +1, 훈련 16, Mana +8/day, ANAL/DOJO 기능 제공."},
+  nonprofit:{short:"+$150k/월 · Lab+3 · Workshop+15",detail:"비영리 연구실. 건설 $750k / 32일, Cultural Wealth×50 + Slave Maid×15. 매월 $150k 수입, Lab +3, Workshop +15, SHOP 기능 제공."},
+  scamming:{short:"20 worker-h당 순익 약 $2.4k",detail:"개인 자료(Govt Corpse)를 재료로 돌리는 사기 제조 경로. 현재 사이트 계산 기준 평균 순익 약 $2,431 / 20 worker-hours. 큰 한방보다는 남는 작업시간을 현금화하는 소규모 경제 엔진."},
+  bulk:{short:"10개 단위 채굴·정제 · 시간 크게 절약",detail:"대량 굴착/정제 제조를 해금. 큰 바위 10개 채굴은 7,200→3,600 worker-h, 10개 정제는 2,400→1,000 worker-h로 단축. 대신 청소비 아이템이 생기고, 대량 채굴에는 3% Demonic Incursion 위험이 있음."},
+  ultimateCash:{short:"63%/월로 +$666k +666점",detail:"궁극의 선장 반복 이벤트. 매월 63% 확률로 자금 +$666,000과 점수 +666. 이벤트 자체 기대값은 +$419,580/월이며 재료 소모나 부채는 없음."},
+  irradiator:{short:"기지방어333 · 명중100% · Hyperwave 탐지",detail:"방사탑. 건설 $1.45m / 25일, 유지 $60k/월. 탐지 범위 1600·40% Hyperwave, 기지 공격 시 방어력 333·명중100%. 대신 SickBay -0.35/day라 치료가 느려지는 큰 페널티."},
+  necro:{short:"Flak Kit를 Necroplane Parts로 우회 제작",detail:"새 포탑이 아니라 Flak Tower Kit의 대체 제작법. 일반 제작의 소형기관포4+50발상자12 대신 Necroplane Parts×25를 쓰며, 작업량은 1000→2500 worker-h. 귀한 화기/탄약을 아끼는 보급 우회."},
+  bunker:{short:"기지방어 맵에 14mm 고정포탑",detail:"벙커 시설. 건설 $150k / 30일 + Prefab×7 + Necroplane Parts×35, 유지 $10k/월. 인원 +10·저장25·Mana+3/day이며 기지방어 맵에 Power66 4발 Burst 14mm 고정포탑을 배치함."},
+  tactical:{short:"범위10800 · 매시간 4% 탐지",detail:"전술센터는 공격시설이 아니라 전지구 정보망. 건설 $600k, 유지 $50k/월, 개인 자료×50. 범위 10800에서 매시간 4% 탐지 판정을 제공해 장거리 표적 발견에 특화."},
+  treasure:{short:"기지가 있는 지역마다 21%/월 Lootbox",detail:"보물사냥 이벤트 경로. 기지가 존재하는 해당 지역에서 월 21% 판정으로 Lootbox 기회를 생성. 기지 지역을 늘릴수록 판정 기회도 늘어나는 탐험형 보상."},
+  boot:{short:"사격+15 · 근력+10 · 기력/용기+10",detail:"신병 훈련. 기력+10, 용기+10, 반응+5, 사격+15, 투척+5, 근력+10, 근접+5, Mana+10. 성장한 병사보다 신병에게 효율이 큰 기본 강화."},
+  military:{short:"TU+5 포함 전반 능력치 강화",detail:"군사 훈련. TU+5, 기력+10, 체력+5, 용기+10, 반응+5, 사격+5, 투척+5, 근접+5, Mana+10, Psi Strength+15. Boot Camp 선행 + DOJO 필요, 여러 고급훈련과 상호배타."},
+  bread:{short:"탱커형 · 기력≈+31 체력≈+23 근력≈+14",detail:"건강미 훈련 총효과 핵심: 기력≈+31, 체력≈+23, 근력≈+14, 투척+5, Mana+6, 장갑+1. 사격보다 생존력·체력·근력에 치중한 탱커형 성장."},
+  warrior:{short:"근접형 · 근접+10 투척+10 용기+10",detail:"전사문화의 자랑스러운 전사 계열. 핵심 총효과는 기력≈+17, 체력+6, 용기+10, 근접+10, 투척+10, 장갑+1. 근접 전투원 육성에 유리."},
+  charmy:{short:"TU+10 · 체력+15 · 반응+15 · 장갑+3",detail:"Charmy Dance Training. 캡 미도달 기준 TU+10, 기력+10, 체력+15, 용기+10, 반응+15, Psi Skill+5, Mana+10, 전면/하부장갑+3. DOJO 28일, 용기50+, Glamour×6, Zany Zines×3."},
+  saint:{short:"기본 4선장 + 4색 완성 · PUSSY 불가",detail:"혼돈의 성자 루트. 기본 4선장이 빠진 색을 Codex로 채워 4색을 완성하면 진입 가능. PUSSY 계열은 영구 불가. Saint가 되면 기존 Codex G1~G8 신들 보너스 풀은 정지하고 Saint 전용 풀이 켜짐."},
+  saintReinf:{short:"특수병 기대 0.652명/월 ≈ 1.53개월/회",detail:"Saint 전용 지원군 풀. 도마뱀 조각상 전 기준 특수인력 기대 획득량 약 0.652명/월, 평균 약 1.53개월당 1회. 전쟁공주·외톨이 클론·인간 영웅 등 희귀 병종이 핵심 가치."},
+  orthodox:{short:"Dumbass+Saint에서 7%/월 · +$100k",detail:"멍청한 선장 + Saint 전용 추가 이벤트. 매월 7% 확률로 정통파 마법사 영애와 $100k를 함께 얻는 별도 특수병 공급원."},
+  transfig:{short:"Slave/Maid → Demonic Essence 제조",detail:"변신술 의식 연구는 PSION 시설이 필요한 후기 마법 테크. 연구량77, -1000점. 이후 Slave 또는 Slave Maid×1 + $7,777 + 350 worker-h로 Demonic Essence×1 제조 가능하며 매회 10% Demonic Incursion 위험."},
+  xlarge:{short:"저장3000 · Workshop+50",detail:"초대형 저장고. 건설 $2m / 18일, 유지 $30k/월, Slave Robot×12 필요. 저장공간 +3000과 Workshop +50을 한 시설에서 제공."},
+  capsule:{short:"인원50 · Mana+3/day · Lab-1/Workshop-10",detail:"캡슐 숙소. 건설 $200k / 16일, 유지 $7.5k/월. 인원 +50과 Mana +3/day 대신 Lab -1, Workshop -10이라는 공간 효율 대가가 있음."},
+  doubleJail:{short:"포로수용 30 · 일반 Jail의 2배",detail:"2배 감옥. 건설 $350k / 18일, 유지 $25k/월, Slave×5 필요. 포로수용 30으로 일반 Jail 15의 2배지만 SickBay -0.15/day 치료 페널티가 붙음."},
+  dungeon:{short:"포로25 + Workshop5 + 33%/월 보상 이벤트",detail:"지하감옥 마스터가 Dungeon 연구를 무료 해금. Dungeon은 $225k / 20일, 유지 $5k/월, 포로25·Workshop+5·DOJO 제공. 점수3000+에서 시설 보유 시 월 33%로 +$50k, +75점, Zany Zines×10 이벤트."}
+};
 
 const rows=window.CAPTAIN_ROWS;
 
@@ -251,6 +278,25 @@ function humanExtraLosses(stage,id,blocks){
 function humanFeatureName(id){
   return researchLabels[id]||id.replace(/^STR_/,"").replaceAll("_"," ");
 }
+function directEffectsForRow(r){
+  if(!r)return[];
+  return columns.filter(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn"));
+}
+function lateEffectsForRow(r){
+  if(!r)return[];
+  return columns.filter(c=>c.type!=="ev"&&c.type!=="codex"&&r[c.key]==="late");
+}
+function choiceEffectSummary(r){
+  if(!r)return"";
+  const direct=directEffectsForRow(r);
+  const late=lateEffectsForRow(r);
+  const directHtml=direct.length?'<div class="choice-effect-list">'+direct.map(c=>{
+    const i=featureInfo[c.key];
+    return '<div class="choice-effect '+(r[c.key]==="warn"?"warn-effect":"")+'"><b>'+S[r[c.key]]+' '+c.label+'</b><span>'+(i?.short||"")+'</span></div>';
+  }).join("")+'</div>':'<p class="choice-no-direct">이 단계 선택 자체의 즉시 고유효과는 없음. 다음 분기를 여는 게 핵심.</p>';
+  const lateHtml=late.length?'<p class="choice-late"><b>후기/추가조건:</b> '+late.map(c=>c.label).join(" · ")+'</p>':'';
+  return '<div class="choice-effects-wrap"><span class="choice-effects-title">실제 효과</span>'+directHtml+lateHtml+'</div>';
+}
 function choiceOptionCard(stage,id,blocks){
   const r=rowForResearchId(id);
   const extras=humanExtraLosses(stage,id,blocks);
@@ -261,6 +307,7 @@ function choiceOptionCard(stage,id,blocks){
   return '<article class="choice-option">'+
     '<div class="choice-option-head"><div><strong>'+(researchLabels[id]||id)+'</strong>'+(ev?'<small>'+ev+' /월</small>':'')+'</div>'+colorsHtml+'</div>'+
     (summary?'<p>'+summary+'</p>':'')+
+    choiceEffectSummary(r)+
     constraint+
     '</article>';
 }
@@ -288,7 +335,7 @@ function renderCodexChoice(){
 }
 function renderExclusiveRules(){
   const insight=document.querySelector("#soreassGoldInsight");
-  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>각 상자에서 <b>하나만 고르면 됩니다.</b> 같은 묶음의 다른 선택지가 비활성화된다는 사실은 별도 목록으로 반복하지 않습니다. 선택마다 정말 별개의 기능 손실이 있을 때만 <b>고유 제약</b>으로 표시합니다.</p>';
+  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>각 상자에서 <b>하나만 고르면 됩니다.</b> 카드 안의 <b>실제 효과</b>에는 수치와 기능을 바로 표시합니다. ✅는 자연 접근, ⚠는 큰 페널티가 있는 접근, ◇는 후기/추가조건입니다. 같은 묶음의 다른 선택지가 비활성화되는 사실은 반복하지 않고 별개의 기능 손실만 <b>고유 제약</b>으로 표시합니다.</p>';
   const root=document.querySelector("#exclusiveRules"); if(!root)return;
   root.innerHTML=exclusiveStages.map((g,i)=>renderChoiceStage(g,i)).join("")+renderCodexChoice();
 }
@@ -305,9 +352,24 @@ const featureNames=Object.fromEntries(columns.filter(c=>c.type!=="ev"&&c.type!==
 const stageOrder={initial:0,class:1,unclassed:2,pure:3};
 let sortState={key:"stage",dir:1};
 
-function statusCell(v){
-  const label=v==="yes"?"자연 접근":v==="late"?"후기/조건부":v==="warn"?"가능·큰 페널티":"불가/봉쇄";
-  return '<span class="status '+v+'" title="'+label+'">'+S[v]+'</span>';
+function statusLabel(v){return v==="yes"?"자연 접근":v==="late"?"후기/조건부":v==="warn"?"가능·큰 페널티":"불가/봉쇄";}
+function statusCell(v,c){
+  const i=featureInfo[c?.key];
+  const title=[statusLabel(v),i?.short].filter(Boolean).join(" · ");
+  return '<span class="status '+v+'" title="'+title+'">'+S[v]+'</span>';
+}
+function columnHead(c){
+  if(c.type==="ev")return '<span class="col-title">'+c.label+'</span><small class="col-effect">직접 현금 + 판매가 지급품 기대값</small>';
+  if(c.type==="codex")return '<span class="col-title">'+c.label+'</span><small class="col-effect">색 이벤트 · 전용보상 · Saint 연계</small>';
+  const i=featureInfo[c.key];
+  return '<span class="col-title">'+c.label+'</span>'+(i?'<small class="col-effect">'+i.short+'</small>':'');
+}
+function effectCardsHtml(r){
+  const effects=columns.filter(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn"||r[c.key]==="late"));
+  return '<div class="effect-card-grid">'+effects.map(c=>{
+    const state=r[c.key],i=featureInfo[c.key]||{};
+    return '<article class="effect-card effect-'+state+'"><div class="effect-card-head"><b>'+S[state]+' '+c.label+'</b><span>'+statusLabel(state)+'</span></div><strong>'+i.short+'</strong><p>'+i.detail+'</p></article>';
+  }).join("")+'</div>';
 }
 function evCell(r){
   const cls=r.ev>0?"ev-pos":r.ev<0?"ev-neg":"ev-zero";
@@ -321,7 +383,7 @@ function renderHead(){
   const groups=[];
   for(const c of columns){let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group,count:0};groups.push(g)}g.count++}
   thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
-  '<tr>'+columns.map(c=>'<th data-sort="'+(c.key==="ev"?"ev":"")+'">'+c.label+'</th>').join("")+'</tr>';
+  '<tr>'+columns.map(c=>'<th class="feature-head" data-sort="'+(c.key==="ev"?"ev":"")+'" title="'+(featureInfo[c.key]?.detail||"")+'">'+columnHead(c)+'</th>').join("")+'</tr>';
   thead.querySelectorAll("[data-sort=ev]").forEach(th=>{th.style.cursor="pointer";th.title="클릭하여 EV 정렬";th.addEventListener("click",()=>{sortState={key:"ev",dir:sortState.key==="ev"?-sortState.dir:-1};renderRows()})});
 }
 
@@ -331,7 +393,8 @@ function filteredRows(){
   const only=document.querySelector("#onlyAvailable").checked;
   let out=rows.filter(r=>{
     if(stage!=="all"&&r.stage!==stage)return false;
-    const blob=[r.name,r.code,r.route,r.summary,...r.notes,...Object.entries(r).filter(([k,v])=>v==="yes"||v==="warn").map(([k])=>featureNames[k]||"")].join(" ").toLowerCase();
+    const activeKeys=Object.entries(r).filter(([k,v])=>v==="yes"||v==="warn"||v==="late").map(([k])=>k);
+    const blob=[r.name,r.code,r.route,r.summary,...r.notes,...activeKeys.map(k=>featureNames[k]||""),...activeKeys.map(k=>featureInfo[k]?.short||""),...activeKeys.map(k=>featureInfo[k]?.detail||"")].join(" ").toLowerCase();
     if(q&&!blob.includes(q))return false;
     if(only&&!columns.some(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn")))return false;
     return true;
@@ -344,15 +407,14 @@ function filteredRows(){
 }
 function renderRows(){
   const tbody=document.querySelector("#matrixTable tbody");
-  tbody.innerHTML=filteredRows().map(r=>'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key]))+'</td>').join("")+'</tr>').join("");
+  tbody.innerHTML=filteredRows().map(r=>'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>').join("");
   tbody.querySelectorAll("tr").forEach(tr=>tr.addEventListener("click",()=>openDetail(tr.dataset.id)));
 }
 function openDetail(id){
   const r=rows.find(x=>x.id===id); if(!r)return;
-  const avail=columns.filter(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn"||r[c.key]==="late"));
   document.querySelector("#dialogBody").innerHTML='<p class="eyebrow">'+r.stageName+'</p><h2>'+r.name+'</h2><p class="muted">'+r.route+' · '+r.from+'</p><p>'+r.summary+'</p>'+
   '<div class="detail-grid"><div class="detail-box"><strong>반복 이벤트 월 EV</strong>'+r.evText+'</div><div class="detail-box"><strong>색 태그</strong>'+colors(r)+'</div></div>'+
-  '<h3>접근 가능한 주요 옵션</h3><div class="feature-list">'+avail.map(c=>'<span class="feature-chip">'+S[r[c.key]]+' '+c.label+'</span>').join("")+'</div>'+
+  '<h3>접근 가능한 주요 옵션 · 실제 효과</h3>'+effectCardsHtml(r)+
   codexDetailHtml(r)+'<h3>주의 / 해설</h3><ul>'+r.notes.map(n=>'<li>'+n+'</li>').join("")+'</ul>';
   document.querySelector("#detailDialog").showModal();
 }
