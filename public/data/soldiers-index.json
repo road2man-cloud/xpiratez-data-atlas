@@ -1,1 +1,1 @@
-[Line 1 is 810.4KB, exceeds 50.0KB limit. Use bash: sed -n '1p' D:\daphne_auto\xpiratez-data-atlas\public\data\soldiers-index.json | head -c 51200]
+[Line 1 is 848.9KB, exceeds 50.0KB limit. Use bash: sed -n '1p' D:\daphne_auto\xpiratez-data-atlas\.tmp-cap-data\soldiers-index.json | head -c 51200]
