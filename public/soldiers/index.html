@@ -40,13 +40,20 @@
         <option value="max">최대</option>
       </select>
     </div>
+    <div class="field">
+      <label for="sortMetric">정렬 기준</label>
+      <select id="sortMetric">
+        <option value="current">현재 능력치</option>
+        <option value="cap">성장캡</option>
+      </select>
+    </div>
     <label class="check"><input id="traitsOnly" type="checkbox"> 자동 특성 있는 획득형만</label>
   </section>
 
   <section class="explain card">
     <strong>실제 획득형 계산</strong>
     <span>기본 Soldier 랜덤치 → 획득 루트의 <code>spawnedSoldier.currentStats</code> 덮어쓰기 → 생성 시 <code>transformationBonuses</code> 능력치 합산 → OXCE 최소치 보정.</span>
-    <span>따라서 같은 내부 Soldier Type이라도 초기 특성/스탯이 다르면 별도 행입니다. 방어구 능력치는 이 표의 “고유 병사 스펙”에는 포함하지 않습니다.</span>
+    <span>각 능력치는 <b>현재 생성값 / 실효 성장캡</b>으로 표시합니다. 실효 성장캡은 본체 statCaps에 생성 시 자동 특성의 능력치 보너스를 더한 값이며, 특수 생성 템플릿은 시작부터 성장캡을 넘을 수도 있습니다. 방어구 능력치는 포함하지 않습니다.</span>
   </section>
 
   <section class="table-card card">
