@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import yaml from "js-yaml";
+import {buildSoldierData} from "./soldier-data.mjs";
 
 const args=process.argv.slice(2);
 const arg=(name,fallback=null)=>{const i=args.indexOf(name);return i>=0&&i+1<args.length?args[i+1]:fallback};
@@ -322,6 +323,8 @@ for(const r of researchList){
 }
 researchIndex.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
 
+const soldierData=buildSoldierData({effectiveMerged,sourceHistory,tr});
+
 const sortableItemFields=[...sortableItemFieldSet].filter(k=>k!=="type").sort((a,b)=>(fieldMeta[a]?.label||a).localeCompare(fieldMeta[b]?.label||b,"ko")).map(k=>({key:k,label:fieldMeta[k]?.label||k}));
 
 fs.rmSync(outDir,{recursive:true,force:true});fs.mkdirSync(outDir,{recursive:true});
@@ -336,11 +339,12 @@ const manifest={
   generatedAt:new Date().toISOString(),
   mod:{name:META.name||"X-Piratez",version:META.version||"unknown",id:META.id||"piratez",requiredExtendedVersion:META.requiredExtendedVersion||null},
   source:{metadataSha256:sha256(metadataPath),rules:ruleFiles.map(file=>({file,sha256:sha256(path.join(rulesDir,file))})),languages:["ko.yml","en-US.yml"].filter(f=>fs.existsSync(path.join(langDir,f))).map(file=>({file,sha256:sha256(path.join(langDir,file))}))},
-  counts:{items:itemIndex.length,research:researchIndex.length,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
+  counts:{items:itemIndex.length,research:researchIndex.length,soldiers:soldierData.counts.soldiers,soldierProfiles:soldierData.counts.soldierProfiles,soldierBonuses:soldierData.counts.soldierBonuses,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
   loreIncluded:includeLore
 };
 fs.writeFileSync(path.join(outDir,"items-index.json"),JSON.stringify({meta:manifest,index:itemIndex}));
 fs.writeFileSync(path.join(outDir,"research-index.json"),JSON.stringify({meta:manifest,index:researchIndex}));
+fs.writeFileSync(path.join(outDir,"soldiers-index.json"),JSON.stringify({meta:manifest,...soldierData}));
 fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
 fs.writeFileSync(path.join(outDir,"manifest.json"),JSON.stringify(manifest,null,2));
 console.log(JSON.stringify(manifest.counts));
