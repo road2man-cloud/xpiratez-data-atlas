@@ -1,4 +1,4 @@
-let DATA=null,ROUTES=null,ROUTES_PROMISE=null,CURRENT_DETAIL=null;
+let DATA=null,ROUTES=null,ROUTES_PROMISE=null,CURRENT_DETAIL=null,DETAIL_RECALC_TIMER=null;
 let sort={key:"frontArmor",dir:-1};
 const DETAIL_CACHE={},RAW_CACHE={},MANUFACTURE_BUCKET_CACHE={};
 
@@ -176,7 +176,11 @@ async function openDetail(id,bucket){
   if(!d){$("#detailBody").innerHTML="<p>상세 데이터 없음</p>";return}
   let html='<p class="eyebrow">Armor detail</p><h2>'+esc(d.koName)+'</h2><p class="muted">'+esc(d.id)+(d.storeItemId?' · item '+esc(d.storeItemId):'')+'</p>';
   html+='<div class="detail-grid">'+
-    kv("방어력 전/좌/우/후/하",[d.frontArmor,d.leftArmor,d.rightArmor,d.rearArmor,d.underArmor].join(" / "))+kv("무게",fmt(d.weight))+kv("획득 방식",(d.acquisition.kinds||[]).map(esc).join(" · "))+kv("시간 계산 기준",staffCount("scientists",10)+" 과학자 · "+staffCount("engineers",10)+" 엔지니어")+
+    kv("방어력 전/좌/우/후/하",[d.frontArmor,d.leftArmor,d.rightArmor,d.rearArmor,d.underArmor].join(" / "))+kv("무게",fmt(d.weight))+kv("획득 방식",(d.acquisition.kinds||[]).map(esc).join(" · "))+
+    '<div class="box detail-staff"><strong>시간 계산 기준</strong><div class="staff-inline">'+
+      '<label>과학자 <input id="detailScientists" type="number" min="1" max="999" step="1" value="'+staffCount("scientists",10)+'" inputmode="numeric"></label>'+
+      '<label>엔지니어 <input id="detailEngineers" type="number" min="1" max="999" step="1" value="'+staffCount("engineers",10)+'" inputmode="numeric"></label>'+
+    '</div></div>'+
     '</div>';
   html+='<h3>능력치 보정</h3><div class="stats-grid">'+Object.entries(d.stats||{}).map(([k,v])=>'<div class="statbox"><small>'+esc(statLabels[k]||k)+'</small><b class="'+(v>0?"pos":v<0?"neg":"")+'">'+(v>0?"+":"")+fmt(v)+'</b></div>').join("")+'</div>';
   html+='<h3>피해유형별 저항 배율</h3><div class="resist-grid">'+(DATA.damageTypes||[]).map((x,i)=>'<div class="statbox"><small>'+esc(x.ko||x.key)+'</small><b>'+resist(d.damageModifier[i])+'</b></div>').join("")+'</div>';
@@ -207,6 +211,19 @@ async function openDetail(id,bucket){
 
   html+='<details><summary>원본 Armor 룰 · 별도 저장</summary><div class="raw-load"><button id="loadRawRule" type="button">원본 룰 불러오기</button><div id="rawRuleBody" class="muted">화면/음향 리소스와 분리된 핵심 룰을 필요할 때만 불러옵니다.</div></div></details>';
   $("#detailBody").innerHTML=html;
+  [["detailScientists","scientists"],["detailEngineers","engineers"]].forEach(([detailId,toolbarId])=>{
+    const input=$("#"+detailId);
+    if(!input)return;
+    input.addEventListener("input",()=>{
+      const n=Math.floor(Number(input.value));
+      if(!Number.isFinite(n)||n<1||n>999)return;
+      $("#"+toolbarId).value=String(n);
+      clearTimeout(DETAIL_RECALC_TIMER);
+      DETAIL_RECALC_TIMER=setTimeout(()=>{
+        if(CURRENT_DETAIL&&$("#detailDialog").open)openDetail(CURRENT_DETAIL.id,CURRENT_DETAIL.bucket);
+      },180);
+    });
+  });
   $("#loadRawRule").onclick=async()=>{
     const body=$("#rawRuleBody");body.textContent="불러오는 중…";
     try{const raw=await rawDetail(id,bucket);body.innerHTML='<pre>'+esc(JSON.stringify(raw?.raw||{},null,2))+'</pre>';}
@@ -218,6 +235,6 @@ async function openDetail(id,bucket){
 ["scientists","engineers"].forEach(id=>$("#"+id).addEventListener("input",()=>{
   if(CURRENT_DETAIL&&$("#detailDialog").open)openDetail(CURRENT_DETAIL.id,CURRENT_DETAIL.bucket);
 }));
-$("#closeDialog").onclick=()=>{$("#detailDialog").close();CURRENT_DETAIL=null};
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){e.currentTarget.close();CURRENT_DETAIL=null}});
+$("#closeDialog").onclick=()=>{clearTimeout(DETAIL_RECALC_TIMER);$("#detailDialog").close();CURRENT_DETAIL=null};
+$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){clearTimeout(DETAIL_RECALC_TIMER);e.currentTarget.close();CURRENT_DETAIL=null}});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
