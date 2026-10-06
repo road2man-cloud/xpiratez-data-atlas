@@ -94,3 +94,20 @@ If two acquisition routes share the same base Soldier Type but differ in `curren
 - spawn-template fixed stats
 - automatic transformation bonuses
 - effective trait-included generated stats
+
+
+## Growth caps and sorting
+
+Every stat in the acquisition and base-rule tables is shown as:
+
+`generated stat / effective growth cap`
+
+For acquisition profiles:
+
+- raw growth cap = the underlying `RuleSoldier.statCaps`
+- effective growth cap = raw growth cap + stat modifiers from automatic creation-time soldier bonuses
+- training cap = `RuleSoldier.trainingStatCaps`, shown separately in detail views
+
+The main table can sort each stat column by either the selected generated value (min/avg/max) or by the effective growth cap.
+
+Automatic bonus stats are outside the intrinsic `statCaps` system in OXCE. Therefore an automatic +13 firing bonus on a body with firing cap 120 produces an effective displayed growth cap of 133. Spawn templates and transformations may also create a soldier already above the intrinsic cap; those cases are valid and are highlighted rather than clamped down.
