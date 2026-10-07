@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병종 DB</title>
-<link rel="stylesheet" href="styles.css?v=soldiers-20261007-finalbuilds4-filters">
+<link rel="stylesheet" href="styles.css?v=soldiers-20261007-finalbuilds5-checkbox-filters">
 </head>
 <body>
 <header class="hero">
@@ -48,19 +48,18 @@
         <option value="cap">성장캡</option>
       </select>
     </div>
-    <div class="field" id="finalSourceField" hidden>
-      <label for="finalSource">최종조합 출처</label>
-      <select id="finalSource">
-        <option value="non-saint">일반 획득형 (Saint 제외)</option>
-        <option value="saint">Saint 지원군만</option>
-        <option value="all">전체</option>
-      </select>
+    <div class="filter-field" id="finalSourceField" hidden>
+      <span class="filter-label">최종조합 출처</span>
+      <div class="check-group">
+        <label class="filter-check"><input id="finalSourceRegular" type="checkbox" checked> 일반 획득형</label>
+        <label class="filter-check saint-check"><input id="finalSourceSaint" type="checkbox"> Saint 지원군</label>
+      </div>
     </div>
-    <div class="field" id="finalBaseField" hidden>
-      <label for="finalBase">강화 전 기본형</label>
-      <select id="finalBase">
-        <option value="">전체 기본형</option>
-      </select>
+    <div class="filter-field final-base-field" id="finalBaseField" hidden>
+      <span class="filter-label">강화 전 기본형</span>
+      <div class="check-group final-base-options" id="finalBaseOptions">
+        <label class="filter-check all-check"><input id="finalBaseAll" type="checkbox" checked> 전체 기본형</label>
+      </div>
     </div>
     <label class="check"><input id="traitsOnly" type="checkbox"> 자동 특성 있는 획득형만</label>
   </section>
@@ -89,6 +88,6 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script src="app.js?v=soldiers-20261007-finalbuilds4-filters"></script>
+<script src="app.js?v=soldiers-20261007-finalbuilds5-checkbox-filters"></script>
 </body>
 </html>
