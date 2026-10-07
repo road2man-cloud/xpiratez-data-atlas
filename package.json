@@ -13,7 +13,13 @@
     "build:item-editorial": "node tools/build-item-editorial-insights.mjs",
     "build:editorials": "npm run build:research-editorial && npm run build:item-editorial",
     "check:item-research": "node tools/check-item-research-data.mjs",
-    "check:choices": "node tools/check-choice-coverage.mjs"
+    "check:choices": "node tools/check-choice-coverage.mjs",
+    "check:soldiers": "node tools/check-soldiers.mjs --data public/data",
+    "check:progression": "node tools/check-progression.mjs --data public/data",
+    "check:starting": "node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json",
+    "check:armors": "node tools/check-armors.mjs",
+    "check:weapons": "node tools/check-weapons.mjs",
+    "check:all": "npm run check:item-research && npm run check:soldiers && npm run check:progression && npm run check:starting && npm run check:facilities && npm run check:armors && npm run check:weapons && npm run check:choices"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
