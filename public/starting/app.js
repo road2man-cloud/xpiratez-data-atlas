@@ -1,7 +1,5 @@
 const DATA_URL="../data/starting-bonuses.json";
 const NAMES_URL="../items/data/entities.json";
-const SOLDIERS_URL="../data/soldiers-index.json";
-const PROGRESSION_URL="../data/progression.json";
 const ALIAS={
   STR_ARCTIC:"북극",STR_ANTARCTICA:"남극",STR_SIBERIA:"시베리아",STR_NORTH_ATLANTIC:"북대서양",
   STR_EUROPE:"유럽",STR_NORTH_AMERICA:"북아메리카",STR_SOUTH_AMERICA:"남아메리카",
@@ -14,10 +12,9 @@ const ALIAS={
   STR_TECHNOCRACY:"테크노크라시",STR_INDONESIA:"인도네시아",STR_TURAN:"투란",STR_CHILE:"칠레",
   STR_VENEZUELA:"베네수엘라"
 };
-const PERSON_REWARD_ITEMS=new Set(["STR_THEBAN_ASSAULT_CLONE_LICENSE","CIVILIAN_YOUNG_UBER","STR_TURANIAN_UBER","STR_REVOLUTIONARY_GIRL","STR_SLAVE","STR_HERO","STR_CATGIRL_VICTIM"]);
 const STAT_ORDER=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
 const STAT_LABEL={tu:"TU",stamina:"기력",health:"체력",bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",strength:"근력",psiStrength:"Psi 강도",psiSkill:"Psi 기술",melee:"근접",mana:"Mana"};
-let DATA=null,NAMES={},SOLDIER_DATA=null,PROGRESSION=null,PROFILE_BY_EVENT=new Map(),UNIT_PROFILES_BY_ITEM=new Map();
+let DATA=null,NAMES={};
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 const fmt=n=>new Intl.NumberFormat("ko-KR").format(Number(n)||0);
@@ -41,7 +38,7 @@ function group(list,kind){
     m.get(key).events.push(e);
   });
   return [...m.values()].map(g=>{
-    const itemMap=new Map(),research=new Set(),spawns=[];
+    const itemMap=new Map(),research=new Set(),spawns=[],unitProfiles=[];
     let points=0,funds=0;
     for(const e of g.events){
       points+=Number(e.points)||0;funds+=Number(e.funds)||0;
@@ -50,8 +47,9 @@ function group(list,kind){
       if(e.spawnedPersonType&&e.spawnedPersons)spawns.push({
         eventId:e.eventId,type:e.spawnedPersonType,count:e.spawnedPersons,soldier:e.spawnedSoldier||{}
       });
+      for(const p of e.unitProfiles||[])unitProfiles.push(p);
     }
-    return{...g,points,funds,items:[...itemMap].map(([id,qty])=>({id,qty})),research:[...research],spawns};
+    return{...g,points,funds,items:[...itemMap].map(([id,qty])=>({id,qty})),research:[...research],spawns,unitProfiles};
   });
 }
 function titleOf(g){
@@ -97,7 +95,22 @@ function statText(profile,key){
   if(sameRange(s,key))return fmt(s.min?.[key]);
   return fmt(s.min?.[key])+" / "+fmt(s.avg?.[key])+" / "+fmt(s.max?.[key]);
 }
-function unitProfileCard(profile,meta={}){
+function traitEffectText(profile){
+  const parts=[];
+  for(const t of profile.traits||[]){
+    const statBits=STAT_ORDER.filter(k=>(Number(t.stats?.[k])||0)!==0).map(k=>{
+      const v=Number(t.stats[k])||0;
+      return (STAT_LABEL[k]||k)+" "+(v>0?"+":"")+fmt(v);
+    });
+    if(statBits.length)parts.push(human(t.id)+": "+statBits.join(" · "));
+    const armor=[["전면",t.frontArmor],["측면",t.sideArmor],["후면",t.rearArmor],["하부",t.underArmor]]
+      .filter(([,v])=>(Number(v)||0)!==0).map(([k,v])=>k+" "+(Number(v)>0?"+":"")+fmt(v));
+    if(armor.length)parts.push(human(t.id)+" 방어 "+armor.join(" · "));
+    if((Number(t.visibilityAtDark)||0)!==0)parts.push(human(t.id)+" 야간시야 +"+fmt(t.visibilityAtDark));
+  }
+  return parts.join(" / ");
+}
+function unitProfileCard(profile){
   if(!profile)return "";
   const traits=(profile.traits||[]).map(t=>human(t.id||t)).join(", ");
   const caps=profile.effectiveStatCaps||profile.rawStatCaps||{};
@@ -107,49 +120,41 @@ function unitProfileCard(profile,meta={}){
     (caps[k]!=null?'<small>성장캡 '+fmt(caps[k])+'</small>':"")+'</div>'
   ).join("");
   const sourceBits=[];
-  if(meta.rewardQty)sourceBits.push(meta.recipe?"스타팅 재료 "+fmt(meta.rewardQty)+"개":"지급 "+fmt(meta.rewardQty)+"명");
+  if(profile.rewardQty)sourceBits.push(profile.recipe?"스타팅 재료 "+fmt(profile.rewardQty)+"개":"지급 "+fmt(profile.rewardQty)+"명");
   if(profile.cost!=null)sourceBits.push("생성비 "+fmt(profile.cost));
   if(profile.time!=null)sourceBits.push("작업량 "+fmt(profile.time));
   if(profile.rank!=null)sourceBits.push("rank "+fmt(profile.rank));
   let recipeInfo="";
-  if(meta.recipe&&meta.rewardItemId){
-    const own=(meta.recipe.requiredItems||[]).find(x=>x.id===meta.rewardItemId);
-    const extras=(meta.recipe.requiredItems||[]).filter(x=>x.id!==meta.rewardItemId);
-    const uses=Math.max(1,Number(own?.qty)||1);
-    const maxRuns=Math.floor((Number(meta.rewardQty)||0)/uses);
-    recipeInfo='<div class="unit-recipe"><b>전환 조건</b> '+esc(human(meta.rewardItemId))+' ×'+fmt(uses)+' / 1회'+
+  if(profile.recipe&&profile.rewardItemId){
+    const own=(profile.recipe.requiredItems||[]).find(x=>x.id===profile.rewardItemId);
+    const extras=(profile.recipe.requiredItems||[]).filter(x=>x.id!==profile.rewardItemId);
+    const uses=Math.max(1,Number(own?.qty)||Number(profile.rewardItemQty)||1);
+    const maxRuns=profile.maxRuns??Math.floor((Number(profile.rewardQty)||0)/uses);
+    recipeInfo='<div class="unit-recipe"><b>전환 조건</b> '+esc(human(profile.rewardItemId))+' ×'+fmt(uses)+' / 1회'+
       (maxRuns?' · 스타팅 물량 기준 최대 '+fmt(maxRuns)+'회':"")+
       (extras.length?'<br><span>추가 재료: '+extras.map(x=>esc(human(x.id))+' ×'+fmt(x.qty)).join(" · ")+'</span>':"")+
-      ((meta.recipe.requiresBaseFunc||[]).length?'<br><span>시설: '+meta.recipe.requiresBaseFunc.map(human).map(esc).join(", ")+'</span>':"")+'</div>';
+      ((profile.recipe.requiresBaseFunc||[]).length?'<br><span>시설: '+profile.recipe.requiresBaseFunc.map(human).map(esc).join(", ")+'</span>':"")+'</div>';
   }
   const displayName=profile.sourceType==="event"?(profile.soldierKoName||profile.soldierType):(profile.sourceKoName||profile.soldierKoName||profile.sourceId);
+  const traitEffects=traitEffectText(profile);
   return '<div class="unit-profile">'+
     '<div class="unit-profile-head"><div><strong>'+esc(displayName)+'</strong>'+
     '<span class="id">'+esc(profile.sourceId||profile.id)+'</span></div>'+
-    '<span class="unit-mode">'+esc(meta.mode||"지급 유닛")+'</span></div>'+
+    '<span class="unit-mode">'+esc(profile.mode||"지급 유닛")+'</span></div>'+
     '<p class="unit-summary">'+esc(profile.soldierKoName||profile.soldierType)+
     (profile.armor?' · 방어구 '+human(profile.armor):"")+
     (sourceBits.length?' · '+sourceBits.join(" · "):"")+'</p>'+
-    '<div class="unit-stat-legend">'+(fixed?"고정 실전 능력치":"실전 능력치 최소 / 평균 / 최대")+' · 자동 특성 적용 후</div>'+
+    '<div class="unit-stat-legend">'+(fixed?"고정 최종 능력치":"최종 능력치 최소 / 평균 / 최대")+' · <b>자동 특성 포함</b></div>'+
     '<div class="unit-stats">'+statCells+'</div>'+
-    (traits?'<div class="unit-traits"><b>자동 특성</b> '+esc(traits)+'</div>':"")+
+    (traits?'<div class="unit-traits"><b>자동 특성</b> '+esc(traits)+(traitEffects?'<small>'+esc(traitEffects)+'</small>':"")+'</div>':"")+
     recipeInfo+
   '</div>';
 }
 function unitProfilesForGroup(g){
-  const out=[];
-  const seen=new Set();
-  for(const e of g.events){
-    const p=PROFILE_BY_EVENT.get(e.eventId);
-    if(p&&!seen.has(p.id)){seen.add(p.id);out.push({profile:p,mode:"즉시 지급 유닛",rewardQty:e.spawnedPersons||p.spawnedPersons||1});}
-  }
-  for(const item of g.items){
-    for(const link of UNIT_PROFILES_BY_ITEM.get(item.id)||[]){
-      const p=link.profile;
-      if(seen.has(p.id))continue;
-      seen.add(p.id);
-      out.push({profile:p,recipe:link.recipe,mode:"보상 아이템으로 고용/생성",rewardQty:item.qty,rewardItemId:item.id});
-    }
+  const out=[],seen=new Set();
+  for(const p of g.unitProfiles||[]){
+    if(!p||seen.has(p.id))continue;
+    seen.add(p.id);out.push(p);
   }
   return out;
 }
@@ -158,7 +163,7 @@ function unitSection(g){
   if(!units.length)return "";
   return '<div class="group unit-group"><span class="group-title">제공 유닛 실제 전투 능력치</span>'+
     '<p class="unit-note">병종 DB의 생성 프로필을 연결해 자동 특성까지 적용한 값입니다. 즉시 지급 병사와 인물/라이선스형 보상의 전환 병사만 표시하며, 일반 재료가 우연히 고용식에 들어가는 경우는 제외합니다.</p>'+
-    units.map(x=>unitProfileCard(x.profile,x)).join("")+'</div>';
+    units.map(unitProfileCard).join("")+'</div>';
 }
 function card(g){
   const qty=g.items.reduce((n,x)=>n+x.qty,0);
@@ -209,24 +214,11 @@ function render(){
   document.querySelector("#cards").innerHTML=groups.length?groups.map(card).join(""):'<div class="empty">조건에 맞는 스타팅 보너스가 없습니다.</div>';
 }
 async function init(){
-  const [data,names,soldiers,progression]=await Promise.all([
+  const [data,names]=await Promise.all([
     fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error("starting data "+r.status);return r.json()}),
-    fetch(NAMES_URL).then(r=>r.ok?r.json():null).catch(()=>null),
-    fetch(SOLDIERS_URL).then(r=>{if(!r.ok)throw new Error("soldier data "+r.status);return r.json()}),
-    fetch(PROGRESSION_URL).then(r=>{if(!r.ok)throw new Error("progression data "+r.status);return r.json()})
+    fetch(NAMES_URL).then(r=>r.ok?r.json():null).catch(()=>null)
   ]);
-  DATA=data;NAMES=names?.names||{};SOLDIER_DATA=soldiers;PROGRESSION=progression;
-  PROFILE_BY_EVENT=new Map((soldiers.profiles||[]).filter(p=>p.sourceType==="event").map(p=>[p.sourceId,p]));
-  const manufactureBySource=new Map((soldiers.profiles||[]).filter(p=>p.sourceType==="manufacture").map(p=>[p.sourceId,p]));
-  UNIT_PROFILES_BY_ITEM=new Map();
-  for(const recipe of Object.values(progression.recipes||{})){
-    const profile=manufactureBySource.get(recipe.id);if(!profile)continue;
-    for(const item of recipe.requiredItems||[]){
-      if(!PERSON_REWARD_ITEMS.has(item.id))continue;
-      if(!UNIT_PROFILES_BY_ITEM.has(item.id))UNIT_PROFILES_BY_ITEM.set(item.id,[]);
-      UNIT_PROFILES_BY_ITEM.get(item.id).push({profile,recipe});
-    }
-  }
+  DATA=data;NAMES=names?.names||{};
   const groups=allGroups();renderStats(groups);render();
   for(const id of ["search","kind","sort"])document.querySelector("#"+id).addEventListener(id==="search"?"input":"change",render);
 }
