@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez 기지시설 DB</title>
+<link rel="stylesheet" href="styles.css?v=facility-db-20261007">
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <a class="back" href="../">← Data Atlas</a>
+  <p class="eyebrow">XPiratez v.o1.1.1 · Ruleset-backed</p>
+  <h1>기지시설 DB</h1>
+  <p class="lede">건설비·기간·유지비와 숙소/창고/연구/작업장/훈련/격납/포로 수용을 비교하고, 시설이 제공하는 <code>baseFunc</code>가 실제 어떤 연구·제조·시설을 열어 주는지 역추적합니다.</p>
+</div></header>
+<main class="wrap">
+  <section id="summary" class="summary"></section>
+
+  <section class="toolbar card">
+    <div class="field grow"><label for="search">검색</label><input id="search" type="search" placeholder="시설명, 내부 ID, 연구, baseFunc, 건설 재료…"></div>
+    <div class="field"><label for="role">역할</label><select id="role">
+      <option value="">전체 역할</option><option value="income">월수익</option><option value="housing">숙소</option><option value="storage">저장</option>
+      <option value="research">연구</option><option value="workshop">작업장</option><option value="training">훈련</option><option value="hangar">격납</option>
+      <option value="containment">포로/생물 수용</option><option value="detection">탐지</option><option value="defense">방어</option>
+      <option value="medical">의료</option><option value="psi">Psi</option><option value="special">특수</option>
+    </select></div>
+    <div class="field"><label for="status">상태</label><select id="status">
+      <option value="">전체</option><option value="available">룰상 가용</option><option value="state">손상/잔해/상태 전용</option><option value="starting">시작기지 배치</option>
+    </select></div>
+    <div class="field"><label for="func">기지 기능</label><select id="func"><option value="">전체 baseFunc</option></select></div>
+  </section>
+
+  <section class="explain card">
+    <strong>월 비용 해석</strong><span><code>monthlyCost</code>가 음수이면 비용이 아니라 월수입입니다. 목록에서는 “수입 +”로 바꿔 표시합니다.</span>
+    <strong>연구량</strong><span>시설의 <code>requires</code>에서 시작해 research <code>dependencies + requires</code>를 중복 제거한 명목 합계입니다. 이벤트·무료 해금은 실제 경로를 더 짧게 만들 수 있습니다.</span>
+    <strong>baseFunc</strong><span>시설 설명문이 아니라 엔진 조건 자체를 역참조합니다. 예: 어떤 시설이 <code>LAB</code>을 제공하면, 실제로 <code>requiresBaseFunc: [LAB]</code>을 가진 연구·제조·시설이 상세창에 표시됩니다.</span>
+  </section>
+
+  <section class="table-card card">
+    <div class="table-head"><div><p class="eyebrow">정렬 가능</p><h2>시설 비교</h2></div><p id="rowCount" class="muted"></p></div>
+    <div class="table-shell"><table id="facilityTable"><thead></thead><tbody></tbody></table></div>
+  </section>
+</main>
+<dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
+<script src="app.js?v=facility-db-20261007"></script>
+</body>
+</html>
