@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-stat-trait-split";
+const ASSET_VERSION="soldiers-20261007-stat-trait-split2";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -625,6 +625,15 @@ function finalStatsGrid(row){
     return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(capV)+'</b>'+split+dc+'</div>';
   }).join("")+'</div><p class="muted">굵은 값은 최종 실효치입니다. 아래의 본체 수치는 훈련·변환으로 바뀐 실제 능력치이고, 특성 수치는 SoldierBonus로 별도 가산된 값입니다.</p>';
 }
+function bonusExtraSummary(id){
+  const b=BONUS_BY_ID.get(id);if(!b)return"";
+  const bits=[];
+  const armor=[["전방",b.frontArmor],["측면",b.sideArmor],["후방",b.rearArmor],["하부",b.underArmor]].filter(([,v])=>Number(v));
+  if(armor.length)bits.push("방어 "+armor.map(([n,v])=>n+" "+(Number(v)>0?"+":"")+fmt(v)).join(" · "));
+  if(Number(b.visibilityAtDark))bits.push("암시야 "+(Number(b.visibilityAtDark)>0?"+":"")+fmt(b.visibilityAtDark));
+  if(b.recovery)bits.push("회복 "+compactValue(b.recovery));
+  return bits.join(" · ");
+}
 function deltaGrid(title,stats){
   return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
     const v=stats?.[k]||0;
@@ -648,7 +657,7 @@ function openDetail(encoded){
     html+=finalStatsGrid(r);
     if(r.preGrowthTotal>0)html+=deltaGrid("강화 조건 충족을 위한 최소 선성장 (평균 생성값 기준)",r.preGrowthByBand?.avg);
     html+='<h3>시작 시 자동 특성</h3><div class="traits">'+((p.traits||[]).length?(p.traits||[]).map(t=>'<div class="trait-card"><strong>'+esc(t.koName)+'</strong><small>'+esc(t.id)+'</small></div>').join(""):'<span class="muted">없음</span>')+'</div>';
-    html+='<h3>추가 강화 실행 순서</h3><div class="traits">'+((r.combo.transformationIds||[]).length?(r.combo.transformationIds||[]).map((id,i)=>{const t=TRANSFORM_BY_ID.get(id);if(!t)return"";const bonus=t.soldierBonusType?(BONUS_BY_ID.get(t.soldierBonusType)?.koName||t.soldierBonusType):"특성 없음";const rawChanges=statOrder.filter(k=>t.flatOverallStatChange?.[k]).map(k=>DATA.statLabels[k]+" "+(t.flatOverallStatChange[k]>0?"+":"")+fmt(t.flatOverallStatChange[k])).join(" · ");const traitChanges=statOrder.filter(k=>t.traitStats?.[k]).map(k=>DATA.statLabels[k]+" "+(t.traitStats[k]>0?"+":"")+fmt(t.traitStats[k])).join(" · ");return '<div class="trait-card"><strong>'+(i+1)+'. '+esc(t.koName)+'</strong><small>'+esc(id)+' · '+esc(bonus)+'</small><div><b>본체 능력치:</b> '+(rawChanges||'<span class="muted">없음</span>')+'</div><div><b>특성 보너스:</b> '+(traitChanges||'<span class="muted">없음</span>')+'</div></div>'}).join(""):'<span class="muted">추가 강화 없음</span>')+'</div>';
+    html+='<h3>추가 강화 실행 순서</h3><div class="traits">'+((r.combo.transformationIds||[]).length?(r.combo.transformationIds||[]).map((id,i)=>{const t=TRANSFORM_BY_ID.get(id);if(!t)return"";const bonus=t.soldierBonusType?(BONUS_BY_ID.get(t.soldierBonusType)?.koName||t.soldierBonusType):"특성 없음";const rawChanges=statOrder.filter(k=>t.flatOverallStatChange?.[k]).map(k=>DATA.statLabels[k]+" "+(t.flatOverallStatChange[k]>0?"+":"")+fmt(t.flatOverallStatChange[k])).join(" · ");const traitChanges=statOrder.filter(k=>t.traitStats?.[k]).map(k=>DATA.statLabels[k]+" "+(t.traitStats[k]>0?"+":"")+fmt(t.traitStats[k])).join(" · ");return '<div class="trait-card"><strong>'+(i+1)+'. '+esc(t.koName)+'</strong><small>'+esc(id)+' · '+esc(bonus)+'</small><div><b>본체 능력치:</b> '+(rawChanges||'<span class="muted">없음</span>')+'</div><div><b>특성 보너스:</b> '+(traitChanges||'<span class="muted">없음</span>')+'</div><div><b>특성 기타 효과:</b> '+(bonusExtraSummary(t.soldierBonusType)||'<span class="muted">없음</span>')+'</div></div>'}).join(""):'<span class="muted">추가 강화 없음</span>')+'</div>';
     html+='<div class="growth-note"><strong>OXCE 실제 변환식 기준</strong><span>각 단계의 requiredMinStats를 만족하지 못하면 현재 성장캡 안에서 필요한 최소치만큼 먼저 성장한 뒤 강화합니다. 이후 Flat 변화, 현재값 비례 변화, 성장분 비례 변화, 랜덤 범위, min/max/statCaps 상·하한을 OXCE 순서대로 적용합니다. 성장캡으로 요구조건에 도달할 수 없는 조합은 표에서 제외합니다.</span></div>';
     if(r.growthSensitive)html+=deltaGrid("성장분 비례 변화 합계",r.combo.percentGainedChange);
     if(r.randomSensitive)html+='<p class="muted">랜덤 변화 범위가 있는 강화가 포함되어 최소/평균/최대 탭의 결과가 달라집니다.</p>';
@@ -662,6 +671,7 @@ function openDetail(encoded){
     html+='<div class="detail-grid"><div class="box"><strong>비용 / 회복</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div><div class="box"><strong>적용 병종</strong>'+(r.allowedSoldierTypes||[]).length+'종</div><div class="box"><strong>생산 Soldier Type</strong>'+String(r.producedSoldierType||"유지")+'</div></div>';
     deltaGrid("본체 능력치 변화 (Flat)",r.flatOverallStatChange);
     deltaGrid("특성 보너스 (SoldierBonus · 본체 성장캡과 별도)",r.traitStats);
+    if(r.soldierBonusType)html+='<p class="muted"><b>특성 기타 효과:</b> '+(bonusExtraSummary(r.soldierBonusType)||"없음")+'</p>';
     const bounds=[];if(r.upperBoundAtMaxStats)bounds.push("기본 생성 최대치(maxStats)");if(r.upperBoundAtStatCaps)bounds.push("성장캡(statCaps)");
     html+='<p class="muted">본체 능력치 변화'+(bounds.length?"에는 "+bounds.join(" / ")+" 상한 규칙이 적용될 수 있습니다.":"는 변환 자체의 능력치 변화입니다.")+' 특성 보너스는 별도 SoldierBonus로 붙으므로 같은 종류의 수치로 취급하지 않습니다.</p>';
     html+='<h3>성장분 비례 변화</h3><p class="muted">아래 percentGainedStatChange는 현재 총 스탯이 아니라 “초기치 이후 성장한 양”에 적용되므로 실제 최종 변화량은 병사마다 다릅니다.</p>';
