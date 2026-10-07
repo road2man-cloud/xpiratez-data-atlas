@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-finalbuilds4-filters";
+const ASSET_VERSION="soldiers-20261007-finalbuilds5-checkbox-filters";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -395,25 +395,30 @@ function buildFinalRows(){
   return rows;
 }
 function populateFinalFilters(){
-  const select=$("#finalBase");if(!select)return;
+  const box=$("#finalBaseOptions");if(!box)return;
   const byType=new Map();
   for(const r of FINAL_ROWS){
     const p=r.profile;if(!p)continue;
     if(!byType.has(p.soldierType))byType.set(p.soldierType,p.soldierKoName||p.soldierType);
   }
   const options=[...byType].sort((a,b)=>String(a[1]).localeCompare(String(b[1]),"ko"));
-  select.innerHTML='<option value="">전체 기본형</option>'+options.map(([id,name])=>
-    '<option value="'+esc(id)+'">'+esc(name)+' · '+esc(id)+'</option>'
-  ).join("");
+  box.innerHTML='<label class="filter-check all-check"><input id="finalBaseAll" type="checkbox" checked> 전체 기본형</label>'+
+    options.map(([id,name])=>'<label class="filter-check"><input class="final-base-check" type="checkbox" value="'+esc(id)+'"> '+esc(name)+'</label>').join("");
+}
+function selectedBaseTypes(){
+  const all=$("#finalBaseAll");
+  if(!all||all.checked)return null;
+  return new Set([...document.querySelectorAll(".final-base-check:checked")].map(x=>x.value));
 }
 function finalFilterMatch(r){
   if(r._mode!=="final")return true;
-  const source=$("#finalSource")?.value||"non-saint";
   const isSaint=(Number(r.profile?.saintSlots)||0)>0;
-  if(source==="saint"&&!isSaint)return false;
-  if(source==="non-saint"&&isSaint)return false;
-  const base=$("#finalBase")?.value||"";
-  if(base&&r.profile?.soldierType!==base)return false;
+  const regularOn=$("#finalSourceRegular")?.checked!==false;
+  const saintOn=!!$("#finalSourceSaint")?.checked;
+  if(isSaint&&!saintOn)return false;
+  if(!isSaint&&!regularOn)return false;
+  const bases=selectedBaseTypes();
+  if(bases&&!bases.has(r.profile?.soldierType))return false;
   return true;
 }
 function dataset(){
@@ -721,7 +726,19 @@ function renderProgression(soldierId){
   return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3><div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div><div class="routes">'+((p.acquisitionPaths||[]).map(acquisitionHtml).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>')+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
 }
 
-["search","dataset","band","sortMetric","traitsOnly","finalSource","finalBase"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
+["search","dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
+$("#finalBaseOptions").addEventListener("change",e=>{
+  const target=e.target;
+  if(target.id==="finalBaseAll"){
+    if(target.checked)document.querySelectorAll(".final-base-check").forEach(x=>x.checked=false);
+  }else if(target.classList.contains("final-base-check")){
+    const checks=[...document.querySelectorAll(".final-base-check")];
+    const all=$("#finalBaseAll");
+    if(target.checked&&all)all.checked=false;
+    if(all&&!checks.some(x=>x.checked))all.checked=true;
+  }
+  finalPage=0;render();
+});
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",async e=>{
   if(e.target.id==="detailDialog"){e.currentTarget.close();return}
