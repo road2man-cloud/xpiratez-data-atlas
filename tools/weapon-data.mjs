@@ -250,7 +250,8 @@ export function buildWeaponData({effectiveMerged,sourceHistory,tr,damageKeys,sol
     counts:{shooting:shooting.length,melee:melee.length,throwing:throwing.length,characters:characters.length,unsupportedSpecs},
     engineNotes:{
       accuracy:"OXCE BattleUnit::getFiringAccuracy 계열: 캐릭터 stat multiplier × 무기 accuracy, 이후 자세/양손/거리 보정.",
-      power:"OXCE RuleStatBonus: power 또는 meleePower에 캐릭터 스탯 보너스를 합산. 표의 위력은 방어/저항/랜덤 피해 적용 전 명목 위력.",
+      power:"OXCE RuleStatBonus: power 또는 meleePower에 캐릭터 스탯 보너스를 합산. 1타 명목위력과 shots×pellets 총 명목위력을 분리하고, powerRangeReduction은 선택 거리 값에만 적용.",
+      range:"maxRange/물리 투척거리는 하드 사거리로 취급. 하드 사거리 밖은 피해 0이 아니라 공격 불가이므로 거리 기반 위력·정확도를 사거리 밖으로 표시.",
       tu:"OXCE BattleUnit::getActionTUs: flat가 아니면 캐릭터 기본 TU에 % 비용을 곱해 floor, 최소 1.",
       throwRange:"OXCE ProjectileFlyBState::getMaxThrowDistance의 동일고도 물리 투척거리 근사."
     }
