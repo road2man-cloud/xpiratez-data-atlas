@@ -534,11 +534,15 @@ const manifest={
 };
 const progressionTopics=researchList.map(r=>{
   const prerequisites=unique([...listify(r.dependencies),...listify(r.requires)]).filter(x=>researchIds.has(x));
+  const spawnedItems=listify(r.spawnedItem).filter(x=>typeof x==="string");
+  const unlocks=listify(r.unlocks).filter(x=>typeof x==="string"&&researchIds.has(x));
   return{
     id:r.name,koName:tr(r.name,"ko"),enName:tr(r.name,"en"),cost:r.cost??null,points:r.points??null,
     prerequisites,needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
     requiresBaseFunc:listify(r.requiresBaseFunc),
-    disables:listify(r.disables).filter(x=>typeof x==="string").map(entity)
+    disables:listify(r.disables).filter(x=>typeof x==="string").map(entity),
+    ...(spawnedItems.length?{spawnedItems:spawnedItems.map(entity)}:{}),
+    ...(unlocks.length?{unlocks:unlocks.map(entity)}:{})
   };
 });
 const progressionTopicIndex=new Map(progressionTopics.map((x,i)=>[x.id,i]));
