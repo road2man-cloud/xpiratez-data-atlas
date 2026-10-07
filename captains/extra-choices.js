@@ -47,8 +47,8 @@
     },
     {
       title: "여왕 형태",
-      kind: "상호배타 5분기",
-      hint: "Queen 연구 5종이 서로를 직접 disables 합니다. 네 색은 해당 Codex에 종속되고, Savage는 별도 needItem 루트입니다.",
+      kind: "경로 상호배타 결과",
+      hint: "Queen 연구 5종이 서로를 직접 disables 합니다. 같은 시점의 단순 5지선다라기보다 네 색은 해당 Codex 결과, Savage는 별도 needItem 루트이므로 ‘경로 결과’로 표시합니다.",
       options: [
         {name:"위대한 여왕", id:"STR_QUEEN_GOLD", meta:"Gold Codex · +1000점", effect:"다른 Queen 4종 봉쇄"},
         {name:"음험한 여왕", id:"STR_QUEEN_GRAY", meta:"Gray Codex · +1000점", effect:"다른 Queen 4종 봉쇄"},
@@ -187,23 +187,107 @@
     }
   ];
 
+  const consequences = {
+    STR_THREAD_OF_PROPHECY_PERSONALITY:{preq:"Personality Test + STR_THREAD_OF_PROPHECY",gain:"STR_CAPTAIN_PUSSY로 이어지는 예언 전용 대체 진입",loss:"일반 초기 5선장 선택 전체",recovery:"Thread of Prophecy를 확보하기 전 세이브가 아니면 일반 5선장으로 되돌리는 우회 없음."},
+
+    STR_GALS_ARE_SUPERIOR_PREQ:{preq:"STR_DIVERGING_PATHS",loss:"다른 갈라지는 길 4개 + Nekomimi Network",recovery:"선택 전 회피만 가능."},
+    STR_WE_NEED_MALE_TOUCH_PREQ:{preq:"STR_DIVERGING_PATHS",loss:"다른 갈라지는 길 4개 + Nekomimi Network",recovery:"선택 전 회피만 가능."},
+    STR_PEASANT_REVOLUTION_PREQ:{preq:"STR_DIVERGING_PATHS + Farmer Recruitment",loss:"다른 갈라지는 길 4개 + Nekomimi Network + Pure Maiden Training",recovery:"선택 전 회피만 가능."},
+    STR_HYBRID_PATH_PREQ:{preq:"STR_DIVERGING_PATHS + STR_TAKE_ME_TO_YOUR_DEALER",gain:"STR_RETICULAN 무료 획득 + Reticulan/Hybrid 장기축",loss:"다른 갈라지는 길 4개",recovery:"Hybrid Recruitment에는 별도로 Mutant Alliance + Human-Reticulan Alliance 등이 필요."},
+    STR_CAT_PATH_PREQ:{preq:"STR_DIVERGING_PATHS + Alien Origins + Communications",gain:"Nekomimi 연구 무료 획득 + Nekomimi Network 축",loss:"다른 갈라지는 길 4개",recovery:"선택 전 회피만 가능."},
+
+    STR_CODEX_GRAY_EXP:{gain:"Gold + Red + Gray 상태 유지",loss:"Green 결손 → Zombie Medicine + Mushroom Medicine",recovery:"Codex 선택 시 빠진 Green을 채우면 이 결손 상태를 피할 수 있음."},
+    STR_CODEX_GREEN_EXP:{gain:"Gold + Green + Red 상태 유지",loss:"Gray 결손 → Astrosensorium + Mutant Magic + Grimoire",recovery:"Codex 선택 시 빠진 Gray를 채우면 회피."},
+    STR_CODEX_GOLD_EXP:{gain:"Gold + Green + Gray 상태 유지",loss:"Red 결손 → Berserker Armor + Powered by Rage + Aggressor Armor Production",recovery:"Codex 선택 시 빠진 Red를 채우면 회피."},
+    STR_CODEX_RED_EXP:{gain:"Green + Red + Gray 상태 유지",loss:"Gold 결손 → Amazon Armor Production + Grav Cannon",recovery:"Codex 선택 시 빠진 Gold를 채우면 회피."},
+
+    STR_EMBRACE_THE_POWER:{preq:"STR_QUESTION_OF_DRILL",gain:"Menacing Hull / Shadow Chasing 쪽을 유지하고 Tiny Drill Investigation → Codex Choice 경로를 보존",loss:"STR_REJECT_THE_POWER 및 Reject가 즉시 여는 Cinderella Project 선행",recovery:"Reject와 직접 상호배타. Tiny Drill 조사까지 살리려면 이쪽."},
+    STR_REJECT_THE_POWER:{preq:"STR_QUESTION_OF_DRILL",gain:"STR_CINDERELLA_PROJECT_PREQ 즉시 해금 + Ninja Weapon Use 요구조건",loss:"STR_EMBRACE_THE_POWER + STR_TINY_DRILL_INVESTIGATION → Tiny Drill 기반 Codex Choice 경로",recovery:"Tiny Drill 조사는 직접 disable되므로 이 경로에서는 복구 불가."},
+
+    STR_QUEEN_GOLD:{preq:"STR_CODEX_GOLD",gain:"Magnificent Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
+    STR_QUEEN_GRAY:{preq:"STR_CODEX_GRAY",gain:"Insidious Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
+    STR_QUEEN_GREEN:{preq:"STR_CODEX_GREEN",gain:"Gentle Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
+    STR_QUEEN_RED:{preq:"STR_CODEX_RED",gain:"Warrior Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
+    STR_QUEEN_SAVAGE:{preq:"별도 Queen Savage 실물 조건",gain:"Savage Queen · +2000점 + STR_CROWNING_UC 해금",loss:"색상 Queen 4종",recovery:"다른 Queen이 먼저 확정되면 복구 불가."},
+
+    STR_BOUNTY_HUNTING_CHALLENGE_JACK:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"승리 시 +250점 + Casino Coupon ×5 + TIGER_TURRET_ARMOR 무료 연구",loss:"Mutant Alliance / Goblin Zaxx / 도전하지 않음",recovery:"같은 Challenge에서 다른 상대 재선택 불가."},
+    STR_BOUNTY_HUNTING_CHALLENGE_MA:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"선택 즉시 Reticulan Electrogun 무료 연구 + Damsel Victim 지급; 승리 시 +250점 + Peasant Bondage Gear 무료 연구",loss:"Jack / Goblin Zaxx / 도전하지 않음",recovery:"다른 상대 재선택 불가."},
+    STR_BOUNTY_HUNTING_CHALLENGE_BANK:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"Goblin Zaxx Challenge 진행; 승리 연구 +250점",loss:"Jack / Mutant Alliance / 도전하지 않음",recovery:"다른 상대 재선택 불가."},
+    STR_BOUNTY_HUNTING_CHALLENGE_NONE:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"전투 도전 없이 Challenge Done; NONE_CHOSEN 상태 +500점",loss:"세 도전 임무의 승리 보상",recovery:"Challenge Active도 닫혀 나중에 도전으로 되돌릴 수 없음."},
+
+    STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT_BANISH_PREQ:{preq:"Ninja Champion Defeat + SUMM",gain:"Mystery Box ×1 +250점",loss:"예속의 Slave Ninja Champion + 사귀기의 Ninja Scroll/+1500점",recovery:"결과 연구까지 서로 disable되어 복구 불가."},
+    STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT_ENSLAVE_PREQ:{preq:"Ninja Champion Defeat",gain:"Slave Ninja Champion ×1 +100점",loss:"추방 Mystery Box + 사귀기 Ninja Scroll/+1500점",recovery:"복구 불가."},
+    STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT_BEFRIEND_PREQ:{preq:"Ninja Champion Defeat",gain:"Ninja Scroll ×1 +1500점",loss:"추방 Mystery Box + 예속 Slave Ninja Champion",recovery:"복구 불가."},
+
+    STR_RED_KNIGHT_PREQ:{preq:"STR_THE_GREAT_CAUSE",gain:"STR_RED_KNIGHT 변환: 기본 Soldier/S/M/V/X/W 및 Damsel 계열",loss:"STR_PEOPLES_ARMY_PREQ + STR_RED_FANATIC 변환",recovery:"두 PREQ가 직접 상호배타."},
+    STR_PEOPLES_ARMY_PREQ:{preq:"STR_THE_GREAT_CAUSE",gain:"STR_RED_FANATIC 변환: Revolutionary Training을 마친 Peasant/Damsel/Slave/Lamia",loss:"STR_RED_KNIGHT_PREQ + STR_RED_KNIGHT 변환",recovery:"두 PREQ가 직접 상호배타."},
+
+    STR_RECRUIT_PUREBLOODS:{preq:"STR_GDX_129 + STR_SLAVE_SOLDIERS",gain:"Pureblood 고용 제조: 100 worker-h + $10k + Mutant Alliance Trophy Credit ×250 → Pureblood 1명 + Long Knife + Infantry Laser + 탄창 5",loss:"Mutant Alliance 접촉 + School Books + Durasuit Procurement + Mutant Alliance Lore + Zero Zero + Hybrid Recruitment",recovery:"Mutant Alliance 연구 자체를 disable하므로 이후 Hybrid 축 우회 없음."},
+    STR_CONTACT_MUTANT_ALLIANCE:{preq:"Alien Origins + Mutant Origins + Logistics + Alien Terror + MA Trophy 75 + Alliance Favors + Captain Rank 04",gain:"School Books + Durasuit Procurement + Mutant Alliance Lore + Zero Zero + Hybrid Recruitment 해금; Medical Supplies 구매 가능",loss:"Pureblood 직접 고용 연구/제조",recovery:"Life Is Hybrid 후 Bugeye/Hybrid 축을 살리려면 이쪽이 핵심."},
+
+    STR_STUDY_ROOM:{preq:"Schooling 2 + Data Mining + Steam Power + Alchemy + Engineer+ + Healer+ + Personal Labs",gain:"Analytics + Study Room 시설: Lab +4, ANAL",loss:"VIP Club 시설 연구: 월 +$500k, Training 16, Mana +8/day, DOJO",recovery:"STR_VIP_CLUB_FAC와 직접 상호배타."},
+    STR_VIP_CLUB_FAC:{preq:"STR_VIP_CLUB",gain:"Analytics + VIP Club: $1.35m/20일, 월 +$500k, Lab +1, Training 16, Mana +8/day, ANAL+DOJO",loss:"Study Room의 Lab +4 연구 인프라",recovery:"STR_STUDY_ROOM과 직접 상호배타."},
+
+    STR_GDX_012:{preq:"STR_GDX_011 + Honor",gain:"STR_DOCTOR_X_HIRE 지급 → Ocular + Dr. X Spector 관련 후속",loss:"Prank/Humiliate/Banish/Merchandize/Red Mage 선물 + Red Mage 예속",recovery:"일반 Dr. X 처리 변경 불가."},
+    STR_GDX_013:{preq:"STR_GDX_011 + Lingerie Set + LFS_002 + Creativity",gain:"Doctor X A35 지급 + Spector 약탈 PREQ + Appease Dr. X 축",loss:"다른 일반 Dr. X 처리 + Red Mage 예속 + Red Mage Fountain Share",recovery:"세 스토리 축에 교차 봉쇄가 생김."},
+    STR_GDX_014:{preq:"STR_GDX_011 + Zombie Sustenance + Interrogation + Justice",gain:"Doctor X C50 지급 + Spector 약탈 PREQ + Humiliating Dr. X 프로젝트",loss:"다른 일반 Dr. X 처리",recovery:"복구 불가."},
+    STR_GDX_015:{preq:"STR_GDX_011 + STR_NEC_001",gain:"Mystery Box ×1 + Spector 약탈 PREQ",loss:"다른 일반 Dr. X 처리",recovery:"복구 불가."},
+    STR_GDX_016:{preq:"STR_GDX_011 + Plotting + Captain Rank 05 + Savvyness",gain:"Doctor X Sale 지급 + Spector 약탈 PREQ; Sell Dr. X to Jack → Credit Chip M ×2000",loss:"다른 일반 Dr. X 처리",recovery:"복구 불가."},
+    STR_GDX_017:{preq:"STR_GDX_011 + STR_WIZ_102",gain:"STR_WIZ_127 Red Mage's New Maid → Black Tower 축 + Spector 약탈 PREQ",loss:"다른 일반 Dr. X 처리 + Red Mage 예속",recovery:"복구 불가."},
+    STR_GDX_018:{preq:"STR_GDX_011 + STR_TEC_168",gain:"Experiment-X(STR_GDX_053) + Spector 약탈 PREQ → STR_TEC_190/Aurora 축",loss:"STR_TEC_169를 선택한 경우 이 루트 자체가 봉쇄",recovery:"TEC168을 택하면 일반 GDX012~017이 먼저 닫히므로 조건부 대체 선택."},
+
+    STR_GDX_065:{preq:"GDX_064 + Doctor X A40 + Dancer Slave + Honor + Justice",gain:"Marry Dr. X 특수 프로젝트 → Doctor X A60 축",loss:"Knight / Vampire Princess",recovery:"세 결과가 직접 상호배타."},
+    STR_GDX_066:{preq:"GDX_064 + Doctor X A40 + Emancipation + Honor",gain:"Knight Dr. X 프로젝트 → Doctor X Knight 50",loss:"Lady / Vampire Princess; Red-Eyes 협력을 먼저 택하면 이 선택도 봉쇄",recovery:"복구 불가."},
+    STR_GDX_067:{preq:"GDX_064 + Doctor X Vampire",gain:"Gudrun Vampire Princess 반복 이벤트 풀 4개 활성화(각 executionOdds 36)",loss:"Lady / Knight",recovery:"복구 불가."},
+
+    STR_TEC_081:{preq:"STR_TEC_080",gain:"Book of Life 지급 + STR_TEC_100X/STR_TEC_181 후속 선행",loss:"Red-Eyes 거절 + Shadowtech 재교정 + Knight Gudrun + Red Mage Fountain Share",recovery:"여러 스토리 축 교차봉쇄라 선택 전 확인 필요."},
+    STR_TEC_082:{preq:"STR_TEC_080",gain:"STR_TEC_083 해금 + STR_NO_AGGRESSION 선행",loss:"Red-Eyes 협력 + Book of Life/협력 후속",recovery:"협력 루트 복구 불가."},
+
+    STR_TEC_168:{preq:"STR_TEC_172",gain:"STR_TEC_180_PREQ + Doctor X → Aurora(GDX018) 조건",loss:"STR_TEC_169 + 일반 Dr. X 처리 GDX012~017",recovery:"Dr. X 처리까지 사실상 고정하는 고영향 선택."},
+    STR_TEC_169:{preq:"STR_TEC_172",gain:"Gudrun을 자기 루트에 보존",loss:"STR_TEC_168 + GDX018 + 이후 STR_TEC_178 Help",recovery:"다음 Aurora 분기 폭도 줄어듦."},
+
+    STR_TEC_178:{preq:"STR_TEC_176",gain:"STR_TEC_182_PREQ + Family Ties Aurora + STR_TEC_181 + Hanged Princess 후속",loss:"STR_TEC_179 + STR_TEC_169",recovery:"TEC169가 먼저면 이 선택은 이미 봉쇄."},
+    STR_TEC_179:{preq:"STR_TEC_176",gain:"STR_TEC_083 해금",loss:"STR_TEC_178 Help 후속축",recovery:"Help 전용 후속은 복구 불가."},
+
+    STR_TEC_196:{preq:"STR_TEC_103 + STR_TEC_183",gain:"STR_PRISS_CC_UC craft armament 축",loss:"Servant / Sacrifice",recovery:"세 이용 방식 직접 상호배타."},
+    STR_TEC_197:{preq:"STR_TEC_103 + STR_TEC_183",gain:"Nine Circles PREQ + Mistress of Hell Aurora 프로젝트(1000 worker-h)",loss:"Weapon / Sacrifice",recovery:"직접 상호배타."},
+    STR_TEC_198:{preq:"STR_TEC_103 + STR_TEC_183",gain:"STR_TEC_110_UNUSED + Frozen Aurora(STR_TEC_199) 축",loss:"Weapon / Servant",recovery:"직접 상호배타."},
+
+    STR_WIZ_112_NO:{preq:"STR_WIZ_111 + Chronomancy",gain:"Treasure Chest 지급 + STR_WIZ_025 결과",loss:"Red Mage 예속/Slave Red Mage",recovery:"STR_WIZ_112를 직접 disable."},
+    STR_WIZ_112:{preq:"STR_WIZ_111 + Chronomancy",gain:"Enslave: Red Mage → STR_WIZ_113 Slave Red Mage 축",loss:"Trust + Doctor X 고용/장난/Red Mage 선물 + Red Mage용 X-Slave 준비",recovery:"Dr. X 선택과 교차봉쇄."},
+
+    STR_WIZ_181:{preq:"STR_WIZ_022",gain:"Mystery Box ×1 + STR_WIZ_023 결과",loss:"Fountain Hide + Doctor X Prank + Red-Eyes Cooperate",recovery:"GDX013 또는 TEC081이 먼저면 Share가 이미 봉쇄."},
+    STR_WIZ_182:{preq:"STR_WIZ_022",gain:"STR_WIZ_041 결과",loss:"Fountain Share + Mystery Box",recovery:"Share만 직접 봉쇄."}
+  };
+
   function esc(v){
     return String(v ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   }
 
-  function renderOption(o){
+  function renderOption(o,g){
+    const c=consequences[o.id]||{};
+    const peerLoss=g.options.filter(x=>x.id!==o.id).map(x=>x.name).join(" · ");
+    const preq=c.preq||"상위 분기 조건 충족";
+    const gain=c.gain||o.effect||"—";
+    const loss=c.loss||(peerLoss||"추가 직접 봉쇄 없음");
+    const recovery=c.recovery||(peerLoss?"같은 세이브에서 해당 상호배타 선택으로 직접 복구 불가.":"별도 복구 제한 없음.");
     return '<article class="choice-option">'+
       '<div class="choice-option-head"><div><strong>'+esc(o.name)+'</strong><small>'+esc(o.id)+' · '+esc(o.meta)+'</small></div></div>'+
-      '<div class="choice-effects-wrap"><span class="choice-effects-title">확인된 효과</span>'+
-        '<div class="choice-effect-list"><div class="choice-effect"><b>분기 결과</b><span>'+esc(o.effect)+'</span></div></div>'+
+      '<div class="choice-effects-wrap"><span class="choice-effects-title">장기 영향</span>'+
+        '<div class="choice-effect-list">'+
+          '<div class="choice-effect"><b>선행</b><span>'+esc(preq)+'</span></div>'+
+          '<div class="choice-effect"><b>얻는 것</b><span>'+esc(gain)+'</span></div>'+
+        '</div>'+
       '</div>'+
+      '<p class="choice-consequence"><b>영구 손실:</b> '+esc(loss)+'</p>'+
+      '<p class="choice-late"><b>복구/우회:</b> '+esc(recovery)+'</p>'+
     '</article>';
   }
 
   function renderGroup(g, idx){
     return '<article class="choice-stage card">'+
       '<div class="choice-stage-head"><div><p class="eyebrow">추가 분기 '+(idx+1)+'</p><h3>'+esc(g.title)+'</h3><p>'+esc(g.hint)+'</p></div><span class="one-choice-badge">'+esc(g.kind)+'</span></div>'+
-      '<div class="choice-grid">'+g.options.map(renderOption).join("")+'</div>'+
+      '<div class="choice-grid">'+g.options.map(o=>renderOption(o,g)).join("")+'</div>'+
       (g.note?'<p class="choice-late"><b>구조 주의:</b> '+esc(g.note)+'</p>':'')+
     '</article>';
   }
@@ -215,7 +299,7 @@
   heading.className="card";
   heading.innerHTML='<p class="eyebrow">원본 ruleset 상호배타 감사</p>'+
     '<h3>선장·Codex·갈라지는 길 외 추가 분기</h3>'+
-    '<p class="muted">아래는 v.o1.1.1 <code>research.disables</code>를 전수 검사해 기존 페이지에 없던 실제 선택축을 별도로 정리한 것입니다. 단순 연결요소를 한 묶음으로 오인하지 않고, 같은 질문의 직접 선택과 후속 경로 잠금을 구분했습니다.</p>';
+    '<p class="muted">v.o1.1.1 정규화 연구 DB에서 <b>raw.disables 보유 연구 163개 / 연결요소 86개</b>를 전수 검사했습니다. 단순 PREQ/result 안전장치·완료 플래그는 제외하고, 실제 선택축과 선택 뒤 영구 손실만 분리했습니다.</p>';
   root.appendChild(heading);
   root.insertAdjacentHTML("beforeend", groups.map(renderGroup).join(""));
 })();

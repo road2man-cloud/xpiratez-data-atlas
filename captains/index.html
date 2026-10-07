@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="XPiratez v.o1.1.1 선택지·분기 DB: 선장, Codex, 갈라지는 길, 세력·스토리 상호배타와 후속 손실을 비교." />
-  <title>XPiratez 선택지·분기 DB</title>
+  <meta name="description" content="XPiratez v.o1.1.1 영구 선택·분기 DB: 선장 성격, Codex, 사회·병종·세력·스토리 상호배타 선택의 획득과 영구 손실을 비교합니다." />
+  <title>XPiratez 영구 선택·분기 DB</title>
   <link rel="stylesheet" href="styles.css?v=effects3-20261006" />
 </head>
 <body id="top">
@@ -12,8 +12,8 @@
     <div class="hero__inner">
       <div>
         <p class="eyebrow">XPiratez v.o1.1.1 · OXCE 8.6</p>
-        <h1>선택지·분기 DB</h1>
-        <p class="lede">선장·Codex·갈라지는 길부터 세력·스토리 후기 선택까지. 무엇을 얻고 무엇이 영구히 닫히는지 원본 룰셋 기준으로 비교합니다.</p>
+        <h1>영구 선택·분기 DB</h1>
+        <p class="lede">선장 성격, Codex, 사회·병종·세력·스토리 분기까지. 무엇을 얻는지뿐 아니라 무엇을 영구 포기하는지 원본 룰셋 기준으로 비교합니다.</p>
       </div>
       <div class="legend card">
         <strong>표시</strong>
@@ -28,9 +28,9 @@
   <main>
     <section class="summary-grid">
       <article class="card accent">
-        <span class="kicker">규칙셋 기준 최단 분기</span>
-        <strong>1단계 → 4단계</strong>
-        <p>초기 성격 → PUSSY 클래스 → 무직 혼합형 → Pure 최종. 현재 세이브 날짜와 무관하게 룰의 상호배타 구조를 비교합니다.</p>
+        <span class="kicker">룰셋 전체 상호배타 감사</span>
+        <strong>163개 disables · 86개 연결요소</strong>
+        <p>내부 플래그와 query/result 안전장치를 제외하고, 실제 선택과 선택 뒤 영구 손실을 플레이어 관점의 논리 분기로 묶었습니다.</p>
       </article>
       <article class="card">
         <span class="kicker">방어 종합</span>
@@ -104,10 +104,10 @@
     <section class="exclusivity-section">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">선택 구조</p>
-          <h2>한눈에 보는 상호배타 분기</h2>
+          <p class="eyebrow">영구 선택 구조</p>
+          <h2>플레이어가 실제로 고르는 상호배타 분기</h2>
         </div>
-        <p class="muted">각 단계는 “아래 목록 중 1개 선택”으로만 표현합니다. 같은 선택 관계를 잠금 목록으로 다시 반복하지 않습니다.</p>
+        <p class="muted">직접 선택과 경로 결과를 구분하고, 각 카드에서 선행·획득·영구 손실·복구 가능성을 함께 표시합니다.</p>
       </div>
       <div id="soreassGoldInsight" class="card codex-alert"></div>
       <div id="exclusiveRules"></div>
@@ -178,6 +178,6 @@
   <script src="captain-rows.js?v=human2-20261006"></script>
   <script src="glossary.js?v=terms2-20261006"></script>
   <script src="app.js?v=effects5-20261007"></script>
-  <script src="extra-choices.js?v=ruleset-audit2-20261007"></script>
+  <script src="extra-choices.js?v=ruleset-audit3-20261007"></script>
 </body>
 </html>
