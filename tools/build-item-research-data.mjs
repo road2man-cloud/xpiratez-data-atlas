@@ -318,6 +318,7 @@ const researchDetails={},researchIndex=[],researchResourceDetails={};
 for(const r of researchList){
   const id=r.name,bucket=crypto.createHash("sha1").update(id).digest("hex")[0],refs=groupRefs(researchRefs,id,"research");
   const deps=directDeps.get(id)||[],reqBy=[...new Set(requiredBy.get(id)||[])],unlocks=explicitUnlocks.get(id)||[];
+  const spawnedItems=(Array.isArray(r.spawnedItem)?r.spawnedItem:(r.spawnedItem==null?[]:[r.spawnedItem])).filter(x=>typeof x==="string");
   const items=refs.filter(x=>x.section==="items"),mans=refs.filter(x=>x.section==="manufacture"),others=refs.filter(x=>x.section!=="items"&&x.section!=="manufacture");
   const rawSplit=splitPresentationResources(r);
   const detail={
@@ -333,7 +334,7 @@ for(const r of researchList){
   researchDetails[id]=detail;
   researchIndex.push({
     id,bucket,koName:detail.koName,enName:detail.enName,cost:detail.cost,points:detail.points,needItem:detail.needItem,destroyItem:detail.destroyItem,
-    dependencyCount:deps.length,requiredByCount:reqBy.length,itemReferenceCount:items.length,manufactureReferenceCount:mans.length,otherReferenceCount:others.length,
+    dependencyCount:deps.length,requiredByCount:reqBy.length,spawnedItemCount:spawnedItems.length,itemReferenceCount:items.length,manufactureReferenceCount:mans.length,otherReferenceCount:others.length,
     sourceFile:detail.sourceFiles.at(-1)
   });
 }
