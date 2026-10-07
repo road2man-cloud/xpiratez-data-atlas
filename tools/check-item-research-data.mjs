@@ -13,6 +13,7 @@ const research=readJson("research-index.json");
 const researchInsight=readJson("research-insight-index.json");
 const researchInsightById=new Map((researchInsight.index||[]).map(x=>[x.id,x]));
 const researchEditorialMeta=readJson("research-editorial-meta.json");
+const itemEditorialMeta=readJson("item-editorial-meta.json");
 const schema=readJson("schema.json");
 const entities=readJson("entities.json");
 const files=[];
@@ -24,8 +25,10 @@ if(largest?.bytes>=50*1024*1024)throw new Error("Generated file too large for no
 if(items.index?.length!==4007)throw new Error("Expected 4007 items, got "+(items.index?.length??0));
 if(research.index?.length!==4612)throw new Error("Expected 4612 research topics, got "+(research.index?.length??0));
 if(researchInsight.index?.length!==4612)throw new Error("Expected 4612 research insight topics, got "+(researchInsight.index?.length??0));
-if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==1)throw new Error("Research editorial metadata mismatch");
+if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==2)throw new Error("Research editorial metadata mismatch");
 if(!String(researchEditorialMeta.generator||"").startsWith("GPT editorial synthesis"))throw new Error("Missing GPT editorial generator metadata");
+if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==1)throw new Error("Item editorial metadata mismatch");
+if(!String(itemEditorialMeta.generator||"").startsWith("GPT item editorial synthesis"))throw new Error("Missing GPT item editorial generator metadata");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
 if(research.index.length!==new Set(research.index.map(x=>x.id)).size)throw new Error("Duplicate research ids");
 const littleBirdAssemblyIndex=research.index.find(x=>x.id==="STR_LITTLE_BIRD_ASSEMBLY");
@@ -34,11 +37,15 @@ if(!entities.names||!Object.keys(entities.names).length)throw new Error("Missing
 if(!schema.resourceStorage?.separated)throw new Error("Resource separation metadata missing");
 if(!schema.effectiveCoreFields?.length||!schema.coreSourceLegend)throw new Error("Core-source codec metadata missing");
 
-const itemChunks={},itemResources={};
+const itemChunks={},itemEditorialChunks={},itemResources={};
 for(const x of items.index){
   itemChunks[x.bucket]??=readJson("chunks",x.bucket+".json").details;
-  const d=itemChunks[x.bucket][x.id];
+  itemEditorialChunks[x.bucket]??=readJson("item-editorial-chunks",x.bucket+".json").details;
+  const d=itemChunks[x.bucket][x.id],editorial=itemEditorialChunks[x.bucket][x.id];
   if(!d?.raw||!d.effectiveCore)throw new Error("Incomplete item detail "+x.id);
+  if(!editorial)throw new Error("Missing GPT item editorial "+x.id);
+  for(const k of ["overview","effect","acquisition","progression","decision","watch"])if(typeof editorial[k]!=="string"||editorial[k].length<15)throw new Error("Incomplete GPT item editorial "+x.id+" "+k);
+  if(/undefined|null/.test(JSON.stringify(editorial)))throw new Error("Invalid GPT item editorial text "+x.id);
   if(hasPresentationResourceKey(d.raw)||hasPresentationResourceKey(d.rawDeclared))throw new Error("Presentation resource bundled into item core "+x.id);
   if(!d.inheritedViaRefNode&&Object.prototype.hasOwnProperty.call(d,"rawDeclared"))throw new Error("Redundant rawDeclared "+x.id);
   if(Object.prototype.hasOwnProperty.call(d,"references"))throw new Error("Redundant item reference union "+x.id);
@@ -61,7 +68,8 @@ for(const x of research.index){
   if(!d?.raw)throw new Error("Incomplete research detail "+x.id);
   if(Object.prototype.hasOwnProperty.call(d,"insight"))throw new Error("Research insight leaked into canonical research detail "+x.id);
   if(insight?.version!==1||insight?.evidence!=="derived-from-ruleset"||!insight?.summary||!Array.isArray(insight.roles)||!insight.roles.length)throw new Error("Missing research insight "+x.id);
-  if(!editorial||typeof editorial.core!=="string"||editorial.core.length<30||typeof editorial.decision!=="string"||!editorial.decision.length)throw new Error("Missing GPT research editorial "+x.id);
+  if(!editorial||typeof editorial.core!=="string"||editorial.core.length<30)throw new Error("Missing GPT research editorial "+x.id);
+  for(const k of ["effect","action","route","decision"])if(typeof editorial[k]!=="string"||editorial[k].length<20)throw new Error("Incomplete GPT research editorial "+x.id+" "+k);
   if(/undefined|null/.test(JSON.stringify(editorial)))throw new Error("Invalid GPT research editorial text "+x.id);
   if(!ix||!Array.isArray(ix.insightKinds)||!ix.insightKinds.length||!ix.primaryInsightKind)throw new Error("Missing research insight index "+x.id);
   if(ix.dependencyIds&&(!Array.isArray(ix.dependencyIds)||ix.dependencyIds.some(v=>typeof v!=="string")))throw new Error("Invalid research dependencyIds "+x.id);
@@ -85,7 +93,7 @@ const littleBirdInsight=researchInsightChunks[littleBirdAssemblyIndex.bucket].ST
 const littleBirdEditorial=researchEditorialChunks[littleBirdAssemblyIndex.bucket].STR_LITTLE_BIRD_ASSEMBLY;
 if(!littleBirdInsight.roles.includes("item-reward")||!littleBirdInsight.spawnedItems.includes("STR_HELICOPTER_WRECKAGE"))throw new Error("Little Bird assembly item-reward insight failed");
 if(littleBirdAssembly.summaryKo===littleBirdInsight.summary)throw new Error("Derived research insight overwrote direct research summary");
-if(!littleBirdEditorial.core.includes("헬리콥터 잔해")||!littleBirdEditorial.decision.includes("합계는 99")||!littleBirdEditorial.watch.includes("자동으로 완성"))throw new Error("Little Bird GPT editorial regression");
+if(!littleBirdEditorial.core.includes("헬리콥터 잔해")||!littleBirdEditorial.effect.includes("헬리콥터 잔해")||!littleBirdEditorial.route.includes("명목 합계 99")||!littleBirdEditorial.watch.includes("자동으로 완성"))throw new Error("Little Bird GPT editorial regression");
 
 const charm=research.index.find(x=>x.id==="STR_CHARMY_DANCE_TRAINING");
 if(!charm)throw new Error("Missing STR_CHARMY_DANCE_TRAINING");
@@ -96,7 +104,7 @@ const ci=researchInsightChunks[charm.bucket].STR_CHARMY_DANCE_TRAINING.insight;
 const ct=(ci.transformations||[]).find(x=>x.id==="STR_CHARMY_DANCE_TRAINING");
 const charmEditorial=researchEditorialChunks[charm.bucket].STR_CHARMY_DANCE_TRAINING;
 if(ci.primaryRole!=="soldier-training"||!ci.roles.includes("soldier-training")||ci.automaticEffect!==false||!ct)throw new Error("Charmy Dance insight classification failed");
-if(!charmEditorial.core.includes("즉시 버프")||!charmEditorial.core.includes("soldierBonus")||!charmEditorial.watch.includes("연구 완료 = 병사 강화 완료"))throw new Error("Charmy Dance GPT editorial regression");
+if(!charmEditorial.core.includes("즉시 버프")||!charmEditorial.effect.includes("soldierBonus")||!charmEditorial.action.includes("비용 1,000")||!charmEditorial.action.includes("28일")||!charmEditorial.route.includes("DOJO")||!charmEditorial.watch.includes("연구 완료 = 병사 강화 완료"))throw new Error("Charmy Dance GPT editorial regression");
 for(const id of ["STR_SUPER_SEXY_MARTIAL_DANCE","STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT"])if(!cd.dependencies.includes(id))throw new Error("Charmy Dance dependency regression "+id);
 if(ct.cost!==1000||ct.recoveryTime!==28||ct.requiredMinStats?.bravery!==50||!ct.requiresBaseFunc.includes("DOJO"))throw new Error("Charmy Dance training requirements failed");
 const charmItems=Object.fromEntries((ct.requiredItems||[]).map(x=>[x.id,x.qty]));
@@ -123,9 +131,11 @@ if(!ninjaDefeat||ninjaDefeat.kind!=="event-grant"||!ninjaDefeat.scripts?.some(s=
 const ninjaChallenge=charmEventLinks.find(x=>x.eventId==="STR_CBT_TOURNAMENT_CHALLENGER_NINJA");
 if(!ninjaChallenge||ninjaChallenge.kind!=="event-grant"||!ninjaChallenge.scripts?.some(s=>s.conditions.executionOdds===50&&s.researchTriggers.STR_DUMBASS_CBT_CHAMPION===true&&s.researchTriggers.STR_CBT_TOURNAMENT_CHALLENGER_NINJA===false&&s.facilityTriggers.STR_VIP_CLUB_FAC===true&&s.facilityTriggers.STR_LUXURY_SPA===true))throw new Error("Charmy Dance Ninja challenge route regression");
 
-const editorialBytes=files.filter(x=>x.path.includes("research-editorial-")).reduce((s,x)=>s+x.bytes,0);
-if(editorialBytes>=4*1024*1024)throw new Error("Research editorial data bloat regression: "+(editorialBytes/1048576).toFixed(1)+" MiB");
-if(totalBytes>=44*1024*1024)throw new Error("Research data bloat regression: "+(totalBytes/1048576).toFixed(1)+" MiB");
+const researchEditorialBytes=files.filter(x=>x.path.includes("research-editorial-")).reduce((s,x)=>s+x.bytes,0);
+const itemEditorialBytes=files.filter(x=>x.path.includes("item-editorial-")).reduce((s,x)=>s+x.bytes,0);
+if(researchEditorialBytes>=8*1024*1024)throw new Error("Research editorial data bloat regression: "+(researchEditorialBytes/1048576).toFixed(1)+" MiB");
+if(itemEditorialBytes>=8*1024*1024)throw new Error("Item editorial data bloat regression: "+(itemEditorialBytes/1048576).toFixed(1)+" MiB");
+if(totalBytes>=56*1024*1024)throw new Error("Item/research data bloat regression: "+(totalBytes/1048576).toFixed(1)+" MiB");
 
 const violence=research.index.find(x=>x.id==="STR_VIOLENCE");
 const violenceEditorial=violence&&researchEditorialChunks[violence.bucket]?.STR_VIOLENCE;
@@ -138,5 +148,13 @@ if(ud.raw.costBuy!==4500||ud.raw.costSell!==1500||ud.raw.weight!==6||
    ud.raw.accuracyAuto!==50||ud.raw.tuAuto!==27||
    ud.raw.accuracySnap!==70||ud.raw.tuSnap!==21||
    ud.raw.accuracyAimed!==100||ud.raw.tuAimed!==45)throw new Error("UAC Carbine smoke test failed");
+const ue=itemEditorialChunks[u.bucket].STR_UAC_CARBINE;
+if(!ue.overview.includes("무기 본체")||!ue.effect.includes("호환 탄약")||!ue.acquisition.includes("구매가 4,500")||!ue.progression.includes("연구 DB"))throw new Error("UAC Carbine GPT item editorial regression");
+const chainsaw=items.index.find(x=>x.id==="STR_CHAINSAW"),ce=chainsaw&&itemEditorialChunks[chainsaw.bucket]?.STR_CHAINSAW;
+if(!ce?.effect.includes("5타 × 기본 위력 35")||!ce.effect.includes("명목 총합 175")||!ce.effect.includes("TU 24"))throw new Error("Chainsaw GPT item editorial regression");
+const medikit=items.index.find(x=>x.id==="STR_MEDI_KIT"),me=medikit&&itemEditorialChunks[medikit.bucket]?.STR_MEDI_KIT;
+if(!me?.effect.includes("체력 +4")||!me.effect.includes("기절 +12")||!me.effect.includes("기력 +25")||!me.effect.includes("TU 10"))throw new Error("Medikit GPT item editorial regression");
+const glamour=items.index.find(x=>x.id==="STR_GLAMOUR"),ge=glamour&&itemEditorialChunks[glamour.bucket]?.STR_GLAMOUR;
+if(!ge?.overview.includes("캠페인 자원")||!ge.watch.includes("STR_UNAVAILABLE")||!ge.watch.includes("스크립트"))throw new Error("Glamour GPT item editorial regression");
 
-console.log(`OK normalized item/research DB: ${items.index.length} items, ${research.index.length} research, ${classifiedResearchCount} semantically classified research, ${researchEditorialMeta.count} GPT editorials, ${Object.keys(entities.names).length} entity names, ${(totalBytes/1048576).toFixed(1)} MiB total, editorial ${(editorialBytes/1048576).toFixed(1)} MiB, largest ${(largest.bytes/1048576).toFixed(1)} MiB`);
+console.log(`OK normalized item/research DB: ${items.index.length} items, ${research.index.length} research, ${classifiedResearchCount} semantically classified research, ${researchEditorialMeta.count} research GPT editorials, ${itemEditorialMeta.count} item GPT editorials, ${Object.keys(entities.names).length} entity names, ${(totalBytes/1048576).toFixed(1)} MiB total, research editorial ${(researchEditorialBytes/1048576).toFixed(1)} MiB, item editorial ${(itemEditorialBytes/1048576).toFixed(1)} MiB, largest ${(largest.bytes/1048576).toFixed(1)} MiB`);
