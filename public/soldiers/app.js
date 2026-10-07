@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-stat-trait-split2";
+const ASSET_VERSION="soldiers-20261007-route-effects-final-simple2";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -457,7 +457,7 @@ function growthCapValue(row,key){
 }
 function sortValue(row,key,band){
   if(!statOrder.includes(key))return row[key]??0;
-  if(row._mode==="transformation")return statValue(row,key,band);
+  if(row._mode==="transformation"||row._mode==="final")return statValue(row,key,band);
   return $("#sortMetric").value==="cap"?growthCapValue(row,key):statValue(row,key,band);
 }
 function searchBlob(row){
@@ -496,7 +496,7 @@ function render(){
   const mode=$("#dataset").value,band=$("#band").value;
   $("#traitsOnly").disabled=mode!=="profiles";
   $("#band").disabled=mode==="transformations";
-  $("#sortMetric").disabled=mode==="transformations";
+  $("#sortMetric").disabled=mode==="transformations"||mode==="final";
   $("#finalSourceField").hidden=mode!=="final";
   $("#finalBaseField").hidden=mode!=="final";
   $("#tableTitle").textContent=
@@ -513,7 +513,7 @@ function render(){
   }else if(mode==="final"){
     head=[
       th("획득형","name"),'<th>유효 최종 강화 조합</th>',th("특성","totalTraitCount"),th("강화비용","cost"),
-      ...statOrder.map(k=>th(DATA.statLabels[k],k,"최종 / 성장캡"))
+      ...statOrder.map(k=>th(DATA.statLabels[k],k,"최종 실효값"))
     ].join("");
   }else if(mode==="soldiers"){
     head=[
@@ -536,7 +536,7 @@ function render(){
     $("#pager").innerHTML='<button data-page="'+(finalPage-1)+'" '+(finalPage<=0?"disabled":"")+'>← 이전</button><span>'+(finalPage+1)+' / '+pages+'</span><button data-page="'+(finalPage+1)+'" '+(finalPage>=pages-1?"disabled":"")+'>다음 →</button>';
     $("#pager").querySelectorAll("button[data-page]").forEach(b=>b.addEventListener("click",()=>{finalPage=Number(b.dataset.page)||0;render()}));
   }else $("#pager").innerHTML="";
-  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 능력치 변화와 특성 보너스를 분리 표시 · 열 정렬은 둘의 단순합계 기준":mode==="final"?" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 기준 · "+($("#sortMetric").value==="cap"?"성장캡":"최종 능력치")+" 정렬 · 페이지 "+(finalPage+1):" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
+  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 능력치 변화와 특성 보너스를 분리 표시 · 열 정렬은 둘의 단순합계 기준":mode==="final"?" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 최종 실효값 · 페이지 "+(finalPage+1):" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
   $("#soldierTable tbody").innerHTML=shown.map(r=>rowHtml(r,band)).join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
     const key=el.dataset.sort;
@@ -560,8 +560,7 @@ function rowHtml(r,band){
   }else if(r._mode==="final"){
     const shown=(r.enhancementNames||[]).slice(0,8).map(x=>'<span class="trait">'+esc(x)+'</span>').join("");
     const more=(r.enhancementNames||[]).length>8?' <span class="tag">+'+((r.enhancementNames||[]).length-8)+'개</span>':"";
-    const growth=r.timingSensitive?' <span class="tag growth-warn">적용 시점 영향</span>':"";
-    second=sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more+growth;
+    second=sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
     c1=fmt(r.totalTraitCount);c2=fmt(r.cost);
   }else if(r._mode==="soldier"){
     second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
@@ -581,11 +580,11 @@ function rowHtml(r,band){
         const traitCls=trait>0?"delta-pos":trait<0?"delta-neg":"muted";
         return '<td><small class="'+rawCls+'">능력 '+(raw>0?"+":"")+fmt(raw)+'</small><br><small class="'+traitCls+'">특성 '+(trait>0?"+":"")+fmt(trait)+'</small></td>';
       }
+      if(r._mode==="final")return '<td><span class="stat-current">'+fmt(v)+'</span></td>';
       const capV=growthCapValue(r,k);
-      const d=r._mode==="profile"?(r.traitStats?.[k]||0):r._mode==="final"?(r.deltaByBand?.[band]?.[k]||0):0;
+      const d=r._mode==="profile"?(r.traitStats?.[k]||0):0;
       const over=Number(v)>Number(capV)?" over-cap":"";
-      const prefix=r._mode==="final"?"강화 ":"특성 ";
-      const dc=d>0?'<small class="delta-pos">'+prefix+'+'+fmt(d)+'</small>':d<0?'<small class="delta-neg">'+prefix+fmt(d)+'</small>':'';
+      const dc=d>0?'<small class="delta-pos">특성 +'+fmt(d)+'</small>':d<0?'<small class="delta-neg">특성 '+fmt(d)+'</small>':'';
       return '<td><div class="stat-pair'+over+'"><span class="stat-current">'+fmt(v)+'</span><span class="stat-slash">/</span><span class="stat-cap">'+fmt(capV)+'</span></div>'+dc+'</td>';
     }).join("")+'</tr>';
 }
@@ -616,14 +615,10 @@ function statsCapGrid(title,row){
   }).join("")+'</div><p class="muted">앞 숫자는 선택한 생성값, 뒤 숫자는 자동 특성까지 포함한 실효 성장캡입니다. 시작값이 캡보다 높은 특수 생성형은 그대로 유지되지만 일반 성장으로 더 오르지는 않습니다.</p>';
 }
 function finalStatsGrid(row){
-  const band=$("#band").value,current=row.finalStats?.[band]||{},raw=row.finalRawStats?.[band]||{},traitApplied=row.finalTraitAppliedByBand?.[band]||{},base=row.profile?.effectiveStats?.[band]||{};
-  return '<h3>최종 강화 능력치 / 성장캡</h3><div class="stats-grid">'+statOrder.map(k=>{
-    const cur=current[k]??0,rawCur=raw[k]??0,trait=traitApplied[k]??0,capV=row.finalCap?.[k]??0,delta=(Number(cur)||0)-(Number(base[k])||0);
-    const over=Number(cur)>Number(capV)?' over-cap':'';
-    const dc=delta>0?'<small class="delta-pos">강화 +'+fmt(delta)+'</small>':delta<0?'<small class="delta-neg">강화 '+fmt(delta)+'</small>':'';
-    const split='<small>본체 '+fmt(rawCur)+(trait?(' · 특성 '+(trait>0?"+":"")+fmt(trait)):'')+'</small>';
-    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(capV)+'</b>'+split+dc+'</div>';
-  }).join("")+'</div><p class="muted">굵은 값은 최종 실효치입니다. 아래의 본체 수치는 훈련·변환으로 바뀐 실제 능력치이고, 특성 수치는 SoldierBonus로 별도 가산된 값입니다.</p>';
+  const band=$("#band").value,current=row.finalStats?.[band]||{};
+  return '<h3>최종 실효 능력치</h3><div class="stats-grid">'+statOrder.map(k=>
+    '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(current[k]??0)+'</b></div>'
+  ).join("")+'</div>';
 }
 function bonusExtraSummary(id){
   const b=BONUS_BY_ID.get(id);if(!b)return"";
@@ -655,12 +650,8 @@ function openDetail(encoded){
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(p)+'<br>'+esc(p.sourceKoName)+'<br><small>'+esc(p.sourceId)+'</small></div><div class="box"><strong>최종 특성 / 추가 강화</strong>'+fmt(r.totalTraitCount)+' / '+fmt(r.enhancementCount)+'</div><div class="box"><strong>추가 비용 / 회복 합계</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div></div>';
     html+='<div class="compat-ok"><strong>공존 검증 통과</strong><span>requiredPreviousTransformations와 forbiddenPreviousTransformations를 실제 실행 순서대로 검사한 조합입니다.</span></div>';
     html+=finalStatsGrid(r);
-    if(r.preGrowthTotal>0)html+=deltaGrid("강화 조건 충족을 위한 최소 선성장 (평균 생성값 기준)",r.preGrowthByBand?.avg);
-    html+='<h3>시작 시 자동 특성</h3><div class="traits">'+((p.traits||[]).length?(p.traits||[]).map(t=>'<div class="trait-card"><strong>'+esc(t.koName)+'</strong><small>'+esc(t.id)+'</small></div>').join(""):'<span class="muted">없음</span>')+'</div>';
-    html+='<h3>추가 강화 실행 순서</h3><div class="traits">'+((r.combo.transformationIds||[]).length?(r.combo.transformationIds||[]).map((id,i)=>{const t=TRANSFORM_BY_ID.get(id);if(!t)return"";const bonus=t.soldierBonusType?(BONUS_BY_ID.get(t.soldierBonusType)?.koName||t.soldierBonusType):"특성 없음";const rawChanges=statOrder.filter(k=>t.flatOverallStatChange?.[k]).map(k=>DATA.statLabels[k]+" "+(t.flatOverallStatChange[k]>0?"+":"")+fmt(t.flatOverallStatChange[k])).join(" · ");const traitChanges=statOrder.filter(k=>t.traitStats?.[k]).map(k=>DATA.statLabels[k]+" "+(t.traitStats[k]>0?"+":"")+fmt(t.traitStats[k])).join(" · ");return '<div class="trait-card"><strong>'+(i+1)+'. '+esc(t.koName)+'</strong><small>'+esc(id)+' · '+esc(bonus)+'</small><div><b>본체 능력치:</b> '+(rawChanges||'<span class="muted">없음</span>')+'</div><div><b>특성 보너스:</b> '+(traitChanges||'<span class="muted">없음</span>')+'</div><div><b>특성 기타 효과:</b> '+(bonusExtraSummary(t.soldierBonusType)||'<span class="muted">없음</span>')+'</div></div>'}).join(""):'<span class="muted">추가 강화 없음</span>')+'</div>';
-    html+='<div class="growth-note"><strong>OXCE 실제 변환식 기준</strong><span>각 단계의 requiredMinStats를 만족하지 못하면 현재 성장캡 안에서 필요한 최소치만큼 먼저 성장한 뒤 강화합니다. 이후 Flat 변화, 현재값 비례 변화, 성장분 비례 변화, 랜덤 범위, min/max/statCaps 상·하한을 OXCE 순서대로 적용합니다. 성장캡으로 요구조건에 도달할 수 없는 조합은 표에서 제외합니다.</span></div>';
-    if(r.growthSensitive)html+=deltaGrid("성장분 비례 변화 합계",r.combo.percentGainedChange);
-    if(r.randomSensitive)html+='<p class="muted">랜덤 변화 범위가 있는 강화가 포함되어 최소/평균/최대 탭의 결과가 달라집니다.</p>';
+    html+='<h3>최종 보유 특성</h3><div class="traits">'+((r.finalTraitNames||[]).length?(r.finalTraitNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">없음</span>')+'</div>';
+    html+='<h3>추가 강화</h3><div class="traits">'+((r.enhancementNames||[]).length?(r.enhancementNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">추가 강화 없음</span>')+'</div>';
   }else if(r._mode==="soldier"){
     html+='<div class="detail-grid"><div class="box"><strong>구매 / 월급</strong>'+fmt(r.costBuy)+' / '+fmt(r.costSalary)+'</div><div class="box"><strong>월 고용 제한</strong>'+fmt(r.monthlyBuyLimit)+'</div><div class="box"><strong>기본 장갑</strong>'+String(r.armor||"—")+'</div></div>';
     html+=statsGrid("기본 생성 최소", {min:r.minStats,avg:r.minStats,max:r.minStats});
@@ -678,7 +669,7 @@ function openDetail(encoded){
     deltaGrid("percentGainedStatChange",r.percentGainedStatChange);
     html+='<div class="detail-grid"><div class="box"><strong>필요 연구</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>필수 이전 변환</strong>'+(r.requiredPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>금지 이전 변환</strong>'+(r.forbiddenPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
   }
-  html+=renderProgression(r._id);
+  html+=renderProgression(r._id,r._mode==="profile"?r:r._mode==="final"?r.profile:null);
   $("#detailBody").innerHTML=html;
   $("#detailDialog").showModal();
 }
@@ -725,27 +716,76 @@ function planTable(p){
 }
 function eventById(id){return PROG?.events?.[id]||null}
 function eventScript(eventId,scriptId){return (eventById(eventId)?.scripts||[]).find(s=>s.id===scriptId)||null}
-function acquisitionHtml(p){
-  if(p.kind==="buy")return '<div class="acq-card"><strong>직접 고용</strong><span>비용 '+fmt(p.cost)+'</span>'+planSummary(planById(p.researchPlanId))+'</div>';
+function pathMatchesProfile(path,profile){
+  if(!profile)return false;
+  if(profile.sourceType==="direct")return path.kind==="buy";
+  if(profile.sourceType==="manufacture")return path.kind==="manufacture"&&path.recipeId===profile.sourceId;
+  if(profile.sourceType==="event")return path.kind==="event"&&path.eventId===profile.sourceId;
+  return false;
+}
+function profileRouteEffectHtml(profile){
+  if(!profile)return"";
+  const traits=profile.traits||[];
+  const traitCards=traits.map(t=>{
+    const stats=statOrder.filter(k=>Number(t.stats?.[k])||0).map(k=>DATA.statLabels[k]+" "+((Number(t.stats[k])||0)>0?"+":"")+fmt(t.stats[k])).join(" · ");
+    const extra=bonusExtraSummary(t.id);
+    return '<div class="trait-card"><strong>'+esc(t.koName)+'</strong><small>'+esc(t.id)+'</small><div>'+(stats||'<span class="muted">수치 보너스 없음</span>')+'</div>'+(extra?'<div><b>기타 효과:</b> '+esc(extra)+'</div>':'')+'</div>';
+  }).join("");
+  const combined=statOrder.filter(k=>Number(profile.traitStats?.[k])||0).map(k=>{
+    const v=Number(profile.traitStats[k])||0;
+    return '<span class="trait">'+esc(DATA.statLabels[k])+' '+(v>0?"+":"")+fmt(v)+'</span>';
+  }).join(" ");
+  const overrides=[
+    ["initialStats",profile.initialStatsOverride],
+    ["currentStats",profile.currentStatsOverride]
+  ].filter(([,v])=>v&&typeof v==="object"&&Object.keys(v).length).map(([label,v])=>
+    '<div class="route-line"><small>'+label+' 고정값</small> '+Object.entries(v).map(([k,x])=>'<span class="tag">'+esc(DATA.statLabels[k]||k)+' = '+fmt(x)+'</span>').join(" ")+'</div>'
+  ).join("");
+  if(!traits.length&&!combined&&!overrides)return '<div class="route-effect-box"><strong>이 획득루트의 추가 효과</strong><span class="muted">추가 특성·고정 능력치 없음</span></div>';
+  return '<div class="route-effect-box"><strong>이 획득루트의 추가 효과</strong>'+
+    (traitCards?'<div class="traits">'+traitCards+'</div>':'')+
+    (combined?'<div class="route-line"><small>특성 합산 실효 보너스</small> '+combined+'</div>':'')+
+    overrides+'</div>';
+}
+function eventSourcesHtml(sources){
+  if(!sources?.length)return"";
+  const cards=sources.map(src=>{const ev=eventById(src.eventId);return ev?'<div class="event-box"><span class="tag">대안 이벤트</span> '+esc(ev.koName)+' '+(ev.scripts||[]).map(s=>eventConditions(s)).join("")+'</div>':""}).join("");
+  return '<details class="event-sources"><summary>이 아이템을 얻을 수 있는 이벤트 '+sources.length+'개</summary><p class="muted">서로 다른 대안 획득처입니다. 전부 완료해야 하는 목록이 아닙니다.</p>'+cards+'</details>';
+}
+function acquisitionHtml(p,profile=null,selected=false){
+  const effects=selected?profileRouteEffectHtml(profile):"";
+  if(p.kind==="buy")return '<div class="acq-card"><strong>직접 고용</strong><span>비용 '+fmt(p.cost)+'</span>'+effects+planSummary(planById(p.researchPlanId))+'</div>';
   if(p.kind==="event"){
     const e=eventById(p.eventId);if(!e)return"";
     const variants=(p.variants||[]).map(v=>'<details><summary>이벤트 발생 조건과 전체 연구 루트</summary>'+eventConditions(eventScript(p.eventId,v.scriptId))+planSummary(planById(v.researchPlanId),"이벤트 포함 연구 트리")+'</details>').join("");
-    return '<div class="acq-card"><strong>이벤트 획득 · '+esc(e.koName)+'</strong><span class="id">'+esc(e.id)+' · 생성 '+fmt(p.spawnedPersons)+'명</span>'+planSummary(planById(p.baseResearchPlanId),"이벤트 기본 연구 조건")+variants+'</div>';
+    return '<div class="acq-card"><strong>이벤트 획득 · '+esc(e.koName)+'</strong><span class="id">'+esc(e.id)+' · 생성 '+fmt(p.spawnedPersons)+'명</span>'+effects+planSummary(planById(p.baseResearchPlanId),"이벤트 기본 연구 조건")+variants+'</div>';
   }
   const r=PROG?.recipes?.[p.recipeId];if(!r)return"";
-  const items=(r.requiredItems||[]).map(i=>'<div class="req-item"><b>'+esc(i.koName)+'</b> × '+fmt(i.qty)+(i.eventSources||[]).map(src=>{const ev=eventById(src.eventId);return ev?'<div class="event-box"><span class="tag">이벤트</span> '+esc(ev.koName)+' '+(ev.scripts||[]).map(s=>eventConditions(s)).join("")+'</div>':""}).join("")+'</div>').join("");
+  const items=(r.requiredItems||[]).map(i=>'<div class="req-item"><b>'+esc(i.koName)+'</b> × '+fmt(i.qty)+eventSourcesHtml(i.eventSources||[])+'</div>').join("");
   const variants=(r.eventVariants||[]).map(v=>{const ev=eventById(v.eventId);return '<details><summary>'+esc(ev?.koName||v.eventId)+' 경유 실제 루트</summary>'+eventConditions(eventScript(v.eventId,v.scriptId))+planSummary(planById(v.researchPlanId),"이벤트 포함 연구 트리")+'</details>'}).join("");
-  return '<div class="acq-card"><strong>'+esc(r.koName)+'</strong><span>비용 '+fmt(r.cost)+' · 시간 '+fmt(r.time)+' · 작업장 '+fmt(r.space)+'</span>'+planSummary(planById(r.baseResearchPlanId),"기본 제조/전환 연구")+(items?'<h4>필요 아이템</h4>'+items:'')+variants+'</div>';
+  return '<div class="acq-card"><strong>'+esc(r.koName)+'</strong><span>비용 '+fmt(r.cost)+' · 시간 '+fmt(r.time)+' · 작업장 '+fmt(r.space)+'</span>'+effects+planSummary(planById(r.baseResearchPlanId),"기본 제조/전환 연구")+(items?'<h4>필요 아이템</h4>'+items:'')+variants+'</div>';
 }
 function trainingHtml(t){
   const stats={...(t.bonus?.stats||{}),...(t.flatOverallStatChange||{})};
   const bonuses=Object.entries(stats).filter(([,v])=>v).map(([k,v])=>'<span class="trait">'+esc(DATA.statLabels[k]||k)+' '+(v>0?"+":"")+fmt(v)+'</span>').join(" ");
   return '<div class="acq-card"><strong>'+esc(t.koName)+'</strong><span class="id">'+esc(t.id)+'</span><div>'+bonuses+'</div>'+planSummary(planById(t.researchPlanId),"훈련 해금 연구")+'</div>';
 }
-function renderProgression(soldierId){
+function renderProgression(soldierId,profile=null){
   const p=PROG?.soldiers?.[soldierId];if(!p)return"";
-  const gates=(p.summary?.commonBranchGates||[]).map(x=>'<span class="trait">'+esc(x.koName)+'</span>').join(" ");
-  return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3><div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div><div class="routes">'+((p.acquisitionPaths||[]).map(acquisitionHtml).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>')+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
+  const paths=p.acquisitionPaths||[];
+  let routeSummary="",routesHtml="";
+  if(profile){
+    const selected=paths.filter(x=>pathMatchesProfile(x,profile));
+    routeSummary='<div class="detail-grid"><div class="box"><strong>현재 획득형</strong>'+esc(profile.sourceKoName)+'</div><div class="box"><strong>표시 경로</strong>이 획득형과 일치하는 루트만</div><div class="box"><strong>추가 특성</strong>'+fmt((profile.traits||[]).length)+'</div></div>';
+    routesHtml='<h4>현재 선택한 획득 루트</h4>'+
+      (selected.length?selected.map(x=>acquisitionHtml(x,profile,true)).join(""):profileRouteEffectHtml(profile)+'<p class="muted">이 획득형과 정확히 일치하는 progression 경로는 별도 추적되지 않았습니다.</p>');
+  }else{
+    const gates=(p.summary?.commonBranchGates||[]).map(x=>'<span class="trait">'+esc(x.koName)+'</span>').join(" ");
+    routeSummary='<div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div>';
+    routesHtml='<p class="muted">아래 '+paths.length+'개는 이 기본 바디를 얻는 서로 다른 대안 경로입니다. 전부 거쳐야 하는 이벤트/선행 목록이 아닙니다.</p>'+
+      (paths.map(x=>acquisitionHtml(x)).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>');
+  }
+  return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3>'+routeSummary+'<div class="routes">'+routesHtml+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 연구량은 표시된 경로의 연구 계획 기준입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
 }
 
 ["search","dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
