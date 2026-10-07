@@ -41,4 +41,21 @@ const weirdThrow=sections.throwing.filter(x=>x.categories?.includes("STR_BAT_CAT
 if(weirdThrow.length)throw new Error("Corpse leaked into throwing weapons: "+weirdThrow[0].itemId);
 const pelletRows=sections.shooting.filter(x=>Number(x.pellets)>1);
 if(!pelletRows.length)throw new Error("No shotgun/pellet rows");
-console.log("OK weapons: "+sections.shooting.length+" shooting, "+sections.melee.length+" melee, "+sections.throwing.length+" throwing, "+d.characters.length+" reference characters, "+pelletRows.length+" pellet rows, "+Object.values(d.sectionChunks).flat().length+" chunks");
+
+function expectShooting(itemId,mode,expected){
+  const r=sections.shooting.find(x=>x.itemId===itemId&&x.mode===mode);
+  if(!r)throw new Error("Missing shooting regression row: "+itemId+" / "+mode);
+  for(const [key,value] of Object.entries(expected)){
+    if(Number(r[key])!==Number(value))throw new Error("Bad "+itemId+" "+key+": "+r[key]+" != "+value);
+  }
+}
+expectShooting("STR_CHAINSAW","auto",{basePower:35,shots:5,maxRange:1,powerRangeThreshold:3,powerRangeReduction:99});
+expectShooting("STR_CHAINSAW_LOLI","auto",{basePower:15,shots:4,maxRange:1,powerRangeThreshold:3,powerRangeReduction:99});
+expectShooting("STR_CHAINSAW_HEAVY","auto",{basePower:110,shots:5,maxRange:1,powerRangeThreshold:3,powerRangeReduction:99});
+expectShooting("STR_RIPPER","snap",{basePower:30,shots:3,maxRange:1,powerRangeThreshold:3,powerRangeReduction:99});
+
+const shortRangeRows=sections.shooting.filter(x=>Number(x.maxRange)<10);
+const shortMultiRows=shortRangeRows.filter(x=>Number(x.shots)>1||Number(x.pellets)>1);
+if(shortRangeRows.length<50)throw new Error("Suspiciously few short-range shooting rows: "+shortRangeRows.length);
+if(shortMultiRows.length<8)throw new Error("Suspiciously few short-range multi-hit rows: "+shortMultiRows.length);
+console.log("OK weapons: "+sections.shooting.length+" shooting, "+sections.melee.length+" melee, "+sections.throwing.length+" throwing, "+d.characters.length+" reference characters, "+pelletRows.length+" pellet rows, "+shortRangeRows.length+" short-range rows, "+shortMultiRows.length+" short-range multi-hit rows, "+Object.values(d.sectionChunks).flat().length+" chunks");
