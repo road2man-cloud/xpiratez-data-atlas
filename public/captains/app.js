@@ -321,16 +321,22 @@ function renderChoiceStage(stage,index){
 }
 function renderCodexChoice(){
   const opts=[
-    ["Gold","금색 코덱스","장교의 채찍 · 화염포","소심이면 네 번째 색 → Saint"],
-    ["Green","녹색 코덱스","생체플라스마 투사기","무모면 네 번째 색 → Saint"],
-    ["Red","적색 코덱스","리틀'일리야","게으른이면 네 번째 색 → Saint"],
-    ["Gray","회색 코덱스","컨버전 발사기","멍청이면 네 번째 색 → Saint"]
+    {color:"Gold",name:"금색 코덱스",id:"STR_CHOOSE_GOLD_QUERY",route:"STR_USE_DRILL_GOLD → Fuego / 가두어진 이변 → Gold Codex",event:"+300점 · 큰 바위×30",reward:"은괴×12 · 금괴×36 · 보물 상자 · 우주복×3 · 제독의 복장 · 장교의 채찍",tech:"장교의 채찍 · 화염포",saint:"소심이면 네 번째 색 → Saint"},
+    {color:"Green",name:"녹색 코덱스",id:"STR_CHOOSE_GREEN_QUERY",route:"STR_USE_DRILL_GREEN → Ventura / 고요한 이변 → Green Codex",event:"청소비×15 · 고철더미×7",reward:"치료 젤×20 · 의료 보급품×10 · 간호사 복장 · 완벽한 슈퍼변이체 스테이시스 포드×3",tech:"생체플라스마 투사기",saint:"무모면 네 번째 색 → Saint"},
+    {color:"Red",name:"적색 코덱스",id:"STR_CHOOSE_RED_QUERY",route:"STR_USE_DRILL_RED → Metallo / 폭풍 같은 이변 → Red Codex",event:"-$25k",reward:"구식 광선총×2 · 군용 광선총×2 · 광선총 전지×50 · 어그레서 갑옷×8 · 악마 해골",tech:"리틀'일리야",saint:"게으른이면 네 번째 색 → Saint"},
+    {color:"Gray",name:"회색 코덱스",id:"STR_CHOOSE_GRAY_QUERY",route:"STR_USE_DRILL_GRAY → Fortuna / 말할 수 없는 이변 → Gray Codex",event:"-210점 · 광기의 기록물×1",reward:"암호화 데이터 디스크×7 · 노움×1 · 똑똑이 복장 · 리베르 오컬터스 · 주술의 책",tech:"컨버전 발사기",saint:"멍청이면 네 번째 색 → Saint"}
   ];
   return '<article class="choice-stage card codex-choice-stage">'+
-    '<div class="choice-stage-head"><div><p class="eyebrow">Codex 선택</p><h3>Codex 색상</h3><p>플레이어 관점에서는 단순한 4지선다입니다.</p></div><span class="one-choice-badge">아래 4색 중 1개 선택</span></div>'+
-    '<div class="choice-grid codex-choice-grid">'+opts.map(([color,name,tech,saint])=>'<article class="choice-option codex-human '+color.toLowerCase()+'">'+
-      '<div class="choice-option-head"><div><strong>'+name+'</strong><small>'+CaptainGlossary.explain(tech)+'</small></div><span class="color-pill">'+color+'</span></div>'+
-      '<p>'+saint+'</p>'+
+    '<div class="choice-stage-head"><div><p class="eyebrow">Codex 선택</p><h3>자그마한 드릴 → Codex 4색</h3><p><b>STR_TINY_DRILL_INVESTIGATION</b> 뒤 실제로 고르는 4지선다입니다. 각 query는 연구량 1 / +10점이며, Tiny Drill + Menacing Hull 특수 프로젝트(space 70, time 1, refund)와 Anomaly 연구(cost 4)를 거쳐 실제 Codex를 얻습니다.</p></div><span class="one-choice-badge">아래 4색 중 1개 선택</span></div>'+
+    '<div class="choice-grid codex-choice-grid">'+opts.map(o=>'<article class="choice-option codex-human '+o.color.toLowerCase()+'">'+
+      '<div class="choice-option-head"><div><strong>'+o.name+'</strong><small>'+o.id+' · 연구량 1 · +10점</small></div><span class="color-pill">'+o.color+'</span></div>'+
+      '<p><b>경로:</b> '+o.route+'</p>'+
+      '<div class="choice-effects-wrap"><span class="choice-effects-title">실제 결과</span><div class="choice-effect-list">'+
+        '<div class="choice-effect"><b>중간 이변</b><span>'+o.event+'</span></div>'+
+        '<div class="choice-effect"><b>최종 보상</b><span>'+o.reward+'</span></div>'+
+        '<div class="choice-effect"><b>대표 후속</b><span>'+CaptainGlossary.explain(o.tech)+'</span></div>'+
+      '</div></div>'+
+      '<p class="choice-late"><b>선장 보완:</b> '+o.saint+'</p>'+
       '</article>').join("")+'</div>'+
     '</article>';
 }
