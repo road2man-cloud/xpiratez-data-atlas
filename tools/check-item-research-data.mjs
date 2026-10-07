@@ -22,6 +22,8 @@ if(items.index?.length!==4007)throw new Error("Expected 4007 items, got "+(items
 if(research.index?.length!==4612)throw new Error("Expected 4612 research topics, got "+(research.index?.length??0));
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
 if(research.index.length!==new Set(research.index.map(x=>x.id)).size)throw new Error("Duplicate research ids");
+const littleBirdAssemblyIndex=research.index.find(x=>x.id==="STR_LITTLE_BIRD_ASSEMBLY");
+if(littleBirdAssemblyIndex?.spawnedItemCount!==1)throw new Error("Little Bird assembly spawned item count missing from research index");
 if(!entities.names||!Object.keys(entities.names).length)throw new Error("Missing normalized entity dictionary");
 if(!schema.resourceStorage?.separated)throw new Error("Resource separation metadata missing");
 if(!schema.effectiveCoreFields?.length||!schema.coreSourceLegend)throw new Error("Core-source codec metadata missing");
@@ -45,6 +47,7 @@ for(const x of items.index){
 
 const researchChunks={},researchResources={};
 for(const x of research.index){
+  if(!Number.isInteger(x.spawnedItemCount)||x.spawnedItemCount<0)throw new Error("Invalid spawnedItemCount "+x.id);
   researchChunks[x.bucket]??=readJson("research-chunks",x.bucket+".json").details;
   const d=researchChunks[x.bucket][x.id];
   if(!d?.raw)throw new Error("Incomplete research detail "+x.id);
