@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-finalbuilds5-checkbox-filters";
+const ASSET_VERSION="soldiers-20261007-finalbuilds6-finaltype-filters";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -398,8 +398,10 @@ function populateFinalFilters(){
   const box=$("#finalBaseOptions");if(!box)return;
   const byType=new Map();
   for(const r of FINAL_ROWS){
-    const p=r.profile;if(!p)continue;
-    if(!byType.has(p.soldierType))byType.set(p.soldierType,p.soldierKoName||p.soldierType);
+    const type=r.finalSoldierType||r._id||r.profile?.soldierType;
+    if(!type)continue;
+    const name=SOLDIER_BY_ID.get(type)?.koName||r._name||r.profile?.soldierKoName||type;
+    if(!byType.has(type))byType.set(type,name);
   }
   const options=[...byType].sort((a,b)=>String(a[1]).localeCompare(String(b[1]),"ko"));
   box.innerHTML='<label class="filter-check all-check"><input id="finalBaseAll" type="checkbox" checked> 전체 기본형</label>'+
@@ -418,7 +420,8 @@ function finalFilterMatch(r){
   if(isSaint&&!saintOn)return false;
   if(!isSaint&&!regularOn)return false;
   const bases=selectedBaseTypes();
-  if(bases&&!bases.has(r.profile?.soldierType))return false;
+  const finalType=r.finalSoldierType||r._id||r.profile?.soldierType;
+  if(bases&&!bases.has(finalType))return false;
   return true;
 }
 function dataset(){
