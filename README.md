@@ -25,9 +25,9 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 
 탈것/기체 탭은 탑승 병력·조종사·속도·연료·내구·무장·레이더·비용을 비교하고, 직접 구매/제조법과 핵심 재료의 이벤트 획득원을 연결합니다. 예를 들어 Schoolbus처럼 특정 이벤트 재료가 필요한 기체는 이벤트의 연구 트리거, 월 제한, 난이도, 기타 트리거까지 함께 표시합니다.
 
-선장 선택 매트릭스는 초기 5선장부터 PUSSY 클래스·Unclassed 혼합형·Pure/Ultimate까지의 분기를 한 표에서 비교합니다. 반복 이벤트 현금 기대값, Hotel/VIP/Nonprofit/Scamming 같은 경제 옵션, 방사탑·네크로방어·벙커·전술센터 같은 방어/탐지 옵션, Boot Camp·Military Drill·Bread & Fishes·Warrior Culture·Charmy Dance 같은 병사 강화, Chaos Saint 특수병 공급과 인프라 해금을 함께 보여줍니다. 정적 모듈은 `public/captains/`에 있습니다.
+영구 선택·분기 DB는 초기 5선장부터 PUSSY 클래스·Unclassed 혼합형·Pure/Ultimate, Codex, 갈라지는 길, 세력·병종·스토리 상호배타까지 한곳에서 비교합니다. 각 선택의 선행·즉시 보상·후속 해금뿐 아니라 영구 손실과 복구/우회 가능성을 함께 표시하며, 반복 이벤트 경제·방어/탐지·병사 강화·Chaos Saint 공급과 인프라 영향도 연결합니다. 정적 모듈은 `public/captains/`에 있습니다.
 
-선장 페이지는 각 단계의 실제 `disables`를 전수 표시하며, Codex의 선택 연구와 실물 Codex 연구에서 발생하는 2중 4색 상호배타도 따로 보여줍니다. 기본 4선장의 Saint 보완색(무모→Green, 멍청→Gray, 게으름→Red, 소심→Gold), G1~G8 Captain×Codex 보너스, Saint 진입 시 중단되는 보너스, Gray/Sore-Ass 등으로 봉쇄되는 부정·도박 이벤트까지 교차표로 정리합니다.
+영구 선택·분기 페이지는 정규화 연구 DB의 `raw.disables` 보유 연구 163개를 86개 연결요소로 전수 감사하고, 내부 PREQ/result 플래그를 제외한 실제 선택축과 경로 결과를 구분해 보여줍니다. Codex의 선택 연구와 실물 Codex 연구에서 발생하는 2중 4색 상호배타도 따로 보여줍니다. 기본 4선장의 Saint 보완색(무모→Green, 멍청→Gray, 게으름→Red, 소심→Gold), G1~G8 Captain×Codex 보너스, Saint 진입 시 중단되는 보너스, Gray/Sore-Ass 등으로 봉쇄되는 부정·도박 이벤트까지 교차표로 정리합니다.
 
 병종/탈것의 **명목 누적 연구량**은 표시된 해금 루트의 `dependencies`와 `requires`를 중복 제거해 합산합니다. OXCE는 이미 비활성화된 선행 연구를 검사에서 제외할 수 있고 `unlocks`, `getOneFree`, 이벤트 직접 지급으로 우회하는 경우가 있으므로, 실제 플레이에서 필요한 연구량은 이 명목값보다 작을 수 있습니다. 페이지는 분기 연구·실물 표본·필요 기지기능·이벤트 조건을 함께 표시해 실제 경로를 따로 판단할 수 있게 합니다.
 
