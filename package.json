@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build:data": "node tools/build-data.mjs",
+    "build:facilities": "node tools/build-data.mjs --facility-only",
     "check": "node tools/check-data.mjs",
+    "check:facilities": "node tools/check-facilities.mjs",
     "build:item-research": "node tools/build-item-research-data.mjs",
     "check:item-research": "node tools/check-item-research-data.mjs",
     "check:choices": "node tools/check-choice-coverage.mjs"

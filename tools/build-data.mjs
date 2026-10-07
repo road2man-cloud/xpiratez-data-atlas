@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import yaml from "js-yaml";
 import {buildSoldierData} from "./soldier-data.mjs";
 import {buildArmorData} from "./armor-data.mjs";
+import {buildFacilityData} from "./facility-data.mjs";
 
 const args=process.argv.slice(2);
 const arg=(name,fallback=null)=>{const i=args.indexOf(name);return i>=0&&i+1<args.length?args[i+1]:fallback};
@@ -11,6 +12,7 @@ const source=arg("--source",process.env.XPIRATEZ_MOD_PATH);
 const outDir=path.resolve(arg("--out","public/data"));
 const includeLore=args.includes("--include-lore");
 const armorOnly=args.includes("--armor-only");
+const facilityOnly=args.includes("--facility-only");
 if(!source){console.error("Usage: node tools/build-data.mjs --source <.../user/mods/Piratez>");process.exit(2)}
 
 const modRoot=path.resolve(source);
@@ -508,28 +510,37 @@ craftProgression.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
 
 const soldierData=buildSoldierData({effectiveMerged,sourceHistory,tr});
 const armorData=buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys});
+const facilityData=buildFacilityData({effectiveMerged,sourceHistory,tr});
 
 const sortableItemFields=[...sortableItemFieldSet].filter(k=>k!=="type").sort((a,b)=>(fieldMeta[a]?.label||a).localeCompare(fieldMeta[b]?.label||b,"ko")).map(k=>({key:k,label:fieldMeta[k]?.label||k}));
 
-if(!armorOnly)fs.rmSync(outDir,{recursive:true,force:true});fs.mkdirSync(outDir,{recursive:true});
+if(!armorOnly&&!facilityOnly)fs.rmSync(outDir,{recursive:true,force:true});
+fs.mkdirSync(outDir,{recursive:true});
 if(armorOnly){
   fs.rmSync(path.join(outDir,"armor-chunks"),{recursive:true,force:true});
   fs.rmSync(path.join(outDir,"resource-chunks","armors"),{recursive:true,force:true});
+}
+if(facilityOnly){
+  fs.rmSync(path.join(outDir,"facility-chunks"),{recursive:true,force:true});
+  for(const file of ["facilities-index.json","facility-base-functions.json","facility-research.json"])fs.rmSync(path.join(outDir,file),{force:true});
 }
 function writeChunks(dir,details){
   const d=path.join(outDir,dir);fs.mkdirSync(d,{recursive:true});const buckets={};
   for(const [id,x] of Object.entries(details))(buckets[x.bucket]||={})[id]=x;
   for(const [b,v] of Object.entries(buckets))fs.writeFileSync(path.join(d,b+".json"),JSON.stringify({details:v}));
 }
-if(!armorOnly){writeChunks("chunks",itemDetails);writeChunks("research-chunks",researchDetails)}
-writeChunks("armor-chunks",armorData.details);
-writeChunks("resource-chunks/armors",armorData.resourceDetails);
+if(!armorOnly&&!facilityOnly){writeChunks("chunks",itemDetails);writeChunks("research-chunks",researchDetails)}
+if(!facilityOnly){
+  writeChunks("armor-chunks",armorData.details);
+  writeChunks("resource-chunks/armors",armorData.resourceDetails);
+}
+if(!armorOnly)writeChunks("facility-chunks",facilityData.details);
 
 const manifest={
   generatedAt:new Date().toISOString(),
   mod:{name:META.name||"X-Piratez",version:META.version||"unknown",id:META.id||"piratez",requiredExtendedVersion:META.requiredExtendedVersion||null},
   source:{metadataSha256:sha256(metadataPath),rules:ruleFiles.map(file=>({file,sha256:sha256(path.join(rulesDir,file))})),languages:["ko.yml","en-US.yml"].filter(f=>fs.existsSync(path.join(langDir,f))).map(file=>({file,sha256:sha256(path.join(langDir,file))}))},
-  counts:{items:itemIndex.length,research:researchIndex.length,armors:armorData.counts.armors,equipableArmors:armorData.counts.equipable,manufacturableArmors:armorData.counts.manufacturable,buyableArmors:armorData.counts.buyable,soldiers:soldierData.counts.soldiers,soldierProfiles:soldierData.counts.soldierProfiles,soldierBonuses:soldierData.counts.soldierBonuses,crafts:craftProgression.length,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
+  counts:{items:itemIndex.length,research:researchIndex.length,armors:armorData.counts.armors,equipableArmors:armorData.counts.equipable,manufacturableArmors:armorData.counts.manufacturable,buyableArmors:armorData.counts.buyable,soldiers:soldierData.counts.soldiers,soldierProfiles:soldierData.counts.soldierProfiles,soldierBonuses:soldierData.counts.soldierBonuses,crafts:craftProgression.length,facilities:facilityData.counts.facilities,manufacture:manufactureList.length,ufopaedia:ufopaedia.length,itemRuleFields:allItemKeys.length,sortableItemFields:sortableItemFields.length},
   loreIncluded:includeLore
 };
 const progressionTopics=researchList.map(r=>{
@@ -616,7 +627,7 @@ for(const [id,plan] of Object.entries(researchPlanStore)){
     topics:plan.topics.map(t=>progressionTopicIndex.get(t.id)).filter(Number.isInteger)
   };
 }
-if(!armorOnly){
+if(!armorOnly&&!facilityOnly){
   fs.writeFileSync(path.join(outDir,"items-index.json"),JSON.stringify({meta:manifest,index:itemIndex}));
   fs.writeFileSync(path.join(outDir,"research-index.json"),JSON.stringify({meta:manifest,index:researchIndex}));
   fs.writeFileSync(path.join(outDir,"soldiers-index.json"),JSON.stringify({meta:manifest,...soldierData}));
@@ -631,5 +642,11 @@ if(!armorOnly){
   fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
   fs.writeFileSync(path.join(outDir,"manifest.json"),JSON.stringify(manifest,null,2));
 }
-fs.writeFileSync(path.join(outDir,"armors-index.json"),JSON.stringify({meta:manifest,counts:armorData.counts,statKeys:armorData.statKeys,damageTypes:armorData.damageTypes,index:armorData.index}));
+if(!armorOnly){
+  const {details:facilityDetails,baseFunctionMeta:facilityBaseFunctionMeta,researchCatalog:facilityResearchCatalog,...facilityIndexData}=facilityData;
+  fs.writeFileSync(path.join(outDir,"facilities-index.json"),JSON.stringify({meta:manifest,...facilityIndexData}));
+  fs.writeFileSync(path.join(outDir,"facility-base-functions.json"),JSON.stringify({baseFunctionMeta:facilityBaseFunctionMeta}));
+  fs.writeFileSync(path.join(outDir,"facility-research.json"),JSON.stringify({researchCatalog:facilityResearchCatalog}));
+}
+if(!facilityOnly)fs.writeFileSync(path.join(outDir,"armors-index.json"),JSON.stringify({meta:manifest,counts:armorData.counts,statKeys:armorData.statKeys,damageTypes:armorData.damageTypes,index:armorData.index}));
 console.log(JSON.stringify(manifest.counts));
