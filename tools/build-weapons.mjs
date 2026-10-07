@@ -126,10 +126,12 @@ const meta={
   source:{metadataSha256:sha256(metadataPath),ruleCount:ruleFiles.length,soldierProfiles:soldierData.profiles.length},
   counts:weaponData.counts
 };
-const dataDir=path.dirname(outFile),chunkDir=path.join(dataDir,"weapon-chunks");
+const dataDir=path.dirname(outFile),chunkDir=path.join(dataDir,"weapon-chunks"),detailDir=path.join(dataDir,"weapon-details");
 fs.mkdirSync(dataDir,{recursive:true});
 fs.rmSync(chunkDir,{recursive:true,force:true});
+fs.rmSync(detailDir,{recursive:true,force:true});
 fs.mkdirSync(chunkDir,{recursive:true});
+fs.mkdirSync(detailDir,{recursive:true});
 const sectionChunks={},chunkRows=180;
 for(const [section,rows] of Object.entries(weaponData.sections)){
   const files=[];
@@ -140,8 +142,24 @@ for(const [section,rows] of Object.entries(weaponData.sections)){
   }
   sectionChunks[section]=files;
 }
+
+const detailBuckets={},detailIndex={};
+for(const [id,detail] of Object.entries(weaponData.details||{})){
+  const bucket=crypto.createHash("sha256").update(id).digest("hex")[0];
+  (detailBuckets[bucket]||={})[id]=detail;
+  detailIndex[id]="weapon-details/"+bucket+".json";
+}
+for(const [bucket,details] of Object.entries(detailBuckets)){
+  fs.writeFileSync(path.join(detailDir,bucket+".json"),JSON.stringify({details}));
+}
+
 fs.writeFileSync(outFile,JSON.stringify({
-  meta,statKeys:weaponData.statKeys,characters:weaponData.characters,counts:weaponData.counts,
-  engineNotes:weaponData.engineNotes,sectionChunks
+  meta,statKeys:weaponData.statKeys,characters:weaponData.characters,targetProfiles:weaponData.targetProfiles,damageProfiles:weaponData.damageProfiles,counts:weaponData.counts,
+  engineNotes:weaponData.engineNotes,sectionChunks,detailIndex
 }));
-console.log(JSON.stringify({out:outFile,chunkRows,chunks:Object.fromEntries(Object.entries(sectionChunks).map(([k,v])=>[k,v.length])),...weaponData.counts}));
+console.log(JSON.stringify({
+  out:outFile,chunkRows,
+  chunks:Object.fromEntries(Object.entries(sectionChunks).map(([k,v])=>[k,v.length])),
+  detailChunks:Object.keys(detailBuckets).length,
+  ...weaponData.counts
+}));

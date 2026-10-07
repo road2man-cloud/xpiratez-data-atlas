@@ -116,6 +116,75 @@ function meleeAccuracySpec(rule){
 function throwAccuracySpec(rule){
   return normalizeBonus(rule?.throwMultiplier,{throwing:1});
 }
+function hasScriptFields(rule){
+  return !!rule&&typeof rule==="object"&&Object.keys(rule).some(k=>/script/i.test(k));
+}
+function damageProfile(damageType,alter){
+  const id=Number.isInteger(damageType)?damageType:0;
+  const base={
+    RandomType:8,ResistType:id,ArmorEffectiveness:1,ToHealth:1,RandomHealth:false,
+    IgnoreDirection:false
+  };
+  if(id===0){base.RandomType=5}
+  else if(id===2){base.RandomType=4;base.ArmorEffectiveness=0;base.IgnoreDirection=true}
+  else if(id===3){base.RandomType=9}
+  else if(id===6){base.ToHealth=0}
+  else if(id===9){base.RandomType=5;base.ArmorEffectiveness=0;base.ToHealth=0;base.IgnoreDirection=true}
+  const a=alter&&typeof alter==="object"&&!Array.isArray(alter)?alter:{};
+  return {
+    randomType:n(a.RandomType,base.RandomType),
+    resistType:n(a.ResistType,base.ResistType),
+    armorEffectiveness:a.ArmorEffectiveness==null?base.ArmorEffectiveness:n(a.ArmorEffectiveness,base.ArmorEffectiveness),
+    toHealth:a.ToHealth==null?base.ToHealth:n(a.ToHealth,base.ToHealth),
+    randomHealth:a.RandomHealth==null?base.RandomHealth:Boolean(a.RandomHealth),
+    ignoreDirection:a.IgnoreDirection==null?base.IgnoreDirection:Boolean(a.IgnoreDirection)
+  };
+}
+function collectStrings(value,out){
+  if(typeof value==="string"){out.add(value);return}
+  if(Array.isArray(value)){for(const v of value)collectStrings(v,out)}
+  else if(value&&typeof value==="object")for(const v of Object.values(value))collectStrings(v,out);
+}
+function buildTargetProfiles(effectiveMerged,tr){
+  const unitById=new Map(arr(effectiveMerged.units).filter(x=>x&&typeof x.type==="string").map(x=>[x.type,x]));
+  const armorById=new Map(arr(effectiveMerged.armors).filter(x=>x&&typeof x.type==="string").map(x=>[x.type,x]));
+  const enemyIds=new Set(),raceRefs=new Map();
+  for(const race of arr(effectiveMerged.alienRaces)){
+    if(!race||typeof race.id!=="string")continue;
+    const ids=new Set();
+    collectStrings(race.members,ids);
+    collectStrings(race.membersRandom,ids);
+    for(const id of ids){
+      if(!unitById.has(id))continue;
+      enemyIds.add(id);
+      const refs=raceRefs.get(id)||[];
+      refs.push({id:race.id,koName:tr(race.id,"ko"),enName:tr(race.id,"en")});
+      raceRefs.set(id,refs);
+    }
+  }
+  const profiles=[];
+  for(const id of enemyIds){
+    const u=unitById.get(id);if(!u||typeof u.armor!=="string")continue;
+    const a=armorById.get(u.armor);if(!a)continue;
+    const modifiers=Array.from({length:20},(_,i)=>{
+      const v=Array.isArray(a.damageModifier)?a.damageModifier[i]:null;
+      return v==null?1:n(v,1);
+    });
+    profiles.push({
+      unitId:u.type,koName:tr(u.type,"ko"),enName:tr(u.type,"en"),
+      armorId:a.type,armorKoName:tr(a.type,"ko"),armorEnName:tr(a.type,"en"),
+      frontArmor:n(a.frontArmor),sideArmor:n(a.sideArmor),rearArmor:n(a.rearArmor),underArmor:n(a.underArmor),
+      damageModifier:modifiers,scripted:hasScriptFields(a),races:raceRefs.get(id)||[]
+    });
+  }
+  profiles.sort((a,b)=>a.koName.localeCompare(b.koName,"ko")||a.unitId.localeCompare(b.unitId,"en"));
+  if(profiles.length){
+    const vals=profiles.map(x=>x.frontArmor).sort((a,b)=>a-b),median=vals[Math.floor(vals.length/2)]??0;
+    const chosen=profiles.slice().sort((a,b)=>Math.abs(a.frontArmor-median)-Math.abs(b.frontArmor-median)||a.koName.localeCompare(b.koName,"ko"))[0];
+    if(chosen)chosen.recommended=true;
+  }
+  return profiles;
+}
 function compactRelations(detail){
   const research=(detail?.research||[]).map(x=>({id:x.id||x.owner,koName:x.koName,cost:x.cost??null,needItem:x.needItem??null,destroyItem:x.destroyItem??null}));
   const manufacture=(detail?.manufacture||[]).map(x=>({id:x.id||x.owner,koName:x.koName,time:x.time??null,cost:x.cost??null,requiredQty:x.requiredQty??null,producedQty:x.producedQty??null}));
@@ -199,9 +268,13 @@ export function buildWeaponData({effectiveMerged,sourceHistory,tr,damageKeys,sol
             powerRangeThreshold:n(powerRule.powerRangeThreshold,0),basePower:n(powerRule.power,0),
             damageBonus:damageSpec(powerRule),powerSourceId:powerRule.type,
             damageType:dmgType,damageTypeKo:damageName(damageKeys,tr,dmgType),
+            damageProfile:damageProfile(dmgType,ammo.damageAlter??powerRule.damageAlter),
+            actualDamageScripted:hasScriptFields(item)||hasScriptFields(ammo)||hasScriptFields(powerRule),
             blastRadius:ammo.blastRadius??ammo.damageAlter?.FixRadius??null,
-            armorEffectiveness:ammo.damageAlter?.ArmorEffectiveness??null,
-            toHealth:ammo.damageAlter?.ToHealth??null,toStun:ammo.damageAlter?.ToStun??null,toTile:ammo.damageAlter?.ToTile??null
+            armorEffectiveness:ammo.damageAlter?.ArmorEffectiveness??powerRule.damageAlter?.ArmorEffectiveness??null,
+            toHealth:ammo.damageAlter?.ToHealth??powerRule.damageAlter?.ToHealth??null,
+            toStun:ammo.damageAlter?.ToStun??powerRule.damageAlter?.ToStun??null,
+            toTile:ammo.damageAlter?.ToTile??powerRule.damageAlter?.ToTile??null
           });
         }
       }
@@ -218,6 +291,8 @@ export function buildWeaponData({effectiveMerged,sourceHistory,tr,damageKeys,sol
         cost:actionCost(item,"melee"),shots:1,pellets:1,basePower,
         damageBonus:standalone?damageSpec(item):meleeSpec(item),
         damageType:dmgType,damageTypeKo:damageName(damageKeys,tr,dmgType),
+        damageProfile:damageProfile(dmgType,standalone?item.damageAlter:item.meleeAlter),
+        actualDamageScripted:hasScriptFields(item),
         armorEffectiveness:(standalone?item.damageAlter:item.meleeAlter)?.ArmorEffectiveness??null,
         toHealth:(standalone?item.damageAlter:item.meleeAlter)?.ToHealth??null,
         toStun:(standalone?item.damageAlter:item.meleeAlter)?.ToStun??null,
@@ -234,6 +309,7 @@ export function buildWeaponData({effectiveMerged,sourceHistory,tr,damageKeys,sol
         cost:actionCost(item,"throw"),primeCost:item.costPrime?.time??item.tuPrime??50,
         primeFlat:Boolean(item.flatPrime?.time??false),basePower:n(item.power,0),damageBonus:damageSpec(item),
         damageType:dmgType,damageTypeKo:damageName(damageKeys,tr,dmgType),
+        damageProfile:damageProfile(dmgType,item.damageAlter),actualDamageScripted:hasScriptFields(item),
         throwRange:n(item.throwRange,200),throwDropoffRange:n(item.throwDropoffRange,99),throwDropoff:n(item.throwDropoff,5),
         blastRadius:item.blastRadius??item.damageAlter?.FixRadius??null,
         armorEffectiveness:item.damageAlter?.ArmorEffectiveness??null,toHealth:item.damageAlter?.ToHealth??null,
@@ -243,15 +319,40 @@ export function buildWeaponData({effectiveMerged,sourceHistory,tr,damageKeys,sol
   }
 
   const characters=makeCharacters(soldierData);
-  const unsupportedSpecs=[...shooting,...melee,...throwing].filter(r=>r.accuracyBonus?.kind==="script"||r.damageBonus?.kind==="script").length;
+  const targetProfiles=buildTargetProfiles(effectiveMerged,tr);
+  const allRows=[...shooting,...melee,...throwing];
+  const unsupportedSpecs=allRows.filter(r=>r.accuracyBonus?.kind==="script"||r.damageBonus?.kind==="script").length;
+  const damageProfiles={};
+  for(const r of allRows){
+    damageProfiles[r.id]={...r.damageProfile,scripted:Boolean(r.actualDamageScripted)};
+    delete r.damageProfile;
+    delete r.actualDamageScripted;
+  }
+  const detailIds=new Set();
+  for(const r of allRows){
+    detailIds.add(r.itemId);
+    if(r.ammoId)detailIds.add(r.ammoId);
+    if(r.powerSourceId)detailIds.add(r.powerSourceId);
+  }
+  const details={};
+  for(const id of [...detailIds].sort()){
+    const rule=byId.get(id);
+    if(!rule)continue;
+    details[id]={
+      itemId:id,koName:tr(id,"ko"),enName:tr(id,"en"),
+      sourceFiles:sourceHistory["type:"+id]||[],
+      rule
+    };
+  }
   return {
-    statKeys:STAT_KEYS,characters,
-    sections:{shooting,melee,throwing},
-    counts:{shooting:shooting.length,melee:melee.length,throwing:throwing.length,characters:characters.length,unsupportedSpecs},
+    statKeys:STAT_KEYS,characters,targetProfiles,damageProfiles,
+    sections:{shooting,melee,throwing},details,
+    counts:{shooting:shooting.length,melee:melee.length,throwing:throwing.length,characters:characters.length,targetProfiles:targetProfiles.length,detailItems:Object.keys(details).length,unsupportedSpecs},
     engineNotes:{
       accuracy:"OXCE BattleUnit::getFiringAccuracy 계열: 캐릭터 stat multiplier × 무기 accuracy, 이후 자세/양손/거리 보정.",
       power:"OXCE RuleStatBonus: power 또는 meleePower에 캐릭터 스탯 보너스를 합산. 1타 명목위력과 shots×pellets 총 명목위력을 분리하고, powerRangeReduction은 선택 거리 값에만 적용.",
       range:"maxRange/물리 투척거리는 하드 사거리로 취급. 하드 사거리 밖은 피해 0이 아니라 공격 불가이므로 거리 기반 위력·정확도를 사거리 밖으로 표시.",
+      actualDamage:"명중 시 기대 HP 피해: OXCE RandomType의 정수 피해 분포 → 선택한 적 armor.damageModifier[ResistType] → 전면 방어력 × ArmorEffectiveness 차감 → ToHealth/RandomHealth. alienRaces에 실제 편성되는 적 유닛을 개별 선택하며, 커스텀 전투 스크립트는 정적 근사로 표시.",
       tu:"OXCE BattleUnit::getActionTUs: flat가 아니면 캐릭터 기본 TU에 % 비용을 곱해 floor, 최소 1.",
       throwRange:"OXCE ProjectileFlyBState::getMaxThrowDistance의 동일고도 물리 투척거리 근사."
     }
