@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "generator": "GPT item editorial synthesis v1",
+  "evidence": "ruleset-and-derived-links",
+  "generatedFrom": [
+    "items-index.json",
+    "chunks",
+    "entities.json"
+  ],
+  "count": 4007,
+  "averageChars": 485
+}
