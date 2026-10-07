@@ -120,6 +120,28 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       };
     });
   }
+  const salaryRanks=[
+    ["rookie",null,"STR_ROOKIE"],
+    ["squaddie","costSalarySquaddie","STR_SQUADDIE"],
+    ["sergeant","costSalarySergeant","STR_SERGEANT"],
+    ["captain","costSalaryCaptain","STR_CAPTAIN"],
+    ["colonel","costSalaryColonel","STR_COLONEL"],
+    ["commander","costSalaryCommander","STR_COMMANDER"]
+  ];
+  function salaryByRank(rule){
+    const base=Number(rule?.costSalary)||0;
+    const rankStrings=Array.isArray(rule?.rankStrings)?rule.rankStrings:[];
+    return salaryRanks.map(([key,field,fallback],rank)=>{
+      const id=rankStrings[rank]||fallback;
+      const bonus=field?(Number(rule?.[field])||0):0;
+      return{rank,key,id,koName:tr(id,"ko"),enName:tr(id,"en"),base,bonus,total:base+bonus};
+    });
+  }
+  function salaryForRank(rule,rank){
+    const rows=salaryByRank(rule);
+    const n=Number(rank),i=Number.isFinite(n)?Math.max(0,Math.min(rows.length-1,Math.trunc(n))):0;
+    return rows[i]?.total??(Number(rule?.costSalary)||0);
+  }
   function baseRecord(rule){
     const range=baseRange(rule),rawSplit=splitPresentationResources(rule);
     if(rawSplit.resources.length)resourceDetails[rule.type]={id:rule.type,effective:rawSplit.resources};
@@ -127,7 +149,11 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       id:rule.type,koName:tr(rule.type,"ko"),enName:tr(rule.type,"en"),
       minStats:range.min,avgStats:range.avg,maxStats:range.max,
       statCaps:readStats(rule.statCaps),trainingStatCaps:readStats(rule.trainingStatCaps),
-      costBuy:rule.costBuy??0,costSalary:rule.costSalary??0,monthlyBuyLimit:rule.monthlyBuyLimit??null,
+      costBuy:rule.costBuy??0,costSalary:rule.costSalary??0,
+      costSalarySquaddie:rule.costSalarySquaddie??0,costSalarySergeant:rule.costSalarySergeant??0,
+      costSalaryCaptain:rule.costSalaryCaptain??0,costSalaryColonel:rule.costSalaryColonel??0,
+      costSalaryCommander:rule.costSalaryCommander??0,salaryByRank:salaryByRank(rule),
+      rankStrings:Array.isArray(rule.rankStrings)?rule.rankStrings:[],monthlyBuyLimit:rule.monthlyBuyLimit??null,
       transferTime:rule.transferTime??null,requires:Array.isArray(rule.requires)?rule.requires:[],
       armor:rule.armor??null,allowPromotion:rule.allowPromotion??true,
       sourceFiles:sourceHistory["type:"+rule.type]||["Piratez.rul"],raw:rawSplit.core,resourceFieldCount:rawSplit.resources.length,
@@ -154,6 +180,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     const caps=effectiveCapStats(soldier,traitStats);
     const saint=saintMeta(sourceId);
     const direct=sourceType==="direct";
+    const rank=Number.isFinite(Number(template.rank))?Math.trunc(Number(template.rank)):0;
     return{
       id:sourceType+":"+sourceId,sourceType,sourceId,soldierType:soldier.type,
       soldierKoName:tr(soldier.type,"ko"),soldierEnName:tr(soldier.type,"en"),
@@ -161,7 +188,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       sourceEnName:direct?("Direct hire · "+tr(soldier.type,"en")):tr(sourceId,"en"),
       spawnedPersons:sourceType==="event"?(entry.spawnedPersons??1):1,
       cost:direct?(soldier.costBuy??0):(entry.cost??null),
-      salary:direct?(soldier.costSalary??0):null,
+      salary:salaryForRank(soldier,rank),
       time:direct?(soldier.transferTime??null):(entry.time??null),
       monthlyBuyLimit:direct?(soldier.monthlyBuyLimit??null):null,
       requires:Array.isArray(entry.requires)?entry.requires:[],
@@ -170,7 +197,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       effectiveStats:effective,rawStatCaps:caps.raw,effectiveStatCaps:caps.effective,trainingStatCaps:readStats(soldier.trainingStatCaps),
       initialStatsOverride:template.initialStats??null,currentStatsOverride:template.currentStats??null,
       previousTransformations:template.previousTransformations??{},
-      armor:template.armor??soldier.armor??null,rank:template.rank??0,nationality:template.nationality??null,
+      armor:template.armor??soldier.armor??null,rank,nationality:template.nationality??null,
       ...saint,
       sourceFiles:direct?(sourceHistory["type:"+soldier.type]||["Piratez.rul"]):(sourceHistory["name:"+sourceId]||[]),
       ...flatRange("effective",effective)
