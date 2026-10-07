@@ -40,11 +40,13 @@ jobs:
           node tools/check-soldiers.mjs --data public/data
           node tools/check-progression.mjs --data public/data
           node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json
+          node tools/check-facilities.mjs --data public/data
           node tools/check-armors.mjs
           node tools/check-weapons.mjs
           node --check public/items/app.js
           node --check public/soldiers/app.js
           node --check public/crafts/app.js
+          node --check public/facilities/app.js
           node --check public/armors/app.js
           node --check public/captains/app.js
           node --check public/weapons/app.js
