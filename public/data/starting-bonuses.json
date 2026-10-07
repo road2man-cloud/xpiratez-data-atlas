@@ -1,0 +1,1748 @@
+{
+  "meta": {
+    "mod": "XPiratez",
+    "version": "v.o1.1.1",
+    "sourceFile": "Piratez_Events.rul",
+    "rule": "firstMonth: 0 + lastMonth: 0 + base region/country trigger",
+    "rawEventCount": 39,
+    "regionEventCount": 14,
+    "countryEventCount": 25
+  },
+  "regions": [
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_ARCTIC"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_ARCTIC_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_ARCTIC_EVENT",
+      "descriptionId": "STR_START_LOCATION_ARCTIC_EVENT_DESCRIPTION",
+      "points": 450,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CLOTHING_TRIBAL",
+          "qty": 6
+        }
+      ],
+      "research": [
+        "STR_POLAR_OUTFIT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_ANTARCTICA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_ANTARCTICA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_ANTARCTICA_EVENT",
+      "descriptionId": "STR_START_LOCATION_ANTARCTICA_EVENT_DESCRIPTION",
+      "points": 700,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CLOTHING_TRIBAL",
+          "qty": 6
+        }
+      ],
+      "research": [
+        "STR_POLAR_OUTFIT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_SIBERIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_SIBERIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_SIBERIA_EVENT",
+      "descriptionId": "STR_START_LOCATION_SIBERIA_EVENT_DESCRIPTION",
+      "points": 200,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_LUXURY_FUR",
+          "qty": 8
+        }
+      ],
+      "research": [
+        "STR_FUR_HAT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_NORTH_ATLANTIC"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_NORTH_ATLANTIC_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_NORTH_ATLANTIC_EVENT",
+      "descriptionId": "STR_START_LOCATION_NORTH_ATLANTIC_EVENT_DESCRIPTION",
+      "points": 450,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CLOTHING_TRIBAL",
+          "qty": 6
+        }
+      ],
+      "research": [
+        "STR_SEA_TRANSPORT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_EUROPE"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_EUROPE_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_EUROPE_EVENT",
+      "descriptionId": "STR_START_LOCATION_EUROPE_EVENT_DESCRIPTION",
+      "points": -50,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_RAIDER_CORPSE",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_RAIDER_CORPSE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_NORTH_AMERICA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_NORTH_AMERICA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_NORTH_AMERICA_EVENT",
+      "descriptionId": "STR_START_LOCATION_NORTH_AMERICA_EVENT_DESCRIPTION",
+      "points": 200,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_VODKA",
+          "qty": 5
+        }
+      ],
+      "research": [
+        "STR_UBER_WHEAT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_SOUTH_AMERICA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_SOUTH_AMERICA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_SOUTH_AMERICA_EVENT",
+      "descriptionId": "STR_START_LOCATION_SOUTH_AMERICA_EVENT_DESCRIPTION",
+      "points": 450,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_RED_PEPPER",
+          "qty": 10
+        },
+        {
+          "id": "STR_DEVILS_PEPPER",
+          "qty": 10
+        },
+        {
+          "id": "STR_EGGPLANT",
+          "qty": 10
+        },
+        {
+          "id": "STR_ORANGE",
+          "qty": 10
+        },
+        {
+          "id": "STR_COCONUT",
+          "qty": 10
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_WAT_DO"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_NORTH_AFRICA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_NORTH_AFRICA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_NORTH_AFRICA_EVENT",
+      "descriptionId": "STR_START_LOCATION_NORTH_AFRICA_EVENT_DESCRIPTION",
+      "points": -50,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_BEER",
+          "qty": 6
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_ANKH",
+        "STR_AMPHORE",
+        "STR_GOLDEN_CUP",
+        "STR_GOLDEN_CROSS",
+        "STR_CROWN",
+        "STR_COINS",
+        "STR_DIAMOND"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_SOUTHERN_AFRICA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_SOUTHERN_AFRICA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_SOUTHERN_AFRICA_EVENT",
+      "descriptionId": "STR_START_LOCATION_SOUTHERN_AFRICA_EVENT_DESCRIPTION",
+      "points": 200,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_BLOWPIPE",
+          "qty": 3
+        },
+        {
+          "id": "STR_BLOWPIPE_DARTS_ACID",
+          "qty": 24
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_MONSTER_HUNT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_CENTRAL_ASIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_CENTRAL_ASIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_CENTRAL_ASIA_EVENT",
+      "descriptionId": "STR_START_LOCATION_CENTRAL_ASIA_EVENT_DESCRIPTION",
+      "points": 200,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_MUTANT_COMPLAINT",
+          "qty": 777
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_NECROPIRATE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_CENTRAL_ASIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_EVENT_MEDUSA",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_EVENT_MEDUSA",
+      "descriptionId": "STR_START_LOCATION_EVENT_MEDUSA_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CUTLASS",
+          "qty": 2
+        },
+        {
+          "id": "STR_BARBARIAN_AX",
+          "qty": 2
+        }
+      ],
+      "research": [
+        "STR_LAMIA_BRONZE_ARMOR"
+      ],
+      "spawnedPersonType": "STR_SOLDIER_LAMIA",
+      "spawnedPersons": 4,
+      "spawnedSoldier": {
+        "rank": 1,
+        "nationality": null,
+        "armor": "STR_LAMIA_BRONZE_A_UC",
+        "transformationBonuses": {
+          "STR_BEEFY_TRAIT": 1,
+          "STR_TOUGH_TRAIT": 1,
+          "STR_PROUD_WARRIOR": 1
+        },
+        "previousTransformations": {
+          "STR_PROUD_WARRIOR": 1
+        },
+        "currentStats": {}
+      },
+      "timer": 15000,
+      "timerRandom": 25000
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_SOUTH_EAST_ASIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_SOUTH_EAST_ASIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_SOUTH_EAST_ASIA_EVENT",
+      "descriptionId": "STR_START_LOCATION_SOUTH_EAST_ASIA_EVENT_DESCRIPTION",
+      "points": 200,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_MUTANT_FISH",
+          "qty": 10
+        },
+        {
+          "id": "STR_MUTANT_EGG",
+          "qty": 10
+        },
+        {
+          "id": "STR_PUMPKIN",
+          "qty": 10
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_MUTANT_EGG"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_AUSTRALASIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_AUSTRALASIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_AUSTRALASIA_EVENT",
+      "descriptionId": "STR_START_LOCATION_AUSTRALASIA_EVENT_DESCRIPTION",
+      "points": 450,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_PIR_CANNONBALL_HE",
+          "qty": 20
+        },
+        {
+          "id": "STR_PIR_CANNONBALL",
+          "qty": 20
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_MISSION_SEA_ADVENTURE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    },
+    {
+      "kind": "region",
+      "triggerIds": [
+        "STR_PACIFIC"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_LOCATION_PACIFIC_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_LOCATION_PACIFIC_EVENT",
+      "descriptionId": "STR_START_LOCATION_PACIFIC_EVENT_DESCRIPTION",
+      "points": 700,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_HERO",
+          "qty": 1
+        },
+        {
+          "id": "STR_PARROT",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_DEEP_ONE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 60,
+      "timerRandom": 300
+    }
+  ],
+  "countries": [
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_UK"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_UK_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_UK_EVENT",
+      "descriptionId": "STR_START_COUNTRY_UK_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_JUNK_PILE",
+          "qty": 8
+        },
+        {
+          "id": "STR_NECROPLANE_PARTS",
+          "qty": 30
+        },
+        {
+          "id": "STR_CHEMICALS",
+          "qty": 50
+        },
+        {
+          "id": "STR_SCRAP_METAL",
+          "qty": 50
+        }
+      ],
+      "research": [
+        "STR_UK"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_USA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_USA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_USA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_USA_EVENT_DESCRIPTION",
+      "points": -150,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_GOVT_MAGNUM",
+          "qty": 1
+        },
+        {
+          "id": "STR_OLD_MAGNUM",
+          "qty": 3
+        },
+        {
+          "id": "STR_OLD_MAGNUM_ROUNDS",
+          "qty": 50
+        },
+        {
+          "id": "STR_GLAMOUR",
+          "qty": 10
+        },
+        {
+          "id": "STR_SHERIFFS_HANDBOOK",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_USA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_RUSSIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_RUSSIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_RUSSIA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_RUSSIA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_BABY_NUKE",
+          "qty": 1
+        },
+        {
+          "id": "STR_BABY_NUKE_BLUEPRINTS",
+          "qty": 1
+        },
+        {
+          "id": "STR_GOVT_FINE",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_RUSSIA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_FRANCE"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_FRANCE_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_FRANCE_EVENT",
+      "descriptionId": "STR_START_COUNTRY_FRANCE_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_SLAVE_MAID_SUPER",
+          "qty": 6
+        },
+        {
+          "id": "STR_MEIDO_OUTFIT",
+          "qty": 6
+        },
+        {
+          "id": "STR_RAYGUN_CLIP",
+          "qty": 9
+        },
+        {
+          "id": "STR_PARTS_WEAPON_ADV",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_FRANCE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_GERMANY"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_GERMANY_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_GERMANY_EVENT",
+      "descriptionId": "STR_START_COUNTRY_GERMANY_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CHOCOLATE",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_GERMANY"
+      ],
+      "spawnedPersonType": "STR_SOLDIER_GNOME",
+      "spawnedPersons": 1,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_ITALY"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_ITALY_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_ITALY_EVENT",
+      "descriptionId": "STR_START_COUNTRY_ITALY_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CRUSADER_ARMOR",
+          "qty": 6
+        },
+        {
+          "id": "STR_NUN_OUTFIT",
+          "qty": 6
+        },
+        {
+          "id": "STR_SWORD_MDV",
+          "qty": 6
+        },
+        {
+          "id": "STR_QUARTERSTAFF",
+          "qty": 6
+        },
+        {
+          "id": "STR_GOLDEN_CROSS",
+          "qty": 1
+        },
+        {
+          "id": "STR_GOLDEN_CUP",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_ITALY"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_SPAIN"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_SPAIN_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_SPAIN_EVENT",
+      "descriptionId": "STR_START_COUNTRY_SPAIN_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "CIVILIAN_YOUNG_UBER",
+          "qty": 5
+        }
+      ],
+      "research": [
+        "STR_SPAIN"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_CHINA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_CHINA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_CHINA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_CHINA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_SECTOWEED",
+          "qty": 75
+        }
+      ],
+      "research": [
+        "STR_CHINA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_CHINA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_CHINA_2_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_CHINA_2_EVENT",
+      "descriptionId": "STR_START_COUNTRY_CHINA_2_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_RIFLE_AK_SMG",
+          "qty": 1
+        }
+      ],
+      "research": [],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 16000,
+      "timerRandom": 16000
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_JAPAN"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_JAPAN_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_JAPAN_EVENT",
+      "descriptionId": "STR_START_COUNTRY_JAPAN_EVENT_DESCRIPTION",
+      "points": 150,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_KATANA",
+          "qty": 3
+        },
+        {
+          "id": "STR_WAKIZASHI",
+          "qty": 3
+        },
+        {
+          "id": "STR_FAN",
+          "qty": 6
+        },
+        {
+          "id": "STR_FUSO_KNIVES",
+          "qty": 30
+        },
+        {
+          "id": "STR_BUSHIDO_HANDBOOK",
+          "qty": 1
+        },
+        {
+          "id": "STR_GLAMOUR",
+          "qty": 20
+        }
+      ],
+      "research": [
+        "STR_JAPAN"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_AUSTRALIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_AUSTRALIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_AUSTRALIA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_AUSTRALIA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": -75000,
+      "items": [
+        {
+          "id": "STR_LOBSTERMAN_HIDE",
+          "qty": 20
+        },
+        {
+          "id": "STR_MEGASCORPION_POISON",
+          "qty": 10
+        },
+        {
+          "id": "STR_SPIDER_SILK",
+          "qty": 10
+        },
+        {
+          "id": "STR_SKULL",
+          "qty": 20
+        }
+      ],
+      "research": [
+        "STR_AUSTRALIA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_NIGERIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_NIGERIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_NIGERIA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_NIGERIA_EVENT_DESCRIPTION",
+      "points": -100,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_FLAK_TOWER_KIT",
+          "qty": 3
+        },
+        {
+          "id": "STR_SMALL_CANNON_ROUNDS_X50",
+          "qty": 3
+        },
+        {
+          "id": "STR_MINIGUN",
+          "qty": 1
+        },
+        {
+          "id": "STR_MINIGUN_AMMO",
+          "qty": 5
+        },
+        {
+          "id": "STR_MACHINEGUN_BELT",
+          "qty": 8
+        }
+      ],
+      "research": [
+        "STR_NIGERIA"
+      ],
+      "spawnedPersonType": "STR_SOLDIER_SLAVE",
+      "spawnedPersons": 1,
+      "spawnedSoldier": {
+        "rank": 3,
+        "nationality": 9,
+        "armor": "STR_SLAVE_ARMOR_DEMOLISHER_UC",
+        "transformationBonuses": {
+          "STR_HEROIC": 1,
+          "STR_TOUGH_TRAIT": 1,
+          "STR_JUDGE": 1,
+          "STR_HALF_UBER": 1
+        },
+        "previousTransformations": {
+          "STR_UBERIZATION": 1,
+          "STR_JUDICAL_EDUCATION": 1
+        },
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_INDIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_INDIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_INDIA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_INDIA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_SLAVE",
+          "qty": 24
+        },
+        {
+          "id": "STR_SLAVE_MAID",
+          "qty": 24
+        },
+        {
+          "id": "STR_SLAVE_GLADIATRIX",
+          "qty": 4
+        },
+        {
+          "id": "STR_SLAVE_BRUTE",
+          "qty": 4
+        }
+      ],
+      "research": [
+        "STR_INDIA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_SOUTH_AFRICA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_SOUTH_AFRICA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_SOUTH_AFRICA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_SOUTH_AFRICA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_GOVT_FINE",
+          "qty": 5
+        },
+        {
+          "id": "STR_CAR_CORPSE",
+          "qty": 2
+        },
+        {
+          "id": "STR_SCRAP_METAL",
+          "qty": 20
+        }
+      ],
+      "research": [
+        "STR_SOUTH_AFRICA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_EGYPT"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_EGYPT_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_EGYPT_EVENT",
+      "descriptionId": "STR_START_COUNTRY_EGYPT_EVENT_DESCRIPTION",
+      "points": -600,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_THEBAN_ASSAULT_CLONE_LICENSE",
+          "qty": 12
+        }
+      ],
+      "research": [
+        "STR_EGYPT"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_CANADA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_CANADA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_CANADA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_CANADA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_CULTURAL_WEALTH",
+          "qty": 50
+        },
+        {
+          "id": "STR_GOVT_CORPSE",
+          "qty": 15
+        },
+        {
+          "id": "STR_GLAMOUR",
+          "qty": 10
+        },
+        {
+          "id": "STR_CODE_GOVT_PERSONAL",
+          "qty": 3
+        },
+        {
+          "id": "STR_LINGERIE",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_CANADA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_NCR"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_NCR_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_NCR_EVENT",
+      "descriptionId": "STR_START_COUNTRY_NCR_EVENT_DESCRIPTION",
+      "points": 100,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_PORN",
+          "qty": 50
+        },
+        {
+          "id": "STR_GLAMOUR",
+          "qty": 50
+        },
+        {
+          "id": "STR_CRACK",
+          "qty": 50
+        },
+        {
+          "id": "STR_CATGIRL_VICTIM",
+          "qty": 8
+        },
+        {
+          "id": "STR_HIDEOUT_CLEANING_BILL",
+          "qty": 75
+        }
+      ],
+      "research": [
+        "STR_NCR"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_BRAZIL"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_BRAZIL_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_BRAZIL_EVENT",
+      "descriptionId": "STR_START_COUNTRY_BRAZIL_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_ARCANE_BOOK",
+          "qty": 3
+        },
+        {
+          "id": "STR_ESOTERICA",
+          "qty": 2
+        }
+      ],
+      "research": [
+        "STR_BRAZIL"
+      ],
+      "spawnedPersonType": "STR_SOLDIER_HYBRID",
+      "spawnedPersons": 1,
+      "spawnedSoldier": {
+        "rank": 2,
+        "nationality": null,
+        "armor": "STR_HYBRID_ARMOR_JUMPSUIT_UC",
+        "transformationBonuses": {
+          "STR_MAGOS": 1
+        },
+        "previousTransformations": {
+          "STR_MAGOS_CEREMONY": 1
+        },
+        "currentStats": {
+          "reactions": 90,
+          "bravery": 90,
+          "psiSkill": 50
+        }
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_LATIN_EMPIRE"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_LATIN_EMPIRE_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_LATIN_EMPIRE_EVENT",
+      "descriptionId": "STR_START_COUNTRY_LATIN_EMPIRE_EVENT_DESCRIPTION",
+      "points": -50,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_OLD_BOOKS",
+          "qty": 1
+        }
+      ],
+      "research": [
+        "STR_LATIN_EMPIRE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_TECHNOCRACY"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_TECHNOCRACY_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_TECHNOCRACY_EVENT",
+      "descriptionId": "STR_START_COUNTRY_TECHNOCRACY_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_ELECTRONIC_PIECES",
+          "qty": 20
+        }
+      ],
+      "research": [
+        "STR_TECHNOCRACY"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_INDONESIA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_INDONESIA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_INDONESIA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_INDONESIA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_HUMAN_HOE",
+          "qty": 3
+        },
+        {
+          "id": "STR_SLUGGA",
+          "qty": 1
+        },
+        {
+          "id": "STR_SLUGGA_AMMO",
+          "qty": 8
+        },
+        {
+          "id": "STR_SLUGGA_AMMO_SHOT",
+          "qty": 8
+        },
+        {
+          "id": "STR_SHOOTA",
+          "qty": 1
+        },
+        {
+          "id": "STR_SHOOTA_CLIP",
+          "qty": 4
+        },
+        {
+          "id": "STR_BLUNDERBUSS",
+          "qty": 1
+        },
+        {
+          "id": "STR_BLUNDERBUSS_AMMO",
+          "qty": 12
+        }
+      ],
+      "research": [
+        "STR_INDONESIA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_TURAN"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_TURAN_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_TURAN_EVENT",
+      "descriptionId": "STR_START_COUNTRY_TURAN_EVENT_DESCRIPTION",
+      "points": -100,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_TURANIAN_UBER",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_TURAN"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_CHILE"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_CHILE_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_CHILE_EVENT",
+      "descriptionId": "STR_START_COUNTRY_CHILE_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_ORE",
+          "qty": 20
+        },
+        {
+          "id": "STR_LOOTBOX_PREPPER",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_CHILE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [
+        "STR_VENEZUELA"
+      ],
+      "excludedTriggerIds": [],
+      "scriptId": "STR_START_COUNTRY_VENEZUELA_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_VENEZUELA_EVENT",
+      "descriptionId": "STR_START_COUNTRY_VENEZUELA_EVENT_DESCRIPTION",
+      "points": 0,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_WORKER",
+          "qty": 10
+        },
+        {
+          "id": "STR_REVOLUTIONARY_GIRL",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_VENEZUELA"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    },
+    {
+      "kind": "country",
+      "triggerIds": [],
+      "excludedTriggerIds": [
+        "STR_USA",
+        "STR_RUSSIA",
+        "STR_UK",
+        "STR_FRANCE",
+        "STR_GERMANY",
+        "STR_ITALY",
+        "STR_SPAIN",
+        "STR_CHINA",
+        "STR_JAPAN",
+        "STR_INDIA",
+        "STR_BRAZIL",
+        "STR_AUSTRALIA",
+        "STR_NIGERIA",
+        "STR_SOUTH_AFRICA",
+        "STR_EGYPT",
+        "STR_CANADA",
+        "STR_NCR",
+        "STR_LATIN_EMPIRE",
+        "STR_TECHNOCRACY",
+        "STR_TURAN",
+        "STR_INDONESIA",
+        "STR_CHILE",
+        "STR_VENEZUELA"
+      ],
+      "scriptId": "STR_START_COUNTRY_NONE_EVENT",
+      "executionOdds": 100,
+      "firstMonth": 0,
+      "lastMonth": 0,
+      "eventId": "STR_START_COUNTRY_NONE_EVENT",
+      "descriptionId": "STR_START_COUNTRY_NONE_EVENT_DESCRIPTION",
+      "points": 50,
+      "funds": 0,
+      "items": [
+        {
+          "id": "STR_LOKNAR_SCRIPTURES",
+          "qty": 2
+        },
+        {
+          "id": "STR_PINUP_MAGAZINE",
+          "qty": 3
+        }
+      ],
+      "research": [
+        "STR_MEGASCORPION_POISON",
+        "STR_SPIDER_SILK",
+        "STR_MONSTER_TEETH",
+        "STR_MONSTER_EYE",
+        "STR_LUXURY_FUR",
+        "STR_LOBSTERMAN_HIDE"
+      ],
+      "spawnedPersonType": null,
+      "spawnedPersons": 0,
+      "spawnedSoldier": {
+        "rank": null,
+        "nationality": null,
+        "armor": null,
+        "transformationBonuses": {},
+        "previousTransformations": {},
+        "currentStats": {}
+      },
+      "timer": 3200,
+      "timerRandom": 1200
+    }
+  ]
+}
