@@ -13,7 +13,7 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),detail:null};
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
@@ -104,7 +104,8 @@ async function detail(mode,id){
   const d=cache.get(row.bucket)[id];
   if(mode==="research"){
     if(!state.insightCache.has(row.bucket))state.insightCache.set(row.bucket,(await json(`${dataBase}/research-insight-chunks/${row.bucket}.json`)).details);
-    return {...d,insight:state.insightCache.get(row.bucket)[id]?.insight||null};
+    if(!state.editorialCache.has(row.bucket))state.editorialCache.set(row.bucket,(await json(`${dataBase}/research-editorial-chunks/${row.bucket}.json`)).details);
+    return {...d,insight:state.insightCache.get(row.bucket)[id]?.insight||null,editorial:state.editorialCache.get(row.bucket)[id]||null};
   }
   return d;
 }
@@ -202,6 +203,16 @@ function prerequisiteDetail(id){
     eventLinks
   };
 }
+function researchEditorialMarkup(d){
+  const e=d.editorial;if(!e)return"";
+  const row=(label,text,kind="")=>text?`<div class="editorial-row ${kind}"><span>${esc(label)}</span><p>${esc(text)}</p></div>`:"";
+  return`<section class="section editorial-panel">
+    <div class="insight-heading"><h3>GPT 플레이 인사이트</h3><span class="evidence-tag gpt">GPT 편집 · 룰셋 기반 자동 합성</span></div>
+    ${row("핵심",e.core,"core")}
+    ${row("판단",e.decision,"decision")}
+    ${row("주의",e.watch,"watch")}
+  </section>`;
+}
 function researchInsightMarkup(d){
   const i=d.insight;if(!i)return"";
   const p=i.prerequisite||{},pd=prerequisiteDetail(d.id),roles=arr(i.roles),rq=i.researchRequirements||{};
@@ -225,6 +236,7 @@ function renderResearch(d){
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["연구량",d.cost],["완료 점수",d.points],["실물 표본",d.needItem?(d.destroyItem?"필요·소모":"필요"):"불필요"],["직접 선행",d.dependencies.length],["후속 연구",d.requiredBy.length],["생성 아이템",spawned.length],["아이템 연결",d.itemReferences.length],["제조 연결",d.manufactureReferences.length]])}
+  ${researchEditorialMarkup(d)}
   ${researchInsightMarkup(d)}
   <section class="section"><h3>직접 선행</h3>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   <section class="section"><h3>후속 연구</h3>${d.requiredBy?.length?d.requiredBy.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
