@@ -39,6 +39,7 @@ jobs:
           grep -Fq 'data-data-base="../items/data"' public/research/index.html
           node tools/check-soldiers.mjs --data public/data
           node tools/check-progression.mjs --data public/data
+          node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json
           node tools/check-armors.mjs
           node tools/check-weapons.mjs
           node --check public/items/app.js
