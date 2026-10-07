@@ -3,6 +3,39 @@
 
   const groups = [
     {
+      title: "예언에 의한 선장 성격 우회",
+      kind: "조건부 대체 선택",
+      hint: "STR_THREAD_OF_PROPHECY를 확보하면 일반 초기 5선장 연구가 모두 비활성화되고, 같은 성격검사에서 별도 선택인 ‘난 캡틴 키드다!?’가 열립니다.",
+      options: [
+        {name:"난 캡틴 키드다!?", id:"STR_THREAD_OF_PROPHECY_PERSONALITY", meta:"연구량 1 · Personality Test + Thread of Prophecy", effect:"lookup이 STR_CAPTAIN_PUSSY로 연결되는 예언 전용 대체 진입. 일반 5선장 선택은 Thread of Prophecy 자체가 봉쇄"}
+      ],
+      note:"이 항목은 6번째 일반 선장 선택지가 아니라, Thread of Prophecy를 먼저 얻은 경우 기존 5지선다 전체를 대체하는 특수 진입입니다."
+    },
+    {
+      title: "갈라지는 길의 숨은 고유 손실",
+      kind: "5지선다 추가 결과",
+      hint: "다른 네 갈래를 닫는 공통 효과를 제외하고, 각 선택만 추가로 잃게 만드는 연구를 분리했습니다.",
+      options: [
+        {name:"슈퍼변이체 계집이 최고다", id:"STR_GALS_ARE_SUPERIOR_PREQ", meta:"연구량 24", effect:"추가로 Nekomimi Network 봉쇄"},
+        {name:"남성 병사", id:"STR_WE_NEED_MALE_TOUCH_PREQ", meta:"연구량 3", effect:"추가로 Nekomimi Network 봉쇄"},
+        {name:"농부 혁명!", id:"STR_PEASANT_REVOLUTION_PREQ", meta:"연구량 9", effect:"추가로 Nekomimi Network + Pure Maiden Training(영애 순화 의식) 봉쇄"},
+        {name:"삶은 혼종이다", id:"STR_HYBRID_PATH_PREQ", meta:"연구량 20", effect:"다른 네 갈래 외 추가 고유 disable 없음"},
+        {name:"고양이와 함께 살기", id:"STR_CAT_PATH_PREQ", meta:"연구량 32", effect:"다른 네 갈래 외 추가 고유 disable 없음"}
+      ]
+    },
+    {
+      title: "Codex 결손색 페널티",
+      kind: "선택 후 잔존 결손색 효과",
+      hint: "기본 4선장은 이미 3색을 갖습니다. 빠진 색을 Codex 선택으로 채우면 4색/Saint로 가지만, 이미 가진 색을 중복 선택해 결손색을 남기면 해당 3색 조합의 EXP 연구가 특정 테크를 추가 봉쇄합니다.",
+      options: [
+        {name:"녹색이 끝까지 없음", id:"STR_CODEX_GRAY_EXP", meta:"Gold + Red + Gray", effect:"Zombie Medicine + Mushroom Medicine 봉쇄"},
+        {name:"회색이 끝까지 없음", id:"STR_CODEX_GREEN_EXP", meta:"Gold + Green + Red", effect:"Astrosensorium + Mutant Magic + Grimoire 봉쇄"},
+        {name:"적색이 끝까지 없음", id:"STR_CODEX_GOLD_EXP", meta:"Gold + Green + Gray", effect:"Berserker Armor + Powered by Rage + Aggressor Armor Production 봉쇄"},
+        {name:"금색이 끝까지 없음", id:"STR_CODEX_RED_EXP", meta:"Green + Red + Gray", effect:"Amazon Armor Production + Grav Cannon 봉쇄"}
+      ],
+      note:"따라서 기본 4선장에서 ‘Saint가 막힌다’가 비정답 Codex의 전부가 아닙니다. 남겨 둔 결손색에 따라 실제 연구 손실도 달라집니다."
+    },
+    {
       title: "드릴의 힘",
       kind: "직접 2지선다 + 후속 잠금",
       hint: "STR_QUESTION_OF_DRILL 뒤의 핵심 선택. ‘자그마한 드릴 조사’는 제3의 동등 선택지가 아니라 거부 루트와만 충돌하는 별도 연구입니다.",
@@ -74,16 +107,18 @@
     },
     {
       title: "닥터 X 처리",
-      kind: "후기 스토리 6지선다",
-      hint: "STR_GDX_011 뒤의 직접 선택. 여섯 연구가 서로를 봉쇄하며 일부는 Red Mage 후속도 추가로 잠급니다.",
+      kind: "일반 6지선다 + 오로라 대체 1개",
+      hint: "보통 STR_GDX_011 뒤 6개 처리안 중 하나를 고릅니다. 그러나 앞서 ‘오로라를 위해 거드런 납치’를 고르면 그 6개가 전부 봉쇄되고, 조건부 7번째 선택 ‘닥터 X를 오로라에게 선물’로 대체됩니다.",
       options: [
         {name:"그녀를 고용", id:"STR_GDX_012", meta:"연구량 10", effect:"Doctor X Hire 지급"},
         {name:"그녀에게 장난치기", id:"STR_GDX_013", meta:"연구량 5", effect:"Doctor X A35 지급 · Spector 약탈 PREQ 해금"},
         {name:"그녀를 모욕", id:"STR_GDX_014", meta:"연구량 5", effect:"Doctor X C50 지급 · Spector 약탈 PREQ 해금"},
         {name:"그녀를 추방", id:"STR_GDX_015", meta:"연구량 5", effect:"Mystery Box 지급 · Spector 약탈 PREQ 해금"},
         {name:"그녀를 상품화", id:"STR_GDX_016", meta:"연구량 20", effect:"Doctor X Sale 지급 · Spector 약탈 PREQ 해금"},
-        {name:"레드 메이지에게 선물", id:"STR_GDX_017", meta:"연구량 1", effect:"Red Mage 계열 lookup · Spector 약탈 PREQ 해금"}
-      ]
+        {name:"레드 메이지에게 선물", id:"STR_GDX_017", meta:"연구량 1", effect:"Red Mage 계열 lookup · Spector 약탈 PREQ 해금"},
+        {name:"오로라에게 선물", id:"STR_GDX_018", meta:"연구량 1 · STR_TEC_168 필요", effect:"오로라 루트에서만 등장 · Spector 약탈 PREQ 해금"}
+      ],
+      note:"STR_TEC_168은 일반 GDX_012~017을 모두 직접 disable하고 GDX_018의 선행이 됩니다. 반대로 STR_TEC_169는 GDX_018을 disable합니다."
     },
     {
       title: "거드런 형태",
@@ -109,8 +144,8 @@
       kind: "후기 스토리 2지선다",
       hint: "STR_TEC_172 뒤 거드런을 누구를 위해 확보할지 선택합니다.",
       options: [
-        {name:"오로라를 위해 거드런 납치", id:"STR_TEC_168", meta:"연구량 1", effect:"TEC_180 PREQ 해금 · Dr. X 선택축 봉쇄"},
-        {name:"먼저 당신을 위해 거드런 확보", id:"STR_TEC_169", meta:"연구량 1", effect:"TEC_168 봉쇄 · 이후 ‘오로라 도움’ 선택도 봉쇄"}
+        {name:"오로라를 위해 거드런 납치", id:"STR_TEC_168", meta:"연구량 1", effect:"TEC_180 PREQ 해금 · Doctor X 일반 6개 처리안 봉쇄 · 대신 GDX_018 ‘오로라에게 선물’ 활성 조건"},
+        {name:"먼저 당신을 위해 거드런 확보", id:"STR_TEC_169", meta:"연구량 1", effect:"TEC_168 봉쇄 · Doctor X의 오로라 전용 GDX_018 봉쇄 · 이후 ‘오로라 도움’ 선택도 봉쇄"}
       ]
     },
     {
