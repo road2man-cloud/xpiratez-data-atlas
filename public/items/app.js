@@ -13,7 +13,7 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),detail:null};
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
@@ -107,7 +107,8 @@ async function detail(mode,id){
     if(!state.editorialCache.has(row.bucket))state.editorialCache.set(row.bucket,(await json(`${dataBase}/research-editorial-chunks/${row.bucket}.json`)).details);
     return {...d,insight:state.insightCache.get(row.bucket)[id]?.insight||null,editorial:state.editorialCache.get(row.bucket)[id]||null};
   }
-  return d;
+  if(!state.itemEditorialCache.has(row.bucket))state.itemEditorialCache.set(row.bucket,(await json(`${dataBase}/item-editorial-chunks/${row.bucket}.json`)).details);
+  return {...d,editorial:state.itemEditorialCache.get(row.bucket)[id]||null};
 }
 function entity(id,preferredKind=""){const preferred=preferredKind==="items"?itemMap.get(id):preferredKind==="research"?researchMap.get(id):null,x=preferred||itemMap.get(id)||researchMap.get(id),kind=preferred?preferredKind:itemMap.has(id)?"items":researchMap.has(id)?"research":"",n=entityNames[id];return kind?`<button class="chip" data-kind="${kind}" data-open="${esc(id)}">${esc(x.koName)}<span class="sub">${esc(x.enName)}</span></button>`:n?`<span class="badge">${esc(n[0])}<span class="sub">${esc(n[1])} · ${esc(id)}</span></span>`:`<span class="badge">${esc(id)}</span>`}
 function humanPath(p){return String(p||"직접 참조").split(".").map(x=>pathNames[x]||(/^\d+$/.test(x)?"#"+(Number(x)+1):x)).join(" › ")}
@@ -130,11 +131,25 @@ async function openDetail(mode,id){
     history.replaceState(null,"","#"+(mode==="items"?"item=":"research=")+encodeURIComponent(id));
   }catch(e){$("#detail").innerHTML=`<p class="error">${esc(e.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
+function itemEditorialMarkup(d){
+  const e=d.editorial;if(!e)return"";
+  const row=(label,text,kind="")=>text?`<div class="editorial-row ${kind}"><span>${esc(label)}</span><p>${esc(text)}</p></div>`:"";
+  return`<section class="section editorial-panel item-editorial">
+    <div class="insight-heading"><h3>GPT 아이템 인사이트</h3><span class="evidence-tag gpt">GPT 편집 · 룰셋 기반 자동 합성</span></div>
+    ${row("정체",e.overview,"core")}
+    ${row("실제 효과",e.effect,"effect")}
+    ${row("획득/해금",e.acquisition,"action")}
+    ${row("진행 연결",e.progression,"route")}
+    ${row("판단",e.decision,"decision")}
+    ${row("주의",e.watch,"watch")}
+  </section>`;
+}
 function renderItem(d){
   const c=d.effectiveCore||{},codes=d.effectiveCoreSourceCodes||"",legend=schema.coreSourceLegend||{},s=d.effectiveCoreSources||Object.fromEntries((schema.effectiveCoreFields||[]).map((k,i)=>[k,legend[codes[i]]||""])),r=d.raw||{},refs=allItemReferences(d);
   const power=r.power!=null?c.power:r.meleePower!=null?c.meleePower:"—",powerSrc=r.power!=null?s.power:s.meleePower;
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["종류",kinds[d.kind]||d.kind,s.battleType],["위력",power,powerSrc],["피해형",d.damageTypeKo],["무게",c.weight,s.weight],["창고 점유",c.size,s.size],["구매가",r.costBuy??"—",r.costBuy!=null?s.costBuy:""],["판매가",r.costSell??"—",r.costSell!=null?s.costSell:""],["월 급여/수익",c.monthlySalary,s.monthlySalary],["아이템 내구",c.armor,s.armor],["한손 보정",c.oneHandedPenalty==null?"—":c.oneHandedPenalty+"%",s.oneHandedPenalty],["무릎쏴",c.kneelBonus==null?"—":c.kneelBonus+"%",s.kneelBonus]])}
+  ${itemEditorialMarkup(d)}
   <section class="section"><h3>공격 행동</h3>${d.fireModes?.length?`<table><tr><th>행동</th><th>명중</th><th>TU</th><th>발수</th></tr>${d.fireModes.map(x=>`<tr><td>${esc(x.name||x.label)}</td><td>${fmt(x.accuracy)}%</td><td>${fmt(x.tu)}</td><td>${fmt(x.shots)}</td></tr>`).join("")}</table>`:'<div class="empty">직접 공격 행동 없음</div>'}</section>
   <section class="section"><h3>호환 탄약</h3>${d.compatibleAmmo?.length?d.compatibleAmmo.map(x=>entity(x,"items")).join(""):'<div class="empty">없음/해당 없음</div>'}</section>
   <section class="section"><h3>이 탄약을 쓰는 무기</h3>${d.usedByWeapons?.length?d.usedByWeapons.map(x=>entity(x,"items")).join(""):'<div class="empty">없음/해당 없음</div>'}</section>
@@ -208,8 +223,11 @@ function researchEditorialMarkup(d){
   const row=(label,text,kind="")=>text?`<div class="editorial-row ${kind}"><span>${esc(label)}</span><p>${esc(text)}</p></div>`:"";
   return`<section class="section editorial-panel">
     <div class="insight-heading"><h3>GPT 플레이 인사이트</h3><span class="evidence-tag gpt">GPT 편집 · 룰셋 기반 자동 합성</span></div>
-    ${row("핵심",e.core,"core")}
-    ${row("판단",e.decision,"decision")}
+    ${row("정체",e.core,"core")}
+    ${row("실제 효과",e.effect,"effect")}
+    ${row("다음 행동",e.action,"action")}
+    ${row("도달/비용",e.route,"route")}
+    ${row("우선순위",e.decision,"decision")}
     ${row("주의",e.watch,"watch")}
   </section>`;
 }
