@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-finalbuilds3-type-conversions";
+const ASSET_VERSION="soldiers-20261007-finalbuilds4-filters";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -21,6 +21,7 @@ async function load(){
   for(const b of DATA.bonuses||[])BONUS_BY_ID.set(b.id,b);
   for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
   FINAL_ROWS=buildFinalRows();
+  populateFinalFilters();
   try{
     const [prog,research]=await Promise.all([
       fetch(versioned("../data/progression.json")),
@@ -393,6 +394,28 @@ function buildFinalRows(){
   }
   return rows;
 }
+function populateFinalFilters(){
+  const select=$("#finalBase");if(!select)return;
+  const byType=new Map();
+  for(const r of FINAL_ROWS){
+    const p=r.profile;if(!p)continue;
+    if(!byType.has(p.soldierType))byType.set(p.soldierType,p.soldierKoName||p.soldierType);
+  }
+  const options=[...byType].sort((a,b)=>String(a[1]).localeCompare(String(b[1]),"ko"));
+  select.innerHTML='<option value="">전체 기본형</option>'+options.map(([id,name])=>
+    '<option value="'+esc(id)+'">'+esc(name)+' · '+esc(id)+'</option>'
+  ).join("");
+}
+function finalFilterMatch(r){
+  if(r._mode!=="final")return true;
+  const source=$("#finalSource")?.value||"non-saint";
+  const isSaint=(Number(r.profile?.saintSlots)||0)>0;
+  if(source==="saint"&&!isSaint)return false;
+  if(source==="non-saint"&&isSaint)return false;
+  const base=$("#finalBase")?.value||"";
+  if(base&&r.profile?.soldierType!==base)return false;
+  return true;
+}
 function dataset(){
   const mode=$("#dataset").value;
   if(mode==="final")return FINAL_ROWS;
@@ -434,7 +457,11 @@ function searchBlob(row){
 function filtered(){
   const q=$("#search").value.trim().toLowerCase();
   const traitsOnly=!$("#traitsOnly").disabled&&$("#traitsOnly").checked;
-  let a=dataset().filter(r=>(!q||searchBlob(r).includes(q))&&(!traitsOnly||r._mode==="profile"&&r.traitNames.length));
+  let a=dataset().filter(r=>
+    (!q||searchBlob(r).includes(q))&&
+    (!traitsOnly||r._mode==="profile"&&r.traitNames.length)&&
+    finalFilterMatch(r)
+  );
   const band=$("#band").value;
   a.sort((x,y)=>{
     let av,bv;
@@ -456,6 +483,8 @@ function render(){
   $("#traitsOnly").disabled=mode!=="profiles";
   $("#band").disabled=mode==="transformations";
   $("#sortMetric").disabled=mode==="transformations";
+  $("#finalSourceField").hidden=mode!=="final";
+  $("#finalBaseField").hidden=mode!=="final";
   $("#tableTitle").textContent=
     mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
     mode==="final"?"최종 강화 조합 — 상호배타 규칙·선행 순서 적용":
@@ -692,7 +721,7 @@ function renderProgression(soldierId){
   return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3><div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div><div class="routes">'+((p.acquisitionPaths||[]).map(acquisitionHtml).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>')+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
 }
 
-["search","dataset","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
+["search","dataset","band","sortMetric","traitsOnly","finalSource","finalBase"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",async e=>{
   if(e.target.id==="detailDialog"){e.currentTarget.close();return}
