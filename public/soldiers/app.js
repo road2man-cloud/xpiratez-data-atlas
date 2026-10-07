@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-finalbuilds6-finaltype-filters";
+const ASSET_VERSION="soldiers-20261007-finalbuilds7-all-toggle";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -733,7 +733,9 @@ function renderProgression(soldierId){
 $("#finalBaseOptions").addEventListener("change",e=>{
   const target=e.target;
   if(target.id==="finalBaseAll"){
-    if(target.checked)document.querySelectorAll(".final-base-check").forEach(x=>x.checked=false);
+    const checks=[...document.querySelectorAll(".final-base-check")];
+    if(target.checked)checks.forEach(x=>x.checked=false);
+    else checks.forEach(x=>x.checked=true);
   }else if(target.classList.contains("final-base-check")){
     const checks=[...document.querySelectorAll(".final-base-check")];
     const all=$("#finalBaseAll");
