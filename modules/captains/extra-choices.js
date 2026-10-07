@@ -24,6 +24,18 @@
       ]
     },
     {
+      title: "자그마한 드릴 → Codex 실제 색상 선택",
+      kind: "직접 4지선다 + 색별 Anomaly",
+      hint: "STR_TINY_DRILL_INVESTIGATION 뒤 STR_CHOOSE_*_QUERY 네 색 중 하나를 고릅니다. 선택 뒤 Tiny Drill + Menacing Hull 특수 프로젝트로 Anomaly를 만들고, 해당 Anomaly를 연구한 뒤 이벤트 연쇄에서 실제 Codex와 색별 보상을 받습니다.",
+      options: [
+        {name:"금색 코덱스 선택", id:"STR_CHOOSE_GOLD_QUERY", meta:"연구량 1 · +10점", effect:"Fuego Anomaly → Gold Codex"},
+        {name:"회색 코덱스 선택", id:"STR_CHOOSE_GRAY_QUERY", meta:"연구량 1 · +10점", effect:"Fortuna Anomaly → Gray Codex"},
+        {name:"적색 코덱스 선택", id:"STR_CHOOSE_RED_QUERY", meta:"연구량 1 · +10점", effect:"Metallo Anomaly → Red Codex"},
+        {name:"녹색 코덱스 선택", id:"STR_CHOOSE_GREEN_QUERY", meta:"연구량 1 · +10점", effect:"Ventura Anomaly → Green Codex"}
+      ],
+      note:"특수 프로젝트 규칙은 space 70 / time 1이며 Tiny Drill과 Menacing Hull을 요구하고 refund:true라 재료를 반환합니다. 실제 Codex 획득 전 해당 Anomaly 연구(cost 4)와 이벤트 단계가 남습니다."
+    },
+    {
       title: "Codex 결손색 페널티",
       kind: "선택 후 잔존 결손색 효과",
       hint: "기본 4선장은 이미 3색을 갖습니다. 빠진 색을 Codex 선택으로 채우면 4색/Saint로 가지만, 이미 가진 색을 중복 선택해 결손색을 남기면 해당 3색 조합의 EXP 연구가 특정 테크를 추가 봉쇄합니다.",
@@ -196,6 +208,11 @@
     STR_HYBRID_PATH_PREQ:{preq:"STR_DIVERGING_PATHS + STR_TAKE_ME_TO_YOUR_DEALER",gain:"STR_RETICULAN 무료 획득 + Reticulan/Hybrid 장기축",loss:"다른 갈라지는 길 4개",recovery:"Hybrid Recruitment에는 별도로 Mutant Alliance + Human-Reticulan Alliance 등이 필요."},
     STR_CAT_PATH_PREQ:{preq:"STR_DIVERGING_PATHS + Alien Origins + Communications",gain:"Nekomimi 연구 무료 획득 + Nekomimi Network 축",loss:"다른 갈라지는 길 4개",recovery:"선택 전 회피만 가능."},
 
+    STR_CHOOSE_GOLD_QUERY:{preq:"STR_TINY_DRILL_INVESTIGATION",gain:"query +10점 → STR_USE_DRILL_GOLD(space 70/time 1, Tiny Drill+Menacing Hull, refund) → Fuego Anomaly 연구(cost 4) → 중간 이벤트 +300점·큰 바위×30 → 최종 이벤트에서 Gold Codex + 은괴×12 + 금괴×36 + 보물 상자 + 우주복×3 + 제독의 복장 + 장교의 채찍",loss:"다른 Codex 색 query 3개",recovery:"다른 색 query를 직접 disable하므로 선택 후 색 변경 불가."},
+    STR_CHOOSE_GRAY_QUERY:{preq:"STR_TINY_DRILL_INVESTIGATION",gain:"query +10점 → STR_USE_DRILL_GRAY(space 70/time 1, 재료 refund) → Fortuna Anomaly 연구(cost 4) → 중간 이벤트 -210점·광기의 기록물×1 → 최종 이벤트에서 Gray Codex + 암호화 데이터 디스크×7 + 노움×1 + 똑똑이 복장 + 리베르 오컬터스 + 주술의 책",loss:"다른 Codex 색 query 3개",recovery:"다른 색 query를 직접 disable하므로 선택 후 색 변경 불가."},
+    STR_CHOOSE_RED_QUERY:{preq:"STR_TINY_DRILL_INVESTIGATION",gain:"query +10점 → STR_USE_DRILL_RED(space 70/time 1, 재료 refund) → Metallo Anomaly 연구(cost 4) → 중간 이벤트 -$25k → 최종 이벤트에서 Red Codex + 구식 광선총×2 + 군용 광선총×2 + 광선총 전지×50 + 어그레서 갑옷×8 + 악마 해골",loss:"다른 Codex 색 query 3개",recovery:"다른 색 query를 직접 disable하므로 선택 후 색 변경 불가."},
+    STR_CHOOSE_GREEN_QUERY:{preq:"STR_TINY_DRILL_INVESTIGATION",gain:"query +10점 → STR_USE_DRILL_GREEN(space 70/time 1, 재료 refund) → Ventura Anomaly 연구(cost 4) → 중간 이벤트 청소비×15·고철더미×7 → 최종 이벤트에서 Green Codex + 치료 젤×20 + 의료 보급품×10 + 간호사 복장 + 완벽한 슈퍼변이체 스테이시스 포드×3",loss:"다른 Codex 색 query 3개",recovery:"다른 색 query를 직접 disable하므로 선택 후 색 변경 불가."},
+
     STR_CODEX_GRAY_EXP:{gain:"Gold + Red + Gray 상태 유지",loss:"Green 결손 → Zombie Medicine + Mushroom Medicine",recovery:"Codex 선택 시 빠진 Green을 채우면 이 결손 상태를 피할 수 있음."},
     STR_CODEX_GREEN_EXP:{gain:"Gold + Green + Red 상태 유지",loss:"Gray 결손 → Astrosensorium + Mutant Magic + Grimoire",recovery:"Codex 선택 시 빠진 Gray를 채우면 회피."},
     STR_CODEX_GOLD_EXP:{gain:"Gold + Green + Gray 상태 유지",loss:"Red 결손 → Berserker Armor + Powered by Rage + Aggressor Armor Production",recovery:"Codex 선택 시 빠진 Red를 채우면 회피."},
@@ -208,25 +225,25 @@
     STR_QUEEN_GRAY:{preq:"STR_CODEX_GRAY",gain:"Insidious Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
     STR_QUEEN_GREEN:{preq:"STR_CODEX_GREEN",gain:"Gentle Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
     STR_QUEEN_RED:{preq:"STR_CODEX_RED",gain:"Warrior Queen 상태 · +1000점",loss:"다른 Queen 4종",recovery:"Codex/Queen 진행 전 경로 선택으로만 회피."},
-    STR_QUEEN_SAVAGE:{preq:"별도 Queen Savage 실물 조건",gain:"Savage Queen · +2000점 + STR_CROWNING_UC 해금",loss:"색상 Queen 4종",recovery:"다른 Queen이 먼저 확정되면 복구 불가."},
+    STR_QUEEN_SAVAGE:{preq:"별도 Queen Savage 실물 조건",gain:"Savage Queen · +2000점 + STR_CROWNING_UC 해금. 추가로 Pariah Training과 History 051의 선행이며, Captain Red 보유 시 STR_QUEEN_SAVAGE_RED를 통해 Warrior Culture PREQ도 해금",loss:"색상 Queen 4종",recovery:"다른 Queen이 먼저 확정되면 복구 불가."},
 
-    STR_BOUNTY_HUNTING_CHALLENGE_JACK:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"승리 시 +250점 + Casino Coupon ×5 + TIGER_TURRET_ARMOR 무료 연구",loss:"Mutant Alliance / Goblin Zaxx / 도전하지 않음",recovery:"같은 Challenge에서 다른 상대 재선택 불가."},
-    STR_BOUNTY_HUNTING_CHALLENGE_MA:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"선택 즉시 Reticulan Electrogun 무료 연구 + Damsel Victim 지급; 승리 시 +250점 + Peasant Bondage Gear 무료 연구",loss:"Jack / Goblin Zaxx / 도전하지 않음",recovery:"다른 상대 재선택 불가."},
-    STR_BOUNTY_HUNTING_CHALLENGE_BANK:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"Goblin Zaxx Challenge 진행; 승리 연구 +250점",loss:"Jack / Mutant Alliance / 도전하지 않음",recovery:"다른 상대 재선택 불가."},
+    STR_BOUNTY_HUNTING_CHALLENGE_JACK:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"선택 결과 플래그에서 -500점. 승리 시 +250점 + Casino Coupon ×5 + TIGER_TURRET_ARMOR 무료 연구",loss:"Mutant Alliance / Goblin Zaxx / 도전하지 않음",recovery:"같은 Challenge에서 다른 상대 재선택 불가."},
+    STR_BOUNTY_HUNTING_CHALLENGE_MA:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"선택 즉시 Reticulan Electrogun 무료 연구 + Damsel Victim 지급, 결과 플래그 -500점; 승리 시 +250점 + Peasant Bondage Gear 무료 연구",loss:"Jack / Goblin Zaxx / 도전하지 않음",recovery:"다른 상대 재선택 불가."},
+    STR_BOUNTY_HUNTING_CHALLENGE_BANK:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"Goblin Zaxx Challenge 진행; 선택 결과 플래그 -500점, 승리 연구 +250점",loss:"Jack / Mutant Alliance / 도전하지 않음",recovery:"다른 상대 재선택 불가."},
     STR_BOUNTY_HUNTING_CHALLENGE_NONE:{preq:"STR_BOUNTY_HUNTING_CHALLENGE",gain:"전투 도전 없이 Challenge Done; NONE_CHOSEN 상태 +500점",loss:"세 도전 임무의 승리 보상",recovery:"Challenge Active도 닫혀 나중에 도전으로 되돌릴 수 없음."},
 
     STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT_BANISH_PREQ:{preq:"Ninja Champion Defeat + SUMM",gain:"Mystery Box ×1 +250점",loss:"예속의 Slave Ninja Champion + 사귀기의 Ninja Scroll/+1500점",recovery:"결과 연구까지 서로 disable되어 복구 불가."},
     STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT_ENSLAVE_PREQ:{preq:"Ninja Champion Defeat",gain:"Slave Ninja Champion ×1 +100점",loss:"추방 Mystery Box + 사귀기 Ninja Scroll/+1500점",recovery:"복구 불가."},
     STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT_BEFRIEND_PREQ:{preq:"Ninja Champion Defeat",gain:"Ninja Scroll ×1 +1500점",loss:"추방 Mystery Box + 예속 Slave Ninja Champion",recovery:"복구 불가."},
 
-    STR_RED_KNIGHT_PREQ:{preq:"STR_THE_GREAT_CAUSE",gain:"STR_RED_KNIGHT 변환: 기본 Soldier/S/M/V/X/W 및 Damsel 계열",loss:"STR_PEOPLES_ARMY_PREQ + STR_RED_FANATIC 변환",recovery:"두 PREQ가 직접 상호배타."},
-    STR_PEOPLES_ARMY_PREQ:{preq:"STR_THE_GREAT_CAUSE",gain:"STR_RED_FANATIC 변환: Revolutionary Training을 마친 Peasant/Damsel/Slave/Lamia",loss:"STR_RED_KNIGHT_PREQ + STR_RED_KNIGHT 변환",recovery:"두 PREQ가 직접 상호배타."},
+    STR_RED_KNIGHT_PREQ:{preq:"STR_THE_GREAT_CAUSE",gain:"STR_RED_KNIGHT 변환: 기본 Soldier/S/M/V/X/W 및 Damsel, Rank 3+, 근접 85+, stat-gain commendation, Glamour×20, DOJO, $50k, 14일. 일반 flat stat(캡 적용): 용기+10·PsiStr+3. SoldierBonus(별도 레이어): 전/측/후/하부 장갑+3, TU/기력/체력/반응/근력/Mana+3, 용기+10, PsiStr-3. Red Knight 선택은 Peasant Party 혁명 지원군 A(25%) 조건도 차단",loss:"STR_PEOPLES_ARMY_PREQ + STR_RED_FANATIC 변환",recovery:"두 PREQ가 직접 상호배타."},
+    STR_PEOPLES_ARMY_PREQ:{preq:"STR_THE_GREAT_CAUSE",gain:"STR_RED_FANATIC 변환: Revolutionary Training 완료 Peasant/Damsel/Slave/Lamia, Glamour×1, DOJO, $0, 14일. 일반 flat stat(캡 적용): TU+10·기력+10·체력+5·용기+10·사격+5·근력+5·PsiSkill+5·근접+5·Mana+5. SoldierBonus(별도 레이어): 전/측/후/하부 장갑+1, TU/기력/체력/반응/근력/Mana+1, 용기+10, PsiSkill+3. People’s Army는 혁명 지원군 C 25% 판정을 추가하고 Red Knight가 아니므로 Peasant Party 지원군 A 25%도 유지 가능",loss:"STR_RED_KNIGHT_PREQ + STR_RED_KNIGHT 변환",recovery:"두 PREQ가 직접 상호배타."},
 
     STR_RECRUIT_PUREBLOODS:{preq:"STR_GDX_129 + STR_SLAVE_SOLDIERS",gain:"Pureblood 고용 제조: 100 worker-h + $10k + Mutant Alliance Trophy Credit ×250 → Pureblood 1명 + Long Knife + Infantry Laser + 탄창 5",loss:"Mutant Alliance 접촉 + School Books + Durasuit Procurement + Mutant Alliance Lore + Zero Zero + Hybrid Recruitment",recovery:"Mutant Alliance 연구 자체를 disable하므로 이후 Hybrid 축 우회 없음."},
     STR_CONTACT_MUTANT_ALLIANCE:{preq:"Alien Origins + Mutant Origins + Logistics + Alien Terror + MA Trophy 75 + Alliance Favors + Captain Rank 04",gain:"School Books + Durasuit Procurement + Mutant Alliance Lore + Zero Zero + Hybrid Recruitment 해금; Medical Supplies 구매 가능",loss:"Pureblood 직접 고용 연구/제조",recovery:"Life Is Hybrid 후 Bugeye/Hybrid 축을 살리려면 이쪽이 핵심."},
 
-    STR_STUDY_ROOM:{preq:"Schooling 2 + Data Mining + Steam Power + Alchemy + Engineer+ + Healer+ + Personal Labs",gain:"Analytics + Study Room 시설: Lab +4, ANAL",loss:"VIP Club 시설 연구: 월 +$500k, Training 16, Mana +8/day, DOJO",recovery:"STR_VIP_CLUB_FAC와 직접 상호배타."},
-    STR_VIP_CLUB_FAC:{preq:"STR_VIP_CLUB",gain:"Analytics + VIP Club: $1.35m/20일, 월 +$500k, Lab +1, Training 16, Mana +8/day, ANAL+DOJO",loss:"Study Room의 Lab +4 연구 인프라",recovery:"STR_STUDY_ROOM과 직접 상호배타."},
+    STR_STUDY_ROOM:{preq:"Schooling 2 + Data Mining + Steam Power + Alchemy + Engineer+ + Healer+ + Personal Labs",gain:"Analytics + Study Room: 건설 $2.5m/26일, 유지 $150k/월, Govt Corpse×200 + Cultural Wealth×50, Lab +4, ANAL",loss:"VIP Club 시설 연구: 월 +$500k, Training 16, Mana +8/day, DOJO",recovery:"STR_VIP_CLUB_FAC와 직접 상호배타."},
+    STR_VIP_CLUB_FAC:{preq:"STR_VIP_CLUB",gain:"Analytics + VIP Club: $1.35m/20일, Glamour×240, 월 +$500k, Lab +1, Training 16, Mana +8/day, ANAL+DOJO",loss:"Study Room의 Lab +4 연구 인프라",recovery:"STR_STUDY_ROOM과 직접 상호배타."},
 
     STR_GDX_012:{preq:"STR_GDX_011 + Honor",gain:"STR_DOCTOR_X_HIRE 지급 → Ocular + Dr. X Spector 관련 후속",loss:"Prank/Humiliate/Banish/Merchandize/Red Mage 선물 + Red Mage 예속",recovery:"일반 Dr. X 처리 변경 불가."},
     STR_GDX_013:{preq:"STR_GDX_011 + Lingerie Set + LFS_002 + Creativity",gain:"Doctor X A35 지급 + Spector 약탈 PREQ + Appease Dr. X 축",loss:"다른 일반 Dr. X 처리 + Red Mage 예속 + Red Mage Fountain Share",recovery:"세 스토리 축에 교차 봉쇄가 생김."},
