@@ -25,9 +25,9 @@ if(largest?.bytes>=50*1024*1024)throw new Error("Generated file too large for no
 if(items.index?.length!==4007)throw new Error("Expected 4007 items, got "+(items.index?.length??0));
 if(research.index?.length!==4612)throw new Error("Expected 4612 research topics, got "+(research.index?.length??0));
 if(researchInsight.index?.length!==4612)throw new Error("Expected 4612 research insight topics, got "+(researchInsight.index?.length??0));
-if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==2)throw new Error("Research editorial metadata mismatch");
+if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==3)throw new Error("Research editorial metadata mismatch");
 if(!String(researchEditorialMeta.generator||"").startsWith("GPT editorial synthesis"))throw new Error("Missing GPT editorial generator metadata");
-if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==1)throw new Error("Item editorial metadata mismatch");
+if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==2)throw new Error("Item editorial metadata mismatch");
 if(!String(itemEditorialMeta.generator||"").startsWith("GPT item editorial synthesis"))throw new Error("Missing GPT item editorial generator metadata");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
 if(research.index.length!==new Set(research.index.map(x=>x.id)).size)throw new Error("Duplicate research ids");
