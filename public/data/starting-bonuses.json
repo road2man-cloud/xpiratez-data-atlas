@@ -6,7 +6,9 @@
     "rule": "firstMonth: 0 + lastMonth: 0 + base region/country trigger",
     "rawEventCount": 39,
     "regionEventCount": 14,
-    "countryEventCount": 25
+    "countryEventCount": 25,
+    "unitProfileCount": 12,
+    "unitProfileSource": "soldiers-index.json + progression.json"
   },
   "regions": [
     {
@@ -43,7 +45,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -79,7 +82,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -115,7 +119,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -151,7 +156,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -187,7 +193,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -223,7 +230,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -279,7 +287,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -325,7 +334,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -369,7 +379,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -409,7 +420,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -455,7 +467,304 @@
         "currentStats": {}
       },
       "timer": 15000,
-      "timerRandom": 25000
+      "timerRandom": 25000,
+      "unitProfiles": [
+        {
+          "id": "event:STR_START_LOCATION_EVENT_MEDUSA",
+          "sourceType": "event",
+          "sourceId": "STR_START_LOCATION_EVENT_MEDUSA",
+          "mode": "즉시 지급 유닛",
+          "rewardItemId": null,
+          "rewardQty": 4,
+          "rewardItemQty": 1,
+          "maxRuns": null,
+          "soldierType": "STR_SOLDIER_LAMIA",
+          "soldierKoName": "라미아",
+          "soldierEnName": "Lamia",
+          "sourceKoName": "Lamia Guards",
+          "sourceEnName": "Lamia Guards",
+          "spawnedPersons": 4,
+          "cost": null,
+          "time": null,
+          "armor": "STR_LAMIA_BRONZE_A_UC",
+          "rank": 1,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 50,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 60,
+              "reactions": 35,
+              "firing": 30,
+              "throwing": 40,
+              "strength": 35,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 50,
+              "mana": 60
+            },
+            "avg": {
+              "tu": 60,
+              "stamina": 100,
+              "health": 70,
+              "bravery": 80,
+              "reactions": 40,
+              "firing": 40,
+              "throwing": 52.5,
+              "strength": 42.5,
+              "psiStrength": 37.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 70
+            },
+            "max": {
+              "tu": 70,
+              "stamina": 120,
+              "health": 80,
+              "bravery": 100,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 80
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 50,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 60,
+              "reactions": 35,
+              "firing": 30,
+              "throwing": 40,
+              "strength": 35,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 50,
+              "mana": 60
+            },
+            "avg": {
+              "tu": 60,
+              "stamina": 100,
+              "health": 70,
+              "bravery": 80,
+              "reactions": 40,
+              "firing": 40,
+              "throwing": 52.5,
+              "strength": 42.5,
+              "psiStrength": 37.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 70
+            },
+            "max": {
+              "tu": 70,
+              "stamina": 120,
+              "health": 80,
+              "bravery": 100,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 80
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 50,
+              "stamina": 90,
+              "health": 76,
+              "bravery": 60,
+              "reactions": 35,
+              "firing": 30,
+              "throwing": 40,
+              "strength": 40,
+              "psiStrength": 26,
+              "psiSkill": 0,
+              "melee": 50,
+              "mana": 75
+            },
+            "avg": {
+              "tu": 60,
+              "stamina": 110,
+              "health": 86,
+              "bravery": 80,
+              "reactions": 40,
+              "firing": 40,
+              "throwing": 52.5,
+              "strength": 47.5,
+              "psiStrength": 38.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 85
+            },
+            "max": {
+              "tu": 70,
+              "stamina": 130,
+              "health": 96,
+              "bravery": 100,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 65,
+              "strength": 55,
+              "psiStrength": 51,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 95
+            }
+          },
+          "rawStatCaps": {
+            "tu": 100,
+            "stamina": 200,
+            "health": 100,
+            "bravery": 100,
+            "reactions": 60,
+            "firing": 100,
+            "throwing": 90,
+            "strength": 65,
+            "psiStrength": 50,
+            "psiSkill": 30,
+            "melee": 110,
+            "mana": 140
+          },
+          "effectiveStatCaps": {
+            "tu": 100,
+            "stamina": 210,
+            "health": 116,
+            "bravery": 100,
+            "reactions": 60,
+            "firing": 100,
+            "throwing": 90,
+            "strength": 70,
+            "psiStrength": 51,
+            "psiSkill": 29,
+            "melee": 110,
+            "mana": 155
+          },
+          "trainingStatCaps": {
+            "tu": 75,
+            "stamina": 125,
+            "health": 75,
+            "bravery": 0,
+            "reactions": 50,
+            "firing": 75,
+            "throwing": 65,
+            "strength": 50,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 75,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_BEEFY_TRAIT",
+            "STR_TOUGH_TRAIT",
+            "STR_PROUD_WARRIOR"
+          ],
+          "traits": [
+            {
+              "id": "STR_BEEFY_TRAIT",
+              "koName": "울끈불끈함",
+              "enName": "Beefy",
+              "stats": {
+                "tu": 0,
+                "stamina": -2,
+                "health": 6,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 4,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 0
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": null
+            },
+            {
+              "id": "STR_TOUGH_TRAIT",
+              "koName": "굳건함",
+              "enName": "Tough As Nails",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 9,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 12
+              },
+              "frontArmor": 1,
+              "sideArmor": 1,
+              "rearArmor": 1,
+              "underArmor": 1,
+              "visibilityAtDark": 0,
+              "recovery": null
+            },
+            {
+              "id": "STR_PROUD_WARRIOR",
+              "koName": "자랑스러운 전사",
+              "enName": "Proud Warrior",
+              "stats": {
+                "tu": 0,
+                "stamina": 12,
+                "health": 1,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 1,
+                "psiStrength": 1,
+                "psiSkill": -1,
+                "melee": 0,
+                "mana": 3
+              },
+              "frontArmor": 1,
+              "sideArmor": 1,
+              "rearArmor": 1,
+              "underArmor": 1,
+              "visibilityAtDark": 0,
+              "recovery": null
+            }
+          ],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 10,
+            "health": 16,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 5,
+            "psiStrength": 1,
+            "psiSkill": -1,
+            "melee": 0,
+            "mana": 15
+          },
+          "previousTransformations": {
+            "STR_PROUD_WARRIOR": 1
+          },
+          "recipe": null
+        }
+      ]
     },
     {
       "kind": "region",
@@ -503,7 +812,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -547,7 +857,8 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": []
     },
     {
       "kind": "region",
@@ -587,7 +898,337 @@
         "currentStats": {}
       },
       "timer": 60,
-      "timerRandom": 300
+      "timerRandom": 300,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_HERO_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_HERO_RECRUITMENT",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "STR_HERO",
+          "rewardQty": 1,
+          "rewardItemQty": 1,
+          "maxRuns": 1,
+          "soldierType": "STR_SOLDIER_HERO",
+          "soldierKoName": "영웅",
+          "soldierEnName": "Hero",
+          "sourceKoName": "고용: 영웅",
+          "sourceEnName": "Recruit: Hero",
+          "spawnedPersons": 1,
+          "cost": 0,
+          "time": 100,
+          "armor": "STR_SLAVE_PUNK_UC",
+          "rank": 0,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 70,
+              "stamina": 90,
+              "health": 50,
+              "bravery": 150,
+              "reactions": 60,
+              "firing": 80,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 80,
+              "mana": 15
+            },
+            "avg": {
+              "tu": 87.5,
+              "stamina": 120,
+              "health": 70,
+              "bravery": 150,
+              "reactions": 90,
+              "firing": 107.5,
+              "throwing": 90,
+              "strength": 65,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 115,
+              "mana": 107.5
+            },
+            "max": {
+              "tu": 105,
+              "stamina": 150,
+              "health": 90,
+              "bravery": 150,
+              "reactions": 120,
+              "firing": 135,
+              "throwing": 120,
+              "strength": 90,
+              "psiStrength": 80,
+              "psiSkill": 0,
+              "melee": 150,
+              "mana": 200
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 70,
+              "stamina": 90,
+              "health": 50,
+              "bravery": 150,
+              "reactions": 60,
+              "firing": 80,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 80,
+              "mana": 15
+            },
+            "avg": {
+              "tu": 87.5,
+              "stamina": 120,
+              "health": 70,
+              "bravery": 150,
+              "reactions": 90,
+              "firing": 107.5,
+              "throwing": 90,
+              "strength": 65,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 115,
+              "mana": 107.5
+            },
+            "max": {
+              "tu": 105,
+              "stamina": 150,
+              "health": 90,
+              "bravery": 150,
+              "reactions": 120,
+              "firing": 135,
+              "throwing": 120,
+              "strength": 90,
+              "psiStrength": 80,
+              "psiSkill": 0,
+              "melee": 150,
+              "mana": 200
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 70,
+              "stamina": 90,
+              "health": 50,
+              "bravery": 150,
+              "reactions": 60,
+              "firing": 80,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 80,
+              "mana": 15
+            },
+            "avg": {
+              "tu": 87.5,
+              "stamina": 120,
+              "health": 70,
+              "bravery": 150,
+              "reactions": 90,
+              "firing": 107.5,
+              "throwing": 90,
+              "strength": 65,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 115,
+              "mana": 107.5
+            },
+            "max": {
+              "tu": 105,
+              "stamina": 150,
+              "health": 90,
+              "bravery": 150,
+              "reactions": 120,
+              "firing": 135,
+              "throwing": 120,
+              "strength": 90,
+              "psiStrength": 80,
+              "psiSkill": 0,
+              "melee": 150,
+              "mana": 200
+            }
+          },
+          "rawStatCaps": {
+            "tu": 80,
+            "stamina": 120,
+            "health": 60,
+            "bravery": 150,
+            "reactions": 80,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 60,
+            "psiStrength": 75,
+            "psiSkill": 50,
+            "melee": 100,
+            "mana": 150
+          },
+          "effectiveStatCaps": {
+            "tu": 80,
+            "stamina": 120,
+            "health": 60,
+            "bravery": 150,
+            "reactions": 80,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 60,
+            "psiStrength": 75,
+            "psiSkill": 50,
+            "melee": 100,
+            "mana": 150
+          },
+          "trainingStatCaps": {
+            "tu": 66,
+            "stamina": 85,
+            "health": 40,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 40,
+            "psiStrength": 0,
+            "psiSkill": 50,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_HEROIC",
+            "STR_IRON_SKIN_TRAIT"
+          ],
+          "traits": [
+            {
+              "id": "STR_HEROIC",
+              "koName": "영웅적인",
+              "enName": "Heroic",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 0
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 2,
+              "recovery": {
+                "time": {
+                  "flatOne": 4
+                },
+                "morale": {
+                  "flatOne": 4
+                },
+                "energy": {
+                  "flatOne": 4
+                },
+                "health": {
+                  "fatalWounds": 0.2
+                },
+                "stun": {
+                  "flatOne": 2
+                }
+              }
+            },
+            {
+              "id": "STR_IRON_SKIN_TRAIT",
+              "koName": "쇠 피부",
+              "enName": "Iron Skin",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 0
+              },
+              "frontArmor": 10,
+              "sideArmor": 10,
+              "rearArmor": 10,
+              "underArmor": 10,
+              "visibilityAtDark": 0,
+              "recovery": null
+            }
+          ],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {},
+          "recipe": {
+            "id": "STR_HERO_RECRUITMENT",
+            "koName": "고용: 영웅",
+            "enName": "Recruit: Hero",
+            "requiredItems": [
+              {
+                "id": "STR_HERO",
+                "koName": "인간 영웅",
+                "enName": "Human Hero",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_LOCATION_PACIFIC_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_THE_MAGNIFICIENT_SEVEN_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_SAINTS_REINFORCEMENTS",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_ASTROROCK_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_KNOCK_KNOCK_PENITENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        }
+      ]
     }
   ],
   "countries": [
@@ -637,7 +1278,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -689,7 +1331,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -733,7 +1376,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -781,7 +1425,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -817,7 +1462,222 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "event:STR_START_COUNTRY_GERMANY_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_START_COUNTRY_GERMANY_EVENT",
+          "mode": "즉시 지급 유닛",
+          "rewardItemId": null,
+          "rewardQty": 1,
+          "rewardItemQty": 1,
+          "maxRuns": null,
+          "soldierType": "STR_SOLDIER_GNOME",
+          "soldierKoName": "노움",
+          "soldierEnName": "Gnome",
+          "sourceKoName": "국가: 블랙마치",
+          "sourceEnName": "Country: Blackmarch",
+          "spawnedPersons": 1,
+          "cost": null,
+          "time": null,
+          "armor": "STR_GNOME_DRESS_UC",
+          "rank": 0,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 40,
+              "stamina": 70,
+              "health": 50,
+              "bravery": 160,
+              "reactions": 55,
+              "firing": 60,
+              "throwing": 40,
+              "strength": 8,
+              "psiStrength": 80,
+              "psiSkill": 0,
+              "melee": 40,
+              "mana": 65
+            },
+            "avg": {
+              "tu": 50,
+              "stamina": 105,
+              "health": 55,
+              "bravery": 165,
+              "reactions": 60,
+              "firing": 72.5,
+              "throwing": 45,
+              "strength": 10,
+              "psiStrength": 85,
+              "psiSkill": 0,
+              "melee": 50,
+              "mana": 72.5
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 140,
+              "health": 60,
+              "bravery": 170,
+              "reactions": 65,
+              "firing": 85,
+              "throwing": 50,
+              "strength": 12,
+              "psiStrength": 90,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 80
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 40,
+              "stamina": 70,
+              "health": 50,
+              "bravery": 160,
+              "reactions": 55,
+              "firing": 60,
+              "throwing": 40,
+              "strength": 8,
+              "psiStrength": 80,
+              "psiSkill": 0,
+              "melee": 40,
+              "mana": 65
+            },
+            "avg": {
+              "tu": 50,
+              "stamina": 105,
+              "health": 55,
+              "bravery": 165,
+              "reactions": 60,
+              "firing": 72.5,
+              "throwing": 45,
+              "strength": 10,
+              "psiStrength": 85,
+              "psiSkill": 0,
+              "melee": 50,
+              "mana": 72.5
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 140,
+              "health": 60,
+              "bravery": 170,
+              "reactions": 65,
+              "firing": 85,
+              "throwing": 50,
+              "strength": 12,
+              "psiStrength": 90,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 80
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 40,
+              "stamina": 70,
+              "health": 50,
+              "bravery": 160,
+              "reactions": 55,
+              "firing": 60,
+              "throwing": 40,
+              "strength": 8,
+              "psiStrength": 80,
+              "psiSkill": 0,
+              "melee": 40,
+              "mana": 65
+            },
+            "avg": {
+              "tu": 50,
+              "stamina": 105,
+              "health": 55,
+              "bravery": 165,
+              "reactions": 60,
+              "firing": 72.5,
+              "throwing": 45,
+              "strength": 10,
+              "psiStrength": 85,
+              "psiSkill": 0,
+              "melee": 50,
+              "mana": 72.5
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 140,
+              "health": 60,
+              "bravery": 170,
+              "reactions": 65,
+              "firing": 85,
+              "throwing": 50,
+              "strength": 12,
+              "psiStrength": 90,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 80
+            }
+          },
+          "rawStatCaps": {
+            "tu": 65,
+            "stamina": 200,
+            "health": 70,
+            "bravery": 180,
+            "reactions": 70,
+            "firing": 130,
+            "throwing": 70,
+            "strength": 20,
+            "psiStrength": 90,
+            "psiSkill": 15,
+            "melee": 90,
+            "mana": 85
+          },
+          "effectiveStatCaps": {
+            "tu": 65,
+            "stamina": 200,
+            "health": 70,
+            "bravery": 180,
+            "reactions": 70,
+            "firing": 130,
+            "throwing": 70,
+            "strength": 20,
+            "psiStrength": 90,
+            "psiSkill": 15,
+            "melee": 90,
+            "mana": 85
+          },
+          "trainingStatCaps": {
+            "tu": 50,
+            "stamina": 100,
+            "health": 50,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 50,
+            "strength": 20,
+            "psiStrength": 0,
+            "psiSkill": 15,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [],
+          "traits": [],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {},
+          "recipe": null
+        }
+      ]
     },
     {
       "kind": "country",
@@ -873,7 +1733,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -909,7 +1770,552 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_YOUNG_UBER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_YOUNG_UBER_RECRUITMENT",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "CIVILIAN_YOUNG_UBER",
+          "rewardQty": 5,
+          "rewardItemQty": 1,
+          "maxRuns": 5,
+          "soldierType": "STR_SOLDIER_S",
+          "soldierKoName": "싸움꾼",
+          "soldierEnName": "Hand",
+          "sourceKoName": "고용: 어린 슈퍼변이체",
+          "sourceEnName": "Recruit: Young Uber",
+          "spawnedPersons": 1,
+          "cost": 0,
+          "time": 200,
+          "armor": "STR_GANGER_OUTFIT_UC",
+          "rank": 0,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 60,
+              "stamina": 30,
+              "health": 40,
+              "bravery": 10,
+              "reactions": 40,
+              "firing": 35,
+              "throwing": 40,
+              "strength": 10,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 25
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 55,
+              "health": 50,
+              "bravery": 40,
+              "reactions": 55,
+              "firing": 50,
+              "throwing": 52.5,
+              "strength": 30,
+              "psiStrength": 42.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 32.5
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 90,
+              "mana": 40
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 60,
+              "stamina": 30,
+              "health": 40,
+              "bravery": 10,
+              "reactions": 40,
+              "firing": 35,
+              "throwing": 40,
+              "strength": 10,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 25
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 55,
+              "health": 50,
+              "bravery": 40,
+              "reactions": 55,
+              "firing": 50,
+              "throwing": 52.5,
+              "strength": 30,
+              "psiStrength": 42.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 32.5
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 90,
+              "mana": 40
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 60,
+              "stamina": 30,
+              "health": 40,
+              "bravery": 10,
+              "reactions": 40,
+              "firing": 35,
+              "throwing": 40,
+              "strength": 10,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 25
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 55,
+              "health": 50,
+              "bravery": 40,
+              "reactions": 55,
+              "firing": 50,
+              "throwing": 52.5,
+              "strength": 30,
+              "psiStrength": 42.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 32.5
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 90,
+              "mana": 40
+            }
+          },
+          "rawStatCaps": {
+            "tu": 100,
+            "stamina": 140,
+            "health": 90,
+            "bravery": 100,
+            "reactions": 100,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 80,
+            "psiStrength": 60,
+            "psiSkill": 40,
+            "melee": 125,
+            "mana": 70
+          },
+          "effectiveStatCaps": {
+            "tu": 100,
+            "stamina": 140,
+            "health": 90,
+            "bravery": 100,
+            "reactions": 100,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 80,
+            "psiStrength": 60,
+            "psiSkill": 40,
+            "melee": 125,
+            "mana": 70
+          },
+          "trainingStatCaps": {
+            "tu": 85,
+            "stamina": 100,
+            "health": 66,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 66,
+            "psiStrength": 0,
+            "psiSkill": 40,
+            "melee": 100,
+            "mana": 0
+          },
+          "traitNames": [],
+          "traits": [],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {},
+          "recipe": {
+            "id": "STR_YOUNG_UBER_RECRUITMENT",
+            "koName": "고용: 어린 슈퍼변이체",
+            "enName": "Recruit: Young Uber",
+            "requiredItems": [
+              {
+                "id": "CIVILIAN_YOUNG_UBER",
+                "koName": "어린 슈퍼변이체",
+                "enName": "Young Uber",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_SPAIN_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_KNOCK_KNOCK_YOUNG_UBER",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TROUBLESEEKING_ALLY",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        },
+        {
+          "id": "manufacture:STR_YOUNG_UBER_RECRUITMENT_SPY",
+          "sourceType": "manufacture",
+          "sourceId": "STR_YOUNG_UBER_RECRUITMENT_SPY",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "CIVILIAN_YOUNG_UBER",
+          "rewardQty": 5,
+          "rewardItemQty": 1,
+          "maxRuns": 5,
+          "soldierType": "STR_SOLDIER_S",
+          "soldierKoName": "싸움꾼",
+          "soldierEnName": "Hand",
+          "sourceKoName": "고용: 어린 슈퍼변이체(스파이 훈장)",
+          "sourceEnName": "Recruit: Young Uber (Spy Honors)",
+          "spawnedPersons": 1,
+          "cost": 0,
+          "time": 100,
+          "armor": "STR_GANGER_OUTFIT_UC",
+          "rank": 1,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 60,
+              "stamina": 30,
+              "health": 40,
+              "bravery": 10,
+              "reactions": 40,
+              "firing": 35,
+              "throwing": 40,
+              "strength": 10,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 25
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 55,
+              "health": 50,
+              "bravery": 40,
+              "reactions": 55,
+              "firing": 50,
+              "throwing": 52.5,
+              "strength": 30,
+              "psiStrength": 42.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 32.5
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 90,
+              "mana": 40
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 60,
+              "stamina": 30,
+              "health": 40,
+              "bravery": 10,
+              "reactions": 40,
+              "firing": 35,
+              "throwing": 40,
+              "strength": 10,
+              "psiStrength": 25,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 25
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 55,
+              "health": 50,
+              "bravery": 40,
+              "reactions": 55,
+              "firing": 50,
+              "throwing": 52.5,
+              "strength": 30,
+              "psiStrength": 42.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 32.5
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 90,
+              "mana": 40
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 60,
+              "stamina": 30,
+              "health": 40,
+              "bravery": 10,
+              "reactions": 45,
+              "firing": 35,
+              "throwing": 40,
+              "strength": 10,
+              "psiStrength": 28,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 55,
+              "health": 50,
+              "bravery": 40,
+              "reactions": 60,
+              "firing": 50,
+              "throwing": 52.5,
+              "strength": 30,
+              "psiStrength": 45.5,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 37.5
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 75,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 50,
+              "psiStrength": 63,
+              "psiSkill": 0,
+              "melee": 90,
+              "mana": 45
+            }
+          },
+          "rawStatCaps": {
+            "tu": 100,
+            "stamina": 140,
+            "health": 90,
+            "bravery": 100,
+            "reactions": 100,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 80,
+            "psiStrength": 60,
+            "psiSkill": 40,
+            "melee": 125,
+            "mana": 70
+          },
+          "effectiveStatCaps": {
+            "tu": 100,
+            "stamina": 140,
+            "health": 90,
+            "bravery": 100,
+            "reactions": 105,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 80,
+            "psiStrength": 63,
+            "psiSkill": 40,
+            "melee": 125,
+            "mana": 75
+          },
+          "trainingStatCaps": {
+            "tu": 85,
+            "stamina": 100,
+            "health": 66,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 66,
+            "psiStrength": 0,
+            "psiSkill": 40,
+            "melee": 100,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_FORMER_SPY_TRAIT"
+          ],
+          "traits": [
+            {
+              "id": "STR_FORMER_SPY_TRAIT",
+              "koName": "전직 스파이",
+              "enName": "Former Spy",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 5,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 3,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 5
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": {
+                "morale": {
+                  "flatOne": 1
+                }
+              }
+            }
+          ],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 5,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 3,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 5
+          },
+          "previousTransformations": {},
+          "recipe": {
+            "id": "STR_YOUNG_UBER_RECRUITMENT_SPY",
+            "koName": "고용: 어린 슈퍼변이체(스파이 훈장)",
+            "enName": "Recruit: Young Uber (Spy Honors)",
+            "requiredItems": [
+              {
+                "id": "CIVILIAN_YOUNG_UBER",
+                "koName": "어린 슈퍼변이체",
+                "enName": "Young Uber",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_SPAIN_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_KNOCK_KNOCK_YOUNG_UBER",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TROUBLESEEKING_ALLY",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_SPY_BADGE",
+                "koName": "스파이 훈장",
+                "enName": "Spy Honors",
+                "qty": 1,
+                "eventSources": []
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        }
+      ]
     },
     {
       "kind": "country",
@@ -945,7 +2351,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -979,7 +2386,8 @@
         "currentStats": {}
       },
       "timer": 16000,
-      "timerRandom": 16000
+      "timerRandom": 16000,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1035,7 +2443,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1083,7 +2492,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1143,7 +2553,351 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "event:STR_START_COUNTRY_NIGERIA_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_START_COUNTRY_NIGERIA_EVENT",
+          "mode": "즉시 지급 유닛",
+          "rewardItemId": null,
+          "rewardQty": 1,
+          "rewardItemQty": 1,
+          "maxRuns": null,
+          "soldierType": "STR_SOLDIER_SLAVE",
+          "soldierKoName": "노예병",
+          "soldierEnName": "Slave Soldier",
+          "sourceKoName": "국가: 히든 익스팬스",
+          "sourceEnName": "Country: Hidden Expanse",
+          "spawnedPersons": 1,
+          "cost": null,
+          "time": null,
+          "armor": "STR_SLAVE_ARMOR_DEMOLISHER_UC",
+          "rank": 3,
+          "nationality": 9,
+          "initialStats": {
+            "min": {
+              "tu": 45,
+              "stamina": 40,
+              "health": 30,
+              "bravery": 10,
+              "reactions": 35,
+              "firing": 35,
+              "throwing": 30,
+              "strength": 15,
+              "psiStrength": 15,
+              "psiSkill": 0,
+              "melee": 25,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 52.5,
+              "stamina": 55,
+              "health": 37.5,
+              "bravery": 30,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 42.5,
+              "strength": 27.5,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 42.5,
+              "mana": 65
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 45,
+              "bravery": 50,
+              "reactions": 55,
+              "firing": 65,
+              "throwing": 55,
+              "strength": 40,
+              "psiStrength": 75,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 100
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 45,
+              "stamina": 40,
+              "health": 30,
+              "bravery": 10,
+              "reactions": 35,
+              "firing": 35,
+              "throwing": 30,
+              "strength": 15,
+              "psiStrength": 15,
+              "psiSkill": 0,
+              "melee": 25,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 52.5,
+              "stamina": 55,
+              "health": 37.5,
+              "bravery": 30,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 42.5,
+              "strength": 27.5,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 42.5,
+              "mana": 65
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 45,
+              "bravery": 50,
+              "reactions": 55,
+              "firing": 65,
+              "throwing": 55,
+              "strength": 40,
+              "psiStrength": 75,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 100
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 50,
+              "stamina": 40,
+              "health": 49,
+              "bravery": 10,
+              "reactions": 45,
+              "firing": 35,
+              "throwing": 30,
+              "strength": 35,
+              "psiStrength": 6,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 37
+            },
+            "avg": {
+              "tu": 57.5,
+              "stamina": 55,
+              "health": 56.5,
+              "bravery": 30,
+              "reactions": 55,
+              "firing": 50,
+              "throwing": 42.5,
+              "strength": 47.5,
+              "psiStrength": 36,
+              "psiSkill": 0,
+              "melee": 47.5,
+              "mana": 72
+            },
+            "max": {
+              "tu": 65,
+              "stamina": 70,
+              "health": 64,
+              "bravery": 50,
+              "reactions": 65,
+              "firing": 65,
+              "throwing": 55,
+              "strength": 60,
+              "psiStrength": 66,
+              "psiSkill": 0,
+              "melee": 65,
+              "mana": 107
+            }
+          },
+          "rawStatCaps": {
+            "tu": 80,
+            "stamina": 120,
+            "health": 60,
+            "bravery": 100,
+            "reactions": 80,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 60,
+            "psiStrength": 44,
+            "psiSkill": 65,
+            "melee": 100,
+            "mana": 140
+          },
+          "effectiveStatCaps": {
+            "tu": 85,
+            "stamina": 120,
+            "health": 79,
+            "bravery": 100,
+            "reactions": 90,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 80,
+            "psiStrength": 35,
+            "psiSkill": 65,
+            "melee": 105,
+            "mana": 147
+          },
+          "trainingStatCaps": {
+            "tu": 66,
+            "stamina": 85,
+            "health": 40,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 40,
+            "psiStrength": 0,
+            "psiSkill": 65,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_HEROIC",
+            "STR_TOUGH_TRAIT",
+            "STR_JUDGE",
+            "STR_HALF_UBER"
+          ],
+          "traits": [
+            {
+              "id": "STR_HEROIC",
+              "koName": "영웅적인",
+              "enName": "Heroic",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 0
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 2,
+              "recovery": {
+                "time": {
+                  "flatOne": 4
+                },
+                "morale": {
+                  "flatOne": 4
+                },
+                "energy": {
+                  "flatOne": 4
+                },
+                "health": {
+                  "fatalWounds": 0.2
+                },
+                "stun": {
+                  "flatOne": 2
+                }
+              }
+            },
+            {
+              "id": "STR_TOUGH_TRAIT",
+              "koName": "굳건함",
+              "enName": "Tough As Nails",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 9,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 12
+              },
+              "frontArmor": 1,
+              "sideArmor": 1,
+              "rearArmor": 1,
+              "underArmor": 1,
+              "visibilityAtDark": 0,
+              "recovery": null
+            },
+            {
+              "id": "STR_JUDGE",
+              "koName": "판관",
+              "enName": "Judge",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 5,
+                "psiStrength": 1,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 20
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": null
+            },
+            {
+              "id": "STR_HALF_UBER",
+              "koName": "반 슈퍼변이체",
+              "enName": "Half-Uber",
+              "stats": {
+                "tu": 5,
+                "stamina": 0,
+                "health": 10,
+                "bravery": 0,
+                "reactions": 10,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 15,
+                "psiStrength": -10,
+                "psiSkill": 0,
+                "melee": 5,
+                "mana": -25
+              },
+              "frontArmor": 5,
+              "sideArmor": 5,
+              "rearArmor": 5,
+              "underArmor": 5,
+              "visibilityAtDark": 1,
+              "recovery": {
+                "morale": {
+                  "flatOne": -2
+                }
+              }
+            }
+          ],
+          "traitStats": {
+            "tu": 5,
+            "stamina": 0,
+            "health": 19,
+            "bravery": 0,
+            "reactions": 10,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 20,
+            "psiStrength": -9,
+            "psiSkill": 0,
+            "melee": 5,
+            "mana": 7
+          },
+          "previousTransformations": {
+            "STR_UBERIZATION": 1,
+            "STR_JUDICAL_EDUCATION": 1
+          },
+          "recipe": null
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1191,7 +2945,677 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_SOLDIER_SLAVE_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SOLDIER_SLAVE_RECRUITMENT",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "STR_SLAVE",
+          "rewardQty": 24,
+          "rewardItemQty": 1,
+          "maxRuns": 24,
+          "soldierType": "STR_SOLDIER_SLAVE",
+          "soldierKoName": "노예병",
+          "soldierEnName": "Slave Soldier",
+          "sourceKoName": "고용: 노예병",
+          "sourceEnName": "Recruit: Slave Soldier",
+          "spawnedPersons": 1,
+          "cost": 1000,
+          "time": 200,
+          "armor": "STR_SLAVE_PUNK_UC",
+          "rank": 0,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 45,
+              "stamina": 40,
+              "health": 30,
+              "bravery": 10,
+              "reactions": 35,
+              "firing": 35,
+              "throwing": 30,
+              "strength": 15,
+              "psiStrength": 15,
+              "psiSkill": 0,
+              "melee": 25,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 52.5,
+              "stamina": 55,
+              "health": 37.5,
+              "bravery": 30,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 42.5,
+              "strength": 27.5,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 42.5,
+              "mana": 65
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 45,
+              "bravery": 50,
+              "reactions": 55,
+              "firing": 65,
+              "throwing": 55,
+              "strength": 40,
+              "psiStrength": 75,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 100
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 45,
+              "stamina": 40,
+              "health": 30,
+              "bravery": 10,
+              "reactions": 35,
+              "firing": 35,
+              "throwing": 30,
+              "strength": 15,
+              "psiStrength": 15,
+              "psiSkill": 0,
+              "melee": 25,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 52.5,
+              "stamina": 55,
+              "health": 37.5,
+              "bravery": 30,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 42.5,
+              "strength": 27.5,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 42.5,
+              "mana": 65
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 45,
+              "bravery": 50,
+              "reactions": 55,
+              "firing": 65,
+              "throwing": 55,
+              "strength": 40,
+              "psiStrength": 75,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 100
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 45,
+              "stamina": 40,
+              "health": 30,
+              "bravery": 10,
+              "reactions": 35,
+              "firing": 35,
+              "throwing": 30,
+              "strength": 15,
+              "psiStrength": 15,
+              "psiSkill": 0,
+              "melee": 25,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 52.5,
+              "stamina": 55,
+              "health": 37.5,
+              "bravery": 30,
+              "reactions": 45,
+              "firing": 50,
+              "throwing": 42.5,
+              "strength": 27.5,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 42.5,
+              "mana": 65
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 45,
+              "bravery": 50,
+              "reactions": 55,
+              "firing": 65,
+              "throwing": 55,
+              "strength": 40,
+              "psiStrength": 75,
+              "psiSkill": 0,
+              "melee": 60,
+              "mana": 100
+            }
+          },
+          "rawStatCaps": {
+            "tu": 80,
+            "stamina": 120,
+            "health": 60,
+            "bravery": 100,
+            "reactions": 80,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 60,
+            "psiStrength": 44,
+            "psiSkill": 65,
+            "melee": 100,
+            "mana": 140
+          },
+          "effectiveStatCaps": {
+            "tu": 80,
+            "stamina": 120,
+            "health": 60,
+            "bravery": 100,
+            "reactions": 80,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 60,
+            "psiStrength": 44,
+            "psiSkill": 65,
+            "melee": 100,
+            "mana": 140
+          },
+          "trainingStatCaps": {
+            "tu": 66,
+            "stamina": 85,
+            "health": 40,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 40,
+            "psiStrength": 0,
+            "psiSkill": 65,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [],
+          "traits": [],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {},
+          "recipe": {
+            "id": "STR_SOLDIER_SLAVE_RECRUITMENT",
+            "koName": "고용: 노예병",
+            "enName": "Recruit: Slave Soldier",
+            "requiredItems": [
+              {
+                "id": "STR_SLAVE",
+                "koName": "노예",
+                "enName": "SLAVE",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_INDIA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_NOGREEN_YESRED_ROUNDUP",
+                    "fields": [
+                      "everyMultiItemList",
+                      "randomMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LIZARDMAN_STATUE_EVENT_SLAVES",
+                    "fields": [
+                      "randomItemList",
+                      "randomMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_KNOCK_KNOCK_WILLING_SLAVE",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_AXCRAZY_LUST",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKSORE_REIGN_AND_RULE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_MUTANT_MEAT",
+                "koName": "돌연변이 고기",
+                "enName": "Mutant Meat",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_LAZYSORE_PURE_NATURE_BOUNTY",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_RED_OLD_MINES_RATS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_SACRIFICES",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_GLAMOUR",
+                "koName": "글래머",
+                "enName": "Glamour",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_USA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_START_COUNTRY_JAPAN_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_START_COUNTRY_CANADA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_START_COUNTRY_NCR_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TURAN_MONEYLOSS_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LATIN_EMPIRE_DUELS_EVENT_WON",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LATIN_EMPIRE_DUELS_EVENT_DANCER",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LATIN_EMPIRE_DUELS_EVENT_WARRIOR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TRAIN_YOUR_BODY_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBASS_RABID_FANS_GLAMOUR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBASS_SUPERSTAR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKASS_HAPPY_WARRIOR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKASS_BEST_BOSS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_PICKING_BRAINS",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKDUMB_SEDUCTION",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_DONATION",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKLAZY_PIRATEZ",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_PUSSY_PROTAGONIST",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOLD_AT_SEANS_NEW_FACES",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOLD_CHARM",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOLD_SCORED",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DOUBLEGOLD_FACES_AND_MASKS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKLAZY_I_HAD_A_DREAM",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_NOGREEN_YESGOLD_REVEL_AND_RULE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_1_GREAT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_1_GOOD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_1_OK",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_2_GREAT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_2_GOOD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_2_OK",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_LOSE_BAD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHAMP_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHAMP_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_ENSLAVED_NINJA",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_OGRESS_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_OGRESS_LOSE2",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_OGRESS_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_BLACK_DRAGON_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_SPEECH_GLAMOUR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_ASTROROCK_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_INTERSTELLAR_ASTROROCK_EVENT_EPIC",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_INTERSTELLAR_ASTROROCK_EVENT_GOOD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_SLAVE_CAUGHT_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LAB_ACCIDENT",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_POPULAR_HERO",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GDX_EVENT_ROMANCE_TOPLESS_BEACH",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GDX_EVENT_ROMANCE_GLAMOUR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GDX_EVENT_VAMPIRE_DANCE",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_WIZ_EVENT_FLOWERS",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_2_GIRLS_1_PANTIES_CONTINUED",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_VOLLEYBALL_MATCH",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CODEX_BONUS_G8A",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CODEX_BONUS_G8B",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOODSCORE_VACATION",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GAMBLING_NIGHT_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GAMBLING_NIGHT_WIN_DUMBASS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TROUBLESEEKING_FRIENDS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_AXCRAZY_CAPTIVES",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": [
+              "CULT"
+            ]
+          }
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1235,7 +3659,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1271,7 +3696,289 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+          "sourceType": "manufacture",
+          "sourceId": "STR_THEBAN_ASSAULT_CLONE",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "STR_THEBAN_ASSAULT_CLONE_LICENSE",
+          "rewardQty": 12,
+          "rewardItemQty": 1,
+          "maxRuns": 12,
+          "soldierType": "STR_SOLDIER_PEASANT",
+          "soldierKoName": "농부",
+          "soldierEnName": "Peasant",
+          "sourceKoName": "돌격 클론",
+          "sourceEnName": "Assault Clone",
+          "spawnedPersons": 1,
+          "cost": 10000,
+          "time": 1,
+          "armor": "STR_PEASANT_ARMOR_BIOAQUA_EVA_UC",
+          "rank": 1,
+          "nationality": 19,
+          "initialStats": {
+            "min": {
+              "tu": 70,
+              "stamina": 100,
+              "health": 45,
+              "bravery": 90,
+              "reactions": 60,
+              "firing": 75,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 100,
+              "health": 45,
+              "bravery": 90,
+              "reactions": 60,
+              "firing": 75,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 30
+            },
+            "max": {
+              "tu": 70,
+              "stamina": 100,
+              "health": 45,
+              "bravery": 90,
+              "reactions": 60,
+              "firing": 75,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 30
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 70,
+              "stamina": 100,
+              "health": 45,
+              "bravery": 90,
+              "reactions": 60,
+              "firing": 75,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 30
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 100,
+              "health": 45,
+              "bravery": 90,
+              "reactions": 60,
+              "firing": 75,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 30
+            },
+            "max": {
+              "tu": 70,
+              "stamina": 100,
+              "health": 45,
+              "bravery": 90,
+              "reactions": 60,
+              "firing": 75,
+              "throwing": 60,
+              "strength": 40,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 30
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 80,
+              "stamina": 110,
+              "health": 55,
+              "bravery": 90,
+              "reactions": 70,
+              "firing": 80,
+              "throwing": 60,
+              "strength": 45,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 80,
+              "mana": 35
+            },
+            "avg": {
+              "tu": 80,
+              "stamina": 110,
+              "health": 55,
+              "bravery": 90,
+              "reactions": 70,
+              "firing": 80,
+              "throwing": 60,
+              "strength": 45,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 80,
+              "mana": 35
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 110,
+              "health": 55,
+              "bravery": 90,
+              "reactions": 70,
+              "firing": 80,
+              "throwing": 60,
+              "strength": 45,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 80,
+              "mana": 35
+            }
+          },
+          "rawStatCaps": {
+            "tu": 80,
+            "stamina": 145,
+            "health": 55,
+            "bravery": 100,
+            "reactions": 80,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 45,
+            "psiStrength": 42,
+            "psiSkill": 70,
+            "melee": 100,
+            "mana": 160
+          },
+          "effectiveStatCaps": {
+            "tu": 90,
+            "stamina": 155,
+            "health": 65,
+            "bravery": 100,
+            "reactions": 90,
+            "firing": 125,
+            "throwing": 90,
+            "strength": 50,
+            "psiStrength": 42,
+            "psiSkill": 40,
+            "melee": 110,
+            "mana": 165
+          },
+          "trainingStatCaps": {
+            "tu": 66,
+            "stamina": 85,
+            "health": 40,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 40,
+            "psiStrength": 0,
+            "psiSkill": 70,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_THEBAN_ASSAULT_CLONE"
+          ],
+          "traits": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "koName": "돌격 클론",
+              "enName": "Assault Clone",
+              "stats": {
+                "tu": 10,
+                "stamina": 10,
+                "health": 10,
+                "bravery": 0,
+                "reactions": 10,
+                "firing": 5,
+                "throwing": 0,
+                "strength": 5,
+                "psiStrength": 0,
+                "psiSkill": -30,
+                "melee": 10,
+                "mana": 5
+              },
+              "frontArmor": 4,
+              "sideArmor": 4,
+              "rearArmor": 4,
+              "underArmor": 4,
+              "visibilityAtDark": 3,
+              "recovery": {
+                "morale": {
+                  "flatOne": 8
+                },
+                "energy": {
+                  "flatOne": 5
+                },
+                "stun": {
+                  "flatOne": 3
+                }
+              }
+            }
+          ],
+          "traitStats": {
+            "tu": 10,
+            "stamina": 10,
+            "health": 10,
+            "bravery": 0,
+            "reactions": 10,
+            "firing": 5,
+            "throwing": 0,
+            "strength": 5,
+            "psiStrength": 0,
+            "psiSkill": -30,
+            "melee": 10,
+            "mana": 5
+          },
+          "previousTransformations": {
+            "STR_THEBAN_ASSAULT_CLONE": 1
+          },
+          "recipe": {
+            "id": "STR_THEBAN_ASSAULT_CLONE",
+            "koName": "돌격 클론",
+            "enName": "Assault Clone",
+            "requiredItems": [
+              {
+                "id": "STR_THEBAN_ASSAULT_CLONE_LICENSE",
+                "koName": "돌격 클론 면허",
+                "enName": "Assault Clone License",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_EGYPT_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_SPEECH_THEBES",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1323,7 +4030,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1375,7 +4083,322 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_CATGIRL_VICTIM_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_CATGIRL_VICTIM_RECRUITMENT",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "STR_CATGIRL_VICTIM",
+          "rewardQty": 8,
+          "rewardItemQty": 1,
+          "maxRuns": 8,
+          "soldierType": "STR_SOLDIER_NEKOMIMI_O",
+          "soldierKoName": "무법자 캣걸",
+          "soldierEnName": "Outlaw Catgirl",
+          "sourceKoName": "고용: 무법자 캣걸",
+          "sourceEnName": "Recruit: Outlaw Catgirl",
+          "spawnedPersons": 1,
+          "cost": 10000,
+          "time": 300,
+          "armor": "STR_NEKO_PRISONER_ROBE_UC",
+          "rank": 0,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 30,
+              "bravery": 60,
+              "reactions": 80,
+              "firing": 50,
+              "throwing": 50,
+              "strength": 20,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 35
+            },
+            "avg": {
+              "tu": 87.5,
+              "stamina": 95,
+              "health": 32.5,
+              "bravery": 70,
+              "reactions": 90,
+              "firing": 57.5,
+              "throwing": 57.5,
+              "strength": 27.5,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 85,
+              "mana": 37.5
+            },
+            "max": {
+              "tu": 95,
+              "stamina": 110,
+              "health": 35,
+              "bravery": 80,
+              "reactions": 100,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 35,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 100,
+              "mana": 40
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 30,
+              "bravery": 60,
+              "reactions": 80,
+              "firing": 50,
+              "throwing": 50,
+              "strength": 20,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 35
+            },
+            "avg": {
+              "tu": 87.5,
+              "stamina": 95,
+              "health": 32.5,
+              "bravery": 70,
+              "reactions": 90,
+              "firing": 57.5,
+              "throwing": 57.5,
+              "strength": 27.5,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 85,
+              "mana": 37.5
+            },
+            "max": {
+              "tu": 95,
+              "stamina": 110,
+              "health": 35,
+              "bravery": 80,
+              "reactions": 100,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 35,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 100,
+              "mana": 40
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 30,
+              "bravery": 60,
+              "reactions": 80,
+              "firing": 50,
+              "throwing": 50,
+              "strength": 20,
+              "psiStrength": 50,
+              "psiSkill": 0,
+              "melee": 70,
+              "mana": 35
+            },
+            "avg": {
+              "tu": 87.5,
+              "stamina": 95,
+              "health": 32.5,
+              "bravery": 70,
+              "reactions": 90,
+              "firing": 57.5,
+              "throwing": 57.5,
+              "strength": 27.5,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 85,
+              "mana": 37.5
+            },
+            "max": {
+              "tu": 95,
+              "stamina": 110,
+              "health": 35,
+              "bravery": 80,
+              "reactions": 100,
+              "firing": 65,
+              "throwing": 65,
+              "strength": 35,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 100,
+              "mana": 40
+            }
+          },
+          "rawStatCaps": {
+            "tu": 110,
+            "stamina": 125,
+            "health": 45,
+            "bravery": 100,
+            "reactions": 125,
+            "firing": 130,
+            "throwing": 90,
+            "strength": 40,
+            "psiStrength": 70,
+            "psiSkill": 70,
+            "melee": 140,
+            "mana": 50
+          },
+          "effectiveStatCaps": {
+            "tu": 110,
+            "stamina": 125,
+            "health": 45,
+            "bravery": 100,
+            "reactions": 125,
+            "firing": 130,
+            "throwing": 90,
+            "strength": 40,
+            "psiStrength": 70,
+            "psiSkill": 70,
+            "melee": 140,
+            "mana": 50
+          },
+          "trainingStatCaps": {
+            "tu": 90,
+            "stamina": 110,
+            "health": 35,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 90,
+            "throwing": 60,
+            "strength": 30,
+            "psiStrength": 0,
+            "psiSkill": 70,
+            "melee": 100,
+            "mana": 0
+          },
+          "traitNames": [],
+          "traits": [],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {},
+          "recipe": {
+            "id": "STR_CATGIRL_VICTIM_RECRUITMENT",
+            "koName": "고용: 무법자 캣걸",
+            "enName": "Recruit: Outlaw Catgirl",
+            "requiredItems": [
+              {
+                "id": "STR_CATGIRL_VICTIM",
+                "koName": "사로잡힌 캣걸",
+                "enName": "Catgirl Captive",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_NCR_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_KNOCK_KNOCK_CATGIRL",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_VODKA",
+                "koName": "코스모포르토바야 보드카",
+                "enName": "Kosmoportovaya Vodka",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_LOCATION_NORTH_AMERICA_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKLAZY_BEST_BARGAIN",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DELINQUENT_SPORTS_BAD",
+                    "fields": [
+                      "everyItemList",
+                      "randomMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_OMNIVENDER",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_CIGS",
+                "koName": "부다X 담배",
+                "enName": "Buddha-X Smokes",
+                "qty": 5,
+                "eventSources": [
+                  {
+                    "eventId": "STR_OMNIVENDER",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_MUTANT_FISH",
+                "koName": "돌연변이 물고기",
+                "enName": "Mutant Fish",
+                "qty": 5,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_LOCATION_SOUTH_EAST_ASIA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_SACRIFICES",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1423,7 +4446,259 @@
         }
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "event:STR_START_COUNTRY_BRAZIL_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_START_COUNTRY_BRAZIL_EVENT",
+          "mode": "즉시 지급 유닛",
+          "rewardItemId": null,
+          "rewardQty": 1,
+          "rewardItemQty": 1,
+          "maxRuns": null,
+          "soldierType": "STR_SOLDIER_HYBRID",
+          "soldierKoName": "버그아이",
+          "soldierEnName": "Bugeye",
+          "sourceKoName": "국가: 다크 도미니언",
+          "sourceEnName": "Country: Dark Dominion",
+          "spawnedPersons": 1,
+          "cost": null,
+          "time": null,
+          "armor": "STR_HYBRID_ARMOR_JUMPSUIT_UC",
+          "rank": 2,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 50,
+              "stamina": 40,
+              "health": 20,
+              "bravery": 10,
+              "reactions": 50,
+              "firing": 40,
+              "throwing": 35,
+              "strength": 20,
+              "psiStrength": 65,
+              "psiSkill": 25,
+              "melee": 20,
+              "mana": 40
+            },
+            "avg": {
+              "tu": 55,
+              "stamina": 55,
+              "health": 25,
+              "bravery": 35,
+              "reactions": 65,
+              "firing": 52.5,
+              "throwing": 40,
+              "strength": 25,
+              "psiStrength": 70,
+              "psiSkill": 25,
+              "melee": 40,
+              "mana": 50
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 30,
+              "bravery": 60,
+              "reactions": 80,
+              "firing": 65,
+              "throwing": 45,
+              "strength": 30,
+              "psiStrength": 75,
+              "psiSkill": 25,
+              "melee": 60,
+              "mana": 60
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 50,
+              "stamina": 40,
+              "health": 20,
+              "bravery": 90,
+              "reactions": 90,
+              "firing": 40,
+              "throwing": 35,
+              "strength": 20,
+              "psiStrength": 65,
+              "psiSkill": 50,
+              "melee": 20,
+              "mana": 40
+            },
+            "avg": {
+              "tu": 55,
+              "stamina": 55,
+              "health": 25,
+              "bravery": 90,
+              "reactions": 90,
+              "firing": 52.5,
+              "throwing": 40,
+              "strength": 25,
+              "psiStrength": 70,
+              "psiSkill": 50,
+              "melee": 40,
+              "mana": 50
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 30,
+              "bravery": 90,
+              "reactions": 90,
+              "firing": 65,
+              "throwing": 45,
+              "strength": 30,
+              "psiStrength": 75,
+              "psiSkill": 50,
+              "melee": 60,
+              "mana": 60
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 50,
+              "stamina": 40,
+              "health": 20,
+              "bravery": 90,
+              "reactions": 90,
+              "firing": 40,
+              "throwing": 35,
+              "strength": 20,
+              "psiStrength": 66,
+              "psiSkill": 51,
+              "melee": 20,
+              "mana": 40
+            },
+            "avg": {
+              "tu": 55,
+              "stamina": 55,
+              "health": 25,
+              "bravery": 90,
+              "reactions": 90,
+              "firing": 52.5,
+              "throwing": 40,
+              "strength": 25,
+              "psiStrength": 71,
+              "psiSkill": 51,
+              "melee": 40,
+              "mana": 50
+            },
+            "max": {
+              "tu": 60,
+              "stamina": 70,
+              "health": 30,
+              "bravery": 90,
+              "reactions": 90,
+              "firing": 65,
+              "throwing": 45,
+              "strength": 30,
+              "psiStrength": 76,
+              "psiSkill": 51,
+              "melee": 60,
+              "mana": 60
+            }
+          },
+          "rawStatCaps": {
+            "tu": 80,
+            "stamina": 100,
+            "health": 40,
+            "bravery": 90,
+            "reactions": 110,
+            "firing": 125,
+            "throwing": 80,
+            "strength": 40,
+            "psiStrength": 75,
+            "psiSkill": 75,
+            "melee": 90,
+            "mana": 90
+          },
+          "effectiveStatCaps": {
+            "tu": 80,
+            "stamina": 100,
+            "health": 40,
+            "bravery": 90,
+            "reactions": 110,
+            "firing": 125,
+            "throwing": 80,
+            "strength": 40,
+            "psiStrength": 76,
+            "psiSkill": 76,
+            "melee": 90,
+            "mana": 90
+          },
+          "trainingStatCaps": {
+            "tu": 66,
+            "stamina": 85,
+            "health": 33,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 33,
+            "psiStrength": 0,
+            "psiSkill": 75,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_MAGOS"
+          ],
+          "traits": [
+            {
+              "id": "STR_MAGOS",
+              "koName": "마고스",
+              "enName": "Magos",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 1,
+                "psiSkill": 1,
+                "melee": 0,
+                "mana": 0
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": {
+                "morale": {
+                  "flatOne": 1
+                },
+                "energy": {
+                  "flatOne": 1
+                }
+              }
+            }
+          ],
+          "traitStats": {
+            "tu": 0,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 1,
+            "psiSkill": 1,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {
+            "STR_MAGOS_CEREMONY": 1
+          },
+          "recipe": null
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1459,7 +4734,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1495,7 +4771,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1559,7 +4836,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1595,7 +4873,281 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_TURANIAN_UBER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_TURANIAN_UBER_RECRUITMENT",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "STR_TURANIAN_UBER",
+          "rewardQty": 3,
+          "rewardItemQty": 1,
+          "maxRuns": 3,
+          "soldierType": "STR_SOLDIER_M",
+          "soldierKoName": "전사",
+          "soldierEnName": "Warrior",
+          "sourceKoName": "고용: 투란 계집",
+          "sourceEnName": "Recruit: Turanian Gal",
+          "spawnedPersons": 1,
+          "cost": 20000,
+          "time": 20,
+          "armor": "STR_HYENA_RIDER_ARMOR_UC",
+          "rank": 1,
+          "nationality": null,
+          "initialStats": {
+            "min": {
+              "tu": 60,
+              "stamina": 55,
+              "health": 45,
+              "bravery": 30,
+              "reactions": 50,
+              "firing": 50,
+              "throwing": 45,
+              "strength": 25,
+              "psiStrength": 27,
+              "psiSkill": 0,
+              "melee": 45,
+              "mana": 45
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 67.5,
+              "health": 52.5,
+              "bravery": 50,
+              "reactions": 60,
+              "firing": 63.5,
+              "throwing": 56.5,
+              "strength": 37.5,
+              "psiStrength": 43.5,
+              "psiSkill": 0,
+              "melee": 70.5,
+              "mana": 50
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 77,
+              "throwing": 68,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 96,
+              "mana": 55
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 45,
+              "bravery": 70,
+              "reactions": 50,
+              "firing": 50,
+              "throwing": 69,
+              "strength": 25,
+              "psiStrength": 27,
+              "psiSkill": 0,
+              "melee": 45,
+              "mana": 45
+            },
+            "avg": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 52.5,
+              "bravery": 70,
+              "reactions": 60,
+              "firing": 63.5,
+              "throwing": 69,
+              "strength": 37.5,
+              "psiStrength": 43.5,
+              "psiSkill": 0,
+              "melee": 70.5,
+              "mana": 50
+            },
+            "max": {
+              "tu": 80,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 77,
+              "throwing": 69,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 96,
+              "mana": 55
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 81,
+              "stamina": 80,
+              "health": 45,
+              "bravery": 70,
+              "reactions": 50,
+              "firing": 50,
+              "throwing": 70,
+              "strength": 25,
+              "psiStrength": 27,
+              "psiSkill": 0,
+              "melee": 45,
+              "mana": 45
+            },
+            "avg": {
+              "tu": 81,
+              "stamina": 80,
+              "health": 52.5,
+              "bravery": 70,
+              "reactions": 60,
+              "firing": 63.5,
+              "throwing": 70,
+              "strength": 37.5,
+              "psiStrength": 43.5,
+              "psiSkill": 0,
+              "melee": 70.5,
+              "mana": 50
+            },
+            "max": {
+              "tu": 81,
+              "stamina": 80,
+              "health": 60,
+              "bravery": 70,
+              "reactions": 70,
+              "firing": 77,
+              "throwing": 70,
+              "strength": 50,
+              "psiStrength": 60,
+              "psiSkill": 0,
+              "melee": 96,
+              "mana": 55
+            }
+          },
+          "rawStatCaps": {
+            "tu": 100,
+            "stamina": 140,
+            "health": 90,
+            "bravery": 100,
+            "reactions": 100,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 80,
+            "psiStrength": 60,
+            "psiSkill": 40,
+            "melee": 125,
+            "mana": 70
+          },
+          "effectiveStatCaps": {
+            "tu": 101,
+            "stamina": 140,
+            "health": 90,
+            "bravery": 100,
+            "reactions": 100,
+            "firing": 120,
+            "throwing": 91,
+            "strength": 80,
+            "psiStrength": 60,
+            "psiSkill": 40,
+            "melee": 125,
+            "mana": 70
+          },
+          "trainingStatCaps": {
+            "tu": 85,
+            "stamina": 100,
+            "health": 66,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 66,
+            "psiStrength": 0,
+            "psiSkill": 40,
+            "melee": 100,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_HUNTRESS"
+          ],
+          "traits": [
+            {
+              "id": "STR_HUNTRESS",
+              "koName": "여사냥꾼",
+              "enName": "Huntress",
+              "stats": {
+                "tu": 1,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 1,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 0
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": {
+                "energy": {
+                  "flatOne": 2
+                }
+              }
+            }
+          ],
+          "traitStats": {
+            "tu": 1,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 0,
+            "throwing": 1,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": 0
+          },
+          "previousTransformations": {},
+          "recipe": {
+            "id": "STR_TURANIAN_UBER_RECRUITMENT",
+            "koName": "고용: 투란 계집",
+            "enName": "Recruit: Turanian Gal",
+            "requiredItems": [
+              {
+                "id": "STR_TURANIAN_UBER",
+                "koName": "투란의 계집",
+                "enName": "Turanian Gal",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_TURAN_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TROUBLESEEKING_ALLY",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1635,7 +5187,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     },
     {
       "kind": "country",
@@ -1675,7 +5228,722 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": [
+        {
+          "id": "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "mode": "보상 아이템으로 고용/생성",
+          "rewardItemId": "STR_REVOLUTIONARY_GIRL",
+          "rewardQty": 3,
+          "rewardItemQty": 1,
+          "maxRuns": 3,
+          "soldierType": "STR_SOLDIER_PEASANT",
+          "soldierKoName": "농부",
+          "soldierEnName": "Peasant",
+          "sourceKoName": "고용: 농부 혁명가",
+          "sourceEnName": "Recruit: Peasant Revolutionary",
+          "spawnedPersons": 1,
+          "cost": 5000,
+          "time": 10,
+          "armor": "STR_PEASANT_ARMOR_DURASUIT_UC",
+          "rank": 0,
+          "nationality": 15,
+          "initialStats": {
+            "min": {
+              "tu": 50,
+              "stamina": 60,
+              "health": 35,
+              "bravery": 40,
+              "reactions": 40,
+              "firing": 30,
+              "throwing": 30,
+              "strength": 15,
+              "psiStrength": 20,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 65
+            },
+            "avg": {
+              "tu": 52.5,
+              "stamina": 65,
+              "health": 37.5,
+              "bravery": 50,
+              "reactions": 42.5,
+              "firing": 33,
+              "throwing": 33,
+              "strength": 17.5,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 33,
+              "mana": 72.5
+            },
+            "max": {
+              "tu": 55,
+              "stamina": 70,
+              "health": 40,
+              "bravery": 60,
+              "reactions": 45,
+              "firing": 36,
+              "throwing": 36,
+              "strength": 20,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 36,
+              "mana": 80
+            }
+          },
+          "currentStatsBeforeTraits": {
+            "min": {
+              "tu": 65,
+              "stamina": 60,
+              "health": 35,
+              "bravery": 80,
+              "reactions": 40,
+              "firing": 60,
+              "throwing": 30,
+              "strength": 25,
+              "psiStrength": 20,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 65
+            },
+            "avg": {
+              "tu": 65,
+              "stamina": 65,
+              "health": 37.5,
+              "bravery": 80,
+              "reactions": 42.5,
+              "firing": 60,
+              "throwing": 33,
+              "strength": 25,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 33,
+              "mana": 72.5
+            },
+            "max": {
+              "tu": 65,
+              "stamina": 70,
+              "health": 40,
+              "bravery": 80,
+              "reactions": 45,
+              "firing": 60,
+              "throwing": 36,
+              "strength": 25,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 36,
+              "mana": 80
+            }
+          },
+          "effectiveStats": {
+            "min": {
+              "tu": 70,
+              "stamina": 60,
+              "health": 35,
+              "bravery": 90,
+              "reactions": 45,
+              "firing": 60,
+              "throwing": 30,
+              "strength": 25,
+              "psiStrength": 20,
+              "psiSkill": 0,
+              "melee": 30,
+              "mana": 56
+            },
+            "avg": {
+              "tu": 70,
+              "stamina": 65,
+              "health": 37.5,
+              "bravery": 90,
+              "reactions": 47.5,
+              "firing": 60,
+              "throwing": 33,
+              "strength": 25,
+              "psiStrength": 45,
+              "psiSkill": 0,
+              "melee": 33,
+              "mana": 63.5
+            },
+            "max": {
+              "tu": 70,
+              "stamina": 70,
+              "health": 40,
+              "bravery": 90,
+              "reactions": 50,
+              "firing": 60,
+              "throwing": 36,
+              "strength": 25,
+              "psiStrength": 70,
+              "psiSkill": 0,
+              "melee": 36,
+              "mana": 71
+            }
+          },
+          "rawStatCaps": {
+            "tu": 80,
+            "stamina": 145,
+            "health": 55,
+            "bravery": 100,
+            "reactions": 80,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 45,
+            "psiStrength": 42,
+            "psiSkill": 70,
+            "melee": 100,
+            "mana": 160
+          },
+          "effectiveStatCaps": {
+            "tu": 85,
+            "stamina": 145,
+            "health": 55,
+            "bravery": 110,
+            "reactions": 85,
+            "firing": 120,
+            "throwing": 90,
+            "strength": 45,
+            "psiStrength": 42,
+            "psiSkill": 70,
+            "melee": 100,
+            "mana": 151
+          },
+          "trainingStatCaps": {
+            "tu": 66,
+            "stamina": 85,
+            "health": 40,
+            "bravery": 0,
+            "reactions": 0,
+            "firing": 85,
+            "throwing": 66,
+            "strength": 40,
+            "psiStrength": 0,
+            "psiSkill": 70,
+            "melee": 66,
+            "mana": 0
+          },
+          "traitNames": [
+            "STR_REVOLUTIONARY",
+            "STR_BASIC_FIREARMS_TRAINING"
+          ],
+          "traits": [
+            {
+              "id": "STR_REVOLUTIONARY",
+              "koName": "혁명적",
+              "enName": "Revolutionary",
+              "stats": {
+                "tu": 5,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 10,
+                "reactions": 5,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": -10
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": null
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "koName": "기본 총기 훈련",
+              "enName": "Basic Gun Training",
+              "stats": {
+                "tu": 0,
+                "stamina": 0,
+                "health": 0,
+                "bravery": 0,
+                "reactions": 0,
+                "firing": 0,
+                "throwing": 0,
+                "strength": 0,
+                "psiStrength": 0,
+                "psiSkill": 0,
+                "melee": 0,
+                "mana": 1
+              },
+              "frontArmor": 0,
+              "sideArmor": 0,
+              "rearArmor": 0,
+              "underArmor": 0,
+              "visibilityAtDark": 0,
+              "recovery": null
+            }
+          ],
+          "traitStats": {
+            "tu": 5,
+            "stamina": 0,
+            "health": 0,
+            "bravery": 10,
+            "reactions": 5,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 0,
+            "psiStrength": 0,
+            "psiSkill": 0,
+            "melee": 0,
+            "mana": -9
+          },
+          "previousTransformations": {
+            "STR_REVOLUTIONARY_TRAINING": 1,
+            "STR_BASIC_FIREARMS_TRAINING": 1
+          },
+          "recipe": {
+            "id": "STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+            "koName": "고용: 농부 혁명가",
+            "enName": "Recruit: Peasant Revolutionary",
+            "requiredItems": [
+              {
+                "id": "STR_REVOLUTIONARY_GIRL",
+                "koName": "농부 혁명가",
+                "enName": "Peasant Revolutionary",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_VENEZUELA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_SAINTS_REINFORCEMENTS",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_SPEECH_HEROIC",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_SPEECH_GOOD",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_REINFORCEMENTS",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_REINFORCEMENTS_2",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_KNOCK_KNOCK_REVOLUTIONARY_GIRL",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TROUBLESEEKING_ALLY",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "STR_GLAMOUR",
+                "koName": "글래머",
+                "enName": "Glamour",
+                "qty": 1,
+                "eventSources": [
+                  {
+                    "eventId": "STR_START_COUNTRY_USA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_START_COUNTRY_JAPAN_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_START_COUNTRY_CANADA_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_START_COUNTRY_NCR_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TURAN_MONEYLOSS_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LATIN_EMPIRE_DUELS_EVENT_WON",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LATIN_EMPIRE_DUELS_EVENT_DANCER",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LATIN_EMPIRE_DUELS_EVENT_WARRIOR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TRAIN_YOUR_BODY_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBASS_RABID_FANS_GLAMOUR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBASS_SUPERSTAR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKASS_HAPPY_WARRIOR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKASS_BEST_BOSS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_PICKING_BRAINS",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKDUMB_SEDUCTION",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_DONATION",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKLAZY_PIRATEZ",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DUMBLAZY_PUSSY_PROTAGONIST",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOLD_AT_SEANS_NEW_FACES",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOLD_CHARM",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOLD_SCORED",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_DOUBLEGOLD_FACES_AND_MASKS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_JACKLAZY_I_HAD_A_DREAM",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_NOGREEN_YESGOLD_REVEL_AND_RULE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_1_GREAT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_1_GOOD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_1_OK",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_2_GREAT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_2_GOOD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CAP_LOG_2_OK",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_LOSE_BAD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHAMP_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHAMP_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_NINJA_DEFEAT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_ENSLAVED_NINJA",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_OGRESS_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_OGRESS_LOSE2",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_OGRESS_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CBT_TOURNAMENT_CHALLENGER_BLACK_DRAGON_LOSE",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_REVOLUTIONARY_SPEECH_GLAMOUR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_ASTROROCK_EVENT",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_INTERSTELLAR_ASTROROCK_EVENT_EPIC",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_INTERSTELLAR_ASTROROCK_EVENT_GOOD",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_SLAVE_CAUGHT_EVENT",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_LAB_ACCIDENT",
+                    "fields": [
+                      "randomItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_POPULAR_HERO",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GDX_EVENT_ROMANCE_TOPLESS_BEACH",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GDX_EVENT_ROMANCE_GLAMOUR",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GDX_EVENT_VAMPIRE_DANCE",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_WIZ_EVENT_FLOWERS",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_2_GIRLS_1_PANTIES_CONTINUED",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_VOLLEYBALL_MATCH",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CODEX_BONUS_G8A",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_CODEX_BONUS_G8B",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GOODSCORE_VACATION",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GAMBLING_NIGHT_WIN",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_GAMBLING_NIGHT_WIN_DUMBASS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_TROUBLESEEKING_FRIENDS",
+                    "fields": [
+                      "everyMultiItemList"
+                    ]
+                  },
+                  {
+                    "eventId": "STR_AXCRAZY_CAPTIVES",
+                    "fields": [
+                      "everyItemList"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "requiresBaseFunc": []
+          }
+        }
+      ]
     },
     {
       "kind": "country",
@@ -1742,7 +6010,8 @@
         "currentStats": {}
       },
       "timer": 3200,
-      "timerRandom": 1200
+      "timerRandom": 1200,
+      "unitProfiles": []
     }
   ]
 }
