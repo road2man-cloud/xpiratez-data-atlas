@@ -8,6 +8,7 @@ on:
       - "tools/build-item-research-data.mjs"
       - "tools/data-normalize.mjs"
       - "tools/check-item-research-data.mjs"
+      - "tools/check-editorial-quality.mjs"
       - "tools/migrate-research-insight-sidecars.mjs"
       - "tools/build-research-editorial-insights.mjs"
       - "tools/build-item-editorial-insights.mjs"
@@ -41,8 +42,10 @@ jobs:
           node tools/build-research-editorial-insights.mjs --data public/items/data --out public/items/data
           node tools/build-item-editorial-insights.mjs --data public/items/data --out public/items/data
 
-      - name: Verify migrated research DB
-        run: node tools/check-item-research-data.mjs --data public/items/data
+      - name: Verify migrated research DB and editorial quality
+        run: |
+          node tools/check-item-research-data.mjs --data public/items/data
+          node tools/check-editorial-quality.mjs --data public/items/data
 
       - name: Publish migrated research data
         if: github.event_name == 'push'
@@ -53,6 +56,7 @@ jobs:
           node tools/build-research-editorial-insights.mjs --data public/items/data --out public/items/data
           node tools/build-item-editorial-insights.mjs --data public/items/data --out public/items/data
           node tools/check-item-research-data.mjs --data public/items/data
+          node tools/check-editorial-quality.mjs --data public/items/data
           if git diff --quiet -- public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks public/items/data/item-editorial-meta.json public/items/data/item-editorial-chunks; then
             echo "Research/item data and GPT editorials already current."
             exit 0
