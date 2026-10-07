@@ -13,14 +13,17 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},detail:null};
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
 async function init(){
   try{
-    const [ii,ri,s,m,e]=await Promise.all([json(`${dataBase}/items-index.json`),json(`${dataBase}/research-index.json`),json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`),json(`${dataBase}/entities.json`)]);
-    itemIndex=ii.index;researchIndex=ri.index;schema=s;manifest=m;entityNames=e.names||{};
+    const [ii,ri,rii,s,m,e]=await Promise.all([json(`${dataBase}/items-index.json`),json(`${dataBase}/research-index.json`),json(`${dataBase}/research-insight-index.json`),json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`),json(`${dataBase}/entities.json`)]);
+    itemIndex=ii.index;
+    const insightIndex=new Map((rii.index||[]).map(x=>[x.id,x]));
+    researchIndex=ri.index.map(x=>({...x,...(insightIndex.get(x.id)||{})}));
+    schema=s;manifest=m;entityNames=e.names||{};
     itemMap=new Map(itemIndex.map(x=>[x.id,x]));researchMap=new Map(researchIndex.map(x=>[x.id,x]));
     if($("#itemCount"))$("#itemCount").textContent="("+fmt(itemIndex.length)+")";if($("#researchCount"))$("#researchCount").textContent="("+fmt(researchIndex.length)+")";
     $("#metaLine").textContent=pageMode==="items"?`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 아이템 ${fmt(itemIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`:`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 연구 ${fmt(researchIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`;
@@ -98,7 +101,12 @@ async function detail(mode,id){
   const map=mode==="items"?itemMap:researchMap,row=map.get(id);if(!row)throw new Error("대상을 찾지 못했습니다: "+id);
   const cache=state.cache[mode],dir=mode==="items"?"chunks":"research-chunks";
   if(!cache.has(row.bucket))cache.set(row.bucket,(await json(`${dataBase}/${dir}/${row.bucket}.json`)).details);
-  return cache.get(row.bucket)[id];
+  const d=cache.get(row.bucket)[id];
+  if(mode==="research"){
+    if(!state.insightCache.has(row.bucket))state.insightCache.set(row.bucket,(await json(`${dataBase}/research-insight-chunks/${row.bucket}.json`)).details);
+    return {...d,insight:state.insightCache.get(row.bucket)[id]?.insight||null};
+  }
+  return d;
 }
 function entity(id,preferredKind=""){const preferred=preferredKind==="items"?itemMap.get(id):preferredKind==="research"?researchMap.get(id):null,x=preferred||itemMap.get(id)||researchMap.get(id),kind=preferred?preferredKind:itemMap.has(id)?"items":researchMap.has(id)?"research":"",n=entityNames[id];return kind?`<button class="chip" data-kind="${kind}" data-open="${esc(id)}">${esc(x.koName)}<span class="sub">${esc(x.enName)}</span></button>`:n?`<span class="badge">${esc(n[0])}<span class="sub">${esc(n[1])} · ${esc(id)}</span></span>`:`<span class="badge">${esc(id)}</span>`}
 function humanPath(p){return String(p||"직접 참조").split(".").map(x=>pathNames[x]||(/^\d+$/.test(x)?"#"+(Number(x)+1):x)).join(" › ")}
@@ -168,21 +176,49 @@ function semanticRefMarkup(x){
   const role=insightRoleLabels[x.kind]||x.kind,preferred=x.section==="items"?"items":x.section==="research"?"research":"";
   return`<div class="semantic-ref"><div><span class="badge insight-kind">${esc(role)}</span> ${entity(x.id,preferred)}</div>${x.events?.length?`<div class="semantic-extra">연결 이벤트: ${idList(x.events)}</div>`:""}${x.eventRequires?.length?`<div class="semantic-extra">이벤트 자체 선행 연구: ${idList(x.eventRequires,"research")}</div>`:""}${x.requiresBaseFunc?.length?`<div class="semantic-extra">기지 기능: ${idList(x.requiresBaseFunc)}</div>`:""}${x.scriptGate?scriptGateMarkup(x.scriptGate):x.conditions&&Object.keys(x.conditions).length?`<div class="condition-cloud">${conditionsMarkup(x.conditions)}</div>`:""}${x.scripts?.length?`<div class="semantic-extra">${x.scripts.map(scriptGateMarkup).join("")}</div>`:""}<div class="paths">${arr(x.paths).map(humanPath).map(esc).join(" · ")}</div></div>`;
 }
+function prerequisiteDetail(id){
+  const depth=new Map(),queue=arr(researchMap.get(id)?.dependencyIds).map(x=>[x,1]);
+  for(let qi=0;qi<queue.length;qi++){
+    const [cur,d]=queue[qi],old=depth.get(cur);
+    if(old!=null&&old<=d)continue;
+    depth.set(cur,d);
+    for(const dep of arr(researchMap.get(cur)?.dependencyIds))queue.push([dep,d+1]);
+  }
+  const nearest=[...depth.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).map(([x])=>x);
+  const sampleAll=nearest.filter(x=>researchMap.get(x)?.needItem);
+  const branchAll=nearest.filter(x=>arr(researchMap.get(x)?.disableIds).length);
+  const eventLinks=[];
+  for(const researchId of nearest){
+    for(const ref of arr(researchMap.get(researchId)?.eventLinks)){
+      eventLinks.push({researchId,eventId:ref.id,kind:ref.kind,paths:ref.paths||[],scripts:ref.scripts||[],eventRequires:ref.eventRequires||[],requiresBaseFunc:ref.requiresBaseFunc||[]});
+      if(eventLinks.length>=24)break;
+    }
+    if(eventLinks.length>=24)break;
+  }
+  return{
+    topicIds:nearest.slice(0,80),topicCount:nearest.length,topicPreviewTruncated:nearest.length>80,
+    sampleTopics:sampleAll.slice(0,30),sampleTopicCount:sampleAll.length,
+    branchTopics:branchAll.slice(0,30),branchTopicCount:branchAll.length,
+    eventLinks
+  };
+}
 function researchInsightMarkup(d){
   const i=d.insight;if(!i)return"";
-  const p=i.prerequisite||{},roles=arr(i.roles);
+  const p=i.prerequisite||{},pd=prerequisiteDetail(d.id),roles=arr(i.roles),rq=i.researchRequirements||{};
   return`<section class="section insight-panel">
     <div class="insight-heading"><h3>플레이 관점 해석</h3><span class="evidence-tag derived">규칙에서 자동 도출</span></div>
+    <p class="insight-summary">${esc(i.summary||"")}</p>
     <div class="role-cloud">${roles.map(x=>`<span class="badge insight-kind">${esc(insightRoleLabels[x]||x)}</span>`).join("")}</div>
     ${i.automaticEffect===false?`<div class="callout important"><b>연구 완료만으로 자동 버프가 붙지 않습니다.</b> 아래 후속 훈련/변신을 병사별로 실행해야 실제 효과가 적용됩니다.</div>`:""}
     <div class="insight-kpis"><span>명목 선행 주제 <b>${fmt(p.topicCount||0)}</b></span><span>선행 연구량 <b>${fmt(p.prerequisiteCost||0)}</b></span><span>연구+선행 합계 <b>${fmt((p.prerequisiteCost||0)+(d.cost||0))}</b></span></div>
     <p class="muted derived-note">명목 선행망은 dependencies + requires 재귀 합집합입니다. 이벤트 직접 지급·unlock/getOneFree 우회·분기 때문에 실제 최소 경로와 다를 수 있습니다.</p>
-    ${i.researchRequirements?.requiresBaseFunc?.length?`<div class="requirement-line"><b>이 연구에 필요한 기지 기능</b> ${idList(i.researchRequirements.requiresBaseFunc)}</div>`:""}
+    ${rq.sampleItem?`<div class="requirement-line"><b>실물 표본</b> ${entity(rq.sampleItem,"items")}</div>`:""}
+    ${rq.requiresBaseFunc?.length?`<div class="requirement-line"><b>이 연구에 필요한 기지 기능</b> ${idList(rq.requiresBaseFunc)}</div>`:""}
     ${i.transformations?.length?`<div class="insight-subsection"><h4>연구 후 실제 적용 방법과 효과</h4>${i.transformations.map(transformationMarkup).join("")}</div>`:""}
     ${i.semanticReferences?.length?`<div class="insight-subsection"><h4>이 연구가 실제로 여는 것</h4>${i.semanticReferences.map(semanticRefMarkup).join("")}</div>`:""}
     ${i.disables?.length?`<div class="insight-subsection"><h4>상호배타/비활성화</h4><div class="chip-cloud">${idList(i.disables,"research")}</div></div>`:""}
-    ${p.topicIds?.length?`<details class="route-details"><summary>명목 선행망 ${p.topicPreviewTruncated?`가까운 ${fmt(p.topicIds.length)}개 / 전체 ${fmt(p.topicCount)}개`:`${fmt(p.topicCount)}개`} · 전체 연구량 ${fmt(p.prerequisiteCost)}</summary><div class="chip-cloud">${idList(p.topicIds,"research")}</div>${p.sampleTopics?.length?`<p class="muted">실물 표본 선행: ${p.sampleTopicCount>p.sampleTopics.length?`주요 ${fmt(p.sampleTopics.length)}개 / 전체 ${fmt(p.sampleTopicCount)}개 · `:""}${idList(p.sampleTopics,"research")}</p>`:""}${p.branchTopics?.length?`<p class="muted">분기/배타 선행: ${p.branchTopicCount>p.branchTopics.length?`주요 ${fmt(p.branchTopics.length)}개 / 전체 ${fmt(p.branchTopicCount)}개 · `:""}${idList(p.branchTopics,"research")}</p>`:""}</details>`:""}
-    ${p.eventLinks?.length?`<details><summary>가까운 선행의 이벤트 획득/연결 ${fmt(p.eventLinks.length)}개</summary><div>${p.eventLinks.map(x=>`<div class="semantic-ref"><div><span class="badge insight-kind">${esc(insightRoleLabels[x.kind]||x.kind)}</span> ${entity(x.researchId,"research")} ← ${entity(x.eventId)}</div>${x.eventRequires?.length?`<div class="semantic-extra">이벤트 자체 선행 연구: ${idList(x.eventRequires,"research")}</div>`:""}${x.requiresBaseFunc?.length?`<div class="semantic-extra">이벤트 기지 기능: ${idList(x.requiresBaseFunc)}</div>`:""}${x.scripts?.length?x.scripts.map(scriptGateMarkup).join(""):""}<div class="paths">${arr(x.paths).map(humanPath).map(esc).join(" · ")}</div></div>`).join("")}</div></details>`:""}
+    ${pd.topicIds?.length?`<details class="route-details"><summary>명목 선행망 ${pd.topicPreviewTruncated?`가까운 ${fmt(pd.topicIds.length)}개 / 전체 ${fmt(p.topicCount)}개`:`${fmt(p.topicCount)}개`} · 전체 연구량 ${fmt(p.prerequisiteCost)}</summary><div class="chip-cloud">${idList(pd.topicIds,"research")}</div>${pd.sampleTopics?.length?`<p class="muted">실물 표본 선행: ${pd.sampleTopicCount>pd.sampleTopics.length?`주요 ${fmt(pd.sampleTopics.length)}개 / 전체 ${fmt(pd.sampleTopicCount)}개 · `:""}${idList(pd.sampleTopics,"research")}</p>`:""}${pd.branchTopics?.length?`<p class="muted">분기/배타 선행: ${pd.branchTopicCount>pd.branchTopics.length?`주요 ${fmt(pd.branchTopics.length)}개 / 전체 ${fmt(pd.branchTopicCount)}개 · `:""}${idList(pd.branchTopics,"research")}</p>`:""}</details>`:""}
+    ${pd.eventLinks?.length?`<details><summary>가까운 선행의 이벤트 획득/연결 ${fmt(pd.eventLinks.length)}개</summary><div>${pd.eventLinks.map(x=>`<div class="semantic-ref"><div><span class="badge insight-kind">${esc(insightRoleLabels[x.kind]||x.kind)}</span> ${entity(x.researchId,"research")} ← ${entity(x.eventId)}</div>${x.eventRequires?.length?`<div class="semantic-extra">이벤트 자체 선행 연구: ${idList(x.eventRequires,"research")}</div>`:""}${x.requiresBaseFunc?.length?`<div class="semantic-extra">이벤트 기지 기능: ${idList(x.requiresBaseFunc)}</div>`:""}${x.scripts?.length?x.scripts.map(scriptGateMarkup).join(""):""}<div class="paths">${arr(x.paths).map(humanPath).map(esc).join(" · ")}</div></div>`).join("")}</div></details>`:""}
   </section>`;
 }
 function renderResearch(d){

@@ -493,38 +493,12 @@ function prerequisiteInsight(id){
   }
   visit(id);
   const topics=ordered.map(x=>researchByName.get(x)).filter(Boolean);
-  const baseFuncs=[...new Set(topics.flatMap(x=>listify(x.requiresBaseFunc).filter(v=>typeof v==="string")))];
-  const branchAll=topics.filter(x=>listify(x.disables).some(v=>typeof v==="string")).map(x=>x.name);
-  const sampleAll=topics.filter(x=>x.needItem).map(x=>x.name);
-  const depth=new Map(),queue=(directDeps.get(id)||[]).map(x=>[x,1]);
-  for(let qi=0;qi<queue.length;qi++){
-    const [cur,d]=queue[qi],old=depth.get(cur);
-    if(old!=null&&old<=d)continue;
-    depth.set(cur,d);
-    for(const dep of directDeps.get(cur)||[])queue.push([dep,d+1]);
-  }
-  const nearest=[...depth.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).map(([x])=>x);
-  const eventLinks=[];
-  for(const topic of nearest){
-    for(const ref of semanticRefsForResearch(topic).filter(x=>["event-grant","event-research-link"].includes(x.kind))){
-      eventLinks.push({
-        researchId:topic,eventId:ref.id,kind:ref.kind,paths:ref.paths,
-        scripts:ref.scripts||[],eventRequires:ref.eventRequires||[],requiresBaseFunc:ref.requiresBaseFunc||[]
-      });
-      if(eventLinks.length>=24)break;
-    }
-    if(eventLinks.length>=24)break;
-  }
-  const previewLimit=80;
   const out={
-    topicIds:nearest.slice(0,previewLimit),
-    topicCount:ordered.length,
-    topicPreviewTruncated:ordered.length>previewLimit,
+    topicCount:topics.length,
     prerequisiteCost:topics.reduce((n,x)=>n+(typeof x.cost==="number"?x.cost:0),0),
-    requiresBaseFunc:baseFuncs,
-    sampleTopics:sampleAll.slice(0,30),sampleTopicCount:sampleAll.length,
-    branchTopics:branchAll.slice(0,30),branchTopicCount:branchAll.length,
-    eventLinks
+    requiresBaseFunc:[...new Set(topics.flatMap(x=>listify(x.requiresBaseFunc).filter(v=>typeof v==="string")))],
+    sampleTopicCount:topics.filter(x=>x.needItem).length,
+    branchTopicCount:topics.filter(x=>listify(x.disables).some(v=>typeof v==="string")).length
   };
   prereqInsightCache.set(id,out);return out;
 }
@@ -592,6 +566,7 @@ function buildResearchInsight(r,refs,reqBy){
     roles,
     primaryRole:roles[0],
     automaticEffect:transformations.length?false:null,
+    evidence:"derived-from-ruleset",
     researchRequirements:{
       cost:r.cost??null,
       needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
@@ -610,7 +585,7 @@ function buildResearchInsight(r,refs,reqBy){
 }
 const allResearchKeys=[...new Set(researchList.flatMap(x=>Object.keys(x)))].sort();
 const researchFieldMeta=Object.fromEntries(allResearchKeys.map(k=>[k,{label:({name:"내부 연구 ID",cost:"연구량",points:"완료 점수",dependencies:"직접 선행",requires:"필요 조건",unlocks:"명시 해금",needItem:"실물 표본 필요",destroyItem:"표본 소모",getOneFree:"무료 획득",getOneFreeProtected:"조건부 무료 획득"}[k]||k),description:"X-Piratez 연구 규칙의 원본 필드입니다."}]));
-const researchDetails={},researchIndex=[],researchResourceDetails={};
+const researchDetails={},researchInsightDetails={},researchIndex=[],researchInsightIndex=[],researchResourceDetails={};
 for(const r of researchList){
   const id=r.name,bucket=crypto.createHash("sha1").update(id).digest("hex")[0],refs=groupRefs(researchRefs,id,"research");
   const deps=directDeps.get(id)||[],reqBy=[...new Set(requiredBy.get(id)||[])],unlocks=explicitUnlocks.get(id)||[];
@@ -620,7 +595,7 @@ for(const r of researchList){
   const rawSplit=splitPresentationResources(r);
   const detail={
     id,bucket,koName:tr(id,"ko"),enName:tr(id,"en"),
-    summaryKo:insight.summary,insight,
+    summaryKo:tr(id,"ko")+": 연구량 "+(r.cost??"—")+" · 완료 점수 "+(r.points??"—")+(r.needItem?" · 실물 표본 "+(r.destroyItem?"필요·소모":"필요"):""),
     cost:r.cost??null,points:r.points??null,needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
     dependencies:deps,requiredBy:reqBy,unlocks,
     itemReferences:items,manufactureReferences:mans,otherReferences:others,
@@ -629,6 +604,7 @@ for(const r of researchList){
   };
   if(rawSplit.resources.length)researchResourceDetails[id]={id,bucket,effective:rawSplit.resources};
   researchDetails[id]=detail;
+  researchInsightDetails[id]={id,bucket,insight};
   const insightTerms=[...new Set([
     ...insight.roles,
     ...insight.transformations.map(x=>x.id),
@@ -637,14 +613,26 @@ for(const r of researchList){
     ...insight.semanticReferences.flatMap(x=>x.events||[])
   ])];
   const insightNames=[...new Set(insightTerms.filter(x=>typeof x==="string"&&x.startsWith("STR_")).flatMap(x=>[tr(x,"ko"),tr(x,"en")]))];
+  const eventLinks=insight.semanticReferences.filter(x=>["event-grant","event-research-link"].includes(x.kind)).map(x=>({
+    id:x.id,kind:x.kind,paths:x.paths,
+    ...(x.scripts?.length?{scripts:x.scripts}:{}),
+    ...(x.eventRequires?.length?{eventRequires:x.eventRequires}:{}),
+    ...(x.requiresBaseFunc?.length?{requiresBaseFunc:x.requiresBaseFunc}:{})
+  }));
   researchIndex.push({
     id,bucket,koName:detail.koName,enName:detail.enName,cost:detail.cost,points:detail.points,needItem:detail.needItem,destroyItem:detail.destroyItem,
     dependencyCount:deps.length,requiredByCount:reqBy.length,spawnedItemCount:spawnedItems.length,itemReferenceCount:items.length,manufactureReferenceCount:mans.length,otherReferenceCount:others.length,
-    insightKinds:insight.roles,primaryInsightKind:insight.primaryRole,insightTerms,insightNames,
     sourceFile:detail.sourceFiles.at(-1)
+  });
+  researchInsightIndex.push({
+    id,bucket,insightKinds:insight.roles,primaryInsightKind:insight.primaryRole,insightTerms,insightNames,
+    ...(deps.length?{dependencyIds:deps}:{}),
+    ...(insight.disables.length?{disableIds:insight.disables}:{}),
+    ...(eventLinks.length?{eventLinks}:{})
   });
 }
 researchIndex.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
+researchInsightIndex.sort((a,b)=>a.id.localeCompare(b.id));
 
 const sortableItemFields=[...sortableItemFieldSet].filter(k=>k!=="type").sort((a,b)=>(fieldMeta[a]?.label||a).localeCompare(fieldMeta[b]?.label||b,"ko")).map(k=>({key:k,label:fieldMeta[k]?.label||k,storage:promotedSortableFields.has(k)?"topLevel":"sortable"}));
 const entityNames=Object.fromEntries([...entityNameIds].sort().map(id=>[id,[tr(id,"ko"),tr(id,"en")]]));
@@ -657,7 +645,7 @@ function writeChunks(dir,details){
   for(const [id,x] of Object.entries(details))(buckets[x.bucket]||={})[id]=x;
   for(const [b,v] of Object.entries(buckets))fs.writeFileSync(path.join(d,b+".json"),JSON.stringify({details:v}));
 }
-writeChunks("chunks",itemDetails);writeChunks("research-chunks",researchDetails);
+writeChunks("chunks",itemDetails);writeChunks("research-chunks",researchDetails);writeChunks("research-insight-chunks",researchInsightDetails);
 writeChunks("resource-chunks/items",itemResourceDetails);writeChunks("resource-chunks/research",researchResourceDetails);
 
 const manifest={
@@ -670,6 +658,7 @@ const manifest={
 };
 fs.writeFileSync(path.join(outDir,"items-index.json"),JSON.stringify({meta:manifest,index:itemIndex}));
 fs.writeFileSync(path.join(outDir,"research-index.json"),JSON.stringify({meta:manifest,index:researchIndex}));
+fs.writeFileSync(path.join(outDir,"research-insight-index.json"),JSON.stringify({version:1,index:researchInsightIndex}));
 fs.writeFileSync(path.join(outDir,"entities.json"),JSON.stringify({names:entityNames}));
 fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,effectiveCoreFields,coreSourceLegend,globalItemDefaults:globals,resourceStorage:{separated:true,path:"resource-chunks/<kind>/<bucket>.json",entryFormat:"[jsonPointer,value]"},damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
 fs.writeFileSync(path.join(outDir,"manifest.json"),JSON.stringify(manifest,null,2));
