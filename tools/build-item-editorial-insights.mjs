@@ -20,7 +20,8 @@ function detailFor(row){
 }
 function list(v){return Array.isArray(v)?v:[]}
 function uniq(xs){return [...new Set(list(xs).filter(Boolean))]}
-function ko(id){return entities[id]?.[0]||itemById.get(id)?.koName||id}
+function cleanName(v){return String(v??"").replace(/\s+/g," ").trim()}
+function ko(id){return cleanName(entities[id]?.[0]||itemById.get(id)?.koName||id)}
 function names(ids,limit=4){
   const xs=uniq(ids).map(ko);
   if(!xs.length)return "";
@@ -29,7 +30,7 @@ function names(ids,limit=4){
 function num(v){return Number(v||0).toLocaleString("ko-KR")}
 function pct(v){return Number.isFinite(v)?num(v)+"%":"—"}
 function hasBatchim(s){const t=String(s||"").trim();for(let i=t.length-1;i>=0;i--){const c=t.charCodeAt(i);if(c>=0xac00&&c<=0xd7a3)return(c-0xac00)%28!==0;if(/[A-Za-z0-9]/.test(t[i]))return false}return false}
-function topic(s){return String(s)+(hasBatchim(s)?"은":"는")}
+function topic(s){const v=cleanName(s);return v+(hasBatchim(v)?"은":"는")}
 function hasPath(ref,prefix){return list(ref?.paths).some(p=>p===prefix||p.startsWith(prefix+"."))}
 function refsBySection(d,section){return list(d.otherReferences).filter(x=>x.section===section)}
 function directPower(d){
@@ -69,6 +70,27 @@ function bestMultiHit(d){
 }
 function kindName(kind){
   return ({weapon:"무기",ammo:"탄약",melee:"근접무기",grenade:"투척/폭발물",medical:"의료품",scanner:"스캐너",psi:"사이오닉 장비",flare:"특수/조명 아이템",corpse:"시체·잔해","damage-item":"공격 아이템",item:"일반 아이템"})[kind]||kind||"아이템";
+}
+const sectionKo={armors:"방어구",ufopaedia:"UFOPEDIA",alienDeployments:"미션/배치",items:"다른 아이템",units:"유닛",events:"이벤트",terrains:"지형",ufos:"UFO",craftWeapons:"기체 무장",commendations:"훈장",crafts:"기체",alienRaces:"종족",startingConditions:"시작 조건",soldiers:"병사",facilities:"시설",enviroEffects:"환경 효과",soldierTransformation:"병사 변신",soldierBonuses:"병사 특성",alienFuel:"연료"};
+function groupedOtherReferences(d){
+  const groups=new Map();
+  for(const x of list(d.otherReferences)){
+    if(x.section==="events")continue;
+    if(!groups.has(x.section))groups.set(x.section,[]);
+    groups.get(x.section).push(x);
+  }
+  return [...groups.entries()].sort((a,b)=>b[1].length-a[1].length);
+}
+function otherSectionSummary(d,limit=3){
+  return groupedOtherReferences(d).slice(0,limit).map(([k,xs])=>(sectionKo[k]||k)+" "+num(xs.length)+"회").join(" · ");
+}
+function otherReferenceDetail(d,limitSections=2,limitNames=2){
+  return groupedOtherReferences(d).slice(0,limitSections).map(([k,xs])=>{
+    const label=sectionKo[k]||k;
+    const ids=uniq(xs.map(x=>x.id));
+    const shown=ids.slice(0,limitNames).map(ko).join("·");
+    return label+" "+(shown||num(xs.length)+"회")+(ids.length>limitNames?" 외 "+num(ids.length-limitNames)+"개":"");
+  }).join(" / ");
 }
 
 function overview(row,d){
@@ -124,11 +146,27 @@ function effect(row,d){
     if(Number.isFinite(r.fuseType))parts.push("퓨즈 유형 값은 "+num(r.fuseType)+"이다.");
   }else{
     if(p>0)parts.push("직접 위력 값은 "+num(p)+(d.damageTypeKo?" ("+d.damageTypeKo+")":"")+"이다.");
-    if(Number.isFinite(c.armor)&&c.armor>0)parts.push("아이템 내구 값은 "+num(c.armor)+"이다.");
+    if(Number.isFinite(r.armor)&&r.armor>0)parts.push("룰셋에 명시된 아이템 내구 값은 "+num(r.armor)+"이다.");
     if(r.specialType!=null)parts.push("specialType "+num(r.specialType)+"의 특수 아이템이다.");
     if(r.scripts&&Object.keys(r.scripts).length)parts.push("아이템 자체 스크립트가 있어 battleType과 정적 수치만으로 효과를 완전히 설명할 수 없다.");
   }
-  if(!parts.length)parts.push("직접 전투 수치보다 연결된 연구·제조·이벤트에서 소비되는 역할을 보는 편이 중요하다.");
+  if(!parts.length){
+    if(row.researchCount||row.manufactureCount){
+      const links=[];
+      if(row.researchCount)links.push("연구 "+num(row.researchCount)+"곳");
+      if(row.manufactureCount)links.push("제조 "+num(row.manufactureCount)+"곳");
+      parts.push("직접 전투 효과는 확인되지 않고 "+links.join("·")+"에서 조건·재료·보상 등의 형태로 참조된다. 이 아이템의 실질 효과는 그 연결을 진행시키는 캠페인 자원 역할에 가깝다.");
+    }else if(row.referenceCount){
+      parts.push("직접 전투 효과는 확인되지 않지만 다른 룰에서 "+num(row.referenceCount)+"회 참조된다. 전투 장비라기보다 이벤트·유닛·맵·스크립트에서 쓰이는 상태/자원 ID일 가능성이 높다.");
+    }else if(Number(row.costBuy||0)>0||Number(row.costSell||0)>0){
+      const econ=[];
+      if(Number(row.costBuy||0)>0)econ.push("구매 "+num(row.costBuy));
+      if(Number(row.costSell||0)>0)econ.push("판매 "+num(row.costSell));
+      parts.push("직접 전투 효과와 뚜렷한 진행 역참조는 확인되지 않는다. 현재 룰에서 분명한 기능은 "+econ.join("·")+"의 경제/수집 가치 쪽이다.");
+    }else{
+      parts.push("정적 룰에서 직접 전투 효과나 뚜렷한 역참조가 확인되지 않는다. 장식·맵 오브젝트·스크립트 전용 표식처럼 정규화된 수치만으로 용도를 확정하기 어려운 항목이다.");
+    }
+  }
   return parts.join(" ");
 }
 
@@ -145,9 +183,16 @@ function acquisition(row,d){
   }
   if(ownManufacture)parts.push("동명 제조식이 있으며 제조 시간은 "+num(ownManufacture.time)+", 비용은 "+num(ownManufacture.cost)+"으로 기록되어 있다.");
   if(ownResearch)parts.push("동명 연구와 직접 연결되어 있어 조사/해금 단계를 거치는 아이템이다.");
-  const ev=refsBySection(d,"events");
-  if(ev.length)parts.push("이벤트 역참조가 "+num(ev.length)+"개 있어 이벤트 지급·요구·조건 중 하나로 쓰일 수 있다. 정확한 방향은 아래 역참조 경로에서 확인해야 한다.");
-  if(!parts.length)parts.push("현재 정규화 데이터에서 단일한 구매·동명 제조·동명 연구 경로가 뚜렷하지 않다. 전투 드랍·이벤트·맵 배치가 실제 획득 경로일 수 있다.");
+  const ev=refsBySection(d,"events"),otherDetail=otherReferenceDetail(d);
+  if(ev.length)parts.push("이벤트 역참조가 "+num(ev.length)+"개 있으며 대표 연결은 "+names(ev.map(x=>x.id),3)+"이다. 지급·요구·조건 중 어느 방향인지는 아래 역참조 경로에서 확인해야 한다.");
+  if(otherDetail&&parts.length)parts.push("추가 배치/사용 단서는 "+otherDetail+" 쪽에 있다.");
+  if(!parts.length){
+    const other=otherSectionSummary(d);
+    if(other)parts.push("일반 구매·동명 제조·동명 연구 경로는 잡히지 않지만 "+other+"에서 이 아이템을 참조한다. 대표 연결은 "+otherReferenceDetail(d,2,3)+"이며 실제 획득·배치 경로를 찾을 때 이 역참조를 먼저 확인하는 편이 정확하다.");
+    else if(d.kind==="corpse")parts.push("구매·동명 제조·동명 연구·이벤트 역참조가 잡히지 않는다. 시체/잔해 계열이므로 전투·맵에서 회수되는 오브젝트일 수 있으나, 자동 데이터만으로 획득 장소를 특정하지는 않는다.");
+    else if(["weapon","ammo","medical","grenade","scanner","psi"].includes(d.kind))parts.push("표준 구매·동명 제조·동명 연구·이벤트 경로가 자동 검출되지 않는다. 적 장비, 맵 배치, 미션 스크립트 지급 같은 비정형 획득 가능성을 원본 역참조에서 확인해야 한다.");
+    else parts.push("표준 구매·동명 제조·동명 연구·이벤트 경로가 자동 검출되지 않는다. 맵 배치·스크립트 지급·내부 표식처럼 일반 해금표 밖의 경로일 수 있다.");
+  }
   return parts.join(" ");
 }
 
@@ -158,8 +203,11 @@ function progression(row,d){
   const req=manufacture.filter(x=>list(x.paths).some(p=>p.startsWith("requires.")||p.startsWith("requiredItems.")));
   if(row.researchCount)parts.push("연구 DB 참조는 "+num(row.researchCount)+"개"+(dep.length?"이며 선행관계 참조가 "+num(dep.length)+"개":"")+(free.length?", getOneFree 계열이 "+num(free.length)+"개":"")+"다.");
   if(row.manufactureCount)parts.push("제조 DB 참조는 "+num(row.manufactureCount)+"개"+(req.length?"이며 최소 "+num(req.length)+"개는 requires/재료 계열 경로에서 잡힌다.":"다."));
-  if(row.referenceCount>=50)parts.push("전체 역참조 "+num(row.referenceCount)+"개로 매우 많아 여러 콘텐츠가 공유하는 핵심 ID일 가능성이 높다.");
-  else if(row.referenceCount)parts.push("전체 역참조는 "+num(row.referenceCount)+"개다. 참조 수가 적더라도 어떤 필드에서 이 ID를 요구하는지는 아래 원본 역참조 경로로 확인할 수 있다.");
+  if(row.referenceCount>=50)parts.push("전체 역참조 "+num(row.referenceCount)+"개로 매우 많아 여러 콘텐츠가 공유하는 핵심 ID일 가능성이 높다."+ (otherSectionSummary(d)?" 주요 기타 참조는 "+otherSectionSummary(d)+"다.":""));
+  else if(row.referenceCount){
+    const detail=otherReferenceDetail(d,2,2);
+    parts.push("전체 역참조는 "+num(row.referenceCount)+"개다."+ (detail?" 대표 연결은 "+detail+"이다.":"")+" 어떤 필드에서 이 ID를 요구하는지는 아래 원본 역참조 경로로 확인할 수 있다.");
+  }
   if(!parts.length)parts.push("연구·제조·기타 룰에서 직접 확인되는 역참조가 거의 없어 독립적인 장비/자원에 가깝다.");
   return parts.join(" ");
 }
@@ -177,7 +225,25 @@ function decision(row,d){
   if(d.kind==="weapon"&&bestMultiHit(d))parts.push("다단 공격은 명목 총합이 높아 보여도 각 타격 명중·방어 판정이 따로 들어갈 수 있으므로 단발 고위력 무기와 같은 방식으로 비교하면 안 된다.");
   if(d.kind==="medical")parts.push("의료품은 공격 기대값보다 전투 지속시간과 행동 복구 가치가 핵심이라 판매가만으로 우선순위를 정하기 어렵다.");
   if(["item","flare","corpse"].includes(d.kind)&&row.referenceCount>=80)parts.push("전투 슬롯보다 캠페인 진행 자원으로서 보관 가치가 높을 가능성이 크다.");
-  if(!parts.length)parts.push("이 아이템의 우선순위는 직접 전투 성능보다 현재 세이브에서의 획득 난이도와 연결된 연구·제조 목표에 따라 달라진다.");
+  if(!parts.length){
+    if(row.researchCount||row.manufactureCount){
+      const links=[];
+      if(row.researchCount)links.push("연구 "+num(row.researchCount)+"개");
+      if(row.manufactureCount)links.push("제조 "+num(row.manufactureCount)+"개");
+      parts.push(links.join("·")+"와 연결되어 있으므로 당장 쓰지 않더라도 진행 병목 재료인지 확인한 뒤 판매·소모하는 편이 안전하다.");
+    }else if(row.referenceCount){
+      const detail=otherReferenceDetail(d,2,2);
+      parts.push("전체 역참조가 "+num(row.referenceCount)+"개라 독립적인 장비라기보다 특정 콘텐츠와 함께 쓰이는 항목에 가깝다."+ (detail?" 대표 연결은 "+detail+"이다.":"")+" 해당 역참조의 용도를 확인한 뒤 보관 여부를 결정하는 편이 낫다.");
+    }else if(d.kind==="weapon"){
+      parts.push("연구·제조·경제 연결이 거의 없는 무기라면 현재 보유 전력에서 공격 모드·탄약·사거리의 실전 효율이 보관 여부를 결정한다.");
+    }else if(d.kind==="ammo"){
+      parts.push("진행 연결이 거의 없는 탄약이라면 현재 실제로 사용하는 호환 무기가 있는지가 보관 가치의 핵심이다.");
+    }else if(d.kind==="corpse"){
+      parts.push("직접 진행 역참조와 판매 가치가 없다면 장기 보관 우선순위는 낮다. 다만 미션·연구 스크립트의 동적 요구는 정적 역참조에서 빠질 수 있다.");
+    }else{
+      parts.push("현재 데이터에서 직접 전투·경제·진행 가치가 뚜렷하지 않다. 특정 이벤트나 스크립트 목적이 확인되지 않는다면 우선순위를 높게 둘 근거는 적다.");
+    }
+  }
   return parts.slice(0,3).join(" ");
 }
 
@@ -191,20 +257,62 @@ function caution(row,d){
   if(list(r.requires).includes("STR_UNAVAILABLE"))notes.push("일반 가용 조건에 STR_UNAVAILABLE이 걸려 있어 통상 구매/장비와 다른 획득·사용 경로를 가질 수 있다.");
   if(r.scripts&&Object.keys(r.scripts).length)notes.push("자체 스크립트가 있으므로 정적 수치만으로 모든 동작을 설명할 수 없다.");
   if(d.kind==="corpse")notes.push("시체/잔해의 내구·무게 같은 전투 필드는 회수 오브젝트 속성일 수 있어 병사 장비 성능으로 해석하면 안 된다.");
-  if(!notes.length)notes.push("이 해설은 룰셋 직접값과 역참조를 조합한 것이다. 미션 스크립트가 동적으로 지급·제거하는 예외는 아래 원본 역참조에서 추가 확인할 수 있다.");
+  if(!notes.length){
+    if(d.kind==="weapon"&&list(d.compatibleAmmo).length)notes.push("본체와 탄약의 역할이 분리되어 있으므로 본체 수치만으로 실제 피해·운용비를 판단하면 안 된다.");
+    else if(d.kind==="ammo"&&list(d.usedByWeapons).length)notes.push("탄약 자체 수치가 좋아도 호환 무기의 명중·TU·발사 방식에 따라 실제 효율이 크게 달라진다.");
+    else if(row.referenceCount>=50)notes.push("역참조가 "+num(row.referenceCount)+"개로 많지만, 참조된다는 사실만으로 지급·소모·해금 중 어느 방향인지 단정할 수 없다. 아래 경로명을 함께 확인해야 한다.");
+    else if(row.referenceCount>0)notes.push("정적 역참조 "+num(row.referenceCount)+"개가 확인되지만 각 참조의 방향은 지급·요구·배치 등 서로 다를 수 있다. 경로 이름을 확인하지 않고 효과를 추정하면 안 된다.");
+    else if(Number(row.costSell||0)>0||Number(row.costBuy||0)>0)notes.push("가격이 설정되어 있어도 안정적으로 반복 구매·획득 가능한지는 별개다. 해금 조건이나 실제 공급 경로가 확인되지 않으면 경제 효율을 과대평가할 수 있다.");
+    else notes.push("정적 룰에서 별도 경고 조건이나 역참조가 거의 보이지 않는다. 이것이 곧 '아무 기능 없음'을 뜻하지는 않으며 맵·미션 스크립트 전용 사용은 남을 수 있다.");
+  }
   return notes.slice(0,4).join(" ");
 }
 
 function expanded(text,fallback){const t=String(text||"").trim();return t.length>=45?t:[t,fallback].filter(Boolean).join(" ")}
+function effectFallback(row,d){
+  const r=d.raw||{};
+  if(Number.isFinite(r.armor)&&r.armor>0)return "이 내구 값은 아이템 오브젝트 자체의 내구성 계열 값이며 병사의 방어력에 그대로 더하는 수치로 해석하면 안 된다.";
+  if(row.researchCount||row.manufactureCount){
+    const bits=[];
+    if(row.researchCount)bits.push("연구 "+num(row.researchCount)+"곳");
+    if(row.manufactureCount)bits.push("제조 "+num(row.manufactureCount)+"곳");
+    return "직접 전투 성능보다 "+bits.join("·")+"에서 이 ID를 어떻게 소비·요구하는지가 실질 효과를 결정한다.";
+  }
+  if(row.referenceCount)return "직접 수치 효과가 짧게 보이더라도 정적 역참조 "+num(row.referenceCount)+"개가 있으므로 연결 콘텐츠의 경로와 함께 해석해야 한다.";
+  if(d.kind==="weapon"||d.kind==="ammo")return "표시된 단일 수치보다 실제 공격 모드·호환 탄약·명중·TU를 묶어서 봐야 전투 효율을 판단할 수 있다.";
+  return "정적 수치만으로 용도를 확정하기 어려운 항목이므로 카테고리·배치·스크립트 정보를 함께 확인해야 한다.";
+}
+function decisionFallback(row,d){
+  if(Number(row.costSell||0)>0||Number(row.costBuy||0)>0){
+    const bits=[];
+    if(Number(row.costBuy||0)>0)bits.push("구매가 "+num(row.costBuy));
+    if(Number(row.costSell||0)>0)bits.push("판매가 "+num(row.costSell));
+    return bits.join("·")+"처럼 가격 정보가 있어도 반복 공급 가능 여부는 별개다. 현재 확보 경로와 향후 재구매 가능성을 확인한 뒤 처분하는 편이 안전하다.";
+  }
+  if(row.researchCount||row.manufactureCount){
+    const bits=[];
+    if(row.researchCount)bits.push("연구 "+num(row.researchCount)+"개");
+    if(row.manufactureCount)bits.push("제조 "+num(row.manufactureCount)+"개");
+    return bits.join("·")+" 연결이 현재 목표 트리에 포함된다면 보관 가치가 올라가고, 해당 계통을 쓰지 않는 세이브라면 우선순위는 낮아진다.";
+  }
+  if(row.referenceCount){
+    const detail=otherReferenceDetail(d,2,2);
+    return "정적 역참조 "+num(row.referenceCount)+"개"+(detail?"("+detail+")":"")+"가 실제 플레이에서 활성화되는지에 따라 보관 가치가 달라진다.";
+  }
+  if(d.kind==="weapon")return "진행·경제 연결이 적으므로 현재 보유 무기 대비 명중·TU·사거리·탄약 효율이 실제 채용 여부를 결정한다.";
+  if(d.kind==="ammo")return "현재 운용 중인 호환 무기가 없다면 재고 가치가 낮고, 주력 무기 탄약이라면 공급 안정성이 우선순위를 결정한다.";
+  if(d.kind==="medical")return "회복량과 사용 TU가 충분히 좋다면 판매가보다 전투 지속력 가치가 우선하며, 대체 의료품이 충분하면 우선순위가 낮아진다.";
+  return "현재 정적 데이터만으로 뚜렷한 전투·경제·진행 우선순위를 만들기 어렵다. 실제 사용하는 미션·이벤트가 확인될 때 가치가 구체화된다.";
+}
 function editorialFor(row){
   const d=detailFor(row);
   if(!d)throw new Error("Missing item detail "+row.id);
   return{
     overview:expanded(overview(row,d),"전투용인지 진행용인지 판단할 때 아래 직접 룰과 역참조를 함께 보는 것이 안전하다."),
-    effect:expanded(effect(row,d),"단독 수치만으로 최종 성능을 단정하지 말고 호환 장비·탄약·스크립트와 함께 해석해야 한다."),
+    effect:expanded(effect(row,d),effectFallback(row,d)),
     acquisition:expanded(acquisition(row,d),"현재 보이는 경로가 전부가 아닐 수 있으므로 이벤트·미션·맵 배치 역참조도 함께 확인해야 한다."),
     progression:expanded(progression(row,d),"참조의 방향은 선행 조건·무료 지급·재료 요구처럼 서로 다르므로 아래 경로명을 함께 확인해야 한다."),
-    decision:expanded(decision(row,d),"현재 세이브의 재고·자금·연구 목표가 달라지면 보관·판매·장비 우선순위도 달라질 수 있다."),
+    decision:expanded(decision(row,d),decisionFallback(row,d)),
     watch:expanded(caution(row,d),"표시 수치는 원본 룰을 요약한 것이며 엔진 보정이나 스크립트 예외가 있으면 실제 동작은 달라질 수 있다.")
   };
 }
@@ -220,8 +328,8 @@ const dir=outFile("item-editorial-chunks");
 fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});
 for(const [bucket,details] of Object.entries(buckets))fs.writeFileSync(path.join(dir,bucket+".json"),JSON.stringify({details}));
 const meta={
-  version:1,
-  generator:"GPT item editorial synthesis v1",
+  version:2,
+  generator:"GPT item editorial synthesis v2",
   evidence:"ruleset-and-derived-links",
   generatedFrom:["items-index.json","chunks","entities.json"],
   count:items.length,
