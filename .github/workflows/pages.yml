@@ -47,6 +47,7 @@ jobs:
           node --check public/armors/app.js
           node --check public/captains/app.js
           node --check public/weapons/app.js
+          node --check public/starting/app.js
 
       - name: Publish public tree to gh-pages
         run: |
