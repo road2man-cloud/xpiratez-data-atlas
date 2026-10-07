@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "generator": "GPT item editorial synthesis v1",
+  "version": 2,
+  "generator": "GPT item editorial synthesis v2",
   "evidence": "ruleset-and-derived-links",
   "generatedFrom": [
     "items-index.json",
@@ -8,5 +8,5 @@
     "entities.json"
   ],
   "count": 4007,
-  "averageChars": 485
+  "averageChars": 591
 }

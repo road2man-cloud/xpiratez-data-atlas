@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "generator": "GPT editorial synthesis v2",
+  "version": 3,
+  "generator": "GPT editorial synthesis v3",
   "evidence": "ruleset-and-derived-links",
   "generatedFrom": [
     "research-index.json",
@@ -9,5 +9,5 @@
     "research-insight-chunks"
   ],
   "count": 4612,
-  "averageChars": 639
+  "averageChars": 662
 }
