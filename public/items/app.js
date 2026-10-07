@@ -10,7 +10,7 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},detail:null};
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
@@ -43,7 +43,7 @@ function bind(){
 }
 const sortOptions={
   items:[["koName","이름"],["kind","종류"],["weight","무게"],["size","창고 점유"],["power","위력"],["costBuy","구매가"],["costSell","판매가"],["monthlySalary","월 급여/수익"],["accuracyAimed","조준 명중"],["researchCount","연구 연결"],["manufactureCount","제조 연결"],["referenceCount","전체 역참조"]],
-  research:[["koName","이름"],["cost","연구량"],["points","완료 점수"],["dependencyCount","직접 선행"],["requiredByCount","후속 연구"],["itemReferenceCount","아이템 연결"],["manufactureReferenceCount","제조 연결"],["otherReferenceCount","기타 연결"]]
+  research:[["koName","이름"],["cost","연구량"],["points","완료 점수"],["dependencyCount","직접 선행"],["requiredByCount","후속 연구"],["spawnedItemCount","생성 아이템"],["itemReferenceCount","아이템 연결"],["manufactureReferenceCount","제조 연결"],["otherReferenceCount","기타 연결"]]
 };
 function renderControls(){
   const mode=state.mode;
@@ -52,7 +52,7 @@ function renderControls(){
   $("#sort").innerHTML=base+extra;$("#sort").value=state.sort[mode];
   $("#filters").innerHTML=mode==="items"
     ?`<label><span>종류</span><select data-filter="kind"><option value="">전체</option>${Object.entries(kinds).map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select></label><label><span>연구</span><select data-filter="research"><option value="">전체</option><option value="yes">연결 있음</option><option value="no">없음</option></select></label><label><span>제조</span><select data-filter="manufacture"><option value="">전체</option><option value="yes">연결 있음</option><option value="no">없음</option></select></label>`
-    :`<label><span>실물 표본</span><select data-filter="sample"><option value="">전체</option><option value="yes">필요</option><option value="destroy">소모</option><option value="no">불필요</option></select></label><label><span>아이템 연결</span><select data-filter="items"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label>`;
+    :`<label><span>실물 표본</span><select data-filter="sample"><option value="">전체</option><option value="yes">필요</option><option value="destroy">소모</option><option value="no">불필요</option></select></label><label><span>생성 아이템</span><select data-filter="outputs"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>아이템 연결</span><select data-filter="items"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label>`;
   for(const [k,v] of Object.entries(state.filter[mode])){const e=$(`[data-filter="${k}"]`);if(e)e.value=v}
 }
 function filtered(){
@@ -66,6 +66,7 @@ function filtered(){
       if(f.manufacture==="yes"&&!x.manufactureCount)return false;if(f.manufacture==="no"&&x.manufactureCount)return false;
     }else{
       if(f.sample==="yes"&&!x.needItem)return false;if(f.sample==="destroy"&&!x.destroyItem)return false;if(f.sample==="no"&&x.needItem)return false;
+      if(f.outputs==="yes"&&!x.spawnedItemCount)return false;if(f.outputs==="no"&&x.spawnedItemCount)return false;
       if(f.items==="yes"&&!x.itemReferenceCount)return false;if(f.items==="no"&&x.itemReferenceCount)return false;
     }
     return true;
@@ -82,8 +83,8 @@ function render(){
     $("#thead").innerHTML="<tr><th>비교</th><th>아이템</th><th>ID</th><th>종류</th><th>위력</th><th>무게</th><th>창고</th><th>판매가</th><th>월 급여/수익</th><th>연구</th><th>제조</th></tr>";
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${esc(kinds[x.kind]||x.kind)}</td><td>${fmt(x.power)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.size)}</td><td>${fmt(x.costSell)}</td><td>${fmt(x.monthlySalary)}</td><td>${fmt(x.researchCount)}</td><td>${fmt(x.manufactureCount)}</td></tr>`).join("");
   }else{
-    $("#thead").innerHTML="<tr><th>비교</th><th>연구</th><th>ID</th><th>연구량</th><th>점수</th><th>직접 선행</th><th>후속</th><th>아이템</th><th>제조</th><th>표본</th></tr>";
-    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
+    $("#thead").innerHTML="<tr><th>비교</th><th>연구</th><th>ID</th><th>연구량</th><th>점수</th><th>직접 선행</th><th>후속</th><th>생성</th><th>아이템</th><th>제조</th><th>표본</th></tr>";
+    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
   }
   const nums=[1,state.page-2,state.page-1,state.page,state.page+1,state.page+2,pages].filter(x=>x>=1&&x<=pages),uniq=[...new Set(nums)].sort((a,b)=>a-b);
   $("#pager").innerHTML=uniq.map(n=>`<button data-page="${n}" class="${n===state.page?"current":""}">${n}</button>`).join("");
@@ -132,10 +133,12 @@ function renderItem(d){
   <section class="section"><h3>출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section>`;
 }
 function renderResearch(d){
+  const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
-  ${kpis([["연구량",d.cost],["완료 점수",d.points],["실물 표본",d.needItem?(d.destroyItem?"필요·소모":"필요"):"불필요"],["직접 선행",d.dependencies.length],["후속 연구",d.requiredBy.length],["아이템 연결",d.itemReferences.length],["제조 연결",d.manufactureReferences.length]])}
+  ${kpis([["연구량",d.cost],["완료 점수",d.points],["실물 표본",d.needItem?(d.destroyItem?"필요·소모":"필요"):"불필요"],["직접 선행",d.dependencies.length],["후속 연구",d.requiredBy.length],["생성 아이템",spawned.length],["아이템 연결",d.itemReferences.length],["제조 연결",d.manufactureReferences.length]])}
   <section class="section"><h3>직접 선행</h3>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   <section class="section"><h3>후속 연구</h3>${d.requiredBy?.length?d.requiredBy.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
+  ${spawned.length?`<section class="section"><h3>완료 시 생성 아이템</h3>${spawned.map(x=>entity(x,"items")).join("")}</section>`:""}
   <section class="section"><h3>명시 해금</h3>${d.unlocks?.length?d.unlocks.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   <section class="section"><h3>아이템 역참조</h3>${relations(d.itemReferences)}</section><section class="section"><h3>제조 역참조</h3>${relations(d.manufactureReferences)}</section>
   <details><summary>기타 역참조 ${d.otherReferences?.length||0}개</summary><div>${relations(d.otherReferences)}</div></details>
@@ -151,7 +154,7 @@ async function openCompare(){
   const ds=await Promise.all(ids.map(id=>detail(state.mode,id)));
   const fields=state.mode==="items"
     ?[["종류",d=>kinds[d.kind]],["무게",d=>d.effectiveCore?.weight],["창고 점유",d=>d.effectiveCore?.size],["판매가",d=>d.raw?.costSell],["월 급여/수익",d=>d.effectiveCore?.monthlySalary],["위력",d=>d.raw?.power??d.raw?.meleePower],["피해형",d=>d.damageTypeKo],["내구",d=>d.effectiveCore?.armor],["한손 보정",d=>d.effectiveCore?.oneHandedPenalty],["연구 연결",d=>d.research.length],["제조 연결",d=>d.manufacture.length]]
-    :[["연구량",d=>d.cost],["점수",d=>d.points],["실물 표본",d=>d.needItem?(d.destroyItem?"소모":"필요"):"불필요"],["직접 선행",d=>d.dependencies.length],["후속",d=>d.requiredBy.length],["아이템 연결",d=>d.itemReferences.length],["제조 연결",d=>d.manufactureReferences.length]];
+    :[["연구량",d=>d.cost],["점수",d=>d.points],["실물 표본",d=>d.needItem?(d.destroyItem?"소모":"필요"):"불필요"],["직접 선행",d=>d.dependencies.length],["후속",d=>d.requiredBy.length],["생성 아이템",d=>arr(d.raw?.spawnedItem).length],["아이템 연결",d=>d.itemReferences.length],["제조 연결",d=>d.manufactureReferences.length]];
   $("#compareBody").innerHTML=`<table class="compare-table"><tr><th>항목</th>${ds.map(d=>`<th>${esc(d.koName)}<span class="sub">${esc(d.enName)}</span></th>`).join("")}</tr>${fields.map(([k,f])=>`<tr><td>${esc(k)}</td>${ds.map(d=>`<td>${esc(fmt(f(d)))}</td>`).join("")}</tr>`).join("")}</table>`;
   $("#compareDialog").showModal();
 }
