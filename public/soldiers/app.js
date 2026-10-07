@@ -1,5 +1,5 @@
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-finalbuilds7-all-toggle";
+const ASSET_VERSION="soldiers-20261007-finalbuilds8-master-checkbox";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -405,7 +405,7 @@ function populateFinalFilters(){
   }
   const options=[...byType].sort((a,b)=>String(a[1]).localeCompare(String(b[1]),"ko"));
   box.innerHTML='<label class="filter-check all-check"><input id="finalBaseAll" type="checkbox" checked> 전체 기본형</label>'+
-    options.map(([id,name])=>'<label class="filter-check"><input class="final-base-check" type="checkbox" value="'+esc(id)+'"> '+esc(name)+'</label>').join("");
+    options.map(([id,name])=>'<label class="filter-check"><input class="final-base-check" type="checkbox" value="'+esc(id)+'" checked> '+esc(name)+'</label>').join("");
 }
 function selectedBaseTypes(){
   const all=$("#finalBaseAll");
@@ -734,13 +734,11 @@ $("#finalBaseOptions").addEventListener("change",e=>{
   const target=e.target;
   if(target.id==="finalBaseAll"){
     const checks=[...document.querySelectorAll(".final-base-check")];
-    if(target.checked)checks.forEach(x=>x.checked=false);
-    else checks.forEach(x=>x.checked=true);
+    checks.forEach(x=>x.checked=true);
   }else if(target.classList.contains("final-base-check")){
     const checks=[...document.querySelectorAll(".final-base-check")];
     const all=$("#finalBaseAll");
-    if(target.checked&&all)all.checked=false;
-    if(all&&!checks.some(x=>x.checked))all.checked=true;
+    if(all)all.checked=checks.every(x=>x.checked);
   }
   finalPage=0;render();
 });
