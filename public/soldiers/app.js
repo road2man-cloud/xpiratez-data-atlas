@@ -371,8 +371,8 @@ function buildFinalRows(){
         const finalRawStats={min:simulations.min.raw,avg:simulations.avg.raw,max:simulations.max.raw};
         const finalTraitAppliedByBand={};
         for(const band of ["min","avg","max"]){
-          finalTraitAppliedByBand[band]={};
-          for(const k of statOrder)finalTraitAppliedByBand[band][k]=(Number(finalStats[band]?.[k])||0)-(Number(finalRawStats[band]?.[k])||0);
+          finalTraitAppliedByBand[band]=bonusStatsFor(simulations[band].bonusIds);
+          if((Number(finalRawStats[band]?.psiSkill)||0)<=0)finalTraitAppliedByBand[band].psiSkill=0;
         }
         const preGrowthByBand={min:simulations.min.preGrowth,avg:simulations.avg.preGrowth,max:simulations.max.preGrowth};
         const preGrowthTotal=statOrder.reduce((n,k)=>n+(Number(preGrowthByBand.avg?.[k])||0),0);
