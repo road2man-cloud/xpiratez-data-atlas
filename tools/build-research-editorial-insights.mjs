@@ -32,6 +32,7 @@ function names(ids,limit=3){
 }
 function num(v){return Number(v||0).toLocaleString("ko-KR")}
 function list(v){return Array.isArray(v)?v:[]}
+function uniq(v){return [...new Set(list(v).filter(Boolean))]}
 function hasBatchim(s){
   const t=String(s||"").trim();if(!t)return false;
   for(let i=t.length-1;i>=0;i--){
@@ -180,6 +181,13 @@ function strategic(row,d,i){
   if(med>0&&row.cost>=med*2&&row.cost>=10)parts.push("같은 주 역할 연구의 중앙값 "+num(med)+"보다 자체 비용이 큰 편이라, 바로 이어서 쓸 결과가 있을 때 투자 효율이 좋아진다.");
   else if(med>0&&row.cost>0&&row.cost<=Math.max(2,med*.5))parts.push("같은 주 역할의 전형적 비용보다 가벼운 편이라 필요한 계통이라면 부담 없이 병목을 제거하기 좋다.");
 
+  if((i.primaryRole||roles[0])==="soldier-training")parts.push("대상 병사와 훈련 재료·시설이 이미 준비되어 있다면 즉시 전력 상승으로 연결되므로 우선순위가 높다. 반대로 연구만 끝내고 실제 훈련을 못 하면 단기 가치는 낮다.");
+  else if((i.primaryRole||roles[0])==="manufacture")parts.push("작업장과 재료를 바로 투입할 수 있을 때 연구 가치가 즉시 실현된다. 생산 여력이 없으면 당장은 후속 관문에 가깝다.");
+  else if((i.primaryRole||roles[0])==="facility")parts.push("건설 자금·기지 공간·완공 시간을 감당할 수 있을 때 우선순위가 올라간다. 연구 완료만으로 시설 기능이 생기지는 않는다.");
+  else if(["event-unlock","event-grant","event-research-link"].includes(i.primaryRole||roles[0]))parts.push("연결 이벤트의 나머지 트리거가 가까워졌을 때 우선순위가 높다. 조건이 멀다면 연구량보다 이벤트 병목이 더 크다.");
+  else if((i.primaryRole||roles[0])==="branch-choice")parts.push("즉시 보상보다 닫히는 반대 분기의 장기 보상이 더 중요하므로, 선택 전에 후속 병종·훈련·시설·연구를 비교해야 한다.");
+  else if(["progression","research-unlock","ufopaedia"].includes(i.primaryRole||roles[0]))parts.push("직접 효과보다 목표 후속 연구로 가는 길을 여는 가치가 핵심이다. 목표 후속이 명확하지 않다면 직접 전력·경제 개선 연구보다 뒤로 미룰 수 있다.");
+
   if(row.requiredByCount>=8)parts.push("직접 후속 연구가 "+num(row.requiredByCount)+"개라 여러 갈래를 동시에 여는 허브이므로, 이 계통을 넓게 탈 계획이면 우선순위가 높다.");
   else if(row.requiredByCount>=3)parts.push("직접 후속 연구 "+num(row.requiredByCount)+"개에 연결되어 있어 단일 보상보다 트리 확장 가치가 크다.");
   else if(row.requiredByCount===0&&!roles.some(x=>["soldier-training","manufacture","craft","facility","recruitment","purchase","mission","item-reward","research-granted-by","event-grant","event-unlock","event-research-link","branch-choice","research-grant","research-unlock"].includes(x)))parts.push("확인된 직접 후속 연구가 없으므로 특정 이벤트·도감·플래그 목적이 아니라면 급하게 완료할 이유는 적다.");
@@ -192,7 +200,7 @@ function strategic(row,d,i){
     if(row.cost==null)parts.push("연구량이 따로 명시되지 않은 플래그형 항목이라 비용 대비 효율보다 실제 획득 경로와 후속 연결을 확인하는 편이 정확하다.");
     else parts.push("현재 확인된 직접 연결이 제한적이므로 연구량 자체보다 이 플래그가 어떤 스크립트·도감·조건에서 소비되는지를 확인해야 우선순위를 판단할 수 있다.");
   }
-  return parts.slice(0,3).join(" ");
+  return parts.slice(0,4).join(" ");
 }
 
 function caution(row,d,i){
@@ -213,29 +221,98 @@ function caution(row,d,i){
   return notes.slice(0,2).join(" ");
 }
 
+function concreteEffect(row,d,i){
+  const roles=list(i.roles),parts=[],transforms=list(i.transformations),refs=k=>roleRefs(i,k);
+  if(transforms.length){
+    const t=transforms[0],flat=statText(t.flatOverallStatChange),bonus=statText(t.soldierBonus?.stats),combined=statText(t.combinedFixedStatChange);
+    if(flat)parts.push("훈련 직접 변화: "+flat+".");
+    if(t.soldierBonus?.id)parts.push("별도 soldierBonus는 "+ko(t.soldierBonus.id)+(bonus?" ("+bonus+")":"")+"이며, 직접 능력치 변화와 같은 레이어가 아니다.");
+    if(combined&&combined!==flat)parts.push("직접 변화와 보너스 수치의 단순 합산 잠재값은 "+combined+"이다. 다만 직접 변화분은 stat cap 때문에 실제 증가량이 더 작을 수 있다.");
+    if(t.producedSoldierType)parts.push("변환 결과 병종은 "+ko(t.producedSoldierType)+"이다.");
+  }
+  if(list(i.spawnedItems).length)parts.push("연구 완료 시 "+object(names(i.spawnedItems,4))+" 직접 생성한다.");
+  if(refs("manufacture").length)parts.push("직접 연결 제조식은 "+names(refs("manufacture").map(x=>x.id),4)+"이다.");
+  if(refs("facility").length)parts.push("건설 조건이 열리는 시설은 "+names(refs("facility").map(x=>x.id),4)+"이다.");
+  if(refs("craft").length)parts.push("기체 계통 연결은 "+names(refs("craft").map(x=>x.id),4)+"이다.");
+  if(refs("recruitment").length)parts.push("병종/고용 연결은 "+names(refs("recruitment").map(x=>x.id),4)+"이다.");
+  if(refs("purchase").length)parts.push("구매 해금 아이템은 "+names(refs("purchase").map(x=>x.id),4)+"이다.");
+  if(list(i.freeResearch).length)parts.push("완료 시 getOneFree 계열로 "+object(names(i.freeResearch,4))+" 추가 지급한다.");
+  if(list(i.explicitUnlocks).length)parts.push("명시적으로 여는 후속 연구는 "+names(i.explicitUnlocks,4)+"이다.");
+  if(roles.includes("event-unlock")||roles.includes("event-grant")||roles.includes("event-research-link")){
+    const ev=uniq(list(i.semanticReferences).filter(x=>String(x.kind).startsWith("event-")).map(x=>x.id));
+    if(ev.length)parts.push("직접 연결 이벤트는 "+names(ev,4)+"이다.");
+  }
+  if(!parts.length&&list(d.requiredBy).length)parts.push("확인된 직접 효과보다 "+names(d.requiredBy,4)+" 등 후속 연구의 선행 플래그로 쓰이는 의미가 크다.");
+  if(!parts.length)parts.push("현재 자동 역참조에서 즉시 적용되는 전투·제조·시설 효과는 뚜렷하지 않다. 이 경우 효과 자체보다 플래그 소비처를 보는 편이 정확하다.");
+  return parts.slice(0,4).join(" ");
+}
+
+function nextAction(row,d,i){
+  const primary=i.primaryRole||list(i.roles)[0]||"other",refs=k=>roleRefs(i,k),t=list(i.transformations)[0];
+  if(primary==="soldier-training"&&t){
+    const req=[];
+    if(t.cost)req.push("비용 "+num(t.cost));
+    if(t.recoveryTime)req.push(num(t.recoveryTime)+"일");
+    if(list(t.requiresBaseFunc).length)req.push("기지 기능 "+names(t.requiresBaseFunc,3));
+    if(list(t.requiredItems).length)req.push("재료 "+t.requiredItems.slice(0,4).map(x=>ko(x.id)+" ×"+x.qty).join("·"));
+    return "연구 뒤 병사 상세에서 "+object(ko(t.id))+" 실제로 실행해야 한다. "+(req.length?"실행 조건은 "+req.join(", ")+"다. ":"")+(list(t.allowedSoldierTypes).length?"적용 가능 병종은 "+num(t.allowedSoldierTypes.length)+"종이다.":"");
+  }
+  if(primary==="manufacture"){const target=names(refs("manufacture").map(x=>x.id),4)||"연결 제조식";return "연구 완료 후 제조 메뉴에서 "+object(target)+" 실제 생산해야 결과물을 얻는다. 작업장·재료·제조시간이 다음 병목이다.";}
+  if(primary==="facility")return "연구 완료 후 "+(names(refs("facility").map(x=>x.id),4)||"연결 시설")+"을 실제 건설해야 기능이 생긴다. 기지 공간·건설비·완공기간까지 확인해야 한다.";
+  if(primary==="craft")return "연구 완료 후 "+(names(refs("craft").map(x=>x.id),4)||"연결 기체")+"의 구매·제조·수리 경로를 이어가야 실제 전력화된다. 격납고와 승무원/무장 조건도 별개다.";
+  if(primary==="recruitment")return "연구 완료 후 "+(names(refs("recruitment").map(x=>x.id),4)||"연결 병종")+"의 실제 고용·획득 루트를 진행해야 한다. 연구 자체가 병사를 자동 생성하지는 않는다.";
+  if(primary==="purchase")return "연구 완료 후 상점에서 "+(names(refs("purchase").map(x=>x.id),4)||"연결 아이템")+"의 구매 가능 여부와 가격을 확인해 실제 조달해야 한다.";
+  if(primary==="event-unlock"||primary==="event-grant"||primary==="event-research-link")return "이 연구만 끝내고 기다리는 것이 아니라 아래 이벤트 스크립트의 시기·확률·시설·다른 연구 조건을 함께 맞춰야 한다. 이벤트 지급형이면 연구실에서 직접 밀 수 없는 경로인지도 먼저 확인해야 한다.";
+  if(primary==="branch-choice")return "완료 전에 비활성화되는 "+(names(i.disables,4)||"반대 선택지")+"의 후속 보상까지 비교하고 장기 분기를 확정해야 한다.";
+  if(primary==="item-reward")return "완료 직후 생성 아이템 "+(names(i.spawnedItems,4)||"보상")+"을 기지 보유품에서 확인하고, 다음 연구 표본·제조 재료·수리 재료 중 어디에 쓰이는지 이어서 확인해야 한다.";
+  const next=list(i.explicitUnlocks).length?i.explicitUnlocks:d.requiredBy;
+  if(list(next).length)return "이 연구 자체가 목표가 아니라면 완료 직후 "+names(next,4)+" 등 실제 목표 후속 연구로 이어가는 편이 효율적이다.";
+  return "연구 완료 후 새로 열린 제조·시설·병종·이벤트가 없는지 역참조를 확인하고, 직접 소비처가 없다면 다음 목표를 위해 꼭 필요한 플래그인지 다시 판단해야 한다.";
+}
+
+function routeSummary(row,d,i){
+  const p=i.prerequisite||{},rq=i.researchRequirements||{},parts=[],total=(p.prerequisiteCost||0)+(row.cost||0);
+  if(Number.isFinite(row.cost))parts.push("자체 연구량 "+num(row.cost));
+  else parts.push("자체 연구량이 명시되지 않은 이벤트/플래그형 항목");
+  if(p.topicCount)parts.push("재귀 선행 "+num(p.topicCount)+"개·선행 연구량 "+num(p.prerequisiteCost)+"·명목 합계 "+num(total));
+  if(p.sampleTopicCount)parts.push("선행망의 실물 표본 연구 "+num(p.sampleTopicCount)+"개");
+  if(p.branchTopicCount)parts.push("선행망의 분기/배타 연구 "+num(p.branchTopicCount)+"개");
+  if(rq.needItem)parts.push("이 연구 자체도 실물 표본 필요"+(rq.destroyItem?"·소모":"·비소모"));
+  if(list(rq.requiresBaseFunc).length)parts.push("연구 기지 기능 "+names(rq.requiresBaseFunc,4));
+  let out=parts.join(" / ")+". ";
+  if((p.topicCount||0)>=100)out+="이 값은 dependencies+requires 재귀 합집합이므로 이벤트 직접 지급·getOneFree·선택 분기가 많은 후기 트리에서는 실제 최소 루트보다 크게 잡힐 수 있다.";
+  else out+="이벤트 직접 지급·getOneFree 우회가 있으면 실제 최소 도달량은 이 명목값보다 작아질 수 있다.";
+  return out;
+}
+
+function expanded(text,fallback){const t=String(text||"").trim();return t.length>=45?t:[t,fallback].filter(Boolean).join(" ")}
 function editorialFor(row){
   const d=detailFor(row),i=insightFor(row);
   if(!d||!i)throw new Error("Missing research insight inputs "+row.id);
-  const core=opening(row,d,i);
-  const decision=strategic(row,d,i);
-  const watch=caution(row,d,i);
+  const core=expanded(opening(row,d,i),"이 연구의 실제 가치는 이름보다 아래의 직접 연결과 후속 소비처를 함께 볼 때 더 정확히 판단할 수 있다.");
+  const effect=expanded(concreteEffect(row,d,i),"직접 전투 효과가 없다면 후속 연구·이벤트·제조·시설을 여는 진행 플래그 자체가 이 연구의 실질적인 효과다.");
+  const action=expanded(nextAction(row,d,i),"완료 후 자동으로 모든 보상이 적용된다고 가정하지 말고 새로 열린 메뉴·이벤트·후속 연구를 실제로 확인해야 한다.");
+  const route=expanded(routeSummary(row,d,i),"명목 선행량은 재귀 합집합이므로 이벤트 지급·무료 획득·분기 우회가 있는 세이브에서는 실제 도달 비용과 달라질 수 있다.");
+  const decision=expanded(strategic(row,d,i),"현재 세이브에서 바로 이어서 사용할 후속 보상이 없다면 같은 연구량의 직접 전력·경제 개선 연구와 우선순위를 비교할 필요가 있다.");
+  const watchRaw=caution(row,d,i);
   const generic="이 해설은 현재 룰셋의 직접·역참조 관계를 바탕으로 한 판단이므로, 스크립트에 숨은 조건이 새로 발견되면 우선순위 해석은 달라질 수 있다.";
-  return{core,decision,watch:watch===generic?"":watch};
+  const watch=expanded(watchRaw===generic?"":watchRaw,"직접 룰과 역참조만으로 보이지 않는 스크립트 예외가 있을 수 있으므로 아래 이벤트·원본 필드를 함께 확인하는 것이 안전하다.");
+  return{core,effect,action,route,decision,watch};
 }
 
 const buckets={};
 let totalChars=0;
 for(const row of research){
   const editorial=editorialFor(row);
-  totalChars+=editorial.core.length+editorial.decision.length+editorial.watch.length;
+  totalChars+=Object.values(editorial).reduce((n,x)=>n+String(x||"").length,0);
   (buckets[row.bucket]||={})[row.id]=editorial;
 }
 const dir=outFile("research-editorial-chunks");
 fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});
 for(const [bucket,details] of Object.entries(buckets))fs.writeFileSync(path.join(dir,bucket+".json"),JSON.stringify({details}));
 const meta={
-  version:1,
-  generator:"GPT editorial synthesis v1",
+  version:2,
+  generator:"GPT editorial synthesis v2",
   evidence:"ruleset-and-derived-links",
   generatedFrom:["research-index.json","research-chunks","research-insight-index.json","research-insight-chunks"],
   count:research.length,
