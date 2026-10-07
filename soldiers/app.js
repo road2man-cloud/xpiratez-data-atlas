@@ -507,7 +507,7 @@ function render(){
   let head;
   if(mode==="profiles"){
     head=[
-      th("획득형","name"),'<th>획득 루트·자동 특성</th>',th("비용","cost"),th("시간","time"),
+      th("획득형","name"),'<th>획득 루트·자동 특성</th>',th("비용","cost"),th("시간","time"),th("월 유지비","salary"),
       ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
     ].join("");
   }else if(mode==="final"){
@@ -517,7 +517,7 @@ function render(){
     ].join("");
   }else if(mode==="soldiers"){
     head=[
-      th("기본 바디","name"),'<th>해금 조건</th>',th("구매가","costBuy"),th("월급","costSalary"),
+      th("기본 바디","name"),'<th>해금 조건</th>',th("구매가","costBuy"),th("월 유지비","costSalary"),
       ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
     ].join("");
   }else{
@@ -550,13 +550,25 @@ function sourceBadges(r){
   if(r.saintSlots>0)s+=' <span class="tag saint">Saint '+r.saintSlots+'/31 · '+pct(r.saintProbability)+'</span>';
   return s;
 }
+function salaryRow(soldierType,rank){
+  const rows=SOLDIER_BY_ID.get(soldierType)?.salaryByRank||[];
+  return rows.find(x=>Number(x.rank)===Number(rank))||rows[0]||null;
+}
+function salaryBreakdown(r){
+  const rows=r.salaryByRank||[];
+  if(!rows.length)return'<p class="muted">계급별 유지비 데이터 없음</p>';
+  return '<h3>계급별 월 유지비</h3><div class="detail-grid">'+rows.map(x=>
+    '<div class="box"><strong>'+esc(x.koName||x.id)+'</strong>'+fmt(x.total)+
+    '<small>기본 '+fmt(x.base)+(x.bonus?' + 계급 추가 '+fmt(x.bonus):'')+'</small></div>'
+  ).join("")+'</div><p class="muted">월 유지비 = 병종 기본 유지비 + 현재 계급의 추가 급여입니다. 계급이 바뀌면 다음 월 유지비도 바뀝니다.</p>';
+}
 function rowHtml(r,band){
   const id=encodeURIComponent(r.id);
-  let second,c1,c2;
+  let second,c1,c2,c3=null;
   if(r._mode==="profile"){
     const traits=(r.traits||[]).map(t=>'<span class="trait">'+t.koName+'</span>').join("");
     second=sourceBadges(r)+'<br><span class="route">'+r.sourceKoName+'</span><br>'+traits;
-    c1=fmt(r.cost);c2=fmt(r.time);
+    c1=fmt(r.cost);c2=fmt(r.time);c3=fmt(r.salary);
   }else if(r._mode==="final"){
     const shown=(r.enhancementNames||[]).slice(0,8).map(x=>'<span class="trait">'+esc(x)+'</span>').join("");
     const more=(r.enhancementNames||[]).length>8?' <span class="tag">+'+((r.enhancementNames||[]).length-8)+'개</span>':"";
@@ -571,7 +583,8 @@ function rowHtml(r,band){
     second='<span class="route">적용 '+(r.allowedSoldierTypes?.length||0)+'종</span><br>'+trait+' '+produced;
     c1=fmt(r.cost);c2=fmt(r.recoveryTime);
   }
-  return '<tr data-row="'+id+'"><td><span class="name">'+r._name+'</span><span class="id">'+r._id+'</span></td><td>'+second+'</td><td>'+c1+'</td><td>'+c2+'</td>'+
+  const costCells='<td>'+c1+'</td><td>'+c2+'</td>'+(r._mode==="profile"?'<td>'+c3+'</td>':'');
+  return '<tr data-row="'+id+'"><td><span class="name">'+r._name+'</span><span class="id">'+r._id+'</span></td><td>'+second+'</td>'+costCells+
     statOrder.map(k=>{
       const v=statValue(r,k,band);
       if(r._mode==="transformation"){
@@ -640,7 +653,8 @@ function openDetail(encoded){
   const r=findRow(encoded);if(!r)return;
   let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 획득형":r._mode==="final"?"최종 강화 조합":r._mode==="soldier"?"기본 바디 규칙":"변신·훈련 루트")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
   if(r._mode==="profile"){
-    html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
+    const salary=salaryRow(r.soldierType,r.rank);
+    html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>현재 월 유지비</strong>'+fmt(r.salary)+'<br><small>'+(salary?esc(salary.koName||salary.id)+' · 기본 '+fmt(salary.base)+(salary.bonus?' + 계급 추가 '+fmt(salary.bonus):''):'계급 '+fmt(r.rank))+'</small></div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
     html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
     html+=statsCapGrid("자동 특성 포함 능력치 / 성장캡",r);
     html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
@@ -653,7 +667,8 @@ function openDetail(encoded){
     html+='<h3>최종 보유 특성</h3><div class="traits">'+((r.finalTraitNames||[]).length?(r.finalTraitNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">없음</span>')+'</div>';
     html+='<h3>추가 강화</h3><div class="traits">'+((r.enhancementNames||[]).length?(r.enhancementNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">추가 강화 없음</span>')+'</div>';
   }else if(r._mode==="soldier"){
-    html+='<div class="detail-grid"><div class="box"><strong>구매 / 월급</strong>'+fmt(r.costBuy)+' / '+fmt(r.costSalary)+'</div><div class="box"><strong>월 고용 제한</strong>'+fmt(r.monthlyBuyLimit)+'</div><div class="box"><strong>기본 장갑</strong>'+String(r.armor||"—")+'</div></div>';
+    html+='<div class="detail-grid"><div class="box"><strong>구매 / 기본 월 유지비</strong>'+fmt(r.costBuy)+' / '+fmt(r.costSalary)+'</div><div class="box"><strong>월 고용 제한</strong>'+fmt(r.monthlyBuyLimit)+'</div><div class="box"><strong>기본 장갑</strong>'+String(r.armor||"—")+'</div></div>';
+    html+=salaryBreakdown(r);
     html+=statsGrid("기본 생성 최소", {min:r.minStats,avg:r.minStats,max:r.minStats});
     html+=statsGrid("기본 생성 평균", {min:r.avgStats,avg:r.avgStats,max:r.avgStats});
     html+=statsGrid("기본 생성 최대", {min:r.maxStats,avg:r.maxStats,max:r.maxStats});
