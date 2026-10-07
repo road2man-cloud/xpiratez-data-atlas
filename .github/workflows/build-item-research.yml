@@ -10,6 +10,11 @@ on:
       - "tools/check-item-research-data.mjs"
       - "tools/migrate-research-insight-sidecars.mjs"
       - "tools/build-research-editorial-insights.mjs"
+      - "tools/build-item-editorial-insights.mjs"
+      - "public/items/app.js"
+      - "public/items/styles.css"
+      - "public/items/index.html"
+      - "public/research/index.html"
       - "package.json"
   workflow_dispatch:
 
@@ -31,8 +36,10 @@ jobs:
       - name: Migrate embedded research insights to sidecars
         run: node tools/migrate-research-insight-sidecars.mjs --data public/items/data
 
-      - name: Generate GPT research editorials
-        run: node tools/build-research-editorial-insights.mjs --data public/items/data --out public/items/data
+      - name: Generate GPT research and item editorials
+        run: |
+          node tools/build-research-editorial-insights.mjs --data public/items/data --out public/items/data
+          node tools/build-item-editorial-insights.mjs --data public/items/data --out public/items/data
 
       - name: Verify migrated research DB
         run: node tools/check-item-research-data.mjs --data public/items/data
@@ -44,13 +51,14 @@ jobs:
           git checkout -B main origin/main
           node tools/migrate-research-insight-sidecars.mjs --data public/items/data
           node tools/build-research-editorial-insights.mjs --data public/items/data --out public/items/data
+          node tools/build-item-editorial-insights.mjs --data public/items/data --out public/items/data
           node tools/check-item-research-data.mjs --data public/items/data
-          if git diff --quiet -- public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks; then
-            echo "Research data, insight sidecars, and GPT editorials already current."
+          if git diff --quiet -- public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks public/items/data/item-editorial-meta.json public/items/data/item-editorial-chunks; then
+            echo "Research/item data and GPT editorials already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks
-          git commit -m "Refresh research insights and GPT editorials"
+          git add public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks public/items/data/item-editorial-meta.json public/items/data/item-editorial-chunks
+          git commit -m "Refresh research and item GPT editorials"
           git push origin HEAD:main
