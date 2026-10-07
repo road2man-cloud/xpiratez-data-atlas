@@ -112,18 +112,21 @@ function accuracyAtDistance(r,s){
   }
   return Math.max(0,a);
 }
-function effectivePower(r,s){
+function nominalPower(r,s){
   const b=evalBonus(r.damageBonus,s);
-  let p=(Number(r.basePower)||0)+(b??0);
+  return Math.max(0,(Number(r.basePower)||0)+(b??0));
+}
+function actionPower(r,s){
+  const p=nominalPower(r,s);
+  return p*Math.max(1,Number(r.shots)||1)*Math.max(1,Number(r.pellets)||1);
+}
+function distancePower(r,s,d,inRange){
+  if(!inRange)return null;
+  let p=nominalPower(r,s);
   if(r.section==="shooting"){
-    const d=Math.max(0,Number($("#distance").value)||0);
     p=Math.trunc(p-(Number(r.powerRangeReduction)||0)*Math.max(0,d-(Number(r.powerRangeThreshold)||0)));
   }
   return Math.max(0,p);
-}
-function actionPower(r,s){
-  const p=effectivePower(r,s);
-  return p*Math.max(1,Number(r.shots)||1)*Math.max(1,Number(r.pellets)||1);
 }
 function throwPhysicalRange(weight,strength){
   weight=Math.max(.01,Number(weight)||0);strength=Math.max(.01,Number(strength)||0);
@@ -138,9 +141,20 @@ function throwPhysicalRange(weight,strength){
   return (dist+8)/16;
 }
 function computed(r){
-  const s=stats(),tu=tuCost(r,s),power=effectivePower(r,s),total=actionPower(r,s),acc=accuracyAtDistance(r,s);
+  const s=stats(),tu=tuCost(r,s),power=nominalPower(r,s),total=actionPower(r,s);
+  const d=Math.max(0,Number($("#distance").value)||0);
   const phys=r.section==="throwing"?Math.min(Number(r.throwRange)||200,throwPhysicalRange(r.weight,s.strength)):null;
-  return {...r,effPower:power,actionPower:total,tu,effPerTu:tu?total/tu:null,effAccuracy:acc,physicalThrowRange:phys,costEnergy:Number(r.cost?.energy)||0,requiresText:(r.requires||[]).join(" · ")};
+  const hardMax=r.section==="shooting"?(Number.isFinite(Number(r.maxRange))?Number(r.maxRange):200):r.section==="throwing"?phys:null;
+  const inRange=r.section==="melee"||hardMax==null||d<=hardMax;
+  const rangePower=distancePower(r,s,d,inRange);
+  const rangeActionPower=rangePower==null?null:rangePower*Math.max(1,Number(r.shots)||1)*Math.max(1,Number(r.pellets)||1);
+  const acc=inRange?accuracyAtDistance(r,s):null;
+  return {
+    ...r,effPower:power,actionPower:total,rangePower,rangeActionPower,tu,
+    effPerTu:tu&&rangeActionPower!=null?rangeActionPower/tu:null,
+    nominalPerTu:tu?total/tu:null,effAccuracy:acc,inRange,hardMaxRange:hardMax,
+    physicalThrowRange:phys,costEnergy:Number(r.cost?.energy)||0,requiresText:(r.requires||[]).join(" · ")
+  };
 }
 function sectionRows(){
   return SECTION_CACHE[$("#section").value]||[];
@@ -154,7 +168,7 @@ function rows(){
   a.sort((x,y)=>{
     const av=x[sort.key],bv=y[sort.key];
     if(typeof av==="string"||typeof bv==="string")return String(av??"").localeCompare(String(bv??""),"ko")*sort.dir;
-    const aa=Number(av),bb=Number(bv);
+    const aa=av==null?NaN:Number(av),bb=bv==null?NaN:Number(bv);
     return ((Number.isFinite(aa)?aa:-Infinity)-(Number.isFinite(bb)?bb:-Infinity))*sort.dir;
   });
   return a;
@@ -165,6 +179,9 @@ function th(label,key){
 }
 function reqHtml(r){return (r.requires||[]).length?'<span class="req">'+r.requires.map(x=>esc(x)).join("<br>")+"</span>":'<span class="muted">—</span>'}
 function scriptMark(r){return r.damageBonus?.kind==="script"||r.accuracyBonus?.kind==="script"?'<span class="script">SCRIPT*</span>':""}
+function rangeNum(r,v,d=1){return r.inRange?fmt(v,d):'<span class="muted">사거리 밖</span>'}
+function rangePct(r,v){return r.inRange?pct(v):'<span class="muted">사거리 밖</span>'}
+function rangeText(r,v,d=1){return r.inRange?fmt(v,d):"사거리 밖"}
 async function render(){
   if(!DATA)return;
   const section=$("#section").value;
@@ -183,14 +200,14 @@ async function render(){
   $(".distance").style.display=section==="melee"?"none":"grid";
   $("#tableTitle").textContent={shooting:"사격 무기 — 무기 × 탄종 × 모드",melee:"근접 공격",throwing:"투척 무기"}[section];
   const h=section==="shooting"?[
-    th("무기","koName"),th("탄약","ammoKoName"),th("모드","modeKo"),th("피해","damageTypeKo"),th("캐릭터 위력","effPower"),th("행동 최대위력","actionPower"),
-    th("TU","tu"),th("위력/TU","effPerTu"),th("ACC@거리","effAccuracy"),th("기본 ACC","baseAccuracy"),th("유효거리","effectiveRange"),th("Drop","dropoff"),
+    th("무기","koName"),th("탄약","ammoKoName"),th("모드","modeKo"),th("피해","damageTypeKo"),th("1타 명목위력","effPower"),th("총 명목위력","actionPower"),
+    th("총위력@거리","rangeActionPower"),th("TU","tu"),th("위력/TU@거리","effPerTu"),th("ACC@거리","effAccuracy"),th("기본 ACC","baseAccuracy"),th("유효거리","effectiveRange"),th("최대사거리","maxRange"),th("Drop","dropoff"),
     th("발수","shots"),th("펠릿","pellets"),th("탄창","clipSize"),th("탄약가","ammoCostBuy"),th("무게","weight"),th("구매가","costBuy"),th("해금","requiresText")
   ]:section==="melee"?[
-    th("무기","koName"),th("피해","damageTypeKo"),th("캐릭터 위력","effPower"),th("TU","tu"),th("위력/TU","effPerTu"),th("ACC","effAccuracy"),
+    th("무기","koName"),th("피해","damageTypeKo"),th("명목위력","effPower"),th("TU","tu"),th("위력/TU","effPerTu"),th("ACC","effAccuracy"),
     th("기본 위력","basePower"),th("기본 ACC","baseAccuracy"),th("에너지","costEnergy"),th("무게","weight"),th("구매가","costBuy"),th("해금","requiresText")
   ]:[
-    th("무기","koName"),th("피해","damageTypeKo"),th("캐릭터 위력","effPower"),th("TU","tu"),th("위력/TU","effPerTu"),th("ACC@거리","effAccuracy"),
+    th("무기","koName"),th("피해","damageTypeKo"),th("명목위력","effPower"),th("TU","tu"),th("위력/TU@거리","effPerTu"),th("ACC@거리","effAccuracy"),
     th("물리 최대거리","physicalThrowRange"),th("규칙 최대거리","throwRange"),th("무게","weight"),th("폭발반경","blastRadius"),th("프라임","primeCost"),th("구매가","costBuy"),th("해금","requiresText")
   ];
   $("#weaponTable thead").innerHTML="<tr>"+h.join("")+"</tr>";
@@ -203,13 +220,13 @@ function rowHtml(r,section){
   const first='<td><span class="name">'+esc(r.koName)+'</span><span class="id">'+esc(r.itemId)+'</span>'+scriptMark(r)+"</td>";
   if(section==="shooting")return '<tr data-id="'+encodeURIComponent(r.id)+'">'+first+
     '<td><span class="ammo">'+esc(r.ammoKoName)+'</span><span class="id">'+esc(r.ammoId)+'</span></td><td>'+esc(r.modeKo)+'</td><td class="damage">'+esc(r.damageTypeKo||"—")+'</td>'+
-    '<td class="num-strong">'+fmt(r.effPower)+'</td><td class="num-strong good">'+fmt(r.actionPower)+'</td><td>'+fmt(r.tu,0)+'</td><td class="num-strong">'+fmt(r.effPerTu,2)+'</td><td class="num-strong">'+pct(r.effAccuracy)+'</td>'+
-    '<td>'+pct(r.baseAccuracy)+'</td><td>'+fmt(r.effectiveRange,0)+'</td><td>'+fmt(r.dropoff,0)+'</td><td>'+fmt(r.shots,0)+'</td><td>'+fmt(r.pellets,0)+'</td><td>'+fmt(r.clipSize,0)+'</td><td>'+fmt(r.ammoCostBuy,0)+'</td><td>'+fmt(r.weight)+'</td><td>'+fmt(r.costBuy,0)+'</td><td>'+reqHtml(r)+'</td></tr>';
+    '<td class="num-strong">'+fmt(r.effPower)+'</td><td class="num-strong good">'+fmt(r.actionPower)+'</td><td class="num-strong">'+rangeNum(r,r.rangeActionPower)+'</td><td>'+fmt(r.tu,0)+'</td><td class="num-strong">'+rangeNum(r,r.effPerTu,2)+'</td><td class="num-strong">'+rangePct(r,r.effAccuracy)+'</td>'+
+    '<td>'+pct(r.baseAccuracy)+'</td><td>'+fmt(r.effectiveRange,0)+'</td><td>'+fmt(r.maxRange,0)+'</td><td>'+fmt(r.dropoff,0)+'</td><td>'+fmt(r.shots,0)+'</td><td>'+fmt(r.pellets,0)+'</td><td>'+fmt(r.clipSize,0)+'</td><td>'+fmt(r.ammoCostBuy,0)+'</td><td>'+fmt(r.weight)+'</td><td>'+fmt(r.costBuy,0)+'</td><td>'+reqHtml(r)+'</td></tr>';
   if(section==="melee")return '<tr data-id="'+encodeURIComponent(r.id)+'">'+first+
     '<td class="damage">'+esc(r.damageTypeKo||"—")+'</td><td class="num-strong">'+fmt(r.effPower)+'</td><td>'+fmt(r.tu,0)+'</td><td class="num-strong good">'+fmt(r.effPerTu,2)+'</td><td class="num-strong">'+pct(r.effAccuracy)+'</td>'+
     '<td>'+fmt(r.basePower)+'</td><td>'+pct(r.baseAccuracy)+'</td><td>'+fmt(r.cost?.energy,0)+'</td><td>'+fmt(r.weight)+'</td><td>'+fmt(r.costBuy,0)+'</td><td>'+reqHtml(r)+'</td></tr>';
   return '<tr data-id="'+encodeURIComponent(r.id)+'">'+first+
-    '<td class="damage">'+esc(r.damageTypeKo||"—")+'</td><td class="num-strong">'+fmt(r.effPower)+'</td><td>'+fmt(r.tu,0)+'</td><td class="num-strong good">'+fmt(r.effPerTu,2)+'</td><td class="num-strong">'+pct(r.effAccuracy)+'</td>'+
+    '<td class="damage">'+esc(r.damageTypeKo||"—")+'</td><td class="num-strong">'+fmt(r.effPower)+'</td><td>'+fmt(r.tu,0)+'</td><td class="num-strong good">'+rangeNum(r,r.effPerTu,2)+'</td><td class="num-strong">'+rangePct(r,r.effAccuracy)+'</td>'+
     '<td class="num-strong">'+fmt(r.physicalThrowRange,1)+'</td><td>'+fmt(r.throwRange,0)+'</td><td>'+fmt(r.weight)+'</td><td>'+fmt(r.blastRadius,1)+'</td><td>'+fmt(r.primeCost,0)+'</td><td>'+fmt(r.costBuy,0)+'</td><td>'+reqHtml(r)+'</td></tr>';
 }
 function findRow(id){return sectionRows().find(x=>x.id===id)}
@@ -227,9 +244,9 @@ function openDetail(id){
   const raw=findRow(id);if(!raw)return;const r=computed(raw),s=stats(),c=character();
   const bonus=evalBonus(r.damageBonus,s),accMult=evalBonus(r.accuracyBonus,s);
   let html='<p class="eyebrow">'+({shooting:"사격",melee:"근접",throwing:"투척"}[r.section])+' 계산 상세</p><h2>'+esc(r.koName)+'</h2><p class="muted">'+esc(r.itemId)+(r.ammoId?" · "+esc(r.ammoKoName)+" / "+esc(r.ammoId):"")+'</p>';
-  html+='<div class="detail-grid"><div class="box"><strong>기준 캐릭터</strong>'+esc(c.koName)+'</div><div class="box"><strong>캐릭터 위력</strong>'+fmt(r.effPower)+'</div><div class="box"><strong>행동 TU</strong>'+fmt(r.tu,0)+'</div><div class="box"><strong>위력/TU</strong>'+fmt(r.effPerTu,2)+'</div></div>';
-  html+='<h3>위력 계산</h3><div class="formula">기본 위력 '+fmt(r.basePower)+' + 스탯 보너스 '+(bonus==null?"SCRIPT":fmt(bonus))+' = '+fmt(r.effPower)+(r.section==="shooting"?'\n행동 최대위력 = '+fmt(r.effPower)+' × '+fmt(r.shots,0)+'발 × '+fmt(r.pellets,0)+'펠릿 = '+fmt(r.actionPower):"")+'\n보너스식: '+esc(bonusFormula(r.damageBonus))+'</div>';
-  html+='<h3>정확도 계산</h3><div class="formula">스탯 multiplier '+(accMult==null?"SCRIPT":fmt(accMult))+' × 기본 ACC '+fmt(r.baseAccuracy)+'% / 100 → '+pct(baseAccuracy(r,s))+'\n거리/자세 보정 후 = '+pct(r.effAccuracy)+'\nmultiplier식: '+esc(bonusFormula(r.accuracyBonus))+'</div>';
+  html+='<div class="detail-grid"><div class="box"><strong>기준 캐릭터</strong>'+esc(c.koName)+'</div><div class="box"><strong>1타 명목위력</strong>'+fmt(r.effPower)+'</div><div class="box"><strong>총 명목위력</strong>'+fmt(r.actionPower)+'</div><div class="box"><strong>총위력@거리</strong>'+esc(rangeText(r,r.rangeActionPower))+'</div><div class="box"><strong>행동 TU</strong>'+fmt(r.tu,0)+'</div><div class="box"><strong>위력/TU@거리</strong>'+esc(rangeText(r,r.effPerTu,2))+'</div></div>';
+  html+='<h3>위력 계산</h3><div class="formula">기본 위력 '+fmt(r.basePower)+' + 스탯 보너스 '+(bonus==null?"SCRIPT":fmt(bonus))+' = 1타 명목위력 '+fmt(r.effPower)+(r.section==="shooting"?'\n총 명목위력 = '+fmt(r.effPower)+' × '+fmt(r.shots,0)+'발 × '+fmt(r.pellets,0)+'펠릿 = '+fmt(r.actionPower)+'\n선택 거리 '+fmt(Number($("#distance").value)||0,0)+'칸 총위력 = '+rangeText(r,r.rangeActionPower):"")+'\n보너스식: '+esc(bonusFormula(r.damageBonus))+'</div>';
+  html+='<h3>정확도 계산</h3><div class="formula">스탯 multiplier '+(accMult==null?"SCRIPT":fmt(accMult))+' × 기본 ACC '+fmt(r.baseAccuracy)+'% / 100 → '+pct(baseAccuracy(r,s))+'\n거리/자세 보정 후 = '+(r.inRange?pct(r.effAccuracy):"사거리 밖")+(r.hardMaxRange!=null?'\n하드 최대사거리 = '+fmt(r.hardMaxRange,1)+'칸':"")+'\nmultiplier식: '+esc(bonusFormula(r.accuracyBonus))+'</div>';
   html+='<div class="detail-grid"><div class="box"><strong>피해유형</strong>'+esc(r.damageTypeKo||"—")+'</div><div class="box"><strong>ArmorEffectiveness</strong>'+fmt(r.armorEffectiveness,2)+'</div><div class="box"><strong>ToHealth / ToStun</strong>'+fmt(r.toHealth,2)+' / '+fmt(r.toStun,2)+'</div><div class="box"><strong>ToTile</strong>'+fmt(r.toTile,2)+'</div></div>';
   if(r.section==="throwing")html+='<h3>투척거리</h3><div class="formula">동일 고도 OXCE 물리 투척거리 = '+fmt(r.physicalThrowRange,1)+'칸\n근력 '+fmt(s.strength)+' / 무게 '+fmt(r.weight)+' / 아이템 규칙 상한 '+fmt(r.throwRange,0)+'칸</div>';
   const research=[...(r.research||[]),...(r.ammoResearch||[])],manufacture=[...(r.manufacture||[]),...(r.ammoManufacture||[])];
