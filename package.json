@@ -7,7 +7,8 @@
     "build:data": "node tools/build-data.mjs",
     "check": "node tools/check-data.mjs",
     "build:item-research": "node tools/build-item-research-data.mjs",
-    "check:item-research": "node tools/check-item-research-data.mjs"
+    "check:item-research": "node tools/check-item-research-data.mjs",
+    "check:choices": "node tools/check-choice-coverage.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
