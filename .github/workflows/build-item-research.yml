@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   verify:
@@ -59,3 +59,22 @@ jobs:
 
       - name: Verify generated DB
         run: node tools/check-item-research-data.mjs --data .cache/item-research-data
+
+      - name: Publish regenerated research data
+        if: github.event_name == 'push'
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          rm -rf public/items/data/research-chunks
+          cp -R .cache/item-research-data/research-chunks public/items/data/research-chunks
+          cp .cache/item-research-data/research-index.json public/items/data/research-index.json
+          node tools/check-item-research-data.mjs --data public/items/data
+          if git diff --quiet -- public/items/data/research-index.json public/items/data/research-chunks; then
+            echo "Research data already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/items/data/research-index.json public/items/data/research-chunks
+          git commit -m "Regenerate research insight data"
+          git push origin HEAD:main

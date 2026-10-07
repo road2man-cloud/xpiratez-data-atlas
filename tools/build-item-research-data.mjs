@@ -156,6 +156,47 @@ function containsId(v,id){
 
 const researchByName=new Map(researchList.map(x=>[x.name,x]));
 const manufactureByName=new Map(manufactureList.map(x=>[x.name,x]));
+const listify=v=>Array.isArray(v)?v:(v==null?[]:[v]);
+const soldierTransformations=(Array.isArray(effectiveMerged.soldierTransformation)?effectiveMerged.soldierTransformation:[]).filter(x=>x&&typeof x.name==="string");
+const soldierBonuses=(Array.isArray(effectiveMerged.soldierBonuses)?effectiveMerged.soldierBonuses:[]).filter(x=>x&&typeof x.name==="string");
+const eventList=(Array.isArray(effectiveMerged.events)?effectiveMerged.events:[]).filter(x=>x&&typeof x.name==="string");
+const eventScripts=Array.isArray(effectiveMerged.eventScripts)?effectiveMerged.eventScripts:[];
+const bonusByName=new Map(soldierBonuses.map(x=>[x.name,x]));
+const transformationByName=new Map(soldierTransformations.map(x=>[x.name,x]));
+const eventByName=new Map(eventList.map(x=>[x.name,x]));
+const eventNameSet=new Set(eventList.map(x=>x.name));
+
+function nonZeroNumericObject(v){
+  if(!v||typeof v!=="object"||Array.isArray(v))return{};
+  return Object.fromEntries(Object.entries(v).filter(([,x])=>typeof x==="number"&&x!==0));
+}
+function collectKnownStrings(v,known,out=new Set()){
+  if(typeof v==="string"){if(known.has(v))out.add(v);return out}
+  if(Array.isArray(v)){v.forEach(x=>collectKnownStrings(x,known,out));return out}
+  if(v&&typeof v==="object")Object.values(v).forEach(x=>collectKnownStrings(x,known,out));
+  return out;
+}
+function eventScriptConditions(s){
+  const out={};
+  for(const k of ["firstMonth","lastMonth","minDifficulty","maxDifficulty","executionOdds","minFunds","maxFunds","minScore","maxScore"])if(s[k]!=null)out[k]=s[k];
+  return out;
+}
+function boolTriggerMap(v){
+  if(!v||typeof v!=="object"||Array.isArray(v))return{};
+  return Object.fromEntries(Object.entries(v).filter(([,x])=>typeof x==="boolean"));
+}
+const eventScriptMetaById=new Map(),eventScriptsByEvent=new Map();
+eventScripts.forEach((s,i)=>{
+  const id=ownerId(s,i),eventIds=[...collectKnownStrings(s,eventNameSet)];
+  const meta={
+    id,eventIds,conditions:eventScriptConditions(s),
+    researchTriggers:boolTriggerMap(s.researchTriggers),
+    facilityTriggers:boolTriggerMap(s.facilityTriggers),
+    itemTriggers:boolTriggerMap(s.itemTriggers)
+  };
+  eventScriptMetaById.set(id,meta);
+  for(const eventId of eventIds)(eventScriptsByEvent.get(eventId)||eventScriptsByEvent.set(eventId,[]).get(eventId)).push(meta);
+});
 
 function researchRelationsForItem(id){
   return groupRefs(itemRefs,id,"items").filter(x=>x.section==="research").map(g=>{
@@ -312,6 +353,261 @@ for(const r of researchList){
   const u=(Array.isArray(r.unlocks)?r.unlocks:[]).filter(x=>researchIds.has(x));explicitUnlocks.set(r.name,[...new Set(u)]);
   for(const x of u)(requiredBy.get(r.name)||requiredBy.set(r.name,[]).get(r.name));
 }
+
+const insightRoleLabels={
+  "soldier-training":"병사 훈련/변신",
+  manufacture:"제조 해금",
+  "event-unlock":"이벤트 조건",
+  "event-grant":"이벤트 획득/지급",
+  "event-research-link":"이벤트 연구 연결",
+  facility:"시설 해금",
+  recruitment:"고용/병종 해금",
+  craft:"기체 해금",
+  purchase:"구매 해금",
+  "item-gate":"아이템 사용 조건",
+  mission:"미션 진행",
+  "branch-choice":"분기/배타",
+  "research-unlock":"후속 연구 해금",
+  "research-grant":"추가 연구 지급",
+  "research-granted-by":"다른 연구 보상으로 획득",
+  "item-reward":"아이템 지급",
+  ufopaedia:"정보/도감 해금",
+  progression:"진행 플래그",
+  other:"기타 연결"
+};
+const pathRoot=(paths,key)=>paths.some(p=>p===key||p.startsWith(key+"."));
+function classifySemanticRef(g){
+  if(g.section==="soldierTransformation"&&pathRoot(g.paths,"requires"))return"soldier-training";
+  if(g.section==="manufacture"&&pathRoot(g.paths,"requires"))return"manufacture";
+  if(g.section==="events"){
+    if(pathRoot(g.paths,"requires"))return"event-unlock";
+    if(pathRoot(g.paths,"researchList"))return"event-grant";
+    if(g.paths.some(p=>/research/i.test(p)))return"event-research-link";
+  }
+  if(g.section==="eventScripts"&&g.paths.some(p=>p==="researchTriggers"||p.startsWith("researchTriggers.")))return"event-unlock";
+  if(g.section==="facilities"&&pathRoot(g.paths,"requires"))return"facility";
+  if(g.section==="soldiers"&&pathRoot(g.paths,"requires"))return"recruitment";
+  if(g.section==="crafts"&&pathRoot(g.paths,"requires"))return"craft";
+  if(g.section==="items"&&pathRoot(g.paths,"requiresBuy"))return"purchase";
+  if(g.section==="items"&&pathRoot(g.paths,"requires"))return"item-gate";
+  if(g.section==="research"&&(pathRoot(g.paths,"getOneFree")||pathRoot(g.paths,"getOneFreeProtected")))return"research-granted-by";
+  if(g.section==="ufopaedia"&&pathRoot(g.paths,"requires"))return"ufopaedia";
+  if(["missionScripts","alienMissions","alienDeployments"].includes(g.section)&&(pathRoot(g.paths,"requires")||g.paths.some(p=>/Triggers/.test(p))))return"mission";
+  return null;
+}
+const semanticRefCache=new Map();
+function semanticRefsForResearch(id,refs=null){
+  if(!refs&&semanticRefCache.has(id))return semanticRefCache.get(id);
+  const groups=refs||groupRefs(researchRefs,id,"research");
+  const out=groups.map(g=>{
+    const kind=classifySemanticRef(g);if(!kind)return null;
+    const x={kind,section:g.section,id:g.id,paths:g.paths};
+    if(g.section==="eventScripts"){
+      const m=eventScriptMetaById.get(g.id);
+      if(m){
+        x.events=m.eventIds;x.conditions=m.conditions;
+        x.scriptGate={
+          id:m.id,conditions:m.conditions,
+          researchTriggers:m.researchTriggers,
+          facilityTriggers:m.facilityTriggers,
+          itemTriggers:m.itemTriggers
+        };
+      }
+    }else if(g.section==="events"){
+      const scripts=eventScriptsByEvent.get(g.id)||[],event=eventByName.get(g.id);
+      if(scripts.length)x.scripts=scripts.map(s=>({
+        id:s.id,conditions:s.conditions,
+        researchTriggers:s.researchTriggers,
+        facilityTriggers:s.facilityTriggers,
+        itemTriggers:s.itemTriggers
+      }));
+      if(event){
+        x.eventRequires=listify(event.requires).filter(v=>typeof v==="string"&&researchIds.has(v));
+        x.requiresBaseFunc=listify(event.requiresBaseFunc).filter(v=>typeof v==="string");
+      }
+    }
+    return x;
+  }).filter(Boolean);
+  if(!refs)semanticRefCache.set(id,out);
+  return out;
+}
+function requiredItemList(v){
+  if(!v||typeof v!=="object"||Array.isArray(v))return[];
+  return Object.entries(v).map(([id,qty])=>({id,qty}));
+}
+function addNumericObjects(a,b){
+  const out={...a};
+  for(const [k,v] of Object.entries(b||{}))if(typeof v==="number")out[k]=(out[k]||0)+v;
+  return Object.fromEntries(Object.entries(out).filter(([,v])=>v!==0));
+}
+function soldierBonusInsight(id){
+  const b=id?bonusByName.get(id):null;if(!b)return null;
+  return{
+    id,
+    stats:nonZeroNumericObject(b.stats),
+    armor:Object.fromEntries(Object.entries({frontArmor:b.frontArmor,sideArmor:b.sideArmor,rearArmor:b.rearArmor,underArmor:b.underArmor}).filter(([,v])=>typeof v==="number"&&v!==0)),
+    visibilityAtDark:b.visibilityAtDark??null,
+    recovery:b.recovery??null,
+    sourceFiles:sourceHistory["name:"+id]||[]
+  };
+}
+function transformationInsight(id){
+  const t=transformationByName.get(id);if(!t)return null;
+  const flatOverallStatChange=nonZeroNumericObject(t.flatOverallStatChange);
+  const soldierBonus=soldierBonusInsight(t.soldierBonusType);
+  return{
+    id,
+    cost:t.cost??0,recoveryTime:t.recoveryTime??0,
+    requiresBaseFunc:listify(t.requiresBaseFunc).filter(x=>typeof x==="string"),
+    requiredItems:requiredItemList(t.requiredItems),
+    requiredMinStats:nonZeroNumericObject(t.requiredMinStats),
+    requiredMaxStats:nonZeroNumericObject(t.requiredMaxStats),
+    allowedSoldierTypes:listify(t.allowedSoldierTypes).filter(x=>typeof x==="string"),
+    forbiddenSoldierTypes:listify(t.forbiddenSoldierTypes).filter(x=>typeof x==="string"),
+    requiredPreviousTransformations:listify(t.requiredPreviousTransformations).filter(x=>typeof x==="string"),
+    forbiddenPreviousTransformations:listify(t.forbiddenPreviousTransformations).filter(x=>typeof x==="string"),
+    producedSoldierType:t.producedSoldierType??null,
+    flatOverallStatChange,
+    percentOverallStatChange:nonZeroNumericObject(t.percentOverallStatChange),
+    percentGainedStatChange:nonZeroNumericObject(t.percentGainedStatChange),
+    soldierBonus,
+    combinedFixedStatChange:addNumericObjects(flatOverallStatChange,soldierBonus?.stats||{}),
+    upperBoundAtStatCaps:t.upperBoundAtStatCaps??null,
+    lowerBoundAtMinStats:t.lowerBoundAtMinStats??null,
+    upperBoundAtMaxStats:t.upperBoundAtMaxStats??null,
+    includeBonusesForMinStats:t.includeBonusesForMinStats??null,
+    sourceFiles:sourceHistory["name:"+id]||[]
+  };
+}
+const prereqInsightCache=new Map();
+function prerequisiteInsight(id){
+  if(prereqInsightCache.has(id))return prereqInsightCache.get(id);
+  const seen=new Set(),ordered=[],visiting=new Set();
+  function visit(cur){
+    if(visiting.has(cur))return;
+    visiting.add(cur);
+    for(const dep of directDeps.get(cur)||[]){
+      if(!seen.has(dep)){visit(dep);seen.add(dep);ordered.push(dep)}
+    }
+    visiting.delete(cur);
+  }
+  visit(id);
+  const topics=ordered.map(x=>researchByName.get(x)).filter(Boolean);
+  const baseFuncs=[...new Set(topics.flatMap(x=>listify(x.requiresBaseFunc).filter(v=>typeof v==="string")))];
+  const branchAll=topics.filter(x=>listify(x.disables).some(v=>typeof v==="string")).map(x=>x.name);
+  const sampleAll=topics.filter(x=>x.needItem).map(x=>x.name);
+  const depth=new Map(),queue=(directDeps.get(id)||[]).map(x=>[x,1]);
+  for(let qi=0;qi<queue.length;qi++){
+    const [cur,d]=queue[qi],old=depth.get(cur);
+    if(old!=null&&old<=d)continue;
+    depth.set(cur,d);
+    for(const dep of directDeps.get(cur)||[])queue.push([dep,d+1]);
+  }
+  const nearest=[...depth.entries()].sort((a,b)=>a[1]-b[1]||a[0].localeCompare(b[0])).map(([x])=>x);
+  const eventLinks=[];
+  for(const topic of nearest){
+    for(const ref of semanticRefsForResearch(topic).filter(x=>["event-grant","event-research-link"].includes(x.kind))){
+      eventLinks.push({
+        researchId:topic,eventId:ref.id,kind:ref.kind,paths:ref.paths,
+        scripts:ref.scripts||[],eventRequires:ref.eventRequires||[],requiresBaseFunc:ref.requiresBaseFunc||[]
+      });
+      if(eventLinks.length>=24)break;
+    }
+    if(eventLinks.length>=24)break;
+  }
+  const previewLimit=80;
+  const out={
+    topicIds:nearest.slice(0,previewLimit),
+    topicCount:ordered.length,
+    topicPreviewTruncated:ordered.length>previewLimit,
+    prerequisiteCost:topics.reduce((n,x)=>n+(typeof x.cost==="number"?x.cost:0),0),
+    requiresBaseFunc:baseFuncs,
+    sampleTopics:sampleAll.slice(0,30),sampleTopicCount:sampleAll.length,
+    branchTopics:branchAll.slice(0,30),branchTopicCount:branchAll.length,
+    eventLinks
+  };
+  prereqInsightCache.set(id,out);return out;
+}
+function roleSummary(roles){
+  return roles.map(x=>insightRoleLabels[x]||x).join(" · ");
+}
+function buildResearchInsight(r,refs,reqBy){
+  const semantic=semanticRefsForResearch(r.name,refs);
+  const transformationIds=[...new Set(semantic.filter(x=>x.kind==="soldier-training").map(x=>x.id))];
+  const transformations=transformationIds.map(transformationInsight).filter(Boolean);
+  const roles=[];
+  for(const x of semantic.map(x=>x.kind))if(!roles.includes(x))roles.push(x);
+  const spawnedItems=listify(r.spawnedItem).filter(x=>typeof x==="string");
+  const freeResearch=listify(r.getOneFree).filter(x=>typeof x==="string"&&researchIds.has(x));
+  const explicit=listify(r.unlocks).filter(x=>typeof x==="string"&&researchIds.has(x));
+  const disables=listify(r.disables).filter(x=>typeof x==="string");
+  if(disables.length&&!roles.includes("branch-choice"))roles.push("branch-choice");
+  if(explicit.length&&!roles.includes("research-unlock"))roles.push("research-unlock");
+  if(freeResearch.length&&!roles.includes("research-grant"))roles.push("research-grant");
+  if(spawnedItems.length&&!roles.includes("item-reward"))roles.push("item-reward");
+  if(!roles.length&&reqBy.length)roles.push("progression");
+  if(!roles.length)roles.push("other");
+  const rolePriority=["soldier-training","manufacture","event-grant","event-unlock","facility","recruitment","craft","purchase","item-gate","mission","branch-choice","research-unlock","research-grant","item-reward","research-granted-by","ufopaedia","progression","event-research-link","other"];
+  roles.sort((a,b)=>rolePriority.indexOf(a)-rolePriority.indexOf(b));
+
+  let summary;
+  if(transformations.length){
+    summary=`병사 훈련/변신 해금 연구 · 연구 완료만으로 병사 능력치가 자동 변경되지는 않으며, 이후 아래 후속 훈련/변신을 병사별로 실행해야 실제 효과를 얻습니다.`;
+  }else if(roles.includes("manufacture")){
+    const n=semantic.filter(x=>x.kind==="manufacture").length;
+    summary=`제조 해금 연구 · 완료 후 관련 제조법 ${n}개를 사용할 수 있습니다. 실제 결과물 획득에는 제조 단계가 추가로 필요합니다.`;
+  }else if(roles.includes("event-grant")){
+    const n=semantic.filter(x=>x.kind==="event-grant").length;
+    summary=`이벤트 획득 연구/플래그 · 일반 연구실 연구보다 관련 이벤트 ${n}개에서 지급되는 진행 표식으로 쓰입니다. 아래 이벤트 발생 조건을 확인하세요.`;
+  }else if(roles.includes("event-unlock")){
+    const n=semantic.filter(x=>x.kind==="event-unlock").length;
+    summary=`이벤트 진행 연구 · 완료 후 관련 이벤트/스크립트 조건 ${n}개를 충족합니다. 실제 발생은 다른 조건·확률·시기 제한에 좌우될 수 있습니다.`;
+  }else if(roles.includes("facility")){
+    summary=`시설 해금 연구 · 완료 후 관련 시설 건설 조건을 충족합니다.`;
+  }else if(roles.includes("recruitment")){
+    summary=`병종/고용 해금 연구 · 완료 후 관련 병종의 획득 조건을 충족합니다.`;
+  }else if(roles.includes("craft")){
+    summary=`기체 해금 연구 · 완료 후 관련 기체의 구매·제조 진행 조건을 충족합니다.`;
+  }else if(roles.includes("purchase")){
+    summary=`구매 해금 연구 · 완료 후 관련 아이템의 구매 조건을 충족합니다.`;
+  }else if(roles.includes("mission")){
+    summary=`미션 진행 연구 · 완료 후 관련 미션/배치 스크립트의 진행 조건을 충족합니다.`;
+  }else if(roles.includes("research-granted-by")){
+    const n=semantic.filter(x=>x.kind==="research-granted-by").length;
+    summary=`연구 보상/진행 플래그 · 직접 연구 외에도 다른 연구 ${n}개에서 getOneFree 계열 보상으로 지급됩니다.`;
+  }else if(roles.includes("ufopaedia")){
+    summary=`정보/도감 해금 연구 · 확인된 직접 용도는 UFOPEDIA 항목의 표시 조건입니다. 전투·제조·이벤트 해금이 별도로 연결되면 위 역할이 우선 표시됩니다.`;
+  }else if(roles.includes("progression")){
+    summary=`진행 플래그 연구 · 직접 자동 효과보다 후속 연구 ${reqBy.length}개의 선행 조건으로 작동합니다.`;
+  }else{
+    summary=`복합/특수 연구 · 자동 분류된 역할: ${roleSummary(roles)}. 아래 의미 연결과 원본 룰을 함께 확인하세요.`;
+  }
+  const prereq=prerequisiteInsight(r.name);
+  const followUpActions=[];
+  for(const t of transformations)followUpActions.push({kind:"soldier-training",id:t.id});
+  for(const x of semantic.filter(x=>["manufacture","facility","recruitment","craft","purchase"].includes(x.kind)))followUpActions.push({kind:x.kind,id:x.id});
+  return{
+    version:1,
+    summary,
+    roles,
+    primaryRole:roles[0],
+    automaticEffect:transformations.length?false:null,
+    researchRequirements:{
+      cost:r.cost??null,
+      needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
+      sampleItem:itemIds.has(r.name)?r.name:null,
+      requiresBaseFunc:listify(r.requiresBaseFunc).filter(x=>typeof x==="string")
+    },
+    prerequisite:prereq,
+    transformations,
+    semanticReferences:semantic,
+    followUpActions,
+    disables,
+    explicitUnlocks:explicit,
+    freeResearch,
+    spawnedItems
+  };
+}
 const allResearchKeys=[...new Set(researchList.flatMap(x=>Object.keys(x)))].sort();
 const researchFieldMeta=Object.fromEntries(allResearchKeys.map(k=>[k,{label:({name:"내부 연구 ID",cost:"연구량",points:"완료 점수",dependencies:"직접 선행",requires:"필요 조건",unlocks:"명시 해금",needItem:"실물 표본 필요",destroyItem:"표본 소모",getOneFree:"무료 획득",getOneFreeProtected:"조건부 무료 획득"}[k]||k),description:"X-Piratez 연구 규칙의 원본 필드입니다."}]));
 const researchDetails={},researchIndex=[],researchResourceDetails={};
@@ -320,10 +616,11 @@ for(const r of researchList){
   const deps=directDeps.get(id)||[],reqBy=[...new Set(requiredBy.get(id)||[])],unlocks=explicitUnlocks.get(id)||[];
   const spawnedItems=(Array.isArray(r.spawnedItem)?r.spawnedItem:(r.spawnedItem==null?[]:[r.spawnedItem])).filter(x=>typeof x==="string");
   const items=refs.filter(x=>x.section==="items"),mans=refs.filter(x=>x.section==="manufacture"),others=refs.filter(x=>x.section!=="items"&&x.section!=="manufacture");
+  const insight=buildResearchInsight(r,refs,reqBy);
   const rawSplit=splitPresentationResources(r);
   const detail={
     id,bucket,koName:tr(id,"ko"),enName:tr(id,"en"),
-    summaryKo:tr(id,"ko")+": 연구량 "+(r.cost??"—")+" · 완료 점수 "+(r.points??"—")+(r.needItem?" · 실물 표본 "+(r.destroyItem?"필요·소모":"필요"):""),
+    summaryKo:insight.summary,insight,
     cost:r.cost??null,points:r.points??null,needItem:Boolean(r.needItem),destroyItem:Boolean(r.destroyItem),
     dependencies:deps,requiredBy:reqBy,unlocks,
     itemReferences:items,manufactureReferences:mans,otherReferences:others,
@@ -332,9 +629,18 @@ for(const r of researchList){
   };
   if(rawSplit.resources.length)researchResourceDetails[id]={id,bucket,effective:rawSplit.resources};
   researchDetails[id]=detail;
+  const insightTerms=[...new Set([
+    ...insight.roles,
+    ...insight.transformations.map(x=>x.id),
+    ...insight.transformations.map(x=>x.soldierBonus?.id).filter(Boolean),
+    ...insight.semanticReferences.map(x=>x.id),
+    ...insight.semanticReferences.flatMap(x=>x.events||[])
+  ])];
+  const insightNames=[...new Set(insightTerms.filter(x=>typeof x==="string"&&x.startsWith("STR_")).flatMap(x=>[tr(x,"ko"),tr(x,"en")]))];
   researchIndex.push({
     id,bucket,koName:detail.koName,enName:detail.enName,cost:detail.cost,points:detail.points,needItem:detail.needItem,destroyItem:detail.destroyItem,
     dependencyCount:deps.length,requiredByCount:reqBy.length,spawnedItemCount:spawnedItems.length,itemReferenceCount:items.length,manufactureReferenceCount:mans.length,otherReferenceCount:others.length,
+    insightKinds:insight.roles,primaryInsightKind:insight.primaryRole,insightTerms,insightNames,
     sourceFile:detail.sourceFiles.at(-1)
   });
 }
