@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병종 DB</title>
-<link rel="stylesheet" href="styles.css?v=soldiers-20261007-finalbuilds9-two-state-all">
+<link rel="stylesheet" href="styles.css?v=soldiers-20261007-stat-trait-split">
 </head>
 <body>
 <header class="hero">
@@ -68,7 +68,7 @@
     <strong>실제 획득형 계산</strong>
     <span>기본 Soldier 랜덤치 → 획득 루트의 <code>spawnedSoldier.currentStats</code> 덮어쓰기 → 생성 시 <code>transformationBonuses</code> 능력치 합산 → OXCE 최소치 보정.</span>
     <span>각 능력치는 <b>현재 생성값 / 실효 성장캡</b>으로 표시합니다. 실효 성장캡은 본체 statCaps에 생성 시 자동 특성의 능력치 보너스를 더한 값이며, 특수 생성 템플릿은 시작부터 성장캡을 넘을 수도 있습니다. 방어구 능력치는 포함하지 않습니다.</span>
-    <span><b>최종 강화 조합</b>은 이미 받은 변환, 필수 이전 변환, 금지 이전 변환을 실제 순서대로 검사해 공존 가능한 강화만 묶습니다. requiredMinStats가 있으면 성장캡 안에서 필요한 최소 선성장까지 반영하고, OXCE의 Flat·현재값 비례·성장분 비례·랜덤 범위·스탯 상한 계산을 적용합니다.</span>
+    <span><b>최종 강화 조합</b>은 이미 받은 변환, 필수 이전 변환, 금지 이전 변환을 실제 순서대로 검사해 공존 가능한 강화만 묶습니다. requiredMinStats가 있으면 성장캡 안에서 필요한 최소 선성장까지 반영하고, OXCE의 Flat·현재값 비례·성장분 비례·랜덤 범위·스탯 상한 계산을 적용합니다. 본체 능력치 변화와 SoldierBonus 특성 가산은 분리 계산하고, 최종 실효치에서만 합칩니다.</span>
   </section>
 
   <section class="table-card card">
@@ -88,6 +88,6 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script src="app.js?v=soldiers-20261007-finalbuilds9-two-state-all"></script>
+<script src="app.js?v=soldiers-20261007-stat-trait-split"></script>
 </body>
 </html>
