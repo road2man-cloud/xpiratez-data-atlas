@@ -68,6 +68,10 @@ for(const b of "0123456789abcdef"){
 }
 if(planCount!==progression.researchPlanCount)throw new Error("Research plan count mismatch: "+planCount+" != "+progression.researchPlanCount);
 
+const littleBirdAssembly=research.topics.find(x=>x.id==="STR_LITTLE_BIRD_ASSEMBLY");
+if(!littleBirdAssembly?.spawnedItems?.some(x=>x.id==="STR_HELICOPTER_WRECKAGE"))throw new Error("Little Bird assembly result item missing");
+if(!littleBirdAssembly?.unlocks?.some(x=>x.id==="STR_OLD_AIRCRAFT_REPAIRED"))throw new Error("Little Bird assembly downstream unlock missing");
+
 const schoolbus=progression.crafts.find(x=>x.id==="STR_SCHOOLBUS");
 if(!schoolbus||schoolbus.soldiers!==11||schoolbus.speedMax!==500||schoolbus.fuelMax!==3000)throw new Error("Schoolbus stat smoke test failed");
 if(!schoolbus.summary?.commonBranchGates?.some(x=>x.id==="STR_REJECT_THE_POWER"))throw new Error("Schoolbus reject-power branch missing");

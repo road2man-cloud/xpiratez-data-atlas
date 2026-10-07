@@ -118,9 +118,15 @@ function eventConditions(s){
   return bits.length?'<div class="route-line"><small>이벤트 조건</small> '+bits.join(" · ")+'</div>':'<div class="route-line"><small>이벤트 조건</small> 추가 조건 없음</div>';
 }
 function planTable(p){
-  const rows=(p.topics||[]).map(t=>'<tr><td>'+esc(t.koName)+'</td><td>'+fmt(t.cost)+'</td><td>'+((t.prerequisites||[]).map(esc).join("<br>")||"—")+'</td><td>'+(t.needItem?(t.destroyItem?"필요·소모":"필요"):"—")+'</td><td>'+((t.requiresBaseFunc||[]).join(", ")||"—")+'</td><td>'+((t.disables||[]).map(entityLabel).join("<br>")||"—")+'</td></tr>').join("");
+  const outcome=t=>{
+    const bits=[];
+    if((t.spawnedItems||[]).length)bits.push('<span class="tag">생성 '+t.spawnedItems.map(entityLabel).join(", ")+'</span>');
+    if((t.unlocks||[]).length)bits.push('<span class="tag">후속 해금 '+t.unlocks.map(entityLabel).join(", ")+'</span>');
+    return bits.join("<br>")||"—";
+  };
+  const rows=(p.topics||[]).map(t=>'<tr><td>'+esc(t.koName)+'</td><td>'+fmt(t.cost)+'</td><td>'+((t.prerequisites||[]).map(esc).join("<br>")||"—")+'</td><td>'+outcome(t)+'</td><td>'+(t.needItem?(t.destroyItem?"필요·소모":"필요"):"—")+'</td><td>'+((t.requiresBaseFunc||[]).join(", ")||"—")+'</td><td>'+((t.disables||[]).map(entityLabel).join("<br>")||"—")+'</td></tr>').join("");
   const items=(p.topics||[]).filter(t=>t.needItem).map(x=>'<span class="tag">'+esc(x.koName)+' '+(x.destroyItem?"(소모)":"(필요)")+'</span>').join(" ");
-  return (items?'<div class="route-line"><small>실물 표본 연구</small> '+items+'</div>':'')+'<div class="plan-table"><table><thead><tr><th>연구</th><th>량</th><th>직접 선행</th><th>표본</th><th>기지 기능</th><th>이 선택으로 닫히는 연구/루트</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  return (items?'<div class="route-line"><small>실물 표본 연구</small> '+items+'</div>':'')+'<div class="plan-table"><table><thead><tr><th>연구</th><th>량</th><th>직접 선행</th><th>연구 결과</th><th>표본</th><th>기지 기능</th><th>이 선택으로 닫히는 연구/루트</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 function recipeHtml(r){
   const items=(r.requiredItems||[]).map(i=>'<div class="req-item"><b>'+esc(i.koName)+'</b> × '+fmt(i.qty)+(i.researchSources||[]).map(src=>'<div class="event-box"><span class="tag">연구 생산</span> '+entityLabel(src)+'</div>').join("")+(i.eventSources||[]).map(src=>{const ev=eventById(src.eventId);return ev?'<div class="event-box"><span class="tag">이벤트</span> '+esc(ev.koName)+(ev.scripts||[]).map(s=>eventConditions(s)).join("")+'</div>':""}).join("")+'</div>').join("");
