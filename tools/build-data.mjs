@@ -334,6 +334,12 @@ const eventScripts=Array.isArray(effectiveMerged.eventScripts)?effectiveMerged.e
 const transformations=(Array.isArray(effectiveMerged.soldierTransformation)?effectiveMerged.soldierTransformation:[]).filter(x=>x&&typeof x.name==="string");
 const soldierBonuses=(Array.isArray(effectiveMerged.soldierBonuses)?effectiveMerged.soldierBonuses:[]).filter(x=>x&&typeof x.name==="string");
 const bonusByName=new Map(soldierBonuses.map(x=>[x.name,x]));
+// v.o1.1.1 has a few progression edges encoded through a research-produced
+// intermediate item rather than a direct research dependency. Keep those
+// explicit so the published nominal route matches the playable route.
+const implicitRecipeResearchSources={
+  STR_LITTLE_BIRD:{STR_HELICOPTER_WRECKAGE:["STR_LITTLE_BIRD_ASSEMBLY"]}
+};
 
 const researchPlanCache=new Map(),researchPlanStore={};
 function researchPlan(rootIds){
@@ -394,13 +400,16 @@ function eventSourcesForItem(id){
   }));
 }
 function requiredItemsForRecipe(m){
+  const implicit=implicitRecipeResearchSources[m.name]||{};
   return Object.entries(m.requiredItems||{}).map(([id,qty])=>({
     id,koName:tr(id,"ko"),enName:tr(id,"en"),qty,
-    eventSources:eventSourcesForItem(id)
+    eventSources:eventSourcesForItem(id),
+    researchSources:listify(implicit[id]).filter(x=>researchIds.has(x)).map(entity)
   }));
 }
 function acquisitionRecipe(m,extraRoots=[]){
-  const roots=unique([...listify(m.requires),...extraRoots]).filter(x=>researchIds.has(x));
+  const implicitRoots=Object.values(implicitRecipeResearchSources[m.name]||{}).flat();
+  const roots=unique([...listify(m.requires),...extraRoots,...implicitRoots]).filter(x=>researchIds.has(x));
   const requiredItems=requiredItemsForRecipe(m);
   const baseResearchPlan=researchPlan(roots);
   const eventVariants=[];
@@ -559,7 +568,8 @@ function registerProgressionRecipe(r){
   if(progressionRecipes[r.id])return r.id;
   const requiredItems=(r.requiredItems||[]).map(i=>({
     id:i.id,koName:i.koName,enName:i.enName,qty:i.qty,
-    eventSources:(i.eventSources||[]).map(ev=>({eventId:registerProgressionEvent(ev),fields:ev.fields||[]}))
+    eventSources:(i.eventSources||[]).map(ev=>({eventId:registerProgressionEvent(ev),fields:ev.fields||[]})),
+    researchSources:i.researchSources||[]
   }));
   progressionRecipes[r.id]={
     id:r.id,koName:r.koName,enName:r.enName,category:r.category,
