@@ -4,12 +4,12 @@
   const groups = [
     {
       title: "예언에 의한 선장 성격 우회",
-      kind: "조건부 대체 선택",
-      hint: "STR_THREAD_OF_PROPHECY를 확보하면 일반 초기 5선장 연구가 모두 비활성화되고, 같은 성격검사에서 별도 선택인 ‘난 캡틴 키드다!?’가 열립니다.",
+      kind: "난이도 0 자동 대체",
+      hint: "STR_THREAD_OF_PROPHECY는 maxDifficulty 0 / Month 0 / executionOdds 100의 자동 이벤트입니다. 같은 난이도에서 고르는 선택지가 아니라, 일반 초기 5선장 대신 ‘난 캡틴 키드다!?’만 남기는 난이도 전용 진입입니다.",
       options: [
-        {name:"난 캡틴 키드다!?", id:"STR_THREAD_OF_PROPHECY_PERSONALITY", meta:"연구량 1 · Personality Test + Thread of Prophecy", effect:"lookup이 STR_CAPTAIN_PUSSY로 연결되는 예언 전용 대체 진입. 일반 5선장 선택은 Thread of Prophecy 자체가 봉쇄"}
+        {name:"난 캡틴 키드다!?", id:"STR_THREAD_OF_PROPHECY_PERSONALITY", meta:"연구량 1 · Personality Test + Thread of Prophecy", effect:"lookup이 STR_CAPTAIN_PUSSY로 연결되는 예언 전용 대체 진입. Thread 자체가 STR_WASTELAND_PRIESTESS / STR_WASTELAND_SORCERESS와 일반 5선장을 disable"}
       ],
-      note:"이 항목은 6번째 일반 선장 선택지가 아니라, Thread of Prophecy를 먼저 얻은 경우 기존 5지선다 전체를 대체하는 특수 진입입니다."
+      note:"Wasteland Priestess / Sorceress 이벤트는 둘 다 minDifficulty 1이라 난이도 0에서는 원래 등장하지 않습니다. 즉 이 두 disable은 같은 세이브에서 자발적으로 포기하는 대가라기보다 쉬운 난이도에서 더 어두운 콘텐츠를 제거하는 정리 규칙입니다."
     },
     {
       title: "갈라지는 길의 숨은 고유 손실",
@@ -22,18 +22,6 @@
         {name:"삶은 혼종이다", id:"STR_HYBRID_PATH_PREQ", meta:"연구량 20", effect:"다른 네 갈래 외 추가 고유 disable 없음"},
         {name:"고양이와 함께 살기", id:"STR_CAT_PATH_PREQ", meta:"연구량 32", effect:"다른 네 갈래 외 추가 고유 disable 없음"}
       ]
-    },
-    {
-      title: "자그마한 드릴 → Codex 실제 색상 선택",
-      kind: "직접 4지선다 + 색별 Anomaly",
-      hint: "STR_TINY_DRILL_INVESTIGATION 뒤 STR_CHOOSE_*_QUERY 네 색 중 하나를 고릅니다. 선택 뒤 Tiny Drill + Menacing Hull 특수 프로젝트로 Anomaly를 만들고, 해당 Anomaly를 연구한 뒤 이벤트 연쇄에서 실제 Codex와 색별 보상을 받습니다.",
-      options: [
-        {name:"금색 코덱스 선택", id:"STR_CHOOSE_GOLD_QUERY", meta:"연구량 1 · +10점", effect:"Fuego Anomaly → Gold Codex"},
-        {name:"회색 코덱스 선택", id:"STR_CHOOSE_GRAY_QUERY", meta:"연구량 1 · +10점", effect:"Fortuna Anomaly → Gray Codex"},
-        {name:"적색 코덱스 선택", id:"STR_CHOOSE_RED_QUERY", meta:"연구량 1 · +10점", effect:"Metallo Anomaly → Red Codex"},
-        {name:"녹색 코덱스 선택", id:"STR_CHOOSE_GREEN_QUERY", meta:"연구량 1 · +10점", effect:"Ventura Anomaly → Green Codex"}
-      ],
-      note:"특수 프로젝트 규칙은 space 70 / time 1이며 Tiny Drill과 Menacing Hull을 요구하고 refund:true라 재료를 반환합니다. 실제 Codex 획득 전 해당 Anomaly 연구(cost 4)와 이벤트 단계가 남습니다."
     },
     {
       title: "Codex 결손색 페널티",
@@ -78,7 +66,8 @@
         {name:"돌연변이 연맹에게 도전", id:"STR_BOUNTY_HUNTING_CHALLENGE_MA", meta:"연구량 6", effect:"Reticulan Electrogun 무료 연구 + Damsel Victim 지급"},
         {name:"잭에게 도전", id:"STR_BOUNTY_HUNTING_CHALLENGE_JACK", meta:"연구량 6", effect:"Challenge Done으로 진행"},
         {name:"고객에게 도전하지 않음", id:"STR_BOUNTY_HUNTING_CHALLENGE_NONE", meta:"연구량 12", effect:"다른 도전 선택 봉쇄 · Challenge Done으로 진행"}
-      ]
+      ],
+      note:"STR_BOUNTY_HUNTING_B_PASS도 네 선택지와 Challenge ON을 disable하지만, B-Pass 선행은 STR_BOUNTY_HUNTING_CHALLENGE_DONE을 요구합니다. 즉 새 5번째 선택이 아니라 이미 끝난 Challenge UI를 닫는 후처리입니다."
     },
     {
       title: "스카이 닌자 챔피언 처리",
@@ -200,7 +189,7 @@
   ];
 
   const consequences = {
-    STR_THREAD_OF_PROPHECY_PERSONALITY:{preq:"Personality Test + STR_THREAD_OF_PROPHECY",gain:"STR_CAPTAIN_PUSSY로 이어지는 예언 전용 대체 진입",loss:"일반 초기 5선장 선택 전체",recovery:"Thread of Prophecy를 확보하기 전 세이브가 아니면 일반 5선장으로 되돌리는 우회 없음."},
+    STR_THREAD_OF_PROPHECY_PERSONALITY:{preq:"난이도 인덱스 0에서 Month 0에 STR_THREAD_OF_PROPHECY 자동 획득 + Personality Test",gain:"STR_CAPTAIN_PUSSY로 이어지는 예언 전용 대체 진입",loss:"일반 초기 5선장 + STR_WASTELAND_PRIESTESS + STR_WASTELAND_SORCERESS. 다만 Priestess/Sorceress 이벤트 자체가 minDifficulty 1이라 난이도 0에서는 원래 비활성",recovery:"같은 난이도/세이브에서 되돌리는 일반 우회 없음. Priestess/Sorceress·일반 선장 콘텐츠를 보려면 Thread 자동 이벤트가 없는 더 높은 난이도로 시작해야 함."},
 
     STR_GALS_ARE_SUPERIOR_PREQ:{preq:"STR_DIVERGING_PATHS",loss:"다른 갈라지는 길 4개 + Nekomimi Network",recovery:"선택 전 회피만 가능."},
     STR_WE_NEED_MALE_TOUCH_PREQ:{preq:"STR_DIVERGING_PATHS",loss:"다른 갈라지는 길 4개 + Nekomimi Network",recovery:"선택 전 회피만 가능."},
@@ -245,7 +234,7 @@
     STR_STUDY_ROOM:{preq:"Schooling 2 + Data Mining + Steam Power + Alchemy + Engineer+ + Healer+ + Personal Labs",gain:"Analytics + Study Room: 건설 $2.5m/26일, 유지 $150k/월, Govt Corpse×200 + Cultural Wealth×50, Lab +4, ANAL",loss:"VIP Club 시설 연구: 월 +$500k, Training 16, Mana +8/day, DOJO",recovery:"STR_VIP_CLUB_FAC와 직접 상호배타."},
     STR_VIP_CLUB_FAC:{preq:"STR_VIP_CLUB",gain:"Analytics + VIP Club: $1.35m/20일, Glamour×240, 월 +$500k, Lab +1, Training 16, Mana +8/day, ANAL+DOJO",loss:"Study Room의 Lab +4 연구 인프라",recovery:"STR_STUDY_ROOM과 직접 상호배타."},
 
-    STR_GDX_012:{preq:"STR_GDX_011 + Honor",gain:"STR_DOCTOR_X_HIRE 지급 → Ocular + Dr. X Spector 관련 후속",loss:"Prank/Humiliate/Banish/Merchandize/Red Mage 선물 + Red Mage 예속",recovery:"일반 Dr. X 처리 변경 불가."},
+    STR_GDX_012:{preq:"STR_GDX_011 + Honor",gain:"STR_DOCTOR_X_HIRE 지급 → 고용/Ocular 계열",loss:"Prank/Humiliate/Banish/Merchandize/Red Mage 선물 + Red Mage 예속 + STR_GDXCAR_EX(닥터 X의 스펙터를 약탈)",recovery:"일반 Dr. X 처리 변경 불가. Spector 약탈은 다른 비고용 처리안에서 STR_GDXCAR_EX_PREQ가 열린 뒤 가능한 경로라 고용과 공존하지 않음."},
     STR_GDX_013:{preq:"STR_GDX_011 + Lingerie Set + LFS_002 + Creativity",gain:"Doctor X A35 지급 + Spector 약탈 PREQ + Appease Dr. X 축",loss:"다른 일반 Dr. X 처리 + Red Mage 예속 + Red Mage Fountain Share",recovery:"세 스토리 축에 교차 봉쇄가 생김."},
     STR_GDX_014:{preq:"STR_GDX_011 + Zombie Sustenance + Interrogation + Justice",gain:"Doctor X C50 지급 + Spector 약탈 PREQ + Humiliating Dr. X 프로젝트",loss:"다른 일반 Dr. X 처리",recovery:"복구 불가."},
     STR_GDX_015:{preq:"STR_GDX_011 + STR_NEC_001",gain:"Mystery Box ×1 + Spector 약탈 PREQ",loss:"다른 일반 Dr. X 처리",recovery:"복구 불가."},
