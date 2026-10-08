@@ -57,7 +57,13 @@ try {
     page.on("pageerror",e=>errors.push(e.message));
     page.on("console",msg=>{if(msg.type()==="error"&&!msg.location().url.endsWith("/favicon.ico"))errors.push("console: "+msg.text()+" ["+msg.location().url+"]")});
     page.on("response",r=>{if(r.status()>=400&&!r.url().split("?")[0].endsWith("/favicon.ico"))httpErrors.push(r.status()+" "+r.url().slice(0,180))});
-    page.on("requestfailed",r=>httpErrors.push("network "+r.url().slice(0,180)+" "+r.failure()?.errorText));
+    page.on("requestfailed",r=>{
+      const reason=r.failure()?.errorText||"";
+      // Search/detail navigation may cancel obsolete lazy-loads; an aborted
+      // request is not an outage. Keep recording all other network failures.
+      if(reason.includes("net::ERR_ABORTED"))return;
+      httpErrors.push("network "+r.url().slice(0,180)+" "+reason);
+    });
     let count=0,search="skip",detail="skip",display="";
     try{
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
