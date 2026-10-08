@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez 제조 DB</title>
+<link rel="stylesheet" href="styles.css?v=manufacture-db-20261008">
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="topnav"><a class="back" href="../">← Data Atlas</a><div><a class="ghost" href="../items/">아이템 DB</a><a class="ghost" href="../research/">연구 DB</a><a class="ghost" href="../facilities/">기지시설 DB</a></div></div>
+  <p class="eyebrow">XPiratez v.o1.1.1 · Ruleset-backed</p>
+  <h1>제조 DB</h1>
+  <p class="lede">2,158개 제조식을 시간·비용·재료·산출물·선행 연구·baseFunc와 시설까지 추적하고, 판매가 기준 경제성과 GPT 플레이 인사이트를 함께 비교합니다.</p>
+</div></header>
+
+<main class="wrap">
+  <section id="summary" class="summary"></section>
+
+  <section class="toolbar card">
+    <label class="field grow"><span>검색</span><input id="search" type="search" placeholder="제조식, 재료, 산출물, 연구, baseFunc, 내부 ID…"></label>
+    <label class="field"><span>역할</span><select id="role"><option value="">전체 역할</option></select></label>
+    <label class="field"><span>분류</span><select id="category"><option value="">전체 분류</option></select></label>
+    <label class="field"><span>경제성</span><select id="economics">
+      <option value="">전체</option><option value="positive">순가치 +</option><option value="negative">순가치 -</option><option value="na">금전 비교 제외</option>
+    </select></label>
+    <label class="field"><span>기지 기능</span><select id="baseFunc"><option value="">전체 baseFunc</option></select></label>
+  </section>
+
+  <section class="explain card">
+    <strong>제조 시간</strong><span><code>time</code>은 기술자-시간으로 해석합니다. 예: 100이면 기술자 1명 100시간, 10명 지속 투입 시 단순 환산 약 10시간입니다.</span>
+    <strong>판매가 기준 순가치</strong><span><b>기대 산출 판매가 − 제조 현금비 − 투입 재료를 그냥 팔았을 때의 판매가 기회비용</b>입니다. 전투 성능·희소성·병사·기체 가치는 포함하지 않습니다.</span>
+    <strong>랜덤 산출</strong><span><code>randomProducedItems</code> 가중치를 확률로 정규화한 평균 기대값입니다. 단발 제조 결과를 보장하지 않습니다.</span>
+    <strong>명목 연구량</strong><span>직접 요구 연구에서 재귀 선행망을 중복 제거해 합산합니다. 이벤트 지급·getOneFree·상호배타 분기 때문에 실제 최소 도달량은 달라질 수 있습니다.</span>
+  </section>
+
+  <section class="table-card card">
+    <div class="table-head">
+      <div><p class="eyebrow">정렬 가능</p><h2>제조식 비교</h2></div>
+      <div class="table-meta"><span id="rowCount"></span><select id="pageSize"><option>50</option><option selected>100</option><option>250</option></select></div>
+    </div>
+    <div class="table-shell"><table id="manufactureTable"><thead></thead><tbody></tbody></table></div>
+    <div class="pager"><button id="prev">이전</button><span id="pageInfo"></span><button id="next">다음</button></div>
+  </section>
+</main>
+
+<div id="backdrop" class="backdrop" hidden></div>
+<aside id="drawer" class="drawer" aria-hidden="true">
+  <button id="closeDrawer" class="close" aria-label="닫기">×</button>
+  <div id="detail"></div>
+</aside>
+<script type="module" src="app.js?v=manufacture-db-20261008"></script>
+</body>
+</html>
