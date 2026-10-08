@@ -6,6 +6,7 @@ const args=process.argv.slice(2),i=args.indexOf("--data");
 const dataDir=path.resolve(i>=0&&args[i+1]?args[i+1]:"public/data");
 const readGz=(...p)=>JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dataDir,...p))).toString("utf8"));
 const db=readGz("events-index.json.gz"),rows=db.index||[];
+const forceDb=fs.existsSync(path.join(dataDir,"enemy-forces-index.json.gz"))?readGz("enemy-forces-index.json.gz"):{index:[],counts:{}};
 const detailCache={},editorialCache={};
 function detail(x){detailCache[x.bucket]??=readGz("event-chunks",x.bucket+".json.gz").details;return detailCache[x.bucket][x.id]}
 function editorial(x){editorialCache[x.bucket]??=readGz("event-editorial-chunks",x.bucket+".json.gz").details;return editorialCache[x.bucket][x.id]}
@@ -23,6 +24,10 @@ assert(db.counts?.recruitment===9,"Recruitment event count regression");
 assert(db.counts?.boundedWindow===85,"Bounded event window count regression");
 assert(db.counts?.chance===592,"Conditional chance event count regression");
 assert(db.counts?.negativeGate===306,"Negative gate event count regression");
+assert(!rows.some(x=>x.id==="STR_LOC_ACADEMY_OUTPOST"),"Scientific Experiments must not be misclassified as an events: row");
+const scienceMission=(forceDb.index||[]).find(x=>x.id==="STR_LOC_ACADEMY_OUTPOST");
+assert(scienceMission?.koName==="과학 실험","Scientific Experiments alienMission missing from cross-search index");
+assert(scienceMission.searchText.includes("과학 실험"),"Scientific Experiments search text regression");
 
 const editorialFields=["overview","trigger","result","value","action","missRisk","verification"];
 for(const x of rows){
@@ -90,4 +95,7 @@ const bytes=fs.readdirSync(path.join(dataDir,"event-chunks")).reduce((s,f)=>s+fs
   fs.statSync(path.join(dataDir,"events-index.json.gz")).size;
 assert(bytes<2*1024*1024,"Event DB gzip bloat regression");
 assert(db.compression==="gzip","Event DB compression metadata missing");
+const eventApp=path.resolve("public/events/app.js"),eventHtml=path.resolve("public/events/index.html");
+if(fs.existsSync(eventApp)){const s=fs.readFileSync(eventApp,"utf8");assert(s.includes("enemy-forces-index.json.gz")&&s.includes("renderMissionSurface")&&s.includes("../forces/#force="),"Event cross-search frontend regression")}
+if(fs.existsSync(eventHtml)){const s=fs.readFileSync(eventHtml,"utf8");assert(s.includes("missionSurface")&&s.includes("이벤트형 미션"),"Event mission-surface UI regression")}
 console.log(`OK event DB: ${rows.length} events, ${db.counts.scripts} scripts, ${db.counts.researchRewards} research rewards, ${db.counts.itemRewards} item rewards, ${db.counts.boundedWindow} bounded windows, ${db.counts.negativeGate} negative gates, ${(bytes/1048576).toFixed(1)} MiB`);

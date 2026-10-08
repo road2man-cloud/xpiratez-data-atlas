@@ -3,7 +3,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const fmt=v=>v==null||Number.isNaN(Number(v))?"—":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:2});
 const pct=v=>v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%";
 const dataBase="../data";
-let db={index:[],counts:{},roles:{},triggerKinds:{}},rows=[],detailCache=new Map(),editorialCache=new Map(),forceLinks=null;
+let db={index:[],counts:{},roles:{},triggerKinds:{}},forceDb={index:[],counts:{}},rows=[],detailCache=new Map(),editorialCache=new Map(),forceLinks=null;
 const state={q:"",role:"",triggerKind:"",missRisk:"",reward:"",sort:"koName",dir:1,page:1,pageSize:100};
 
 async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 gzip 데이터 스트림 해제를 지원하지 않습니다.");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));return new Response(stream).json()}
@@ -31,7 +31,8 @@ function renderSummary(){
     stat("연구/플래그 지급",c.researchRewards),
     stat("확정 아이템 지급",c.itemRewards),
     stat("기간 제한",c.boundedWindow),
-    stat("false 게이트 포함",c.negativeGate)
+    stat("false 게이트 포함",c.negativeGate),
+    stat("이벤트형 미션",forceDb.counts?.missions||0,"통합검색 교차노출")
   ].join("");
 }
 function rewardMatch(x,v){
@@ -66,7 +67,18 @@ const cols=[
   ["researchRewardCount","연구"],["guaranteedItemCount","확정 아이템"],["randomRewardCount","랜덤"],
   ["funds","자금"],["points","점수"],["missRisk","놓침"]
 ];
+function renderMissionSurface(){
+  const box=$("#missionSurface"),q=state.q;
+  if(!q){box.hidden=true;box.innerHTML="";return}
+  const matches=(forceDb.index||[]).filter(x=>x.searchText?.includes(q)).slice(0,24);
+  if(!matches.length){box.hidden=true;box.innerHTML="";return}
+  box.hidden=false;
+  box.innerHTML='<div class="table-head"><div><p class="eyebrow">통합 검색</p><h2>이벤트형 미션 / 적작전 '+fmt(matches.length)+'개</h2></div><span class="evidence direct">alienMission · 별도 분류</span></div>'+
+    '<p class="classification-note">아래 항목은 내부 <code>events:</code> 객체가 아니라 <code>alienMission/missionScript</code> 계열입니다. 게임에서는 경고·미션으로 보여 이벤트처럼 느껴질 수 있어 이벤트 검색에서 함께 노출합니다.</p>'+
+    '<div class="mission-hit-grid">'+matches.map(x=>'<a class="mission-hit" href="../forces/#force='+encodeURIComponent(x.id)+'"><span class="kind">이벤트형 미션 / 적작전</span><b>'+esc(x.koName)+'</b><span class="sub">'+esc(x.enName)+' · '+esc(x.id)+'</span><div class="metrics"><span>script '+fmt(x.scriptCount)+'</span><span>wave '+fmt(x.waveCount)+'</span><span>race '+fmt(x.raceCount)+'</span>'+(x.hasGround?'<span>착륙/지상</span>':'')+(x.hasHunter?'<span>Hunter</span>':'')+'</div></a>').join("")+'</div>';
+}
 function render(){
+  renderMissionSurface();
   rows=filtered().sort((a,b)=>state.dir*cmp(a,b,state.sort));
   const pages=Math.max(1,Math.ceil(rows.length/state.pageSize));state.page=Math.min(state.page,pages);
   const start=(state.page-1)*state.pageSize,pageRows=rows.slice(start,start+state.pageSize);
@@ -175,5 +187,5 @@ async function openDetail(id){
 }
 function closeDrawer(){history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
 function route(){const m=location.hash.match(/^#event=(.+)$/);if(m)openDetail(decodeURIComponent(m[1]));else closeDrawer()}
-async function init(){db=await jsonGz(dataBase+"/events-index.json.gz");renderSummary();initFilters();render();route()}
+async function init(){[db,forceDb]=await Promise.all([jsonGz(dataBase+"/events-index.json.gz"),jsonGz(dataBase+"/enemy-forces-index.json.gz")]);renderSummary();initFilters();render();route()}
 init().catch(e=>{document.body.innerHTML=`<main class="wrap"><h1>이벤트 DB 로드 실패</h1><pre>${esc(e.stack||e.message)}</pre></main>`});
