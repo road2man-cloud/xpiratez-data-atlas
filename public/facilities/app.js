@@ -109,11 +109,12 @@ function requiredFuncHtml(d){
     return '<div class="flow"><span class="func">'+esc(id)+(FUNC_LABELS[id]?" · "+esc(FUNC_LABELS[id]):"")+'</span><span class="arrow">← 제공 시설</span>'+((meta.providers||[]).map(p=>'<span class="badge">'+entityName(p)+'</span>').join("")||'<span class="warn-tag">현재 시설 룰에서 제공자 미확인</span>')+'</div>';
   }).join("")+'</div>';
 }
+function consumerTarget(c){const body='<b>'+esc(c.koName||c.owner)+'</b><span class="id">'+esc(c.owner)+'</span>';return c.section==="manufacture"?'<a class="consumer-link" href="../manufacture/#recipe='+encodeURIComponent(c.owner)+'">'+body+'</a>':body}
 function consumersHtml(d){
   if(!(d.provideBaseFunc||[]).length)return '<div class="section-card"><strong>이 시설이 여는 기능</strong><span class="muted">provideBaseFunc 없음</span></div>';
   return d.provideBaseFunc.map(id=>{
     const group=SUPPORT?.baseFunctionMeta?.[id]||{id,consumers:[]};
-    const rows=(group.consumers||[]).map(c=>'<tr><td>'+esc(SECTION_LABELS[c.section]||c.section)+'</td><td><b>'+esc(c.koName||c.owner)+'</b><span class="id">'+esc(c.owner)+'</span></td><td class="path">'+esc(c.path)+'</td></tr>').join("");
+    const rows=(group.consumers||[]).map(c=>'<tr><td>'+esc(SECTION_LABELS[c.section]||c.section)+'</td><td>'+consumerTarget(c)+'</td><td class="path">'+esc(c.path)+'</td></tr>').join("");
     return '<div class="consumer-card"><strong>'+funcHtml([id])+'을 요구하는 룰 '+fmt((group.consumers||[]).length)+'개</strong>'+(rows?'<div class="consumer-table"><table><thead><tr><th>종류</th><th>대상</th><th>조건 필드</th></tr></thead><tbody>'+rows+'</tbody></table></div>':'<span class="muted">현재 룰셋에서 직접 소비자 없음</span>')+'</div>';
   }).join("");
 }

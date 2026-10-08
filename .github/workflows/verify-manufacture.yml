@@ -1,0 +1,33 @@
+name: Verify manufacture data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build-manufacture-data.mjs"
+      - "tools/check-manufacture.mjs"
+      - "public/manufacture/**"
+      - "public/data/manufacture-index.json"
+      - "public/data/manufacture-chunks/**"
+      - "public/data/manufacture-editorial-chunks/**"
+      - "package.json"
+      - ".github/workflows/verify-manufacture.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify manufacture DB
+        run: |
+          node tools/check-manufacture.mjs --data public/data
+          node --check public/manufacture/app.js
+          node --check tools/build-manufacture-data.mjs
+          node --check tools/check-manufacture.mjs
