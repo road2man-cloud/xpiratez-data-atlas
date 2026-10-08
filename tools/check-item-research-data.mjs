@@ -27,7 +27,7 @@ if(research.index?.length!==4612)throw new Error("Expected 4612 research topics,
 if(researchInsight.index?.length!==4612)throw new Error("Expected 4612 research insight topics, got "+(researchInsight.index?.length??0));
 if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==3)throw new Error("Research editorial metadata mismatch");
 if(!String(researchEditorialMeta.generator||"").startsWith("GPT editorial synthesis"))throw new Error("Missing GPT editorial generator metadata");
-if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==2)throw new Error("Item editorial metadata mismatch");
+if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==3)throw new Error("Item editorial metadata mismatch");
 if(!String(itemEditorialMeta.generator||"").startsWith("GPT item editorial synthesis"))throw new Error("Missing GPT item editorial generator metadata");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
 if(research.index.length!==new Set(research.index.map(x=>x.id)).size)throw new Error("Duplicate research ids");
@@ -44,7 +44,7 @@ for(const x of items.index){
   const d=itemChunks[x.bucket][x.id],editorial=itemEditorialChunks[x.bucket][x.id];
   if(!d?.raw||!d.effectiveCore)throw new Error("Incomplete item detail "+x.id);
   if(!editorial)throw new Error("Missing GPT item editorial "+x.id);
-  for(const k of ["overview","effect","acquisition","progression","decision","watch"])if(typeof editorial[k]!=="string"||editorial[k].length<15)throw new Error("Incomplete GPT item editorial "+x.id+" "+k);
+  for(const k of ["overview","effect","acquisition","progression","decision","watch","uses","economics"])if(typeof editorial[k]!=="string"||editorial[k].length<15)throw new Error("Incomplete GPT item editorial "+x.id+" "+k);
   if(/undefined|null/.test(JSON.stringify(editorial)))throw new Error("Invalid GPT item editorial text "+x.id);
   if(hasPresentationResourceKey(d.raw)||hasPresentationResourceKey(d.rawDeclared))throw new Error("Presentation resource bundled into item core "+x.id);
   if(!d.inheritedViaRefNode&&Object.prototype.hasOwnProperty.call(d,"rawDeclared"))throw new Error("Redundant rawDeclared "+x.id);
@@ -134,8 +134,8 @@ if(!ninjaChallenge||ninjaChallenge.kind!=="event-grant"||!ninjaChallenge.scripts
 const researchEditorialBytes=files.filter(x=>x.path.includes("research-editorial-")).reduce((s,x)=>s+x.bytes,0);
 const itemEditorialBytes=files.filter(x=>x.path.includes("item-editorial-")).reduce((s,x)=>s+x.bytes,0);
 if(researchEditorialBytes>=8*1024*1024)throw new Error("Research editorial data bloat regression: "+(researchEditorialBytes/1048576).toFixed(1)+" MiB");
-if(itemEditorialBytes>=8*1024*1024)throw new Error("Item editorial data bloat regression: "+(itemEditorialBytes/1048576).toFixed(1)+" MiB");
-if(totalBytes>=56*1024*1024)throw new Error("Item/research data bloat regression: "+(totalBytes/1048576).toFixed(1)+" MiB");
+if(itemEditorialBytes>=8.5*1024*1024)throw new Error("Item editorial data bloat regression (includes item uses/economics fields): "+(itemEditorialBytes/1048576).toFixed(1)+" MiB");
+if(totalBytes>=58*1024*1024)throw new Error("Item/research data bloat regression (includes new item-usage cross-system data): "+(totalBytes/1048576).toFixed(1)+" MiB");
 
 const violence=research.index.find(x=>x.id==="STR_VIOLENCE");
 const violenceEditorial=violence&&researchEditorialChunks[violence.bucket]?.STR_VIOLENCE;

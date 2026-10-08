@@ -33,6 +33,7 @@ jobs:
       - name: Verify atlas data and frontend
         run: |
           node tools/check-item-research-data.mjs --data public/items/data
+          node tools/check-item-usage-insights.mjs --items public/items/data --world public/data
           node tools/check-editorial-quality.mjs --data public/items/data
           node tools/check-manufacture.mjs --data public/data
           node tools/check-events.mjs --data public/data

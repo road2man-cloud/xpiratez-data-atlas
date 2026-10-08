@@ -13,10 +13,17 @@ const items=readJson("items-index.json").index||[];
 const entities=readJson("entities.json").names||{};
 const itemById=new Map(items.map(x=>[x.id,x]));
 const detailBuckets=new Map();
+const usageBuckets=new Map();
 
 function detailFor(row){
   if(!detailBuckets.has(row.bucket))detailBuckets.set(row.bucket,readJson("chunks",row.bucket+".json").details);
   return detailBuckets.get(row.bucket)[row.id];
+}
+function usageFor(row){
+  if(!usageBuckets.has(row.bucket))usageBuckets.set(row.bucket,readJson("item-usage-chunks",row.bucket+".json").details);
+  const usage=usageBuckets.get(row.bucket)[row.id];
+  if(!usage)throw new Error("Missing cross-system item usage "+row.id);
+  return usage;
 }
 function list(v){return Array.isArray(v)?v:[]}
 function uniq(xs){return [...new Set(list(xs).filter(Boolean))]}
@@ -93,10 +100,12 @@ function otherReferenceDetail(d,limitSections=2,limitNames=2){
   }).join(" / ");
 }
 
-function overview(row,d){
+function overview(row,d,u){
   const r=d.raw||{},p=directPower(d),ammo=list(d.compatibleAmmo),used=list(d.usedByWeapons);
+  if(Number(row.monthlyMaintenance)<0)return topic(row.koName)+" 보유 시 월 유지비 "+num(row.monthlyMaintenance)+"로 매월 "+num(-row.monthlyMaintenance)+"의 비용 절감 효과가 있는 경제 아이템이다. 단순 판매가 "+num(row.costSell)+"보다 장기 반복 수입의 가치가 크며 보유 기간에 따라 판단해야 한다.";
   const campaignHeavy=(row.referenceCount>=80||row.researchCount>=10||row.manufactureCount>=5)&&["item","flare","corpse"].includes(d.kind);
   if(campaignHeavy)return topic(row.koName)+" 전투 스펙보다 연구·제조·이벤트에서 반복 참조되는 캠페인 자원 성격이 강하다. 현재 연구 "+num(row.researchCount)+"개, 제조 "+num(row.manufactureCount)+"개, 전체 역참조 "+num(row.referenceCount)+"개가 연결된다.";
+  if((r.hiddenOnMinimap||r.invWidth===0)&&list(u.consumes).length&&["item","flare"].includes(d.kind))return topic(row.koName)+" 전술 조명 장비라기보다 제조 "+num(u.consumes.length)+"곳에서 실제 소모되는 특수 자원이다. 특히 "+names(list(u.consumes).sort((a,b)=>a.qty-b.qty).map(x=>x.id),3)+"에 투입되므로 각 사용처의 수량·산출물·연구 조건을 비교해야 한다.";
   if(d.kind==="weapon"){
     if(ammo.length)return topic(row.koName)+" "+names(ammo,3)+"를 사용하는 무기 본체다. 본체의 명중·TU·사거리와 탄약의 실제 위력·피해형을 분리해서 봐야 한다.";
     if((r.maxRange??d.effectiveCore?.maxRange)<=1||r.clipSize===-1)return topic(row.koName)+" 별도 탄약 없이 직접 공격하는 근거리 무기다. 표시 위력보다 한 행동의 타격 수·명중·TU가 실전 화력을 크게 좌우한다.";
@@ -170,6 +179,45 @@ function effect(row,d){
   return parts.join(" ");
 }
 
+function usesEditorial(row,u){
+  const consumers=list(u.consumes),transforms=list(u.transformations),flags=list(u.researchUnlocks);
+  const output=x=>{
+    const fixed=list(x.output?.fixed).map(v=>ko(v.id)+(v.qty!==1?" ×"+num(v.qty):""));
+    const other=list(x.output?.other).map(v=>ko(v.id)+(v.kind==="person"?" (병사)":" (기체)"));
+    const known=[...fixed,...other].slice(0,3).join("·");
+    const random=list(x.output?.randomSample).slice(0,4).map(v=>ko(v.id)+(v.qty!==1?" ×"+num(v.qty):"")).join("·");
+    return [known,random?"랜덤 후보 "+random+(x.output.randomOptions>4?" 등":""):""].filter(Boolean).join(" + ")||"원본 제조식에서 산출 확인";
+  };
+  if(consumers.length){
+    const preview=consumers.slice().sort((a,b)=>a.qty-b.qty).slice(0,5).map(x=>ko(x.id)+" ×"+num(x.qty)+" → "+output(x));
+    return topic(row.koName)+" 제조 "+num(consumers.length)+"곳에서 실물 재료로 직접 소비된다. 대표 사용처(제조 1회 기준): "+preview.join(" / ")+(consumers.length>5?" / 그 외 "+num(consumers.length-5)+"곳은 아래 전체 목록 참조":"")+". 연구 선행조건에 등장하는 것은 실물 소비와 구분한다.";
+  }
+  if(transforms.length)return topic(row.koName)+" 제조 소모처는 없지만 병사 훈련/변신 "+num(transforms.length)+"곳에서 실물 "+transforms.slice(0,3).map(x=>"×"+num(x.qty)+"("+ko(x.id)+")").join("·")+"이 필요하다. 연구 플래그와 달리 훈련별 재료를 준비해야 한다.";
+  if(flags.length)return topic(row.koName)+" 제조 재료로 소비되지 않지만 "+names(flags.map(x=>x.id),4)+"의 연구 선행 플래그로 참조된다. 이는 아이템 수량을 차감하는 소비처가 아니다.";
+  return topic(row.koName)+" 확인된 제조·훈련 실물 소비처는 없다. 연구 선행 조건은 아이템 소모가 아니며 이벤트·맵 사용은 별도 근거에서 확인해야 한다.";
+}
+function economyEditorial(row,u){
+  const ec=u.economy||{},maintenance=Number(ec.monthlyMaintenance||0),sell=ec.sellValue??row.costSell;
+  const out=[];
+  if(maintenance<0){
+    out.push("월 유지비 "+num(maintenance)+"은 명시된 음수 유지비다. 보유 중 월 "+num(-maintenance)+"만큼 유지비를 줄이는 경제 효과가 있으므로 단순 판매가보다 반복 절감이 핵심 가치다.");
+    if(sell>0&&Number.isFinite(ec.holdingMonthsToExceedSale))
+      out.push("판매가 "+num(sell)+"와 비교하면 약 "+ec.holdingMonthsToExceedSale.toFixed(2)+"개월의 절감액이 한 번의 판매대금을 넘는다(유지비가 매월 적용된다는 전제).");
+  }else if(maintenance>0)out.push("월 유지비 "+num(maintenance)+"의 반복 비용이 설정돼 있다. 한 번의 구매가보다 보유 기간 동안의 총비용이 중요하다.");
+  else out.push(topic(row.koName)+" 월 유지비가 설정되지 않았다. "+(sell==null?"원본 판매가는 확인되지 않는다.":"원본 판매가는 "+num(sell)+"이다.")+" 판매/보유 판단에는 실제 제조·연구의 실물 사용처와 재조달 경로를 함께 확인해야 한다.");
+  if(typeof (ec.size??row.size)==="number"&&(ec.size??row.size)<0)out.push("창고 크기도 "+(ec.size??row.size)+"로 음수 설정돼 있다. 실제 공간 처리 효과는 엔진에서 확인할 필요가 있다.");
+  if(list(u.consumes).length>0&&maintenance<0)out.push("재료로 소비하면 해당 아이템 보유에 따른 월 유지비 절감도 포기할 수 있으므로 소모와 보유를 비교해야 한다.");
+  return out.join(" ");
+}
+function supplyEditorial(row,u){
+  const events=list(u.eventGrants),production=list(u.produces);
+  const grants=events.filter(x=>x.kind==="fixed"),random=events.filter(x=>x.kind!=="fixed");
+  const parts=[];
+  if(grants.length)parts.push("확정 이벤트 보상 "+num(new Set(grants.map(x=>x.id)).size)+"곳(예: "+names(grants.map(x=>x.id),3)+")");
+  if(random.length)parts.push("랜덤 이벤트 후보 "+num(new Set(random.map(x=>x.id)).size)+"곳(발생/당첨 보장 아님)");
+  if(production.length)parts.push("제조 산출 "+num(new Set(production.map(x=>x.id)).size)+"개 제조식(예: "+names(production.map(x=>x.id),3)+")");
+  return parts.length?"실제 아이템 지급·생산 경로: "+parts.join(" · ")+". 이 목록은 연구 선행 플래그와 구분된다.":"";
+}
 function acquisition(row,d){
   const r=d.raw||{},parts=[];
   const ownResearch=list(d.research).find(x=>x.id===d.id&&hasPath(x,"name"));
@@ -196,13 +244,13 @@ function acquisition(row,d){
   return parts.join(" ");
 }
 
-function progression(row,d){
+function progression(row,d,u){
   const parts=[],research=list(d.research),manufacture=list(d.manufacture);
   const dep=research.filter(x=>list(x.paths).some(p=>p.startsWith("dependencies.")));
   const free=research.filter(x=>list(x.paths).some(p=>p.startsWith("getOneFree.")));
-  const req=manufacture.filter(x=>list(x.paths).some(p=>p.startsWith("requires.")||p.startsWith("requiredItems.")));
+  const recipes=new Set([...list(u.consumes),...list(u.produces),...list(u.manufactureResearchGates)].map(x=>x.id));
   if(row.researchCount)parts.push("연구 DB 참조는 "+num(row.researchCount)+"개"+(dep.length?"이며 선행관계 참조가 "+num(dep.length)+"개":"")+(free.length?", getOneFree 계열이 "+num(free.length)+"개":"")+"다.");
-  if(row.manufactureCount)parts.push("제조 DB 참조는 "+num(row.manufactureCount)+"개"+(req.length?"이며 최소 "+num(req.length)+"개는 requires/재료 계열 경로에서 잡힌다.":"다."));
+  if(recipes.size)parts.push("제조 관련 제조식은 "+num(recipes.size)+"곳이며, 실제 재료 소모 "+num(list(u.consumes).length)+"곳·생산 "+num(new Set(list(u.produces).map(x=>x.id)).size)+"곳이다. requires 연구 플래그와 requiredItems 실물 재료를 분리해 집계했다.");
   if(row.referenceCount>=50)parts.push("전체 역참조 "+num(row.referenceCount)+"개로 매우 많아 여러 콘텐츠가 공유하는 핵심 ID일 가능성이 높다."+ (otherSectionSummary(d)?" 주요 기타 참조는 "+otherSectionSummary(d)+"다.":""));
   else if(row.referenceCount){
     const detail=otherReferenceDetail(d,2,2);
@@ -305,14 +353,16 @@ function decisionFallback(row,d){
   return "현재 정적 데이터만으로 뚜렷한 전투·경제·진행 우선순위를 만들기 어렵다. 실제 사용하는 미션·이벤트가 확인될 때 가치가 구체화된다.";
 }
 function editorialFor(row){
-  const d=detailFor(row);
+  const d=detailFor(row),u=usageFor(row);
   if(!d)throw new Error("Missing item detail "+row.id);
   return{
-    overview:expanded(overview(row,d),"전투용인지 진행용인지 판단할 때 아래 직접 룰과 역참조를 함께 보는 것이 안전하다."),
+    overview:expanded(overview(row,d,u),"전투용인지 진행용인지 판단할 때 아래 직접 룰과 역참조를 함께 보는 것이 안전하다."),
     effect:expanded(effect(row,d),effectFallback(row,d)),
-    acquisition:expanded(acquisition(row,d),"현재 보이는 경로가 전부가 아닐 수 있으므로 이벤트·미션·맵 배치 역참조도 함께 확인해야 한다."),
-    progression:expanded(progression(row,d),"참조의 방향은 선행 조건·무료 지급·재료 요구처럼 서로 다르므로 아래 경로명을 함께 확인해야 한다."),
-    decision:expanded(decision(row,d),decisionFallback(row,d)),
+    acquisition:expanded([acquisition(row,d),supplyEditorial(row,u)].filter(Boolean).join(" "),"현재 보이는 경로가 전부가 아닐 수 있으므로 이벤트·미션·맵 배치 역참조도 함께 확인해야 한다."),
+    progression:expanded(progression(row,d,u),"참조의 방향은 선행 조건·무료 지급·재료 요구처럼 서로 다르므로 아래 경로명을 함께 확인해야 한다."),
+    uses:usesEditorial(row,u),
+    economics:economyEditorial(row,u),
+    decision:expanded((u.economy?.monthlyMaintenanceRelief>0?"반복 유지비 절감 효과가 있으므로 즉시 판매와 장기 보유를 기간 기준으로 비교해야 한다. ":"")+decision(row,d),decisionFallback(row,d)),
     watch:expanded(caution(row,d),"표시 수치는 원본 룰을 요약한 것이며 엔진 보정이나 스크립트 예외가 있으면 실제 동작은 달라질 수 있다.")
   };
 }
@@ -328,10 +378,10 @@ const dir=outFile("item-editorial-chunks");
 fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});
 for(const [bucket,details] of Object.entries(buckets))fs.writeFileSync(path.join(dir,bucket+".json"),JSON.stringify({details}));
 const meta={
-  version:2,
-  generator:"GPT item editorial synthesis v2",
+  version:3,
+  generator:"GPT item editorial synthesis v3",
   evidence:"ruleset-and-derived-links",
-  generatedFrom:["items-index.json","chunks","entities.json"],
+  generatedFrom:["items-index.json","chunks","entities.json","item-usage-chunks"],
   count:items.length,
   averageChars:Math.round(totalChars/Math.max(1,items.length))
 };

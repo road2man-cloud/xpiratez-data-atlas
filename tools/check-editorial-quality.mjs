@@ -40,7 +40,7 @@ function stats(rows,getter,fields){
 function assert(cond,msg){if(!cond)throw new Error(msg)}
 function allTexts(rows,getter,fields){return rows.flatMap(r=>fields.map(f=>({id:r.id,field:f,text:String(getter(r)?.[f]||"")})))}
 
-const itemFields=["overview","effect","acquisition","progression","decision","watch"];
+const itemFields=["overview","effect","acquisition","progression","decision","watch","uses","economics"];
 const researchFields=["core","effect","action","route","decision","watch"];
 const itemStats=stats(items,itemEditorial,itemFields);
 const researchStats=stats(research,researchEditorial,researchFields);

@@ -1,12 +1,13 @@
 {
-  "version": 2,
-  "generator": "GPT item editorial synthesis v2",
+  "version": 3,
+  "generator": "GPT item editorial synthesis v3",
   "evidence": "ruleset-and-derived-links",
   "generatedFrom": [
     "items-index.json",
     "chunks",
-    "entities.json"
+    "entities.json",
+    "item-usage-chunks"
   ],
   "count": 4007,
-  "averageChars": 591
+  "averageChars": 865
 }
