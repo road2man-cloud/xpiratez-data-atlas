@@ -65,6 +65,26 @@ function uniq(xs){return[...new Set(arr(xs).filter(Boolean))]}
 function bucket(id){return crypto.createHash("sha1").update(id).digest("hex")[0]}
 function fmt(v){return Number(v||0).toLocaleString("ko-KR",{maximumFractionDigits:2})}
 function pct(v){return v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%"}
+const difficultyLevels=[
+  {id:0,key:"beginner",koName:"초보",enName:"Beginner"},
+  {id:1,key:"experienced",koName:"경험자",enName:"Experienced"},
+  {id:2,key:"veteran",koName:"베테랑",enName:"Veteran"},
+  {id:3,key:"genius",koName:"천재",enName:"Genius"},
+  {id:4,key:"superhuman",koName:"초인",enName:"Superhuman"}
+];
+// OXCE BattlescapeGenerator::deployAliens(): inclusive, independent integer RNG(0,dQty)
+// and RNG(0,extraQty); medQty is not read by this engine routine.
+function deploymentDifficultyQty(row,difficulty){
+  const low=num(row.lowQty),high=num(row.highQty),random=num(row.dQty)+num(row.extraQty);
+  const base=difficulty<2?low:difficulty<4?low+Math.trunc((high-low)/2):high;
+  return{difficulty,min:base,max:base+random,average:base+random/2};
+}
+function difficultyTotals(rows){
+  return difficultyLevels.map(level=>{
+    const quantities=rows.map(row=>row.difficultyQty[level.id]);
+    return{difficulty:level.id,min:quantities.reduce((s,x)=>s+x.min,0),max:quantities.reduce((s,x)=>s+x.max,0),average:quantities.reduce((s,x)=>s+x.average,0)};
+  });
+}
 function hasBatchim(s){const t=String(s||"").trim();for(let i=t.length-1;i>=0;i--){const c=t.charCodeAt(i);if(c>=0xac00&&c<=0xd7a3)return(c-0xac00)%28!==0;if(/[A-Za-z0-9]/.test(t[i]))return false}return false}
 function topic(s){const v=String(s||"").trim();return v+(hasBatchim(v)?"은":"는")}
 function expanded(text,fallback){const t=String(text||"").trim();return t.length>=55?t:[t,fallback].filter(Boolean).join(" ")}
@@ -86,6 +106,20 @@ const events=arr(effective.events).filter(x=>x&&typeof x.name==="string");
 const ufoMap=new Map(ufos.map(x=>[x.type,x])),missionMap=new Map(missions.map(x=>[x.type,x]));
 const trajectoryMap=new Map(trajectories.map(x=>[x.id,x])),deploymentMap=new Map(deployments.map(x=>[x.type,x]));
 const raceMap=new Map(races.map(x=>[x.id,x])),unitMap=new Map(units.map(x=>[x.type,x]));
+// Tactical sites can be tied to a mission/UFO via alienDeployment.customUfo
+// even when alienMission.siteType and UFO.missionCustomDeploy are absent.
+const deploymentsByCustomUfo=new Map(),deploymentsByBriefingTitle=new Map();
+for(const d of deployments){
+  if(typeof d.customUfo==="string"){
+    if(!deploymentsByCustomUfo.has(d.customUfo))deploymentsByCustomUfo.set(d.customUfo,[]);
+    deploymentsByCustomUfo.get(d.customUfo).push(d.type);
+  }
+  const title=obj(d.briefing).title;
+  if(typeof title==="string"){
+    if(!deploymentsByBriefingTitle.has(title))deploymentsByBriefingTitle.set(title,[]);
+    deploymentsByBriefingTitle.get(title).push(d.type);
+  }
+}
 
 function weightedBuckets(v){
   const rows=[];
@@ -143,11 +177,28 @@ function trajectoryProfile(id,speedMax){
   return{id,...named(id),groundTimer:t.groundTimer??0,waypoints,hasGround:waypoints.some(x=>x.isGround),sourceFiles:sourceHistory["id:"+id]||[]};
 }
 function itemInfo(id){const x=itemMap.get(id);return{id,koName:x?.koName||tr(id,"ko"),enName:x?.enName||tr(id,"en"),kind:x?.kind??null,power:x?.power??null,damageTypeKo:x?.damageTypeKo??null}}
+const combatStatKeys=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
+function unitDifficultyProfiles(u,armor){
+  const stats=obj(u.stats),growth=obj(effective.statGrowthMultipliers),coefficients=arr(effective.difficultyCoefficient),aims=arr(effective.aimAndArmorMultipliers);
+  const withArmor=Object.fromEntries(combatStatKeys.filter(k=>stats[k]!=null||num(armor?.[k])!==0).map(k=>[k,num(stats[k])+num(armor?.[k])]));
+  const armorSides={front:num(armor?.frontArmor),left:num(armor?.leftArmor),right:num(armor?.rightArmor),rear:num(armor?.rearArmor),under:num(armor?.underArmor)};
+  return difficultyLevels.map(level=>{
+    const coeff=Number(coefficients[level.id]??level.id),aim=Number(aims[level.id]??1);
+    const adjusted=Object.fromEntries(Object.entries(withArmor).map(([k,base])=>{
+      const increased=k==="mana"?base:base+Math.trunc(base*coeff*num(growth[k])/100);
+      return[k,k==="firing"?Math.trunc(increased*aim):increased];
+    }));
+    const scaledArmor=Object.fromEntries(Object.entries(armorSides).map(([k,value])=>[k,Math.trunc(value*aim)]));
+    return{difficulty:level.id,stats:adjusted,armor:scaledArmor};
+  });
+}
 function unitProfile(id){
   const u=unitMap.get(id);if(!u)return{...named(id),missing:true};
   const a=armorMap.get(u.armor);
   const built=uniq([...(Array.isArray(u.builtInWeapons)?u.builtInWeapons:[]),...arr(u.builtInWeaponSets).flatMap(arr),u.meleeWeapon,u.psiWeapon].filter(x=>typeof x==="string"));
   return{id,...named(id),race:u.race??null,rank:u.rank??null,stats:obj(u.stats),armorId:u.armor??null,
+    armorStatBonuses:Object.fromEntries(combatStatKeys.filter(k=>num(a?.[k])!==0).map(k=>[k,num(a[k])])),
+    difficultyProfiles:unitDifficultyProfiles(u,a),
     armor:a?{id:a.id,koName:a.koName,enName:a.enName,front:a.frontArmor,left:a.leftArmor,right:a.rightArmor,rear:a.rearArmor,under:a.underArmor,ap:a.ap,incendiary:a.incendiary,he:a.he,laser:a.laser,plasma:a.plasma,stun:a.stun,meleeResist:a.meleeResist,acid:a.acid}:u.armor?named(u.armor):null,
     builtInWeapons:built.map(itemInfo),livingWeapon:Boolean(u.livingWeapon),capturable:u.capturable??null,intelligence:u.intelligence??null,aggression:u.aggression??null,spotter:u.spotter??null,sniper:u.sniper??null,energyRecovery:u.energyRecovery??null,value:u.value??null,sourceFiles:sourceHistory["type:"+id]||[]};
 }
@@ -162,33 +213,58 @@ function candidateWeights(race,rank,customUnitType){
 function deploymentProfile(id){
   const d=deploymentMap.get(id);if(!d)return null;
   const briefing=obj(d.briefing);
+  const data=arr(d.data).map((row,i)=>({index:i+1,alienRank:num(row.alienRank),customUnitType:row.customUnitType??null,lowQty:num(row.lowQty),medQty:row.medQty??null,highQty:num(row.highQty),dQty:num(row.dQty),extraQty:num(row.extraQty),percentageOutsideUfo:row.percentageOutsideUfo??null,difficultyQty:difficultyLevels.map(level=>deploymentDifficultyQty(row,level.id)),itemSets:arr(row.itemSets).map((set,level)=>({level,items:arr(set).filter(x=>typeof x==="string").map(itemInfo)})),extraRandomItems:arr(row.extraRandomItems).map(arr).map(xs=>xs.filter(x=>typeof x==="string").map(itemInfo))}));
   return{id,...named(id),race:d.race??null,width:d.width??null,length:d.length??null,height:d.height??null,terrains:arr(d.terrains),duration:d.duration??null,
     alertId:d.alert??null,alertName:d.alert?tr(d.alert,"ko"):null,alertDescriptionId:d.alertDescription??null,alertDescription:d.alertDescription?tr(d.alertDescription,"ko"):null,
-    markerNameId:d.markerName??null,markerName:d.markerName?tr(d.markerName,"ko"):null,customUfo:d.customUfo??null,
+    markerNameId:d.markerName??null,markerName:d.markerName?tr(d.markerName,"ko"):null,customUfo:d.customUfo??null,briefingTitle:briefing.title??null,
     briefing:{titleId:briefing.title??null,title:briefing.title?tr(briefing.title,"ko"):null,descId:briefing.desc??null,desc:briefing.desc?tr(briefing.desc,"ko"):null},
-    data:arr(d.data).map((row,i)=>({index:i+1,alienRank:num(row.alienRank),customUnitType:row.customUnitType??null,lowQty:num(row.lowQty),medQty:row.medQty??null,highQty:num(row.highQty),dQty:num(row.dQty),extraQty:num(row.extraQty),percentageOutsideUfo:row.percentageOutsideUfo??null,itemSets:arr(row.itemSets).map((set,level)=>({level,items:arr(set).filter(x=>typeof x==="string").map(itemInfo)})),extraRandomItems:arr(row.extraRandomItems).map(arr).map(xs=>xs.filter(x=>typeof x==="string").map(itemInfo))})),
+    data,difficultyTotals:difficultyTotals(data),
     sourceFiles:sourceHistory["type:"+id]||[]};
 }
 function effectiveDeployFor(ufo,raceId){
-  const rb=obj(ufo?.raceBonus)[raceId]||{},id=rb.missionCustomDeploy||ufo?.missionCustomDeploy||(ufo&&deploymentMap.has(ufo.type)?ufo.type:null);
-  return{id,source:rb.missionCustomDeploy?"raceBonus.missionCustomDeploy":ufo?.missionCustomDeploy?"ufo.missionCustomDeploy":id?"same-id deployment":"unresolved",raceBonus:rb};
+  const rb=obj(ufo?.raceBonus)[raceId]||{};
+  const candidates=[],seen=new Set();
+  const add=(id,source)=>{if(!id||!deploymentMap.has(id)||seen.has(id))return;seen.add(id);candidates.push({id,source})};
+  if(rb.missionCustomDeploy)add(rb.missionCustomDeploy,"raceBonus.missionCustomDeploy");
+  else if(ufo?.missionCustomDeploy)add(ufo.missionCustomDeploy,"ufo.missionCustomDeploy");
+  else if(ufo&&deploymentMap.has(ufo.type))add(ufo.type,"same-id deployment");
+  if(ufo)for(const id of deploymentsByCustomUfo.get(ufo.type)||[])add(id,"alienDeployment.customUfo");
+  return{id:candidates[0]?.id||null,source:candidates[0]?.source||"unresolved",deploymentCandidates:candidates,raceBonus:rb};
 }
 function raceProfile(id){
   const r=raceMap.get(id);if(!r)return{...named(id),missing:true};
   const max=Math.max(arr(r.members).length,arr(r.membersRandom).length);
   return{id,...named(id),ranks:Array.from({length:max},(_,rank)=>({rank,candidates:candidateWeights(r,rank,null)})),sourceFiles:sourceHistory["id:"+id]||[]};
 }
-function threatProfile(waves,siteDeploymentId,raceIds){
+function siteDeploymentsFor(m){
+  const entries=[],seen=new Set();
+  const add=(id,source)=>{if(!id||!deploymentMap.has(id)||seen.has(id))return;seen.add(id);entries.push({id,source})};
+  add(m.siteType,"alienMission.siteType");
+  // Explicit deployment.customUfo references outrank naming conventions.
+  for(const id of deploymentsByCustomUfo.get(m.type)||[])add(id,"alienDeployment.customUfo");
+  // OXCE map-site datasets also commonly use the mission name as deployment ID
+  // or a biome suffix, without siteType/customUfo. Keep these as *inferred*
+  // candidates, not proven runtime spawn paths.
+  if(m.objective===3){
+    add(m.type,"matching mission/deployment ID (inferred)");
+    for(const id of deploymentsByBriefingTitle.get(m.type)||[]){
+      const d=deploymentMap.get(id);
+      if(id.startsWith(m.type+"_")&&(!d.customUfo||d.customUfo===m.type))add(id,"briefing.title + deployment ID prefix (inferred)");
+    }
+  }
+  return entries;
+}
+function threatProfile(waves,siteDeployments,raceIds){
   const pairs=[];
-  for(const w of waves)for(const re of Object.values(w.raceEffects||{}))if(re.deploymentId)pairs.push({deploymentId:re.deploymentId,raceId:re.raceId,mult:Math.max(1,w.count||1)});
-  if(siteDeploymentId)for(const raceId of raceIds.length?raceIds:[""])pairs.push({deploymentId:siteDeploymentId,raceId,mult:1});
+  for(const w of waves)for(const re of Object.values(w.raceEffects||{}))for(const dep of re.deploymentCandidates||[])pairs.push({deploymentId:dep.id,raceId:re.raceId,mult:Math.max(1,w.count||1)});
+  for(const dep of siteDeployments)for(const raceId of raceIds.length?raceIds:[""])pairs.push({deploymentId:dep.id,raceId,mult:1});
   const seen=new Set(),sizes=[],unitIds=new Set(),weaponIds=new Set();let maxHealth=0,maxFiring=0,maxReactions=0,maxMelee=0,maxArmor=0;
   for(const p of pairs){
     const key=p.deploymentId+"|"+p.raceId;if(seen.has(key))continue;seen.add(key);
     const d=deploymentMap.get(p.deploymentId),race=raceMap.get(p.raceId);if(!d)continue;
     let low=0,high=0;
     for(const row of arr(d.data)){
-      low+=(num(row.lowQty)+num(row.extraQty))*p.mult;high+=(num(row.highQty)+num(row.extraQty))*p.mult;
+      low+=deploymentDifficultyQty(row,0).min*p.mult;high+=deploymentDifficultyQty(row,4).max*p.mult;
       for(const c of candidateWeights(race,num(row.alienRank),row.customUnitType)){
         unitIds.add(c.id);const u=unitMap.get(c.id);if(!u)continue;
         maxHealth=Math.max(maxHealth,num(u.stats?.health));maxFiring=Math.max(maxFiring,num(u.stats?.firing));maxReactions=Math.max(maxReactions,num(u.stats?.reactions));maxMelee=Math.max(maxMelee,num(u.stats?.melee));
@@ -200,7 +276,11 @@ function threatProfile(waves,siteDeploymentId,raceIds){
   }
   return{sizes,unitIds:[...unitIds],weaponIds:[...weaponIds],maxHealth,maxFiring,maxReactions,maxMelee,maxArmor};
 }
-const support={meta:{version:1,generator:"enemy-force-support-v1"},units:Object.fromEntries(units.map(u=>[u.type,unitProfile(u.type)])),races:Object.fromEntries(races.map(r=>[r.id,raceProfile(r.id)])),deployments:Object.fromEntries(deployments.map(d=>[d.type,deploymentProfile(d.type)]))};
+const support={meta:{version:2,generator:"enemy-force-support-v2",difficultyLevels,
+  difficultyMechanics:{quantityRule:"BattlescapeGenerator::deployAliens",randomInclusive:true,randomTerms:["dQty","extraQty"],medianRule:"lowQty + trunc((highQty-lowQty)/2)",medQtyUsed:false,spawnNodeMayReduceActualCount:true,
+    difficultyCoefficient:arr(effective.difficultyCoefficient),aimAndArmorMultipliers:arr(effective.aimAndArmorMultipliers),statGrowthMultipliers:obj(effective.statGrowthMultipliers),
+    note:"수량 난수는 각 rank별 독립 추첨이며, 실제 전장 스폰 노드가 부족하면 유닛 배치가 실패할 수 있습니다. 장비 itemLevel은 경과 월과 alienItemLevels 표로 정해지고 난이도 구간과 별개입니다."}},
+  units:Object.fromEntries(units.map(u=>[u.type,unitProfile(u.type)])),races:Object.fromEntries(races.map(r=>[r.id,raceProfile(r.id)])),deployments:Object.fromEntries(deployments.map(d=>[d.type,deploymentProfile(d.type)]))};
 
 function raceIdsFromBuckets(buckets){return uniq(buckets.flatMap(b=>b.options.map(x=>x.id)))}
 const eventForceLinks={};
@@ -219,21 +299,20 @@ for(const m of missions){
   const allRaceIds=uniq([...raceIdsFromBuckets(missionRaceWeights),...scriptsDetailed.flatMap(s=>raceIdsFromBuckets(s.raceWeightsOverride||[]))]);
   const waves=arr(m.waves).map((w,i)=>{
     const u=ufoMap.get(w.ufo),baseSpeed=num(u?.speedMax),traj=trajectoryProfile(w.trajectory,baseSpeed);
-    const raceEffects=Object.fromEntries(allRaceIds.map(raceId=>{const dep=effectiveDeployFor(u,raceId),bonus=num(dep.raceBonus?.speedMax);return[raceId,{raceId,...named(raceId),speedMaxBase:baseSpeed,speedMaxRaceBonus:bonus,effectiveSpeedMax:baseSpeed+bonus,deploymentId:dep.id,deploymentSource:dep.source}]}));
+    const raceEffects=Object.fromEntries(allRaceIds.map(raceId=>{const dep=effectiveDeployFor(u,raceId),bonus=num(dep.raceBonus?.speedMax);return[raceId,{raceId,...named(raceId),speedMaxBase:baseSpeed,speedMaxRaceBonus:bonus,effectiveSpeedMax:baseSpeed+bonus,deploymentId:dep.id,deploymentSource:dep.source,deploymentCandidates:dep.deploymentCandidates}]}));
     return{index:i+1,ufoId:w.ufo,...named(w.ufo),count:num(w.count),timer:num(w.timer),trajectoryId:w.trajectory,objective:Boolean(w.objective),hunterKillerPercentage:w.hunterKillerPercentage??u?.hunterKillerPercentage??0,huntMode:w.huntMode??u?.huntMode??null,huntBehavior:w.huntBehavior??u?.huntBehavior??null,ufo:{size:u?.size??null,damageMax:u?.damageMax??null,speedMax:baseSpeed,accel:u?.accel??null,power:u?.power??null,range:u?.range??null,reload:u?.reload??null,score:u?.score??null,unmanned:Boolean(u?.unmanned),sourceFiles:sourceHistory["type:"+w.ufo]||[]},trajectory:traj,raceEffects};
   });
   totalWaves+=waves.reduce((s,w)=>s+w.count,0);
   const hasGround=waves.some(w=>w.trajectory?.hasGround),hasHunter=waves.some(w=>num(w.hunterKillerPercentage)>0);
   if(hasGround)groundMissionCount++;if(hasHunter)hunterMissionCount++;
   const upstreamPositive=uniq(scriptsDetailed.flatMap(s=>s.upstreamEvents.positive.map(x=>x.eventId)));if(upstreamPositive.length)eventLinkedCount++;
-  const siteDeploymentId=m.siteType&&deploymentMap.has(m.siteType)?m.siteType:null;
-  const detail={id,bucket:b,koName:tr(id,"ko"),enName:tr(id,"en"),objective:m.objective??null,operationType:m.operationType??null,points:m.points??0,spawnZone:m.spawnZone??null,siteType:m.siteType??null,siteDeploymentId,raceWeights:missionRaceWeights,scripts:scriptsDetailed,waves,missionWeights:weightedBuckets(m.missionWeights),spawnUfo:m.spawnUfo??null,retaliationOdds:m.retaliationOdds??null,sourceFiles:sourceHistory["type:"+id]||[],raw:m};
+  const siteDeploymentId=m.siteType&&deploymentMap.has(m.siteType)?m.siteType:null,siteDeployments=siteDeploymentsFor(m);
+  const detail={id,bucket:b,koName:tr(id,"ko"),enName:tr(id,"en"),objective:m.objective??null,operationType:m.operationType??null,points:m.points??0,spawnZone:m.spawnZone??null,siteType:m.siteType??null,siteDeploymentId,siteDeployments,raceWeights:missionRaceWeights,scripts:scriptsDetailed,waves,missionWeights:weightedBuckets(m.missionWeights),spawnUfo:m.spawnUfo??null,retaliationOdds:m.retaliationOdds??null,sourceFiles:sourceHistory["type:"+id]||[],raw:m};
   (details[b]||={})[id]=detail;
-  const raceCount=allRaceIds.length,deployIds=uniq([siteDeploymentId,...waves.flatMap(w=>Object.values(w.raceEffects).map(x=>x.deploymentId))].filter(Boolean)),maxSpeed=Math.max(0,...waves.map(w=>w.ufo.speedMax),...waves.flatMap(w=>Object.values(w.raceEffects).map(x=>x.effectiveSpeedMax)));
-  const search=[id,detail.koName,detail.enName,...allRaceIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...deployIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...waves.flatMap(w=>[w.ufoId,w.koName,w.enName,w.trajectoryId]),...upstreamPositive.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")])].filter(Boolean).join(" ").toLowerCase();
+  const raceCount=allRaceIds.length,deployIds=uniq([...siteDeployments.map(x=>x.id),...waves.flatMap(w=>Object.values(w.raceEffects).flatMap(x=>x.deploymentCandidates.map(c=>c.id)))].filter(Boolean)),maxSpeed=Math.max(0,...waves.map(w=>w.ufo.speedMax),...waves.flatMap(w=>Object.values(w.raceEffects).map(x=>x.effectiveSpeedMax)));
+  const threat=threatProfile(waves,siteDeployments,allRaceIds);
+  const search=[id,detail.koName,detail.enName,...allRaceIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...deployIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...threat.unitIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...waves.flatMap(w=>[w.ufoId,w.koName,w.enName,w.trajectoryId]),...upstreamPositive.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")])].filter(Boolean).join(" ").toLowerCase();
   index.push({id,bucket:b,koName:detail.koName,enName:detail.enName,scriptCount:scriptsDetailed.length,waveTypeCount:waves.length,waveCount:waves.reduce((s,w)=>s+w.count,0),raceCount,deploymentCount:deployIds.length,maxSpeed,hasGround,hasHunter,eventLinkCount:upstreamPositive.length,siteType:detail.siteType,objective:detail.objective,searchText:search});
-
-  const threat=threatProfile(waves,siteDeploymentId,allRaceIds);
   const scriptDesc=scriptsDetailed.length?scriptsDetailed.slice(0,4).map(s=>{
     const odds=s.conditions?.executionOdds,first=s.conditions?.firstMonth,last=s.conditions?.lastMonth;
     const when=first!=null||last!=null?" · 월 "+(first??"제한없음")+"~"+(last??"제한없음"):"";
@@ -250,11 +329,17 @@ for(const m of missions){
   const groundDesc=moveParts.join(" / ")+(hasGround?" . altitude 0은 지상 이동이 아니라 착륙 상태입니다.":" . altitude 0 착륙 구간은 없습니다.");
   const raceTop=missionRaceWeights.flatMap(g=>g.options.slice().sort((a,b)=>b.relativeShare-a.relativeShare).slice(0,2).map(x=>tr(x.id,"ko")+" "+Math.round(x.relativeShare*1000)/10+"%"));
   const raceDesc=missionRaceWeights.length?"raceWeights "+missionRaceWeights.length+"개 버킷. 대표 조건부 후보: "+raceTop.slice(0,6).join(" · ")+".":"alienMission 자체 raceWeights가 비어 있으며 missionScript override나 다른 게임 로직에서 종족이 정해질 수 있습니다.";
-  const compDesc=deployIds.length?("교전 배치 후보 "+deployIds.length+"개: "+deployIds.slice(0,4).map(x=>tr(x,"ko")).join(" · ")+(deployIds.length>4?" 외 "+(deployIds.length-4)+"개":"")+". alienRank는 race의 같은 rank 슬롯과 매핑됩니다."):"직접 확정 가능한 alienDeployment 매핑이 없어 tactical siteType이나 동적 override 확인이 필요합니다.";
+  const firstSite=siteDeployments[0],firstRace=allRaceIds[0],exampleRow=firstSite&&deploymentMap.get(firstSite.id)?.data?.find(r=>candidateWeights(raceMap.get(firstRace),num(r.alienRank),r.customUnitType).length);
+  const exampleCandidate=exampleRow&&candidateWeights(raceMap.get(firstRace),num(exampleRow.alienRank),exampleRow.customUnitType)[0];
+  const example=exampleCandidate?" 예: "+tr(firstRace,"ko")+" / rank "+exampleRow.alienRank+" → "+tr(exampleCandidate.id,"ko")+" (low "+num(exampleRow.lowQty)+", high "+num(exampleRow.highQty)+").":"";
+  const terrainNote=siteDeployments.length>1?" 지형별 배치 "+siteDeployments.length+"개가 구분되며 지형에 따른 선택 비율은 이 룰로 확정할 수 없습니다.":"";
+  const diffExample=firstSite&&support.deployments[firstSite.id]?.difficultyTotals;
+  const diffNote=diffExample?" 난이도별 이 배치의 규칙상 총 인원: 초보·경험자 "+fmt(diffExample[0].min)+"~"+fmt(diffExample[0].max)+", 베테랑·천재 "+fmt(diffExample[2].min)+"~"+fmt(diffExample[2].max)+", 초인 "+fmt(diffExample[4].min)+"~"+fmt(diffExample[4].max)+". 실제 스폰 인원은 배치 가능 노드에 좌우됩니다.":"";
+  const compDesc=deployIds.length?("교전 배치 후보 "+deployIds.length+"개: "+deployIds.slice(0,4).map(x=>tr(x,"ko")).join(" · ")+(deployIds.length>4?" 외 "+(deployIds.length-4)+"개":"")+". alienRank는 race의 같은 rank 슬롯과 매핑됩니다."+terrainNote+example+diffNote):"직접 연결 가능한 alienDeployment가 없습니다. race의 구성원 목록만으로 실제 전술 출현 수량이나 rank를 확정할 수 없습니다.";
   const sizeLow=threat.sizes.length?Math.min(...threat.sizes.map(x=>x.low)):null,sizeHigh=threat.sizes.length?Math.max(...threat.sizes.map(x=>x.high)):null;
   const weaponNames=threat.weaponIds.filter(x=>["weapon","melee","grenade","damage-item","psi"].includes(itemMap.get(x)?.kind)).slice(0,6).map(x=>tr(x,"ko"));
   const threatParts=[];
-  if(sizeLow!=null)threatParts.push("배치 후보 규모 low "+fmt(sizeLow)+"~high "+fmt(sizeHigh));
+  if(sizeLow!=null)threatParts.push("각 배치 후보의 생성 시도량: 초보 최소 "+fmt(sizeLow)+"~초인 최대 "+fmt(sizeHigh)+" (지형·종족 대체 배치 합산 금지)");
   if(threat.maxHealth)threatParts.push("후보 유닛 최대 체력 "+fmt(threat.maxHealth));
   if(threat.maxArmor)threatParts.push("최대 장갑면 "+fmt(threat.maxArmor));
   if(threat.maxFiring)threatParts.push("최대 사격 "+fmt(threat.maxFiring));
@@ -270,13 +355,18 @@ for(const m of missions){
   if(hasGround)actionParts.push("착륙 waypoint가 있으므로 groundTimer 구간이 실제 교전 가능한 창인지 wave별로 확인합니다.");
   if(raceTop.length)actionParts.push("교전 예상은 현재 버킷 raceWeights에서 가장 높은 "+raceTop.slice(0,3).join(" · ")+"부터 좁히는 편이 빠릅니다.");
   if(!actionParts.length)actionParts.push("현재 작전은 직접 missionScript/event gate 연결이 적으므로 원본 호출 경로와 wave 자체를 먼저 확인해야 합니다.");
-  const unresolved=waves.reduce((n,w)=>n+Object.values(w.raceEffects||{}).filter(x=>!x.deploymentId).length,0);
+  const unresolved=waves.reduce((n,w)=>n+Object.values(w.raceEffects||{}).filter(x=>!x.deploymentCandidates.length&&!(siteDeployments.length&&w.ufoId==="dummy")).length,0);
   const cautionParts=["missionWeights "+scriptsDetailed.length+"개 연결, race 후보 "+raceCount+"종, deployment 후보 "+deployIds.length+"개"];
   if(unresolved)cautionParts.push("race별 deployment 미해결 "+unresolved+"건");
   if(!scriptsDetailed.length)cautionParts.push("missionScript 직접 선택 경로 미검출");
   if(upstreamPositive.length)cautionParts.push("이벤트 연결 "+upstreamPositive.length+"개는 gate 충족 경로이지 즉시 스폰 보장이 아님");
   cautionParts.push("가중치 share는 같은 bucket 안 조건부 비율이며 최종 절대 발생확률이 아님");
-  cautionParts.push("itemSets는 장비 레벨별 세트이지 세트 간 랜덤확률 목록이 아님");
+  cautionParts.push("raceWeights는 종족 선택 비율이지 개별 유닛 출현 비율이 아님");
+  if(siteDeployments.some(x=>x.source==="alienDeployment.customUfo"))cautionParts.push("customUfo는 전술 배치 연결이며, 지형별 deployment를 동시에 전부 등장시키는 규칙이 아님");
+  if(siteDeployments.some(x=>x.source.includes("(inferred)")))cautionParts.push("같은 ID/브리핑 제목으로 찾은 배치는 정적 구조상 후보이며 실제 런타임 호출을 확정하는 직접 필드는 아님");
+  cautionParts.push("lowQty/highQty는 난이도 세 구간별 기준 수량이며 dQty와 extraQty는 각각 독립 정수 난수의 추가 수량임");
+  cautionParts.push("난이도별 인원은 스폰 시도량의 범위이며 스폰 노드 부족 시 실제 적 유닛 수는 감소할 수 있음");
+  cautionParts.push("itemSets는 월별 장비 테크 레벨의 세트이지 난이도별 선택지 또는 세트 간 균등 랜덤확률 목록이 아님");
   (editorials[b]||={})[id]={
     overview:expanded(topic(detail.koName)+" alienMission 단위의 적 작전/부대 생성 규칙입니다. "+waveDesc+".","wave·UFO·종족·교전 배치를 함께 봐야 실제 적부대의 의미가 드러납니다."),
     spawn:expanded("생성 후보 경로: "+scriptDesc+". "+eventDesc,"missionScript의 조건과 가중치를 실제 생성 원인으로 봐야 합니다."),
