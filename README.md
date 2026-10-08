@@ -1,12 +1,12 @@
 # X-Piratez Data Atlas
 
-X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · [기지시설 DB](./public/facilities/) · 방어구·병종·탈것을 **검색·정렬·비교**하고, 상세 화면에서 실제 적용 핵심 스펙, 원본 룰 필드, 연구/제조/이벤트 역참조를 확인할 수 있는 정적 웹 DB입니다. 병종과 탈것은 획득 방식, 해금 연구트리, 명목 누적 연구량, 분기 전용 조건, 표본/기지 기능/기간 제한 같은 특수조건까지 추적합니다.
+X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · [기지시설 DB](./public/facilities/) · [기체무장 DB](./public/craft-weapons/) · 방어구·병종·탈것을 **검색·정렬·비교**하고, 상세 화면에서 실제 적용 핵심 스펙, 원본 룰 필드, 연구/제조/이벤트 역참조를 확인할 수 있는 정적 웹 DB입니다. 병종과 탈것은 획득 방식, 해금 연구트리, 명목 누적 연구량, 분기 전용 조건, 표본/기지 기능/기간 제한 같은 특수조건까지 추적합니다.
 
 ## 기준 데이터
 
 - X-Piratez: **v.o1.1.1**
 - OXCE 요구 버전: **8.6**
-- 현재 생성 결과: **4,007 items / 4,612 research / 957 armors (496 store-item armors) / 29 base Soldier rules / 72 acquisition profiles / 83 soldier transformations / 998 soldier bonuses / 96 crafts / 115 facilities / 2,158 manufacture / 4,972 ufopaedia records**
+- 현재 생성 결과: **4,007 items / 4,612 research / 957 armors (496 store-item armors) / 29 base Soldier rules / 72 acquisition profiles / 83 soldier transformations / 998 soldier bonuses / 96 crafts / 155 craft weapons / 115 facilities / 2,158 manufacture / 4,972 ufopaedia records**
 - 한국어 이름은 모드의 `Language/ko.yml`, 영문은 `Language/en-US.yml`에서 해석합니다.
 - 이미지·음원·맵 등 원본 게임 자산은 포함하지 않습니다.
 - UFOPEDIA 장문 본문은 저작권이 있는 원문 재배포를 피하기 위해 기본 생성물에서는 제외합니다.
@@ -23,7 +23,7 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 
 병종 탭의 기본 단위는 내부 `RuleSoldier` 29개가 아니라 **실제 획득형 72개**입니다. 직접 고용 15개, 제조/Recruitment 48개, 이벤트 생성 9개를 각각 별도 행으로 추적하고, 같은 Soldier Type이라도 `spawnedSoldier.currentStats`나 생성 시 `transformationBonuses`가 다르면 서로 다른 획득형으로 분리합니다. 자동 특성의 soldierBonus `stats`를 OXCE 엔진과 같은 순서로 합산한 **실전 생성 능력치**를 TU·기력·체력·용기·반응·사격·투척·근력·Psi·근접·Mana별 최소/평균/최대로 정렬할 수 있습니다. 29개 RuleSoldier는 내부 바디/성장 규칙 참고 탭으로 따로 두며, 초기 획득 이후의 변신·훈련은 83개 루트를 별도 탭으로 제공합니다. Saint 지원군은 31칸 가중표지만 고유 결과는 15개이며, 각 획득형에 슬롯 수와 확률을 표시합니다. Psi Skill은 기본 0이면 특성만으로 잠금 해제되지 않는 OXCE 예외도 반영합니다. 상세창에는 직접 고용·제조/Recruitment·이벤트 획득 방식, 분기 전용 여부, 명목 누적 연구량, Destructor 같은 특수 훈련의 전체 선행 연구트리를 연결합니다.
 
-탈것/기체 탭은 탑승 병력·조종사·속도·연료·내구·무장·레이더·비용을 비교하고, 직접 구매/제조법과 핵심 재료의 이벤트 획득원을 연결합니다. 예를 들어 Schoolbus처럼 특정 이벤트 재료가 필요한 기체는 이벤트의 연구 트리거, 월 제한, 난이도, 기타 트리거까지 함께 표시합니다.\n\n기지시설 탭은 115개 effective facility 룰의 건설비·기간·월 유지비/수익·면적·숙소·창고·연구실·작업장·훈련실·격납고·포로 수용·탐지·방어를 비교합니다. 시설의 `provideBaseFunc`와 연구/제조/시설의 `requiresBaseFunc`를 양방향 역추적해 “이 시설을 지으면 실제로 무엇이 열리는가”를 표시하고, 전체 선행 연구망·건설 재료·파괴/개조 상태도 함께 보여줍니다.
+탈것/기체 탭은 탑승 병력·조종사·속도·연료·내구·무장·레이더·비용을 비교하고, 직접 구매/제조법과 핵심 재료의 이벤트 획득원을 연결합니다. 예를 들어 Schoolbus처럼 특정 이벤트 재료가 필요한 기체는 이벤트의 연구 트리거, 월 제한, 난이도, 기타 트리거까지 함께 표시합니다.\n\n기체무장 탭은 155개 `craftWeapons` 프로필의 weaponType, 위력·사거리·명중·탄약·재장전·재보급률·지원 스탯을 비교하고, 각 장비가 실제로 장착 가능한 기체/슬롯을 역추적합니다. `launcher`와 `clip`이 `items`의 개인 전술무기·탄약을 재사용하는지도 표시합니다. 예를 들어 `STR_CRAFT_PIR_CANNON_UC`(해적 대포)는 `STR_PIR_CANNON`(돌격대포)과 `STR_PIR_CANNONBALL`(대포알)을 재사용하지만, 기체전 위력·사거리·명중은 craftWeapon 프로필의 별도 수치를 사용합니다.\n\n기지시설 탭은 115개 effective facility 룰의 건설비·기간·월 유지비/수익·면적·숙소·창고·연구실·작업장·훈련실·격납고·포로 수용·탐지·방어를 비교합니다. 시설의 `provideBaseFunc`와 연구/제조/시설의 `requiresBaseFunc`를 양방향 역추적해 “이 시설을 지으면 실제로 무엇이 열리는가”를 표시하고, 전체 선행 연구망·건설 재료·파괴/개조 상태도 함께 보여줍니다.
 
 영구 선택·분기 DB는 초기 5선장부터 PUSSY 클래스·Unclassed 혼합형·Pure/Ultimate, Codex, 갈라지는 길, 세력·병종·스토리 상호배타까지 한곳에서 비교합니다. 각 선택의 선행·즉시 보상·후속 해금뿐 아니라 영구 손실과 복구/우회 가능성을 함께 표시하며, 반복 이벤트 경제·방어/탐지·병사 강화·Chaos Saint 공급과 인프라 영향도 연결합니다. 정적 모듈은 `public/captains/`에 있습니다.
 

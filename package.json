@@ -15,6 +15,7 @@
     "build:editorials": "npm run build:research-editorial && npm run build:item-editorial",
     "check:item-research": "node tools/check-item-research-data.mjs",
     "check:manufacture": "node tools/check-manufacture.mjs --data public/data",
+    "check:craft-weapons": "node tools/check-craft-weapons.mjs --data public/data",
     "check:editorials": "node tools/check-editorial-quality.mjs --data public/items/data",
     "check:choices": "node tools/check-choice-coverage.mjs"
   },

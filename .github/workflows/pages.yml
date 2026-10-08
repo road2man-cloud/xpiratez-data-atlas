@@ -35,6 +35,7 @@ jobs:
           node tools/check-item-research-data.mjs --data public/items/data
           node tools/check-editorial-quality.mjs --data public/items/data
           node tools/check-manufacture.mjs --data public/data
+          node tools/check-craft-weapons.mjs --data public/data
           test ! -e public/data/items-index.json
           test ! -e public/data/research-index.json
           grep -Fq 'data-data-base="./data"' public/items/index.html
@@ -50,6 +51,7 @@ jobs:
           node --check public/manufacture/app.js
           node --check public/soldiers/app.js
           node --check public/crafts/app.js
+          node --check public/craft-weapons/app.js
           node --check public/facilities/app.js
           node --check public/armors/app.js
           node --check public/captains/app.js
