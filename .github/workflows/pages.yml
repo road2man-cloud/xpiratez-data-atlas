@@ -42,6 +42,7 @@ jobs:
           node tools/check-progression.mjs --data public/data
           node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json
           node tools/check-facilities.mjs --data public/data
+          node tools/check-facilities-frontend.mjs
           node tools/check-armors.mjs
           node tools/check-weapons.mjs
           node --check public/items/app.js
