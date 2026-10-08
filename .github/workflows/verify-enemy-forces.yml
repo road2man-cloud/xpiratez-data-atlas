@@ -1,0 +1,37 @@
+name: Verify enemy force data
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/build-enemy-force-data.mjs"
+      - "tools/check-enemy-forces.mjs"
+      - "public/forces/**"
+      - "public/events/**"
+      - "public/data/enemy-forces-index.json.gz"
+      - "public/data/enemy-force-chunks/**"
+      - "public/data/enemy-force-editorial-chunks/**"
+      - "public/data/enemy-force-support.json.gz"
+      - "public/data/event-force-links.json.gz"
+      - "package.json"
+      - ".github/workflows/verify-enemy-forces.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify enemy force DB
+        run: |
+          node tools/check-enemy-forces.mjs --data public/data
+          node --check public/forces/app.js
+          node --check public/events/app.js
+          node --check tools/build-enemy-force-data.mjs
+          node --check tools/check-enemy-forces.mjs
