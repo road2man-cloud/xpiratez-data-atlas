@@ -161,7 +161,11 @@ function candidateWeights(race,rank,customUnitType){
 }
 function deploymentProfile(id){
   const d=deploymentMap.get(id);if(!d)return null;
+  const briefing=obj(d.briefing);
   return{id,...named(id),race:d.race??null,width:d.width??null,length:d.length??null,height:d.height??null,terrains:arr(d.terrains),duration:d.duration??null,
+    alertId:d.alert??null,alertName:d.alert?tr(d.alert,"ko"):null,alertDescriptionId:d.alertDescription??null,alertDescription:d.alertDescription?tr(d.alertDescription,"ko"):null,
+    markerNameId:d.markerName??null,markerName:d.markerName?tr(d.markerName,"ko"):null,customUfo:d.customUfo??null,
+    briefing:{titleId:briefing.title??null,title:briefing.title?tr(briefing.title,"ko"):null,descId:briefing.desc??null,desc:briefing.desc?tr(briefing.desc,"ko"):null},
     data:arr(d.data).map((row,i)=>({index:i+1,alienRank:num(row.alienRank),customUnitType:row.customUnitType??null,lowQty:num(row.lowQty),medQty:row.medQty??null,highQty:num(row.highQty),dQty:num(row.dQty),extraQty:num(row.extraQty),percentageOutsideUfo:row.percentageOutsideUfo??null,itemSets:arr(row.itemSets).map((set,level)=>({level,items:arr(set).filter(x=>typeof x==="string").map(itemInfo)})),extraRandomItems:arr(row.extraRandomItems).map(arr).map(xs=>xs.filter(x=>typeof x==="string").map(itemInfo))})),
     sourceFiles:sourceHistory["type:"+id]||[]};
 }
@@ -288,8 +292,17 @@ for(const e of Object.values(eventForceLinks)){
   const dedupe=xs=>{const m=new Map();for(const x of xs){const k=[x.eventId,x.triggerKind,x.triggerId,x.missionId,x.bucket].join("|");if(!m.has(k))m.set(k,x)}return[...m.values()]};
   e.enables=dedupe(e.enables);e.blocks=dedupe(e.blocks);
 }
-const counts={missions:index.length,waves:totalWaves,ufos:ufos.length,trajectories:trajectories.length,races:races.length,units:units.length,deployments:deployments.length,groundMissions:groundMissionCount,hunterMissions:hunterMissionCount,eventLinkedMissions:eventLinkedCount};
+const deploymentSurfaces=Object.values(support.deployments).filter(d=>d.alertId||d.alertDescriptionId||d.markerNameId||d.briefing?.titleId||d.briefing?.descId).map(d=>({
+  kind:"deployment",id:d.id,koName:d.koName,enName:d.enName,
+  alertName:d.alertName,markerName:d.markerName,briefingTitle:d.briefing?.title||null,briefingDesc:d.briefing?.desc||null,
+  customUfo:d.customUfo,race:d.race,width:d.width,length:d.length,height:d.height,
+  searchText:[d.id,d.koName,d.enName,d.alertId,d.alertName,d.alertDescriptionId,d.alertDescription,d.markerNameId,d.markerName,d.briefing?.titleId,d.briefing?.title,d.briefing?.descId,d.briefing?.desc,d.customUfo].filter(Boolean).join(" ").toLowerCase()
+}));
+const missionSurfaces=index.map(x=>({kind:"mission",id:x.id,koName:x.koName,enName:x.enName,scriptCount:x.scriptCount,waveCount:x.waveCount,raceCount:x.raceCount,hasGround:x.hasGround,hasHunter:x.hasHunter,searchText:x.searchText}));
+const eventSurfaces=[...missionSurfaces,...deploymentSurfaces];
+const counts={missions:index.length,waves:totalWaves,ufos:ufos.length,trajectories:trajectories.length,races:races.length,units:units.length,deployments:deployments.length,groundMissions:groundMissionCount,hunterMissions:hunterMissionCount,eventLinkedMissions:eventLinkedCount,eventSurfaceMissions:missionSurfaces.length,eventSurfaceDeployments:deploymentSurfaces.length};
 gzipJson(path.join(outDir,"enemy-forces-index.json.gz"),{meta:{version:1,generator:"enemy-force-data-v1",compression:"gzip",sourceVersion:"XPiratez v.o1.1.1"},counts,index});
+gzipJson(path.join(outDir,"event-surfaces-index.json.gz"),{meta:{version:1,generator:"event-surface-index-v1",compression:"gzip"},counts:{missions:missionSurfaces.length,deployments:deploymentSurfaces.length,total:eventSurfaces.length},index:eventSurfaces});
 for(const [b,ds] of Object.entries(details))gzipJson(path.join(outDir,"enemy-force-chunks",b+".json.gz"),{details:ds});
 for(const [b,ds] of Object.entries(editorials))gzipJson(path.join(outDir,"enemy-force-editorial-chunks",b+".json.gz"),{details:ds});
 gzipJson(path.join(outDir,"enemy-force-support.json.gz"),support);
