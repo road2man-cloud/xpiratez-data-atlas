@@ -4,20 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 적부대 / 작전 DB</title>
-<link rel="stylesheet" href="styles.css?v=enemy-forces-20261008">
+<link rel="stylesheet" href="styles.css?v=enemy-forces-difficulty-20261008">
 </head>
 <body>
 <header class="hero"><div class="wrap">
   <div class="topnav"><a class="back" href="../">← Data Atlas</a><div><a class="ghost" href="../events/">이벤트 DB</a><a class="ghost" href="../crafts/">기체 DB</a><a class="ghost" href="../weapons/">무기 DB</a><a class="ghost" href="../items/">아이템 DB</a></div></div>
   <p class="eyebrow">XPiratez v.o1.1.1 · missionScripts → alienMissions → UFO/race/deployment</p>
   <h1>적부대 / 작전 DB</h1>
-  <p class="lede">적 작전이 왜 생성되는지부터 Geoscape 이동속도·UFO wave·종족 상대확률·교전 배치·적 유닛 후보확률·무장·스탯까지 한 경로로 추적합니다. 이벤트가 지급한 연구/아이템이 어떤 적부대의 missionScript 조건을 만족시키는지도 역추적합니다.</p>
+  <p class="lede">적 작전이 왜 생성되는지부터 Geoscape 이동속도·UFO wave·종족 상대확률·지형별 customUfo 전술 배치·계급별 적 유닛 후보확률·수량·무장·스탯까지 한 경로로 추적합니다. 이벤트가 지급한 연구/아이템이 어떤 적부대의 missionScript 조건을 만족시키는지도 역추적합니다.</p>
 </div></header>
 
 <main class="wrap">
   <section id="summary" class="summary"></section>
   <section class="toolbar card">
     <label class="field grow"><span>검색</span><input id="search" type="search" placeholder="작전, UFO, 종족, 배치, 이벤트, trajectory, 내부 ID…"></label>
+    <label class="field"><span>교전 난이도</span><select id="difficulty"><option value="0">초보 (0)</option><option value="1" selected>경험자 (1)</option><option value="2">베테랑 (2)</option><option value="3">천재 (3)</option><option value="4">초인 (4)</option></select></label>
     <label class="field"><span>지상/착륙</span><select id="ground"><option value="">전체</option><option value="yes">포함</option><option value="no">없음</option></select></label>
     <label class="field"><span>Hunter-killer</span><select id="hunter"><option value="">전체</option><option value="yes">포함</option><option value="no">없음</option></select></label>
     <label class="field"><span>이벤트 연결</span><select id="eventLinked"><option value="">전체</option><option value="yes">직접 연결 있음</option><option value="no">직접 연결 없음</option></select></label>
@@ -27,7 +28,8 @@
     <strong>생성 원인</strong><span><code>missionScript</code>의 월·난이도·executionOdds·research/item gate와 <code>missionWeights</code>를 표시합니다. 이벤트가 그 gate를 충족시키는 연구/아이템을 직접 지급하면 인과 링크로 연결합니다.</span>
     <strong>이동속도</strong><span>UFO <code>speedMax</code>와 trajectory waypoint의 speed%를 분리합니다. 표시 이동속도는 <b>speedMax × speed%</b>이며 raceBonus.speedMax는 최대속도에 더해집니다.</span>
     <strong>확률</strong><span><code>missionWeights</code>와 <code>raceWeights</code>는 같은 버킷 안의 <b>상대 가중치</b>입니다. executionOdds·지역·다른 스크립트 경쟁까지 합친 최종 절대 발생확률로 단정하지 않습니다.</span>
-    <strong>교전 편성</strong><span><code>alienDeployment.alienRank</code>를 선택 race의 같은 rank 슬롯에 매핑합니다. <code>membersRandom</code>이 있으면 중복 등장 횟수로 유닛 후보 상대확률을 계산합니다. <code>itemSets</code>는 장비 레벨별 세트이며 세트 간 랜덤확률 목록이 아닙니다.</span>
+    <strong>교전 편성</strong><span>난이도 0·1은 lowQty, 2·3은 lowQty+trunc((highQty−lowQty)/2), 4는 highQty를 기본 인원으로 삼고 <code>random(0,dQty)</code>와 <code>random(0,extraQty)</code>를 더합니다. 전술 스폰 위치 부족 시 실제 인원은 감소할 수 있습니다. <code>alienMission.siteType</code> 및 <code>alienDeployment.customUfo</code>로 지형별 배치를 역추적합니다. <code>alienDeployment.alienRank</code>를 선택 race의 같은 rank 슬롯에 매핑하고 <code>membersRandom</code>의 중복 횟수로 슬롯 내 후보확률을 계산합니다. 종족 90%는 <b>해당 종족의 유닛이 90%로 개별 등장한다</b>는 뜻이 아닙니다.</span>
+    <strong>난이도별 전투 스탯</strong><span>유닛 원본 stats에 방어구 stat 보너스를 합산한 후, XPiratez <code>difficultyCoefficient</code>·<code>statGrowthMultipliers</code>를 적용하고 조준/장갑에 <code>aimAndArmorMultipliers</code>를 반영합니다. <code>itemSets</code> 장비 레벨은 전투 난이도가 아니라 경과 월에 따른 별도 추첨입니다.</span>
   </section>
 
   <section class="table-card card">
@@ -39,6 +41,6 @@
 
 <div id="backdrop" class="backdrop" hidden></div>
 <aside id="drawer" class="drawer" aria-hidden="true"><button id="closeDrawer" class="close" aria-label="닫기">×</button><div id="detail"></div></aside>
-<script type="module" src="app.js?v=enemy-forces-20261008"></script>
+<script type="module" src="app.js?v=enemy-forces-difficulty-20261008"></script>
 </body>
 </html>
