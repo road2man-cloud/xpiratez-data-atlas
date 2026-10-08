@@ -116,6 +116,22 @@ function siteMarkup(d){
 }
 function rawMarkup(d){return '<details><summary>원본 alienMission 룰</summary><pre>'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>'}
 
+async function openDeploymentDetail(id){
+  try{
+    if(!support)support=await jsonGz(dataBase+"/enemy-force-support.json.gz");
+    const d=support?.deployments?.[id];if(!d)throw new Error("deployment를 찾을 수 없습니다: "+id);
+    const race=d.race||"";
+    $("#detail").innerHTML='<h2>'+esc(d.koName||d.id)+'</h2><div class="id">'+esc(d.enName||"")+' · '+esc(d.id)+'</div>'+
+      '<p><span class="role">전투 경고 / 브리핑</span> <span class="role secondary">alienDeployment</span></p>'+
+      kpis([["크기",fmt(d.width)+"×"+fmt(d.length)+"×"+fmt(d.height)],["duration",Array.isArray(d.duration)?d.duration.join("~"):fmt(d.duration)],["고정 race",d.race||"호출 mission에서 결정"],["customUfo",d.customUfo||"—"],["편성 행",fmt(d.data?.length||0)],["지형",fmt(d.terrains?.length||0)]])+
+      (d.alertName?'<section class="section"><h3>플레이어 경고</h3><p><b>'+esc(d.alertName)+'</b></p>'+(d.alertDescription?'<p>'+esc(d.alertDescription)+'</p>':'')+(d.markerName?'<p class="sub">지도 마커: '+esc(d.markerName)+'</p>':'')+'</section>':'')+
+      (d.briefing?.title||d.briefing?.desc?'<section class="section"><h3>브리핑</h3>'+(d.briefing.title?'<p><b>'+esc(d.briefing.title)+'</b></p>':'')+(d.briefing.desc?'<p>'+esc(d.briefing.desc)+'</p>':'')+'</section>':'')+
+      '<section class="section"><h3>전술 배치 / 적 편성</h3><p class="muted">'+(race?'고정 race가 있어 실제 unit 후보까지 계산합니다.':'이 deployment 자체에는 고정 race가 없습니다. 실제 unit 후보는 이 배치를 호출한 alienMission이 선택한 race에 따라 달라지므로, 아래 alienRank·수량·itemSets는 직접값이고 unit 후보는 호출 경로와 함께 봐야 합니다.')+'</p>'+deploymentMarkup(d.id,race)+'</section>'+
+      (d.terrains?.length?'<section class="section"><h3>가능 지형</h3><p class="muted">'+d.terrains.map(esc).join(" · ")+'</p></section>':'')+
+      '<section class="section"><h3>출처</h3><p class="muted">'+((d.sourceFiles||[]).map(esc).join(" → ")||"—")+'</p></section>';
+    $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
+  }catch(err){$("#detail").innerHTML='<p class="negative">'+esc(err.stack||err.message)+'</p>';$("#drawer").classList.add("open");$("#backdrop").hidden=false}
+}
 async function openDetail(id){
   const row=db.index.find(x=>x.id===id);if(!row)return;
   try{
@@ -128,6 +144,6 @@ async function openDetail(id){
   }catch(err){$("#detail").innerHTML='<p class="negative">'+esc(err.stack||err.message)+'</p>';$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
 function closeDrawer(){history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
-function route(){const m=location.hash.match(/^#force=(.+)$/);if(m)openDetail(decodeURIComponent(m[1]));else closeDrawer()}
+function route(){const f=location.hash.match(/^#force=(.+)$/),d=location.hash.match(/^#deployment=(.+)$/);if(f)openDetail(decodeURIComponent(f[1]));else if(d)openDeploymentDetail(decodeURIComponent(d[1]));else closeDrawer()}
 async function init(){db=await jsonGz(dataBase+"/enemy-forces-index.json.gz");renderSummary();initFilters();render();route()}
 init().catch(e=>{document.body.innerHTML='<main class="wrap"><h1>적부대 DB 로드 실패</h1><pre>'+esc(e.stack||e.message)+'</pre></main>'});
