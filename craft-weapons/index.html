@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez 기체무장 DB</title>
+<link rel="stylesheet" href="styles.css?v=craft-weapons-20261008">
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <a class="back" href="../">← Data Atlas</a>
+  <p class="eyebrow">XPiratez v.o1.1.1 · craftWeapons</p>
+  <h1>기체무장 DB</h1>
+  <p class="lede">기체용 무장·지원장비 155종의 실제 <code>craftWeapons</code> 수치, 장착 가능한 기체, launcher/clip 아이템 재사용 여부, 연구·제조 경로를 비교합니다.</p>
+</div></header>
+<main class="wrap">
+  <section id="summary" class="summary"></section>
+
+  <section class="notice card">
+    <strong>개인무기와 기체무장이 같은가?</strong>
+    <span>일부는 맞습니다. 예를 들어 <b>해적 대포</b> <code>STR_CRAFT_PIR_CANNON_UC</code>는 별도의 전술무기를 만드는 게 아니라 기체무장 프로필이 <code>launcher: STR_PIR_CANNON</code>과 <code>clip: STR_PIR_CANNONBALL</code>을 재사용합니다. 다만 기체전 위력·사거리·명중은 개인전투 수치를 그대로 쓰지 않고 이 craftWeapon 프로필의 별도 수치를 사용합니다. 이런 경우를 “개인 전술무기 공용”으로 따로 표시합니다.</span>
+  </section>
+
+  <section class="toolbar card">
+    <div class="field grow"><label for="search">검색</label><input id="search" type="search" placeholder="해적 대포, 돌격대포, RPG, 장착 기체, 내부 ID…"></div>
+    <div class="field"><label for="typeFilter">weaponType</label><select id="typeFilter"><option value="">전체</option></select></div>
+    <div class="field"><label for="roleFilter">역할</label><select id="roleFilter"><option value="">전체</option><option value="attack">공격</option><option value="tractor">견인</option><option value="defense">방어</option><option value="sensor">센서</option><option value="mobility">기동</option><option value="support">기타 지원</option></select></div>
+    <div class="field"><label for="shareFilter">아이템 관계</label><select id="shareFilter"><option value="">전체</option><option value="shared">개인 전술무기 공용</option><option value="craftonly">전술무기 공용 아님</option></select></div>
+  </section>
+
+  <section class="table-card card">
+    <div class="table-head"><div><p class="eyebrow">정렬 가능</p><h2>기체무장 비교</h2></div><p id="rowCount" class="muted"></p></div>
+    <div class="table-shell"><table id="weaponTable"><thead></thead><tbody></tbody></table></div>
+  </section>
+</main>
+<dialog id="detailDialog"><button id="closeDialog" class="close">×</button><div id="detailBody"></div></dialog>
+<script src="app.js?v=craft-weapons-20261008"></script>
+</body>
+</html>
