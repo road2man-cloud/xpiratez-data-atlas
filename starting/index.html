@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="XPiratez v.o1.1.1 Month 0 시작 지역·국가 보너스 전체 비교 DB">
   <title>XPiratez 스타팅 보너스 DB</title>
-  <link rel="stylesheet" href="styles.css?v=20261007-units3">
+  <link rel="stylesheet" href="styles.css?v=20261008-load-guard">
 </head>
 <body>
 <header class="hero">
@@ -71,7 +71,7 @@
     </div>
     <p id="resultCount" class="muted"></p>
   </div>
-  <section id="cards" class="cards" aria-live="polite"></section>
+  <section id="cards" class="cards" aria-live="polite"><div class="empty" role="status">스타팅 보너스 데이터 불러오는 중…</div></section>
 
   <section class="notes">
     <h2>읽는 법</h2>
@@ -79,6 +79,6 @@
     <p>각 카드의 “원본 이벤트”를 펼치면 중앙아시아 Medusa나 중국 2차 지급처럼 같은 위치에서 추가로 발생하는 이벤트를 분리해서 확인할 수 있습니다. 지급·전환 가능한 병사가 있는 경우 병종 DB의 최종 실전 능력치(최소/평균/최대 또는 고정값)를 자동 특성까지 합산해 표시하며, 특성 자체의 능력치·방어·야간시야 보너스도 함께 표시합니다.</p>
   </section>
 </main>
-<script src="app.js?v=20261007-units3"></script>
+<script src="app.js?v=20261008-load-guard"></script>
 </body>
 </html>

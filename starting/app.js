@@ -214,15 +214,32 @@ function render(){
   document.querySelector("#cards").innerHTML=groups.length?groups.map(card).join(""):'<div class="empty">조건에 맞는 스타팅 보너스가 없습니다.</div>';
 }
 async function init(){
-  const [data,names]=await Promise.all([
-    fetch(DATA_URL).then(r=>{if(!r.ok)throw new Error("starting data "+r.status);return r.json()}),
-    fetch(NAMES_URL).then(r=>r.ok?r.json():null).catch(()=>null)
-  ]);
-  DATA=data;NAMES=names?.names||{};
-  const groups=allGroups();renderStats(groups);render();
+  // Render the essential Month 0 rewards immediately. The large translations
+  // dictionary is optional; a slow/failed dictionary request must never hide
+  // all of the starting bonus cards, especially on a mobile connection.
+  const response=await fetch(DATA_URL,{cache:"no-cache"});
+  if(!response.ok)throw new Error("starting data HTTP "+response.status);
+  const data=await response.json();
+  if(!data?.meta||!Array.isArray(data.regions)||!Array.isArray(data.countries)){
+    throw new Error("스타팅 보너스 데이터 형식이 올바르지 않습니다");
+  }
+  DATA=data;
+  renderStats(allGroups());
+  render();
   for(const id of ["search","kind","sort"])document.querySelector("#"+id).addEventListener(id==="search"?"input":"change",render);
+  // Enhance labels after first paint. On failure we keep the Korean region
+  // aliases and raw item/research IDs rather than failing the whole page.
+  void fetch(NAMES_URL).then(r=>{if(!r.ok)throw new Error("names HTTP "+r.status);return r.json()})
+    .then(names=>{NAMES=names?.names||{};render()})
+    .catch(err=>console.warn("Optional starting bonus translations unavailable:",err));
 }
-init().catch(err=>{
+function showLoadError(err){
   console.error(err);
-  document.querySelector("#cards").innerHTML='<div class="empty">스타팅 보너스 데이터를 불러오지 못했습니다: '+esc(err.message)+'</div>';
-});
+  document.querySelector("#cards").innerHTML='<div class="empty">스타팅 보너스 데이터를 불러오지 못했습니다: '+esc(err.message)+
+    ' <button id="retryStarting" type="button">다시 불러오기</button></div>';
+  document.querySelector("#retryStarting").addEventListener("click",()=>{
+    document.querySelector("#cards").innerHTML='<div class="empty">스타팅 보너스 데이터 다시 불러오는 중…</div>';
+    init().catch(showLoadError);
+  });
+}
+init().catch(showLoadError);
