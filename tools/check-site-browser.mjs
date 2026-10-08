@@ -101,6 +101,12 @@ try {
         const selector=await page.locator("#detailDialog").count()?"#detailDialog[open]":"#drawer.open";
         await page.locator(selector).waitFor({state:"visible",timeout:14000});
         const contentSelector=await page.locator("#detailBody").count()?"#detailBody":slug==="captains"?"#dialogBody":"#detail";
+        // A visible drawer can still contain an async loading placeholder,
+        // especially on the live Pages CDN. Assert the finished detail.
+        await page.waitForFunction(selector=>{
+          const text=document.querySelector(selector)?.innerText||"";
+          return text.length>45&&!/상세 데이터 불러오는 중|데이터 로딩 중/i.test(text);
+        },contentSelector,{timeout:25000});
         const content=await page.locator(contentSelector).innerText();
         detail=String(content.length);
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
