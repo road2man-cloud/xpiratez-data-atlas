@@ -3,7 +3,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const fmt=v=>v==null||Number.isNaN(Number(v))?"—":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:2});
 const pct=v=>v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%";
 const dataBase="../data";
-let db={index:[],counts:{},roles:{},triggerKinds:{}},rows=[],detailCache=new Map(),editorialCache=new Map();
+let db={index:[],counts:{},roles:{},triggerKinds:{}},rows=[],detailCache=new Map(),editorialCache=new Map(),forceLinks=null;
 const state={q:"",role:"",triggerKind:"",missRisk:"",reward:"",sort:"koName",dir:1,page:1,pageSize:100};
 
 async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 gzip 데이터 스트림 해제를 지원하지 않습니다.");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));return new Response(stream).json()}
@@ -92,6 +92,7 @@ function kpis(xs){return`<div class="kpis">${xs.map(([k,v,cls=""])=>`<div class=
 function namedChip(x,href=""){const body=`<b>${esc(x.koName||x.id)}</b><span class="sub">${esc(x.enName||"")} · ${esc(x.id)}</span>`;return href?`<a class="chip" href="${href}">${body}</a>`:`<span class="chip">${body}</span>`}
 function itemLink(x){return namedChip(x,`../items/#item=${encodeURIComponent(x.id)}`)}
 function researchLink(x){return namedChip(x,`../research/#research=${encodeURIComponent(x.id)}`)}
+function forceLink(x){return namedChip({id:x.missionId,koName:x.missionKoName||x.missionId,enName:x.missionEnName||""},`../forces/#force=${encodeURIComponent(x.missionId)}`)}
 function triggerChip(x){const cls=x.value===true?"required":x.value===false?"forbidden":"";return`<span class="trigger-chip ${cls}"><b>${esc(x.koName||x.id)}</b><span>${esc(x.label||"조건")} · ${esc(String(x.value))}</span><small>${esc(x.id)}</small></span>`}
 function editorialMarkup(e){
   if(!e)return"";
@@ -141,12 +142,22 @@ function effectsMarkup(d){
   if(e.interruptResearch)parts.push(`<section class="section warning-box"><h3>연구 중단</h3><p>${researchLink({id:e.interruptResearch,koName:e.interruptResearch,enName:""})}</p></section>`);
   return parts.join("");
 }
+function forceLinksMarkup(eventId){
+  const links=forceLinks?.[eventId];
+  if(!links||(links.enables?.length||0)+(links.blocks?.length||0)===0)return"";
+  const group=(title,xs,cls="")=>{
+    if(!xs?.length)return"";
+    return '<div class="force-chain '+cls+'"><h4>'+esc(title)+'</h4>'+xs.map(x=>'<div class="selection">'+forceLink(x)+'<span>missionScript '+esc(x.scriptId||"—")+' · '+esc(x.triggerKind)+': '+esc(x.triggerKoName||x.triggerId)+'</span><small>missionWeights bucket '+esc(x.bucket)+' · weight '+fmt(x.weight)+'/'+fmt(x.totalWeight)+' · 같은 bucket 상대 '+pct(x.relativeShare)+'</small></div>').join("")+'</div>';
+  };
+  return '<section class="section"><div class="insight-head"><h3>이 이벤트 이후 연결되는 적부대 / 작전</h3><span class="evidence direct">보상 → missionScript gate 역추적</span></div><p class="muted">이벤트가 직접 지급하는 연구/아이템이 적 missionScript의 true/false gate와 일치하는 경로입니다. 아래 상대 weight는 같은 missionWeights bucket 안 비율이며, 이 이벤트 완료 직후 적부대가 그 확률로 즉시 생성된다는 뜻은 아닙니다.</p>'+group("활성화 가능한 작전",links.enables)+group("차단될 수 있는 작전",links.blocks,"block")+'</section>';
+}
 function rawMarkup(d){return`<details><summary>원본 event 룰</summary><pre>${esc(JSON.stringify(d.raw,null,2))}</pre></details>`}
 async function openDetail(id){
   const row=db.index.find(x=>x.id===id);if(!row)return;
   try{
     if(!detailCache.has(row.bucket))detailCache.set(row.bucket,(await jsonGz(`${dataBase}/event-chunks/${row.bucket}.json.gz`)).details);
     if(!editorialCache.has(row.bucket))editorialCache.set(row.bucket,(await jsonGz(`${dataBase}/event-editorial-chunks/${row.bucket}.json.gz`)).details);
+    if(!forceLinks)forceLinks=await jsonGz(`${dataBase}/event-force-links.json.gz`);
     const d=detailCache.get(row.bucket)[id],e=editorialCache.get(row.bucket)[id],ef=d.effects||{},ts=d.triggerSummary||{};
     $("#detail").innerHTML=`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div>
       <p><span class="role">${esc(d.primaryRoleKo)}</span> ${(d.roles||[]).filter(x=>x!==d.primaryRole).map(x=>`<span class="role secondary">${esc(roleLabel(x))}</span>`).join(" ")}</p>
@@ -155,6 +166,7 @@ async function openDetail(id){
       ${editorialMarkup(e)}
       <section class="section"><div class="insight-head"><h3>발생 조건 / eventScripts</h3><span class="evidence direct">원본 직접값</span></div>${d.scripts?.length?d.scripts.map(s=>scriptMarkup(s,d.id)).join(""):'<div class="empty">연결 스크립트 없음</div>'}</section>
       ${effectsMarkup(d)}
+      ${forceLinksMarkup(d.id)}
       <section class="section"><h3>직접 결과 요약</h3>${kpis([["연구/플래그",fmt(ef.researchRewards?.length||0)],["확정 아이템",fmt(ef.guaranteedItems?.length||0)],["랜덤 후보",fmt((ef.randomItems?.list?.length||0)+(ef.randomItems?.multi?.length||0))],["병사/인원",ef.spawnedPersonType?fmt(ef.spawnedPersons||1):"—"],["timer",fmt(d.timer)],["timerRandom",fmt(d.timerRandom)]])}</section>
       <section class="section"><h3>출처</h3><p class="muted">${(d.sourceFiles||[]).map(esc).join(" → ")||"—"}</p></section>
       ${rawMarkup(d)}`;
