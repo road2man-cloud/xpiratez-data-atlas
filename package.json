@@ -9,10 +9,12 @@
     "check": "node tools/check-data.mjs",
     "check:facilities": "node tools/check-facilities.mjs",
     "build:item-research": "node tools/build-item-research-data.mjs",
+    "build:manufacture": "node tools/build-manufacture-data.mjs",
     "build:research-editorial": "node tools/build-research-editorial-insights.mjs",
     "build:item-editorial": "node tools/build-item-editorial-insights.mjs",
     "build:editorials": "npm run build:research-editorial && npm run build:item-editorial",
     "check:item-research": "node tools/check-item-research-data.mjs",
+    "check:manufacture": "node tools/check-manufacture.mjs --data public/data",
     "check:editorials": "node tools/check-editorial-quality.mjs --data public/items/data",
     "check:choices": "node tools/check-choice-coverage.mjs"
   },
