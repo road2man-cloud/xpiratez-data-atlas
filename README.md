@@ -38,7 +38,16 @@ Node.js 20+ 기준입니다.
 ```bash
 npm install
 npm run build:data -- --source "C:/path/to/user/mods/Piratez"
-npm run check
+npm run check              # 전체 DB · 스타팅 · 선택지 · 프런트 자산 통합 검증
+
+# 스타팅만 검증 (원본 이벤트 및 번역 지연/실패/재시도까지)
+npm run check:starting
+
+# 선택: 실제 Chrome/Edge에서 13개 DB를 모바일 화면으로 열고
+# 검색·상세창·HTTP/자바스크립트 오류까지 검사
+npm install --no-save --package-lock=false playwright-core@1.64.0
+node tools/check-site-browser.mjs --local
+node tools/check-site-browser.mjs --base=https://road2man-cloud.github.io/xpiratez-data-atlas/
 
 # 기지시설 DB만 안전하게 갱신·검증
 npm run build:facilities -- --source "C:/path/to/user/mods/Piratez" --out public/data

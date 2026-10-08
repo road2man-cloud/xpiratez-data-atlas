@@ -6,6 +6,7 @@ on:
     paths:
       - "public/**"
       - "tools/**"
+      - "package.json"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -32,36 +33,20 @@ jobs:
 
       - name: Verify atlas data and frontend
         run: |
-          node tools/check-item-research-data.mjs --data public/items/data
-          node tools/check-item-usage-insights.mjs --items public/items/data --world public/data
-          node tools/check-editorial-quality.mjs --data public/items/data
-          node tools/check-manufacture.mjs --data public/data
-          node tools/check-events.mjs --data public/data
-          node tools/check-enemy-forces.mjs --data public/data
-          node tools/check-craft-weapons.mjs --data public/data
+          # One canonical gate for all DB, choices, start bonuses, assets and JS.
+          npm run check
           test ! -e public/data/items-index.json
           test ! -e public/data/research-index.json
           grep -Fq 'data-data-base="./data"' public/items/index.html
           grep -Fq 'data-data-base="../items/data"' public/research/index.html
-          node tools/check-soldiers.mjs --data public/data
-          node tools/check-progression.mjs --data public/data
-          node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json
-          node tools/check-facilities.mjs --data public/data
-          node tools/check-facilities-frontend.mjs
-          node tools/check-armors.mjs
-          node tools/check-weapons.mjs
-          node --check public/items/app.js
-          node --check public/manufacture/app.js
-          node --check public/events/app.js
-          node --check public/forces/app.js
-          node --check public/soldiers/app.js
-          node --check public/crafts/app.js
-          node --check public/craft-weapons/app.js
-          node --check public/facilities/app.js
-          node --check public/armors/app.js
-          node --check public/captains/app.js
-          node --check public/weapons/app.js
-          node --check public/starting/app.js
+
+      - name: Browser smoke for all 13 DBs (mobile viewport)
+        run: |
+          npm install --no-save --package-lock=false playwright-core@1.64.0
+          if ! command -v google-chrome >/dev/null 2>&1 && ! command -v chromium >/dev/null 2>&1; then
+            npx playwright-core install chromium
+          fi
+          node tools/check-site-browser.mjs --local
 
       - name: Publish public tree to gh-pages
         run: |

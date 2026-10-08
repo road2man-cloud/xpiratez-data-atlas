@@ -3,35 +3,42 @@ import path from "node:path";
 import {hasPresentationResourceKey} from "./data-normalize.mjs";
 const args=process.argv.slice(2),i=args.indexOf("--data"),dataDir=path.resolve(i>=0&&args[i+1]?args[i+1]:"public/data");
 const file=(...parts)=>path.join(dataDir,...parts);
-const items=JSON.parse(fs.readFileSync(file("items-index.json"),"utf8"));
-const research=JSON.parse(fs.readFileSync(file("research-index.json"),"utf8"));
-const schema=JSON.parse(fs.readFileSync(file("schema.json"),"utf8"));
+// Item/research JSON was moved to the single canonical public/items/data tree.
+// The shared public/data directory intentionally has no item/research copies.
+const itemDataDir=path.resolve(dataDir,"../items/data");
+const itemFile=(...parts)=>path.join(itemDataDir,...parts);
+const items=JSON.parse(fs.readFileSync(itemFile("items-index.json"),"utf8"));
+const research=JSON.parse(fs.readFileSync(itemFile("research-index.json"),"utf8"));
+const schema=JSON.parse(fs.readFileSync(itemFile("schema.json"),"utf8"));
 const soldiers=JSON.parse(fs.readFileSync(file("soldiers-index.json"),"utf8"));
 const armors=JSON.parse(fs.readFileSync(file("armors-index.json"),"utf8"));
 const facilities=JSON.parse(fs.readFileSync(file("facilities-index.json"),"utf8"));
 const facilityBaseFunctions=JSON.parse(fs.readFileSync(file("facility-base-functions.json"),"utf8"));
 const facilityResearch=JSON.parse(fs.readFileSync(file("facility-research.json"),"utf8"));
-const entities=JSON.parse(fs.readFileSync(file("entities.json"),"utf8"));
+const entities=JSON.parse(fs.readFileSync(itemFile("entities.json"),"utf8"));
+if(fs.existsSync(file("items-index.json"))||fs.existsSync(file("research-index.json"))){
+  throw new Error("Legacy item/research copies found under shared public/data");
+}
 if(!items.index.length)throw new Error("No items generated");
 if(!research.index.length)throw new Error("No research generated");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
 if(research.index.length!==new Set(research.index.map(x=>x.id)).size)throw new Error("Duplicate research ids");
 const cache={};
 for(const x of items.index){
-  cache[x.bucket]??=JSON.parse(fs.readFileSync(file("chunks",`${x.bucket}.json`),"utf8")).details;
+  cache[x.bucket]??=JSON.parse(fs.readFileSync(itemFile("chunks",`${x.bucket}.json`),"utf8")).details;
   const d=cache[x.bucket][x.id];if(!d)throw new Error("Missing item detail "+x.id);
   if(!d.raw||!d.effectiveCore)throw new Error("Incomplete item detail "+x.id);
   if(hasPresentationResourceKey(d.raw)||hasPresentationResourceKey(d.rawDeclared))throw new Error("Bundled presentation resource in item "+x.id);
   if(!d.inheritedViaRefNode&&Object.prototype.hasOwnProperty.call(d,"rawDeclared"))throw new Error("Redundant rawDeclared "+x.id);
-  if(d.resourceFieldCount){const rr=JSON.parse(fs.readFileSync(file("resource-chunks","items",`${x.bucket}.json`),"utf8")).details;if(!rr[x.id])throw new Error("Missing item resource sidecar "+x.id);}
+  if(d.resourceFieldCount){const rr=JSON.parse(fs.readFileSync(itemFile("resource-chunks","items",`${x.bucket}.json`),"utf8")).details;if(!rr[x.id])throw new Error("Missing item resource sidecar "+x.id);}
 }
 const rc={};
 for(const x of research.index){
-  rc[x.bucket]??=JSON.parse(fs.readFileSync(file("research-chunks",`${x.bucket}.json`),"utf8")).details;
+  rc[x.bucket]??=JSON.parse(fs.readFileSync(itemFile("research-chunks",`${x.bucket}.json`),"utf8")).details;
   const d=rc[x.bucket][x.id];if(!d)throw new Error("Missing research detail "+x.id);
   if(hasPresentationResourceKey(d.raw))throw new Error("Bundled presentation resource in research "+x.id);
   if(Object.prototype.hasOwnProperty.call(d,"references"))throw new Error("Redundant research reference union "+x.id);
-  if(d.resourceFieldCount){const rr=JSON.parse(fs.readFileSync(file("resource-chunks","research",`${x.bucket}.json`),"utf8")).details;if(!rr[x.id])throw new Error("Missing research resource sidecar "+x.id);}
+  if(d.resourceFieldCount){const rr=JSON.parse(fs.readFileSync(itemFile("resource-chunks","research",`${x.bucket}.json`),"utf8")).details;if(!rr[x.id])throw new Error("Missing research resource sidecar "+x.id);}
 }
 if(!schema.sortableItemFields?.length)throw new Error("No sortable fields");
 if(!soldiers.soldiers?.length)throw new Error("No soldiers generated");

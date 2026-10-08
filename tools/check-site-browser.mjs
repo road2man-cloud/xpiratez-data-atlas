@@ -1,0 +1,119 @@
+// Browser smoke test for the public XPiratez Data Atlas.
+// Run with a local install of playwright-core and Microsoft Edge:
+//   node tools/check-site-browser.mjs --local
+//   node tools/check-site-browser.mjs --base=https://road2man-cloud.github.io/xpiratez-data-atlas/
+//   node tools/check-site-browser.mjs --local --pages=starting,items,research
+import http from "node:http";
+import fs from "node:fs/promises";
+import {existsSync} from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {chromium} from "playwright-core";
+
+const publicDir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../public");
+const args=process.argv.slice(2);
+const option=(prefix)=>args.find(x=>x.startsWith(prefix+"="))?.slice(prefix.length+1);
+const pages=(option("--pages")||"starting,captains,soldiers,crafts,craft-weapons,facilities,armors,items,research,manufacture,events,forces,weapons").split(",");
+const ready={
+  starting:"#cards .card", captains:"#matrixTable tbody tr", soldiers:"#soldierTable tbody tr",
+  crafts:"#craftTable tbody tr", "craft-weapons":"#weaponTable tbody tr",
+  facilities:"#facilityTable tbody tr", armors:"#armorTable tbody tr",
+  items:"#tbody tr", research:"#tbody tr", manufacture:"#manufactureTable tbody tr",
+  events:"#eventTable tbody tr", forces:"#forceTable tbody tr", weapons:"#weaponTable tbody tr"
+};
+const htmlError=/데이터를 불러오지 못했습니다|로딩 실패|데이터 불러오기 실패|Error loading|TypeError:|ReferenceError:/i;
+let server;
+if(args.includes("--local")){
+  const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".gz":"application/octet-stream"};
+  server=http.createServer(async(req,res)=>{
+    try{
+      const pathname=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
+      const file=path.resolve(publicDir,"."+pathname,(pathname.endsWith("/")?"index.html":""));
+      if(!file.startsWith(publicDir+path.sep)&&file!==publicDir){res.writeHead(403);res.end();return;}
+      const bytes=await fs.readFile(file);
+      res.writeHead(200,{"Content-Type":mime[path.extname(file)]||"application/octet-stream","Cache-Control":"no-store"});
+      res.end(bytes);
+    }catch(e){res.writeHead(404);res.end("Not found");}
+  });
+  await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
+}
+const base=server?"http://127.0.0.1:"+server.address().port+"/":option("--base")||"https://road2man-cloud.github.io/xpiratez-data-atlas/";
+const browserCandidates=[
+  process.env.EDGE_PATH,
+  "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+  "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium",
+  chromium.executablePath()
+];
+const edge=browserCandidates.find(x=>x&&existsSync(x));
+if(!edge)throw new Error("Chrome/Edge not found; set EDGE_PATH or install Playwright Chromium");
+const browser=await chromium.launch({executablePath:edge,headless:true,args:["--no-first-run","--no-sandbox"]});
+const results=[];
+try {
+  for(const slug of pages){
+    if(!ready[slug]){console.log("FAIL "+slug+" unknown-page");results.push(false);continue;}
+    const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+    const errors=[],httpErrors=[];
+    page.on("pageerror",e=>errors.push(e.message));
+    page.on("console",msg=>{if(msg.type()==="error"&&!msg.location().url.endsWith("/favicon.ico"))errors.push("console: "+msg.text()+" ["+msg.location().url+"]")});
+    page.on("response",r=>{if(r.status()>=400&&!r.url().split("?")[0].endsWith("/favicon.ico"))httpErrors.push(r.status()+" "+r.url().slice(0,180))});
+    page.on("requestfailed",r=>httpErrors.push("network "+r.url().slice(0,180)+" "+r.failure()?.errorText));
+    let count=0,search="skip",detail="skip",display="";
+    try{
+      await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+      await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
+      count=await page.locator(ready[slug]).count();
+      if(slug==="starting"){
+        await page.locator("#search").fill("STR_EGYPT");
+        await page.waitForTimeout(180);
+        search=String(await page.locator("#cards .card").count());
+        if(+search<1||+search>=count)errors.push("search STR_EGYPT unexpectedly returned "+search+" (expected at least 1, less than "+count+")");
+        await page.locator("#search").fill("");
+        await page.locator("#kind").selectOption("country");
+        const country=await page.locator("#cards .card").count();
+        if(country<1||country>=count)errors.push("country filter returned "+country);
+        await page.locator("#kind").selectOption("all");
+        await page.locator("#sort").selectOption("points");
+        await page.locator("#cards details").first().evaluate(el=>el.open=true);
+        detail=String(await page.locator("#cards details[open] .event-row").count());
+        if(+detail<1)errors.push("start card details empty");
+      }else{
+        const input=page.locator("#search");
+        if(await input.count()){
+          const before=await page.locator(ready[slug]).count();
+          await input.fill("unlikely_no_match_search_88bbb");
+          await page.waitForTimeout(350);
+          const after=await page.locator(ready[slug]).count();
+          search=before+"->"+after;
+          if(after>=before&&before>2)errors.push("search no-match did not filter ("+search+")");
+          await input.fill("");
+        }
+        const row=page.locator(ready[slug]).first();
+        // Item/research first table cell is a comparison checkbox; click the name instead.
+        if(slug==="items"||slug==="research")await row.locator("td").nth(1).click();
+        else await row.click();
+        const selector=await page.locator("#detailDialog").count()?"#detailDialog[open]":"#drawer.open";
+        await page.locator(selector).waitFor({state:"visible",timeout:14000});
+        const contentSelector=await page.locator("#detailBody").count()?"#detailBody":slug==="captains"?"#dialogBody":"#detail";
+        const content=await page.locator(contentSelector).innerText();
+        detail=String(content.length);
+        if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
+      }
+      display=(await page.locator("body").innerText()).slice(-320).replace(/\s+/g," ");
+      if(htmlError.test(display))errors.push("failure text in body tail");
+    }catch(e){
+      errors.push(e.message.split("\n")[0]);
+      display=(await page.locator("body").innerText().catch(()=>"<no DOM>")).slice(0,260).replace(/\s+/g," ");
+    }
+    const ok=!!count&&!errors.length&&!httpErrors.length;
+    results.push(ok);
+    console.log((ok?"PASS":"FAIL")+" "+slug+" rows="+count+" search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+" http="+JSON.stringify(httpErrors.slice(0,6))+(ok?"":" DOM="+display));
+    await page.close();
+  }
+}finally{
+  await browser.close();
+  if(server)await new Promise(resolve=>server.close(resolve));
+}
+const pass=results.filter(Boolean).length;
+console.log("SITE SMOKE "+pass+"/"+results.length+" passed | base="+base);
+if(pass!==results.length)process.exitCode=1;
