@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez 이벤트 DB</title>
+<link rel="stylesheet" href="styles.css?v=events-db-20261008">
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="topnav"><a class="back" href="../">← Data Atlas</a><div><a class="ghost" href="../research/">연구 DB</a><a class="ghost" href="../items/">아이템 DB</a><a class="ghost" href="../starting/">스타팅 DB</a></div></div>
+  <p class="eyebrow">XPiratez v.o1.1.1 · Events + eventScripts</p>
+  <h1>이벤트 DB</h1>
+  <p class="lede">792개 이벤트를 643개 eventScript와 합쳐 발생 조건·확률·기간·false 게이트·연구/아이템/병사/자금 결과를 추적하고, GPT 플레이 인사이트로 실제 준비 행동과 놓침 위험까지 설명합니다.</p>
+</div></header>
+
+<main class="wrap">
+  <section id="summary" class="summary"></section>
+
+  <section class="toolbar card">
+    <label class="field grow"><span>검색</span><input id="search" type="search" placeholder="이벤트, 연구/아이템 보상, 조건, 시설, 지역, 내부 ID…"></label>
+    <label class="field"><span>주 역할</span><select id="role"><option value="">전체 역할</option></select></label>
+    <label class="field"><span>발생 조건</span><select id="triggerKind"><option value="">전체 조건</option></select></label>
+    <label class="field"><span>놓침 위험</span><select id="missRisk"><option value="">전체</option><option value="high">높음</option><option value="medium">중간</option><option value="low">낮음</option></select></label>
+    <label class="field"><span>결과</span><select id="reward"><option value="">전체</option><option value="research">연구/플래그</option><option value="item">확정 아이템</option><option value="random">랜덤 보상</option><option value="recruit">병사/인원</option><option value="funds">자금 변화</option><option value="points">점수 변화</option></select></label>
+  </section>
+
+  <section class="explain card">
+    <strong>events</strong><span>실제 결과입니다. 연구 플래그, 아이템, 병사, 자금·점수, 연구 중단 등을 직접 기록합니다.</span>
+    <strong>eventScripts</strong><span>발생 후보가 되는 조건입니다. 월·난이도·자금/점수·연구/시설/아이템 true/false 게이트와 <code>executionOdds</code>를 별도로 표시합니다.</span>
+    <strong>확률 해석</strong><span><code>executionOdds</code>는 직접값입니다. <code>eventWeights</code>/<code>oneTimeRandomEvents</code>는 같은 표 안 상대 가중치만 계산하며 두 값을 임의로 곱해 최종 발생확률이라고 단정하지 않습니다.</span>
+    <strong>놓침 위험</strong><span><code>lastMonth</code>, false 트리거, 1회 랜덤 후보를 근거로 한 파생 해석입니다. 원본 조건과 GPT 판단을 상세창에서 분리해 보여줍니다.</span>
+  </section>
+
+  <section class="table-card card">
+    <div class="table-head">
+      <div><p class="eyebrow">정렬 가능</p><h2>이벤트 비교</h2></div>
+      <div class="table-meta"><span id="rowCount"></span><select id="pageSize"><option>50</option><option selected>100</option><option>250</option></select></div>
+    </div>
+    <div class="table-shell"><table id="eventTable"><thead></thead><tbody></tbody></table></div>
+    <div class="pager"><button id="prev">이전</button><span id="pageInfo"></span><button id="next">다음</button></div>
+  </section>
+</main>
+
+<div id="backdrop" class="backdrop" hidden></div>
+<aside id="drawer" class="drawer" aria-hidden="true">
+  <button id="closeDrawer" class="close" aria-label="닫기">×</button>
+  <div id="detail"></div>
+</aside>
+<script type="module" src="app.js?v=events-db-20261008"></script>
+</body>
+</html>
