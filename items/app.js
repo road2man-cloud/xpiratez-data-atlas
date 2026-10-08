@@ -13,14 +13,15 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),detail:null};
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
 async function init(){
   try{
-    const [ii,ri,rii,s,m,e]=await Promise.all([json(`${dataBase}/items-index.json`),json(`${dataBase}/research-index.json`),json(`${dataBase}/research-insight-index.json`),json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`),json(`${dataBase}/entities.json`)]);
-    itemIndex=ii.index;
+    const [ii,ri,rii,s,m,e,ui]=await Promise.all([json(`${dataBase}/items-index.json`),json(`${dataBase}/research-index.json`),json(`${dataBase}/research-insight-index.json`),json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`),json(`${dataBase}/entities.json`),json(`${dataBase}/item-usage-index.json`)]);
+    const useCounts=new Map((ui.index||[]).map(x=>[x.id,x]));
+    itemIndex=ii.index.map(x=>({...x,...(useCounts.get(x.id)||{}),originalManufactureReferences:x.manufactureCount}));
     const insightIndex=new Map((rii.index||[]).map(x=>[x.id,x]));
     researchIndex=ri.index.map(x=>({...x,...(insightIndex.get(x.id)||{})}));
     schema=s;manifest=m;entityNames=e.names||{};
@@ -48,7 +49,7 @@ function bind(){
   addEventListener("hashchange",route);
 }
 const sortOptions={
-  items:[["koName","이름"],["kind","종류"],["weight","무게"],["size","창고 점유"],["power","위력"],["costBuy","구매가"],["costSell","판매가"],["monthlySalary","월 급여/수익"],["accuracyAimed","조준 명중"],["researchCount","연구 연결"],["manufactureCount","제조 연결"],["referenceCount","전체 역참조"]],
+  items:[["koName","이름"],["kind","종류"],["weight","무게"],["size","창고 점유"],["power","위력"],["costBuy","구매가"],["costSell","판매가"],["monthlySalary","월 급여/수익"],["monthlyMaintenance","월 유지비"],["materialUses","실제 제조 소모"],["manufactureSources","제조 산출"],["accuracyAimed","조준 명중"],["researchCount","연구 연결"],["manufactureTotalRecipes","전체 제조 연결"],["referenceCount","전체 역참조"]],
   research:[["koName","이름"],["cost","연구량"],["points","완료 점수"],["dependencyCount","직접 선행"],["requiredByCount","후속 연구"],["spawnedItemCount","생성 아이템"],["itemReferenceCount","아이템 연결"],["manufactureReferenceCount","제조 연결"],["otherReferenceCount","기타 연결"]]
 };
 function renderControls(){
@@ -69,7 +70,7 @@ function filtered(){
     if(mode==="items"){
       if(f.kind&&x.kind!==f.kind)return false;
       if(f.research==="yes"&&!x.researchCount)return false;if(f.research==="no"&&x.researchCount)return false;
-      if(f.manufacture==="yes"&&!x.manufactureCount)return false;if(f.manufacture==="no"&&x.manufactureCount)return false;
+      if(f.manufacture==="yes"&&!x.manufactureTotalRecipes)return false;if(f.manufacture==="no"&&x.manufactureTotalRecipes)return false;
     }else{
       if(f.sample==="yes"&&!x.needItem)return false;if(f.sample==="destroy"&&!x.destroyItem)return false;if(f.sample==="no"&&x.needItem)return false;
       if(f.outputs==="yes"&&!x.spawnedItemCount)return false;if(f.outputs==="no"&&x.spawnedItemCount)return false;
@@ -87,8 +88,8 @@ function render(){
   const page=rows.slice((state.page-1)*state.pageSize,state.page*state.pageSize),sel=state.selected[state.mode];
   $("#statusText").textContent=`${fmt(rows.length)}개 결과 · ${state.page}/${pages} 페이지`;
   if(state.mode==="items"){
-    $("#thead").innerHTML="<tr><th>비교</th><th>아이템</th><th>ID</th><th>종류</th><th>위력</th><th>무게</th><th>창고</th><th>판매가</th><th>월 급여/수익</th><th>연구</th><th>제조</th></tr>";
-    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${esc(kinds[x.kind]||x.kind)}</td><td>${fmt(x.power)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.size)}</td><td>${fmt(x.costSell)}</td><td>${fmt(x.monthlySalary)}</td><td>${fmt(x.researchCount)}</td><td>${fmt(x.manufactureCount)}</td></tr>`).join("");
+    $("#thead").innerHTML="<tr><th>비교</th><th>아이템</th><th>ID</th><th>종류</th><th>위력</th><th>무게</th><th>창고</th><th>판매가</th><th>월 유지비</th><th>연구</th><th>제조 소비</th><th>제조 생산</th></tr>";
+    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${esc(kinds[x.kind]||x.kind)}</td><td>${fmt(x.power)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.size)}</td><td>${fmt(x.costSell)}</td><td>${fmt(x.monthlyMaintenance)}</td><td>${fmt(x.researchCount)}</td><td>${fmt(x.materialUses)}</td><td>${fmt(x.manufactureSources)}</td></tr>`).join("");
   }else{
     $("#thead").innerHTML="<tr><th>비교</th><th>연구</th><th>해석</th><th>ID</th><th>연구량</th><th>점수</th><th>직접 선행</th><th>후속</th><th>생성</th><th>아이템</th><th>제조</th><th>표본</th></tr>";
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td><span class="badge insight-kind">${esc(insightRoleLabels[x.primaryInsightKind]||x.primaryInsightKind||"—")}</span></td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
@@ -108,7 +109,8 @@ async function detail(mode,id){
     return {...d,insight:state.insightCache.get(row.bucket)[id]?.insight||null,editorial:state.editorialCache.get(row.bucket)[id]||null};
   }
   if(!state.itemEditorialCache.has(row.bucket))state.itemEditorialCache.set(row.bucket,(await json(`${dataBase}/item-editorial-chunks/${row.bucket}.json`)).details);
-  return {...d,editorial:state.itemEditorialCache.get(row.bucket)[id]||null};
+  if(!state.itemUsageCache.has(row.bucket))state.itemUsageCache.set(row.bucket,(await json(`${dataBase}/item-usage-chunks/${row.bucket}.json`)).details);
+  return {...d,editorial:state.itemEditorialCache.get(row.bucket)[id]||null,usage:state.itemUsageCache.get(row.bucket)[id]||null};
 }
 function entity(id,preferredKind=""){const preferred=preferredKind==="items"?itemMap.get(id):preferredKind==="research"?researchMap.get(id):null,x=preferred||itemMap.get(id)||researchMap.get(id),kind=preferred?preferredKind:itemMap.has(id)?"items":researchMap.has(id)?"research":"",n=entityNames[id];return kind?`<button class="chip" data-kind="${kind}" data-open="${esc(id)}">${esc(x.koName)}<span class="sub">${esc(x.enName)}</span></button>`:n?`<span class="badge">${esc(n[0])}<span class="sub">${esc(n[1])} · ${esc(id)}</span></span>`:`<span class="badge">${esc(id)}</span>`}
 function humanPath(p){return String(p||"직접 참조").split(".").map(x=>pathNames[x]||(/^\d+$/.test(x)?"#"+(Number(x)+1):x)).join(" › ")}
@@ -139,22 +141,52 @@ function itemEditorialMarkup(d){
     <div class="insight-heading"><h3>GPT 아이템 인사이트</h3><span class="evidence-tag gpt">GPT 편집 · 룰셋 기반 자동 합성</span></div>
     ${row("정체",e.overview,"core")}
     ${row("실제 효과",e.effect,"effect")}
+    ${row("실물 사용처",e.uses,"route")}
+    ${row("경제 효과",e.economics,"decision")}
     ${row("획득/해금",e.acquisition,"action")}
     ${row("진행 연결",e.progression,"route")}
     ${row("판단",e.decision,"decision")}
     ${row("주의",e.watch,"watch")}
   </section>`;
 }
+function itemUsageMarkup(d){
+  const u=d.usage;if(!u)return"";
+  const link=(id,kind,label)=>`<a class="chip" href="../${kind}/#${kind==="manufacture"?"recipe":kind==="events"?"event":"research"}=${encodeURIComponent(id)}">${esc(label||entityNames[id]?.[0]||id)}<span class="sub">${esc(id)}</span></a>`;
+  const counts=[["실물 소비 제조식",u.consumes.length],["제조 산출처",new Set(u.produces.map(x=>x.id)).size],["이벤트 지급처",new Set(u.eventGrants.map(x=>x.id)).size],["훈련/변신 재료",u.transformations.length]];
+  const section=(label,xs,render,expanded=false)=>xs.length?`<details ${expanded?"open":""}><summary>${esc(label)} · ${fmt(xs.length)}건</summary><div class="usage-list">${xs.map(render).join("")}</div></details>`:"";
+  const qty=n=>`<strong>×${esc(fmt(n))}</strong>`;
+  const consumed=section("제조에서 실물 재료로 소모",u.consumes,x=>{
+    const fixed=(x.output?.fixed||[]).map(o=>`${entityNames[o.id]?.[0]||o.id} ×${fmt(o.qty)}`);
+    const other=(x.output?.other||[]).map(o=>`${entityNames[o.id]?.[0]||o.id} (${o.kind==="person"?"병사":"기체"})`);
+    const result=[...fixed,...other].join(" · ")||"확정 아이템 없음";
+    const random=(x.output?.randomSample||[]).map(y=>`${entityNames[y.id]?.[0]||y.id} ×${fmt(y.qty)}`).join(" · ");
+    return`<div class="usage-entry">${link(x.id,"manufacture",x.koName)} ${qty(x.qty)} <span class="badge">${esc(x.role)}</span><div class="usage-note">확정 산출 요약(최대 5종): ${esc(result)}${x.output?.randomOptions?` · 랜덤 산출 ${fmt(x.output.randomOptions)}개 후보(예: ${esc(random)})`:""}</div>${x.baseFuncs?.length?`<div class="usage-note">필요 기지 기능: ${esc(x.baseFuncs.join(" · "))}</div>`:""}</div>`;
+  },u.consumes.length>0);
+  const produced=section("제조로 획득",u.produces,x=>`<div class="usage-entry">${link(x.id,"manufacture",x.koName)} ${qty(x.qty)} <span class="badge">${x.kind==="fixed"?"확정 산출":"랜덤 후보"}</span>${x.kind==="random"&&x.relativeShare!=null?`<div class="usage-note">해당 제조식 랜덤표 내부 비중: ${(x.relativeShare*100).toFixed(2)}% (조건부 비중)</div>`:""}</div>`);
+  const grants=section("이벤트에서 지급",u.eventGrants,x=>`<div class="usage-entry">${link(x.id,"events",x.koName)} ${qty(x.qty)} <span class="badge">${x.kind==="fixed"?"확정 지급":x.kind==="random-list"?"랜덤 단일 후보":"랜덤 묶음 후보"}</span>${x.kind==="random-list"&&x.relativeShare!=null?`<div class="usage-note">해당 이벤트 내부 목록 상대 비중 ${(x.relativeShare*100).toFixed(2)}% · 이벤트 발생률과 별개</div>`:""}</div>`);
+  const eventResearch=section("이벤트가 같은 ID의 연구 플래그 지급 (실물 아님)",u.eventResearchGrants||[],x=>`<div class="usage-entry">${link(x.id,"events")} <span class="usage-note">연구 플래그 지급 · 아이템 수량 증가 아님</span></div>`);
+  const conditions=section("이벤트에서 아이템 보유 조건",u.eventConditions,x=>`<div class="usage-entry">${link(x.id,"events",x.koName)} <span class="badge">${x.required===true?"보유 요구":x.required===false?"미보유 요구":"조건 "+esc(String(x.required))}</span><div class="usage-note">eventScript: ${esc(x.scriptId)}</div></div>`);
+  const transforms=section("병사 훈련·변신의 실물 재료",u.transformations,x=>`<div class="usage-entry"><b>${esc(entityNames[x.id]?.[0]||x.id)}</b> ${qty(x.qty)}${x.cost?`<div class="usage-note">실행비 ${fmt(x.cost)}</div>`:""}${x.baseFuncs?.length?`<div class="usage-note">기지 기능 ${esc(x.baseFuncs.join(" · "))}</div>`:""}</div>`);
+  const unlocks=section("연구 선행 조건 (아이템 실물 소모 아님)",u.researchUnlocks,x=>`<div class="usage-entry">${link(x.id,"research",x.koName)} <span class="usage-note">완료 연구 플래그 필요 · 아이템 수량 차감 아님</span></div>`);
+  const manufactureGates=section("제조 해금 조건 (실물 소모 아님)",u.manufactureResearchGates,x=>`<div class="usage-entry">${link(x.id,"manufacture",x.koName)} <span class="usage-note">requires 연구/해금 플래그 · 실물 소모는 위에서 별도 집계</span></div>`);
+  const sample=u.specimenResearch?.needItem?`<p class="usage-note">동명 연구 ${link(u.specimenResearch.id,"research")}: 실물 표본 필요 · ${u.specimenResearch.destroyItem?"연구 시 소모":"연구 시 비소모"}.</p>`:"";
+  const panels=[consumed,produced,transforms,grants,eventResearch,conditions,unlocks,manufactureGates].filter(Boolean).join("");
+  return`<section class="section usage-panel"><div class="insight-heading"><h3>실제 사용처·획득처 전수 분석</h3><span class="evidence-tag derived">룰셋 집계 · 직접 재료/보상/조건 구분</span></div>
+    ${kpis(counts)}${sample}${panels||'<p class="empty">정형 제조·이벤트·훈련/변신·연구 사용처는 없음. 맵·스크립트·기타 역참조는 아래에서 확인하세요.</p>'}
+    <p class="muted">×수량은 1회 기준. 랜덤표 내부 비중은 전체 미션/이벤트 발생 확률이 아닙니다.</p>
+  </section>`;
+}
 function renderItem(d){
   const c=d.effectiveCore||{},codes=d.effectiveCoreSourceCodes||"",legend=schema.coreSourceLegend||{},s=d.effectiveCoreSources||Object.fromEntries((schema.effectiveCoreFields||[]).map((k,i)=>[k,legend[codes[i]]||""])),r=d.raw||{},refs=allItemReferences(d);
   const power=r.power!=null?c.power:r.meleePower!=null?c.meleePower:"—",powerSrc=r.power!=null?s.power:s.meleePower;
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
-  ${kpis([["종류",kinds[d.kind]||d.kind,s.battleType],["위력",power,powerSrc],["피해형",d.damageTypeKo],["무게",c.weight,s.weight],["창고 점유",c.size,s.size],["구매가",r.costBuy??"—",r.costBuy!=null?s.costBuy:""],["판매가",r.costSell??"—",r.costSell!=null?s.costSell:""],["월 급여/수익",c.monthlySalary,s.monthlySalary],["아이템 내구",c.armor,s.armor],["한손 보정",c.oneHandedPenalty==null?"—":c.oneHandedPenalty+"%",s.oneHandedPenalty],["무릎쏴",c.kneelBonus==null?"—":c.kneelBonus+"%",s.kneelBonus]])}
+  ${kpis([["종류",kinds[d.kind]||d.kind,s.battleType],["위력",power,powerSrc],["피해형",d.damageTypeKo],["무게",c.weight,s.weight],["창고 점유",c.size,s.size],["구매가",r.costBuy??"—",r.costBuy!=null?s.costBuy:""],["판매가",r.costSell??"—",r.costSell!=null?s.costSell:""],["월 급여/수익",c.monthlySalary,s.monthlySalary],["월 유지비",c.monthlyMaintenance,s.monthlyMaintenance],["아이템 내구",c.armor,s.armor],["한손 보정",c.oneHandedPenalty==null?"—":c.oneHandedPenalty+"%",s.oneHandedPenalty],["무릎쏴",c.kneelBonus==null?"—":c.kneelBonus+"%",s.kneelBonus]])}
   ${itemEditorialMarkup(d)}
+  ${itemUsageMarkup(d)}
   <section class="section"><h3>공격 행동</h3>${d.fireModes?.length?`<table><tr><th>행동</th><th>명중</th><th>TU</th><th>발수</th></tr>${d.fireModes.map(x=>`<tr><td>${esc(x.name||x.label)}</td><td>${fmt(x.accuracy)}%</td><td>${fmt(x.tu)}</td><td>${fmt(x.shots)}</td></tr>`).join("")}</table>`:'<div class="empty">직접 공격 행동 없음</div>'}</section>
   <section class="section"><h3>호환 탄약</h3>${d.compatibleAmmo?.length?d.compatibleAmmo.map(x=>entity(x,"items")).join(""):'<div class="empty">없음/해당 없음</div>'}</section>
   <section class="section"><h3>이 탄약을 쓰는 무기</h3>${d.usedByWeapons?.length?d.usedByWeapons.map(x=>entity(x,"items")).join(""):'<div class="empty">없음/해당 없음</div>'}</section>
-  <section class="section"><h3>연구 연결</h3>${relations(d.research,"research")}</section><section class="section"><h3>제조 연결</h3>${relations(d.manufacture,"manufacture")}</section>
+  <section class="section"><h3>연구 연결</h3>${relations(d.research,"research")}</section><section class="section"><h3>기존 문자열형 제조 역참조 · 위 실물 사용처 전수집계를 우선</h3>${relations(d.manufacture,"manufacture")}</section>
   <details><summary>전체 역참조 ${refs.length}개</summary><div>${relations(refs)}</div></details>
   <details><summary>최종 핵심 룰 필드 ${Object.keys(r).length}개</summary><div>${rawTable(r,schema.fieldMeta)}</div></details>
   ${resourceDetailsMarkup("items",d)}
