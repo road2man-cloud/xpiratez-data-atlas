@@ -5,7 +5,7 @@ import zlib from "node:zlib";
 const args=process.argv.slice(2),i=args.indexOf("--data");
 const dataDir=path.resolve(i>=0&&args[i+1]?args[i+1]:"public/data");
 const readGz=(...p)=>JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(dataDir,...p))));
-const db=readGz("enemy-forces-index.json.gz"),support=readGz("enemy-force-support.json.gz"),eventLinks=readGz("event-force-links.json.gz");
+const db=readGz("enemy-forces-index.json.gz"),support=readGz("enemy-force-support.json.gz"),eventLinks=readGz("event-force-links.json.gz"),surfaceDb=readGz("event-surfaces-index.json.gz");
 const rows=db.index||[],forceCache={},editorialCache={};
 function force(row){forceCache[row.bucket]??=readGz("enemy-force-chunks",row.bucket+".json.gz").details;return forceCache[row.bucket][row.id]}
 function editorial(row){editorialCache[row.bucket]??=readGz("enemy-force-editorial-chunks",row.bucket+".json.gz").details;return editorialCache[row.bucket][row.id]}
@@ -15,6 +15,11 @@ assert(rows.length===339,"Expected 339 enemy missions, got "+rows.length);
 assert(db.counts.waves===723,"Wave count regression");
 assert(db.counts.races===129&&db.counts.units===435&&db.counts.deployments===489,"Support count regression");
 assert(db.counts.eventLinkedMissions>=80,"Event-linked force coverage regression");
+assert(surfaceDb.counts?.missions===339,"Event surface mission count regression");
+assert(surfaceDb.counts?.deployments===286,"Event surface deployment count regression");
+assert(surfaceDb.counts?.total===625,"Event surface total count regression");
+assert(surfaceDb.index.some(x=>x.kind==="deployment"&&x.id==="STR_LOC_ACADEMY_OUTPOST_TEMPERATE"&&x.searchText.includes("과학 실험")),"Scientific Experiments deployment surface regression");
+assert(surfaceDb.index.some(x=>x.kind==="deployment"&&x.alertName&&x.briefingDesc),"Alert/briefing deployment surface regression");
 for(const row of rows){
   const d=force(row),e=editorial(row);assert(d?.id===row.id,"Missing force detail "+row.id);assert(e,"Missing force editorial "+row.id);
   for(const k of ["overview","spawn","movement","encounter","threat","action","caution"])assert(typeof e[k]==="string"&&e[k].length>=55,"Weak force editorial "+row.id+" "+k);
@@ -60,7 +65,7 @@ function get(id){const row=rows.find(x=>x.id===id);assert(row,"Missing force "+i
   const links=eventLinks.STR_JACKS_WARNING;assert(links?.enables?.some(x=>x.missionId==="STR_MISSION_NINJA_ESTABLISH_BASE"),"Event force reverse link regression");
 }
 const files=[
-  "enemy-forces-index.json.gz","enemy-force-support.json.gz","event-force-links.json.gz",
+  "enemy-forces-index.json.gz","enemy-force-support.json.gz","event-force-links.json.gz","event-surfaces-index.json.gz",
   ...fs.readdirSync(path.join(dataDir,"enemy-force-chunks")).map(x=>"enemy-force-chunks/"+x),
   ...fs.readdirSync(path.join(dataDir,"enemy-force-editorial-chunks")).map(x=>"enemy-force-editorial-chunks/"+x)
 ];
@@ -70,7 +75,7 @@ assert(textByField.action.unique>220,"Enemy force action insight diversity regre
 assert(textByField.caution.unique>90,"Enemy force caution insight diversity regression");
 assert(textByField.overview.maxRepeat<40,"Enemy force overview repetition regression");
 const appPath=path.resolve("public/forces/app.js"),eventAppPath=path.resolve("public/events/app.js");
-if(fs.existsSync(appPath)){const app=fs.readFileSync(appPath,"utf8");assert(app.includes("deploymentMarkup")&&app.includes("trajectoryMarkup"),"Enemy force frontend detail mapping missing")}
+if(fs.existsSync(appPath)){const app=fs.readFileSync(appPath,"utf8");assert(app.includes("deploymentMarkup")&&app.includes("trajectoryMarkup")&&app.includes("openDeploymentDetail")&&app.includes("#deployment="),"Enemy force frontend detail mapping missing")}
 if(fs.existsSync(eventAppPath)){const app=fs.readFileSync(eventAppPath,"utf8");assert(app.includes("event-force-links.json.gz")&&app.includes("../forces/#force="),"Event -> enemy force frontend reverse link missing")}
 const bytes=files.reduce((s,p)=>s+fs.statSync(path.join(dataDir,p)).size,0);
 assert(bytes<4*1024*1024,"Enemy force DB gzip bloat regression "+(bytes/1048576).toFixed(1)+" MiB");

@@ -13,6 +13,7 @@ on:
       - "public/data/enemy-force-editorial-chunks/**"
       - "public/data/enemy-force-support.json.gz"
       - "public/data/event-force-links.json.gz"
+      - "public/data/event-surfaces-index.json.gz"
       - "package.json"
       - ".github/workflows/verify-enemy-forces.yml"
   workflow_dispatch:

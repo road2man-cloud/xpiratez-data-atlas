@@ -3,7 +3,7 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const fmt=v=>v==null||Number.isNaN(Number(v))?"—":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:2});
 const pct=v=>v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%";
 const dataBase="../data";
-let db={index:[],counts:{},roles:{},triggerKinds:{}},forceDb={index:[],counts:{}},rows=[],detailCache=new Map(),editorialCache=new Map(),forceLinks=null;
+let db={index:[],counts:{},roles:{},triggerKinds:{}},eventSurfaceDb={index:[],counts:{}},rows=[],detailCache=new Map(),editorialCache=new Map(),forceLinks=null;
 const state={q:"",role:"",triggerKind:"",missRisk:"",reward:"",sort:"koName",dir:1,page:1,pageSize:100};
 
 async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 gzip 데이터 스트림 해제를 지원하지 않습니다.");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));return new Response(stream).json()}
@@ -32,7 +32,8 @@ function renderSummary(){
     stat("확정 아이템 지급",c.itemRewards),
     stat("기간 제한",c.boundedWindow),
     stat("false 게이트 포함",c.negativeGate),
-    stat("이벤트형 미션",forceDb.counts?.missions||0,"통합검색 교차노출")
+    stat("이벤트형 미션",eventSurfaceDb.counts?.missions||0,"통합검색"),
+    stat("전투 경고/브리핑",eventSurfaceDb.counts?.deployments||0,"통합검색")
   ].join("");
 }
 function rewardMatch(x,v){
@@ -70,12 +71,12 @@ const cols=[
 function renderMissionSurface(){
   const box=$("#missionSurface"),q=state.q;
   if(!q){box.hidden=true;box.innerHTML="";return}
-  const matches=(forceDb.index||[]).filter(x=>x.searchText?.includes(q)).slice(0,24);
+  const matches=(eventSurfaceDb.index||[]).filter(x=>x.searchText?.includes(q)).slice(0,36);
   if(!matches.length){box.hidden=true;box.innerHTML="";return}
   box.hidden=false;
-  box.innerHTML='<div class="table-head"><div><p class="eyebrow">통합 검색</p><h2>이벤트형 미션 / 적작전 '+fmt(matches.length)+'개</h2></div><span class="evidence direct">alienMission · 별도 분류</span></div>'+
-    '<p class="classification-note">아래 항목은 내부 <code>events:</code> 객체가 아니라 <code>alienMission/missionScript</code> 계열입니다. 게임에서는 경고·미션으로 보여 이벤트처럼 느껴질 수 있어 이벤트 검색에서 함께 노출합니다.</p>'+
-    '<div class="mission-hit-grid">'+matches.map(x=>'<a class="mission-hit" href="../forces/#force='+encodeURIComponent(x.id)+'"><span class="kind">이벤트형 미션 / 적작전</span><b>'+esc(x.koName)+'</b><span class="sub">'+esc(x.enName)+' · '+esc(x.id)+'</span><div class="metrics"><span>script '+fmt(x.scriptCount)+'</span><span>wave '+fmt(x.waveCount)+'</span><span>race '+fmt(x.raceCount)+'</span>'+(x.hasGround?'<span>착륙/지상</span>':'')+(x.hasHunter?'<span>Hunter</span>':'')+'</div></a>').join("")+'</div>';
+  box.innerHTML='<div class="table-head"><div><p class="eyebrow">통합 검색</p><h2>이벤트형 미션 / 경고 '+fmt(matches.length)+'개</h2></div><span class="evidence direct">alienMission + alienDeployment</span></div>'+
+    '<p class="classification-note">아래 항목은 내부 <code>events:</code> 객체가 아닙니다. <code>alienMission/missionScript</code> 또는 <code>alienDeployment alert/briefing</code>이지만 플레이어에게는 이벤트·경고·특수 임무처럼 보이므로 함께 검색합니다.</p>'+
+    '<div class="mission-hit-grid">'+matches.map(x=>{const dep=x.kind==="deployment",href=dep?("../forces/#deployment="+encodeURIComponent(x.id)):("../forces/#force="+encodeURIComponent(x.id));return '<a class="mission-hit" href="'+href+'"><span class="kind">'+(dep?'전투 경고 / 브리핑':'이벤트형 미션 / 적작전')+'</span><b>'+esc(x.koName)+'</b><span class="sub">'+esc(x.enName)+' · '+esc(x.id)+'</span>'+(dep&&x.alertName?'<span class="sub">경고명: '+esc(x.alertName)+'</span>':'')+'<div class="metrics">'+(dep?('<span>'+fmt(x.width)+'×'+fmt(x.length)+'×'+fmt(x.height)+'</span>'+(x.customUfo?'<span>customUfo '+esc(x.customUfo)+'</span>':'')):('<span>script '+fmt(x.scriptCount)+'</span><span>wave '+fmt(x.waveCount)+'</span><span>race '+fmt(x.raceCount)+'</span>'+(x.hasGround?'<span>착륙/지상</span>':'')+(x.hasHunter?'<span>Hunter</span>':'')))+'</div></a>'}).join("")+'</div>';
 }
 function render(){
   renderMissionSurface();
@@ -187,5 +188,5 @@ async function openDetail(id){
 }
 function closeDrawer(){history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
 function route(){const m=location.hash.match(/^#event=(.+)$/);if(m)openDetail(decodeURIComponent(m[1]));else closeDrawer()}
-async function init(){[db,forceDb]=await Promise.all([jsonGz(dataBase+"/events-index.json.gz"),jsonGz(dataBase+"/enemy-forces-index.json.gz")]);renderSummary();initFilters();render();route()}
+async function init(){[db,eventSurfaceDb]=await Promise.all([jsonGz(dataBase+"/events-index.json.gz"),jsonGz(dataBase+"/event-surfaces-index.json.gz")]);renderSummary();initFilters();render();route()}
 init().catch(e=>{document.body.innerHTML=`<main class="wrap"><h1>이벤트 DB 로드 실패</h1><pre>${esc(e.stack||e.message)}</pre></main>`});
