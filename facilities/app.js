@@ -1,5 +1,7 @@
 let DATA=null,SUPPORT=null,SUPPORT_PROMISE=null;
 let sort={key:"buildCost",dir:1};
+const EFFICIENCY_KEYS={storage:"storagePerTile",labs:"labsPerTile",workshops:"workshopsPerTile",trainingRooms:"trainingPerTile"};
+const capacityKey=key=>$("#efficiencyView").checked?EFFICIENCY_KEYS[key]:key;
 const DETAIL_BUCKETS=new Map();
 const $=q=>document.querySelector(q);
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
@@ -79,15 +81,16 @@ function filtered(){
 }
 function th(label,key){const on=sort.key===key?" sort-on":"";const arrow=sort.key===key?(sort.dir>0?" ▲":" ▼"):"";return '<th data-sort="'+key+'" class="'+on+'">'+label+arrow+'</th>'}
 function render(){
+  const perTile=$("#efficiencyView").checked;
   const rows=filtered();$("#rowCount").textContent=rows.length+"개";
   $("#facilityTable thead").innerHTML="<tr>"+[
     th("시설","name"),"<th>역할</th>",th("면적","area"),th("건설비","buildCost"),th("건설일","buildTime"),th("월비용/수익","monthlyCost"),
-    th("숙소","personnel"),th("저장","storage"),th("연구","labs"),th("작업장","workshops"),th("훈련","trainingRooms"),th("포로","aliens"),th("기체","crafts"),
+    th("숙소","personnel"),...[ ["저장","storage"],["연구","labs"],["작업장","workshops"],["훈련","trainingRooms"] ].map(([label,key])=>th(label+(perTile?"/칸":""),capacityKey(key))),th("포로","aliens"),th("기체","crafts"),
     th("레이더","radarRange"),th("방어","defense"),th("명목 연구량","researchCost"),"<th>제공 baseFunc</th>"
   ].join("")+"</tr>";
   $("#facilityTable tbody").innerHTML=rows.map(x=>{
     const state=x.stateOnly?'<span class="warn-tag">상태 전용</span>':x.startingCount?'<span class="ok-tag">시작 ×'+fmt(x.startingCount)+'</span>':"";
-    return '<tr data-id="'+esc(x.id)+'"><td><span class="name">'+esc(x.koName)+'</span><span class="id">'+esc(x.enName)+' · '+esc(x.id)+'</span>'+state+'</td><td class="roles-cell">'+rolesHtml(x.roles)+'</td><td>'+fmt(x.area)+'</td><td>'+fmt(x.buildCost)+'</td><td>'+fmt(x.buildTime)+'</td><td>'+moneyText(x.monthlyCost)+'</td><td>'+fmt(x.personnel)+'</td><td>'+fmt(x.storage)+'</td><td>'+fmt(x.labs)+'</td><td>'+fmt(x.workshops)+'</td><td>'+fmt(x.trainingRooms)+'</td><td>'+fmt(x.aliens)+'</td><td>'+fmt(x.crafts)+'</td><td>'+fmt(x.radarRange)+'</td><td>'+fmt(x.defense)+'</td><td>'+fmt(x.researchCost)+'</td><td class="func-cell">'+funcHtml(x.provideBaseFunc)+'</td></tr>';
+    return '<tr data-id="'+esc(x.id)+'"><td><span class="name">'+esc(x.koName)+'</span><span class="id">'+esc(x.enName)+' · '+esc(x.id)+'</span>'+state+'</td><td class="roles-cell">'+rolesHtml(x.roles)+'</td><td>'+fmt(x.area)+'</td><td>'+fmt(x.buildCost)+'</td><td>'+fmt(x.buildTime)+'</td><td>'+moneyText(x.monthlyCost)+'</td><td>'+fmt(x.personnel)+'</td><td>'+fmt(x[capacityKey("storage")])+'</td><td>'+fmt(x[capacityKey("labs")])+'</td><td>'+fmt(x[capacityKey("workshops")])+'</td><td>'+fmt(x[capacityKey("trainingRooms")])+'</td><td>'+fmt(x.aliens)+'</td><td>'+fmt(x.crafts)+'</td><td>'+fmt(x.radarRange)+'</td><td>'+fmt(x.defense)+'</td><td>'+fmt(x.researchCost)+'</td><td class="func-cell">'+funcHtml(x.provideBaseFunc)+'</td></tr>';
   }).join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{const k=el.dataset.sort;if(sort.key===k)sort.dir*=-1;else sort={key:k,dir:k==="name"?1:-1};render()}));
   document.querySelectorAll("#facilityTable tbody tr").forEach(el=>el.addEventListener("click",()=>openDetail(el.dataset.id)));
@@ -154,6 +157,12 @@ async function openDetail(id){
   '<details><summary>원본 effective facility 룰 보기</summary><p class="muted">맵 배치 전용 필드 '+esc((d.omittedLayoutFields||[]).join(", ")||"없음")+' 및 스프라이트/사운드 리소스는 공개 데이터에서 분리했습니다.</p><pre class="raw">'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>';
   $("#detailDialog").showModal();
 }
+$("#efficiencyView").addEventListener("change",()=>{
+  const perTile=$("#efficiencyView").checked;
+  const pair=Object.entries(EFFICIENCY_KEYS).find(([raw,efficiency])=>sort.key===(perTile?raw:efficiency));
+  if(pair)sort.key=pair[perTile?1:0];
+  render();
+});
 ["search"].forEach(id=>$("#"+id).addEventListener("input",render));
 ["role","status","func"].forEach(id=>$("#"+id).addEventListener("change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
