@@ -139,13 +139,13 @@ function renderTable(){
     const checkbox='<label class="check-row"><input type="checkbox" data-toggle="'+esc(t.id)+'" '+(checked?'checked ':"")+(toggleable?"":'disabled ')+'aria-label="'+esc(t.koName)+' 선택 또는 해제"> 체크</label>';
     const researchWarn=status==="ready"&&distinctResearchWarnings(t).length;
     return'<tr data-id="'+esc(t.id)+'" title="행 클릭: 상세 규칙 보기">'+
-      '<td><strong>'+esc(t.koName)+'</strong><span class="ident">'+esc(t.enName)+' · '+esc(t.id)+'</span></td>'+
+      '<td>'+checkbox+'<strong>'+esc(t.koName)+'</strong><span class="ident">'+esc(t.enName)+' · '+esc(t.id)+'</span></td>'+
       '<td><span class="'+status+'">'+esc(text)+'</span>'+(researchWarn?'<span class="tag warning">연구분기 주의</span>':"")+
       (reasons?'<div class="tiny">'+esc(reasons.slice(0,110))+'</div>':"")+'</td>'+
       '<td>'+esc(t.kind)+'</td><td>'+esc(t.allowedSoldierTypes.length?t.allowedSoldierTypes.length+"종":"전체 (제외 조건 별도)")+'</td>'+
       '<td>'+n(t.cost)+'$'+(t.transferTime!=null?'<div class="tiny">'+n(t.transferTime)+'h</div>':t.recoveryTime?'<div class="tiny">회복 '+n(t.recoveryTime)+'</div>':"")+'</td>'+
       '<td class="tiny">'+esc(rankStat(t).slice(0,170))+'</td><td>'+esc(name(t.soldierBonusType))+'</td>'+
-      '<td>'+n(t.forbiddenPreviousTransformations.length)+'개 배제 / '+n(t.requiredPreviousTransformations.length)+'개 선행</td><td>'+checkbox+button+'</td></tr>';
+      '<td>'+n(t.forbiddenPreviousTransformations.length)+'개 배제 / '+n(t.requiredPreviousTransformations.length)+'개 선행</td><td>'+button+'</td></tr>';
   }).join("");
   if(!sorted.length)$("#trainingTable tbody").innerHTML='<tr><td colspan="9">조건에 맞는 훈련이 없습니다.</td></tr>';
 }
@@ -246,7 +246,7 @@ function bind(){
         canAdd(t,target.dataset.chain!==undefined);return;
       }
     }
-    if(e.target.closest("[data-toggle]"))return;
+    if(e.target.closest(".check-row"))return;
     const row=e.target.closest("#trainingTable tbody tr[data-id]");
     if(row)showDetail(row.dataset.id);
   });

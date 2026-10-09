@@ -126,7 +126,7 @@ try {
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           const culture=page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]');
           trainingStage="check cultural education";
-          await culture.locator('[data-toggle]').check();
+          await culture.locator('[data-toggle]').check({timeout:12000});
           if(await page.locator("#timeline .timeline-row").count()!==1)errors.push("Training checkbox did not select cultural education");
           await input.fill("STR_NEPOTISM");
           await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"]').waitFor({state:"attached",timeout:10000});
@@ -193,6 +193,7 @@ try {
       display=(await page.locator("body").innerText()).slice(-320).replace(/\s+/g," ");
       if(htmlError.test(display))errors.push("failure text in body tail");
     }catch(e){
+      if(slug==="trainings")console.log("TRAINING MOBILE DIAGNOSTIC: "+e.message.slice(0,1800));
       errors.push((slug==="trainings"?"stage="+trainingStage+": ":"")+e.message.split("\n")[0]);
       display=(await page.locator("body").innerText().catch(()=>"<no DOM>")).slice(0,260).replace(/\s+/g," ");
     }
