@@ -110,6 +110,52 @@ try {
         const content=await page.locator(contentSelector).innerText();
         detail=String(content.length);
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
+        if(slug==="items"){
+          // Regression: the real-world item page must expose the relationships,
+          // not merely ship the correct data in an unused JSON sidecar.
+          for(const target of [
+            {id:"STR_MUTANT_BLESSINGS",required:["영웅의 축복","제조에서 실물 재료로 소모","자색 리본","Champion Summoning","퍼플 블룸의 하사품","×1","×32","×69"],materialUses:3},
+            {id:"STR_OFFERING_TO_PURPLE_BLOOM",required:["퍼플 블룸의 하사품","월 유지비 -33,000","33,000","시발링가 부활"],materialUses:0},
+            {id:"STR_GLAMOUR",required:["글래머","제조에서 실물 재료로 소모","×250","×1,600"],materialUses:45},
+            {id:"STR_INDUSTRIAL_STOCKS",required:["무기 회사 주식","월 유지비 -100,000","100,000"],materialUses:0}
+          ]){
+            await page.locator("#closeDrawer").click();
+            await input.fill(target.id);
+            const targetRow=page.locator(`#tbody tr[data-id="${target.id}"]`);
+            await targetRow.waitFor({state:"attached",timeout:12000});
+            const actualId=(await targetRow.locator("td").nth(2).innerText()).trim();
+            if(actualId!==target.id)errors.push("item search "+target.id+" resolved to "+actualId);
+            const cells=await targetRow.locator("td").allTextContents();
+            if(Number(cells[10]?.replaceAll(",",""))!==target.materialUses)
+              errors.push(target.id+" item table manufacture usage count: "+cells[10]);
+            await targetRow.locator("td").nth(1).click();
+            await page.waitForFunction(id=>{
+              const head=document.querySelector("#detail > .id")?.innerText||"";
+              const s=document.querySelector("#detail")?.innerText||"";
+              return head.includes("· "+id)&&s.includes("GPT 아이템 인사이트")&&s.includes("실제 사용처·획득처 전수 분석");
+            },target.id,{timeout:20000});
+            const visible=await page.locator("#detail").innerText();
+            for(const word of target.required)if(!visible.includes(word))
+              errors.push(target.id+" missing visible insight: "+word);
+            if(target.id==="STR_MUTANT_BLESSINGS"){
+              const links=await page.locator("#detail a[href*='recipe=']").evaluateAll(xs=>xs.map(a=>a.getAttribute("href")));
+              for(const id of ["STR_RIBBON","STR_WARRIOR_SUMMONING","STR_OFFERING_TO_PURPLE_BLOOM"])
+                if(!links.some(h=>h.includes("recipe="+id)))errors.push("Missing recipe link: "+id);
+            }
+          }
+          // A bookmark opened directly must resolve the correct drawer too.
+          await page.goto(new URL("items/#item=STR_MUTANT_BLESSINGS",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+          await page.waitForFunction(()=>document.querySelector("#detail > .id")?.innerText.includes("STR_MUTANT_BLESSINGS"),{timeout:20000});
+          if(!(await page.locator("#detail").innerText()).includes("×69"))errors.push("Item deep-link missing blessing consumption detail");
+          detail+=" + four item usages / direct link";
+        }
+        if(slug==="manufacture"){
+          await page.goto(new URL("manufacture/#recipe=STR_WARRIOR_SUMMONING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+          await page.waitForFunction(()=>document.querySelector("#detail > .id")?.innerText.includes("STR_WARRIOR_SUMMONING"),{timeout:20000});
+          const recipeText=await page.locator("#detail").innerText();
+          if(!recipeText.includes("영웅의 축복")||!recipeText.includes("32"))errors.push("Champion Summoning deep-link missing 32 Blessings input");
+          detail+=" + champion recipe deep link";
+        }
       }
       display=(await page.locator("body").innerText()).slice(-320).replace(/\s+/g," ");
       if(htmlError.test(display))errors.push("failure text in body tail");
