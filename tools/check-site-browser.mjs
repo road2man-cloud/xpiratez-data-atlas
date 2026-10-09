@@ -13,9 +13,9 @@ import {chromium} from "playwright-core";
 const publicDir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../public");
 const args=process.argv.slice(2);
 const option=(prefix)=>args.find(x=>x.startsWith(prefix+"="))?.slice(prefix.length+1);
-const pages=(option("--pages")||"starting,captains,soldiers,crafts,craft-weapons,facilities,armors,items,research,manufacture,events,forces,weapons").split(",");
+const pages=(option("--pages")||"starting,captains,soldiers,trainings,crafts,craft-weapons,facilities,armors,items,research,manufacture,events,forces,weapons").split(",");
 const ready={
-  starting:"#cards .card", captains:"#matrixTable tbody tr", soldiers:"#soldierTable tbody tr",
+  starting:"#cards .card", captains:"#matrixTable tbody tr", soldiers:"#soldierTable tbody tr", trainings:"#trainingTable tbody tr[data-id]",
   crafts:"#craftTable tbody tr", "craft-weapons":"#weaponTable tbody tr",
   facilities:"#facilityTable tbody tr", armors:"#armorTable tbody tr",
   items:"#tbody tr", research:"#tbody tr", manufacture:"#manufactureTable tbody tr",
@@ -24,7 +24,7 @@ const ready={
 const htmlError=/데이터를 불러오지 못했습니다|로딩 실패|데이터 불러오기 실패|Error loading|TypeError:|ReferenceError:/i;
 let server;
 if(args.includes("--local")){
-  const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".gz":"application/octet-stream"};
+  const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".gz":"application/octet-stream"};
   server=http.createServer(async(req,res)=>{
     try{
       const pathname=decodeURIComponent(new URL(req.url,"http://localhost").pathname);
@@ -120,6 +120,24 @@ try {
         const content=await page.locator(contentSelector).innerText();
         detail=String(content.length);
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
+        if(slug==="trainings"){
+          await page.locator("#closeDialog").click();
+          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
+          const culture=page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]');
+          await culture.locator('[data-toggle]').check();
+          if(await page.locator("#timeline .timeline-row").count()!==1)errors.push("Training checkbox did not select cultural education");
+          await input.fill("STR_NEPOTISM");
+          await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"]').waitFor({state:"attached",timeout:10000});
+          if(await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"] .blocked').count()!==1)errors.push("Nepotism was not blocked after cultural education");
+          await page.locator("#undo").click();
+          await input.fill("STR_MILITARY_DRILL_TRAINING");
+          await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-chain]').click();
+          if(await page.locator("#timeline .timeline-row").count()!==3)errors.push("Three-step military prerequisite chain not added");
+          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
+          await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
+          if(await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count()!==1)errors.push("Cultural education not blocked after military drill");
+          detail+=" + checkbox / exclusivity / prerequisite chain";
+        }
         if(slug==="items"){
           // Regression: the real-world item page must expose the relationships,
           // not merely ship the correct data in an unused JSON sidecar.

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XPiratez 병사훈련·상호배타 조합 DB</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <a class="back" href="../">← 전체 DB</a> <a class="back" href="../soldiers/">· 병종 DB</a> <a class="back" href="../research/">· 연구 DB</a>
+  <p class="eyebrow">XPiratez v.o1.1.1 · soldierTransformation rules</p>
+  <h1>병사훈련 DB</h1>
+  <p class="lede">훈련·교육·개조·병종전환을 순서대로 선택하세요. <code>requiredPreviousTransformations</code>·<code>forbiddenPreviousTransformations</code>를 매 단계 재계산하여, 가능한 다음 훈련과 봉쇄된 훈련을 구분합니다.</p>
+</div></header>
+<main class="wrap">
+  <section id="summary" class="summary" aria-label="데이터 및 현재 조합 요약"></section>
+  <div class="planner-layout">
+    <section class="card planner">
+      <div class="section-head"><div><p class="eyebrow">ORDERED BUILD PLANNER</p><h2>훈련 조합 설계</h2></div>
+        <div class="actions"><button id="undo" type="button">마지막 취소</button><button id="reset" type="button">전체 초기화</button></div>
+      </div>
+      <div class="selectors">
+        <label>출발 병종 / 실제 획득 경로<select id="origin"></select></label>
+        <label>병사 현재 상태<select id="condition">
+          <option value="healthy">건강한 생존 병사</option><option value="wounded">부상 병사</option><option value="dead">사망 병사</option>
+        </select></label>
+      </div>
+      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>를 판정합니다. 연구 완료·기지시설·아이템·훈장·현재 능력치 충족 여부는 실제 세이브에 따라 달라지며 아래 상세에서 별도로 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
+      <div id="timeline" class="timeline" aria-live="polite"></div>
+      <div id="planEffects" class="plan-effects"></div>
+      <div class="actions"><button id="copyPlan" type="button">현재 조합 복사</button><span id="copyStatus" class="muted" role="status"></span></div>
+    </section>
+    <aside class="card decision">
+      <h2>지금 가능한 다음 선택</h2>
+      <p id="decisionHint" class="muted"></p>
+      <h3>이미 배제된 훈련</h3><div id="blockedList" class="choice-list"></div>
+      <h3>선행 훈련이 필요한 후보</h3><div id="futureList" class="choice-list"></div>
+      <div id="researchWarnings" class="research-warnings"></div>
+    </aside>
+  </div>
+  <section class="card listing">
+    <div class="section-head"><div><p class="eyebrow">FULL RULESET</p><h2>훈련 목록·선택</h2></div><p id="rowCount" class="muted"></p></div>
+    <div class="toolbar">
+      <label class="wide">검색<input id="search" type="search" placeholder="문화 교육, Charmy Dance, ID, 특성, 연구…"></label>
+      <label>현재 상태<select id="statusFilter">
+        <option value="all">전체</option><option value="ready">지금 선택 가능</option>
+        <option value="prereq">선행 훈련 필요</option><option value="blocked">선택 불가</option>
+      </select></label>
+      <label>유형<select id="kindFilter"><option value="all">전체 유형</option></select></label>
+    </div>
+    <div class="table-shell"><table id="trainingTable">
+      <thead><tr><th>훈련 / 내부 ID</th><th>현재 판정</th><th>유형</th><th>대상 병종</th><th>비용 / 기간</th><th>직접 능력 변화</th><th>부여 특성</th><th>이전 훈련 제한</th><th>추가</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="under-table">훈련을 <b>체크</b>하면 선택 순서에 추가되고, 체크 해제 시 그 단계부터 뒤의 훈련을 취소하여 유효한 조합을 유지합니다. 행을 누르면 정확한 연구/시설/아이템/능력치/훈장/상호배타 관계와 원본 코드를 확인할 수 있습니다. <b>선행 포함</b>은 명시적인 선행 훈련만 순서대로 추가합니다. 연구 분기 충돌 가능성은 별도 경고하며 자동으로 임의 우회하지 않습니다.</p>
+  </section>
+</main>
+<dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>

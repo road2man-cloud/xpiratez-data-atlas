@@ -1,6 +1,6 @@
 # X-Piratez Data Atlas
 
-X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · [기지시설 DB](./public/facilities/) · [기체무장 DB](./public/craft-weapons/) · 방어구·병종·탈것을 **검색·정렬·비교**하고, 상세 화면에서 실제 적용 핵심 스펙, 원본 룰 필드, 연구/제조/이벤트 역참조를 확인할 수 있는 정적 웹 DB입니다. 병종과 탈것은 획득 방식, 해금 연구트리, 명목 누적 연구량, 분기 전용 조건, 표본/기지 기능/기간 제한 같은 특수조건까지 추적합니다.
+X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · [병사훈련·조합 DB](./public/trainings/) · [기지시설 DB](./public/facilities/) · [기체무장 DB](./public/craft-weapons/) · 방어구·병종·탈것을 **검색·정렬·비교**하고, 상세 화면에서 실제 적용 핵심 스펙, 원본 룰 필드, 연구/제조/이벤트 역참조를 확인할 수 있는 정적 웹 DB입니다. 병종과 탈것은 획득 방식, 해금 연구트리, 명목 누적 연구량, 분기 전용 조건, 표본/기지 기능/기간 제한 같은 특수조건까지 추적합니다.
 
 ## 기준 데이터
 
@@ -10,6 +10,12 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 - 한국어 이름은 모드의 `Language/ko.yml`, 영문은 `Language/en-US.yml`에서 해석합니다.
 - 이미지·음원·맵 등 원본 게임 자산은 포함하지 않습니다.
 - UFOPEDIA 장문 본문은 저작권이 있는 원문 재배포를 피하기 위해 기본 생성물에서는 제외합니다.
+
+## 병사훈련·상호배타 조합 DB
+
+`public/trainings/`는 공식 v.o1.1.1의 `soldierTransformation` 83개를 전수 표시합니다. 병종 29개 또는 실제 획득형 72개를 선택하고, 훈련을 체크한 순서대로 이전 변신 기록을 갱신하여 필수 선행·방향성 상호배타·대상 병종·생존 상태를 재검증합니다. 209건의 방향성 배제와 16건의 비대칭 관계도 원본 `forbiddenPreviousTransformations`대로 다루며 임의로 쌍방 배제하지 않습니다. `removeTransformations`와 병종 전환, 반복 가능한 훈련/복제도 구분합니다. 단계 해제 시 그 이후 선택도 취소합니다. 직접 능력치 변화와 `soldierBonus` 특성 보너스는 별도 표시합니다.
+
+**중요:** 조합기에서 「선택 가능」은 구조적 가능성입니다. 연구 완료, 실물 재료, 건물 기능, 훈장, Psi 수치/계급은 세이브 파일 없이 보장할 수 없습니다. 연구의 명목 선행망에 `disables` 관계가 동시에 나타나면 별도로 경고하며 강제 제외하지 않습니다. 최종 실효 스탯은 상한, 퍼센트, 순서·성장 상태에 따라 달라질 수 있습니다.
 
 ## 무엇을 보여주나
 
@@ -43,11 +49,15 @@ npm run check              # 전체 DB · 스타팅 · 선택지 · 프런트 �
 # 스타팅만 검증 (원본 이벤트 및 번역 지연/실패/재시도까지)
 npm run check:starting
 
-# 선택: 실제 Chrome/Edge에서 13개 DB를 모바일 화면으로 열고
+# 선택: 실제 Chrome/Edge에서 14개 DB를 모바일 화면으로 열고
 # 검색·상세창·HTTP/자바스크립트 오류까지 검사
 npm install --no-save --package-lock=false playwright-core@1.64.0
 node tools/check-site-browser.mjs --local
 node tools/check-site-browser.mjs --base=https://road2man-cloud.github.io/xpiratez-data-atlas/
+
+# 병사훈련 전용 sidecar 갱신 (다른 DB/Pages 자산에 손대지 않음)
+npm run build:trainings -- --source "C:/path/to/user/mods/Piratez"
+npm run check:trainings
 
 # 기지시설 DB만 안전하게 갱신·검증
 npm run build:facilities -- --source "C:/path/to/user/mods/Piratez" --out public/data

@@ -284,11 +284,13 @@ function researchInsightMarkup(d){
   </section>`;
 }
 function renderResearch(d){
+  const trainingIds=[...new Set((d.otherReferences||[]).filter(x=>x.section==="soldierTransformation").map(x=>x.owner||x.id).filter(Boolean))];
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["연구량",d.cost],["완료 점수",d.points],["실물 표본",d.needItem?(d.destroyItem?"필요·소모":"필요"):"불필요"],["직접 선행",d.dependencies.length],["후속 연구",d.requiredBy.length],["생성 아이템",spawned.length],["아이템 연결",d.itemReferences.length],["제조 연결",d.manufactureReferences.length]])}
   ${researchEditorialMarkup(d)}
   ${researchInsightMarkup(d)}
+  ${trainingIds.length?`<section class="section"><h3>연결되는 병사 훈련·변신</h3>${trainingIds.map(id=>`<a class="entity" href="../trainings/?training=${encodeURIComponent(id)}">훈련 조합기에서 ${esc(id)} 확인 →</a>`).join(" ")}</section>`:""}
   <section class="section"><h3>직접 선행</h3>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   <section class="section"><h3>후속 연구</h3>${d.requiredBy?.length?d.requiredBy.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   ${spawned.length?`<section class="section"><h3>완료 시 생성 아이템</h3>${spawned.map(x=>entity(x,"items")).join("")}</section>`:""}
