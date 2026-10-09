@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import {makeResearchContextEngine} from "./research-context.mjs";
 
 const args=process.argv.slice(2);
 const arg=(name,fallback=null)=>{const i=args.indexOf(name);return i>=0&&i+1<args.length?args[i+1]:fallback};
 const dataDir=path.resolve(arg("--data","public/items/data"));
+const worldDir=path.resolve(arg("--world","public/data"));
 const outDir=path.resolve(arg("--out",dataDir));
 const file=(...parts)=>path.join(dataDir,...parts);
 const outFile=(...parts)=>path.join(outDir,...parts);
@@ -80,6 +82,7 @@ for(const row of research){
   if(Number.isFinite(row.cost))(costsByRole.get(role)||costsByRole.set(role,[]).get(role)).push(row.cost);
 }
 const roleMedian=new Map([...costsByRole].map(([k,v])=>[k,median(v)]));
+const contextEngine=makeResearchContextEngine({research,insightIndex,worldDir,ko,topic,detailFor});
 
 function opening(row,d,i){
   const roles=list(i.roles),primary=i.primaryRole||roles[0]||"other";
@@ -170,7 +173,19 @@ function opening(row,d,i){
   return topic(row.koName)+" 현재 자동 역참조상 단일한 전투·제조 효과로 설명하기 어려운 특수 연구다. 아래 연결과 원본 룰을 함께 보면 실제로 어떤 플래그나 조건으로 소비되는지 판단할 수 있다.";
 }
 
-function strategic(row,d,i){
+function strategic(row,d,i,context){
+  if(context.info.hub){
+    const graph=context.info,other=graph.groups.slice(0,5).map(x=>x.label+" "+names(x.ids,2)).join(" / ");
+    const cost=Number.isFinite(row.cost)?" 자체 연구량 "+num(row.cost)+"의 투자와 실제 선행·추가 조건을 감수할 만큼 이 후속 계통을 사용할 계획인지가 핵심이다.":"";
+    const bad=context.badGates.length?" 더구나 특정 이벤트는 이 연구의 미보유 상태를 조건으로 하므로 해당 이벤트의 직접 결과까지 비교하고 연구 시점을 결정해야 한다.":"";
+    return "직접 후속 연구 "+num(graph.directCount)+"개를 묶는 관문이다. "+other+"로 이어지지만 다른 선행과 분기가 남는다."+cost+bad;
+  }
+  if(context.badGates.length){
+    const beneficial=context.badGates.some(g=>g.rewardsResearch.some(x=>x!==row.id)||g.rewardsItems.some(x=>x.qty>0)||g.funds>0||g.points>0);
+    if(beneficial)return "이 연구 자체의 효과와 미보유 상태에서만 발생하는 별도 이벤트의 긍정적 보상은 다른 경로다. 이벤트의 시기·추가 연구 조건을 충족할 수 있는 세이브라면 연구를 늦추는 선택에도 가치가 있지만, 후속 연구 진행 지연과 맞바꿔야 한다.";
+    return "이 연구가 없는 상태에서만 일어나는 별도 이벤트는 자금·점수 손실이나 연구 중단 등 불리한 결과일 수 있다. 따라서 이를 피하려면 연구를 앞당기는 쪽이 유리할 수 있으며, 이벤트 본문의 손익을 먼저 확인해야 한다.";
+  }
+  if(context.production&&i.primaryRole==="manufacture")return context.production.decision;
   const roles=list(i.roles),parts=[],total=(i.prerequisite?.prerequisiteCost||0)+(row.cost||0);
   if(i.prerequisite?.topicCount){
     if(i.prerequisite.topicCount>=100)parts.push("재귀 선행 합집합은 "+num(i.prerequisite.topicCount)+"개·연구량 "+num(i.prerequisite.prerequisiteCost)+"이고 자체 연구량은 "+num(row.cost)+", 합계는 "+num(total)+"이다. 다만 이벤트 지급·우회·분기가 섞인 큰 트리에서는 이 값이 실제 최소 루트보다 크게 잡힐 수 있다.");
@@ -212,7 +227,7 @@ function caution(row,d,i){
   if(list(i.researchRequirements?.requiresBaseFunc).length)notes.push("연구 자체에 "+names(i.researchRequirements.requiresBaseFunc,3)+" 기능이 필요하다.");
   if(list(i.disables).length&&i.primaryRole!=="branch-choice")notes.push(names(i.disables,3)+"와 배타 관계가 있으므로 먼저 찍고 되돌리는 식의 운용을 하면 안 된다.");
   if(roles.includes("research-granted-by")){const xs=roleRefs(i,"research-granted-by").map(x=>x.id);notes.push((names(xs,3)||"다른 연구")+"의 무료 지급 경로가 있으므로 직접 연구 전에 우회 획득 가능성을 확인하는 편이 낫다.");}
-  if(h.odds.length)notes.push("연결 이벤트에는 발생 확률 "+h.odds.slice(0,3).map(x=>x+"%").join("·")+" 조건이 확인된다.");
+  if(h.odds.length)notes.push("연결 이벤트의 executionOdds(조건부 스크립트 실행률)는 "+h.odds.slice(0,3).map(x=>x+"%").join("·")+"로 기록되어 있다. 다른 트리거와 선택 가중치가 있어 최종 이벤트 발생률과 같지 않다.");
   if(h.months.length)notes.push("이벤트 시기 조건 값은 게임 월 "+h.months.slice(0,4).join("·")+"로 기록되어 있다.");
   if(h.facilities.length)notes.push("이벤트 쪽에서 "+names(h.facilities,3)+" 시설을 요구하는 경로가 있다.");
   if(!notes.length&&roles.includes("manufacture")){const xs=roleRefs(i,"manufacture").map(x=>x.id);notes.push((names(xs,3)||"연결 제조식")+" 해금과 실제 보유는 다르므로 제조 재료·시설·시간까지 확보되어 있는지 같이 봐야 한다.");}
@@ -234,8 +249,10 @@ function caution(row,d,i){
   return notes.slice(0,2).join(" ");
 }
 
-function concreteEffect(row,d,i){
+function concreteEffect(row,d,i,context){
   const roles=list(i.roles),parts=[],transforms=list(i.transformations),refs=k=>roleRefs(i,k);
+  if(context.info.hub)parts.push("연구 완료를 직접 선행으로 요구하는 후속 연구는 "+num(context.info.directCount)+"개다. 이는 각 후속의 기타 조건까지 즉시 완료된다는 뜻이 아니다.");
+  if(context.badGates.length)parts.push("연구 미보유 조건으로 발동하는 별도 이벤트의 보상은 연구 완료의 직접 효과가 아니다. 해당 보상은 그 이벤트가 실제 발동할 때만 발생한다.");
   if(transforms.length){
     const t=transforms[0],flat=statText(t.flatOverallStatChange),bonus=statText(t.soldierBonus?.stats),combined=statText(t.combinedFixedStatChange);
     if(flat)parts.push("훈련 직접 변화: "+flat+".");
@@ -264,7 +281,7 @@ function concreteEffect(row,d,i){
     else if(primary==="progression")parts.push("즉시 적용되는 전투·제조 효과보다 후속 트리에서 이 연구 ID를 선행 플래그로 소비하는 구조가 핵심이다.");
     else parts.push("현재 자동 역참조에서 즉시 적용되는 전투·제조·시설 효과는 뚜렷하지 않다. 직접 후속은 "+num(row.requiredByCount||0)+"개이며 자체 연구량은 "+(Number.isFinite(row.cost)?num(row.cost):"미지정")+"이다.");
   }
-  return parts.slice(0,4).join(" ");
+  return parts.slice(0,context.info.hub?5:4).join(" ");
 }
 
 function nextAction(row,d,i){
@@ -320,7 +337,7 @@ function routeSummary(row,d,i){
   let out=parts.join(" / ")+". ";
   if((p.topicCount||0)>=100)out+="이 값은 dependencies+requires 재귀 합집합이므로 이벤트 직접 지급·getOneFree·선택 분기가 많은 후기 트리에서는 실제 최소 루트보다 크게 잡힐 수 있다.";
   else if(eventGrant.length||grantedBy.length)out+="직접 연구 외 지급 경로가 확인되므로 현재 세이브에서 그 우회가 가능한지 먼저 확인하면 실제 연구량을 줄일 수 있다.";
-  else out+="이벤트 직접 지급·getOneFree 우회가 있으면 실제 최소 도달량은 이 명목값보다 작아질 수 있다.";
+  else out+="이 합계는 정적 선행 연구량으로, 실물 표본·시설·시기·상호배타 분기 비용은 별도로 판단해야 한다.";
   return out;
 }
 
@@ -328,15 +345,21 @@ function expanded(text,fallback){const t=String(text||"").trim();return t.length
 function editorialFor(row){
   const d=detailFor(row),i=insightFor(row);
   if(!d||!i)throw new Error("Missing research insight inputs "+row.id);
-  const core=expanded(opening(row,d,i),"이 연구의 실제 가치는 이름보다 아래의 직접 연결과 후속 소비처를 함께 볼 때 더 정확히 판단할 수 있다.");
-  const effect=expanded(concreteEffect(row,d,i),"직접 전투 효과가 없다면 후속 연구·이벤트·제조·시설을 여는 진행 플래그 자체가 이 연구의 실질적인 효과다.");
-  const action=expanded(nextAction(row,d,i),"완료 후 자동으로 모든 보상이 적용된다고 가정하지 말고 새로 열린 메뉴·이벤트·후속 연구를 실제로 확인해야 한다.");
+  const analysis=contextEngine.analyze(row,d,i);
+  const baseOpening=analysis.production&&i.primaryRole==="manufacture"?
+    topic(row.koName)+" "+analysis.production.overview:opening(row,d,i);
+  const core=expanded(analysis.info.hub?analysis.core:analysis.info.multiRole&&!baseOpening.includes("복합 관문")&&!baseOpening.includes("즉시 버프")?
+    baseOpening+" 또한 "+analysis.core:analysis.core&&!analysis.info.hub&&!analysis.info.multiRole?analysis.core:baseOpening,
+    "이 연구의 실제 가치는 이름보다 아래의 직접 연결과 후속 소비처를 함께 볼 때 더 정확히 판단할 수 있다.");
+  const context=expanded(analysis.context,"이 연구가 영향을 주는 다른 시스템과 조건을 구분해야 직접 결과와 후속 보상을 혼동하지 않는다.");
+  const effect=expanded(concreteEffect(row,d,i,analysis),"직접 전투 효과가 없다면 후속 연구·이벤트·제조·시설을 여는 진행 플래그 자체가 이 연구의 실질적인 효과다.");
+  const action=expanded(analysis.action||nextAction(row,d,i),"완료 후 자동으로 모든 보상이 적용된다고 가정하지 말고 새로 열린 메뉴·이벤트·후속 연구를 실제로 확인해야 한다.");
   const route=expanded(routeSummary(row,d,i),"명목 선행량은 재귀 합집합이므로 이벤트 지급·무료 획득·분기 우회가 있는 세이브에서는 실제 도달 비용과 달라질 수 있다.");
-  const decision=expanded(strategic(row,d,i),"현재 세이브에서 바로 이어서 사용할 후속 보상이 없다면 같은 연구량의 직접 전력·경제 개선 연구와 우선순위를 비교할 필요가 있다.");
+  const decision=expanded(strategic(row,d,i,analysis),"현재 세이브에서 바로 이어서 사용할 후속 보상이 없다면 같은 연구량의 직접 전력·경제 개선 연구와 우선순위를 비교할 필요가 있다.");
   const watchRaw=caution(row,d,i);
   const generic="이 해설은 현재 룰셋의 직접·역참조 관계를 바탕으로 한 판단이므로, 스크립트에 숨은 조건이 새로 발견되면 우선순위 해석은 달라질 수 있다.";
-  const watch=expanded(watchRaw===generic?"":watchRaw,"직접 룰과 역참조만으로 보이지 않는 스크립트 예외가 있을 수 있으므로 아래 이벤트·원본 필드를 함께 확인하는 것이 안전하다.");
-  return{core,effect,action,route,decision,watch};
+  const watch=expanded([analysis.watch,watchRaw===generic?"":watchRaw].filter(Boolean).join(" "),"직접 룰과 역참조만으로 보이지 않는 스크립트 예외가 있을 수 있으므로 아래 이벤트·원본 필드를 함께 확인하는 것이 안전하다.");
+  return{core,context,effect,action,route,decision,watch};
 }
 
 const buckets={};
@@ -350,10 +373,10 @@ const dir=outFile("research-editorial-chunks");
 fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});
 for(const [bucket,details] of Object.entries(buckets))fs.writeFileSync(path.join(dir,bucket+".json"),JSON.stringify({details}));
 const meta={
-  version:3,
-  generator:"GPT editorial synthesis v3",
+  version:4,
+  generator:"Source-grounded contextual editorial synthesis v4",
   evidence:"ruleset-and-derived-links",
-  generatedFrom:["research-index.json","research-chunks","research-insight-index.json","research-insight-chunks"],
+  generatedFrom:["research-index.json","research-chunks","research-insight-index.json","research-insight-chunks","events-index.json.gz","event-chunks/*.json.gz"],
   count:research.length,
   averageChars:Math.round(totalChars/Math.max(1,research.length))
 };

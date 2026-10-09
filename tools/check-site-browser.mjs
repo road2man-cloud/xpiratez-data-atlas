@@ -186,6 +186,27 @@ try {
           if(!(await page.locator("#detail").innerText()).includes("×69"))errors.push("Item deep-link missing blessing consumption detail");
           detail+=" + four item usages / direct link";
         }
+        if(slug==="research"){
+          // Guard against single-item summaries for strategically significant topics.
+          await page.goto(new URL("research/#research=STR_CUNNING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+          await page.waitForFunction(()=>{
+            const t=document.querySelector("#detail")?.innerText||"";
+            return t.includes("STR_CUNNING")&&t.includes("캠페인 내 위치")&&t.includes("시발링가 돌");
+          },{timeout:25000});
+          const txt=await page.locator("#detail").innerText();
+          for(const word of ["16개","의사소통","사기와 도용","글래머 고용","미보유","시발링가 돌","바론 스컬페이스","가죽 채찍","X그로그"])
+            if(!txt.includes(word))errors.push("Cunning research lacks context: "+word);
+          const overview=await page.locator(".editorial-row.core p").first().innerText();
+          if(overview.includes("가죽 채찍 제조를 여는 생산 기술"))errors.push("Cunning still uses shallow whip-only overview");
+          const insight=page.locator(".editorial-row.context p").first();
+          if(!(await insight.count())||!(await insight.innerText()).includes("후속 갈래"))errors.push("Research context is missing in frontend");
+          await page.locator("#closeDrawer").click();
+          await page.locator("#search").fill("STR_CUNNING");
+          const target=page.locator("#tbody tr[data-id='STR_CUNNING']");
+          await target.waitFor({state:"attached",timeout:12000});
+          if(!(await target.innerText()).includes("후속 허브"))errors.push("Cunning hub not visible in search table");
+          detail+=" + Cunning downstream/event gates";
+        }
         if(slug==="manufacture"){
           await page.goto(new URL("manufacture/#recipe=STR_WARRIOR_SUMMONING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
           await page.waitForFunction(()=>document.querySelector("#detail > .id")?.innerText.includes("STR_WARRIOR_SUMMONING"),{timeout:20000});

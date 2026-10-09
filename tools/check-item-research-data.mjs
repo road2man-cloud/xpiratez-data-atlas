@@ -25,8 +25,8 @@ if(largest?.bytes>=50*1024*1024)throw new Error("Generated file too large for no
 if(items.index?.length!==4007)throw new Error("Expected 4007 items, got "+(items.index?.length??0));
 if(research.index?.length!==4612)throw new Error("Expected 4612 research topics, got "+(research.index?.length??0));
 if(researchInsight.index?.length!==4612)throw new Error("Expected 4612 research insight topics, got "+(researchInsight.index?.length??0));
-if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==3)throw new Error("Research editorial metadata mismatch");
-if(!String(researchEditorialMeta.generator||"").startsWith("GPT editorial synthesis"))throw new Error("Missing GPT editorial generator metadata");
+if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==4)throw new Error("Research contextual editorial metadata mismatch");
+if(!String(researchEditorialMeta.generator||"").includes("contextual editorial synthesis v4"))throw new Error("Missing contextual research editorial generator metadata");
 if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==3)throw new Error("Item editorial metadata mismatch");
 if(!String(itemEditorialMeta.generator||"").startsWith("GPT item editorial synthesis"))throw new Error("Missing GPT item editorial generator metadata");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
@@ -68,7 +68,7 @@ for(const x of research.index){
   if(!d?.raw)throw new Error("Incomplete research detail "+x.id);
   if(Object.prototype.hasOwnProperty.call(d,"insight"))throw new Error("Research insight leaked into canonical research detail "+x.id);
   if(insight?.version!==1||insight?.evidence!=="derived-from-ruleset"||!insight?.summary||!Array.isArray(insight.roles)||!insight.roles.length)throw new Error("Missing research insight "+x.id);
-  if(!editorial||typeof editorial.core!=="string"||editorial.core.length<30)throw new Error("Missing GPT research editorial "+x.id);
+  if(!editorial||typeof editorial.core!=="string"||editorial.core.length<30||typeof editorial.context!=="string"||editorial.context.length<35)throw new Error("Missing contextual research editorial "+x.id);
   for(const k of ["effect","action","route","decision"])if(typeof editorial[k]!=="string"||editorial[k].length<20)throw new Error("Incomplete GPT research editorial "+x.id+" "+k);
   if(/undefined|null/.test(JSON.stringify(editorial)))throw new Error("Invalid GPT research editorial text "+x.id);
   if(!ix||!Array.isArray(ix.insightKinds)||!ix.insightKinds.length||!ix.primaryInsightKind)throw new Error("Missing research insight index "+x.id);
@@ -93,7 +93,7 @@ const littleBirdInsight=researchInsightChunks[littleBirdAssemblyIndex.bucket].ST
 const littleBirdEditorial=researchEditorialChunks[littleBirdAssemblyIndex.bucket].STR_LITTLE_BIRD_ASSEMBLY;
 if(!littleBirdInsight.roles.includes("item-reward")||!littleBirdInsight.spawnedItems.includes("STR_HELICOPTER_WRECKAGE"))throw new Error("Little Bird assembly item-reward insight failed");
 if(littleBirdAssembly.summaryKo===littleBirdInsight.summary)throw new Error("Derived research insight overwrote direct research summary");
-if(!littleBirdEditorial.core.includes("헬리콥터 잔해")||!littleBirdEditorial.effect.includes("헬리콥터 잔해")||!littleBirdEditorial.route.includes("명목 합계 99")||!littleBirdEditorial.watch.includes("자동으로 완성"))throw new Error("Little Bird GPT editorial regression");
+if(!littleBirdEditorial.core.includes("헬리콥터 잔해")||!littleBirdEditorial.context.includes("헬리콥터 잔해")||!littleBirdEditorial.effect.includes("헬리콥터 잔해")||!littleBirdEditorial.route.includes("명목 합계 99")||!littleBirdEditorial.watch.includes("자동으로 완성"))throw new Error("Little Bird contextual editorial regression");
 
 const charm=research.index.find(x=>x.id==="STR_CHARMY_DANCE_TRAINING");
 if(!charm)throw new Error("Missing STR_CHARMY_DANCE_TRAINING");
@@ -133,13 +133,14 @@ if(!ninjaChallenge||ninjaChallenge.kind!=="event-grant"||!ninjaChallenge.scripts
 
 const researchEditorialBytes=files.filter(x=>x.path.includes("research-editorial-")).reduce((s,x)=>s+x.bytes,0);
 const itemEditorialBytes=files.filter(x=>x.path.includes("item-editorial-")).reduce((s,x)=>s+x.bytes,0);
-if(researchEditorialBytes>=8*1024*1024)throw new Error("Research editorial data bloat regression: "+(researchEditorialBytes/1048576).toFixed(1)+" MiB");
+// v4 adds a source-linked context layer for all 4,612 research topics.
+if(researchEditorialBytes>=11*1024*1024)throw new Error("Research contextual editorial data bloat regression: "+(researchEditorialBytes/1048576).toFixed(1)+" MiB");
 if(itemEditorialBytes>=8.5*1024*1024)throw new Error("Item editorial data bloat regression (includes item uses/economics fields): "+(itemEditorialBytes/1048576).toFixed(1)+" MiB");
-if(totalBytes>=58*1024*1024)throw new Error("Item/research data bloat regression (includes new item-usage cross-system data): "+(totalBytes/1048576).toFixed(1)+" MiB");
+if(totalBytes>=62*1024*1024)throw new Error("Item/research data bloat regression (includes v4 contextual editorials): "+(totalBytes/1048576).toFixed(1)+" MiB");
 
 const violence=research.index.find(x=>x.id==="STR_VIOLENCE");
 const violenceEditorial=violence&&researchEditorialChunks[violence.bucket]?.STR_VIOLENCE;
-if(!violenceEditorial?.decision.includes("후속 연구가 14개")||!violenceEditorial?.watch.includes("무료 지급 경로"))throw new Error("Violence GPT editorial regression");
+if(!violenceEditorial?.context.includes("직접 후속 연구 14개")||!violenceEditorial?.watch.includes("무료 지급 경로"))throw new Error("Violence contextual editorial regression");
 
 const u=items.index.find(x=>x.id==="STR_UAC_CARBINE");
 if(!u)throw new Error("Missing STR_UAC_CARBINE");

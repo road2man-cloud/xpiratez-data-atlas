@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>XPiratez Research DB</title>
-  <link rel="stylesheet" href="../items/styles.css">
+  <link rel="stylesheet" href="../items/styles.css?v=20261009-context-v4">
 </head>
 <body data-mode="research" data-data-base="../items/data">
 <header class="hero">
@@ -48,8 +48,8 @@
 
   <section class="about">
     <h2>표시 방식</h2>
-    <p>각 연구 상세에는 룰셋 구조를 사람이 실제 플레이 판단에 쓰기 쉽게 풀어쓴 <strong>GPT 플레이 인사이트</strong>를 제공합니다. 연구의 정체, 실제 효과, 완료 후 해야 할 행동, 도달 비용과 병목, 우선순위, 놓치기 쉬운 함정을 각각 분리해 설명하고, 아래에는 생성 아이템·제조·이벤트·시설·병종·기체·훈련/변신의 원본 근거를 계속 표시합니다.</p>
-    <p class="muted">GPT 해설은 룰셋 직접값과 역참조·파생 계산을 바탕으로 자동 합성한 편집 해설이며 원본 값 자체를 덮어쓰지 않습니다. 명목 선행망은 이벤트 직접 지급·unlock/getOneFree 우회·분기 때문에 실제 최소 경로보다 길 수 있습니다.</p>
+    <p>각 연구 상세에는 룰셋 구조를 사람이 실제 플레이 판단에 쓰기 쉽게 풀어쓴 <strong>GPT 플레이 인사이트</strong>를 제공합니다. 연구의 정체, 캠페인 내 역할·직접 후속·2단계 파급효과, 실제 효과, 완료 후 해야 할 행동, 도달 비용과 병목, 우선순위, 놓치기 쉬운 함정을 각각 분리해 설명하고, 아래에는 생성 아이템·제조·이벤트·시설·병종·기체·훈련/변신의 원본 근거를 계속 표시합니다.</p>
+    <p class="muted">GPT 해설은 룰셋 직접값과 역참조·파생 계산을 바탕으로 자동 합성한 편집 해설이며 원본 값 자체를 덮어쓰지 않습니다. 후속 연구 수와 2단계 연결 수는 구조상 참조 관계이며 연구 완료 즉시 모두 해금된다는 뜻이 아닙니다. 이벤트의 true/false 연구 조건을 구분하고, 이벤트 보상은 연구의 직접 보상으로 합산하지 않습니다. executionOdds 역시 다른 이벤트 선택 조건을 포함한 최종 발생확률이 아닙니다. 명목 선행망은 이벤트 직접 지급·unlock/getOneFree 우회·분기 때문에 실제 최소 경로보다 길 수 있습니다.</p>
   </section>
 </main>
 
@@ -64,6 +64,6 @@
   <div id="compareBody"></div>
 </dialog>
 
-<script type="module" src="../items/app.js?v=20261008-item-usage-v1"></script>
+<script type="module" src="../items/app.js?v=20261009-context-v4"></script>
 </body>
 </html>

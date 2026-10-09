@@ -1,13 +1,15 @@
 {
-  "version": 3,
-  "generator": "GPT editorial synthesis v3",
+  "version": 4,
+  "generator": "Source-grounded contextual editorial synthesis v4",
   "evidence": "ruleset-and-derived-links",
   "generatedFrom": [
     "research-index.json",
     "research-chunks",
     "research-insight-index.json",
-    "research-insight-chunks"
+    "research-insight-chunks",
+    "events-index.json.gz",
+    "event-chunks/*.json.gz"
   ],
   "count": 4612,
-  "averageChars": 662
+  "averageChars": 886
 }
