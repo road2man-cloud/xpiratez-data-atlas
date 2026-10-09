@@ -97,6 +97,16 @@ try {
         const row=page.locator(ready[slug]).first();
         // Item/research first table cell is a comparison checkbox; click the name instead.
         if(slug==="items"||slug==="research")await row.locator("td").nth(1).click();
+        else if(slug==="soldiers"){
+          // On mobile, the tall sticky soldier filters blocked row taps.
+          const portrait=await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position);
+          if(portrait==="sticky")errors.push("portrait soldier toolbar overlays the table");
+          await page.setViewportSize({width:844,height:390});
+          const landscape=await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position);
+          if(landscape==="sticky")errors.push("landscape soldier toolbar overlays the table");
+          await page.setViewportSize({width:390,height:844});
+          await row.locator("td").first().click();
+        }
         else await row.click();
         const selector=await page.locator("#detailDialog").count()?"#detailDialog[open]":"#drawer.open";
         await page.locator(selector).waitFor({state:"visible",timeout:14000});
