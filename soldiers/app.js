@@ -674,6 +674,7 @@ function openDetail(encoded){
     html+=statsGrid("기본 생성 최대", {min:r.maxStats,avg:r.maxStats,max:r.maxStats});
     html+='<h3>성장 상한</h3><div class="stats-grid">'+statOrder.map(k=>'<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(r.statCaps[k])+'</b><small>훈련 '+fmt(r.trainingStatCaps[k])+'</small></div>').join("")+'</div>';
   }else{
+    html+='<p><a href="../trainings/?training='+encodeURIComponent(r._id)+'" target="_blank" rel="noopener" style="color:#93c5fd;font-weight:700">이 훈련의 상호배타·선행 조합 설계 →</a></p>';
     html+='<div class="detail-grid"><div class="box"><strong>비용 / 회복</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div><div class="box"><strong>적용 병종</strong>'+(r.allowedSoldierTypes||[]).length+'종</div><div class="box"><strong>생산 Soldier Type</strong>'+String(r.producedSoldierType||"유지")+'</div></div>';
     deltaGrid("본체 능력치 변화 (Flat)",r.flatOverallStatChange);
     deltaGrid("특성 보너스 (SoldierBonus · 본체 성장캡과 별도)",r.traitStats);
