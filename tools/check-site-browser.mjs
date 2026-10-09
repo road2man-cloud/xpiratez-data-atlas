@@ -126,7 +126,8 @@ try {
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           const culture=page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]');
           trainingStage="check cultural education";
-          await culture.locator('[data-toggle]').check({timeout:12000});
+          await culture.locator('[data-toggle]').click({timeout:12000});
+          if(!(await culture.locator('[data-toggle]').isChecked()))errors.push("Cultural education checkbox was not retained after rerender");
           if(await page.locator("#timeline .timeline-row").count()!==1)errors.push("Training checkbox did not select cultural education");
           await input.fill("STR_NEPOTISM");
           await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"]').waitFor({state:"attached",timeout:10000});
@@ -135,7 +136,8 @@ try {
           await page.locator("#undo").click();
           await input.fill("STR_MILITARY_DRILL_TRAINING");
           trainingStage="add military drill prerequisite chain";
-          await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-toggle]').check({timeout:12000});
+          await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-toggle]').click({timeout:12000});
+          if(!(await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-toggle]').isChecked()))errors.push("Military drill checkbox was not retained after rerender");
           if(await page.locator("#timeline .timeline-row").count()!==3)errors.push("Three-step military prerequisite chain not added");
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
