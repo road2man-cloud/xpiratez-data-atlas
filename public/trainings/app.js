@@ -112,6 +112,17 @@ function renderDecisions(){
     conflicts.slice(0,10).map(c=>'<li>'+researchLink(c.disabling)+' → '+researchLink(c.disabled)+' 비활성화</li>').join("")+'</ul></div>'
     :'<p class="fine">연구상 주의: 선택한 훈련들의 명목 선행망에서 알려진 disables 충돌이 없습니다. 이는 현재 세이브에서 연구·시설·재료를 보유했다는 뜻은 아닙니다.</p>';
 }
+function renderQuickPicker(){
+  const picker=$("#quickTraining"),previous=picker.value;
+  const possible=rows.filter(row=>row.status==="ready"||row.status==="prereq"&&!!addWithPrerequisites(row.t,state,byId).state)
+    .sort((a,b)=>(a.status==="ready"?0:1)-(b.status==="ready"?0:1)||a.t.koName.localeCompare(b.t.koName,"ko"));
+  picker.innerHTML='<option value="">훈련을 선택하세요</option>'+possible.map(({t,status})=>
+    '<option value="'+esc(t.id)+'">'+esc(t.koName)+' · '+(status==="ready"?"바로 선택":"필수 선행 포함")+'</option>'
+  ).join("");
+  if(possible.some(row=>row.t.id===previous))picker.value=previous;
+  $("#quickAdd").disabled=!picker.value;
+  $("#quickHint").textContent="즉시 가능 "+possible.filter(x=>x.status==="ready").length+"개 · 선행 포함 가능 "+possible.filter(x=>x.status==="prereq").length+"개 · 연구/시설/재료 충족은 별도 확인";
+}
 function renderTable(){
   const search=$("#search").value.trim().toLowerCase().normalize("NFKC"),
     filter=$("#statusFilter").value,kind=$("#kindFilter").value;
@@ -152,7 +163,7 @@ function renderTable(){
 function redraw(){
   origin=currentOrigin();state=currentState();
   rows=DATA.transformations.map(t=>{const issues=evaluate(t,state);return{t,issues,status:statusOf(issues)}});
-  renderSummary();renderTimeline();renderEffects();renderDecisions();renderTable();
+  renderSummary();renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderTable();
 }
 const section=(title,content)=>'<section class="detail-section"><h3>'+esc(title)+'</h3>'+content+'</section>';
 function showDetail(id){
@@ -216,6 +227,8 @@ function initOrigins(){
 function bind(){
   $("#origin").addEventListener("change",()=>{selected=[];redraw();});
   $("#condition").addEventListener("change",()=>{selected=[];redraw();});
+  $("#quickTraining").addEventListener("change",()=>{$("#quickAdd").disabled=!$("#quickTraining").value;});
+  $("#quickAdd").addEventListener("click",()=>{const t=byId.get($("#quickTraining").value);if(t)canAdd(t,true);});
   // Only 83 rules: synchronous filtering prevents checkboxes moving during a tap.
   $("#search").addEventListener("input",renderTable);
   $("#statusFilter").addEventListener("change",renderTable);

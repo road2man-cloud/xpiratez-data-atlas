@@ -26,6 +26,11 @@
           <option value="healthy">건강한 생존 병사</option><option value="wounded">부상 병사</option><option value="dead">사망 병사</option>
         </select></label>
       </div>
+      <div class="quick-training" aria-label="훈련 빠른 선택">
+        <label for="quickTraining">지금 가능한 다음 훈련 (선행 자동 포함)<select id="quickTraining"><option value="">훈련을 선택하세요</option></select></label>
+        <button id="quickAdd" type="button" class="btn-add" disabled>선택한 훈련 추가</button>
+        <span id="quickHint" class="muted" aria-live="polite"></span>
+      </div>
       <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>를 판정합니다. 연구 완료·기지시설·아이템·훈장·현재 능력치 충족 여부는 실제 세이브에 따라 달라지며 아래 상세에서 별도로 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
       <div id="timeline" class="timeline" aria-live="polite"></div>
       <div id="planEffects" class="plan-effects"></div>
