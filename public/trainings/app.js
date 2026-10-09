@@ -7,7 +7,7 @@ const list=x=>Array.isArray(x)?x:[];
 const sum=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b||{}))out[k]=(out[k]||0)+Number(v||0);return out};
 const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0);
 const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?"+":"")+v).join(" · ")||"변화 없음";
-let DATA,byId,relations,origins,selected=[],state,origin,rows,statLabels,queryTimer;
+let DATA,byId,relations,origins,selected=[],state,origin,rows,statLabels;
 const rankStat=t=>textStats(t.flatOverallStatChange,statLabels);
 const typeName=id=>DATA.soldiers.find(s=>s.id===id)?.koName||id;
 const name=id=>byId.get(id)?.koName||DATA.researchGraph[id]?.koName||DATA.bonuses[id]?.koName||typeName(id);
@@ -216,7 +216,8 @@ function initOrigins(){
 function bind(){
   $("#origin").addEventListener("change",()=>{selected=[];redraw();});
   $("#condition").addEventListener("change",()=>{selected=[];redraw();});
-  $("#search").addEventListener("input",()=>{clearTimeout(queryTimer);queryTimer=setTimeout(renderTable,80);});
+  // Only 83 rules: synchronous filtering prevents checkboxes moving during a tap.
+  $("#search").addEventListener("input",renderTable);
   $("#statusFilter").addEventListener("change",renderTable);
   $("#kindFilter").addEventListener("change",renderTable);
   $("#undo").addEventListener("click",()=>{selected.pop();redraw();});

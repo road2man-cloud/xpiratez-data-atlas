@@ -135,7 +135,7 @@ try {
           await page.locator("#undo").click();
           await input.fill("STR_MILITARY_DRILL_TRAINING");
           trainingStage="add military drill prerequisite chain";
-          await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-chain]').click();
+          await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-toggle]').check({timeout:12000});
           if(await page.locator("#timeline .timeline-row").count()!==3)errors.push("Three-step military prerequisite chain not added");
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
