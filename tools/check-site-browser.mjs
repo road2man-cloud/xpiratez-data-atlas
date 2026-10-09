@@ -64,7 +64,7 @@ try {
       if(reason.includes("net::ERR_ABORTED"))return;
       httpErrors.push("network "+r.url().slice(0,180)+" "+reason);
     });
-    let count=0,search="skip",detail="skip",display="";
+    let count=0,search="skip",detail="skip",display="",trainingStage="opening";
     try{
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
       await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
@@ -121,21 +121,26 @@ try {
         detail=String(content.length);
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
         if(slug==="trainings"){
+          trainingStage="close detail button";
           await page.locator("#closeDialog").click();
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           const culture=page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]');
+          trainingStage="check cultural education";
           await culture.locator('[data-toggle]').check();
           if(await page.locator("#timeline .timeline-row").count()!==1)errors.push("Training checkbox did not select cultural education");
           await input.fill("STR_NEPOTISM");
           await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"]').waitFor({state:"attached",timeout:10000});
           if(await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"] .blocked').count()!==1)errors.push("Nepotism was not blocked after cultural education");
+          trainingStage="undo cultural education";
           await page.locator("#undo").click();
           await input.fill("STR_MILITARY_DRILL_TRAINING");
+          trainingStage="add military drill prerequisite chain";
           await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-chain]').click();
           if(await page.locator("#timeline .timeline-row").count()!==3)errors.push("Three-step military prerequisite chain not added");
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
           if(await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count()!==1)errors.push("Cultural education not blocked after military drill");
+          trainingStage="completed";
           detail+=" + checkbox / exclusivity / prerequisite chain";
         }
         if(slug==="items"){
@@ -188,7 +193,7 @@ try {
       display=(await page.locator("body").innerText()).slice(-320).replace(/\s+/g," ");
       if(htmlError.test(display))errors.push("failure text in body tail");
     }catch(e){
-      errors.push(e.message.split("\n")[0]);
+      errors.push((slug==="trainings"?"stage="+trainingStage+": ":"")+e.message.split("\n")[0]);
       display=(await page.locator("body").innerText().catch(()=>"<no DOM>")).slice(0,260).replace(/\s+/g," ");
     }
     const ok=!!count&&!errors.length&&!httpErrors.length;
