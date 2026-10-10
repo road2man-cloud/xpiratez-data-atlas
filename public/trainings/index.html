@@ -37,9 +37,15 @@
       <div class="actions"><button id="copyPlan" type="button">현재 조합 복사</button><span id="copyStatus" class="muted" role="status"></span></div>
     </section>
     <aside class="card decision">
-      <h2>지금 가능한 다음 선택</h2>
+      <h2>선택에 따른 배제 현황</h2>
       <p id="decisionHint" class="muted"></p>
-      <h3>이미 배제된 훈련</h3><div id="blockedList" class="choice-list"></div>
+      <div class="exclusion-focus">
+        <h3>이번 선택으로 새로 배제 <span id="newBlockedCount" class="count"></span></h3>
+        <p id="latestSelectionHint" class="fine" aria-live="polite"></p>
+        <div id="newBlockedList" class="choice-list" aria-live="polite"></div>
+      </div>
+      <h3>이전부터 배제된 훈련 <span id="blockedCount" class="count"></span></h3>
+      <div id="blockedList" class="choice-list"></div>
       <h3>선행 훈련이 필요한 후보</h3><div id="futureList" class="choice-list"></div>
       <div id="researchWarnings" class="research-warnings"></div>
     </aside>
@@ -53,12 +59,15 @@
         <option value="prereq">선행 훈련 필요</option><option value="blocked">선택 불가</option>
       </select></label>
       <label>유형<select id="kindFilter"><option value="all">전체 유형</option></select></label>
+      <label>특성 스탯 정렬<select id="sortBy"><option value="status">선택 가능 순 (기본)</option></select></label>
+      <label>정렬 방향<select id="sortDirection"><option value="desc">큰 값부터</option><option value="asc">작은 값부터</option></select></label>
     </div>
+    <p id="sortHint" class="fine">직접 상승치와 SoldierBonus 특성의 추가 스탯은 서로 다른 값입니다. 특성 정렬 시 선택 불가 훈련도 함께 정렬하며, 필요하면 상태 필터로 좁힐 수 있습니다.</p>
     <div class="table-shell"><table id="trainingTable">
-      <thead><tr><th>훈련 선택 / 내부 ID</th><th>현재 판정</th><th>유형</th><th>대상 병종</th><th>비용 / 기간</th><th>직접 능력 변화</th><th>부여 특성</th><th>이전 훈련 제한</th><th>추가</th></tr></thead>
+      <thead><tr><th>훈련 선택 / 내부 ID</th><th>현재 판정</th><th>유형</th><th>대상 병종</th><th>비용 / 기간</th><th>직접 능력 변화</th><th>특성 증가 스탯 (SoldierBonus)</th><th>부여 특성</th><th>이전 훈련 제한</th><th>추가</th></tr></thead>
       <tbody></tbody>
     </table></div>
-    <p class="under-table">훈련을 <b>체크</b>하면 선택 순서에 추가되고, 체크 해제 시 그 단계부터 뒤의 훈련을 취소하여 유효한 조합을 유지합니다. 행을 누르면 정확한 연구/시설/아이템/능력치/훈장/상호배타 관계와 원본 코드를 확인할 수 있습니다. <b>선행 포함</b>은 명시적인 선행 훈련만 순서대로 추가합니다. 연구 분기 충돌 가능성은 별도 경고하며 자동으로 임의 우회하지 않습니다.</p>
+    <p class="under-table">훈련을 <b>체크</b>하면 오른쪽에서 새로 배제된 훈련과 이전부터 배제된 훈련을 각각 확인할 수 있습니다. <b>특성 스탯 정렬</b>은 훈련 직접 상승치가 아닌 획득 SoldierBonus의 스탯 증가량을 비교합니다. 체크 해제 시 그 단계부터 뒤의 훈련을 취소하여 유효한 조합을 유지합니다. 행을 누르면 정확한 연구/시설/아이템/능력치/훈장/상호배타 관계와 원본 코드를 확인할 수 있습니다. <b>선행 포함</b>은 명시적인 선행 훈련만 순서대로 추가합니다. 연구 분기 충돌 가능성은 별도 경고하며 자동으로 임의 우회하지 않습니다.</p>
   </section>
 </main>
 <dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>

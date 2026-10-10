@@ -130,22 +130,53 @@ try {
           const culture=page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]');
           if(!await culture.locator('[data-toggle]').isChecked())errors.push("Table checkbox did not reflect selected cultural education");
           if(await page.locator("#timeline .timeline-row").count()!==1)errors.push("Quick add did not select cultural education");
+          if(!await page.locator('#newBlockedList [data-info="STR_NEPOTISM"]').count())errors.push("Newly blocked list omitted nepotism");
+          if(!await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())errors.push("Newly blocked list omitted military drill");
+          if(!await page.locator("#latestSelectionHint").innerText().then(t=>t.includes("문화 교육")))errors.push("No selected training reason shown next to exclusions");
+          const cultureCells=await culture.locator("td").allTextContents();
+          if(!cultureCells[5].includes("사격+2")||!cultureCells[6].includes("사격+1"))
+            errors.push("Direct vs SoldierBonus firing bonuses not separately displayed: "+cultureCells.slice(5,7));
+          trainingStage="trait stats sort";
+          await input.fill("");
+          await page.locator("#sortBy").selectOption("trait:firing");
+          let statOrder=await page.locator("#trainingTable tbody tr[data-sort-value]").evaluateAll(trs=>trs.map(t=>Number(t.dataset.sortValue)));
+          if(statOrder.length!==83||!statOrder.some(v=>v>0)||statOrder.some((v,i)=>i>0&&statOrder[i-1]<v))
+            errors.push("Trait firing descending sort incorrect: count="+statOrder.length+" first="+statOrder.slice(0,12).join(",")+" max="+Math.max(...statOrder));
+          await page.locator("#sortDirection").selectOption("asc");
+          statOrder=await page.locator("#trainingTable tbody tr[data-sort-value]").evaluateAll(trs=>trs.map(t=>Number(t.dataset.sortValue)));
+          if(statOrder.length!==83||statOrder.some((v,i)=>i>0&&statOrder[i-1]>v))
+            errors.push("Trait firing ascending sort incorrect: count="+statOrder.length+" first="+statOrder.slice(0,12).join(",")+" max="+Math.max(...statOrder));
+          await page.locator("#sortBy").selectOption("status");
           await input.fill("STR_NEPOTISM");
           await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"]').waitFor({state:"attached",timeout:10000});
           if(await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"] .blocked').count()!==1)errors.push("Nepotism was not blocked after cultural education");
           trainingStage="undo cultural education";
           await page.locator("#undo").click();
+          if(await page.locator("#newBlockedList .choice").count())errors.push("Undo left stale newly blocked training rows");
+          trainingStage="select and deselect via checkbox";
+          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
+          await culture.locator("[data-toggle]").check();
+          if(!await page.locator('#newBlockedList [data-info="STR_NEPOTISM"]').count())
+            errors.push("Checkbox click did not update the adjacent exclusion list");
+          await culture.locator("[data-toggle]").uncheck();
+          if(await page.locator("#timeline .timeline-row").count()||await page.locator("#newBlockedList .choice").count())
+            errors.push("Unchecking did not clear the planning sequence and newly excluded list");
+          await input.fill("");
           trainingStage="quick-add military drill prerequisite chain";
           await page.locator("#quickTraining").selectOption("STR_MILITARY_DRILL_TRAINING");
           await page.locator("#quickAdd").click({timeout:12000});
           if(await page.locator("#timeline .timeline-row").count()!==3)errors.push("Three-step military prerequisite chain not added");
+          if(!await page.locator('#newBlockedList [data-info="STR_PERSON_OF_CULTURE_TRAINING"]').count())
+            errors.push("Newly blocked list omitted culture after military chain");
+          if(!(await page.locator("#latestSelectionHint").innerText()).includes("자동 선행 포함"))
+            errors.push("New exclusion list failed to indicate automatically added prerequisites");
           await input.fill("STR_MILITARY_DRILL_TRAINING");
           if(!await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-toggle]').isChecked())errors.push("Military drill checkbox was not retained after rerender");
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
           if(await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count()!==1)errors.push("Cultural education not blocked after military drill");
           trainingStage="completed";
-          detail+=" + checkbox / exclusivity / prerequisite chain";
+          detail+=" + checkbox / exclusion deltas / trait stat sort / prerequisite chain";
         }
         if(slug==="items"){
           // Regression: the real-world item page must expose the relationships,

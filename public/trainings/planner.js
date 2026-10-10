@@ -1,4 +1,5 @@
 // Ordered soldier transformations. Restrictions apply to PREVIOUS transformations.
+// Keep directional forbids distinct from soldier-type and research gates.
 const list=x=>Array.isArray(x)?x:[];
 export function initialState(origin,{condition="healthy"}={}){
   const prior=new Set(Object.entries(origin.previousTransformations||{}).filter(([,v])=>!!v).map(([id])=>id));
@@ -87,4 +88,27 @@ export function compileRelations(rows){
     relations.get(t.id).requires=list(t.requiredPreviousTransformations);
   }
   return relations;
+}
+
+// Exclusions only use the candidate's forbidden PREVIOUS transformations.
+// Origin profiles may include previous transformations before the first click.
+export function excludedByPrior(rows,state){
+  return rows.flatMap(t=>{
+    const blockedBy=list(t.forbiddenPreviousTransformations).filter(id=>state.prior.has(id));
+    return blockedBy.length?[{id:t.id,blockedBy}]:[];
+  });
+}
+export function newlyExcludedByPrior(rows,before,after){
+  const already=new Set(excludedByPrior(rows,before).map(row=>row.id));
+  return excludedByPrior(rows,after).filter(row=>!already.has(row.id));
+}
+
+// SoldierBonus.stats must not be conflated with flatOverallStatChange.
+export function traitStatsOf(t,bonuses){
+  return bonuses?.[t.soldierBonusType]?.stats||{};
+}
+export function traitSortValue(t,bonuses,key){
+  const stats=traitStatsOf(t,bonuses);
+  if(key==="total")return Object.values(stats).reduce((total,value)=>total+(typeof value==="number"?Math.max(0,value):0),0);
+  return Number(stats[key]||0);
 }
