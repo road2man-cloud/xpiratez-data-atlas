@@ -1,4 +1,4 @@
-import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,newlyExcludedByPrior,traitStatsOf,traitSortValue} from "./planner.js";
+import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue} from "./planner.js";
 
 const $=selector=>document.querySelector(selector);
 const esc=x=>String(x??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
@@ -100,31 +100,37 @@ function renderDecisions(){
   $("#decisionHint").textContent=typeName(state.soldierType)+" 기준 · 바로 선택 "+ready.length+"개 / 선행 필요 "+future.length+"개 / 현재 상태·병종·배타 때문에 불가 "+rows.filter(x=>x.status==="blocked").length+"개";
   const allForbidden=excludedByPrior(DATA.transformations,state);
   const previous=latestAdded.length?replay(currentOrigin(),selected.slice(0,-latestAdded.length),byId,{condition:$("#condition").value}):null;
-  const newIds=new Set(previous?newlyExcludedByPrior(DATA.transformations,previous,state).map(x=>x.id):[]);
-  const fresh=allForbidden.filter(x=>newIds.has(x.id)),older=allForbidden.filter(x=>!newIds.has(x.id));
-  const choice=x=>{
+  const changes=previous?exclusionChanges(DATA.transformations,previous,state):{newlyBlocked:[],additionalCauses:[],unblocked:[]};
+  const fresh=changes.newlyBlocked,additional=changes.additionalCauses;
+  const newIds=new Set(fresh.map(x=>x.id)),older=allForbidden.filter(x=>!newIds.has(x.id));
+  const choice=(x,addedOnly=false)=>{
     const t=byId.get(x.id);
     const repeated=selected.includes(x.id)?" · 이미 선택한 훈련의 재실행도 제한됨":"";
-    return'<div class="choice exclusion-item"><div class="choice-main"><strong>'+esc(t.koName)+'</strong><span class="exclusion-reason">배제 원인: '+esc(x.blockedBy.map(name).join(", "))+esc(repeated)+'</span></div><button data-info="'+esc(t.id)+'" class="btn-small">상세</button></div>';
+    const causes=addedOnly?x.addedBy:x.blockedBy;
+    return'<div class="choice exclusion-item"><div class="choice-main"><strong>'+esc(t.koName)+'</strong><span class="exclusion-reason">'+(addedOnly?"이번 선택이 추가한 배제 원인: ":"배제 원인: ")+esc(causes.map(name).join(", "))+esc(repeated)+'</span></div><button data-info="'+esc(t.id)+'" class="btn-small">상세</button></div>';
   };
   $("#newBlockedCount").textContent=fresh.length+"개";
   $("#latestSelectionHint").textContent=latestAdded.length?
     "방금 추가: "+latestAdded.map(name).join(" → ")+(latestAdded.length>1?" (자동 선행 포함)":"")+" · 이전 상태와 비교":
     "훈련을 체크하면 그 선택으로 새로 봉쇄된 훈련을 이곳에서 확인할 수 있습니다.";
-  $("#newBlockedList").innerHTML=fresh.map(choice).join("")||
+  $("#newBlockedList").innerHTML=fresh.map(x=>choice(x)).join("")||
     '<p class="muted fine">'+(latestAdded.length?"이번 추가로 새로 배제된 훈련은 없습니다.":"아직 새로 선택한 훈련이 없습니다.")+'</p>';
+  $("#extraBlockedCount").textContent=additional.length+"개";
+  $("#extraBlockedList").innerHTML=additional.map(x=>choice(x,true)).join("")||
+    '<p class="muted fine">'+(latestAdded.length?"이미 배제된 훈련에 새로운 차단 원인은 더해지지 않았습니다.":"추가 원인 없음")+'</p>';
   $("#blockedCount").textContent=older.length+"개 · 총 "+allForbidden.length+"개";
-  $("#blockedList").innerHTML=older.map(choice).join("")||
+  $("#blockedList").innerHTML=older.map(x=>choice(x)).join("")||
     '<p class="muted fine">이전 선택 또는 시작 획득 경로로 이미 배제된 훈련이 없습니다.</p>';
   // Keep the effect visible next to the checkboxes on mobile, without scrolling
   // back up to the full rule panel. The expandable view lists every blocker.
-  $("#mobileExclusionTitle").textContent="이번 선택으로 새로 배제 "+fresh.length+"개";
-  $("#mobileExclusionTotal").textContent="현재 누적 "+allForbidden.length+"개";
-  $("#mobileExclusionNames").innerHTML=fresh.length?
-    fresh.slice(0,4).map(x=>'<span>'+esc(byId.get(x.id).koName)+'</span>').join("")+
-    (fresh.length>4?'<span>외 '+n(fresh.length-4)+'개</span>':""):
-    '<span class="muted">'+(latestAdded.length?"이번 선택에서 추가 배제 없음":"훈련 체크 시 여기 표시")+'</span>';
-  $("#mobileExclusionFull").innerHTML=allForbidden.map(choice).join("")||
+  $("#mobileExclusionTitle").textContent="이번 선택: 새 배제 "+fresh.length+"개 · 기존 배제 원인 추가 "+additional.length+"개";
+  $("#mobileExclusionTotal").textContent="현재 누적 배제 "+allForbidden.length+"개";
+  const previews=[...fresh.map(x=>({id:x.id,shared:false})),...additional.map(x=>({id:x.id,shared:true}))];
+  $("#mobileExclusionNames").innerHTML=previews.length?
+    previews.slice(0,5).map(x=>'<span'+(x.shared?' class="also-blocked"':"")+'>'+esc(byId.get(x.id).koName)+(x.shared?" · 원인 추가":"")+'</span>').join("")+
+    (previews.length>5?'<span>외 '+n(previews.length-5)+'개</span>':""):
+    '<span class="muted">'+(latestAdded.length?"이번 선택에서 배제 변화 없음":"훈련 체크 시 여기 표시")+'</span>';
+  $("#mobileExclusionFull").innerHTML=allForbidden.map(x=>choice(x)).join("")||
     '<p class="muted fine">현재 순서에서 배제된 훈련이 없습니다.</p>';
   $("#futureList").innerHTML=future.slice(0,50).map(x=>{
     const p=addWithPrerequisites(x.t,state,byId);

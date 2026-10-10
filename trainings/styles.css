@@ -4,6 +4,9 @@
 .exclusion-focus h3{margin:0 0 5px;color:#e5efff}
 .exclusion-focus .choice-list{max-height:360px}
 .exclusion-focus .choice{border-color:#47768c;background:#152f40}
+.exclusion-overlap{margin-top:12px;padding-top:12px;border-top:1px solid #385876}
+.exclusion-overlap h3{font-size:.88rem;color:#e9d7ac}
+.exclusion-overlap .choice{border-color:#675934;background:#272338}
 .exclusion-reason{color:#c0d4e8!important}
 .count{font-size:.8rem;font-weight:500;color:#a6d4f5}
 .trait-values{min-width:160px;max-width:260px;line-height:1.7}
@@ -15,6 +18,7 @@
 .mobile-exclusion-brief .tiny{display:inline}
 .mobile-exclusion-names{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .mobile-exclusion-names span{border:1px solid #4f7494;border-radius:6px;padding:2px 7px;font-size:.73rem;color:#d8ecff}
+.mobile-exclusion-names .also-blocked{border-color:#9a7848;background:#2b2737;color:#ffebc6}
 .mobile-exclusion-brief details{margin-top:6px;font-size:.77rem}
 .mobile-exclusion-brief summary{font-weight:600;font-size:.75rem}
 .mobile-exclusion-brief .choice-list{max-height:min(38vh,360px);margin:8px 0 0;overflow:auto}

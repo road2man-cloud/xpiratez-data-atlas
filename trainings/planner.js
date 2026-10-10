@@ -103,6 +103,23 @@ export function newlyExcludedByPrior(rows,before,after){
   return excludedByPrior(rows,after).filter(row=>!already.has(row.id));
 }
 
+// Track newly introduced blocker EDGES as well as newly blocked targets.
+// Otherwise choosing B after A silently hides B's effect when both block C.
+export function exclusionChanges(rows,before,after){
+  const prior=new Map(excludedByPrior(rows,before).map(x=>[x.id,x.blockedBy]));
+  const current=excludedByPrior(rows,after);
+  const remaining=new Set(current.map(x=>x.id));
+  const newlyBlocked=[],additionalCauses=[];
+  for(const row of current){
+    const old=prior.get(row.id);
+    const addedBy=row.blockedBy.filter(id=>!old?.includes(id));
+    if(!old)newlyBlocked.push({...row,addedBy});
+    else if(addedBy.length)additionalCauses.push({...row,addedBy});
+  }
+  const unblocked=[...prior].filter(([id])=>!remaining.has(id)).map(([id,removedBy])=>({id,removedBy}));
+  return{newlyBlocked,additionalCauses,unblocked};
+}
+
 // SoldierBonus.stats must not be conflated with flatOverallStatChange.
 export function traitStatsOf(t,bonuses){
   return bonuses?.[t.soldierBonusType]?.stats||{};
