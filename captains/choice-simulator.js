@@ -16,8 +16,11 @@ const results=document.querySelector("#choiceTopicResults");
 const completedInput=document.querySelector("#choiceCompletedInput");
 const saveFile=document.querySelector("#choiceSaveFile");
 const saveSummary=document.querySelector("#choiceSaveSummary");
+const evidenceSection=document.querySelector("#choiceSaveEvidence");
+const evidenceContent=document.querySelector("#choiceSaveEvidenceContent");
 let index=null,previouslyCompleted=[],proposed=[],state=null;
-let importedDisabled=[],sourceMode="manual",saveInfo=null;
+let importedDisabled=[],sourceMode="manual",saveInfo=null,saveEvidence=null;
+let importGeneration=0;
 let notice="";
 const cards=[...document.querySelectorAll("#exclusiveRules .choice-option[data-choice-id]")];
 const surface=[...new Set(cards.map(card=>card.dataset.choiceId))];
@@ -106,7 +109,7 @@ function renderTimeline(){
     html+='<div class="choice-sim-past-list">'+state.past.map(id=>
       '<span class="choice-sim-tag '+(state.completed.has(id)?"":"choice-sim-erased")+'" title="'+esc(pretty(id))+'">'+
       esc(terse(id))+(state.completed.has(id)?"":" · 완료 취소/배제")+
-      ' <button type="button" data-sim-remove-past="'+esc(id)+'" aria-label="'+esc(pretty(id))+' 목록에서 제외">×</button></span>'
+      (sourceMode==="save"?"":' <button type="button" data-sim-remove-past="'+esc(id)+'" aria-label="'+esc(pretty(id))+' 목록에서 제외">×</button>')+'</span>'
     ).join("")+'</div>';
   }
   if(state.steps.length){
@@ -129,8 +132,11 @@ function renderBlocked(){
   exclusions.innerHTML='<p class="muted">직접 배제와 선행 경로 위험을 따로 표시합니다. '+blocked.length+'개 중 최대 30개 표시.</p>'+
     blocked.slice(0,30).map(row=>{
       const st=row.status;
+      const cause=st.fromSave?saveEvidence?.disableCauses?.find(x=>x.id===row.id):null;
       const reason=st.kind==="blocked"?
-        (st.fromSave?"세이브 researchRuleStatus=2 (원인 연구 미기록)":st.blockers.length?"배제 원인: "+blockerText(st.blockers):"영구 배제됨")+
+        (st.fromSave?"세이브 영구 배제(researchRuleStatus=2)"+
+          (cause?" · 연구 일지 기반 배제 원인 후보: "+pretty(cause.source.id):" · 원인 불확인"):
+          st.blockers.length?"배제 원인: "+blockerText(st.blockers):"영구 배제됨")+
           (st.removedBy?" · 완료 플래그 제거 연구: "+pretty(st.removedBy):""):
         "차단된 명목 선행: "+pretty(st.nominal.missing)+" · 원인: "+
           (st.nominal.fromSave?"세이브 연구 상태=2":st.blockers.length?blockerText(st.blockers):"경로 배제");
@@ -140,6 +146,52 @@ function renderBlocked(){
         '<small>'+esc(reason)+'</small></div>';
     }).join("");
 }
+
+function renderSaveEvidence(){
+  if(!saveEvidence || sourceMode!=="save"){
+    evidenceSection.hidden=true;
+    evidenceContent.textContent="";
+    return;
+  }
+  evidenceSection.hidden=false;
+  const data=saveEvidence,sourceNames=["기지 연구","무료 지급(원인)","후속 무료 지급","임무 보상","이벤트 보상"];
+  const day=e=>String(e.year)+"-"+String(e.month).padStart(2,"0")+"-"+String(e.day).padStart(2,"0");
+  const timeline=data.diary.filter(entry=>surface.includes(entry.id) || index.byId.get(entry.id)?.disables.length);
+  const causes=data.disableCauses.filter(x=>surface.includes(x.id));
+  let html='<p class="muted">일지 인식 '+data.diary.length+'건 · 주요 선택 이력 '+timeline.length+
+    '건 · <b>현재 영구 배제와 연결되는 원인 후보 '+data.disableCauses.length+'건</b></p>';
+  if(data.lostChoices.length){
+    const uniq=new Map(data.lostChoices.map(e=>[e.id,e]));
+    html+='<div class="choice-sim-evidence-note"><b>과거 기록은 있으나 지금은 영구 배제된 선택 '+uniq.size+'개</b> — '+
+      [...uniq.values()].slice(0,8).map(e=>esc(terse(e.id))+" ("+esc(day(e))+")").join(" · ")+
+      '</div>';
+  }
+  if(causes.length){
+    html+='<h5>영구 배제 원인 후보 (게임 연구 일지 × 원본 disables)</h5>'+
+      causes.slice(0,15).map(({id,source})=>
+        '<div class="choice-sim-evidence-row"><b>'+esc(terse(id))+'</b><small>← '+
+        esc(terse(source.id))+' · '+esc(day(source))+
+        ' · '+esc(sourceNames[source.sourceType]||"출처 미상")+'</small></div>').join("");
+  }
+  if(timeline.length){
+    html+='<h5>주요 선택 기록 (일지 순서의 최신 12건)</h5>'+
+      timeline.slice(-12).reverse().map(e=>{
+        const disabled=data.disabled.includes(e.id),discovered=data.completed.includes(e.id);
+        return '<div class="choice-sim-evidence-row"><b>'+esc(terse(e.id))+'</b>'+
+          '<small>'+esc(day(e))+' · '+esc(sourceNames[e.sourceType]||"출처 미상")+
+          (e.sourceName?" · "+esc(e.sourceName):"")+' · '+
+          (disabled?"현재 영구 배제":discovered?"현재 완료":"현재 미완료(과거 기록)")+
+          '</small></div>';
+      }).join("");
+  }else{
+    html+='<p class="muted">이 세이브에서 분석 가능한 주요 분기 연구 일지가 없습니다. '+
+      '일지가 없다고 연구를 완료하지 않았다는 뜻은 아닙니다. 현재 상태는 discovered와 researchRuleStatus를 기준으로 유지합니다.</p>';
+  }
+  html+='<p class="choice-sim-help">일지의 획득 경로와 날짜는 세이브 기록입니다. 배제 원인 후보는 '+
+    '룰셋의 직접 disables와 대조한 추정으로, 엔진 내부의 정확한 발생 원인을 입증하거나 같은 날짜 안의 실행 순서를 확정하지 않습니다.</p>';
+  evidenceContent.innerHTML=html;
+}
+
 function renderMessage(){
   const conflicts=state.priorConflicts.slice(0,6).map(x=>
     esc(pretty(x.id))+" ← "+(x.fromSave?"세이브 완료/배제 동시 기록":esc(blockerText(x.blockedBy))));
@@ -158,7 +210,7 @@ function renderMessage(){
 function refresh(){
   if(!index)return;
   state=computeChoiceScenario(index,previouslyCompleted,proposed,{snapshot:sourceMode==="save",disabledIds:importedDisabled});
-  selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMessage();renderSearch();
+  selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMessage();renderSearch();renderSaveEvidence();
 }
 
 function renderSearch(){
@@ -174,7 +226,7 @@ function renderSearch(){
   results.innerHTML=matched.map(t=>{
     const st=choiceStatus(index,state,t.id);
     const canPlan=st.kind!=="blocked"&&st.kind!=="completed";
-    const canPast=!state.steps.length&&!state.past.includes(t.id);
+    const canPast=sourceMode!=="save"&&!state.steps.length&&!state.past.includes(t.id);
     return '<div class="choice-sim-result"><span><b>'+esc(name(t.id))+'</b><small>'+esc(t.id)+'</small>'+
       '<small>'+esc(describe(st))+'</small></span>'+
       '<div><button type="button" data-sim-search-plan="'+esc(t.id)+'" '+(canPlan?"":"disabled")+'>이후 가정</button>'+
@@ -205,8 +257,9 @@ function updateCompletedField(){completedInput.value=previouslyCompleted.join("\
 function applyPast(){
   const parsed=parseCompletedResearch(index,completedInput.value);
   if(parsed.malformed){notice="입력 형식이 올바르지 않습니다. 연구 ID 목록이나 completed 배열 JSON을 입력하세요.";renderMessage();return;}
+  importGeneration++;
   previouslyCompleted=parsed.ids;
-  proposed=[];importedDisabled=[];sourceMode="manual";saveInfo=null;
+  proposed=[];importedDisabled=[];sourceMode="manual";saveInfo=null;saveEvidence=null;
   saveSummary.textContent="수동 목록 적용: 이전 세이브의 연구 배제 상태는 초기화되었습니다.";
   if(saveFile)saveFile.value="";
   updateCompletedField();
@@ -247,7 +300,8 @@ document.querySelector("#exclusiveRules").addEventListener("click",event=>{
 document.querySelector("#choiceCompletedApply").addEventListener("click",()=>{if(index)applyPast();});
 document.querySelector("#choiceScenarioReset").addEventListener("click",()=>{
   if(!index)return;
-  previouslyCompleted=[];proposed=[];importedDisabled=[];sourceMode="manual";saveInfo=null;
+  importGeneration++;
+  previouslyCompleted=[];proposed=[];importedDisabled=[];sourceMode="manual";saveInfo=null;saveEvidence=null;
   completedInput.value="";search.value="";
   if(saveFile)saveFile.value="";
   saveSummary.textContent="";
@@ -260,25 +314,31 @@ async function importSave(file){
   if(!file)return;
   const limit=60*1024*1024;
   if(file.size>limit){saveSummary.textContent="60MB를 넘는 세이브는 브라우저 메모리 보호를 위해 지원하지 않습니다.";return;}
+  const generation=++importGeneration;
   saveSummary.textContent="선택한 파일을 브라우저 내부에서 분석하는 중입니다. 외부로 전송하지 않습니다.";
   try{
-    const parsed=parseXpiratezSave(await file.text(),index);
+    const fileText=await file.text();
+    if(generation!==importGeneration)return;
+    const parsed=parseXpiratezSave(fileText,index);
     const known=parsed.completed.length+parsed.disabled.length;
     if(!known&&(parsed.unknownCompleted.length||parsed.unknownDisabled.length))
       throw new Error("현재 XPiratez DB와 일치하는 연구가 0개입니다. 모드 버전을 확인하세요.");
     previouslyCompleted=parsed.completed;
     importedDisabled=parsed.disabled;
-    sourceMode="save";saveInfo=parsed.meta;proposed=[];
+    sourceMode="save";saveInfo=parsed.meta;saveEvidence=parsed;proposed=[];
     updateCompletedField();
     const title=file.name+" · 현재 완료 "+parsed.completed.length+"개 · 영구 배제 "+
-      parsed.disabled.length+"개 · 상태 항목 "+parsed.meta.rawStatuses+"개";
+      parsed.disabled.length+"개 · 연구 일지 "+parsed.diary.length+"건 · 배제 원인 후보 "+
+      parsed.disableCauses.length+"건";
     saveSummary.textContent=title+(parsed.warnings.length?"\n주의: "+parsed.warnings.join(" / "):"")+
-      "\n출처: 두 번째 YAML 문서의 discovered / researchRuleStatus (2=영구 배제). 진행 중 연구·일반 지급 목록은 제외.";
+      "\n출처: 두 번째 YAML 문서의 discovered / researchRuleStatus (2=영구 배제) / researchDiary. 진행 중 연구·일반 지급 목록은 제외.";
     notice=title+". 이후 선택은 OXCE의 실제 disables 처리(완료 플래그 제거 및 영구 배제)를 따릅니다.";
     refresh();
   }catch(error){
+    if(generation!==importGeneration)return;
     saveSummary.textContent="세이브 분석 실패: "+error.message+
       "\n기존 선택 상태는 변경하지 않았습니다. 텍스트형 OXCE .sav인지 확인하세요.";
+    saveFile.value="";
   }
 }
 saveFile?.addEventListener("change",event=>{

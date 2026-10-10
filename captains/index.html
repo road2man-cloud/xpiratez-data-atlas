@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="XPiratez v.o1.1.1 영구 선택·분기 DB: 선장 성격, Codex, 사회·병종·세력·스토리 상호배타 선택의 획득과 영구 손실을 비교합니다." />
   <title>XPiratez 영구 선택·분기 DB</title>
-  <link rel="stylesheet" href="styles.css?v=sav-import-20261010" />
+  <link rel="stylesheet" href="styles.css?v=research-diary-20261010" />
 </head>
 <body id="top">
   <header class="hero">
@@ -125,7 +125,7 @@
           <div class="choice-sim-editor">
             <label for="choiceSaveFile"><b>XPiratez 세이브 불러오기 (.sav)</b></label>
             <input id="choiceSaveFile" type="file" accept=".sav,.yaml,.yml,text/plain" aria-describedby="choiceSaveHelp" />
-            <p id="choiceSaveHelp" class="choice-sim-help">게임의 YAML 세이브에서 <code>discovered</code>와 <code>researchRuleStatus</code>만 브라우저 안에서 분석합니다. 파일은 서버로 전송하거나 저장하지 않습니다.</p>
+            <p id="choiceSaveHelp" class="choice-sim-help">게임의 YAML 세이브에서 <code>discovered</code>, <code>researchRuleStatus</code>, <code>researchDiary</code>의 연구 기록만 브라우저 안에서 분석합니다. 파일은 서버로 전송하거나 저장하지 않습니다.</p>
             <div id="choiceSaveSummary" class="choice-sim-save-summary" role="status" aria-live="polite"></div>
             <label for="choiceCompletedInput"><b>현재 완료된 연구 ID</b> (수동 입력도 가능)</label>
             <textarea id="choiceCompletedInput" rows="3" spellcheck="false" placeholder="STR_CAPTAIN_SOREASS&#10;STR_EMBRACE_THE_POWER"></textarea>
@@ -142,9 +142,13 @@
             <div id="choiceScenarioTimeline" class="choice-sim-timeline"></div>
             <h4>차단된 주요 분기 · 원인</h4>
             <div id="choiceScenarioBlocked" class="choice-sim-blocked"></div>
+            <section id="choiceSaveEvidence" class="choice-sim-evidence" hidden aria-label="세이브 연구 일지 근거">
+              <h4>세이브 연구 일지 · 영구 배제 원인 추적</h4>
+              <div id="choiceSaveEvidenceContent"></div>
+            </section>
           </div>
         </div>
-        <p class="choice-sim-disclaimer">판정 기준: <b>직접 봉쇄</b>는 룰셋 disables의 방향대로 계산합니다. OXCE의 disables는 기존 완료 연구 플래그도 제거하고 영구 배제합니다. <b>선행 경로 위험</b>은 일반 연구 경로만의 추정이며 이벤트 지급·unlocks·getOneFree·실물·시설·난이도·시기 조건은 자동 충족시키지 않습니다. 따라서 표시되는 '후보'는 실제 세이브의 연구 가능 확정이 아닙니다.</p>
+        <p class="choice-sim-disclaimer">판정 기준: <b>직접 봉쇄</b>는 룰셋 disables의 방향대로 계산합니다. OXCE의 disables는 기존 완료 연구 플래그도 제거하고 영구 배제합니다. <b>선행 경로 위험</b>은 일반 연구 경로만의 추정입니다. 원본에는 무료 무작위 연구 지급을 가진 주제 396개와 조건부 무료 지급 연구 102개가 있으며, 실제 당첨 결과·추가 지급·이벤트·실물·시설·난이도·시기 조건을 임의로 충족시키지 않습니다. 따라서 표시되는 '후보'는 실제 세이브의 연구 가능 확정이 아닙니다.</p>
       </section>
       <div id="exclusiveRules"></div>
     </section>
@@ -215,6 +219,6 @@
   <script src="glossary.js?v=terms2-20261006"></script>
   <script src="app.js?v=choice-history-20261010"></script>
   <script src="extra-choices.js?v=choice-history-20261010"></script>
-  <script type="module" src="choice-simulator.js?v=sav-import-20261010"></script>
+  <script type="module" src="choice-simulator.js?v=research-diary-20261010"></script>
 </body>
 </html>
