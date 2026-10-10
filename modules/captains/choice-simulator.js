@@ -20,6 +20,12 @@ const evidenceSection=document.querySelector("#choiceSaveEvidence");
 const evidenceContent=document.querySelector("#choiceSaveEvidenceContent");
 let index=null,previouslyCompleted=[],proposed=[],state=null;
 let importedDisabled=[],sourceMode="manual",saveInfo=null,saveEvidence=null;
+let searchTopics=[],searchTimer=null;
+const statusCache=new Map();
+function status(id){
+  if(!statusCache.has(id))statusCache.set(id,choiceStatus(index,state,id));
+  return statusCache.get(id);
+}
 let importGeneration=0;
 let notice="";
 const cards=[...document.querySelectorAll("#exclusiveRules .choice-option[data-choice-id]")];
@@ -80,9 +86,9 @@ function decorate(){
 }
 function selectedStat(){
   const blockedResearch=[...state.disabled].filter(id=>!state.completed.has(id));
-  const blockedSurface=surface.filter(id=>choiceStatus(index,state,id).kind==="blocked");
-  const riskySurface=surface.filter(id=>choiceStatus(index,state,id).kind==="path-risk");
-  const bypassedSurface=surface.filter(id=>choiceStatus(index,state,id).unlockedBy?.length>0);
+  const blockedSurface=surface.filter(id=>status(id).kind==="blocked");
+  const riskySurface=surface.filter(id=>status(id).kind==="path-risk");
+  const bypassedSurface=surface.filter(id=>status(id).unlockedBy?.length>0);
   stats.innerHTML='<span><b>'+state.completed.size+'</b>개 현재 완료</span>'+
     '<span><b>'+state.steps.length+'</b>개 이후 가정</span>'+
     '<span><b>'+state.erased.length+'</b>개 완료 플래그 제거</span>'+
@@ -93,7 +99,7 @@ function selectedStat(){
 }
 function cardStatuses(){
   for(const card of cards){
-    const id=card.dataset.choiceId,st=choiceStatus(index,state,id);
+    const id=card.dataset.choiceId,st=status(id);
     card.dataset.simState=st.kind;
     const label=card.querySelector(".choice-sim-card-state");
     if(!label)continue;
@@ -126,7 +132,7 @@ function renderTimeline(){
   if(state.steps.length){
     html+='<div class="choice-sim-history-label">이후 가정 (위에서 아래로 완료 순서)</div>';
     html+='<ol class="choice-sim-steps">'+state.steps.map((id,i)=>{
-      const st=choiceStatus(index,state,id);
+      const st=status(id);
       return '<li><span title="'+esc(pretty(id))+'"><b>'+esc(terse(id))+'</b><small>'+esc(id)+'</small></span>'+
         (st.kind==="blocked"?'<span class="choice-sim-step-note">이후 선택으로 완료 플래그 제거됨</span>':"")+
         '<button type="button" data-sim-remove-step="'+i+'">취소</button></li>';
@@ -135,7 +141,7 @@ function renderTimeline(){
   timeline.innerHTML=html||'<p class="muted">아직 선택 이력이 없습니다. 아래 분기의 선택 버튼을 누르거나 기존 완료 연구를 입력하세요.</p>';
 }
 function renderBlocked(){
-  const blocked=surface.map(id=>({id,status:choiceStatus(index,state,id)}))
+  const blocked=surface.map(id=>({id,status:status(id)}))
     .filter(row=>row.status.kind==="blocked"||row.status.kind==="path-risk")
     .sort((a,b)=>(a.status.kind==="blocked"?0:1)-(b.status.kind==="blocked"?0:1)||
       a.id.localeCompare(b.id));
@@ -221,6 +227,7 @@ function renderMessage(){
 function refresh(){
   if(!index)return;
   state=computeChoiceScenario(index,previouslyCompleted,proposed,{snapshot:sourceMode==="save",disabledIds:importedDisabled});
+  statusCache.clear();
   selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMessage();renderSearch();renderSaveEvidence();
 }
 
@@ -228,14 +235,13 @@ function renderSearch(){
   if(!index)return;
   const query=search.value.trim().toLocaleLowerCase();
   if(query.length<2){results.innerHTML='<p class="muted">두 글자 이상 입력하면 4,612개 연구 중에서 찾습니다.</p>';return;}
-  const matched=index.topics.filter(t=>[t.id,t.koName,t.enName]
-    .some(value=>value.toLocaleLowerCase().includes(query)))
-    .sort((a,b)=>(a.id.toLowerCase()===query?-2:a.id.toLowerCase().startsWith(query)?-1:0)-
-       (b.id.toLowerCase()===query?-2:b.id.toLowerCase().startsWith(query)?-1:0))
-    .slice(0,12);
+  const matched=searchTopics.filter(t=>t.terms.some(value=>value.includes(query)))
+    .sort((a,b)=>(a.id===query?-2:a.id.startsWith(query)?-1:0)-
+       (b.id===query?-2:b.id.startsWith(query)?-1:0))
+    .slice(0,12).map(entry=>entry.topic);
   if(!matched.length){results.innerHTML='<p class="muted">일치하는 연구가 없습니다.</p>';return;}
   results.innerHTML=matched.map(t=>{
-    const st=choiceStatus(index,state,t.id);
+    const st=status(t.id);
     const canPlan=st.kind!=="blocked"&&st.kind!=="completed";
     const canPast=sourceMode!=="save"&&!state.steps.length&&!state.past.includes(t.id);
     return '<div class="choice-sim-result"><span><b>'+esc(name(t.id))+'</b><small>'+esc(t.id)+'</small>'+
@@ -251,7 +257,7 @@ function renderSearch(){
   }).join("");
 }
 function addStep(id){
-  const st=choiceStatus(index,state,id);
+  const st=status(id);
   if(st.kind==="completed"||st.kind==="blocked"||st.kind==="unknown"){
     notice=describe(st);renderMessage();return;
   }
@@ -330,7 +336,10 @@ document.querySelector("#choiceScenarioReset").addEventListener("click",()=>{
   saveSummary.textContent="";
   notice="완료·영구 배제 상태 및 이후 가정을 모두 초기화했습니다.";refresh();
 });
-search.addEventListener("input",()=>{if(index)renderSearch();});
+search.addEventListener("input",()=>{
+  if(searchTimer!==null)clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{searchTimer=null;if(index)renderSearch();},100);
+});
 
 async function importSave(file){
   if(!index){saveSummary.textContent="연구 데이터 준비 전에는 파일을 분석할 수 없습니다.";return;}
@@ -371,22 +380,21 @@ saveFile?.addEventListener("change",event=>{
 
 async function initialize(){
   try{
-    const [response,gateResponse]=await Promise.all([
-      fetch("../data/progression-research.json"),
-      fetch("../data/choice-research-gates.json")
-    ]);
-    if(!response.ok||!gateResponse.ok)throw new Error("연구 규칙 또는 해금 조건 파일 HTTP "+(response.ok?gateResponse.status:response.status));
-    const [body,gates]=await Promise.all([response.json(),gateResponse.json()]);
-    if(gates.schemaVersion!==1||gates.count!==body.topics.length)
-      throw new Error("기본 연구 DB와 분기 조건 DB의 버전/항목 수가 일치하지 않습니다.");
-    index=buildChoiceIndex(body.topics,gates);
+    const response=await fetch("../data/choice-simulator-index.json");
+    if(!response.ok)throw new Error("분기 시뮬레이터 인덱스 HTTP "+response.status);
+    const body=await response.json();
+    if(body.schemaVersion!==1||body.format!=="choice-runtime-v1"||body.count!==body.topics?.length)
+      throw new Error("분기 시뮬레이터 인덱스 버전/항목 수가 일치하지 않습니다.");
+    index=buildChoiceIndex(body.topics,{inline:true,unresolvedByField:body.unresolvedByField});
+    searchTopics=index.topics.map(topic=>({topic,id:topic.id.toLocaleLowerCase(),
+      terms:[topic.id,topic.koName,topic.enName].map(value=>value.toLocaleLowerCase())}));
     state=computeChoiceScenario(index,[],[]);
     decorate();
     content.hidden=false;
     loading.hidden=true;
     notice="원본 "+index.topics.length+"개 연구 로드 완료. unlocks가 dependencies만 우회하는 엔진 규칙을 사용합니다. "+
-      "현재 DB에 없는 외부 참조: dependencies "+(gates.unresolvedByField?.dependencies||0)+"건, "+
-      "무료 지급 "+(gates.unresolvedByField?.getOneFree||0)+"건은 판정 보류하며 임의로 완료 처리하지 않습니다.";
+      "현재 DB에 없는 외부 참조: dependencies "+(body.unresolvedByField?.dependencies||0)+"건, "+
+      "무료 지급 "+(body.unresolvedByField?.getOneFree||0)+"건은 판정 보류하며 임의로 완료 처리하지 않습니다.";
     refresh();
   }catch(error){
     loading.textContent="시뮬레이터 연구 데이터 로드 실패: "+error.message+
@@ -394,4 +402,26 @@ async function initialize(){
     loading.classList.add("choice-sim-error");
   }
 }
-if(panel)initialize();
+// Avoid loading thousands of research rules when only the comparison table
+// is being viewed. Direct navigation or scrolling near the simulator starts it.
+let initializationStarted=false;
+function activate(){
+  if(initializationStarted)return;
+  initializationStarted=true;
+  loading.textContent="연구 규칙과 분기 조건을 불러오는 중…";
+  void initialize();
+}
+if(panel){
+  if("IntersectionObserver" in window){
+    const observer=new IntersectionObserver(entries=>{
+      if(entries.some(entry=>entry.isIntersecting)){
+        observer.disconnect();
+        activate();
+      }
+    },{rootMargin:"300px 0px"});
+    observer.observe(panel);
+  }else{
+    activate();
+  }
+  document.querySelector(".choice-sim-jump")?.addEventListener("click",activate);
+}
