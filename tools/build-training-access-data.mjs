@@ -9,7 +9,7 @@ const base=path.resolve("public/data");
 const training=JSON.parse(fs.readFileSync(path.join(base,"trainings-index.json"),"utf8"));
 const neededResearch=new Set(training.transformations.flatMap(x=>x.researchRoots||[]));
 neededResearch.add("STR_CAPTAIN_SAINT");
-const interestedItems=new Set(["STR_ROGUE_CLONE"]);
+const interestedItems=new Set(["STR_ROGUE_CLONE","STR_ORTHODOX_MAGE_DAMSEL"]);
 const researchEvents={},itemEvents={};
 const eventDetails=[];
 for(const bucket of "0123456789abcdef") {
@@ -53,6 +53,10 @@ assert(researchEvents.STR_CAPTAIN_SAINT?.some(e=>e.scripts.some(s=>s.researchTri
   "Saint must reject Pussy captain");
 assert(itemEvents.STR_ROGUE_CLONE?.some(e=>e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_SAINT===true)));
 assert(itemEvents.STR_ROGUE_CLONE?.some(e=>e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_DUMBLAZY===true)));
+assert(itemEvents.STR_ORTHODOX_MAGE_DAMSEL?.some(e=>
+  e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_DUMBASS===true&&s.researchTriggers.STR_CAPTAIN_SAINT===true)));
+assert(itemEvents.STR_ORTHODOX_MAGE_DAMSEL?.some(e=>
+  e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_JACKLAZY===true&&s.researchTriggers.STR_CAPTAIN_PUSSY_UP===true)));
 const out={
   meta:{source:"published event-chunks from original v.o1.1.1 rules",
     ruleSha256:training.meta.sha256,events:eventDetails.length},

@@ -1,5 +1,6 @@
+import {auditSoldierBuild} from "./branch-audit.js";
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-20261007-route-effects-final-simple2";
+const ASSET_VERSION="soldiers-branch-audit-20261010";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -21,6 +22,7 @@ async function load(){
   for(const b of DATA.bonuses||[])BONUS_BY_ID.set(b.id,b);
   for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
   FINAL_ROWS=buildFinalRows();
+  for(const row of FINAL_ROWS)row.branchAudit=auditSoldierBuild(row.profile,row.combo.transformationIds,TRANSFORM_BY_ID);
   populateFinalFilters();
   try{
     const [prog,research]=await Promise.all([
@@ -40,7 +42,7 @@ function renderSummary(){
     ["기본 바디 규칙",DATA.soldiers.length+"종","내부 RuleSoldier / 성장 규칙"],
     ["Saint 지원군",pc.saintUnique+"종","고유 결과 · 가중 슬롯 "+pc.saintSlots+"칸"],
     ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"],
-    ["최종 강화 조합",FINAL_ROWS.length+"개","상호배타·선행순서 검증 완료"]
+    ["최종 강화 이론 조합",FINAL_ROWS.length+"개",FINAL_ROWS.filter(x=>x.branchAudit.hard.length)+"개는 선장·연구 배제 충돌 확인 · 나머지도 조건부"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
 function addStatsObj(a,b){
@@ -425,6 +427,9 @@ function finalFilterMatch(r){
   const saintOn=!!$("#finalSourceSaint")?.checked;
   if(isSaint&&!saintOn)return false;
   if(!isSaint&&!regularOn)return false;
+  const filter=$("#finalBranchFilter")?.value||"no-hard";
+  if(filter==="no-hard"&&r.branchAudit?.hard.length)return false;
+  if(filter==="hard"&&!r.branchAudit?.hard.length)return false;
   const bases=selectedBaseTypes();
   const finalType=r.finalSoldierType||r._id||r.profile?.soldierType;
   if(bases&&!bases.has(finalType))return false;
@@ -499,9 +504,10 @@ function render(){
   $("#sortMetric").disabled=mode==="transformations"||mode==="final";
   $("#finalSourceField").hidden=mode!=="final";
   $("#finalBaseField").hidden=mode!=="final";
+  $("#finalBranchField").hidden=mode!=="final";
   $("#tableTitle").textContent=
     mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
-    mode==="final"?"최종 강화 조합 — 상호배타 규칙·선행 순서 적용":
+    mode==="final"?"최종 강화 이론 후보 — 훈련 순서 + 분기 배제 검사":
     mode==="soldiers"?"기본 바디 규칙 — 내부 RuleSoldier 29종":
     "변신·훈련 루트 — 본체 능력치 / 특성 보너스 분리";
   let head;
@@ -512,7 +518,7 @@ function render(){
     ].join("");
   }else if(mode==="final"){
     head=[
-      th("획득형","name"),'<th>유효 최종 강화 조합</th>',th("특성","totalTraitCount"),th("강화비용","cost"),
+      th("획득형","name"),'<th>조건부 강화 조합 · 분기 경고</th>',th("특성","totalTraitCount"),th("강화비용","cost"),
       ...statOrder.map(k=>th(DATA.statLabels[k],k,"최종 실효값"))
     ].join("");
   }else if(mode==="soldiers"){
@@ -536,7 +542,7 @@ function render(){
     $("#pager").innerHTML='<button data-page="'+(finalPage-1)+'" '+(finalPage<=0?"disabled":"")+'>← 이전</button><span>'+(finalPage+1)+' / '+pages+'</span><button data-page="'+(finalPage+1)+'" '+(finalPage>=pages-1?"disabled":"")+'>다음 →</button>';
     $("#pager").querySelectorAll("button[data-page]").forEach(b=>b.addEventListener("click",()=>{finalPage=Number(b.dataset.page)||0;render()}));
   }else $("#pager").innerHTML="";
-  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 능력치 변화와 특성 보너스를 분리 표시 · 열 정렬은 둘의 단순합계 기준":mode==="final"?" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 최종 실효값 · 페이지 "+(finalPage+1):" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
+  $("#rowCount").textContent=rows.length+"개"+(mode==="final"?" · 분기상 확정 가능 여부는 미검증":"")+(mode==="transformations"?" · 능력치 변화와 특성 보너스를 분리 표시 · 열 정렬은 둘의 단순합계 기준":mode==="final"?" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 최종 실효값 · 페이지 "+(finalPage+1):" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
   $("#soldierTable tbody").innerHTML=shown.map(r=>rowHtml(r,band)).join("");
   document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
     const key=el.dataset.sort;
@@ -547,7 +553,7 @@ function render(){
 }
 function sourceBadges(r){
   let s='<span class="tag">'+(sourceLabel[r.sourceType]||r.sourceType)+'</span>';
-  if(r.saintSlots>0)s+=' <span class="tag saint">Saint '+r.saintSlots+'/31 · '+pct(r.saintProbability)+'</span>';
+  if(r.saintSlots>0)s+=' <span class="tag saint">Saint 풀 포함 '+r.saintSlots+'/31 · '+pct(r.saintProbability)+' · 별도 획득처는 항목별 확인</span>';
   return s;
 }
 function salaryRow(soldierType,rank){
@@ -572,7 +578,11 @@ function rowHtml(r,band){
   }else if(r._mode==="final"){
     const shown=(r.enhancementNames||[]).slice(0,8).map(x=>'<span class="trait">'+esc(x)+'</span>').join("");
     const more=(r.enhancementNames||[]).length>8?' <span class="tag">+'+((r.enhancementNames||[]).length-8)+'개</span>':"";
-    second=sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
+    const audit=r.branchAudit||{hard:[],sourceWarnings:[]};
+    const hardLabel=audit.hard.length?'<span class="tag branch-hard">분기 충돌 '+audit.hard.length+'건 · 실행 불가</span>':
+      '<span class="tag branch-conditional">분기·이벤트 실현 여부 별도 확인</span>';
+    const saintLabel=audit.sourceWarnings.length?'<span class="tag branch-saint-warning">Saint 지원군으로 획득 시 추가 제한 '+audit.sourceWarnings.length+'건</span>':"";
+    second=hardLabel+' '+saintLabel+'<br>'+sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
     c1=fmt(r.totalTraitCount);c2=fmt(r.cost);
   }else if(r._mode==="soldier"){
     second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
@@ -662,7 +672,12 @@ function openDetail(encoded){
   }else if(r._mode==="final"){
     const p=r.profile;
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(p)+'<br>'+esc(p.sourceKoName)+'<br><small>'+esc(p.sourceId)+'</small></div><div class="box"><strong>최종 특성 / 추가 강화</strong>'+fmt(r.totalTraitCount)+' / '+fmt(r.enhancementCount)+'</div><div class="box"><strong>추가 비용 / 회복 합계</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div></div>';
-    html+='<div class="compat-ok"><strong>공존 검증 통과</strong><span>requiredPreviousTransformations와 forbiddenPreviousTransformations를 실제 실행 순서대로 검사한 조합입니다.</span></div>';
+    const audit=r.branchAudit||{hard:[],sourceWarnings:[]};
+    html+='<div class="'+(audit.hard.length?'compat-hard':'growth-note')+'"><strong>'+
+      (audit.hard.length?'연구·선장 분기로 실행 불가능한 조합':'병종·훈련 순서 검증만 통과 · 실제 달성 미확정')+
+      '</strong><span>원본 변신의 선행·배제 및 순서를 검사했지만, 연구 이벤트의 지급 시점·보유 재료·시설·훈련 한계를 모두 충족한 실행 계획은 아닙니다.</span>'+
+      (audit.hard.length?'<ul>'+audit.hard.map(x=>'<li>'+esc(x.reason)+' ('+esc(x.ids.join(', '))+')</li>').join("")+'</ul>':"")+
+      (audit.sourceWarnings.length?'<ul>'+audit.sourceWarnings.map(x=>'<li>'+esc(x.reason)+'</li>').join("")+'</ul>':"")+'</div>';
     html+=finalStatsGrid(r);
     html+='<h3>최종 보유 특성</h3><div class="traits">'+((r.finalTraitNames||[]).length?(r.finalTraitNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">없음</span>')+'</div>';
     html+='<h3>추가 강화</h3><div class="traits">'+((r.enhancementNames||[]).length?(r.enhancementNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">추가 강화 없음</span>')+'</div>';
@@ -778,58 +793,5 @@ function acquisitionHtml(p,profile=null,selected=false){
   }
   const r=PROG?.recipes?.[p.recipeId];if(!r)return"";
   const items=(r.requiredItems||[]).map(i=>'<div class="req-item"><b>'+esc(i.koName)+'</b> × '+fmt(i.qty)+eventSourcesHtml(i.eventSources||[])+'</div>').join("");
-  const variants=(r.eventVariants||[]).map(v=>{const ev=eventById(v.eventId);return '<details><summary>'+esc(ev?.koName||v.eventId)+' 경유 실제 루트</summary>'+eventConditions(eventScript(v.eventId,v.scriptId))+planSummary(planById(v.researchPlanId),"이벤트 포함 연구 트리")+'</details>'}).join("");
-  return '<div class="acq-card"><strong>'+esc(r.koName)+'</strong><span>비용 '+fmt(r.cost)+' · 시간 '+fmt(r.time)+' · 작업장 '+fmt(r.space)+'</span>'+effects+planSummary(planById(r.baseResearchPlanId),"기본 제조/전환 연구")+(items?'<h4>필요 아이템</h4>'+items:'')+variants+'</div>';
-}
-function trainingHtml(t){
-  const stats={...(t.bonus?.stats||{}),...(t.flatOverallStatChange||{})};
-  const bonuses=Object.entries(stats).filter(([,v])=>v).map(([k,v])=>'<span class="trait">'+esc(DATA.statLabels[k]||k)+' '+(v>0?"+":"")+fmt(v)+'</span>').join(" ");
-  return '<div class="acq-card"><strong>'+esc(t.koName)+'</strong><span class="id">'+esc(t.id)+'</span><div>'+bonuses+'</div>'+planSummary(planById(t.researchPlanId),"훈련 해금 연구")+'</div>';
-}
-function renderProgression(soldierId,profile=null){
-  const p=PROG?.soldiers?.[soldierId];if(!p)return"";
-  const paths=p.acquisitionPaths||[];
-  let routeSummary="",routesHtml="";
-  if(profile){
-    const selected=paths.filter(x=>pathMatchesProfile(x,profile));
-    routeSummary='<div class="detail-grid"><div class="box"><strong>현재 획득형</strong>'+esc(profile.sourceKoName)+'</div><div class="box"><strong>표시 경로</strong>이 획득형과 일치하는 루트만</div><div class="box"><strong>추가 특성</strong>'+fmt((profile.traits||[]).length)+'</div></div>';
-    routesHtml='<h4>현재 선택한 획득 루트</h4>'+
-      (selected.length?selected.map(x=>acquisitionHtml(x,profile,true)).join(""):profileRouteEffectHtml(profile)+'<p class="muted">이 획득형과 정확히 일치하는 progression 경로는 별도 추적되지 않았습니다.</p>');
-  }else{
-    const gates=(p.summary?.commonBranchGates||[]).map(x=>'<span class="trait">'+esc(x.koName)+'</span>').join(" ");
-    routeSummary='<div class="detail-grid"><div class="box"><strong>확인된 획득 경로</strong>'+fmt(p.summary?.pathCount)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(p.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+(gates||"없음")+'</div></div>';
-    routesHtml='<p class="muted">아래 '+paths.length+'개는 이 기본 바디를 얻는 서로 다른 대안 경로입니다. 전부 거쳐야 하는 이벤트/선행 목록이 아닙니다.</p>'+
-      (paths.map(x=>acquisitionHtml(x)).join("")||'<span class="muted">직접 추적 가능한 획득 경로 없음</span>');
-  }
-  return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3>'+routeSummary+'<div class="routes">'+routesHtml+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 연구량은 표시된 경로의 연구 계획 기준입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
-}
 
-["search","dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
-$("#finalBaseOptions").addEventListener("change",e=>{
-  const target=e.target;
-  if(target.id==="finalBaseAll"){
-    const checks=[...document.querySelectorAll(".final-base-check")];
-    if(target.checked){
-      checks.forEach(x=>x.checked=false);
-    }else{
-      checks.forEach(x=>x.checked=true);
-    }
-  }else if(target.classList.contains("final-base-check")){
-    const all=$("#finalBaseAll");
-    if(all)all.checked=false;
-  }
-  finalPage=0;render();
-});
-$("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
-$("#detailDialog").addEventListener("click",async e=>{
-  if(e.target.id==="detailDialog"){e.currentTarget.close();return}
-  const b=e.target.closest(".plan-load");if(!b)return;
-  b.disabled=true;b.textContent="불러오는 중…";
-  try{
-    const p=await loadPlan(b.dataset.plan);
-    const target=b.closest(".route-card")?.querySelector('[data-plan-body="'+b.dataset.plan+'"]');
-    if(target)target.innerHTML=planTable(p);
-    b.remove();
-  }catch(err){b.disabled=false;b.textContent="연구트리 로드 실패";console.error(err)}
-});
-load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+err.message+'</span></article>';console.error(err)});
+[Showing lines 1-795 of 851 (50.0KB limit). Use offset=796 to continue.]

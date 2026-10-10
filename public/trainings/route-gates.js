@@ -7,14 +7,25 @@ export const CAPTAIN_ROUTES=[
   {id:"ANY",label:"선장 미지정 · 변신 자체 조건만"},
   {id:"DUMBASS",label:"Dumbass · DumbLazy 가능",first:"STR_CAPTAIN_DUMBASS",
     steps:["STR_CAPTAIN_DUMBASS","STR_CAPTAIN_DUMBLAZY"]},
-  {id:"DUMBASS_SAINT",label:"Dumbass → DumbLazy + Saint (조건 달성 가정)",first:"STR_CAPTAIN_DUMBASS",
-    steps:["STR_CAPTAIN_DUMBASS","STR_CAPTAIN_DUMBLAZY","STR_CAPTAIN_RED","STR_CAPTAIN_GREEN","STR_CAPTAIN_GOLD","STR_CODEX_GRAY_AWAKENED","STR_CAPTAIN_GRAY","STR_CAPTAINS_LOG_01","STR_CAPTAIN_SAINT"]},
+  {id:"DUMBASS_SAINT",label:"Dumbass → Gray Codex + Saint (조건 달성 가정)",first:"STR_CAPTAIN_DUMBASS",
+    steps:["STR_CAPTAIN_DUMBASS","STR_CAPTAIN_DUMBLAZY","STR_EMBRACE_THE_POWER","STR_TINY_DRILL_INVESTIGATION",
+      "STR_CAPTAIN_RED","STR_CAPTAIN_GREEN","STR_CAPTAIN_GOLD","STR_CODEX_GRAY_AWAKENED","STR_CAPTAIN_GRAY","STR_CAPTAINS_LOG_01","STR_CAPTAIN_SAINT"]},
   {id:"LAZYASS",label:"Lazyass · DumbLazy 가능",first:"STR_CAPTAIN_LAZYASS",
     steps:["STR_CAPTAIN_LAZYASS","STR_CAPTAIN_DUMBLAZY"]},
-  {id:"LAZYASS_SAINT",label:"Lazyass → DumbLazy + Saint (조건 달성 가정)",first:"STR_CAPTAIN_LAZYASS",
-    steps:["STR_CAPTAIN_LAZYASS","STR_CAPTAIN_DUMBLAZY","STR_CAPTAIN_GREEN","STR_CAPTAIN_GOLD","STR_CAPTAIN_GRAY","STR_CODEX_RED_AWAKENED","STR_CAPTAIN_RED","STR_CAPTAINS_LOG_01","STR_CAPTAIN_SAINT"]},
-  {id:"THIEF",label:"Pussy → Thief · Captains 11 + DumbLazy",first:"STR_CAPTAIN_PUSSY",second:"STR_CAPTAIN_THIEF",
-    steps:["STR_CAPTAIN_PUSSY","STR_CAPTAIN_PUSSY_UP","STR_CAPTAIN_THIEF","STR_CAPTAIN_DUMBLAZY"]},
+  {id:"LAZYASS_SAINT",label:"Lazyass → Red Codex + Saint (조건 달성 가정)",first:"STR_CAPTAIN_LAZYASS",
+    steps:["STR_CAPTAIN_LAZYASS","STR_CAPTAIN_DUMBLAZY","STR_EMBRACE_THE_POWER","STR_TINY_DRILL_INVESTIGATION",
+      "STR_CAPTAIN_GREEN","STR_CAPTAIN_GOLD","STR_CAPTAIN_GRAY","STR_CODEX_RED_AWAKENED","STR_CAPTAIN_RED","STR_CAPTAINS_LOG_01","STR_CAPTAIN_SAINT"]},
+  {id:"JACKASS_SAINT",label:"Jackass → Green Codex + Saint (조건 달성 가정)",first:"STR_CAPTAIN_JACKASS",
+    steps:["STR_CAPTAIN_JACKASS","STR_EMBRACE_THE_POWER","STR_TINY_DRILL_INVESTIGATION",
+      "STR_CAPTAIN_RED","STR_CAPTAIN_GRAY","STR_CAPTAIN_GOLD","STR_CODEX_GREEN_AWAKENED","STR_CAPTAIN_GREEN","STR_CAPTAINS_LOG_01","STR_CAPTAIN_SAINT"]},
+  {id:"SOREASS_SAINT",label:"Soreass → Gold Codex + Saint (조건 달성 가정)",first:"STR_CAPTAIN_SOREASS",
+    steps:["STR_CAPTAIN_SOREASS","STR_EMBRACE_THE_POWER","STR_TINY_DRILL_INVESTIGATION",
+      "STR_CAPTAIN_RED","STR_CAPTAIN_GREEN","STR_CAPTAIN_GRAY","STR_CODEX_GOLD_AWAKENED","STR_CAPTAIN_GOLD","STR_CAPTAINS_LOG_01","STR_CAPTAIN_SAINT"]},
+  {id:"THIEF",label:"Pussy → Thief · Captains 11 + JackLazy 이벤트",first:"STR_CAPTAIN_PUSSY",second:"STR_CAPTAIN_THIEF",
+    steps:["STR_CAPTAIN_PUSSY","STR_CAPTAIN_PUSSY_UP","STR_CAPTAIN_THIEF","STR_CAPTAIN_DUMBLAZY","STR_CAPTAIN_JACKLAZY"]},
+  {id:"THIEF_SAVAGE",label:"Pussy → Thief → 힘 거부 → 야만 여왕 (후기 도달 가정)",first:"STR_CAPTAIN_PUSSY",second:"STR_CAPTAIN_THIEF",
+    steps:["STR_CAPTAIN_PUSSY","STR_CAPTAIN_PUSSY_UP","STR_CAPTAIN_THIEF","STR_CAPTAIN_DUMBLAZY","STR_CAPTAIN_JACKLAZY",
+      "STR_QUESTION_OF_DRILL","STR_REJECT_THE_POWER","STR_QUEEN_SAVAGE"]},
   {id:"PRIEST",label:"Pussy → Priest · DumbLazy 가능",first:"STR_CAPTAIN_PUSSY",second:"STR_CAPTAIN_PRIEST",
     steps:["STR_CAPTAIN_PUSSY","STR_CAPTAIN_PUSSY_UP","STR_CAPTAIN_PRIEST","STR_CAPTAIN_DUMBLAZY"]},
   {id:"RULER",label:"Pussy → Ruler",first:"STR_CAPTAIN_PUSSY",second:"STR_CAPTAIN_RULER",
@@ -44,6 +55,12 @@ export function impossibleFlag(id,ctx){
   if(startingCaptains.has(id))return id!==ctx.route.first;
   if(pussySecondaries.has(id))return id!==ctx.route.second;
   if(id==="STR_CAPTAIN_SAINT"&&ctx.route.first==="STR_CAPTAIN_PUSSY")return true;
+  if(id==="STR_CAPTAIN_PUSSY_UP"&&ctx.route.first!=="STR_CAPTAIN_PUSSY")return true;
+  if(id==="STR_CAPTAIN_JACKLAZY"&&![
+    "STR_CAPTAIN_THIEF","STR_CAPTAIN_MAGE"
+  ].includes(ctx.route.second)&&![
+    "STR_CAPTAIN_JACKASS","STR_CAPTAIN_LAZYASS"
+  ].includes(ctx.route.first))return true;
   // DumbLazy is granted by the compatible first/second captain routes; all
   // its compatible templates carry it as a completed flag in this planner.
   if(id==="STR_CAPTAIN_DUMBLAZY")return true;
@@ -81,6 +98,19 @@ export function trainingRouteGate(t,ctx,access){
   const blocked=[],caution=[],events=[];
   for(const root of names(t.researchRoots)){
     if(root==="STR_UNAVAILABLE"){blocked.push({id:root,reason:"미사용 내부 전용 플래그"});continue;}
+    // Cross-category gates not expressed as a transformation's own forbids:
+    // Wasteland Priestess II (required for Savage Queen) is granted only
+    // after STR_REJECT_THE_POWER, which disables Tiny Drill Investigation.
+    // Every Saint Codex route requires that Tiny Drill Investigation.
+    if(root==="STR_PARIAH_TRAINING"&&
+      (ctx.state.completed.has("STR_TINY_DRILL_INVESTIGATION")||ctx.state.completed.has("STR_CAPTAIN_SAINT"))){
+      blocked.push({id:root,reason:"야만 여왕의 여사제 이벤트는 힘 거부 필요; Saint/Codex의 드릴 조사와 영구 배타"});continue;
+    }
+    if((root==="STR_BRIDES_TO_THE_QUEEN"||
+       ["STR_HERO_GOLD_TRAINING","STR_HERO_GREEN_TRAINING","STR_HERO_RED_TRAINING"].includes(root))&&
+       ctx.state.completed.has("STR_REJECT_THE_POWER")){
+      blocked.push({id:root,reason:"Codex 각성이 필요한 연구이지만 힘 거부가 드릴 조사를 봉쇄"});continue;
+    }
     if(ctx.state.disabled.has(root)){blocked.push({id:root,reason:"선택 분기로 비활성화된 연구"});continue;}
     const grantEvents=access?.researchEvents?.[root]||[];
     if(grantEvents.length){
@@ -117,5 +147,7 @@ export function routeEventReport(ctx,access){
   const rogueSaint=eventAvailability(rogueEvents.filter(e=>e.id==="STR_SAINTS_REINFORCEMENTS"),ctx);
   const rogueDumbLazy=eventAvailability(rogueEvents.filter(e=>e.id==="STR_KNOCK_KNOCK_ROGUE_CLONE"),ctx);
   const rogueTrouble=eventAvailability(rogueEvents.filter(e=>e.id==="STR_TROUBLESEEKING_ALLY"),ctx);
-  return{saint,eleven,rogueSaint,rogueDumbLazy,rogueTrouble};
+  const orthodox=access?.itemEvents?.STR_ORTHODOX_MAGE_DAMSEL||[];
+  const orthodoxSaint=eventAvailability(orthodox.filter(e=>e.id==="STR_KNOCK_KNOCK_ORTHODOX_MAGE_DAMSEL"),ctx);
+  return{saint,eleven,rogueSaint,rogueDumbLazy,rogueTrouble,orthodoxSaint};
 }

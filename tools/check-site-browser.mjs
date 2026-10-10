@@ -118,6 +118,22 @@ try {
           const landscape=await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position);
           if(landscape==="sticky")errors.push("landscape soldier toolbar overlays the table");
           await page.setViewportSize({width:390,height:844});
+          await page.locator("#dataset").selectOption("final");
+          const safeRows=Number((await page.locator("#rowCount").innerText()).match(/^\d+/)?.[0]||0);
+          if(!safeRows)errors.push("All soldier final builds vanished after hard-gate filtering");
+          await page.locator("#finalBranchFilter").selectOption("all");
+          const allRows=Number((await page.locator("#rowCount").innerText()).match(/^\d+/)?.[0]||0);
+          if(allRows<=safeRows)errors.push("Soldier final build selector did not expose known theoretical conflicts");
+          await page.locator("#finalBranchFilter").selectOption("hard");
+          if(!await page.locator("#soldierTable tbody .branch-hard").count())
+            errors.push("Known impossible soldier final build has no visible exclusion badge");
+          const excludedRow=page.locator("#soldierTable tbody tr").first();
+          await excludedRow.locator("td").first().click();
+          const auditDetail=await page.locator("#detailBody").innerText();
+          if(!auditDetail.includes("연구·선장 분기로 실행 불가능한 조합"))
+            errors.push("Soldier detail omitted hard research/event branch conflicts");
+          await page.locator("#closeDialog").click();
+          await page.locator("#dataset").selectOption("profiles");
           await row.locator("td").first().click();
         }
         else await row.click();

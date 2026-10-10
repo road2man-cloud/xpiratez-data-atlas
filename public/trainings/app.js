@@ -107,7 +107,8 @@ function renderRouteAccess(){
     brief("Saint",report.saint,"STR_CAPTAIN_SAINT","네 색상 + 선장일지 1권 이벤트")+
     brief("Rogue 클론 — Saint 증원",report.rogueSaint,"STR_SAINTS_REINFORCEMENTS","랜덤 반복 증원")+
     brief("Rogue 클론 — DumbLazy 방문",report.rogueDumbLazy,"STR_KNOCK_KNOCK_ROGUE_CLONE","랜덤 반복 방문")+
-    brief("Rogue 클론 — TroubleSeeking",report.rogueTrouble,"STR_TROUBLESEEKING_ALLY","JackDumb 또는 Dumbass+Saint 랜덤 이벤트")+'</div>'+
+    brief("Rogue 클론 — TroubleSeeking",report.rogueTrouble,"STR_TROUBLESEEKING_ALLY","JackDumb 또는 Dumbass+Saint 랜덤 이벤트")+
+    brief("붉은 새벽단 기적술사",report.orthodoxSaint,"STR_KNOCK_KNOCK_ORTHODOX_MAGE_DAMSEL","Dumbass+Saint 또는 Pussy+JackLazy(Thief 포함) 이벤트")+'</div>'+
     (routeContext.route.id.endsWith("_SAINT")?'<p class="fine">Saint 도달 시나리오: 빠진 색상의 코덱스 각성, 선장일지 #1 및 Saint 이벤트까지 달성했다고 가정합니다. 도마뱀인간 석상 보유 여부에 따라 증원 스크립트 하나가 제한됩니다.</p>':"")+
     '<p class="fine">훈련의 연구·아이템·시설을 지금 보유한다는 뜻은 아닙니다. <b>분기상 가능</b>과 <b>현재 게임에서 실행 가능</b>은 다릅니다.</p>';
 }

@@ -106,8 +106,41 @@ const itemUnknown=eventAvailability(access.itemEvents.STR_ROGUE_CLONE.filter(
   e=>e.id==="STR_SAINTS_REINFORCEMENTS"),createRouteContext(graph,"DUMBASS_SAINT"));
 assert(itemUnknown.eligible.some(s=>s.itemUnknown.some(x=>x.id==="STR_LIZARDMAN_STATUE")),
   "Inventory condition must remain unknown in the branch-only scenario");
+assert(access.itemEvents.STR_ORTHODOX_MAGE_DAMSEL?.some(e=>
+  e.id==="STR_KNOCK_KNOCK_ORTHODOX_MAGE_DAMSEL"&&
+  e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_DUMBASS===true&&s.researchTriggers.STR_CAPTAIN_SAINT===true)),
+  "Dumbass + Saint Orthodox Mage item grant missing");
+assert(access.itemEvents.STR_ORTHODOX_MAGE_DAMSEL?.some(e=>
+  e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_PUSSY_UP===true&&s.researchTriggers.STR_CAPTAIN_JACKLAZY===true)),
+  "Pussy + JackLazy non-Saint Orthodox Mage source missing");
+for(const r of ["DUMBASS_SAINT","LAZYASS_SAINT","JACKASS_SAINT","SOREASS_SAINT"]){
+  const context=createRouteContext(graph,r);
+  assert(context.state.completed.has("STR_TINY_DRILL_INVESTIGATION"),
+    r+" Saint Codex must pass through Tiny Drill Investigation");
+  assert(context.state.disabled.has("STR_REJECT_THE_POWER"),
+    r+" Saint must lock the Reject Power / Savage Queen route");
+  assert.equal(gate("STR_PARIAH_TRAINING",r).kind,"blocked",
+    r+" may not combine Saint with Savage Queen's Pariah");
+  assert.equal(gate("STR_CAPTAINS_11",r).kind,"blocked");
+}
+const savage=createRouteContext(graph,"THIEF_SAVAGE");
+assert(savage.state.completed.has("STR_REJECT_THE_POWER"));
+assert(savage.state.completed.has("STR_QUEEN_SAVAGE"));
+assert(savage.state.disabled.has("STR_TINY_DRILL_INVESTIGATION"));
+assert.notEqual(gate("STR_PARIAH_TRAINING","THIEF_SAVAGE").kind,"blocked");
+assert.equal(gate("STR_BRIDES_TO_THE_QUEEN","THIEF_SAVAGE").kind,"blocked",
+  "Pussy Thief Savage Queen cannot unlock Codex-awakened Brides");
+assert.equal(gate("STR_HERO_GOLD_TRAINING","THIEF_SAVAGE").kind,"blocked");
+assert.equal(info("THIEF").orthodoxSaint.kind,"possible",
+  "Thief must have JackLazy-derived alternate Orthodox Mage event");
+assert.equal(info("THIEF_SAVAGE").orthodoxSaint.kind,"possible");
+assert.equal(info("DUMBASS_SAINT").orthodoxSaint.kind,"possible");
+assert.equal(info("JACKASS_SAINT").orthodoxSaint.kind,"blocked");
+assert.equal(info("LAZYASS_SAINT").orthodoxSaint.kind,"blocked");
+assert.equal(info("PRIEST").orthodoxSaint.kind,"blocked");
+
 const markup=fs.readFileSync("public/trainings/index.html","utf8");
 const app=fs.readFileSync("public/trainings/app.js","utf8");
 assert(markup.includes('id="captainRoute"')&&markup.includes('id="routeAccessSummary"'));
 assert(app.includes("trainingRouteGate")&&app.includes("planWithRoute"));
-console.log("OK training route gates: "+CAPTAIN_ROUTES.length+" captain profiles, Saint+DumbLazy repeatable Rogue, Thief-only 11, Priest/Ruler exclusivity, clone prior restrictions, 3 internal-only transformations, Proud Warrior alternate unlock");
+console.log("OK training route gates: "+CAPTAIN_ROUTES.length+" captain profiles, all four Saint/Gray-Green-Red-Gold vs Savage rejection, Thief's 11, Pussy/JackLazy Orthodox Mage, Priest/Ruler exclusivity, 3 internal-only transforms, clone and Proud Warrior alternate unlock");
