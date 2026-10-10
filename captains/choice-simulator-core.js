@@ -1,17 +1,40 @@
-export function buildChoiceIndex(topics) {
+export function buildChoiceIndex(topics, gates=null) {
   if (!Array.isArray(topics) || !topics.length) throw new Error("No research topics");
-  const byId=new Map();
+  const byId=new Map(),unlockedBy=new Map();
+  const gateTopics=gates?.topics||{};
+  const ids=v=>(Array.isArray(v)?v:[]).map(x=>typeof x==="string"?x:x?.id).filter(x=>typeof x==="string");
   for(const t of topics){
     if(!t || typeof t.id!=="string" || byId.has(t.id)) throw new Error("Invalid research ID");
+    const g=gateTopics[t.id]||{};
     byId.set(t.id,{
       id:t.id,koName:String(t.koName||""),enName:String(t.enName||""),
-      prerequisites:Array.isArray(t.prerequisites)?t.prerequisites:[],
-      disables:Array.isArray(t.disables)?t.disables.map(x=>typeof x==="string"?x:x.id).filter(x=>typeof x==="string"):[],
-      reenables:Array.isArray(t.reenables)?t.reenables.map(x=>typeof x==="string"?x:x.id).filter(x=>typeof x==="string"):[],
-      needItem:t.needItem===true,requiresBaseFunc:Array.isArray(t.requiresBaseFunc)?t.requiresBaseFunc:[]
+      prerequisites:ids(t.prerequisites),
+      // Unlike the legacy "prerequisites" union, OXCE lets any already
+      // discovered research's unlocks bypass dependencies (NEVER requires).
+      dependencies:gates?ids(g.dependencies):ids(t.prerequisites),
+      requires:ids(g.requires),
+      unlocks:gates?ids(g.unlocks):ids(t.unlocks),
+      disables:ids(t.disables),reenables:ids(t.reenables),
+      getOneFree:ids(g.getOneFree),
+      getOneFreeProtected:g.getOneFreeProtected||{},
+      sequentialGetOneFree:g.sequentialGetOneFree===true,
+      unresolvedDependencies:ids(g.unresolvedDependencies),
+      unresolvedRequires:ids(g.unresolvedRequires),
+      unresolvedGetOneFree:ids(g.unresolvedGetOneFree),
+      zeroCost:g.zeroCost===true||t.cost===0,
+      repeatable:g.repeatable===true,
+      neededItem:g.neededItem||null,
+      needItem:t.needItem===true,
+      requiresBaseFunc:Array.isArray(t.requiresBaseFunc)?t.requiresBaseFunc:[]
     });
   }
-  return {byId,topics:[...byId.values()]};
+  for(const topic of byId.values()){
+    for(const target of topic.unlocks){
+      if(!unlockedBy.has(target))unlockedBy.set(target,new Set());
+      unlockedBy.get(target).add(topic.id);
+    }
+  }
+  return {byId,topics:[...byId.values()],unlockedBy,gatesLoaded:Boolean(gates),unresolvedByField:gates?.unresolvedByField||{}};
 }
 export function choiceLabel(index,id){
   const t=index.byId.get(id), label=t?.koName?.trim()||t?.enName?.trim();
@@ -70,39 +93,97 @@ export function computeChoiceScenario(index, previouslyCompleted=[], proposedSte
   return {past,steps,completed,disabled,blockedBy,saveDisabled,removedBy,erased,reenabled,
     skipped,priorConflicts,snapshot};
 }
+function currentlyUnlockedBy(index,state,id){
+  return [...(index.unlockedBy.get(id)||[])].filter(source=>state.completed.has(source));
+}
+function missingGateParts(index,state,id){
+  const topic=index.byId.get(id);
+  if(!topic)return {missingDependencies:[],missingRequires:[],unlockedBy:[]};
+  const unlockedBy=currentlyUnlockedBy(index,state,id);
+  return {
+    unlockedBy,
+    missingDependencies:unlockedBy.length?[]:topic.dependencies.filter(req=>!state.completed.has(req)),
+    missingRequires:topic.requires.filter(req=>!state.completed.has(req))
+  };
+}
 function blockedPrerequisite(index,state,id,seen,depth=24){
   if(depth<=0||seen.has(id)||state.completed.has(id))return null;
-  const t=index.byId.get(id);if(!t)return null;
+  const topic=index.byId.get(id);if(!topic)return null;
   seen.add(id);
-  for(const req of t.prerequisites){
-    if(state.completed.has(req))continue;
-    if(state.disabled.has(req)){
-      seen.delete(id);
-      return {missing:req,blockers:[...(state.blockedBy.get(req)||[])],fromSave:state.saveDisabled.has(req),path:[id,req]};
+  const missing=missingGateParts(index,state,id);
+  for(const [kind,requirements] of [
+    ["requires",missing.missingRequires],["dependencies",missing.missingDependencies]
+  ]) {
+    for(const req of requirements){
+      if(state.disabled.has(req)){
+        seen.delete(id);
+        return {missing:req,kind,blockers:[...(state.blockedBy.get(req)||[])],
+          fromSave:state.saveDisabled.has(req),path:[id,req]};
+      }
+      const deeper=blockedPrerequisite(index,state,req,seen,depth-1);
+      if(deeper){
+        seen.delete(id);
+        return {...deeper,path:[id,...deeper.path]};
+      }
     }
-    const deeper=blockedPrerequisite(index,state,req,seen,depth-1);
-    if(deeper){seen.delete(id);return {...deeper,path:[id,...deeper.path]};}
   }
-  seen.delete(id);return null;
+  seen.delete(id);
+  return null;
+}
+export function choiceGrantCandidates(index,state,id){
+  const topic=index.byId.get(id);
+  if(!topic)return {eligible:[],pending:[],outcomes:[],tickets:0,unresolved:[],sequential:false};
+  const eligible=[],pending=[];
+  const include=(target,requirement=null)=>{
+    if(!index.byId.has(target)||state.disabled.has(target)||state.completed.has(target))return;
+    const entry={id:target,requires:requirement};
+    if(!requirement || state.completed.has(requirement))eligible.push(entry);
+    else pending.push(entry);
+  };
+  for(const target of topic.getOneFree)include(target);
+  for(const [pre,targets] of Object.entries(topic.getOneFreeProtected))
+    for(const target of targets)include(target,pre);
+  // OXCE appends each listed getOneFree element to the possible draws; the
+  // same target listed twice is two lottery tickets, not one unique choice.
+  const weights=new Map();
+  for(const entry of eligible)weights.set(entry.id,(weights.get(entry.id)||0)+1);
+  const outcomes=[...weights].map(([target,weight])=>({id:target,weight,
+    percent:eligible.length?100*weight/eligible.length:0}));
+  return {eligible,pending,outcomes,tickets:eligible.length,
+    unresolved:topic.unresolvedGetOneFree,
+    sequential:topic.sequentialGetOneFree};
 }
 export function choiceStatus(index,state,id){
   const t=index.byId.get(id);
   if(!t)return {id,kind:"unknown",blockers:[],missing:[]};
   const blockers=[...(state.blockedBy.get(id)||[])];
+  const grant=choiceGrantCandidates(index,state,id);
   if(state.completed.has(id))return {
     id,kind:"completed",origin:state.past.includes(id)?"past":"planned",
-    blockers:state.disabled.has(id)?blockers:[],inconsistent:state.disabled.has(id),missing:[]
+    blockers:state.disabled.has(id)?blockers:[],inconsistent:state.disabled.has(id),
+    missing:[],grant,zeroCost:t.zeroCost
   };
   if(state.disabled.has(id))return {
     id,kind:"blocked",blockers,fromSave:state.saveDisabled.has(id),
     wasCompleted:state.erased.some(x=>x.id===id),
     removedBy:state.removedBy.get(id)||null,missing:[]
   };
-  const missing=t.prerequisites.filter(req=>!state.completed.has(req));
+  const parts=missingGateParts(index,state,id);
+  const missing=[...new Set([...parts.missingDependencies,...parts.missingRequires])];
   const nominal=blockedPrerequisite(index,state,id,new Set());
-  return {id,kind:nominal?"path-risk":missing.length?"pending":"candidate",
+  // The same explicit unlock that bypasses known dependencies also bypasses
+  // unresolved dependency references. It never bypasses hard "requires".
+  const unresolved=[...(parts.unlockedBy.length?[]:t.unresolvedDependencies),...t.unresolvedRequires];
+  const alternateUnlocks=[...(index.unlockedBy.get(id)||[])].filter(source=>
+    !state.completed.has(source)&&!state.disabled.has(source));
+  return {
+    id,kind:nominal?"path-risk":unresolved.length?"uncertain":missing.length?"pending":"candidate",
     blockers:nominal?.blockers||[],missing,nominal,
-    needItem:t.needItem,requiresBaseFunc:t.requiresBaseFunc};
+    missingDependencies:parts.missingDependencies,missingRequires:parts.missingRequires,
+    unlockedBy:parts.unlockedBy,alternateUnlocks,unresolved,
+    needItem:t.needItem,neededItem:t.neededItem,requiresBaseFunc:t.requiresBaseFunc,
+    zeroCost:t.zeroCost,grant
+  };
 }
 export function choiceImpact(index,state,id,surfaceIds=[]){
   const t=index.byId.get(id);

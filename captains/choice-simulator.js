@@ -1,6 +1,6 @@
 import {
   buildChoiceIndex, choiceLabel, computeChoiceScenario, choiceStatus,
-  choiceImpact, parseCompletedResearch
+  choiceImpact, choiceGrantCandidates, parseCompletedResearch
 } from "./choice-simulator-core.js";
 import {parseXpiratezSave} from "./save-import-core.js";
 
@@ -37,7 +37,9 @@ function describe(status){
   if(status.kind==="unknown")return "연구 DB에 없는 ID";
   if(status.kind==="completed"){
     if(status.inconsistent)return "입력 불일치: 현재 완료와 영구 배제에 동시에 포함된 연구";
-    return status.origin==="past"?"현재 완료 (세이브/입력)":"완료로 가정 (선택 순서 반영)";
+    const bonus=status.grant?.outcomes?.length||0;
+    return (status.origin==="past"?"현재 완료 (세이브/입력)":"완료로 가정 (선택 순서 반영)")+
+      (bonus?" · 추가 무료 연구 지급 후보 "+bonus+"종 / 가중치 "+status.grant.tickets+"칸 (실제 지급 미확정)":"");
   }
   if(status.kind==="blocked"){
     if(status.removedBy)return "완료 연구 플래그 제거 · "+pretty(status.removedBy)+"이 영구 배제";
@@ -47,10 +49,17 @@ function describe(status){
   if(status.kind==="path-risk")
     return "선행 경로 위험 · "+pretty(status.nominal.missing)+"이 "+
       (status.nominal.fromSave?"세이브에서 영구 배제":status.blockers.length?status.blockers.map(terse).join(", ")+"에 의해 배제":"배제됨")+
-      " (특수 지급 우회 미검증)";
+      (status.alternateUnlocks?.length?" · 별도 unlocks 우회 후보 "+status.alternateUnlocks.map(terse).slice(0,3).join(", "):"")+
+      " (무료 지급·이벤트 우회 미검증)";
   const extra=[];
-  if(status.missing.length)extra.push("선행 미완료 "+status.missing.length+"개");
-  if(status.needItem)extra.push("실물 표본 조건 별도");
+  if(status.unresolved?.length)extra.push("원본 선행 연구 참조 미해결: "+status.unresolved.join(", "));
+  if(status.unlockedBy?.length)extra.push("unlocks로 dependencies 우회: "+status.unlockedBy.map(terse).slice(0,3).join(", "));
+  if(status.missingDependencies?.length)extra.push("dependencies 미완료 "+status.missingDependencies.length+"개");
+  if(status.missingRequires?.length)extra.push("requires 필수 미완료 "+status.missingRequires.length+"개");
+  if(status.zeroCost)extra.push("연구량 0: 자동 처리 조건 확인 필요");
+  if(status.grant?.tickets)extra.push("무료 지급 "+status.grant.outcomes.length+"종 / 추첨 가중치 "+status.grant.tickets+"칸 (실제 결과 미확정)");
+  if(status.grant?.unresolved?.length)extra.push("DB에 없는 무료 지급 후보 "+status.grant.unresolved.length+"건 제외");
+  if(status.needItem)extra.push("실물 표본 조건 별도"+(status.neededItem?" ("+status.neededItem+")":""));
   if(status.requiresBaseFunc?.length)extra.push("시설 "+status.requiresBaseFunc.join(", "));
   if(!extra.length)extra.push("룰셋 직접 배제 없음");
   return "완료 가능성을 가정할 후보 · "+extra.join(" · ");
@@ -73,11 +82,13 @@ function selectedStat(){
   const blockedResearch=[...state.disabled].filter(id=>!state.completed.has(id));
   const blockedSurface=surface.filter(id=>choiceStatus(index,state,id).kind==="blocked");
   const riskySurface=surface.filter(id=>choiceStatus(index,state,id).kind==="path-risk");
+  const bypassedSurface=surface.filter(id=>choiceStatus(index,state,id).unlockedBy?.length>0);
   stats.innerHTML='<span><b>'+state.completed.size+'</b>개 현재 완료</span>'+
     '<span><b>'+state.steps.length+'</b>개 이후 가정</span>'+
     '<span><b>'+state.erased.length+'</b>개 완료 플래그 제거</span>'+
     '<span><b>'+blockedSurface.length+'</b>개 분기 직접 봉쇄</span>'+
     '<span><b>'+riskySurface.length+'</b>개 분기 선행 경로 위험</span>'+
+    '<span><b>'+bypassedSurface.length+'</b>개 분기 선행 우회 활성</span>'+
     '<span><b>'+blockedResearch.length+'</b>개 연구 직접 봉쇄</span>';
 }
 function cardStatuses(){
@@ -92,7 +103,7 @@ function cardStatuses(){
       const copy={
         completed:st.inconsistent?"완료/배제 상태 충돌":"완료",
         blocked:st.wasCompleted?"완료 취소 · 영구 배제":st.fromSave?"세이브상 영구 배제":"직접 영구 배제", "path-risk":"선행 경로 위험",
-        pending:"선행/조건 확인 필요",candidate:"선택 후보",unknown:"불명"
+        pending:"선행/조건 확인 필요",candidate:"선택 후보",uncertain:"원본 선행 참조 미해결",unknown:"불명"
       };
       label.textContent=copy[st.kind]||explanation;
       const btn=card.querySelector("[data-sim-pick]");
@@ -228,7 +239,12 @@ function renderSearch(){
     const canPlan=st.kind!=="blocked"&&st.kind!=="completed";
     const canPast=sourceMode!=="save"&&!state.steps.length&&!state.past.includes(t.id);
     return '<div class="choice-sim-result"><span><b>'+esc(name(t.id))+'</b><small>'+esc(t.id)+'</small>'+
-      '<small>'+esc(describe(st))+'</small></span>'+
+      '<small>'+esc(describe(st))+'</small>'+
+      (st.grant?.eligible?.length?'<small class="choice-sim-bonus-preview">무료 지급 후보: '+
+        esc(st.grant.outcomes.slice(0,4).map(x=>name(x.id)+
+          (x.weight>1?" ×"+x.weight:"")).join(" · "))+
+        (st.grant.outcomes.length>4?" 외 "+(st.grant.outcomes.length-4)+"종":"")+
+        ' / 추첨칸 '+st.grant.tickets+'개 · 결과 미확정</small>':"")+'</span>'+
       '<div><button type="button" data-sim-search-plan="'+esc(t.id)+'" '+(canPlan?"":"disabled")+'>이후 가정</button>'+
       '<button type="button" data-sim-search-past="'+esc(t.id)+'" '+(canPast?"":"disabled")+
       ' title="가정 선택 이전에만 과거 완료를 추가할 수 있습니다">이미 완료</button></div></div>';
@@ -240,10 +256,17 @@ function addStep(id){
     notice=describe(st);renderMessage();return;
   }
   const impact=choiceImpact(index,state,id,surface);
+  const bonus=choiceGrantCandidates(index,state,id);
   proposed.push(id);
   const warnings=[];
   if(st.kind==="path-risk")warnings.push("차단된 선행 경로의 우회 여부 미검증");
   else if(st.missing?.length)warnings.push("명목 선행 "+st.missing.length+"개 미완료");
+  if(st.zeroCost)warnings.push("0비용 자동 처리/지급 경로 미검증");
+  if(bonus.tickets)warnings.push("추가 무료 연구 후보 "+bonus.outcomes.length+"종, 추첨칸 "+bonus.tickets+"개"+
+    " ("+bonus.outcomes.slice(0,3).map(x=>name(x.id)+(x.weight>1?" ×"+x.weight:"")).join(", ")+") — 실제 획득 미확정");
+  if(bonus.pending.length)warnings.push("조건부 무료 지급 후보 "+bonus.pending.length+"개는 아직 미충족");
+  if(bonus.unresolved?.length)warnings.push("현재 연구 DB에 없는 무료 지급 참조 "+bonus.unresolved.length+"건은 확률 추정에서 제외");
+  if(st.unresolved?.length)warnings.push("현재 연구 DB에 없는 선행 "+st.unresolved.join(", ")+"은 연구 가능 여부를 미확정으로 둡니다");
   if(st.needItem)warnings.push("실물 표본 조건 미검증");
   if(st.requiresBaseFunc?.length)warnings.push("시설 조건 미검증");
   notice=pretty(id)+" 완료를 가정했습니다. 새로 직접 봉쇄된 주요 분기 "+
@@ -348,15 +371,22 @@ saveFile?.addEventListener("change",event=>{
 
 async function initialize(){
   try{
-    const response=await fetch("../data/progression-research.json");
-    if(!response.ok)throw new Error("HTTP "+response.status);
-    const body=await response.json();
-    index=buildChoiceIndex(body.topics);
+    const [response,gateResponse]=await Promise.all([
+      fetch("../data/progression-research.json"),
+      fetch("../data/choice-research-gates.json")
+    ]);
+    if(!response.ok||!gateResponse.ok)throw new Error("연구 규칙 또는 해금 조건 파일 HTTP "+(response.ok?gateResponse.status:response.status));
+    const [body,gates]=await Promise.all([response.json(),gateResponse.json()]);
+    if(gates.schemaVersion!==1||gates.count!==body.topics.length)
+      throw new Error("기본 연구 DB와 분기 조건 DB의 버전/항목 수가 일치하지 않습니다.");
+    index=buildChoiceIndex(body.topics,gates);
     state=computeChoiceScenario(index,[],[]);
     decorate();
     content.hidden=false;
     loading.hidden=true;
-    notice="원본 "+index.topics.length+"개 연구를 불러왔습니다. 세이브의 영구 배제 상태를 우선하며, 이후 disables는 완료 플래그를 제거합니다.";
+    notice="원본 "+index.topics.length+"개 연구 로드 완료. unlocks가 dependencies만 우회하는 엔진 규칙을 사용합니다. "+
+      "현재 DB에 없는 외부 참조: dependencies "+(gates.unresolvedByField?.dependencies||0)+"건, "+
+      "무료 지급 "+(gates.unresolvedByField?.getOneFree||0)+"건은 판정 보류하며 임의로 완료 처리하지 않습니다.";
     refresh();
   }catch(error){
     loading.textContent="시뮬레이터 연구 데이터 로드 실패: "+error.message+
