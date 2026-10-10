@@ -4,6 +4,7 @@ import fs from "node:fs";
 import zlib from "node:zlib";
 import path from "node:path";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 
 const base=path.resolve("public/data");
 const training=JSON.parse(fs.readFileSync(path.join(base,"trainings-index.json"),"utf8"));
@@ -57,12 +58,26 @@ assert(itemEvents.STR_ORTHODOX_MAGE_DAMSEL?.some(e=>
   e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_DUMBASS===true&&s.researchTriggers.STR_CAPTAIN_SAINT===true)));
 assert(itemEvents.STR_ORTHODOX_MAGE_DAMSEL?.some(e=>
   e.scripts.some(s=>s.researchTriggers.STR_CAPTAIN_JACKLAZY===true&&s.researchTriggers.STR_CAPTAIN_PUSSY_UP===true)));
+// Derive the four-stage captain choice catalog from the existing audited
+// captain page; these are option nodes, NOT a limited set of build presets.
+const captainSource=fs.readFileSync("public/captains/app.js","utf8");
+const start=captainSource.indexOf("const exclusiveStages=[");
+const end=captainSource.indexOf("const captainCodexInteractionRows=",start);
+assert(start>=0&&end>start,"Captain choice stages not found");
+const stages=vm.runInNewContext(captainSource.slice(start,end)+"\nexclusiveStages",{}, {timeout:1500});
+const captainStages=stages.map(stage=>({title:stage.title,ids:stage.rows.map(([id])=>id)}));
+assert.equal(captainStages.map(s=>s.ids.length).join(","),"5,5,7,5",
+  "Captain stage counts changed; inspect actual rules and update the catalog");
+const choiceGates=JSON.parse(fs.readFileSync(path.join(base,"choice-research-gates.json"),"utf8")).topics;
+for(const stage of captainStages)for(const id of stage.ids)
+  assert(choiceGates[id],"Unknown captain stage research ID: "+id);
 const out={
-  meta:{source:"published event-chunks from original v.o1.1.1 rules",
+  captainStages,
+  meta:{source:"published event-chunks and choice-stage catalog from original v.o1.1.1 rules",
     ruleSha256:training.meta.sha256,events:eventDetails.length},
   researchEvents,itemEvents
 };
 const dest=path.join(base,"training-access.json");
 fs.writeFileSync(dest,JSON.stringify(out));
 console.log("Built "+dest+": "+Object.keys(researchEvents).length+" training research reward IDs, "+
- Object.keys(itemEvents).length+" recruitment item IDs, "+eventDetails.length+" events");
+ Object.keys(itemEvents).length+" recruitment item IDs, "+eventDetails.length+" events, "+captainStages.reduce((n,s)=>n+s.ids.length,0)+" stage choices");

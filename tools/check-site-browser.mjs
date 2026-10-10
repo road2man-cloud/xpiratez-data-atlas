@@ -357,7 +357,16 @@ try {
             errors.push("Training table and exclusion panel are not side-by-side on desktop: "+JSON.stringify(layout));
           await page.setViewportSize({width:390,height:844});
           trainingStage="captain route exclusivity";
-          await page.locator("#captainRoute").selectOption("DUMBASS_SAINT");
+          const counts=await Promise.all([0,1,2,3].map(i=>
+            page.locator("#captainStage"+i+" option").count()));
+          if(counts.join(",")!=="6,6,8,6")
+            errors.push("Four captain stages do not expose all 22 rule-based choices: "+counts);
+          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_DUMBASS");
+          if(await page.locator("#saintMilestone").isEnabled())
+            errors.push("Saint became enabled without the fourth Codex color");
+          await page.locator("#captainCodex").selectOption("GRAY");
+          await page.locator('[data-companion="STR_CAPTAIN_DUMBLAZY"]').check();
+          await page.locator("#saintMilestone").check();
           if(!(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — Saint 증원")||
               !(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — DumbLazy 방문")||
               !(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — TroubleSeeking"))
@@ -367,17 +376,27 @@ try {
           if(!await cap11.locator('[data-toggle]').isDisabled()||
              !await page.locator('#branchBlockedList [data-info="STR_CAPTAINS_11"]').count())
             errors.push("Dumbass+Saint incorrectly allowed Thief-only Captains 11");
-          await page.locator("#captainRoute").selectOption("THIEF");
+          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_PUSSY");
+          if(!await page.locator("#captainStage1Wrap").isVisible())
+            errors.push("Pussy failed to reveal the job choices");
+          await page.locator("#captainStage1").selectOption("STR_CAPTAIN_THIEF");
           await input.fill("STR_CAPTAINS_11");
           if(await cap11.locator('[data-toggle]').isDisabled())
             errors.push("Thief must be able to plan Captains 11 with further event prerequisites");
           if(!(await page.locator("#routeAccessSummary").innerText()).includes("선택 분기에서는 불가"))
             errors.push("Thief route did not display Saint conflict");
-          await page.locator("#captainRoute").selectOption("PRIEST");
+          await page.locator("#captainStage1").selectOption("STR_CAPTAIN_PRIEST");
           await input.fill("STR_BREAD_AND_FISHES_TRAINING");
           if(await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
             errors.push("Priest-exclusive Bread and Fishes was blocked in Priest branch");
-          await page.locator("#captainRoute").selectOption("ANY");
+          await page.locator("#captainStage1").selectOption("STR_CAPTAIN_UNCLASSED_UP");
+          await page.locator("#captainStage2").selectOption("STR_CAPTAIN_PURE_UP");
+          if(!await page.locator("#captainStage3Wrap").isVisible())
+            errors.push("Pure gate failed to reveal the fourth stage");
+          await page.locator("#captainStage3").selectOption("STR_CAPTAIN_RED_UP");
+          if(await page.locator("#saintMilestone").isEnabled())
+            errors.push("Pussy + Pure was incorrectly eligible for Saint");
+          await page.locator("#captainStage0").selectOption("");
           await page.locator("#origin").selectOption("profile:manufacture:STR_THEBAN_ASSAULT_CLONE");
           await input.fill("STR_BATTLE_FORM_AUGMENTATION");
           if(!await page.locator('#trainingTable tbody tr[data-id="STR_BATTLE_FORM_AUGMENTATION"] [data-toggle]').isDisabled())
@@ -385,15 +404,18 @@ try {
           await input.fill("STR_CAREER_SOLDIER");
           if(!await page.locator('#trainingTable tbody tr[data-id="STR_CAREER_SOLDIER"] [data-toggle]').isDisabled())
             errors.push("STR_UNAVAILABLE internal transformation became executable");
-          await page.locator("#captainRoute").selectOption("DUMBASS_SAINT");
+          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_DUMBASS");
+          await page.locator("#captainCodex").selectOption("GRAY");
+          await page.locator('[data-companion="STR_CAPTAIN_DUMBLAZY"]').check();
+          await page.locator("#saintMilestone").check();
           await page.locator("#origin").selectOption("profile:manufacture:STR_ROGUE_CLONE_RECRUITMENT");
           await input.fill("STR_BREAD_AND_FISHES_TRAINING");
           if(!await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
             errors.push("Rogue clone omitted prior Theban transformation exclusion");
           trainingStage="additional research branch exclusions";
-          await page.locator("#captainRoute").selectOption("ANY");
+          await page.locator("#captainStage0").selectOption("");
           await page.locator("#origin").selectOption("base:STR_SOLDIER");
-          if(await page.locator("#researchRouteSelectors select").count()<5)
+          if(await page.locator("#researchRouteSelectors select").count()<4)
             errors.push("Cross-branch training DB selectors not present");
           await page.locator("#research-route-path").selectOption("STR_PEASANT_REVOLUTION_PREQ");
           await input.fill("STR_PURE_MAIDEN_TRAINING");
@@ -412,7 +434,10 @@ try {
             errors.push("Unknown research IDs silently ignored in training branch planner");
           await page.locator("#researchRouteExtra").fill("");
           await page.locator("#researchRouteExtra").dispatchEvent("change");
-          await page.locator("#captainRoute").selectOption("DUMBASS_SAINT");
+          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_DUMBASS");
+          await page.locator("#captainCodex").selectOption("GRAY");
+          await page.locator('[data-companion="STR_CAPTAIN_DUMBLAZY"]').check();
+          await page.locator("#saintMilestone").check();
           await input.fill("STR_CAPTAINS_11");
           await page.locator('#trainingTable tbody tr[data-id="STR_CAPTAINS_11"] td').first().click();
           const capEvidence=await page.locator("#detailBody").innerText();
