@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병사훈련·상호배타 조합 DB</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body>
 <header class="hero"><div class="wrap">
@@ -28,6 +29,19 @@
         </select></label>
       </div>
       <div id="routeAccessSummary" class="route-access" aria-live="polite"></div>
+      <section class="research-route-panel" aria-label="나머지 연구 선택지의 배제조건">
+        <h3>나머지 선택지·획득 경로 배제검사 <span class="tag">분기 DB 연동</span></h3>
+        <p class="fine">위 선장 시나리오와 함께 갈라지는 길, 여왕, Codex, 신의 선물 등의 후속 연구 분기를 선택하세요. 이벤트를 통해 지급되는 연구와 필수 재료의 출처도 추적합니다.</p>
+        <div id="researchRouteSelectors" class="research-route-selectors"></div>
+        <details class="extra-research">
+          <summary>실제 완료된 연구·선택지 ID 추가</summary>
+          <label>완료한 연구 ID (공백·쉼표로 구분)
+            <textarea id="researchRouteExtra" rows="2" spellcheck="false" placeholder="STR_RESEARCH_ID, STR_ANOTHER_CHOICE"></textarea>
+          </label>
+          <p class="fine">확실히 완료한 연구만 입력하세요. 보유 확인이 안 된 아이템이나 연구는 '불가능'으로 처리하지 않습니다.</p>
+        </details>
+        <div id="researchRouteHint" class="note" aria-live="polite"></div>
+      </section>
       <div class="quick-training" aria-label="훈련 빠른 선택">
         <label for="quickTraining">지금 가능한 다음 훈련 (선행 자동 포함)<select id="quickTraining"><option value="">훈련을 선택하세요</option></select></label>
         <button id="quickAdd" type="button" class="btn-add" disabled>선택한 훈련 추가</button>
@@ -54,7 +68,7 @@
       </div>
       <h3>이전부터 배제된 훈련 <span id="blockedCount" class="count"></span></h3>
       <div id="blockedList" class="choice-list"></div>
-      <h3>선장 분기로 접근 불가 <span id="branchBlockedCount" class="count"></span></h3><div id="branchBlockedList" class="choice-list"></div>
+      <h3>선장·연구·이벤트 분기로 접근 불가 <span id="branchBlockedCount" class="count"></span></h3><div id="branchBlockedList" class="choice-list"></div>
       <h3>선행 훈련이 필요한 후보</h3><div id="futureList" class="choice-list"></div>
       <div id="researchWarnings" class="research-warnings"></div>
     </aside>
@@ -89,5 +103,6 @@
 </main>
 <dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
 <script type="module" src="app.js"></script>
+<script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
