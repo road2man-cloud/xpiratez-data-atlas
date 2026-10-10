@@ -139,12 +139,19 @@ try {
             "name: Smoke Save","---","difficulty: 2","funds: 1000",
             "bases:","  - name: Demo","    research:","      - project: STR_CAPTAIN_LAZYASS",
             "discovered:","  - STR_GDX_012",
-            "researchRuleStatus:","  STR_TEC_169: 2","  STR_GDX_013: 2"
+            "researchRuleStatus:","  STR_TEC_169: 2","  STR_GDX_013: 2",
+            "researchDiary:",
+            "  - {date: [2601, 1, 29], name: STR_TEC_168, sourceType: 4, sourceName: STR_AURORA_EVENT}"
           ].join("\\n")+"\\n";
           await page.locator("#choiceSaveFile").setInputFiles({
             name:"choice-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(sampleSave.replaceAll("\\n","\n"))
           });
           await page.waitForFunction(()=>document.querySelector("#choiceSaveSummary")?.textContent.includes("영구 배제 2개"),{timeout:10000});
+          if(!await page.locator("#choiceSaveEvidence").isVisible())
+            errors.push("Research diary evidence panel did not appear");
+          const evidence=await page.locator("#choiceSaveEvidenceContent").innerText();
+          if(!evidence.includes("배제 원인 후보")||!evidence.includes("이벤트 보상"))
+            errors.push("Research diary evidence failed to connect event source with ruleset disables");
           if(await page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_012"]').getAttribute("data-sim-state")!=="completed")
             errors.push("Save discovered was not marked completed");
           if(await page.locator('#exclusiveRules .choice-option[data-choice-id="STR_TEC_169"]').getAttribute("data-sim-state")!=="blocked")

@@ -131,6 +131,15 @@ html{scroll-behavior:smooth}
 @media(max-width:760px){.effect-card-grid{grid-template-columns:1fr}.feature-head{min-width:138px}}
 
 /* Research-driven, chronological choice simulator */
+.choice-sim-evidence[hidden]{display:none}
+.choice-sim-evidence{margin-top:16px;border-top:1px solid #345071;padding-top:9px}
+.choice-sim-evidence h4{margin:6px 0 8px}
+.choice-sim-evidence h5{margin:11px 0 6px;color:#c4d9f9;font-size:.75rem}
+.choice-sim-evidence-note{padding:7px 8px;margin:7px 0;border:1px solid #715a38;background:#31281d;border-radius:8px;color:#ffe2a0;font-size:.72rem;line-height:1.5}
+.choice-sim-evidence-row{border-top:1px solid #263c56;padding:6px 2px;overflow-wrap:anywhere}
+.choice-sim-evidence-row b,.choice-sim-evidence-row small{display:block;font-size:.73rem}
+.choice-sim-evidence-row small{font-size:.66rem;color:#a5bedb;line-height:1.45}
+
 .choice-sim-editor input[type=file]{display:block;width:100%;max-width:100%;font-size:.75rem;color:#c3d8f3;padding:7px 4px;border:1px solid #344a6d;border-radius:9px}
 .choice-sim-editor input[type=file]::file-selector-button{cursor:pointer;background:#233959;color:#e1eeff;border:1px solid #44618b;border-radius:7px;padding:7px 8px;margin-right:10px}
 .choice-sim-save-summary{white-space:pre-line;overflow-wrap:anywhere;font-size:.72rem;line-height:1.45;color:#a4e3c5;border-left:3px solid #3b8969;padding-left:9px;margin:5px 0}

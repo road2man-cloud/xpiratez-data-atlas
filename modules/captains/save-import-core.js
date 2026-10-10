@@ -1,4 +1,4 @@
-// Read only two top-level sections from OXCE multi-document, plain UTF-8 YAML save.
+// Read research-only top-level sections from OXCE multi-document, plain UTF-8 YAML save.
 // Do not treat in-progress base research or poppedResearch as completed research.
 // No server upload, no YAML tag evaluation, no extraction of other personal save fields.
 const ID=/^[A-Za-z0-9_][A-Za-z0-9_.:-]*$/;
@@ -47,8 +47,75 @@ function statusMap(section){
   }
   return out;
 }
+// Current OXCE ResearchDiaryEntry::save emits flow-style maps:
+ // - {date: [year, month, day], name: STR_..., sourceType: 0..4, sourceName: ...}
+ // Older block-style maps are accepted as well. Unknown diary syntax is skipped,
+ // never mistaken for completed research or an authoritative disable.
+function parseDiary(section,index){
+  const diary=[],unknown=[],unparsed=[];
+  if(!section)return {diary,unknown,unparsed};
+  if(section.head==="[]"||section.head==="null"||section.head==="~")
+    return {diary,unknown,unparsed};
+  if(section.head.trim()){
+    unparsed.push("Unsupported researchDiary header");
+    return {diary,unknown,unparsed};
+  }
+  const collect=[];
+  let record=null;
+  for(const line of section.lines){
+    const trimmed=line.trim();
+    if(!trimmed||trimmed.startsWith("#"))continue;
+    const start=line.match(/^\s+-\s+(.+)$/);
+    if(start){
+      if(record)collect.push(record.join(" "));
+      record=[start[1].trim()];
+    }else if(record){
+      record.push(trimmed);
+    }else{
+      unparsed.push(trimmed.slice(0,65));
+    }
+  }
+  if(record)collect.push(record.join(" "));
+  for(const raw of collect){
+    // Research diary fields are unique flat scalar values, except for date's
+    // three-integer flow array. Match explicit YAML keys, not arbitrary strings.
+    const name=raw.match(/(?:^|[\s,{])name:\s*(?:"([^"]+)"|'([^']+)'|([A-Za-z0-9_.:-]+))/);
+    const date=raw.match(/(?:^|[\s,{])date:\s*\[\s*(\d{1,6})\s*,\s*(\d{1,2})\s*,\s*(\d{1,2})\s*\]/);
+    const type=raw.match(/(?:^|[\s,{])sourceType:\s*(\d{1,2})(?=\s*[,}\s]|$)/);
+    const source=raw.match(/(?:^|[\s,{])sourceName:\s*(?:"([^"]*)"|'([^']*)'|([^,}]*))/);
+    if(!name||!date||!type){
+      unparsed.push(raw.slice(0,100));
+      continue;
+    }
+    const id=name[1]||name[2]||name[3];
+    const year=Number(date[1]),month=Number(date[2]),day=Number(date[3]),sourceType=Number(type[1]);
+    if(!ID.test(id)||month<1||month>12||day<1||day>31||sourceType>4){
+      unparsed.push(raw.slice(0,100));
+      continue;
+    }
+    const entry={
+      id,year,month,day,
+      sourceType,sourceName:(source?.[1]??source?.[2]??source?.[3]??"").trim()
+    };
+    if(index.byId.has(id))diary.push(entry);
+    else unknown.push(entry);
+  }
+  return {diary,unknown,unparsed};
+}
+export function traceSaveDisableCauses(index,diary,disabled){
+  // diary ordering is preserved from the OXCE save. This is rule-backed
+  // candidate evidence, not a claim that no intervening event changed status.
+  const candidate=new Map(),disabledSet=new Set(disabled);
+  for(const entry of diary){
+    for(const target of index.byId.get(entry.id)?.disables||[]){
+      if(disabledSet.has(target))candidate.set(target,entry);
+    }
+  }
+  return [...candidate].map(([id,source])=>({id,source}));
+}
+
 function readSections(text){
-  const wanted=new Set(["discovered","researchRuleStatus"]);
+  const wanted=new Set(["discovered","researchRuleStatus","researchDiary"]);
   const header={},body={};
   let documentIndex=0,seenContent=false,capture=null;
   const lines=text.replace(/^\uFEFF/,"").split(/\r?\n/);
@@ -86,6 +153,7 @@ export function parseXpiratezSave(text,index){
   const {header,body}=readSections(text);
   const rawCompleted=items(body.discovered);
   const statuses=statusMap(body.researchRuleStatus);
+  const diaryResult=parseDiary(body.researchDiary,index);
   if(!body.discovered&&!body.researchRuleStatus)
     throw new Error("완료 연구와 연구 상태 필드를 모두 찾을 수 없습니다.");
   const completed=[],disabled=[],unknownCompleted=[],unknownDisabled=[],otherStatuses=[],seen=new Set();
@@ -100,14 +168,22 @@ export function parseXpiratezSave(text,index){
     }else if(![0,1,3].includes(status))otherStatuses.push({id,status});
   }
   const overlaps=completed.filter(id=>disabled.includes(id));
+  const disableCauses=traceSaveDisableCauses(index,diaryResult.diary,disabled);
+  const lostChoices=diaryResult.diary.filter(entry=>disabled.includes(entry.id)&&
+    !completed.includes(entry.id)&&index.byId.get(entry.id)?.disables?.length>0);
   const warnings=[];
   if(unknownCompleted.length||unknownDisabled.length)
     warnings.push("현 DB에 없는 완료 연구 "+unknownCompleted.length+"개 / 배제 연구 "+unknownDisabled.length+"개 (모드 버전 불일치 가능)");
   if(overlaps.length)warnings.push("완료와 영구 배제에 동시에 기록된 연구 "+overlaps.length+"개 (세이브 확인 필요)");
   if(otherStatuses.length)warnings.push("알 수 없는 연구 상태 코드 "+otherStatuses.length+"개");
+  if(diaryResult.unparsed.length)warnings.push("연구 일지 형식 미인식 "+diaryResult.unparsed.length+"건 (완료/배제 상태는 별도로 정상 판독)");
+  if(diaryResult.unknown.length)warnings.push("현 DB에 없는 연구 일지 항목 "+diaryResult.unknown.length+"건");
   if(!rawCompleted.length&&!statuses.size)warnings.push("연구 이력이 비어 있습니다. 첫날 세이브인지 확인하세요.");
   return {completed,disabled,unknownCompleted,unknownDisabled,overlaps,
+    diary:diaryResult.diary,unknownDiaryCount:diaryResult.unknown.length,
+    unparsedDiaryCount:diaryResult.unparsed.length,disableCauses,lostChoices,
     warnings,otherStatuses,
     meta:{name:header.name||"",mods:header.mods?"모드 정보 있음":"모드 정보 없음",
-      rawCompleted:rawCompleted.length,rawStatuses:statuses.size}};
+      rawCompleted:rawCompleted.length,rawStatuses:statuses.size,
+      rawDiary:diaryResult.diary.length+diaryResult.unknown.length+diaryResult.unparsed.length}};
 }
