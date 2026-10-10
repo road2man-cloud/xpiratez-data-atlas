@@ -123,7 +123,7 @@ const syntheticEngine=buildChoiceIndex([
   {id:"BONUS",disables:[],cost:10}
 ],{topics:{
   SOURCE:{unlocks:["TARGET"],getOneFree:["TARGET","TARGET","BONUS"]},
-  TARGET:{dependencies:["DEP"],requires:["REQ"]},
+  TARGET:{dependencies:["DEP"],requires:["REQ"],unresolvedDependencies:["UNRESOLVED_ORIGINAL"]},
   DEP:{},REQ:{},LOCK:{},BONUS:{}
 }});
 const noSource=computeChoiceScenario(syntheticEngine,[],["LOCK"]);
@@ -132,6 +132,8 @@ const sourceOnly=computeChoiceScenario(syntheticEngine,[],["SOURCE"]);
 assert.equal(choiceStatus(syntheticEngine,sourceOnly,"TARGET").kind,"pending");
 assert.deepEqual(choiceStatus(syntheticEngine,sourceOnly,"TARGET").missingDependencies,[]);
 assert.deepEqual(choiceStatus(syntheticEngine,sourceOnly,"TARGET").missingRequires,["REQ"]);
+const withoutUnlock=computeChoiceScenario(syntheticEngine,[],["REQ"]);
+assert.equal(choiceStatus(syntheticEngine,withoutUnlock,"TARGET").kind,"uncertain");
 const sourceReq=computeChoiceScenario(syntheticEngine,[],["SOURCE","REQ"]);
 assert.equal(choiceStatus(syntheticEngine,sourceReq,"TARGET").kind,"candidate");
 const sourceLock=computeChoiceScenario(syntheticEngine,[],["SOURCE","LOCK"]);

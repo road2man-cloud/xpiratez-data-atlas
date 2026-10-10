@@ -171,7 +171,9 @@ export function choiceStatus(index,state,id){
   const parts=missingGateParts(index,state,id);
   const missing=[...new Set([...parts.missingDependencies,...parts.missingRequires])];
   const nominal=blockedPrerequisite(index,state,id,new Set());
-  const unresolved=[...t.unresolvedDependencies,...t.unresolvedRequires];
+  // The same explicit unlock that bypasses known dependencies also bypasses
+  // unresolved dependency references. It never bypasses hard "requires".
+  const unresolved=[...(parts.unlockedBy.length?[]:t.unresolvedDependencies),...t.unresolvedRequires];
   const alternateUnlocks=[...(index.unlockedBy.get(id)||[])].filter(source=>
     !state.completed.has(source)&&!state.disabled.has(source));
   return {
