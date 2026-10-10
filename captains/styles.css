@@ -205,4 +205,13 @@ html{scroll-behavior:smooth}
 .choice-option[data-sim-state="completed"]{border-color:#397b61;background:#13291f}
 .choice-option[data-sim-state="completed"] .choice-sim-card-state{color:#9af0c8}
 @media(max-width:880px){.choice-sim-grid{grid-template-columns:1fr}.choice-sim-heading{display:block}.choice-sim-heading>button{margin:8px 0 14px}}
-@media(max-width:620px){.choice-simulator{padding:14px}.choice-sim-steps li{flex-wrap:wrap}}
+@media(max-width:620px){.choice-simulator{padding:14px}.choice-sim-steps li{flex-wrap:wrap}
+  /* Avoid a continually composited full-width blur while scrolling on phones. */
+  .toolbar{backdrop-filter:none;background:#121a2d}
+}
+/* Hundreds of detailed branch/effect elements remain searchable and clickable,
+   but offscreen cards do not need layout or paint on every frame. */
+@supports (content-visibility:auto){
+  #exclusiveRules .choice-stage{content-visibility:auto;contain-intrinsic-size:auto 680px}
+  .glossary-card,.deep-card,.timeline article{content-visibility:auto;contain-intrinsic-size:auto 310px}
+}

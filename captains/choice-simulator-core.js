@@ -2,10 +2,11 @@ export function buildChoiceIndex(topics, gates=null) {
   if (!Array.isArray(topics) || !topics.length) throw new Error("No research topics");
   const byId=new Map(),unlockedBy=new Map();
   const gateTopics=gates?.topics||{};
+  const inlineGates=gates?.inline===true;
   const ids=v=>(Array.isArray(v)?v:[]).map(x=>typeof x==="string"?x:x?.id).filter(x=>typeof x==="string");
   for(const t of topics){
     if(!t || typeof t.id!=="string" || byId.has(t.id)) throw new Error("Invalid research ID");
-    const g=gateTopics[t.id]||{};
+    const g=inlineGates?t:gateTopics[t.id]||{};
     byId.set(t.id,{
       id:t.id,koName:String(t.koName||""),enName:String(t.enName||""),
       prerequisites:ids(t.prerequisites),

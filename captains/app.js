@@ -423,6 +423,19 @@ function renderCaptainCodexInteractions(){
 const featureNames=Object.fromEntries(columns.filter(c=>c.type!=="ev"&&c.type!=="codex").map(c=>[c.key,c.label]));
 const stageOrder={initial:0,class:1,unclassed:2,pure:3};
 let sortState={key:"stage",dir:1};
+// Expensive Codex and status-cell markup is invariant across sorting/filtering.
+// Index it once rather than reconstructing the whole matrix per keystroke.
+const rowInfo=new Map(rows.map((r,order)=>{
+  const keys=Object.entries(r).filter(([key,value])=>value==="yes"||value==="warn"||value==="late").map(([key])=>key);
+  return [r.id,{order,search:[r.name,r.code,r.route,r.summary,...r.notes,
+    ...keys.map(key=>featureNames[key]||""),
+    ...keys.map(key=>featureInfo[key]?.short||""),
+    ...keys.map(key=>featureInfo[key]?.detail||"")].join(" ").toLowerCase(),
+    available:columns.some(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn"))}];
+}));
+const rowMarkup=new Map();
+const matrixBody=document.querySelector("#matrixTable tbody");
+let searchDebounce=null;
 
 function statusLabel(v){return v==="yes"?"자연 접근":v==="late"?"후기/조건부":v==="warn"?"가능·큰 페널티":"불가/봉쇄";}
 function statusCell(v,c){
@@ -465,23 +478,28 @@ function filteredRows(){
   const only=document.querySelector("#onlyAvailable").checked;
   let out=rows.filter(r=>{
     if(stage!=="all"&&r.stage!==stage)return false;
-    const activeKeys=Object.entries(r).filter(([k,v])=>v==="yes"||v==="warn"||v==="late").map(([k])=>k);
-    const blob=[r.name,r.code,r.route,r.summary,...r.notes,...activeKeys.map(k=>featureNames[k]||""),...activeKeys.map(k=>featureInfo[k]?.short||""),...activeKeys.map(k=>featureInfo[k]?.detail||"")].join(" ").toLowerCase();
-    if(q&&!blob.includes(q))return false;
-    if(only&&!columns.some(c=>c.type!=="ev"&&c.type!=="codex"&&(r[c.key]==="yes"||r[c.key]==="warn")))return false;
+    const info=rowInfo.get(r.id);
+    if(q&&!info.search.includes(q))return false;
+    if(only&&!info.available)return false;
     return true;
   });
   out.sort((a,b)=>{
     if(sortState.key==="ev")return (a.ev-b.ev)*sortState.dir;
-    return (stageOrder[a.stage]-stageOrder[b.stage])||rows.indexOf(a)-rows.indexOf(b);
+    return (stageOrder[a.stage]-stageOrder[b.stage])||rowInfo.get(a.id).order-rowInfo.get(b.id).order;
   });
   return out;
 }
-function renderRows(){
-  const tbody=document.querySelector("#matrixTable tbody");
-  tbody.innerHTML=filteredRows().map(r=>'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>').join("");
-  tbody.querySelectorAll("tr").forEach(tr=>tr.addEventListener("click",()=>openDetail(tr.dataset.id)));
+function matrixRow(r){
+  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
+  return rowMarkup.get(r.id);
 }
+function renderRows(){
+  matrixBody.innerHTML=filteredRows().map(matrixRow).join("");
+}
+matrixBody.addEventListener("click",event=>{
+  const target=event.target.closest("tr[data-id]");
+  if(target&&matrixBody.contains(target))openDetail(target.dataset.id);
+});
 function openDetail(id){
   const r=rows.find(x=>x.id===id); if(!r)return;
   document.querySelector("#dialogBody").innerHTML='<p class="eyebrow">'+r.stageName+'</p><h2>'+r.name+'</h2><p class="muted">'+r.route+' · '+r.from+'</p><p>'+r.summary+'</p>'+
@@ -516,10 +534,13 @@ function renderDeep(){
  document.querySelector("#deepDiveCards").innerHTML=deep.map(d=>'<article class="deep-card card"><p class="eyebrow">'+d.tag+'</p><h3>'+d.title+'</h3><p>'+d.body+'</p><table><tbody>'+d.rows.map(x=>'<tr><th>'+x[0]+'</th><td>'+x[1]+'</td></tr>').join("")+'</tbody></table></article>').join("");
 }
 
-document.querySelector("#search").addEventListener("input",renderRows);
+document.querySelector("#search").addEventListener("input",()=>{
+  if(searchDebounce!==null)clearTimeout(searchDebounce);
+  searchDebounce=setTimeout(()=>{searchDebounce=null;renderRows();},100);
+});
 document.querySelector("#stageFilter").addEventListener("change",renderRows);
 document.querySelector("#onlyAvailable").addEventListener("change",renderRows);
-document.querySelector("#resetBtn").addEventListener("click",()=>{document.querySelector("#search").value="";document.querySelector("#stageFilter").value="all";document.querySelector("#onlyAvailable").checked=false;sortState={key:"stage",dir:1};renderRows()});
+document.querySelector("#resetBtn").addEventListener("click",()=>{if(searchDebounce!==null)clearTimeout(searchDebounce);searchDebounce=null;document.querySelector("#search").value="";document.querySelector("#stageFilter").value="all";document.querySelector("#onlyAvailable").checked=false;sortState={key:"stage",dir:1};renderRows()});
 document.querySelector("#dialogClose").addEventListener("click",()=>document.querySelector("#detailDialog").close());
 document.querySelector("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
 
