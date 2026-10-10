@@ -521,5 +521,6 @@ document.querySelector("#stageFilter").addEventListener("change",renderRows);
 document.querySelector("#onlyAvailable").addEventListener("change",renderRows);
 document.querySelector("#resetBtn").addEventListener("click",()=>{document.querySelector("#search").value="";document.querySelector("#stageFilter").value="all";document.querySelector("#onlyAvailable").checked=false;sortState={key:"stage",dir:1};renderRows()});
 document.querySelector("#dialogClose").addEventListener("click",()=>document.querySelector("#detailDialog").close());
+document.querySelector("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
 
-[Showing lines 1-523 of 527 (50.0KB limit). Use offset=524 to continue.]
+renderHead();renderRows();renderCodexEconomyTable();renderCodexCards();renderExclusiveRules();renderCaptainCodexInteractions();CaptainGlossary.render();renderTimeline();renderDeep();
