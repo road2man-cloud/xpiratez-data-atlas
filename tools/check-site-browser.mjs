@@ -120,6 +120,47 @@ try {
         const content=await page.locator(contentSelector).innerText();
         detail=String(content.length);
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
+        if(slug==="captains"){
+          await page.locator("#dialogClose").click();
+          await page.locator("#choiceSimulatorContent").waitFor({state:"visible",timeout:25000});
+          const linkedCards=await page.locator("#exclusiveRules .choice-option[data-choice-id]").count();
+          if(linkedCards<80)
+            errors.push("Branch cards are not wired to research IDs: "+linkedCards);
+          const jack=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_CAPTAIN_JACKASS"]').first();
+          const dumb=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_CAPTAIN_DUMBASS"]').first();
+          await jack.locator("[data-sim-pick]").click();
+          if(await dumb.getAttribute("data-sim-state")!=="blocked"||
+            !await dumb.locator("[data-sim-pick]").isDisabled())
+            errors.push("Selecting Jackass did not directly block Dumbass");
+          const blockedPanel=await page.locator("#choiceScenarioBlocked").innerText();
+          if(!blockedPanel.includes("무모한 선장"))errors.push("Blocked branch reason is not visible");
+          await page.locator("#choiceScenarioReset").click();
+          await page.locator("#choiceCompletedInput").fill("STR_GDX_012");
+          await page.locator("#choiceCompletedApply").click();
+          await page.locator("#choiceTopicSearch").fill("STR_TEC_168");
+          await page.locator('[data-sim-search-plan="STR_TEC_168"]').click();
+          const doc=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_012"]');
+          if(await doc.getAttribute("data-sim-state")!=="completed")
+            errors.push("Completed Dr. X was retroactively removed by Aurora gate");
+          const aurora=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_018"]');
+          if(await aurora.getAttribute("data-sim-state")==="blocked")
+            errors.push("Aurora conditional option was wrongly treated as direct mutual disable");
+          const otherDoctor=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_013"]');
+          if(await otherDoctor.getAttribute("data-sim-state")!=="blocked")
+            errors.push("Aurora route did not block ordinary Dr. X options");
+          await page.locator("#choiceScenarioReset").click();
+          await page.locator("#choiceTopicSearch").fill("STR_HOTEL");
+          await page.locator('[data-sim-search-plan="STR_HOTEL"]').click();
+          await jack.locator("[data-sim-pick]").click();
+          if(!(await page.locator("#choiceScenarioTimeline").innerText()).includes("호텔"))
+            errors.push("One-way completion order removed already completed Hotel");
+          if(await page.locator("#choiceScenarioTimeline [data-sim-remove-step]").count()!==2)
+            errors.push("Expected chronological Hotel / Jackass timeline");
+          await page.locator("#choiceScenarioTimeline [data-sim-remove-step]").last().click();
+          if(await jack.getAttribute("data-sim-state")==="completed")
+            errors.push("Undo did not restore Jackass as a selectable option");
+          detail+=" + directional branch simulator + historical completion + undo";
+        }
         if(slug==="trainings"){
           trainingStage="close detail button";
           await page.locator("#closeDialog").click();

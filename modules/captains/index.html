@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="XPiratez v.o1.1.1 영구 선택·분기 DB: 선장 성격, Codex, 사회·병종·세력·스토리 상호배타 선택의 획득과 영구 손실을 비교합니다." />
   <title>XPiratez 영구 선택·분기 DB</title>
-  <link rel="stylesheet" href="styles.css?v=effects3-20261006" />
+  <link rel="stylesheet" href="styles.css?v=choice-history-20261010" />
 </head>
 <body id="top">
   <header class="hero">
@@ -14,6 +14,7 @@
         <p class="eyebrow">XPiratez v.o1.1.1 · OXCE 8.6</p>
         <h1>영구 선택·분기 DB</h1>
         <p class="lede">선장 성격, Codex, 사회·병종·세력·스토리 분기까지. 무엇을 얻는지뿐 아니라 무엇을 영구 포기하는지 원본 룰셋 기준으로 비교합니다.</p>
+        <a class="choice-sim-jump" href="#choiceSimulator">선택 조합 직접 계산하기 ↓</a>
       </div>
       <div class="legend card">
         <strong>표시</strong>
@@ -110,6 +111,37 @@
         <p class="muted">직접 선택과 경로 결과를 구분하고, 각 카드에서 선행·획득·영구 손실·복구 가능성을 함께 표시합니다.</p>
       </div>
       <div id="soreassGoldInsight" class="card codex-alert"></div>
+      <section id="choiceSimulator" class="card choice-simulator" aria-label="연구 선택 조합 시뮬레이터">
+        <div class="choice-sim-heading">
+          <div>
+            <p class="eyebrow">원본 연구 ID 기반 · 순서별 계산</p>
+            <h3>선택 조합 시뮬레이터</h3>
+            <p>아래 분기 카드의 <b>완료로 가정</b>을 누르면 배제되는 선택이 즉시 표시됩니다. 이미 연구한 항목은 왼쪽에서 먼저 등록하세요.</p>
+          </div>
+          <button id="choiceScenarioReset" type="button">가정 초기화</button>
+        </div>
+        <div id="choiceSimulatorLoading" role="status" aria-live="polite">원본 연구 관계 불러오는 중…</div>
+        <div id="choiceSimulatorContent" class="choice-sim-grid" hidden>
+          <div class="choice-sim-editor">
+            <label for="choiceCompletedInput"><b>이미 완료된 연구 ID</b> (과거 이력)</label>
+            <textarea id="choiceCompletedInput" rows="3" spellcheck="false" placeholder="STR_CAPTAIN_SOREASS&#10;STR_EMBRACE_THE_POWER"></textarea>
+            <p class="choice-sim-help">공백·쉼표·줄바꿈 구분. 연구 ID 목록 또는 {"completed":["STR_…"]} JSON을 붙여넣으세요. 적용 시 이후 가정 선택은 초기화됩니다. .sav 파일 직접 분석 기능은 아닙니다.</p>
+            <button id="choiceCompletedApply" type="button">완료 연구 목록 적용</button>
+            <label for="choiceTopicSearch"><b>연구·이벤트 플래그 검색</b></label>
+            <input type="search" id="choiceTopicSearch" placeholder="예: 오로라, Codex, STR_TEC_168" autocomplete="off"/>
+            <div id="choiceTopicResults" class="choice-sim-search-results" aria-live="polite"></div>
+          </div>
+          <div class="choice-sim-output">
+            <div id="choiceScenarioStats" class="choice-sim-stats" aria-live="polite"></div>
+            <div id="choiceScenarioMessage" class="choice-sim-message" role="status" aria-live="polite"></div>
+            <h4>이미 완료한 연구 / 이후 가정 순서</h4>
+            <div id="choiceScenarioTimeline" class="choice-sim-timeline"></div>
+            <h4>차단된 주요 분기 · 원인</h4>
+            <div id="choiceScenarioBlocked" class="choice-sim-blocked"></div>
+          </div>
+        </div>
+        <p class="choice-sim-disclaimer">판정 기준: <b>직접 봉쇄</b>는 룰셋 disables의 방향대로 계산합니다. 이미 완료한 연구는 나중에 막혀도 완료 이력을 취소하지 않습니다. <b>선행 경로 위험</b>은 일반 연구 경로만의 추정이며 이벤트 지급·unlocks·getOneFree·실물·시설·난이도·시기 조건은 자동 충족시키지 않습니다. 따라서 표시되는 '후보'는 실제 세이브의 연구 가능 확정이 아닙니다.</p>
+      </section>
       <div id="exclusiveRules"></div>
     </section>
 
@@ -177,7 +209,8 @@
 
   <script src="captain-rows.js?v=human2-20261006"></script>
   <script src="glossary.js?v=terms2-20261006"></script>
-  <script src="app.js?v=effects6-20261007"></script>
-  <script src="extra-choices.js?v=directional-audit-20261010"></script>
+  <script src="app.js?v=choice-history-20261010"></script>
+  <script src="extra-choices.js?v=choice-history-20261010"></script>
+  <script type="module" src="choice-simulator.js?v=choice-history-20261010"></script>
 </body>
 </html>

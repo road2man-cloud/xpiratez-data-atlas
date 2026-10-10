@@ -305,7 +305,7 @@ function choiceOptionCard(stage,id,blocks){
   const ev=r?.evText||"";
   const colorsHtml=r?colors(r):"";
   const constraint=extras.length?'<p class="choice-consequence"><b>고유 제약:</b> '+extras.map(humanFeatureName).join(" · ")+'</p>':'';
-  return '<article class="choice-option">'+
+  return '<article class="choice-option" data-choice-id="'+id+'">'+
     '<div class="choice-option-head"><div><strong>'+(researchLabels[id]||id)+'</strong>'+(ev?'<small>'+ev+' /월</small>':'')+'</div>'+colorsHtml+'</div>'+
     (summary?'<p>'+summary+'</p>':'')+
     choiceEffectSummary(r)+
@@ -328,7 +328,7 @@ function renderCodexChoice(){
   ];
   return '<article class="choice-stage card codex-choice-stage">'+
     '<div class="choice-stage-head"><div><p class="eyebrow">Codex 선택</p><h3>자그마한 드릴 → Codex 4색</h3><p><b>STR_TINY_DRILL_INVESTIGATION</b> 뒤 실제로 고르는 4지선다입니다. 각 query는 연구량 1 / +10점이며, Tiny Drill + Menacing Hull 특수 프로젝트(space 70, time 1, refund)와 Anomaly 연구(cost 4)를 거쳐 실제 Codex를 얻습니다.</p></div><span class="one-choice-badge">아래 4색 중 1개 선택</span></div>'+
-    '<div class="choice-grid codex-choice-grid">'+opts.map(o=>'<article class="choice-option codex-human '+o.color.toLowerCase()+'">'+
+    '<div class="choice-grid codex-choice-grid">'+opts.map(o=>'<article class="choice-option codex-human '+o.color.toLowerCase()+'" data-choice-id="'+o.id+'">'+
       '<div class="choice-option-head"><div><strong>'+o.name+'</strong><small>'+o.id+' · 연구량 1 · +10점</small></div><span class="color-pill">'+o.color+'</span></div>'+
       '<p><b>경로:</b> '+o.route+'</p>'+
       '<div class="choice-effects-wrap"><span class="choice-effects-title">실제 결과</span><div class="choice-effect-list">'+
@@ -343,7 +343,7 @@ function renderCodexChoice(){
 
 const divergingPathOptions=[
   {
-    name:"슈퍼변이체 계집이 최고다",
+    name:"슈퍼변이체 계집이 최고다",id:"STR_GALS_ARE_SUPERIOR_PREQ",
     query:"?슈퍼변이체 계집이 최고다?",
     cost:"연구량 24",
     gate:"갈라지는 길",
@@ -352,7 +352,7 @@ const divergingPathOptions=[
     detail:"여성/강화병 중심 분기. 이후 용사 고용과 Super Slave 계열에 연결되지만 완료 점수 -250이라는 명시적 페널티가 있다."
   },
   {
-    name:"남성 병사",
+    name:"남성 병사",id:"STR_WE_NEED_MALE_TOUCH_PREQ",
     query:"?우리는 남자가 필요해?",
     cost:"연구량 3",
     gate:"갈라지는 길",
@@ -361,7 +361,7 @@ const divergingPathOptions=[
     detail:"가장 싼 진입 비용. 선택 연구에서 '노예병' 연구를 공짜로 얻고, 이후 Bonding Ceremony · SS Operations · School of Hard Knocks · ANZUG 축으로 이어진다."
   },
   {
-    name:"농부 혁명!",
+    name:"농부 혁명!",id:"STR_PEASANT_REVOLUTION_PREQ",
     query:"?농부 혁명?",
     cost:"연구량 9",
     gate:"갈라지는 길 + 농부 고용",
@@ -370,7 +370,7 @@ const divergingPathOptions=[
     detail:"농부/혁명 계열의 장기 분기. Revolutionary Training과 Contacts: Scavengers의 핵심 선행이며 라미아 고용 선행도 만족시킨다."
   },
   {
-    name:"삶은 혼종이다",
+    name:"삶은 혼종이다",id:"STR_HYBRID_PATH_PREQ",
     query:"?삶은 혼종이다?",
     cost:"연구량 20",
     gate:"갈라지는 길 + '섹토위드 어디서 사'",
@@ -379,7 +379,7 @@ const divergingPathOptions=[
     detail:"선택 순간 레티큘란 연구를 공짜로 얻고 레티큘란 접촉 축을 연다. 본 연구 뒤에는 Hiver 특성, 마고스 졸업→버그아이 사이코너트, 버그아이 고용 연계, 레티큘란 플라스마 차저, 정찰/소형 수송기, 버그아이 반항아 갑옷·Technician Suit가 연결된다. 단, 버그아이 고용 자체는 Mutant Alliance·Human-Reticulan Alliance·Hybrid of Twilight 등 별도 선행까지 필요해 즉시 고용은 아니다."
   },
   {
-    name:"고양이와 함께 살기",
+    name:"고양이와 함께 살기",id:"STR_CAT_PATH_PREQ",
     query:"?고양이와 함께 살기?",
     cost:"연구량 32",
     gate:"갈라지는 길 + 외계인 기원 + 통신",
@@ -391,7 +391,7 @@ const divergingPathOptions=[
 function renderDivergingPathsChoice(){
   return '<article class="choice-stage card">'+
     '<div class="choice-stage-head"><div><p class="eyebrow">장기 사회·병종 분기</p><h3>갈라지는 길</h3><p><b>STR_DIVERGING_PATHS</b> 뒤에 등장하는 별도의 영구 5지선다. 선장 성격/Codex와는 다른 선택축입니다.</p></div><span class="one-choice-badge">아래 5개 중 1개 선택</span></div>'+
-    '<div class="choice-grid">'+divergingPathOptions.map(o=>'<article class="choice-option">'+
+    '<div class="choice-grid">'+divergingPathOptions.map(o=>'<article class="choice-option" data-choice-id="'+o.id+'">'+
       '<div class="choice-option-head"><div><strong>'+o.name+'</strong><small>'+o.query+' · '+o.cost+'</small></div></div>'+
       '<p>'+o.detail+'</p>'+
       '<div class="choice-effects-wrap"><span class="choice-effects-title">실제 효과</span>'+
@@ -407,7 +407,7 @@ function renderDivergingPathsChoice(){
 }
 function renderExclusiveRules(){
   const insight=document.querySelector("#soreassGoldInsight");
-  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>각 상자에서 <b>하나만 고르면 됩니다.</b> 카드 안의 <b>실제 효과</b>에는 수치와 기능을 바로 표시합니다. ✅는 자연 접근, ⚠는 큰 페널티가 있는 접근, ◇는 후기/추가조건입니다. 같은 묶음의 다른 선택지가 비활성화되는 사실은 반복하지 않고 별개의 기능 손실만 <b>고유 제약</b>으로 표시합니다.</p>';
+  if(insight) insight.innerHTML='<strong>읽는 법</strong><p>대부분의 직접 선택축은 하나만 고를 수 있지만, 닥터 X의 오로라 대체 선택과 Codex 결손색 결과처럼 <b>선행 조건·선택 순서로 갈리는 예외</b>가 있습니다. 카드 아래 <b>완료로 가정</b>을 누르면 다른 카드의 직접 봉쇄 상태가 바뀝니다. ✅는 자연 접근, ⚠는 큰 페널티, ◇는 후기/추가조건입니다. 개별 카드의 고유 제약은 상단 시뮬레이터와 별개로 룰셋 해설을 요약합니다.</p>';
   const root=document.querySelector("#exclusiveRules"); if(!root)return;
   root.innerHTML=exclusiveStages.map((g,i)=>renderChoiceStage(g,i)).join("")+renderCodexChoice()+renderDivergingPathsChoice();
 }
