@@ -175,7 +175,7 @@ function card(g){
     :"";
   const spawns=g.spawns.length?'<div class="group"><span class="group-title">지급 병종 / 인물</span>'+
     g.spawns.map(s=>'<div class="spawn"><strong>'+esc(human(s.type))+' ×'+fmt(s.count)+'</strong><span class="id">'+esc(s.type)+'</span><small>'+esc(soldierText(s)||"추가 지정 없음")+'</small></div>').join("")+'</div>':"";
-  return '<article class="card" data-search="'+esc(searchable(g))+'">'+
+  return '<article class="card" data-play-id="'+esc(internalIdOf(g))+'" data-search="'+esc(searchable(g))+'">'+
     '<div class="card-head"><div><h3>'+esc(titleOf(g))+'</h3><span class="id">'+esc(internalIdOf(g))+'</span></div>'+
     '<div class="badges"><span class="badge '+g.kind+'">'+(g.kind==="region"?"지역":"국가")+'</span>'+
     (g.events.length>1?'<span class="badge multi">'+g.events.length+'개 이벤트 중첩</span>':"")+'</div></div>'+

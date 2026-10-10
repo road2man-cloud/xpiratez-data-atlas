@@ -1,0 +1,31 @@
+/* Decision-first overlay shared across all XPiratez Atlas pages. */
+.xpz-guide-inline{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;margin:5px 0 1px;max-width:100%}
+.xpz-guide-open{display:inline-flex;align-items:center;gap:3px;font:inherit;font-size:11px;font-weight:800;letter-spacing:-.01em;line-height:1.4;padding:3px 8px;cursor:pointer;border:1px solid #647aa1;border-radius:7px;background:#172b48;color:#dbeafe;white-space:nowrap}
+.xpz-guide-open:hover,.xpz-guide-open:focus-visible{border-color:#76b3ff;color:#fff;background:#21466c}
+.xpz-guide-teaser{display:block;flex:1 1 165px;max-width:36ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#a9c3e7;font-size:11px;line-height:1.5;min-width:60px}
+#cards .xpz-guide-inline{flex:1 1 100%;margin-top:4px}
+#cards .xpz-guide-teaser{max-width:45ch}
+.xpz-play-dialog{box-sizing:border-box;width:min(720px,calc(100vw - 24px));max-height:min(90dvh,960px);padding:0;margin:auto;border:1px solid #405572;border-radius:16px;box-shadow:0 18px 90px rgba(0,0,0,.6);background:#111c2d;color:#edf4ff;color-scheme:dark;overflow:auto;font-family:Inter,system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.62}
+.xpz-play-dialog::backdrop{background:rgba(2,8,18,.77);backdrop-filter:blur(3px)}
+.xpz-play-toolbar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 20px;background:#132039;border-bottom:1px solid #344662}
+.xpz-play-eyebrow{font-size:10px;letter-spacing:.13em;color:#8cbaff;font-weight:800}
+.xpz-play-close{font-size:13px;padding:6px 10px;background:#1e314e;border:1px solid #52637d;border-radius:8px;color:#fff;cursor:pointer}
+.xpz-play-body{padding:20px}
+.xpz-play-title{font-size:clamp(19px,3vw,25px);letter-spacing:-.03em;margin:2px 0 16px;line-height:1.3;color:#fff}
+.xpz-play-conclusion{padding:0 0 15px;border-bottom:1px solid #344762;margin-bottom:15px}
+.xpz-play-label{display:inline-block;font-size:11px;color:#9bc5ff;font-weight:800;letter-spacing:.02em;margin-bottom:6px}
+.xpz-play-summary{margin:0;font-size:15px;font-weight:750;color:#f4f8ff;line-height:1.65}
+.xpz-play-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.xpz-play-section{min-width:0;background:#172740;border:1px solid #304767;border-radius:10px;padding:12px 14px}
+.xpz-play-section h3{margin:0 0 5px;font-size:12px;font-weight:800;color:#a6cdff}
+.xpz-play-section p{margin:0;line-height:1.66;font-size:13px;white-space:pre-line;color:#e1ebfc;overflow-wrap:anywhere}
+.xpz-play-watch{grid-column:1/-1}
+.xpz-play-watch h3{color:#f3ce9d}
+.xpz-play-footer{margin-top:18px;padding-top:11px;border-top:1px solid #304767}
+.xpz-play-source{color:#a0acc2;font-size:11px;margin:0 0 12px;overflow-wrap:anywhere}
+.xpz-play-nav{display:flex;gap:8px;flex-wrap:wrap}
+.xpz-play-nav a,.xpz-play-native{font:inherit;font-size:12px;font-weight:700;border:1px solid #506a91;border-radius:8px;padding:8px 11px;color:#e5f2ff;background:#223852;text-decoration:none;cursor:pointer}
+.xpz-play-nav a:hover,.xpz-play-native:hover{background:#284d73;border-color:#87baf2}
+.xpz-play-loading,.xpz-play-error{padding:20px 2px;color:#bdd2f3;font-size:14px}
+.xpz-play-error{color:#fcbaba}
+@media(max-width:570px){.xpz-play-body{padding:14px}.xpz-play-grid{grid-template-columns:1fr;gap:9px}.xpz-play-section{padding:10px 12px}.xpz-play-watch{grid-column:auto}.xpz-play-summary{font-size:14px}.xpz-guide-teaser{max-width:25ch}}

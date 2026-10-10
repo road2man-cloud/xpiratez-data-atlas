@@ -69,6 +69,19 @@ try {
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
       await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
       count=await page.locator(ready[slug]).count();
+      // Every database row exposes a source-grounded, decision-first guide
+      // without stealing the original table/detail interaction.
+      const guide=page.locator(ready[slug]+" .xpz-guide-open").first();
+      await guide.waitFor({state:"attached",timeout:25000});
+      await guide.evaluate(el=>el.click());
+      await page.locator("#xpz-play-dialog[open]").waitFor({state:"visible",timeout:25000});
+      await page.waitForFunction(()=>{
+        const t=document.querySelector("#xpz-play-dialog")?.innerText||"";
+        return t.includes("한눈에 보는 결론")&&t.includes("실제 효과")&&t.includes("실행 방법")&&t.includes("언제 가치가 있는가")&&t.includes("주의 · 예외")&&t.includes("근거:");
+      },{timeout:25000});
+      if(!(await page.locator("#xpz-play-dialog .xpz-play-source").innerText()).includes("근거:"))errors.push("play guide has no provenance");
+      await page.locator("#xpz-play-dialog .xpz-play-close").click();
+      if(await page.locator("#xpz-play-dialog[open]").count())errors.push("play guide modal did not close");
       if(slug==="starting"){
         await page.locator("#search").fill("STR_EGYPT");
         await page.waitForTimeout(180);
@@ -126,6 +139,19 @@ try {
           const linkedCards=await page.locator("#exclusiveRules .choice-option[data-choice-id]").count();
           if(linkedCards<80)
             errors.push("Branch cards are not wired to research IDs: "+linkedCards);
+          const firstChoiceGuide=page.locator("#exclusiveRules .choice-option[data-choice-id] .xpz-guide-open").first();
+          await firstChoiceGuide.waitFor({state:"attached",timeout:18000});
+          const guideCount=await page.locator("#exclusiveRules .choice-option[data-choice-id] .xpz-guide-open").count();
+          if(guideCount!==linkedCards)errors.push("Branch decision guides incomplete: "+guideCount+"/"+linkedCards);
+          await firstChoiceGuide.evaluate(el=>el.click());
+          await page.locator("#xpz-play-dialog[open]").waitFor({state:"visible",timeout:18000});
+          await page.waitForFunction(()=>{
+            const t=document.querySelector("#xpz-play-dialog .xpz-play-body")?.innerText||"";
+            return t.includes("실제 효과")&&t.includes("해금 · 자격");
+          },{timeout:25000});
+          const branchGuideText=await page.locator("#xpz-play-dialog .xpz-play-body").innerText();
+          if(!branchGuideText.includes("실제 효과")||!branchGuideText.includes("해금 · 자격"))errors.push("Branch research guide is missing core explanation");
+          await page.locator("#xpz-play-dialog .xpz-play-close").click();
           const jack=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_CAPTAIN_JACKASS"]').first();
           const dumb=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_CAPTAIN_DUMBASS"]').first();
           await jack.locator("[data-sim-pick]").click();

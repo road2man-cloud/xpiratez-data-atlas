@@ -40,7 +40,7 @@ jobs:
           grep -Fq 'data-data-base="./data"' public/items/index.html
           grep -Fq 'data-data-base="../items/data"' public/research/index.html
 
-      - name: Browser smoke for all 13 DBs (mobile viewport)
+      - name: Browser smoke for all 14 DBs and decision guides (mobile viewport)
         run: |
           npm install --no-save --package-lock=false playwright-core@1.64.0
           if ! command -v google-chrome >/dev/null 2>&1 && ! command -v chromium >/dev/null 2>&1; then
