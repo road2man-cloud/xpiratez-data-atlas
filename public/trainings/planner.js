@@ -8,6 +8,10 @@ export function initialState(origin,{condition="healthy"}={}){
 export function evaluate(t,state){
   const issues=[];
   if(!t)return[{code:"unknown",ids:[]}];
+  // STR_UNAVAILABLE is an official internal-only marker, not a researchable
+  // project. It must never appear as an executable soldier transformation.
+  if(list(t.requires).includes("STR_UNAVAILABLE"))
+    issues.push({code:"unavailable",ids:["STR_UNAVAILABLE"]});
   if(t.allowedSoldierTypes?.length&&!t.allowedSoldierTypes.includes(state.soldierType))
     issues.push({code:"type",ids:[state.soldierType]});
   if(list(t.forbiddenSoldierTypes).includes(state.soldierType))

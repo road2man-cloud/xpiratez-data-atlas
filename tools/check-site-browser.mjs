@@ -314,8 +314,42 @@ try {
             layout.sidePosition!=="sticky"||!layout.mobileHidden||layout.bodyScrollWidth>layout.windowWidth+1)
             errors.push("Training table and exclusion panel are not side-by-side on desktop: "+JSON.stringify(layout));
           await page.setViewportSize({width:390,height:844});
+          trainingStage="captain route exclusivity";
+          await page.locator("#captainRoute").selectOption("DUMBASS_SAINT");
+          if(!(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — Saint 증원")||
+              !(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — DumbLazy 방문")||
+              !(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — TroubleSeeking"))
+            errors.push("Dumbass+Saint must expose all THREE repeatable Rogue recruitment event sources");
+          await input.fill("STR_CAPTAINS_11");
+          const cap11=page.locator('#trainingTable tbody tr[data-id="STR_CAPTAINS_11"]');
+          if(!await cap11.locator('[data-toggle]').isDisabled()||
+             !await page.locator('#branchBlockedList [data-info="STR_CAPTAINS_11"]').count())
+            errors.push("Dumbass+Saint incorrectly allowed Thief-only Captains 11");
+          await page.locator("#captainRoute").selectOption("THIEF");
+          await input.fill("STR_CAPTAINS_11");
+          if(await cap11.locator('[data-toggle]').isDisabled())
+            errors.push("Thief must be able to plan Captains 11 with further event prerequisites");
+          if(!(await page.locator("#routeAccessSummary").innerText()).includes("선택 분기에서는 불가"))
+            errors.push("Thief route did not display Saint conflict");
+          await page.locator("#captainRoute").selectOption("PRIEST");
+          await input.fill("STR_BREAD_AND_FISHES_TRAINING");
+          if(await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
+            errors.push("Priest-exclusive Bread and Fishes was blocked in Priest branch");
+          await page.locator("#captainRoute").selectOption("ANY");
+          await page.locator("#origin").selectOption("profile:manufacture:STR_THEBAN_ASSAULT_CLONE");
+          await input.fill("STR_BATTLE_FORM_AUGMENTATION");
+          if(!await page.locator('#trainingTable tbody tr[data-id="STR_BATTLE_FORM_AUGMENTATION"] [data-toggle]').isDisabled())
+            errors.push("Egyptian Assault Clone was permitted forbidden Battle Form");
+          await input.fill("STR_CAREER_SOLDIER");
+          if(!await page.locator('#trainingTable tbody tr[data-id="STR_CAREER_SOLDIER"] [data-toggle]').isDisabled())
+            errors.push("STR_UNAVAILABLE internal transformation became executable");
+          await page.locator("#captainRoute").selectOption("DUMBASS_SAINT");
+          await page.locator("#origin").selectOption("profile:manufacture:STR_ROGUE_CLONE_RECRUITMENT");
+          await input.fill("STR_BREAD_AND_FISHES_TRAINING");
+          if(!await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
+            errors.push("Rogue clone omitted prior Theban transformation exclusion");
           trainingStage="completed";
-          detail+=" + checkbox / exclusion deltas / trait stat sort / prerequisite chain";
+          detail+=" + checkbox / exclusion deltas / trait stat sort / prerequisite chain / captain branch + Rogue clone";
         }
         if(slug==="items"){
           // Regression: the real-world item page must expose the relationships,
