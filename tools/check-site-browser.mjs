@@ -174,6 +174,17 @@ try {
           if(!await page.locator('#newBlockedList [data-info="STR_NEPOTISM"]').count())errors.push("Newly blocked list omitted nepotism");
           if(!await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())errors.push("Newly blocked list omitted military drill");
           if(!await page.locator("#latestSelectionHint").innerText().then(t=>t.includes("문화 교육")))errors.push("No selected training reason shown next to exclusions");
+          const mobileTitle=await page.locator("#mobileExclusionTitle").innerText();
+          if(!mobileTitle.includes("4개"))errors.push("Mobile live exclusion title did not show the four newly blocked trainings: "+mobileTitle);
+          const mobileNames=await page.locator("#mobileExclusionNames").innerText();
+          if(!mobileNames.includes("혈연중시")||!mobileNames.includes("군사 훈련"))
+            errors.push("Mobile checklist-adjacent exclusion names missing");
+          if(await page.locator(".mobile-exclusion-brief").evaluate(el=>getComputedStyle(el).position)!=="sticky")
+            errors.push("Mobile exclusion summary does not stay visible during table scrolling");
+          await page.locator("#mobileExclusionDetails summary").click();
+          if(!(await page.locator("#mobileExclusionFull").innerText()).includes("배제 원인: 문화 교육"))
+            errors.push("Mobile full exclusion list omitted ruleset-backed reasons");
+          await page.locator("#mobileExclusionDetails summary").click();
           const cultureCells=await culture.locator("td").allTextContents();
           if(!cultureCells[5].includes("사격+2")||!cultureCells[6].includes("사격+1"))
             errors.push("Direct vs SoldierBonus firing bonuses not separately displayed: "+cultureCells.slice(5,7));
@@ -194,6 +205,8 @@ try {
           trainingStage="undo cultural education";
           await page.locator("#undo").click();
           if(await page.locator("#newBlockedList .choice").count())errors.push("Undo left stale newly blocked training rows");
+          if(!(await page.locator("#mobileExclusionTitle").innerText()).includes("0개"))
+            errors.push("Undo left stale exclusion count in the mobile summary");
           trainingStage="select and deselect via checkbox";
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await culture.locator("[data-toggle]").check();
@@ -202,6 +215,8 @@ try {
           await culture.locator("[data-toggle]").uncheck();
           if(await page.locator("#timeline .timeline-row").count()||await page.locator("#newBlockedList .choice").count())
             errors.push("Unchecking did not clear the planning sequence and newly excluded list");
+          if(!(await page.locator("#mobileExclusionTitle").innerText()).includes("0개"))
+            errors.push("Unchecking did not clear the mobile exclusion summary");
           await input.fill("");
           trainingStage="quick-add military drill prerequisite chain";
           await page.locator("#quickTraining").selectOption("STR_MILITARY_DRILL_TRAINING");
@@ -216,6 +231,21 @@ try {
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
           if(await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count()!==1)errors.push("Cultural education not blocked after military drill");
+          trainingStage="desktop panel beside the training table";
+          await page.setViewportSize({width:1500,height:900});
+          await page.evaluate(()=>window.scrollTo(0,0));
+          const layout=await page.evaluate(()=>{
+            const table=document.querySelector(".training-workspace .listing").getBoundingClientRect();
+            const side=document.querySelector(".training-workspace .decision").getBoundingClientRect();
+            return{tableRight:table.right,sideLeft:side.left,tableTop:table.top,sideTop:side.top,
+              sidePosition:getComputedStyle(document.querySelector(".training-workspace .decision")).position,
+              mobileHidden:getComputedStyle(document.querySelector(".mobile-exclusion-brief")).display==="none",
+              bodyScrollWidth:document.documentElement.scrollWidth,windowWidth:window.innerWidth};
+          });
+          if(layout.tableRight>=layout.sideLeft||Math.abs(layout.tableTop-layout.sideTop)>3||
+            layout.sidePosition!=="sticky"||!layout.mobileHidden||layout.bodyScrollWidth>layout.windowWidth+1)
+            errors.push("Training table and exclusion panel are not side-by-side on desktop: "+JSON.stringify(layout));
+          await page.setViewportSize({width:390,height:844});
           trainingStage="completed";
           detail+=" + checkbox / exclusion deltas / trait stat sort / prerequisite chain";
         }

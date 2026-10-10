@@ -116,6 +116,16 @@ function renderDecisions(){
   $("#blockedCount").textContent=older.length+"개 · 총 "+allForbidden.length+"개";
   $("#blockedList").innerHTML=older.map(choice).join("")||
     '<p class="muted fine">이전 선택 또는 시작 획득 경로로 이미 배제된 훈련이 없습니다.</p>';
+  // Keep the effect visible next to the checkboxes on mobile, without scrolling
+  // back up to the full rule panel. The expandable view lists every blocker.
+  $("#mobileExclusionTitle").textContent="이번 선택으로 새로 배제 "+fresh.length+"개";
+  $("#mobileExclusionTotal").textContent="현재 누적 "+allForbidden.length+"개";
+  $("#mobileExclusionNames").innerHTML=fresh.length?
+    fresh.slice(0,4).map(x=>'<span>'+esc(byId.get(x.id).koName)+'</span>').join("")+
+    (fresh.length>4?'<span>외 '+n(fresh.length-4)+'개</span>':""):
+    '<span class="muted">'+(latestAdded.length?"이번 선택에서 추가 배제 없음":"훈련 체크 시 여기 표시")+'</span>';
+  $("#mobileExclusionFull").innerHTML=allForbidden.map(choice).join("")||
+    '<p class="muted fine">현재 순서에서 배제된 훈련이 없습니다.</p>';
   $("#futureList").innerHTML=future.slice(0,50).map(x=>{
     const p=addWithPrerequisites(x.t,state,byId);
     return'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(x.issues.flatMap(y=>y.ids).map(name).join(" → "))+' 필요</span></div>'+
