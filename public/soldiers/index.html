@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병종 DB</title>
-<link rel="stylesheet" href="styles.css?v=soldiers-20261009-mobile-toolbar">
+<link rel="stylesheet" href="styles.css?v=soldiers-hardcap-ui-20261010">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body>
@@ -46,7 +46,7 @@
       <label for="sortMetric">정렬 기준</label>
       <select id="sortMetric">
         <option value="current">현재 능력치</option>
-        <option value="cap">성장캡</option>
+        <option value="cap">성장 하드캡</option>
       </select>
     </div>
     <div class="field" id="finalBranchField" hidden>
@@ -76,7 +76,7 @@
   <section class="explain card">
     <strong>실제 획득형 계산</strong>
     <span>기본 Soldier 랜덤치 → 획득 루트의 <code>spawnedSoldier.currentStats</code> 덮어쓰기 → 생성 시 <code>transformationBonuses</code> 능력치 합산 → OXCE 최소치 보정.</span>
-    <span>각 능력치는 <b>현재 생성값 / 실효 성장캡</b>으로 표시합니다. 실효 성장캡은 본체 statCaps에 생성 시 자동 특성의 능력치 보너스를 더한 값이며, 특수 생성 템플릿은 시작부터 성장캡을 넘을 수도 있습니다. 방어구 능력치는 포함하지 않습니다.</span>
+    <span>표의 각 능력치는 <b>현재 실효값 / 성장 하드캡</b>으로 표시합니다. 하드캡은 최종 병종의 <code>statCaps</code>에 보유 특성(SoldierBonus)의 능력치 보너스를 합산한 <b>일반 성장 상한</b>입니다. 훈련캡(<code>trainingStatCaps</code>)은 별도 값이며, 특수 생성·변환으로 일반 성장 상한을 넘는 능력치는 절대 최대치로 잘못 해석하지 않도록 붉게 구별합니다. 방어구 보너스는 포함하지 않습니다.</span>
     <span><b>최종 강화 조합</b>은 병종·변신 순서만 만족하는 <b>이론적 상한 후보</b>입니다. 선장·Codex·여왕 분기, 연구 획득 이벤트 및 희귀 실물 재료가 모두 충족됐다는 뜻은 아닙니다. 원본에서 확실히 확인되는 <b>내부 전용·선장 전용 동시 선택·야만 여왕/Codex 충돌</b>은 별도 감지하여 기본 표에서 제외합니다. 남아 있는 조합도 <b>캠페인 실행 가능이 확정된 것은 아닙니다.</b> 실제 병사 훈련 경로는 <a href="../trainings/" style="color:#93c5fd">병사훈련 DB</a>에서 검토하세요.</span>
   </section>
 
@@ -97,7 +97,7 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=soldiers-branch-audit-20261010"></script>
+<script type="module" src="app.js?v=soldiers-hardcap-ui-20261010"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
