@@ -2,7 +2,7 @@
 // prerequisite chains, conversion, clone semantics, repeatable projects.
 import fs from "node:fs";
 import assert from "node:assert/strict";
-import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,newlyExcludedByPrior,traitStatsOf,traitSortValue} from "../public/trainings/planner.js";
+import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,newlyExcludedByPrior,exclusionChanges,traitStatsOf,traitSortValue} from "../public/trainings/planner.js";
 
 const data=JSON.parse(fs.readFileSync("public/data/trainings-index.json","utf8"));
 const soldier=JSON.parse(fs.readFileSync("public/data/soldiers-index.json","utf8"));
@@ -60,6 +60,21 @@ for(const id of ["STR_NEPOTISM","STR_MILITARY_DRILL_TRAINING"]){
   verify(newlyExcludedByPrior(data.transformations,initial,afterCulture).some(x=>x.id===id),"Missing newly excluded "+id);
 }
 assert.deepEqual(excludedByPrior(data.transformations,initial),[],"Fresh Gal must start without trained exclusions");
+const bread=byId.get("STR_BREAD_AND_FISHES_TRAINING");
+const afterBread=apply(bread,initial),afterBreadCulture=apply(culture,afterBread);
+const breadChanges=exclusionChanges(data.transformations,afterBread,afterBreadCulture);
+verify(excludedByPrior(data.transformations,afterBread).some(x=>x.id==="STR_MILITARY_DRILL_TRAINING"),
+  "Bread and Fishes must already block military drill");
+const sharedMilitary=breadChanges.additionalCauses.find(x=>x.id==="STR_MILITARY_DRILL_TRAINING");
+verify(sharedMilitary?.blockedBy.includes(bread.id)&&sharedMilitary?.blockedBy.includes(culture.id),
+  "Both steps must be credited for their shared exclusion");
+assert.deepEqual(sharedMilitary.addedBy,[culture.id],"Only the latest step should be a NEW cause");
+verify(!breadChanges.newlyBlocked.some(x=>x.id==="STR_MILITARY_DRILL_TRAINING"),
+  "An existing blocked target must not count as a newly blocked target");
+verify(breadChanges.newlyBlocked.some(x=>x.id==="STR_NEPOTISM"&&x.addedBy.includes(culture.id)),
+  "Culture must still report genuinely new exclusions");
+assert.deepEqual(exclusionChanges(data.transformations,afterBread,afterBread).additionalCauses,[],
+  "A rerender must not invent newly added exclusion causes");
 const afterNepotism=apply(byId.get("STR_NEPOTISM"),initial);
 verify(evaluate(culture,afterNepotism).some(x=>x.code==="forbidden"),"Nepotism must prevent culture later");
 assert.deepEqual(replay(gal,["STR_NEPOTISM"],byId).steps,["STR_NEPOTISM"]);
@@ -93,6 +108,8 @@ verify(knownInitial.length>0,"Acquisition history must create preexisting exclus
 assert.deepEqual(newlyExcludedByPrior(data.transformations,initialProfileState,initialProfileState),[],"Preexisting blocks are not newly added");
 const removes={id:"REMOVE",allowedSoldierTypes:[],forbiddenPreviousTransformations:[],requiredPreviousTransformations:[],removeTransformations:["B"]};
 verify(!apply(removes,apply(B,initial)).prior.has("B"),"Removal of a previous transformation failed");
+assert.deepEqual(exclusionChanges([A,B],apply(B,initial),apply(removes,apply(B,initial))).unblocked,
+  [{id:"A",removedBy:["B"]}],"Removal must release a formerly excluded target");
 const clone={id:"CLONE",createsClone:true,producedSoldierType:"SOME_CLONE",allowedSoldierTypes:[],requiredPreviousTransformations:[],forbiddenPreviousTransformations:[]};
 assert.equal(apply(clone,initial).soldierType,initial.soldierType,"Clone changed source soldier type");
 for(const t of data.transformations) {
@@ -103,4 +120,4 @@ const conflicts=findResearchConflicts([culture,military],graph);
 assert.ok(Array.isArray(conflicts));
 const relations=compileRelations(data.transformations);
 verify(relations.get(culture.id).blockedBy.includes("STR_NEPOTISM"),"Missing reverse lookup");
-console.log("OK training DB: "+data.transformations.length+" verified effective transforms; "+expectedPairs+" directional excludes; "+reverseAsym.length+" asymmetric edges; diff/newly blocked incl. starting profile, trait-only stat sort; military 3-step closure; culture/nepotism; repeat, type change, clone, remove and research graph");
+console.log("OK training DB: "+data.transformations.length+" verified effective transforms; "+expectedPairs+" directional excludes; "+reverseAsym.length+" asymmetric edges; new exclusions vs additional causes (Bread+Culture, military drill), release and initial profile; trait-only stat sort; military 3-step closure; culture/nepotism; repeat, type change, clone and research graph");

@@ -252,6 +252,33 @@ try {
           await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
           if(await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count()!==1)errors.push("Cultural education not blocked after military drill");
+          trainingStage="overlapping exclusion causes after two valid choices";
+          await page.locator("#reset").click();
+          await input.fill("");
+          await page.locator("#quickTraining").selectOption("STR_BREAD_AND_FISHES_TRAINING");
+          await page.locator("#quickAdd").click({timeout:12000});
+          if(!await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
+            errors.push("Bread and Fishes did not initially exclude military drill");
+          await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
+          await page.locator("#quickAdd").click({timeout:12000});
+          if(await page.locator("#timeline .timeline-row").count()!==2)
+            errors.push("Two separate training selections were not retained in sequence");
+          if(await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
+            errors.push("Overlapping military drill exclusion incorrectly counted as a new target");
+          const extraRow=page.locator('#extraBlockedList .choice:has([data-info="STR_MILITARY_DRILL_TRAINING"])');
+          if(!await extraRow.count()||!(await extraRow.innerText()).includes("이번 선택이 추가한 배제 원인: 문화 교육"))
+            errors.push("Second choice omitted shared military drill exclusion cause");
+          const previousRow=page.locator('#blockedList .choice:has([data-info="STR_MILITARY_DRILL_TRAINING"])');
+          if(!await previousRow.count()||!(await previousRow.innerText()).includes("건강미 훈련")||
+              !(await previousRow.innerText()).includes("문화 교육"))
+            errors.push("Cumulative exclusion row does not retain BOTH blockers");
+          if(!(await page.locator("#mobileExclusionTitle").innerText()).includes("원인 추가 1개")||
+              !(await page.locator("#mobileExclusionNames").innerText()).includes("군사 훈련 · 원인 추가"))
+            errors.push("Mobile exclusion summary concealed the second blocker");
+          await page.locator("#undo").click();
+          if(await page.locator("#extraBlockedList .choice").count()||
+              !await page.locator('#blockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
+            errors.push("Undo should remove the added cause while keeping the original blocker");
           trainingStage="desktop panel beside the training table";
           await page.setViewportSize({width:1500,height:900});
           await page.evaluate(()=>window.scrollTo(0,0));
