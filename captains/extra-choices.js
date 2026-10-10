@@ -277,7 +277,7 @@
     const gain=c.gain||o.effect||"—";
     const loss=c.loss||(peerLoss||"추가 직접 봉쇄 없음");
     const recovery=c.recovery||(peerLoss?"같은 세이브에서 해당 상호배타 선택으로 직접 복구 불가.":"별도 복구 제한 없음.");
-    return '<article class="choice-option">'+
+    return '<article class="choice-option" data-choice-id="'+esc(o.id)+'">'+
       '<div class="choice-option-head"><div><strong>'+esc(o.name)+'</strong><small>'+esc(o.id)+' · '+esc(o.meta)+'</small></div></div>'+
       '<div class="choice-effects-wrap"><span class="choice-effects-title">장기 영향</span>'+
         '<div class="choice-effect-list">'+
