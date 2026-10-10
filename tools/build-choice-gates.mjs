@@ -6,7 +6,9 @@ import path from "node:path";
 // already published with the Atlas, not hand-authored lists.
 const detailDir="public/items/data/research-chunks";
 const output="public/data/choice-research-gates.json";
-const known=new Set(JSON.parse(fs.readFileSync("public/data/progression-research.json","utf8")).topics.map(x=>x.id));
+const runtimeOutput="public/data/choice-simulator-index.json";
+const researchTopics=JSON.parse(fs.readFileSync("public/data/progression-research.json","utf8")).topics;
+const known=new Set(researchTopics.map(x=>x.id));
 const data={};
 const unknownReferences=new Map();
 let counts={dependencies:0,requires:0,unlocks:0,freeSources:0,protectedSources:0,repeatable:0,sequential:0};
@@ -78,4 +80,28 @@ const manifest={schemaVersion:1,count:known.size,source:"published effective-raw
 const serialized=JSON.stringify(manifest).slice(0,-1)+',"topics":{\n'+
   Object.entries(data).map(([id,row])=>JSON.stringify(id)+":"+JSON.stringify(row)).join(",\n")+"\n}}";
 fs.writeFileSync(output,serialized);
+
+// The browser needs a small subset of two canonical catalogs. Merge only the
+// engine fields it actually reads so loading the choices page does not parse
+// the complete progression graph and a second 4,612-topic gate manifest.
+// Original catalogs remain authoritative for build-time audits and other DBs.
+const compactIds=value=>(Array.isArray(value)?value:[])
+  .map(entry=>typeof entry==="string"?entry:entry?.id).filter(id=>typeof id==="string");
+const runtimeTopics=researchTopics.map(topic=>{
+  const row={id:topic.id,koName:topic.koName||"",enName:topic.enName||""};
+  for(const field of ["prerequisites","disables","reenables"]){
+    const values=compactIds(topic[field]);
+    if(values.length)row[field]=values;
+  }
+  if(topic.needItem===true)row.needItem=true;
+  if(topic.cost===0)row.cost=0;
+  if(Array.isArray(topic.requiresBaseFunc)&&topic.requiresBaseFunc.length)
+    row.requiresBaseFunc=topic.requiresBaseFunc;
+  Object.assign(row,data[topic.id]);
+  return row;
+});
+const runtime={schemaVersion:1,format:"choice-runtime-v1",count:known.size,unresolvedByField,topics:runtimeTopics};
+const runtimeJson=JSON.stringify(runtime);
+fs.writeFileSync(runtimeOutput,runtimeJson);
 console.log("Generated "+output+" "+(Buffer.byteLength(serialized)/1024).toFixed(1)+" KiB",counts,"unresolved references",unresolvedByField);
+console.log("Generated "+runtimeOutput+" "+(Buffer.byteLength(runtimeJson)/1024).toFixed(1)+" KiB");

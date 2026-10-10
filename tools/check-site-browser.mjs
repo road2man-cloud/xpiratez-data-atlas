@@ -69,6 +69,12 @@ try {
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
       await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
       count=await page.locator(ready[slug]).count();
+      if(slug==="captains"){
+        const before=await page.evaluate(()=>performance.getEntriesByType("resource")
+          .filter(entry=>/choice-simulator-index\.json|progression-research\.json|choice-research-gates\.json/.test(entry.name))
+          .map(entry=>entry.name));
+        if(before.length)errors.push("Captain simulator fetched heavy research data on first paint: "+before.join(", "));
+      }
       // Every database row exposes a source-grounded, decision-first guide
       // without stealing the original table/detail interaction.
       const guide=page.locator(ready[slug]+" .xpz-guide-open").first();
@@ -162,7 +168,13 @@ try {
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
         if(slug==="captains"){
           await page.locator("#dialogClose").click();
+          // The full research graph is intentionally deferred while visitors
+          // browse the comparison table; approaching the simulator loads it.
+          await page.locator("#choiceSimulator").scrollIntoViewIfNeeded();
           await page.locator("#choiceSimulatorContent").waitFor({state:"visible",timeout:25000});
+          const loaded=await page.evaluate(()=>performance.getEntriesByType("resource")
+            .filter(entry=>/choice-simulator-index\.json/.test(entry.name)).length);
+          if(loaded!==1)errors.push("Compact simulator should load exactly once when approached: "+loaded);
           const linkedCards=await page.locator("#exclusiveRules .choice-option[data-choice-id]").count();
           if(linkedCards<80)
             errors.push("Branch cards are not wired to research IDs: "+linkedCards);

@@ -8,6 +8,23 @@ import {
 const topics=JSON.parse(fs.readFileSync("public/data/progression-research.json","utf8")).topics;
 const gates=JSON.parse(fs.readFileSync("public/data/choice-research-gates.json","utf8"));
 const graph=buildChoiceIndex(topics,gates);
+const runtime=JSON.parse(fs.readFileSync("public/data/choice-simulator-index.json","utf8"));
+assert.equal(runtime.schemaVersion,1);
+assert.equal(runtime.format,"choice-runtime-v1");
+assert.equal(runtime.count,topics.length);
+const runtimeGraph=buildChoiceIndex(runtime.topics,{inline:true,unresolvedByField:runtime.unresolvedByField});
+assert.equal(runtimeGraph.topics.length,4612);
+assert.deepEqual(runtimeGraph.unresolvedByField,graph.unresolvedByField);
+for(const topic of graph.topics){
+  assert.deepEqual(runtimeGraph.byId.get(topic.id),topic,"Compact choice rules changed "+topic.id);
+}
+const originalBytes=fs.statSync("public/data/progression-research.json").size+
+  fs.statSync("public/data/choice-research-gates.json").size;
+const runtimeBytes=fs.statSync("public/data/choice-simulator-index.json").size;
+assert(runtimeBytes<originalBytes*.75,"Compact runtime data should be at least 25% smaller");
+const simulatorScript=fs.readFileSync("public/captains/choice-simulator.js","utf8");
+assert(simulatorScript.includes("IntersectionObserver")&&simulatorScript.includes("choice-simulator-index.json"),
+  "Simulator must defer loading compact research data until it is needed");
 assert.equal(graph.topics.length,4612);
 assert.equal(graph.byId.size,4612);
 const rules=(id)=>graph.byId.get(id);
@@ -166,4 +183,4 @@ const html=fs.readFileSync("public/captains/index.html","utf8");
 for(const token of ["id=\"choiceSimulator\"","id=\"choiceScenarioBlocked\"","type=\"module\" src=\"choice-simulator.js"]){
   assert(html.includes(token),"Missing simulator UI token "+token);
 }
-console.log("OK chronological choices: 4612 topics; OXCE unlocks bypass deps but not requires, weighted getOneFree, save disables, reenables, and mirrored UI");
+console.log("OK chronological choices: 4612 topics; compact runtime is "+Math.round(100*runtimeBytes/originalBytes)+"% of prior JSON, all engine topics identical; OXCE bypass, weighted getOneFree, save disables, reenables, mirrored UI");
