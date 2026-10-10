@@ -1,6 +1,7 @@
 import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue} from "./planner.js";
-import {buildChoiceIndex} from "../captains/choice-simulator-core.js";
-import {CAPTAIN_ROUTES,createRouteContext,trainingRouteGate,routeEventReport} from "./route-gates.js";
+import {buildChoiceIndex,parseCompletedResearch} from "../captains/choice-simulator-core.js";
+import {trainingRouteGate,routeEventReport} from "./route-gates.js";
+import {buildStagedCaptainContext,validateCaptainStages} from "./staged-captain.js";
 import {routeContext as buildResearchRouteContext,trainingRouteAccess} from "./route-access.js";
 
 const $=selector=>document.querySelector(selector);
@@ -11,6 +12,7 @@ const sum=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b||{}))out[
 const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0);
 const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?"+":"")+v).join(" · ")||"변화 없음";
 let DATA,ACCESS,choiceIndex,routeContext,researchRouteContext,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
+let selectedCompanions=new Set(),codexChoice="",saintGoal=false;
 const rankStat=t=>textStats(t.flatOverallStatChange,statLabels);
 const bonusStats=t=>traitStatsOf(t,DATA.bonuses);
 const typeName=id=>DATA.soldiers.find(s=>s.id===id)?.koName||id;
@@ -20,10 +22,12 @@ const evidenceEventLink=(id,label)=>'<a class="name-link" href="../events/#event
 function researchRouteOptions(){
   const options={captain:routeContext?.route?.second||routeContext?.route?.first||""};
   for(const group of DATA.routeChoices||[]){
-    if(group.id==="captain")continue;
+    if(group.id==="captain"||group.id==="codex")continue;
     options[group.id]=$("#research-route-"+group.id)?.value||"";
   }
-  options.extra=$("#researchRouteExtra")?.value||"";
+  options.codex=codexChoice?"STR_CODEX_"+codexChoice+"_AWAKENED":"";
+  const inherited=routeContext?.state?[...routeContext.state.completed]:[];
+  options.extra=[...inherited,$("#researchRouteExtra")?.value||""].join(" ");
   return options;
 }
 const researchRouteReason=access=>{
@@ -80,6 +84,38 @@ function canAdd(t,includePrerequisites=false){
   latestAdded=[...plan.steps]; // One checkbox can append a whole prerequisite chain.
   redraw();
 }
+function currentCaptainStages(){
+  return [0,1,2,3].map(i=>$("#captainStage"+i).value);
+}
+function refreshCaptainStages(){
+  $("#captainStage1Wrap").hidden=$("#captainStage0").value!=="STR_CAPTAIN_PUSSY";
+  $("#captainStage2Wrap").hidden=$("#captainStage1").value!=="STR_CAPTAIN_UNCLASSED_UP";
+  $("#captainStage3Wrap").hidden=$("#captainStage2").value!=="STR_CAPTAIN_PURE_UP";
+}
+function renderCaptainModifiers(){
+  const host=$("#captainCompanions");
+  const available=routeContext?.availableCompanions||[];
+  host.innerHTML=available.length?available.map(id=>
+    '<label><input type="checkbox" data-companion="'+esc(id)+'"'+
+    (selectedCompanions.has(id)?' checked':'')+'> '+esc(researchLabel(id))+'</label>'
+  ).join(""):'<span class="fine">이 경로에서 해금된 후속 성격 없음</span>';
+  $("#captainCodex").disabled=!routeContext?.state;
+  $("#captainCodex").value=codexChoice;
+  const owned=routeContext.ownedColors||[],colors=routeContext.colors||[],
+    missing=routeContext.missingColors||[];
+  $("#codexEligibility").textContent=!routeContext?.state?"선장 성격을 먼저 선택하세요":
+    routeContext.codexBlocked?"힘 거부와 드릴 조사 분기가 배타적이므로 Codex 각성 불가":
+    codexChoice&&owned.includes(codexChoice)?"기존 보유 색상의 중복 선택 — 결손색은 그대로":
+    "보유 "+(colors.join(", ")||"없음")+" · 결손색 "+(missing.join(", ")||"없음")+
+    (codexChoice?" · Codex 각성까지 달성했다고 가정":"");
+  $("#saintMilestone").disabled=!routeContext.saintPossible;
+  $("#saintMilestone").checked=routeContext.saintGoal;
+  $("#saintEligibility").textContent=!routeContext?.state?"선장 성격 미선택":
+    routeContext.route.first==="STR_CAPTAIN_PUSSY"?"Pussy 계열은 Saint 이벤트의 금지 조건":
+    !routeContext.route.isTerminal?"선장 분기 결정 미완료":
+    !routeContext.saintPossible?"네 색상·드릴 조사 조건 미달, 다른 분기와 배타 또는 결손색 존재":
+    routeContext.saintGoal?"네 색상+선장일지+Saint 지급 완료 가정":"조건 충족 가정 가능 — 지급 자체는 별도 이벤트";
+}
 function renderRouteAccess(){
   const host=$("#routeAccessSummary");
   if(!routeContext?.state){
@@ -109,7 +145,7 @@ function renderRouteAccess(){
     brief("Rogue 클론 — DumbLazy 방문",report.rogueDumbLazy,"STR_KNOCK_KNOCK_ROGUE_CLONE","랜덤 반복 방문")+
     brief("Rogue 클론 — TroubleSeeking",report.rogueTrouble,"STR_TROUBLESEEKING_ALLY","JackDumb 또는 Dumbass+Saint 랜덤 이벤트")+
     brief("붉은 새벽단 기적술사",report.orthodoxSaint,"STR_KNOCK_KNOCK_ORTHODOX_MAGE_DAMSEL","Dumbass+Saint 또는 Pussy+JackLazy(Thief 포함) 이벤트")+'</div>'+
-    (routeContext.route.id.endsWith("_SAINT")?'<p class="fine">Saint 도달 시나리오: 빠진 색상의 코덱스 각성, 선장일지 #1 및 Saint 이벤트까지 달성했다고 가정합니다. 도마뱀인간 석상 보유 여부에 따라 증원 스크립트 하나가 제한됩니다.</p>':"")+
+    (routeContext.saintGoal?'<p class="fine">Saint 달성 가정: 선택 Codex 각성, 선장일지 #1 및 Saint 지급 이벤트 완료가 필요합니다. 도마뱀인간 석상에 따라 증원 이벤트가 제한됩니다.</p>':"")+
     '<p class="fine">훈련의 연구·아이템·시설을 지금 보유한다는 뜻은 아닙니다. <b>분기상 가능</b>과 <b>현재 게임에서 실행 가능</b>은 다릅니다.</p>';
 }
 function renderResearchRoute(){
@@ -300,10 +336,18 @@ function renderTable(){
 }
 function redraw(){
   origin=currentOrigin();state=currentState();
-  routeContext=createRouteContext(choiceIndex,$("#captainRoute").value);
+  const prior=parseCompletedResearch(choiceIndex,$("#researchRouteExtra")?.value||"").ids
+    .filter(id=>!id.startsWith("STR_CAPTAIN_")&&id!=="STR_CAPTAINS_11");
+  routeContext=buildStagedCaptainContext(choiceIndex,ACCESS.captainStages,{
+    stages:currentCaptainStages(),companions:[...selectedCompanions],
+    codex:codexChoice,saint:saintGoal,extraFlags:prior,
+    queenSavage:$("#research-route-queen")?.value==="STR_QUEEN_SAVAGE"
+  });
+  if(saintGoal&&!routeContext.saintPossible)saintGoal=false;
   researchRouteContext=buildResearchRouteContext(DATA,researchRouteOptions());
   rows=DATA.transformations.map(t=>{const issues=issuesFor(t,state);return{t,issues,status:statusOf(issues)}});
-  renderSummary();renderRouteAccess();renderResearchRoute();renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderTable();
+  renderSummary();renderCaptainModifiers();renderRouteAccess();renderResearchRoute();
+  renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderTable();
 }
 const section=(title,content)=>'<section class="detail-section"><h3>'+esc(title)+'</h3>'+content+'</section>';
 function renderResearchEvidence(t){
@@ -409,8 +453,18 @@ function initOrigins(){
 function bind(){
   $("#origin").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   $("#condition").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
-  $("#captainRoute").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
-  for(const group of DATA.routeChoices||[])if(group.id!=="captain")
+  for(let i=0;i<4;i++)$("#captainStage"+i).addEventListener("change",()=>{
+    for(let j=i+1;j<4;j++)$("#captainStage"+j).value="";
+    refreshCaptainStages();
+    selectedCompanions.clear();codexChoice="";saintGoal=false;selected=[];latestAdded=[];redraw();
+  });
+  $("#captainCodex").addEventListener("change",e=>{
+    codexChoice=e.target.value;saintGoal=false;selected=[];latestAdded=[];redraw();
+  });
+  $("#saintMilestone").addEventListener("change",e=>{
+    saintGoal=e.target.checked;selected=[];latestAdded=[];redraw();
+  });
+  for(const group of DATA.routeChoices||[])if(group.id!=="captain"&&group.id!=="codex")
     $("#research-route-"+group.id).addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   $("#researchRouteExtra").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   $("#quickTraining").addEventListener("change",()=>{$("#quickAdd").disabled=!$("#quickTraining").value;});
@@ -426,6 +480,12 @@ function bind(){
   $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
   $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))$("#detailDialog").close();});
   document.addEventListener("change",e=>{
+    const companion=e.target.dataset?.companion;
+    if(companion){
+      if(e.target.checked)selectedCompanions.add(companion);
+      else selectedCompanions.delete(companion);
+      selected=[];latestAdded=[];redraw();return;
+    }
     const id=e.target.dataset?.toggle;
     if(!id)return;
     if(!e.target.checked){
@@ -454,7 +514,7 @@ function bind(){
     if(row)showDetail(row.dataset.id);
   });
   $("#copyPlan").addEventListener("click",async()=>{
-    const text="XPiratez 훈련 조합 | "+currentOrigin().label+" | "+$("#captainRoute").selectedOptions[0].text+" | "+$("#condition").selectedOptions[0].text+"\n"+
+    const text="XPiratez 훈련 조합 | "+currentOrigin().label+" | 선장 "+currentCaptainStages().filter(Boolean).join(" → ")+" | 후속 성격 "+[...selectedCompanions].join(",")+" | 코덱스 "+(codexChoice||"미선택")+" | Saint "+(saintGoal?"가정":"아님")+" | "+$("#condition").selectedOptions[0].text+"\n"+
       selected.map((id,i)=>(i+1)+". "+byId.get(id).koName+" ("+id+")").join("\n");
     try{await navigator.clipboard.writeText(text);$("#copyStatus").textContent="복사됨";}
     catch{$("#copyStatus").textContent="복사 권한이 없어 선택된 조합을 복사하지 못했습니다.";}
@@ -469,8 +529,15 @@ async function init(){
     ]);
     DATA=trainings;ACCESS=access;
     choiceIndex=buildChoiceIndex(progression.topics,choiceGates);
-    $("#captainRoute").innerHTML=CAPTAIN_ROUTES.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.label)+'</option>').join("");
-    $("#researchRouteSelectors").innerHTML=(DATA.routeChoices||[]).filter(g=>g.id!=="captain").map(group=>
+    validateCaptainStages(choiceIndex,ACCESS.captainStages);
+    for(let i=0;i<4;i++)
+      $("#captainStage"+i).innerHTML='<option value="">미선택 · 다음 단계 또는 보류</option>'+
+        ACCESS.captainStages[i].ids.map(id=>'<option value="'+esc(id)+'">'+
+          esc(choiceIndex.byId.get(id)?.koName||id)+'</option>').join("");
+    $("#captainCodex").innerHTML='<option value="">Codex 미선택</option>'+
+      ["GOLD","GREEN","RED","GRAY"].map(c=>
+        '<option value="'+c+'">'+esc(choiceIndex.byId.get("STR_CODEX_"+c)?.koName||c)+'</option>').join("");
+    $("#researchRouteSelectors").innerHTML=(DATA.routeChoices||[]).filter(g=>g.id!=="captain"&&g.id!=="codex").map(group=>
       '<label>'+esc(group.label)+'<select id="research-route-'+esc(group.id)+'">'+
       '<option value="">미선택 · 배제 확정 안 함</option>'+
       group.choices.map(c=>'<option value="'+esc(c.id)+'">'+esc(c.koName)+' ('+esc(c.id)+')</option>').join("")+
@@ -487,7 +554,31 @@ async function init(){
     bind();
     const query=new URLSearchParams(location.search);
     if(query.has("training")){$("#search").value=query.get("training");}
-    if(CAPTAIN_ROUTES.some(r=>r.id===query.get("route")))$("#captainRoute").value=query.get("route");
+    const legacy={
+      DUMBASS:"STR_CAPTAIN_DUMBASS",JACKASS:"STR_CAPTAIN_JACKASS",
+      LAZYASS:"STR_CAPTAIN_LAZYASS",SOREASS:"STR_CAPTAIN_SOREASS",
+      THIEF:"STR_CAPTAIN_THIEF",PRIEST:"STR_CAPTAIN_PRIEST",
+      RULER:"STR_CAPTAIN_RULER",MAGE:"STR_CAPTAIN_MAGE",
+      DUMBASS_SAINT:"STR_CAPTAIN_DUMBASS",LAZYASS_SAINT:"STR_CAPTAIN_LAZYASS",
+      JACKASS_SAINT:"STR_CAPTAIN_JACKASS",SOREASS_SAINT:"STR_CAPTAIN_SOREASS"
+    };
+    const from=legacy[query.get("route")]||query.get("route")||"";
+    const stage=ACCESS.captainStages.findIndex(group=>group.ids.includes(from));
+    if(stage>=0){
+      if(stage>0)$("#captainStage0").value="STR_CAPTAIN_PUSSY";
+      if(stage>1)$("#captainStage1").value="STR_CAPTAIN_UNCLASSED_UP";
+      if(stage>2)$("#captainStage2").value="STR_CAPTAIN_PURE_UP";
+      $("#captainStage"+stage).value=from;
+      if(stage===1&&!$("#captainStage0").value)$("#captainStage0").value="STR_CAPTAIN_PUSSY";
+    }
+    if(query.get("route")?.endsWith("_SAINT")){
+      const color={DUMBASS_SAINT:"GRAY",LAZYASS_SAINT:"RED",JACKASS_SAINT:"GREEN",SOREASS_SAINT:"GOLD"}[query.get("route")];
+      codexChoice=color||"";saintGoal=Boolean(color);
+      if(["DUMBASS_SAINT","LAZYASS_SAINT"].includes(query.get("route")))
+        selectedCompanions.add("STR_CAPTAIN_DUMBLAZY");
+    }
+    if(["GOLD","GREEN","RED","GRAY"].includes(query.get("codex")))codexChoice=query.get("codex");
+    refreshCaptainStages();
     redraw();
     if(byId.has(query.get("training")))showDetail(query.get("training"));
   }catch(error){

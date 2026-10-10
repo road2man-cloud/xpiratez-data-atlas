@@ -23,15 +23,23 @@
       </div>
       <div class="selectors">
         <label>출발 병종 / 실제 획득 경로<select id="origin"></select></label>
-        <label>선장·분기 시나리오<select id="captainRoute"><option value="ANY">선장 미지정 · 변신 자체 조건만</option></select></label>
+        <label>1단계 · 선장 기본 성격<select id="captainStage0"><option value="">미지정</option></select></label>
+        <label id="captainStage1Wrap" hidden>2단계 · Pussy 직업<select id="captainStage1"><option value="">직업 미지정</option></select></label>
+        <label id="captainStage2Wrap" hidden>3단계 · 혼합형 / Pure<select id="captainStage2"><option value="">혼합형 미지정</option></select></label>
+        <label id="captainStage3Wrap" hidden>4단계 · Pure 최종<select id="captainStage3"><option value="">Pure 최종 미지정</option></select></label>
         <label>병사 현재 상태<select id="condition">
           <option value="healthy">건강한 생존 병사</option><option value="wounded">부상 병사</option><option value="dead">사망 병사</option>
         </select></label>
       </div>
+      <section class="captain-modifiers" aria-label="추가 성격과 성자 조건">
+        <div><b>추가 획득 성격 (해금 가능한 것만 복수 선택)</b><div id="captainCompanions" class="companion-choices"></div></div>
+        <label class="captain-codex-label">선택할 Codex 및 각성 가정<select id="captainCodex"><option value="">미선택</option></select><small id="codexEligibility"></small></label>
+        <label class="saint-selector"><input type="checkbox" id="saintMilestone"> Saint 획득 가정 <small id="saintEligibility"></small></label>
+      </section>
       <div id="routeAccessSummary" class="route-access" aria-live="polite"></div>
       <section class="research-route-panel" aria-label="나머지 연구 선택지의 배제조건">
         <h3>나머지 선택지·획득 경로 배제검사 <span class="tag">분기 DB 연동</span></h3>
-        <p class="fine">위 선장 시나리오와 함께 갈라지는 길, 여왕, Codex, 신의 선물 등의 후속 연구 분기를 선택하세요. 이벤트를 통해 지급되는 연구와 필수 재료의 출처도 추적합니다.</p>
+        <p class="fine">위의 단계별 선장 선택과 함께 갈라지는 길, 여왕, 신의 선물 등의 후속 연구 분기를 선택하세요. Codex는 선장 선택 바로 아래에서 설정합니다. 이벤트를 통해 지급되는 연구와 필수 재료의 출처도 추적합니다.</p>
         <div id="researchRouteSelectors" class="research-route-selectors"></div>
         <details class="extra-research">
           <summary>실제 완료된 연구·선택지 ID 추가</summary>
@@ -47,7 +55,7 @@
         <button id="quickAdd" type="button" class="btn-add" disabled>선택한 훈련 추가</button>
         <span id="quickHint" class="muted" aria-live="polite"></span>
       </div>
-      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>와 <b>선장 선택으로 영구 봉쇄된 연구·이벤트</b>를 분리해 판정합니다. Saint 시나리오는 색상 코덱스·선장의 일지 및 이벤트까지 획득했다고 <b>가정</b>한 장기 경로입니다. 실행 전에는 실제 세이브의 연구 완료·시설·아이템·훈장·능력치를 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
+      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>와 <b>선장 선택으로 영구 봉쇄된 연구·이벤트</b>를 분리해 판정합니다. 선장은 원본 4단계 선택지를 따라 구성하며 <b>고정된 유형 수를 가정하지 않습니다.</b> Saint는 Codex로 네 색상을 확보하고 선장의 일지 및 이벤트를 달성했다고 <b>가정</b>하는 추가 성취입니다. 실행 전에는 실제 세이브의 연구 완료·시설·아이템·훈장·능력치를 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
       <div id="timeline" class="timeline" aria-live="polite"></div>
       <div id="planEffects" class="plan-effects"></div>
       <div class="actions"><button id="copyPlan" type="button">현재 조합 복사</button><span id="copyStatus" class="muted" role="status"></span></div>

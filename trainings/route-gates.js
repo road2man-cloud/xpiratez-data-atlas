@@ -52,6 +52,28 @@ export function impossibleFlag(id,ctx){
   if(!ctx?.state)return false;
   if(ctx.state.completed.has(id))return false;
   if(ctx.state.disabled.has(id))return true;
+  if(ctx.dynamic){
+    const chosen=ctx.stageChoices||[],stages=ctx.stages||[];
+    if(id==="STR_CAPTAIN_SAINT"&&chosen[0]==="STR_CAPTAIN_PUSSY")return true;
+    if(id==="STR_CAPTAIN_PUSSY_UP"&&chosen[0]!=="STR_CAPTAIN_PUSSY")return true;
+    const stage=stages.findIndex(s=>s.ids.includes(id));
+    if(stage===0)return chosen[0]!==id;
+    if(stage===1)return chosen[0]!=="STR_CAPTAIN_PUSSY"||Boolean(chosen[1]&&chosen[1]!==id);
+    if(stage===2)return chosen[0]!=="STR_CAPTAIN_PUSSY"||
+      Boolean(chosen[1]&&chosen[1]!=="STR_CAPTAIN_UNCLASSED_UP")||
+      Boolean(chosen[2]&&chosen[2]!==id);
+    if(stage===3)return chosen[0]!=="STR_CAPTAIN_PUSSY"||
+      Boolean(chosen[1]&&chosen[1]!=="STR_CAPTAIN_UNCLASSED_UP")||
+      Boolean(chosen[2]&&chosen[2]!=="STR_CAPTAIN_PURE_UP")||
+      Boolean(chosen[3]&&chosen[3]!==id);
+    const companions=[
+      "STR_CAPTAIN_DUMBLAZY","STR_CAPTAIN_JACKDUMB","STR_CAPTAIN_JACKLAZY",
+      "STR_CAPTAIN_JACKSORE","STR_CAPTAIN_LAZYSORE","STR_CAPTAIN_SOREDUMB"
+    ];
+    if(companions.includes(id))
+      return ctx.route.isTerminal&&!ctx.availableCompanions.includes(id);
+    return false; // Unknown future grants are conditional, not permanently blocked.
+  }
   if(startingCaptains.has(id))return id!==ctx.route.first;
   if(pussySecondaries.has(id))return id!==ctx.route.second;
   if(id==="STR_CAPTAIN_SAINT"&&ctx.route.first==="STR_CAPTAIN_PUSSY")return true;
@@ -120,8 +142,18 @@ export function trainingRouteGate(t,ctx,access){
       if(!ctx.state.completed.has(root))caution.push({id:root,reason:"이벤트의 추가 연구·보유 조건과 지급 시점을 확인"});
       continue;
     }
-    const rule=ctx.index.byId.get(root),status=choiceStatus(ctx.index,ctx.state,root);
-    if(status.kind==="blocked"){blocked.push({id:root,reason:"분기에서 연구가 비활성화됨"});continue;}
+    const rule=ctx.index.byId.get(root);
+    const status=ctx.dynamic?null:choiceStatus(ctx.index,ctx.state,root);
+    if(status?.kind==="blocked"){blocked.push({id:root,reason:"분기에서 연구가 비활성화됨"});continue;}
+    // OXCE "requires" cannot be bypassed by unlocks. Unlike nominal
+    // dependencies these are hard prerequisites even with an alternate event.
+    if(ctx.dynamic){
+      const lostRequires=names(rule?.requires).filter(id=>ctx.state.disabled.has(id));
+      if(lostRequires.length){
+        blocked.push({id:root,reason:"필수 requires 연구 비활성화: "+lostRequires.join(", ")});
+        continue;
+      }
+    }
     const unavailableDirect=names(rule?.dependencies).filter(x=>
       x.startsWith("STR_CAPTAIN_")&&impossibleFlag(x,ctx));
     // Only declare an irreversible block on DIRECT, named captain dependencies
@@ -133,7 +165,11 @@ export function trainingRouteGate(t,ctx,access){
       blocked.push({id:root,reason:"필수 선장 연구 "+unavailableDirect.join(", ")+" 획득 불가"});
       continue;
     }
-    if(status.kind==="path-risk"||status.kind==="uncertain")
+    if(ctx.dynamic){
+      const pendingNominal=names(rule?.dependencies).filter(id=>ctx.state.disabled.has(id));
+      if(pendingNominal.length||names(rule?.unresolvedDependencies).length)
+        caution.push({id:root,reason:"명목 선행조건 차단/미해결 — 이벤트·unlocks 우회 가능성 검증 필요"});
+    }else if(status.kind==="path-risk"||status.kind==="uncertain")
       caution.push({id:root,reason:"연구 경로에 차단된 명목 선행조건/대체 해금 확인 필요"});
   }
   return{kind:blocked.length?"blocked":caution.length?"caution":"possible",
