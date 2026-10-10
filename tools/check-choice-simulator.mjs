@@ -10,7 +10,7 @@ const graph=buildChoiceIndex(topics);
 assert.equal(graph.topics.length,4612);
 assert.equal(graph.byId.size,4612);
 const rules=(id)=>graph.byId.get(id);
-const scenario=(prior=[],steps=[])=>computeChoiceScenario(graph,prior,steps);
+const scenario=(prior=[],steps=[],options={})=>computeChoiceScenario(graph,prior,steps,options);
 const status=(state,id)=>choiceStatus(graph,state,id);
 const chosen=(state,id)=>state.completed.has(id);
 const blocked=(state,id)=>status(state,id).kind==="blocked";
@@ -37,7 +37,9 @@ const reOrdered=scenario([],["STR_CAPTAIN_DUMBASS","STR_CAPTAIN_JACKASS"]);
 assert.deepEqual(reOrdered.steps,["STR_CAPTAIN_DUMBASS"]);
 const oneWayFirst=scenario([],["STR_HOTEL","STR_CAPTAIN_JACKASS"]);
 assert.deepEqual(oneWayFirst.steps,["STR_HOTEL","STR_CAPTAIN_JACKASS"]);
-assert.equal(status(oneWayFirst,"STR_HOTEL").kind,"completed");
+assert.equal(status(oneWayFirst,"STR_HOTEL").kind,"blocked");
+assert.equal(oneWayFirst.erased.some(x=>x.id==="STR_HOTEL"&&x.by==="STR_CAPTAIN_JACKASS"),true);
+assert.equal(chosen(oneWayFirst,"STR_HOTEL"),false);
 assert.deepEqual(status(oneWayFirst,"STR_HOTEL").blockers,["STR_CAPTAIN_JACKASS"]);
 assert.equal(rules("STR_HOTEL").disables.includes("STR_CAPTAIN_JACKASS"),false);
 
@@ -65,7 +67,8 @@ assert.notEqual(status(embracePower,"STR_TINY_DRILL_INVESTIGATION").kind,"blocke
 
 const docThenAurora=scenario([],["STR_GDX_012","STR_TEC_168","STR_GDX_018"]);
 assert.deepEqual(docThenAurora.steps,["STR_GDX_012","STR_TEC_168","STR_GDX_018"]);
-assert.equal(status(docThenAurora,"STR_GDX_012").kind,"completed");
+assert.equal(status(docThenAurora,"STR_GDX_012").kind,"blocked");
+assert.equal(docThenAurora.erased.some(x=>x.id==="STR_GDX_012"&&x.by==="STR_TEC_168"),true);
 assert.equal(status(docThenAurora,"STR_GDX_012").blockers.includes("STR_TEC_168"),true);
 assert.equal(status(docThenAurora,"STR_GDX_018").kind,"completed");
 
@@ -81,16 +84,35 @@ assert.equal(blocked(route169,"STR_TEC_178"),true);
 const savedDoctor=scenario(["STR_GDX_012"],["STR_TEC_168"]);
 assert.equal(savedDoctor.past.length,1);
 assert.deepEqual(savedDoctor.steps,["STR_TEC_168"]);
-assert.equal(status(savedDoctor,"STR_GDX_012").origin,"past");
+assert.equal(status(savedDoctor,"STR_GDX_012").kind,"blocked");
+assert.equal(savedDoctor.erased[0].origin,"past");
 
 const impact=choiceImpact(graph,scenario(),"STR_TEC_168",[
   "STR_GDX_012","STR_GDX_013","STR_GDX_014","STR_GDX_015","STR_GDX_016","STR_GDX_017"]);
 assert.equal(impact.newSurface.length,6);
 assert.equal(impact.newDirect.length,7);
-assert.equal(choiceImpact(graph,savedDoctor,"STR_TEC_168").alreadyCompleted.length,1);
+assert.equal(choiceImpact(graph,scenario(["STR_GDX_012"]),"STR_TEC_168").alreadyCompleted.length,1);
 assert.equal(impact.alreadyCompleted.length,0);
 assert.equal(scenario().completed.size,0);
 
+const snapshot=scenario(["STR_GDX_012"],[],{snapshot:true,disabledIds:["STR_TEC_169","STR_GDX_013"]});
+assert.equal(chosen(snapshot,"STR_GDX_012"),true);
+assert.equal(status(snapshot,"STR_GDX_013").kind,"blocked");
+assert.equal(status(snapshot,"STR_GDX_013").fromSave,true);
+assert.equal(status(snapshot,"STR_GDX_014").kind!=="blocked",true);
+assert.equal(snapshot.priorConflicts.length,0);
+const snapshotNext=scenario(["STR_GDX_012"],["STR_TEC_168"],{snapshot:true,disabledIds:["STR_TEC_169"]});
+assert.equal(status(snapshotNext,"STR_GDX_012").kind,"blocked");
+assert.equal(snapshotNext.erased.length,1);
+const synthetic=buildChoiceIndex([
+  {id:"A",disables:[{id:"B"}],reenables:[]},
+  {id:"B",disables:[],reenables:[{id:"A"}]},
+  {id:"C",disables:[],reenables:[{id:"B"}]}
+]);
+const reenable=computeChoiceScenario(synthetic,[],["A","C","B"]);
+assert.deepEqual(reenable.steps,["A","C","B"]);
+assert.equal(reenable.disabled.has("B"),false);
+assert.equal(reenable.disabled.has("A"),false);
 const parsed=parseCompletedResearch(graph,"STR_CAPTAIN_SOREASS, STR_TEC_168\nSTR_TEC_168 INVALID_ID");
 assert.deepEqual(parsed.ids,["STR_CAPTAIN_SOREASS","STR_TEC_168"]);
 assert.deepEqual(parsed.unknown,["INVALID_ID"]);
@@ -101,7 +123,7 @@ assert.equal(parseCompletedResearch(graph,'{"foo":["STR_CAPTAIN_JACKASS"]}').mal
 assert.equal(parseCompletedResearch(graph,'{"completed":').malformed,true);
 assert.equal(choiceLabel(graph,"STR_CAPTAIN_JACKASS").length>0,true);
 
-for(const file of ["choice-simulator.js","choice-simulator-core.js","app.js","extra-choices.js","index.html","styles.css"]){
+for(const file of ["choice-simulator.js","choice-simulator-core.js","save-import-core.js","app.js","extra-choices.js","index.html","styles.css"]){
   assert.equal(
     fs.readFileSync("public/captains/"+file,"utf8"),
     fs.readFileSync("modules/captains/"+file,"utf8"),
@@ -112,4 +134,4 @@ const html=fs.readFileSync("public/captains/index.html","utf8");
 for(const token of ["id=\"choiceSimulator\"","id=\"choiceScenarioBlocked\"","type=\"module\" src=\"choice-simulator.js"]){
   assert(html.includes(token),"Missing simulator UI token "+token);
 }
-console.log("OK chronological choices: 4612 topics; mutual and one-way, prior history, event gates, direct/nominal blocks, undo-style recompute, import and mirrored UI");
+console.log("OK chronological choices: 4612 topics; retroactive un-research, save status=2, reenables, directional exclusions, undo and mirrored UI");

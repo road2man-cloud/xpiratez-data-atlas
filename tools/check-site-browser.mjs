@@ -135,13 +135,32 @@ try {
           const blockedPanel=await page.locator("#choiceScenarioBlocked").innerText();
           if(!blockedPanel.includes("무모한 선장"))errors.push("Blocked branch reason is not visible");
           await page.locator("#choiceScenarioReset").click();
+          const sampleSave=[
+            "name: Smoke Save","---","difficulty: 2","funds: 1000",
+            "bases:","  - name: Demo","    research:","      - project: STR_CAPTAIN_LAZYASS",
+            "discovered:","  - STR_GDX_012",
+            "researchRuleStatus:","  STR_TEC_169: 2","  STR_GDX_013: 2"
+          ].join("\\n")+"\\n";
+          await page.locator("#choiceSaveFile").setInputFiles({
+            name:"choice-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(sampleSave.replaceAll("\\n","\n"))
+          });
+          await page.waitForFunction(()=>document.querySelector("#choiceSaveSummary")?.textContent.includes("영구 배제 2개"),{timeout:10000});
+          if(await page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_012"]').getAttribute("data-sim-state")!=="completed")
+            errors.push("Save discovered was not marked completed");
+          if(await page.locator('#exclusiveRules .choice-option[data-choice-id="STR_TEC_169"]').getAttribute("data-sim-state")!=="blocked")
+            errors.push("Save researchRuleStatus=2 was ignored");
+          if((await page.locator("#choiceScenarioStats").innerText()).includes("연구 직접 봉쇄")===false)
+            errors.push("Missing save-backed exclusions metric");
+          await page.locator("#choiceScenarioReset").click();
           await page.locator("#choiceCompletedInput").fill("STR_GDX_012");
           await page.locator("#choiceCompletedApply").click();
           await page.locator("#choiceTopicSearch").fill("STR_TEC_168");
           await page.locator('[data-sim-search-plan="STR_TEC_168"]').click();
           const doc=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_012"]');
-          if(await doc.getAttribute("data-sim-state")!=="completed")
-            errors.push("Completed Dr. X was retroactively removed by Aurora gate");
+          if(await doc.getAttribute("data-sim-state")!=="blocked")
+            errors.push("OXCE must un-research the previously completed Dr. X flag");
+          if(!(await page.locator("#choiceScenarioMessage").innerText()).includes("완료 플래그 제거"))
+            errors.push("Missing retroactive research removal explanation");
           const aurora=page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_018"]');
           if(await aurora.getAttribute("data-sim-state")==="blocked")
             errors.push("Aurora conditional option was wrongly treated as direct mutual disable");
@@ -152,8 +171,10 @@ try {
           await page.locator("#choiceTopicSearch").fill("STR_HOTEL");
           await page.locator('[data-sim-search-plan="STR_HOTEL"]').click();
           await jack.locator("[data-sim-pick]").click();
-          if(!(await page.locator("#choiceScenarioTimeline").innerText()).includes("호텔"))
-            errors.push("One-way completion order removed already completed Hotel");
+          if(!(await page.locator("#choiceScenarioTimeline").innerText()).includes("완료 플래그 제거됨"))
+            errors.push("Retroactively un-researched Hotel not shown in timeline");
+          if(!(await page.locator("#choiceScenarioMessage").innerText()).includes("완료 플래그 제거"))
+            errors.push("Un-research effect missing from explanation");
           if(await page.locator("#choiceScenarioTimeline [data-sim-remove-step]").count()!==2)
             errors.push("Expected chronological Hotel / Jackass timeline");
           await page.locator("#choiceScenarioTimeline [data-sim-remove-step]").last().click();

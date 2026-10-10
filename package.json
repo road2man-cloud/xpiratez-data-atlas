@@ -34,7 +34,7 @@
     "check:enemy-forces": "node tools/check-enemy-forces.mjs --data public/data",
     "check:craft-weapons": "node tools/check-craft-weapons.mjs --data public/data",
     "check:editorials": "node tools/check-editorial-quality.mjs --data public/items/data",
-    "check:choices": "node tools/check-choice-coverage.mjs && node tools/check-choice-exclusions.mjs && node tools/check-choice-simulator.mjs"
+    "check:choices": "node tools/check-choice-coverage.mjs && node tools/check-choice-exclusions.mjs && node tools/check-choice-simulator.mjs && node tools/check-save-import.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"

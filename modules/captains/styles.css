@@ -131,6 +131,12 @@ html{scroll-behavior:smooth}
 @media(max-width:760px){.effect-card-grid{grid-template-columns:1fr}.feature-head{min-width:138px}}
 
 /* Research-driven, chronological choice simulator */
+.choice-sim-editor input[type=file]{display:block;width:100%;max-width:100%;font-size:.75rem;color:#c3d8f3;padding:7px 4px;border:1px solid #344a6d;border-radius:9px}
+.choice-sim-editor input[type=file]::file-selector-button{cursor:pointer;background:#233959;color:#e1eeff;border:1px solid #44618b;border-radius:7px;padding:7px 8px;margin-right:10px}
+.choice-sim-save-summary{white-space:pre-line;overflow-wrap:anywhere;font-size:.72rem;line-height:1.45;color:#a4e3c5;border-left:3px solid #3b8969;padding-left:9px;margin:5px 0}
+.choice-sim-save-summary:empty{display:none}
+.choice-sim-erased{background:#3a2029;border-color:#94516d;color:#ffceda;text-decoration:line-through}
+
 .choice-sim-jump{display:inline-flex;margin-top:12px;color:#bfdbfe;font-size:.88rem;font-weight:750;border:1px solid #42618b;background:#1b2a44;border-radius:9px;padding:8px 12px;text-decoration:none}
 .choice-sim-jump:hover{color:#fff;background:#284069}
 
