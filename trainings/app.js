@@ -1,4 +1,4 @@
-import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations} from "./planner.js";
+import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,newlyExcludedByPrior,traitStatsOf,traitSortValue} from "./planner.js";
 
 const $=selector=>document.querySelector(selector);
 const esc=x=>String(x??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
@@ -7,8 +7,9 @@ const list=x=>Array.isArray(x)?x:[];
 const sum=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b||{}))out[k]=(out[k]||0)+Number(v||0);return out};
 const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0);
 const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?"+":"")+v).join(" · ")||"변화 없음";
-let DATA,byId,relations,origins,selected=[],state,origin,rows,statLabels;
+let DATA,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
 const rankStat=t=>textStats(t.flatOverallStatChange,statLabels);
+const bonusStats=t=>traitStatsOf(t,DATA.bonuses);
 const typeName=id=>DATA.soldiers.find(s=>s.id===id)?.koName||id;
 const name=id=>byId.get(id)?.koName||DATA.researchGraph[id]?.koName||DATA.bonuses[id]?.koName||typeName(id);
 const idTag=id=>'<span class="chip">'+esc(name(id))+' <span class="tiny">('+esc(id)+')</span></span>';
@@ -35,6 +36,7 @@ function canAdd(t,includePrerequisites=false){
   if(issues.length&&!includePrerequisites)return;
   if(!plan.state)return;
   selected.push(...plan.steps);
+  latestAdded=[...plan.steps]; // One checkbox can append a whole prerequisite chain.
   redraw();
 }
 function renderSummary(){
@@ -94,13 +96,26 @@ function distinctResearchWarnings(rs){
   return findResearchConflicts([...selectedRows,rs],DATA.researchGraph).filter(x=>!base.has(x.disabling+"|"+x.disabled));
 }
 function renderDecisions(){
-  const ready=rows.filter(x=>x.status==="ready"),forbidden=rows.filter(x=>x.issues.some(y=>y.code==="forbidden")),
-    future=rows.filter(x=>x.status==="prereq");
+  const ready=rows.filter(x=>x.status==="ready"),future=rows.filter(x=>x.status==="prereq");
   $("#decisionHint").textContent=typeName(state.soldierType)+" 기준 · 바로 선택 "+ready.length+"개 / 선행 필요 "+future.length+"개 / 현재 상태·병종·배타 때문에 불가 "+rows.filter(x=>x.status==="blocked").length+"개";
-  $("#blockedList").innerHTML=forbidden.slice(0,50).map(x=>{
-    const f=x.issues.filter(y=>y.code==="forbidden").flatMap(y=>y.ids).map(name);
-    return'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(f.join(", "))+' 선행 때문에 봉쇄</span></div><button data-info="'+esc(x.t.id)+'" class="btn-small">원인</button></div>';
-  }).join("")||'<p class="muted">현재 선택한 훈련 때문에 봉쇄된 항목이 없습니다.</p>';
+  const allForbidden=excludedByPrior(DATA.transformations,state);
+  const previous=latestAdded.length?replay(currentOrigin(),selected.slice(0,-latestAdded.length),byId,{condition:$("#condition").value}):null;
+  const newIds=new Set(previous?newlyExcludedByPrior(DATA.transformations,previous,state).map(x=>x.id):[]);
+  const fresh=allForbidden.filter(x=>newIds.has(x.id)),older=allForbidden.filter(x=>!newIds.has(x.id));
+  const choice=x=>{
+    const t=byId.get(x.id);
+    const repeated=selected.includes(x.id)?" · 이미 선택한 훈련의 재실행도 제한됨":"";
+    return'<div class="choice exclusion-item"><div class="choice-main"><strong>'+esc(t.koName)+'</strong><span class="exclusion-reason">배제 원인: '+esc(x.blockedBy.map(name).join(", "))+esc(repeated)+'</span></div><button data-info="'+esc(t.id)+'" class="btn-small">상세</button></div>';
+  };
+  $("#newBlockedCount").textContent=fresh.length+"개";
+  $("#latestSelectionHint").textContent=latestAdded.length?
+    "방금 추가: "+latestAdded.map(name).join(" → ")+(latestAdded.length>1?" (자동 선행 포함)":"")+" · 이전 상태와 비교":
+    "훈련을 체크하면 그 선택으로 새로 봉쇄된 훈련을 이곳에서 확인할 수 있습니다.";
+  $("#newBlockedList").innerHTML=fresh.map(choice).join("")||
+    '<p class="muted fine">'+(latestAdded.length?"이번 추가로 새로 배제된 훈련은 없습니다.":"아직 새로 선택한 훈련이 없습니다.")+'</p>';
+  $("#blockedCount").textContent=older.length+"개 · 총 "+allForbidden.length+"개";
+  $("#blockedList").innerHTML=older.map(choice).join("")||
+    '<p class="muted fine">이전 선택 또는 시작 획득 경로로 이미 배제된 훈련이 없습니다.</p>';
   $("#futureList").innerHTML=future.slice(0,50).map(x=>{
     const p=addWithPrerequisites(x.t,state,byId);
     return'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(x.issues.flatMap(y=>y.ids).map(name).join(" → "))+' 필요</span></div>'+
@@ -125,7 +140,9 @@ function renderQuickPicker(){
 }
 function renderTable(){
   const search=$("#search").value.trim().toLowerCase().normalize("NFKC"),
-    filter=$("#statusFilter").value,kind=$("#kindFilter").value;
+    filter=$("#statusFilter").value,kind=$("#kindFilter").value,
+    sortBy=$("#sortBy").value,sortKey=sortBy.startsWith("trait:")?sortBy.slice(6):null,
+    ascending=$("#sortDirection").value==="asc";
   const sorted=[...rows].filter(x=>{
     if(filter!=="all"&&x.status!==filter)return false;
     if(kind!=="all"&&x.t.kind!==kind)return false;
@@ -135,8 +152,18 @@ function renderTable(){
       ...t.requiredItems.map(v=>v.id+" "+v.koName),
       ...t.forbiddenPreviousTransformations.map(name),...t.requiredPreviousTransformations.map(name)].join(" ").normalize("NFKC").toLowerCase();
     return!search||blob.includes(search);
-  }).sort((a,b)=>({ready:0,prereq:1,blocked:2}[a.status]-{ready:0,prereq:1,blocked:2}[b.status])||
-    a.t.koName.localeCompare(b.t.koName,"ko"));
+  }).sort((a,b)=>{
+    if(sortKey){
+      const delta=traitSortValue(a.t,DATA.bonuses,sortKey)-traitSortValue(b.t,DATA.bonuses,sortKey);
+      if(delta)return ascending?delta:-delta;
+    }
+    return ({ready:0,prereq:1,blocked:2}[a.status]-{ready:0,prereq:1,blocked:2}[b.status])||
+      a.t.koName.localeCompare(b.t.koName,"ko");
+  });
+  $("#sortHint").textContent=sortKey?
+    "SoldierBonus 특성의 "+(sortKey==="total"?"양수 스탯 증가 단순합":(statLabels[sortKey]||sortKey)+" 보정값")+
+      " 기준 "+(ascending?"오름차순":"내림차순")+"입니다. 직접 상승치는 제외하며, 상태가 불가인 훈련도 포함됩니다. 총합은 스탯별 가치가 다른 참고 수치입니다.":
+    "직접 상승치와 SoldierBonus 특성의 추가 스탯은 별도입니다. 정렬 기준을 선택하면 특성 증가량으로 전체 훈련을 비교합니다.";
   $("#rowCount").textContent=sorted.length+" / "+DATA.transformations.length+"개";
   $("#trainingTable tbody").innerHTML=sorted.map(({t,status,issues})=>{
     const text=status==="ready"?(selected.includes(t.id)?"선택 가능 · 반복":"선택 가능"):status==="prereq"?"선행 필요":"선택 불가";
@@ -149,16 +176,20 @@ function renderTable(){
     const toggleable=checked||status==="ready"||(status==="prereq"&&!!plan?.state);
     const checkbox='<label class="check-row"><input type="checkbox" data-toggle="'+esc(t.id)+'" '+(checked?'checked ':"")+(toggleable?"":'disabled ')+'aria-label="'+esc(t.koName)+' 선택 또는 해제"> 체크</label>';
     const researchWarn=status==="ready"&&distinctResearchWarnings(t).length;
-    return'<tr data-id="'+esc(t.id)+'" title="행 클릭: 상세 규칙 보기">'+
+    const traitStats=bonusStats(t),sortValue=sortKey?traitSortValue(t,DATA.bonuses,sortKey):null;
+    const sortHighlight=sortKey?'<div class="sort-emphasis">'+esc(sortKey==="total"?"증가 합계":statLabels[sortKey]||sortKey)+' <b>'+(sortValue>0?"+":"")+n(sortValue)+'</b></div>':"";
+    return'<tr data-id="'+esc(t.id)+'"'+(sortKey?' data-sort-value="'+sortValue+'"':"")+' title="행 클릭: 상세 규칙 보기">'+
       '<td>'+checkbox+'<strong>'+esc(t.koName)+'</strong><span class="ident">'+esc(t.enName)+' · '+esc(t.id)+'</span></td>'+
       '<td><span class="'+status+'">'+esc(text)+'</span>'+(researchWarn?'<span class="tag warning">연구분기 주의</span>':"")+
       (reasons?'<div class="tiny">'+esc(reasons.slice(0,110))+'</div>':"")+'</td>'+
       '<td>'+esc(t.kind)+'</td><td>'+esc(t.allowedSoldierTypes.length?t.allowedSoldierTypes.length+"종":"전체 (제외 조건 별도)")+'</td>'+
       '<td>'+n(t.cost)+'$'+(t.transferTime!=null?'<div class="tiny">'+n(t.transferTime)+'h</div>':t.recoveryTime?'<div class="tiny">회복 '+n(t.recoveryTime)+'</div>':"")+'</td>'+
-      '<td class="tiny">'+esc(rankStat(t).slice(0,170))+'</td><td>'+esc(name(t.soldierBonusType))+'</td>'+
+      '<td class="tiny">'+esc(rankStat(t).slice(0,170))+'</td>'+
+      '<td class="tiny trait-values">'+sortHighlight+esc(entries(traitStats).length?textStats(traitStats,statLabels):"특성 스탯 없음")+'</td>'+
+      '<td>'+esc(name(t.soldierBonusType))+'</td>'+
       '<td>'+n(t.forbiddenPreviousTransformations.length)+'개 배제 / '+n(t.requiredPreviousTransformations.length)+'개 선행</td><td>'+button+'</td></tr>';
   }).join("");
-  if(!sorted.length)$("#trainingTable tbody").innerHTML='<tr><td colspan="9">조건에 맞는 훈련이 없습니다.</td></tr>';
+  if(!sorted.length)$("#trainingTable tbody").innerHTML='<tr><td colspan="10">조건에 맞는 훈련이 없습니다.</td></tr>';
 }
 function redraw(){
   origin=currentOrigin();state=currentState();
@@ -225,16 +256,18 @@ function initOrigins(){
   $("#origin").value=origins.has("base:STR_SOLDIER")?"base:STR_SOLDIER":bases[0].id;
 }
 function bind(){
-  $("#origin").addEventListener("change",()=>{selected=[];redraw();});
-  $("#condition").addEventListener("change",()=>{selected=[];redraw();});
+  $("#origin").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
+  $("#condition").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   $("#quickTraining").addEventListener("change",()=>{$("#quickAdd").disabled=!$("#quickTraining").value;});
   $("#quickAdd").addEventListener("click",()=>{const t=byId.get($("#quickTraining").value);if(t)canAdd(t,true);});
   // Only 83 rules: synchronous filtering prevents checkboxes moving during a tap.
   $("#search").addEventListener("input",renderTable);
   $("#statusFilter").addEventListener("change",renderTable);
   $("#kindFilter").addEventListener("change",renderTable);
-  $("#undo").addEventListener("click",()=>{selected.pop();redraw();});
-  $("#reset").addEventListener("click",()=>{selected=[];redraw();});
+  $("#sortBy").addEventListener("change",renderTable);
+  $("#sortDirection").addEventListener("change",renderTable);
+  $("#undo").addEventListener("click",()=>{selected.pop();latestAdded=[];redraw();});
+  $("#reset").addEventListener("click",()=>{selected=[];latestAdded=[];redraw();});
   $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
   $("#detailDialog").addEventListener("click",e=>{if(e.target===$("#detailDialog"))$("#detailDialog").close();});
   document.addEventListener("change",e=>{
@@ -243,6 +276,7 @@ function bind(){
     if(!e.target.checked){
       const index=selected.indexOf(id);
       if(index>=0)selected=selected.slice(0,index);
+      latestAdded=[];
       redraw();
       return;
     }
@@ -251,7 +285,7 @@ function bind(){
   document.addEventListener("click",e=>{
     const target=e.target.closest("[data-add],[data-chain],[data-info],[data-cut]");
     if(target){
-      if(target.dataset.cut!==undefined){selected=selected.slice(0,Number(target.dataset.cut));redraw();return;}
+      if(target.dataset.cut!==undefined){selected=selected.slice(0,Number(target.dataset.cut));latestAdded=[];redraw();return;}
       const id=target.dataset.info||target.dataset.chain||target.dataset.add;
       const t=byId.get(id);
       if(target.dataset.info){showDetail(id);return;}
@@ -281,6 +315,10 @@ async function init(){
     relations=compileRelations(DATA.transformations);
     initOrigins();
     $("#kindFilter").innerHTML='<option value="all">전체 유형</option>'+Object.entries(DATA.counts.categoryCounts).map(([kind,count])=>'<option value="'+esc(kind)+'">'+esc(kind)+' ('+count+')</option>').join("");
+    const usedKeys=new Set(DATA.transformations.flatMap(t=>entries(bonusStats(t)).map(([key])=>key)));
+    const sortableKeys=[...new Set([...DATA.statKeys.filter(k=>usedKeys.has(k)),...[...usedKeys].sort()])];
+    $("#sortBy").innerHTML='<option value="status">선택 가능 순 (기본)</option><option value="trait:total">특성 증가 스탯 합계순 (양수)</option>'+
+      sortableKeys.map(k=>'<option value="trait:'+esc(k)+'">특성 '+esc(statLabels[k]||k)+' 보정값</option>').join("");
     bind();
     const query=new URLSearchParams(location.search);
     if(query.has("training")){$("#search").value=query.get("training");}
@@ -289,7 +327,7 @@ async function init(){
   }catch(error){
     console.error(error);
     $("#summary").innerHTML='<div class="card metric blocked">훈련 데이터 로딩 실패: '+esc(error.message)+'</div>';
-    $("#trainingTable tbody").innerHTML='<tr><td colspan="9" class="blocked">데이터를 불러오지 못했습니다.</td></tr>';
+    $("#trainingTable tbody").innerHTML='<tr><td colspan="10" class="blocked">데이터를 불러오지 못했습니다.</td></tr>';
   }
 }
 init();
