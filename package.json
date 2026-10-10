@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:data": "node tools/build-data.mjs",
+    "build:data": "node tools/build-data.mjs && node tools/build-choice-gates.mjs",
+    "build:choice-gates": "node tools/build-choice-gates.mjs",
     "build:facilities": "node tools/build-data.mjs --facility-only",
     "build:trainings": "node tools/build-training-data.mjs",
     "check": "npm run check:all",

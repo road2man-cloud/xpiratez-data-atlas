@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="XPiratez v.o1.1.1 영구 선택·분기 DB: 선장 성격, Codex, 사회·병종·세력·스토리 상호배타 선택의 획득과 영구 손실을 비교합니다." />
   <title>XPiratez 영구 선택·분기 DB</title>
-  <link rel="stylesheet" href="styles.css?v=research-diary-20261010" />
+  <link rel="stylesheet" href="styles.css?v=engine-gates-20261010" />
 </head>
 <body id="top">
   <header class="hero">
@@ -114,7 +114,7 @@
       <section id="choiceSimulator" class="card choice-simulator" aria-label="연구 선택 조합 시뮬레이터">
         <div class="choice-sim-heading">
           <div>
-            <p class="eyebrow">원본 연구 ID 기반 · 순서별 계산</p>
+            <p class="eyebrow">원본 엔진 해금 규칙 · 실제 세이브 이력 · 순서별 계산</p>
             <h3>선택 조합 시뮬레이터</h3>
             <p>아래 분기 카드의 <b>완료로 가정</b>을 누르면 배제되는 선택이 즉시 표시됩니다. 이미 연구한 항목은 왼쪽에서 먼저 등록하세요.</p>
           </div>
@@ -148,7 +148,7 @@
             </section>
           </div>
         </div>
-        <p class="choice-sim-disclaimer">판정 기준: <b>직접 봉쇄</b>는 룰셋 disables의 방향대로 계산합니다. OXCE의 disables는 기존 완료 연구 플래그도 제거하고 영구 배제합니다. <b>선행 경로 위험</b>은 일반 연구 경로만의 추정입니다. 원본에는 무료 무작위 연구 지급을 가진 주제 396개와 조건부 무료 지급 연구 102개가 있으며, 실제 당첨 결과·추가 지급·이벤트·실물·시설·난이도·시기 조건을 임의로 충족시키지 않습니다. 따라서 표시되는 '후보'는 실제 세이브의 연구 가능 확정이 아닙니다.</p>
+        <p class="choice-sim-disclaimer">판정 기준: <b>직접 봉쇄</b>는 원본 disables의 방향대로 계산하고, 완료 연구 플래그도 제거합니다. OXCE의 <b>unlocks</b>는 <b>dependencies</b>를 우회하지만 <b>requires</b>까지 우회하지는 않습니다. 원본 <b>getOneFree</b>의 중복 연구 ID는 추첨 가중치로 보존합니다. 무료 연구 지급은 실제 무작위 추첨·조건부 보상·자동 0비용 연구·실물·시설·이벤트·시기를 충족했다고 가정하지 않습니다. 세이브의 연구 가능 여부를 확정하는 시스템이 아니라 완료를 가정한 분기 위험 분석입니다.</p>
       </section>
       <div id="exclusiveRules"></div>
     </section>
@@ -219,6 +219,6 @@
   <script src="glossary.js?v=terms2-20261006"></script>
   <script src="app.js?v=choice-history-20261010"></script>
   <script src="extra-choices.js?v=choice-history-20261010"></script>
-  <script type="module" src="choice-simulator.js?v=research-diary-20261010"></script>
+  <script type="module" src="choice-simulator.js?v=engine-gates-20261010"></script>
 </body>
 </html>

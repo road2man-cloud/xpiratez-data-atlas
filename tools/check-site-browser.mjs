@@ -187,7 +187,20 @@ try {
           await page.locator("#choiceScenarioTimeline [data-sim-remove-step]").last().click();
           if(await jack.getAttribute("data-sim-state")==="completed")
             errors.push("Undo did not restore Jackass as a selectable option");
-          detail+=" + directional branch simulator + historical completion + undo";
+          await page.locator("#choiceScenarioReset").click();
+          await page.locator("#choiceCompletedInput").fill("STR_POLTERGEIST_EMBODIMENT");
+          await page.locator("#choiceCompletedApply").click();
+          await page.locator("#choiceTopicSearch").fill("STR_FORMER_ZOMBIE_TRAIT");
+          const bypassRow=page.locator('#choiceTopicResults [data-sim-search-plan="STR_FORMER_ZOMBIE_TRAIT"]').locator("..").locator("..");
+          if(!(await bypassRow.innerText()).includes("unlocks로 dependencies 우회"))
+            errors.push("Research unlock did not bypass an unmet dependency");
+          await page.locator("#choiceScenarioReset").click();
+          await page.locator("#choiceTopicSearch").fill("STR_NAZI_MAGE");
+          const weightedSource=page.locator('#choiceTopicResults [data-sim-search-plan="STR_NAZI_MAGE"]').locator("..").locator("..");
+          const weightedText=await weightedSource.innerText();
+          if(!weightedText.includes("추첨칸")||!weightedText.includes("무료 지급 후보"))
+            errors.push("Weighted free research candidate preview missing");
+          detail+=" + engine unlock bypass + weighted bonus research + historical completion + undo";
         }
         if(slug==="trainings"){
           trainingStage="close detail button";

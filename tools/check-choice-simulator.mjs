@@ -2,11 +2,12 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {
   buildChoiceIndex, choiceLabel, computeChoiceScenario, choiceStatus,
-  choiceImpact, parseCompletedResearch
+  choiceImpact, choiceGrantCandidates, parseCompletedResearch
 } from "../public/captains/choice-simulator-core.js";
 
 const topics=JSON.parse(fs.readFileSync("public/data/progression-research.json","utf8")).topics;
-const graph=buildChoiceIndex(topics);
+const gates=JSON.parse(fs.readFileSync("public/data/choice-research-gates.json","utf8"));
+const graph=buildChoiceIndex(topics,gates);
 assert.equal(graph.topics.length,4612);
 assert.equal(graph.byId.size,4612);
 const rules=(id)=>graph.byId.get(id);
@@ -113,6 +114,35 @@ const reenable=computeChoiceScenario(synthetic,[],["A","C","B"]);
 assert.deepEqual(reenable.steps,["A","C","B"]);
 assert.equal(reenable.disabled.has("B"),false);
 assert.equal(reenable.disabled.has("A"),false);
+const syntheticEngine=buildChoiceIndex([
+  {id:"SOURCE",disables:["DEP"],cost:10},
+  {id:"DEP",disables:[],cost:10},
+  {id:"REQ",disables:[],cost:10},
+  {id:"TARGET",disables:[],cost:10},
+  {id:"LOCK",disables:["REQ"],cost:10},
+  {id:"BONUS",disables:[],cost:10}
+],{topics:{
+  SOURCE:{unlocks:["TARGET"],getOneFree:["TARGET","TARGET","BONUS"]},
+  TARGET:{dependencies:["DEP"],requires:["REQ"]},
+  DEP:{},REQ:{},LOCK:{},BONUS:{}
+}});
+const noSource=computeChoiceScenario(syntheticEngine,[],["LOCK"]);
+assert.equal(choiceStatus(syntheticEngine,noSource,"TARGET").kind,"path-risk");
+const sourceOnly=computeChoiceScenario(syntheticEngine,[],["SOURCE"]);
+assert.equal(choiceStatus(syntheticEngine,sourceOnly,"TARGET").kind,"pending");
+assert.deepEqual(choiceStatus(syntheticEngine,sourceOnly,"TARGET").missingDependencies,[]);
+assert.deepEqual(choiceStatus(syntheticEngine,sourceOnly,"TARGET").missingRequires,["REQ"]);
+const sourceReq=computeChoiceScenario(syntheticEngine,[],["SOURCE","REQ"]);
+assert.equal(choiceStatus(syntheticEngine,sourceReq,"TARGET").kind,"candidate");
+const sourceLock=computeChoiceScenario(syntheticEngine,[],["SOURCE","LOCK"]);
+assert.equal(choiceStatus(syntheticEngine,sourceLock,"TARGET").kind,"path-risk");
+assert.equal(choiceStatus(syntheticEngine,sourceLock,"TARGET").nominal.kind,"requires");
+const weightPool=choiceGrantCandidates(syntheticEngine,computeChoiceScenario(syntheticEngine),"SOURCE");
+assert.equal(weightPool.tickets,3);
+assert.deepEqual(weightPool.outcomes.map(x=>[x.id,x.weight]),[["TARGET",2],["BONUS",1]]);
+assert(Math.abs(weightPool.outcomes[0].percent-200/3)<0.001);
+const weightedActual=choiceGrantCandidates(graph,computeChoiceScenario(graph),"STR_NAZI_MAGE");
+assert(weightedActual.outcomes.some(x=>x.weight>1),"Original getOneFree duplicates must remain as lottery weight");
 const parsed=parseCompletedResearch(graph,"STR_CAPTAIN_SOREASS, STR_TEC_168\nSTR_TEC_168 INVALID_ID");
 assert.deepEqual(parsed.ids,["STR_CAPTAIN_SOREASS","STR_TEC_168"]);
 assert.deepEqual(parsed.unknown,["INVALID_ID"]);
@@ -134,4 +164,4 @@ const html=fs.readFileSync("public/captains/index.html","utf8");
 for(const token of ["id=\"choiceSimulator\"","id=\"choiceScenarioBlocked\"","type=\"module\" src=\"choice-simulator.js"]){
   assert(html.includes(token),"Missing simulator UI token "+token);
 }
-console.log("OK chronological choices: 4612 topics; retroactive un-research, save status=2, reenables, directional exclusions, undo and mirrored UI");
+console.log("OK chronological choices: 4612 topics; OXCE unlocks bypass deps but not requires, weighted getOneFree, save disables, reenables, and mirrored UI");
