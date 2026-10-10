@@ -26,7 +26,7 @@
     {
       title: "Codex 결손색 페널티",
       kind: "선택 후 잔존 결손색 효과",
-      hint: "기본 4선장은 이미 3색을 갖습니다. 빠진 색을 Codex 선택으로 채우면 4색/Saint로 가지만, 이미 가진 색을 중복 선택해 결손색을 남기면 해당 3색 조합의 EXP 연구가 특정 테크를 추가 봉쇄합니다.",
+      hint: "기본 4선장은 이미 3색을 갖습니다. 빠진 색을 Codex 선택으로 채우면 4색/Saint로 가지만, 이미 가진 색을 중복 선택해 결손색을 남기면 해당 3색 조합의 EXP 연구가 특정 테크를 추가 봉쇄합니다. EXP 연구 4개는 서로 직접 disables를 갖지 않으며, 결손색 조건으로 갈리는 경로 결과입니다.",
       options: [
         {name:"녹색이 끝까지 없음", id:"STR_CODEX_GRAY_EXP", meta:"Gold + Red + Gray", effect:"Zombie Medicine + Mushroom Medicine 봉쇄"},
         {name:"회색이 끝까지 없음", id:"STR_CODEX_GREEN_EXP", meta:"Gold + Green + Red", effect:"Astrosensorium + Mutant Magic + Grimoire 봉쇄"},
@@ -109,7 +109,7 @@
     {
       title: "닥터 X 처리",
       kind: "일반 6지선다 + 오로라 대체 1개",
-      hint: "보통 STR_GDX_011 뒤 6개 처리안 중 하나를 고릅니다. 그러나 앞서 ‘오로라를 위해 거드런 납치’를 고르면 그 6개가 전부 봉쇄되고, 조건부 7번째 선택 ‘닥터 X를 오로라에게 선물’로 대체됩니다.",
+      hint: "일반 6개는 서로 직접 상호배타입니다. 오로라 전용 GDX_018은 일곱 번째 직접 상호배타가 아닙니다. TEC_168을 먼저 완료하면 일반 6개를 봉쇄하고 GDX_018의 선행을 엽니다. 이미 완료한 연구의 이력까지 취소하는 것은 아니므로 선택 순서도 구분해야 합니다.",
       options: [
         {name:"그녀를 고용", id:"STR_GDX_012", meta:"연구량 10", effect:"Doctor X Hire 지급"},
         {name:"그녀에게 장난치기", id:"STR_GDX_013", meta:"연구량 5", effect:"Doctor X A35 지급 · Spector 약탈 PREQ 해금"},
@@ -305,7 +305,7 @@
   heading.className="card";
   heading.innerHTML='<p class="eyebrow">원본 ruleset 상호배타 감사</p>'+
     '<h3>선장·Codex·갈라지는 길 외 추가 분기</h3>'+
-    '<p class="muted">v.o1.1.1 정규화 연구 DB에서 <b>raw.disables 보유 연구 163개 / 연결요소 86개</b>를 전수 검사했습니다. 단순 PREQ/result 안전장치·완료 플래그는 제외하고, 실제 선택축과 선택 뒤 영구 손실만 분리했습니다.</p>';
+    '<p class="muted">v.o1.1.1 정규화 연구 DB의 <b>disables 보유 연구 163개, 방향성 관계 440건</b>을 검사했습니다. 이 중 단방향 관계 171건은 임의로 역방향 차단으로 취급하지 않습니다. 내부 PREQ·결과·후처리 플래그는 플레이어 선택 카드에서 분리했습니다. 현재 세이브의 완료 연구를 읽는 화면은 아니며, 표시된 분기는 원본 룰셋의 구조입니다.</p>';
   root.appendChild(heading);
   root.insertAdjacentHTML("beforeend", groups.map(renderGroup).join(""));
 })();

@@ -11,6 +11,14 @@ The captain module covers:
 - Unclassed hybrid branches: DUMBLAZY, LAZYSORE, SOREDUMB, JACKSORE, JACKDUMB, JACKLAZY
 - Pure gate and GOLD / GREEN / RED / GRAY / ULTIMATE endpoints
 
+## Directional branch exclusions (v.o1.1.1)
+
+Run `npm run check:choices` before deploying. The first check verifies coverage of question-labelled topics, mutual components and external blockers. The second (`tools/check-choice-exclusions.mjs`) compares **the exact directed `disables` targets** for all 22 captain choices and 8 Codex declarations, checks the 18 additional groups, and verifies cross-story gates. It also verifies that the module and published copies match.
+
+The normalized research data has 163 `disables`-bearing topics and 440 directed disable links, 171 of which have no reverse link. A one-way disable must not automatically be mirrored. In particular, four missing-Codex EXP nodes are consequences of prerequisites, *not* direct mutual-disable choices. The ordinary six Dr. X outcomes disable one another, but the Aurora-specific GDX_018 is unlocked by TEC_168, which blocks those six; TEC_169 blocks GDX_018. These distinctions must survive future content changes.
+
+The public branch page is a static reference, not a simulator of a particular save's already-completed research. Internal/result/aftermath PREQ flags are not all displayed as separate player-facing choices; those omitted sources do not imply that a new ordinary branch is missing.
+
 ## Status semantics
 
 - `yes`: the captain path naturally supplies the captain/personality tag needed by the feature.
