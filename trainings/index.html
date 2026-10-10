@@ -22,16 +22,18 @@
       </div>
       <div class="selectors">
         <label>출발 병종 / 실제 획득 경로<select id="origin"></select></label>
+        <label>선장·분기 시나리오<select id="captainRoute"><option value="ANY">선장 미지정 · 변신 자체 조건만</option></select></label>
         <label>병사 현재 상태<select id="condition">
           <option value="healthy">건강한 생존 병사</option><option value="wounded">부상 병사</option><option value="dead">사망 병사</option>
         </select></label>
       </div>
+      <div id="routeAccessSummary" class="route-access" aria-live="polite"></div>
       <div class="quick-training" aria-label="훈련 빠른 선택">
         <label for="quickTraining">지금 가능한 다음 훈련 (선행 자동 포함)<select id="quickTraining"><option value="">훈련을 선택하세요</option></select></label>
         <button id="quickAdd" type="button" class="btn-add" disabled>선택한 훈련 추가</button>
         <span id="quickHint" class="muted" aria-live="polite"></span>
       </div>
-      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>를 판정합니다. 연구 완료·기지시설·아이템·훈장·현재 능력치 충족 여부는 실제 세이브에 따라 달라지며 아래 상세에서 별도로 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
+      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>와 <b>선장 선택으로 영구 봉쇄된 연구·이벤트</b>를 분리해 판정합니다. Saint 시나리오는 색상 코덱스·선장의 일지 및 이벤트까지 획득했다고 <b>가정</b>한 장기 경로입니다. 실행 전에는 실제 세이브의 연구 완료·시설·아이템·훈장·능력치를 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
       <div id="timeline" class="timeline" aria-live="polite"></div>
       <div id="planEffects" class="plan-effects"></div>
       <div class="actions"><button id="copyPlan" type="button">현재 조합 복사</button><span id="copyStatus" class="muted" role="status"></span></div>
@@ -52,6 +54,7 @@
       </div>
       <h3>이전부터 배제된 훈련 <span id="blockedCount" class="count"></span></h3>
       <div id="blockedList" class="choice-list"></div>
+      <h3>선장 분기로 접근 불가 <span id="branchBlockedCount" class="count"></span></h3><div id="branchBlockedList" class="choice-list"></div>
       <h3>선행 훈련이 필요한 후보</h3><div id="futureList" class="choice-list"></div>
       <div id="researchWarnings" class="research-warnings"></div>
     </aside>
@@ -60,7 +63,7 @@
     <div class="toolbar">
       <label class="wide">검색<input id="search" type="search" placeholder="문화 교육, Charmy Dance, ID, 특성, 연구…"></label>
       <label>현재 상태<select id="statusFilter">
-        <option value="all">전체</option><option value="ready">지금 선택 가능</option>
+        <option value="all">전체</option><option value="ready">변신/분기 조건상 선택 가능</option>
         <option value="prereq">선행 훈련 필요</option><option value="blocked">선택 불가</option>
       </select></label>
       <label>유형<select id="kindFilter"><option value="all">전체 유형</option></select></label>
@@ -80,7 +83,7 @@
       <thead><tr><th>훈련 선택 / 내부 ID</th><th>현재 판정</th><th>유형</th><th>대상 병종</th><th>비용 / 기간</th><th>직접 능력 변화</th><th>특성 증가 스탯 (SoldierBonus)</th><th>부여 특성</th><th>이전 훈련 제한</th><th>추가</th></tr></thead>
       <tbody></tbody>
     </table></div>
-    <p class="under-table">훈련을 <b>체크</b>하면 비교표 옆 패널(작은 화면에서는 표 위 요약)에서 새로 배제된 훈련, 이미 배제됐지만 이번 선택으로 원인이 추가된 훈련, 이전부터 배제된 훈련을 각각 확인할 수 있습니다. <b>특성 스탯 정렬</b>은 훈련 직접 상승치가 아닌 획득 SoldierBonus의 스탯 증가량을 비교합니다. 체크 해제 시 그 단계부터 뒤의 훈련을 취소하여 유효한 조합을 유지합니다. 행을 누르면 정확한 연구/시설/아이템/능력치/훈장/상호배타 관계와 원본 코드를 확인할 수 있습니다. <b>선행 포함</b>은 명시적인 선행 훈련만 순서대로 추가합니다. 연구 분기 충돌 가능성은 별도 경고하며 자동으로 임의 우회하지 않습니다.</p>
+    <p class="under-table">선장 시나리오를 고르면 연구·이벤트 지급 플래그가 해당 분기에서 <b>영구 불가능</b>한 훈련을 차단하고, 가능하지만 아직 지급되지 않은 보상은 <b>조건부</b>로 표시합니다. 훈련을 <b>체크</b>하면 비교표 옆 패널(작은 화면에서는 표 위 요약)에서 새로 배제된 훈련, 이미 배제됐지만 이번 선택으로 원인이 추가된 훈련, 이전부터 배제된 훈련을 각각 확인할 수 있습니다. <b>특성 스탯 정렬</b>은 훈련 직접 상승치가 아닌 획득 SoldierBonus의 스탯 증가량을 비교합니다. 체크 해제 시 그 단계부터 뒤의 훈련을 취소하여 유효한 조합을 유지합니다. 행을 누르면 정확한 연구/시설/아이템/능력치/훈장/상호배타 관계와 원본 코드를 확인할 수 있습니다. <b>선행 포함</b>은 명시적인 선행 훈련만 순서대로 추가합니다. 연구 분기 충돌 가능성은 별도 경고하며 자동으로 임의 우회하지 않습니다.</p>
     </section>
   </div>
 </main>

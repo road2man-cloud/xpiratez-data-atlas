@@ -1,4 +1,6 @@
 import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue} from "./planner.js";
+import {buildChoiceIndex} from "../captains/choice-simulator-core.js";
+import {CAPTAIN_ROUTES,createRouteContext,trainingRouteGate,routeEventReport} from "./route-gates.js";
 
 const $=selector=>document.querySelector(selector);
 const esc=x=>String(x??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
@@ -7,7 +9,7 @@ const list=x=>Array.isArray(x)?x:[];
 const sum=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b||{}))out[k]=(out[k]||0)+Number(v||0);return out};
 const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0);
 const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?"+":"")+v).join(" · ")||"변화 없음";
-let DATA,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
+let DATA,ACCESS,choiceIndex,routeContext,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
 const rankStat=t=>textStats(t.flatOverallStatChange,statLabels);
 const bonusStats=t=>traitStatsOf(t,DATA.bonuses);
 const typeName=id=>DATA.soldiers.find(s=>s.id===id)?.koName||id;
@@ -20,6 +22,8 @@ const researchLink=id=>'<a class="name-link" href="../research/#research='+encod
 const itemLink=x=>'<a class="name-link" href="../items/#item='+encodeURIComponent(x.id)+'" target="_blank" rel="noopener">'+esc(x.koName)+'</a> <span class="tiny">'+esc(x.id)+'</span> ×'+n(x.amount);
 const labelIssue=(issue)=>{
   if(issue.code==="forbidden")return"선택한 이전 훈련과 배타: "+issue.ids.map(name).join(", ");
+  if(issue.code==="unavailable")return"게임에서 사용할 수 없는 내부 전용 변신 (STR_UNAVAILABLE)";
+  if(issue.code==="route-blocked")return"선장 분기로 영구 불가: "+(issue.details||issue.ids.map(name).join(", "));
   if(issue.code==="prerequisite")return"먼저 이 훈련 필요: "+issue.ids.map(name).join(", ");
   if(issue.code==="type"||issue.code==="forbidden-type")return"현재 병종("+typeName(state.soldierType)+")에 적용할 수 없음";
   if(issue.code==="condition")return"현재 병사 상태에서 실행 불가";
@@ -29,15 +33,57 @@ const isHard=issues=>issues.some(x=>x.code!=="prerequisite");
 const statusOf=issues=>!issues.length?"ready":isHard(issues)?"blocked":"prereq";
 function currentOrigin(){return origins.get($("#origin").value);}
 function currentState(){return replay(currentOrigin(),selected,byId,{condition:$("#condition").value});}
+function routeIssues(t){
+  const gate=trainingRouteGate(t,routeContext,ACCESS);
+  return gate.kind==="blocked"?[{code:"route-blocked",ids:gate.reasons.map(x=>x.id),details:gate.reasons.map(x=>x.id+" — "+x.reason).join(" / ")}]:[];
+}
+function issuesFor(t,s){return[...evaluate(t,s),...routeIssues(t)];}
+function planWithRoute(t,s){
+  if(!t||routeIssues(t).length)return{steps:[],state:null};
+  const plan=addWithPrerequisites(t,s,byId);
+  if(plan.state&&plan.steps.some(id=>routeIssues(byId.get(id)).length))return{steps:[],state:null};
+  return plan;
+}
 function canAdd(t,includePrerequisites=false){
   state=currentState();
-  const issues=evaluate(t,state);
-  const plan=addWithPrerequisites(t,state,byId);
+  const issues=issuesFor(t,state);
+  const plan=planWithRoute(t,state);
   if(issues.length&&!includePrerequisites)return;
   if(!plan.state)return;
   selected.push(...plan.steps);
   latestAdded=[...plan.steps]; // One checkbox can append a whole prerequisite chain.
   redraw();
+}
+function renderRouteAccess(){
+  const host=$("#routeAccessSummary");
+  if(!routeContext?.state){
+    host.innerHTML='<p class="fine">선장을 지정하면 Thief 전용 Captains 11과 Saint·DumbLazy 이벤트 및 배제되는 훈련이 함께 판정됩니다. 선장 미지정 상태에서는 이력·병종 제약만 적용합니다.</p>';
+    return;
+  }
+  const report=routeEventReport(routeContext,ACCESS);
+  const eventLink=(id,label)=>'<a class="name-link" href="../events/#event='+encodeURIComponent(id)+'" target="_blank" rel="noopener">'+esc(label)+'</a>';
+  const brief=(title,reportRow,eventId,detail)=>{
+    const kind=reportRow.kind;
+    const label=kind==="completed"?"달성 가정":kind==="blocked"?"선택 분기에서는 불가":
+      kind==="unselected"?"선장 미선택":"경로 가능 · 보상/조건 미확정";
+    const eligible=reportRow.eligible||[];
+    const pending=[...new Set(eligible.flatMap(s=>s.missing||[]))];
+    const blocked=[...new Set((reportRow.scripts||[]).flatMap(s=>(s.blocked||[]).map(x=>x.id)))];
+    const notes=kind==="blocked"&&blocked.length?"충돌: "+blocked.join(", "):
+      pending.length?"남은 플래그: "+pending.slice(0,4).join(", ")+(pending.length>4?" 외 "+(pending.length-4)+"개":""):"";
+    return'<div class="route-gate '+(kind==="blocked"?"route-gate-blocked":"")+'"><strong>'+esc(title)+'</strong>'+
+      '<span class="route-status">'+esc(label)+'</span><p>'+eventLink(eventId,detail)+'</p>'+
+      (notes?'<div class="tiny">'+esc(notes)+'</div>':"")+'</div>';
+  };
+  host.innerHTML='<div class="route-title"><b>선장 분기 → 연구·이벤트·특수병 획득</b><span class="tiny">실제 원본 이벤트 지급 조건 대조 · 반복 랜덤은 획득 보장 아님</span></div>'+
+    '<div class="route-gates">'+
+    brief("Captains 11",report.eleven,"STR_CAPTAINS_11","Thief 전용 이벤트")+
+    brief("Saint",report.saint,"STR_CAPTAIN_SAINT","네 색상 + 선장일지 1권 이벤트")+
+    brief("Rogue 클론 — Saint 증원",report.rogueSaint,"STR_SAINTS_REINFORCEMENTS","랜덤 반복 증원")+
+    brief("Rogue 클론 — DumbLazy 방문",report.rogueDumbLazy,"STR_KNOCK_KNOCK_ROGUE_CLONE","랜덤 반복 방문")+
+    brief("Rogue 클론 — TroubleSeeking",report.rogueTrouble,"STR_TROUBLESEEKING_ALLY","JackDumb 또는 Dumbass+Saint 랜덤 이벤트")+'</div>'+
+    (routeContext.route.id.endsWith("_SAINT")?'<p class="fine">Saint 도달 시나리오: 빠진 색상의 코덱스 각성, 선장일지 #1 및 Saint 이벤트까지 달성했다고 가정합니다. 도마뱀인간 석상 보유 여부에 따라 증원 스크립트 하나가 제한됩니다.</p>':"")+
+    '<p class="fine">훈련의 연구·아이템·시설을 지금 보유한다는 뜻은 아닙니다. <b>분기상 가능</b>과 <b>현재 게임에서 실행 가능</b>은 다릅니다.</p>';
 }
 function renderSummary(){
   const blocked=rows.filter(x=>x.status==="blocked");
@@ -47,8 +93,8 @@ function renderSummary(){
     ["원본 변신·훈련",DATA.counts.transformations+"개","모든 soldierTransformation 포함"],
     ["방향성 배제",DATA.counts.directionalExclusions+"건","A → B 실행순서가 중요"],
     ["선택한 단계",selected.length+"단계","중복/반복 가능 훈련 포함"],
-    ["다음 선택 가능",ready+"개","연구·재료 충족은 별도"],
-    ["이전 훈련으로 봉쇄",priorBlocked.length+"개","현재 순서 기준"]
+    ["분기·변신상 가능",ready+"개","연구·재료 충족은 별도"],
+    ["분기·변신 차단",blocked.length+"개","변신 이력 "+priorBlocked.length+"개 포함"]
   ];
   $("#summary").innerHTML=values.map(([count,value,sub])=>'<div class="card metric"><strong>'+esc(value)+'</strong><span>'+esc(count)+' · '+esc(sub)+'</span></div>').join("");
 }
@@ -97,7 +143,8 @@ function distinctResearchWarnings(rs){
 }
 function renderDecisions(){
   const ready=rows.filter(x=>x.status==="ready"),future=rows.filter(x=>x.status==="prereq");
-  $("#decisionHint").textContent=typeName(state.soldierType)+" 기준 · 바로 선택 "+ready.length+"개 / 선행 필요 "+future.length+"개 / 현재 상태·병종·배타 때문에 불가 "+rows.filter(x=>x.status==="blocked").length+"개";
+  const routeBlocked=rows.filter(x=>x.issues.some(issue=>issue.code==="route-blocked"));
+  $("#decisionHint").textContent=typeName(state.soldierType)+" 기준 · 변신 조건상 가능 "+ready.length+"개 / 선행 필요 "+future.length+"개 / 전체 차단 "+rows.filter(x=>x.status==="blocked").length+"개 (선장 분기 "+routeBlocked.length+"개)";
   const allForbidden=excludedByPrior(DATA.transformations,state);
   const previous=latestAdded.length?replay(currentOrigin(),selected.slice(0,-latestAdded.length),byId,{condition:$("#condition").value}):null;
   const changes=previous?exclusionChanges(DATA.transformations,previous,state):{newlyBlocked:[],additionalCauses:[],unblocked:[]};
@@ -121,10 +168,13 @@ function renderDecisions(){
   $("#blockedCount").textContent=older.length+"개 · 총 "+allForbidden.length+"개";
   $("#blockedList").innerHTML=older.map(x=>choice(x)).join("")||
     '<p class="muted fine">이전 선택 또는 시작 획득 경로로 이미 배제된 훈련이 없습니다.</p>';
+  $("#branchBlockedCount").textContent=routeBlocked.length+"개";
+  $("#branchBlockedList").innerHTML=routeBlocked.map(x=>'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(x.issues.filter(y=>y.code==="route-blocked").map(labelIssue).join(" / "))+'</span></div><button data-info="'+esc(x.t.id)+'" class="btn-small">상세</button></div>').join("")||
+    '<p class="muted fine">현재 선택한 선장 분기로 영구 봉쇄된 훈련이 없습니다.</p>';
   // Keep the effect visible next to the checkboxes on mobile, without scrolling
   // back up to the full rule panel. The expandable view lists every blocker.
   $("#mobileExclusionTitle").textContent="이번 선택: 새 배제 "+fresh.length+"개 · 기존 배제 원인 추가 "+additional.length+"개";
-  $("#mobileExclusionTotal").textContent="현재 누적 배제 "+allForbidden.length+"개";
+  $("#mobileExclusionTotal").textContent="이력 배제 "+allForbidden.length+"개 · 선장 분기 배제 "+routeBlocked.length+"개";
   const previews=[...fresh.map(x=>({id:x.id,shared:false})),...additional.map(x=>({id:x.id,shared:true}))];
   $("#mobileExclusionNames").innerHTML=previews.length?
     previews.slice(0,5).map(x=>'<span'+(x.shared?' class="also-blocked"':"")+'>'+esc(byId.get(x.id).koName)+(x.shared?" · 원인 추가":"")+'</span>').join("")+
@@ -133,7 +183,7 @@ function renderDecisions(){
   $("#mobileExclusionFull").innerHTML=allForbidden.map(x=>choice(x)).join("")||
     '<p class="muted fine">현재 순서에서 배제된 훈련이 없습니다.</p>';
   $("#futureList").innerHTML=future.slice(0,50).map(x=>{
-    const p=addWithPrerequisites(x.t,state,byId);
+    const p=planWithRoute(x.t,state);
     return'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(x.issues.flatMap(y=>y.ids).map(name).join(" → "))+' 필요</span></div>'+
       (p.state?'<button class="btn-small btn-prepare" data-chain="'+esc(x.t.id)+'">선행 포함</button>':'<button class="btn-small" data-info="'+esc(x.t.id)+'">조건</button>')+'</div>';
   }).join("")||'<p class="muted">현재 순서에서 필수 선행만 남아 있는 후보가 없습니다.</p>';
@@ -145,14 +195,14 @@ function renderDecisions(){
 }
 function renderQuickPicker(){
   const picker=$("#quickTraining"),previous=picker.value;
-  const possible=rows.filter(row=>row.status==="ready"||row.status==="prereq"&&!!addWithPrerequisites(row.t,state,byId).state)
+  const possible=rows.filter(row=>row.status==="ready"||row.status==="prereq"&&!!planWithRoute(row.t,state).state)
     .sort((a,b)=>(a.status==="ready"?0:1)-(b.status==="ready"?0:1)||a.t.koName.localeCompare(b.t.koName,"ko"));
   picker.innerHTML='<option value="">훈련을 선택하세요</option>'+possible.map(({t,status})=>
-    '<option value="'+esc(t.id)+'">'+esc(t.koName)+' · '+(status==="ready"?"바로 선택":"필수 선행 포함")+'</option>'
+    '<option value="'+esc(t.id)+'">'+esc(t.koName)+' · '+(status==="ready"?"변신/분기상 가능":"필수 선행 포함")+'</option>'
   ).join("");
   if(possible.some(row=>row.t.id===previous))picker.value=previous;
   $("#quickAdd").disabled=!picker.value;
-  $("#quickHint").textContent="즉시 가능 "+possible.filter(x=>x.status==="ready").length+"개 · 선행 포함 가능 "+possible.filter(x=>x.status==="prereq").length+"개 · 연구/시설/재료 충족은 별도 확인";
+  $("#quickHint").textContent="변신·분기상 가능 "+possible.filter(x=>x.status==="ready").length+"개 · 선행 포함 가능 "+possible.filter(x=>x.status==="prereq").length+"개 · 연구/시설/재료 충족은 별도 확인";
 }
 function renderTable(){
   const search=$("#search").value.trim().toLowerCase().normalize("NFKC"),
@@ -182,9 +232,10 @@ function renderTable(){
     "직접 상승치와 SoldierBonus 특성의 추가 스탯은 별도입니다. 정렬 기준을 선택하면 특성 증가량으로 전체 훈련을 비교합니다.";
   $("#rowCount").textContent=sorted.length+" / "+DATA.transformations.length+"개";
   $("#trainingTable tbody").innerHTML=sorted.map(({t,status,issues})=>{
-    const text=status==="ready"?(selected.includes(t.id)?"선택 가능 · 반복":"선택 가능"):status==="prereq"?"선행 필요":"선택 불가";
+    const routeGate=trainingRouteGate(t,routeContext,ACCESS);
+    const text=status==="ready"?(selected.includes(t.id)?"조합 가능 · 반복":"분기·변신상 가능"):status==="prereq"?"선행 훈련 필요":"선택 불가";
     const reasons=issues.map(labelIssue).join(" / ");
-    const plan=status==="prereq"?addWithPrerequisites(t,state,byId):null;
+    const plan=status==="prereq"?planWithRoute(t,state):null;
     const button=status==="ready"?'<button class="btn-add btn-small" data-add="'+esc(t.id)+'">추가</button>':
       plan?.state?'<button class="btn-prepare btn-small" data-chain="'+esc(t.id)+'">선행 포함</button>':
       '<button class="btn-small" disabled>불가</button>';
@@ -196,7 +247,7 @@ function renderTable(){
     const sortHighlight=sortKey?'<div class="sort-emphasis">'+esc(sortKey==="total"?"증가 합계":statLabels[sortKey]||sortKey)+' <b>'+(sortValue>0?"+":"")+n(sortValue)+'</b></div>':"";
     return'<tr data-id="'+esc(t.id)+'"'+(sortKey?' data-sort-value="'+sortValue+'"':"")+' title="행 클릭: 상세 규칙 보기">'+
       '<td>'+checkbox+'<strong>'+esc(t.koName)+'</strong><span class="ident">'+esc(t.enName)+' · '+esc(t.id)+'</span></td>'+
-      '<td><span class="'+status+'">'+esc(text)+'</span>'+(researchWarn?'<span class="tag warning">연구분기 주의</span>':"")+
+      '<td><span class="'+status+'">'+esc(text)+'</span>'+(routeGate.kind==="caution"?'<span class="tag warning">연구/이벤트 조건</span>':"")+(researchWarn?'<span class="tag warning">연구분기 주의</span>':"")+
       (reasons?'<div class="tiny">'+esc(reasons.slice(0,110))+'</div>':"")+'</td>'+
       '<td>'+esc(t.kind)+'</td><td>'+esc(t.allowedSoldierTypes.length?t.allowedSoldierTypes.length+"종":"전체 (제외 조건 별도)")+'</td>'+
       '<td>'+n(t.cost)+'$'+(t.transferTime!=null?'<div class="tiny">'+n(t.transferTime)+'h</div>':t.recoveryTime?'<div class="tiny">회복 '+n(t.recoveryTime)+'</div>':"")+'</td>'+
@@ -209,14 +260,16 @@ function renderTable(){
 }
 function redraw(){
   origin=currentOrigin();state=currentState();
-  rows=DATA.transformations.map(t=>{const issues=evaluate(t,state);return{t,issues,status:statusOf(issues)}});
-  renderSummary();renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderTable();
+  routeContext=createRouteContext(choiceIndex,$("#captainRoute").value);
+  rows=DATA.transformations.map(t=>{const issues=issuesFor(t,state);return{t,issues,status:statusOf(issues)}});
+  renderSummary();renderRouteAccess();renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderTable();
 }
 const section=(title,content)=>'<section class="detail-section"><h3>'+esc(title)+'</h3>'+content+'</section>';
 function showDetail(id){
   const t=byId.get(id);if(!t)return;
   state=currentState();
-  const issues=evaluate(t,state),p=addWithPrerequisites(t,state,byId);
+  const issues=issuesFor(t,state),p=planWithRoute(t,state);
+  const routeGate=trainingRouteGate(t,routeContext,ACCESS);
   const relation=relations.get(id);
   const bonus=t.soldierBonusType?DATA.bonuses[t.soldierBonusType]:null;
   const button=!issues.length?'<button class="btn-add" data-add="'+esc(t.id)+'">현재 계획에 추가</button>':
@@ -247,7 +300,8 @@ function showDetail(id){
       valueLine("이 훈련 후 다른 훈련을 봉쇄할 수 있음",idTags(relation.blocksLater))+'</div>'+
       '<p class="note">코드의 <code>forbiddenPreviousTransformations</code>는 <b>선행 기록을 확인</b>합니다. 상대방의 역방향 조건까지 자동으로 대칭 처리하지 않습니다. 순서를 바꿔 조합이 가능해지는 경우가 있으며, 연구 분기는 별도 검증 대상입니다.</p>'+
       (t.removeTransformations.length?'<p><b>이 훈련 완료 시 제거되는 과거 변신 기록</b>: '+idTags(t.removeTransformations)+'</p>':"")+
-      (issues.length?'<p class="blocked"><b>현재 선택 불가 사유:</b> '+esc(issues.map(labelIssue).join(" / "))+'</p>':'<p class="ready">현재 순서·병종·상태 기준으로 추가할 수 있습니다.</p>')+
+      (issues.length?'<p class="blocked"><b>현재 선택 불가 사유:</b> '+esc(issues.map(labelIssue).join(" / "))+'</p>':'<p class="ready">현재 순서·병종·선장 분기 기준에서 조합 가능합니다. 실제 연구/아이템 충족은 별도입니다.</p>')+
+      (routeGate.notes?.length?'<p class="warning"><b>선장·연구 경로 참고:</b> '+esc(routeGate.notes.map(x=>x.id+" — "+x.reason).join(" / "))+'</p>':"")+
       (researchConflict.length?'<p class="warning">명목 선행 연구망에서 disables 충돌이 '+researchConflict.length+'건 발견됩니다. 사건·무료 연구·해금 순서를 확인하십시오.</p>':""))+
     section("실제 능력 효과 · 서로 다른 계층",'<div class="detail-grid">'+
       valueLine("훈련의 직접 능력 변화 (flatOverallStatChange)",statChips(t.flatOverallStatChange))+
@@ -274,6 +328,7 @@ function initOrigins(){
 function bind(){
   $("#origin").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   $("#condition").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
+  $("#captainRoute").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   $("#quickTraining").addEventListener("change",()=>{$("#quickAdd").disabled=!$("#quickTraining").value;});
   $("#quickAdd").addEventListener("click",()=>{const t=byId.get($("#quickTraining").value);if(t)canAdd(t,true);});
   // Only 83 rules: synchronous filtering prevents checkboxes moving during a tap.
@@ -315,7 +370,7 @@ function bind(){
     if(row)showDetail(row.dataset.id);
   });
   $("#copyPlan").addEventListener("click",async()=>{
-    const text="XPiratez 훈련 조합 | "+currentOrigin().label+" | "+$("#condition").selectedOptions[0].text+"\n"+
+    const text="XPiratez 훈련 조합 | "+currentOrigin().label+" | "+$("#captainRoute").selectedOptions[0].text+" | "+$("#condition").selectedOptions[0].text+"\n"+
       selected.map((id,i)=>(i+1)+". "+byId.get(id).koName+" ("+id+")").join("\n");
     try{await navigator.clipboard.writeText(text);$("#copyStatus").textContent="복사됨";}
     catch{$("#copyStatus").textContent="복사 권한이 없어 선택된 조합을 복사하지 못했습니다.";}
@@ -323,9 +378,14 @@ function bind(){
 }
 async function init(){
   try{
-    const response=await fetch("../data/trainings-index.json");
-    if(!response.ok)throw new Error("HTTP "+response.status);
-    DATA=await response.json();
+    const load=async file=>{const r=await fetch(file);if(!r.ok)throw new Error(file+" HTTP "+r.status);return r.json();};
+    const [trainings,access,progression,choiceGates]=await Promise.all([
+      load("../data/trainings-index.json"),load("../data/training-access.json"),
+      load("../data/progression-research.json"),load("../data/choice-research-gates.json")
+    ]);
+    DATA=trainings;ACCESS=access;
+    choiceIndex=buildChoiceIndex(progression.topics,choiceGates);
+    $("#captainRoute").innerHTML=CAPTAIN_ROUTES.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.label)+'</option>').join("");
     byId=new Map(DATA.transformations.map(t=>[t.id,t]));
     statLabels=DATA.statLabels;
     relations=compileRelations(DATA.transformations);
@@ -338,6 +398,7 @@ async function init(){
     bind();
     const query=new URLSearchParams(location.search);
     if(query.has("training")){$("#search").value=query.get("training");}
+    if(CAPTAIN_ROUTES.some(r=>r.id===query.get("route")))$("#captainRoute").value=query.get("route");
     redraw();
     if(byId.has(query.get("training")))showDetail(query.get("training"));
   }catch(error){
