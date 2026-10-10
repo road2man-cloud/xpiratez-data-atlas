@@ -111,6 +111,10 @@ try {
         // Item/research first table cell is a comparison checkbox; click the name instead.
         if(slug==="items"||slug==="research")await row.locator("td").nth(1).click();
         else if(slug==="soldiers"){
+          const summary=await page.locator("#summary").innerText();
+          if(summary.includes("[object Object]"))errors.push("Soldier initial summary printed objects instead of a branch-conflict count");
+          const initialCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
+          if(initialCaps!==12)errors.push("Initial soldier profiles missing growth hard caps: "+initialCaps+"/12");
           // On mobile, the tall sticky soldier filters blocked row taps.
           const portrait=await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position);
           if(portrait==="sticky")errors.push("portrait soldier toolbar overlays the table");
@@ -119,6 +123,12 @@ try {
           if(landscape==="sticky")errors.push("landscape soldier toolbar overlays the table");
           await page.setViewportSize({width:390,height:844});
           await page.locator("#dataset").selectOption("final");
+          const finalCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
+          if(finalCaps!==12)errors.push("Final soldier builds missing growth hard caps: "+finalCaps+"/12");
+          if(await page.locator("#sortMetric").isDisabled())errors.push("Final hard-cap sorting selector was disabled");
+          await page.locator("#sortMetric").selectOption("cap");
+          const sortedCaps=await page.locator("#soldierTable tbody tr").evaluateAll(rows=>rows.slice(0,6).map(row=>Number(row.querySelectorAll("td")[9]?.querySelector(".stat-cap")?.textContent.replace(/,/g,"")||0)));
+          if(sortedCaps.some((v,i)=>i>0&&v>sortedCaps[i-1]))errors.push("Final firing hard-cap sorting was not descending: "+sortedCaps.join(","));
           const safeRows=Number((await page.locator("#rowCount").innerText()).match(/^\d+/)?.[0]||0);
           if(!safeRows)errors.push("All soldier final builds vanished after hard-gate filtering");
           await page.locator("#finalBranchFilter").selectOption("all");
@@ -130,6 +140,7 @@ try {
           const excludedRow=page.locator("#soldierTable tbody tr").first();
           await excludedRow.locator("td").first().click();
           const auditDetail=await page.locator("#detailBody").innerText();
+          if(!auditDetail.includes("최종 실효 능력치 / 성장 하드캡"))errors.push("Final soldier detail omitted growth hard caps");
           if(!auditDetail.includes("연구·선장 분기로 실행 불가능한 조합"))
             errors.push("Soldier detail omitted hard research/event branch conflicts");
           await page.locator("#closeDialog").click();
