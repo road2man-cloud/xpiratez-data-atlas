@@ -374,6 +374,37 @@ try {
           await input.fill("STR_BREAD_AND_FISHES_TRAINING");
           if(!await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
             errors.push("Rogue clone omitted prior Theban transformation exclusion");
+          trainingStage="additional research branch exclusions";
+          await page.locator("#captainRoute").selectOption("ANY");
+          await page.locator("#origin").selectOption("base:STR_SOLDIER");
+          if(await page.locator("#researchRouteSelectors select").count()<5)
+            errors.push("Cross-branch training DB selectors not present");
+          await page.locator("#research-route-path").selectOption("STR_PEASANT_REVOLUTION_PREQ");
+          await input.fill("STR_PURE_MAIDEN_TRAINING");
+          if(!await page.locator('#branchBlockedList [data-info="STR_PURE_MAIDEN_TRAINING"]').count())
+            errors.push("Peasant Revolution failed to close Pure Maiden training");
+          await page.locator("#research-route-path").selectOption("STR_CAT_PATH_PREQ");
+          if(await page.locator('#branchBlockedList [data-info="STR_PURE_MAIDEN_TRAINING"]').count())
+            errors.push("Cat path falsely inherited Peasant Revolution block");
+          await page.locator("#research-route-path").selectOption("STR_HYBRID_PATH_PREQ");
+          if(await page.locator('#branchBlockedList [data-info="STR_PURE_MAIDEN_TRAINING"]').count())
+            errors.push("Hybrid path falsely inherited Peasant Revolution block");
+          await page.locator(".research-route-panel details.extra-research summary").click();
+          await page.locator("#researchRouteExtra").fill("STR_UNKNOWN_RESEARCH_SMOKE");
+          await page.locator("#researchRouteExtra").dispatchEvent("change");
+          if(!(await page.locator("#researchRouteHint").innerText()).includes("STR_UNKNOWN_RESEARCH_SMOKE"))
+            errors.push("Unknown research IDs silently ignored in training branch planner");
+          await page.locator("#researchRouteExtra").fill("");
+          await page.locator("#researchRouteExtra").dispatchEvent("change");
+          await page.locator("#captainRoute").selectOption("DUMBASS_SAINT");
+          await input.fill("STR_CAPTAINS_11");
+          await page.locator('#trainingTable tbody tr[data-id="STR_CAPTAINS_11"] td').first().click();
+          const capEvidence=await page.locator("#detailBody").innerText();
+          if(!capEvidence.includes("동일 이벤트 연구+전용 재료")||
+             !capEvidence.includes("STR_CAPTAINS_11_TOKEN")||
+             !capEvidence.includes("STR_CAPTAIN_THIEF"))
+            errors.push("Captain's 11 detail omitted event-to-research/token/Thief evidence");
+          await page.locator("#closeDialog").click();
           trainingStage="completed";
           detail+=" + checkbox / exclusion deltas / trait stat sort / prerequisite chain / captain branch + Rogue clone";
         }

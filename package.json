@@ -17,7 +17,7 @@
     "check:site": "node tools/check-site-assets.mjs",
     "check:starting": "node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json && node tools/check-starting-frontend.mjs",
     "check:soldiers": "node tools/check-soldiers.mjs --data public/data",
-    "check:trainings": "node tools/check-trainings.mjs && node tools/check-training-access.mjs",
+    "check:trainings": "node tools/check-trainings.mjs && node tools/check-training-access.mjs && node tools/check-training-routes.mjs",
     "check:progression": "node tools/check-progression.mjs --data public/data",
     "check:facilities-frontend": "node tools/check-facilities-frontend.mjs",
     "check:armors": "node tools/check-armors.mjs",
