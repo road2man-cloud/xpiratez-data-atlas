@@ -49,6 +49,14 @@
         <option value="cap">성장캡</option>
       </select>
     </div>
+    <div class="field" id="finalBranchField" hidden>
+      <label for="finalBranchFilter">연구·선장 분기 충돌</label>
+      <select id="finalBranchFilter">
+        <option value="no-hard">명백한 배제 충돌 제외 (기본)</option>
+        <option value="all">전체 이론 조합 · 오류 포함</option>
+        <option value="hard">배제 충돌 발견 조합만</option>
+      </select>
+    </div>
     <div class="filter-field" id="finalSourceField" hidden>
       <span class="filter-label">최종조합 출처</span>
       <div class="check-group">
@@ -69,7 +77,7 @@
     <strong>실제 획득형 계산</strong>
     <span>기본 Soldier 랜덤치 → 획득 루트의 <code>spawnedSoldier.currentStats</code> 덮어쓰기 → 생성 시 <code>transformationBonuses</code> 능력치 합산 → OXCE 최소치 보정.</span>
     <span>각 능력치는 <b>현재 생성값 / 실효 성장캡</b>으로 표시합니다. 실효 성장캡은 본체 statCaps에 생성 시 자동 특성의 능력치 보너스를 더한 값이며, 특수 생성 템플릿은 시작부터 성장캡을 넘을 수도 있습니다. 방어구 능력치는 포함하지 않습니다.</span>
-    <span><b>최종 강화 조합</b>은 상호배타·선행조건을 검증한 유효 조합만 만들고, 표에는 계산 과정 대신 <b>최종 실효 능력치</b>만 보여줍니다. 순서별 훈련 배제와 필요한 선행작업은 <a href="../trainings/" style="color:#93c5fd">병사훈련 DB</a>에서 별도로 설계할 수 있습니다.</span>
+    <span><b>최종 강화 조합</b>은 병종·변신 순서만 만족하는 <b>이론적 상한 후보</b>입니다. 선장·Codex·여왕 분기, 연구 획득 이벤트 및 희귀 실물 재료가 모두 충족됐다는 뜻은 아닙니다. 원본에서 확실히 확인되는 <b>내부 전용·선장 전용 동시 선택·야만 여왕/Codex 충돌</b>은 별도 감지하여 기본 표에서 제외합니다. 남아 있는 조합도 <b>캠페인 실행 가능이 확정된 것은 아닙니다.</b> 실제 병사 훈련 경로는 <a href="../trainings/" style="color:#93c5fd">병사훈련 DB</a>에서 검토하세요.</span>
   </section>
 
   <section class="table-card card">
@@ -89,7 +97,7 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script src="app.js?v=soldiers-20261007-route-effects-final-simple2"></script>
+<script type="module" src="app.js?v=soldiers-branch-audit-20261010"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
