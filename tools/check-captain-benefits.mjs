@@ -48,7 +48,7 @@ const gods=index.special?.godRewards||[];
 assert.equal(rawGodRewards.length,14);
 assert.equal(gods.length,rawGodRewards.length);
 assert.equal(index.meta.codexGodOutcomes,14);
-assert.equal(new Set(gods.map(g=>g.id)).size,13);
+assert.equal(new Set(gods.map(g=>g.id)).size,14);
 assert.deepEqual([...new Set(gods.map(g=>g.group))],
  Array.from({length:8},(_,i)=>"G"+(i+1)));
 for(const reward of gods){
