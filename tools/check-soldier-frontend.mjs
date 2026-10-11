@@ -101,8 +101,68 @@ try{
   const details=await evaluate("(()=>{document.querySelector('#soldierTable tbody tr').click();return {opened:document.querySelector('#detailDialog').open,text:document.querySelector('#detailBody').innerText.slice(0,600)}})()");
   if(!details.opened)throw Error("Detail dialog did not open");
   if(!details.text.includes("하드캡"))throw Error("Final detail missing hard caps");
+
+  // The new branch selector must really affect the rendered final builds.
+  const originalCount=await evaluate("document.querySelector('#rowCount').textContent");
+  const maleFiltered=await evaluate(`(()=>{
+    const field=document.querySelector('#finalPathFilter');
+    field.value='STR_WE_NEED_MALE_TOUCH_PREQ';
+    field.dispatchEvent(new Event('change',{bubbles:true}));
+    return {value:field.value,count:document.querySelector('#rowCount').textContent,
+      visible:document.querySelectorAll('#soldierTable tbody tr').length}
+  })()`);
+  if(maleFiltered.value!=="STR_WE_NEED_MALE_TOUCH_PREQ"||!maleFiltered.visible)
+    throw Error("Male Soldiers branch filter failed "+JSON.stringify(maleFiltered));
+  console.log("Soldiers branch filter:",JSON.stringify({originalCount,maleFiltered}));
+
+  // Test the same mutually exclusive paths in the interactive Training DB.
+  await send("Page.navigate",{url:url.replace("/soldiers/","/trainings/")});
+  await waitFor("(()=>document.querySelector('#trainingTable tbody tr')?.getAttribute('data-id')||null)()",
+    "training table initial render",35000);
+  const male=await evaluate(`(()=>{
+    document.querySelector('#origin').value='base:STR_SOLDIER_SLAVE';
+    document.querySelector('#origin').dispatchEvent(new Event('change',{bubbles:true}));
+    const path=document.querySelector('#research-route-path');
+    path.value='STR_WE_NEED_MALE_TOUCH_PREQ';
+    path.dispatchEvent(new Event('change',{bubbles:true}));
+    const status=id=>document.querySelector('[data-id="'+id+'"] td:nth-child(2)')?.innerText;
+    return {hard:status('STR_SCHOOL_OF_HARD_KNOCKS'),
+      bond:status('STR_BONDING_CEREMONY'),revolution:status('STR_REVOLUTIONARY_TRAINING'),
+      officer:status('STR_OFFICER_TRAINING')};
+  })()`);
+  if(/선택 불가/.test(male.hard)||/선택 불가/.test(male.bond)||
+    !/선택 불가/.test(male.revolution)||/선택 불가/.test(male.officer))
+    throw Error("Male Soldiers path training gate failed "+JSON.stringify(male));
+
+  const peasant=await evaluate(`(()=>{
+    const path=document.querySelector('#research-route-path');
+    path.value='STR_PEASANT_REVOLUTION_PREQ';
+    path.dispatchEvent(new Event('change',{bubbles:true}));
+    const status=id=>document.querySelector('[data-id="'+id+'"] td:nth-child(2)')?.innerText;
+    return {hard:status('STR_SCHOOL_OF_HARD_KNOCKS'),
+      bond:status('STR_BONDING_CEREMONY'),revolution:status('STR_REVOLUTIONARY_TRAINING'),
+      officer:status('STR_OFFICER_TRAINING')};
+  })()`);
+  if(!/선택 불가/.test(peasant.hard)||!/선택 불가/.test(peasant.bond)||
+    /선택 불가/.test(peasant.revolution)||/선택 불가/.test(peasant.officer))
+    throw Error("Peasant path training gate failed "+JSON.stringify(peasant));
+
+  const composite=await evaluate(`(()=>{
+    const path=document.querySelector('#research-route-path');
+    path.value='';
+    path.dispatchEvent(new Event('change',{bubbles:true}));
+    const button=document.querySelector('[data-add="STR_SCHOOL_OF_HARD_KNOCKS"]');
+    if(!button){return {error:'Hard Knocks add button missing'}}
+    button.click();
+    return {timeline:document.querySelector('#timeline')?.innerText?.slice(0,200),
+      disabled:document.querySelector('[data-id="STR_REVOLUTIONARY_TRAINING"] td:nth-child(2)')?.innerText,
+      blockedList:document.querySelector('#branchBlockedList')?.innerText?.includes('환생의 의식')};
+  })()`);
+  if(composite.error||!/선택 불가/.test(composite.disabled)||!composite.blockedList)
+    throw Error("Training combination path exclusion failed "+JSON.stringify(composite));
+  console.log("Training branch UI:",JSON.stringify({male,peasant,composite}));
   if(exceptions.length||errors.length)throw Error("Browser errors: "+JSON.stringify({exceptions,errors}));
-  console.log("OK soldiers browser smoke: initial rows, final hard caps, detail dialog");
+  console.log("OK soldiers/training browser smoke: tables, hard caps, details, Diverging Paths filters and trait exclusivity");
 }catch(e){
   console.error("Soldiers browser smoke FAILED:",e.message);
   if(exceptions.length||errors.length)console.error(JSON.stringify({exceptions,errors}));

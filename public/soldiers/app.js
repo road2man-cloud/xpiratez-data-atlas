@@ -1,6 +1,6 @@
 import {auditSoldierBuild} from "./branch-audit.js";
-let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-hardcap-ui-20261010";
+let DATA=null,PROG=null,PATH_GATES=null;
+const ASSET_VERSION="soldiers-trait-path-audit-20261011";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[];
@@ -14,15 +14,20 @@ const statOrder=["tu","stamina","health","bravery","reactions","firing","throwin
 const sourceLabel={direct:"직접 고용",manufacture:"제조/Recruitment",event:"이벤트"};
 
 async function load(){
-  const res=await fetch(versioned("../data/soldiers-index.json"));
+  const [res,gateRes]=await Promise.all([
+    fetch(versioned("../data/soldiers-index.json")),
+    fetch(versioned("../data/training-path-gates.json"))
+  ]);
   if(!res.ok)throw new Error("병종 데이터 HTTP "+res.status);
+  if(!gateRes.ok)throw new Error("훈련 분기배제 데이터 HTTP "+gateRes.status);
   DATA=await res.json();
+  PATH_GATES=await gateRes.json();
   for(const t of DATA.transformations||[])TRANSFORM_BY_ID.set(t.id,t);
   for(const s of DATA.enhancementBuildSets||[])BUILD_SET_BY_ID.set(s.id,s);
   for(const b of DATA.bonuses||[])BONUS_BY_ID.set(b.id,b);
   for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
   FINAL_ROWS=buildFinalRows();
-  for(const row of FINAL_ROWS)row.branchAudit=auditSoldierBuild(row.profile,row.combo.transformationIds,TRANSFORM_BY_ID);
+  updateBranchAudits();
   populateFinalFilters();
   try{
     const [prog,research]=await Promise.all([
@@ -35,6 +40,11 @@ async function load(){
   renderSummary();
   render();
 }
+function updateBranchAudits(){
+  const selectedPath=$("#finalPathFilter")?.value||"";
+  for(const row of FINAL_ROWS)
+    row.branchAudit=auditSoldierBuild(row.profile,row.combo.transformationIds,TRANSFORM_BY_ID,PATH_GATES,selectedPath);
+}
 function renderSummary(){
   const pc=DATA.profileCounts||{};
   $("#summary").innerHTML=[
@@ -42,7 +52,7 @@ function renderSummary(){
     ["기본 바디 규칙",DATA.soldiers.length+"종","내부 RuleSoldier / 성장 규칙"],
     ["Saint 지원군",pc.saintUnique+"종","고유 결과 · 가중 슬롯 "+pc.saintSlots+"칸"],
     ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"],
-    ["최종 강화 이론 조합",FINAL_ROWS.length+"개",FINAL_ROWS.filter(x=>x.branchAudit?.hard?.length).length+"개는 선장·연구 배제 충돌 확인 · 나머지도 조건부"]
+    ["최종 강화 이론 조합",FINAL_ROWS.length+"개",FINAL_ROWS.filter(x=>x.branchAudit?.hard?.length).length+"개는 선장·갈림길·연구 배제 충돌 확인 · 나머지도 조건부"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
 function addStatsObj(a,b){
@@ -504,6 +514,7 @@ function render(){
   $("#sortMetric").disabled=mode==="transformations";
   $("#finalSourceField").hidden=mode!=="final";
   $("#finalBaseField").hidden=mode!=="final";
+  $("#finalPathField").hidden=mode!=="final";
   $("#finalBranchField").hidden=mode!=="final";
   $("#tableTitle").textContent=
     mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
@@ -687,6 +698,10 @@ function openDetail(encoded){
       '</strong><span>원본 변신의 선행·배제 및 순서를 검사했지만, 연구 이벤트의 지급 시점·보유 재료·시설·훈련 한계를 모두 충족한 실행 계획은 아닙니다.</span>'+
       (audit.hard.length?'<ul>'+audit.hard.map(x=>'<li>'+esc(x.reason)+' ('+esc(x.ids.join(', '))+')</li>').join("")+'</ul>':"")+
       (audit.sourceWarnings.length?'<ul>'+audit.sourceWarnings.map(x=>'<li>'+esc(x.reason)+'</li>').join("")+'</ul>':"")+'</div>';
+    html+='<p class="muted"><b>이 조합에서 아직 배제되지 않은 갈림길:</b> '+
+      (audit.divergingPaths?.length?audit.divergingPaths.map(x=>esc(x.koName)).join(" · "):"없음")+
+      (audit.selectedPath?" · 현재 선택: "+esc(PATH_GATES.paths.find(p=>p.id===audit.selectedPath)?.koName||audit.selectedPath):"")+
+      '</p>';
     html+=finalStatsGrid(r);
     html+='<h3>최종 보유 특성</h3><div class="traits">'+((r.finalTraitNames||[]).length?(r.finalTraitNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">없음</span>')+'</div>';
     html+='<h3>추가 강화</h3><div class="traits">'+((r.enhancementNames||[]).length?(r.enhancementNames||[]).map(x=>'<span class="trait">'+esc(x)+'</span>').join(" "):'<span class="muted">추가 강화 없음</span>')+'</div>';
@@ -829,6 +844,12 @@ function renderProgression(soldierId,profile=null){
 }
 
 ["search","dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
+$("#finalPathFilter").addEventListener("change",()=>{
+  updateBranchAudits();
+  finalPage=0;
+  renderSummary();
+  render();
+});
 $("#finalBaseOptions").addEventListener("change",e=>{
   const target=e.target;
   if(target.id==="finalBaseAll"){

@@ -56,22 +56,21 @@ export function researchBlock(id,context,graph,eventSources={},path=new Set()){
   const causes=[],disabled=context.disabledBy.get(id);
   if(disabled?.size)causes.push({researchId:id,disabledBy:[...disabled],via:null});
   const topic=graph[id]||{},nominal=values(topic.prerequisites);
-  // OXCE dependencies are unlock candidates and can be bypassed by an
-  // event or explicit unlock; do NOT require an entire nominal chain.
-  // Hard "requires", one-parent gates and direct named branch choices are
-  // stronger evidence. For a multi-parent alternative gate, reject only
-  // when every indexed dependency route is independently closed.
-  const namedGates=nominal.filter(x=>context.branchIds.has(x));
+  // OXCE dependencies are an AND list. A *completed* explicit unlock can
+  // bypass the WHOLE dependencies list (not hard "requires"), while a still
+  // reachable grant/event is a possible but unconfirmed bypass. Do not
+  // silently drop a blocked parent merely because the list has 2+ entries.
+  // This used to expose Male Soldiers-only Hard Knocks/Bonding on every path.
   const bypass=context.alternativeSources?.[id]||{};
   const possibleUnlock=[...values(bypass.unlockers),...values(bypass.freeGrantors)]
-    .some(grantor=>!context.disabledBy.has(grantor));
+    .some(grantor=>!context.disabledBy.has(grantor)&&
+      researchBlock(grantor,context,graph,eventSources,next).length===0);
   // Any still-reachable event reward grants its research flag without following
   // the ordinary dependency chain. It is NOT proof that the player owns it.
   const possibleEvent=values(eventSources[id]).some(source=>
     eventAccess(source,context,graph,eventSources,next).possible);
-  const requiredDeps=possibleUnlock||possibleEvent?[]:
-    [...(nominal.length===1?nominal:[]),...namedGates];
-  const mandatory=[...new Set([...values(topic.strictRequires),...requiredDeps])];
+  const mandatory=[...new Set([...values(topic.strictRequires),
+    ...(possibleUnlock||possibleEvent?[]:nominal)])];
   for(const parent of mandatory){
     for(const reason of researchBlock(parent,context,graph,eventSources,next))
       causes.push({...reason,via:reason.via||id});
