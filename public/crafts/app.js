@@ -1,7 +1,22 @@
 let DATA=null;
 let sort={key:"soldiers",dir:-1};
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map();
-let RESEARCH_TOPICS=null;
+let RESEARCH_TOPICS=null,RESEARCH_PROMISE=null;
+async function compactJson(url){
+  if(typeof DecompressionStream!=="undefined"){
+    const response=await fetch(url+".gz");
+    if(response.ok)return new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    if(response.status!==404)throw new Error(url+".gz HTTP "+response.status);
+  }
+  const r=await fetch(url);if(!r.ok)throw new Error(url+" HTTP "+r.status);
+  return r.json();
+}
+const searchHay=new WeakMap();
+async function ensureResearchTopics(){
+  if(RESEARCH_TOPICS)return RESEARCH_TOPICS;
+  if(!RESEARCH_PROMISE)RESEARCH_PROMISE=compactJson("../data/progression-research.json").then(x=>RESEARCH_TOPICS=x.topics||[]).catch(err=>{RESEARCH_PROMISE=null;throw err});
+  return RESEARCH_PROMISE;
+}
 const $=q=>document.querySelector(q);
 const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:1});
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
@@ -28,14 +43,7 @@ function slotTypeTable(x){
 }
 
 async function load(){
-  const [r,research]=await Promise.all([
-    fetch("../data/progression.json"),
-    fetch("../data/progression-research.json")
-  ]);
-  if(!r.ok)throw new Error("진행 데이터 HTTP "+r.status);
-  if(!research.ok)throw new Error("연구 카탈로그 HTTP "+research.status);
-  DATA=await r.json();
-  RESEARCH_TOPICS=(await research.json()).topics||[];
+  DATA=await compactJson("../data/progression.json");
   renderSummary();render();
 }
 function renderSummary(){
@@ -50,14 +58,16 @@ function renderSummary(){
 function eventById(id){return DATA?.events?.[id]||null}
 function eventScript(eventId,scriptId){return (eventById(eventId)?.scripts||[]).find(s=>s.id===scriptId)||null}
 function searchBlob(x){
+  if(searchHay.has(x))return searchHay.get(x);
   const routeBits=(x.acquisitionPaths||[]).flatMap(p=>{
     if(p.kind!=="manufacture")return[];
     const r=DATA?.recipes?.[p.recipeId];if(!r)return[];
     return[r.koName,r.enName,r.id,...(r.eventVariants||[]).flatMap(v=>{const e=eventById(v.eventId);return[e?.koName,e?.enName,e?.id]})];
   });
   const weaponBits=craftSlots(x).flatMap(s=>s.allowedTypes.flatMap(t=>{const m=typeMeta(t);return[m?.label,...(m?.samples||[]),...(m?.roles||[])].filter(Boolean)}));
-  return [x.koName,x.enName,x.id,...(x.aliases||[]),...(x.summary?.commonBranchGates||[]).flatMap(g=>[g.koName,g.enName,g.id]),...routeBits,...weaponBits]
+  const value=[x.koName,x.enName,x.id,...(x.aliases||[]),...(x.summary?.commonBranchGates||[]).flatMap(g=>[g.koName,g.enName,g.id]),...routeBits,...weaponBits]
     .filter(Boolean).join(" ").toLowerCase();
+  searchHay.set(x,value);return value;
 }
 function filtered(){
   const q=$("#search").value.trim().toLowerCase(),route=$("#route").value,cap=$("#capacity").value;
@@ -99,7 +109,7 @@ async function loadPlan(id){
   if(PLAN_CACHE.has(id))return PLAN_CACHE.get(id);
   const b=id[0];
   if(!PLAN_BUCKETS.has(b)){const r=await fetch("../data/progression-plans/"+b+".json");PLAN_BUCKETS.set(b,(await r.json()).plans)}
-  if(!RESEARCH_TOPICS){const r=await fetch("../data/progression-research.json");RESEARCH_TOPICS=(await r.json()).topics||[]}
+  await ensureResearchTopics();
   const compact=PLAN_BUCKETS.get(b)[id]||{topics:[]};
   const p={...compact,topics:(compact.topics||[]).map(i=>RESEARCH_TOPICS[i]).filter(Boolean)};
   PLAN_CACHE.set(id,p);return p;
@@ -133,17 +143,22 @@ function recipeHtml(r){
   const variants=(r.eventVariants||[]).map(v=>{const ev=eventById(v.eventId),plan=planById(v.researchPlanId);return '<details><summary>'+esc(ev?.koName||v.eventId)+' 경유 전체 루트 · 명목 '+fmt(plan?.totalCost)+'</summary>'+eventConditions(eventScript(v.eventId,v.scriptId))+planSummary(plan,"이벤트 포함 연구 트리")+'</details>'}).join("");
   return '<div class="acq-card"><strong>'+esc(r.koName)+'</strong><span class="id">'+esc(r.id)+'</span><div class="metrics"><div class="box"><strong>제조비</strong>'+fmt(r.cost)+'</div><div class="box"><strong>시간</strong>'+fmt(r.time)+'</div><div class="box"><strong>작업장</strong>'+fmt(r.space)+'</div><div class="box"><strong>기지 기능</strong>'+esc((r.requiresBaseFunc||[]).join(", ")||"없음")+'</div></div>'+planSummary(planById(r.baseResearchPlanId),"기본 제조 해금 연구")+(items?'<h4>필요 아이템과 획득원</h4>'+items:'')+variants+'</div>';
 }
-function openDetail(id){
+async function openDetail(id){
   const x=DATA.crafts.find(c=>c.id===id);if(!x)return;
+  if(!$("#detailDialog").open)$("#detailDialog").showModal();
+  $("#detailBody").textContent="연구 해금 경로 불러오는 중…";
+  try{await ensureResearchTopics();}catch(err){console.warn("Research catalog unavailable",err)}
+  if(!$("#detailDialog").open)return;
   const gates=(x.summary?.commonBranchGates||[]).map(g=>'<span class="trait">'+esc(g.koName)+'</span>').join(" ")||"없음";
   const paths=(x.acquisitionPaths||[]).map(p=>p.kind==="buy"?'<div class="acq-card"><strong>직접 구매</strong><span>비용 '+fmt(p.cost)+'</span>'+planSummary(planById(p.researchPlanId),"구매 해금 연구")+'</div>':recipeHtml(DATA?.recipes?.[p.recipeId]||{})).join("")||'<span class="muted">직접 추적 가능한 구매/제조 경로 없음</span>';
   $("#detailBody").innerHTML='<p class="eyebrow">탈것 / 기체</p><h2>'+esc(x.koName)+'</h2><p class="muted">'+esc(x.enName)+' · '+esc(x.id)+'</p>'+
   '<div class="detail-grid"><div class="box"><strong>탑승 병력 / 조종사</strong>'+fmt(x.soldiers)+' / '+fmt(x.pilots)+'</div><div class="box"><strong>속도 / 연료</strong>'+fmt(x.speedMax)+' / '+fmt(x.fuelMax)+'</div><div class="box"><strong>내구 / 장비 슬롯</strong>'+fmt(x.damageMax)+' / '+fmt(x.weapons)+'</div><div class="box"><strong>슬롯 성격</strong>'+roleBadges(craftRoles(x))+'</div><div class="box"><strong>레이더</strong>'+fmt(x.radarRange)+' @ '+fmt(x.radarChance)+'%</div><div class="box"><strong>구매 / 판매</strong>'+fmt(x.costBuy)+' / '+fmt(x.costSell)+'</div><div class="box"><strong>임대·유지비</strong>'+fmt(x.costRent)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(x.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+gates+'</div></div>'+
   '<h3>장비 슬롯·무장 용도 상세</h3><div class="weapon-note"><b>읽는 법:</b> Ruleset의 <code>weapons</code>는 현재 장착 무기 수가 아니라 장비 슬롯 수입니다. 아래는 각 슬롯이 허용하는 <code>weaponType</code> 계열의 용도와 v.o1.1.1 기체장비 정의에서의 수치 범위입니다. 공격 수치가 없는 계열은 방어·기동·탐지 같은 지원용입니다.</div>'+slotTypeTable(x)+
   '<h3>획득·구매·제조 방식</h3><div class="routes">'+paths+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. 이벤트/무료해금으로 실제 최소는 더 작을 수 있습니다.</p>';
-  $("#detailDialog").showModal();
 }
-["search"].forEach(id=>$("#"+id).addEventListener("input",render));["route","capacity"].forEach(id=>$("#"+id).addEventListener("change",render));
+let searchTimer=null;
+$("#search").addEventListener("input",()=>{if(searchTimer!==null)clearTimeout(searchTimer);if(!$("#search").value.trim())render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
+["route","capacity"].forEach(id=>$("#"+id).addEventListener("change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",async e=>{
   if(e.target.id==="detailDialog"){e.currentTarget.close();return}

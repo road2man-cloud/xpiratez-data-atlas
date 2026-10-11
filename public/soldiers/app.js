@@ -1,9 +1,11 @@
 import {auditSoldierBuild} from "./branch-audit.js";
 let DATA=null,PROG=null;
-const ASSET_VERSION="soldiers-hardcap-ui-20261010";
+const ASSET_VERSION="soldiers-lazy-final-20261011";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
-let RESEARCH_TOPICS=null,FINAL_ROWS=[];
+let RESEARCH_TOPICS=null,FINAL_ROWS=[],PROGRESSION_PROMISE=null;
+let finalRowsReady=false,searchTimer=null;
+const searchHay=new Map();
 let sort={key:"firing",dir:-1},finalPage=0;
 const FINAL_PAGE_SIZE=200;
 
@@ -12,28 +14,46 @@ const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko
 const pct=n=>n==null?"—":(Number(n)*100).toFixed(2)+"%";
 const statOrder=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
 const sourceLabel={direct:"직접 고용",manufacture:"제조/Recruitment",event:"이벤트"};
-
+async function compactJson(url){
+  if(typeof DecompressionStream!=="undefined"){
+    const gzipUrl=new URL(url,location.href);gzipUrl.pathname+=".gz";
+    const r=await fetch(gzipUrl);
+    if(r.ok)return new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    if(r.status!==404)throw new Error("압축 데이터 HTTP "+r.status);
+  }
+  const r=await fetch(url);
+  if(!r.ok)throw new Error("병종/연구 데이터 HTTP "+r.status);
+  return r.json();
+}
 async function load(){
-  const res=await fetch(versioned("../data/soldiers-index.json"));
-  if(!res.ok)throw new Error("병종 데이터 HTTP "+res.status);
-  DATA=await res.json();
+  DATA=await compactJson(versioned("../data/soldiers-index.json"));
   for(const t of DATA.transformations||[])TRANSFORM_BY_ID.set(t.id,t);
   for(const s of DATA.enhancementBuildSets||[])BUILD_SET_BY_ID.set(s.id,s);
   for(const b of DATA.bonuses||[])BONUS_BY_ID.set(b.id,b);
   for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
-  FINAL_ROWS=buildFinalRows();
-  for(const row of FINAL_ROWS)row.branchAudit=auditSoldierBuild(row.profile,row.combo.transformationIds,TRANSFORM_BY_ID);
-  populateFinalFilters();
-  try{
-    const [prog,research]=await Promise.all([
-      fetch(versioned("../data/progression.json")),
-      fetch(versioned("../data/progression-research.json"))
-    ]);
-    if(prog.ok)PROG=await prog.json();
-    if(research.ok)RESEARCH_TOPICS=(await research.json()).topics||[];
-  }catch(err){console.warn("Progression data is not published yet.",err)}
+  // Final build simulation is expensive. Only do it on the final-build tab.
+  // Progression rules belong to details, not the initial comparison table.
   renderSummary();
   render();
+}
+function ensureFinalRows(){
+  if(finalRowsReady)return;
+  FINAL_ROWS=buildFinalRows();
+  for(const row of FINAL_ROWS)row.branchAudit=auditSoldierBuild(row.profile,row.combo.transformationIds,TRANSFORM_BY_ID);
+  finalRowsReady=true;
+  populateFinalFilters();
+  renderSummary();
+}
+async function ensureProgression(){
+  if(PROGRESSION_PROMISE)return PROGRESSION_PROMISE;
+  PROGRESSION_PROMISE=(async()=>{
+    const [prog,research]=await Promise.all([
+      compactJson(versioned("../data/progression.json")),
+      compactJson(versioned("../data/progression-research.json"))
+    ]);
+    PROG=prog;RESEARCH_TOPICS=research.topics||[];
+  })().catch(err=>{PROGRESSION_PROMISE=null;throw err});
+  return PROGRESSION_PROMISE;
 }
 function renderSummary(){
   const pc=DATA.profileCounts||{};
@@ -42,7 +62,7 @@ function renderSummary(){
     ["기본 바디 규칙",DATA.soldiers.length+"종","내부 RuleSoldier / 성장 규칙"],
     ["Saint 지원군",pc.saintUnique+"종","고유 결과 · 가중 슬롯 "+pc.saintSlots+"칸"],
     ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"],
-    ["최종 강화 이론 조합",FINAL_ROWS.length+"개",FINAL_ROWS.filter(x=>x.branchAudit?.hard?.length).length+"개는 선장·연구 배제 충돌 확인 · 나머지도 조건부"]
+    ["최종 강화 이론 조합",(DATA.counts?.soldierFinalBuilds||FINAL_ROWS.length)+"개",finalRowsReady?FINAL_ROWS.filter(x=>x.branchAudit?.hard?.length).length+"개는 선장·연구 배제 충돌 확인 · 나머지도 조건부":"최종 강화 탭을 열 때 상세 분기 충돌 계산"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
 function addStatsObj(a,b){
@@ -466,12 +486,15 @@ function sortValue(row,key,band){
   return $("#sortMetric").value==="cap"?growthCapValue(row,key):statValue(row,key,band);
 }
 function searchBlob(row){
-  return [
+  const key=row._mode+"|"+(row.id||row._id);
+  if(searchHay.has(key))return searchHay.get(key);
+  const value=[
     row._name,row._id,row._route,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
     ...(row.traitNames||[]),...(row.traits||[]).flatMap(t=>[t.koName,t.enName,t.id]),
     ...(row.requires||[]),...(row.allowedSoldierTypes||[]),...(row.requiredPreviousTransformations||[]),
     ...(row.forbiddenPreviousTransformations||[]),...(row.enhancementNames||[]),...(row.addedTraitNames||[]),...(row.finalTraitNames||[])
   ].filter(Boolean).join(" ").toLowerCase();
+  searchHay.set(key,value);return value;
 }
 function filtered(){
   const q=$("#search").value.trim().toLowerCase();
@@ -499,6 +522,7 @@ function th(label,key,sub=""){
 function render(){
   if(!DATA)return;
   const mode=$("#dataset").value,band=$("#band").value;
+  if(mode==="final")ensureFinalRows();
   $("#traitsOnly").disabled=mode!=="profiles";
   $("#band").disabled=mode==="transformations";
   $("#sortMetric").disabled=mode==="transformations";
@@ -668,8 +692,14 @@ function deltaGrid(title,stats){
     return '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b class="'+cls+'">'+(v>0?"+":"")+fmt(v)+'</b></div>';
   }).join("")+'</div>';
 }
-function openDetail(encoded){
+async function openDetail(encoded){
   const r=findRow(encoded);if(!r)return;
+  const dialog=$("#detailDialog");
+  if(!dialog.open)dialog.showModal();
+  if(r._mode!=="transformation"){
+    $("#detailBody").textContent="획득 경로와 연구 트리를 불러오는 중…";
+    try{await ensureProgression();}catch(err){console.warn("Progression data is not published yet.",err)}
+  }
   let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 획득형":r._mode==="final"?"최종 강화 조합":r._mode==="soldier"?"기본 바디 규칙":"변신·훈련 루트")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
   if(r._mode==="profile"){
     const salary=salaryRow(r.soldierType,r.rank);
@@ -710,8 +740,7 @@ function openDetail(encoded){
     html+='<div class="detail-grid"><div class="box"><strong>필요 연구</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>필수 이전 변환</strong>'+(r.requiredPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>금지 이전 변환</strong>'+(r.forbiddenPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
   }
   html+=renderProgression(r._id,r._mode==="profile"?r:r._mode==="final"?r.profile:null);
-  $("#detailBody").innerHTML=html;
-  $("#detailDialog").showModal();
+  if(dialog.open)$("#detailBody").innerHTML=html;
 }
 function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
 function planById(id){return PROG?.plans?.[id]||null}
@@ -730,8 +759,7 @@ async function loadPlan(id){
     PLAN_BUCKETS.set(b,(await r.json()).plans);
   }
   if(!RESEARCH_TOPICS){
-    const r=await fetch(versioned("../data/progression-research.json"));
-    RESEARCH_TOPICS=(await r.json()).topics||[];
+    RESEARCH_TOPICS=(await compactJson(versioned("../data/progression-research.json"))).topics||[];
   }
   const compact=PLAN_BUCKETS.get(b)[id]||{topics:[]};
   const p={...compact,topics:(compact.topics||[]).map(i=>RESEARCH_TOPICS[i]).filter(Boolean)};
@@ -828,7 +856,14 @@ function renderProgression(soldierId,profile=null){
   return '<section class="progression"><h3>획득 방식 · 루트 · 연구량</h3>'+routeSummary+'<div class="routes">'+routesHtml+'</div><h3>특수 훈련 / 후기 강화</h3><div class="routes">'+((p.trainingRoutes||[]).map(trainingHtml).join("")||'<span class="muted">별도 특수 훈련 없음</span>')+'</div><p class="muted">* 연구량은 표시된 경로의 연구 계획 기준입니다. unlocks/getOneFree/이벤트 직접 지급으로 실제 최소량은 더 작아질 수 있습니다.</p></section>';
 }
 
-["search","dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{finalPage=0;render()}));
+["search","dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",()=>{
+  finalPage=0;
+  if(id==="search"){
+    if(searchTimer!==null)clearTimeout(searchTimer);
+    if(!$("#search").value.trim()){searchTimer=null;render()}
+    else searchTimer=setTimeout(()=>{searchTimer=null;render()},100);
+  }else render();
+}));
 $("#finalBaseOptions").addEventListener("change",e=>{
   const target=e.target;
   if(target.id==="finalBaseAll"){

@@ -522,13 +522,21 @@ function bind(){
 }
 async function init(){
   try{
-    const load=async file=>{const r=await fetch(file);if(!r.ok)throw new Error(file+" HTTP "+r.status);return r.json();};
-    const [trainings,access,progression,choiceGates]=await Promise.all([
+    const load=async file=>{
+      if(typeof DecompressionStream!=="undefined"&&/(trainings-index|choice-simulator-index)\.json$/.test(file)){
+        const gz=await fetch(file+".gz");
+        if(gz.ok)return new Response(gz.body.pipeThrough(new DecompressionStream("gzip"))).json();
+        if(gz.status!==404)throw new Error(file+".gz HTTP "+gz.status);
+      }
+      const r=await fetch(file);if(!r.ok)throw new Error(file+" HTTP "+r.status);return r.json();
+    };
+    const [trainings,access,choices]=await Promise.all([
       load("../data/trainings-index.json"),load("../data/training-access.json"),
-      load("../data/progression-research.json"),load("../data/choice-research-gates.json")
+      load("../data/choice-simulator-index.json")
     ]);
     DATA=trainings;ACCESS=access;
-    choiceIndex=buildChoiceIndex(progression.topics,choiceGates);
+    if(choices.schemaVersion!==1||choices.format!=="choice-runtime-v1"||choices.count!==choices.topics?.length)throw new Error("분기 엔진 인덱스 버전이 일치하지 않습니다.");
+    choiceIndex=buildChoiceIndex(choices.topics,{inline:true,unresolvedByField:choices.unresolvedByField});
     validateCaptainStages(choiceIndex,ACCESS.captainStages);
     for(let i=0;i<4;i++)
       $("#captainStage"+i).innerHTML='<option value="">미선택 · 다음 단계 또는 보류</option>'+

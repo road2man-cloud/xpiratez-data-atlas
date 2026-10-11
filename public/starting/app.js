@@ -14,7 +14,7 @@ const ALIAS={
 };
 const STAT_ORDER=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
 const STAT_LABEL={tu:"TU",stamina:"기력",health:"체력",bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",strength:"근력",psiStrength:"Psi 강도",psiSkill:"Psi 기술",melee:"근접",mana:"Mana"};
-let DATA=null,NAMES={};
+let DATA=null,NAMES={},GROUP_CACHE=null,SEARCH_CACHE=new WeakMap();
 
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 const fmt=n=>new Intl.NumberFormat("ko-KR").format(Number(n)||0);
@@ -58,11 +58,13 @@ function titleOf(g){
 }
 function internalIdOf(g){return g.key==="__NONE__"?"NO_LISTED_COUNTRY":g.key}
 function searchable(g){
+  if(SEARCH_CACHE.has(g))return SEARCH_CACHE.get(g);
   const ids=[g.key,...g.excluded,...g.events.flatMap(e=>[e.eventId,e.descriptionId]),...g.items.map(x=>x.id),...g.research,...g.spawns.flatMap(s=>[
     s.type,s.soldier?.armor,...Object.keys(s.soldier?.transformationBonuses||{}),
     ...Object.keys(s.soldier?.previousTransformations||{})
   ])].filter(Boolean);
-  return [titleOf(g),...ids,...ids.map(human)].join(" ").toLowerCase();
+  const value=[titleOf(g),...ids,...ids.map(human)].join(" ").toLowerCase();
+  SEARCH_CACHE.set(g,value);return value;
 }
 function rewardChip(x){
   return '<span class="chip" title="'+esc(x.id)+'"><b>'+esc(human(x.id))+'</b><em>×'+fmt(x.qty)+'</em></span>';
@@ -193,7 +195,7 @@ function card(g){
   '</article>';
 }
 function allGroups(){
-  return [...group(DATA.regions||[],"region"),...group(DATA.countries||[],"country")];
+  return GROUP_CACHE??=( [...group(DATA.regions||[],"region"),...group(DATA.countries||[],"country")]);
 }
 function renderStats(groups){
   const region=groups.filter(x=>x.kind==="region").length,country=groups.filter(x=>x.kind==="country").length;
@@ -223,14 +225,23 @@ async function init(){
   if(!data?.meta||!Array.isArray(data.regions)||!Array.isArray(data.countries)){
     throw new Error("스타팅 보너스 데이터 형식이 올바르지 않습니다");
   }
-  DATA=data;
+  DATA=data;GROUP_CACHE=null;SEARCH_CACHE=new WeakMap();
   renderStats(allGroups());
   render();
   for(const id of ["search","kind","sort"])document.querySelector("#"+id).addEventListener(id==="search"?"input":"change",render);
   // Enhance labels after first paint. On failure we keep the Korean region
   // aliases and raw item/research IDs rather than failing the whole page.
-  void fetch(NAMES_URL).then(r=>{if(!r.ok)throw new Error("names HTTP "+r.status);return r.json()})
-    .then(names=>{NAMES=names?.names||{};render()})
+  void (async()=>{
+    if(typeof DecompressionStream!=="undefined"){
+      const gzip=await fetch(NAMES_URL+".gz");
+      if(gzip.ok)return new Response(gzip.body.pipeThrough(new DecompressionStream("gzip"))).json();
+      if(gzip.status!==404)throw new Error("names gzip HTTP "+gzip.status);
+    }
+    const response=await fetch(NAMES_URL);
+    if(!response.ok)throw new Error("names HTTP "+response.status);
+    return response.json();
+  })()
+    .then(names=>{NAMES=names?.names||{};SEARCH_CACHE=new WeakMap();render()})
     .catch(err=>console.warn("Optional starting bonus translations unavailable:",err));
 }
 function showLoadError(err){

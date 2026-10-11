@@ -5,6 +5,7 @@ const pct=v=>v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%";
 const dataBase="../data";
 let db={index:[],counts:{},roles:{},triggerKinds:{}},eventSurfaceDb={index:[],counts:{}},rows=[],detailCache=new Map(),editorialCache=new Map(),forceLinks=null;
 const state={q:"",role:"",triggerKind:"",missRisk:"",reward:"",sort:"koName",dir:1,page:1,pageSize:100};
+let searchTimer=null;
 
 async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 gzip 데이터 스트림 해제를 지원하지 않습니다.");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));return new Response(stream).json()}
 function stat(label,value,note=""){return`<div class="stat"><span>${esc(label)}</span><b>${esc(fmt(value))}</b>${note?`<span>${esc(note)}</span>`:""}</div>`}
@@ -15,7 +16,7 @@ function roleLabel(v){return db.roles?.[v]||v||"—"}
 function initFilters(){
   $("#role").insertAdjacentHTML("beforeend",Object.entries(db.roles||{}).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(""));
   $("#triggerKind").insertAdjacentHTML("beforeend",Object.entries(db.triggerKinds||{}).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(""));
-  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;render()});
+  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;if(searchTimer!==null)clearTimeout(searchTimer);if(!state.q)render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
   for(const id of ["role","triggerKind","missRisk","reward"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
   $("#pageSize").addEventListener("change",e=>{state.pageSize=Number(e.target.value);state.page=1;render()});
   $("#prev").onclick=()=>{if(state.page>1){state.page--;render()}};

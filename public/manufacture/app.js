@@ -5,8 +5,10 @@ const money=v=>v==null?"—":(Number(v)>0?"+":"")+fmt(Math.round(Number(v)));
 const dataBase="../data";
 let db={index:[],counts:{},roles:{}},rows=[],detailCache=new Map(),editorialCache=new Map();
 const state={q:"",role:"",category:"",economics:"",baseFunc:"",sort:"koName",dir:1,page:1,pageSize:100};
+let searchTimer=null;
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);return r.json()}
+async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("브라우저 gzip 스트림 지원 필요");return new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json()}
 function stat(label,value,note=""){return`<div class="stat"><span>${esc(label)}</span><b>${esc(fmt(value))}</b>${note?`<span>${esc(note)}</span>`:""}</div>`}
 function initFilters(){
   $("#role").insertAdjacentHTML("beforeend",Object.entries(db.roles).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(""));
@@ -14,7 +16,7 @@ function initFilters(){
   $("#category").insertAdjacentHTML("beforeend",cats.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(""));
   const funcs=[...new Set(db.index.flatMap(x=>x.baseFuncs||[]))].sort();
   $("#baseFunc").insertAdjacentHTML("beforeend",funcs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join(""));
-  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;render()});
+  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;if(searchTimer!==null)clearTimeout(searchTimer);if(!state.q)render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
   for(const id of ["role","category","economics","baseFunc"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
   $("#pageSize").addEventListener("change",e=>{state.pageSize=Number(e.target.value);state.page=1;render()});
   $("#prev").onclick=()=>{if(state.page>1){state.page--;render()}};
@@ -153,6 +155,6 @@ async function openDetail(id){
 function closeDrawer(){history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
 function route(){const m=location.hash.match(/^#recipe=(.+)$/);if(m)openDetail(decodeURIComponent(m[1]));else closeDrawer()}
 async function init(){
-  db=await json(dataBase+"/manufacture-index.json");renderSummary();initFilters();render();route();
+  db=await jsonGz(dataBase+"/manufacture-index.json.gz");renderSummary();initFilters();render();route();
 }
 init().catch(e=>{document.body.innerHTML=`<main class="wrap"><h1>제조 DB 로드 실패</h1><pre>${esc(e.stack||e.message)}</pre></main>`});

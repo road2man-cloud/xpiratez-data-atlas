@@ -102,7 +102,8 @@ async function openDetail(id,bucket){
  '<details><summary>원본 effective craftWeapon 룰 보기</summary><pre class="raw">'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>';
  $("#detailDialog").showModal();
 }
-["search"].forEach(id=>$("#"+id).addEventListener("input",render));
+let searchTimer=null;
+$("#search").addEventListener("input",()=>{if(searchTimer!==null)clearTimeout(searchTimer);if(!$("#search").value.trim())render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
 ["typeFilter","roleFilter","shareFilter"].forEach(id=>$("#"+id).addEventListener("change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
