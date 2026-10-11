@@ -54,7 +54,7 @@ for(const name of expected){
 for(const essential of ["starting-bonuses.json","soldiers-index.json","trainings-index.json","facilities-index.json","manufacture-index.json","craft-weapons-index.json","weapons-index.json"]){
   if(!fs.existsSync(path.join(root,"data",essential)))errors.push("data/"+essential+" missing");
 }
-for(const essential of ["items-index.json","research-index.json","schema.json","entities.json","research-insight-index.json"]){
+for(const essential of ["items-index.json","research-index.json","schema.json","entities.json","catalog-ids.json","research-insight-index.json"]){
   if(!fs.existsSync(path.join(root,"items/data",essential)))errors.push("items/data/"+essential+" missing");
   if(fs.existsSync(path.join(root,"data",essential)))errors.push("canonical duplicate under data/"+essential);
 }

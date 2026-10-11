@@ -11,6 +11,8 @@ const readJson=(...parts)=>JSON.parse(fs.readFileSync(file(...parts),"utf8"));
 const items=readJson("items-index.json");
 const research=readJson("research-index.json");
 const researchInsight=readJson("research-insight-index.json");
+const catalogIds=readJson("catalog-ids.json");
+if(JSON.stringify(catalogIds.items)!==JSON.stringify(items.index.map(x=>x.id))||JSON.stringify(catalogIds.research)!==JSON.stringify(research.index.map(x=>x.id)))throw new Error("Compact cross-catalog ID lookup does not match canonical catalog IDs");
 const researchInsightById=new Map((researchInsight.index||[]).map(x=>[x.id,x]));
 const researchEditorialMeta=readJson("research-editorial-meta.json");
 const itemEditorialMeta=readJson("item-editorial-meta.json");

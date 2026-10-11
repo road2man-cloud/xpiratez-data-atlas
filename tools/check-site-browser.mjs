@@ -75,6 +75,43 @@ try {
           .map(entry=>entry.name));
         if(before.length)errors.push("Captain simulator fetched heavy research data on first paint: "+before.join(", "));
       }
+      // A fast first list must not fetch megabytes belonging exclusively to
+      // the opposite catalog or to detail-only research/route calculations.
+      const paths=await page.evaluate(()=>performance.getEntriesByType("resource")
+        .map(entry=>new URL(entry.name).pathname));
+      const forbidden={
+        items:["research-index.json","research-insight-index.json","entities.json"],
+        research:["items-index.json","item-usage-index.json","entities.json"],
+        soldiers:["progression.json","progression-research.json"],
+        crafts:["progression-research.json"],
+        trainings:["progression-research.json","choice-research-gates.json"]
+      };
+      for(const path of forbidden[slug]||[])
+        if(paths.some(item=>item.endsWith("/"+path)||item.endsWith("/"+path+".gz")))
+          errors.push("Eager large catalog request on "+slug+": "+path);
+      const compressedRequired={
+        items:["items-index.json.gz","item-usage-index.json.gz","catalog-ids.json.gz"],
+        research:["research-index.json.gz","research-insight-index.json.gz","catalog-ids.json.gz"],
+        soldiers:["soldiers-runtime.json.gz"],
+        trainings:["trainings-runtime.json.gz"],
+        crafts:["crafts-runtime.json.gz"],
+        weapons:["weapons-index.json.gz"],
+        armors:["armors-index.json.gz"],
+        manufacture:["manufacture-runtime.json.gz"]
+      };
+      for(const required of compressedRequired[slug]||[])
+        if(!paths.some(p=>p.endsWith("/"+required)))errors.push(slug+" omitted its compressed index: "+required);
+      if(slug==="weapons"&&!paths.some(p=>/\/weapon-chunks\/[^/]+\.json\.gz$/.test(p)))
+        errors.push("Weapon section did not use compressed chunks");
+      if(slug==="weapons"||slug==="armors"){
+        if(count>100)errors.push(slug+" rendered "+count+" table rows instead of at most 100");
+        const pager=page.locator(slug==="weapons"?"#weaponPager":"#armorPager");
+        const first=await page.locator(ready[slug]).first().locator(".name").innerText();
+        await pager.locator('button[data-page="1"]').first().evaluate(button=>button.click());
+        const second=await page.locator(ready[slug]).first().locator(".name").innerText();
+        if(first===second)errors.push(slug+" pagination did not advance");
+        await pager.locator('button[data-page="0"]').first().evaluate(button=>button.click());
+      }
       // Every database row exposes a source-grounded, decision-first guide
       // without stealing the original table/detail interaction.
       const guide=page.locator(ready[slug]+" .xpz-guide-open").first();
@@ -596,13 +633,5 @@ try {
     }
     const ok=!!count&&!errors.length&&!httpErrors.length;
     results.push(ok);
-    console.log((ok?"PASS":"FAIL")+" "+slug+" rows="+count+" search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+" http="+JSON.stringify(httpErrors.slice(0,6))+(ok?"":" DOM="+display));
-    await page.close();
-  }
-}finally{
-  await browser.close();
-  if(server)await new Promise(resolve=>server.close(resolve));
-}
-const pass=results.filter(Boolean).length;
-console.log("SITE SMOKE "+pass+"/"+results.length+" passed | base="+base);
-if(pass!==results.length)process.exitCode=1;
+
+[Showing lines 1-635 of 646 (50.0KB limit). Use offset=636 to continue.]

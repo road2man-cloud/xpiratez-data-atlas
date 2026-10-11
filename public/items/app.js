@@ -15,32 +15,67 @@ const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
 const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map();
+let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null;
+const modePromises={},searchHay=new WeakMap();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
-async function init(){
-  try{
-    const [ii,ri,rii,s,m,e,ui,branchReport]=await Promise.all([json(`${dataBase}/items-index.json`),json(`${dataBase}/research-index.json`),json(`${dataBase}/research-insight-index.json`),json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`),json(`${dataBase}/entities.json`),json(`${dataBase}/item-usage-index.json`),pageMode==="research"?json("../data/research-branch-conflicts.json"):Promise.resolve(null)]);
-    if(pageMode==="research"){
-      if(branchReport?.schemaVersion!==2||branchReport?.meta?.total!==ri.index.length)throw new Error("복수 선행 분기 감사 데이터 버전 불일치");
+async function compactJson(url){
+  if(typeof DecompressionStream!=="undefined"){
+    const response=await fetch(url+".gz");
+    if(response.ok)return new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    if(response.status!==404)throw new Error(url+".gz · HTTP "+response.status);
+  }
+  return json(url);
+}
+async function ensureMode(mode){
+  if(modePromises[mode])return modePromises[mode];
+  modePromises[mode]=(async()=>{
+    if(mode==="items"){
+      const [items,usage]=await Promise.all([compactJson(`${dataBase}/items-index.json`),compactJson(`${dataBase}/item-usage-index.json`)]);
+      const counts=new Map((usage.index||[]).map(x=>[x.id,x]));
+      itemIndex=items.index.map(x=>({...x,...(counts.get(x.id)||{}),originalManufactureReferences:x.manufactureCount}));
+      itemMap=new Map(itemIndex.map(x=>[x.id,x]));
+    }else{
+      const [research,insight,branchReport]=await Promise.all([
+        compactJson(`${dataBase}/research-index.json`),
+        compactJson(`${dataBase}/research-insight-index.json`),
+        json("../data/research-branch-conflicts.json")
+      ]);
+      if(branchReport?.schemaVersion!==2||branchReport?.meta?.total!==research.index.length)
+        throw new Error("복수 선행 분기 감사 데이터 버전 불일치");
       researchBranchReport=branchReport;
       branchConflictMap=new Map(branchReport.affected.map(row=>[row.id,row]));
+      const insightIndex=new Map((insight.index||[]).map(x=>[x.id,x]));
+      researchIndex=research.index.map(x=>({...x,...(insightIndex.get(x.id)||{}),
+        branchConflictCount:branchConflictMap.get(x.id)?.conflicts.length||0,
+        branchNestedCount:branchConflictMap.get(x.id)?.unlockSourceConflicts.length||0,
+        branchSelfDisableCount:branchConflictMap.get(x.id)?.selfDisablingUnlockSources.length||0
+      }));
+      researchMap=new Map(researchIndex.map(x=>[x.id,x]));
     }
-    const useCounts=new Map((ui.index||[]).map(x=>[x.id,x]));
-    itemIndex=ii.index.map(x=>({...x,...(useCounts.get(x.id)||{}),originalManufactureReferences:x.manufactureCount}));
-    const insightIndex=new Map((rii.index||[]).map(x=>[x.id,x]));
-    researchIndex=ri.index.map(x=>({...x,...(insightIndex.get(x.id)||{}),branchConflictCount:branchConflictMap.get(x.id)?.conflicts.length||0,branchNestedCount:branchConflictMap.get(x.id)?.unlockSourceConflicts.length||0,branchSelfDisableCount:branchConflictMap.get(x.id)?.selfDisablingUnlockSources.length||0}));
-    schema=s;manifest=m;entityNames=e.names||{};
-    itemMap=new Map(itemIndex.map(x=>[x.id,x]));researchMap=new Map(researchIndex.map(x=>[x.id,x]));
-    if($("#itemCount"))$("#itemCount").textContent="("+fmt(itemIndex.length)+")";if($("#researchCount"))$("#researchCount").textContent="("+fmt(researchIndex.length)+")";
-    $("#metaLine").textContent=pageMode==="items"?`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 아이템 ${fmt(itemIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`:`${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 연구 ${fmt(researchIndex.length)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`;
-    bind();renderControls();render();route();
+  })().catch(err=>{delete modePromises[mode];throw err});
+  return modePromises[mode];
+}
+function ensureNames(){
+  return namesPromise??=(compactJson(`${dataBase}/entities.json`).then(data=>{entityNames=data.names||{}}).catch(err=>{namesPromise=null;throw err}));
+}
+async function init(){
+  try{
+    const [s,m,ids]=await Promise.all([json(`${dataBase}/schema.json`),json(`${dataBase}/manifest.json`),compactJson(`${dataBase}/catalog-ids.json`),ensureMode(pageMode)]);
+    schema=s;manifest=m;itemIds=new Set(ids.items);researchIds=new Set(ids.research);
+    if($("#itemCount"))$("#itemCount").textContent="("+fmt(itemIds.size)+")";
+    if($("#researchCount"))$("#researchCount").textContent="("+fmt(researchIds.size)+")";
+    $("#metaLine").textContent=pageMode==="items"?
+      `${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 아이템 ${fmt(itemIds.size)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`:
+      `${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 연구 ${fmt(researchIds.size)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`;
+    bind();renderControls();render();void route();
   }catch(e){
     $("#statusText").innerHTML=`<span class="error">데이터가 아직 배포되지 않았습니다: ${esc(e.message)}</span>`;
   }
 }
 function bind(){
   $$(".tab").forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;state.page=1;$$(".tab").forEach(x=>x.classList.toggle("active",x===b));renderControls();render()});
-  $("#search").oninput=e=>{state.query=e.target.value;state.page=1;render()};
+  $("#search").oninput=e=>{state.query=e.target.value;state.page=1;if(searchTimer!==null)clearTimeout(searchTimer);if(!state.query.trim())render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)};
   $("#sort").onchange=e=>{state.sort[state.mode]=e.target.value;state.page=1;render()};
   $("#direction").onclick=()=>{state.dir*=-1;$("#direction").textContent=state.dir===1?"↑":"↓";render()};
   $("#filters").onchange=e=>{const k=e.target.dataset.filter;if(k){state.filter[state.mode][k]=e.target.value;state.page=1;render()}};
@@ -70,8 +105,11 @@ function renderControls(){
 function filtered(){
   const mode=state.mode,src=mode==="items"?itemIndex:researchIndex,q=state.query.trim().toLocaleLowerCase("ko"),f=state.filter[mode];
   const out=src.filter(x=>{
-    const hay=[x.koName,x.enName,x.id,...(x.categories||[]),...(x.categoryIds||[]),...(x.insightTerms||[]),...(x.insightNames||[]),...(x.insightKinds||[]).map(k=>insightRoleLabels[k]||k)].filter(Boolean).join(" ").toLocaleLowerCase("ko");
-    if(q&&!hay.includes(q))return false;
+    if(q){
+      let hay=searchHay.get(x);
+      if(!hay){hay=[x.koName,x.enName,x.id,...(x.categories||[]),...(x.categoryIds||[]),...(x.insightTerms||[]),...(x.insightNames||[]),...(x.insightKinds||[]).map(k=>insightRoleLabels[k]||k)].filter(Boolean).join(" ").toLocaleLowerCase("ko");searchHay.set(x,hay)}
+      if(!hay.includes(q))return false;
+    }
     if(mode==="items"){
       if(f.kind&&x.kind!==f.kind)return false;
       if(f.research==="yes"&&!x.researchCount)return false;if(f.research==="no"&&x.researchCount)return false;
@@ -107,6 +145,7 @@ function render(){
   updateCompare();
 }
 async function detail(mode,id){
+  await Promise.all([ensureMode(mode),ensureNames()]);
   const map=mode==="items"?itemMap:researchMap,row=map.get(id);if(!row)throw new Error("대상을 찾지 못했습니다: "+id);
   const cache=state.cache[mode],dir=mode==="items"?"chunks":"research-chunks";
   if(!cache.has(row.bucket))cache.set(row.bucket,(await json(`${dataBase}/${dir}/${row.bucket}.json`)).details);
@@ -120,7 +159,7 @@ async function detail(mode,id){
   if(!state.itemUsageCache.has(row.bucket))state.itemUsageCache.set(row.bucket,(await json(`${dataBase}/item-usage-chunks/${row.bucket}.json`)).details);
   return {...d,editorial:state.itemEditorialCache.get(row.bucket)[id]||null,usage:state.itemUsageCache.get(row.bucket)[id]||null};
 }
-function entity(id,preferredKind=""){const preferred=preferredKind==="items"?itemMap.get(id):preferredKind==="research"?researchMap.get(id):null,x=preferred||itemMap.get(id)||researchMap.get(id),kind=preferred?preferredKind:itemMap.has(id)?"items":researchMap.has(id)?"research":"",n=entityNames[id];return kind?`<button class="chip" data-kind="${kind}" data-open="${esc(id)}">${esc(x.koName)}<span class="sub">${esc(x.enName)}</span></button>`:n?`<span class="badge">${esc(n[0])}<span class="sub">${esc(n[1])} · ${esc(id)}</span></span>`:`<span class="badge">${esc(id)}</span>`}
+function entity(id,preferredKind=""){const preferred=preferredKind==="items"&&itemIds.has(id)?"items":preferredKind==="research"&&researchIds.has(id)?"research":"";const kind=preferred||(itemIds.has(id)?"items":researchIds.has(id)?"research":"");const x=kind==="items"?itemMap.get(id):researchMap.get(id),n=entityNames[id];return kind?`<button class="chip" data-kind="${kind}" data-open="${esc(id)}">${esc(x?.koName||n?.[0]||id)}<span class="sub">${esc(x?.enName||n?.[1]||"")}</span></button>`:n?`<span class="badge">${esc(n[0])}<span class="sub">${esc(n[1])} · ${esc(id)}</span></span>`:`<span class="badge">${esc(id)}</span>`}
 function humanPath(p){return String(p||"직접 참조").split(".").map(x=>pathNames[x]||(/^\d+$/.test(x)?"#"+(Number(x)+1):x)).join(" › ")}
 function manufactureEntity(id){const n=entityNames[id];return`<a class="chip" href="../manufacture/#recipe=${encodeURIComponent(id)}">${esc(n?.[0]||id)}<span class="sub">${esc(n?.[1]||"")} · ${esc(id)}</span></a>`}
 function relations(xs,defaultSection=""){if(!xs?.length)return'<div class="empty">없음</div>';return xs.map(x=>{const section=x.section||defaultSection,preferred=section==="items"||section==="research"?section:"",target=section==="manufacture"?manufactureEntity(x.id):entity(x.id,preferred);return`<div class="rel"><span class="badge">${esc(sections[section]||section||"연결")}</span> ${target}<div class="paths">${arr(x.paths).map(humanPath).map(esc).join(" · ")}</div></div>`}).join("")}
@@ -358,10 +397,5 @@ async function openCompare(){
   const ids=state.selected[state.mode];if(ids.length<2)return;
   const ds=await Promise.all(ids.map(id=>detail(state.mode,id)));
   const fields=state.mode==="items"
-    ?[["종류",d=>kinds[d.kind]],["무게",d=>d.effectiveCore?.weight],["창고 점유",d=>d.effectiveCore?.size],["판매가",d=>d.raw?.costSell],["월 급여/수익",d=>d.effectiveCore?.monthlySalary],["위력",d=>d.raw?.power??d.raw?.meleePower],["피해형",d=>d.damageTypeKo],["내구",d=>d.effectiveCore?.armor],["한손 보정",d=>d.effectiveCore?.oneHandedPenalty],["연구 연결",d=>d.research.length],["제조 연결",d=>d.manufacture.length]]
-    :[["해석",d=>insightRoleLabels[d.insight?.primaryRole]||d.insight?.primaryRole||"—"],["연구량",d=>d.cost],["점수",d=>d.points],["실물 표본",d=>d.needItem?(d.destroyItem?"소모":"필요"):"불필요"],["명목 선행 연구량",d=>d.insight?.prerequisite?.prerequisiteCost??0],["직접 선행",d=>d.dependencies.length],["후속",d=>d.requiredBy.length],["생성 아이템",d=>Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem.length:(typeof d.raw?.spawnedItem==="string"?1:0)],["아이템 연결",d=>d.itemReferences.length],["제조 연결",d=>d.manufactureReferences.length]];
-  $("#compareBody").innerHTML=`<table class="compare-table"><tr><th>항목</th>${ds.map(d=>`<th>${esc(d.koName)}<span class="sub">${esc(d.enName)}</span></th>`).join("")}</tr>${fields.map(([k,f])=>`<tr><td>${esc(k)}</td>${ds.map(d=>`<td>${esc(fmt(f(d)))}</td>`).join("")}</tr>`).join("")}</table>`;
-  $("#compareDialog").showModal();
-}
-function route(){const m=location.hash.match(/^#(item|research)=(.+)$/);if(!m)return;state.mode=m[1]==="item"?"items":"research";$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.mode===state.mode));renderControls();render();openDetail(state.mode,decodeURIComponent(m[2]))}
-init();
+
+[Showing lines 1-399 of 407 (50.0KB limit). Use offset=400 to continue.]

@@ -5,6 +5,7 @@ const pct=v=>v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%";
 const dataBase="../data";
 let db={index:[],counts:{}},rows=[],support=null,detailCache=new Map(),editorialCache=new Map();
 const state={q:"",ground:"",hunter:"",eventLinked:"",difficulty:1,sort:"koName",dir:1,page:1,pageSize:100};
+let searchTimer=null;
 
 async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 gzip 데이터 스트림 해제를 지원하지 않습니다.");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));return new Response(stream).json()}
 function stat(label,value,note=""){return '<div class="stat"><span>'+esc(label)+'</span><b>'+esc(fmt(value))+'</b>'+(note?'<span>'+esc(note)+'</span>':'')+'</div>'}
@@ -14,7 +15,7 @@ function eventLink(x){return namedChip({id:x.eventId,koName:x.eventKoName,enName
 function itemLink(x){return namedChip(x,'../items/#item='+encodeURIComponent(x.id))}
 
 function initFilters(){
-  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;render()});
+  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;if(searchTimer!==null)clearTimeout(searchTimer);if(!state.q)render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
   for(const id of ["ground","hunter","eventLinked"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
   $("#difficulty").addEventListener("change",e=>{state.difficulty=Number(e.target.value);if(location.hash)route()});
   $("#drawer").addEventListener("change",e=>{if(e.target?.id==="detailDifficulty"){state.difficulty=Number(e.target.value);$("#difficulty").value=e.target.value;route()}});
