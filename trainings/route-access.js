@@ -50,6 +50,9 @@ export function routeContext(data,choices={}){
 }
 
 export function researchBlock(id,context,graph,eventSources={},path=new Set()){
+  // With no assumed research history, no branch can be proven permanently
+  // blocked. Unknown future event/item supply remains unresolved, not blocked.
+  if(context.completed.size===0&&context.disabledBy.size===0)return[];
   if(path.has(id)||path.size>=8)return[]; // cycles/deep paths are unresolved, not proof of exclusion
   if(context.completed.has(id)&&!context.disabledBy.has(id))return[]; // already granted; event no-self replay gate is irrelevant
   const next=new Set(path);next.add(id);
