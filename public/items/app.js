@@ -363,5 +363,5 @@ async function openCompare(){
   $("#compareBody").innerHTML=`<table class="compare-table"><tr><th>항목</th>${ds.map(d=>`<th>${esc(d.koName)}<span class="sub">${esc(d.enName)}</span></th>`).join("")}</tr>${fields.map(([k,f])=>`<tr><td>${esc(k)}</td>${ds.map(d=>`<td>${esc(fmt(f(d)))}</td>`).join("")}</tr>`).join("")}</table>`;
   $("#compareDialog").showModal();
 }
-
-[Showing lines 1-365 of 368 (50.0KB limit). Use offset=366 to continue.]
+function route(){const m=location.hash.match(/^#(item|research)=(.+)$/);if(!m)return;state.mode=m[1]==="item"?"items":"research";$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.mode===state.mode));renderControls();render();openDetail(state.mode,decodeURIComponent(m[2]))}
+init();
