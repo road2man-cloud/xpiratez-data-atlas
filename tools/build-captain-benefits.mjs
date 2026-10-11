@@ -207,10 +207,11 @@ const compactEvents=result.map(row=>{
     eventCount:events.length};
 });
 // Codex god bonuses are event gates, not eight exclusive captain branches.
-// G7 exposes two named rewards plus a third weighted (77/242) event outcome\n// without an independently indexed reward entry: do not invent its items.
+// G7 has three real outcomes: A/B items and a 77/242 weighted Poltergeist,
+// whose original item costSell is -$13,000,000.
 const godBonusRe=/^STR_CODEX_BONUS_G([1-8])([ABC]?)$/;
 const godRewardEvents=eventDetails.filter(e=>godBonusRe.test(e.id));
-assert.equal(godRewardEvents.length,13,"Codex G1-G8 indexed outcome count changed");
+assert.equal(godRewardEvents.length,14,"Codex G1-G8 indexed outcome count changed");
 const godRewards=godRewardEvents.map(e=>{
   const [,ordinal,variant]=e.id.match(godBonusRe);
   const script=ids(e.scripts).find(s=>ids(s.eventWeights).some(w=>
@@ -238,7 +239,8 @@ const godRewards=godRewardEvents.map(e=>{
     forbiddenResearch:excluded.map(x=>({id:x.id,name:x.koName||label(x.id)})),
     requiredItems:items.map(x=>({id:x.id,name:x.koName||label(x.id),value:x.value})),
     odds:script.conditions.executionOdds,weight:weights[0],
-    reward:slimReward(eventRewards(e))
+    reward:{...slimReward(eventRewards(e)),
+      guaranteedItemSellValue:Number(e.effects?.guaranteedItemSellValue)||0}
   };
 }).sort((a,b)=>Number(a.group.slice(1))-Number(b.group.slice(1))||
   (a.variant||"").localeCompare(b.variant||""));
