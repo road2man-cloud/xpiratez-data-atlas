@@ -11,6 +11,7 @@ const stats=document.querySelector("#choiceScenarioStats");
 const message=document.querySelector("#choiceScenarioMessage");
 const timeline=document.querySelector("#choiceScenarioTimeline");
 const exclusions=document.querySelector("#choiceScenarioBlocked");
+const multiPanel=document.querySelector("#choiceMultiPrerequisite");
 const search=document.querySelector("#choiceTopicSearch");
 const results=document.querySelector("#choiceTopicResults");
 const completedInput=document.querySelector("#choiceCompletedInput");
@@ -18,7 +19,7 @@ const saveFile=document.querySelector("#choiceSaveFile");
 const saveSummary=document.querySelector("#choiceSaveSummary");
 const evidenceSection=document.querySelector("#choiceSaveEvidence");
 const evidenceContent=document.querySelector("#choiceSaveEvidenceContent");
-let index=null,previouslyCompleted=[],proposed=[],state=null;
+let index=null,previouslyCompleted=[],proposed=[],state=null,branchReport=null;
 let importedDisabled=[],sourceMode="manual",saveInfo=null,saveEvidence=null;
 let searchTopics=[],searchTimer=null;
 const statusCache=new Map();
@@ -164,6 +165,43 @@ function renderBlocked(){
     }).join("");
 }
 
+function renderMultiPrerequisites(){
+  if(!multiPanel||!branchReport)return;
+  const rows=branchReport.affected.map(row=>({row,st:status(row.id)}));
+  const directlyBlocked=rows.filter(x=>x.st.kind==="blocked").length;
+  const activeBypass=rows.filter(x=>x.st.unlockedBy?.length).length;
+  const risky=rows.filter(x=>x.st.kind==="path-risk").length;
+  const selfLocks=branchReport.meta.selfLockCount;
+  const label=({row,st})=>{
+    const available=row.unlockSources.filter(id=>!state.disabled.has(id));
+    const finished=row.unlockSources.filter(id=>state.completed.has(id));
+    const caution=st.kind==="blocked"?"직접 영구 배제":
+      finished.length?"해금 출처 완료 · requires 별도 확인":
+      st.kind==="path-risk"?"선행 경로 위험":
+      !available.length?"대체 해금 출처 모두 배제 · 획득경로 불확실":
+      "대체 해금 가능성 · 조건 미검증";
+    return '<div class="choice-sim-block-row"><strong><a href="../research/#research='+encodeURIComponent(row.id)+'">'+
+      esc(terse(row.id))+'</a></strong><span class="'+(st.kind==="blocked"?"sim-text-blocked":"sim-text-risk")+'">'+
+      esc(caution)+'</span><small>충돌 선행 쌍 '+new Set(row.conflicts.map(pair=>[pair.from,pair.to].sort().join("|"))).size+
+      '개 · 안전한 unlocks 출처 '+row.unlockSources.length+'개'+
+      (row.selfLocks.length?' · 원본 선행이 후속 자체를 배제 '+row.selfLocks.length+'개':"")+
+      (row.unsafeUnlockSources.length?' · 이 연구까지 disables하는 위험 해금 출처 '+row.unsafeUnlockSources.length+'개':"")+
+      (finished.length?' · 활성: '+esc(finished.map(terse).slice(0,2).join(", ")):
+        available.length?' · 후보: '+esc(available.map(terse).slice(0,2).join(", ")):"")+
+      '</small></div>';
+  };
+  const important=rows.filter(x=>x.st.kind==="blocked"||x.st.kind==="path-risk"||x.row.unsafeUnlockSources.length);
+  const preview=important.length?important.slice(0,8):rows.slice(0,6);
+  multiPanel.innerHTML='<p class="muted">원본 복수 선행 '+branchReport.meta.multipleCount+
+    '개 중 상호배제 선행이 함께 들어간 연구 '+rows.length+
+    '개. 이 중 직접 배제 '+directlyBlocked+'개 · 현재 unlocks 우회 활성 '+activeBypass+
+    '개 · 선행 경로 위험 '+risky+'개 · 명목 선행이 대상 연구를 직접 배제하는 사례 '+selfLocks+
+    '개. <b>명목 dependencies의 모순만으로 영구 차단하지 않습니다.</b></p>'+
+    preview.map(label).join("")+
+    '<details><summary>전수조사 '+rows.length+'개 전체 펼치기</summary>'+
+    rows.map(label).join("")+'</details>'+
+    '<p class="choice-sim-help">판정식: (dependencies 전부 완료 또는 discovered unlocks 출처 1개 이상) 그리고 requires 전부 완료. 해당 연구의 직접 disables와 세이브 영구 배제 상태가 우선하며 이벤트·아이템·시설·무작위 지급은 미검증입니다.</p>';
+}
 function renderSaveEvidence(){
   if(!saveEvidence || sourceMode!=="save"){
     evidenceSection.hidden=true;
@@ -228,7 +266,7 @@ function refresh(){
   if(!index)return;
   state=computeChoiceScenario(index,previouslyCompleted,proposed,{snapshot:sourceMode==="save",disabledIds:importedDisabled});
   statusCache.clear();
-  selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMessage();renderSearch();renderSaveEvidence();
+  selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMultiPrerequisites();renderMessage();renderSearch();renderSaveEvidence();
 }
 
 function renderSearch(){
@@ -380,9 +418,13 @@ saveFile?.addEventListener("change",event=>{
 
 async function initialize(){
   try{
-    const response=await fetch("../data/choice-simulator-index.json");
+    const [response,auditResponse]=await Promise.all([fetch("../data/choice-simulator-index.json"),fetch("../data/research-branch-conflicts.json")]);
     if(!response.ok)throw new Error("분기 시뮬레이터 인덱스 HTTP "+response.status);
-    const body=await response.json();
+    if(!auditResponse.ok)throw new Error("복수 선행 감사 데이터 HTTP "+auditResponse.status);
+    const [body,audit]=await Promise.all([response.json(),auditResponse.json()]);
+    if(audit.schemaVersion!==1||audit.meta?.total!==body.count||audit.meta?.affected!==audit.affected?.length)
+      throw new Error("복수 선행 감사 데이터 버전/항목 수 불일치");
+    branchReport=audit;
     if(body.schemaVersion!==1||body.format!=="choice-runtime-v1"||body.count!==body.topics?.length)
       throw new Error("분기 시뮬레이터 인덱스 버전/항목 수가 일치하지 않습니다.");
     index=buildChoiceIndex(body.topics,{inline:true,unresolvedByField:body.unresolvedByField});

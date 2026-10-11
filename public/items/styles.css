@@ -1,3 +1,7 @@
+.badge.branch-alt{margin:2px 0 2px 5px;border-color:#577e9d;background:#152e43;color:#bce4ff;font-weight:800}
+.branch-gate-panel{padding:14px;border:1px solid #3a627f;border-radius:11px;background:#102035;line-height:1.65}
+.branch-gate-panel .insight-subsection{margin-top:12px}
+.branch-gate-panel details .semantic-ref{overflow-wrap:anywhere}
 :root{
   --bg:#0b1020;--panel:#111a2e;--panel2:#17243b;--line:#293b5f;--text:#edf3ff;--muted:#94a7c3;
   --accent:#7fb4ff;--accent2:#63d7c9;--warn:#ffd27a;
