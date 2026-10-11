@@ -40,6 +40,71 @@ for(const outcome of shared.outcomes){
     assert((source.scripts||[]).some(s=>s.id===script.id),
       "Shared event missing named script: "+outcome.id+" / "+script.id);
 }
+// Every G1-G8 reward must expose source-derived gates without misclassifying
+// the event as a captain choice. G7 is one weighted roll, not three 23% rolls.
+const godRewardRe=/^STR_CODEX_BONUS_G([1-8])([ABC]?)$/;
+const rawGodRewards=[...events.values()].filter(e=>godRewardRe.test(e.id));
+const gods=index.special?.godRewards||[];
+assert.equal(rawGodRewards.length,13);
+assert.equal(gods.length,rawGodRewards.length);
+assert.equal(index.meta.codexGodOutcomes,13);
+assert.equal(new Set(gods.map(g=>g.id)).size,13);
+assert.deepEqual([...new Set(gods.map(g=>g.group))],
+ Array.from({length:8},(_,i)=>"G"+(i+1)));
+for(const reward of gods){
+  const source=events.get(reward.id);
+  assert(source,"Unindexed G reward: "+reward.id);
+  const script=source.scripts.find(s=>
+    (s.eventWeights||[]).some(w=>(w.entries||[]).some(e=>e.eventId===reward.id)));
+  assert(script,"G reward has no weighted event script: "+reward.id);
+  const required=(script.triggerMaps?.researchTriggers||[]).filter(t=>t.value===true);
+  const forbidden=(script.triggerMaps?.researchTriggers||[]).filter(t=>t.value===false);
+  const items=(script.triggerMaps?.itemTriggers||[]);
+  const weight=(script.eventWeights||[]).flatMap(w=>(w.entries||[])
+    .filter(e=>e.eventId===reward.id)
+    .map(e=>({weight:e.weight,totalWeight:w.totalWeight,bucket:w.bucket})));
+  assert.deepEqual(reward.requiredResearch.map(x=>x.id),required.map(x=>x.id),
+    "G bonus required research diverged from source: "+reward.id);
+  assert.deepEqual(reward.forbiddenResearch.map(x=>x.id),forbidden.map(x=>x.id));
+  assert.deepEqual(reward.requiredItems.map(x=>({id:x.id,value:x.value})),
+    items.map(x=>({id:x.id,value:x.value})));
+  assert.deepEqual(reward.weight,weight[0]);
+  assert.equal(reward.odds,script.conditions.executionOdds);
+  assert.equal(reward.captainTrait,required.find(x=>/^STR_CAPTAIN_(DUMBLAZY|SOREDUMB|JACKSORE|JACKLAZY)$/.test(x.id))?.id||null);
+  assert.equal(reward.codexItem,items.find(x=>/^STR_CODEX_(GOLD|GREEN|RED|GRAY)$/.test(x.id))?.id);
+  assert(reward.forbiddenResearch.some(x=>x.id==="STR_CAPTAIN_SAINT"),
+    "No explicit Saint blocking gate: "+reward.id);
+  assert.deepEqual(reward.reward.guaranteedItems.map(x=>({id:x.id,qty:x.qty})),
+    (source.effects.guaranteedItems||[]).map(x=>({id:x.id,qty:x.qty})));
+  assert.equal(reward.reward.points,source.effects.points||0);
+  assert.equal(reward.reward.spawnedPersonType,source.effects.spawnedPersonType||null);
+  assert.equal(reward.reward.spawnedPersons,source.effects.spawnedPersons||null);
+}
+const g7=gods.filter(x=>x.group==="G7");
+assert.deepEqual(g7.map(g=>[g.weight.weight,g.weight.totalWeight]),[[144,242],[21,242]]);
+const g7Script=events.get("STR_CODEX_BONUS_G7A").scripts
+  .find(s=>s.id==="STR_CODEX_BONUS_G7");
+assert.equal(g7Script.eventWeights[0].entries.find(x=>x.eventId==="STR_CODEX_BONUS_G7C").weight,77);
+assert.equal(events.has("STR_CODEX_BONUS_G7C"),false,
+  "If G7C becomes indexed, expose its actual results instead of an unindexed caution");
+assert.equal(gods.find(g=>g.group==="G5").reward.spawnedSoldier.transformationBonuses.STR_BLESSING_OF_WAR,1);
+for(const row of index.rows){
+  const expected=gods.filter(g=>!g.captainTrait||row.eventSearch.includes(g.id)).map(g=>g.id);
+  assert.deepEqual(row.godRewardCandidates,expected,
+    "Wrong named captain-to-G payoff link: "+row.rowId);
+}
+for(const [captain,extras] of Object.entries({
+  lazyass:["G2A","G2B","G8A","G8B"],
+  dumbass:["G2A","G2B","G4A","G4B"],
+  jackass:["G6A","G6B","G8A","G8B"],
+  soreass:["G4A","G4B","G6A","G6B"]
+})){
+  const ids=index.rows.find(x=>x.rowId===captain).godRewardCandidates
+    .filter(id=>/G(?:2|4|6|8)[AB]$/.test(id))
+    .map(id=>id.replace("STR_CODEX_BONUS_",""));
+  assert.deepEqual(ids,extras,"Captain special G reward path regression: "+captain);
+}
+
 const names=new Set();
 let total=0,direct=0,subsequent=0,rewards=0;
 for(const row of index.rows){
@@ -169,6 +234,16 @@ assert(css.includes(".benefit-visitor-primary")&&css.includes(".benefit-visitor-
   css.includes(".captain-shared-visitor-cell")&&css.includes(".captain-shared-visitors"),
   "Common visitor must be visually prominent, not a tiny footnote");
 assert(css.includes(".toolbar{position:static!important")&&css.includes(".captain-benefit-cell"));
+assert(app.includes("CaptainBenefits?.godMatrixCell(r)")&&app.includes('id="godRewardSection"')===false,
+  "G reward must be rendered as a matrix column and separate HTML section");
+assert(ui.includes("function godRewardsMarkup(row)")&&ui.includes("function godMatrixCell(r)")&&
+  ui.includes("godGateStatus")&&ui.includes("renderGodPlanner()")&&
+  ui.includes("STR_CAPTAIN_SAINT")&&ui.includes("STR_SHADOW_CHASING")&&
+  ui.includes("STR_PSI_LAB")&&ui.includes('group==="G7"'),
+  "G reward eligibility cannot be replaced by a non-causal flat benefit list");
+assert(fs.readFileSync("public/captains/index.html","utf8").includes('id="godRewardSection"'));
+assert(css.includes(".god-reward-groups")&&css.includes(".captain-god-cell"));
+
 console.log("OK captain benefit catalog: "+index.rows.length+" stage choices / "+events.size+" event rules / "+
   total+" candidate event associations ("+direct+" direct / "+subsequent+
   " unlock-dependent) / "+rewards+" reward-bearing / "+shared.outcomes.length+" shared Knock Knock outcomes; Captain's 11, Priest/Thief common visitor & DumbLazy, exact conditional gates, direct exclusions and mobile CSS");
