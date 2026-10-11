@@ -86,6 +86,30 @@ try {
         const visitorColumnHeading=await page.locator('#matrixTable thead .captain-shared-visitor-head').textContent();
         if(!visitorColumnHeading.includes('공통 방문')||!visitorColumnHeading.includes('전용 보상과 별개'))
           errors.push('Shared visitor header must be separate from exclusive perk header');
+        const godCols=await page.locator('#matrixTable tbody .captain-god-cell').count();
+        if(godCols!==22)errors.push('Only '+godCols+'/22 captain-to-G reward matrix cells');
+        await page.locator('#godRewardCaptainChoice').waitFor({state:'attached',timeout:20000});
+        const godSelect=page.locator('#godRewardCaptainChoice');
+        if(await godSelect.locator('option').count()!==22)
+          errors.push('G reward selector is missing one or more captain paths');
+        await godSelect.selectOption('lazyass');
+        const lazyG2=page.locator('#godRewardPlannerList [data-god-event="STR_CODEX_BONUS_G2A"]');
+        const lazyG8=page.locator('#godRewardPlannerList [data-god-event="STR_CODEX_BONUS_G8A"]');
+        const lazyG4=page.locator('#godRewardPlannerList [data-god-event="STR_CODEX_BONUS_G4A"]');
+        if(!(await lazyG2.getAttribute('class')).includes('god-candidate')||
+           !(await lazyG8.getAttribute('class')).includes('god-candidate')||
+           !(await lazyG4.getAttribute('class')).includes('god-ineligible'))
+          errors.push('Lazyass should link G2 and G8 via subsequent traits, not SoreDumb G4');
+        const lazyText=await page.locator('#godRewardPlannerList').textContent();
+        if(!lazyText.includes('어둠 추적')||!lazyText.includes('부두술')||
+           !lazyText.includes('Saint')||!lazyText.includes('77/242'))
+          errors.push('G bonus causal chain or G7 weighted risk absent');
+        await godSelect.selectOption('jackass');
+        const jackG6=page.locator('#godRewardPlannerList [data-god-event="STR_CODEX_BONUS_G6A"]');
+        if(!(await jackG6.getAttribute('class')).includes('god-candidate')||
+           !(await page.locator('#godRewardPlannerList [data-god-event="STR_CODEX_BONUS_G2A"]').getAttribute('class')).includes('god-ineligible'))
+          errors.push('Jackass G6/G8 but not G2 causal link failed');
+        await godSelect.selectOption('lazyass');
         // A tiny footnote was insufficient: Priest's first featured event was
         // titled only '똑 똑', while Thief's main perk was Captain's 11.
         // Both rows MUST have the same prominent, source-backed visitor status.
@@ -364,6 +388,8 @@ try {
             if(await commonThief.locator('details .captain-shared-event-links a').count()!==21)
               errors.push('Not all common Knock Knock outcome IDs were linked');
           }
+          if(await page.locator('#captainBenefitDetail .god-reward-inline .god-reward-group').count()!==8)
+            errors.push('Captain detail has no self-contained G1-G8 causal reward breakdown');
           if(!(await page.locator('#captainBenefitDetail').innerText()).includes('STR_KNOCK_KNOCK_ROGUE_CLONE'))
             errors.push('Thief conditional DumbLazy/Rogue Clone entry absent');
           await page.locator('#dialogClose').click();
