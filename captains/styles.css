@@ -218,3 +218,57 @@ html{scroll-behavior:smooth}
   #exclusiveRules .choice-stage{content-visibility:auto;contain-intrinsic-size:auto 680px}
   .glossary-card,.deep-card,.timeline article{content-visibility:auto;contain-intrinsic-size:auto 310px}
 }
+
+/* Effective-rules-derived Captain payoff/provenance surface. */
+.captain-benefits-status{color:#a9cce9;font-size:.78rem;margin:4px 4px 10px;line-height:1.5}
+.captain-benefit-head{min-width:210px;max-width:240px}
+.captain-benefit-head small{display:block;color:#9eb5d7;font-size:.63rem;line-height:1.3;margin-top:4px}
+.captain-benefit-cell{min-width:195px;max-width:245px;vertical-align:top;text-align:left;line-height:1.38}
+.benefit-main{display:block;font-size:.78rem;font-weight:900;color:#a7f3d0;overflow-wrap:anywhere}
+.benefit-conditional{display:block;margin-top:4px;color:#dfc990;font-size:.68rem}
+.benefit-count{display:block;margin-top:4px;color:#9eb0ce;font-size:.63rem}
+.captain-branch-perks{margin:10px 0 0;padding:9px 11px;border:1px solid #315c48;background:#10271f;border-radius:10px;display:grid;gap:4px;color:#bedccc}
+.captain-branch-perks>b{font-size:.7rem;color:#8de7b5}
+.captain-branch-perks>strong{font-size:.9rem;color:#e0fff0}
+.captain-branch-perks>small,.captain-branch-perks>span{font-size:.7rem;line-height:1.4}
+.captain-benefit-detail{margin:20px 0 28px;display:grid;gap:11px}
+.captain-benefit-detail h3{font-size:1.1rem;margin:0 0 4px}
+.captain-benefit-explain{border-left:3px solid #50749e;padding:7px 10px;font-size:.8rem;line-height:1.55;color:#bcd0ea}
+.captain-key-reward{background:#163426;border:1px solid #3f8762;border-radius:13px;padding:16px}
+.captain-key-reward h4{color:#a5ffd2;font-size:1rem;margin:0 0 8px}
+.captain-key-reward p{font-size:.82rem;margin:9px 0;line-height:1.55}
+.captain-benefit-group{border:1px solid #35496b;border-radius:11px;padding:10px 12px;min-width:0}
+.captain-benefit-group>summary,.captain-event-item summary{cursor:pointer;color:#c5dcff;font-weight:800;font-size:.82rem}
+.captain-event-list{display:grid;gap:10px;margin-top:12px}
+.captain-event-item{padding:12px;border:1px solid #304361;border-radius:10px;background:#101c30;overflow-wrap:anywhere}
+.captain-event-title{display:flex;justify-content:space-between;gap:8px;align-items:start;flex-wrap:wrap}
+.captain-event-title b{font-size:.82rem;color:#dfedff}
+.captain-event-title span{font-size:.68rem;color:#d8cb9e}
+.captain-event-reward{font-size:.78rem!important;line-height:1.5;margin:8px 0!important}
+.captain-event-item details{font-size:.75rem;border-top:1px solid #2b4160;padding-top:7px}
+.captain-event-item details ul{padding-left:17px;display:grid;gap:8px}
+.captain-event-item details li{font-size:.73rem;line-height:1.55}
+.captain-event-item details li>div{margin:4px 0;overflow-wrap:anywhere}
+.captain-event-item details small{display:block;color:#a8bdd6}
+.captain-event-source{display:inline-block;font-size:.71rem;margin-top:8px}
+.captain-research-links{font-size:.77rem;line-height:1.8;overflow-wrap:anywhere}
+.branch-gate-not{color:#fda4af}
+@media(max-width:900px){
+  /* The toolbar used to stick at 3-4 lines (>50% of a short iPhone viewport).
+     It now scrolls naturally away; ONLY the concise table headers remain sticky. */
+  .toolbar{position:static!important;top:auto!important;backdrop-filter:none!important;flex-wrap:wrap;gap:8px;padding:10px}
+  .toolbar .search-wrap{min-width:0;flex:1 1 100%}
+  .toolbar .filter-wrap{min-width:110px}
+  .toolbar .check{padding:4px 0;font-size:.75rem}
+  .table-shell{max-height:75dvh;overscroll-behavior:contain}
+  .table-shell thead tr.group th{top:0;min-height:28px;padding:5px;font-size:.68rem;line-height:1.2;white-space:nowrap}
+  .table-shell thead tr:nth-child(2) th{top:28px;padding:5px 6px;font-size:.7rem;line-height:1.2;vertical-align:middle}
+  .table-shell .feature-head .col-effect{display:none}
+  .table-shell .feature-head .col-title{font-size:.7rem;max-height:36px;overflow:hidden}
+  .table-shell th:first-child,.table-shell td:first-child{min-width:142px;max-width:142px}
+  .table-shell .captain-benefit-head{min-width:145px;max-width:155px}
+  .table-shell .captain-benefit-head small{display:none}
+  .table-shell .captain-benefit-cell{min-width:158px;max-width:176px}
+  .captain-benefit-detail{gap:9px}
+  .captain-key-reward{padding:11px}
+}
