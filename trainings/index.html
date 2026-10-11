@@ -55,7 +55,7 @@
         <button id="quickAdd" type="button" class="btn-add" disabled>선택한 훈련 추가</button>
         <span id="quickHint" class="muted" aria-live="polite"></span>
       </div>
-      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>와 <b>선장 선택으로 영구 봉쇄된 연구·이벤트</b>를 분리해 판정합니다. 선장은 원본 4단계 선택지를 따라 구성하며 <b>고정된 유형 수를 가정하지 않습니다.</b> Saint는 Codex로 네 색상을 확보하고 선장의 일지 및 이벤트를 달성했다고 <b>가정</b>하는 추가 성취입니다. 실행 전에는 실제 세이브의 연구 완료·시설·아이템·훈장·능력치를 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
+      <p class="note">이 조합기는 <b>병종·이전 훈련·순서·생존 상태</b>와 <b>선장 선택으로 영구 봉쇄된 연구·이벤트</b>, <b>서로 다른 갈림길(Diverging Paths) 전용 특성의 동시 선택 충돌</b>을 분리해 판정합니다. 선장은 원본 4단계 선택지를 따라 구성하며 <b>고정된 유형 수를 가정하지 않습니다.</b> Saint는 Codex로 네 색상을 확보하고 선장의 일지 및 이벤트를 달성했다고 <b>가정</b>하는 추가 성취입니다. 실행 전에는 실제 세이브의 연구 완료·시설·아이템·훈장·능력치를 확인해야 합니다. 복제/소환은 원본 병사의 변신으로 합산하지 않습니다.</p>
       <div id="timeline" class="timeline" aria-live="polite"></div>
       <div id="planEffects" class="plan-effects"></div>
       <div class="actions"><button id="copyPlan" type="button">현재 조합 복사</button><span id="copyStatus" class="muted" role="status"></span></div>
@@ -110,7 +110,7 @@
   </div>
 </main>
 <dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
-<script type="module" src="app.js?v=large-db-perf-20261011"></script>
+<script type="module" src="app.js?v=large-db-perf-trait-gates-20261011"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
