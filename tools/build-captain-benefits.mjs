@@ -207,10 +207,10 @@ const compactEvents=result.map(row=>{
     eventCount:events.length};
 });
 // Codex god bonuses are event gates, not eight exclusive captain branches.
-// G7 has three weighted outcomes, including the dangerous third outcome.
+// G7 exposes two named rewards plus a third weighted (77/242) event outcome\n// without an independently indexed reward entry: do not invent its items.
 const godBonusRe=/^STR_CODEX_BONUS_G([1-8])([ABC]?)$/;
 const godRewardEvents=eventDetails.filter(e=>godBonusRe.test(e.id));
-assert.equal(godRewardEvents.length,14,"Codex G1-G8 outcome count changed");
+assert.equal(godRewardEvents.length,13,"Codex G1-G8 indexed outcome count changed");
 const godRewards=godRewardEvents.map(e=>{
   const [,ordinal,variant]=e.id.match(godBonusRe);
   const script=ids(e.scripts).find(s=>ids(s.eventWeights).some(w=>
