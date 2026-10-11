@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="XPiratez v.o1.1.1 영구 선택·분기 DB: 선장 성격, Codex, 사회·병종·세력·스토리 상호배타 선택의 획득과 영구 손실을 비교합니다." />
   <title>XPiratez 영구 선택·분기 DB</title>
-  <link rel="stylesheet" href="styles.css?v=branch-cycle-20261011-v1" />
+  <link rel="stylesheet" href="styles.css?v=mobile-captain-perks-20261011-v1" />
   <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body id="top">
@@ -76,8 +76,9 @@
           <p class="eyebrow">핵심 비교</p>
           <h2>전체 O/X 매트릭스</h2>
         </div>
-        <p class="muted">가로 스크롤 가능. 행을 누르면 상세 설명이 열립니다.</p>
+        <p class="muted">좌우 스크롤 가능 · 선장 행을 누르면 전용 이벤트·훈련 보상과 상호배제를 확인합니다.</p>
       </div>
+      <p id="captainBenefitsStatus" class="captain-benefits-status" role="status" aria-live="polite">전용 이벤트·훈련 보상 원본 데이터 연결 중…</p>
       <div class="table-shell card">
         <table id="matrixTable">
           <thead></thead>
@@ -218,9 +219,10 @@
     <div id="dialogBody"></div>
   </dialog>
 
-  <script src="captain-rows.js?v=human2-20261006"></script>
+  <script src="captain-rows.js?v=captain-perks-20261011-v1"></script>
   <script src="glossary.js?v=terms2-20261006"></script>
-  <script src="app.js?v=branch-perf-20261011"></script>
+  <script src="app.js?v=captain-perks-20261011-v1"></script>
+  <script src="benefits.js?v=captain-perks-20261011-v1"></script>
   <script src="extra-choices.js?v=choice-history-20261010"></script>
   <script type="module" src="choice-simulator.js?v=branch-audit-20261011-v4"></script>
   <script defer src="../play-guide.js?v=20261010"></script>
