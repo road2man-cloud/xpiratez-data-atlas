@@ -61,7 +61,17 @@ function cmp(a,b,key){
 const cols=[
   ["koName","제조식"],["roleKo","역할"],["time","기술자-시간"],["cost","제조비"],["requiredItemCount","재료종"],["outputItemCount","확정산출"],["researchCost","명목 연구량"],["baseFuncCount","baseFunc"],["opportunityNet","순가치"],["opportunityNetPerEngineerHour","순가치/시간"],["randomOptionCount","랜덤"]
 ];
+let searchReady=false,searchPromise=null;
+function ensureSearch(){
+  if(searchReady)return;
+  if(db.index.every(x=>typeof x.searchText==="string")){searchReady=true;render();return;}
+  if(!searchPromise)searchPromise=loadRuntime(dataBase+"/manufacture-search.json?v=large-db-perf-20261011")
+    .then(body=>{for(const row of db.index)row.searchText=body.search[row.id]||"";searchReady=true;if(state.q)render();})
+    .catch(error=>{searchPromise=null;if(state.q)$("#rowCount").textContent="검색 자료 로드 실패 · 입력을 바꾸면 재시도: "+error.message;});
+}
 function render(){
+  if(state.q&&!searchReady){$("#rowCount").textContent="전체 검색 자료를 불러오는 중…";ensureSearch();return;}
+
   rows=filtered().sort((a,b)=>state.dir*cmp(a,b,state.sort));
   const pages=Math.max(1,Math.ceil(rows.length/state.pageSize));state.page=Math.min(state.page,pages);
   const start=(state.page-1)*state.pageSize,pageRows=rows.slice(start,start+state.pageSize);

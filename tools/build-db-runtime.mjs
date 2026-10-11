@@ -22,7 +22,8 @@ const bonuses=Object.fromEntries(Object.entries(trainings.bonuses).map(([id,b])=
 write('trainings-runtime',{...trainings,transformations,bonuses});
 write('training-raw-rules',{rawRules});
 const manufacture=read('manufacture-index');
-const fields=['id','bucket','koName','enName','category','categoryKo','role','roleKo','time','cost','requiredItemCount','inputSummary','outputSummary','outputItemCount','randomOptionCount','researchCount','researchCost','baseFuncs','baseFuncCount','economicComparable','opportunityNet','opportunityNetPerEngineerHour','searchText'];
+const fields=['id','bucket','koName','enName','category','categoryKo','role','roleKo','time','cost','requiredItemCount','inputSummary','outputSummary','outputItemCount','randomOptionCount','researchCount','researchCost','baseFuncs','baseFuncCount','economicComparable','opportunityNet','opportunityNetPerEngineerHour'];
+write('manufacture-search',{search:Object.fromEntries(manufacture.index.map(row=>[row.id,row.searchText]))});
 write('manufacture-runtime',{...manufacture,index:manufacture.index.map(row=>Object.fromEntries(fields.map(k=>[k,row[k]])))});
 // Preserve ordinal research IDs used by progression plan buckets.
 write('soldier-research-labels',{topics:read('progression-research').topics.map(({id,koName,enName})=>({id,koName,enName}))});

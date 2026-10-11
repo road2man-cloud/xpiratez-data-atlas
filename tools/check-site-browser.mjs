@@ -112,6 +112,7 @@ try {
           search=before+"->"+after;
           if(after>=before&&before>2)errors.push("search no-match did not filter ("+search+")");
           await input.fill("");
+          await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
         }
         const row=page.locator(ready[slug]).first();
         // Item/research first table cell is a comparison checkbox; click the name instead.

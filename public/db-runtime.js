@@ -4,7 +4,7 @@ const requests=new Map();
 const fallbacks={
   "crafts-runtime":"progression","soldiers-runtime":"soldiers-index","soldiers-builds":"soldiers-index",
   "trainings-runtime":"trainings-index","training-raw-rules":"trainings-index",
-  "manufacture-runtime":"manufacture-index","soldier-research-labels":"progression-research"
+  "manufacture-search":"manufacture-index","manufacture-runtime":"manufacture-index","soldier-research-labels":"progression-research"
 };
 export function loadRuntime(url){
   if(!requests.has(url))requests.set(url,(async()=>{
@@ -15,6 +15,7 @@ export function loadRuntime(url){
     if(!response.ok)throw new Error(target+' HTTP '+response.status);
     if(compressed)return new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
     const body=await response.json();
+    if(url.includes('/manufacture-search.json'))return {search:Object.fromEntries(body.index.map(row=>[row.id,row.searchText]))};
     if(url.includes('/training-raw-rules.json'))return {rawRules:Object.fromEntries(body.transformations.map(t=>[t.id,t.rawRule]))};
     return body;
   })().catch(error=>{requests.delete(url);throw error;}));
