@@ -312,7 +312,7 @@ for(const m of missions){
   const raceCount=allRaceIds.length,deployIds=uniq([...siteDeployments.map(x=>x.id),...waves.flatMap(w=>Object.values(w.raceEffects).flatMap(x=>x.deploymentCandidates.map(c=>c.id)))].filter(Boolean)),maxSpeed=Math.max(0,...waves.map(w=>w.ufo.speedMax),...waves.flatMap(w=>Object.values(w.raceEffects).map(x=>x.effectiveSpeedMax)));
   const threat=threatProfile(waves,siteDeployments,allRaceIds);
   const search=[id,detail.koName,detail.enName,...allRaceIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...deployIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...threat.unitIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),...waves.flatMap(w=>[w.ufoId,w.koName,w.enName,w.trajectoryId]),...upstreamPositive.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")])].filter(Boolean).join(" ").toLowerCase();
-  index.push({id,bucket:b,koName:detail.koName,enName:detail.enName,scriptCount:scriptsDetailed.length,waveTypeCount:waves.length,waveCount:waves.reduce((s,w)=>s+w.count,0),raceCount,deploymentCount:deployIds.length,maxSpeed,hasGround,hasHunter,eventLinkCount:upstreamPositive.length,siteType:detail.siteType,objective:detail.objective,searchText:search});
+  index.push({id,bucket:b,koName:detail.koName,enName:detail.enName,scriptCount:scriptsDetailed.length,waveTypeCount:waves.length,waveCount:waves.reduce((s,w)=>s+w.count,0),raceCount,deploymentCount:deployIds.length,maxSpeed,maxHull:Math.max(0,...waves.map(w=>num(w.ufo.damageMax))),vesselNames:uniq(waves.map(w=>w.koName)),hasGround,hasHunter,eventLinkCount:upstreamPositive.length,siteType:detail.siteType,objective:detail.objective,searchText:search});
   const scriptDesc=scriptsDetailed.length?scriptsDetailed.slice(0,4).map(s=>{
     const odds=s.conditions?.executionOdds,first=s.conditions?.firstMonth,last=s.conditions?.lastMonth;
     const when=first!=null||last!=null?" · 월 "+(first??"제한없음")+"~"+(last??"제한없음"):"";
@@ -378,6 +378,56 @@ for(const m of missions){
   };
 }
 index.sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
+
+// A vessel is a first-class Geoscape object, even if no alienMission currently
+// references it. The mission-centric index alone makes a search for "Sandcrawler"
+// look like an unrelated "Marauding" operation.
+const vesselMissions=new Map();
+for(const d of Object.values(details).flatMap(Object.values)){
+  for(const w of d.waves){
+    if(!vesselMissions.has(w.ufoId))vesselMissions.set(w.ufoId,[]);
+    vesselMissions.get(w.ufoId).push({
+      missionId:d.id,missionKoName:d.koName,missionEnName:d.enName,
+      waveIndex:w.index,count:w.count,timer:w.timer,trajectoryId:w.trajectoryId,
+      trajectory:w.trajectory,hunterKillerPercentage:w.hunterKillerPercentage,
+      raceEffects:Object.values(w.raceEffects),scriptCount:d.scripts.length,
+      eventLinkCount:new Set(d.scripts.flatMap(s=>s.upstreamEvents.positive.map(x=>x.eventId))).size
+    });
+  }
+}
+const vesselIndex=ufos.map(u=>{
+  const id=u.type,links=vesselMissions.get(id)||[];
+  const directDeployment=effectiveDeployFor(u,"");
+  const deploymentIds=uniq([
+    ...directDeployment.deploymentCandidates.map(x=>x.id),
+    ...links.flatMap(m=>m.raceEffects.flatMap(r=>r.deploymentCandidates.map(x=>x.id)))
+  ]);
+  const raceIds=uniq(links.flatMap(m=>m.raceEffects.map(r=>r.raceId)));
+  const hasGround=links.some(m=>m.trajectory?.hasGround);
+  const hasHunter=links.some(m=>num(m.hunterKillerPercentage)>0);
+  const row={
+    id,koName:tr(id,"ko"),enName:tr(id,"en"),
+    size:u.size??null,damageMax:u.damageMax??null,speedMax:u.speedMax??null,
+    accel:u.accel??null,armor:u.armor??null,avoidBonus:u.avoidBonus??null,
+    power:u.power??null,range:u.range??null,reload:u.reload??null,score:u.score??null,
+    markerLand:u.markerLand??null,markerCrash:u.markerCrash??null,
+    missionCustomDeploy:u.missionCustomDeploy??null,unmanned:Boolean(u.unmanned),
+    directDeployments:directDeployment.deploymentCandidates,
+    missions:links,missionCount:new Set(links.map(m=>m.missionId)).size,
+    waveCount:links.reduce((sum,m)=>sum+m.count,0),
+    deploymentCount:deploymentIds.length,raceCount:raceIds.length,
+    eventLinkCount:Math.max(0,...links.map(m=>m.eventLinkCount)),
+    hasGround,hasHunter,
+    maxSpeed:Math.max(num(u.speedMax),...links.flatMap(m=>m.raceEffects.map(r=>r.effectiveSpeedMax))),
+    sourceFiles:sourceHistory["type:"+id]||[]
+  };
+  row.searchText=[id,row.koName,row.enName,
+    ...links.flatMap(m=>[m.missionId,m.missionKoName,m.missionEnName,m.trajectoryId]),
+    ...deploymentIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")]),
+    ...raceIds.flatMap(x=>[x,tr(x,"ko"),tr(x,"en")])
+  ].filter(Boolean).join(" ").toLowerCase();
+  return row;
+}).sort((a,b)=>a.koName.localeCompare(b.koName,"ko"));
 for(const e of Object.values(eventForceLinks)){
   const dedupe=xs=>{const m=new Map();for(const x of xs){const k=[x.eventId,x.triggerKind,x.triggerId,x.missionId,x.bucket].join("|");if(!m.has(k))m.set(k,x)}return[...m.values()]};
   e.enables=dedupe(e.enables);e.blocks=dedupe(e.blocks);
@@ -391,7 +441,7 @@ const deploymentSurfaces=Object.values(support.deployments).filter(d=>d.alertId|
 const missionSurfaces=index.map(x=>({kind:"mission",id:x.id,koName:x.koName,enName:x.enName,scriptCount:x.scriptCount,waveCount:x.waveCount,raceCount:x.raceCount,hasGround:x.hasGround,hasHunter:x.hasHunter,searchText:x.searchText}));
 const eventSurfaces=[...missionSurfaces,...deploymentSurfaces];
 const counts={missions:index.length,waves:totalWaves,ufos:ufos.length,trajectories:trajectories.length,races:races.length,units:units.length,deployments:deployments.length,groundMissions:groundMissionCount,hunterMissions:hunterMissionCount,eventLinkedMissions:eventLinkedCount,eventSurfaceMissions:missionSurfaces.length,eventSurfaceDeployments:deploymentSurfaces.length};
-gzipJson(path.join(outDir,"enemy-forces-index.json.gz"),{meta:{version:1,generator:"enemy-force-data-v1",compression:"gzip",sourceVersion:"XPiratez v.o1.1.1"},counts,index});
+gzipJson(path.join(outDir,"enemy-forces-index.json.gz"),{meta:{version:2,generator:"enemy-force-data-v2",compression:"gzip",sourceVersion:"XPiratez v.o1.1.1"},counts,index,vessels:vesselIndex});
 gzipJson(path.join(outDir,"event-surfaces-index.json.gz"),{meta:{version:1,generator:"event-surface-index-v1",compression:"gzip"},counts:{missions:missionSurfaces.length,deployments:deploymentSurfaces.length,total:eventSurfaces.length},index:eventSurfaces});
 for(const [b,ds] of Object.entries(details))gzipJson(path.join(outDir,"enemy-force-chunks",b+".json.gz"),{details:ds});
 for(const [b,ds] of Object.entries(editorials))gzipJson(path.join(outDir,"enemy-force-editorial-chunks",b+".json.gz"),{details:ds});

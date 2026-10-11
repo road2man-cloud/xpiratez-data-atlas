@@ -12,6 +12,28 @@ function editorial(row){editorialCache[row.bucket]??=readGz("enemy-force-editori
 function assert(v,msg){if(!v)throw new Error(msg)}
 function close(a,b,eps=1e-8){return Math.abs(Number(a)-Number(b))<=eps*Math.max(1,Math.abs(Number(a)),Math.abs(Number(b)))}
 assert(rows.length===339,"Expected 339 enemy missions, got "+rows.length);
+const vessels=db.vessels||[];
+assert(vessels.length===db.counts.ufos&&vessels.length===213,"Every UFO needs an independent searchable vessel record");
+const vesselIds=new Set(vessels.map(v=>v.id));
+assert(vesselIds.size===vessels.length,"Duplicate vessel ids");
+const missionIdsByIndex=new Set(rows.map(r=>r.id));
+for(const v of vessels){
+  assert(v.searchText.includes(v.id.toLowerCase())&&v.searchText.includes(v.koName.toLowerCase()),"Vessel alias/index missing "+v.id);
+  assert(v.missionCount===new Set(v.missions.map(m=>m.missionId)).size,"Vessel mission count mismatch "+v.id);
+  for(const m of v.missions){
+    assert(missionIdsByIndex.has(m.missionId),"Vessel links to missing mission "+v.id+" -> "+m.missionId);
+    assert(m.trajectoryId===m.trajectory?.id||!m.trajectory,"Vessel trajectory mismatch "+v.id);
+    for(const p of m.trajectory?.waypoints||[])assert(close(p.baseEffectiveSpeed,v.speedMax*p.speedPct/100),"Vessel waypoint speed mismatch "+v.id);
+  }
+}
+const sand=vessels.find(v=>v.id==="STR_VESSEL_GHOUL_CRAWLER");
+assert(sand?.koName==="샌드크롤러"&&sand.enName==="Sandcrawler","Sandcrawler translation/index missing");
+assert(sand.damageMax===180&&sand.speedMax===40&&sand.accel===1,"Sandcrawler hull/speed/accel regression");
+assert(sand.armor===1&&sand.power===10&&sand.range===10&&sand.reload===57,"Sandcrawler combat profile regression");
+assert(sand.missionCount===1&&sand.missions[0]?.missionId==="STR_MISSION_SANDCRAWLER","Sandcrawler mission reverse-link missing");
+assert(sand.searchText.includes("샌드크롤러")&&!sand.hasGround&&sand.missions[0].trajectory?.waypoints.every(p=>p.altitude===1&&p.baseEffectiveSpeed===40),"Sandcrawler search/landing regression");
+assert(sand.missions[0].raceEffects.some(r=>r.raceId==="STR_BANDIT"&&r.deploymentId==="STR_VESSEL_GHOUL_CRAWLER"),"Sandcrawler crew deployment missing");
+assert(rows.find(x=>x.id==="STR_MISSION_SANDCRAWLER")?.vesselNames?.includes("샌드크롤러"),"Mission result must expose vessel alias");
 assert(db.counts.waves===723,"Wave count regression");
 assert(db.counts.races===129&&db.counts.units===435&&db.counts.deployments===489,"Support count regression");
 assert(db.counts.eventLinkedMissions>=80,"Event-linked force coverage regression");
