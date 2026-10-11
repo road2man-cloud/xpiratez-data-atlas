@@ -25,6 +25,15 @@ assert(captainEvent.scripts.some(s=>s.yes.includes("STR_CAPTAIN_THIEF")));
 const dumb=routeContext(data,{captain:"STR_CAPTAIN_DUMBASS"});
 const priest=routeContext(data,{captain:"STR_CAPTAIN_PRIEST"});
 const thief=routeContext(data,{captain:"STR_CAPTAIN_THIEF"});
+// With no assumed completed/disabled research, speculative events and unlocks
+// cannot PROVE an exclusion. The startup shortcut must retain that invariant
+// for every canonical research topic, not just the handful of named samples.
+const unchosen=routeContext(data,{});
+assert.equal(unchosen.completed.size,0);
+assert.equal(unchosen.disabledBy.size,0);
+for(const id of Object.keys(data.researchGraph))
+  assert.deepEqual(researchBlock(id,unchosen,data.researchGraph,data.researchEventRoutes),[],
+    "Unchosen branch should not permanently block "+id);
 assert(dumb.disabledBy.get("STR_CAPTAIN_PUSSY")?.has("STR_CAPTAIN_DUMBASS"));
 assert(thief.completed.has("STR_CAPTAIN_PUSSY_UP"));
 assert(route("STR_CAPTAINS_11",{captain:"STR_CAPTAIN_DUMBASS"}).blocked,

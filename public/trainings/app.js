@@ -7,7 +7,8 @@ import {routeContext as buildResearchRouteContext,trainingRouteAccess} from "./r
 
 const $=selector=>document.querySelector(selector);
 const esc=x=>String(x??"").replace(/[&<>"']/g,s=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
-const n=x=>Number(x||0).toLocaleString("ko-KR");
+const koNumber=new Intl.NumberFormat("ko-KR");
+const n=x=>koNumber.format(Number(x||0));
 const list=x=>Array.isArray(x)?x:[];
 const sum=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b||{}))out[k]=(out[k]||0)+Number(v||0);return out};
 const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0);
