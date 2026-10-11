@@ -29,3 +29,9 @@ write('soldier-research-labels',{topics:read('progression-research').topics.map(
 // Existing canonical progression remains available to other DBs.
 fs.writeFileSync(base+'progression.json.gz',gzipSync(fs.readFileSync(base+'progression.json'),{level:9}));
 fs.writeFileSync(base+'choice-simulator-index.json.gz',gzipSync(fs.readFileSync(base+'choice-simulator-index.json'),{level:9}));
+const progression=read('progression');
+write('crafts-runtime',{
+  crafts:progression.crafts,
+  recipes:Object.fromEntries(Object.entries(progression.recipes).map(([id,r])=>[id,{id:r.id,koName:r.koName,enName:r.enName,eventVariants:(r.eventVariants||[]).map(v=>({eventId:v.eventId}))}])),
+  events:Object.fromEntries(Object.entries(progression.events).map(([id,e])=>[id,{id:e.id,koName:e.koName,enName:e.enName}]))
+});

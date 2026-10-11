@@ -29,7 +29,7 @@ const server=http.createServer((req,res)=>{
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const base='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox']});
-const selectors={soldiers:'#soldierTable tbody tr[data-row]',trainings:'#trainingTable tbody tr[data-id]',manufacture:'#manufactureTable tbody tr[data-id]'};
+const selectors={crafts:'#craftTable tbody tr[data-id]',soldiers:'#soldierTable tbody tr[data-row]',trainings:'#trainingTable tbody tr[data-id]',manufacture:'#manufactureTable tbody tr[data-id]'};
 const reports=[];
 const modes=[{name:'desktop',width:1440,height:900,cpu:1,latency:40,mbps:10},{name:'mobile',width:390,height:844,cpu:4,latency:150,mbps:1.6}];
 const median=values=>[...values].sort((a,b)=>a-b)[Math.floor(values.length/2)];

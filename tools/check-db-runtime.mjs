@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {gunzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 const read=name=>JSON.parse(fs.existsSync('public/data/'+name+'.json')?fs.readFileSync('public/data/'+name+'.json','utf8'):gunzipSync(fs.readFileSync('public/data/'+name+'.json.gz')));
-for(const name of ['soldiers-runtime','soldiers-builds','trainings-runtime','training-raw-rules','manufacture-runtime','soldier-research-labels','choice-simulator-index','progression']){
+for(const name of ['crafts-runtime','soldiers-runtime','soldiers-builds','trainings-runtime','training-raw-rules','manufacture-runtime','soldier-research-labels','choice-simulator-index','progression']){
   assert.deepEqual(JSON.parse(gunzipSync(fs.readFileSync('public/data/'+name+'.json.gz'))),read(name),name+' gzip parity');
 }
 const soldiers=read('soldiers-index'),sr=read('soldiers-runtime');
@@ -35,3 +35,12 @@ async function rows(source){
 const before=await rows(baseline),after=await rows(current);
 assert.deepEqual(after,before);
 console.log('OK runtime: exact gzip/JSON, search/sort fields, all research/event gates and referenced trait effects; '+after.length+' final builds numerically identical');
+
+const cr=read('crafts-runtime'),prog=read('progression');
+assert.deepEqual(cr.crafts,prog.crafts);
+for(const [id,r] of Object.entries(cr.recipes)){
+  for(const key of ['id','koName','enName'])assert.equal(r[key],prog.recipes[id][key]);
+  assert.deepEqual(r.eventVariants,(prog.recipes[id].eventVariants||[]).map(v=>({eventId:v.eventId})));
+}
+for(const [id,e] of Object.entries(cr.events))for(const key of ['id','koName','enName'])assert.equal(e[key],prog.events[id][key]);
+console.log('OK crafts runtime: all 96 craft stats, slots, branch summaries, aliases and recipe/event search labels identical');

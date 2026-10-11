@@ -2,7 +2,7 @@
 // Older browsers fetch the equivalent JSON. Failed requests are retryable.
 const requests=new Map();
 const fallbacks={
-  "soldiers-runtime":"soldiers-index","soldiers-builds":"soldiers-index",
+  "crafts-runtime":"progression","soldiers-runtime":"soldiers-index","soldiers-builds":"soldiers-index",
   "trainings-runtime":"trainings-index","training-raw-rules":"trainings-index",
   "manufacture-runtime":"manufacture-index","soldier-research-labels":"progression-research"
 };
