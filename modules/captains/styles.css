@@ -228,6 +228,15 @@ html{scroll-behavior:smooth}
 .benefit-conditional{display:block;margin-top:4px;color:#dfc990;font-size:.68rem}
 .benefit-count{display:block;margin-top:4px;color:#9eb0ce;font-size:.63rem}
 .benefit-common{display:block;margin-top:3px;font-size:.69rem;color:#abd4fb;line-height:1.35}
+.benefit-visitor-primary{display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:7px 8px;margin-top:8px;border-radius:7px;border:1px solid #405775;background:#192940;line-height:1.35;overflow-wrap:anywhere}
+.benefit-visitor-primary strong{display:block;font-size:.78rem;font-weight:900;color:#d8ecff}
+.benefit-visitor-primary>b{display:block;font-size:.76rem;font-weight:850;color:#9bedc4}
+.benefit-visitor-primary small{display:block;font-size:.67rem;color:#b8cbe2;line-height:1.4}
+.benefit-visitor-yes>b{color:#9bedc4}
+.benefit-visitor-no>b{color:#f4b4b8}
+.benefit-visitor-no{border-color:#6a4146;background:#2d1d2a}
+.captain-benefit-cell .benefit-visitor-primary{max-width:100%}
+.captain-branch-perks .benefit-visitor-primary{margin:2px 0 4px}
 .captain-branch-perks{margin:10px 0 0;padding:9px 11px;border:1px solid #315c48;background:#10271f;border-radius:10px;display:grid;gap:4px;color:#bedccc}
 .captain-branch-perks>b{font-size:.7rem;color:#8de7b5}
 .captain-branch-perks>strong{font-size:.9rem;color:#e0fff0}
