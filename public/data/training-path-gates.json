@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "modVersion": "v.o1.1.1",
+  "trainingRulesSha256": "18fed01d0e134aa67b309b1ff820be4f4515b0f84d760ef8fb2864fe2ac9a1f4",
+  "paths": [
+    {
+      "id": "STR_GALS_ARE_SUPERIOR_PREQ",
+      "koName": "?슈퍼변이체 계집이 최고다?",
+      "enName": "?Gals Are Superior?"
+    },
+    {
+      "id": "STR_WE_NEED_MALE_TOUCH_PREQ",
+      "koName": "?우리는 남자가 필요해?",
+      "enName": "?We Need Male Touch?"
+    },
+    {
+      "id": "STR_PEASANT_REVOLUTION_PREQ",
+      "koName": "?농부 혁명?",
+      "enName": "?Peasant Revolution?"
+    },
+    {
+      "id": "STR_HYBRID_PATH_PREQ",
+      "koName": "?삶은 혼종이다?",
+      "enName": "?Life Is Hybrid?"
+    },
+    {
+      "id": "STR_CAT_PATH_PREQ",
+      "koName": "?고양이와 함께 살기?",
+      "enName": "?Cats 4 Life?"
+    }
+  ],
+  "masks": {
+    "STR_HIGH_MAGOS_CEREMONY": 8,
+    "STR_SARGEANT_TRAINING": 2,
+    "STR_MAGOS_CEREMONY": 8,
+    "STR_PSYCHONAUT_TRAINING": 8,
+    "STR_HOLY_WARRIOR_TRAINING": 2,
+    "STR_PURE_MAIDEN_TRAINING": 27,
+    "STR_SEER_CEREMONY": 8,
+    "STR_XENOMANCER_CEREMONY": 8,
+    "STR_ELEMENTALISTA_CEREMONY": 8,
+    "STR_BONDING_CEREMONY": 2,
+    "STR_OFFICER_TRAINING": 6,
+    "STR_SHAKEUP": 1,
+    "STR_SUN_WARRIORS_TRAINING": 2,
+    "STR_SCHOOL_OF_HARD_KNOCKS": 2,
+    "STR_REVOLUTIONARY_TRAINING": 4
+  },
+  "counts": {
+    "transformations": 83,
+    "constrained": 15,
+    "noIndexedPath": 0
+  }
+}

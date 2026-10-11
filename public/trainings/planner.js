@@ -124,6 +124,29 @@ export function exclusionChanges(rows,before,after){
   return{newlyBlocked,additionalCauses,unblocked};
 }
 
+// A candidate may be individually researchable yet mutually exclusive with a
+// previously selected training because the two require different Diverging Paths.
+// Only inspect newly planned transformations: a pre-trained event recruit may
+// legitimately carry a bonus from an otherwise blocked research route.
+export function divergentPathCompatibility(transformationIds,gateData){
+  const paths=Array.isArray(gateData?.paths)?gateData.paths:[];
+  if(!paths.length)return{compatible:true,paths:[],conflictIds:[]};
+  const all=(1<<paths.length)-1;
+  const ids=[...new Set(Array.isArray(transformationIds)?transformationIds:[])];
+  const maskFor=id=>gateData?.masks?.[id]??all;
+  const mask=ids.reduce((allowed,id)=>allowed&maskFor(id),all);
+  const remaining=paths.filter((_,index)=>mask&(1<<index));
+  if(mask)return{compatible:true,paths:remaining,conflictIds:[]};
+  let conflictIds=[];
+  for(let i=0;i<ids.length&&!conflictIds.length;i++)for(let j=i+1;j<ids.length;j++)
+    if(!(maskFor(ids[i])&maskFor(ids[j]))){
+      conflictIds=[ids[i],ids[j]];
+      break;
+    }
+  if(!conflictIds.length)conflictIds=ids.filter(id=>maskFor(id)!==all);
+  return{compatible:false,paths:[],conflictIds};
+}
+
 // SoldierBonus.stats must not be conflated with flatOverallStatChange.
 export function traitStatsOf(t,bonuses){
   return bonuses?.[t.soldierBonusType]?.stats||{};

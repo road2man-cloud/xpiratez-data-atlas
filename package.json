@@ -7,7 +7,8 @@
     "build:data": "node tools/build-data.mjs && node tools/build-choice-gates.mjs && npm run build:db-runtime && npm run build:public-gzip",
     "build:choice-gates": "node tools/build-choice-gates.mjs && npm run build:db-runtime && npm run build:public-gzip",
     "build:facilities": "node tools/build-data.mjs --facility-only",
-    "build:trainings": "node tools/build-training-data.mjs && node tools/build-training-access-data.mjs && npm run build:db-runtime && npm run build:public-gzip",
+    "build:trainings": "node tools/build-training-data.mjs && node tools/build-training-access-data.mjs && node tools/build-training-path-gates.mjs && npm run build:db-runtime && npm run build:public-gzip",
+    "build:trait-gates": "node tools/build-training-path-gates.mjs",
     "build:training-access": "node tools/build-training-access-data.mjs",
     "build:play-guide": "node tools/build-play-guide.mjs",
     "build:public-gzip": "node tools/build-public-gzip.mjs",
@@ -20,7 +21,7 @@
     "check:site": "node tools/check-site-assets.mjs",
     "check:functional:browser": "node tools/check-site-functional.mjs",
     "check:starting": "node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json && node tools/check-starting-frontend.mjs",
-    "check:soldiers": "node tools/check-soldiers.mjs --data public/data && node tools/check-soldier-branch-audit.mjs",
+    "check:soldiers": "node tools/check-soldiers.mjs --data public/data && node tools/check-soldier-branch-audit.mjs && node tools/check-trait-exclusions.mjs",
     "check:soldiers:browser": "node tools/check-soldier-frontend.mjs",
     "check:trainings": "node tools/check-trainings.mjs && node tools/check-training-access.mjs && node tools/check-training-routes.mjs && node tools/check-staged-captain.mjs",
     "check:progression": "node tools/check-progression.mjs --data public/data",
@@ -49,5 +50,8 @@
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.56.0"
   }
 }
