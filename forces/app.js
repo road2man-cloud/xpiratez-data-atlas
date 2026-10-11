@@ -3,8 +3,8 @@ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const fmt=v=>v==null||Number.isNaN(Number(v))?"—":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:2});
 const pct=v=>v==null?"—":(Number(v)*100).toFixed(Number(v)*100<10?2:1)+"%";
 const dataBase="../data";
-let db={index:[],counts:{}},rows=[],support=null,detailCache=new Map(),editorialCache=new Map();
-const state={q:"",ground:"",hunter:"",eventLinked:"",difficulty:1,sort:"koName",dir:1,page:1,pageSize:100};
+let db={index:[],vessels:[],counts:{}},rows=[],missionRows=[],vesselRows=[],support=null,detailCache=new Map(),editorialCache=new Map();
+const state={q:"",kind:"all",ground:"",hunter:"",eventLinked:"",difficulty:1,sort:"koName",dir:1,page:1,pageSize:100};
 let searchTimer=null;
 
 async function jsonGz(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);if(typeof DecompressionStream==="undefined")throw new Error("이 브라우저는 gzip 데이터 스트림 해제를 지원하지 않습니다.");const stream=r.body.pipeThrough(new DecompressionStream("gzip"));return new Response(stream).json()}
@@ -16,7 +16,7 @@ function itemLink(x){return namedChip(x,'../items/#item='+encodeURIComponent(x.i
 
 function initFilters(){
   $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;if(searchTimer!==null)clearTimeout(searchTimer);if(!state.q)render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
-  for(const id of ["ground","hunter","eventLinked"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
+  for(const id of ["kind","ground","hunter","eventLinked"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
   $("#difficulty").addEventListener("change",e=>{state.difficulty=Number(e.target.value);if(location.hash)route()});
   $("#drawer").addEventListener("change",e=>{if(e.target?.id==="detailDifficulty"){state.difficulty=Number(e.target.value);$("#difficulty").value=e.target.value;route()}});
   $("#pageSize").addEventListener("change",e=>{state.pageSize=Number(e.target.value);state.page=1;render()});
@@ -29,15 +29,20 @@ function renderSummary(){
   const c=db.counts||{};
   $("#summary").innerHTML=[stat("적 작전",c.missions),stat("총 wave",c.waves),stat("UFO",c.ufos),stat("종족",c.races),stat("적 유닛",c.units),stat("전술 배치",c.deployments),stat("지상 waypoint 작전",c.groundMissions),stat("Hunter-killer",c.hunterMissions),stat("이벤트 직접연결",c.eventLinkedMissions)].join("");
 }
-function filtered(){return db.index.filter(x=>{
-  if(state.q&&!x.searchText.includes(state.q))return false;
-  if(state.ground==="yes"&&!x.hasGround)return false;if(state.ground==="no"&&x.hasGround)return false;
-  if(state.hunter==="yes"&&!x.hasHunter)return false;if(state.hunter==="no"&&x.hasHunter)return false;
-  if(state.eventLinked==="yes"&&!x.eventLinkCount)return false;if(state.eventLinked==="no"&&x.eventLinkCount)return false;
-  return true;
-})}
+function filtered(){
+  // Keep the familiar mission list when search is empty. Queries search BOTH
+  // missions and physical UFOs; the dropdown can explicitly show either class.
+  const all=state.kind==="mission"?missionRows:state.kind==="vessel"?vesselRows:state.q?[...missionRows,...vesselRows]:missionRows;
+  return all.filter(x=>{
+    if(state.q&&!x.searchText.includes(state.q))return false;
+    if(state.ground==="yes"&&!x.hasGround)return false;if(state.ground==="no"&&x.hasGround)return false;
+    if(state.hunter==="yes"&&!x.hasHunter)return false;if(state.hunter==="no"&&x.hasHunter)return false;
+    if(state.eventLinked==="yes"&&!x.eventLinkCount)return false;if(state.eventLinked==="no"&&x.eventLinkCount)return false;
+    return true;
+  });
+}
 function cmp(a,b,key){const av=a[key],bv=b[key];if(av==null&&bv==null)return 0;if(av==null)return 1;if(bv==null)return-1;if(typeof av==="number"&&typeof bv==="number")return av-bv;return String(av).localeCompare(String(bv),"ko",{numeric:true})}
-const cols=[["koName","작전 / 부대"],["scriptCount","missionScript"],["waveTypeCount","wave종"],["waveCount","wave수"],["raceCount","종족후보"],["deploymentCount","배치후보"],["maxSpeed","최대속도"],["hasGround","지상"],["hasHunter","Hunter"],["eventLinkCount","이벤트"]];
+const cols=[["kind","분류"],["koName","작전 / 이동체"],["scriptCount","missionScript"],["waveCount","wave수"],["raceCount","종족후보"],["deploymentCount","배치후보"],["maxHull","내구 최대"],["maxSpeed","최대속도"],["hasGround","착륙 waypoint"],["hasHunter","Hunter"],["eventLinkCount","이벤트"]];
 function render(){
   rows=filtered().sort((a,b)=>state.dir*cmp(a,b,state.sort));
   const pages=Math.max(1,Math.ceil(rows.length/state.pageSize));state.page=Math.min(state.page,pages);
@@ -45,9 +50,15 @@ function render(){
   $("#rowCount").textContent=rows.length.toLocaleString("ko-KR")+"개";$("#pageInfo").textContent=state.page+" / "+pages;
   $("#prev").disabled=state.page<=1;$("#next").disabled=state.page>=pages;
   $("#forceTable thead").innerHTML="<tr>"+cols.map(x=>'<th data-sort="'+x[0]+'">'+esc(x[1])+(state.sort===x[0]?(state.dir>0?" ▲":" ▼"):"")+"</th>").join("")+"</tr>";
-  $("#forceTable tbody").innerHTML=pageRows.map(x=>'<tr data-id="'+esc(x.id)+'"><td><span class="name">'+esc(x.koName)+'</span><span class="sub">'+esc(x.enName)+' · '+esc(x.id)+'</span></td><td>'+fmt(x.scriptCount)+'</td><td>'+fmt(x.waveTypeCount)+'</td><td>'+fmt(x.waveCount)+'</td><td>'+fmt(x.raceCount)+'</td><td>'+fmt(x.deploymentCount)+'</td><td>'+fmt(x.maxSpeed)+'</td><td>'+(x.hasGround?'<span class="positive">있음</span>':'—')+'</td><td>'+(x.hasHunter?'<span class="warning">있음</span>':'—')+'</td><td>'+(x.eventLinkCount?'<span class="positive">'+fmt(x.eventLinkCount)+'</span>':'—')+'</td></tr>').join("");
+  $("#forceTable tbody").innerHTML=pageRows.map(x=>{
+    const isVessel=x.kind==="vessel";
+    const second=isVessel
+      ?('<span class="vessel-alias">연결 작전: '+esc([...new Set((x.missions||[]).map(m=>m.missionKoName))].slice(0,3).join(" · ")||"직접 연결 미확인")+'</span>')
+      :((x.vesselNames||[]).length?'<span class="vessel-alias">등장 기체: '+esc(x.vesselNames.join(" · "))+'</span>':'');
+    return '<tr data-kind="'+esc(x.kind)+'" data-id="'+esc(x.id)+'"><td><span class="role '+(isVessel?'secondary':'')+'">'+(isVessel?'이동체':'작전')+'</span></td><td><span class="name">'+esc(x.koName)+'</span>'+second+'<span class="sub">'+esc(x.enName)+' · '+esc(x.id)+'</span></td><td>'+(isVessel?'—':fmt(x.scriptCount))+'</td><td>'+fmt(x.waveCount)+'</td><td>'+fmt(x.raceCount)+'</td><td>'+fmt(x.deploymentCount)+'</td><td>'+fmt(isVessel?x.damageMax:x.maxHull)+'</td><td>'+fmt(x.maxSpeed)+'</td><td>'+(x.hasGround?'<span class="positive">있음</span>':'—')+'</td><td>'+(x.hasHunter?'<span class="warning">있음</span>':'—')+'</td><td>'+(x.eventLinkCount?'<span class="positive">'+fmt(x.eventLinkCount)+'</span>':'—')+'</td></tr>';
+  }).join("");
   document.querySelectorAll("th[data-sort]").forEach(th=>th.onclick=()=>{const k=th.dataset.sort;if(state.sort===k)state.dir*=-1;else{state.sort=k;state.dir=1}render()});
-  document.querySelectorAll("#forceTable tbody tr").forEach(tr=>tr.onclick=()=>{location.hash="force="+encodeURIComponent(tr.dataset.id)});
+  document.querySelectorAll("#forceTable tbody tr").forEach(tr=>tr.onclick=()=>{location.hash=(tr.dataset.kind==="vessel"?"vessel=":"force=")+encodeURIComponent(tr.dataset.id)});
 }
 function editorialMarkup(e){
   if(!e)return"";
@@ -145,7 +156,7 @@ function waveDeploymentsMarkup(re){
 }
 function wavesMarkup(d){
   if(!d.waves?.length)return'<section class="section"><h3>Wave / 이동</h3><div class="empty">wave 없음</div></section>';
-  return '<section class="section"><div class="insight-head"><h3>Wave / Geoscape 이동 / 교전배치</h3><span class="evidence direct">UFO + trajectory + raceBonus</span></div>'+d.waves.map(w=>'<article class="wave-card"><div class="wave-head"><div><b>Wave '+w.index+': '+esc(w.koName)+'</b><span class="sub">'+esc(w.ufoId)+' · count '+fmt(w.count)+' · trajectory '+esc(w.trajectoryId)+'</span></div><div><span class="pill">max '+fmt(w.ufo.speedMax)+'</span>'+(w.hunterKillerPercentage?'<span class="pill warning">hunter '+fmt(w.hunterKillerPercentage)+'%</span>':'')+'</div></div>'+kpis([["HP/내구",fmt(w.ufo.damageMax)],["최대속도",fmt(w.ufo.speedMax)],["가속",fmt(w.ufo.accel)],["화력",fmt(w.ufo.power)],["사거리",fmt(w.ufo.range)],["reload",fmt(w.ufo.reload)],["score",fmt(w.ufo.score)],["groundTimer",fmt(w.trajectory?.groundTimer)]])+(Object.keys(w.raceEffects||{}).length?Object.values(w.raceEffects).map(re=>'<details class="race-card"><summary>'+esc(re.koName)+' · 조건부 max '+fmt(re.effectiveSpeedMax)+' · '+esc(w.ufoId==="dummy"&&d.siteDeployments?.length?"지형별 배치 "+d.siteDeployments.length+"개":re.deploymentId?"deployment "+re.deploymentId:"배치 미확인")+'</summary><div class="sub">기본 '+fmt(re.speedMaxBase)+' + raceBonus.speedMax '+fmt(re.speedMaxRaceBonus)+' = '+fmt(re.effectiveSpeedMax)+' · 배치 근거 '+esc(re.deploymentSource)+'</div>'+trajectoryMarkup(w.trajectory,re.effectiveSpeedMax)+(w.ufoId==="dummy"&&d.siteDeployments?.length?'<div class="direct-note">이 wave는 dummy입니다. 실제 지상 전술 병력은 아래의 customUfo 연결 지형별 배치를 확인하세요.</div>':waveDeploymentsMarkup(re))+'</details>').join(""):trajectoryMarkup(w.trajectory,w.ufo.speedMax)+'<div class="unknown-note">이 작전에서 종족이 정적으로 확정되지 않아 race별 deployment/유닛 편성은 표시하지 않습니다.</div>')+'</article>').join("")+'</section>';
+  return '<section class="section"><div class="insight-head"><h3>Wave / Geoscape 이동 / 교전배치</h3><span class="evidence direct">UFO + trajectory + raceBonus</span></div>'+d.waves.map(w=>'<article class="wave-card"><div class="wave-head"><div><b>Wave '+w.index+': '+esc(w.koName)+'</b><span class="sub">'+esc(w.ufoId)+' · count '+fmt(w.count)+' · trajectory '+esc(w.trajectoryId)+'</span></div><div>'+((db.vessels||[]).some(v=>v.id===w.ufoId)?'<a class="force-link" href="#vessel='+encodeURIComponent(w.ufoId)+'">기체 상세</a>':'')+'<span class="pill">max '+fmt(w.ufo.speedMax)+'</span>'+(w.hunterKillerPercentage?'<span class="pill warning">hunter '+fmt(w.hunterKillerPercentage)+'%</span>':'')+'</div></div>'+kpis([["HP/내구",fmt(w.ufo.damageMax)],["최대속도",fmt(w.ufo.speedMax)],["가속",fmt(w.ufo.accel)],["화력",fmt(w.ufo.power)],["사거리",fmt(w.ufo.range)],["reload",fmt(w.ufo.reload)],["score",fmt(w.ufo.score)],["groundTimer",fmt(w.trajectory?.groundTimer)]])+(Object.keys(w.raceEffects||{}).length?Object.values(w.raceEffects).map(re=>'<details class="race-card"><summary>'+esc(re.koName)+' · 조건부 max '+fmt(re.effectiveSpeedMax)+' · '+esc(w.ufoId==="dummy"&&d.siteDeployments?.length?"지형별 배치 "+d.siteDeployments.length+"개":re.deploymentId?"deployment "+re.deploymentId:"배치 미확인")+'</summary><div class="sub">기본 '+fmt(re.speedMaxBase)+' + raceBonus.speedMax '+fmt(re.speedMaxRaceBonus)+' = '+fmt(re.effectiveSpeedMax)+' · 배치 근거 '+esc(re.deploymentSource)+'</div>'+trajectoryMarkup(w.trajectory,re.effectiveSpeedMax)+(w.ufoId==="dummy"&&d.siteDeployments?.length?'<div class="direct-note">이 wave는 dummy입니다. 실제 지상 전술 병력은 아래의 customUfo 연결 지형별 배치를 확인하세요.</div>':waveDeploymentsMarkup(re))+'</details>').join(""):trajectoryMarkup(w.trajectory,w.ufo.speedMax)+'<div class="unknown-note">이 작전에서 종족이 정적으로 확정되지 않아 race별 deployment/유닛 편성은 표시하지 않습니다.</div>')+'</article>').join("")+'</section>';
 }
 function deploymentSourceKo(source){
   return ({"alienMission.siteType":"작전 siteType 직접 참조","alienDeployment.customUfo":"배치 customUfo 직접 참조",
@@ -201,6 +212,44 @@ async function openDeploymentDetail(id){
     $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
   }catch(err){$("#detail").innerHTML='<p class="negative">'+esc(err.stack||err.message)+'</p>';$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
+async function openVesselDetail(id){
+  const vessel=(db.vessels||[]).find(v=>v.id===id);if(!vessel)return;
+  try{
+    if(!support)support=await jsonGz(dataBase+"/enemy-force-support.json.gz");
+    const landing=vessel.missions.some(m=>m.trajectory?.hasGround);
+    const uniqueMissions=new Set(vessel.missions.map(m=>m.missionId));
+    const missionDetails=vessel.missions.map((m,mi)=>{
+      const races=m.raceEffects||[];
+      const combat=races.length?races.map((re,ri)=>'<details class="race-card"'+(mi===0&&ri===0?' open':'')+'><summary>'+esc(re.koName)+' · '+esc(re.raceId)+' · 실효 최대속도 '+fmt(re.effectiveSpeedMax)+'</summary>'+
+        '<p class="sub">최대속도 '+fmt(re.speedMaxBase)+' + raceBonus '+fmt(re.speedMaxRaceBonus)+' · 전술 배치 출처 '+esc(re.deploymentSource)+'</p>'+
+        waveDeploymentsMarkup(re)+'</details>').join(""):
+        '<p class="unknown-note">이 작전에 대해 종족을 정적으로 확정할 수 없어 실제 유닛 후보를 단정할 수 없습니다.</p>';
+      return '<article class="wave-card"><div class="wave-head"><div><b>'+esc(m.missionKoName)+' · Wave '+fmt(m.waveIndex)+'</b><span class="sub">'+esc(m.missionId)+' · wave 개수 '+fmt(m.count)+' · timer '+fmt(m.timer)+'</span></div>'+
+        '<a class="force-link" href="#force='+encodeURIComponent(m.missionId)+'">연결 작전 상세 보기</a></div>'+
+        '<div class="condition-cloud"><span class="condition">경로 '+esc(m.trajectoryId)+'</span><span class="condition">'+(m.trajectory?.hasGround?'고도 0 착륙 waypoint 포함':'고도 0 착륙 waypoint 없음')+'</span></div>'+
+        trajectoryMarkup(m.trajectory,vessel.speedMax)+combat+'</article>';
+    }).join("");
+    const directDeployments=!vessel.missions.length?(vessel.directDeployments||[]).map(x=>'<details class="race-card"><summary>직접 deployment 후보 '+esc(x.id)+' · '+esc(x.source)+'</summary>'+
+      '<p class="warning-note">이 기체를 호출하는 작전의 종족·편성 수량이 확인되지 않아 해당 배치가 실제로 사용되는지는 확정할 수 없습니다.</p>'+
+      deploymentMarkup(x.id,"")+'</details>').join(""):"";
+    const hasDirect=vessel.missions.length||vessel.directDeployments?.length;
+    $("#detail").innerHTML='<h2>'+esc(vessel.koName)+'</h2><div class="id">'+esc(vessel.enName)+' · '+esc(vessel.id)+'</div>'+
+      '<p><span class="role secondary">개별 적 이동체 / UFO 룰</span></p>'+detailDifficultyControlMarkup()+
+      kpis([["기체 내구도",fmt(vessel.damageMax)],["최대속도",fmt(vessel.speedMax)],["가속",fmt(vessel.accel)],["방어력",fmt(vessel.armor)],
+        ["요격 화력",fmt(vessel.power)],["사거리",fmt(vessel.range)],["재장전",fmt(vessel.reload)],["회피 보정",fmt(vessel.avoidBonus)],
+        ["기체 규모",vessel.size||"—"],["연결 작전",fmt(uniqueMissions.size)],["교전 배치 후보",fmt(vessel.deploymentCount)],["score",fmt(vessel.score)]])+
+      '<section class="section"><div class="insight-head"><h3>착륙 / 이동 경로</h3><span class="evidence direct">ufo + trajectory 원본</span></div>'+
+      '<p class="'+(landing?'positive':'muted')+'">'+(!vessel.missions.length?'이 기체를 사용하는 작전이 정적으로 연결되지 않아 자동 착륙 여부를 확인할 수 없습니다.':landing?'연결된 이동 경로에 altitude 0 착륙 waypoint가 있습니다.':'연결된 작전의 이동 경로에는 altitude 0 착륙 waypoint가 확인되지 않습니다.')+'</p>'+
+      '<p class="muted">이 결과는 경로상 자동 착륙 구간 유무입니다. 전술 전투 진입 가능 여부와 동일하지 않습니다. markerLand '+fmt(vessel.markerLand)+'는 착륙 표시용 지오스케이프 마커 필드이며 실제 착륙 경로를 증명하지 않습니다.</p>'+
+      '</section>'+
+      '<section class="section"><div class="insight-head"><h3>연결 작전 · 구성원 · 무장</h3><span class="evidence direct">wave → race → deployment → unit</span></div>'+
+      '<p class="muted">기체 1개가 항상 고정 병력을 싣는 것은 아닙니다. 아래 구성은 각각의 작전·선택 종족·난이도별 전술 배치 규칙입니다. 서로 다른 작전/종족의 병력을 합산하지 않습니다.</p>'+
+      (hasDirect?missionDetails+directDeployments:'<div class="unknown-note">이 기체와 정적으로 연결된 작전/전술 배치를 확인할 수 없습니다. 구성원을 임의로 만들지 않습니다.</div>')+'</section>'+
+      '<section class="section"><h3>출처</h3><p class="muted">'+((vessel.sourceFiles||[]).map(esc).join(" → ")||"—")+'</p></section>';
+    $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
+  }catch(err){$("#detail").innerHTML='<p class="negative">'+esc(err.stack||err.message)+'</p>';$("#drawer").classList.add("open");$("#backdrop").hidden=false}
+}
+
 async function openDetail(id){
   const row=db.index.find(x=>x.id===id);if(!row)return;
   try{
@@ -213,6 +262,6 @@ async function openDetail(id){
   }catch(err){$("#detail").innerHTML='<p class="negative">'+esc(err.stack||err.message)+'</p>';$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
 function closeDrawer(){history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
-function route(){const f=location.hash.match(/^#force=(.+)$/),d=location.hash.match(/^#deployment=(.+)$/);if(f)openDetail(decodeURIComponent(f[1]));else if(d)openDeploymentDetail(decodeURIComponent(d[1]));else closeDrawer()}
-async function init(){db=await jsonGz(dataBase+"/enemy-forces-index.json.gz");renderSummary();initFilters();render();route()}
+function route(){const f=location.hash.match(/^#force=(.+)$/),d=location.hash.match(/^#deployment=(.+)$/),v=location.hash.match(/^#vessel=(.+)$/);if(f)openDetail(decodeURIComponent(f[1]));else if(d)openDeploymentDetail(decodeURIComponent(d[1]));else if(v)openVesselDetail(decodeURIComponent(v[1]));else closeDrawer()}
+async function init(){db=await jsonGz(dataBase+"/enemy-forces-index.json.gz");missionRows=db.index.map(x=>({...x,kind:"mission"}));vesselRows=(db.vessels||[]).map(x=>({...x,kind:"vessel"}));renderSummary();initFilters();render();route()}
 init().catch(e=>{document.body.innerHTML='<main class="wrap"><h1>적부대 DB 로드 실패</h1><pre>'+esc(e.stack||e.message)+'</pre></main>'});
