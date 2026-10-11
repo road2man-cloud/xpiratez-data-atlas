@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import zlib from "node:zlib";
+import vm from "node:vm";
 import {buildChoiceIndex,computeChoiceScenario} from "../public/captains/choice-simulator-core.js";
 const root="public/data/";
 const index=JSON.parse(fs.readFileSync(root+"captain-benefits-index.json","utf8"));
@@ -106,6 +107,11 @@ const thief=index.rows.find(x=>x.rowId==="thief");
 const priest=index.rows.find(x=>x.rowId==="priest");
 const soreass=index.rows.find(x=>x.rowId==="soreass");
 assert(thief&&priest&&soreass);
+const captainVm={window:{}};
+vm.runInNewContext(fs.readFileSync("public/captains/captain-rows.js","utf8"),captainVm);
+const priestFeature=captainVm.window.CAPTAIN_ROWS.find(r=>r.id==="priest");
+assert(priestFeature?.bread==="yes"&&priestFeature?.bunker==="yes",
+  "Priest's visible primary perk must stay derived from bread/health training and bunker access");
 assert.equal(thief.commonKnockKnock.eligible,true,"Thief wrongly denied ordinary Knock Knock");
 assert.equal(priest.commonKnockKnock.eligible,true,"Priest wrongly denied ordinary Knock Knock");
 assert.equal(soreass.commonKnockKnock.eligible,false,"Soreass bypassed default negative gate");
@@ -151,6 +157,15 @@ const ui=fs.readFileSync("public/captains/benefits.js","utf8");
 const css=fs.readFileSync("public/captains/styles.css","utf8");
 assert(app.includes("CaptainBenefits?.matrixCell(r)")&&app.includes("CaptainBenefits?.renderDetail(r.id)"));
 assert(ui.includes("captainsElevenMarkup")&&ui.includes("eventPath(p)")&&ui.includes("commonVisitorMarkup")&&ui.includes("직접 표시할 지급품 없음"));
+assert(ui.includes('row.rowId==="priest"')&&ui.includes("건강미 훈련 · 벙커")&&
+  ui.includes("sharedVisitorBadge(row)")&&ui.includes("benefit-visitor-primary")&&
+  ui.includes("똑 똑(똑똑이) 방문")&&ui.includes("DumbLazy 연구 완료 후 외톨이 클론"),
+  "Priest/Thief shared visitor UI must not depend on featured reward ranking");
+assert(ui.includes("featuredName(indirect)")&&ui.includes("featuredName(direct)")&&
+  ui.includes("STR_KNOCK_KNOCK_ROGUE_CLONE"),
+  "Generic '똑 똑' headlines must distinguish each special reward");
+assert(css.includes(".benefit-visitor-primary")&&css.includes(".benefit-visitor-yes"),
+  "Common visitor must be visually prominent, not a tiny footnote");
 assert(css.includes(".toolbar{position:static!important")&&css.includes(".captain-benefit-cell"));
 console.log("OK captain benefit catalog: "+index.rows.length+" stage choices / "+events.size+" event rules / "+
   total+" candidate event associations ("+direct+" direct / "+subsequent+
