@@ -21,6 +21,7 @@
     if(!row)return "";
     return [row.choiceId,...row.unlocks.map(x=>x.id+" "+x.name),
       ...row.featured.map(x=>x.id+" "+x.name),row.eventSearch||"",
+      row.commonKnockKnock?.eligible?"일반 똑 똑 knock knock 공통 방문":"",
       id==="thief"?"캡틴스11 captains eleven 선장11 선장의 11 비밀 속임수":""]
       .join(" ").toLowerCase();
   }
@@ -43,7 +44,9 @@
       '<small class="benefit-conditional">'+esc(headline.tag)+'</small>'+
       '<small class="benefit-count">원본 명시 해금 '+row.unlocks.length+
       '개 · 직접 이벤트 '+row.categories.directEvents+
-      '곳 · 후속 후보 '+row.categories.downstreamEvents+'곳</small>';
+      '곳 · 후속 후보 '+row.categories.downstreamEvents+'곳</small>'+
+      '<small class="benefit-common">일반 똑 똑: '+
+      (row.commonKnockKnock?.eligible?'조건부 가능 (공통 방문)':'Soreass 조건으로 제외')+'</small>';
   }
   function renderStageCardBadges(){
     for(const card of document.querySelectorAll(".captain-branch-perks[data-benefit-choice]")){
@@ -57,6 +60,8 @@
         '<small>'+esc(headline.tag)+'</small>'+
         '<span>연구 해금 후보 '+row.unlocks.length+'개 · 관련 이벤트 '+row.categories.directEvents+
         ' 직접 / '+row.categories.downstreamEvents+' 후속 · 자세한 사항은 위 비교표의 선장 행을 선택</span>'+
+        '<small class="benefit-common">일반 똑 똑: '+
+        (row.commonKnockKnock?.eligible?'조건부 가능 · 다른 선장과 공유':'Soreass 조건으로 기본 방문 제외')+'</small>'+
         (highlight?'<small>'+highlight+'</small>':'');
     }
   }
@@ -131,6 +136,42 @@
       '<p><a href="../trainings/?training=STR_CAPTAINS_11">병사훈련 DB에서 효과·상한·재료 확인</a> · '+
       '<a href="../events/#event=STR_CAPTAINS_11">지급 이벤트 원본 보기</a></p></article>';
   }
+  function commonVisitorMarkup(row,detail){
+    const common=catalog?.special?.commonKnockKnock;
+    if(!common)return'<p class="risk-note">공통 방문 이벤트 검증 색인이 제공되지 않았습니다.</p>';
+    const available=row.commonKnockKnock?.eligible===true;
+    const sources=common.scripts.map(s=>'<code>'+esc(s.id)+'</code>').join(', ');
+    const exclusions=common.excludedResearch.map(id=>
+      '<a href="'+researchLink(id)+'">'+esc(id)+'</a>').join(' + ');
+    const first=common.scripts.map(s=>s.conditions?.firstMonth)
+      .filter(v=>v!==undefined);
+    const odds=common.scripts.map(s=>s.conditions?.executionOdds)
+      .filter(v=>v!==undefined);
+    const specialized=(detail.events||[]).filter(e=>/^STR_KNOCK_KNOCK_/.test(e.id));
+    return '<section class="captain-common-visitor" data-common-visitor="'+
+      (available?'eligible':'excluded')+'"><h4>공통 똑 똑(Knock Knock) 방문 · 선장 고유 보상과 별개</h4>'+
+      '<p><strong>'+ (available?'일반 방문 가능 후보':'이 분기는 일반 방문 차단')+
+      '</strong> · 원본 일반 방문 스크립트의 조건은 <b>'+exclusions+
+      ' 미보유</b>입니다. 사제/도둑 계급 자체는 금지조건에 없습니다.</p>'+
+      '<p>기본 스크립트: '+sources+
+      ' · firstMonth '+esc([...new Set(first)].join(', '))+
+      ' · executionOdds '+esc([...new Set(odds)].join(', '))+
+      '. <b>이 값은 방문의 월간 확정 확률이 아닙니다.</b> 이벤트별 선택 가중치와 다른 게임 조건은 별개입니다.</p>'+
+      (available?'<p>선장 선택만으로 이벤트가 반드시 발생하지는 않습니다.</p>':
+        '<p>단, Soreass 전용 방문 이벤트 등 별도 스크립트는 이 공통 차단과 구분합니다.</p>')+
+      '<details><summary>공통 방문 결과 후보 '+common.outcomes.length+
+      '종 전체 · 원본 이벤트 보기</summary><div class="captain-shared-event-links">'+
+      common.outcomes.map(x=>'<a href="'+eventLink(x.id)+'" title="'+esc(x.id)+'">'+
+        esc(x.name)+' ('+esc(x.id)+')</a>').join(' · ')+
+      '</div></details>'+
+      '<p>이 분기에 연결된 추가 특수 똑 똑 결과: '+
+      (specialized.length?specialized.slice(0,7).map(e=>
+        '<a href="'+eventLink(e.id)+'">'+esc(e.id)+'</a>').join(' · ')+
+        (specialized.length>7?' 외 '+(specialized.length-7)+'종':''):
+        '별도 추가 플래그의 지급 여부 확인 필요')+
+      '. 추가 특수 방문은 DumbLazy·JackLazy·Saint 등 각자의 연구·배제 조건을 충족해야 합니다.</p>'+
+      '</section>';
+  }
   function itemGroup(label,entries,max=12){
     if(!entries.length)return'<p class="muted">이 단계 선택의 명시적 해당 항목 없음</p>';
     return '<div class="captain-research-links">'+entries.slice(0,max).map(x=>
@@ -147,7 +188,7 @@
     const disabled=row.directDisables;
     host.innerHTML='<h3>선장 고유 혜택 · 정확한 지급·해금·상호배제</h3>'+
       '<p class="captain-benefit-explain">원본 4,612개 연구와 792개 이벤트의 조건을 대조했습니다. <b>연구 unlocks는 선행 우회/진입 후보이지 연구 자동 완료가 아니며</b>, 이벤트는 다른 선행·추첨·시기·자원 조건을 충족해야 합니다. 목록의 존재만으로 해당 세이브에서 발생이 보장되지 않습니다.</p>'+
-      captainsElevenMarkup(row)+
+      captainsElevenMarkup(row)+commonVisitorMarkup(row,detail)+
       '<details class="captain-benefit-group" open><summary>이 선택이 직접 조건인 이벤트 <b>'+direct.length+'개</b></summary>'+
       '<div class="captain-event-list">'+(direct.length?direct.map(eventCard).join(""):'<p>직접 조건인 이벤트 없음 · 다음 단계 또는 연구 해금 경로 확인</p>')+'</div></details>'+
       '<details class="captain-benefit-group"><summary>후속 명시 해금 뒤 조건부 이벤트 <b>'+followup.length+'개</b> (전체 목록)</summary>'+
@@ -189,6 +230,7 @@
     if(!response.ok)throw Error("전용 보상 데이터 HTTP "+response.status);
     const data=await response.json();
     if(data.schemaVersion!==1||data.meta.captains!==22||data.rows.length!==22||
+      data.special?.commonKnockKnock?.scripts.length!==3||
       !data.rows.some(r=>r.rowId==="thief"&&r.featured.some(e=>e.id==="STR_CAPTAINS_11")))
       throw Error("Captain’s 11 또는 선장 보상 색인 불일치");
     catalog=data;

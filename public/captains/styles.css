@@ -227,6 +227,7 @@ html{scroll-behavior:smooth}
 .benefit-main{display:block;font-size:.78rem;font-weight:900;color:#a7f3d0;overflow-wrap:anywhere}
 .benefit-conditional{display:block;margin-top:4px;color:#dfc990;font-size:.68rem}
 .benefit-count{display:block;margin-top:4px;color:#9eb0ce;font-size:.63rem}
+.benefit-common{display:block;margin-top:3px;font-size:.69rem;color:#abd4fb;line-height:1.35}
 .captain-branch-perks{margin:10px 0 0;padding:9px 11px;border:1px solid #315c48;background:#10271f;border-radius:10px;display:grid;gap:4px;color:#bedccc}
 .captain-branch-perks>b{font-size:.7rem;color:#8de7b5}
 .captain-branch-perks>strong{font-size:.9rem;color:#e0fff0}
@@ -236,6 +237,12 @@ html{scroll-behavior:smooth}
 .captain-benefit-explain{border-left:3px solid #50749e;padding:7px 10px;font-size:.8rem;line-height:1.55;color:#bcd0ea}
 .captain-key-reward{background:#163426;border:1px solid #3f8762;border-radius:13px;padding:16px}
 .captain-key-reward h4{color:#a5ffd2;font-size:1rem;margin:0 0 8px}
+.captain-common-visitor{border:1px solid #49627d;background:#132238;border-radius:12px;padding:13px;line-height:1.55}
+.captain-common-visitor h4{font-size:.93rem;color:#c7e6ff;margin:0 0 8px}
+.captain-common-visitor p{font-size:.79rem;margin:8px 0;overflow-wrap:anywhere}
+.captain-common-visitor details{margin:10px 0}
+.captain-common-visitor summary{font-weight:800;font-size:.78rem;color:#c2dcff;cursor:pointer}
+.captain-shared-event-links{display:block;max-height:210px;overflow:auto;font-size:.72rem;line-height:1.85;margin:8px 0;overflow-wrap:anywhere}
 .captain-key-reward p{font-size:.82rem;margin:9px 0;line-height:1.55}
 .captain-benefit-group{border:1px solid #35496b;border-radius:11px;padding:10px 12px;min-width:0}
 .captain-benefit-group>summary,.captain-event-item summary{cursor:pointer;color:#c5dcff;font-weight:800;font-size:.82rem}
