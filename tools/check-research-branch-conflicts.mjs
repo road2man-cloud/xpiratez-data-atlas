@@ -1,13 +1,49 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {auditMultiPrerequisiteBranches} from "./research-branch-audit.mjs";
+import {auditResearchCycles,publishedResearchEventGrants} from "./research-cycle-audit.mjs";
 import {buildChoiceIndex,computeChoiceScenario,choiceStatus} from "../public/captains/choice-simulator-core.js";
 
 const runtime=JSON.parse(fs.readFileSync("public/data/choice-simulator-index.json","utf8"));
 const catalog=JSON.parse(fs.readFileSync("public/data/research-branch-conflicts.json","utf8"));
-assert.deepEqual(catalog,auditMultiPrerequisiteBranches(runtime.topics),
-  "The published collision catalog must exactly match the effective OXCE research rules");
-assert.equal(catalog.schemaVersion,2);
+const recomputed=auditMultiPrerequisiteBranches(runtime.topics);
+const cycles=auditResearchCycles(runtime.topics,publishedResearchEventGrants());
+recomputed.schemaVersion=3;
+recomputed.cycles=cycles.groups;
+Object.assign(recomputed.meta,{cycleGroups:cycles.groupCount,cycleTopics:cycles.topicCount,
+  cycleGroupsWithoutIndexedEscape:cycles.noIndexedEscape});
+assert.deepEqual(catalog,recomputed,
+  "The published conflicts and cycles must exactly match effective rules and event grants");
+assert.equal(catalog.schemaVersion,3);
+assert.equal(catalog.meta.cycleGroups,7);
+assert.equal(catalog.meta.cycleTopics,95);
+assert.equal(catalog.meta.cycleGroupsWithoutIndexedEscape,0);
+const cycleIds=new Set(catalog.cycles.flatMap(g=>g.memberIds));
+assert.equal(cycleIds.size,95);
+const byTopic=new Map(runtime.topics.map(t=>[t.id,t]));
+for(const group of catalog.cycles){
+  assert(group.memberIds.length>1&&group.witness.length>=3,"Cycle is not a closed directed loop");
+  assert.equal(group.witness[0],group.witness.at(-1));
+  for(let k=1;k<group.witness.length;k++){
+    const source=byTopic.get(group.witness[k-1]);
+    assert([...(source?.dependencies||[]),...(source?.requires||[])].includes(group.witness[k]),
+      "Cycle proof contains non-prerequisite edge: "+group.witness[k-1]);
+  }
+  assert(Object.values(group.externalSourceCounts).some(n=>n>0),
+    "A cycle without an indexed external grant needs an explicit unknown-path warning");
+}
+const ninja=catalog.cycles.find(g=>g.memberIds.includes("STR_NINJA_WAR_READY"));
+assert(ninja?.memberIds.includes("STR_NINJA_WAR"));
+assert(ninja.externalSourceExamples.events.some(e=>e.eventId==="STR_NINJA_WAR_READY"));
+assert(ninja.externalSourceExamples.events.some(e=>e.eventId==="STR_GODS_WILL_BE_WATCHING"));
+const syntheticCycles=auditResearchCycles([
+ {id:"A",dependencies:["B"]},{id:"B",dependencies:["A"]},
+ {id:"UNLOCK",unlocks:["A"]},{id:"C",dependencies:["D"]},{id:"D",dependencies:["C"]}
+],{B:[{id:"GRANT_B",koName:"B event"}]});
+assert.equal(syntheticCycles.groupCount,2);
+assert.equal(syntheticCycles.topicCount,4);
+assert.equal(syntheticCycles.noIndexedEscape,1);
+assert(syntheticCycles.groups.find(g=>g.memberIds.includes("A")).externalSourceCounts.unlocks===1);
 assert.equal(catalog.meta.total,4612);
 assert.equal(catalog.meta.multipleCount,1777);
 assert.equal(catalog.meta.conflictCount,42);
@@ -132,6 +168,10 @@ const researchHTML=fs.readFileSync("public/research/index.html","utf8");
 const branchHTML=fs.readFileSync("public/captains/index.html","utf8");
 assert(researchUI.includes('data-filter="branch"')&&researchUI.includes("researchBranchConflictMarkup(d)"),
   "Research filter and detail must surface alternative branches");
+assert(researchUI.includes('value="cycle"')&&researchUI.includes("researchCycleMarkup(d)"),
+  "Research database must expose nominal dependency cycles and their escape mechanisms");
+assert(branchUI.includes("cycleReportMarkup()")&&branchUI.includes("choiceCycleGroups"),
+  "Branch simulator must disclose the seven nominal research cycles");
 assert(researchUI.includes('value="nested"')&&researchUI.includes("unlockSourceConflicts")&&
   researchUI.includes('value="self-source"')&&researchUI.includes("자기 배제하는 해금 출처"),
   "Nested unlock-source warnings must be filterable and explained in research DB");
@@ -144,5 +184,6 @@ console.log("[research-branch-audit] OK "+catalog.meta.total+" rules / "+catalog
   " multi-prerequisite topics / "+catalog.meta.affected+" directed conflicts / "+
   catalog.meta.selfLockCount+" self-disabling nominal prerequisites / "+catalog.meta.nestedConflictTargets+
   " targets with upstream unlock-source conflict / "+catalog.meta.selfDisablingSourceTargets+
-  " targets with self-disabling unlockers / "+verifiedBypassEdges+
+  " targets with self-disabling unlockers / "+catalog.meta.cycleGroups+
+  " cyclic nominal-dependency components ("+catalog.meta.cycleTopics+" rules) / "+verifiedBypassEdges+
   " engine bypass edges; tested unsafe unlock, hard requires, nested sources and mirrored UI");
