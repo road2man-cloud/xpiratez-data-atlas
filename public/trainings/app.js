@@ -1,3 +1,4 @@
+import {loadRuntime} from "../db-runtime.js";
 import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue} from "./planner.js";
 import {buildChoiceIndex,parseCompletedResearch} from "../captains/choice-simulator-core.js";
 import {trainingRouteGate,routeEventReport} from "./route-gates.js";
@@ -56,16 +57,22 @@ const isHard=issues=>issues.some(x=>x.code!=="prerequisite");
 const statusOf=issues=>!issues.length?"ready":isHard(issues)?"blocked":"prereq";
 function currentOrigin(){return origins.get($("#origin").value);}
 function currentState(){return replay(currentOrigin(),selected,byId,{condition:$("#condition").value});}
+const ROUTE_ISSUES=new Map(),ROUTE_ACCESS=new Map(),TRAINING_SEARCH=new Map();
+function cachedRouteAccess(t){
+  if(!ROUTE_ACCESS.has(t.id))ROUTE_ACCESS.set(t.id,trainingRouteAccess(t,researchRouteContext,DATA));
+  return ROUTE_ACCESS.get(t.id);
+}
 function routeIssues(t){
+  if(ROUTE_ISSUES.has(t.id))return ROUTE_ISSUES.get(t.id);
   const gate=trainingRouteGate(t,routeContext,ACCESS);
   const existing=gate.kind==="blocked"?
     [{code:"route-blocked",ids:gate.reasons.map(x=>x.id),details:gate.reasons.map(x=>x.id+" — "+x.reason).join(" / ")}]:[];
   // Preserve the dedicated captain/Saint event model; supplement it with
   // the broader choice/event/item provenance for other route decisions.
-  const research=trainingRouteAccess(t,researchRouteContext,DATA);
+  const research=cachedRouteAccess(t);
   if(research.blocked&&!existing.length)
     existing.push({code:"research-route-blocked",ids:research.blockers.map(x=>x.researchId),access:research});
-  return existing;
+  ROUTE_ISSUES.set(t.id,existing);return existing;
 }
 function issuesFor(t,s){return[...evaluate(t,s),...routeIssues(t)];}
 function planWithRoute(t,s){
@@ -289,11 +296,11 @@ function renderTable(){
     if(filter!=="all"&&x.status!==filter)return false;
     if(kind!=="all"&&x.t.kind!==kind)return false;
     const t=x.t;
-    const blob=[t.id,t.koName,t.enName,t.kind,t.soldierBonusType||"",
+    if(!TRAINING_SEARCH.has(t.id))TRAINING_SEARCH.set(t.id,[t.id,t.koName,t.enName,t.kind,t.soldierBonusType||"",
       name(t.soldierBonusType),...t.requires,...t.requires.map(name),
       ...t.requiredItems.map(v=>v.id+" "+v.koName),
-      ...t.forbiddenPreviousTransformations.map(name),...t.requiredPreviousTransformations.map(name)].join(" ").normalize("NFKC").toLowerCase();
-    return!search||blob.includes(search);
+      ...t.forbiddenPreviousTransformations.map(name),...t.requiredPreviousTransformations.map(name)].join(" ").normalize("NFKC").toLowerCase());
+    return!search||TRAINING_SEARCH.get(t.id).includes(search);
   }).sort((a,b)=>{
     if(sortKey){
       const delta=traitSortValue(a.t,DATA.bonuses,sortKey)-traitSortValue(b.t,DATA.bonuses,sortKey);
@@ -335,6 +342,7 @@ function renderTable(){
   if(!sorted.length)$("#trainingTable tbody").innerHTML='<tr><td colspan="10">조건에 맞는 훈련이 없습니다.</td></tr>';
 }
 function redraw(){
+  ROUTE_ISSUES.clear();ROUTE_ACCESS.clear();
   origin=currentOrigin();state=currentState();
   const prior=parseCompletedResearch(choiceIndex,$("#researchRouteExtra")?.value||"").ids
     .filter(id=>!id.startsWith("STR_CAPTAIN_")&&id!=="STR_CAPTAINS_11");
@@ -351,7 +359,7 @@ function redraw(){
 }
 const section=(title,content)=>'<section class="detail-section"><h3>'+esc(title)+'</h3>'+content+'</section>';
 function renderResearchEvidence(t){
-  const access=trainingRouteAccess(t,researchRouteContext,DATA);
+  const access=cachedRouteAccess(t);
   const sources=access.sourceEvents.map(source=>
     '<li>'+evidenceEventLink(source.eventId,source.eventKoName)+' → '+esc(researchLabel(source.researchId))+
     ' · '+(source.impossible?'<span class="blocked">선택 분기에서 불가</span>':
@@ -438,8 +446,13 @@ function showDetail(id){
       extraStats.filter(k=>entries(t[k]).length).map(k=>'<p><b>'+esc(k)+'</b> '+statChips(t[k])+'</p>').join("")+
       '<p class="fine">직접 능력치에는 하드캡·최소/최대치 및 퍼센트 계산이 영향을 줄 수 있습니다. 특성 stats는 별도 SoldierBonus이며 합산 순서를 혼동하지 마십시오.</p>')+
     section("공식 데이터 / 근거",'<p><code>Ruleset/Piratez_Transformations.rul</code> · 효과값 <code>soldiers-index.json</code> · 연구 선행 <code>progression-research.json</code></p>'+
-      '<details><summary>원본 룰 필드 펼치기</summary><pre>'+esc(JSON.stringify(t.rawRule,null,2))+'</pre></details>');
+      '<details><summary>원본 룰 필드 펼치기</summary><pre>'+esc("불러오는 중…")+'</pre></details>');
   $("#detailDialog").showModal();
+  const raw=$("#detailBody pre");
+  loadRuntime("../data/training-raw-rules.json?v=large-db-perf-20261011")
+    .then(body=>{if(raw.isConnected)raw.textContent=JSON.stringify(body.rawRules[id],null,2);})
+    .catch(error=>{if(raw.isConnected){raw.textContent="원본 규칙 로드 실패: "+error.message;
+      const retry=document.createElement("button");retry.textContent="재시도";retry.onclick=()=>showDetail(id);raw.after(retry);}});
 }
 function initOrigins(){
   origins=new Map();
@@ -522,13 +535,14 @@ function bind(){
 }
 async function init(){
   try{
+    performance.mark("trainings:load-start");
     const load=async file=>{const r=await fetch(file);if(!r.ok)throw new Error(file+" HTTP "+r.status);return r.json();};
-    const [trainings,access,progression,choiceGates]=await Promise.all([
-      load("../data/trainings-index.json"),load("../data/training-access.json"),
-      load("../data/progression-research.json"),load("../data/choice-research-gates.json")
+    const [trainings,access,progression]=await Promise.all([
+      loadRuntime("../data/trainings-runtime.json?v=large-db-perf-20261011"),load("../data/training-access.json"),
+      loadRuntime("../data/choice-simulator-index.json?v=large-db-perf-20261011")
     ]);
     DATA=trainings;ACCESS=access;
-    choiceIndex=buildChoiceIndex(progression.topics,choiceGates);
+    choiceIndex=buildChoiceIndex(progression.topics,{inline:true,unresolvedByField:progression.unresolvedByField});
     validateCaptainStages(choiceIndex,ACCESS.captainStages);
     for(let i=0;i<4;i++)
       $("#captainStage"+i).innerHTML='<option value="">미선택 · 다음 단계 또는 보류</option>'+
@@ -580,6 +594,8 @@ async function init(){
     if(["GOLD","GREEN","RED","GRAY"].includes(query.get("codex")))codexChoice=query.get("codex");
     refreshCaptainStages();
     redraw();
+    performance.mark("trainings:ready");
+    performance.measure("trainings:initial","trainings:load-start","trainings:ready");
     if(byId.has(query.get("training")))showDetail(query.get("training"));
   }catch(error){
     console.error(error);

@@ -1,12 +1,18 @@
+import {loadRuntime,debounce} from "../db-runtime.js";
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmt=v=>v==null||Number.isNaN(Number(v))?"—":Number(v).toLocaleString("ko-KR",{maximumFractionDigits:2});
+const numberFormat=new Intl.NumberFormat("ko-KR",{maximumFractionDigits:2});
+const fmt=v=>v==null||Number.isNaN(Number(v))?"—":numberFormat.format(Number(v));
 const money=v=>v==null?"—":(Number(v)>0?"+":"")+fmt(Math.round(Number(v)));
 const dataBase="../data";
 let db={index:[],counts:{},roles:{}},rows=[],detailCache=new Map(),editorialCache=new Map();
 const state={q:"",role:"",category:"",economics:"",baseFunc:"",sort:"koName",dir:1,page:1,pageSize:100};
 
-async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" "+r.status);return r.json()}
+const jsonCache=new Map();
+function json(url){
+  if(!jsonCache.has(url))jsonCache.set(url,fetch(url).then(r=>{if(!r.ok)throw new Error(url+" "+r.status);return r.json();}).catch(error=>{jsonCache.delete(url);throw error;}));
+  return jsonCache.get(url);
+}
 function stat(label,value,note=""){return`<div class="stat"><span>${esc(label)}</span><b>${esc(fmt(value))}</b>${note?`<span>${esc(note)}</span>`:""}</div>`}
 function initFilters(){
   $("#role").insertAdjacentHTML("beforeend",Object.entries(db.roles).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(""));
@@ -14,7 +20,7 @@ function initFilters(){
   $("#category").insertAdjacentHTML("beforeend",cats.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join(""));
   const funcs=[...new Set(db.index.flatMap(x=>x.baseFuncs||[]))].sort();
   $("#baseFunc").insertAdjacentHTML("beforeend",funcs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join(""));
-  $("#search").addEventListener("input",e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;render()});
+  $("#search").addEventListener("input",debounce(e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;render()}));
   for(const id of ["role","category","economics","baseFunc"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
   $("#pageSize").addEventListener("change",e=>{state.pageSize=Number(e.target.value);state.page=1;render()});
   $("#prev").onclick=()=>{if(state.page>1){state.page--;render()}};
@@ -45,11 +51,12 @@ function filtered(){
     return true;
   });
 }
+const nameCollator=new Intl.Collator("ko",{numeric:true});
 function cmp(a,b,key){
   const av=a[key],bv=b[key];
   if(av==null&&bv==null)return 0;if(av==null)return 1;if(bv==null)return-1;
   if(typeof av==="number"&&typeof bv==="number")return av-bv;
-  return String(av).localeCompare(String(bv),"ko",{numeric:true});
+  return nameCollator.compare(String(av),String(bv));
 }
 const cols=[
   ["koName","제조식"],["roleKo","역할"],["time","기술자-시간"],["cost","제조비"],["requiredItemCount","재료종"],["outputItemCount","확정산출"],["researchCost","명목 연구량"],["baseFuncCount","baseFunc"],["opportunityNet","순가치"],["opportunityNetPerEngineerHour","순가치/시간"],["randomOptionCount","랜덤"]
@@ -123,11 +130,17 @@ function specialOutputMarkup(d){
   return parts.length?`<section class="section"><h3>특수 산출</h3>${parts.join("")}</section>`:"";
 }
 function rawMarkup(d){return`<details><summary>원본 manufacture 룰</summary><pre>${esc(JSON.stringify(d.raw,null,2))}</pre></details>`}
+let detailGeneration=0;
 async function openDetail(id){
+  const generation=++detailGeneration;
   const row=db.index.find(x=>x.id===id);if(!row)return;
   try{
-    if(!detailCache.has(row.bucket))detailCache.set(row.bucket,(await json(`${dataBase}/manufacture-chunks/${row.bucket}.json`)).details);
-    if(!editorialCache.has(row.bucket))editorialCache.set(row.bucket,(await json(`${dataBase}/manufacture-editorial-chunks/${row.bucket}.json`)).details);
+    const [detail,editorial]=await Promise.all([
+      json(`${dataBase}/manufacture-chunks/${row.bucket}.json`),
+      json(`${dataBase}/manufacture-editorial-chunks/${row.bucket}.json`)
+    ]);
+    detailCache.set(row.bucket,detail.details);editorialCache.set(row.bucket,editorial.details);
+    if(generation!==detailGeneration)return;
     const d=detailCache.get(row.bucket)[id],e=editorialCache.get(row.bucket)[id],ec=d.economics||{},cls=ec.opportunityNet>0?"positive":ec.opportunityNet<0?"negative":"";
     $("#detail").innerHTML=`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><p><span class="role">${esc(d.roleKo)}</span> <span class="role">${esc(d.categoryKo)}</span></p>
       ${kpis([["기술자-시간",fmt(d.time)],["제조비",fmt(d.cost)],["space",fmt(d.space)],["명목 연구량",fmt(d.research?.totalCost)],["재료 기회비용",fmt(ec.inputSellOpportunityValue)],["기대 산출 판매가",fmt(ec.expectedOutputSellValue)],["순가치",ec.economicComparable?money(ec.opportunityNet):"비교 제외",cls],["순가치/시간",ec.economicComparable?money(ec.opportunityNetPerEngineerHour):"—",cls]])}
@@ -148,11 +161,13 @@ async function openDetail(id){
       <section class="section"><h3>출처</h3><p class="muted">${(d.sourceFiles||[]).map(esc).join(" → ")||"—"}</p></section>
       ${rawMarkup(d)}`;
     $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
-  }catch(err){$("#detail").innerHTML=`<p class="negative">${esc(err.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
+  }catch(err){if(generation!==detailGeneration)return;$("#detail").innerHTML=`<p class="negative">${esc(err.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
-function closeDrawer(){history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
+function closeDrawer(){detailGeneration++;history.replaceState(null,"",location.pathname+location.search);$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true}
 function route(){const m=location.hash.match(/^#recipe=(.+)$/);if(m)openDetail(decodeURIComponent(m[1]));else closeDrawer()}
 async function init(){
-  db=await json(dataBase+"/manufacture-index.json");renderSummary();initFilters();render();route();
+  performance.mark("manufacture:load-start");
+  db=await loadRuntime(dataBase+"/manufacture-runtime.json?v=large-db-perf-20261011");renderSummary();initFilters();render();
+  performance.mark("manufacture:ready");performance.measure("manufacture:initial","manufacture:load-start","manufacture:ready");route();
 }
 init().catch(e=>{document.body.innerHTML=`<main class="wrap"><h1>제조 DB 로드 실패</h1><pre>${esc(e.stack||e.message)}</pre></main>`});
