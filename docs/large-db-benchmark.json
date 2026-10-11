@@ -1,0 +1,1083 @@
+{
+  "baselineCommit": "a2205f282389b6b6396e5d5bbcacde87975a7dcc",
+  "testedCommit": "d6914fef2db19e4db57daa22023493a9a062d25b",
+  "workflowRun": 38110497786,
+  "conditions": [
+    {
+      "mode": "desktop",
+      "viewport": [
+        1440,
+        900
+      ],
+      "mbps": 10,
+      "latencyMs": 40,
+      "cpuThrottle": 1
+    },
+    {
+      "mode": "mobile",
+      "viewport": [
+        390,
+        844
+      ],
+      "mbps": 1.6,
+      "latencyMs": 150,
+      "cpuThrottle": 4
+    }
+  ],
+  "results": [
+    {
+      "mode": "desktop",
+      "page": "crafts",
+      "before": {
+        "readyMs": 679,
+        "scriptMs": 8,
+        "layoutMs": 94,
+        "dataEncodedBytes": 388558,
+        "longTaskMs": 75,
+        "maxLongTaskMs": 75
+      },
+      "after": {
+        "readyMs": 403,
+        "scriptMs": 21,
+        "layoutMs": 94,
+        "dataEncodedBytes": 28393,
+        "longTaskMs": 75,
+        "maxLongTaskMs": 75
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 998.8999999999942,
+            "dataEncodedBytes": 388558,
+            "dataDecodedBytes": 3120034,
+            "requests": [
+              "progression.json",
+              "progression-research.json",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 197,
+            "maxLongTaskMs": 107,
+            "measures": [],
+            "scriptMs": 7.276999999999999,
+            "layoutMs": 170.609
+          },
+          {
+            "readyMs": 657.5,
+            "dataEncodedBytes": 388558,
+            "dataDecodedBytes": 3120034,
+            "requests": [
+              "progression.json",
+              "progression-research.json",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 70,
+            "maxLongTaskMs": 70,
+            "measures": [],
+            "scriptMs": 11.96,
+            "layoutMs": 90.06400000000001
+          },
+          {
+            "readyMs": 679.3999999999942,
+            "dataEncodedBytes": 388558,
+            "dataDecodedBytes": 3120034,
+            "requests": [
+              "progression.json",
+              "progression-research.json",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 75,
+            "maxLongTaskMs": 75,
+            "measures": [],
+            "scriptMs": 8.165000000000001,
+            "layoutMs": 94.357
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 403,
+            "dataEncodedBytes": 28393,
+            "dataDecodedBytes": 28393,
+            "requests": [
+              "crafts-runtime.json.gz?v=large-db-perf-20261011",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 74,
+            "maxLongTaskMs": 74,
+            "measures": [
+              {
+                "name": "crafts:initial",
+                "ms": 83.5
+              }
+            ],
+            "scriptMs": 23.634999999999998,
+            "layoutMs": 90.75999999999999
+          },
+          {
+            "readyMs": 414.8999999999942,
+            "dataEncodedBytes": 28393,
+            "dataDecodedBytes": 28393,
+            "requests": [
+              "crafts-runtime.json.gz?v=large-db-perf-20261011",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 75,
+            "maxLongTaskMs": 75,
+            "measures": [
+              {
+                "name": "crafts:initial",
+                "ms": 85.5
+              }
+            ],
+            "scriptMs": 20.868000000000002,
+            "layoutMs": 102.06899999999999
+          },
+          {
+            "readyMs": 385.1999999999971,
+            "dataEncodedBytes": 28393,
+            "dataDecodedBytes": 28393,
+            "requests": [
+              "crafts-runtime.json.gz?v=large-db-perf-20261011",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 76,
+            "maxLongTaskMs": 76,
+            "measures": [
+              {
+                "name": "crafts:initial",
+                "ms": 80.19999999999709
+              }
+            ],
+            "scriptMs": 15.270000000000001,
+            "layoutMs": 93.88499999999999
+          }
+        ]
+      }
+    },
+    {
+      "mode": "desktop",
+      "page": "soldiers",
+      "before": {
+        "readyMs": 2338,
+        "scriptMs": 7,
+        "layoutMs": 116,
+        "dataEncodedBytes": 562801,
+        "longTaskMs": 1372,
+        "maxLongTaskMs": 1244
+      },
+      "after": {
+        "readyMs": 491,
+        "scriptMs": 23,
+        "layoutMs": 106,
+        "dataEncodedBytes": 75838,
+        "longTaskMs": 84,
+        "maxLongTaskMs": 84
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 2433.800000000003,
+            "dataEncodedBytes": 562801,
+            "dataDecodedBytes": 6672241,
+            "requests": [
+              "soldiers-index.json?v=soldiers-hardcap-ui-20261010",
+              "soldiers.teasers.json.gz",
+              "progression.json?v=soldiers-hardcap-ui-20261010",
+              "progression-research.json?v=soldiers-hardcap-ui-20261010"
+            ],
+            "longTaskMs": 1437,
+            "maxLongTaskMs": 1305,
+            "measures": [],
+            "scriptMs": 6.928,
+            "layoutMs": 121.78500000000001
+          },
+          {
+            "readyMs": 2337.800000000003,
+            "dataEncodedBytes": 562801,
+            "dataDecodedBytes": 6672241,
+            "requests": [
+              "soldiers-index.json?v=soldiers-hardcap-ui-20261010",
+              "soldiers.teasers.json.gz",
+              "progression.json?v=soldiers-hardcap-ui-20261010",
+              "progression-research.json?v=soldiers-hardcap-ui-20261010"
+            ],
+            "longTaskMs": 1344,
+            "maxLongTaskMs": 1218,
+            "measures": [],
+            "scriptMs": 6.337,
+            "layoutMs": 116.45
+          },
+          {
+            "readyMs": 2329.5,
+            "dataEncodedBytes": 562801,
+            "dataDecodedBytes": 6672241,
+            "requests": [
+              "soldiers-index.json?v=soldiers-hardcap-ui-20261010",
+              "soldiers.teasers.json.gz",
+              "progression.json?v=soldiers-hardcap-ui-20261010",
+              "progression-research.json?v=soldiers-hardcap-ui-20261010"
+            ],
+            "longTaskMs": 1372,
+            "maxLongTaskMs": 1244,
+            "measures": [],
+            "scriptMs": 7.037,
+            "layoutMs": 110.454
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 494,
+            "dataEncodedBytes": 75838,
+            "dataDecodedBytes": 75838,
+            "requests": [
+              "soldiers-runtime.json.gz?v=large-db-perf-20261011",
+              "soldiers.teasers.json.gz"
+            ],
+            "longTaskMs": 91,
+            "maxLongTaskMs": 91,
+            "measures": [
+              {
+                "name": "soldiers:initial",
+                "ms": 127.89999999999418
+              }
+            ],
+            "scriptMs": 22.809,
+            "layoutMs": 104.98,
+            "finalMs": 1425
+          },
+          {
+            "readyMs": 470.1999999999971,
+            "dataEncodedBytes": 75838,
+            "dataDecodedBytes": 75838,
+            "requests": [
+              "soldiers-runtime.json.gz?v=large-db-perf-20261011",
+              "soldiers.teasers.json.gz"
+            ],
+            "longTaskMs": 84,
+            "maxLongTaskMs": 84,
+            "measures": [
+              {
+                "name": "soldiers:initial",
+                "ms": 131.09999999999127
+              }
+            ],
+            "scriptMs": 16.932,
+            "layoutMs": 106.464,
+            "finalMs": 1384
+          },
+          {
+            "readyMs": 490.70000000001164,
+            "dataEncodedBytes": 75838,
+            "dataDecodedBytes": 75838,
+            "requests": [
+              "soldiers-runtime.json.gz?v=large-db-perf-20261011",
+              "soldiers.teasers.json.gz"
+            ],
+            "longTaskMs": 84,
+            "maxLongTaskMs": 84,
+            "measures": [
+              {
+                "name": "soldiers:initial",
+                "ms": 127
+              }
+            ],
+            "scriptMs": 22.55,
+            "layoutMs": 120.519,
+            "finalMs": 1399
+          }
+        ]
+      }
+    },
+    {
+      "mode": "desktop",
+      "page": "trainings",
+      "before": {
+        "readyMs": 1152,
+        "scriptMs": 7,
+        "layoutMs": 145,
+        "dataEncodedBytes": 533566,
+        "longTaskMs": 142,
+        "maxLongTaskMs": 91
+      },
+      "after": {
+        "readyMs": 1104,
+        "scriptMs": 7,
+        "layoutMs": 143,
+        "dataEncodedBytes": 395238,
+        "longTaskMs": 142,
+        "maxLongTaskMs": 88
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 1152.9000000000087,
+            "dataEncodedBytes": 533566,
+            "dataDecodedBytes": 4107466,
+            "requests": [
+              "trainings-index.json",
+              "training-access.json",
+              "progression-research.json",
+              "choice-research-gates.json",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 156,
+            "maxLongTaskMs": 96,
+            "measures": [],
+            "scriptMs": 6.954,
+            "layoutMs": 144.873
+          },
+          {
+            "readyMs": 1152.199999999997,
+            "dataEncodedBytes": 533566,
+            "dataDecodedBytes": 4107466,
+            "requests": [
+              "trainings-index.json",
+              "training-access.json",
+              "progression-research.json",
+              "choice-research-gates.json",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 141,
+            "maxLongTaskMs": 90,
+            "measures": [],
+            "scriptMs": 7.577,
+            "layoutMs": 144.411
+          },
+          {
+            "readyMs": 1142.800000000003,
+            "dataEncodedBytes": 533566,
+            "dataDecodedBytes": 4107466,
+            "requests": [
+              "trainings-index.json",
+              "training-access.json",
+              "progression-research.json",
+              "choice-research-gates.json",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 142,
+            "maxLongTaskMs": 91,
+            "measures": [],
+            "scriptMs": 7.036,
+            "layoutMs": 145.90900000000002
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 1109.199999999997,
+            "dataEncodedBytes": 395238,
+            "dataDecodedBytes": 401301,
+            "requests": [
+              "trainings-runtime.json.gz?v=large-db-perf-20261011",
+              "training-access.json",
+              "choice-simulator-index.json.gz?v=large-db-perf-20261011",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 88,
+            "maxLongTaskMs": 88,
+            "measures": [
+              {
+                "name": "trainings:initial",
+                "ms": 417.8000000000029
+              }
+            ],
+            "scriptMs": 7.027,
+            "layoutMs": 142.848
+          },
+          {
+            "readyMs": 1092.199999999997,
+            "dataEncodedBytes": 395238,
+            "dataDecodedBytes": 401301,
+            "requests": [
+              "trainings-runtime.json.gz?v=large-db-perf-20261011",
+              "training-access.json",
+              "choice-simulator-index.json.gz?v=large-db-perf-20261011",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 163,
+            "maxLongTaskMs": 101,
+            "measures": [
+              {
+                "name": "trainings:initial",
+                "ms": 433.59999999999127
+              }
+            ],
+            "scriptMs": 9.435,
+            "layoutMs": 139.257
+          },
+          {
+            "readyMs": 1103.5,
+            "dataEncodedBytes": 395238,
+            "dataDecodedBytes": 401301,
+            "requests": [
+              "trainings-runtime.json.gz?v=large-db-perf-20261011",
+              "training-access.json",
+              "choice-simulator-index.json.gz?v=large-db-perf-20261011",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 142,
+            "maxLongTaskMs": 87,
+            "measures": [
+              {
+                "name": "trainings:initial",
+                "ms": 426
+              }
+            ],
+            "scriptMs": 7.097,
+            "layoutMs": 151.585
+          }
+        ]
+      }
+    },
+    {
+      "mode": "desktop",
+      "page": "manufacture",
+      "before": {
+        "readyMs": 1074,
+        "scriptMs": 15,
+        "layoutMs": 106,
+        "dataEncodedBytes": 436297,
+        "longTaskMs": 76,
+        "maxLongTaskMs": 76
+      },
+      "after": {
+        "readyMs": 573,
+        "scriptMs": 17,
+        "layoutMs": 101,
+        "dataEncodedBytes": 209990,
+        "longTaskMs": 80,
+        "maxLongTaskMs": 80
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 1059.3999999999942,
+            "dataEncodedBytes": 436297,
+            "dataDecodedBytes": 2882167,
+            "requests": [
+              "manufacture-index.json",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 138,
+            "maxLongTaskMs": 81,
+            "measures": [],
+            "scriptMs": 11.767,
+            "layoutMs": 105.76
+          },
+          {
+            "readyMs": 1079.9000000000087,
+            "dataEncodedBytes": 436297,
+            "dataDecodedBytes": 2882167,
+            "requests": [
+              "manufacture-index.json",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 76,
+            "maxLongTaskMs": 76,
+            "measures": [],
+            "scriptMs": 15.360000000000001,
+            "layoutMs": 101.661
+          },
+          {
+            "readyMs": 1074.199999999997,
+            "dataEncodedBytes": 436297,
+            "dataDecodedBytes": 2882167,
+            "requests": [
+              "manufacture-index.json",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 75,
+            "maxLongTaskMs": 75,
+            "measures": [],
+            "scriptMs": 21.675,
+            "layoutMs": 108.28699999999999
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 578.1000000000058,
+            "dataEncodedBytes": 209990,
+            "dataDecodedBytes": 209990,
+            "requests": [
+              "manufacture-runtime.json.gz?v=large-db-perf-20261011",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 80,
+            "maxLongTaskMs": 80,
+            "measures": [
+              {
+                "name": "manufacture:initial",
+                "ms": 230.10000000000582
+              }
+            ],
+            "scriptMs": 16.848,
+            "layoutMs": 101.381
+          },
+          {
+            "readyMs": 572.8999999999942,
+            "dataEncodedBytes": 209990,
+            "dataDecodedBytes": 209990,
+            "requests": [
+              "manufacture-runtime.json.gz?v=large-db-perf-20261011",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 81,
+            "maxLongTaskMs": 81,
+            "measures": [
+              {
+                "name": "manufacture:initial",
+                "ms": 228
+              }
+            ],
+            "scriptMs": 21.434,
+            "layoutMs": 95.24199999999999
+          },
+          {
+            "readyMs": 568,
+            "dataEncodedBytes": 209990,
+            "dataDecodedBytes": 209990,
+            "requests": [
+              "manufacture-runtime.json.gz?v=large-db-perf-20261011",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 76,
+            "maxLongTaskMs": 76,
+            "measures": [
+              {
+                "name": "manufacture:initial",
+                "ms": 227
+              }
+            ],
+            "scriptMs": 15.32,
+            "layoutMs": 104.553
+          }
+        ]
+      }
+    },
+    {
+      "mode": "mobile",
+      "page": "crafts",
+      "before": {
+        "readyMs": 3234,
+        "scriptMs": 20,
+        "layoutMs": 324,
+        "dataEncodedBytes": 388558,
+        "longTaskMs": 659,
+        "maxLongTaskMs": 328
+      },
+      "after": {
+        "readyMs": 1443,
+        "scriptMs": 66,
+        "layoutMs": 302,
+        "dataEncodedBytes": 28393,
+        "longTaskMs": 363,
+        "maxLongTaskMs": 320
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 3312.300000000003,
+            "dataEncodedBytes": 388558,
+            "dataDecodedBytes": 3120034,
+            "requests": [
+              "progression.json",
+              "progression-research.json",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 714,
+            "maxLongTaskMs": 360,
+            "measures": [],
+            "scriptMs": 20.273,
+            "layoutMs": 332.466
+          },
+          {
+            "readyMs": 3234.199999999997,
+            "dataEncodedBytes": 388558,
+            "dataDecodedBytes": 3120034,
+            "requests": [
+              "progression.json",
+              "progression-research.json",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 659,
+            "maxLongTaskMs": 328,
+            "measures": [],
+            "scriptMs": 22.238999999999997,
+            "layoutMs": 323.666
+          },
+          {
+            "readyMs": 3206.2000000000116,
+            "dataEncodedBytes": 388558,
+            "dataDecodedBytes": 3120034,
+            "requests": [
+              "progression.json",
+              "progression-research.json",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 644,
+            "maxLongTaskMs": 321,
+            "measures": [],
+            "scriptMs": 19.281,
+            "layoutMs": 307.105
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 1442.5,
+            "dataEncodedBytes": 28393,
+            "dataDecodedBytes": 28393,
+            "requests": [
+              "crafts-runtime.json.gz?v=large-db-perf-20261011",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 344,
+            "maxLongTaskMs": 344,
+            "measures": [
+              {
+                "name": "crafts:initial",
+                "ms": 355.3999999999942
+              }
+            ],
+            "scriptMs": 59.721000000000004,
+            "layoutMs": 316.97999999999996
+          },
+          {
+            "readyMs": 1403.7000000000116,
+            "dataEncodedBytes": 28393,
+            "dataDecodedBytes": 28393,
+            "requests": [
+              "crafts-runtime.json.gz?v=large-db-perf-20261011",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 363,
+            "maxLongTaskMs": 311,
+            "measures": [
+              {
+                "name": "crafts:initial",
+                "ms": 351
+              }
+            ],
+            "scriptMs": 65.712,
+            "layoutMs": 302.015
+          },
+          {
+            "readyMs": 1453.7000000000116,
+            "dataEncodedBytes": 28393,
+            "dataDecodedBytes": 28393,
+            "requests": [
+              "crafts-runtime.json.gz?v=large-db-perf-20261011",
+              "crafts.teasers.json.gz"
+            ],
+            "longTaskMs": 374,
+            "maxLongTaskMs": 320,
+            "measures": [
+              {
+                "name": "crafts:initial",
+                "ms": 359.20000000001164
+              }
+            ],
+            "scriptMs": 65.72500000000001,
+            "layoutMs": 302.341
+          }
+        ]
+      }
+    },
+    {
+      "mode": "mobile",
+      "page": "soldiers",
+      "before": {
+        "readyMs": 10801,
+        "scriptMs": 19,
+        "layoutMs": 352,
+        "dataEncodedBytes": 562801,
+        "longTaskMs": 6908,
+        "maxLongTaskMs": 6042
+      },
+      "after": {
+        "readyMs": 1824,
+        "scriptMs": 65,
+        "layoutMs": 347,
+        "dataEncodedBytes": 75838,
+        "longTaskMs": 453,
+        "maxLongTaskMs": 345
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 10930.300000000017,
+            "dataEncodedBytes": 562801,
+            "dataDecodedBytes": 6672241,
+            "requests": [
+              "soldiers-index.json?v=soldiers-hardcap-ui-20261010",
+              "soldiers.teasers.json.gz",
+              "progression.json?v=soldiers-hardcap-ui-20261010",
+              "progression-research.json?v=soldiers-hardcap-ui-20261010"
+            ],
+            "longTaskMs": 7067,
+            "maxLongTaskMs": 6087,
+            "measures": [],
+            "scriptMs": 18.163,
+            "layoutMs": 351.663
+          },
+          {
+            "readyMs": 10800.600000000006,
+            "dataEncodedBytes": 562801,
+            "dataDecodedBytes": 6672241,
+            "requests": [
+              "soldiers-index.json?v=soldiers-hardcap-ui-20261010",
+              "soldiers.teasers.json.gz",
+              "progression.json?v=soldiers-hardcap-ui-20261010",
+              "progression-research.json?v=soldiers-hardcap-ui-20261010"
+            ],
+            "longTaskMs": 6908,
+            "maxLongTaskMs": 6042,
+            "measures": [],
+            "scriptMs": 19.491,
+            "layoutMs": 340.655
+          },
+          {
+            "readyMs": 10162.899999999994,
+            "dataEncodedBytes": 562801,
+            "dataDecodedBytes": 6672241,
+            "requests": [
+              "soldiers-index.json?v=soldiers-hardcap-ui-20261010",
+              "soldiers.teasers.json.gz",
+              "progression.json?v=soldiers-hardcap-ui-20261010",
+              "progression-research.json?v=soldiers-hardcap-ui-20261010"
+            ],
+            "longTaskMs": 6261,
+            "maxLongTaskMs": 5393,
+            "measures": [],
+            "scriptMs": 22.747,
+            "layoutMs": 351.786
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 1828.5,
+            "dataEncodedBytes": 75838,
+            "dataDecodedBytes": 75838,
+            "requests": [
+              "soldiers-runtime.json.gz?v=large-db-perf-20261011",
+              "soldiers.teasers.json.gz"
+            ],
+            "longTaskMs": 460,
+            "maxLongTaskMs": 353,
+            "measures": [
+              {
+                "name": "soldiers:initial",
+                "ms": 633.3999999999942
+              }
+            ],
+            "scriptMs": 64.871,
+            "layoutMs": 355.922,
+            "finalMs": 6855
+          },
+          {
+            "readyMs": 1823.5,
+            "dataEncodedBytes": 75838,
+            "dataDecodedBytes": 75838,
+            "requests": [
+              "soldiers-runtime.json.gz?v=large-db-perf-20261011",
+              "soldiers.teasers.json.gz"
+            ],
+            "longTaskMs": 453,
+            "maxLongTaskMs": 344,
+            "measures": [
+              {
+                "name": "soldiers:initial",
+                "ms": 637.1000000000058
+              }
+            ],
+            "scriptMs": 71.34400000000001,
+            "layoutMs": 342.637,
+            "finalMs": 6376
+          },
+          {
+            "readyMs": 1804.3999999999942,
+            "dataEncodedBytes": 75838,
+            "dataDecodedBytes": 75838,
+            "requests": [
+              "soldiers-runtime.json.gz?v=large-db-perf-20261011",
+              "soldiers.teasers.json.gz"
+            ],
+            "longTaskMs": 452,
+            "maxLongTaskMs": 345,
+            "measures": [
+              {
+                "name": "soldiers:initial",
+                "ms": 635.5
+              }
+            ],
+            "scriptMs": 64.682,
+            "layoutMs": 346.86400000000003,
+            "finalMs": 6485
+          }
+        ]
+      }
+    },
+    {
+      "mode": "mobile",
+      "page": "trainings",
+      "before": {
+        "readyMs": 4453,
+        "scriptMs": 24,
+        "layoutMs": 469,
+        "dataEncodedBytes": 533566,
+        "longTaskMs": 780,
+        "maxLongTaskMs": 378
+      },
+      "after": {
+        "readyMs": 3722,
+        "scriptMs": 24,
+        "layoutMs": 459,
+        "dataEncodedBytes": 395238,
+        "longTaskMs": 651,
+        "maxLongTaskMs": 384
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 4444.6999999999825,
+            "dataEncodedBytes": 533566,
+            "dataDecodedBytes": 4107466,
+            "requests": [
+              "trainings-index.json",
+              "training-access.json",
+              "progression-research.json",
+              "choice-research-gates.json",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 765,
+            "maxLongTaskMs": 378,
+            "measures": [],
+            "scriptMs": 23.508000000000003,
+            "layoutMs": 459.34799999999996
+          },
+          {
+            "readyMs": 4452.600000000006,
+            "dataEncodedBytes": 533566,
+            "dataDecodedBytes": 4107466,
+            "requests": [
+              "trainings-index.json",
+              "training-access.json",
+              "progression-research.json",
+              "choice-research-gates.json",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 796,
+            "maxLongTaskMs": 388,
+            "measures": [],
+            "scriptMs": 20.698999999999998,
+            "layoutMs": 471.066
+          },
+          {
+            "readyMs": 4483.200000000012,
+            "dataEncodedBytes": 533566,
+            "dataDecodedBytes": 4107466,
+            "requests": [
+              "trainings-index.json",
+              "training-access.json",
+              "progression-research.json",
+              "choice-research-gates.json",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 780,
+            "maxLongTaskMs": 358,
+            "measures": [],
+            "scriptMs": 24.994,
+            "layoutMs": 469.44399999999996
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 3722,
+            "dataEncodedBytes": 395238,
+            "dataDecodedBytes": 401301,
+            "requests": [
+              "trainings-runtime.json.gz?v=large-db-perf-20261011",
+              "training-access.json",
+              "choice-simulator-index.json.gz?v=large-db-perf-20261011",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 651,
+            "maxLongTaskMs": 384,
+            "measures": [
+              {
+                "name": "trainings:initial",
+                "ms": 2406.5
+              }
+            ],
+            "scriptMs": 23.671999999999997,
+            "layoutMs": 459.25300000000004
+          },
+          {
+            "readyMs": 3712.2999999999884,
+            "dataEncodedBytes": 395238,
+            "dataDecodedBytes": 401301,
+            "requests": [
+              "trainings-runtime.json.gz?v=large-db-perf-20261011",
+              "training-access.json",
+              "choice-simulator-index.json.gz?v=large-db-perf-20261011",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 627,
+            "maxLongTaskMs": 373,
+            "measures": [
+              {
+                "name": "trainings:initial",
+                "ms": 2390.5
+              }
+            ],
+            "scriptMs": 23.171,
+            "layoutMs": 452.97900000000004
+          },
+          {
+            "readyMs": 3742.2999999999884,
+            "dataEncodedBytes": 395238,
+            "dataDecodedBytes": 401301,
+            "requests": [
+              "trainings-runtime.json.gz?v=large-db-perf-20261011",
+              "training-access.json",
+              "choice-simulator-index.json.gz?v=large-db-perf-20261011",
+              "trainings.teasers.json.gz"
+            ],
+            "longTaskMs": 667,
+            "maxLongTaskMs": 401,
+            "measures": [
+              {
+                "name": "trainings:initial",
+                "ms": 2401.1999999999825
+              }
+            ],
+            "scriptMs": 24.322,
+            "layoutMs": 467.392
+          }
+        ]
+      }
+    },
+    {
+      "mode": "mobile",
+      "page": "manufacture",
+      "before": {
+        "readyMs": 3609,
+        "scriptMs": 22,
+        "layoutMs": 337,
+        "dataEncodedBytes": 436297,
+        "longTaskMs": 722,
+        "maxLongTaskMs": 351
+      },
+      "after": {
+        "readyMs": 2387,
+        "scriptMs": 67,
+        "layoutMs": 339,
+        "dataEncodedBytes": 209990,
+        "longTaskMs": 416,
+        "maxLongTaskMs": 357
+      },
+      "samples": {
+        "before": [
+          {
+            "readyMs": 3609.2000000000116,
+            "dataEncodedBytes": 436297,
+            "dataDecodedBytes": 2882167,
+            "requests": [
+              "manufacture-index.json",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 722,
+            "maxLongTaskMs": 359,
+            "measures": [],
+            "scriptMs": 21.909000000000002,
+            "layoutMs": 337.18199999999996
+          },
+          {
+            "readyMs": 3641.7999999999884,
+            "dataEncodedBytes": 436297,
+            "dataDecodedBytes": 2882167,
+            "requests": [
+              "manufacture-index.json",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 737,
+            "maxLongTaskMs": 351,
+            "measures": [],
+            "scriptMs": 20.060000000000002,
+            "layoutMs": 339.13300000000004
+          },
+          {
+            "readyMs": 3558.2000000000116,
+            "dataEncodedBytes": 436297,
+            "dataDecodedBytes": 2882167,
+            "requests": [
+              "manufacture-index.json",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 670,
+            "maxLongTaskMs": 330,
+            "measures": [],
+            "scriptMs": 25.079,
+            "layoutMs": 320.604
+          }
+        ],
+        "after": [
+          {
+            "readyMs": 2386.5,
+            "dataEncodedBytes": 209990,
+            "dataDecodedBytes": 209990,
+            "requests": [
+              "manufacture-runtime.json.gz?v=large-db-perf-20261011",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 417,
+            "maxLongTaskMs": 357,
+            "measures": [
+              {
+                "name": "manufacture:initial",
+                "ms": 1277.6999999999825
+              }
+            ],
+            "scriptMs": 77.717,
+            "layoutMs": 338.76800000000003
+          },
+          {
+            "readyMs": 2367.5999999999767,
+            "dataEncodedBytes": 209990,
+            "dataDecodedBytes": 209990,
+            "requests": [
+              "manufacture-runtime.json.gz?v=large-db-perf-20261011",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 350,
+            "maxLongTaskMs": 350,
+            "measures": [
+              {
+                "name": "manufacture:initial",
+                "ms": 1276.5
+              }
+            ],
+            "scriptMs": 65.06,
+            "layoutMs": 334.169
+          },
+          {
+            "readyMs": 2390.5,
+            "dataEncodedBytes": 209990,
+            "dataDecodedBytes": 209990,
+            "requests": [
+              "manufacture-runtime.json.gz?v=large-db-perf-20261011",
+              "manufacture.teasers.json.gz"
+            ],
+            "longTaskMs": 416,
+            "maxLongTaskMs": 365,
+            "measures": [
+              {
+                "name": "manufacture:initial",
+                "ms": 1275
+              }
+            ],
+            "scriptMs": 66.569,
+            "layoutMs": 348.291
+          }
+        ]
+      }
+    }
+  ]
+}
