@@ -70,6 +70,38 @@ try {
       await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
       count=await page.locator(ready[slug]).count();
       if(slug==="captains"){
+        await page.waitForFunction(()=>window.CaptainBenefits&&document.querySelector('#captainBenefitsStatus')?.textContent.includes('22개 선택지'),{timeout:20000});
+        const benefitStatus=await page.locator('#captainBenefitsStatus').innerText();
+        if(!benefitStatus.includes('원본 근거 검증'))errors.push('Captain payoff index not loaded');
+        const thiefCell=await page.locator('#matrixTable tbody tr[data-id="thief"] .captain-benefit-cell').innerText();
+        if(!thiefCell.includes('선장의 11')||!thiefCell.includes('토큰 ×11'))
+          errors.push('Thief payoff missing Captain’s 11 in comparison matrix');
+        const thiefStage=await page.locator('#exclusiveRules .captain-branch-perks[data-benefit-choice="thief"]').textContent();
+        if(!thiefStage.includes('선장의 11')||!thiefStage.includes('토큰 ×11'))
+          errors.push('Thief class-stage card omitted its main reward');
+        const otherBenefitRows=await page.locator('#matrixTable tbody .captain-benefit-cell').count();
+        if(otherBenefitRows!==22)errors.push('Only '+otherBenefitRows+'/22 Captain branch advantage cells');
+        for(const [width,height] of [[390,844],[375,667],[844,390]]){
+          await page.setViewportSize({width,height});
+          const metrics=await page.evaluate(()=>{
+            const bar=document.querySelector('.toolbar');
+            const shell=document.querySelector('#matrixTable')?.closest('.table-shell');
+            const first=shell?.querySelector('thead tr.group th');
+            const second=shell?.querySelector('thead tr:nth-child(2) th');
+            if(shell)shell.scrollTop=330;
+            return {barPosition:getComputedStyle(bar).position,
+              height:window.innerHeight,
+              first:first?.getBoundingClientRect().height||0,
+              second:second?.getBoundingClientRect().height||0,
+              headerHeight:Math.max(first?.getBoundingClientRect().height||0,
+                (first?.getBoundingClientRect().height||0)+(second?.getBoundingClientRect().height||0))};
+          });
+          if(metrics.barPosition==='sticky'||metrics.barPosition==='fixed')
+            errors.push('Mobile Captain toolbar blocks scrolling in '+width+'x'+height+' viewport');
+          if(metrics.headerHeight>metrics.height*.2)
+            errors.push('Mobile Captain sticky table headers cover '+Math.round(100*metrics.headerHeight/metrics.height)+'% of '+width+'x'+height);
+        }
+        await page.setViewportSize({width:390,height:844});
         const before=await page.evaluate(()=>performance.getEntriesByType("resource")
           .filter(entry=>/choice-simulator-index\.json|progression-research\.json|choice-research-gates\.json/.test(entry.name))
           .map(entry=>entry.name));
@@ -258,6 +290,23 @@ try {
         }
         if(slug==="captains"){
           await page.locator("#dialogClose").click();
+          await page.locator('#matrixTable tbody tr[data-id="thief"]').click();
+          await page.locator('#captainBenefitDetail .captain-key-reward').waitFor({state:'visible',timeout:24000});
+          const chiefReward=await page.locator('#captainBenefitDetail').innerText();
+          if(!chiefReward.includes('선장의 11')||!chiefReward.includes('토큰 11개')||
+            !chiefReward.includes('100,000')||!chiefReward.includes('500시간')||
+            !chiefReward.includes('병종 19종')||!chiefReward.includes('SoldierBonus'))
+            errors.push('Captain’s 11 event/bonus full provenance was omitted from Thief detail');
+          const directPayoffs=await page.locator('#captainBenefitDetail [data-benefit-event="STR_CAPTAINS_11"]').count();
+          if(directPayoffs!==1)errors.push('Captain’s 11 event missing from direct event payoff list');
+          if(!chiefReward.includes('원본 직접 disables')||!chiefReward.includes('후속 명시 해금 뒤 조건부 이벤트'))
+            errors.push('Captain detail lacks exact exclusion or exhaustive conditional event summary');
+          await page.locator('#dialogClose').click();
+          await page.locator('#search').fill('캡틴스11');
+          await page.waitForTimeout(220);
+          if(await page.locator('#matrixTable tbody tr[data-id="thief"]').count()!==1)
+            errors.push('Captain eleven rewards not searchable');
+          await page.locator('#search').fill('');
           // The full research graph is intentionally deferred while visitors
           // browse the comparison table; approaching the simulator loads it.
           await page.locator("#choiceSimulator").scrollIntoViewIfNeeded();
