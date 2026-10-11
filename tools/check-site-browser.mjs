@@ -81,6 +81,14 @@ try {
           errors.push('Thief class-stage card omitted its main reward');
         const otherBenefitRows=await page.locator('#matrixTable tbody .captain-benefit-cell').count();
         if(otherBenefitRows!==22)errors.push('Only '+otherBenefitRows+'/22 Captain branch advantage cells');
+        for(const branch of ['thief','priest']){
+          const text=await page.locator('#matrixTable tbody tr[data-id="'+branch+'"] .captain-benefit-cell').innerText();
+          if(!text.includes('일반 똑 똑: 조건부 가능'))
+            errors.push('Default Knock Knock omitted for '+branch+' despite no Soreass exclusion');
+        }
+        if(!(await page.locator('#matrixTable tbody tr[data-id="soreass"] .captain-benefit-cell').innerText())
+          .includes('일반 똑 똑: Soreass 조건으로 제외'))
+          errors.push('Default Knock Knock was incorrectly allowed for Soreass');
         for(const [width,height] of [[390,844],[375,667],[844,390]]){
           await page.setViewportSize({width,height});
           const metrics=await page.evaluate(()=>{
@@ -264,6 +272,27 @@ try {
           if(directPayoffs!==1)errors.push('Captain’s 11 event missing from direct event payoff list');
           if(!chiefReward.includes('원본 직접 disables')||!chiefReward.includes('후속 명시 해금 뒤 조건부 이벤트'))
             errors.push('Captain detail lacks exact exclusion or exhaustive conditional event summary');
+          const commonThief=page.locator('#captainBenefitDetail .captain-common-visitor[data-common-visitor="eligible"]');
+          if(await commonThief.count()!==1)errors.push('Default Knock Knock absent in Thief detail');
+          else {
+            const summary=await commonThief.innerText();
+            if(!summary.includes('21종')||!summary.includes('STR_KNOCK_KNOCK_0')||
+               !summary.includes('STR_CAPTAIN_SOREASS')||!summary.includes('executionOdds 23'))
+              errors.push('Thief shared Knock Knock entry omitted source gates or all 21 outcomes');
+            await commonThief.locator('details').evaluate(el=>el.open=true);
+            if(await commonThief.locator('details .captain-shared-event-links a').count()!==21)
+              errors.push('Not all common Knock Knock outcome IDs were linked');
+          }
+          if(!(await page.locator('#captainBenefitDetail').innerText()).includes('STR_KNOCK_KNOCK_ROGUE_CLONE'))
+            errors.push('Thief conditional DumbLazy/Rogue Clone entry absent');
+          await page.locator('#dialogClose').click();
+          await page.locator('#matrixTable tbody tr[data-id="priest"]').click();
+          await page.locator('#captainBenefitDetail .captain-common-visitor[data-common-visitor="eligible"]').waitFor({state:'attached',timeout:16000});
+          const priestCommon=await page.locator('#captainBenefitDetail .captain-common-visitor').innerText();
+          if(!priestCommon.includes('일반 방문 가능 후보')||
+             !priestCommon.includes('STR_CAPTAIN_SOREASS')||
+             !priestCommon.includes('STR_KNOCK_KNOCK_ROGUE_CLONE'))
+            errors.push('Priest shared and special Knock Knock routes not distinguished');
           await page.locator('#dialogClose').click();
           await page.locator('#search').fill('캡틴스11');
           await page.waitForTimeout(220);

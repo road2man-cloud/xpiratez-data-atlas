@@ -16,12 +16,40 @@ assert.equal(events.size,792);
 assert.equal(index.schemaVersion,1);
 assert.equal(index.meta.events,792);
 assert.equal(index.rows.length,22);
+const shared=index.special?.commonKnockKnock;
+assert(shared,"Common events without positive captain gates must be published separately");
+assert.equal(shared.scripts.length,3);
+assert.deepEqual(shared.scripts.map(s=>s.id),
+  ["STR_KNOCK_KNOCK_0","STR_KNOCK_KNOCK_1","STR_KNOCK_KNOCK_2"]);
+assert.equal(shared.outcomes.length,index.meta.commonKnockKnockEvents);
+assert.equal(shared.outcomes.length,21);
+assert.deepEqual(shared.excludedResearch,["STR_CAPTAIN_SOREASS"]);
+for(const script of shared.scripts){
+  assert.deepEqual(script.required,[]);
+  assert.deepEqual(script.forbidden,shared.excludedResearch);
+  assert.equal(script.conditions.firstMonth,0);
+  assert.equal(script.conditions.executionOdds,23);
+}
+for(const outcome of shared.outcomes){
+  const source=events.get(outcome.id);
+  assert(source,"Shared Knock Knock outcome missing from effective event DB: "+outcome.id);
+  assert.equal((source.effects?.researchRewards||[]).length,outcome.researchRewards);
+  assert.equal((source.effects?.guaranteedItems||[]).length,outcome.itemRewards);
+  for(const script of shared.scripts)
+    assert((source.scripts||[]).some(s=>s.id===script.id),
+      "Shared event missing named script: "+outcome.id+" / "+script.id);
+}
 const names=new Set();
 let total=0,direct=0,subsequent=0,rewards=0;
 for(const row of index.rows){
   assert(!names.has(row.rowId),"Duplicate Captain: "+row.rowId);names.add(row.rowId);
   const topic=byTopic.get(row.choiceId);assert(topic,"Unknown effective Captain rule: "+row.choiceId);
   const state=computeChoiceScenario(graph,[],[...row.enteredAfter,row.choiceId]);
+  assert.equal(row.commonKnockKnock?.eligible,!state.completed.has("STR_CAPTAIN_SOREASS"),
+    "Incorrect common Knock Knock eligibility: "+row.rowId);
+  assert.deepEqual(row.commonKnockKnock.blockers,
+    state.completed.has("STR_CAPTAIN_SOREASS")?["STR_CAPTAIN_SOREASS"]:[]);
+  assert.equal(row.commonKnockKnock.outcomeCount,shared.outcomes.length);
   const selfDisable=(topic.disables||[]).includes(row.choiceId);
   assert.equal(row.branchStatus,selfDisable?"self-disabled-final-flag":"stage-completed");
   assert(typeof row.eventSearch==="string");
@@ -75,7 +103,22 @@ for(const row of index.rows){
 assert.equal(total,index.meta.totalRelatedEvents);
 assert(total>=500&&direct>=70&&rewards>=150);
 const thief=index.rows.find(x=>x.rowId==="thief");
-assert(thief);
+const priest=index.rows.find(x=>x.rowId==="priest");
+const soreass=index.rows.find(x=>x.rowId==="soreass");
+assert(thief&&priest&&soreass);
+assert.equal(thief.commonKnockKnock.eligible,true,"Thief wrongly denied ordinary Knock Knock");
+assert.equal(priest.commonKnockKnock.eligible,true,"Priest wrongly denied ordinary Knock Knock");
+assert.equal(soreass.commonKnockKnock.eligible,false,"Soreass bypassed default negative gate");
+for(const row of [thief,priest]){
+ const visits=JSON.parse(fs.readFileSync(root+"captain-benefits/"+row.rowId+".json","utf8")).events;
+ const clone=visits.find(e=>e.id==="STR_KNOCK_KNOCK_ROGUE_CLONE");
+ assert(clone?.paths.some(p=>p.required.includes("STR_CAPTAIN_DUMBLAZY")),
+  "Rogue-clone visitor must be available *conditionally* after DumbLazy for "+row.rowId);
+ assert(row.unlocks.some(u=>u.id==="STR_CAPTAIN_DUMBLAZY"&&u.status==="candidate"),
+  "Both Thief and Priest must unlock possible DumbLazy route");
+}
+assert(!thief.directDisables.some(x=>x.id==="STR_CAPTAIN_DUMBLAZY"));
+assert(!priest.directDisables.some(x=>x.id==="STR_CAPTAIN_DUMBLAZY"));
 const thiefEvents=JSON.parse(fs.readFileSync(root+"captain-benefits/thief.json","utf8")).events;
 const eleven=thiefEvents.find(x=>x.id==="STR_CAPTAINS_11");
 assert(eleven,"Major Thief exclusive event must be present");
@@ -107,8 +150,8 @@ const app=fs.readFileSync("public/captains/app.js","utf8");
 const ui=fs.readFileSync("public/captains/benefits.js","utf8");
 const css=fs.readFileSync("public/captains/styles.css","utf8");
 assert(app.includes("CaptainBenefits?.matrixCell(r)")&&app.includes("CaptainBenefits?.renderDetail(r.id)"));
-assert(ui.includes("captainsElevenMarkup")&&ui.includes("eventPath(p)")&&ui.includes("직접 표시할 지급품 없음"));
+assert(ui.includes("captainsElevenMarkup")&&ui.includes("eventPath(p)")&&ui.includes("commonVisitorMarkup")&&ui.includes("직접 표시할 지급품 없음"));
 assert(css.includes(".toolbar{position:static!important")&&css.includes(".captain-benefit-cell"));
 console.log("OK captain benefit catalog: "+index.rows.length+" stage choices / "+events.size+" event rules / "+
   total+" candidate event associations ("+direct+" direct / "+subsequent+
-  " unlock-dependent) / "+rewards+" reward-bearing; Captain's 11 event/training exact, conditional gates, direct exclusions and mobile CSS");
+  " unlock-dependent) / "+rewards+" reward-bearing / "+shared.outcomes.length+" shared Knock Knock outcomes; Captain's 11, Priest/Thief common visitor & DumbLazy, exact conditional gates, direct exclusions and mobile CSS");
