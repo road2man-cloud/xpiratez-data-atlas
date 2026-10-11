@@ -1,10 +1,14 @@
 import fs from "node:fs";
 import path from "node:path";
+import {gunzipSync} from "node:zlib";
 
 const args=process.argv.slice(2),i=args.indexOf("--data");
 const dataDir=path.resolve(i>=0&&args[i+1]?args[i+1]:"public/data");
 const read=(...p)=>JSON.parse(fs.readFileSync(path.join(dataDir,...p),"utf8"));
 const db=read("manufacture-index.json"),rows=db.index||[];
+const raw=fs.readFileSync(path.join(dataDir,"manufacture-index.json"));
+const gz=fs.readFileSync(path.join(dataDir,"manufacture-index.json.gz"));
+if(!gunzipSync(gz).equals(raw)||gz.length>=raw.length*0.3)throw new Error("Manufacture gzip does not match primary index or is inefficient");
 const detailCache={},editorialCache={};
 function detail(x){detailCache[x.bucket]??=read("manufacture-chunks",x.bucket+".json").details;return detailCache[x.bucket][x.id]}
 function editorial(x){editorialCache[x.bucket]??=read("manufacture-editorial-chunks",x.bucket+".json").details;return editorialCache[x.bucket][x.id]}

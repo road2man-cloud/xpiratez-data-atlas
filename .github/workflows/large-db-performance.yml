@@ -6,6 +6,7 @@ on:
       - 'tools/benchmark-large-dbs.mjs'
       - 'tools/build-db-runtime.mjs'
       - 'tools/check-db-runtime.mjs'
+      - 'tools/check-site-functional.mjs'
       - '.github/workflows/large-db-performance.yml'
   workflow_dispatch:
 permissions:
@@ -34,6 +35,8 @@ jobs:
         run: node tools/benchmark-large-dbs.mjs
       - name: Mobile regression across all databases
         run: node tools/check-site-browser.mjs --local
+      - name: Deep function, cross-link and broken gzip regression
+        run: npm run check:functional:browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:

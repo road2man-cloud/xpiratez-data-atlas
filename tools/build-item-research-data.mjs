@@ -659,6 +659,9 @@ const manifest={
 fs.writeFileSync(path.join(outDir,"items-index.json"),JSON.stringify({meta:manifest,index:itemIndex}));
 fs.writeFileSync(path.join(outDir,"research-index.json"),JSON.stringify({meta:manifest,index:researchIndex}));
 fs.writeFileSync(path.join(outDir,"research-insight-index.json"),JSON.stringify({version:1,index:researchInsightIndex}));
+// Only ID membership is required to create cross-catalog links on first paint.
+// Full opposite-catalog indexes and the multilingual name dictionary load on demand.
+fs.writeFileSync(path.join(outDir,"catalog-ids.json"),JSON.stringify({items:itemIndex.map(x=>x.id),research:researchIndex.map(x=>x.id)}));
 fs.writeFileSync(path.join(outDir,"entities.json"),JSON.stringify({names:entityNames}));
 fs.writeFileSync(path.join(outDir,"schema.json"),JSON.stringify({allItemKeys,fieldMeta,sortableItemFields,allResearchKeys,researchFieldMeta,effectiveCoreFields,coreSourceLegend,globalItemDefaults:globals,resourceStorage:{separated:true,path:"resource-chunks/<kind>/<bucket>.json",entryFormat:"[jsonPointer,value]"},damageTypes:damageKeys.map((k,i)=>({id:i,key:k,ko:tr(k,"ko"),en:tr(k,"en")}))},null,2));
 fs.writeFileSync(path.join(outDir,"manifest.json"),JSON.stringify(manifest,null,2));

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import yaml from "js-yaml";
+import {gzipSync} from "node:zlib";
 
 const args=process.argv.slice(2);
 const arg=(name,fallback=null)=>{const i=args.indexOf(name);return i>=0&&i+1<args.length?args[i+1]:fallback};
@@ -257,14 +258,16 @@ for(const m of recipes){
 
 rows.sort((a,b)=>(a.listOrder??999999)-(b.listOrder??999999)||a.koName.localeCompare(b.koName,"ko"));
 fs.mkdirSync(outDir,{recursive:true});
-fs.writeFileSync(path.join(outDir,"manufacture-index.json"),JSON.stringify({
+const indexJSON=JSON.stringify({
   meta:{version:1,generator:"manufacture-data-v1",sourceVersion:"XPiratez v.o1.1.1",economicModel:"item costSell opportunity-cost; person/craft value excluded"},
   counts:{
     recipes:rows.length,categories:new Set(rows.map(x=>x.category)).size,random:rows.filter(x=>x.randomOptionCount).length,
     recruitment:rows.filter(x=>x.hasPerson).length,craft:rows.filter(x=>x.hasCraft).length,economicComparable:rows.filter(x=>x.economicComparable).length
   },
   roles:roleKo,index:rows
-}));
+});
+fs.writeFileSync(path.join(outDir,"manufacture-index.json"),indexJSON);
+fs.writeFileSync(path.join(outDir,"manufacture-index.json.gz"),gzipSync(Buffer.from(indexJSON),{level:9}));
 for(const [b,ds] of Object.entries(details)){fs.mkdirSync(path.join(outDir,"manufacture-chunks"),{recursive:true});fs.writeFileSync(path.join(outDir,"manufacture-chunks",b+".json"),JSON.stringify({details:ds}))}
 for(const [b,ds] of Object.entries(editorials)){fs.mkdirSync(path.join(outDir,"manufacture-editorial-chunks"),{recursive:true});fs.writeFileSync(path.join(outDir,"manufacture-editorial-chunks",b+".json"),JSON.stringify({details:ds}))}
 console.log(JSON.stringify({recipes:rows.length,categories:new Set(rows.map(x=>x.category)).size,random:rows.filter(x=>x.randomOptionCount).length,recruitment:rows.filter(x=>x.hasPerson).length,craft:rows.filter(x=>x.hasCraft).length,economicComparable:rows.filter(x=>x.economicComparable).length,avgEditorialChars:Math.round(Object.values(editorials).flatMap(x=>Object.values(x)).reduce((s,e)=>s+Object.values(e).join("").length,0)/rows.length)}));

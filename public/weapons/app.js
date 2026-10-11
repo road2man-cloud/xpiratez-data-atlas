@@ -1,6 +1,10 @@
 let DATA=null;
 const SECTION_CACHE={};
+const SECTION_PROMISE={};
 const DETAIL_CACHE={};
+const searchHay=new WeakMap();
+const PAGE_SIZE=100;
+let currentPage=0,searchTimer=null,renderGeneration=0,detailGeneration=0;
 const ASSET_VERSION="20261008-enemy-search1";
 let sort={key:"effPerTu",dir:-1};
 
@@ -9,21 +13,33 @@ const fmt=(n,d=1)=>n==null||!Number.isFinite(Number(n))?"—":Number(n).toLocale
 const pct=n=>n==null?"—":fmt(n,1)+"%";
 const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]));
 const statLabels={tu:"TU",stamina:"기력",health:"체력",bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",strength:"근력",psiStrength:"Psi강도",psiSkill:"Psi기술",melee:"근접",mana:"Mana"};
-
+async function compactJson(url){
+  if(typeof DecompressionStream!=="undefined"){
+    try{
+      const gzipUrl=new URL(url,location.href);gzipUrl.pathname+=".gz";
+      const r=await fetch(gzipUrl);
+      if(r.ok)return await new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    }catch{ /* Corrupted gzip must not hide the original weapon catalog. */ }
+  }
+  const r=await fetch(url);if(!r.ok)throw new Error("무기 데이터 HTTP "+r.status);
+  return r.json();
+}
 async function loadSection(key){
   if(SECTION_CACHE[key])return SECTION_CACHE[key];
+  if(SECTION_PROMISE[key])return SECTION_PROMISE[key];
   const files=DATA.sectionChunks?.[key]||[];
   if(!files.length)throw new Error("무기 데이터 청크가 없습니다: "+key);
-  const parts=await Promise.all(files.map(async rel=>{
-    const res=await fetch("../data/"+rel+"?v="+ASSET_VERSION);
-    if(!res.ok)throw new Error(rel+" 로드 실패: "+res.status);
-    return res.json();
-  }));
-  SECTION_CACHE[key]=parts.flatMap(x=>Array.isArray(x.rows)?x.rows:[]);
-  return SECTION_CACHE[key];
+  SECTION_PROMISE[key]=(async()=>{
+    const parts=await Promise.all(files.map(async rel=>{
+      return compactJson("../data/"+rel+"?v="+ASSET_VERSION);
+    }));
+    SECTION_CACHE[key]=parts.flatMap(x=>Array.isArray(x.rows)?x.rows:[]);
+    return SECTION_CACHE[key];
+  })().finally(()=>{delete SECTION_PROMISE[key]});
+  return SECTION_PROMISE[key];
 }
 async function load(){
-  DATA=await (await fetch("../data/weapons-index.json?v="+ASSET_VERSION)).json();
+  DATA=await compactJson("../data/weapons-index.json?v="+ASSET_VERSION);
   fillCharacters();
   fillTargets(false);
   renderSummary();
@@ -192,7 +208,8 @@ function sectionRows(){
   return SECTION_CACHE[$("#section").value]||[];
 }
 function searchBlob(r){
-  return [r.koName,r.enName,r.itemId,r.ammoKoName,r.ammoEnName,r.ammoId,r.damageTypeKo,...(r.requires||[]),...(r.categories||[])].filter(Boolean).join(" ").toLowerCase();
+  if(!searchHay.has(r))searchHay.set(r,[r.koName,r.enName,r.itemId,r.ammoKoName,r.ammoEnName,r.ammoId,r.damageTypeKo,...(r.requires||[]),...(r.categories||[])].filter(Boolean).join(" ").toLowerCase());
+  return searchHay.get(r);
 }
 function rows(){
   const q=$("#search").value.trim().toLowerCase(),mode=$("#mode").value;
@@ -293,12 +310,13 @@ function actualHtml(r,v,d=1){
 }
 async function render(){
   if(!DATA)return;
+  const generation=++renderGeneration;
   const section=$("#section").value;
   if(!SECTION_CACHE[section]){
     $("#rowCount").textContent="데이터 불러오는 중…";
     $("#weaponTable tbody").innerHTML="";
     await loadSection(section);
-    if(section!==$("#section").value)return;
+    if(generation!==renderGeneration||section!==$("#section").value)return;
   }
   const s=stats(),c=character(),band=$("#band").value;
   $("#characterTitle").textContent=c.koName+" · "+({avg:"평균",min:"최소",max:"최대"}[band]);
@@ -322,10 +340,16 @@ async function render(){
     th("물리 최대거리","physicalThrowRange"),th("규칙 최대거리","throwRange"),th("무게","weight"),th("폭발반경","blastRadius"),th("프라임","primeCost"),th("구매가","costBuy"),th("해금","requiresText")
   ];
   $("#weaponTable thead").innerHTML="<tr>"+h.join("")+"</tr>";
-  const a=rows();$("#rowCount").textContent=a.length+"개 · "+c.koName+" · 거리 "+($("#distance").value||0)+"칸";
-  $("#weaponTable tbody").innerHTML=a.map(r=>rowHtml(r,section)).join("");
-  document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{const k=el.dataset.sort;if(sort.key===k)sort.dir*=-1;else sort={key:k,dir:k==="koName"?1:-1};void render()}));
-  document.querySelectorAll("tbody tr").forEach(el=>el.addEventListener("click",()=>{void openDetail(decodeURIComponent(el.dataset.id))}));
+  const a=rows(),pageCount=Math.max(1,Math.ceil(a.length/PAGE_SIZE));
+  currentPage=Math.min(currentPage,pageCount-1);
+  const shown=a.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
+  $("#rowCount").textContent=a.length+"개 · "+(currentPage+1)+"/"+pageCount+"페이지 · "+c.koName+" · 거리 "+($("#distance").value||0)+"칸";
+  $("#weaponTable tbody").innerHTML=shown.map(r=>rowHtml(r,section)).join("");
+  const pages=[0,currentPage-2,currentPage-1,currentPage,currentPage+1,currentPage+2,pageCount-1].filter(n=>n>=0&&n<pageCount);
+  $("#weaponPager").innerHTML='<button data-page="'+(currentPage-1)+'" '+(currentPage===0?'disabled':'')+'>← 이전</button>'+
+    [...new Set(pages)].sort((a,b)=>a-b).map(n=>'<button data-page="'+n+'" class="'+(n===currentPage?'current':'')+'">'+(n+1)+'</button>').join("")+
+    '<button data-page="'+(currentPage+1)+'" '+(currentPage===pageCount-1?'disabled':'')+'>다음 →</button>';
+  document.querySelectorAll("#weaponTable th[data-sort]").forEach(el=>el.addEventListener("click",()=>{const k=el.dataset.sort;if(sort.key===k)sort.dir*=-1;else sort={key:k,dir:k==="koName"?1:-1};currentPage=0;void render()}));
 }
 function rowHtml(r,section){
   const first='<td><span class="name">'+esc(r.koName)+'</span><span class="id">'+esc(r.itemId)+'</span>'+scriptMark(r)+"</td>";
@@ -379,9 +403,11 @@ function objectRuleHtml(label,obj){
   return '<h3>'+esc(label)+'</h3><pre class="formula rule-object">'+esc(JSON.stringify(obj,null,2))+'</pre>';
 }
 async function openDetail(id){
+  const generation=++detailGeneration;
   const raw=findRow(id);if(!raw)return;const r=computed(raw),s=stats(),c=character();
   const detailIds=[r.itemId,r.ammoId,r.powerSourceId].filter(Boolean);
   const loaded=await Promise.all([...new Set(detailIds)].map(async itemId=>[itemId,await loadRuleDetail(itemId)]));
+  if(generation!==detailGeneration)return;
   const details=Object.fromEntries(loaded),itemDetail=details[r.itemId],ammoDetail=details[r.ammoId],powerDetail=details[r.powerSourceId];
   const itemRule=itemDetail?.rule||{},ammoRule=ammoDetail?.rule||{},powerRule=powerDetail?.rule||{};
   const bonus=evalBonus(r.damageBonus,s),accMult=evalBonus(r.accuracyBonus,s);
@@ -494,9 +520,23 @@ async function openDetail(id){
   $("#detailBody").innerHTML=html;
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
 }
-["search","distance"].forEach(id=>$("#"+id).addEventListener("input",()=>{void render()}));
-$("#targetSearch").addEventListener("input",()=>{fillTargets(true);void render()});
-["section","character","band","targetUnit","mode","kneel","oneHandPenalty"].forEach(id=>$("#"+id).addEventListener("change",()=>{if(id==="section"){sort={key:"effPerTu",dir:-1};$("#mode").value=""}void render()}));
-$("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
+function scheduleRender(){
+  if(searchTimer!==null)clearTimeout(searchTimer);
+  searchTimer=setTimeout(()=>{searchTimer=null;void render()},100);
+}
+$("#search").addEventListener("input",()=>{currentPage=0;scheduleRender()});
+$("#distance").addEventListener("input",scheduleRender);
+$("#targetSearch").addEventListener("input",()=>{fillTargets(true);currentPage=0;scheduleRender()});
+["section","character","band","targetUnit","mode","kneel","oneHandPenalty"].forEach(id=>$("#"+id).addEventListener("change",()=>{if(id==="section"){sort={key:"effPerTu",dir:-1};$("#mode").value=""}currentPage=0;void render()}));
+$("#weaponPager").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-page]");
+  if(!b||b.disabled)return;
+  currentPage=Number(b.dataset.page)||0;void render();
+});
+$("#weaponTable tbody").addEventListener("click",e=>{
+  const tr=e.target.closest("tr[data-id]");
+  if(tr)void openDetail(decodeURIComponent(tr.dataset.id));
+});
+$("#closeDialog").addEventListener("click",()=>{detailGeneration++;$("#detailDialog").close()});
+$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){detailGeneration++;e.currentTarget.close()}});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
