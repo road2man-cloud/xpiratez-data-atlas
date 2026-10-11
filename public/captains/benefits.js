@@ -134,7 +134,9 @@
     const colorName=godColors[color]||color;
     const extraResearch=g.requiredResearch.filter(x=>x.id!==trait&&x.id!==godId&&x.id!==awaken);
     const plus=extraResearch.map(x=>'<a href="'+researchLink(x.id)+'">'+esc(x.name||x.id)+'</a>').join(" · ");
-    const block=g.forbiddenResearch.map(x=>x.id).join(", ");
+    const saintFlag="STR_CAPTAIN_SAINT";
+    const block=g.forbiddenResearch.map(x=>'<a href="'+researchLink(x.id)+'">'+
+      esc(x.id===saintFlag?'혼돈의 성자 (STR_CAPTAIN_SAINT)':x.name||x.id)+'</a>').join(", ");
     const probability='실행 판정 '+g.odds+'%'+
       (g.weight?.totalWeight>g.weight?.weight?' · 결과 가중치 '+g.weight.weight+'/'+g.weight.totalWeight:'');
     return '<article class="god-reward-card '+(candidate?'god-candidate':'god-ineligible')+
@@ -153,7 +155,7 @@
         '<a href="'+researchLink(awaken)+'">'+esc(colorName)+' 각성</a> 이벤트 완료</li>'+
       '<li><b>신의 지식</b>: <a href="'+researchLink(godId)+'">'+esc(godId)+
         '</a> 연구 완료'+(plus?' · 그 밖의 필요 연구 '+plus:'')+'</li>'+
-      '<li><b>중단 조건</b>: '+esc(block)+
+      '<li><b>중단 조건</b>: '+block+
         ' 미획득 상태를 유지 (Saint가 생기면 이후 이벤트 정지)</li></ol>'+
       '<p class="god-event-odds">'+esc(probability)+
       ' · 연구조건 충족만으로 확정 지급되지 않음 · 기존 보상 회수 없음</p>'+
