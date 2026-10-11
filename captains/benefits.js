@@ -10,7 +10,14 @@
   const researchLink=id=>'../research/#research='+encodeURIComponent(id);
   const eventLink=id=>'../events/#event='+encodeURIComponent(id);
   const itemLink=id=>'../items/#item='+encodeURIComponent(id);
-  const eventTitle=e=>e.id==="STR_CAPTAINS_11"?"선장의 11 · Captain’s 11":e.name;
+  function eventTitle(e){
+    if(e.id==="STR_CAPTAINS_11")return "선장의 11 · Captain’s 11";
+    if(e.name==="똑 똑"&&e.id.startsWith("STR_KNOCK_KNOCK_")){
+      const award=e.reward?.guaranteedItems?.[0]?.name||e.reward?.research?.[0]?.name;
+      return "똑 똑 · "+(award||e.id.replace("STR_KNOCK_KNOCK_",""));
+    }
+    return e.name;
+  }
   let catalog=null,loadError=null;
   const byRow=new Map(),chunkCache=new Map();
   const perRow=id=>byRow.get(id)||null;
@@ -21,20 +28,46 @@
     if(!row)return "";
     return [row.choiceId,...row.unlocks.map(x=>x.id+" "+x.name),
       ...row.featured.map(x=>x.id+" "+x.name),row.eventSearch||"",
-      row.commonKnockKnock?.eligible?"일반 똑 똑 knock knock 공통 방문":"",
+      row.commonKnockKnock?.eligible?"일반 똑 똑 똑똑 똑똑이 knock knock 공통 방문":"",
       id==="thief"?"캡틴스11 captains eleven 선장11 선장의 11 비밀 속임수":""]
       .join(" ").toLowerCase();
   }
   function benefitShort(row) {
     if(row.rowId==="thief")return{main:"선장의 11 · 토큰 ×11",tag:"도둑 전용 · 조건 충족 뒤 이벤트 1회"};
+    if(row.rowId==="priest")return{main:"건강미 훈련 · 벙커",tag:"사제 분기의 핵심 강화 · 연구/시설 조건 별도"};
     const direct=row.featured.find(x=>x.route==="selected-branch"&&(x.researchCount||x.itemCount||x.funds>0));
-    if(direct)return{main:direct.name,tag:"선장 선택이 조건인 이벤트 · 다른 조건 확인"};
+    if(direct)return{main:featuredName(direct),tag:"선장 선택이 조건인 이벤트 · 다른 조건 확인"};
     const indirect=row.featured.find(x=>x.route==="subsequent-unlock"&&(x.researchCount||x.itemCount||x.funds>0))||row.featured[0];
-    if(indirect)return{main:indirect.name,tag:indirect.route==="selected-branch"?
+    if(indirect)return{main:featuredName(indirect),tag:indirect.route==="selected-branch"?
       "선장 조건 이벤트 · 결과는 별도 확인":"후속 플래그/이벤트 조건부 · 즉시 지급 아님"};
     const first=row.unlocks.find(x=>x.status==="candidate");
     if(first)return{main:first.name,tag:"연구 해금 경로 후보 · 자동 완료 아님"};
     return{main:"다음 단계 선택·장기 이벤트",tag:"직접 지급보다 후속 분기 해금이 중심"};
+  }
+  function featuredName(e){
+    if(e.name==="똑 똑"&&e.id.startsWith("STR_KNOCK_KNOCK_"))
+      return e.id==="STR_KNOCK_KNOCK_ROGUE_CLONE"
+        ?"똑 똑 · 외톨이 클론 (DumbLazy 조건)"
+        :e.id==="STR_KNOCK_KNOCK_ORTHODOX_MAGE_DAMSEL"
+          ?"똑 똑 · 붉은 새벽단 기적술사 (별도 조건)"
+          :"똑 똑 · "+e.id.replace("STR_KNOCK_KNOCK_","");
+    return e.name;
+  }
+  function sharedVisitorBadge(row){
+    const common=row.commonKnockKnock;
+    if(!common)return '<div class="benefit-visitor-primary benefit-visitor-unknown">공통 방문 이벤트 자료 미확인</div>';
+    const eligible=common.eligible===true;
+    const cloned=eligible&&row.unlocks?.some(x=>x.id==="STR_CAPTAIN_DUMBLAZY"&&x.status!=="disabled")&&
+      row.eventSearch?.includes("STR_KNOCK_KNOCK_ROGUE_CLONE");
+    const mage=eligible&&row.unlocks?.some(x=>x.id==="STR_CAPTAIN_JACKLAZY"&&x.status!=="disabled")&&
+      row.eventSearch?.includes("STR_KNOCK_KNOCK_ORTHODOX_MAGE_DAMSEL");
+    return '<div class="benefit-visitor-primary '+(eligible?'benefit-visitor-yes':'benefit-visitor-no')+
+      '" data-common-knock="'+(eligible?'eligible':'blocked')+'">'+
+      '<strong>똑 똑(똑똑이) 방문</strong><b>'+
+      (eligible?'조건부 가능 · 공통 '+common.outcomeCount+'종':'일반형 차단 · Soreass')+'</b>'+
+      (cloned?'<small>추가: DumbLazy 연구 완료 후 외톨이 클론 추첨 후보</small>':'')+
+      (mage?'<small>추가: JackLazy 경로의 기적술사 추첨 후보</small>':'')+
+      '</div>';
   }
   function matrixCell(r) {
     const row=perRow(r.id);
@@ -42,11 +75,10 @@
     const headline=benefitShort(row);
     return '<span class="benefit-main">'+esc(headline.main)+'</span>'+
       '<small class="benefit-conditional">'+esc(headline.tag)+'</small>'+
+      sharedVisitorBadge(row)+
       '<small class="benefit-count">원본 명시 해금 '+row.unlocks.length+
       '개 · 직접 이벤트 '+row.categories.directEvents+
-      '곳 · 후속 후보 '+row.categories.downstreamEvents+'곳</small>'+
-      '<small class="benefit-common">일반 똑 똑: '+
-      (row.commonKnockKnock?.eligible?'조건부 가능 (공통 방문)':'Soreass 조건으로 제외')+'</small>';
+      '곳 · 후속 후보 '+row.categories.downstreamEvents+'곳</small>';
   }
   function renderStageCardBadges(){
     for(const card of document.querySelectorAll(".captain-branch-perks[data-benefit-choice]")){
@@ -57,11 +89,9 @@
         '<a href="../trainings/?training=STR_CAPTAINS_11">Captain’s 11 훈련 상세</a> · '+
         '<a href="../events/#event=STR_CAPTAINS_11">지급 이벤트</a>':'';
       card.innerHTML='<b>분기 고유 보상·후속 이점</b><strong>'+esc(headline.main)+'</strong>'+
-        '<small>'+esc(headline.tag)+'</small>'+
+        '<small>'+esc(headline.tag)+'</small>'+sharedVisitorBadge(row)+
         '<span>연구 해금 후보 '+row.unlocks.length+'개 · 관련 이벤트 '+row.categories.directEvents+
         ' 직접 / '+row.categories.downstreamEvents+' 후속 · 자세한 사항은 위 비교표의 선장 행을 선택</span>'+
-        '<small class="benefit-common">일반 똑 똑: '+
-        (row.commonKnockKnock?.eligible?'조건부 가능 · 다른 선장과 공유':'Soreass 조건으로 기본 방문 제외')+'</small>'+
         (highlight?'<small>'+highlight+'</small>':'');
     }
   }
