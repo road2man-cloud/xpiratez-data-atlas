@@ -1,5 +1,6 @@
-let DATA=null,ROUTES=null,ROUTES_PROMISE=null,CURRENT_DETAIL=null,DETAIL_RECALC_TIMER=null;
-let sort={key:"frontArmor",dir:-1};
+let DATA=null,ROUTES=null,ROUTES_PROMISE=null,CURRENT_DETAIL=null,DETAIL_RECALC_TIMER=null,DETAIL_GENERATION=0;
+let sort={key:"frontArmor",dir:-1},page=0;
+const PAGE_SIZE=100,SEARCH_HAY=new WeakMap();
 const DETAIL_CACHE={},RAW_CACHE={},MANUFACTURE_BUCKET_CACHE={};
 
 const $=q=>document.querySelector(q);
@@ -31,8 +32,17 @@ function nameWithId(x){
 }
 
 async function load(){
-  const res=await fetch("../data/armors-index.json");
-  DATA=await res.json();
+  if(typeof DecompressionStream!=="undefined"){
+    try{
+      const res=await fetch("../data/armors-index.json.gz");
+      if(res.ok)DATA=await new Response(res.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    }catch{ /* Fall back to the canonical armor index on corrupt gzip. */ }
+  }
+  if(!DATA){
+    const res=await fetch("../data/armors-index.json");
+    if(!res.ok)throw new Error("방어구 인덱스 HTTP "+res.status);
+    DATA=await res.json();
+  }
   renderSummary();
   render();
 }
@@ -46,7 +56,8 @@ function renderSummary(){
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
 function searchBlob(r){
-  return [r.koName,r.enName,r.id,r.storeItemId,...(r.acquisitionKinds||[])].filter(Boolean).join(" ").toLowerCase();
+  if(!SEARCH_HAY.has(r))SEARCH_HAY.set(r,[r.koName,r.enName,r.id,r.storeItemId,...(r.acquisitionKinds||[])].filter(Boolean).join(" ").toLowerCase());
+  return SEARCH_HAY.get(r);
 }
 function filtered(){
   const q=$("#search").value.trim().toLowerCase(),acq=$("#acquire").value;
@@ -81,18 +92,22 @@ function render(){
     th("AP","ap","일반 탄환/Armor Piercing 저항 배율"),th("화염","incendiary"),th("HE","he"),th("레이저","laser"),th("플라즈마","plasma"),th("근접","meleeResist"),th("DT16","dt16")
   ].join("");
   $("#armorTable thead").innerHTML="<tr>"+head+"</tr>";
-  const rows=filtered();$("#rowCount").textContent=rows.length+"종";
-  $("#armorTable tbody").innerHTML=rows.map(r=>'<tr data-id="'+esc(r.id)+'" data-bucket="'+r.bucket+'">'+
+  const rows=filtered(),pages=Math.max(1,Math.ceil(rows.length/PAGE_SIZE));
+  page=Math.min(page,pages-1);
+  $("#rowCount").textContent=rows.length+"종 · "+(page+1)+"/"+pages+"페이지";
+  $("#armorTable tbody").innerHTML=rows.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE).map(r=>'<tr data-id="'+esc(r.id)+'" data-bucket="'+r.bucket+'">'+
     '<td><span class="name">'+esc(r.koName)+'</span><span class="id">'+esc(r.id)+'</span></td>'+
     '<td>'+(r.acquisitionKinds||[]).map(x=>'<span class="tag">'+esc(x)+'</span>').join(" ")+'</td>'+
     '<td>'+fmt(r.mainResearchCost)+(r.mainResearchHasUnlockBypassCandidates?' <span class="warn" title="unlocks로 dependency를 우회할 수 있는 후보가 있어 이 값은 보수적 합계입니다.">⚠</span>':'')+'</td><td>'+fmt(r.mainManufactureTime)+'</td>'+
     [r.frontArmor,r.leftArmor,r.rightArmor,r.rearArmor,r.underArmor,r.weight,r.tu,r.stamina,r.health,r.reactions,r.firing,r.melee].map(x=>'<td>'+fmt(x)+'</td>').join("")+
     [r.ap,r.incendiary,r.he,r.laser,r.plasma,r.meleeResist,r.dt16].map(x=>'<td>'+resist(x)+'</td>').join("")+
     '</tr>').join("");
-  document.querySelectorAll("th[data-sort]").forEach(el=>el.onclick=()=>{
-    const key=el.dataset.sort;if(sort.key===key)sort.dir*=-1;else sort={key,dir:key==="name"?1:-1};render();
+  $("#armorPager").innerHTML='<button data-page="'+(page-1)+'" '+(page===0?'disabled':'')+'>← 이전</button>'+
+    [...new Set([0,page-2,page-1,page,page+1,page+2,pages-1].filter(n=>n>=0&&n<pages))].sort((a,b)=>a-b).map(n=>'<button data-page="'+n+'" class="'+(n===page?'current':'')+'">'+(n+1)+'</button>').join("")+
+    '<button data-page="'+(page+1)+'" '+(page===pages-1?'disabled':'')+'>다음 →</button>';
+  document.querySelectorAll("#armorTable th[data-sort]").forEach(el=>el.onclick=()=>{
+    const key=el.dataset.sort;if(sort.key===key)sort.dir*=-1;else sort={key,dir:key==="name"?1:-1};page=0;render();
   });
-  document.querySelectorAll("#armorTable tbody tr").forEach(el=>el.onclick=()=>openDetail(el.dataset.id,el.dataset.bucket));
 }
 async function detail(id,bucket){
   if(DETAIL_CACHE[id])return DETAIL_CACHE[id];
@@ -169,10 +184,12 @@ function manufactureBlock(m){
     '<h5>제조 해금 연구</h5>'+researchBlock(m.research)+'</article>';
 }
 async function openDetail(id,bucket){
+  const generation=++DETAIL_GENERATION;
   CURRENT_DETAIL={id,bucket};
   $("#detailBody").innerHTML='<p class="muted">상세 데이터 불러오는 중…</p>';
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
   const [d]=await Promise.all([detail(id,bucket),routes()]);
+  if(generation!==DETAIL_GENERATION||!$("#detailDialog").open)return;
   if(!d){$("#detailBody").innerHTML="<p>상세 데이터 없음</p>";return}
   let html='<p class="eyebrow">Armor detail</p><h2>'+esc(d.koName)+'</h2><p class="muted">'+esc(d.id)+(d.storeItemId?' · item '+esc(d.storeItemId):'')+'</p>';
   html+='<div class="detail-grid">'+
@@ -196,6 +213,7 @@ async function openDetail(id,bucket){
       researchBlock(b.research)+'</article>';
   }
   const manufacture=(await Promise.all((d.acquisition.manufactureRefs||[]).map(manufactureRoute))).filter(Boolean);
+  if(generation!==DETAIL_GENERATION||!$("#detailDialog").open)return;
   html+=manufacture.map(manufactureBlock).join("");
   const rewards=d.acquisition.researchRewardKey?(ROUTES.researchRewards?.[d.acquisition.researchRewardKey]||[]):[];
   if(rewards.length){
@@ -230,11 +248,13 @@ async function openDetail(id,bucket){
     catch(err){body.textContent=err.message;}
   };
 }
-["search"].forEach(id=>$("#"+id).addEventListener("input",render));
-["acquire","equipableOnly","manufacturableOnly"].forEach(id=>$("#"+id).addEventListener("change",render));
+$("#search").addEventListener("input",()=>{page=0;render()});
+["acquire","equipableOnly","manufacturableOnly"].forEach(id=>$("#"+id).addEventListener("change",()=>{page=0;render()}));
+$("#armorPager").addEventListener("click",e=>{const b=e.target.closest("button[data-page]");if(b&&!b.disabled){page=Number(b.dataset.page)||0;render()}});
+$("#armorTable tbody").addEventListener("click",e=>{const row=e.target.closest("tr[data-id]");if(row)void openDetail(row.dataset.id,row.dataset.bucket)});
 ["scientists","engineers"].forEach(id=>$("#"+id).addEventListener("input",()=>{
   if(CURRENT_DETAIL&&$("#detailDialog").open)openDetail(CURRENT_DETAIL.id,CURRENT_DETAIL.bucket);
 }));
-$("#closeDialog").onclick=()=>{clearTimeout(DETAIL_RECALC_TIMER);$("#detailDialog").close();CURRENT_DETAIL=null};
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){clearTimeout(DETAIL_RECALC_TIMER);e.currentTarget.close();CURRENT_DETAIL=null}});
+$("#closeDialog").onclick=()=>{DETAIL_GENERATION++;clearTimeout(DETAIL_RECALC_TIMER);$("#detailDialog").close();CURRENT_DETAIL=null};
+$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){DETAIL_GENERATION++;clearTimeout(DETAIL_RECALC_TIMER);e.currentTarget.close();CURRENT_DETAIL=null}});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
