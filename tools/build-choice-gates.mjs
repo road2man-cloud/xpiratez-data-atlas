@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import {auditMultiPrerequisiteBranches} from "./research-branch-audit.mjs";
 
 // Keep research decision-gate facts independent from the older compact
 // "prerequisites" union. Read the generated effective-raw research sources
@@ -103,5 +104,12 @@ const runtimeTopics=researchTopics.map(topic=>{
 const runtime={schemaVersion:1,format:"choice-runtime-v1",count:known.size,unresolvedByField,topics:runtimeTopics};
 const runtimeJson=JSON.stringify(runtime);
 fs.writeFileSync(runtimeOutput,runtimeJson);
+// A directed disable between two nominal prerequisites is not proof that a
+// topic is unreachable. Incoming unlocks can bypass dependencies, but never
+// requires; a source that also disables the target is not a viable bypass.
+const branchReport=auditMultiPrerequisiteBranches(runtimeTopics);
+const branchReportOutput="public/data/research-branch-conflicts.json";
+fs.writeFileSync(branchReportOutput,JSON.stringify(branchReport));
 console.log("Generated "+output+" "+(Buffer.byteLength(serialized)/1024).toFixed(1)+" KiB",counts,"unresolved references",unresolvedByField);
 console.log("Generated "+runtimeOutput+" "+(Buffer.byteLength(runtimeJson)/1024).toFixed(1)+" KiB");
+console.log("Generated "+branchReportOutput+": "+JSON.stringify(branchReport.meta));
