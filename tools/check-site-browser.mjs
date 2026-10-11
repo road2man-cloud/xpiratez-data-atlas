@@ -112,6 +112,7 @@ try {
           search=before+"->"+after;
           if(after>=before&&before>2)errors.push("search no-match did not filter ("+search+")");
           await input.fill("");
+          await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
         }
         const row=page.locator(ready[slug]).first();
         // Item/research first table cell is a comparison checkbox; click the name instead.
@@ -129,6 +130,7 @@ try {
           if(landscape==="sticky")errors.push("landscape soldier toolbar overlays the table");
           await page.setViewportSize({width:390,height:844});
           await page.locator("#dataset").selectOption("final");
+          await page.locator("#soldierTable tbody tr[data-row]").first().waitFor({state:"attached",timeout:60000});
           const finalCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
           if(finalCaps!==12)errors.push("Final soldier builds missing growth hard caps: "+finalCaps+"/12");
           if(await page.locator("#sortMetric").isDisabled())errors.push("Final hard-cap sorting selector was disabled");
