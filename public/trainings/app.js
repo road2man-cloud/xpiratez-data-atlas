@@ -1,5 +1,5 @@
 import {loadRuntime} from "../db-runtime.js";
-import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue} from "./planner.js";
+import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue,divergentPathCompatibility} from "./planner.js";
 import {buildChoiceIndex,parseCompletedResearch} from "../captains/choice-simulator-core.js";
 import {trainingRouteGate,routeEventReport} from "./route-gates.js";
 import {buildStagedCaptainContext,validateCaptainStages} from "./staged-captain.js";
@@ -12,7 +12,7 @@ const list=x=>Array.isArray(x)?x:[];
 const sum=(a,b)=>{const out={...a};for(const [k,v] of Object.entries(b||{}))out[k]=(out[k]||0)+Number(v||0);return out};
 const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0);
 const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?"+":"")+v).join(" · ")||"변화 없음";
-let DATA,ACCESS,choiceIndex,routeContext,researchRouteContext,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
+let DATA,ACCESS,PATH_GATES,choiceIndex,routeContext,researchRouteContext,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
 let selectedCompanions=new Set(),codexChoice="",saintGoal=false;
 const rankStat=t=>textStats(t.flatOverallStatChange,statLabels);
 const bonusStats=t=>traitStatsOf(t,DATA.bonuses);
@@ -48,6 +48,7 @@ const labelIssue=(issue)=>{
   if(issue.code==="unavailable")return"게임에서 사용할 수 없는 내부 전용 변신 (STR_UNAVAILABLE)";
   if(issue.code==="route-blocked")return"선장 분기로 영구 불가: "+(issue.details||issue.ids.map(name).join(", "));
   if(issue.code==="research-route-blocked")return researchRouteReason(issue.access);
+  if(issue.code==="diverging-path-conflict")return"선택된 훈련이 서로 다른 갈림길 전용: "+issue.ids.map(name).join(" + ");
   if(issue.code==="prerequisite")return"먼저 이 훈련 필요: "+issue.ids.map(name).join(", ");
   if(issue.code==="type"||issue.code==="forbidden-type")return"현재 병종("+typeName(state.soldierType)+")에 적용할 수 없음";
   if(issue.code==="condition")return"현재 병사 상태에서 실행 불가";
@@ -74,11 +75,17 @@ function routeIssues(t){
     existing.push({code:"research-route-blocked",ids:research.blockers.map(x=>x.researchId),access:research});
   ROUTE_ISSUES.set(t.id,existing);return existing;
 }
-function issuesFor(t,s){return[...evaluate(t,s),...routeIssues(t)];}
+function pathIssues(ids){
+  if(!PATH_GATES)return[];
+  const check=divergentPathCompatibility(ids,PATH_GATES);
+  return check.compatible?[]:[{code:"diverging-path-conflict",ids:check.conflictIds}];
+}
+function issuesFor(t,s){return[...evaluate(t,s),...routeIssues(t),...pathIssues([...selected,t.id])];}
 function planWithRoute(t,s){
   if(!t||routeIssues(t).length)return{steps:[],state:null};
   const plan=addWithPrerequisites(t,s,byId);
   if(plan.state&&plan.steps.some(id=>routeIssues(byId.get(id)).length))return{steps:[],state:null};
+  if(plan.state&&pathIssues([...selected,...plan.steps]).length)return{steps:[],state:null};
   return plan;
 }
 function canAdd(t,includePrerequisites=false){
@@ -226,7 +233,7 @@ function distinctResearchWarnings(rs){
 }
 function renderDecisions(){
   const ready=rows.filter(x=>x.status==="ready"),future=rows.filter(x=>x.status==="prereq");
-  const routeBlocked=rows.filter(x=>x.issues.some(issue=>issue.code==="route-blocked"||issue.code==="research-route-blocked"));
+  const routeBlocked=rows.filter(x=>x.issues.some(issue=>["route-blocked","research-route-blocked","diverging-path-conflict"].includes(issue.code)));
   $("#decisionHint").textContent=typeName(state.soldierType)+" 기준 · 변신 조건상 가능 "+ready.length+"개 / 선행 필요 "+future.length+"개 / 전체 차단 "+rows.filter(x=>x.status==="blocked").length+"개 (선장 분기 "+routeBlocked.length+"개)";
   const allForbidden=excludedByPrior(DATA.transformations,state);
   const previous=latestAdded.length?replay(currentOrigin(),selected.slice(0,-latestAdded.length),byId,{condition:$("#condition").value}):null;
@@ -252,7 +259,7 @@ function renderDecisions(){
   $("#blockedList").innerHTML=older.map(x=>choice(x)).join("")||
     '<p class="muted fine">이전 선택 또는 시작 획득 경로로 이미 배제된 훈련이 없습니다.</p>';
   $("#branchBlockedCount").textContent=routeBlocked.length+"개";
-  $("#branchBlockedList").innerHTML=routeBlocked.map(x=>'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(x.issues.filter(y=>(y.code==="route-blocked"||y.code==="research-route-blocked")).map(labelIssue).join(" / "))+'</span></div><button data-info="'+esc(x.t.id)+'" class="btn-small">상세</button></div>').join("")||
+  $("#branchBlockedList").innerHTML=routeBlocked.map(x=>'<div class="choice"><div class="choice-main"><strong>'+esc(x.t.koName)+'</strong><span>'+esc(x.issues.filter(y=>["route-blocked","research-route-blocked","diverging-path-conflict"].includes(y.code)).map(labelIssue).join(" / "))+'</span></div><button data-info="'+esc(x.t.id)+'" class="btn-small">상세</button></div>').join("")||
     '<p class="muted fine">현재 선택한 선장 분기로 영구 봉쇄된 훈련이 없습니다.</p>';
   // Keep the effect visible next to the checkboxes on mobile, without scrolling
   // back up to the full rule panel. The expandable view lists every blocker.
@@ -537,11 +544,14 @@ async function init(){
   try{
     performance.mark("trainings:load-start");
     const load=async file=>{const r=await fetch(file);if(!r.ok)throw new Error(file+" HTTP "+r.status);return r.json();};
-    const [trainings,access,progression]=await Promise.all([
+    const [trainings,access,progression,pathGates]=await Promise.all([
       loadRuntime("../data/trainings-runtime.json?v=large-db-perf-20261011"),load("../data/training-access.json"),
-      loadRuntime("../data/choice-simulator-index.json?v=large-db-perf-20261011")
+      loadRuntime("../data/choice-simulator-index.json?v=large-db-perf-20261011"),
+      load("../data/training-path-gates.json")
     ]);
-    DATA=trainings;ACCESS=access;
+    if(pathGates.trainingRulesSha256!==trainings.meta.sha256)
+      throw new Error("갈림길 특성 배제 데이터가 훈련 룰셋과 불일치");
+    DATA=trainings;ACCESS=access;PATH_GATES=pathGates;
     choiceIndex=buildChoiceIndex(progression.topics,{inline:true,unresolvedByField:progression.unresolvedByField});
     validateCaptainStages(choiceIndex,ACCESS.captainStages);
     for(let i=0;i<4;i++)
