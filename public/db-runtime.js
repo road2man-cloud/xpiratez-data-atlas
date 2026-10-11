@@ -8,12 +8,16 @@ const fallbacks={
 };
 export function loadRuntime(url){
   if(!requests.has(url))requests.set(url,(async()=>{
-    const compressed=typeof DecompressionStream!=='undefined';
-    const target=compressed?url.replace(/\.json(?=\?|$)/,'.json.gz'):
-      url.replace(/([^/]+)\.json(?=\?|$)/,(match,name)=>(fallbacks[name]||name)+'.json');
-    const response=await fetch(target);
-    if(!response.ok)throw new Error(target+' HTTP '+response.status);
-    if(compressed)return new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+    if(typeof DecompressionStream!=='undefined'){
+      const gzUrl=url.replace(/\.json(?=\?|$)/,'.json.gz');
+      try{
+        const compressed=await fetch(gzUrl);
+        if(compressed.ok)return await new Response(compressed.body.pipeThrough(new DecompressionStream('gzip'))).json();
+      }catch{ /* Use canonical source if gzip is unavailable or damaged. */ }
+    }
+    const rawUrl=url.replace(/([^/]+)\.json(?=\?|$)/,(match,name)=>(fallbacks[name]||name)+'.json');
+    const response=await fetch(rawUrl);
+    if(!response.ok)throw new Error(rawUrl+' HTTP '+response.status);
     const body=await response.json();
     if(url.includes('/manufacture-search.json'))return {search:Object.fromEntries(body.index.map(row=>[row.id,row.searchText]))};
     if(url.includes('/training-raw-rules.json'))return {rawRules:Object.fromEntries(body.transformations.map(t=>[t.id,t.rawRule]))};

@@ -4,7 +4,7 @@ const SECTION_PROMISE={};
 const DETAIL_CACHE={};
 const searchHay=new WeakMap();
 const PAGE_SIZE=100;
-let currentPage=0,searchTimer=null,renderGeneration=0;
+let currentPage=0,searchTimer=null,renderGeneration=0,detailGeneration=0;
 const ASSET_VERSION="20261008-enemy-search1";
 let sort={key:"effPerTu",dir:-1};
 
@@ -15,10 +15,11 @@ const esc=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&g
 const statLabels={tu:"TU",stamina:"기력",health:"체력",bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",strength:"근력",psiStrength:"Psi강도",psiSkill:"Psi기술",melee:"근접",mana:"Mana"};
 async function compactJson(url){
   if(typeof DecompressionStream!=="undefined"){
-    const gzipUrl=new URL(url,location.href);gzipUrl.pathname+=".gz";
-    const r=await fetch(gzipUrl);
-    if(r.ok)return new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json();
-    if(r.status!==404)throw new Error("압축 무기 데이터 HTTP "+r.status);
+    try{
+      const gzipUrl=new URL(url,location.href);gzipUrl.pathname+=".gz";
+      const r=await fetch(gzipUrl);
+      if(r.ok)return await new Response(r.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    }catch{ /* Corrupted gzip must not hide the original weapon catalog. */ }
   }
   const r=await fetch(url);if(!r.ok)throw new Error("무기 데이터 HTTP "+r.status);
   return r.json();
@@ -402,9 +403,11 @@ function objectRuleHtml(label,obj){
   return '<h3>'+esc(label)+'</h3><pre class="formula rule-object">'+esc(JSON.stringify(obj,null,2))+'</pre>';
 }
 async function openDetail(id){
+  const generation=++detailGeneration;
   const raw=findRow(id);if(!raw)return;const r=computed(raw),s=stats(),c=character();
   const detailIds=[r.itemId,r.ammoId,r.powerSourceId].filter(Boolean);
   const loaded=await Promise.all([...new Set(detailIds)].map(async itemId=>[itemId,await loadRuleDetail(itemId)]));
+  if(generation!==detailGeneration)return;
   const details=Object.fromEntries(loaded),itemDetail=details[r.itemId],ammoDetail=details[r.ammoId],powerDetail=details[r.powerSourceId];
   const itemRule=itemDetail?.rule||{},ammoRule=ammoDetail?.rule||{},powerRule=powerDetail?.rule||{};
   const bonus=evalBonus(r.damageBonus,s),accMult=evalBonus(r.accuracyBonus,s);
@@ -534,6 +537,6 @@ $("#weaponTable tbody").addEventListener("click",e=>{
   const tr=e.target.closest("tr[data-id]");
   if(tr)void openDetail(decodeURIComponent(tr.dataset.id));
 });
-$("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
+$("#closeDialog").addEventListener("click",()=>{detailGeneration++;$("#detailDialog").close()});
+$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){detailGeneration++;e.currentTarget.close()}});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});

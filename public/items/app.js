@@ -15,15 +15,16 @@ const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
 const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map();
-let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null;
+let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null,detailGeneration=0;
 const modePromises={},searchHay=new WeakMap();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
 async function compactJson(url){
   if(typeof DecompressionStream!=="undefined"){
-    const response=await fetch(url+".gz");
-    if(response.ok)return new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).json();
-    if(response.status!==404)throw new Error(url+".gz · HTTP "+response.status);
+    try{
+      const response=await fetch(url+".gz");
+      if(response.ok)return await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    }catch{ /* Restore canonical JSON when a compressed response is malformed. */ }
   }
   return json(url);
 }
@@ -178,12 +179,15 @@ function bindResourceDetails(){
   });
 }
 async function openDetail(mode,id){
+  const generation=++detailGeneration;
   try{
-    const d=await detail(mode,id);state.detail={mode,id};
+    const d=await detail(mode,id);
+    if(generation!==detailGeneration)return;
+    state.detail={mode,id};
     $("#detail").innerHTML=mode==="items"?renderItem(d):renderResearch(d);bindResourceDetails();
     $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
     history.replaceState(null,"","#"+(mode==="items"?"item=":"research=")+encodeURIComponent(id));
-  }catch(e){$("#detail").innerHTML=`<p class="error">${esc(e.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
+  }catch(e){if(generation!==detailGeneration)return;$("#detail").innerHTML=`<p class="error">${esc(e.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
 function itemEditorialMarkup(d){
   const e=d.editorial;if(!e)return"";
@@ -429,7 +433,7 @@ function renderResearch(d){
   ${resourceDetailsMarkup("research",d)}
   <section class="section"><h3>출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section>`;
 }
-function closeDrawer(){state.detail=null;$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true;history.replaceState(null,"",location.pathname+location.search)}
+function closeDrawer(){detailGeneration++;state.detail=null;$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true;history.replaceState(null,"",location.pathname+location.search)}
 function toggleSelect(mode,id){const s=state.selected[mode],i=s.indexOf(id);if(i>=0)s.splice(i,1);else if(s.length<4)s.push(id);render();updateCompare()}
 function updateCompare(){const n=state.selected[state.mode].length;$("#compareCount").textContent=n;$("#compare").disabled=n<2}
 async function openCompare(){

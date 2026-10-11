@@ -233,9 +233,10 @@ async function init(){
   // aliases and raw item/research IDs rather than failing the whole page.
   void (async()=>{
     if(typeof DecompressionStream!=="undefined"){
-      const gzip=await fetch(NAMES_URL+".gz");
-      if(gzip.ok)return new Response(gzip.body.pipeThrough(new DecompressionStream("gzip"))).json();
-      if(gzip.status!==404)throw new Error("names gzip HTTP "+gzip.status);
+      try{
+        const gzip=await fetch(NAMES_URL+".gz");
+        if(gzip.ok)return await new Response(gzip.body.pipeThrough(new DecompressionStream("gzip"))).json();
+      }catch{ /* Names are optional, but canonical JSON may still recover. */ }
     }
     const response=await fetch(NAMES_URL);
     if(!response.ok)throw new Error("names HTTP "+response.status);

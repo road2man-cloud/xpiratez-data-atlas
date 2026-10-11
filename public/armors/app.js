@@ -1,4 +1,4 @@
-let DATA=null,ROUTES=null,ROUTES_PROMISE=null,CURRENT_DETAIL=null,DETAIL_RECALC_TIMER=null;
+let DATA=null,ROUTES=null,ROUTES_PROMISE=null,CURRENT_DETAIL=null,DETAIL_RECALC_TIMER=null,DETAIL_GENERATION=0;
 let sort={key:"frontArmor",dir:-1},page=0;
 const PAGE_SIZE=100,SEARCH_HAY=new WeakMap();
 const DETAIL_CACHE={},RAW_CACHE={},MANUFACTURE_BUCKET_CACHE={};
@@ -33,9 +33,10 @@ function nameWithId(x){
 
 async function load(){
   if(typeof DecompressionStream!=="undefined"){
-    const res=await fetch("../data/armors-index.json.gz");
-    if(res.ok)DATA=await new Response(res.body.pipeThrough(new DecompressionStream("gzip"))).json();
-    else if(res.status!==404)throw new Error("방어구 인덱스 HTTP "+res.status);
+    try{
+      const res=await fetch("../data/armors-index.json.gz");
+      if(res.ok)DATA=await new Response(res.body.pipeThrough(new DecompressionStream("gzip"))).json();
+    }catch{ /* Fall back to the canonical armor index on corrupt gzip. */ }
   }
   if(!DATA){
     const res=await fetch("../data/armors-index.json");
@@ -183,10 +184,12 @@ function manufactureBlock(m){
     '<h5>제조 해금 연구</h5>'+researchBlock(m.research)+'</article>';
 }
 async function openDetail(id,bucket){
+  const generation=++DETAIL_GENERATION;
   CURRENT_DETAIL={id,bucket};
   $("#detailBody").innerHTML='<p class="muted">상세 데이터 불러오는 중…</p>';
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
   const [d]=await Promise.all([detail(id,bucket),routes()]);
+  if(generation!==DETAIL_GENERATION||!$("#detailDialog").open)return;
   if(!d){$("#detailBody").innerHTML="<p>상세 데이터 없음</p>";return}
   let html='<p class="eyebrow">Armor detail</p><h2>'+esc(d.koName)+'</h2><p class="muted">'+esc(d.id)+(d.storeItemId?' · item '+esc(d.storeItemId):'')+'</p>';
   html+='<div class="detail-grid">'+
@@ -210,6 +213,7 @@ async function openDetail(id,bucket){
       researchBlock(b.research)+'</article>';
   }
   const manufacture=(await Promise.all((d.acquisition.manufactureRefs||[]).map(manufactureRoute))).filter(Boolean);
+  if(generation!==DETAIL_GENERATION||!$("#detailDialog").open)return;
   html+=manufacture.map(manufactureBlock).join("");
   const rewards=d.acquisition.researchRewardKey?(ROUTES.researchRewards?.[d.acquisition.researchRewardKey]||[]):[];
   if(rewards.length){
@@ -251,6 +255,6 @@ $("#armorTable tbody").addEventListener("click",e=>{const row=e.target.closest("
 ["scientists","engineers"].forEach(id=>$("#"+id).addEventListener("input",()=>{
   if(CURRENT_DETAIL&&$("#detailDialog").open)openDetail(CURRENT_DETAIL.id,CURRENT_DETAIL.bucket);
 }));
-$("#closeDialog").onclick=()=>{clearTimeout(DETAIL_RECALC_TIMER);$("#detailDialog").close();CURRENT_DETAIL=null};
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){clearTimeout(DETAIL_RECALC_TIMER);e.currentTarget.close();CURRENT_DETAIL=null}});
+$("#closeDialog").onclick=()=>{DETAIL_GENERATION++;clearTimeout(DETAIL_RECALC_TIMER);$("#detailDialog").close();CURRENT_DETAIL=null};
+$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){DETAIL_GENERATION++;clearTimeout(DETAIL_RECALC_TIMER);e.currentTarget.close();CURRENT_DETAIL=null}});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
