@@ -309,6 +309,7 @@ function choiceOptionCard(stage,id,blocks){
     '<div class="choice-option-head"><div><strong>'+(researchLabels[id]||id)+'</strong>'+(ev?'<small>'+ev+' /월</small>':'')+'</div>'+colorsHtml+'</div>'+
     (summary?'<p>'+summary+'</p>':'')+
     choiceEffectSummary(r)+
+    (r?'<div class="captain-branch-perks" data-benefit-choice="'+r.id+'"><span>원본 전용 보상·후속 이벤트 확인 중</span></div>':'')+
     constraint+
     '</article>';
 }
@@ -467,7 +468,7 @@ function renderHead(){
   const thead=document.querySelector("#matrixTable thead");
   const groups=[];
   for(const c of columns){let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group,count:0};groups.push(g)}g.count++}
-  thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
+  thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th><th rowspan="2" class="captain-benefit-head">전용 보상·분기 이점<small>원본 이벤트 + 후속 해금</small></th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
   '<tr>'+columns.map(c=>'<th class="feature-head" data-sort="'+(c.key==="ev"?"ev":"")+'" title="'+(featureInfo[c.key]?.detail||"")+'">'+columnHead(c)+'</th>').join("")+'</tr>';
   thead.querySelectorAll("[data-sort=ev]").forEach(th=>{th.style.cursor="pointer";th.title="클릭하여 EV 정렬";th.addEventListener("click",()=>{sortState={key:"ev",dir:sortState.key==="ev"?-sortState.dir:-1};renderRows()})});
 }
@@ -479,7 +480,7 @@ function filteredRows(){
   let out=rows.filter(r=>{
     if(stage!=="all"&&r.stage!==stage)return false;
     const info=rowInfo.get(r.id);
-    if(q&&!info.search.includes(q))return false;
+    if(q&&!info.search.includes(q)&&!window.CaptainBenefits?.searchText(r.id).includes(q))return false;
     if(only&&!info.available)return false;
     return true;
   });
@@ -490,7 +491,7 @@ function filteredRows(){
   return out;
 }
 function matrixRow(r){
-  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
+  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td><td class="captain-benefit-cell">'+(window.CaptainBenefits?.matrixCell(r)||'<small>분기 보상 확인 중</small>')+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
   return rowMarkup.get(r.id);
 }
 function renderRows(){
@@ -505,8 +506,10 @@ function openDetail(id){
   document.querySelector("#dialogBody").innerHTML='<p class="eyebrow">'+r.stageName+'</p><h2>'+r.name+'</h2><p class="muted">'+r.route+' · '+r.from+'</p><p>'+r.summary+'</p>'+
   '<div class="detail-grid"><div class="detail-box"><strong>반복 이벤트 월 EV</strong>'+r.evText+'</div><div class="detail-box"><strong>색 태그</strong>'+colors(r)+'</div></div>'+
   '<h3>접근 가능한 주요 옵션 · 실제 효과</h3>'+effectCardsHtml(r)+
+  '<section id="captainBenefitDetail" data-branch="'+r.id+'" class="captain-benefit-detail"><h3>전용 보상 · 사건 · 연구 해금 · 배제</h3><p>원본 룰셋에서 분기별 상세 근거를 불러오는 중입니다.</p></section>'+
   codexDetailHtml(r)+'<h3>주의 / 해설</h3><ul>'+r.notes.map(n=>'<li>'+n+'</li>').join("")+'</ul>';
   document.querySelector("#detailDialog").showModal();
+  window.CaptainBenefits?.renderDetail(r.id);
 }
 
 const timelineData=[
