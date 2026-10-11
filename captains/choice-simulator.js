@@ -165,6 +165,30 @@ function renderBlocked(){
     }).join("");
 }
 
+function cycleReportMarkup(){
+  const groups=branchReport?.cycles||[];
+  if(!groups.length)return "";
+  const count=branchReport.meta.cycleTopics;
+  const html=groups.map(group=>{
+    const done=group.memberIds.filter(id=>state.completed.has(id)).length;
+    const blocked=group.memberIds.filter(id=>state.disabled.has(id)).length;
+    const source=group.externalSourceCounts;
+    const start=group.witness[0]||group.memberIds[0];
+    const chain=group.witness.map(terse).join(" → ");
+    const reward=(group.externalSourceExamples?.events||[]).slice(0,2).map(x=>x.eventName).join(", ");
+    return '<div class="choice-sim-cycle-row"><strong><a href="../research/#research='+
+      encodeURIComponent(start)+'">'+esc(terse(start))+'</a></strong> · 그룹 '+group.memberIds.length+
+      '개 · 현재 완료 '+done+'개 · 직접 배제 '+blocked+'개'+
+      '<small>명목 순환 예시: '+esc(chain)+
+      ' · 외부 unlocks '+source.unlocks+' · 무료 추첨 '+source.free+
+      ' · 조건부 지급 '+source.protected+' · 이벤트 직접 지급 '+source.events+
+      (reward?' ('+esc(reward)+')':"")+'</small></div>';
+  });
+  return '<details id="choiceCycleGroups"><summary>추가 점검: 명목 선행 순환 '+
+    groups.length+'그룹 · 연구 '+count+'개 (직접 연구 불가 판정 아님)</summary>'+
+    '<p class="choice-sim-help">순환 내부에서 서로를 명목 선행으로 요구하는 연구들입니다. 그룹 바깥 연구의 unlocks, 직접 이벤트 지급, 무료 추첨 등이 진입 경로일 수 있습니다. 출처가 있다는 사실은 현재 분기에서 획득 가능한 증거가 아닙니다. 상세 연구 DB에서 순환 증거와 지급 경로를 확인하세요.</p>'+
+    html.join("")+'</details>';
+}
 function renderMultiPrerequisites(){
   if(!multiPanel||!branchReport)return;
   const rows=branchReport.affected.map(row=>({row,st:status(row.id)}));
@@ -216,7 +240,7 @@ function renderMultiPrerequisites(){
     branchReport.meta.selfDisablingSourceTargets+'개</b>. 단순 unlocks 목록의 존재만으로 실제 획득 가능을 확정하지 않습니다.</p>'+
     preview.map(label).join("")+
     '<details><summary>전수조사 '+rows.length+'개 전체 펼치기</summary>'+
-    rows.map(label).join("")+'</details>'+
+    rows.map(label).join("")+'</details>'+cycleReportMarkup()+
     '<p class="choice-sim-help">현재 완료된 unlocks 출처가 dependencies를 우회하지만 requires 및 목표의 직접 영구 배제는 우회하지 않습니다. 경로 위험은 직접 불가능 판정이 아니며 이벤트·무료 지급·아이템·기지 기능·시기는 별도로 확인합니다. 완료된 연구는 출처 현재 완료로 표시합니다.</p>';
 }
 function renderSaveEvidence(){
@@ -439,7 +463,8 @@ async function initialize(){
     if(!response.ok)throw new Error("분기 시뮬레이터 인덱스 HTTP "+response.status);
     if(!auditResponse.ok)throw new Error("복수 선행 감사 데이터 HTTP "+auditResponse.status);
     const [body,audit]=await Promise.all([response.json(),auditResponse.json()]);
-    if(audit.schemaVersion!==2||audit.meta?.total!==body.count||audit.meta?.affected!==audit.affected?.length)
+    if(audit.schemaVersion!==3||audit.meta?.total!==body.count||audit.meta?.affected!==audit.affected?.length||
+       audit.meta?.cycleTopics!==new Set((audit.cycles||[]).flatMap(g=>g.memberIds)).size)
       throw new Error("복수 선행 감사 데이터 버전/항목 수 불일치");
     branchReport=audit;
     if(body.schemaVersion!==1||body.format!=="choice-runtime-v1"||body.count!==body.topics?.length)
