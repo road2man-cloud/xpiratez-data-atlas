@@ -45,9 +45,9 @@ for(const outcome of shared.outcomes){
 const godRewardRe=/^STR_CODEX_BONUS_G([1-8])([ABC]?)$/;
 const rawGodRewards=[...events.values()].filter(e=>godRewardRe.test(e.id));
 const gods=index.special?.godRewards||[];
-assert.equal(rawGodRewards.length,13);
+assert.equal(rawGodRewards.length,14);
 assert.equal(gods.length,rawGodRewards.length);
-assert.equal(index.meta.codexGodOutcomes,13);
+assert.equal(index.meta.codexGodOutcomes,14);
 assert.equal(new Set(gods.map(g=>g.id)).size,13);
 assert.deepEqual([...new Set(gods.map(g=>g.group))],
  Array.from({length:8},(_,i)=>"G"+(i+1)));
@@ -76,17 +76,21 @@ for(const reward of gods){
     "No explicit Saint blocking gate: "+reward.id);
   assert.deepEqual(reward.reward.guaranteedItems.map(x=>({id:x.id,qty:x.qty})),
     (source.effects.guaranteedItems||[]).map(x=>({id:x.id,qty:x.qty})));
+  assert.equal(reward.reward.guaranteedItemSellValue,Number(source.effects.guaranteedItemSellValue)||0,
+    "G bonus item sell opportunity cost diverged: "+reward.id);
   assert.equal(reward.reward.points,source.effects.points||0);
   assert.equal(reward.reward.spawnedPersonType,source.effects.spawnedPersonType||null);
   assert.equal(reward.reward.spawnedPersons,source.effects.spawnedPersons||null);
 }
 const g7=gods.filter(x=>x.group==="G7");
-assert.deepEqual(g7.map(g=>[g.weight.weight,g.weight.totalWeight]),[[144,242],[21,242]]);
+assert.deepEqual(g7.map(g=>[g.weight.weight,g.weight.totalWeight]),[[144,242],[21,242],[77,242]]);
 const g7Script=events.get("STR_CODEX_BONUS_G7A").scripts
   .find(s=>s.id==="STR_CODEX_BONUS_G7");
 assert.equal(g7Script.eventWeights[0].entries.find(x=>x.eventId==="STR_CODEX_BONUS_G7C").weight,77);
-assert.equal(events.has("STR_CODEX_BONUS_G7C"),false,
-  "If G7C becomes indexed, expose its actual results instead of an unindexed caution");
+assert(events.has("STR_CODEX_BONUS_G7C"),"Missing G7C source-backed weighted outcome");
+assert.equal(gods.find(g=>g.id==="STR_CODEX_BONUS_G7C").reward.guaranteedItems[0].id,"STR_POLTERGEIST");
+assert.equal(gods.find(g=>g.id==="STR_CODEX_BONUS_G7C").reward.guaranteedItems[0].qty,1);
+assert.equal(gods.find(g=>g.id==="STR_CODEX_BONUS_G7C").reward.guaranteedItemSellValue,-13000000);
 assert.equal(gods.find(g=>g.group==="G5").reward.spawnedSoldier.transformationBonuses.STR_BLESSING_OF_WAR,1);
 for(const row of index.rows){
   const expected=gods.filter(g=>!g.captainTrait||row.eventSearch.includes(g.id)).map(g=>g.id);
