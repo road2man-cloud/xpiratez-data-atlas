@@ -198,6 +198,90 @@ await scenario("armors closed and replaced dialog ignores late load",async page=
   await page.waitForTimeout(1100);
   assert.equal(await page.locator("#detailBody h2").innerText(),second.name,"Late armor detail overwrote newer selection");
 });
+// Additional multi-step and failure-recovery paths. Keep canonical data untouched.
+const loadedSelector={
+  items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",
+  weapons:"#weaponTable tbody tr",soldiers:"#soldierTable tbody tr",
+  trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",
+  manufacture:"#manufactureTable tbody tr"
+};
+for(const slug of Object.keys(loadedSelector)){
+  await scenario(slug+" missing gzip HTTP 404 fallback",async page=>{
+    await page.route(/\.json\.gz(?:\?|$)/,route=>route.fulfill({status:404,body:"not found"}));
+    await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
+    assert((await visibleRows(page,loadedSelector[slug]))>0,"HTTP 404 gzip must fall back to JSON");
+  });
+}
+await scenario("transient network failure permits same-page runtime retry",async page=>{
+  await page.goto(base+"items/");await visibleRows(page,"#tbody tr");
+  await page.route("**/data/soldiers-runtime.json.gz",route=>route.fulfill({status:404,body:"missing"}));
+  let rawRequests=0;
+  await page.route("**/data/soldiers-index.json",route=>{
+    if(++rawRequests===1)return route.abort("failed");
+    return route.continue();
+  });
+  const rejected=await page.evaluate(async()=>{
+    const mod=await import("../db-runtime.js");
+    try{await mod.loadRuntime("../data/soldiers-runtime.json");return false;}catch{return true;}
+  });
+  assert(rejected,"first request should fail");
+  const recovered=await page.evaluate(async()=>{
+    const mod=await import("../db-runtime.js");
+    const value=await mod.loadRuntime("../data/soldiers-runtime.json");
+    return value&&Object.keys(value).length>0;
+  });
+  assert(recovered,"rejected promise must not poison subsequent fetches");
+  assert.equal(rawRequests,2,"canonical JSON was not retried");
+});
+await scenario("items combined search/sort/filter/page/detail/reset",async page=>{
+  await page.goto(base+"items/");assert.equal(await visibleRows(page,"#tbody tr"),100);
+  await page.locator("#search").fill("STR_");
+  await page.waitForFunction(()=>document.querySelector("#statusText")?.textContent?.includes("결과"));
+  await page.locator("#sort").selectOption("costSell");
+  await page.locator("#direction").click();
+  await page.locator('[data-filter="kind"]').selectOption("weapon");
+  if(!(await page.locator('#pager button[data-page="2"]').count()))
+    await page.locator('[data-filter="kind"]').selectOption("item");
+  const secondPage=page.locator('#pager button[data-page="2"]');
+  assert(await secondPage.count(),"combined filter must have multiple pages");
+  const firstId=await page.locator("#tbody tr").first().getAttribute("data-id");
+  await secondPage.click();
+  const secondId=await page.locator("#tbody tr").first().getAttribute("data-id");
+  assert.notEqual(secondId,firstId,"filtered pagination must change rows");
+  await page.locator("#tbody tr").first().locator("td").nth(1).click();
+  await page.locator("#drawer.open").waitFor();
+  await page.waitForFunction(id=>document.querySelector("#detail")?.innerText.includes(id),secondId);
+  await page.locator("#closeDrawer").click();
+  await page.locator("#search").fill("");
+  await page.locator('[data-filter="kind"]').selectOption("");
+  await page.locator("#sort").selectOption("koName");
+  assert.equal(await page.locator("#tbody tr").count(),100);
+  assert.match(await page.locator("#statusText").innerText(),/4,007/);
+});
+for(const slug of ["armors","weapons"]){
+  await scenario(slug+" portrait-landscape table and dialog controls",async page=>{
+    await page.goto(base+slug+"/");await visibleRows(page,loadedSelector[slug]);
+    for(const [width,height] of [[390,844],[844,390]]){
+      await page.setViewportSize({width,height});
+      assert.equal(await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position),"static");
+      const scroll=await page.locator(".table-shell").evaluate(el=>{el.scrollLeft=600;return el.scrollLeft;});
+      assert(scroll>0,"horizontal table scrolling must remain available");
+      await page.locator(loadedSelector[slug]).first().click();
+      await page.locator("#detailDialog[open]").waitFor();
+      await page.locator("#closeDialog").click();
+      assert.equal(await page.locator("#detailDialog[open]").count(),0);
+    }
+  });
+}
+await scenario("item/research direct hash and browser back navigation",async page=>{
+  await page.goto(base+"items/#item=STR_BUCKSHOT_HV");
+  await page.waitForFunction(()=>document.querySelector("#detail")?.innerText.includes("STR_BUCKSHOT_HV"));
+  await page.goto(base+"research/#research=STR_CUNNING");
+  await page.waitForFunction(()=>document.querySelector("#detail")?.innerText.includes("STR_CUNNING"));
+  await page.goBack({waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.querySelector("#detail")?.innerText.includes("STR_BUCKSHOT_HV"));
+  assert.equal(decodeURIComponent(new URL(page.url()).hash),"#item=STR_BUCKSHOT_HV");
+});
 await browser.close();await new Promise(resolve=>server.close(resolve));
 const failures=outcomes.filter(x=>!x.ok);
 console.log("FUNCTIONAL AUDIT "+(outcomes.length-failures.length)+"/"+outcomes.length+" pass");
