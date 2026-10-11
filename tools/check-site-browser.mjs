@@ -100,6 +100,10 @@ try {
            !(await lazyG8.getAttribute('class')).includes('god-candidate')||
            !(await lazyG4.getAttribute('class')).includes('god-ineligible'))
           errors.push('Lazyass should link G2 and G8 via subsequent traits, not SoreDumb G4');
+        const g7Danger=page.locator('#godRewardPlannerList [data-god-event="STR_CODEX_BONUS_G7C"]');
+        if(await g7Danger.count()!==1||
+          !(await g7Danger.textContent()).includes('13,000,000'))
+          errors.push('G7C Poltergeist -13m source item value not displayed');
         const lazyText=await page.locator('#godRewardPlannerList').textContent();
         if(!lazyText.includes('어둠 추적')||!lazyText.includes('부두술')||
            !lazyText.includes('Saint')||!lazyText.includes('77/242'))
