@@ -9,6 +9,7 @@ export function auditMultiPrerequisiteBranches(topics){
     incomingUnlocks.get(target).push(source.id);
   }
   let multipleCount=0,conflictCount=0,selfLockCount=0,hardConflictCount=0,unsafeUnlockCount=0;
+  let selfDisablingSourceTargets=0,selfDisablingSourceEdges=0;
   const affected=[];
   for(const t of topics){
     const requirements=ids(t.requires);
@@ -34,15 +35,43 @@ export function auditMultiPrerequisiteBranches(topics){
       if(conflicts.some(x=>x.requiresAffected))hardConflictCount++;
       const allUnlockSources=incomingUnlocks.get(t.id)||[];
       const unsafeUnlockSources=allUnlockSources.filter(source=>ids(byId.get(source)?.disables).includes(t.id));
-      const unlockSources=allUnlockSources.filter(source=>!unsafeUnlockSources.includes(source));
+      // OXCE first adds the source to discovered, then processes its disables,
+      // *removing its own discovered flag too*. Only currently discovered
+      // sources supply an unlock in getAvailableResearchProjects().
+      const selfDisablingUnlockSources=allUnlockSources.filter(source=>
+        source!==t.id&&ids(byId.get(source)?.disables).includes(source));
+      const unlockSources=allUnlockSources.filter(source=>
+        !unsafeUnlockSources.includes(source)&&!selfDisablingUnlockSources.includes(source));
       if(unsafeUnlockSources.length)unsafeUnlockCount++;
+      if(selfDisablingUnlockSources.length)selfDisablingSourceTargets++;
+      selfDisablingSourceEdges+=selfDisablingUnlockSources.length;
       affected.push({id:t.id,koName:t.koName||"",enName:t.enName||"",
         dependencies:dep,requires:requirements,unlockSources,unsafeUnlockSources,
+        selfDisablingUnlockSources,
         conflicts,selfLocks:selfLocks.map(x=>({from:x.id,field:x.field}))});
     }
   }
-  return {schemaVersion:1,meta:{total:topics.length,multipleCount,conflictCount,selfLockCount,
-    hardConflictCount,unsafeUnlockCount,affected:affected.length},affected};
+  // An incoming unlock edge is a bypass mechanism, not a proof that its
+  // granting research is reachable. Check the unlocker's OWN nominal gates.
+  // This is only a one-hop warning: an event, getOneFree, or another unlock
+  // may bypass those gates too, so it must not become a hard exclusion.
+  const collisionById=new Map(affected.map(row=>[row.id,row.conflicts]));
+  const sourceIdsWithConflicts=new Set();
+  let nestedConflictTargets=0,nestedConflictRoutes=0;
+  for(const row of affected){
+    row.unlockSourceConflicts=row.unlockSources.flatMap(source=>{
+      const sourcePairs=collisionById.get(source)||[];
+      if(!sourcePairs.length)return [];
+      sourceIdsWithConflicts.add(source);
+      return [{source,pairCount:new Set(sourcePairs.map(pair=>[pair.from,pair.to].sort().join("|"))).size}];
+    });
+    if(row.unlockSourceConflicts.length)nestedConflictTargets++;
+    nestedConflictRoutes+=row.unlockSourceConflicts.length;
+  }
+  return {schemaVersion:2,meta:{total:topics.length,multipleCount,conflictCount,selfLockCount,
+    hardConflictCount,unsafeUnlockCount,selfDisablingSourceTargets,selfDisablingSourceEdges,
+    nestedConflictTargets,nestedConflictRoutes,
+    nestedConflictSources:sourceIdsWithConflicts.size,affected:affected.length},affected};
 }
 
 if(process.argv[1]?.replaceAll("\\","/").endsWith("/research-branch-audit.mjs")){

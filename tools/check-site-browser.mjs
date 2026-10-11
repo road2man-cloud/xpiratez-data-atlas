@@ -214,8 +214,28 @@ try {
           await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
           const conflictText=await page.locator("#detail").innerText();
           if(!conflictText.includes("복수 선행 · 상호배제 감사")||
-            !conflictText.includes("대체 해금 출처")||!conflictText.includes("unlocks"))
+            !conflictText.includes("명시적 unlocks 출처")||!conflictText.includes("unlocks"))
             errors.push("Audited research did not show the alternative unlock path and conflict evidence");
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("nested");
+          const nestedCount=await page.locator("#tbody tr").count();
+          if(nestedCount!==8)errors.push("Nested alternative-unlocker collision filter expected 8, got "+nestedCount);
+          await page.locator("#tbody tr").first().locator("td").nth(1).click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const nestedText=await page.locator("#detail").innerText();
+          if(!nestedText.includes("대체 해금 출처에도 분기 충돌")||
+            !nestedText.includes("출처 자체도 명목 선행 충돌"))
+            errors.push("Nested research detail omitted source's own conflicting prerequisites");
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("self-source");
+          const selfSourceCount=await page.locator("#tbody tr").count();
+          if(selfSourceCount!==3)errors.push("Self-disabling unlock-source filter expected 3, got "+selfSourceCount);
+          await page.locator("#tbody tr").first().locator("td").nth(1).click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const selfSourceDetail=await page.locator("#detail").innerText();
+          if(!selfSourceDetail.includes("자기 배제하는 해금 출처")||
+            !await page.locator('#detail [data-open="STR_CAPTAIN_GOLD_UP"]').count())
+            errors.push("Research detail omitted persistent-unlock self-disabling warning");
           await page.locator("#closeDrawer").click();
           await page.locator('[data-filter="branch"]').selectOption("");
         }
@@ -231,10 +251,13 @@ try {
           const auditText=await page.locator("#choiceMultiPrerequisite").innerText();
           if(!auditText.includes("1777")&&!auditText.includes("1,777"))
             errors.push("Simulator multi-prerequisite total not present");
-          if(!auditText.includes("42")||!auditText.includes("대체 해금"))
+          if(!auditText.includes("42")||!auditText.includes("대체 해금")||
+            !auditText.includes("8개")||!auditText.includes("3개"))
             errors.push("Simulator omitted 42 substitute-unlock research branches");
           await page.locator("#choiceMultiPrerequisite details").evaluate(el=>el.open=true);
-          const allAudited=await page.locator('#choiceMultiPrerequisite details a[href*="../research/#research="]').count();
+          const allAudited=await page.locator('#choiceMultiPrerequisite details .choice-sim-block-row > strong > a[href*="../research/#research="]').count();
+          const nestedAudit=await page.locator('#choiceMultiPrerequisite details .choice-sim-block-row small a[href*="../research/#research="]').count();
+          if(nestedAudit<8)errors.push("Nested source link evidence absent: "+nestedAudit);
           if(allAudited!==42)errors.push("Simulator full conflict list count wrong: "+allAudited);
           const linkedCards=await page.locator("#exclusiveRules .choice-option[data-choice-id]").count();
           if(linkedCards<80)

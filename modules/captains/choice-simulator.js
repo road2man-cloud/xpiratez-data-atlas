@@ -169,38 +169,55 @@ function renderMultiPrerequisites(){
   if(!multiPanel||!branchReport)return;
   const rows=branchReport.affected.map(row=>({row,st:status(row.id)}));
   const directlyBlocked=rows.filter(x=>x.st.kind==="blocked").length;
+  const completedTargets=rows.filter(x=>x.st.kind==="completed").length;
   const activeBypass=rows.filter(x=>x.st.unlockedBy?.length).length;
   const risky=rows.filter(x=>x.st.kind==="path-risk").length;
-  const selfLocks=branchReport.meta.selfLockCount;
   const label=({row,st})=>{
-    const available=row.unlockSources.filter(id=>!state.disabled.has(id));
-    const finished=row.unlockSources.filter(id=>state.completed.has(id));
-    const caution=st.kind==="blocked"?"직접 영구 배제":
-      finished.length?"해금 출처 완료 · requires 별도 확인":
-      st.kind==="path-risk"?"선행 경로 위험":
-      !available.length?"대체 해금 출처 모두 배제 · 획득경로 불확실":
-      "대체 해금 가능성 · 조건 미검증";
-    return '<div class="choice-sim-block-row"><strong><a href="../research/#research='+encodeURIComponent(row.id)+'">'+
-      esc(terse(row.id))+'</a></strong><span class="'+(st.kind==="blocked"?"sim-text-blocked":"sim-text-risk")+'">'+
-      esc(caution)+'</span><small>충돌 선행 쌍 '+new Set(row.conflicts.map(pair=>[pair.from,pair.to].sort().join("|"))).size+
-      '개 · 안전한 unlocks 출처 '+row.unlockSources.length+'개'+
-      (row.selfLocks.length?' · 원본 선행이 후속 자체를 배제 '+row.selfLocks.length+'개':"")+
-      (row.unsafeUnlockSources.length?' · 이 연구까지 disables하는 위험 해금 출처 '+row.unsafeUnlockSources.length+'개':"")+
-      (finished.length?' · 활성: '+esc(finished.map(terse).slice(0,2).join(", ")):
-        available.length?' · 후보: '+esc(available.map(terse).slice(0,2).join(", ")):"")+
+    const providers=row.unlockSources.map(id=>({id,kind:status(id).kind}));
+    const finished=providers.filter(x=>x.kind==="completed");
+    const blocked=providers.filter(x=>x.kind==="blocked");
+    const sourceRisks=providers.filter(x=>x.kind==="path-risk");
+    const available=providers.filter(x=>x.kind!=="blocked"&&x.kind!=="completed");
+    const nested=row.unlockSourceConflicts||[];
+    const caution=st.kind==="blocked"?"목표 연구 자체 영구 배제":
+      st.kind==="completed"?"목표 연구 완료":
+      st.kind==="path-risk"?"현재 선행 경로 위험 · 우회 검토":
+      finished.length&&st.kind==="candidate"?"해금 출처 완료 · 연구 가능 후보":
+      finished.length?"해금 출처 완료 · 다른 조건 확인":
+      blocked.length===providers.length?"명시적 unlocks 출처 전부 차단 · 기타 경로 미확인":
+      nested.length?"일부 해금 출처도 선행 충돌 · 추가 검증":
+      "대체 해금 출처 미완료 · 조건 검토";
+    const sample=finished.length?finished:available;
+    const examples=sample.slice(0,2).map(x=>terse(x.id));
+    const nestedLinks=nested.slice(0,3).map(x=>
+      '<a href="../research/#research='+encodeURIComponent(x.source)+'">'+esc(terse(x.source))+'</a>');
+    return '<div class="choice-sim-block-row"><strong><a href="../research/#research='+
+      encodeURIComponent(row.id)+'">'+esc(terse(row.id))+'</a></strong>'+
+      '<span class="'+(st.kind==="blocked"?"sim-text-blocked":"sim-text-risk")+'">'+esc(caution)+'</span>'+
+      '<small>명목 선행 충돌 '+new Set(row.conflicts.map(pair=>[pair.from,pair.to].sort().join("|"))).size+
+      '쌍 · unlocks 출처 '+providers.length+'개 (완료 '+finished.length+
+      ' · 직접 배제 '+blocked.length+' · 경로 위험 '+sourceRisks.length+')'+
+      (nested.length?' · 출처 자체도 명목 선행 충돌 '+nested.length+'개: '+nestedLinks.join(" / "):"")+
+      (row.selfDisablingUnlockSources?.length?' · 완료 직후 자신을 배제하는 출처 '+row.selfDisablingUnlockSources.length+'개: '+
+        row.selfDisablingUnlockSources.map(id=>'<a href="../research/#research='+encodeURIComponent(id)+'">'+esc(terse(id))+'</a>').join(", "):"")+
+      (row.selfLocks.length?' · 선행이 목표 직접 배제 '+row.selfLocks.length+'개':"")+
+      (examples.length?' · 출처 '+(finished.length?"완료: ":"후보: ")+esc(examples.join(", ")):"")+
       '</small></div>';
   };
-  const important=rows.filter(x=>x.st.kind==="blocked"||x.st.kind==="path-risk"||x.row.unsafeUnlockSources.length);
-  const preview=important.length?important.slice(0,8):rows.slice(0,6);
-  multiPanel.innerHTML='<p class="muted">원본 복수 선행 '+branchReport.meta.multipleCount+
-    '개 중 상호배제 선행이 함께 들어간 연구 '+rows.length+
-    '개. 이 중 직접 배제 '+directlyBlocked+'개 · 현재 unlocks 우회 활성 '+activeBypass+
-    '개 · 선행 경로 위험 '+risky+'개 · 명목 선행이 대상 연구를 직접 배제하는 사례 '+selfLocks+
-    '개. <b>명목 dependencies의 모순만으로 영구 차단하지 않습니다.</b></p>'+
+  const important=rows.filter(x=>x.st.kind==="blocked"||x.st.kind==="path-risk"||
+    x.row.unlockSourceConflicts?.length||x.row.unsafeUnlockSources.length||x.row.selfDisablingUnlockSources?.length);
+  const preview=important.length?important.slice(0,10):rows.slice(0,6);
+  multiPanel.innerHTML='<p class="muted">복수 명목 선행 '+branchReport.meta.multipleCount+
+    '개 중 직접 상호배제 선행 연구 '+rows.length+
+    '개 · 대상 직접 배제 '+directlyBlocked+'개 · 대상 완료 '+completedTargets+
+    '개 · 현재 unlocks 우회 활성 '+activeBypass+'개 · 명목 선행 위험 '+risky+
+    '개. 그중 <b>대체 해금자 자체도 명목 선행 충돌인 대상 '+
+    branchReport.meta.nestedConflictTargets+'개</b>, <b>해금 출처가 자기 자신을 영구 배제하는 대상 '+
+    branchReport.meta.selfDisablingSourceTargets+'개</b>. 단순 unlocks 목록의 존재만으로 실제 획득 가능을 확정하지 않습니다.</p>'+
     preview.map(label).join("")+
     '<details><summary>전수조사 '+rows.length+'개 전체 펼치기</summary>'+
     rows.map(label).join("")+'</details>'+
-    '<p class="choice-sim-help">판정식: (dependencies 전부 완료 또는 discovered unlocks 출처 1개 이상) 그리고 requires 전부 완료. 해당 연구의 직접 disables와 세이브 영구 배제 상태가 우선하며 이벤트·아이템·시설·무작위 지급은 미검증입니다.</p>';
+    '<p class="choice-sim-help">현재 완료된 unlocks 출처가 dependencies를 우회하지만 requires 및 목표의 직접 영구 배제는 우회하지 않습니다. 경로 위험은 직접 불가능 판정이 아니며 이벤트·무료 지급·아이템·기지 기능·시기는 별도로 확인합니다. 완료된 연구는 출처 현재 완료로 표시합니다.</p>';
 }
 function renderSaveEvidence(){
   if(!saveEvidence || sourceMode!=="save"){
@@ -422,7 +439,7 @@ async function initialize(){
     if(!response.ok)throw new Error("분기 시뮬레이터 인덱스 HTTP "+response.status);
     if(!auditResponse.ok)throw new Error("복수 선행 감사 데이터 HTTP "+auditResponse.status);
     const [body,audit]=await Promise.all([response.json(),auditResponse.json()]);
-    if(audit.schemaVersion!==1||audit.meta?.total!==body.count||audit.meta?.affected!==audit.affected?.length)
+    if(audit.schemaVersion!==2||audit.meta?.total!==body.count||audit.meta?.affected!==audit.affected?.length)
       throw new Error("복수 선행 감사 데이터 버전/항목 수 불일치");
     branchReport=audit;
     if(body.schemaVersion!==1||body.format!=="choice-runtime-v1"||body.count!==body.topics?.length)
