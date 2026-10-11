@@ -155,16 +155,18 @@ for(const path of ["app.js","benefits.js","captain-rows.js","styles.css","index.
 const app=fs.readFileSync("public/captains/app.js","utf8");
 const ui=fs.readFileSync("public/captains/benefits.js","utf8");
 const css=fs.readFileSync("public/captains/styles.css","utf8");
-assert(app.includes("CaptainBenefits?.matrixCell(r)")&&app.includes("CaptainBenefits?.renderDetail(r.id)"));
+assert(app.includes("CaptainBenefits?.matrixCell(r)")&&app.includes("CaptainBenefits?.visitorCell(r)")&&app.includes("CaptainBenefits?.renderDetail(r.id)"));
 assert(ui.includes("captainsElevenMarkup")&&ui.includes("eventPath(p)")&&ui.includes("commonVisitorMarkup")&&ui.includes("직접 표시할 지급품 없음"));
 assert(ui.includes('row.rowId==="priest"')&&ui.includes("건강미 훈련 · 벙커")&&
   ui.includes("sharedVisitorBadge(row)")&&ui.includes("benefit-visitor-primary")&&
+  ui.includes("function visitorCell(r)")&&ui.includes(".captain-shared-visitors[data-visitor-choice]")&&
   ui.includes("똑 똑(똑똑이) 방문")&&ui.includes("DumbLazy 연구 완료 후 외톨이 클론"),
   "Priest/Thief shared visitor UI must not depend on featured reward ranking");
 assert(ui.includes("featuredName(indirect)")&&ui.includes("featuredName(direct)")&&
   ui.includes("STR_KNOCK_KNOCK_ROGUE_CLONE"),
   "Generic '똑 똑' headlines must distinguish each special reward");
-assert(css.includes(".benefit-visitor-primary")&&css.includes(".benefit-visitor-yes"),
+assert(css.includes(".benefit-visitor-primary")&&css.includes(".benefit-visitor-yes")&&
+  css.includes(".captain-shared-visitor-cell")&&css.includes(".captain-shared-visitors"),
   "Common visitor must be visually prominent, not a tiny footnote");
 assert(css.includes(".toolbar{position:static!important")&&css.includes(".captain-benefit-cell"));
 console.log("OK captain benefit catalog: "+index.rows.length+" stage choices / "+events.size+" event rules / "+

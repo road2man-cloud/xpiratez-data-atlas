@@ -75,10 +75,14 @@
     const headline=benefitShort(row);
     return '<span class="benefit-main">'+esc(headline.main)+'</span>'+
       '<small class="benefit-conditional">'+esc(headline.tag)+'</small>'+
-      sharedVisitorBadge(row)+
       '<small class="benefit-count">원본 명시 해금 '+row.unlocks.length+
       '개 · 직접 이벤트 '+row.categories.directEvents+
       '곳 · 후속 후보 '+row.categories.downstreamEvents+'곳</small>';
+  }
+  function visitorCell(r){
+    const row=perRow(r.id);
+    if(!row)return '<span class="muted">공통 방문 이벤트 확인 중</span>';
+    return sharedVisitorBadge(row);
   }
   function renderStageCardBadges(){
     for(const card of document.querySelectorAll(".captain-branch-perks[data-benefit-choice]")){
@@ -88,11 +92,16 @@
       const highlight=id==="thief"?
         '<a href="../trainings/?training=STR_CAPTAINS_11">Captain’s 11 훈련 상세</a> · '+
         '<a href="../events/#event=STR_CAPTAINS_11">지급 이벤트</a>':'';
-      card.innerHTML='<b>분기 고유 보상·후속 이점</b><strong>'+esc(headline.main)+'</strong>'+
-        '<small>'+esc(headline.tag)+'</small>'+sharedVisitorBadge(row)+
+      card.innerHTML='<b>선장 전용 보상·후속 이점</b><strong>'+esc(headline.main)+'</strong>'+
+        '<small>'+esc(headline.tag)+'</small>'+
         '<span>연구 해금 후보 '+row.unlocks.length+'개 · 관련 이벤트 '+row.categories.directEvents+
         ' 직접 / '+row.categories.downstreamEvents+' 후속 · 자세한 사항은 위 비교표의 선장 행을 선택</span>'+
         (highlight?'<small>'+highlight+'</small>':'');
+    }
+    for(const card of document.querySelectorAll('.captain-shared-visitors[data-visitor-choice]')){
+      const row=perRow(card.dataset.visitorChoice);
+      if(!row)continue;
+      card.innerHTML='<b>공통 방문 이벤트 · 전용 보상과 독립</b>'+sharedVisitorBadge(row);
     }
   }
   function effectLinks(entries,kind,max=8) {
@@ -280,5 +289,5 @@
   });
   // Never leave a rejected network promise unhandled in a normal page.
   ready.catch(()=>{});
-  window.CaptainBenefits={matrixCell,searchText,renderDetail,ready};
+  window.CaptainBenefits={matrixCell,visitorCell,searchText,renderDetail,ready};
 })();
