@@ -416,7 +416,7 @@ function renderExclusiveRules(){
 
 function renderCaptainCodexInteractions(){
   const root=document.querySelector("#captainCodexInteractions"); if(!root)return;
-  root.innerHTML='<div class="interaction-note"><b>중요:</b> G1~G8 Codex 보너스는 모두 Saint 이전에만 작동합니다. Saint가 되면 이 신들 보너스 풀은 정지하므로 단순 상위호환이 아닙니다.</div>'+
+  root.innerHTML='<div class="interaction-note"><b>중요:</b> G1~G8은 선장 선택으로 직접 지급되는 분기 보상이 아니라 신 지식·코덱스 각성·아이템 보유·Saint=false를 따로 요구하는 반복 이벤트입니다. G2/G4/G6/G8만 추가 혼합 성격이 필요합니다. <a href="#godRewardSection">선장별 조건 및 남은 단계 보기 →</a><br>G7은 실행 판정 23% 후 A 144/242, B 21/242, C 77/242의 별도 결과 추첨을 합니다. Saint가 되면 이후 신들 보상 풀은 정지합니다.</div>'+
     '<div class="table-scroll"><table class="exclusive-table"><thead><tr><th>이벤트</th><th>조건</th><th>실행확률</th><th>실제 효과</th></tr></thead><tbody>'+
     captainCodexInteractionRows.map(r=>'<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+CaptainGlossary.explain(r[3])+'</td></tr>').join("")+
     '</tbody></table></div>';
@@ -469,7 +469,7 @@ function renderHead(){
   const thead=document.querySelector("#matrixTable thead");
   const groups=[];
   for(const c of columns){let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group,count:0};groups.push(g)}g.count++}
-  thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th><th rowspan="2" class="captain-benefit-head">선장 전용 보상·분기 이점<small>원본 이벤트 + 후속 해금</small></th><th rowspan="2" class="captain-shared-visitor-head">공통 방문 이벤트<small>전용 보상과 별개 · 똑똑이</small></th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
+  thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th><th rowspan="2" class="captain-benefit-head">선장 전용 보상·분기 이점<small>원본 이벤트 + 후속 해금</small></th><th rowspan="2" class="captain-shared-visitor-head">공통 방문 이벤트<small>전용 보상과 별개 · 똑똑이</small></th><th rowspan="2" class="captain-god-head">G1~G8 반복 보상<small>선장 성격 → 각성 → 신 지식 → Saint 이전</small></th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
   '<tr>'+columns.map(c=>'<th class="feature-head" data-sort="'+(c.key==="ev"?"ev":"")+'" title="'+(featureInfo[c.key]?.detail||"")+'">'+columnHead(c)+'</th>').join("")+'</tr>';
   thead.querySelectorAll("[data-sort=ev]").forEach(th=>{th.style.cursor="pointer";th.title="클릭하여 EV 정렬";th.addEventListener("click",()=>{sortState={key:"ev",dir:sortState.key==="ev"?-sortState.dir:-1};renderRows()})});
 }
@@ -492,7 +492,7 @@ function filteredRows(){
   return out;
 }
 function matrixRow(r){
-  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td><td class="captain-benefit-cell">'+(window.CaptainBenefits?.matrixCell(r)||'<small>분기 보상 확인 중</small>')+'</td><td class="captain-shared-visitor-cell">'+(window.CaptainBenefits?.visitorCell(r)||'<small>독립 방문 상태 확인 중</small>')+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
+  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td><td class="captain-benefit-cell">'+(window.CaptainBenefits?.matrixCell(r)||'<small>분기 보상 확인 중</small>')+'</td><td class="captain-shared-visitor-cell">'+(window.CaptainBenefits?.visitorCell(r)||'<small>독립 방문 상태 확인 중</small>')+'</td><td class="captain-god-cell">'+(window.CaptainBenefits?.godMatrixCell(r)||'<small>G보상 경로 확인 중</small>')+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
   return rowMarkup.get(r.id);
 }
 function renderRows(){

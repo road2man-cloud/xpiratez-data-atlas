@@ -296,3 +296,52 @@ html{scroll-behavior:smooth}
   .captain-benefit-detail{gap:9px}
   .captain-key-reward{padding:11px}
 }
+
+
+/* G1-G8 rewards are conditional events, not a new mutually exclusive captain stage. */
+.captain-god-head{min-width:190px;max-width:255px}
+.captain-god-head small{display:block;font-size:.66rem;line-height:1.35;color:#9eb5d7}
+.captain-god-cell{min-width:185px;max-width:260px;vertical-align:top;line-height:1.4}
+.god-matrix-main{display:block;font-size:.78rem;font-weight:800;color:#b7d3ff}
+.god-matrix-sub{display:block;font-size:.67rem;color:#a6b9d7;margin-top:5px;line-height:1.4}
+.god-reward-explorer{padding:18px;margin-bottom:18px}
+.god-planner-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding-bottom:14px;border-bottom:1px solid #344660}
+.god-planner-controls label{display:grid;gap:4px;font-size:.89rem}
+.god-planner-controls label small{display:block;color:#a6b9d7;font-size:.7rem}
+.god-planner-controls select{color:var(--text);background:#16243d;border:1px solid #466386;border-radius:9px;padding:9px 11px;min-width:min(100%,250px);max-width:100%}
+.god-planner-results>p,.god-reward-inline>p{font-size:.84rem;line-height:1.55;margin:10px 2px}
+.god-reward-inline{margin:16px 0 21px;padding:14px;border:1px solid #3e5b82;border-radius:13px;background:#162136}
+.god-reward-inline h4{margin:0 0 12px}
+.god-reward-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 4px}
+.god-reward-group{min-width:0;border:1px solid #36506e;border-radius:11px;background:#10192b;overflow:hidden}
+.god-reward-group summary{display:block;cursor:pointer;padding:12px 14px;font-size:.86rem;line-height:1.55}
+.god-reward-group summary::-webkit-details-marker{display:none}
+.god-reward-group summary:before{content:"▸";color:#9dc1e8;margin-right:8px}
+.god-reward-group[open] summary:before{content:"▾"}
+.god-reward-group summary small{display:block;color:#adbed8;font-size:.73rem;padding-left:20px}
+.god-reward-group[open] summary{background:#1b2b44;border-bottom:1px solid #375578}
+.god-reward-cards{display:grid;gap:10px;padding:10px}
+.god-reward-card{min-width:0;border:1px solid #324967;border-radius:10px;padding:11px;background:#152136;overflow-wrap:anywhere}
+.god-reward-card.god-candidate{border-color:#376c62;background:#142a2c}
+.god-reward-card.god-ineligible{opacity:.82}
+.god-card-heading{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:5px}
+.god-card-heading strong{font-size:.8rem}
+.god-candidate-status{font-size:.67rem;color:#a8bddb;font-weight:600}
+.god-candidate .god-candidate-status{color:#a7ead2}
+.god-reward-effect{font-size:.79rem;line-height:1.5;margin:7px 0 10px}
+.god-causal-steps{margin:0 0 8px;padding-left:19px;font-size:.73rem;color:#c8d7e7;line-height:1.6}
+.god-causal-steps li{padding-left:2px;margin-bottom:5px}
+.god-causal-steps small{color:#a2b4cb}
+.god-event-odds{font-size:.71rem;color:#e8c98a;line-height:1.5}
+.god-g7-risk{font-size:.75rem;line-height:1.55;color:#fbd18e;border-left:3px solid #986c21;margin:4px 12px 14px;padding:4px 9px}
+.god-reward-card>a{font-size:.74rem;display:inline-block;margin-top:4px}
+@media(max-width:1000px){.god-reward-groups{grid-template-columns:1fr}}
+@media(max-width:620px){
+  .god-reward-explorer{padding:12px}
+  .god-planner-controls{display:grid;grid-template-columns:1fr}
+  .god-planner-controls select{width:100%}
+  .god-reward-inline{padding:10px}
+  .god-reward-group summary{padding:12px 10px}
+  .god-reward-cards{padding:8px}
+  .god-causal-steps{font-size:.72rem}
+}

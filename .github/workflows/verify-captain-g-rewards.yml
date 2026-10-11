@@ -1,0 +1,41 @@
+name: Verify Captain G Reward Paths
+on:
+  pull_request:
+    paths:
+      - "public/captains/**"
+      - "modules/captains/**"
+      - "public/data/captain-benefits-index.json"
+      - "tools/build-captain-benefits.mjs"
+      - "tools/check-captain-benefits.mjs"
+      - "tools/check-site-browser.mjs"
+      - ".github/workflows/verify-captain-g-rewards.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Rebuild captain causal index
+        run: node tools/build-captain-benefits.mjs
+      - name: Verify committed generated data matches source
+        run: |
+          git diff --exit-code -- public/data/captain-benefits-index.json
+          git diff --exit-code -- public/data/captain-benefits/
+      - name: Run all data and site checks
+        run: npm run check
+      - name: Run mobile and desktop captain-page browser checks
+        run: |
+          npm install --no-save --package-lock=false playwright-core@1.64.0
+          if ! command -v google-chrome >/dev/null 2>&1 && ! command -v chromium >/dev/null 2>&1; then
+            npx playwright-core install chromium
+          fi
+          node tools/check-site-browser.mjs --local --pages=captains

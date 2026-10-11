@@ -69,6 +69,162 @@
       (mage?'<small>추가: JackLazy 경로의 기적술사 추첨 후보</small>':'')+
       '</div>';
   }
+
+  // These are repeatable event eligibility gates, not additional captain choices.
+  // Every entry is source-derived from STR_CODEX_BONUS_G* in effective events.
+  const godTraitNames={
+    STR_CAPTAIN_DUMBLAZY:"DumbLazy · 측면: 변태",
+    STR_CAPTAIN_SOREDUMB:"SoreDumb · 측면: 고집쟁이",
+    STR_CAPTAIN_JACKSORE:"JackSore · 측면: 도끼성애자",
+    STR_CAPTAIN_JACKLAZY:"JackLazy · 측면: 몽상가"
+  };
+  const godColors={
+    STR_CODEX_GOLD:"금색",STR_CODEX_GREEN:"녹색",
+    STR_CODEX_RED:"적색",STR_CODEX_GRAY:"회색"
+  };
+  const godRewards=()=>catalog?.special?.godRewards||[];
+  const godKey=g=>g.id.replace("STR_CODEX_BONUS_","");
+  function rowGodRewards(row){
+    if(!row)return [];
+    const candidates=new Set(row.godRewardCandidates||[]);
+    return godRewards().filter(g=>candidates.has(g.id));
+  }
+  function godMatrixCell(r){
+    const row=perRow(r.id);
+    if(!row)return '<small class="muted">G1~G8 인과관계 불러오는 중</small>';
+    const conditional=rowGodRewards(row).filter(g=>g.captainTrait);
+    const groups=[...new Set(conditional.map(g=>g.group))];
+    return '<span class="god-matrix-main">'+
+      (groups.length?esc(groups.join(" · ")):'추가 성격 보상 없음')+'</span>'+
+      '<small class="god-matrix-sub">'+
+      (groups.length?esc(conditional.map(g=>godKey(g)).join(" / "))+
+        ' · 성격 플래그·코덱스 각성·신 지식 추가 필요':'기본 G1·G3·G5·G7은 코덱스 조건부')+
+      '</small><small class="god-matrix-sub">Saint 획득 시 정지 · 클릭하여 인과관계 확인</small>';
+  }
+  function godGateStatus(row,g){
+    if(!g.captainTrait)return {label:"선장 성격 무관",kind:"general"};
+    if(row.choiceId===g.captainTrait)return {label:"선장 선택으로 성격 확보",kind:"direct"};
+    const unlock=row.unlocks.find(x=>x.id===g.captainTrait);
+    if(unlock?.status==="candidate")
+      return {label:"이 선장으로 가능 · "+esc(godTraitNames[g.captainTrait]||g.captainTrait)+" 완료 필요",kind:"conditional"};
+    if(unlock?.status==="disabled")return {label:"해당 성격 차단",kind:"unavailable"};
+    return {label:"이 단계 선택의 직접 연결 없음 · 후속 경로 별도 확인",kind:"unavailable"};
+  }
+  function godEffect(g){
+    const e=g.reward,parts=[];
+    if(e.guaranteedTotal)parts.push(e.guaranteedItems.map(x=>
+      '<a href="'+itemLink(x.id)+'">'+esc(x.name||x.id)+
+      (x.qty>1?' ×'+Number(x.qty).toLocaleString():'')+'</a>').join(" · "));
+    if(e.guaranteedItemSellValue<0)parts.push('<b class="god-negative-value">원본 지급품 costSell -$'+
+      Math.abs(e.guaranteedItemSellValue).toLocaleString()+'</b> · 받기 전에 위험 확인');
+    if(e.points)parts.push('점수 '+(e.points>0?"+":"")+Number(e.points).toLocaleString());
+    if(e.funds)parts.push('자금 '+(e.funds>0?"+":"")+Number(e.funds).toLocaleString());
+    if(e.spawnedPersonType||e.spawnedPersons||e.spawnedSoldier)
+      parts.push('<b>특수 병사</b> '+esc(e.spawnedPersonType||"병사")+
+        (e.spawnedPersons?' ×'+e.spawnedPersons:'')+
+        (e.spawnedSoldier?.transformationBonuses?.STR_BLESSING_OF_WAR?' · Blessing of War 보유':''));
+    return parts.join(' · ')||'별도 직접 지급품 없음';
+  }
+  function godCard(g,row){
+    const candidate=!!row?.godRewardCandidates?.includes(g.id);
+    const gate=godGateStatus(row,g);
+    const group=g.group,trait=g.captainTrait;
+    const godId="STR_GODS_E"+group.slice(1);
+    const color=g.codexItem,awaken=color+"_AWAKENED";
+    const colorName=godColors[color]||color;
+    const extraResearch=g.requiredResearch.filter(x=>x.id!==trait&&x.id!==godId&&x.id!==awaken);
+    const plus=extraResearch.map(x=>'<a href="'+researchLink(x.id)+'">'+esc(x.name||x.id)+'</a>').join(" · ");
+    const saintFlag="STR_CAPTAIN_SAINT";
+    const block=g.forbiddenResearch.map(x=>'<a href="'+researchLink(x.id)+'">'+
+      esc(x.id===saintFlag?'혼돈의 성자 (STR_CAPTAIN_SAINT)':x.name||x.id)+'</a>').join(", ");
+    const probability='실행 판정 '+g.odds+'%'+
+      (g.weight?.totalWeight>g.weight?.weight?' · 결과 가중치 '+g.weight.weight+'/'+g.weight.totalWeight:'');
+    return '<article class="god-reward-card '+(candidate?'god-candidate':'god-ineligible')+
+      '" data-god-event="'+esc(g.id)+'">'+
+      '<div class="god-card-heading"><strong>'+esc(godKey(g))+' · '+esc(g.name)+'</strong>'+
+      '<span class="god-candidate-status">'+(candidate?'선장 경로 후보':'이 선택에서 미연결')+'</span></div>'+
+      '<p class="god-reward-effect"><b>지급:</b> '+godEffect(g)+'</p>'+
+      '<ol class="god-causal-steps">'+
+      '<li><b>선장 성격</b>: '+(trait?'<a href="'+researchLink(trait)+'">'+
+        esc(godTraitNames[trait]||trait)+'</a>':'특정 혼합 성격 불필요')+
+        ' <small>('+gate.label+')</small></li>'+
+      '<li><b>코덱스 확보·연구</b>: <a href="'+researchLink(color)+'">'+esc(colorName)+
+        ' 코덱스 연구</a> + <a href="'+itemLink(color)+'">코덱스 실물 보유</a> (연구에는 CPU 필요, 코덱스 색상 연구들은 상호배제)</li>'+
+      '<li><b>코덱스 각성</b>: <a href="'+researchLink('STR_SHADOW_CHASING')+
+        '">어둠 추적</a> + <a href="'+researchLink('STR_PSI_LAB')+'">부두술</a> + '+
+        '<a href="'+researchLink(awaken)+'">'+esc(colorName)+' 각성</a> 이벤트 완료</li>'+
+      '<li><b>신의 지식</b>: <a href="'+researchLink(godId)+'">'+esc(godId)+
+        '</a> 연구 완료'+(plus?' · 그 밖의 필요 연구 '+plus:'')+'</li>'+
+      '<li><b>중단 조건</b>: '+block+
+        ' 미획득 상태를 유지 (Saint가 생기면 이후 이벤트 정지)</li></ol>'+
+      '<p class="god-event-odds">'+esc(probability)+
+      ' · 연구조건 충족만으로 확정 지급되지 않음 · 기존 보상 회수 없음</p>'+
+      '<a href="'+eventLink(g.id)+'">원본 보상·확률 이벤트 확인 →</a></article>';
+  }
+  function godGroupHtml(group,row){
+    const groupEvents=godRewards().filter(x=>x.group===group);
+    const candidates=groupEvents.filter(x=>row?.godRewardCandidates?.includes(x.id));
+    const name=groupEvents[0]?.name||group;
+    const active=candidates.length>0;
+    const label=active?'선장 기준 연결 '+candidates.map(g=>godKey(g)).join(" / "):'현재 선택과 직접 연결 없음';
+    return '<details class="god-reward-group" '+(active&&groupEvents.some(x=>x.captainTrait)?'open':'')+'>'+
+      '<summary><b>'+esc(group)+'</b> · '+esc(name)+' <small>'+esc(label)+'</small></summary>'+
+      '<div class="god-reward-cards">'+groupEvents.map(g=>godCard(g,row)).join("")+'</div>'+
+      (group==="G7"?'<p class="god-g7-risk"><b>G7C 실제 위험 보상:</b> '+
+        '<a href="'+eventLink("STR_CODEX_BONUS_G7C")+'">시끄러운 유령 ×1</a>, 원본 아이템 매각가 '+
+        '<b>-$13,000,000</b>. G7 실행 판정 23% 후 A 144/242 · B 21/242 · C 77/242 중 하나만 발생합니다. '+
+        '세 결과를 독립적인 23% 지급으로 계산해서는 안 됩니다.</p>':'')+
+      '</details>';
+  }
+  function godOverview(row){
+    if(!row)return'<p>선장 선택에 해당하는 G 보상 자료가 없습니다.</p>';
+    const xs=rowGodRewards(row),trait=xs.filter(x=>x.captainTrait),
+      groups=[...new Set(trait.map(x=>x.group))];
+    const bookworm=row.eventSearch?.includes("STR_BOOKWORM_WISDOM");
+    const greenSermon=row.eventSearch?.includes("STR_GREEN_MAN_OF_THE_CLOTH");
+    const godInfoShortcut=bookworm||greenSermon?
+      '<p class="god-knowledge-shortcut"><b>신의 지식 E1~E8 해금 경로:</b> '+
+      (bookworm?'<a href="'+eventLink("STR_BOOKWORM_WISDOM")+'">공부(책벌레 LazySore)</a> 이벤트 · 연구 164개 지급 중 E1~E8 포함':'')+
+      (bookworm&&greenSermon?' / ':'')+
+      (greenSermon?'<a href="'+eventLink("STR_GREEN_MAN_OF_THE_CLOTH")+'">천 두른 남자(녹색 성격)</a> 이벤트 · 연구 34개 지급 중 E1~E8 포함':'')+
+      '. <b>모두 이벤트가 실제로 발생해야 얻습니다.</b></p>':'';
+    return '<p><b>'+esc(row.rowId)+' 기준:</b> 특정 성격을 추가로 요구하는 보상 '+
+      (groups.length?'<strong>'+esc(groups.join(" · "))+'</strong> ('+
+      trait.map(g=>esc(godKey(g))).join(", ")+')':
+      '해당 단계에서 검증된 직접 후보 없음')+
+      ' · 기본 G1·G3·G5·G7은 코덱스 색상에 따라 별도로 판정합니다.</p>'+
+      '<p class="captain-benefit-explain">이 목록은 <b>현재 선택에서 접근 가능한 경로</b>입니다. 실제 완료된 연구나 '+
+      '아이템을 가정하지 않습니다. 순서: 선장 성격 → 해당 색 코덱스 연구·보유 → 어둠 추적·부두술·각성 → '+
+      '해당 GODS_E 지식 → Saint 미획득 → 확률 판정. 선장 3색과 코덱스 3색 소유는 서로 다릅니다.</p>'+godInfoShortcut;
+  }
+  function godRewardsMarkup(row){
+    return '<section class="god-reward-inline"><h4>G1~G8: 선장 성격에서 보상으로 가는 실제 경로</h4>'+
+      godOverview(row)+'<div class="god-reward-groups">'+
+      Array.from({length:8},(_,i)=>godGroupHtml("G"+(i+1),row)).join("")+'</div></section>';
+  }
+  function renderGodPlannerChoice(id){
+    const host=document.querySelector("#godRewardPlannerList");
+    if(!host)return;
+    const row=perRow(id);
+    host.innerHTML=godOverview(row)+'<div class="god-reward-groups">'+
+      Array.from({length:8},(_,i)=>godGroupHtml("G"+(i+1),row)).join("")+'</div>';
+  }
+  function renderGodPlanner(){
+    const host=document.querySelector("#godRewardPlanner");
+    if(!host||!catalog)return;
+    const selected=host.querySelector("#godRewardCaptainChoice")?.value||"lazyass";
+    const rows=Array.from(document.querySelectorAll("#matrixTable tbody tr[data-id]"));
+    const labels=window.CAPTAIN_ROWS||[];
+    host.innerHTML='<div class="god-planner-controls"><label for="godRewardCaptainChoice"><b>선장 선택 후 받을 수 있는 G보상</b> '+
+      '<small>기본 예시는 게으른 선장 · 실제 세이브는 연구/아이템 완료 여부 확인</small></label>'+
+      '<select id="godRewardCaptainChoice">'+labels.map(r=>
+      '<option value="'+esc(r.id)+'" '+(selected===r.id?'selected':'')+'>'+esc(r.name)+' · '+esc(r.stageName||"")+'</option>').join("")+'</select></div>'+
+      '<div id="godRewardPlannerList" class="god-planner-results"></div>';
+    const select=host.querySelector("#godRewardCaptainChoice");
+    select.addEventListener("change",()=>renderGodPlannerChoice(select.value));
+    renderGodPlannerChoice(select.value);
+  }
+
   function matrixCell(r) {
     const row=perRow(r.id);
     if(!row)return'<span class="muted">보상 자료 로딩 중</span>';
@@ -227,7 +383,7 @@
     const disabled=row.directDisables;
     host.innerHTML='<h3>선장 고유 혜택 · 정확한 지급·해금·상호배제</h3>'+
       '<p class="captain-benefit-explain">원본 4,612개 연구와 792개 이벤트의 조건을 대조했습니다. <b>연구 unlocks는 선행 우회/진입 후보이지 연구 자동 완료가 아니며</b>, 이벤트는 다른 선행·추첨·시기·자원 조건을 충족해야 합니다. 목록의 존재만으로 해당 세이브에서 발생이 보장되지 않습니다.</p>'+
-      captainsElevenMarkup(row)+commonVisitorMarkup(row,detail)+
+      captainsElevenMarkup(row)+commonVisitorMarkup(row,detail)+godRewardsMarkup(row)+
       '<details class="captain-benefit-group" open><summary>이 선택이 직접 조건인 이벤트 <b>'+direct.length+'개</b></summary>'+
       '<div class="captain-event-list">'+(direct.length?direct.map(eventCard).join(""):'<p>직접 조건인 이벤트 없음 · 다음 단계 또는 연구 해금 경로 확인</p>')+'</div></details>'+
       '<details class="captain-benefit-group"><summary>후속 명시 해금 뒤 조건부 이벤트 <b>'+followup.length+'개</b> (전체 목록)</summary>'+
@@ -278,7 +434,7 @@
       byRow.set(entry.rowId,entry);
     }
     // The atlas loads separately so the first comparison UI stays responsive.
-    rowMarkup.clear();renderRows();renderStageCardBadges();
+    rowMarkup.clear();renderRows();renderStageCardBadges();renderGodPlanner();
     if(statusText)statusText.textContent='22개 선택지 원본 근거 검증 · 직접 이벤트와 후속 조건부 후보를 구분 표시';
   }
   const ready=init().catch(e=>{
@@ -289,5 +445,5 @@
   });
   // Never leave a rejected network promise unhandled in a normal page.
   ready.catch(()=>{});
-  window.CaptainBenefits={matrixCell,visitorCell,searchText,renderDetail,ready};
+  window.CaptainBenefits={matrixCell,visitorCell,godMatrixCell,searchText,renderDetail,ready};
 })();
