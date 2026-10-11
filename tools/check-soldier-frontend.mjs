@@ -91,7 +91,10 @@ try{
   if(loaded.rows<1)throw Error("No initial soldier rows");
   if(loaded.summary.includes("[object Object]"))throw Error("Initial summary rendered a list of objects instead of a count");
   console.log("Initial soldiers render:",JSON.stringify({rows:loaded.rows,count:loaded.count,summary:loaded.summary.slice(0,200)}));
-  const actual=await evaluate("(()=>{document.querySelector('#dataset').value='final';document.querySelector('#dataset').dispatchEvent(new Event('change',{bubbles:true}));return {count:document.querySelector('#rowCount').textContent,rows:document.querySelectorAll('#soldierTable tbody tr').length,first:document.querySelector('#soldierTable tbody tr')?.innerText}})()");
+  await evaluate("(()=>{document.querySelector('#dataset').value='final';document.querySelector('#dataset').dispatchEvent(new Event('change',{bubbles:true}));return true})()");
+  // The optimized DB defers final-build loading until this view is selected.
+  // Do not mistake its one-row loading placeholder for a completed table.
+  const actual=await waitFor("(()=>{const rows=document.querySelectorAll('#soldierTable tbody tr');return rows.length&&rows[0].querySelectorAll('.stat-cap').length===12?{count:document.querySelector('#rowCount').textContent,rows:rows.length,first:rows[0].innerText}:null})()","deferred final builds and hard caps",60000);
   console.log("Final builds render:",JSON.stringify(actual));
   if(!actual.rows)throw Error("No final build rows");
   const pairCount=await evaluate("document.querySelectorAll(\x27#soldierTable tbody tr:first-child .stat-pair .stat-cap\x27).length");
@@ -113,7 +116,14 @@ try{
   })()`);
   if(maleFiltered.value!=="STR_WE_NEED_MALE_TOUCH_PREQ"||!maleFiltered.visible)
     throw Error("Male Soldiers branch filter failed "+JSON.stringify(maleFiltered));
-  console.log("Soldiers branch filter:",JSON.stringify({originalCount,maleFiltered}));
+  const pathDetail=await evaluate(`(()=>{
+    document.querySelector("#detailDialog").close();
+    document.querySelector("#soldierTable tbody tr").click();
+    return document.querySelector("#detailBody").innerText;
+  })()`);
+  if(!pathDetail.includes("현재 선택")||!pathDetail.includes("우리는 남자가 필요해"))
+    throw Error("Soldiers branch selection did not reach the actual build audit detail");
+  console.log("Soldiers branch filter:",JSON.stringify({originalCount,maleFiltered,pathDetailVerified:true}));
 
   // Test the same mutually exclusive paths in the interactive Training DB.
   await send("Page.navigate",{url:url.replace("/soldiers/","/trainings/")});

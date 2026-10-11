@@ -1,0 +1,41 @@
+name: Large DB browser performance
+on:
+  pull_request:
+    paths:
+      - 'public/**'
+      - 'tools/benchmark-large-dbs.mjs'
+      - 'tools/build-db-runtime.mjs'
+      - 'tools/check-db-runtime.mjs'
+      - '.github/workflows/large-db-performance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify runtime and all catalogs
+        run: npm run check:all
+      - name: Install browser test dependency
+        run: |
+          npm install --no-save --package-lock=false playwright-core@1.64.0
+          if ! command -v google-chrome >/dev/null 2>&1; then
+            npx playwright-core install chromium
+          fi
+      - name: Prepare matched baseline
+        run: git worktree add --detach /tmp/atlas-baseline a2205f282389b6b6396e5d5bbcacde87975a7dcc
+      - name: Cold desktop and mobile A/B benchmark (three samples each)
+        run: node tools/benchmark-large-dbs.mjs
+      - name: Mobile regression across all databases
+        run: node tools/check-site-browser.mjs --local
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: large-db-benchmark
+          path: large-db-benchmark.json

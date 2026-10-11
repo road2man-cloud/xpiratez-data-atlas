@@ -112,6 +112,7 @@ try {
           search=before+"->"+after;
           if(after>=before&&before>2)errors.push("search no-match did not filter ("+search+")");
           await input.fill("");
+          await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
         }
         const row=page.locator(ready[slug]).first();
         // Item/research first table cell is a comparison checkbox; click the name instead.
@@ -129,6 +130,7 @@ try {
           if(landscape==="sticky")errors.push("landscape soldier toolbar overlays the table");
           await page.setViewportSize({width:390,height:844});
           await page.locator("#dataset").selectOption("final");
+          await page.locator("#soldierTable tbody tr[data-row]").first().waitFor({state:"attached",timeout:60000});
           const finalCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
           if(finalCaps!==12)errors.push("Final soldier builds missing growth hard caps: "+finalCaps+"/12");
           if(await page.locator("#sortMetric").isDisabled())errors.push("Final hard-cap sorting selector was disabled");
@@ -175,8 +177,45 @@ try {
           await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
           const conflictText=await page.locator("#detail").innerText();
           if(!conflictText.includes("복수 선행 · 상호배제 감사")||
-            !conflictText.includes("대체 해금 출처")||!conflictText.includes("unlocks"))
+            !conflictText.includes("명시적 unlocks 출처")||!conflictText.includes("unlocks"))
             errors.push("Audited research did not show the alternative unlock path and conflict evidence");
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("nested");
+          const nestedCount=await page.locator("#tbody tr").count();
+          if(nestedCount!==8)errors.push("Nested alternative-unlocker collision filter expected 8, got "+nestedCount);
+          await page.locator("#tbody tr").first().locator("td").nth(1).click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const nestedText=await page.locator("#detail").innerText();
+          if(!nestedText.includes("대체 해금 출처에도 분기 충돌")||
+            !nestedText.includes("출처 자체도 명목 선행 충돌"))
+            errors.push("Nested research detail omitted source's own conflicting prerequisites");
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("self-source");
+          const selfSourceCount=await page.locator("#tbody tr").count();
+          if(selfSourceCount!==3)errors.push("Self-disabling unlock-source filter expected 3, got "+selfSourceCount);
+          await page.locator("#tbody tr").first().locator("td").nth(1).click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const selfSourceDetail=await page.locator("#detail").innerText();
+          if(!selfSourceDetail.includes("자기 배제하는 해금 출처")||
+            !await page.locator('#detail [data-open="STR_CAPTAIN_GOLD_UP"]').count())
+            errors.push("Research detail omitted persistent-unlock self-disabling warning");
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("cycle");
+          const cycleCount=await page.locator("#tbody tr").count();
+          if(cycleCount!==95)errors.push("Nominal research cycle filter expected 95, got "+cycleCount);
+          await page.locator("#tbody tr").first().locator("td").nth(1).click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const cycleDetail=await page.locator("#detail").innerText();
+          if(!cycleDetail.includes("명목 선행 순환 감사")||
+             !cycleDetail.includes("실제 순환 근거")||!cycleDetail.includes("순환은 연구 불가능 판정이 아닙니다"))
+            errors.push("Cycle detail omitted real loop witness or conditional bypass explanation");
+          await page.locator("#closeDrawer").click();
+          await page.locator('#tbody tr[data-id="STR_NINJA_WAR_READY"]').click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const ninjaCycle=await page.locator("#detail").innerText();
+          if(!ninjaCycle.includes("직접 연구 플래그 지급 이벤트")||
+             !await page.locator('#detail [data-open="STR_NINJA_WAR"]').count())
+            errors.push("Ninja war nominal cycle lacks its direct event grant escape evidence");
           await page.locator("#closeDrawer").click();
           await page.locator('[data-filter="branch"]').selectOption("");
         }
@@ -192,11 +231,20 @@ try {
           const auditText=await page.locator("#choiceMultiPrerequisite").innerText();
           if(!auditText.includes("1777")&&!auditText.includes("1,777"))
             errors.push("Simulator multi-prerequisite total not present");
-          if(!auditText.includes("42")||!auditText.includes("대체 해금"))
+          if(!auditText.includes("42")||!auditText.includes("대체 해금")||
+            !auditText.includes("8개")||!auditText.includes("3개"))
             errors.push("Simulator omitted 42 substitute-unlock research branches");
-          await page.locator("#choiceMultiPrerequisite details").evaluate(el=>el.open=true);
-          const allAudited=await page.locator('#choiceMultiPrerequisite details a[href*="../research/#research="]').count();
+          await page.locator("#choiceMultiPrerequisite details").first().evaluate(el=>el.open=true);
+          const allAudited=await page.locator('#choiceMultiPrerequisite details .choice-sim-block-row > strong > a[href*="../research/#research="]').count();
+          const nestedAudit=await page.locator('#choiceMultiPrerequisite details .choice-sim-block-row small a[href*="../research/#research="]').count();
+          if(nestedAudit<8)errors.push("Nested source link evidence absent: "+nestedAudit);
           if(allAudited!==42)errors.push("Simulator full conflict list count wrong: "+allAudited);
+          await page.locator('#choiceCycleGroups').evaluate(el=>el.open=true);
+          const cycleGroups=await page.locator('#choiceCycleGroups .choice-sim-cycle-row').count();
+          if(cycleGroups!==7)errors.push("Simulator nominal cycle groups expected 7, got "+cycleGroups);
+          const cycleText=await page.locator('#choiceCycleGroups').innerText();
+          if(!cycleText.includes("95개")||!cycleText.includes("외부 unlocks"))
+            errors.push("Simulator cycle summary does not distinguish external escape options");
           const linkedCards=await page.locator("#exclusiveRules .choice-option[data-choice-id]").count();
           if(linkedCards<80)
             errors.push("Branch cards are not wired to research IDs: "+linkedCards);
