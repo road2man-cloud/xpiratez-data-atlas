@@ -10,6 +10,29 @@ const gates=JSON.parse(fs.readFileSync("public/data/training-path-gates.json","u
 assert.equal(gates.schemaVersion,1);
 assert.equal(gates.modVersion,"v.o1.1.1");
 assert.equal(gates.trainingRulesSha256,training.meta.sha256);
+// An unlock is not a valid alternate path if its source simultaneously
+// disables the target. This invariant must agree with the research/choice DB.
+const syntheticGraph={
+  PATH_A:{disables:["PATH_B"]},PATH_B:{disables:["PATH_A"]},
+  UNSAFE:{disables:["TARGET"]},SAFE:{},
+  TARGET:{prerequisites:["PATH_A"]},
+  HARD_TARGET:{prerequisites:["PATH_A"],strictRequires:["PATH_A"]}
+};
+function syntheticAccess(target,unlockers){
+  const data={researchGraph:syntheticGraph,
+    routeChoices:[{id:"path",choices:[{id:"PATH_A"},{id:"PATH_B"}]}],
+    alternativeSources:{[target]:{unlockers}}};
+  return trainingRouteAccess({id:"TEST_TRANSFORM",researchRoots:[target]},
+    routeContext(data,{path:"PATH_B"}),data);
+}
+assert(syntheticAccess("TARGET",["UNSAFE"]).blocked,
+  "A grantor that also disables the target must NOT bypass a conflicting prerequisite");
+assert(syntheticAccess("TARGET",["MISSING"]).blocked,
+  "Unknown alternative grantors must not silently bypass a disabled prerequisite");
+assert(!syntheticAccess("TARGET",["SAFE"]).blocked,
+  "A safe reachable explicit unlock must bypass nominal dependencies");
+assert(syntheticAccess("HARD_TARGET",["SAFE"]).blocked,
+  "Even a safe unlock must not bypass hard requires");
 const choices=training.routeChoices.find(g=>g.id==="path").choices.map(x=>x.id);
 assert.deepEqual(gates.paths.map(x=>x.id),choices);
 const full=(1<<choices.length)-1;

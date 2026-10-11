@@ -63,7 +63,10 @@ export function researchBlock(id,context,graph,eventSources={},path=new Set()){
   // This used to expose Male Soldiers-only Hard Knocks/Bonding on every path.
   const bypass=context.alternativeSources?.[id]||{};
   const possibleUnlock=[...values(bypass.unlockers),...values(bypass.freeGrantors)]
-    .some(grantor=>!context.disabledBy.has(grantor)&&
+    .some(grantor=>!!graph[grantor]&&!context.disabledBy.has(grantor)&&
+      // An unlocker that disables its own target is NOT a real bypass.
+      // Direct disables always wins over the dependency bypass in OXCE.
+      !values(graph[grantor]?.disables).includes(id)&&
       researchBlock(grantor,context,graph,eventSources,next).length===0);
   // Any still-reachable event reward grants its research flag without following
   // the ordinary dependency chain. It is NOT proof that the player owns it.
