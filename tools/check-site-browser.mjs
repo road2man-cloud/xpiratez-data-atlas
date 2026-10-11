@@ -81,14 +81,43 @@ try {
           errors.push('Thief class-stage card omitted its main reward');
         const otherBenefitRows=await page.locator('#matrixTable tbody .captain-benefit-cell').count();
         if(otherBenefitRows!==22)errors.push('Only '+otherBenefitRows+'/22 Captain branch advantage cells');
+        // A tiny footnote was insufficient: Priest's first featured event was
+        // titled only '똑 똑', while Thief's main perk was Captain's 11.
+        // Both rows MUST have the same prominent, source-backed visitor status.
+        const visitorHeads=[];
         for(const branch of ['thief','priest']){
-          const text=await page.locator('#matrixTable tbody tr[data-id="'+branch+'"] .captain-benefit-cell').innerText();
-          if(!text.includes('일반 똑 똑: 조건부 가능'))
-            errors.push('Default Knock Knock omitted for '+branch+' despite no Soreass exclusion');
+          const tr=page.locator('#matrixTable tbody tr[data-id="'+branch+'"]');
+          const visitor=tr.locator('.benefit-visitor-primary[data-common-knock="eligible"]');
+          if(await visitor.count()!==1)errors.push('Prominent common Knock Knock missing on '+branch);
+          const text=await visitor.innerText();
+          if(!text.includes('똑 똑(똑똑이) 방문')||
+             !text.includes('조건부 가능 · 공통 21종')||
+             !text.includes('DumbLazy 연구 완료 후 외톨이 클론'))
+            errors.push('Common vs special visitor distinction missing on '+branch+': '+text);
+          visitorHeads.push((await visitor.locator('strong').innerText())+'|'+(await visitor.locator('b').innerText()));
+          const stage=page.locator('#exclusiveRules .captain-branch-perks[data-benefit-choice="'+branch+'"] .benefit-visitor-primary[data-common-knock="eligible"]');
+          if(await stage.count()!==1)errors.push('Shared visitor omitted from '+branch+' class stage card');
         }
-        if(!(await page.locator('#matrixTable tbody tr[data-id="soreass"] .captain-benefit-cell').innerText())
-          .includes('일반 똑 똑: Soreass 조건으로 제외'))
+        if(visitorHeads[0]!==visitorHeads[1])
+          errors.push('Thief and Priest present inconsistent identical shared Knock Knock conditions');
+        const featured=await page.locator('#matrixTable tbody .benefit-main').allInnerTexts();
+        if(featured.some(s=>s.trim()==='똑 똑'))
+          errors.push('Undifferentiated Knock Knock event falsely promoted as a unique main branch reward');
+        const thiefMain=await page.locator('#matrixTable tbody tr[data-id="thief"] .benefit-main').innerText();
+        const priestMain=await page.locator('#matrixTable tbody tr[data-id="priest"] .benefit-main').innerText();
+        if(!thiefMain.includes('선장의 11')||!priestMain.includes('건강미 훈련'))
+          errors.push('Captain specific main perks replaced by anonymous shared visitor');
+        const blocked=page.locator('#matrixTable tbody tr[data-id="soreass"] .benefit-visitor-primary[data-common-knock="blocked"]');
+        if(await blocked.count()!==1||!(await blocked.innerText()).includes('일반형 차단'))
           errors.push('Default Knock Knock was incorrectly allowed for Soreass');
+        await page.locator('#search').fill('똑똑이');
+        await page.waitForTimeout(300);
+        for(const branch of ['thief','priest'])
+          if(await page.locator('#matrixTable tbody tr[data-id="'+branch+'"]').count()!==1)
+            errors.push('Searching 똑똑이 hides eligible '+branch+' captain');
+        if(await page.locator('#matrixTable tbody tr[data-id="soreass"]').count()!==0)
+          errors.push('Searching eligible 똑똑이 shows excluded Soreass');
+        await page.locator('#search').fill('');
         for(const [width,height] of [[390,844],[375,667],[844,390]]){
           await page.setViewportSize({width,height});
           const metrics=await page.evaluate(()=>{
