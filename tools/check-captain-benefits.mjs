@@ -109,6 +109,14 @@ for(const [captain,extras] of Object.entries({
   assert.deepEqual(ids,extras,"Captain special G reward path regression: "+captain);
 }
 
+// The Bookworm reward is a factual route to all eight E-class god lore flags.
+for(const id of ["STR_BOOKWORM_WISDOM","STR_GREEN_MAN_OF_THE_CLOTH"]){
+  const event=events.get(id);
+  assert(event,"God-knowledge source event removed: "+id);
+  const grants=new Set((event.effects?.researchRewards||[]).map(x=>x.id));
+  for(let n=1;n<=8;n++)assert(grants.has("STR_GODS_E"+n),
+    "Incomplete eight-god knowledge payout in "+id+" / E"+n);
+}
 const names=new Set();
 let total=0,direct=0,subsequent=0,rewards=0;
 for(const row of index.rows){
@@ -243,7 +251,8 @@ assert(app.includes("CaptainBenefits?.godMatrixCell(r)")&&app.includes('id="godR
 assert(ui.includes("function godRewardsMarkup(row)")&&ui.includes("function godMatrixCell(r)")&&
   ui.includes("godGateStatus")&&ui.includes("renderGodPlanner()")&&
   ui.includes("STR_CAPTAIN_SAINT")&&ui.includes("STR_SHADOW_CHASING")&&
-  ui.includes("STR_PSI_LAB")&&ui.includes('group==="G7"'),
+  ui.includes("STR_PSI_LAB")&&ui.includes('group==="G7"')&&
+  ui.includes("STR_BOOKWORM_WISDOM")&&ui.includes("STR_GREEN_MAN_OF_THE_CLOTH"),
   "G reward eligibility cannot be replaced by a non-causal flat benefit list");
 assert(fs.readFileSync("public/captains/index.html","utf8").includes('id="godRewardSection"'));
 assert(css.includes(".god-reward-groups")&&css.includes(".captain-god-cell"));
