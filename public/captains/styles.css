@@ -224,6 +224,9 @@ html{scroll-behavior:smooth}
 .captain-benefit-head{min-width:210px;max-width:240px}
 .captain-benefit-head small{display:block;color:#9eb5d7;font-size:.63rem;line-height:1.3;margin-top:4px}
 .captain-benefit-cell{min-width:195px;max-width:245px;vertical-align:top;text-align:left;line-height:1.38}
+.captain-shared-visitor-head{min-width:195px;max-width:260px}
+.captain-shared-visitor-head small{display:block;color:#9eb5d7;font-size:.63rem;line-height:1.3;margin-top:4px}
+.captain-shared-visitor-cell{min-width:196px;max-width:255px;vertical-align:top;text-align:left;line-height:1.4}
 .benefit-main{display:block;font-size:.78rem;font-weight:900;color:#a7f3d0;overflow-wrap:anywhere}
 .benefit-conditional{display:block;margin-top:4px;color:#dfc990;font-size:.68rem}
 .benefit-count{display:block;margin-top:4px;color:#9eb0ce;font-size:.63rem}
@@ -235,8 +238,10 @@ html{scroll-behavior:smooth}
 .benefit-visitor-yes>b{color:#9bedc4}
 .benefit-visitor-no>b{color:#f4b4b8}
 .benefit-visitor-no{border-color:#6a4146;background:#2d1d2a}
-.captain-benefit-cell .benefit-visitor-primary{max-width:100%}
-.captain-branch-perks .benefit-visitor-primary{margin:2px 0 4px}
+.captain-shared-visitor-cell .benefit-visitor-primary{margin-top:0;max-width:100%}
+.captain-shared-visitors{margin:10px 0 0;padding:9px 11px;border:1px solid #405775;background:#17263a;border-radius:10px;display:grid;gap:4px}
+.captain-shared-visitors>b{font-size:.7rem;color:#c2e5ff}
+.captain-shared-visitors .benefit-visitor-primary{margin:4px 0 0}
 .captain-branch-perks{margin:10px 0 0;padding:9px 11px;border:1px solid #315c48;background:#10271f;border-radius:10px;display:grid;gap:4px;color:#bedccc}
 .captain-branch-perks>b{font-size:.7rem;color:#8de7b5}
 .captain-branch-perks>strong{font-size:.9rem;color:#e0fff0}
@@ -285,6 +290,9 @@ html{scroll-behavior:smooth}
   .table-shell .captain-benefit-head{min-width:145px;max-width:155px}
   .table-shell .captain-benefit-head small{display:none}
   .table-shell .captain-benefit-cell{min-width:158px;max-width:176px}
+  .table-shell .captain-shared-visitor-head{min-width:155px;max-width:165px}
+  .table-shell .captain-shared-visitor-head small{display:none}
+  .table-shell .captain-shared-visitor-cell{min-width:164px;max-width:195px}
   .captain-benefit-detail{gap:9px}
   .captain-key-reward{padding:11px}
 }

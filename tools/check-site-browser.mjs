@@ -81,13 +81,20 @@ try {
           errors.push('Thief class-stage card omitted its main reward');
         const otherBenefitRows=await page.locator('#matrixTable tbody .captain-benefit-cell').count();
         if(otherBenefitRows!==22)errors.push('Only '+otherBenefitRows+'/22 Captain branch advantage cells');
+        const otherVisitorRows=await page.locator('#matrixTable tbody .captain-shared-visitor-cell').count();
+        if(otherVisitorRows!==22)errors.push('Only '+otherVisitorRows+'/22 independent common-visitor cells');
+        const visitorColumnHeading=await page.locator('#matrixTable thead .captain-shared-visitor-head').textContent();
+        if(!visitorColumnHeading.includes('공통 방문')||!visitorColumnHeading.includes('전용 보상과 별개'))
+          errors.push('Shared visitor header must be separate from exclusive perk header');
         // A tiny footnote was insufficient: Priest's first featured event was
         // titled only '똑 똑', while Thief's main perk was Captain's 11.
         // Both rows MUST have the same prominent, source-backed visitor status.
         const visitorHeads=[];
         for(const branch of ['thief','priest']){
           const tr=page.locator('#matrixTable tbody tr[data-id="'+branch+'"]');
-          const visitor=tr.locator('.benefit-visitor-primary[data-common-knock="eligible"]');
+          const visitor=tr.locator('.captain-shared-visitor-cell .benefit-visitor-primary[data-common-knock="eligible"]');
+          if(await tr.locator('.captain-benefit-cell .benefit-visitor-primary').count())
+            errors.push('Common Knock Knock physically nested inside '+branch+' exclusive reward cell');
           if(await visitor.count()!==1)errors.push('Prominent common Knock Knock missing on '+branch);
           const text=await visitor.innerText();
           if(!text.includes('똑 똑(똑똑이) 방문')||
@@ -95,8 +102,16 @@ try {
              !text.includes('DumbLazy 연구 완료 후 외톨이 클론'))
             errors.push('Common vs special visitor distinction missing on '+branch+': '+text);
           visitorHeads.push((await visitor.locator('strong').innerText())+'|'+(await visitor.locator('b').innerText()));
-          const stage=page.locator('#exclusiveRules .captain-branch-perks[data-benefit-choice="'+branch+'"] .benefit-visitor-primary[data-common-knock="eligible"]');
-          if(await stage.count()!==1)errors.push('Shared visitor omitted from '+branch+' class stage card');
+          const stage=page.locator('#exclusiveRules .captain-shared-visitors[data-visitor-choice="'+branch+'"] .benefit-visitor-primary[data-common-knock="eligible"]');
+          if(await stage.count()!==1)errors.push('Shared visitor omitted from '+branch+' independent class section');
+          if(await page.locator('#exclusiveRules .captain-branch-perks[data-benefit-choice="'+branch+'"] .benefit-visitor-primary').count())
+            errors.push('Shared visitor incorrectly rendered within '+branch+' perk bracket');
+          const relationship=await page.evaluate(id=>{
+            const perk=document.querySelector('#exclusiveRules .captain-branch-perks[data-benefit-choice="'+id+'"]');
+            const shared=document.querySelector('#exclusiveRules .captain-shared-visitors[data-visitor-choice="'+id+'"]');
+            return !!perk&&!!shared&&perk.parentElement===shared.parentElement&&perk.nextElementSibling===shared;
+          },branch);
+          if(!relationship)errors.push('Exclusive and shared '+branch+' brackets must be adjacent siblings');
         }
         if(visitorHeads[0]!==visitorHeads[1])
           errors.push('Thief and Priest present inconsistent identical shared Knock Knock conditions');
@@ -107,7 +122,7 @@ try {
         const priestMain=await page.locator('#matrixTable tbody tr[data-id="priest"] .benefit-main').innerText();
         if(!thiefMain.includes('선장의 11')||!priestMain.includes('건강미 훈련'))
           errors.push('Captain specific main perks replaced by anonymous shared visitor');
-        const blocked=page.locator('#matrixTable tbody tr[data-id="soreass"] .benefit-visitor-primary[data-common-knock="blocked"]');
+        const blocked=page.locator('#matrixTable tbody tr[data-id="soreass"] .captain-shared-visitor-cell .benefit-visitor-primary[data-common-knock="blocked"]');
         if(await blocked.count()!==1||!(await blocked.innerText()).includes('일반형 차단'))
           errors.push('Default Knock Knock was incorrectly allowed for Soreass');
         await page.locator('#search').fill('똑똑이');

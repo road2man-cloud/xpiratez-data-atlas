@@ -11,6 +11,10 @@ The captain module covers:
 - Unclassed hybrid branches: DUMBLAZY, LAZYSORE, SOREDUMB, JACKSORE, JACKDUMB, JACKLAZY
 - Pure gate and GOLD / GREEN / RED / GRAY / ULTIMATE endpoints
 
+## Separate the Captain's 11 bracket from common Knock Knock visitors
+
+An additional real-world UI report showed that highlighting a shared visitor **inside the Thief exclusive-reward box** still falsely implied a subordinate relationship to `Captain's 11`. Fixed structurally rather than only relabeling: the captain comparison matrix now has two **independent table cells/columns** — `선장 전용 보상·분기 이점` and `공통 방문 이벤트`. Each stage card has two **adjacent sibling blocks**, one for the branch's exclusive/conditional perks and a second for shared Knock Knock visitor routes. Neither module nests a common Knock Knock node inside the exclusive perk DOM. Detailed view keeps the common visitor and Captain's 11 in separate `article`/`section` siblings. Tests assert separate table cells, DOM sibling identity for Priest and Thief, direct script gates, and Soreass's negative research gate; one cannot pass just by inserting a smaller visitor footnote under Captain's 11.
+
 ## High-visibility visitor status in captain comparison (2026-10-11 follow-up)
 
 The first data fix identified 21 shared `Knock Knock` visitors, but live comparison still visually contradicted itself: the **Priest main perk** was the non-descriptive translated event name **“똑 똑”** (a conditional Rogue Clone event), whereas **Thief main perk** correctly showed Captain's 11. Both had a tiny shared-visitor footnote, leaving users to infer (wrongly) that only Priest could get visitors. This is a **primary-vs-secondary presentation/semantic conflation**, not a new ruleset exclusion.

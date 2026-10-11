@@ -309,7 +309,8 @@ function choiceOptionCard(stage,id,blocks){
     '<div class="choice-option-head"><div><strong>'+(researchLabels[id]||id)+'</strong>'+(ev?'<small>'+ev+' /월</small>':'')+'</div>'+colorsHtml+'</div>'+
     (summary?'<p>'+summary+'</p>':'')+
     choiceEffectSummary(r)+
-    (r?'<div class="captain-branch-perks" data-benefit-choice="'+r.id+'"><span>원본 전용 보상·후속 이벤트 확인 중</span></div>':'')+
+    (r?'<div class="captain-branch-perks" data-benefit-choice="'+r.id+'"><span>원본 전용 보상·후속 이벤트 확인 중</span></div>'+
+      '<div class="captain-shared-visitors" data-visitor-choice="'+r.id+'"><span>독립 공통 방문 이벤트 확인 중</span></div>':'')+
     constraint+
     '</article>';
 }
@@ -468,7 +469,7 @@ function renderHead(){
   const thead=document.querySelector("#matrixTable thead");
   const groups=[];
   for(const c of columns){let g=groups.find(x=>x.name===c.group);if(!g){g={name:c.group,count:0};groups.push(g)}g.count++}
-  thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th><th rowspan="2" class="captain-benefit-head">전용 보상·분기 이점<small>원본 이벤트 + 후속 해금</small></th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
+  thead.innerHTML='<tr class="group"><th rowspan="2">선장 선택</th><th rowspan="2">단계</th><th rowspan="2">최단 시점</th><th rowspan="2">색</th><th rowspan="2" class="captain-benefit-head">선장 전용 보상·분기 이점<small>원본 이벤트 + 후속 해금</small></th><th rowspan="2" class="captain-shared-visitor-head">공통 방문 이벤트<small>전용 보상과 별개 · 똑똑이</small></th>'+groups.map(g=>'<th colspan="'+g.count+'">'+g.name+'</th>').join("")+'</tr>'+
   '<tr>'+columns.map(c=>'<th class="feature-head" data-sort="'+(c.key==="ev"?"ev":"")+'" title="'+(featureInfo[c.key]?.detail||"")+'">'+columnHead(c)+'</th>').join("")+'</tr>';
   thead.querySelectorAll("[data-sort=ev]").forEach(th=>{th.style.cursor="pointer";th.title="클릭하여 EV 정렬";th.addEventListener("click",()=>{sortState={key:"ev",dir:sortState.key==="ev"?-sortState.dir:-1};renderRows()})});
 }
@@ -491,7 +492,7 @@ function filteredRows(){
   return out;
 }
 function matrixRow(r){
-  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td><td class="captain-benefit-cell">'+(window.CaptainBenefits?.matrixCell(r)||'<small>분기 보상 확인 중</small>')+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
+  if(!rowMarkup.has(r.id))rowMarkup.set(r.id,'<tr data-id="'+r.id+'"><td><span class="captain-name">'+r.name+'</span><span class="captain-code">'+r.code+'</span></td><td>'+stagePill(r)+'</td><td>'+r.from+'</td><td>'+colors(r)+'</td><td class="captain-benefit-cell">'+(window.CaptainBenefits?.matrixCell(r)||'<small>분기 보상 확인 중</small>')+'</td><td class="captain-shared-visitor-cell">'+(window.CaptainBenefits?.visitorCell(r)||'<small>독립 방문 상태 확인 중</small>')+'</td>'+columns.map(c=>'<td>'+(c.type==="ev"?evCell(r):c.type==="codex"?codexCell(r,c.color):statusCell(r[c.key],c))+'</td>').join("")+'</tr>');
   return rowMarkup.get(r.id);
 }
 function renderRows(){
