@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {auditMultiPrerequisiteBranches} from "./research-branch-audit.mjs";
+import {auditResearchCycles,publishedResearchEventGrants} from "./research-cycle-audit.mjs";
 
 // Keep research decision-gate facts independent from the older compact
 // "prerequisites" union. Read the generated effective-raw research sources
@@ -108,6 +109,11 @@ fs.writeFileSync(runtimeOutput,runtimeJson);
 // topic is unreachable. Incoming unlocks can bypass dependencies, but never
 // requires; a source that also disables the target is not a viable bypass.
 const branchReport=auditMultiPrerequisiteBranches(runtimeTopics);
+const cycleReport=auditResearchCycles(runtimeTopics,publishedResearchEventGrants());
+branchReport.schemaVersion=3;
+branchReport.cycles=cycleReport.groups;
+Object.assign(branchReport.meta,{cycleGroups:cycleReport.groupCount,cycleTopics:cycleReport.topicCount,
+  cycleGroupsWithoutIndexedEscape:cycleReport.noIndexedEscape});
 const branchReportOutput="public/data/research-branch-conflicts.json";
 fs.writeFileSync(branchReportOutput,JSON.stringify(branchReport));
 console.log("Generated "+output+" "+(Buffer.byteLength(serialized)/1024).toFixed(1)+" KiB",counts,"unresolved references",unresolvedByField);

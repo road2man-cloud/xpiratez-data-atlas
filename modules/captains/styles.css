@@ -185,6 +185,9 @@ html{scroll-behavior:smooth}
 .choice-sim-block-row strong{font-size:.76rem}
 .choice-sim-block-row span{font-size:.69rem;font-weight:bold}
 .choice-sim-block-row small{flex-basis:100%;color:#aebed8;font-size:.66rem}
+.choice-sim-cycle-row{padding:9px 0;border-top:1px solid #314363;font-size:.77rem;line-height:1.5}
+.choice-sim-cycle-row small{display:block;color:#aebed8;font-size:.69rem;margin-top:3px;overflow-wrap:anywhere}
+#choiceCycleGroups{margin-top:12px;padding-top:9px;border-top:1px solid #314363}
 .sim-text-blocked{color:#fca5a5}.sim-text-risk{color:#fcd34d}
 .choice-sim-search-results{display:grid;gap:6px;max-height:300px;overflow:auto;overscroll-behavior:contain}
 .choice-sim-result{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px;border:1px solid #2f405d;border-radius:9px;min-width:0}
