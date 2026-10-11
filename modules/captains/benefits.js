@@ -180,6 +180,14 @@
     if(!row)return'<p>선장 선택에 해당하는 G 보상 자료가 없습니다.</p>';
     const xs=rowGodRewards(row),trait=xs.filter(x=>x.captainTrait),
       groups=[...new Set(trait.map(x=>x.group))];
+    const bookworm=row.eventSearch?.includes("STR_BOOKWORM_WISDOM");
+    const greenSermon=row.eventSearch?.includes("STR_GREEN_MAN_OF_THE_CLOTH");
+    const godInfoShortcut=bookworm||greenSermon?
+      '<p class="god-knowledge-shortcut"><b>신의 지식 E1~E8 해금 경로:</b> '+
+      (bookworm?'<a href="'+eventLink("STR_BOOKWORM_WISDOM")+'">공부(책벌레 LazySore)</a> 이벤트 · 연구 164개 지급 중 E1~E8 포함':'')+
+      (bookworm&&greenSermon?' / ':'')+
+      (greenSermon?'<a href="'+eventLink("STR_GREEN_MAN_OF_THE_CLOTH")+'">천 두른 남자(녹색 성격)</a> 이벤트 · 연구 34개 지급 중 E1~E8 포함':'')+
+      '. <b>모두 이벤트가 실제로 발생해야 얻습니다.</b></p>':'';
     return '<p><b>'+esc(row.rowId)+' 기준:</b> 특정 성격을 추가로 요구하는 보상 '+
       (groups.length?'<strong>'+esc(groups.join(" · "))+'</strong> ('+
       trait.map(g=>esc(godKey(g))).join(", ")+')':
@@ -187,7 +195,7 @@
       ' · 기본 G1·G3·G5·G7은 코덱스 색상에 따라 별도로 판정합니다.</p>'+
       '<p class="captain-benefit-explain">이 목록은 <b>현재 선택에서 접근 가능한 경로</b>입니다. 실제 완료된 연구나 '+
       '아이템을 가정하지 않습니다. 순서: 선장 성격 → 해당 색 코덱스 연구·보유 → 어둠 추적·부두술·각성 → '+
-      '해당 GODS_E 지식 → Saint 미획득 → 확률 판정. 선장 3색과 코덱스 3색 소유는 서로 다릅니다.</p>';
+      '해당 GODS_E 지식 → Saint 미획득 → 확률 판정. 선장 3색과 코덱스 3색 소유는 서로 다릅니다.</p>'+godInfoShortcut;
   }
   function godRewardsMarkup(row){
     return '<section class="god-reward-inline"><h4>G1~G8: 선장 성격에서 보상으로 가는 실제 경로</h4>'+
