@@ -206,13 +206,54 @@ const compactEvents=result.map(row=>{
       funds:e.reward.funds})),
     eventCount:events.length};
 });
+// Codex god bonuses are event gates, not eight exclusive captain branches.
+// G7 has three weighted outcomes, including the dangerous third outcome.
+const godBonusRe=/^STR_CODEX_BONUS_G([1-8])([ABC]?)$/;
+const godRewardEvents=eventDetails.filter(e=>godBonusRe.test(e.id));
+assert.equal(godRewardEvents.length,14,"Codex G1-G8 outcome count changed");
+const godRewards=godRewardEvents.map(e=>{
+  const [,ordinal,variant]=e.id.match(godBonusRe);
+  const script=ids(e.scripts).find(s=>ids(s.eventWeights).some(w=>
+    ids(w.entries).some(x=>x.eventId===e.id)));
+  assert(script,"Missing direct G reward script for "+e.id);
+  const triggers=ids(script.triggerMaps?.researchTriggers);
+  const needed=triggers.filter(x=>x.value===true);
+  const excluded=triggers.filter(x=>x.value===false);
+  const items=ids(script.triggerMaps?.itemTriggers);
+  assert(excluded.some(x=>x.id==="STR_CAPTAIN_SAINT")&&
+    needed.some(x=>x.id==="STR_GODS_E"+ordinal),"Missing god or Saint gate: "+e.id);
+  assert.equal(script.conditions?.executionOdds,23,"Changed executionOdds: "+e.id);
+  const captain=needed.find(x=>/^STR_CAPTAIN_(DUMBLAZY|SOREDUMB|JACKSORE|JACKLAZY)$/.test(x.id));
+  const codex=items.find(x=>/^STR_CODEX_(GOLD|GREEN|RED|GRAY)$/.test(x.id)&&x.value===true);
+  assert(codex,"Missing retained Codex item: "+e.id);
+  const weights=ids(script.eventWeights).flatMap(x=>ids(x.entries)
+    .filter(w=>w.eventId===e.id)
+    .map(w=>({weight:w.weight,totalWeight:x.totalWeight,bucket:x.bucket})));
+  assert.equal(weights.length,1,"Unexpected outcome weight count: "+e.id);
+  return {
+    id:e.id,group:"G"+ordinal,variant:variant||null,
+    name:e.koName||e.id,scriptId:script.id,roles:ids(e.roles),
+    captainTrait:captain?.id||null,codexItem:codex.id,
+    requiredResearch:needed.map(x=>({id:x.id,name:x.koName||label(x.id)})),
+    forbiddenResearch:excluded.map(x=>({id:x.id,name:x.koName||label(x.id)})),
+    requiredItems:items.map(x=>({id:x.id,name:x.koName||label(x.id),value:x.value})),
+    odds:script.conditions.executionOdds,weight:weights[0],
+    reward:slimReward(eventRewards(e))
+  };
+}).sort((a,b)=>Number(a.group.slice(1))-Number(b.group.slice(1))||
+  (a.variant||"").localeCompare(b.variant||""));
+assert.equal(new Set(godRewards.map(x=>x.group)).size,8,"G1-G8 coverage changed");
+const godRewardCandidates=row=>godRewards
+  .filter(g=>!g.captainTrait||row.events.some(e=>e.id===g.id))
+  .map(g=>g.id);
 const output={schemaVersion:1,meta:{captains:22,events:eventDetails.length,
   totalRelatedEvents:result.reduce((n,x)=>n+x.events.length,0),
   source:"Official effective research + event scripts; conditional candidate routes, not earned rewards",
-  captainElevenEvent:"STR_CAPTAINS_11",commonKnockKnockEvents:commonKnockOutcomes.length},
-  special:{captainsElevenTraining:featuredTrain,commonKnockKnock:commonKnock},
+  captainElevenEvent:"STR_CAPTAINS_11",commonKnockKnockEvents:commonKnockOutcomes.length,
+  codexGodOutcomes:godRewards.length},
+  special:{captainsElevenTraining:featuredTrain,commonKnockKnock:commonKnock,godRewards},
   rows:result.map((r,i)=>({...r,events:undefined,eventSearch:compactEvents[i].eventSearch,
-    featured:compactEvents[i].featured}))};
+    featured:compactEvents[i].featured,godRewardCandidates:godRewardCandidates(r)}))};
 const thief=result.find(x=>x.rowId==="thief");
 assert(thief?.events.some(e=>e.id==="STR_CAPTAINS_11"&&e.paths.some(x=>x.mode==="selected-branch")));
 const jackpot=thief.events.find(e=>e.id==="STR_CAPTAINS_11");
