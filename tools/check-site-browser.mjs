@@ -203,6 +203,20 @@ try {
         const content=await page.locator(contentSelector).innerText();
         detail=String(content.length);
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
+        if(slug==="research"){
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("alternative");
+          const audited=await page.locator("#tbody tr").count();
+          if(audited!==42)errors.push("Research multi-prerequisite conflict filter expected 42, got "+audited);
+          await page.locator("#tbody tr").first().locator("td").nth(1).click();
+          await page.locator("#drawer.open").waitFor({state:"visible",timeout:14000});
+          const conflictText=await page.locator("#detail").innerText();
+          if(!conflictText.includes("복수 선행 · 상호배제 감사")||
+            !conflictText.includes("대체 해금 출처")||!conflictText.includes("unlocks"))
+            errors.push("Audited research did not show the alternative unlock path and conflict evidence");
+          await page.locator("#closeDrawer").click();
+          await page.locator('[data-filter="branch"]').selectOption("");
+        }
         if(slug==="captains"){
           await page.locator("#dialogClose").click();
           // The full research graph is intentionally deferred while visitors
@@ -212,6 +226,14 @@ try {
           const loaded=await page.evaluate(()=>performance.getEntriesByType("resource")
             .filter(entry=>/choice-simulator-index\.json/.test(entry.name)).length);
           if(loaded!==1)errors.push("Compact simulator should load exactly once when approached: "+loaded);
+          const auditText=await page.locator("#choiceMultiPrerequisite").innerText();
+          if(!auditText.includes("1777")&&!auditText.includes("1,777"))
+            errors.push("Simulator multi-prerequisite total not present");
+          if(!auditText.includes("42")||!auditText.includes("대체 해금"))
+            errors.push("Simulator omitted 42 substitute-unlock research branches");
+          await page.locator("#choiceMultiPrerequisite details").evaluate(el=>el.open=true);
+          const allAudited=await page.locator('#choiceMultiPrerequisite details a[href*="../research/#research="]').count();
+          if(allAudited!==42)errors.push("Simulator full conflict list count wrong: "+allAudited);
           const linkedCards=await page.locator("#exclusiveRules .choice-option[data-choice-id]").count();
           if(linkedCards<80)
             errors.push("Branch cards are not wired to research IDs: "+linkedCards);

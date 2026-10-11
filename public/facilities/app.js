@@ -164,8 +164,7 @@ $("#efficiencyView").addEventListener("change",()=>{
   if(pair)sort.key=pair[perTile?1:0];
   render();
 });
-let searchTimer=null;
-$("#search").addEventListener("input",()=>{if(searchTimer!==null)clearTimeout(searchTimer);if(!$("#search").value.trim())render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)});
+["search"].forEach(id=>$("#"+id).addEventListener("input",render));
 ["role","status","func"].forEach(id=>$("#"+id).addEventListener("change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});

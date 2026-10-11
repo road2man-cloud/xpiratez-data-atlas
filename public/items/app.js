@@ -13,8 +13,8 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
-let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map();
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
+let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map();
 let itemIds=new Set(),researchIds=new Set(),namesPromise=null;
 const modePromises={};
 const searchHay=new WeakMap();
@@ -38,9 +38,12 @@ async function ensureMode(mode){
       itemIndex=items.index.map(x=>({...x,...(useCounts.get(x.id)||{}),originalManufactureReferences:x.manufactureCount}));
       itemMap=new Map(itemIndex.map(x=>[x.id,x]));
     }else{
-      const [research,insight]=await Promise.all([compactJson(`${dataBase}/research-index.json`),compactJson(`${dataBase}/research-insight-index.json`)]);
+      const [research,insight,branchReport]=await Promise.all([compactJson(`${dataBase}/research-index.json`),compactJson(`${dataBase}/research-insight-index.json`),json("../data/research-branch-conflicts.json")]);
+      if(branchReport?.schemaVersion!==1||branchReport?.meta?.total!==research.index.length)throw new Error("복수 선행 분기 감사 데이터 버전 불일치");
+      researchBranchReport=branchReport;
+      branchConflictMap=new Map(branchReport.affected.map(row=>[row.id,row]));
       const insightIndex=new Map((insight.index||[]).map(x=>[x.id,x]));
-      researchIndex=research.index.map(x=>({...x,...(insightIndex.get(x.id)||{})}));
+      researchIndex=research.index.map(x=>({...x,...(insightIndex.get(x.id)||{}),branchConflictCount:branchConflictMap.get(x.id)?.conflicts.length||0}));
       researchMap=new Map(researchIndex.map(x=>[x.id,x]));
     }
   })().catch(err=>{delete modePromises[mode];throw err});
@@ -80,7 +83,7 @@ function bind(){
 }
 const sortOptions={
   items:[["koName","이름"],["kind","종류"],["weight","무게"],["size","창고 점유"],["power","위력"],["costBuy","구매가"],["costSell","판매가"],["monthlySalary","월 급여/수익"],["monthlyMaintenance","월 유지비"],["materialUses","실제 제조 소모"],["manufactureSources","제조 산출"],["accuracyAimed","조준 명중"],["researchCount","연구 연결"],["manufactureTotalRecipes","전체 제조 연결"],["referenceCount","전체 역참조"]],
-  research:[["koName","이름"],["cost","연구량"],["points","완료 점수"],["dependencyCount","직접 선행"],["requiredByCount","후속 연구"],["spawnedItemCount","생성 아이템"],["itemReferenceCount","아이템 연결"],["manufactureReferenceCount","제조 연결"],["otherReferenceCount","기타 연결"]]
+  research:[["koName","이름"],["cost","연구량"],["points","완료 점수"],["dependencyCount","직접 선행"],["branchConflictCount","충돌 선행 관계"],["requiredByCount","후속 연구"],["spawnedItemCount","생성 아이템"],["itemReferenceCount","아이템 연결"],["manufactureReferenceCount","제조 연결"],["otherReferenceCount","기타 연결"]]
 };
 function renderControls(){
   const mode=state.mode;
@@ -89,7 +92,7 @@ function renderControls(){
   $("#sort").innerHTML=base+extra;$("#sort").value=state.sort[mode];
   $("#filters").innerHTML=mode==="items"
     ?`<label><span>종류</span><select data-filter="kind"><option value="">전체</option>${Object.entries(kinds).map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select></label><label><span>연구</span><select data-filter="research"><option value="">전체</option><option value="yes">연결 있음</option><option value="no">없음</option></select></label><label><span>제조</span><select data-filter="manufacture"><option value="">전체</option><option value="yes">연결 있음</option><option value="no">없음</option></select></label>`
-    :`<label><span>실물 표본</span><select data-filter="sample"><option value="">전체</option><option value="yes">필요</option><option value="destroy">소모</option><option value="no">불필요</option></select></label><label><span>생성 아이템</span><select data-filter="outputs"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>효과 유형</span><select data-filter="effect"><option value="">전체</option>${Object.entries(insightRoleLabels).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</select></label><label><span>아이템 연결</span><select data-filter="items"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label>`;
+    :`<label><span>실물 표본</span><select data-filter="sample"><option value="">전체</option><option value="yes">필요</option><option value="destroy">소모</option><option value="no">불필요</option></select></label><label><span>생성 아이템</span><select data-filter="outputs"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>효과 유형</span><select data-filter="effect"><option value="">전체</option>${Object.entries(insightRoleLabels).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</select></label><label><span>아이템 연결</span><select data-filter="items"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>선행 분기</span><select data-filter="branch"><option value="">전체</option><option value="alternative">충돌 선행 · 대체 해금 (${researchBranchReport?.meta.affected||0})</option></select></label>`;
   for(const [k,v] of Object.entries(state.filter[mode])){const e=$(`[data-filter="${k}"]`);if(e)e.value=v}
 }
 function filtered(){
@@ -109,6 +112,7 @@ function filtered(){
       if(f.outputs==="yes"&&!x.spawnedItemCount)return false;if(f.outputs==="no"&&x.spawnedItemCount)return false;
       if(f.items==="yes"&&!x.itemReferenceCount)return false;if(f.items==="no"&&x.itemReferenceCount)return false;
       if(f.effect&&!arr(x.insightKinds).includes(f.effect))return false;
+      if(f.branch==="alternative"&&!branchConflictMap.has(x.id))return false;
     }
     return true;
   });
@@ -125,7 +129,7 @@ function render(){
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${esc(kinds[x.kind]||x.kind)}</td><td>${fmt(x.power)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.size)}</td><td>${fmt(x.costSell)}</td><td>${fmt(x.monthlyMaintenance)}</td><td>${fmt(x.researchCount)}</td><td>${fmt(x.materialUses)}</td><td>${fmt(x.manufactureSources)}</td></tr>`).join("");
   }else{
     $("#thead").innerHTML="<tr><th>비교</th><th>연구</th><th>해석</th><th>ID</th><th>연구량</th><th>점수</th><th>직접 선행</th><th>후속</th><th>생성</th><th>아이템</th><th>제조</th><th>표본</th></tr>";
-    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td><span class="badge insight-kind">${esc((x.requiredByCount>=5?"후속 허브 · ":"")+(insightRoleLabels[x.primaryInsightKind]||x.primaryInsightKind||"—"))}</span></td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
+    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td><span class="badge insight-kind">${esc((x.requiredByCount>=5?"후속 허브 · ":"")+(insightRoleLabels[x.primaryInsightKind]||x.primaryInsightKind||"—"))}</span>${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌 · 대체 해금</span>':""}</td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
   }
   const nums=[1,state.page-2,state.page-1,state.page,state.page+1,state.page+2,pages].filter(x=>x>=1&&x<=pages),uniq=[...new Set(nums)].sort((a,b)=>a-b);
   $("#pager").innerHTML=uniq.map(n=>`<button data-page="${n}" class="${n===state.page?"current":""}">${n}</button>`).join("");
@@ -318,15 +322,50 @@ function researchInsightMarkup(d){
     ${pd.eventLinks?.length?`<details><summary>가까운 선행의 이벤트 획득/연결 ${fmt(pd.eventLinks.length)}개</summary><div>${pd.eventLinks.map(x=>`<div class="semantic-ref"><div><span class="badge insight-kind">${esc(insightRoleLabels[x.kind]||x.kind)}</span> ${entity(x.researchId,"research")} ← ${entity(x.eventId)}</div>${x.eventRequires?.length?`<div class="semantic-extra">이벤트 자체 선행 연구: ${idList(x.eventRequires,"research")}</div>`:""}${x.requiresBaseFunc?.length?`<div class="semantic-extra">이벤트 기지 기능: ${idList(x.requiresBaseFunc)}</div>`:""}${x.scripts?.length?x.scripts.map(scriptGateMarkup).join(""):""}<div class="paths">${arr(x.paths).map(humanPath).map(esc).join(" · ")}</div></div>`).join("")}</div></details>`:""}
   </section>`;
 }
+function researchBranchConflictMarkup(d){
+  const r=branchConflictMap.get(d.id);
+  if(!r)return "";
+  const pairKeys=new Set();
+  const conflicts=r.conflicts.filter(pair=>{
+    const key=[pair.from,pair.to].sort().join("|");
+    if(pairKeys.has(key))return false;
+    pairKeys.add(key);return true;
+  });
+  const action= r.requires.length
+    ?"다음 requires "+r.requires.length+"개는 대체 해금 이후에도 전부 완료되어야 합니다."
+    :"별도 requires는 없습니다.";
+  return `<section class="section branch-gate-panel">
+    <h3>복수 선행 · 상호배제 감사 <span class="badge branch-alt">대체 해금 경로 있음</span></h3>
+    <p>원본 dependencies에 서로 disables하는 선행 연구가 들어 있습니다. 이는 단순히 모든 선행 연구를 동시에 완료하라는 뜻이 아닙니다. OXCE는 <b>완료된 연구의 unlocks가 이 연구를 가리키면 dependencies 전체를 우회</b>합니다. 하지만 requires와 이 연구 자체의 영구 배제는 우회하지 못합니다.</p>
+    <div class="requirement-line"><b>엔진 판정:</b> 연구 자체가 영구 배제되지 않아야 하며,
+      (dependencies 전체 완료 <b>또는</b> 아래 안전한 unlocks 출처 중 하나 완료), 그리고 requires 전체 완료.
+      실제 연구 실행에는 표본·시설·진행 시기 등도 필요할 수 있습니다.</div>
+    <div class="insight-subsection"><h4>대체 해금 출처 ${fmt(r.unlockSources.length)}개 · 자동 완료 아님</h4>
+      <div class="chip-cloud">${idList(r.unlockSources,"research")}</div></div>
+    ${r.selfLocks.length?`<div class="callout important"><b>명목 선행 충돌:</b> 다음 선행 연구를 완료하면 이 연구 자체가 직접 disables됩니다. 그러나 별도 unlocks 출처가 있는 경우 그 경로는 구별해서 판정해야 합니다.
+      ${idList(r.selfLocks.map(x=>x.from),"research")}</div>`:""}
+    ${r.unsafeUnlockSources.length?`<div class="callout important"><b>함정:</b> 다음 unlocks 출처는 이 연구 자체를 disables하므로 안전한 우회로로 계산하지 않습니다.
+      ${idList(r.unsafeUnlockSources,"research")}</div>`:""}
+    ${r.requires.length?`<div class="insight-subsection"><h4>unlocks로 우회할 수 없는 requires ${fmt(r.requires.length)}개</h4>
+      <div class="chip-cloud">${idList(r.requires,"research")}</div></div>`:""}
+    <details><summary>동시 유지할 수 없는 명목 선행 쌍 ${fmt(conflicts.length)}개 · 원본 근거</summary>
+      <div><p class="muted">${esc(action)} 아래 A → B는 A 연구가 B를 직접 disables한다는 뜻이며, 양방향 차단은 별개의 규칙입니다.</p>
+      ${conflicts.map(pair=>`<div class="semantic-ref">${entity(pair.from,"research")} <b>→ disables →</b> ${entity(pair.to,"research")}</div>`).join("")}
+      </div></details>
+    <p class="muted">실제 가능 여부는 분기 DB에서 세이브를 불러와 직접 배제 상태와 현재 완료된 해금 출처를 확인하세요. 단지 명목 선행 충돌만으로 영구 불가능 처리하지 않습니다.</p>
+    <a class="chip" href="../captains/#choiceSimulator">분기 시뮬레이터에서 내 세이브 확인 →</a>
+  </section>`;
+}
 function renderResearch(d){
   const trainingIds=[...new Set((d.otherReferences||[]).filter(x=>x.section==="soldierTransformation").map(x=>x.owner||x.id).filter(Boolean))];
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["연구량",d.cost],["완료 점수",d.points],["실물 표본",d.needItem?(d.destroyItem?"필요·소모":"필요"):"불필요"],["직접 선행",d.dependencies.length],["후속 연구",d.requiredBy.length],["생성 아이템",spawned.length],["아이템 연결",d.itemReferences.length],["제조 연결",d.manufactureReferences.length]])}
+  ${researchBranchConflictMarkup(d)}
   ${researchEditorialMarkup(d)}
   ${researchInsightMarkup(d)}
   ${trainingIds.length?`<section class="section"><h3>연결되는 병사 훈련·변신</h3>${trainingIds.map(id=>`<a class="entity" href="../trainings/?training=${encodeURIComponent(id)}">훈련 조합기에서 ${esc(id)} 확인 →</a>`).join(" ")}</section>`:""}
-  <section class="section"><h3>직접 선행</h3>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
+  <section class="section"><h3>명목 직접 선행 (dependencies + requires)</h3><p class="muted">이 목록은 요구조건의 정적 합집합입니다. dependencies는 별도 unlocks로 우회할 수 있지만 requires는 우회하지 못합니다. 선행 연구가 서로 배타적인 경우 위의 감사 판정을 우선하세요.</p>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   <section class="section"><h3>후속 연구</h3>${d.requiredBy?.length?d.requiredBy.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   ${spawned.length?`<section class="section"><h3>완료 시 생성 아이템</h3>${spawned.map(x=>entity(x,"items")).join("")}</section>`:""}
   <section class="section"><h3>명시 해금</h3>${d.unlocks?.length?d.unlocks.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
