@@ -633,5 +633,13 @@ try {
     }
     const ok=!!count&&!errors.length&&!httpErrors.length;
     results.push(ok);
-
-[Showing lines 1-635 of 646 (50.0KB limit). Use offset=636 to continue.]
+    console.log((ok?"PASS":"FAIL")+" "+slug+" rows="+count+" search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+" http="+JSON.stringify(httpErrors.slice(0,6))+(ok?"":" DOM="+display));
+    await page.close();
+  }
+}finally{
+  await browser.close();
+  if(server)await new Promise(resolve=>server.close(resolve));
+}
+const pass=results.filter(Boolean).length;
+console.log("SITE SMOKE "+pass+"/"+results.length+" passed | base="+base);
+if(pass!==results.length)process.exitCode=1;

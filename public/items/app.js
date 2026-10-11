@@ -397,5 +397,10 @@ async function openCompare(){
   const ids=state.selected[state.mode];if(ids.length<2)return;
   const ds=await Promise.all(ids.map(id=>detail(state.mode,id)));
   const fields=state.mode==="items"
-
-[Showing lines 1-399 of 407 (50.0KB limit). Use offset=400 to continue.]
+    ?[["종류",d=>kinds[d.kind]],["무게",d=>d.effectiveCore?.weight],["창고 점유",d=>d.effectiveCore?.size],["판매가",d=>d.raw?.costSell],["월 급여/수익",d=>d.effectiveCore?.monthlySalary],["위력",d=>d.raw?.power??d.raw?.meleePower],["피해형",d=>d.damageTypeKo],["내구",d=>d.effectiveCore?.armor],["한손 보정",d=>d.effectiveCore?.oneHandedPenalty],["연구 연결",d=>d.research.length],["제조 연결",d=>d.manufacture.length]]
+    :[["해석",d=>insightRoleLabels[d.insight?.primaryRole]||d.insight?.primaryRole||"—"],["연구량",d=>d.cost],["점수",d=>d.points],["실물 표본",d=>d.needItem?(d.destroyItem?"소모":"필요"):"불필요"],["명목 선행 연구량",d=>d.insight?.prerequisite?.prerequisiteCost??0],["직접 선행",d=>d.dependencies.length],["후속",d=>d.requiredBy.length],["생성 아이템",d=>Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem.length:(typeof d.raw?.spawnedItem==="string"?1:0)],["아이템 연결",d=>d.itemReferences.length],["제조 연결",d=>d.manufactureReferences.length]];
+  $("#compareBody").innerHTML=`<table class="compare-table"><tr><th>항목</th>${ds.map(d=>`<th>${esc(d.koName)}<span class="sub">${esc(d.enName)}</span></th>`).join("")}</tr>${fields.map(([k,f])=>`<tr><td>${esc(k)}</td>${ds.map(d=>`<td>${esc(fmt(f(d)))}</td>`).join("")}</tr>`).join("")}</table>`;
+  $("#compareDialog").showModal();
+}
+async function route(){const m=location.hash.match(/^#(item|research)=(.+)$/);if(!m)return;const mode=m[1]==="item"?"items":"research";try{await ensureMode(mode);state.mode=mode;$$(".tab").forEach(x=>x.classList.toggle("active",x.dataset.mode===mode));renderControls();render();await openDetail(mode,decodeURIComponent(m[2]))}catch(e){$("#statusText").textContent="상세 검색 실패: "+e.message}}
+init();
