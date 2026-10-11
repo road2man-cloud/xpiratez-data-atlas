@@ -115,6 +115,8 @@
     if(e.guaranteedTotal)parts.push(e.guaranteedItems.map(x=>
       '<a href="'+itemLink(x.id)+'">'+esc(x.name||x.id)+
       (x.qty>1?' ×'+Number(x.qty).toLocaleString():'')+'</a>').join(" · "));
+    if(e.guaranteedItemSellValue<0)parts.push('<b class="god-negative-value">원본 지급품 costSell -$'+
+      Math.abs(e.guaranteedItemSellValue).toLocaleString()+'</b> · 받기 전에 위험 확인');
     if(e.points)parts.push('점수 '+(e.points>0?"+":"")+Number(e.points).toLocaleString());
     if(e.funds)parts.push('자금 '+(e.funds>0?"+":"")+Number(e.funds).toLocaleString());
     if(e.spawnedPersonType||e.spawnedPersons||e.spawnedSoldier)
@@ -166,9 +168,10 @@
     return '<details class="god-reward-group" '+(active&&groupEvents.some(x=>x.captainTrait)?'open':'')+'>'+
       '<summary><b>'+esc(group)+'</b> · '+esc(name)+' <small>'+esc(label)+'</small></summary>'+
       '<div class="god-reward-cards">'+groupEvents.map(g=>godCard(g,row)).join("")+'</div>'+
-      (group==="G7"?'<p class="god-g7-risk"><b>G7 제3 결과 주의:</b> 동일 실행 판정 안에 77/242 가중치의 '+
-        '<code>STR_CODEX_BONUS_G7C</code> 결과도 있습니다. 이 결과는 독립적인 지급 이벤트로 색인되지 않으므로 '+
-        'G7A·G7B를 독립적인 23% 지급으로 계산하면 안 됩니다. 시끄러운 유령 위험을 별도 평가하세요.</p>':'')+
+      (group==="G7"?'<p class="god-g7-risk"><b>G7C 실제 위험 보상:</b> '+
+        '<a href="'+eventLink("STR_CODEX_BONUS_G7C")+'">시끄러운 유령 ×1</a>, 원본 아이템 매각가 '+
+        '<b>-$13,000,000</b>. G7 실행 판정 23% 후 A 144/242 · B 21/242 · C 77/242 중 하나만 발생합니다. '+
+        '세 결과를 독립적인 23% 지급으로 계산해서는 안 됩니다.</p>':'')+
       '</details>';
   }
   function godOverview(row){
