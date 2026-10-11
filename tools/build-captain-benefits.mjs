@@ -27,6 +27,41 @@ for(const bucket of "0123456789abcdef"){
 }
 assert.equal(eventDetails.length,792,"Event corpus changed: update output and tests");
 
+// Captain branch comparisons must not omit events with zero positive research
+// triggers: those are shared/global opportunities, NOT branch-specific perks.
+// The ordinary Knock Knock family is a particularly important example.
+const commonKnockScriptIds=["STR_KNOCK_KNOCK_0","STR_KNOCK_KNOCK_1","STR_KNOCK_KNOCK_2"];
+const commonKnockScripts=new Map();
+const commonKnockOutcomes=[];
+for(const event of eventDetails){
+  const matching=ids(event.scripts).filter(s=>commonKnockScriptIds.includes(s.id));
+  if(!matching.length)continue;
+  commonKnockOutcomes.push({
+    id:event.id,name:event.koName||event.id,
+    researchRewards:ids(event.effects?.researchRewards).length,
+    itemRewards:ids(event.effects?.guaranteedItems).length
+  });
+  for(const s of matching){
+    const triggers=ids(s.triggerMaps?.researchTriggers);
+    const positive=triggers.filter(t=>t.value===true).map(t=>t.id);
+    const forbidden=triggers.filter(t=>t.value===false).map(t=>t.id);
+    assert.deepEqual(positive,[],"Common Knock Knock must have no positive research prerequisites: "+s.id);
+    assert.deepEqual(forbidden,["STR_CAPTAIN_SOREASS"],
+      "Common Knock Knock exclusions changed: "+s.id+" / "+event.id);
+    const value={id:s.id,required:positive,forbidden,conditions:s.conditions||{}};
+    if(commonKnockScripts.has(s.id))
+      assert.deepEqual(value,commonKnockScripts.get(s.id),"Common visitor gates differ: "+s.id);
+    else commonKnockScripts.set(s.id,value);
+  }
+}
+assert.equal(commonKnockScripts.size,3,"Missing default Knock Knock script");
+assert(commonKnockOutcomes.length>=8,"Expected distinct global Knock Knock visitors");
+const commonKnock={
+  scripts:commonKnockScriptIds.map(id=>commonKnockScripts.get(id)),
+  outcomes:commonKnockOutcomes.sort((a,b)=>a.id.localeCompare(b.id)),
+  excludedResearch:["STR_CAPTAIN_SOREASS"]
+};
+
 const prefixes={
   initial:[],class:["STR_CAPTAIN_PUSSY","STR_CAPTAIN_PUSSY_UP"],
   unclassed:["STR_CAPTAIN_PUSSY","STR_CAPTAIN_PUSSY_UP","STR_CAPTAIN_UNCLASSED_UP","STR_CAPTAIN_UNCLASSED"],
@@ -130,6 +165,9 @@ for(const row of rows){
     choiceId:id,rowId:row.id,stage:row.stage,
     branchStatus:applied.disabled.has(id)?"self-disabled-final-flag":"stage-completed",
     enteredAfter:prefixes[row.stage],
+    commonKnockKnock:{eligible:!applied.completed.has("STR_CAPTAIN_SOREASS"),
+      blockers:commonKnock.excludedResearch.filter(x=>applied.completed.has(x)),
+      outcomeCount:commonKnockOutcomes.length},
     unlocks:unlocked,
     directDisables:ids(topic.disables).map(x=>({id:x,name:label(x)})),
     events,
@@ -171,7 +209,8 @@ const compactEvents=result.map(row=>{
 const output={schemaVersion:1,meta:{captains:22,events:eventDetails.length,
   totalRelatedEvents:result.reduce((n,x)=>n+x.events.length,0),
   source:"Official effective research + event scripts; conditional candidate routes, not earned rewards",
-  captainElevenEvent:"STR_CAPTAINS_11"},special:{captainsElevenTraining:featuredTrain},
+  captainElevenEvent:"STR_CAPTAINS_11",commonKnockKnockEvents:commonKnockOutcomes.length},
+  special:{captainsElevenTraining:featuredTrain,commonKnockKnock:commonKnock},
   rows:result.map((r,i)=>({...r,events:undefined,eventSearch:compactEvents[i].eventSearch,
     featured:compactEvents[i].featured}))};
 const thief=result.find(x=>x.rowId==="thief");
