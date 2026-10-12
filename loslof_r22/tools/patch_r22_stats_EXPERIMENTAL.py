@@ -24,6 +24,11 @@ FIELDS = r'''
     std::string _r22StatsText;
     std::map<int, unsigned> _r22TileRisks;
     unsigned _r22SampleCount = 0;
+    // Separate 1,024-trial H/B/M counters and 384-trial risk cache.
+    unsigned _r22HitSamples = 0;
+    unsigned _r22BlockedSamples = 0;
+    unsigned _r22MissSamples = 0;
+    unsigned _r22RiskSamples = 0;
 '''
 
 CODE = r'''
@@ -41,6 +46,10 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
         _r22TileRisks.clear();
         _r22StatsKey = 0;
         _r22SampleCount = 0;
+        _r22HitSamples = 0;
+        _r22BlockedSamples = 0;
+        _r22MissSamples = 0;
+        _r22RiskSamples = 0;
     };
     BattleUnit *shooter = _save->getSelectedUnit();
     if (!shooter || !_save->getBattleGame()) { clearInvalidPreview(); return; }
@@ -104,14 +113,34 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
     // Geometry changes are additionally caught by the short timed expiry.
     // Conservatively expire on timer: terrain changes may leave other stale state.
     unsigned long now=SDL_GetTicks();
-    if (key != _r22StatsKey || now-_r22StatsUpdated > 700UL)
+    // Replay-free batched Monte Carlo: never perform more than 256
+    // projectile traces in one frame. 1,024 trials are accumulated across
+    // frames, while risk tiles stop at 384 trials (R19 performance budget).
+    const bool newScenario = (key != _r22StatsKey);
+    const bool staleFinished = (_r22SampleCount >= 1024U &&
+        now-_r22StatsUpdated > 4500UL);
+    if (newScenario || staleFinished)
     {
         _r22StatsText.clear();
         _r22TileRisks.clear();
         _r22SampleCount=0;
-        // Bound to ~320 actual traced bullets to reduce per-mouse-move stalls.
-        const unsigned samples=std::min(96U,
-            std::max(16U,(unsigned)(320/(shots*pellets))));
+        _r22HitSamples=0;
+        _r22BlockedSamples=0;
+        _r22MissSamples=0;
+        _r22RiskSamples=0;
+        _r22StatsKey=key;
+        _r22StatsUpdated=now;
+    }
+    if (_r22SampleCount < 1024U)
+    {
+        const unsigned projectilesPerTrial=static_cast<unsigned>(shots*pellets);
+        const unsigned frameBudget=std::max(1U,
+            std::min(64U,256U/projectilesPerTrial));
+        const unsigned samples=std::min(1024U-_r22SampleCount,frameBudget);
+        // Each batch has its own deterministic seed; never reseed every
+        // frame to the same prefix of the old samples.
+        const unsigned long long sampleSeed=key^
+            (0x9e3779b97f4a7c15ULL*(_r22SampleCount+1ULL));
         struct KeepRng {
             RNG::RandomState previous;
             explicit KeepRng(unsigned long long seed)
@@ -119,7 +148,7 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
                 RNG::globalRandomState()=RNG::RandomState(seed);
             }
             ~KeepRng() { RNG::globalRandomState()=previous; }
-        } keep(key ? key : 1);
+        } keep(sampleSeed ? sampleSeed : 1ULL);
 
         const int width=_save->getMapSizeX();
         const int length=_save->getMapSizeY();
@@ -207,23 +236,33 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
             if (anyHit) ++hit;
             else if (allBlocked) ++blocked;
             else ++missed;
-            for (int t : tileRisk) ++_r22TileRisks[t];
+            if (_r22RiskSamples < 384U)
+            {
+                for (int t : tileRisk) ++_r22TileRisks[t];
+                ++_r22RiskSamples;
+            }
         }
-        _r22SampleCount=samples;
+        _r22HitSamples+=hit;
+        _r22BlockedSamples+=blocked;
+        _r22MissSamples+=missed;
+        _r22SampleCount+=samples;
         std::ostringstream label;
         label << "APPROX ACC " << int(accuracy*100.0+0.5) << "% "
-              << "H " << hit*100/samples << "% B " << blocked*100/samples
-              << "% M " << missed*100/samples << "% n=" << samples;
+              << "H " << _r22HitSamples*100U/_r22SampleCount
+              << "% B " << _r22BlockedSamples*100U/_r22SampleCount
+              << "% M " << _r22MissSamples*100U/_r22SampleCount
+              << "% n=" << _r22SampleCount << "/1024";
         _r22StatsText=label.str();
-        _r22StatsKey=key;
-        _r22StatsUpdated=now;
+        if (_r22SampleCount < 1024U) _redraw=true;
+        else _r22StatsUpdated=now;
     }
 
     // Show at most one outline per tile, no opaque filled surfaces.
     int width=_save->getMapSizeX(), length=_save->getMapSizeY();
     for (const auto& entry : _r22TileRisks)
     {
-        if (entry.second*100<_r22SampleCount) continue; // 1% threshold
+        if (!_r22RiskSamples || entry.second*100U<_r22RiskSamples)
+            continue; // 1% risk threshold, independent 384-trial budget
         int tx=entry.first%width,ty=(entry.first/width)%length;
         int tz=entry.first/(width*length);
         if (tz>_camera->getViewLevel()) continue;
@@ -232,11 +271,24 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
         Position p;
         _camera->convertVoxelToScreen(Position(tx*16+8,ty*16+8,
             tz*24-t->getTerrainLevel()+1),&p);
-        int color=entry.second*3>=_r22SampleCount ? 32 : 160;
+        const unsigned riskPct=entry.second*100U/_r22RiskSamples;
+        const int color=riskPct>=40U ? 32 : riskPct>=10U ? 160 : 73;
+        // Open, one-pixel diamond perimeter; R19-style graduated hatching
+        // without opaque fill or oversized LOS dots.
         drawLine(p.x-4,p.y,p.x,p.y-2,color);
         drawLine(p.x,p.y-2,p.x+4,p.y,color);
         drawLine(p.x+4,p.y,p.x,p.y+2,color);
         drawLine(p.x,p.y+2,p.x-4,p.y,color);
+        if (riskPct>=25U)
+        {
+            drawLine(p.x-2,p.y-1,p.x,p.y+1,color);
+            drawLine(p.x,p.y-1,p.x+2,p.y+1,color);
+        }
+        if (riskPct>=50U)
+        {
+            drawLine(p.x-4,p.y+1,p.x,p.y-1,color);
+            drawLine(p.x,p.y-1,p.x+4,p.y+1,color);
+        }
     }
     if (!_r22StatsText.empty())
         drawString(2,23,_r22StatsText.c_str(),160);
