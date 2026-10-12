@@ -123,7 +123,7 @@ jobs:
         shell: msys2 {0}
         run: |
           python - <<'PY'
-          import hashlib, re, shutil, subprocess
+          import hashlib, os, re, shutil, subprocess
           from pathlib import Path
           exe = Path("build/bin/openxcom.exe")
           assert exe.is_file(), "Missing Windows executable"
@@ -156,6 +156,34 @@ jobs:
               "R22 RECOVERY BETA: large-unit fixes plus 1024 progressive HBM, 384 risk, 256-frame trace budget and hatching.\n"
               "NOT equivalent to R21. H/B/M, shotgun, burst and risk are APPROXIMATE EXPERIMENTS;\n"
               "compatibility have NOT been validated. DO NOT replace your original executable.\n",
+              encoding="utf-8")
+          (out/"BUILD_PROVENANCE.txt").write_text(
+              "Status: R22 Reconstruction Beta (NOT R21-equivalent)\\n"
+              "Pinned engine: OpenXcom Extended 8.6.0\\n"
+              "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
+              f"R22 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
+              f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting\\n"
+              "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
+              "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
+              encoding="utf-8")
+          (out/"HOW_TO_USE_KO.txt").write_text(
+              "XPiratez LOS/LOF R22 Reconstruction Beta - safety-first test guide\\n"
+              "1. Do NOT overwrite your original XPiratez EXE, DLLs, or saves.\\n"
+              "2. Make a separate COPY of the existing XPiratez installation for testing.\\n"
+              "3. Extract this artifact's EXE and DLLs ONLY into that separate copy.\\n"
+              "4. Use separate USER and CONFIG folders to avoid touching original saves/config.\\n"
+              "   Example: EXE_NAME -user C:\\\\XPiratez-R22-Test\\\\User -config C:\\\\XPiratez-R22-Test\\\\Config\\n"
+              "   If game data is not detected, pass -data with your copied game-data path.\\n"
+              "5. Enable XPiratez mod in isolated configuration and load a COPY of a test save.\\n"
+              "6. F8 toggles passive preview. Normal movement, selection and both clicks remain native.\\n"
+              "7. In SNAP / AIMED / AUTO aim, hover for ACC~ and H/B/M estimates.\\n"
+              "8. With Confirm Fire enabled, click target once to preview native lock, again to shoot.\\n"
+              "9. During targeting, backslash toggles SIM stand/kneel without TU use.\\n"
+              "10. THROW shows only range/arc status, not gun H/B/M.\\n"
+              "11. Never use an unverified beta executable for your only campaign save.\\n"
+              "12. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
+              "These percentages are EXPERIMENTAL and not validated against live hit rates.\\n",
               encoding="utf-8")
           manifest = []
           for p in sorted(out.iterdir()):
