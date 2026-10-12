@@ -247,18 +247,18 @@ def patch(header,cpp,state):
         "LOS/LOF: LMB=lock target; F8=off",160);
     if (target.z != viewZ)
         drawString(2,14,target.z > viewZ ? "TARGET ABOVE VIEW" : "TARGET BELOW VIEW",160);''',
-        '''    // Native targeting only: one compact information line.
+        '''    // Exactly five stance letters: STAND and KNEEL have equal width.
+    // Differentiate simulated stance by palette color, not the text "SIM".
+    // SDL_gfx stringColor uses an 8px fixed bitmap font. The statistics
+    // begin at x=42, independently of the stance and of any virtual toggle.
     if (!_r22StatsText.empty())
     {
-        std::ostringstream hud;
         const bool simulated = _r22StanceOverride &&
             (_r22Kneel != soldier->isKneeled());
-        if (simulated) hud << "SIM ";
-        hud << ((simulated ? _r22Kneel : soldier->isKneeled()) ?
-            "KNEEL" : "STAND");
-        hud << " | " << _r22StatsText;
-        const std::string line=hud.str();
-        drawString(2,2,line.c_str(),160);
+        const bool kneel = simulated ? _r22Kneel : soldier->isKneeled();
+        drawString(2,2,kneel ? "KNEEL" : "STAND",simulated ? 73 : 160);
+        const std::string statsLine=" | "+_r22StatsText;
+        drawString(42,2,statsLine.c_str(),160);
     }''')
     cpp=once(cpp,
         '''    if (!_r22StatsText.empty())
@@ -298,13 +298,13 @@ def patch(header,cpp,state):
         '''    drawString(2,37,_r22ThrowValid ?
         "THROW ARC: REACHABLE (ACCURACY NOT SAMPLED)" :
         "THROW ARC: BLOCKED / OUT OF RANGE",160);''',
-        '''    std::ostringstream arc;
-    if (_r22StanceOverride && virtualKneeled != actor->isKneeled())
-        arc << "SIM ";
-    arc << (virtualKneeled ? "KNEEL" : "STAND")
-        << (_r22ThrowValid ? " | THROW OK" : " | THROW BLOCKED");
-    const std::string arcLine=arc.str();
-    drawString(2,2,arcLine.c_str(),160);''')
+        '''    // The same fixed stance column is used while throwing.
+    const bool simulated = _r22StanceOverride &&
+        virtualKneeled != actor->isKneeled();
+    drawString(2,2,virtualKneeled ? "KNEEL" : "STAND",
+        simulated ? 73 : 160);
+    drawString(42,2,_r22ThrowValid ? " | THROW OK" :
+        " | THROW BLOCKED",160);''')
     if "_r22Locked" in cpp or "_r22Target" in cpp or "r22PreviewClick" in cpp:
         raise RuntimeError("Legacy click interception survived in Map.cpp")
     if "r22PreviewClick" in header or "r22PreviewClick" in state:

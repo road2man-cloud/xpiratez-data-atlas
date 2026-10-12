@@ -65,8 +65,12 @@ checks={
         "const bool nativeAim = _cursorType != CT_NONE && native &&" in overlay
         and overlay.index("_r22StatsText.clear();") < overlay.index("if (_cursorType == CT_NONE) return;"),
     "native shot conditional HUD": "if (!_r22StatsText.empty())" in overlay
-        and "drawString(2,2,line.c_str(),160);" in overlay,
+        and "drawString(42,2,statsLine.c_str(),160);" in overlay,
     "HUD includes virtual STAND or KNEEL": '"KNEEL" : "STAND"' in overlay and "_r22StanceOverride" in overlay,
+    "STAND and KNEEL labels are always five characters":
+        'drawString(2,2,kneel ? "KNEEL" : "STAND",simulated ? 73 : 160);' in overlay
+        and 'drawString(42,2,statsLine.c_str(),160);' in overlay
+        and 'if (simulated) hud << "SIM "' not in overlay,
     "old text instructions removed": "LOS/LOF LOCK:" not in mapcpp
         and "LMB=lock target" not in mapcpp,
     "stats HUD rendered once": "drawString(2,23,_r22StatsText.c_str()" not in mapcpp,

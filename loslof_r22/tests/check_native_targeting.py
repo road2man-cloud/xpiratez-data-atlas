@@ -100,7 +100,7 @@ checks={
   "Only one compact H/B/M text placement":
       'drawString(2,23,_r22StatsText.c_str(),160)' not in m and
       'if(!_r22StatsText.empty()) label<<" "<<_r22StatsText' not in m and
-      'drawString(2,2,line.c_str(),160)' in overlay,
+      'drawString(42,2,statsLine.c_str(),160)' in overlay,
   "No obsolete click lock guidance":
       "LMB=lock target" not in m and
       "cursor=origin; RMB=clear" not in m,
@@ -108,10 +108,15 @@ checks={
       '" | THROW OK"' in throw and '" | THROW BLOCKED"' in throw,
   "H/B/M labels indicate sampling":
       'label << "ACC~"' in stats,
-  "SIM shown only when virtual and actual stance differ":
-      "const bool simulated = _r22StanceOverride &&" in overlay and
-      "if (simulated) hud << \"SIM \";" in overlay and
-      "if (_r22StanceOverride && virtualKneeled != actor->isKneeled())" in throw,
+  "Virtual stance marked by color without shifting 5-letter label":
+      'const bool simulated = _r22StanceOverride &&' in overlay and
+      'drawString(2,2,kneel ? "KNEEL" : "STAND",simulated ? 73 : 160);' in overlay and
+      'drawString(42,2,statsLine.c_str(),160);' in overlay and
+      'if (simulated) hud << "SIM "' not in overlay,
+  "Throw preview shares the same fixed-width stance label":
+      'drawString(2,2,virtualKneeled ? "KNEEL" : "STAND",' in throw and
+      'drawString(42,2,_r22ThrowValid ? " | THROW OK" :' in throw and
+      'arc << "SIM "' not in throw,
   "F8 resets throw preview state as well as gun statistics":
       "_r22ThrowTrajectory.clear();" in keys and
       "_r22ThrowValid = false;" in keys,
