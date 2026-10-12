@@ -150,7 +150,7 @@ def patch(maph, mapcpp, teh, tecpp):
         _r22StatsText="NO LOF";
         _r22TileRisks.clear();
         _r22SampleCount=0;
-        _r22HullWorkPending=false;
+        // Keep LOS hull's progressive redraw scheduling intact.
     }
     else if(targetTile->isDiscovered(O_FLOOR) &&
         (!targetTile->getUnit() || targetTile->getUnit()->getVisible()))
