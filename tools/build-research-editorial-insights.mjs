@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {makeResearchContextEngine} from "./research-context.mjs";
+import {buildResearchDecisionInsight} from "./research-decision-insights.mjs";
 
 const args=process.argv.slice(2);
 const arg=(name,fallback=null)=>{const i=args.indexOf(name);return i>=0&&i+1<args.length?args[i+1]:fallback};
@@ -82,6 +83,17 @@ for(const row of research){
   if(Number.isFinite(row.cost))(costsByRole.get(role)||costsByRole.set(role,[]).get(role)).push(row.cost);
 }
 const roleMedian=new Map([...costsByRole].map(([k,v])=>[k,median(v)]));
+// OR paths are sourced from explicit unlocks; reverse dependencies are not sufficient.
+const unlockSources=new Map();
+for(const row of research){
+  const source=detailFor(row);
+  for(const target of list(source?.raw?.unlocks)){
+    if(!researchById.has(target))continue;
+    if(!unlockSources.has(target))unlockSources.set(target,[]);
+    unlockSources.get(target).push(row.id);
+  }
+}
+function detailOfId(id){const row=researchById.get(id);return row?detailFor(row):null;}
 const contextEngine=makeResearchContextEngine({research,insightIndex,worldDir,ko,topic,detailFor});
 
 function opening(row,d,i){
@@ -359,7 +371,10 @@ function editorialFor(row){
   const watchRaw=caution(row,d,i);
   const generic="이 해설은 현재 룰셋의 직접·역참조 관계를 바탕으로 한 판단이므로, 스크립트에 숨은 조건이 새로 발견되면 우선순위 해석은 달라질 수 있다.";
   const watch=expanded([analysis.watch,watchRaw===generic?"":watchRaw].filter(Boolean).join(" "),"직접 룰과 역참조만으로 보이지 않는 스크립트 예외가 있을 수 있으므로 아래 이벤트·원본 필드를 함께 확인하는 것이 안전하다.");
-  return{core,context,effect,action,route,decision,watch};
+  const decisionNotes=buildResearchDecisionInsight({
+    row,detail:d,insight:i,analysis,detailOfId,unlockSources,ko
+  });
+  return{core,context,effect,action,route,decision,watch,...decisionNotes};
 }
 
 const buckets={};
@@ -373,10 +388,10 @@ const dir=outFile("research-editorial-chunks");
 fs.rmSync(dir,{recursive:true,force:true});fs.mkdirSync(dir,{recursive:true});
 for(const [bucket,details] of Object.entries(buckets))fs.writeFileSync(path.join(dir,bucket+".json"),JSON.stringify({details}));
 const meta={
-  version:4,
-  generator:"Source-grounded contextual editorial synthesis v4",
+  version:5,
+  generator:"Source-grounded causal and economic decision insights v5",
   evidence:"ruleset-and-derived-links",
-  generatedFrom:["research-index.json","research-chunks","research-insight-index.json","research-insight-chunks","events-index.json.gz","event-chunks/*.json.gz"],
+  generatedFrom:["research-index.json","research-chunks","research-insight-index.json","research-insight-chunks","manufacture-index.json","manufacture-chunks/*.json","events-index.json.gz","event-chunks/*.json.gz"],
   count:research.length,
   averageChars:Math.round(totalChars/Math.max(1,research.length))
 };
