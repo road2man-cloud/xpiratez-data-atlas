@@ -21,8 +21,15 @@
 | H/B/M 몬테카를로 1,024회, 위험도 384회 | Map 통계 캐시 | 여러 프레임에 걸쳐 누적, 정적 테스트 |
 | 위험도 1% 경계, 강도별 테두리/해칭 | Map | 소스 연결/컴파일 검사 |
 | 투척 궤적과 무게/힘/사거리, 가상 사수 위치 | TileEngine/ProjectileFlyBState | 실제 엔진 공식 사용, 확률 분산까지는 미구현 |
+| 투척 창문/벽 충돌·착지 장애물 검사 | Map/TileEngine/Projectile | 실제 엔진 허용 충돌 종류(V_FLOOR/UNIT/OBJECT)만 미리보기 통과, 정적 검사 |
+| 캠페인 시작 이후 수류탄 즉시 폭발 옵션 변경 | Mod/OptionsAdvancedState | 기존 battleInstantGrenade만 고정 잠금 해제, 게임 메뉴에서 값 저장 가능 |
 | 게임 오브젝트 변화에 대한 캐시 무효화 | Map | 조준선의 차단점은 즉시, 주변 산포 영역은 제한적 |
 | 8.6.0 빌드, EXE `-version` | GitHub Actions | 통과한 빌드에서 확인 |
+
+## 최근 사용성 개선 (2026-10-13)
+
+- **실제 투척 충돌 검사:** 기존 `result != V_OUTOFBOUNDS` 성공 판정은 창문과 벽 충돌을 성공으로 오인할 수 있다. R22는 실제 엔진이 허용하는 `V_FLOOR/V_UNIT/V_OBJECT`만 통과시키고, 물체 착지 시 `INVALID_MOVE_COST`와 큰 벽 예외를 검증한다. 결과는 `ARC CLEAR` 또는 `ARC BLOCKED`로 표시한다. 엔진이 투척 순간 정확도에 따른 랜덤 산포를 적용하므로 `ARC CLEAR`은 **실제 수류탄이 반드시 창문을 통과하거나 목표 타일에 착지한다는 보증이 아니다.**
+- **기존 캠페인 즉시 수류탄:** 일시정지 → 옵션 → Advanced → OXC → Battlescape → Instant Grenades 항목을 변경하고 확인(OK)하면 된다. XPiratez가 고정시킨 다른 옵션의 잠금은 유지한다. `battleInstantGrenade`는 게임에서 던지는 순간 참조하며, 즉시 폭발의 실제 적용 대상은 수류탄의 점화 상태·`FuseTriggerEvent`/아이템의 타이머 타입에 따른다. 기존 게임 세이브의 바이트는 수정하지 않는다.
 
 ## 반드시 유지할 주의점
 
@@ -44,6 +51,7 @@
 5. `patch_r22_throw.py`
 6. `patch_r22_native_targeting.py` — 기존 클릭 가로채기 제거, 실제 조준/확인사격, `\\` 가상 자세, HUD 정리
 7. `patch_r22_native_ballistic_aim.py` — 실제 OXCE 표적 다중 복셀 탐색/좌·우 발사 원점 대조, 첫 발 거부 시 자동사격의 후속 탄환 환상 확률 제거
+8. `patch_r22_throw_window_and_grenade_options.py` — 창문·벽 투척 착탄 판정 및 기존 캠페인 instant grenade 옵션 잠금 해제
 
 해당 브랜치의 `.github/workflows/loslof-r22-win64-reconstruction.yml`가 이 순서로 8.6.0 원본에 패치를 적용하고 정적 검사, Windows 컴파일·링크, EXE `-version`, DLL 수집, SHA256 및 ZIP 업로드를 실행한다.
 

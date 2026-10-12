@@ -105,7 +105,7 @@ checks={
       "LMB=lock target" not in m and
       "cursor=origin; RMB=clear" not in m,
   "Throw HUD is brief":
-      '" | THROW OK"' in throw and '" | THROW BLOCKED"' in throw,
+      '" | ARC CLEAR"' in throw and '" | ARC BLOCKED"' in throw,
   "H/B/M labels indicate sampling":
       'label << "ACC~"' in stats,
   "Virtual stance marked by color without shifting 5-letter label":
