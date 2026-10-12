@@ -99,6 +99,7 @@ jobs:
           python loslof_r22/tests/check_collision_hardening.py engine
           python loslof_r22/tests/check_progressive_montecarlo.py engine
           python loslof_r22/tests/check_native_targeting_input.py engine
+          python loslof_r22/tests/check_native_targeting.py engine
           python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py
 
       - name: Configure MinGW64 (actual OXCE engine)
