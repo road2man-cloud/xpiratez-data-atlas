@@ -191,6 +191,10 @@ def patch(header,cpp,state):
     const Position target = confirmedTarget ? native->waypoints.front() : cursor;
     const Position source = (confirmedTarget && cursor != target) ?
         cursor : r22PlannedPosition(soldier);''')
+    # Remove the original target declaration after the replacement above.
+    # Without this deletion the generated Map.cpp has TWO target declarations
+    # and leaks the obsolete click-lock identifier.
+    cpp=once(cpp, "    const Position target = _r22Locked ? _r22Target : cursor;", "")
     # Keep the selected firing mode and its relativeOrigin (centre/left/right).
     # Constructing a fake SNAPSHOT action silently gave AUTO/AIMED the wrong
     # muzzle offset for weapons with non-centre origins.
