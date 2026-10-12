@@ -59,6 +59,9 @@ checks={
     "preserve LOS when moving": "r22DrawVisibilityHull(planned,eye" in overlay and "r22DrawVisibilityHull(source,eye,viewZ);" in overlay,
     "no HBM during movement": "if (!nativeAim)" in overlay
         and overlay.index("if (!nativeAim)") < overlay.index("getSelectorPosition(&cursor)"),
+    "hidden cursor clears preview before returning":
+        "const bool nativeAim = _cursorType != CT_NONE && native &&" in overlay
+        and overlay.index("_r22StatsText.clear();") < overlay.index("if (_cursorType == CT_NONE) return;"),
     "native shot conditional HUD": "if (!_r22StatsText.empty())" in overlay
         and "drawString(2,2,line.c_str(),160);" in overlay,
     "HUD includes virtual STAND or KNEEL": '"KNEEL" : "STAND"' in overlay and "_r22StanceOverride" in overlay,
