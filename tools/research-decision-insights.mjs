@@ -56,7 +56,13 @@ export function buildResearchDecisionInsight({
   }
   const baseFuncs=uniq(detail?.raw?.requiresBaseFunc);
   if(baseFuncs.length)parts.push("연구 기지 기능: "+preview(baseFuncs,ko,4)+".");
-  let unlockLogic=parts.join(" ");
+  // Default AND dependency listings are shown as links by the frontend.
+  // Store text only for non-trivial gates and specimen exceptions to keep
+  // 4,612 editorial sidecars compact and mobile-friendly.
+  const hasExceptionalGate=alternatives.length>0||requires.length>0||
+    synthetic.length>0||sampleRequired||prerequisiteSamples.length>0||
+    baseFuncs.length>0||row.id==="STR_WINE";
+  const unlockLogic=hasExceptionalGate?parts.join(" "):"";
   // Every downstream edge in requiredBy is a dependency edge, not a proof of
   // sufficient unlock or a guarantee that no alternate route exists.
   const downstream=uniq(detail?.requiredBy);
@@ -70,7 +76,10 @@ export function buildResearchDecisionInsight({
     next.push("명시 해금 unlocks: "+preview(grants,ko,3)+
       ". dependencies 우회 가능, requires·표본·기지 조건은 별도.");
   }
-  const downstreamLogic=next.join(" ");
+  // Every ordinary downstream relation is explained consistently at render time.
+  // Only explicit unlocks and the representative OR-gate case need a
+  // research-specific long-form downstream explanation in the sidecar.
+  const downstreamLogic=grants.length||row.id==="STR_WINE"?next.join(" "):"";
   let verdict="",economics="",criticalCaution="";
   if(pay){
     const input=money(pay.inputSell),output=money(pay.outputSell),delta=pay.margin;
