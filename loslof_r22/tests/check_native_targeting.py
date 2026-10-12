@@ -100,7 +100,7 @@ checks={
   "Only one compact H/B/M text placement":
       'drawString(2,23,_r22StatsText.c_str(),160)' not in m and
       'if(!_r22StatsText.empty()) label<<" "<<_r22StatsText' not in m and
-      'drawString(42,2,statsLine.c_str(),160)' in overlay,
+      'r22DrawContrastHud(kneel ? "KNEEL" : "STAND",simulated,' in overlay,
   "No obsolete click lock guidance":
       "LMB=lock target" not in m and
       "cursor=origin; RMB=clear" not in m,
@@ -110,13 +110,19 @@ checks={
       'label << "ACC~"' in stats,
   "Virtual stance marked by color without shifting 5-letter label":
       'const bool simulated = _r22StanceOverride &&' in overlay and
-      'drawString(2,2,kneel ? "KNEEL" : "STAND",simulated ? 73 : 160);' in overlay and
-      'drawString(42,2,statsLine.c_str(),160);' in overlay and
+      'r22DrawContrastHud(kneel ? "KNEEL" : "STAND",simulated,' in overlay and
+      'drawString(2,2,stance,simulated ? accent : bright);' in m and
+      'drawString(42,2,tail.c_str(),bright);' in m and
       'if (simulated) hud << "SIM "' not in overlay,
   "Throw preview shares the same fixed-width stance label":
-      'drawString(2,2,virtualKneeled ? "KNEEL" : "STAND",' in throw and
-      'drawString(42,2,_r22ThrowValid ? " | THROW OK" :' in throw and
+      'r22DrawContrastHud(virtualKneeled ? "KNEEL" : "STAND",simulated,' in throw and
       'arc << "SIM "' not in throw,
+  "HUD backplate uses active palette and excludes transparent index zero":
+      "const SDL_Color *palette=getPalette();" in m and
+      "for (int i=1;i<256;++i)" in m and
+      "drawRect(0,0,width,12,dark);" in m and
+      "drawLine(0,11,width-1,11,bright);" in m and
+      "if (simulated) drawRect(0,1,2,10,accent);" in m,
   "F8 resets throw preview state as well as gun statistics":
       "_r22ThrowTrajectory.clear();" in keys and
       "_r22ThrowValid = false;" in keys,

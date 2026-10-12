@@ -240,6 +240,51 @@ def patch(header,cpp,state):
     cpp=once(cpp,
         "    const bool virtualKneeled=_r22Locked ? _r22Kneel : actor->isKneeled();",
         "    const bool virtualKneeled=_r22StanceOverride ? _r22Kneel : actor->isKneeled();")
+    # Palette-aware, high contrast but small HUD backing for gun/throw displays.
+    header=once(header,
+        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n',
+        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n'
+        '    void r22DrawContrastHud(const char *stance, bool simulated,\n'
+        '                            const std::string &tail);\n')
+    cpp=once(cpp, 'void Map::r22DrawOverlay()',
+        r'''// R22 HUD: contrast backplate, 5-letter stance, fixed 42px stats origin.
+// Only draws; leaves targeting state and input untouched.
+void Map::r22DrawContrastHud(const char *stance, bool simulated,
+                             const std::string &tail)
+{
+    const SDL_Color *palette=getPalette();
+    if (!palette) return;
+    Uint8 dark=1, bright=15, accent=15;
+    int lowest=2147483647, highest=-1, warmest=-1;
+    // Palette index zero can be transparent; choose from currently drawable
+    // colors rather than assuming palette slots 73/160 are always visible.
+    for (int i=1;i<256;++i)
+    {
+        const SDL_Color &rgb=palette[i];
+        const int lum=2126*int(rgb.r)+7152*int(rgb.g)+722*int(rgb.b);
+        if (lum<lowest) { lowest=lum; dark=static_cast<Uint8>(i); }
+        if (lum>highest) { highest=lum; bright=static_cast<Uint8>(i); }
+        if (int(rgb.r)>int(rgb.b)+35 && int(rgb.g)>int(rgb.b)+20
+            && rgb.r>110 && rgb.g>90 && lum>warmest)
+        {
+            warmest=lum;
+            accent=static_cast<Uint8>(i);
+        }
+    }
+    if (warmest<highest*65/100) accent=bright;
+    // SDL_gfx bitmap text is 8 pixels per glyph. Both STAND and KNEEL
+    // occupy 5 glyphs / 40 pixels; right-hand data always starts at x=42.
+    const int width=std::min(getWidth(),44+int(tail.size())*8);
+    if (width<2) return;
+    drawRect(0,0,width,12,dark);
+    drawLine(0,11,width-1,11,bright);
+    // A tiny fixed bar also marks SIM when the palette lacks a distinct hue.
+    if (simulated) drawRect(0,1,2,10,accent);
+    drawString(2,2,stance,simulated ? accent : bright);
+    drawString(42,2,tail.c_str(),bright);
+}
+
+void Map::r22DrawOverlay()''')
     # 5. One compact HUD line; avoid duplicating H/B/M at edge of screen.
     cpp=once(cpp,
         '''    drawString(2,2,_r22Locked ?
@@ -247,18 +292,14 @@ def patch(header,cpp,state):
         "LOS/LOF: LMB=lock target; F8=off",160);
     if (target.z != viewZ)
         drawString(2,14,target.z > viewZ ? "TARGET ABOVE VIEW" : "TARGET BELOW VIEW",160);''',
-        '''    // Exactly five stance letters: STAND and KNEEL have equal width.
-    // Differentiate simulated stance by palette color, not the text "SIM".
-    // SDL_gfx stringColor uses an 8px fixed bitmap font. The statistics
-    // begin at x=42, independently of the stance and of any virtual toggle.
+        '''    // Fixed-width 5-letter stance and readable backplate for any terrain.
     if (!_r22StatsText.empty())
     {
         const bool simulated = _r22StanceOverride &&
             (_r22Kneel != soldier->isKneeled());
         const bool kneel = simulated ? _r22Kneel : soldier->isKneeled();
-        drawString(2,2,kneel ? "KNEEL" : "STAND",simulated ? 73 : 160);
-        const std::string statsLine=" | "+_r22StatsText;
-        drawString(42,2,statsLine.c_str(),160);
+        r22DrawContrastHud(kneel ? "KNEEL" : "STAND",simulated,
+                           " | "+_r22StatsText);
     }''')
     cpp=once(cpp,
         '''    if (!_r22StatsText.empty())
@@ -298,13 +339,11 @@ def patch(header,cpp,state):
         '''    drawString(2,37,_r22ThrowValid ?
         "THROW ARC: REACHABLE (ACCURACY NOT SAMPLED)" :
         "THROW ARC: BLOCKED / OUT OF RANGE",160);''',
-        '''    // The same fixed stance column is used while throwing.
+        '''    // Throw preview shares the readable backplate and fixed column.
     const bool simulated = _r22StanceOverride &&
         virtualKneeled != actor->isKneeled();
-    drawString(2,2,virtualKneeled ? "KNEEL" : "STAND",
-        simulated ? 73 : 160);
-    drawString(42,2,_r22ThrowValid ? " | THROW OK" :
-        " | THROW BLOCKED",160);''')
+    r22DrawContrastHud(virtualKneeled ? "KNEEL" : "STAND",simulated,
+                       _r22ThrowValid ? " | THROW OK" : " | THROW BLOCKED");''')
     if "_r22Locked" in cpp or "_r22Target" in cpp or "r22PreviewClick" in cpp:
         raise RuntimeError("Legacy click interception survived in Map.cpp")
     if "r22PreviewClick" in header or "r22PreviewClick" in state:
