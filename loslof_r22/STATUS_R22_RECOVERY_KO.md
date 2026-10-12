@@ -13,8 +13,8 @@
 
 | 기능 | 구현 지점 | 확인 수준 |
 |---|---|---|
-| F8 기본 OFF, 표적 잠금, 가상 위치, 가상 무릎 | Map, BattlescapeState | 소스 연결/컴파일 검사 |
-| 이동 경로의 마지막 위치에서 LOS 외곽선, 실제 높이, 1×1 도트 | Pathfinding/TileEngine/Map | 소스 연결/컴파일 검사 |
+| F8 기본 OFF, OXCE 원래 클릭·이동·우클릭 보존, `\\` 가상 STAND/KNEEL | Map, BattlescapeState | 정적 클릭 흐름·키 처리 검사, 실전 미검증 |
+| 이동 경로의 마지막 위치에서 LOS 외곽선, 실제 높이, 1×1 도트 | Pathfinding/TileEngine/Map | 프레임당 최대 64후보로 분산, 정적 검사 |
 | LOF 선과 1차 차단점 빨강, 화면 밖/층 차이 HUD | Map | 소스 연결/컴파일 검사 |
 | H/B/M, 비대칭 산포, 대형 2×2 병종 겹침 판정 | Projectile/Map/Tile | 실제 탄도 API 기반, 확률은 실험적 |
 | 산탄의 1차 충돌 -2 복셀 기준과 추가 펠릿, 연사 | Projectile/Map | OXCE 엔진 계산 재사용, 실전 검증 없음 |
@@ -28,7 +28,7 @@
 
 - 통계의 `H/B/M`은 정확한 실전 피해량 예측이 아니라 샘플링 추정값이다. 가상 사수의 고유 위치/스크립트/특수 스탯 효과는 실제 R21과 차이가 있을 수 있다.
 - 투사체를 아주 많이 발사하는 특수 무기(한 묶음 256개 초과)는 과도한 프레임 지연을 막기 위해 추정 확률 표시를 포기한다.
-- 계산 예산: H/B/M 최대 1,024 표본, 위험 통과 384 표본, 프레임당 256 투사체 경로. 진행 중 HUD의 `n=`이 현재 표본 수를 나타낸다.
+- 계산 예산: H/B/M 최대 1,024 표본, 위험 통과 384 표본, 프레임당 최대 256 투사체 경로와 별도의 LOS 외곽선 최대 64 후보. 진행 중 HUD의 `n=`이 현재 표본 수를 나타낸다.
 - 폴더의 모드 파일, 원본 EXE, 세이브를 절대 덮어쓰지 말고 복사본에서 실행해야 한다.
 - `-version` 실행 성공은 게임 전투, XPiratez 데이터 파일, 모든 DLL 조합의 플레이 가능성 보증이 아니다.
 
@@ -39,8 +39,16 @@
 3. `patch_r22_recovery_beta.py`
 4. `patch_r22_safety.py`
 5. `patch_r22_throw.py`
+6. `patch_r22_native_targeting.py` — 기존 클릭 가로채기 제거, 실제 조준/확인사격, `\\` 가상 자세, HUD 정리
 
 해당 브랜치의 `.github/workflows/loslof-r22-win64-reconstruction.yml`가 이 순서로 8.6.0 원본에 패치를 적용하고 정적 검사, Windows 컴파일·링크, EXE `-version`, DLL 수집, SHA256 및 ZIP 업로드를 실행한다.
+
+## 2026-10-13 확인된 CI 및 패키지
+
+- GitHub Actions 실행 [#38274358495](https://github.com/road2man-cloud/xpiratez-data-atlas/actions/runs/38274358495): Windows x64 컴파일·EXE `-version`·정적 검사·DLL 패키징 전부 성공. **이후 추가된 64후보/프레임 LOS 분산과 가상 SIM HUD 수정은 이 오래된 실행에서 검증한 것이 아님**.
+- 위 빌드 산출물(이전 커밋 `4fd71dd20473b4fc38fadf3b785d456d366823ed`) ZIP의 각 파일 SHA-256 검사 통과. 본 저장소의 최신 브랜치는 별도 CI 확인 필요.
+- EXE 버전 명칭은 계속 `R22 Reconstruction Beta`; 원본 R21 확보 전 동등성 표기는 절대 금지.
+- CI 산출물의 실행파일·DLL은 테스트 복사본에만 배치. 기존 XPiratez 본체, 세이브, 원본 R21을 덮어쓰지 말 것.
 
 ## 아직 완료되지 않은 검증
 
