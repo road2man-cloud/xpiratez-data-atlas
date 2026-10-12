@@ -344,7 +344,7 @@ function routeSummary(row,d,i){
     if(rq.needItem)facts.push("표본 "+(rq.sampleItem?ko(rq.sampleItem):row.koName)+(rq.destroyItem?" 소모":" 필요"));
     if(list(rq.requiresBaseFunc).length)facts.push("기지 "+names(rq.requiresBaseFunc,3)+" 기능");
     if(roleRefs(i,"research-granted-by").length||roleRefs(i,"event-grant").length)facts.push("직접 연구 외 보상 경로 존재");
-    return row.koName+": "+facts.join(" / ")+". 재귀 선행량 합계는 대체 해금·배타 분기를 포함할 수 있어 실제 최소 비용으로 쓰지 않습니다.";
+    return row.koName+": "+facts.join(" / ")+". 재귀합계 ≠ 실제 최단 경로비용.";
   }
   const p=i.prerequisite||{},rq=i.researchRequirements||{},parts=[],total=(p.prerequisiteCost||0)+(row.cost||0);
   if(Number.isFinite(row.cost))parts.push("자체 연구량 "+num(row.cost));
