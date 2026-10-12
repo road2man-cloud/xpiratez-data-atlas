@@ -150,8 +150,8 @@ void Map::r22DrawRemoteTargetHud(const Position &target,const Position &aim)
     const bool outside=screen.x<5 || screen.x>width-8 ||
         screen.y<31 || screen.y>height-15;
     if(!outside && !zDiff) return;
-    const int px=std::max(3,std::min(screen.x,std::max(3,width-136)));
-    const int py=std::max(30,std::min(screen.y,std::max(30,height-24)));
+    const int px=std::max(3,std::min(int(screen.x),std::max(3,width-136)));
+    const int py=std::max(30,std::min(int(screen.y),std::max(30,height-24)));
     const char *arrow=screen.x<5?"<":screen.x>width-8?">":
         screen.y<31?"^":screen.y>height-15?"v":"*";
     std::ostringstream label;
