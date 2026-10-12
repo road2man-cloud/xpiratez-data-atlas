@@ -92,11 +92,14 @@ OLD_OVERLAY_HEAD='''    BattleUnit *soldier = _save->getSelectedUnit();
     getSelectorPosition(&cursor);
     // First click freezes target; after that the cursor represents a hypothetical shooter.'''
 NEW_OVERLAY_HEAD='''    BattleUnit *soldier = _save->getSelectedUnit();
-    if (!soldier || !_save->getTileEngine() || !_camera || _cursorType == CT_NONE)
+    if (!soldier || !_save->getTileEngine() || !_camera)
         return;
     BattleAction *native = _save->getBattleGame() ?
         _save->getBattleGame()->getCurrentAction() : nullptr;
-    const bool nativeAim = native && native->targeting && native->weapon &&
+    // A hidden cursor means a projectile is firing, a turn is resolving,
+    // or another native action owns input. Retire stale preview caches first.
+    const bool nativeAim = _cursorType != CT_NONE && native &&
+        native->targeting && native->weapon &&
         native->actor == soldier &&
         (native->type == BA_SNAPSHOT || native->type == BA_AIMEDSHOT ||
          native->type == BA_AUTOSHOT || native->type == BA_THROW);
@@ -118,6 +121,7 @@ NEW_OVERLAY_HEAD='''    BattleUnit *soldier = _save->getSelectedUnit();
         _r22StatsText.clear();
         _r22TileRisks.clear();
         _r22SampleCount = 0;
+        if (_cursorType == CT_NONE) return;
         Pathfinding *finder = _save->getPathfinding();
         if (finder && finder->isPathPreviewed())
         {
