@@ -18,15 +18,15 @@ export function buildResearchDecisionInsight({
   const pay=analysis?.production?.cashExtraction||null;
   const parts=[];
   if(direct.length){
-    parts.push("일반 연구 경로: "+preview(direct,ko)+" 모두 완료(AND).");
-  }else{
-    parts.push("일반 경로에서 다른 선행 연구는 요구하지 않습니다.");
+    parts.push(direct.length<=6?
+      "일반 경로 AND: "+preview(direct,ko,6)+" 모두 완료.":
+      "일반 경로 AND: 직접 선행 "+direct.length+"개 모두 충족(아래 원본 목록 참조).");
   }
   if(alternatives.length){
-    parts.push("대체 해금 경로: "+preview(alternatives,ko,6)+" 중 하나의 unlocks로 일반 dependencies를 우회할 수 있습니다(OR). 해당 출처의 연구 조건은 따로 충족해야 합니다.");
+    parts.push("대체 경로 OR: "+preview(alternatives,ko,4)+" 중 하나의 unlocks로 dependencies 우회(출처 자체의 조건은 별도).");
   }
   if(requires.length){
-    parts.push("우회 불가 필수조건(requires): "+preview(requires,ko)+" 전부 완료(AND). unlocks만으로는 건너뛸 수 없습니다.");
+    parts.push("우회 불가 requires AND: "+preview(requires,ko,4)+" 모두 완료.");
   }
   const prerequisiteSamples=direct.filter(id=>{
     const research=detailOfId(id);
@@ -34,9 +34,8 @@ export function buildResearchDecisionInsight({
   });
   if(prerequisiteSamples.length){
     const consumed=prerequisiteSamples.filter(id=>detailOfId(id)?.destroyItem);
-    parts.push("선행 연구용 표본: "+preview(prerequisiteSamples,ko,5)+
-      "의 실물을 연구 기지에 확보해야 합니다."+
-      (consumed.length?" 연구 시 소모되는 표본: "+preview(consumed,ko,5)+".":""));
+    parts.push("선행 연구 표본: "+preview(prerequisiteSamples,ko,4)+" 실물 필요."+
+      (consumed.length?" 소모: "+preview(consumed,ko,4)+".":""));
   }
   // Explain synthetic gates that appear impossible when all their dependencies
   // are treated as mandatory, but have OR unlocks sources instead.
@@ -47,16 +46,16 @@ export function buildResearchDecisionInsight({
     return [{id,sources}];
   });
   for(const {id,sources} of synthetic.slice(0,3)){
-    parts.push(ko(id)+"는 중간 해금 플래그입니다. "+preview(sources,ko,6)+
-      " 중 한 경로의 명시 해금으로 충족할 수 있습니다. 열거된 경로를 전부 완료할 필요는 없습니다.");
+    parts.push(ko(id)+"는 중간 플래그: "+preview(sources,ko,6)+
+      " 중 한 경로로 충족(OR). 전부 완료할 필요는 없습니다.");
   }
   if(sampleRequired){
-    parts.push("실물 표본: "+ko(row.id)+" 1개를 해당 연구 기지에 보유해야 하며 "+(sampleConsumed?"연구 시 소모됩니다.":"연구 후에도 남습니다."));
+    parts.push("현재 연구 표본: "+ko(row.id)+" ×1 "+(sampleConsumed?"필요·소모.":"필요·비소모."));
   }else if(row.id==="STR_WINE"){
-    parts.push("와인 실물은 이 연구의 필요조건이 아닙니다. 아이템 보유만으로 연구가 열리지는 않습니다.");
+    parts.push("와인 실물은 이 연구의 필요조건이 아닙니다. 보유만으로 연구 불가.");
   }
   const baseFuncs=uniq(detail?.raw?.requiresBaseFunc);
-  if(baseFuncs.length)parts.push("연구를 시작하는 기지의 필수 기능: "+preview(baseFuncs,ko)+".");
+  if(baseFuncs.length)parts.push("연구 기지 기능: "+preview(baseFuncs,ko,4)+".");
   let unlockLogic=parts.join(" ");
   // Every downstream edge in requiredBy is a dependency edge, not a proof of
   // sufficient unlock or a guarantee that no alternate route exists.
@@ -64,12 +63,12 @@ export function buildResearchDecisionInsight({
   const grants=uniq(detail?.unlocks);
   const next=[];
   if(downstream.length){
-    next.push("일반 선행으로 참조되는 후속 "+downstream.length+"개: "+preview(downstream,ko,5)+
-      ". 이는 후속 연구의 한 조건일 뿐 충분조건이 아니며, 다른 dependencies·requires가 남습니다. 후속에 다른 unlocks 경로가 있으면 필수 경유 연구도 아닐 수 있습니다.");
+    next.push("후속 "+downstream.length+"개의 일반 선행"+
+      (downstream.length<=3?": "+preview(downstream,ko,3):"")+"입니다. 이 연구만으로 충분조건이 아니며, 다른 선행과 requires도 필요합니다. 후속의 별도 unlocks 우회로가 있으면 필수 경유도 아닙니다.");
   }
   if(grants.length){
-    next.push("이 연구의 명시적 unlocks: "+preview(grants,ko,5)+
-      ". 해당 후속의 dependencies는 우회할 수 있지만 requires·실물·기지 조건까지 자동 만족시키지는 않습니다.");
+    next.push("명시 해금 unlocks: "+preview(grants,ko,3)+
+      ". dependencies 우회 가능, requires·표본·기지 조건은 별도.");
   }
   const downstreamLogic=next.join(" ");
   let verdict="",economics="",criticalCaution="";
