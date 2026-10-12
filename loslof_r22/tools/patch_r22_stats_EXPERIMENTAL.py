@@ -34,24 +34,55 @@ CODE = r'''
 void Map::r22DrawStats(const Position& origin, const Position& target,
                       const Position& aim, const Position& muzzle)
 {
+    // Never display a previous weapon's probabilities after deselection or
+    // switching to an action that the ballistic sampler does not support.
+    auto clearInvalidPreview = [this]() {
+        _r22StatsText.clear();
+        _r22TileRisks.clear();
+        _r22StatsKey = 0;
+        _r22SampleCount = 0;
+    };
     BattleUnit *shooter = _save->getSelectedUnit();
-    if (!shooter || !_save->getBattleGame()) return;
+    if (!shooter || !_save->getBattleGame()) { clearInvalidPreview(); return; }
     BattleAction *current = _save->getBattleGame()->getCurrentAction();
-    if (!current || current->actor != shooter || !current->weapon) return;
+    if (!current || current->actor != shooter || !current->weapon) {
+        clearInvalidPreview(); return;
+    }
     if (current->type != BA_SNAPSHOT && current->type != BA_AIMEDSHOT &&
-        current->type != BA_AUTOSHOT) return;
+        current->type != BA_AUTOSHOT) { clearInvalidPreview(); return; }
 
     BattleItem *weapon = current->weapon;
-    if (weapon->getArcingShot(current->type)) return;
+    if (weapon->getArcingShot(current->type)) { clearInvalidPreview(); return; }
     BattleItem *ammo = weapon->getAmmoForAction(current->type,nullptr,nullptr);
-    if (!ammo || !ammo->getRules()) return;
+    if (!ammo || !ammo->getRules()) { clearInvalidPreview(); return; }
     const RuleItemAction *conf = weapon->getActionConf(current->type);
     const int shots = conf ? conf->shots : 1;
     const bool shotgun = ammo->getRules()->getShotgunPellets() > 0 &&
                          ammo->getRules()->getDamageType()->isDirect();
     const int pellets = shotgun ? ammo->getRules()->getShotgunPellets() : 1;
     // Unsupported action sizes don't show invented probabilities.
-    if (shots < 1 || shots > 16 || pellets < 1 || pellets > 20) return;
+    if (shots < 1 || shots > 16 || pellets < 1 || pellets > 20) {
+        clearInvalidPreview(); return;
+    }
+    // Resolve actual occupier, not merely the owner/root tile. Multi-tile
+    // soldiers and units intersecting the floor above use native overlap rules.
+    Tile *targetTile=_save->getTile(target);
+    BattleUnit *targetUnit=targetTile ?
+        targetTile->getOverlappingUnit(_save) : nullptr;
+    if (targetUnit && !targetUnit->getVisible()) targetUnit=nullptr;
+
+    // Compute current accuracy BEFORE the cache key. Skills, injuries,
+    // buffs, ammo and selected action can change without moving the cursor.
+    BattleAction action=*current;
+    action.actor=shooter;
+    action.target=target;
+    BattleActionAttack attack=BattleActionAttack::GetAferShoot(action,ammo);
+    double accuracy=BattleUnit::getFiringAccuracy(attack,_game->getMod())/100.0;
+    if (_r22Locked && _r22Kneel!=shooter->isKneeled())
+    {
+        const double kneel=weapon->getRules()->getKneelBonus(_game->getMod())/100.0;
+        if (kneel > 0.0) accuracy*= _r22Kneel ? kneel : 1.0/kneel;
+    }
 
     unsigned long long key=1469598103934665603ULL;
     auto mix=[&](unsigned long long value) {
@@ -64,6 +95,13 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
                   (int)ammo->getAmmoQuantity(),shots,pellets})
         mix((unsigned int)x);
     mix((unsigned long long)(uintptr_t)weapon);
+    mix((unsigned long long)(uintptr_t)weapon->getRules());
+    mix((unsigned long long)(uintptr_t)ammo);
+    mix((unsigned long long)(uintptr_t)ammo->getRules());
+    mix((unsigned long long)(uintptr_t)targetUnit);
+    mix((unsigned long long)(uintptr_t)targetTile);
+    mix((unsigned long long)(static_cast<long long>(accuracy*1000000.0)));
+    // Geometry changes are additionally caught by the short timed expiry.
     // Conservatively expire on timer: terrain changes may leave other stale state.
     unsigned long now=SDL_GetTicks();
     if (key != _r22StatsKey || now-_r22StatsUpdated > 700UL)
@@ -74,17 +112,6 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
         // Bound to ~320 actual traced bullets to reduce per-mouse-move stalls.
         const unsigned samples=std::min(96U,
             std::max(16U,(unsigned)(320/(shots*pellets))));
-        BattleAction action=*current;
-        action.actor=shooter;
-        action.target=target;
-        BattleActionAttack attack=BattleActionAttack::GetAferShoot(action,ammo);
-        double accuracy=BattleUnit::getFiringAccuracy(attack,_game->getMod())/100.0;
-        if (_r22Locked && _r22Kneel!=shooter->isKneeled())
-        {
-            const double kneel=weapon->getRules()->getKneelBonus(_game->getMod())/100.0;
-            if (kneel > 0.0) accuracy*= _r22Kneel ? kneel : 1.0/kneel;
-        }
-
         struct KeepRng {
             RNG::RandomState previous;
             explicit KeepRng(unsigned long long seed)
@@ -97,8 +124,6 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
         const int width=_save->getMapSizeX();
         const int length=_save->getMapSizeY();
         const int height=_save->getMapSizeZ();
-        Tile *targetTile=_save->getTile(target);
-        BattleUnit *targetUnit=targetTile ? targetTile->getUnit() : nullptr;
         unsigned hit=0, blocked=0, missed=0;
         auto shot=[&](const Position& aimed, double acc, int shotIndex,
                       bool& isHit, bool& isBlocked,
@@ -126,13 +151,14 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
             }
             const Position collisionTile=impact.toTile();
             Tile *t=_save->getTile(collisionTile);
-            BattleUnit *victim=t ? t->getUnit() : nullptr;
+            BattleUnit *victim=t ? t->getOverlappingUnit(_save) : nullptr;
+            if (victim && !victim->getVisible()) victim=nullptr;
             if (status==V_UNIT && victim && targetUnit && victim==targetUnit)
             {
                 isHit=true; return;
             }
             if (!targetUnit && t && collisionTile==target &&
-                status!=V_EMPTY && status!=V_OUTOFBOUNDS)
+                status!=V_EMPTY && status!=V_OUTOFBOUNDS && status!=V_UNIT)
             {
                 isHit=true; return;
             }
