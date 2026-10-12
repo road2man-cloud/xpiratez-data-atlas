@@ -185,6 +185,18 @@ def patch(header,cpp,state):
     cpp=once(cpp,
         "    const Position target = _r22Locked ? _r22Target : cursor;",
         '''    const Position target = confirmedTarget ? native->waypoints.front() : cursor;''')
+    # Keep the selected firing mode and its relativeOrigin (centre/left/right).
+    # Constructing a fake SNAPSHOT action silently gave AUTO/AIMED the wrong
+    # muzzle offset for weapons with non-centre origins.
+    cpp=once(cpp,
+        '''    BattleAction testAction;
+    testAction.actor = soldier;
+    testAction.target = target;
+    testAction.type = BA_SNAPSHOT;''',
+        '''    BattleAction testAction = *native; // read-only action snapshot
+    testAction.actor = soldier;
+    testAction.target = target;''')
+
     # Immediately after the first click the cursor is usually still on the
     # marked target. Do not sample a zero-length "shot from target to itself".
     # An unexplored cursor position is not a valid hypothetical fire origin.
