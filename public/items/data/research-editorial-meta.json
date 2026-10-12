@@ -1,15 +1,17 @@
 {
-  "version": 4,
-  "generator": "Source-grounded contextual editorial synthesis v4",
+  "version": 5,
+  "generator": "Source-grounded causal and economic decision insights v5",
   "evidence": "ruleset-and-derived-links",
   "generatedFrom": [
     "research-index.json",
     "research-chunks",
     "research-insight-index.json",
     "research-insight-chunks",
+    "manufacture-index.json",
+    "manufacture-chunks/*.json",
     "events-index.json.gz",
     "event-chunks/*.json.gz"
   ],
   "count": 4612,
-  "averageChars": 886
+  "averageChars": 927
 }
