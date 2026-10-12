@@ -65,6 +65,11 @@ checks={
       "r22DrawStats(source,target,goal,muzzle);" in overlay,
   "Native first target does not create second click interceptor":
       "r22PreviewClick" not in state and "r22PreviewClick" not in m,
+  "No zero-range sampling before cursor leaves native marked target":
+      "confirmedTarget && (source == target ||" in overlay and
+      "_r22StatsText.clear();" in overlay,
+  "No hidden map geometry leaked from unexplored virtual shooter origin":
+      "startTile && !startTile->isDiscovered(O_FLOOR)" in overlay,
   "Native first click target is the game's own confirmation":
       "Options::battleConfirmFireMode" in overlay and
       "!native->sprayTargeting" in overlay,
