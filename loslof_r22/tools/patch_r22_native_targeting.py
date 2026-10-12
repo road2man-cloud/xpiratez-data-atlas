@@ -241,11 +241,6 @@ def patch(header,cpp,state):
         "    const bool virtualKneeled=_r22Locked ? _r22Kneel : actor->isKneeled();",
         "    const bool virtualKneeled=_r22StanceOverride ? _r22Kneel : actor->isKneeled();")
     # Palette-aware, high contrast but small HUD backing for gun/throw displays.
-    header=once(header,
-        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n',
-        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n'
-        '    void r22DrawContrastHud(const char *stance, bool simulated,\n'
-        '                            const std::string &tail);\n')
     cpp=once(cpp, 'void Map::r22DrawOverlay()',
         r'''// R22 HUD: contrast backplate, 5-letter stance, fixed 42px stats origin.
 // Only draws; leaves targeting state and input untouched.
@@ -334,6 +329,11 @@ void Map::r22DrawOverlay()''')
         '    bool _r22StanceOverride = false;\n',
         '    bool _r22StanceOverride = false;\n'
         '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n')
+    header=once(header,
+        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n',
+        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n'
+        '    void r22DrawContrastHud(const char *stance, bool simulated,\n'
+        '                            const std::string &tail);\n')
 
     cpp=once(cpp,
         '''    drawString(2,37,_r22ThrowValid ?
