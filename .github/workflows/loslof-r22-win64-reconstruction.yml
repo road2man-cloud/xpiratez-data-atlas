@@ -82,6 +82,12 @@ jobs:
           print("Removed upstream -static so MSYS2 SDL 1.2 import libraries and DLLs can link")
           PY
 
+      - name: Run R22 static regression gates on generated native code
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tests/check_integrated_r22.py engine
+          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py
+
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
         run: |
@@ -91,6 +97,12 @@ jobs:
         shell: msys2 {0}
         run: |
           cmake --build build --parallel 4
+          test -s build/bin/openxcom.exe
+
+      - name: Launch real Windows EXE in CLI version smoke test
+        shell: msys2 {0}
+        run: |
+          ./build/bin/openxcom.exe -version
           test -s build/bin/openxcom.exe
 
       - name: Recursively collect non-system DLLs, package proof and hashes
