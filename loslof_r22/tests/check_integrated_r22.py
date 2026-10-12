@@ -15,6 +15,10 @@ mapcpp=read("src/Battlescape/Map.cpp")
 projectileh=read("src/Battlescape/Projectile.h")
 projectilecpp=read("src/Battlescape/Projectile.cpp")
 state=read("src/Battlescape/BattlescapeState.cpp")
+tecpp=read("src/Battlescape/TileEngine.cpp")
+teh=read("src/Battlescape/TileEngine.h")
+flycpp=read("src/Battlescape/ProjectileFlyBState.cpp")
+flyh=read("src/Battlescape/ProjectileFlyBState.h")
 checks={
     "01-F8 default OFF and toggle": ("bool _r22On = false;" in maph and "key == SDLK_F8" in mapcpp),
     "02-target lock and right click unlock": ("bool Map::r22PreviewClick" in mapcpp and "_r22Locked = true" in mapcpp and "if (right)" in mapcpp),
@@ -45,6 +49,12 @@ checks={
     "27-invalid version and duplicate patch fail closed": all("already applied" in read("src/Battlescape/Map.cpp") or x for x in [True]),
     "28-map-level state (not savegame persisted)": ("_r22StatsText" in maph and "_r22VisibleHull" in maph),
     "29-no modifications to other gameplay files": True,
+    "30-throw native range arc preview": ("r22DrawThrowPreview" in mapcpp and "validateThrow(action,origin,goal," in mapcpp),
+    "31-throw position-sensitive cache": ("_r22ThrowCacheKey" in maph and "from.x,from.y,from.z" in mapcpp),
+    "32-throw does not modify game obstacles": ("bool rememberObstacles = true" in teh and "if (rememberObstacles && test" in tecpp),
+    "33-throw respects virtual actor position": ("const Position effective=previewPosition" in flycpp and "const Position *previewPosition = nullptr" in flyh),
+    "34-throw arc ignores invisible actors": ("bool onlyVisible = false" in teh and "Position(0,0,0),true" in mapcpp),
+    "35-throwing does not show old gun HBM": ('_r22StatsText.clear(); // Never display stale gun H/B/M' in mapcpp),
 }
 # The 27th check is intentionally not an argument that patch failure logic
 # has been tested. That behavior is exercised by the strict patch scripts.
@@ -54,7 +64,10 @@ if (root/".git").exists():
     allowed={"src/Battlescape/Map.h","src/Battlescape/Map.cpp",
              "src/Battlescape/BattlescapeState.cpp",
              "src/Battlescape/Projectile.h","src/Battlescape/Projectile.cpp",
-             "src/CMakeLists.txt"}
+             "src/CMakeLists.txt",
+             "src/Battlescape/TileEngine.h","src/Battlescape/TileEngine.cpp",
+             "src/Battlescape/ProjectileFlyBState.h",
+             "src/Battlescape/ProjectileFlyBState.cpp"}
     checks["29-no modifications to other gameplay files"]=set(changed).issubset(allowed)
 failed=[]
 for key,ok in checks.items():
