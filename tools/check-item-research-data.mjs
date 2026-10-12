@@ -27,8 +27,10 @@ if(largest?.bytes>=50*1024*1024)throw new Error("Generated file too large for no
 if(items.index?.length!==4007)throw new Error("Expected 4007 items, got "+(items.index?.length??0));
 if(research.index?.length!==4612)throw new Error("Expected 4612 research topics, got "+(research.index?.length??0));
 if(researchInsight.index?.length!==4612)throw new Error("Expected 4612 research insight topics, got "+(researchInsight.index?.length??0));
-if(researchEditorialMeta.count!==4612||researchEditorialMeta.version!==4)throw new Error("Research contextual editorial metadata mismatch");
-if(!String(researchEditorialMeta.generator||"").includes("contextual editorial synthesis v4"))throw new Error("Missing contextual research editorial generator metadata");
+if(researchEditorialMeta.count!==4612||![4,5].includes(researchEditorialMeta.version))throw new Error("Research contextual editorial metadata mismatch");
+const researchGen=String(researchEditorialMeta.generator||"");
+if(researchEditorialMeta.version===4&&!researchGen.includes("contextual editorial synthesis v4"))throw new Error("Missing v4 research editorial generator metadata");
+if(researchEditorialMeta.version===5&&!researchGen.includes("causal and economic decision insights v5"))throw new Error("Missing v5 research decision generator metadata");
 if(itemEditorialMeta.count!==4007||itemEditorialMeta.version!==3)throw new Error("Item editorial metadata mismatch");
 if(!String(itemEditorialMeta.generator||"").startsWith("GPT item editorial synthesis"))throw new Error("Missing GPT item editorial generator metadata");
 if(items.index.length!==new Set(items.index.map(x=>x.id)).size)throw new Error("Duplicate item ids");
