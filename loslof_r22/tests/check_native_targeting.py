@@ -15,6 +15,7 @@ state=(root/"src/Battlescape/BattlescapeState.cpp").read_text(encoding="utf-8")
 assert m.count("void Map::r22DrawOverlay()")==1
 overlay=m.split("void Map::r22DrawOverlay()",1)[1].split("\n}\n",1)[0]
 keys=m.split("void Map::keyboardPress(Action *action, State *state)",1)[1].split("\n}\n",1)[0]
+backslash=m.split("bool Map::r22ConsumeBackslash()",1)[1].split("\n}\n",1)[0]
 stats=m.split("void Map::r22DrawStats(",1)[1].split("\n}\n",1)[0]
 throw=m.split("void Map::r22DrawThrowPreview(",1)[1].split("\n}\n",1)[0]
 checks={
@@ -30,18 +31,18 @@ checks={
       "r22PreviewClick" not in state and
       "_battleGame->cancelCurrentAction()" in state,
   "Backslash only in native targeting and when F8 is on":
-      "key == SDLK_BACKSLASH && _r22On" in keys and
-      "native->targeting && actor" in keys,
+      "key == SDLK_BACKSLASH && r22ConsumeBackslash()" in keys and
+      "if (!_r22On" in backslash and "!native->targeting" in backslash,
   "Backslash virtual stance is independent of real kneel":
-      "_r22StanceOverride = true;" in keys and
-      "_r22Kneel = !current;" in keys and
-      "->kneel(" not in keys,
+      "_r22StanceOverride=true;" in backslash and
+      "_r22Kneel=!current;" in backslash and
+      "->kneel(" not in backslash,
   "Backslash invalidates probability/LOS/throw caches":
-      all(v in keys for v in
-          ["_r22StatsKey = 0;","_r22HullHash = 0;","_r22ThrowCacheKey = 0;"]),
+      all(v in backslash for v in
+          ["_r22StatsKey=0;","_r22HullHash=0;","_r22ThrowCacheKey=0;"]),
   "Virtual stance follows soldier until explicitly overridden":
       "bool _r22StanceOverride = false;" in h and
-      "_r22StanceOverride ?\n                    _r22Kneel : actor->isKneeled()" in keys,
+      "_r22StanceOverride ? _r22Kneel : actor->isKneeled()" in backslash,
   "Native OXCE aiming action is required":
       "native->targeting && native->weapon" in overlay and
       "native->actor == soldier" in overlay,
@@ -76,6 +77,10 @@ checks={
       '" | THROW OK"' in throw and '" | THROW BLOCKED"' in throw,
   "H/B/M labels indicate sampling":
       'label << "ACC~"' in stats,
+  "Native backslash defaults to deselect and is remapped only in aiming":
+      "_map->r22ConsumeBackslash()" in state and
+      state.index("_map->r22ConsumeBackslash()") <
+      state.index("State::handle(action);",state.index("inline void BattlescapeState::handle(")),
 }
 failed=[]
 for name,valid in checks.items():
