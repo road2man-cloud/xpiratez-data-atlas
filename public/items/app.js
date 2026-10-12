@@ -309,15 +309,24 @@ function prerequisiteDetail(id){
 function researchEditorialMarkup(d){
   const e=d.editorial;if(!e)return"";
   const row=(label,text,kind="")=>text?`<div class="editorial-row ${kind}"><span>${esc(label)}</span><p>${esc(text)}</p></div>`:"";
+  // Decision first; generic graph narration and raw cross-references stay
+  // accessible, but no longer occupy the whole initial drawer.
   return`<section class="section editorial-panel">
-    <div class="insight-heading"><h3>GPT 플레이 인사이트</h3><span class="evidence-tag gpt">룰셋 직접값 + 후속·이벤트 조건 기반 맥락 해석</span></div>
-    ${row("정체",e.core,"core")}
-    ${row("캠페인 내 위치 · 후속 파급효과",e.context,"context")}
-    ${row("실제 효과",e.effect,"effect")}
-    ${row("다음 행동",e.action,"action")}
-    ${row("도달/비용",e.route,"route")}
-    ${row("우선순위",e.decision,"decision")}
-    ${row("주의",e.watch,"watch")}
+    <div class="insight-heading"><h3>GPT 플레이 인사이트</h3><span class="evidence-tag gpt">필요·충분조건 / 실질 보상 / 순이익</span></div>
+    ${row("한눈에 보는 결론",e.verdict||e.core,"core")}
+    ${row("해금 조건 · AND / OR",e.unlockLogic||e.route,"route")}
+    ${row("현금화 손익 · 표본 비용 포함",e.economics,"decision")}
+    ${row("후속 연구 · 필요조건과 충분조건",e.downstreamLogic,"effect")}
+    ${row("놓치면 손해",e.criticalCaution,"watch")}
+    <details class="editorial-extra">
+      <summary>실행 방법·추가 맥락·전체 분석 펼치기</summary>
+      ${row("실행 방법",e.action,"action")}
+      ${row("직접 효과",e.effect,"effect")}
+      ${row("캠페인 내 위치",e.context,"context")}
+      ${row("우선순위 판단",e.decision,"decision")}
+      ${row("명목 선행량 / 별도 지급 경로",e.route,"route")}
+      ${row("기타 주의",e.watch,"watch")}
+    </details>
   </section>`;
 }
 function researchInsightMarkup(d){
@@ -417,13 +426,13 @@ function renderResearch(d){
   const trainingIds=[...new Set((d.otherReferences||[]).filter(x=>x.section==="soldierTransformation").map(x=>x.owner||x.id).filter(Boolean))];
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
-  ${kpis([["연구량",d.cost],["완료 점수",d.points],["실물 표본",d.needItem?(d.destroyItem?"필요·소모":"필요"):"불필요"],["직접 선행",d.dependencies.length],["후속 연구",d.requiredBy.length],["생성 아이템",spawned.length],["아이템 연결",d.itemReferences.length],["제조 연결",d.manufactureReferences.length]])}
+  ${kpis([["연구량",d.cost],["완료 점수",d.points],["연구 표본",d.needItem?(d.destroyItem?"필요·소모":"필요·비소모"):"불필요"]])}
   ${researchBranchConflictMarkup(d)}
   ${researchCycleMarkup(d)}
   ${researchEditorialMarkup(d)}
-  ${researchInsightMarkup(d)}
+  <details class="research-raw-explainer"><summary>원본 룰에서 계산한 선행망·연결 시스템 더 보기</summary>${researchInsightMarkup(d)}</details>
   ${trainingIds.length?`<section class="section"><h3>연결되는 병사 훈련·변신</h3>${trainingIds.map(id=>`<a class="entity" href="../trainings/?training=${encodeURIComponent(id)}">훈련 조합기에서 ${esc(id)} 확인 →</a>`).join(" ")}</section>`:""}
-  <section class="section"><h3>명목 직접 선행 (dependencies + requires)</h3><p class="muted">이 목록은 요구조건의 정적 합집합입니다. dependencies는 별도 unlocks로 우회할 수 있지만 requires는 우회하지 못합니다. 선행 연구가 서로 배타적인 경우 위의 감사 판정을 우선하세요.</p>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
+  <details class="research-raw-explainer"><summary>선행·후속 전체 목록 / 연구·제조 역참조</summary><section class="section"><h3>명목 직접 선행 (dependencies + requires)</h3><p class="muted">이 목록은 요구조건의 정적 합집합입니다. dependencies는 별도 unlocks로 우회할 수 있지만 requires는 우회하지 못합니다. 선행 연구가 서로 배타적인 경우 위의 감사 판정을 우선하세요.</p>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   <section class="section"><h3>후속 연구</h3>${d.requiredBy?.length?d.requiredBy.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
   ${spawned.length?`<section class="section"><h3>완료 시 생성 아이템</h3>${spawned.map(x=>entity(x,"items")).join("")}</section>`:""}
   <section class="section"><h3>명시 해금</h3>${d.unlocks?.length?d.unlocks.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
@@ -431,6 +440,7 @@ function renderResearch(d){
   <details><summary>기타 역참조 ${d.otherReferences?.length||0}개</summary><div>${relations(d.otherReferences)}</div></details>
   <details><summary>원본 연구 핵심 룰</summary><div>${rawTable(d.raw,schema.researchFieldMeta)}</div></details>
   ${resourceDetailsMarkup("research",d)}
+  </details>
   <section class="section"><h3>출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section>`;
 }
 function closeDrawer(){detailGeneration++;state.detail=null;$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true;history.replaceState(null,"",location.pathname+location.search)}
