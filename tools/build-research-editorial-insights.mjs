@@ -228,7 +228,8 @@ function strategic(row,d,i,context){
     if(row.cost==null)parts.push("연구량이 따로 명시되지 않은 플래그형 항목이라 비용 대비 효율보다 실제 획득 경로와 후속 연결을 확인하는 편이 정확하다.");
     else parts.push("현재 확인된 직접 연결이 제한적이므로 연구량 자체보다 이 플래그가 어떤 스크립트·도감·조건에서 소비되는지를 확인해야 우선순위를 판단할 수 있다.");
   }
-  return parts.slice(0,1).join(" ");
+  const primaryDecision=parts[0]||"";
+  return primaryDecision.length>=45?primaryDecision:primaryDecision+" 연결된 제조·훈련·이벤트를 당장 실행할 수 없다면 이 연구의 우선순위를 낮출 수 있습니다.";
 }
 
 function caution(row,d,i){
