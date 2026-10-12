@@ -11,11 +11,24 @@ on:
       - "tools/check-editorial-quality.mjs"
       - "tools/migrate-research-insight-sidecars.mjs"
       - "tools/build-research-editorial-insights.mjs"
+      - "tools/research-decision-insights.mjs"
+      - "tools/research-context.mjs"
+      - "tools/check-research-decision-insights.mjs"
       - "tools/build-item-editorial-insights.mjs"
       - "public/items/app.js"
       - "public/items/styles.css"
       - "public/items/index.html"
       - "public/research/index.html"
+      - "package.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-item-research.yml"
+      - "tools/build-research-editorial-insights.mjs"
+      - "tools/research-decision-insights.mjs"
+      - "tools/research-context.mjs"
+      - "tools/check-research-decision-insights.mjs"
+      - "public/items/app.js"
       - "package.json"
   workflow_dispatch:
 
@@ -46,6 +59,7 @@ jobs:
         run: |
           node tools/check-item-research-data.mjs --data public/items/data
           node tools/check-editorial-quality.mjs --data public/items/data
+          node tools/check-research-decision-insights.mjs --data public/items/data
 
       - name: Publish migrated research data
         if: github.event_name == 'push'
@@ -57,6 +71,7 @@ jobs:
           node tools/build-item-editorial-insights.mjs --data public/items/data --out public/items/data
           node tools/check-item-research-data.mjs --data public/items/data
           node tools/check-editorial-quality.mjs --data public/items/data
+          node tools/check-research-decision-insights.mjs --data public/items/data
           if git diff --quiet -- public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks public/items/data/item-editorial-meta.json public/items/data/item-editorial-chunks; then
             echo "Research/item data and GPT editorials already current."
             exit 0
