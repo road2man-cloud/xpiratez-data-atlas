@@ -40,7 +40,7 @@ checks={
     "18-HBM exclusive sum over samples": ("if (anyHit) ++hit;" in mapcpp and "else if (allBlocked) ++blocked;" in mapcpp and "else ++missed;" in mapcpp),
     "19-no global RNG drift": ("RNG::globalRandomState()=previous" in mapcpp and "struct KeepRng" in mapcpp),
     "20-aim cache and F8 invalidation": ("_r22StatsKey = 0;" in mapcpp and "_r22HullHash = 0;" in mapcpp),
-    "21-risk outlines 1 percent threshold": ("entry.second*100<_r22SampleCount" in mapcpp and "_r22TileRisks" in mapcpp),
+    "21-risk outlines 1 percent threshold": ("entry.second*100U<_r22RiskSamples" in mapcpp and "_r22TileRisks" in mapcpp),
     "22-no unexplored tile risk display": ("!t->isDiscovered(O_FLOOR)" in mapcpp),
     "23-fog-hidden units excluded in visual rays": ("calculateLineVoxel(muzzle,goal,true,&bullet,soldier,nullptr,true)" in mapcpp),
     "24-fog-hidden units excluded in statistical rays": ("projectile.calculateTrajectory(acc,muzzle,true,true)" in mapcpp),
