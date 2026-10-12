@@ -17,7 +17,7 @@ checks={
   "progressive 1024 hit/miss/block trials": "_r22SampleCount < 1024U" in segment
       and "1024U-_r22SampleCount" in segment,
   "bounded per-frame projectile count": "256U/projectilesPerTrial" in segment
-      and "frameBudget" in segment,
+      and "frameBudget" in segment and "shots*pellets > 256" in segment,
   "R19 384-sample risk heatmap limit": "_r22RiskSamples < 384U" in segment,
   "separate risk probability denominator": "entry.second*100U<_r22RiskSamples" in segment
       and "entry.second*100U/_r22RiskSamples" in segment,
@@ -29,6 +29,10 @@ checks={
       "_r22SampleCount+=samples;" in segment and "_r22HitSamples+=hit;" in segment
       and "_r22BlockedSamples+=blocked;" in segment
       and "_r22MissSamples+=missed;" in segment,
+  "native centerline cache invalidates on wall/door change":
+      "const int directCollision=" in segment
+      and "mix(static_cast<unsigned>(directCollision))" in segment
+      and "obstructionPoint.back()" in segment,
   "no premature recompute of incomplete result":
       "_r22SampleCount >= 1024U" in segment and "staleFinished" in segment,
   "F8 and target lock cache reset": "_r22StatsKey = 0;" in m,
@@ -50,3 +54,21 @@ for name,yes in checks.items():
     if not yes:bad.append(name)
 print(f"Progressive MC static tests: {len(checks)-len(bad)}/{len(checks)}")
 if bad: raise SystemExit("Progressive MC static checks failed: "+", ".join(bad))
+
+# Algorithmic budget invariants (pure arithmetic, independent of game):
+for shots,pellets in [(1,1),(1,7),(3,7),(10,10),(16,16)]:
+    per=shots*pellets
+    remaining=1024
+    risk=0
+    frames=0
+    while remaining:
+        budget=max(1,min(64,256//per))
+        samples=min(remaining,budget)
+        assert samples*per<=256, (shots,pellets,samples)
+        assert 0<samples<=64
+        risk+=min(samples,384-risk)
+        remaining-=samples
+        frames+=1
+        assert frames<=1024
+    assert risk==384, (shots,pellets,risk)
+print("PASS arithmetic 1024 trials, 384 risk samples, <=256 traces/frame across five burst/pellet cases")
