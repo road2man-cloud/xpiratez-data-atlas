@@ -773,6 +773,10 @@ try {
         if(slug==="research"){
           // Guard against single-item summaries for strategically significant topics.
           await page.goto(new URL("research/#research=STR_CUNNING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+          await page.waitForFunction(()=>document.querySelector("#detail > .id")?.textContent.includes("STR_CUNNING"),{timeout:25000});
+          // v5 hides the long source-backed context until requested. Verify
+          // that opening it restores every deep evidence / reverse link.
+          await page.locator("#detail .editorial-extra > summary").click();
           await page.waitForFunction(()=>{
             const t=document.querySelector("#detail")?.innerText||"";
             return t.includes("STR_CUNNING")&&t.includes("캠페인 내 위치")&&t.includes("시발링가 돌");
@@ -789,7 +793,18 @@ try {
           const target=page.locator("#tbody tr[data-id='STR_CUNNING']");
           await target.waitFor({state:"attached",timeout:12000});
           if(!(await target.innerText()).includes("후속 허브"))errors.push("Cunning hub not visible in search table");
-          detail+=" + Cunning downstream/event gates";
+          for(const sample of [
+            {id:"STR_WINE",expected:["파티(연관)","중 한 경로","와인 실물"]},
+            {id:"STR_CASH_BAG",expected:["$200,000","$202,200","91개","92개"]}
+          ]){
+            await page.goto(new URL("research/#research="+sample.id,base).href,{waitUntil:"domcontentloaded",timeout:45000});
+            await page.waitForFunction(id=>document.querySelector("#detail > .id")?.textContent.includes(id),sample.id,{timeout:25000});
+            const compact=await page.locator("#detail .editorial-panel").innerText();
+            for(const word of sample.expected){
+              if(!compact.includes(word))errors.push(sample.id+" v5 causal/ROI insight missing: "+word);
+            }
+          }
+          detail+=" + Cunning downstream/event gates + wine OR-path + cash bag ROI";
         }
         if(slug==="manufacture"){
           await page.goto(new URL("manufacture/#recipe=STR_WARRIOR_SUMMONING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
