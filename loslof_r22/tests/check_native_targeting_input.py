@@ -29,6 +29,14 @@ checks={
         and "_currentAction.waypoints.push_back(pos);" in main,
     "map follows game action's first-click target": "native->waypoints.front()" in overlay
         and "Options::battleConfirmFireMode" in overlay,
+    "native first click switches cursor from target to firing source":
+        "const bool confirmedTarget = Options::battleConfirmFireMode &&" in overlay and
+        "const Position source = confirmedTarget ? cursor : r22PlannedPosition(soldier);" in overlay
+        and "const Position target = confirmedTarget ? native->waypoints.front() : cursor;" in overlay,
+    "source cursor travels through LOS, LOF and sampling":
+        "Tile *startTile = _save->getTile(source);" in overlay
+        and "r22DrawVisibilityHull(source,eye,viewZ);" in overlay
+        and "r22DrawStats(source,target,goal,muzzle);" in overlay,
     "map only reads native targeting flag": "const bool nativeAim" in overlay
         and "native->targeting" in overlay,
     "map never creates alternate click lock": "_r22Locked" not in mapcpp
