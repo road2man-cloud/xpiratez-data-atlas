@@ -30,6 +30,7 @@ HEADER=r'''
     unsigned long long _r22HullHash = 0;
     Uint32 _r22HullCheckedAt = 0;
     size_t _r22HullNextIndex = 0; // progressive scan: at most 64 candidate rays/frame
+    bool _r22HullWorkPending = false; // ticker, not render, requests next incremental frame
 '''
 
 METHODS=r'''
@@ -64,7 +65,7 @@ Position Map::r22PlannedPosition(const BattleUnit *unit) const
 }
 
 // Restore LOS outward perimeter while retaining R21's 1x1 INTERNAL pixel dots.
-// Bound voxel traces to 64 candidates per frame. An 850ms cache refresh and
+// Bound voxel traces to 64 candidates per frame. Cache expiry and
 // target/stance/position changes reset the scan, without a single-frame
 // 1,000-ray freeze. Draw completed candidates while the scan converges.
 void Map::r22DrawVisibilityHull(const Position &source,const Position &eye,int level)
@@ -120,7 +121,8 @@ void Map::r22DrawVisibilityHull(const Position &source,const Position &eye,int l
             path.back().toTile()==tile->getPosition()))
             _r22VisibleHull[size_t(y*width+x)]=1;
     }
-    if(_r22HullNextIndex<scanTotal) _redraw=true;
+    _r22HullWorkPending = _r22HullNextIndex < scanTotal;
+    // Avoid forcing a complete terrain repaint inside the render loop.
 
     const auto visible=[&](int x,int y)->bool
     {

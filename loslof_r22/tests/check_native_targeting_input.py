@@ -31,16 +31,18 @@ checks={
         and "Options::battleConfirmFireMode" in overlay,
     "native first click switches cursor from target to firing source":
         "const bool confirmedTarget = Options::battleConfirmFireMode &&" in overlay and
-        "const Position source = confirmedTarget ? cursor : r22PlannedPosition(soldier);" in overlay
-        and "const Position target = confirmedTarget ? native->waypoints.front() : cursor;" in overlay,
+        "const Position target = confirmedTarget ? native->waypoints.front() : cursor;" in overlay
+        and "const Position source = (confirmedTarget && cursor != target) ?" in overlay
+        and "cursor : r22PlannedPosition(soldier);" in overlay,
     "source cursor travels through LOS, LOF and sampling":
         "Tile *startTile = _save->getTile(source);" in overlay
         and "r22DrawVisibilityHull(source,eye,viewZ);" in overlay
         and "r22DrawStats(source,target,goal,muzzle);" in overlay,
-    "skip zero range just after first native target click":
-        "confirmedTarget && (source == target ||" in overlay
-        and "_r22StatsKey = 0;" in overlay,
+    "keep overlay visible at first-click cursor overlap":
+        "const Position source = (confirmedTarget && cursor != target) ?" in overlay
+        and "cursor : r22PlannedPosition(soldier);" in overlay,
     "skip source tile when still unexplored":
+        "confirmedTarget && cursor != target &&" in overlay and
         "startTile && !startTile->isDiscovered(O_FLOOR)" in overlay,
     "map only reads native targeting flag": "const bool nativeAim" in overlay
         and "native->targeting" in overlay,

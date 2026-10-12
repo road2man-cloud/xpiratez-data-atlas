@@ -58,7 +58,8 @@ checks={
     "36-LOS hull rays progressive under per-frame budget": (
         "_r22HullNextIndex = 0;" in maph and
         "while(_r22HullNextIndex<scanTotal && processed<64U)" in mapcpp and
-        "if(_r22HullNextIndex<scanTotal) _redraw=true;" in mapcpp),
+        "_r22HullWorkPending = _r22HullNextIndex < scanTotal;" in mapcpp and
+        "_r22HullWorkPending = false;" in maph),
 }
 # The 27th check is intentionally not an argument that patch failure logic
 # has been tested. That behavior is exercised by the strict patch scripts.

@@ -61,8 +61,9 @@ checks={
       "getSelectorPosition(&cursor)" in overlay,
   "First native confirm click switches cursor into virtual shooter position":
       "const bool confirmedTarget = Options::battleConfirmFireMode &&" in overlay and
-      "const Position source = confirmedTarget ? cursor : r22PlannedPosition(soldier);" in overlay and
-      "const Position target = confirmedTarget ? native->waypoints.front() : cursor;" in overlay,
+      "const Position target = confirmedTarget ? native->waypoints.front() : cursor;" in overlay and
+      "const Position source = (confirmedTarget && cursor != target) ?" in overlay and
+      "cursor : r22PlannedPosition(soldier);" in overlay,
   "Firing traces and stats depend on virtual origin":
       "Tile *startTile = _save->getTile(source);" in overlay and
       "getOriginVoxel(testAction, startTile)" in overlay and
@@ -73,11 +74,19 @@ checks={
       "testAction.type = BA_SNAPSHOT;" not in overlay,
   "Native first target does not create second click interceptor":
       "r22PreviewClick" not in state and "r22PreviewClick" not in m,
-  "No zero-range sampling before cursor leaves native marked target":
-      "confirmedTarget && (source == target ||" in overlay and
-      "_r22StatsText.clear();" in overlay,
+  "Confirmed target overlap retains HUD using the real soldier origin":
+      "const Position source = (confirmedTarget && cursor != target) ?" in overlay and
+      "cursor : r22PlannedPosition(soldier);" in overlay and
+      "if (confirmedTarget && (source == target" not in overlay,
   "No hidden map geometry leaked from unexplored virtual shooter origin":
+      "confirmedTarget && cursor != target &&" in overlay and
       "startTile && !startTile->isDiscovered(O_FLOOR)" in overlay,
+  "No HUD clutter: FROM CURSOR and n= count both absent":
+      '"FROM CURSOR | "' not in overlay and
+      '"% n="' not in stats,
+  "Incremental redraw comes from Map ticker rather than render":
+      "_r22LastUiRefresh >= 90U" in m and
+      "if (_r22SampleCount < 1024U) _redraw=true;" not in stats,
   "Native first click target is the game's own confirmation":
       "Options::battleConfirmFireMode" in overlay and
       "!native->sprayTargeting" in overlay,

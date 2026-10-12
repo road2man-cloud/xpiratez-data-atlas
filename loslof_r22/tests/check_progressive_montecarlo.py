@@ -36,8 +36,12 @@ checks={
   "no premature recompute of incomplete result":
       "_r22SampleCount >= 1024U" in segment and "staleFinished" in segment,
   "F8 and target lock cache reset": "_r22StatsKey = 0;" in m,
-  "convergence drives redraw, without force-redraw once finished":
-      "if (_r22SampleCount < 1024U) _redraw=true;" in segment,
+  "sampling rate limited and never forces terrain redraw":
+      "now-_r22StatsBatchTick>=95U" in segment and
+      "const unsigned traceBudget=newScenario ? 24U : 96U;" in segment and
+      "if (_r22SampleCount < 1024U) _redraw=true;" not in segment,
+  "sampling timestamp state is map-local":
+      "_r22StatsBatchTick = 0;" in h,
   "risk hatching at medium/high rates": "if (riskPct>=25U)" in segment
       and "if (riskPct>=50U)" in segment,
   "do not flood map with translucent fills": "SDL_FillRect" not in segment,

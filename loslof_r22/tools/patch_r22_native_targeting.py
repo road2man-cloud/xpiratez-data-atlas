@@ -121,6 +121,7 @@ NEW_OVERLAY_HEAD='''    BattleUnit *soldier = _save->getSelectedUnit();
         _r22StatsText.clear();
         _r22TileRisks.clear();
         _r22SampleCount = 0;
+        _r22HullWorkPending = false;
         if (_cursorType == CT_NONE) return;
         Pathfinding *finder = _save->getPathfinding();
         if (finder && finder->isPathPreviewed())

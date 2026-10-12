@@ -21,6 +21,7 @@ FIELDS = r'''
         const Position& aim, const Position& muzzle);
     unsigned long long _r22StatsKey = 0;
     unsigned long _r22StatsUpdated = 0;
+    Uint32 _r22StatsBatchTick = 0; // minimum 95ms between progressive batches
     std::string _r22StatsText;
     std::map<int, unsigned> _r22TileRisks;
     unsigned _r22SampleCount = 0;
@@ -147,12 +148,20 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
         _r22RiskSamples=0;
         _r22StatsKey=key;
         _r22StatsUpdated=now;
+        _r22StatsBatchTick=0;
     }
-    if (_r22SampleCount < 1024U)
+    // Animation redraws and mouse movement may run much faster than the
+    // sampling budget. Do not repeat the expensive native traces each draw.
+    if (_r22SampleCount < 1024U &&
+        (newScenario || staleFinished || now-_r22StatsBatchTick>=95U))
     {
+        _r22StatsBatchTick=now;
         const unsigned projectilesPerTrial=static_cast<unsigned>(shots*pellets);
+        // Keep the first hover responsive. Allow more samples only when
+        // the same cursor/weapon scenario persists. Worst case <=256 traces.
+        const unsigned traceBudget=newScenario ? 24U : 96U;
         const unsigned frameBudget=std::max(1U,
-            std::min(64U,256U/projectilesPerTrial));
+            std::min(64U,std::min(256U,traceBudget)/projectilesPerTrial));
         const unsigned samples=std::min(1024U-_r22SampleCount,frameBudget);
         // Each batch has its own deterministic seed; never reseed every
         // frame to the same prefix of the old samples.
@@ -268,10 +277,11 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
               << "H " << _r22HitSamples*100U/_r22SampleCount
               << "% B " << _r22BlockedSamples*100U/_r22SampleCount
               << "% M " << _r22MissSamples*100U/_r22SampleCount
-              << "% n=" << _r22SampleCount << "/1024";
+              << "%";
         _r22StatsText=label.str();
-        if (_r22SampleCount < 1024U) _redraw=true;
-        else _r22StatsUpdated=now;
+        if (_r22SampleCount >= 1024U) _r22StatsUpdated=now;
+        // Map::think() schedules the next incremental redraw at a bounded
+        // rate; never force another full frame from within drawing.
     }
 
     // Show at most one outline per tile, no opaque filled surfaces.
