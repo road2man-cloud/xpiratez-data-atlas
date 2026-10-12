@@ -16,8 +16,10 @@ segment=m.split("void Map::r22DrawStats(",1)[1].split("\n}\n",1)[0]
 checks={
   "progressive 1024 hit/miss/block trials": "_r22SampleCount < 1024U" in segment
       and "1024U-_r22SampleCount" in segment,
-  "bounded per-frame projectile count": "256U/projectilesPerTrial" in segment
-      and "frameBudget" in segment and "shots*pellets > 256" in segment,
+  "bounded per-frame projectile count":
+      "std::min(256U,traceBudget)/projectilesPerTrial" in segment
+      and "frameBudget" in segment and "shots*pellets > 256" in segment
+      and "const unsigned traceBudget=newScenario ? 24U : 96U;" in segment,
   "R19 384-sample risk heatmap limit": "_r22RiskSamples < 384U" in segment,
   "risk voxel-tile insert is skipped for all HBM-only trials":
       "if (_r22RiskSamples < 384U)\n            {" in segment and
@@ -71,7 +73,8 @@ for shots,pellets in [(1,1),(1,7),(3,7),(10,10),(16,16)]:
     risk=0
     frames=0
     while remaining:
-        budget=max(1,min(64,256//per))
+        trace_budget=24 if frames==0 else 96
+        budget=max(1,min(64,min(256,trace_budget)//per))
         samples=min(remaining,budget)
         assert samples*per<=256, (shots,pellets,samples)
         assert 0<samples<=64
