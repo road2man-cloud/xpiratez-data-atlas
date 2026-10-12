@@ -16,6 +16,7 @@ state=read("src/Battlescape/BattlescapeState.cpp")
 main=read("src/Battlescape/BattlescapeGame.cpp")
 keyboard=mapcpp.split("void Map::keyboardPress(Action *action, State *state)",1)[1].split(
     "\n}\n",1)[0]
+backslash=mapcpp.split("bool Map::r22ConsumeBackslash()",1)[1].split("\n}\n",1)[0]
 overlay=mapcpp.split("void Map::r22DrawOverlay()",1)[1].split("\n}\n",1)[0]
 stats=mapcpp.split("void Map::r22DrawStats(",1)[1].split("\n}\n",1)[0]
 
@@ -35,11 +36,12 @@ checks={
         and "_r22Target" not in mapcpp and "_r22Locked" not in maph,
     "F8 is just default-off overlay switch": "bool _r22On = false;" in maph
         and "_r22On = !_r22On;" in keyboard,
-    "backslash uses actual SDLK_BACKSLASH": "key == SDLK_BACKSLASH" in keyboard,
-    "backslash toggles only while native aiming": "native->targeting" in keyboard
-        and "native->actor == actor" in keyboard,
-    "virtual stance not game stance": "_r22Kneel = !current;" in keyboard and "_r22StanceOverride = true;" in keyboard
-        and "->kneel(" not in keyboard,
+    "backslash uses actual SDLK_BACKSLASH": "key == SDLK_BACKSLASH" in keyboard
+        and "SDLK_BACKSLASH" in state and "_map->r22ConsumeBackslash()" in state,
+    "backslash toggles only while native aiming": "!native->targeting" in backslash
+        and "native->actor!=actor" in backslash,
+    "virtual stance not game stance": "_r22Kneel=!current;" in backslash and "_r22StanceOverride=true;" in backslash
+        and "->kneel(" not in backslash,
     "virtual stance affects actual voxel height": "int stanceDelta = (_r22StanceOverride" in overlay
         and "soldier->getKneelHeight()" in overlay,
     "virtual stance affects HBM accuracy": "_r22StanceOverride && _r22Kneel" in stats,
@@ -55,6 +57,8 @@ checks={
     "no offscreen duplicate HBM": 'label<<" "<<_r22StatsText' not in mapcpp,
     "native game click state not rewritten": "getCurrentAction()->targeting =" not in state,
     "normal OXCE map click remains installed": "void BattlescapeState::mapClick(Action *action)" in state,
+    "backslash outranks original GUI button deselect": state.index("_map->r22ConsumeBackslash()") <
+        state.index("State::handle(action);",state.index("inline void BattlescapeState::handle(")),
 }
 failures=[name for name,ok in checks.items() if not ok]
 for name,ok in checks.items():print(("PASS" if ok else "FAIL")+" "+name)
