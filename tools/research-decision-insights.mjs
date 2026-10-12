@@ -28,6 +28,16 @@ export function buildResearchDecisionInsight({
   if(requires.length){
     parts.push("우회 불가 필수조건(requires): "+preview(requires,ko)+" 전부 완료(AND). unlocks만으로는 건너뛸 수 없습니다.");
   }
+  const prerequisiteSamples=direct.filter(id=>{
+    const research=detailOfId(id);
+    return research&&research.needItem;
+  });
+  if(prerequisiteSamples.length){
+    const consumed=prerequisiteSamples.filter(id=>detailOfId(id)?.destroyItem);
+    parts.push("선행 연구용 표본: "+preview(prerequisiteSamples,ko,5)+
+      "의 실물을 연구 기지에 확보해야 합니다."+
+      (consumed.length?" 연구 시 소모되는 표본: "+preview(consumed,ko,5)+".":""));
+  }
   // Explain synthetic gates that appear impossible when all their dependencies
   // are treated as mandatory, but have OR unlocks sources instead.
   const synthetic=direct.flatMap(id=>{
@@ -66,8 +76,8 @@ export function buildResearchDecisionInsight({
   if(pay){
     const input=money(pay.inputSell),output=money(pay.outputSell),delta=pay.margin;
     verdict=ko(row.id)+" "+pay.inputsPerOpen+"개를 즉시 팔면 "+input+", 개봉 후 크레딧 칩을 팔면 "+
-      output+"입니다. 제조 1회당 "+(delta>=0?"+":"")+money(Math.abs(delta))+
-      (delta>=0?"가 남습니다.":"의 매각가치 손실이 납니다.");
+      output+"입니다. 제조 1회당 "+
+      (delta>=0?"순매각 차익 +"+money(delta)+"가 생깁니다.":"매각가치가 "+money(Math.abs(delta))+" 감소합니다.");
     const details=["개봉당 투입 "+ko(row.id)+" ×"+pay.inputsPerOpen,"제조 현금비 "+money(pay.manufactureCashCost),
       "기술자 작업량 "+n(pay.time)];
     if(pay.specimenConsumed&&delta>0&&pay.additionalOpens!==null){
