@@ -66,6 +66,11 @@ jobs:
         run: |
           python loslof_r22/tools/patch_r22_safety.py engine
 
+      - name: Restore R21 throwing native range and cached parabolic trajectory
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r22_throw.py engine
+
       - name: Fix upstream static SDL linkage for MSYS2 MinGW64 DLL imports
         shell: msys2 {0}
         run: |
@@ -86,7 +91,7 @@ jobs:
         shell: msys2 {0}
         run: |
           python loslof_r22/tests/check_integrated_r22.py engine
-          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py
+          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py
 
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
