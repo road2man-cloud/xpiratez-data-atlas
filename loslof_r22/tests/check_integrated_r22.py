@@ -21,8 +21,8 @@ flycpp=read("src/Battlescape/ProjectileFlyBState.cpp")
 flyh=read("src/Battlescape/ProjectileFlyBState.h")
 checks={
     "01-F8 default OFF and toggle": ("bool _r22On = false;" in maph and "key == SDLK_F8" in mapcpp),
-    "02-target lock and right click unlock": ("bool Map::r22PreviewClick" in mapcpp and "_r22Locked = true" in mapcpp and "if (right)" in mapcpp),
-    "03-native input intercept": ("r22PreviewClick(pos," in state),
+    "02-native confirmed target": ("Options::battleConfirmFireMode" in mapcpp and "native->waypoints.front()" in mapcpp),
+    "03-no click interception, preserve movement": ("r22PreviewClick" not in state and "_battleGame->primaryAction(pos);" in state),
     "04-independent virtual kneel": ("_r22Kneel" in maph and "getKneelHeight()" in mapcpp and "getStandHeight()" in mapcpp),
     "05-OXCE true planned position": ("r22PlannedPosition" in mapcpp and "finder->getTUCost" in mapcpp and "path.rbegin()" in mapcpp),
     "06-1x1 internal LOS dot": ("setPixel(mid.x,mid.y,48)" in mapcpp),
