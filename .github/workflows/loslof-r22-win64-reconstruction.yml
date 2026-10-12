@@ -76,6 +76,11 @@ jobs:
         run: |
           python loslof_r22/tools/patch_r22_native_targeting.py engine
 
+      - name: Match native voxel aim and suppress impossible first-shot bursts
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r22_native_ballistic_aim.py engine
+
       - name: Fix upstream static SDL linkage for MSYS2 MinGW64 DLL imports
         shell: msys2 {0}
         run: |
@@ -100,7 +105,8 @@ jobs:
           python loslof_r22/tests/check_progressive_montecarlo.py engine
           python loslof_r22/tests/check_native_targeting_input.py engine
           python loslof_r22/tests/check_native_targeting.py engine
-          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py
+          python loslof_r22/tests/check_native_ballistic_aim.py engine
+          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py loslof_r22/tools/patch_r22_native_ballistic_aim.py
 
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
@@ -163,7 +169,7 @@ jobs:
               "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
               f"R22 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
               f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
-              "Patch chain: preview > stats > recovery > safety > throw > native targeting\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting > native ballistic aim\\n"
               "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
               "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
               encoding="utf-8")
@@ -182,6 +188,7 @@ jobs:
               "9. During targeting, backslash toggles virtual STAND/KNEEL without TU use.\\n"
               "   Virtual stance has a small left indicator; label width stays five letters.\\n"
               "   Palette-adaptive dark HUD plate and bright letters prevent terrain camouflage.\\n"
+              "   NO LOF is shown when native visible-target voxel scan finds no firing path.\\n"
               "10. THROW shows only range/arc status, not gun H/B/M.\\n"
               "11. Never use an unverified beta executable for your only campaign save.\\n"
               "12. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
