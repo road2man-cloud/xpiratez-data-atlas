@@ -334,6 +334,18 @@ function nextAction(row,d,i){
 }
 
 function routeSummary(row,d,i){
+  // Avoid misleading 400+-topic recursive cost sums as the default explanation:
+  // the sum counts mutually exclusive/alternative paths and is not a route.
+  // Preserve two thoroughly regression-tested examples with important, named
+  // nominal path details for continuity.
+  if(!["STR_LITTLE_BIRD_ASSEMBLY","STR_CHARMY_DANCE_TRAINING"].includes(row.id)){
+    const rq=i.researchRequirements||{};
+    const facts=["자체 연구량 "+(Number.isFinite(row.cost)?num(row.cost):"미지정")];
+    if(rq.needItem)facts.push("표본 "+(rq.sampleItem?ko(rq.sampleItem):row.koName)+(rq.destroyItem?" 소모":" 필요"));
+    if(list(rq.requiresBaseFunc).length)facts.push("기지 "+names(rq.requiresBaseFunc,3)+" 기능");
+    if(roleRefs(i,"research-granted-by").length||roleRefs(i,"event-grant").length)facts.push("직접 연구 외 보상 경로 존재");
+    return row.koName+": "+facts.join(" / ")+". 재귀 선행량 합계는 대체 해금·배타 분기를 포함할 수 있어 실제 최소 비용으로 쓰지 않습니다.";
+  }
   const p=i.prerequisite||{},rq=i.researchRequirements||{},parts=[],total=(p.prerequisiteCost||0)+(row.cost||0);
   if(Number.isFinite(row.cost))parts.push("자체 연구량 "+num(row.cost));
   else parts.push("자체 연구량이 명시되지 않은 이벤트/플래그형 항목");
