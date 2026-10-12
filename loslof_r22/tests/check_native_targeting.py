@@ -63,6 +63,10 @@ checks={
       "Tile *startTile = _save->getTile(source);" in overlay and
       "getOriginVoxel(testAction, startTile)" in overlay and
       "r22DrawStats(source,target,goal,muzzle);" in overlay,
+  "Virtual muzzle copies native selected fire mode and offsets":
+      "BattleAction testAction = *native;" in overlay and
+      "testAction.target = target;" in overlay and
+      "testAction.type = BA_SNAPSHOT;" not in overlay,
   "Native first target does not create second click interceptor":
       "r22PreviewClick" not in state and "r22PreviewClick" not in m,
   "No zero-range sampling before cursor leaves native marked target":
