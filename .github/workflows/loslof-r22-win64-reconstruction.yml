@@ -51,6 +51,22 @@ jobs:
         run: |
           python loslof_r22/tools/patch_r22_preview.py engine
 
+      - name: Fix upstream static SDL linkage for MSYS2 MinGW64 DLL imports
+        shell: msys2 {0}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("engine/src/CMakeLists.txt")
+          original = p.read_text(encoding="utf-8")
+          updated, number = re.subn(r"set\s*\(\s*static_flags\s+-static\s*\)",
+                                    "set ( static_flags )", original)
+          if number != 1:
+              raise SystemExit(f"Expected exactly one upstream MinGW '-static' flag, found {number}")
+          p.write_text(updated, encoding="utf-8")
+          print("Removed upstream -static so MSYS2 SDL 1.2 import libraries and DLLs can link")
+          PY
+
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
         run: |
