@@ -76,6 +76,13 @@ checks={
       '" | THROW OK"' in throw and '" | THROW BLOCKED"' in throw,
   "H/B/M labels indicate sampling":
       'label << "ACC~"' in stats,
+  "SIM shown only when virtual and actual stance differ":
+      "const bool simulated = _r22StanceOverride &&" in overlay and
+      "if (simulated) hud << \"SIM \";" in overlay and
+      "if (_r22StanceOverride && virtualKneeled != actor->isKneeled())" in throw,
+  "F8 resets throw preview state as well as gun statistics":
+      "_r22ThrowTrajectory.clear();" in keys and
+      "_r22ThrowValid = false;" in keys,
 }
 failed=[]
 for name,valid in checks.items():
