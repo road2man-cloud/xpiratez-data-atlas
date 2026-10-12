@@ -55,6 +55,16 @@ checks={
   "Fire-aim target is cursor with no click":
       "native->waypoints.front() : cursor" in overlay and
       "getSelectorPosition(&cursor)" in overlay,
+  "First native confirm click switches cursor into virtual shooter position":
+      "const bool confirmedTarget = Options::battleConfirmFireMode &&" in overlay and
+      "const Position source = confirmedTarget ? cursor : r22PlannedPosition(soldier);" in overlay and
+      "const Position target = confirmedTarget ? native->waypoints.front() : cursor;" in overlay,
+  "Firing traces and stats depend on virtual origin":
+      "Tile *startTile = _save->getTile(source);" in overlay and
+      "getOriginVoxel(testAction, startTile)" in overlay and
+      "r22DrawStats(source,target,goal,muzzle);" in overlay,
+  "Native first target does not create second click interceptor":
+      "r22PreviewClick" not in state and "r22PreviewClick" not in m,
   "Native first click target is the game's own confirmation":
       "Options::battleConfirmFireMode" in overlay and
       "!native->sprayTargeting" in overlay,
