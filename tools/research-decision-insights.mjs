@@ -1,7 +1,7 @@
 // Human-facing research decisions: causal gates, alternatives, and real net economic value.
 // Keep the raw research graph unchanged. This layer explains how the graph is traversed.
 const arr=x=>Array.isArray(x)?x:[];
-const uniq=xs=>[...new Set(xs.filter(x=>typeof x==="string"&&x))];
+const uniq=xs=>[...new Set(arr(xs).filter(x=>typeof x==="string"&&x))];
 const n=x=>Number(x).toLocaleString("ko-KR");
 const money=x=>"$"+n(x);
 const preview=(ids,ko,limit=7)=>uniq(ids).slice(0,limit).map(ko).join("·")+
