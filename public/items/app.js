@@ -309,14 +309,22 @@ function prerequisiteDetail(id){
 function researchEditorialMarkup(d){
   const e=d.editorial;if(!e)return"";
   const row=(label,text,kind="")=>text?`<div class="editorial-row ${kind}"><span>${esc(label)}</span><p>${esc(text)}</p></div>`:"";
-  // Decision first; generic graph narration and raw cross-references stay
-  // accessible, but no longer occupy the whole initial drawer.
+  const names=(ids,max=5)=>{const all=arr(ids);return all.slice(0,max).map(id=>entityNames[id]?.[0]||id).join("·")+(all.length>max?" 외 "+(all.length-max)+"개":"");};
+  const deps=arr(d.dependencies),after=arr(d.requiredBy),explicit=arr(d.unlocks);
+  const ordinaryGate=deps.length?"일반 경로: "+names(deps,5)+" 모두 충족(AND). "+
+    "명시 unlocks 출처가 있으면 dependencies는 우회 가능하나 requires는 우회하지 못합니다.":"";
+  const ordinaryAfter=after.length?"후속 "+after.length+"개의 일반 선행 중 하나: "+names(after,3)+
+    ". 충분조건이 아니며 나머지 선행·requires가 필요합니다. 후속에 별도 unlocks가 있다면 필수 경로도 아닐 수 있습니다.":"";
+  const ordinaryUnlocks=explicit.length?"명시적 unlocks: "+names(explicit,3)+
+    ". 대상의 dependencies를 우회하지만 requires·기지·실물 조건은 별도입니다.":"";
+  // Decision first; the same generic causal disclaimer is generated from
+  // canonical data at display time rather than copied to thousands of records.
   return`<section class="section editorial-panel">
     <div class="insight-heading"><h3>GPT 플레이 인사이트</h3><span class="evidence-tag gpt">필요·충분조건 / 실질 보상 / 순이익</span></div>
     ${row("한눈에 보는 결론",e.verdict||e.core,"core")}
-    ${row("해금 조건 · AND / OR",e.unlockLogic||e.route,"route")}
+    ${row("해금 조건 · AND / OR",e.unlockLogic||ordinaryGate,"route")}
     ${row("현금화 손익 · 표본 비용 포함",e.economics,"decision")}
-    ${row("후속 연구 · 필요조건과 충분조건",e.downstreamLogic,"effect")}
+    ${row("후속 연구 · 필요조건과 충분조건",e.downstreamLogic||ordinaryAfter||ordinaryUnlocks,"effect")}
     ${row("놓치면 손해",e.criticalCaution,"watch")}
     <details class="editorial-extra">
       <summary>실행 방법·추가 맥락·전체 분석 펼치기</summary>
