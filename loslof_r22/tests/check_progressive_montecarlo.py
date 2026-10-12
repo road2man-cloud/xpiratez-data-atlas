@@ -19,6 +19,11 @@ checks={
   "bounded per-frame projectile count": "256U/projectilesPerTrial" in segment
       and "frameBudget" in segment and "shots*pellets > 256" in segment,
   "R19 384-sample risk heatmap limit": "_r22RiskSamples < 384U" in segment,
+  "risk voxel-tile insert is skipped for all HBM-only trials":
+      "if (_r22RiskSamples < 384U)\n            {" in segment and
+      "int previousTile=-1;" in segment and
+      "if (tileIndex != previousTile)" in segment and
+      "risk.insert(tileIndex);" in segment,
   "separate risk probability denominator": "entry.second*100U<_r22RiskSamples" in segment
       and "entry.second*100U/_r22RiskSamples" in segment,
   "nonrepeating deterministic per-batch seed":

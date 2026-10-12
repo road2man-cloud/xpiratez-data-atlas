@@ -197,12 +197,25 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
                 return;
             }
             impact=path.back();
-            for (const Position& voxel : path)
+            // Only the first 384 trials contribute to risk. Avoid building
+            // enormous voxel->tile sets for the remaining 640 H/B/M trials.
+            if (_r22RiskSamples < 384U)
             {
-                if (voxel.x<0 || voxel.y<0 || voxel.z<0) continue;
-                int tx=voxel.x/16,ty=voxel.y/16,tz=voxel.z/24;
-                if (tx>=width || ty>=length || tz>=height) continue;
-                risk.insert((tz*length+ty)*width+tx);
+                int previousTile=-1;
+                for (const Position& voxel : path)
+                {
+                    if (voxel.x<0 || voxel.y<0 || voxel.z<0) continue;
+                    int tx=voxel.x/16,ty=voxel.y/16,tz=voxel.z/24;
+                    if (tx>=width || ty>=length || tz>=height) continue;
+                    const int tileIndex=(tz*length+ty)*width+tx;
+                    // Many voxels share one tile; insert once per contiguous
+                    // tile segment, while the set still deduplicates pellets.
+                    if (tileIndex != previousTile)
+                    {
+                        risk.insert(tileIndex);
+                        previousTile=tileIndex;
+                    }
+                }
             }
             const Position collisionTile=impact.toTile();
             Tile *t=_save->getTile(collisionTile);
