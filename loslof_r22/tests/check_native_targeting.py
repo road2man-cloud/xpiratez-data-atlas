@@ -49,6 +49,10 @@ checks={
       overlay.index("if (!nativeAim)") < overlay.index("getSelectorPosition(&cursor)") and
       "_r22StatsText.clear();" in overlay and
       "_r22TileRisks.clear();" in overlay,
+  "Hidden native cursor retires stale stats before returning":
+      "const bool nativeAim = _cursorType != CT_NONE && native &&" in overlay and
+      overlay.index("_r22StatsText.clear();") < overlay.index("if (_cursorType == CT_NONE) return;") and
+      overlay.index("if (_cursorType == CT_NONE) return;") < overlay.index("getSelectorPosition(&cursor)"),
   "Native planned movement LOS remains accessible":
       "finder && finder->isPathPreviewed()" in overlay and
       "r22DrawVisibilityHull(planned,eye" in overlay,
