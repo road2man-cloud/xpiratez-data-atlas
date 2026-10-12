@@ -32,14 +32,19 @@ function editorial(id){
 for(const row of ix){
   const e=editorial(row.id);
   assert(e,"missing editorial "+row.id);
-  for(const field of ["verdict","unlockLogic"]){
-    assert(typeof e[field]==="string"&&e[field].trim().length>=20,row.id+" missing "+field);
+  assert(typeof e.verdict==="string"&&e.verdict.trim().length>=20,row.id+" missing verdict");
+  for(const field of ["verdict","unlockLogic","downstreamLogic"]){
+    assert(typeof e[field]==="string",row.id+" bad "+field);
     assert(!/\b(?:undefined|null|NaN|Infinity)\b/.test(e[field]),row.id+" broken "+field);
   }
-  if(row.requiredByCount>0){
-    assert(e.downstreamLogic.includes("충분조건이 아니"),row.id+" downstream must not imply sufficiency");
+  if(e.downstreamLogic){
+    assert(e.downstreamLogic.includes("충분조건이 아니")||e.downstreamLogic.includes("requires"),
+      row.id+" downstream must not imply unconditional sufficiency");
   }
 }
+const frontend=fs.readFileSync(path.resolve(dir,"..","app.js"),"utf8");
+assert(frontend.includes("충분조건이 아니며")&&frontend.includes("ordinaryGate"),
+  "frontend must explain normal downstream gate necessity without redundant sidecars");
 const wine=editorial("STR_WINE");
 for(const s of ["사과","코스모포르토바야 보드카","불길 위를 걷다","생존","파티(연관)"]){
   assert(wine.unlockLogic.includes(s),"wine missing actual prerequisite "+s);
