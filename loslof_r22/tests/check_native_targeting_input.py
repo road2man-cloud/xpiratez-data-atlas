@@ -38,17 +38,17 @@ checks={
     "backslash uses actual SDLK_BACKSLASH": "key == SDLK_BACKSLASH" in keyboard,
     "backslash toggles only while native aiming": "native->targeting" in keyboard
         and "native->actor == actor" in keyboard,
-    "virtual stance not game stance": "_r22Kneel = !_r22Kneel;" in keyboard
+    "virtual stance not game stance": "_r22Kneel = !current;" in keyboard and "_r22StanceOverride = true;" in keyboard
         and "->kneel(" not in keyboard,
-    "virtual stance affects actual voxel height": "int stanceDelta = (nativeAim" in overlay
+    "virtual stance affects actual voxel height": "int stanceDelta = (_r22StanceOverride" in overlay
         and "soldier->getKneelHeight()" in overlay,
-    "virtual stance affects HBM accuracy": "current->targeting && _r22Kneel" in stats,
-    "preserve LOS when moving": "r22DrawVisibilityHull(source,eye,viewZ);" in overlay,
+    "virtual stance affects HBM accuracy": "_r22StanceOverride && _r22Kneel" in stats,
+    "preserve LOS when moving": "r22DrawVisibilityHull(planned,eye" in overlay and "r22DrawVisibilityHull(source,eye,viewZ);" in overlay,
     "no HBM during movement": "if (!nativeAim)" in overlay
-        and "return; // F8 does not block walking" in overlay,
+        and overlay.index("if (!nativeAim)") < overlay.index("getSelectorPosition(&cursor)"),
     "native shot conditional HUD": "if (!_r22StatsText.empty())" in overlay
-        and "drawString(2,2,hud.c_str(),160);" in overlay,
-    "HUD includes virtual STAND or KNEEL": '"KNEEL  "' in overlay and '"STAND  "' in overlay,
+        and "drawString(2,2,line.c_str(),160);" in overlay,
+    "HUD includes virtual STAND or KNEEL": '"KNEEL" : "STAND"' in overlay and "_r22StanceOverride" in overlay,
     "old text instructions removed": "LOS/LOF LOCK:" not in mapcpp
         and "LMB=lock target" not in mapcpp,
     "stats HUD rendered once": "drawString(2,23,_r22StatsText.c_str()" not in mapcpp,
