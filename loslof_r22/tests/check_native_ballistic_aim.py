@@ -34,7 +34,8 @@ checks={
         "Position goal(target.x*16+8, target.y*16+8," in overlay
         and "goal=_r22NativeAimGoal;" in overlay
         and "canTargetUnit(" in overlay
-        and "false,aimUnit,true)" in overlay,
+        and "false,nullptr,true)" in overlay
+        and "false,aimUnit,true)" not in overlay,
     "sample muzzle adjusted to same offcentre candidate":
         "testAction.relativeOrigin=" in overlay
         and "getOriginVoxel(testAction, startTile)" in overlay,
@@ -51,7 +52,7 @@ checks={
     "no mutating original native BattleAction or gameplay input":
         "BattleAction testAction = *native;" in overlay
         and "BattleAction testSide=testAction;" in overlay
-        and "false,aimUnit,true)" in overlay,
+        and "false,nullptr,true)" in overlay,
     "first native bullet cancellation ends whole automatic burst":
         "rejectedByNative=true;" in stats
         and "if (shotIndex==1 && pellet==0 && nativeRejected)" in stats

@@ -71,6 +71,8 @@ def patch(maph, mapcpp, teh, tecpp):
     // Reuse native OXCE canTargetUnit's multi-voxel scan on a visible enemy.
     // This matters most when the centre is hidden but a head/side is exposed.
     // Off-centre firing tries CENTRE, LEFT, RIGHT in the same order as OXCE.
+    // potentialUnit MUST be null for a REAL visible enemy: passing aimUnit
+    // marks the target hypothetical and incorrectly accepts empty rays.
     // Never touch native BattleAction or mark obstacles on the real map.
     bool nativeNoLof = false;
     BattleUnit *aimUnit=targetTile->getUnit();
@@ -113,7 +115,7 @@ def patch(maph, mapcpp, teh, tecpp):
                 Position candidateGoal=goal;
                 if (_save->getTileEngine()->canTargetUnit(
                     &candidateOrigin,targetTile,&candidateGoal,soldier,
-                    false,aimUnit,true))
+                    false,nullptr,true))
                 {
                     _r22NativeAimFound=true;
                     _r22NativeAimSide=side;
