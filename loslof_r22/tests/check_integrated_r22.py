@@ -55,6 +55,10 @@ checks={
     "33-throw respects virtual actor position": ("const Position effective=previewPosition" in flycpp and "const Position *previewPosition = nullptr" in flyh),
     "34-throw arc ignores invisible actors": ("bool onlyVisible = false" in teh and "Position(0,0,0),true" in mapcpp),
     "35-throwing does not show old gun HBM": ('_r22StatsText.clear(); // Never display stale gun H/B/M' in mapcpp),
+    "36-LOS hull rays progressive under per-frame budget": (
+        "_r22HullNextIndex = 0;" in maph and
+        "while(_r22HullNextIndex<scanTotal && processed<64U)" in mapcpp and
+        "if(_r22HullNextIndex<scanTotal) _redraw=true;" in mapcpp),
 }
 # The 27th check is intentionally not an argument that patch failure logic
 # has been tested. That behavior is exercised by the strict patch scripts.
