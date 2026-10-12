@@ -185,10 +185,11 @@ def patch(header,cpp,state):
         "    const Position source = _r22Locked ? cursor : r22PlannedPosition(soldier);",
         '''    const bool confirmedTarget = Options::battleConfirmFireMode &&
         !native->sprayTargeting && !native->waypoints.empty();
-    const Position source = confirmedTarget ? cursor : r22PlannedPosition(soldier);''')
-    cpp=once(cpp,
-        "    const Position target = _r22Locked ? _r22Target : cursor;",
-        '''    const Position target = confirmedTarget ? native->waypoints.front() : cursor;''')
+    // A first-click cursor still resting on its target must retain the HUD:
+    // fall back to the true soldier position rather than trying a zero-length ray.
+    const Position target = confirmedTarget ? native->waypoints.front() : cursor;
+    const Position source = (confirmedTarget && cursor != target) ?
+        cursor : r22PlannedPosition(soldier);''')
     # Keep the selected firing mode and its relativeOrigin (centre/left/right).
     # Constructing a fake SNAPSHOT action silently gave AUTO/AIMED the wrong
     # muzzle offset for weapons with non-centre origins.
@@ -207,8 +208,8 @@ def patch(header,cpp,state):
     cpp=once(cpp,
         "    Tile *startTile = _save->getTile(source);",
         '''    Tile *startTile = _save->getTile(source);
-    if (confirmedTarget && (source == target ||
-        (startTile && !startTile->isDiscovered(O_FLOOR))))
+    if (confirmedTarget && cursor != target &&
+        startTile && !startTile->isDiscovered(O_FLOOR))
     {
         _r22StatsKey = 0;
         _r22StatsText.clear();
@@ -245,7 +246,6 @@ def patch(header,cpp,state):
     if (!_r22StatsText.empty())
     {
         std::ostringstream hud;
-        if (confirmedTarget) hud << "FROM CURSOR | ";
         const bool simulated = _r22StanceOverride &&
             (_r22Kneel != soldier->isKneeled());
         if (simulated) hud << "SIM ";
@@ -265,6 +265,30 @@ def patch(header,cpp,state):
     cpp=once(cpp,
         '''        label << "APPROX ACC " << int(accuracy*100.0+0.5) << "% "''',
         '''        label << "ACC~" << int(accuracy*100.0+0.5) << "% "''')
+    # No continuously forced full-map repaints for unfinished Monte Carlo
+    # and LOS hull work. Schedule capped refreshes from the native map ticker.
+    cpp=once(cpp,
+        '''	_obstacleTimer->think(0, this);
+}''',
+        '''	_obstacleTimer->think(0, this);
+    if (_r22On && _save && _save->getSide() == FACTION_PLAYER &&
+        _cursorType != CT_NONE &&
+        ((_r22StatsKey != 0 && _r22SampleCount < 1024U) ||
+         _r22HullWorkPending))
+    {
+        const Uint32 tick = SDL_GetTicks();
+        if (tick - _r22LastUiRefresh >= 90U)
+        {
+            _r22LastUiRefresh = tick;
+            _redraw = true;
+        }
+    }
+}''')
+    header=once(header,
+        '    bool _r22StanceOverride = false;\n',
+        '    bool _r22StanceOverride = false;\n'
+        '    Uint32 _r22LastUiRefresh = 0; // at most one incremental redraw per 90ms\n')
+
     cpp=once(cpp,
         '''    drawString(2,37,_r22ThrowValid ?
         "THROW ARC: REACHABLE (ACCURACY NOT SAMPLED)" :
