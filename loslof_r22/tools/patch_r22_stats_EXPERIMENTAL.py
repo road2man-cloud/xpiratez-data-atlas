@@ -57,7 +57,7 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
     auto mix=[&](unsigned long long value) {
         key^=value; key*=1099511628211ULL;
     };
-    for (int x : {shooter->getId(), origin.x,origin.y,origin.z,
+    for (int x : std::initializer_list<int>{shooter->getId(), origin.x,origin.y,origin.z,
                   target.x,target.y,target.z,aim.x,aim.y,aim.z,
                   muzzle.x,muzzle.y,muzzle.z,(int)current->type,
                   (int)_r22Kneel,(int)shooter->isKneeled(),
@@ -107,7 +107,7 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
             BattleAction fired=action;
             fired.autoShotCounter=shotIndex;
             Projectile projectile(_game->getMod(), _save, fired, origin, aimed, ammo);
-            const VoxelType status=projectile.calculateTrajectory(acc,muzzle);
+            const int status=projectile.calculateTrajectory(acc,muzzle);
             const std::vector<Position>& path=projectile.getTrajectoryForPreview();
             if (path.empty())
             {
