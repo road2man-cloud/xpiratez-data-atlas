@@ -1,0 +1,119 @@
+name: OXCE 8.6.0 R22 Reconstruction Windows Test (UNVERIFIED)
+on:
+  push:
+    branches:
+      - loslof-r22-reconstruction-ci-20261012
+    paths:
+      - 'loslof_r22/**'
+      - '.github/workflows/loslof-r22-win64-reconstruction.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 50
+    steps:
+      - name: Checkout reconstruction scripts
+        uses: actions/checkout@v4
+
+      - name: Install MSYS2, GCC, CMake and SDL 1.2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git python
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-SDL
+            mingw-w64-x86_64-SDL_gfx
+            mingw-w64-x86_64-SDL_image
+            mingw-w64-x86_64-SDL_mixer
+
+      - name: Fetch pinned upstream, fail on changed engine revision
+        shell: msys2 {0}
+        run: |
+          git init engine
+          git -C engine remote add origin https://github.com/MeridianOXC/OpenXcom.git
+          git -C engine fetch --depth=1 origin 3e722e09b655ab67acfb59fc8585dc70b583826c
+          git -C engine checkout --detach FETCH_HEAD
+          test "$(git -C engine rev-parse HEAD)" = "3e722e09b655ab67acfb59fc8585dc70b583826c"
+          grep -E 'OPENXCOM_VERSION_SHORT "Extended 8.6(\.0)?"' engine/src/version.h
+
+      - name: Apply strict non-destructive R22 preview integration
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r22_preview.py engine
+
+      - name: Configure MinGW64 (actual OXCE engine)
+        shell: msys2 {0}
+        run: |
+          cmake -G Ninja -S engine -B build -DCMAKE_BUILD_TYPE=Release -DDEV_BUILD=OFF -DBUILD_PACKAGE=OFF
+
+      - name: Compile engine executable
+        shell: msys2 {0}
+        run: |
+          cmake --build build --parallel 4
+          test -s build/bin/openxcom.exe
+
+      - name: Recursively collect non-system DLLs, package proof and hashes
+        shell: msys2 {0}
+        run: |
+          python - <<'PY'
+          import hashlib, re, shutil, subprocess
+          from pathlib import Path
+          exe = Path("build/bin/openxcom.exe")
+          assert exe.is_file(), "Missing Windows executable"
+          out = Path("dist")
+          out.mkdir(exist_ok=True)
+          result = out / "OpenXcomEx_LOSLOF_R22_RECONSTRUCTION_UNVERIFIED.exe"
+          shutil.copy2(exe, result)
+          pending = [result]
+          visited = set()
+          prefix = Path("/mingw64/bin")
+          while pending:
+              binary = pending.pop()
+              imports = subprocess.check_output(["objdump", "-p", str(binary)], text=True, errors="replace")
+              for dll in re.findall(r"^\s*DLL Name:\s*(\S+)", imports, flags=re.MULTILINE):
+                  low = dll.lower()
+                  if low in visited:
+                      continue
+                  visited.add(low)
+                  src = prefix / dll
+                  if not src.exists():
+                      candidates = [p for p in prefix.glob("*.dll") if p.name.lower() == low]
+                      src = candidates[0] if candidates else src
+                  if src.is_file():
+                      dst = out / src.name
+                      shutil.copy2(src, dst)
+                      pending.append(dst)
+          shutil.copy2("engine/LICENSE.txt", out/"OXCE_GPL_LICENSE.txt")
+          (out/"UNVERIFIED.txt").write_text(
+              "OXCE 8.6.0 pinned upstream 3e722e09b655ab67acfb59fc8585dc70b583826c\n"
+              "Reconstruction preview ONLY: F8, target lock, LOS/LOF lines, 1px overlay.\n"
+              "NOT equivalent to R21. H/B/M, 7 pellet, burst, risk map, and XPiratez savegame\n"
+              "compatibility have NOT been validated. DO NOT replace your original executable.\n",
+              encoding="utf-8")
+          manifest = []
+          for p in sorted(out.iterdir()):
+              digest = hashlib.sha256(p.read_bytes()).hexdigest()
+              manifest.append(f"{digest}  {p.name}")
+          (out/"SHA256SUMS.txt").write_text("\n".join(manifest)+"\n",encoding="utf-8")
+          print("Package files:")
+          for p in sorted(out.iterdir()):
+              print(p.name, p.stat().st_size)
+          PY
+
+      - name: Upload unverified Windows build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LOSLOF-R22-RECONSTRUCTION-UNVERIFIED-WIN64
+          path: dist/
+          if-no-files-found: error
+          retention-days: 21
