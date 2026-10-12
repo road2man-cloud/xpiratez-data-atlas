@@ -4,7 +4,9 @@
 Applied *after* preview, ballistic, recovery, safety, and throw patches.
 F8 toggles drawing only. Normal OXCE map clicks move/select/aim/fire.
 Backslash toggles a hypothetical stance ONLY during native active aiming.
-A confirmed first-click target is read from native BattleAction.waypoints.
+A confirmed first-click target is read from native BattleAction.waypoints;
+after that first click the cursor is a virtual shooter origin, never a new
+preview target. The native second-click behavior is untouched.
 Statistics are drawn only during native targeting, not free roaming.
 """
 import argparse
@@ -170,13 +172,19 @@ def patch(header,cpp,state):
     cpp=cpp[:left+1]+"\n"+NEW_KEY+"\n\t"+cpp[after:]
     # 3. Follow native OXCE selected action and stored confirmed target.
     cpp=once(cpp,OLD_OVERLAY_HEAD,NEW_OVERLAY_HEAD)
+    # In native Confirm Fire, the FIRST click locks the intended target.
+    # From then on, the moving cursor is a VIRTUAL FIRING ORIGIN, not a new
+    # target. Prior to first click the cursor is the normal aiming target.
+    # No mouse input is intercepted: clicking elsewhere still uses OXCE's
+    # original retargeting behavior, and clicking the locked target fires.
     cpp=once(cpp,
         "    const Position source = _r22Locked ? cursor : r22PlannedPosition(soldier);",
-        "    const Position source = r22PlannedPosition(soldier);")
+        '''    const bool confirmedTarget = Options::battleConfirmFireMode &&
+        !native->sprayTargeting && !native->waypoints.empty();
+    const Position source = confirmedTarget ? cursor : r22PlannedPosition(soldier);''')
     cpp=once(cpp,
         "    const Position target = _r22Locked ? _r22Target : cursor;",
-        '''    const Position target = nativeAim && Options::battleConfirmFireMode &&
-        !native->sprayTargeting && !native->waypoints.empty() ? native->waypoints.front() : cursor;''')
+        '''    const Position target = confirmedTarget ? native->waypoints.front() : cursor;''')
     cpp=once(cpp,
         '''    int stanceDelta = (_r22Locked && (_r22Kneel != soldier->isKneeled())) ?
         ((_r22Kneel ? soldier->getKneelHeight() : soldier->getStandHeight())
@@ -205,6 +213,7 @@ def patch(header,cpp,state):
     if (!_r22StatsText.empty())
     {
         std::ostringstream hud;
+        if (confirmedTarget) hud << "FROM CURSOR | ";
         const bool simulated = _r22StanceOverride &&
             (_r22Kneel != soldier->isKneeled());
         if (simulated) hud << "SIM ";
