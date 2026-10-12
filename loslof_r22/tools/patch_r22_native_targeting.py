@@ -185,6 +185,22 @@ def patch(header,cpp,state):
     cpp=once(cpp,
         "    const Position target = _r22Locked ? _r22Target : cursor;",
         '''    const Position target = confirmedTarget ? native->waypoints.front() : cursor;''')
+    # Immediately after the first click the cursor is usually still on the
+    # marked target. Do not sample a zero-length "shot from target to itself".
+    # An unexplored cursor position is not a valid hypothetical fire origin.
+    cpp=once(cpp,
+        "    Tile *startTile = _save->getTile(source);",
+        '''    Tile *startTile = _save->getTile(source);
+    if (confirmedTarget && (source == target ||
+        (startTile && !startTile->isDiscovered(O_FLOOR))))
+    {
+        _r22StatsKey = 0;
+        _r22StatsText.clear();
+        _r22TileRisks.clear();
+        _r22SampleCount = 0;
+        return;
+    }''')
+
     cpp=once(cpp,
         '''    int stanceDelta = (_r22Locked && (_r22Kneel != soldier->isKneeled())) ?
         ((_r22Kneel ? soldier->getKneelHeight() : soldier->getStandHeight())
