@@ -70,7 +70,10 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
                          ammo->getRules()->getDamageType()->isDirect();
     const int pellets = shotgun ? ammo->getRules()->getShotgunPellets() : 1;
     // Unsupported action sizes don't show invented probabilities.
-    if (shots < 1 || shots > 16 || pellets < 1 || pellets > 20) {
+    // Never exceed 256 engine bullet traces in a render frame, even in
+    // unusual ammunition containing many pellets and huge bursts.
+    if (shots < 1 || shots > 16 || pellets < 1 || pellets > 20 ||
+        shots*pellets > 256) {
         clearInvalidPreview(); return;
     }
     // Resolve actual occupier, not merely the owner/root tile. Multi-tile
@@ -110,7 +113,21 @@ void Map::r22DrawStats(const Position& origin, const Position& target,
     mix((unsigned long long)(uintptr_t)targetUnit);
     mix((unsigned long long)(uintptr_t)targetTile);
     mix((unsigned long long)(static_cast<long long>(accuracy*1000000.0)));
-    // Geometry changes are additionally caught by the short timed expiry.
+    // A newly opened door, destroyed wall or newly blocking target must
+    // invalidate Monte Carlo results without waiting for cache expiration.
+    // Native voxel obstruction probing consumes no RNG and respects fog.
+    std::vector<Position> obstructionPoint;
+    const int directCollision=_save->getTileEngine()->calculateLineVoxel(
+        muzzle,aim,false,&obstructionPoint,shooter,nullptr,true);
+    mix(static_cast<unsigned>(directCollision));
+    if (!obstructionPoint.empty())
+    {
+        const Position& p=obstructionPoint.back();
+        mix(static_cast<unsigned>(p.x));
+        mix(static_cast<unsigned>(p.y));
+        mix(static_cast<unsigned>(p.z));
+    }
+    // Probabilities on nearby off-ray terrain still fall back to expiry.
     // Conservatively expire on timer: terrain changes may leave other stale state.
     unsigned long now=SDL_GetTicks();
     // Replay-free batched Monte Carlo: never perform more than 256
