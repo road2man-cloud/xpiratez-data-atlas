@@ -59,11 +59,20 @@ export function makeResearchContextEngine({research,insightIndex,worldDir,ko,top
     }
     return manufactureCache.get(x.bucket)[id]||null;
   }
-  function productionFor(insight){
+  function productionFor(insight,row,detail){
     const ids=unique(arr(insight.semanticReferences).filter(x=>x.kind==="manufacture").map(x=>x.id));
     const matches=ids.map(manufacture).filter(Boolean);
     if(!matches.length)return null;
-    const first=matches[0];
+    // Monetary extractions are selected by their actual input and credit-chip outputs,
+    // never by a suggestive name or a guessed resale price.
+    const extract=matches.find(m=>{
+      const inputs=arr(m.requiredItems),outputs=arr(m.deterministicOutputs);
+      return inputs.length===1&&inputs[0].id===row.id&&inputs[0].qty===1&&
+        outputs.length>0&&outputs.every(x=>x.id.startsWith("STR_CREDIT_CHIP_"))&&
+        arr(m.randomOutputs).length===0&&Number.isFinite(m.economics?.opportunityNet)&&
+        Number.isFinite(inputs[0].costSell)&&Number.isFinite(m.economics?.expectedOutputSellValue);
+    });
+    const first=extract||matches[0];
     const label=ko(first.id);
     const inputs=arr(first.requiredItems).slice(0,4).map(x=>ko(x.id)+" ×"+x.qty).join("·");
     const outputs=arr(first.deterministicOutputs).slice(0,4).map(x=>ko(x.id)+" ×"+x.qty).join("·");
@@ -92,7 +101,23 @@ export function makeResearchContextEngine({research,insightIndex,worldDir,ko,top
       "으로 추정된다. 입력품의 재조달 비용과 전투·연구 병목 가치를 포함하지 않은 기회비용 추정치다."+
       (random?" 랜덤 결과가 있는 만큼 단발 손익과 평균은 다르다.":""):
       "이 제조식은 아이템 판매가만으로 전략 가치를 확정할 수 없다. 실제 산출물·희귀 재료 소모를 목표와 함께 평가해야 한다.";
-    return{context,overview,action,decision,random,recipeCount:matches.length,representative:first.id};
+    let cashExtraction=null;
+    if(extract){
+      const inputSell=Number(first.requiredItems[0].costSell);
+      const outputSell=Number(econ.expectedOutputSellValue);
+      const margin=Number(econ.opportunityNet);
+      const specimenConsumed=Boolean(detail?.raw?.needItem&&detail?.raw?.destroyItem);
+      // 'Profitable' requires strictly positive profit, not merely break-even.
+      const additionalOpens=specimenConsumed&&margin>0?Math.floor(inputSell/margin)+1:null;
+      cashExtraction={
+        recipeId:first.id,inputId:row.id,inputSell,outputSell,margin,
+        manufactureCashCost:cash,time,inputsPerOpen:1,
+        specimenConsumed,additionalOpens,
+        totalBags:additionalOpens===null?null:additionalOpens+1,
+        engineerHoursToRecover:additionalOpens===null?null:additionalOpens*time
+      };
+    }
+    return{context,overview,action,decision,random,recipeCount:matches.length,representative:first.id,cashExtraction};
   }
   function groupForId(id){
     const roles=arr(byInsight.get(id)?.insightKinds);
@@ -167,7 +192,7 @@ export function makeResearchContextEngine({research,insightIndex,worldDir,ko,top
       (graph.groups.length>maxGroups?" / 기타 "+(graph.groups.length-maxGroups)+"개 범주":"");
   }
   function analyze(row,detail,insight){
-    const graph=connections(row.id),gates=getEventGates(row,insight),production=productionFor(insight);
+    const graph=connections(row.id),gates=getEventGates(row,insight),production=productionFor(insight,row,detail);
     const bad=gates.filter(g=>consequentialGate(g,row.id));
     const noHas=gates.filter(g=>g.value===false);
     const has=gates.filter(g=>g.value===true);
