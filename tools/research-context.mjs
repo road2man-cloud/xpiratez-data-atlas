@@ -4,6 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
+import {minimumOpensToProfit} from "./research-decision-insights.mjs";
 
 const arr=x=>Array.isArray(x)?x:[];
 const unique=xs=>[...new Set(xs.filter(Boolean))];
@@ -70,6 +71,7 @@ export function makeResearchContextEngine({research,insightIndex,worldDir,ko,top
       return inputs.length===1&&inputs[0].id===row.id&&inputs[0].qty===1&&
         outputs.length>0&&outputs.every(x=>x.id.startsWith("STR_CREDIT_CHIP_"))&&
         arr(m.randomOutputs).length===0&&Number.isFinite(m.economics?.opportunityNet)&&
+        m.economics?.inputSellCoverage===true&&m.economics?.outputSellCoverage===true&&
         Number.isFinite(inputs[0].costSell)&&Number.isFinite(m.economics?.expectedOutputSellValue);
     });
     const first=extract||matches[0];
@@ -108,7 +110,7 @@ export function makeResearchContextEngine({research,insightIndex,worldDir,ko,top
       const margin=Number(econ.opportunityNet);
       const specimenConsumed=Boolean(detail?.raw?.needItem&&detail?.raw?.destroyItem);
       // 'Profitable' requires strictly positive profit, not merely break-even.
-      const additionalOpens=specimenConsumed&&margin>0?Math.floor(inputSell/margin)+1:null;
+      const additionalOpens=specimenConsumed?minimumOpensToProfit(inputSell,margin):null;
       cashExtraction={
         recipeId:first.id,inputId:row.id,inputSell,outputSell,margin,
         manufactureCashCost:cash,time,inputsPerOpen:1,
