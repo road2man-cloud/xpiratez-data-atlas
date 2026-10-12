@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 LOSLOF R22 Full Recovery BETA Windows Test
+name: OXCE 8.6.0 LOSLOF R22 Collision Hardening BETA Windows Test
 on:
   push:
     branches:
-      - loslof-r22-full-recovery-beta-20261012
+      - loslof-r22-collision-hardening-20261013
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -91,6 +91,7 @@ jobs:
         shell: msys2 {0}
         run: |
           python loslof_r22/tests/check_integrated_r22.py engine
+          python loslof_r22/tests/check_collision_hardening.py engine
           python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py
 
       - name: Configure MinGW64 (actual OXCE engine)
@@ -120,7 +121,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R22_RECOVERY_BETA_UNVERIFIED.exe"
+          result = out / "OpenXcomEx_LOSLOF_R22_COLLISION_HARDENING_UNVERIFIED.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -144,7 +145,7 @@ jobs:
           shutil.copy2("engine/LICENSE.txt", out/"OXCE_GPL_LICENSE.txt")
           (out/"UNVERIFIED.txt").write_text(
               "OXCE 8.6.0 pinned upstream 3e722e09b655ab67acfb59fc8585dc70b583826c\n"
-              "R22 RECOVERY BETA: F8, target lock, planned-position LOS hull, H/B/M, multi-shot, risk, remote Z HUD.\n"
+              "R22 RECOVERY BETA: R1-R21 reconstructed UI plus large-unit collision and weapon/ammo cache hardening.\n"
               "NOT equivalent to R21. H/B/M, shotgun, burst and risk are APPROXIMATE EXPERIMENTS;\n"
               "compatibility have NOT been validated. DO NOT replace your original executable.\n",
               encoding="utf-8")
@@ -161,7 +162,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R22-FULL-RECOVERY-BETA-UNVERIFIED-WIN64
+          name: LOSLOF-R22-COLLISION-HARDENING-UNVERIFIED-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21
