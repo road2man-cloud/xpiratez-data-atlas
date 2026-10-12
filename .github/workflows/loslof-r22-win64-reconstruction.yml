@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 R22 Native Targeting Input Fix Windows BETA
+name: OXCE 8.6.0 R22 Native Targeting and Backslash Hotkey Fix
 on:
   push:
     branches:
-      - loslof-r22-native-targeting-input-fix-20261013
+      - loslof-r22-backslash-hotkey-priority-20261013
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -76,6 +76,11 @@ jobs:
         run: |
           python loslof_r22/tools/patch_r22_native_targeting.py engine
 
+      - name: Route backslash before native deselect hotkey without stealing non-aim input
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r22_backslash_priority.py engine
+
       - name: Fix upstream static SDL linkage for MSYS2 MinGW64 DLL imports
         shell: msys2 {0}
         run: |
@@ -100,7 +105,8 @@ jobs:
           python loslof_r22/tests/check_progressive_montecarlo.py engine
           python loslof_r22/tests/check_native_targeting_input.py engine
           python loslof_r22/tests/check_native_targeting.py engine
-          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py
+          python loslof_r22/tests/check_backslash_priority.py engine
+          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py loslof_r22/tools/patch_r22_backslash_priority.py
 
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
@@ -129,7 +135,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R22_NATIVE_TARGETING_FIXED_BETA.exe"
+          result = out / "OpenXcomEx_LOSLOF_R22_BACKSLASH_NATIVE_INPUT_BETA.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -170,7 +176,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R22-NATIVE-TARGETING-FIX-BETA-WIN64
+          name: LOSLOF-R22-BACKSLASH-NATIVE-INPUT-BETA-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21
