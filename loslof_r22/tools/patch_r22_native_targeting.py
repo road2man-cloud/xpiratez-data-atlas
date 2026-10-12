@@ -34,6 +34,7 @@ NEW_KEY=r'''
         {
             _r22On = !_r22On;
             _r22StanceActor = _save ? _save->getSelectedUnit() : nullptr;
+            _r22StanceOverride = false;
             _r22Kneel = _r22StanceActor ?
                 _r22StanceActor->isKneeled() : false;
             _r22StatsKey = 0;
@@ -55,9 +56,12 @@ NEW_KEY=r'''
                 if (_r22StanceActor != actor)
                 {
                     _r22StanceActor = actor;
-                    _r22Kneel = actor->isKneeled();
+                    _r22StanceOverride = false;
                 }
-                _r22Kneel = !_r22Kneel; // virtual only; NO kneel() call.
+                const bool current = _r22StanceOverride ?
+                    _r22Kneel : actor->isKneeled();
+                _r22Kneel = !current; // virtual only; NO kneel() call.
+                _r22StanceOverride = true;
                 _r22StatsKey = 0;
                 _r22HullHash = 0;
                 _r22ThrowCacheKey = 0;
@@ -87,16 +91,42 @@ NEW_OVERLAY_HEAD='''    BattleUnit *soldier = _save->getSelectedUnit();
         return;
     BattleAction *native = _save->getBattleGame() ?
         _save->getBattleGame()->getCurrentAction() : nullptr;
-    const bool nativeAim = native && native->targeting &&
+    const bool nativeAim = native && native->targeting && native->weapon &&
         native->actor == soldier &&
         (native->type == BA_SNAPSHOT || native->type == BA_AIMEDSHOT ||
          native->type == BA_AUTOSHOT || native->type == BA_THROW);
     if (_r22StanceActor != soldier)
     {
         _r22StanceActor = soldier;
+        _r22StanceOverride = false;
         _r22Kneel = soldier->isKneeled();
         _r22StatsKey = 0;
         _r22HullHash = 0;
+    }
+    // Movement remains native. Keep planned LOS only during an actual path
+    // preview; do NOT calculate gun rays or probabilities on a move cursor.
+    if (!nativeAim)
+    {
+        _r22StanceOverride = false;
+        _r22StatsKey = 0;
+        _r22ThrowCacheKey = 0;
+        _r22StatsText.clear();
+        _r22TileRisks.clear();
+        _r22SampleCount = 0;
+        Pathfinding *finder = _save->getPathfinding();
+        if (finder && finder->isPathPreviewed())
+        {
+            const Position planned = r22PlannedPosition(soldier);
+            Tile *tile = _save->getTile(planned);
+            if (tile)
+            {
+                const Position eye(planned.x*16+8, planned.y*16+8,
+                    planned.z*24-tile->getTerrainLevel()+
+                    soldier->getHeight()+soldier->getFloatHeight()-1);
+                r22DrawVisibilityHull(planned,eye,_camera->getViewLevel());
+            }
+        }
+        return;
     }
     Position cursor;
     getSelectorPosition(&cursor);
@@ -111,7 +141,8 @@ def patch(header,cpp,state):
     header=once(header,
         '    bool _r22Locked = false;\n',
         '    // LOSLOF_R22_NATIVE_INPUT_FIX: native aiming has no click lock.\n'
-        '    BattleUnit *_r22StanceActor = nullptr;\n')
+        '    BattleUnit *_r22StanceActor = nullptr;\n'
+        '    bool _r22StanceOverride = false;\n')
     header=once(header,
         '    Position _r22Target = Position(-1,-1,-1);\n',"")
     header=once(header,
@@ -142,41 +173,24 @@ def patch(header,cpp,state):
     cpp=once(cpp,
         "    const Position target = _r22Locked ? _r22Target : cursor;",
         '''    const Position target = nativeAim && Options::battleConfirmFireMode &&
-        !native->waypoints.empty() ? native->waypoints.front() : cursor;''')
+        !native->sprayTargeting && !native->waypoints.empty() ? native->waypoints.front() : cursor;''')
     cpp=once(cpp,
         '''    int stanceDelta = (_r22Locked && (_r22Kneel != soldier->isKneeled())) ?
         ((_r22Kneel ? soldier->getKneelHeight() : soldier->getStandHeight())
          - soldier->getHeight()) : 0;''',
-        '''    int stanceDelta = (nativeAim && (_r22Kneel != soldier->isKneeled())) ?
+        '''    int stanceDelta = (_r22StanceOverride && (_r22Kneel != soldier->isKneeled())) ?
         ((_r22Kneel ? soldier->getKneelHeight() : soldier->getStandHeight())
          - soldier->getHeight()) : 0;''')
     cpp=once(cpp,
         '''    if ((_r22Locked || (_save->getPathfinding() && _save->getPathfinding()->isPathPreviewed())) && source.z <= viewZ)''',
         '''    if (source.z <= viewZ)''')
-    # Draw LOS/ground preview in free movement mode but NO LOF, stats or HUD.
-    cpp=once(cpp,
-        '''    r22DrawVisibilityHull(source,eye,viewZ);
-
-    const BattleAction *selectedAction=''',
-        '''    r22DrawVisibilityHull(source,eye,viewZ);
-
-    if (!nativeAim)
-    {
-        _r22StatsText.clear();
-        _r22TileRisks.clear();
-        _r22StatsKey = 0;
-        _r22SampleCount = 0;
-        return; // F8 does not block walking; never show H/B/M outside aiming.
-    }
-
-    const BattleAction *selectedAction=''')
     # 4. Reuse the engine's action; only the stance is hypothetical.
     cpp=once(cpp,
         "    if (_r22Locked && _r22Kneel!=shooter->isKneeled())",
-        "    if (_r22On && current->targeting && _r22Kneel!=shooter->isKneeled())")
+        "    if (_r22StanceOverride && _r22Kneel!=shooter->isKneeled())")
     cpp=once(cpp,
         "    const bool virtualKneeled=_r22Locked ? _r22Kneel : actor->isKneeled();",
-        "    const bool virtualKneeled=active->targeting ? _r22Kneel : actor->isKneeled();")
+        "    const bool virtualKneeled=_r22StanceOverride ? _r22Kneel : actor->isKneeled();")
     # 5. One compact HUD line; avoid duplicating H/B/M at edge of screen.
     cpp=once(cpp,
         '''    drawString(2,2,_r22Locked ?
@@ -184,12 +198,16 @@ def patch(header,cpp,state):
         "LOS/LOF: LMB=lock target; F8=off",160);
     if (target.z != viewZ)
         drawString(2,14,target.z > viewZ ? "TARGET ABOVE VIEW" : "TARGET BELOW VIEW",160);''',
-        '''    // Native targeting only: one-line action-relevant HUD.
+        '''    // Native targeting only: one compact information line.
     if (!_r22StatsText.empty())
     {
-        const std::string hud=std::string(_r22Kneel ? "KNEEL  " : "STAND  ") +
-            _r22StatsText;
-        drawString(2,2,hud.c_str(),160);
+        std::ostringstream hud;
+        if (_r22StanceOverride) hud << "SIM ";
+        hud << ((_r22StanceOverride ? _r22Kneel : soldier->isKneeled()) ?
+            "KNEEL" : "STAND");
+        hud << " | " << _r22StatsText;
+        const std::string line=hud.str();
+        drawString(2,2,line.c_str(),160);
     }''')
     cpp=once(cpp,
         '''    if (!_r22StatsText.empty())
@@ -200,13 +218,17 @@ def patch(header,cpp,state):
         '    // Offscreen HUD is direction and Z only; do not duplicate statistics.')
     cpp=once(cpp,
         '''        label << "APPROX ACC " << int(accuracy*100.0+0.5) << "% "''',
-        '''        label << "ACC " << int(accuracy*100.0+0.5) << "% "''')
+        '''        label << "ACC~" << int(accuracy*100.0+0.5) << "% "''')
     cpp=once(cpp,
         '''    drawString(2,37,_r22ThrowValid ?
         "THROW ARC: REACHABLE (ACCURACY NOT SAMPLED)" :
         "THROW ARC: BLOCKED / OUT OF RANGE",160);''',
-        '''    drawString(2,2,_r22ThrowValid ?
-        "THROW: REACHABLE" : "THROW: BLOCKED / RANGE",160);''')
+        '''    std::ostringstream arc;
+    if (_r22StanceOverride) arc << "SIM ";
+    arc << (virtualKneeled ? "KNEEL" : "STAND")
+        << (_r22ThrowValid ? " | THROW OK" : " | THROW BLOCKED");
+    const std::string arcLine=arc.str();
+    drawString(2,2,arcLine.c_str(),160);''')
     if "_r22Locked" in cpp or "_r22Target" in cpp or "r22PreviewClick" in cpp:
         raise RuntimeError("Legacy click interception survived in Map.cpp")
     if "r22PreviewClick" in header or "r22PreviewClick" in state:
