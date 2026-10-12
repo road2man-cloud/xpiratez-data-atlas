@@ -39,6 +39,9 @@ NEW_KEY=r'''
                 _r22StanceActor->isKneeled() : false;
             _r22StatsKey = 0;
             _r22HullHash = 0;
+            _r22ThrowCacheKey = 0;
+            _r22ThrowTrajectory.clear();
+            _r22ThrowValid = false;
             _r22StatsText.clear();
             _r22TileRisks.clear();
             _redraw = true;
@@ -202,8 +205,10 @@ def patch(header,cpp,state):
     if (!_r22StatsText.empty())
     {
         std::ostringstream hud;
-        if (_r22StanceOverride) hud << "SIM ";
-        hud << ((_r22StanceOverride ? _r22Kneel : soldier->isKneeled()) ?
+        const bool simulated = _r22StanceOverride &&
+            (_r22Kneel != soldier->isKneeled());
+        if (simulated) hud << "SIM ";
+        hud << ((simulated ? _r22Kneel : soldier->isKneeled()) ?
             "KNEEL" : "STAND");
         hud << " | " << _r22StatsText;
         const std::string line=hud.str();
@@ -224,7 +229,8 @@ def patch(header,cpp,state):
         "THROW ARC: REACHABLE (ACCURACY NOT SAMPLED)" :
         "THROW ARC: BLOCKED / OUT OF RANGE",160);''',
         '''    std::ostringstream arc;
-    if (_r22StanceOverride) arc << "SIM ";
+    if (_r22StanceOverride && virtualKneeled != actor->isKneeled())
+        arc << "SIM ";
     arc << (virtualKneeled ? "KNEEL" : "STAND")
         << (_r22ThrowValid ? " | THROW OK" : " | THROW BLOCKED");
     const std::string arcLine=arc.str();
