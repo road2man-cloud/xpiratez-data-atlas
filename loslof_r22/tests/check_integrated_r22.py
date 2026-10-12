@@ -59,7 +59,11 @@ checks={
         "_r22HullNextIndex = 0;" in maph and
         "while(_r22HullNextIndex<scanTotal && processed<64U)" in mapcpp and
         "_r22HullWorkPending = _r22HullNextIndex < scanTotal;" in mapcpp and
-        "_r22HullWorkPending = false;" in maph),
+        "_r22HullWorkPending = false;" in maph and
+        "while(_r22HullNextIndex<scanTotal && processed<64U)" in mapcpp and
+        "tick-_r22HullLastBatchTick>=90U" in mapcpp and
+        "tick-_r22HullCheckedAt>3000U" in mapcpp and
+        "if(wasPending && !_r22HullWorkPending) _r22HullCheckedAt=tick;" in mapcpp),
 }
 # The 27th check is intentionally not an argument that patch failure logic
 # has been tested. That behavior is exercised by the strict patch scripts.

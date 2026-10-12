@@ -31,6 +31,7 @@ HEADER=r'''
     Uint32 _r22HullCheckedAt = 0;
     size_t _r22HullNextIndex = 0; // progressive scan: at most 64 candidate rays/frame
     bool _r22HullWorkPending = false; // ticker, not render, requests next incremental frame
+    Uint32 _r22HullLastBatchTick = 0; // throttle ray work on animation redraws
 '''
 
 METHODS=r'''
@@ -65,9 +66,9 @@ Position Map::r22PlannedPosition(const BattleUnit *unit) const
 }
 
 // Restore LOS outward perimeter while retaining R21's 1x1 INTERNAL pixel dots.
-// Bound voxel traces to 64 candidates per frame. Cache expiry and
-// target/stance/position changes reset the scan, without a single-frame
-// 1,000-ray freeze. Draw completed candidates while the scan converges.
+// Bound voxel traces to 64 candidates per 90ms batch. A completed
+// hull is cached for three seconds; moving/stance/position changes
+// reset it immediately. Render cached candidates without resampling.
 void Map::r22DrawVisibilityHull(const Position &source,const Position &eye,int level)
 {
     if(level<0 || level>=_save->getMapSizeZ()) return;
@@ -92,36 +93,45 @@ void Map::r22DrawVisibilityHull(const Position &source,const Position &eye,int l
     const size_t scanTotal=size_t(spanX)*size_t(maxY-minY+1);
     const Uint32 tick=SDL_GetTicks();
     // Refresh terrain/door changes, but only after the preceding scan finishes.
-    if(_r22VisibleHull.size()!=size_t(width*length) || key!=_r22HullHash ||
-       (_r22HullNextIndex>=scanTotal && tick-_r22HullCheckedAt>850U))
+    const bool restart =
+        _r22VisibleHull.size()!=size_t(width*length) || key!=_r22HullHash ||
+        (_r22HullNextIndex>=scanTotal && tick-_r22HullCheckedAt>3000U);
+    if(restart)
     {
         _r22VisibleHull.assign(size_t(width*length),0);
         _r22HullNextIndex=0;
         _r22HullHash=key;
         _r22HullCheckedAt=tick;
+        _r22HullLastBatchTick=0;
     }
-    unsigned processed=0;
-    const int radius2=range*range;
-    while(_r22HullNextIndex<scanTotal && processed<64U)
+    const bool wasPending=_r22HullNextIndex<scanTotal;
+    if(restart || tick-_r22HullLastBatchTick>=90U)
     {
-        const size_t index=_r22HullNextIndex++;
-        ++processed; // even out-of-range candidates consume budget
-        const int x=minX+int(index%size_t(spanX));
-        const int y=minY+int(index/size_t(spanX));
-        const int dx=x-source.x,dy=y-source.y;
-        if(dx*dx+dy*dy>radius2) continue;
-        Tile *tile=_save->getTile(Position(x,y,level));
-        if(!tile || !tile->isDiscovered(O_FLOOR)) continue;
-        const Position goal(x*16+8,y*16+8,
-            level*24-tile->getTerrainLevel()+10);
-        std::vector<Position> path;
-        const int voxelResult=_save->getTileEngine()->calculateLineVoxel(
-            eye,goal,true,&path,_save->getSelectedUnit(),nullptr,true);
-        if(voxelResult==V_EMPTY || (!path.empty() &&
-            path.back().toTile()==tile->getPosition()))
-            _r22VisibleHull[size_t(y*width+x)]=1;
+        _r22HullLastBatchTick=tick;
+        unsigned processed=0;
+        const int radius2=range*range;
+        while(_r22HullNextIndex<scanTotal && processed<64U)
+        {
+            const size_t index=_r22HullNextIndex++;
+            ++processed; // even out-of-range candidates consume budget
+            const int x=minX+int(index%size_t(spanX));
+            const int y=minY+int(index/size_t(spanX));
+            const int dx=x-source.x,dy=y-source.y;
+            if(dx*dx+dy*dy>radius2) continue;
+            Tile *tile=_save->getTile(Position(x,y,level));
+            if(!tile || !tile->isDiscovered(O_FLOOR)) continue;
+            const Position goal(x*16+8,y*16+8,
+                level*24-tile->getTerrainLevel()+10);
+            std::vector<Position> path;
+            const int voxelResult=_save->getTileEngine()->calculateLineVoxel(
+                eye,goal,true,&path,_save->getSelectedUnit(),nullptr,true);
+            if(voxelResult==V_EMPTY || (!path.empty() &&
+                path.back().toTile()==tile->getPosition()))
+                _r22VisibleHull[size_t(y*width+x)]=1;
+        }
     }
     _r22HullWorkPending = _r22HullNextIndex < scanTotal;
+    if(wasPending && !_r22HullWorkPending) _r22HullCheckedAt=tick;
     // Avoid forcing a complete terrain repaint inside the render loop.
 
     const auto visible=[&](int x,int y)->bool
