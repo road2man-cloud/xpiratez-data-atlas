@@ -14,6 +14,7 @@ on:
       - "tools/research-decision-insights.mjs"
       - "tools/research-context.mjs"
       - "tools/check-research-decision-insights.mjs"
+      - "tools/check-item-research-data.mjs"
       - "tools/build-item-editorial-insights.mjs"
       - "public/items/app.js"
       - "public/items/styles.css"
@@ -28,6 +29,7 @@ on:
       - "tools/research-decision-insights.mjs"
       - "tools/research-context.mjs"
       - "tools/check-research-decision-insights.mjs"
+      - "tools/check-item-research-data.mjs"
       - "public/items/app.js"
       - "package.json"
   workflow_dispatch:
