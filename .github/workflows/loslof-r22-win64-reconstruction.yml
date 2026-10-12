@@ -61,6 +61,11 @@ jobs:
         run: |
           python loslof_r22/tools/patch_r22_recovery_beta.py engine
 
+      - name: Hardening - native kneel stance, no hidden units, pellet -2, cache
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r22_safety.py engine
+
       - name: Fix upstream static SDL linkage for MSYS2 MinGW64 DLL imports
         shell: msys2 {0}
         run: |
