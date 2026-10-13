@@ -78,9 +78,12 @@ checks={
       "const Position source = (confirmedTarget && cursor != target) ?" in overlay and
       "cursor : r22PlannedPosition(soldier);" in overlay and
       "if (confirmedTarget && (source == target" not in overlay,
-  "No hidden map geometry leaked from unexplored virtual shooter origin":
-      "confirmedTarget && cursor != target &&" in overlay and
-      "startTile && !startTile->isDiscovered(O_FLOOR)" in overlay,
+  "Unexplored virtual origin does not short-circuit native HBM":
+      "Tile *startTile = _save->getTile(source);" in overlay and
+      "if (!startTile || !targetTile) return;" in overlay and
+      "startTile && !startTile->isDiscovered(O_FLOOR)" not in overlay and
+      '"UNKNOWN"' not in overlay and
+      "r22DrawStats(source,target,goal,muzzle);" in overlay,
   "No HUD clutter: FROM CURSOR and n= count both absent":
       '"FROM CURSOR | "' not in overlay and
       '"% n="' not in stats,

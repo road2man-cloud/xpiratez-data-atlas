@@ -209,26 +209,8 @@ def patch(header,cpp,state):
 
     # Immediately after the first click the cursor is usually still on the
     # marked target. Do not sample a zero-length "shot from target to itself".
-    # An unexplored cursor position is not a valid hypothetical fire origin.
-    cpp=once(cpp,
-        "    Tile *startTile = _save->getTile(source);",
-        '''    Tile *startTile = _save->getTile(source);
-    if (confirmedTarget && cursor != target &&
-        startTile && !startTile->isDiscovered(O_FLOOR))
-    {
-        _r22StatsKey = 0;
-        _r22StatsText="UNKNOWN";
-        _r22TileRisks.clear();
-        _r22SampleCount = 0;
-        // The tile is unscouted: do not trace hidden terrain. Still render
-        // an explanation instead of a blank HUD or a misleading NO LOF.
-        const bool virtualPose = _r22StanceOverride &&
-            (_r22Kneel != soldier->isKneeled());
-        const bool kneeling = virtualPose ? _r22Kneel : soldier->isKneeled();
-        r22DrawContrastHud(kneeling ? "KNEEL" : "STAND",
-                           virtualPose, " | UNKNOWN");
-        return;
-    }''')
+    # A valid virtual-origin tile must be sampled regardless of discovery.
+    # The source cursor remains valid without a discovery gate.
 
     cpp=once(cpp,
         '''    int stanceDelta = (_r22Locked && (_r22Kneel != soldier->isKneeled())) ?

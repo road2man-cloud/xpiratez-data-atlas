@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 R22 Native Targeting Input Fix Windows BETA
+name: OXCE 8.6.0 R22 Virtual Origin Fix Windows BETA
 on:
   push:
     branches:
-      - loslof-r22-native-targeting-input-fix-20261013
+      - loslof-r22-virtual-origin-fix-20261014
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -147,7 +147,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R22_NATIVE_TARGETING_FIXED_BETA.exe"
+          result = out / "OpenXcomEx_LOSLOF_R22_VIRTUAL_ORIGIN_FIX_BETA.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -181,7 +181,7 @@ jobs:
               "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
               f"R22 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
               f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
-              "Patch chain: preview > stats > recovery > safety > throw > native targeting > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG\\n"
               "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
               "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
               encoding="utf-8")
@@ -202,7 +202,7 @@ jobs:
               "   Palette-adaptive dark HUD plate and bright letters prevent terrain camouflage.\\n"
               "   After first target click, H/B/M always samples from the CURSOR source tile.\\n"
               "   Direct-voxel scan failure never hides H/B/M; blocked paths give high B.\\n"
-              "   If a cursor tile is undiscovered, UNKNOWN replaces H/B/M to avoid map leaks.\\n"
+              "   A valid cursor tile is sampled even when its floor is not marked discovered.\\n"
               "10. THROW shows nominal ARC CLEAR / ARC BLOCKED (not guaranteed landing).\\n"
               "   Windows and walls block throws under actual native collision rules.\\n"
               "   Game Options > Advanced > OXC > Battlescape > Instant Grenades may be changed in an existing campaign.\\n"
@@ -224,7 +224,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R22-NATIVE-TARGETING-FIX-BETA-WIN64
+          name: LOSLOF-R22-VIRTUAL-ORIGIN-FIX-BETA-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21
