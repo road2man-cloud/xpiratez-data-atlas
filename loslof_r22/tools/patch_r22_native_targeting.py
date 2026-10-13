@@ -220,6 +220,13 @@ def patch(header,cpp,state):
         _r22StatsText="UNKNOWN";
         _r22TileRisks.clear();
         _r22SampleCount = 0;
+        // The tile is unscouted: do not trace hidden terrain. Still render
+        // an explanation instead of a blank HUD or a misleading NO LOF.
+        const bool virtualPose = _r22StanceOverride &&
+            (_r22Kneel != soldier->isKneeled());
+        const bool kneeling = virtualPose ? _r22Kneel : soldier->isKneeled();
+        r22DrawContrastHud(kneeling ? "KNEEL" : "STAND",
+                           virtualPose, " | UNKNOWN");
         return;
     }''')
 
