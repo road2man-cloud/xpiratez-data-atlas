@@ -65,7 +65,7 @@ checks={
     "preview uses 1024 trials 95ms batch and RNG restore":
         "_r22SampleCount < 1024U" in stats
         and "now-_r22StatsBatchTick>=95U" in stats
-        and "RNG::globalRandomState()=previous;" in stats,
+        and "RNG::globalRandomState()=previous;" in stats and "RNG::RandomState previewRng(" in stats,
     "LOS cache is not suppressed by NO LOF branch":
         "_r22HullWorkPending=false;" not in overlay,
 }

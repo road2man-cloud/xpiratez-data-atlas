@@ -86,6 +86,11 @@ jobs:
         run: |
           python loslof_r22/tools/patch_r22_throw_window_and_grenade_options.py engine
 
+      - name: Port R21 isolated preview RNG to R22 sampler without changing gameplay
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r22_r21_local_rng.py engine
+
       - name: Fix upstream static SDL linkage for MSYS2 MinGW64 DLL imports
         shell: msys2 {0}
         run: |
@@ -112,7 +117,8 @@ jobs:
           python loslof_r22/tests/check_native_targeting.py engine
           python loslof_r22/tests/check_native_ballistic_aim.py engine
           python loslof_r22/tests/check_throw_window_and_grenade_options.py engine
-          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py loslof_r22/tools/patch_r22_native_ballistic_aim.py loslof_r22/tools/patch_r22_throw_window_and_grenade_options.py
+          python loslof_r22/tests/check_r21_local_rng.py engine
+          python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py loslof_r22/tools/patch_r22_native_ballistic_aim.py loslof_r22/tools/patch_r22_throw_window_and_grenade_options.py loslof_r22/tools/patch_r22_r21_local_rng.py
 
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
@@ -175,7 +181,7 @@ jobs:
               "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
               f"R22 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
               f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
-              "Patch chain: preview > stats > recovery > safety > throw > native targeting > native ballistic aim > window throw/live grenade option\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG\\n"
               "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
               "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
               encoding="utf-8")
