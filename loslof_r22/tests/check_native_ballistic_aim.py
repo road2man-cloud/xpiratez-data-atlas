@@ -35,7 +35,8 @@ checks={
         and "goal=_r22NativeAimGoal;" in overlay
         and "canTargetUnit(" in overlay
         and "false,nullptr,true)" in overlay
-        and "false,aimUnit,true)" not in overlay,
+        and "false,aimUnit,true)" not in overlay
+        and "aimRootTile" in overlay,
     "sample muzzle adjusted to same offcentre candidate":
         "testAction.relativeOrigin=" in overlay
         and "getOriginVoxel(testAction, startTile)" in overlay,
@@ -44,11 +45,16 @@ checks={
         and "aimNow-_r22NativeAimCheckedAt>900U" in overlay
         and "source.x,source.y,source.z," in overlay
         and "native->weapon" in overlay,
-    "cannot aim case is explicit not made-up numerical HBM":
-        'bool nativeNoLof = false;' in overlay
-        and '_r22StatsText="NO LOF";' in overlay
-        and "if (nativeNoLof)" in overlay
-        and "else if(targetTile->isDiscovered(O_FLOOR)" in overlay,
+    "failed direct voxel scan still estimates H/B/M from virtual cursor":
+        "const Position source = (confirmedTarget && cursor != target) ?" in overlay
+        and "if(targetTile->isDiscovered(O_FLOOR)" in overlay
+        and "r22DrawStats(source,target,goal,muzzle);" in overlay
+        and "if (nativeNoLof)" not in overlay
+        and '_r22StatsText="NO LOF";' not in overlay,
+    "large unit's overlapping tile resolves to its owning tile":
+        "getOverlappingUnit(_save)" in overlay
+        and "aimRootTile" in overlay
+        and "&candidateOrigin,aimRootTile,&candidateGoal,soldier," in overlay,
     "no mutating original native BattleAction or gameplay input":
         "BattleAction testAction = *native;" in overlay
         and "BattleAction testSide=testAction;" in overlay

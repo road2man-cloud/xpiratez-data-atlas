@@ -217,7 +217,7 @@ def patch(header,cpp,state):
         startTile && !startTile->isDiscovered(O_FLOOR))
     {
         _r22StatsKey = 0;
-        _r22StatsText.clear();
+        _r22StatsText="UNKNOWN";
         _r22TileRisks.clear();
         _r22SampleCount = 0;
         return;

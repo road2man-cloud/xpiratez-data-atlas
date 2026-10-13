@@ -74,9 +74,13 @@ def patch(maph, mapcpp, teh, tecpp):
     // potentialUnit MUST be null for a REAL visible enemy: passing aimUnit
     // marks the target hypothetical and incorrectly accepts empty rays.
     // Never touch native BattleAction or mark obstacles on the real map.
-    bool nativeNoLof = false;
-    BattleUnit *aimUnit=targetTile->getUnit();
-    if (aimUnit && aimUnit->getVisible() && aimUnit!=soldier &&
+    // The user may have locked a visible 2x2 unit by its overlapping tile.
+    // Resolve its owning tile for the engine's voxel scanner. Critically,
+    // this ray probe must NOT gate H/B/M: it can find no straight line
+    // while the probabilistic simulation still needs to show blockage.
+    BattleUnit *aimUnit=targetTile->getOverlappingUnit(_save);
+    Tile *aimRootTile=aimUnit ? _save->getTile(aimUnit->getPosition()) : nullptr;
+    if (aimUnit && aimRootTile && aimUnit->getVisible() && aimUnit!=soldier &&
         !testAction.sprayTargeting &&
         !(Options::forceFire && _save->isCtrlPressed(true)) &&
         targetTile->isDiscovered(O_FLOOR))
@@ -114,7 +118,7 @@ def patch(maph, mapcpp, teh, tecpp):
                 candidateOrigin.z+=stanceDelta;
                 Position candidateGoal=goal;
                 if (_save->getTileEngine()->canTargetUnit(
-                    &candidateOrigin,targetTile,&candidateGoal,soldier,
+                    &candidateOrigin,aimRootTile,&candidateGoal,soldier,
                     false,nullptr,true))
                 {
                     _r22NativeAimFound=true;
@@ -134,28 +138,30 @@ def patch(maph, mapcpp, teh, tecpp):
                 _r22NativeAimSide==2 ? BattleActionOrigin::RIGHT :
                 BattleActionOrigin::CENTRE;
         }
-        else nativeNoLof=true;
+        else
+        {
+            // No direct exposed voxel from this VIRTUAL firing tile.
+            // Keep the default geometric aim point and sample native
+            // trajectories. B may reach 100%, but never erase the HUD.
+            testAction.relativeOrigin=BattleActionOrigin::CENTRE;
+        }
     }""")
 
-    # Do not translate a "cannot fire at visible enemy" engine rejection into
-    # artificial percentages. This is distinct from having a low chance when
-    # a valid trajectory exists, especially for bursts.
+    # Native direct-LOF failure cannot suppress the Monte Carlo preview.
+    # It is especially misleading after target-confirm click when the real
+    # actor cannot fire, but the cursor represents an independent origin.
+    # OXCE's per-shot preflight still records the true blocked outcome.
     mapcpp=once(mapcpp,
         """    if(targetTile->isDiscovered(O_FLOOR) &&
         (!targetTile->getUnit() || targetTile->getUnit()->getVisible()))
         r22DrawStats(source,target,goal,muzzle);
     else
         _r22StatsText.clear();""",
-        """    if (nativeNoLof)
-    {
-        _r22StatsKey=0;
-        _r22StatsText="NO LOF";
-        _r22TileRisks.clear();
-        _r22SampleCount=0;
-        // Keep LOS hull's progressive redraw scheduling intact.
-    }
-    else if(targetTile->isDiscovered(O_FLOOR) &&
-        (!targetTile->getUnit() || targetTile->getUnit()->getVisible()))
+        """    // Confirmed native target is independent of the real soldier's
+    // firing line. ALWAYS sample H/B/M from source=cursor when discovered.
+    // Even an impossible straight line is a legitimate B/M probability.
+    if(targetTile->isDiscovered(O_FLOOR) &&
+        (!aimUnit || aimUnit->getVisible()))
         r22DrawStats(source,target,goal,muzzle);
     else
         _r22StatsText.clear();""")

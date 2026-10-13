@@ -12,7 +12,8 @@ checks={
 "existing RNG guard retained":'RNG::globalRandomState()=previous' in m,
 "native applyAccuracy uses preview RNG only if supplied":'previewRng ? previewRng->generate(minimum,maximum) : RNG::generate(minimum,maximum)' in p,
 "normal OXCE projectile callers unmodified":'int Projectile::calculateThrow(double accuracy)' in p and 'int Projectile::calculateTrajectory(double accuracy)' in p,
-"native preview stage keeps no input interception":'r22PreviewClick' not in m
+"native preview stage keeps no input interception":'r22PreviewClick' not in m,
+"cursor-source probability invoked despite missing exposed voxel":'if (nativeNoLof)' not in m and 'r22DrawStats(source,target,goal,muzzle);' in m
 }
 for name,ok in checks.items():print(("PASS " if ok else "FAIL ")+name)
 if not all(checks.values()):raise SystemExit(1)
