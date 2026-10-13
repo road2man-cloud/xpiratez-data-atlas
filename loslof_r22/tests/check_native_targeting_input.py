@@ -38,6 +38,13 @@ checks={
         "Tile *startTile = _save->getTile(source);" in overlay
         and "r22DrawVisibilityHull(source,eye,viewZ);" in overlay
         and "r22DrawStats(source,target,goal,muzzle);" in overlay,
+    "unreachable from real actor never erases cursor source HBM":
+        "r22DrawStats(source,target,goal,muzzle);" in overlay
+        and "if (nativeNoLof)" not in overlay
+        and '_r22StatsText="NO LOF";' not in overlay,
+    "unknown cursor tile says UNKNOWN, not NO LOF":
+        '_r22StatsText="UNKNOWN";' in overlay
+        and "startTile && !startTile->isDiscovered(O_FLOOR)" in overlay,
     "keep overlay visible at first-click cursor overlap":
         "const Position source = (confirmedTarget && cursor != target) ?" in overlay
         and "cursor : r22PlannedPosition(soldier);" in overlay,
