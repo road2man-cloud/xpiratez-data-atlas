@@ -43,7 +43,7 @@ checks={
     "21-risk outlines 1 percent threshold": ("entry.second*100U<_r22RiskSamples" in mapcpp and "_r22TileRisks" in mapcpp),
     "22-no unexplored tile risk display": ("!t->isDiscovered(O_FLOOR)" in mapcpp),
     "23-fog-hidden units excluded in visual rays": ("calculateLineVoxel(muzzle,goal,true,&bullet,soldier,nullptr,true)" in mapcpp),
-    "24-fog-hidden units excluded in statistical rays": ("projectile.calculateTrajectory(acc,muzzle,true,true)" in mapcpp),
+    "24-fog-hidden units excluded in statistical rays": ("projectile.calculateTrajectory(\n                acc,muzzle,true,true,&previewRng)" in mapcpp),
     "25-normal gameplay projectile default unchanged": ("bool onlyVisible = false" in projectileh and "bool excludeUnit, bool onlyVisible" in projectilecpp),
     "26-native projectile trace honours onlyVisible": ("true, &_trajectory, bu, nullptr, onlyVisible" in projectilecpp),
     "27-invalid version and duplicate patch fail closed": all("already applied" in read("src/Battlescape/Map.cpp") or x for x in [True]),
