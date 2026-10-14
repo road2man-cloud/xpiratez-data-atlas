@@ -82,8 +82,7 @@ def patch(maph, mapcpp, teh, tecpp):
     Tile *aimRootTile=aimUnit ? _save->getTile(aimUnit->getPosition()) : nullptr;
     if (aimUnit && aimRootTile && aimUnit->getVisible() && aimUnit!=soldier &&
         !testAction.sprayTargeting &&
-        !(Options::forceFire && _save->isCtrlPressed(true)) &&
-        targetTile->isDiscovered(O_FLOOR))
+        !(Options::forceFire && _save->isCtrlPressed(true))) // visible target even on unexplored floor
     {
         unsigned long long aimKey=1469598103934665603ULL;
         auto aimMix=[&](unsigned long long v) {
@@ -158,10 +157,9 @@ def patch(maph, mapcpp, teh, tecpp):
     else
         _r22StatsText.clear();""",
         """    // Confirmed native target is independent of the real soldier's
-    // firing line. ALWAYS sample H/B/M from source=cursor when discovered.
+    // firing line. ALWAYS sample H/B/M from source=cursor for visible targets.
     // Even an impossible straight line is a legitimate B/M probability.
-    if(targetTile->isDiscovered(O_FLOOR) &&
-        (!aimUnit || aimUnit->getVisible()))
+    if(!aimUnit || aimUnit->getVisible())
         r22DrawStats(source,target,goal,muzzle);
     else
         _r22StatsText.clear();""")

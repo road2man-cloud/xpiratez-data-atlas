@@ -56,6 +56,44 @@ def patch(mapcpp,modcpp,advanced):
                            endTile->getMapData(O_OBJECT)->getBigWall()>3)))
                     accepted=false;
             }
+            // A real throw always launches from getOriginVoxel(action, 0),
+            // not from a hypothetical source tile or a generic eye-height.
+            // In actual-actor mode, veto the preview if native preflight
+            // cannot reach a nominal accepted impact from that real origin.
+            if(accepted && from==actor->getPosition() &&
+               virtualKneeled==actor->isKneeled())
+            {
+                BattleAction nativeAction=*active;
+                Tile *nativeTargetTile=_save->getTile(nativeAction.target);
+                if(nativeTargetTile && nativeTargetTile->getTerrainLevel()==-24 &&
+                   nativeAction.target.z+1<_save->getMapSizeZ())
+                    nativeAction.target.z++;
+                nativeTargetTile=_save->getTile(nativeAction.target);
+                if(!nativeTargetTile) accepted=false;
+                else
+                {
+                    const Position nativeOrigin=_save->getTileEngine()->
+                        getOriginVoxel(nativeAction,nullptr);
+                    const Position nativeGoal=nativeAction.target.toVoxel()+
+                        Position(8,8,1-nativeTargetTile->getTerrainLevel());
+                    double nativeCurve=0.0;
+                    int nativeResult=V_OUTOFBOUNDS;
+                    const bool preflight=_save->getTileEngine()->validateThrow(
+                        nativeAction,nativeOrigin,nativeGoal,_save->getDepth(),
+                        &nativeCurve,&nativeResult,false,false,nullptr,-1);
+                    if(!preflight) accepted=false;
+                    else
+                    {
+                        std::vector<Position> nativeArc;
+                        const int nativeImpact=_save->getTileEngine()->
+                            calculateParabolaVoxel(nativeOrigin,nativeGoal,true,
+                                &nativeArc,actor,nativeCurve,Position(0,0,0),true);
+                        accepted=!nativeArc.empty() &&
+                            (nativeImpact==V_FLOOR || nativeImpact==V_UNIT ||
+                             nativeImpact==V_OBJECT);
+                    }
+                }
+            }
             _r22ThrowValid=accepted;""")
     # The engine randomizes the final throw trajectory. Arc-clear means
     # nominal deterministic preview only; never promise 100% success.

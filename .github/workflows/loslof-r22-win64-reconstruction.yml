@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 R22 Virtual Origin Fix Windows BETA
+name: OXCE 8.6.0 R22 Throw and Visibility Fix Windows BETA
 on:
   push:
     branches:
-      - loslof-r22-virtual-origin-fix-20261014
+      - loslof-r22-throw-visibility-fix-20261014
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -147,7 +147,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R22_VIRTUAL_ORIGIN_FIX_BETA.exe"
+          result = out / "OpenXcomEx_LOSLOF_R22_THROW_VISIBILITY_FIX_BETA.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -224,7 +224,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R22-VIRTUAL-ORIGIN-FIX-BETA-WIN64
+          name: LOSLOF-R22-THROW-VISIBILITY-FIX-BETA-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21

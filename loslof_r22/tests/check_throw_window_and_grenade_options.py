@@ -38,6 +38,11 @@ checks={
      and "endTile->isBigWall()" in throw
      and "getBigWall()<1" in throw
      and "getBigWall()>3" in throw,
+ "Actual thrower voxel rechecked with native preflight":
+     "from==actor->getPosition()" in throw
+     and "getOriginVoxel(nativeAction,nullptr)" in throw
+     and "validateThrow(" in throw
+     and "nativeImpact==V_OBJECT" in throw,
  "Native throw still validates range and parabola":
      "validateThrow(action,origin,goal," in throw
      and "calculateParabolaVoxel(" in throw,

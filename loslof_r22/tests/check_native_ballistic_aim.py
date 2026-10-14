@@ -36,7 +36,8 @@ checks={
         and "canTargetUnit(" in overlay
         and "false,nullptr,true)" in overlay
         and "false,aimUnit,true)" not in overlay
-        and "aimRootTile" in overlay,
+        and "aimRootTile" in overlay
+        and "targetTile->isDiscovered(O_FLOOR)" not in overlay,
     "sample muzzle adjusted to same offcentre candidate":
         "testAction.relativeOrigin=" in overlay
         and "getOriginVoxel(testAction, startTile)" in overlay,
@@ -47,7 +48,7 @@ checks={
         and "native->weapon" in overlay,
     "failed direct voxel scan still estimates H/B/M from virtual cursor":
         "const Position source = (confirmedTarget && cursor != target) ?" in overlay
-        and "if(targetTile->isDiscovered(O_FLOOR)" in overlay
+        and "if(!aimUnit || aimUnit->getVisible())" in overlay
         and "r22DrawStats(source,target,goal,muzzle);" in overlay
         and "if (nativeNoLof)" not in overlay
         and '_r22StatsText="NO LOF";' not in overlay,
