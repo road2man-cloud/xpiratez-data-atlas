@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 R24 Research Progress Windows BETA
+name: OXCE 8.6.0 R25 Virtual Aim Parity Windows BETA
 on:
   push:
     branches:
-      - loslof-r24-research-progress-20261015
+      - loslof-r25-virtual-aim-parity-20261015
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -134,6 +134,13 @@ jobs:
           python loslof_r22/tests/check_r24_research_progress.py engine
           python -m py_compile loslof_r22/tools/patch_r24_research_progress.py loslof_r22/tests/check_r24_research_progress.py
 
+      - name: Apply R25 native-equivalent virtual range and LOS preview patch
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r25_virtual_accuracy.py engine
+          python loslof_r22/tests/check_r25_virtual_accuracy.py engine
+          python -m py_compile loslof_r22/tools/patch_r25_virtual_accuracy.py loslof_r22/tests/check_r25_virtual_accuracy.py
+
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
         run: |
@@ -161,7 +168,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R24_RESEARCH_PROGRESS_BETA.exe"
+          result = out / "OpenXcomEx_LOSLOF_R25_VIRTUAL_AIM_PARITY_BETA.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -188,23 +195,25 @@ jobs:
               "R22 RECOVERY BETA: large-unit fixes plus 1024 progressive HBM, 384 risk, 256-frame trace budget and hatching.\n"
               "R23 RESEARCH UI: new-project base RP and chosen/current actual RP; research logic unchanged.\n"
               "R24 PROGRESS UI: current research spent RP, actual total RP and completion percentage; research logic unchanged.\n"
+              "R25 VIRTUAL AIM: native tile range/distance, virtual LOS penalty, and preview-only projectile LOS override.\n"
               "NOT equivalent to R21. H/B/M, shotgun, burst and risk are APPROXIMATE EXPERIMENTS;\n"
               "compatibility have NOT been validated. DO NOT replace your original executable.\n",
               encoding="utf-8")
           (out/"BUILD_PROVENANCE.txt").write_text(
-              "Status: R24 research progress UI on R23 research cost + R22 Virtual Origin Fix Beta (NOT R21-equivalent)\\n"
+              "Status: R25 virtual aim range/LOS parity on R24 + R23 + R22 Virtual Origin Fix Beta (NOT R21-equivalent)\\n"
               "Pinned engine: OpenXcom Extended 8.6.0\\n"
               "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
               "R22 pinned source patch commit: 6161db7e26cf95197121136137610ab07ee763bd\\n"
               "R23 pinned source patch commit: 7b5ef9775e3c73230786c08d7bc6ab2b48de0f80\\n"
-              f"R24 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
+              "R24 pinned source patch commit: 8fbfb976503edee4be2c2a919f3634e75da3b409\\n"
+              f"R25 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
               f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
-              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG > R23 research cost UI > R24 research progress UI\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG > R23 research cost UI > R24 research progress UI > R25 virtual aim range/LOS\\n"
               "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
               "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
               encoding="utf-8")
           (out/"HOW_TO_USE_KO.txt").write_text(
-              "XPiratez LOS/LOF R24 Research Progress Beta - safety-first test guide\\n"
+              "XPiratez LOS/LOF R25 Virtual Aim Parity Beta - safety-first test guide\\n"
               "1. Do NOT overwrite your original XPiratez EXE, DLLs, or saves.\\n"
               "2. Make a separate COPY of the existing XPiratez installation for testing.\\n"
               "3. Extract this artifact's EXE and DLLs ONLY into that separate copy.\\n"
@@ -234,8 +243,13 @@ jobs:
               "    Opening an existing project shows RP: SPENT / ACTUAL TOTAL (PERCENT%).\\n"
               "    Completion is rounded down to integer percent and capped at 100%; zero-cost projects show 100%.\\n"
               "    Research RNG, scientist allocation and savegame format remain unchanged.\\n"
-              "13. Never use an unverified beta executable for your only campaign save.\\n"
-              "14. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
+              "13. Virtual source cursor preview ACC~ now applies OXCE native tile range dropoff and max range.\\n"
+              "    H/B/M sampling uses LOS from virtual source (including smoke/light), not real actor location.\\n"
+              "    Native crosshair ACC on virtual SOURCE cursor is suppressed to avoid false comparisons.\\n"
+              "    H is a Monte Carlo hit estimate, not the same quantity as crosshair ACC; samples vary.\\n"
+              "    Exact parity still requires real-save live validation, including custom visibility scripts and terrain.\\n"
+              "14. Never use an unverified beta executable for your only campaign save.\\n"
+              "15. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
               "These percentages are EXPERIMENTAL and not validated against live hit rates.\\n",
               encoding="utf-8")
           manifest = []
@@ -251,7 +265,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R24-RESEARCH-PROGRESS-BETA-WIN64
+          name: LOSLOF-R25-VIRTUAL-AIM-PARITY-BETA-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21
