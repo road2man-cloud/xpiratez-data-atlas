@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 R25 Virtual Aim Parity Windows BETA
+name: OXCE 8.6.0 R26 Virtual Source Occupancy Fix Windows BETA
 on:
   push:
     branches:
-      - loslof-r25-virtual-aim-parity-20261015
+      - loslof-r26-virtual-source-occupant-20261015
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -141,6 +141,13 @@ jobs:
           python loslof_r22/tests/check_r25_virtual_accuracy.py engine
           python -m py_compile loslof_r22/tools/patch_r25_virtual_accuracy.py loslof_r22/tests/check_r25_virtual_accuracy.py
 
+      - name: Fix R26 ghost shooter in virtual occupied firing tile, preserve native shots
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r26_virtual_origin_occupancy.py engine
+          python loslof_r22/tests/check_r26_virtual_origin_occupancy.py engine
+          python -m py_compile loslof_r22/tools/patch_r26_virtual_origin_occupancy.py loslof_r22/tests/check_r26_virtual_origin_occupancy.py
+
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
         run: |
@@ -168,7 +175,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R25_VIRTUAL_AIM_PARITY_BETA.exe"
+          result = out / "OpenXcomEx_LOSLOF_R26_VIRTUAL_OCCUPANT_FIX_BETA.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -196,24 +203,26 @@ jobs:
               "R23 RESEARCH UI: new-project base RP and chosen/current actual RP; research logic unchanged.\n"
               "R24 PROGRESS UI: current research spent RP, actual total RP and completion percentage; research logic unchanged.\n"
               "R25 VIRTUAL AIM: native tile range/distance, virtual LOS penalty, and preview-only projectile LOS override.\n"
+              "R26 OCCUPANCY: ignore a friendly occupant on a hypothetical firing tile, preview-only.\n"
               "NOT equivalent to R21. H/B/M, shotgun, burst and risk are APPROXIMATE EXPERIMENTS;\n"
               "compatibility have NOT been validated. DO NOT replace your original executable.\n",
               encoding="utf-8")
           (out/"BUILD_PROVENANCE.txt").write_text(
-              "Status: R25 virtual aim range/LOS parity on R24 + R23 + R22 Virtual Origin Fix Beta (NOT R21-equivalent)\\n"
+              "Status: R26 virtual origin ghost ally fix on R25 + R24 + R23 + R22 Virtual Origin Fix Beta (NOT R21-equivalent)\\n"
               "Pinned engine: OpenXcom Extended 8.6.0\\n"
               "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
               "R22 pinned source patch commit: 6161db7e26cf95197121136137610ab07ee763bd\\n"
               "R23 pinned source patch commit: 7b5ef9775e3c73230786c08d7bc6ab2b48de0f80\\n"
               "R24 pinned source patch commit: 8fbfb976503edee4be2c2a919f3634e75da3b409\\n"
-              f"R25 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
+              "R25 pinned source patch commit: 8b8100577244237d70c27886f8797c5d5da28270\\n"
+              f"R26 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
               f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
-              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG > R23 research cost UI > R24 research progress UI > R25 virtual aim range/LOS\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG > R23 research cost UI > R24 research progress UI > R25 virtual aim range/LOS > R26 virtual origin friendly occupant exclusion\\n"
               "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
               "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
               encoding="utf-8")
           (out/"HOW_TO_USE_KO.txt").write_text(
-              "XPiratez LOS/LOF R25 Virtual Aim Parity Beta - safety-first test guide\\n"
+              "XPiratez LOS/LOF R26 Virtual Source Occupancy Fix Beta - safety-first test guide\\n"
               "1. Do NOT overwrite your original XPiratez EXE, DLLs, or saves.\\n"
               "2. Make a separate COPY of the existing XPiratez installation for testing.\\n"
               "3. Extract this artifact's EXE and DLLs ONLY into that separate copy.\\n"
@@ -248,8 +257,12 @@ jobs:
               "    Native crosshair ACC on virtual SOURCE cursor is suppressed to avoid false comparisons.\\n"
               "    H is a Monte Carlo hit estimate, not the same quantity as crosshair ACC; samples vary.\\n"
               "    Exact parity still requires real-save live validation, including custom visibility scripts and terrain.\\n"
-              "14. Never use an unverified beta executable for your only campaign save.\\n"
-              "15. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
+              "14. Virtual firing tile friendly occupant is excluded from preview rays ONLY.\\n"
+              "    Case: 25.sav, Satanic Eel (12,8,0), Malcontent Chill (12,6,0), same AK rifles.\\n"
+              "    XPiratez 50% no-LOS penalty should not arise from an imagined vacated origin ally.\\n"
+              "    All other walls/units still block firing; the virtual tile is hypothetical until vacated.\\n"
+              "15. Never use an unverified beta executable for your only campaign save.\\n"
+              "16. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
               "These percentages are EXPERIMENTAL and not validated against live hit rates.\\n",
               encoding="utf-8")
           manifest = []
@@ -265,7 +278,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R25-VIRTUAL-AIM-PARITY-BETA-WIN64
+          name: LOSLOF-R26-VIRTUAL-OCCUPANT-FIX-BETA-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21
