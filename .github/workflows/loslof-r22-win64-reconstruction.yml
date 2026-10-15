@@ -1,8 +1,8 @@
-name: OXCE 8.6.0 R22 Virtual Origin Fix Windows BETA
+name: OXCE 8.6.0 R23 Research Cost Windows BETA
 on:
   push:
     branches:
-      - loslof-r22-virtual-origin-fix-20261014
+      - loslof-r23-research-cost-20261015
     paths:
       - 'loslof_r22/**'
       - '.github/workflows/loslof-r22-win64-reconstruction.yml'
@@ -107,7 +107,7 @@ jobs:
           print("Removed upstream -static so MSYS2 SDL 1.2 import libraries and DLLs can link")
           PY
 
-      - name: Run R22 static regression gates on generated native code
+      - name: Run original R22 static regression gates before changing research UI
         shell: msys2 {0}
         run: |
           python loslof_r22/tests/check_integrated_r22.py engine
@@ -119,6 +119,13 @@ jobs:
           python loslof_r22/tests/check_throw_window_and_grenade_options.py engine
           python loslof_r22/tests/check_r21_local_rng.py engine
           python -m py_compile loslof_r22/tools/patch_r22_preview.py loslof_r22/tools/patch_r22_stats_EXPERIMENTAL.py loslof_r22/tools/patch_r22_recovery_beta.py loslof_r22/tools/patch_r22_safety.py loslof_r22/tools/patch_r22_throw.py loslof_r22/tools/patch_r22_native_targeting.py loslof_r22/tools/patch_r22_native_ballistic_aim.py loslof_r22/tools/patch_r22_throw_window_and_grenade_options.py loslof_r22/tools/patch_r22_r21_local_rng.py
+
+      - name: Apply R23 read-only research cost UI after R22 regression checks
+        shell: msys2 {0}
+        run: |
+          python loslof_r22/tools/patch_r23_research_cost.py engine
+          python loslof_r22/tests/check_r23_research_cost.py engine
+          python -m py_compile loslof_r22/tools/patch_r23_research_cost.py loslof_r22/tests/check_r23_research_cost.py
 
       - name: Configure MinGW64 (actual OXCE engine)
         shell: msys2 {0}
@@ -147,7 +154,7 @@ jobs:
           assert exe.is_file(), "Missing Windows executable"
           out = Path("dist")
           out.mkdir(exist_ok=True)
-          result = out / "OpenXcomEx_LOSLOF_R22_VIRTUAL_ORIGIN_FIX_BETA.exe"
+          result = out / "OpenXcomEx_LOSLOF_R23_RESEARCH_COST_BETA.exe"
           shutil.copy2(exe, result)
           pending = [result]
           visited = set()
@@ -172,21 +179,23 @@ jobs:
           (out/"UNVERIFIED.txt").write_text(
               "OXCE 8.6.0 pinned upstream 3e722e09b655ab67acfb59fc8585dc70b583826c\n"
               "R22 RECOVERY BETA: large-unit fixes plus 1024 progressive HBM, 384 risk, 256-frame trace budget and hatching.\n"
+              "R23 RESEARCH UI: new-project base RP and chosen/current actual RP; research logic unchanged.\n"
               "NOT equivalent to R21. H/B/M, shotgun, burst and risk are APPROXIMATE EXPERIMENTS;\n"
               "compatibility have NOT been validated. DO NOT replace your original executable.\n",
               encoding="utf-8")
           (out/"BUILD_PROVENANCE.txt").write_text(
-              "Status: R22 Reconstruction Beta (NOT R21-equivalent)\\n"
+              "Status: R23 research cost UI on R22 Virtual Origin Fix Beta (NOT R21-equivalent)\\n"
               "Pinned engine: OpenXcom Extended 8.6.0\\n"
               "Upstream engine commit: 3e722e09b655ab67acfb59fc8585dc70b583826c\\n"
-              f"R22 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
+              "R22 pinned source patch commit: 6161db7e26cf95197121136137610ab07ee763bd\\n"
+              f"R23 patch repository commit: {os.environ.get('GITHUB_SHA','UNKNOWN')}\\n"
               f"GitHub Actions run ID: {os.environ.get('GITHUB_RUN_ID','UNKNOWN')}\\n"
-              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG\\n"
+              "Patch chain: preview > stats > recovery > safety > throw > native targeting (valid virtual cursor) > native ballistic aim > window throw/live grenade option > R21 isolated preview RNG > R23 research cost UI\\n"
               "CI checks: static regression, compiler, EXE -version CLI smoke test.\\n"
               "NOT checked: real XPiratez fights, input device handling, numerical calibration, R21 parity.\\n",
               encoding="utf-8")
           (out/"HOW_TO_USE_KO.txt").write_text(
-              "XPiratez LOS/LOF R22 Reconstruction Beta - safety-first test guide\\n"
+              "XPiratez LOS/LOF R23 Research Cost Beta - safety-first test guide\\n"
               "1. Do NOT overwrite your original XPiratez EXE, DLLs, or saves.\\n"
               "2. Make a separate COPY of the existing XPiratez installation for testing.\\n"
               "3. Extract this artifact's EXE and DLLs ONLY into that separate copy.\\n"
@@ -207,8 +216,12 @@ jobs:
               "   Windows and walls block throws under actual native collision rules.\\n"
               "   Game Options > Advanced > OXC > Battlescape > Instant Grenades may be changed in an existing campaign.\\n"
               "   Only fuse-zero eligible grenades are affected; save Options with OK.\\n"
-              "11. Never use an unverified beta executable for your only campaign save.\\n"
-              "12. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
+              "11. New research screen: right column is BASE RP from the ruleset.\\n"
+              "    After opening an unstarted project, RP TOTAL is its rolled ACTUAL requirement (50-150% of base).\\n"
+              "    Current research list [N] and project dialog show definitive total RP from the save.\\n"
+              "    RP spent / total in current project dialog does NOT change the saved research cost.\\n"
+              "12. Never use an unverified beta executable for your only campaign save.\\n"
+              "13. Verify SHA256SUMS.txt before use; see BUILD_PROVENANCE.txt for exact source.\\n"
               "These percentages are EXPERIMENTAL and not validated against live hit rates.\\n",
               encoding="utf-8")
           manifest = []
@@ -224,7 +237,7 @@ jobs:
       - name: Upload unverified Windows build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: LOSLOF-R22-VIRTUAL-ORIGIN-FIX-BETA-WIN64
+          name: LOSLOF-R23-RESEARCH-COST-BETA-WIN64
           path: dist/
           if-no-files-found: error
           retention-days: 21
