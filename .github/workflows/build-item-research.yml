@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/build-item-research.yml"
+      - "tools/publish-item-research.sh"
+      - "tools/test-publish-item-research.py"
       - "tools/build-item-research-data.mjs"
       - "tools/data-normalize.mjs"
       - "tools/check-item-research-data.mjs"
@@ -25,6 +27,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/build-item-research.yml"
+      - "tools/publish-item-research.sh"
+      - "tools/test-publish-item-research.py"
       - "tools/build-research-editorial-insights.mjs"
       - "tools/research-decision-insights.mjs"
       - "tools/research-context.mjs"
@@ -35,7 +39,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify:
@@ -48,6 +52,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Test publication isolation and concurrent updates
+        run: python3 tools/test-publish-item-research.py
 
       - name: Migrate embedded research insights to sidecars
         run: node tools/migrate-research-insight-sidecars.mjs --data public/items/data
@@ -63,23 +70,37 @@ jobs:
           node tools/check-editorial-quality.mjs --data public/items/data
           node tools/check-research-decision-insights.mjs --data public/items/data
 
-      - name: Publish migrated research data
-        if: github.event_name == 'push'
-        run: |
-          git fetch origin main
-          git checkout -B main origin/main
-          node tools/migrate-research-insight-sidecars.mjs --data public/items/data
-          node tools/build-research-editorial-insights.mjs --data public/items/data --out public/items/data
-          node tools/build-item-editorial-insights.mjs --data public/items/data --out public/items/data
-          node tools/check-item-research-data.mjs --data public/items/data
-          node tools/check-editorial-quality.mjs --data public/items/data
-          node tools/check-research-decision-insights.mjs --data public/items/data
-          if git diff --quiet -- public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks public/items/data/item-editorial-meta.json public/items/data/item-editorial-chunks; then
-            echo "Research/item data and GPT editorials already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/items/data/research-index.json public/items/data/research-chunks public/items/data/research-insight-index.json public/items/data/research-insight-chunks public/items/data/research-editorial-meta.json public/items/data/research-editorial-chunks public/items/data/item-editorial-meta.json public/items/data/item-editorial-chunks
-          git commit -m "Refresh research and item GPT editorials"
-          git push origin HEAD:main
+
+  publish:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # Serialize this publisher; other main writers are handled by optimistic retries.
+    concurrency:
+      group: item-research-data-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Publish migrated research data with concurrent-update retries
+        env:
+          PUBLISH_ARTIFACT_DIR: ${{ runner.temp }}/research-publish-results
+        run: bash tools/publish-item-research.sh
+
+      - name: Preserve generated patches when publication fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-publish-results-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/research-publish-results
+          if-no-files-found: ignore
+          retention-days: 7
