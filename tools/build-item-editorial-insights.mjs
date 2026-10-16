@@ -352,9 +352,40 @@ function decisionFallback(row,d){
   if(d.kind==="medical")return "회복량과 사용 TU가 충분히 좋다면 판매가보다 전투 지속력 가치가 우선하며, 대체 의료품이 충분하면 우선순위가 낮아진다.";
   return "현재 정적 데이터만으로 뚜렷한 전투·경제·진행 우선순위를 만들기 어렵다. 실제 사용하는 미션·이벤트가 확인될 때 가치가 구체화된다.";
 }
+const combatEditorialOverrides={
+  "STR_KUNG_FU": {
+    "overview": "체육복 무술: 주먹질 6TU, 돌려차기 12TU, 백열권 36TU·5타를 선택. 세 모드 모두 명중 계수 125.",
+    "effect": "주먹질: 6TU/에너지2, 위력 근력×0.25+근접×0.25, ToHealth 0.1. 돌려차기: 12TU/에너지4, 위력 근력×0.25+근접×0.5, ToHealth 0.2, ToTime 2.5. 백열권: 36TU/에너지32, 5타, 한 타격의 위력은 돌려차기와 같음, ToTime 2.5. 주먹질은 근접공격이고 나머지 두 기술은 사거리 1 발사형. 피해 DAZE, 기본 위력 0은 능력치 가산 전이다. 5타를 확정 5배 피해로 해석하지 말 것.",
+    "decision": "순간 무력화는 백열권, TU 12로 강한 단타는 돌려차기, 낮은 에너지·TU로 지속 생포는 주먹질이 유리하다. 기본 맨손도 많은 방어구가 제공하므로 기절봉은 필수품이 아니다.",
+    "watch": "백열권 5타는 별도 명중·피해 판정을 받으며 방어력/저항/난수 영향을 받는다. 무술의 명중에는 근접·반응 능력이 관여하며 사격 능력을 그대로 적용하지 않는다."
+  },
+  "STR_STUN_BATON": {
+    "overview": "일반 맨손 주먹질로 생포 가능하므로 기절봉은 필수가 아니다. 전기 피해와 고통 면역 무시가 차별점이다.",
+    "effect": "기절봉: TU7/에너지2, 명중 계수95, 위력 22+반응×0.15, 전기 피해, ToStun 1, ToHealth 0.05, ArmorEffectiveness 0.75, IgnorePainImmunity=true, RandomStun=false. 일반 맨손: TU8/에너지2, 명중100, 위력 근력×0.25+근접×0.25, DAZE, ToHealth0.15.",
+    "decision": "이미 맨손 생포가 잘되면 구매비 6,000을 지출할 필요가 낮다. 저체력 포로를 적은 체력 피해로 제압하거나 고통 면역 적을 상대할 때 가치가 있다. 전기 저항 높은 적은 반례다.",
+    "watch": "ToStun 1은 기절 성공 보장이 아니다. 피해 유형과 방어·전기 저항을 실제로 확인해야 한다. 기절봉은 손 슬롯을 차지하고 무게 3이다."
+  },
+  "STR_UNARMED_BASIC": {
+    "overview": "일반 주먹질은 다수 방어구에 기본 제공되는 생포 공격. 기절봉은 반드시 필요하지 않다.",
+    "effect": "일반 맨손: TU8/에너지2, 명중 계수100, 위력 근력×0.25+근접×0.25, DAZE 피해, ToHealth 0.15, ArmorEffectiveness1.5. 체육복의 무술 주먹질은 별도 공격으로 TU6/에너지2, 명중125, ToHealth0.1.",
+    "decision": "일반 맨손으로 생포가 성공하면 기절봉 추가 구매 가치는 낮다. 기절봉의 전기 피해·고통 면역 무시·체력 피해 0.05가 필요한 상황에만 사용을 고려한다.",
+    "watch": "일반 맨손 STR_UNARMED_BASIC과 체육복 무술 STR_KUNG_FU의 주먹질은 서로 다른 원본 규칙이다. 모든 병종·장비에서 맨손 가능하다고 무조건 단정하지 말고 방어구 specialWeapon을 확인한다."
+  },
+  "STR_GYM_OUTFIT": {
+    "overview": "체육복 방어구는 무술 STR_KUNG_FU를 제공한다. TU6 주먹질, TU12 돌려차기, TU36·5타 백열권이 핵심이다.",
+    "effect": "체육복 특수무기 STR_KUNG_FU의 주먹질은 TU6/에너지2, 돌려차기는 TU12/에너지4, 백열권은 TU36/에너지32·5타. 명중 계수 모두125. 돌려차기·백열권 타격 위력=근력×0.25+근접×0.5, 주먹질 위력=근력×0.25+근접×0.25. 체육복 방어구 TU+5, 기력+15, 투척+5, Psi Strength+2, 방어력 전 방향20, 무게4.",
+    "decision": "백열권은 고에너지 집중 무력화, 돌려차기는 TU12의 단타, 주먹질은 저에너지 지속 생포. 다만 방어력20이므로 총기 적에게 무턱대고 접근하면 위험하다. 기절봉은 일반 맨손 생포에 필수가 아니다.",
+    "watch": "STR_GYM_OUTFIT(아이템)과 STR_GYM_OUTFIT_UC(방어구)는 구분한다. 공격은 방어구의 specialWeapon STR_KUNG_FU에서 발생하며 실제 피해는 표적 저항·장갑·난수에 따라 달라진다."
+  }
+};
+
 function editorialFor(row){
   const d=detailFor(row),u=usageFor(row);
   if(!d)throw new Error("Missing item detail "+row.id);
+  if(combatEditorialOverrides[row.id]){
+    const base={overview:overview(row,d,u),effect:effect(row,d),acquisition:acquisition(row,d),progression:progression(row,d,u),uses:usesEditorial(row,u),economics:economyEditorial(row,u),decision:decision(row,d),watch:caution(row,d)};
+    return {...base,...combatEditorialOverrides[row.id]};
+  }
   return{
     overview:expanded(overview(row,d,u),"전투용인지 진행용인지 판단할 때 아래 직접 룰과 역참조를 함께 보는 것이 안전하다."),
     effect:expanded(effect(row,d),effectFallback(row,d)),
