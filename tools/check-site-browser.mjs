@@ -53,6 +53,15 @@ try {
   for(const slug of pages){
     if(!ready[slug]){console.log("FAIL "+slug+" unknown-page");results.push(false);continue;}
     const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+    if(slug==="research"||slug==="manufacture"){
+      // The game-first card intentionally folds the former full dossier.
+      // Exercise its expanded state whenever a new detail drawer is rendered,
+      // so existing causality/branch and economics assertions remain strict.
+      await page.addInitScript(()=>{
+        const reveal=()=>document.querySelectorAll("#detail details.game-more").forEach(node=>{if(!node.open)node.open=true});
+        new MutationObserver(reveal).observe(document,{childList:true,subtree:true});
+      });
+    }
     const errors=[],httpErrors=[];
     page.on("pageerror",e=>errors.push(e.message));
     page.on("console",msg=>{if(msg.type()==="error"&&!msg.location().url.endsWith("/favicon.ico"))errors.push("console: "+msg.text()+" ["+msg.location().url+"]")});
@@ -773,7 +782,7 @@ try {
         if(slug==="research"){
           // Guard against single-item summaries for strategically significant topics.
           await page.goto(new URL("research/#research=STR_CUNNING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
-          await page.waitForFunction(()=>document.querySelector("#detail > .id")?.textContent.includes("STR_CUNNING"),{timeout:25000});
+          await page.waitForFunction(()=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.textContent.includes("STR_CUNNING"),{timeout:25000});
           // v5 hides the long source-backed context until requested. Verify
           // that opening it restores every deep evidence / reverse link.
           await page.locator("#detail .editorial-extra > summary").click();
@@ -798,7 +807,7 @@ try {
             {id:"STR_CASH_BAG",expected:["$200,000","$202,200","91개","92개"]}
           ]){
             await page.goto(new URL("research/#research="+sample.id,base).href,{waitUntil:"domcontentloaded",timeout:45000});
-            await page.waitForFunction(id=>document.querySelector("#detail > .id")?.textContent.includes(id),sample.id,{timeout:25000});
+            await page.waitForFunction(id=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.textContent.includes(id),sample.id,{timeout:25000});
             const compact=await page.locator("#detail .editorial-panel").innerText();
             for(const word of sample.expected){
               if(!compact.includes(word))errors.push(sample.id+" v5 causal/ROI insight missing: "+word);
@@ -808,7 +817,7 @@ try {
         }
         if(slug==="manufacture"){
           await page.goto(new URL("manufacture/#recipe=STR_WARRIOR_SUMMONING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
-          await page.waitForFunction(()=>document.querySelector("#detail > .id")?.innerText.includes("STR_WARRIOR_SUMMONING"),{timeout:20000});
+          await page.waitForFunction(()=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.innerText.includes("STR_WARRIOR_SUMMONING"),{timeout:20000});
           const recipeText=await page.locator("#detail").innerText();
           if(!recipeText.includes("영웅의 축복")||!recipeText.includes("32"))errors.push("Champion Summoning deep-link missing 32 Blessings input");
           detail+=" + champion recipe deep link";
