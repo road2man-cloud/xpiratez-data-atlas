@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 제조 DB</title>
-<link rel="stylesheet" href="styles.css?v=large-db-perf-20261011">
+<link rel="stylesheet" href="styles.css?v=20261017-game-list-v2">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
-<body>
+<body class="game-list-mode">
 <header class="hero"><div class="wrap">
   <div class="topnav"><a class="back" href="../">← Data Atlas</a><div><a class="ghost" href="../items/">아이템 DB</a><a class="ghost" href="../research/">연구 DB</a><a class="ghost" href="../facilities/">기지시설 DB</a></div></div>
   <p class="eyebrow">XPiratez v.o1.1.1 · Ruleset-backed</p>
@@ -35,10 +35,12 @@
     <strong>명목 연구량</strong><span>직접 요구 연구에서 재귀 선행망을 중복 제거해 합산합니다. 이벤트 지급·getOneFree·상호배타 분기 때문에 실제 최소 도달량은 달라질 수 있습니다.</span>
   </section>
 
+  <p class="game-manufacture-guide">주제 → 요구되는 연구 → 요구되는 재료 → 생산된 물품 → 유닛 당 비용 → 작업 시간. 금전 순가치·분기·확률 분석은 「분석표 보기」와 제조 상세에서 확인할 수 있습니다.</p>
+
   <section class="table-card card">
     <div class="table-head">
-      <div><p class="eyebrow">정렬 가능</p><h2>제조식 비교</h2></div>
-      <div class="table-meta"><span id="rowCount"></span><select id="pageSize"><option>50</option><option selected>100</option><option>250</option></select></div>
+      <div><p class="eyebrow">게임식 정보 순서</p><h2>제조 목록</h2></div>
+      <div class="table-meta"><button id="listLayoutToggle" type="button" aria-label="목록 표시 형식 변경">분석표 보기</button><span id="rowCount"></span><select id="pageSize"><option>50</option><option selected>100</option><option>250</option></select></div>
     </div>
     <div class="table-shell"><table id="manufactureTable"><thead></thead><tbody></tbody></table></div>
     <div class="pager"><button id="prev">이전</button><span id="pageInfo"></span><button id="next">다음</button></div>
@@ -50,7 +52,7 @@
   <button id="closeDrawer" class="close" aria-label="닫기">×</button>
   <div id="detail"></div>
 </aside>
-<script type="module" src="app.js?v=large-db-perf-20261011"></script>
+<script type="module" src="app.js?v=20261017-game-list-v2"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

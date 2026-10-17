@@ -6,7 +6,7 @@ const fmt=v=>v==null||Number.isNaN(Number(v))?"—":numberFormat.format(Number(v
 const money=v=>v==null?"—":(Number(v)>0?"+":"")+fmt(Math.round(Number(v)));
 const dataBase="../data";
 let db={index:[],counts:{},roles:{}},rows=[],detailCache=new Map(),editorialCache=new Map();
-const state={q:"",role:"",category:"",economics:"",baseFunc:"",sort:"koName",dir:1,page:1,pageSize:100};
+const state={q:"",role:"",category:"",economics:"",baseFunc:"",sort:"koName",dir:1,page:1,pageSize:100,listLayout:"game"};
 
 const jsonCache=new Map();
 function json(url){
@@ -23,6 +23,7 @@ function initFilters(){
   $("#search").addEventListener("input",debounce(e=>{state.q=e.target.value.trim().toLowerCase();state.page=1;render()}));
   for(const id of ["role","category","economics","baseFunc"])$("#"+id).addEventListener("change",e=>{state[id]=e.target.value;state.page=1;render()});
   $("#pageSize").addEventListener("change",e=>{state.pageSize=Number(e.target.value);state.page=1;render()});
+  $("#listLayoutToggle").onclick=()=>{state.listLayout=state.listLayout==="game"?"analysis":"game";document.body.classList.toggle("game-list-mode",state.listLayout==="game");$("#listLayoutToggle").textContent=state.listLayout==="game"?"분석표 보기":"게임식 목록 보기";render()};
   $("#prev").onclick=()=>{if(state.page>1){state.page--;render()}};
   $("#next").onclick=()=>{state.page++;render()};
   $("#closeDrawer").onclick=closeDrawer;$("#backdrop").onclick=closeDrawer;
@@ -61,6 +62,9 @@ function cmp(a,b,key){
 const cols=[
   ["koName","제조식"],["roleKo","역할"],["time","기술자-시간"],["cost","제조비"],["requiredItemCount","재료종"],["outputItemCount","확정산출"],["researchCost","명목 연구량"],["baseFuncCount","baseFunc"],["opportunityNet","순가치"],["opportunityNetPerEngineerHour","순가치/시간"],["randomOptionCount","랜덤"]
 ];
+const gameCols=[
+  ["koName","주제"],["researchCount","요구되는 연구"],["requiredItemCount","요구되는 재료"],["outputItemCount","생산된 물품"],["cost","유닛 당 비용"],["time","작업 시간"]
+];
 let searchReady=false,searchPromise=null;
 function ensureSearch(){
   if(searchReady)return;
@@ -78,8 +82,19 @@ function render(){
   $("#rowCount").textContent=`${rows.length.toLocaleString("ko-KR")}개`;
   $("#pageInfo").textContent=`${state.page} / ${pages}`;
   $("#prev").disabled=state.page<=1;$("#next").disabled=state.page>=pages;
-  $("#manufactureTable thead").innerHTML="<tr>"+cols.map(([k,l])=>`<th data-sort="${k}">${esc(l)}${state.sort===k?(state.dir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>";
+  $("#manufactureTable thead").innerHTML="<tr>"+(state.listLayout==="game"?gameCols:cols).map(([k,l])=>`<th data-sort="${k}">${esc(l)}${state.sort===k?(state.dir>0?" ▲":" ▼"):""}</th>`).join("")+"</tr>";
   $("#manufactureTable tbody").innerHTML=pageRows.map(x=>{
+    if(state.listLayout==="game"){
+      const output=x.outputSummary||"없음",inputs=x.inputSummary||"없음";
+      return`<tr data-id="${esc(x.id)}">
+        <td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td>
+        <td class="game-num">${fmt(x.researchCount)}개</td>
+        <td class="game-short" title="${esc(inputs)}">${esc(inputs)}</td>
+        <td class="game-short" title="${esc(output)}">${esc(output)}${x.randomOptionCount?'<span class="sub">랜덤 후보 '+fmt(x.randomOptionCount)+'개</span>':""}</td>
+        <td class="game-num">${fmt(x.cost)}</td>
+        <td class="game-num">${fmt(x.time)} <span class="game-unit">기술자-시간</span></td>
+      </tr>`;
+    }
     const cls=x.opportunityNet>0?"good":x.opportunityNet<0?"bad":"";
     const out=x.outputSummary+(x.randomOptionCount?` · 랜덤 ${x.randomOptionCount}`:"");
     return`<tr data-id="${esc(x.id)}">
@@ -152,7 +167,8 @@ async function openDetail(id){
     detailCache.set(row.bucket,detail.details);editorialCache.set(row.bucket,editorial.details);
     if(generation!==detailGeneration)return;
     const d=detailCache.get(row.bucket)[id],e=editorialCache.get(row.bucket)[id],ec=d.economics||{},cls=ec.opportunityNet>0?"positive":ec.opportunityNet<0?"negative":"";
-    $("#detail").innerHTML=`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><p><span class="role">${esc(d.roleKo)}</span> <span class="role">${esc(d.categoryKo)}</span></p>
+    const dossier=`<div class="game-dossier"><div class="game-dossier-title">기술개발도 열람</div><div class="game-dossier-top"><b>주제: ${esc(d.koName)}</b><span>제조</span></div><div class="game-dossier-columns"><div><h3>요구되는 연구:</h3><div>${d.directResearch?.length?d.directResearch.map(researchLink).join(" "):"없음"}</div><h3>요구되는 재료:</h3><div>${d.requiredItems?.length?d.requiredItems.map(x=>itemLink(x)).join(" "):"없음"}</div><h3>유닛 당 비용:</h3><p>${fmt(d.cost)}</p><h3>작업 시간:</h3><p>${fmt(d.time)} 기술자-시간</p></div><div><h3>생산된 물품:</h3><div>${d.deterministicOutputs?.length?d.deterministicOutputs.map(x=>itemLink(x)+" ×"+fmt(x.qty)).join(" "):"없음"}${d.craftOutput?`<div>기체: ${esc(d.craftOutput.koName)}</div>`:""}${d.spawnedPersonType?`<div>인원: ${esc(d.spawnedPersonTypeName||d.spawnedPersonType)}</div>`:""}</div><h3>랜덤 산출:</h3><p>${d.randomOutputs?.length||0}개 후보</p><h3>요구 시설 기능:</h3><div>${d.baseFuncDetails?.length?d.baseFuncDetails.map(x=>esc(x.koName||x.id)).join(", "):"없음"}</div></div></div><div class="game-dossier-foot">${esc(d.enName)} · ${esc(d.id)}</div></div>`;
+    $("#detail").innerHTML=`${dossier}<details class="game-more"><summary>경제성 · 제조 경로 · 원본 상세 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><p><span class="role">${esc(d.roleKo)}</span> <span class="role">${esc(d.categoryKo)}</span></p>
       ${kpis([["기술자-시간",fmt(d.time)],["제조비",fmt(d.cost)],["space",fmt(d.space)],["명목 연구량",fmt(d.research?.totalCost)],["재료 기회비용",fmt(ec.inputSellOpportunityValue)],["기대 산출 판매가",fmt(ec.expectedOutputSellValue)],["순가치",ec.economicComparable?money(ec.opportunityNet):"비교 제외",cls],["순가치/시간",ec.economicComparable?money(ec.opportunityNetPerEngineerHour):"—",cls]])}
       ${editorialMarkup(e)}
       ${itemTable(d.requiredItems,"투입 재료")}
@@ -169,7 +185,7 @@ async function openDetail(id){
         <tr><td><b>판매가 기준 순가치</b></td><td class="num ${cls}"><b>${ec.economicComparable?money(ec.opportunityNet):"비교 제외"}</b></td></tr>
       </tbody></table><p class="muted">병사·기체 가치와 전투 성능은 금액으로 환산하지 않습니다. refund 플래그도 추가 현금으로 임의 합산하지 않습니다.</p></section>
       <section class="section"><h3>출처</h3><p class="muted">${(d.sourceFiles||[]).map(esc).join(" → ")||"—"}</p></section>
-      ${rawMarkup(d)}`;
+      ${rawMarkup(d)}</details>`;
     $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
   }catch(err){if(generation!==detailGeneration)return;$("#detail").innerHTML=`<p class="negative">${esc(err.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }

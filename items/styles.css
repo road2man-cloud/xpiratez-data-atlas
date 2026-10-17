@@ -45,3 +45,41 @@ dialog{width:min(1200px,96vw);max-height:90vh;border:1px solid var(--line);borde
 .trigger-row{display:grid;grid-template-columns:76px 1fr;gap:6px;margin-top:6px;font-size:10px}.trigger-row>span{color:#8298b8}.trigger-item{display:inline-flex;align-items:center;gap:3px;margin:2px 5px 2px 0}.trigger-item b{font-size:9px}.trigger-item.required b{color:#91dfb3}.trigger-item.forbidden b{color:#ffbc9f}.route-details{margin-top:12px}
 .error{color:#ff9b9b}
 @media(max-width:780px){.hero{align-items:flex-start;flex-direction:column;padding:25px 12px 15px}main{padding:0 10px 40px}.search{min-width:100%}.status{flex-direction:column}.table-scroll{max-height:64vh}th:nth-child(n+7),td:nth-child(n+7){display:none}.drawer{width:100vw;max-width:100vw;border-left:0}.drawerbody{padding:14px;overflow-x:hidden}.kpis,.insight-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.insight-heading,.insight-card-head{flex-wrap:wrap}.summary,.insight-panel,.editorial-panel,.insight-card,.semantic-ref,.effect-row>*{min-width:0}.summary,.callout,.requirement-line,.semantic-extra,.paths,.chip,.editorial-row p{overflow-wrap:anywhere}.chip{max-width:100%}.editorial-row{grid-template-columns:1fr;gap:4px}.effect-row{grid-template-columns:1fr}.effect-row small{grid-column:1}.trigger-row{grid-template-columns:1fr}}
+
+
+.game-dossier{background:#18090e;border:5px double #426fa9;padding:16px;color:#f0bfd7;margin:0 0 14px;line-height:1.6}
+.game-dossier-title{text-align:center;color:#87b7ff;font-size:27px;font-weight:900}
+.game-dossier-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:#9cc4ff;margin:10px 0 16px}
+.game-dossier-columns{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.game-dossier-columns>div{min-width:0;overflow-wrap:anywhere}
+.game-dossier h3{color:#88b8fa;font-size:15px;margin:13px 0 4px}
+.game-dossier p{margin:2px 0 8px}
+.game-dossier .chip{background:#3b192e;color:#ffc2df;margin:2px;white-space:normal}
+.game-dossier .rel{border-bottom:1px solid #603348}
+.game-dossier-foot{margin-top:16px;border-top:1px solid #62364c;padding-top:9px;color:#bc9bac;font-size:12px}
+.game-more{padding:12px}
+@media(max-width:620px){.game-dossier-columns{grid-template-columns:1fr;gap:10px}.game-dossier-title{font-size:21px}}
+
+
+/* Game-first research catalogue; the former analytical grid remains available on demand. */
+.research-legend{display:flex;flex-wrap:wrap;align-items:center;gap:9px 17px;margin:12px 0 10px;padding:10px 13px;border:1px solid #314e75;border-radius:8px;background:#132038;color:#cfdbed;font-size:12px}
+.research-legend>span{display:inline-flex;align-items:center;gap:6px}
+.research-legend small{color:#a6b5c8}
+body:not(.research-game-list) .research-legend{display:none}
+.research-markers{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.research-marker{box-sizing:border-box;display:inline-block;width:14px;height:14px;border:1px solid #61738a;border-radius:2px;background:transparent;vertical-align:middle;flex-shrink:0}
+.research-marker.active.marker-mission{background:#a779ea;border-color:#c8a8f7}
+.research-marker.active.marker-manufacture{background:#e19b48;border-color:#f1bd79}
+.research-marker.active.marker-purchase{background:#59ba8b;border-color:#8ce0b1}
+.research-marker.active.marker-followup{background:#6ba8f0;border-color:#a6c9ff}
+.research-game-list .table-card{background:#141421;border-color:#38557d}
+.research-game-list .table-scroll{max-height:76vh}
+.research-game-list .table-card table{min-width:760px}
+.research-game-list .table-card th{background:#1b2945;color:#a9caff}
+.research-game-list .table-card td{border-color:#293348;vertical-align:middle}
+.research-game-list .table-card tbody tr:hover{background:#23324c}
+.research-game-list .table-card td:nth-child(3){min-width:220px}
+.research-game-list .table-card td:nth-child(3) .name{color:#f2dbea}
+.research-game-list .table-card .game-numeric{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.research-game-list .table-card .game-needed{color:#efc4d6}
+@media(max-width:780px){.research-game-list .table-card th:nth-child(n+7),.research-game-list .table-card td:nth-child(n+7){display:table-cell}.research-game-list .table-card td:nth-child(3){min-width:165px}.research-legend{gap:8px}}
