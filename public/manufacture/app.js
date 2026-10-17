@@ -152,7 +152,8 @@ async function openDetail(id){
     detailCache.set(row.bucket,detail.details);editorialCache.set(row.bucket,editorial.details);
     if(generation!==detailGeneration)return;
     const d=detailCache.get(row.bucket)[id],e=editorialCache.get(row.bucket)[id],ec=d.economics||{},cls=ec.opportunityNet>0?"positive":ec.opportunityNet<0?"negative":"";
-    $("#detail").innerHTML=`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><p><span class="role">${esc(d.roleKo)}</span> <span class="role">${esc(d.categoryKo)}</span></p>
+    const dossier=`<div class="game-dossier"><div class="game-dossier-title">기술개발도 열람</div><div class="game-dossier-top"><b>주제: ${esc(d.koName)}</b><span>제조</span></div><div class="game-dossier-columns"><div><h3>요구되는 물품:</h3><div>${d.directResearch?.length?d.directResearch.map(researchLink).join(" "):"없음"}</div><h3>요구되는 재료:</h3><div>${d.requiredItems?.length?d.requiredItems.map(x=>itemLink(x)).join(" "):"없음"}</div><h3>유닛 당 비용:</h3><p>${fmt(d.cost)}</p><h3>작업 시간:</h3><p>${fmt(d.time)} 기술자-시간</p></div><div><h3>생산된 물품:</h3><div>${d.deterministicOutputs?.length?d.deterministicOutputs.map(x=>itemLink(x)).join(" "):"없음"}</div><h3>랜덤 산출:</h3><p>${d.randomOutputs?.length||0}개 후보</p><h3>요구 시설 기능:</h3><div>${d.baseFuncDetails?.length?d.baseFuncDetails.map(x=>esc(x.koName||x.id)).join(", "):"없음"}</div></div></div><div class="game-dossier-foot">${esc(d.enName)} · ${esc(d.id)}</div></div>`;
+    $("#detail").innerHTML=`${dossier}<details class="game-more"><summary>경제성 · 제조 경로 · 원본 상세 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><p><span class="role">${esc(d.roleKo)}</span> <span class="role">${esc(d.categoryKo)}</span></p>
       ${kpis([["기술자-시간",fmt(d.time)],["제조비",fmt(d.cost)],["space",fmt(d.space)],["명목 연구량",fmt(d.research?.totalCost)],["재료 기회비용",fmt(ec.inputSellOpportunityValue)],["기대 산출 판매가",fmt(ec.expectedOutputSellValue)],["순가치",ec.economicComparable?money(ec.opportunityNet):"비교 제외",cls],["순가치/시간",ec.economicComparable?money(ec.opportunityNetPerEngineerHour):"—",cls]])}
       ${editorialMarkup(e)}
       ${itemTable(d.requiredItems,"투입 재료")}
@@ -169,7 +170,7 @@ async function openDetail(id){
         <tr><td><b>판매가 기준 순가치</b></td><td class="num ${cls}"><b>${ec.economicComparable?money(ec.opportunityNet):"비교 제외"}</b></td></tr>
       </tbody></table><p class="muted">병사·기체 가치와 전투 성능은 금액으로 환산하지 않습니다. refund 플래그도 추가 현금으로 임의 합산하지 않습니다.</p></section>
       <section class="section"><h3>출처</h3><p class="muted">${(d.sourceFiles||[]).map(esc).join(" → ")||"—"}</p></section>
-      ${rawMarkup(d)}`;
+      ${rawMarkup(d)}</details>`;
     $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
   }catch(err){if(generation!==detailGeneration)return;$("#detail").innerHTML=`<p class="negative">${esc(err.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}
 }
