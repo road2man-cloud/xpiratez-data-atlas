@@ -16,3 +16,21 @@
 .game-dossier-foot{margin-top:16px;border-top:1px solid #62364c;padding-top:9px;color:#bc9bac;font-size:12px}
 .game-more{padding:12px}
 @media(max-width:620px){.game-dossier-columns{grid-template-columns:1fr;gap:10px}.game-dossier-title{font-size:21px}}
+
+
+/* Game-first manufacture list, with the original economic table available by toggle. */
+.game-manufacture-guide{border-left:3px solid #5f9ccd;color:#bed1e5;margin:12px 0;padding:8px 12px;font-size:.86rem}
+.game-list-mode .table-shell table{min-width:870px}
+.game-list-mode .table-shell th{background:#192b48;color:#b0ccfb}
+.game-list-mode .table-shell th:nth-child(2),.game-list-mode .table-shell td:nth-child(2){text-align:center}
+.game-list-mode .table-shell th:nth-child(3),.game-list-mode .table-shell td:nth-child(3),.game-list-mode .table-shell th:nth-child(4),.game-list-mode .table-shell td:nth-child(4){text-align:left}
+.game-list-mode .table-shell td{border-color:#2b374c;vertical-align:middle}
+.game-list-mode .table-shell tbody tr:hover{background:#20324b}
+.game-list-mode .table-shell td:first-child{min-width:160px}
+.game-list-mode .table-shell td:first-child .name{color:#efd8e6}
+.game-list-mode .table-shell td:nth-child(3),.game-list-mode .table-shell td:nth-child(4){min-width:140px;max-width:260px}
+.game-list-mode .table-shell .game-short{font-size:.86rem;color:#e5cadc;overflow-wrap:anywhere}
+.game-list-mode .table-shell .game-num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.game-list-mode .table-shell .game-unit{font-size:.72rem;color:#9eb6d0}
+.game-list-mode #listLayoutToggle{background:#20406b;border-color:#6583ae;color:#f5faff;white-space:nowrap}
+@media(max-width:760px){.game-list-mode .table-shell table{min-width:850px}.game-list-mode .table-shell td:first-child{min-width:150px}.game-list-mode .table-head{align-items:start;gap:12px;flex-wrap:wrap}}
