@@ -433,7 +433,18 @@ function researchBranchConflictMarkup(d){
 function renderResearch(d){
   const trainingIds=[...new Set((d.otherReferences||[]).filter(x=>x.section==="soldierTransformation").map(x=>x.owner||x.id).filter(Boolean))];
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
-  return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
+  const gameEntities=(xs,kind="research")=>xs?.length?xs.map(x=>entity(typeof x==="string"?x:x.id,kind)).join(" "):'<span class="empty">없음</span>';
+  const free=Array.isArray(d.getOneFree)?d.getOneFree:[];
+  const gamePanel=`<div class="game-dossier"><div class="game-dossier-title">기술개발도 열람</div><div class="game-dossier-top"><b>주제: ${esc(d.koName)}</b><span>연구량: ${fmt(d.cost)}</span></div><div class="game-dossier-columns"><div>
+  <h3>필요 물품:</h3><p>${d.needItem?(d.destroyItem?"연구 표본 필요 · 소모":"연구 표본 필요 · 비소모"):"없음"}</p>
+  <h3>다음에서 공짜로 얻음:</h3><div>${gameEntities(free)}</div>
+  <h3>선행 연구:</h3><div>${gameEntities(d.dependencies)}</div>
+  </div><div><h3>다음의 요구함:</h3><div>${gameEntities(d.requiredBy)}</div>
+  <h3>다음의 해금:</h3><div>${gameEntities(d.unlocks)}</div>
+  <h3>아래의 항목:</h3><div>${relations(d.itemReferences)}</div>
+  <h3>제조 연결:</h3><div>${relations(d.manufactureReferences)}</div>
+  </div></div><div class="game-dossier-foot">${esc(d.enName)} · 완료 점수 ${fmt(d.points)}</div></div>`;
+  return`${gamePanel}<details class="game-more"><summary>상세 분석 · 연구 경로 · 경제성 · 원본 근거 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["연구량",d.cost],["완료 점수",d.points],["연구 표본",d.needItem?(d.destroyItem?"필요·소모":"필요·비소모"):"불필요"]])}
   ${researchBranchConflictMarkup(d)}
   ${researchCycleMarkup(d)}
@@ -449,7 +460,7 @@ function renderResearch(d){
   <details><summary>원본 연구 핵심 룰</summary><div>${rawTable(d.raw,schema.researchFieldMeta)}</div></details>
   ${resourceDetailsMarkup("research",d)}
   </details>
-  <section class="section"><h3>출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section>`;
+  <section class="section"><h3>출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section></details>`;
 }
 function closeDrawer(){detailGeneration++;state.detail=null;$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true;history.replaceState(null,"",location.pathname+location.search)}
 function toggleSelect(mode,id){const s=state.selected[mode],i=s.indexOf(id);if(i>=0)s.splice(i,1);else if(s.length<4)s.push(id);render();updateCompare()}
