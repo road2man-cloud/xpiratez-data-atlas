@@ -471,7 +471,7 @@ function renderResearch(d){
   <h3>아래의 항목:</h3><div>${relations(d.itemReferences)}</div>
   <h3>완료 시 생성된 물품:</h3><div>${gameEntities(spawned,"items")}</div>
   <h3>제조 연결:</h3><div>${relations(d.manufactureReferences)}</div>
-  </div></div><div class="game-dossier-foot">${esc(d.enName)} · 완료 점수 ${fmt(d.points)}</div></div>`;
+  </div></div><div class="game-dossier-foot">${esc(d.enName)} · ${esc(d.id)} · 완료 점수 ${fmt(d.points)}</div></div>`;
   return`${gamePanel}<details class="game-more"><summary>상세 분석 · 연구 경로 · 경제성 · 원본 근거 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["연구량",d.cost],["완료 점수",d.points],["연구 표본",d.needItem?(d.destroyItem?"필요·소모":"필요·비소모"):"불필요"]])}
   ${researchBranchConflictMarkup(d)}
