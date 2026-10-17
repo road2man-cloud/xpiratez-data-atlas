@@ -46,7 +46,7 @@
     "check:craft-weapons": "node tools/check-craft-weapons.mjs --data public/data",
     "check:editorials": "node tools/check-editorial-quality.mjs --data public/items/data",
     "check:research-decisions": "node tools/check-research-decision-insights.mjs --data public/items/data",
-    "check:choices": "node tools/check-choice-coverage.mjs && node tools/check-choice-exclusions.mjs && node tools/check-choice-engine-coverage.mjs && node tools/check-choice-simulator.mjs && node tools/check-research-branch-conflicts.mjs && node tools/check-captain-benefits.mjs && node tools/check-save-import.mjs",
+    "check:choices": "node tools/check-choice-coverage.mjs && node tools/check-choice-exclusions.mjs && node tools/check-choice-engine-coverage.mjs && node tools/check-choice-simulator.mjs && node tools/check-research-branch-conflicts.mjs && node tools/check-research-story-routes.mjs && node tools/check-captain-benefits.mjs && node tools/check-save-import.mjs",
     "build:db-runtime": "node tools/build-db-runtime.mjs",
     "check:db-runtime": "node tools/check-db-runtime.mjs"
   },

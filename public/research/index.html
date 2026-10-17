@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>XPiratez Research DB</title>
-  <link rel="stylesheet" href="../items/styles.css?v=20261017-game-list-v2">
+  <link rel="stylesheet" href="../items/styles.css?v=20261018-research-story-v1">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body class="research-game-list" data-mode="research" data-data-base="../items/data">
@@ -33,6 +33,19 @@
     <button id="compare" class="ghost" disabled>비교 <span id="compareCount">0</span>/4</button>
   </section>
 
+  <section class="research-story-selector" aria-label="스토리 분기별 연구 접근성">
+    <label for="researchStoryRoute">현재 선택한 스토리 분기
+      <select id="researchStoryRoute">
+        <option value="">분기 미선택 · 원본 연구 DB</option>
+        <option value="male-touch">Male Touch · 남자가 필요해</option>
+        <option value="gals-superior">Gals Are Superior · 슈퍼변이체 계집이 최고다</option>
+        <option value="peasant-revolution">Peasant Revolution · 농부 혁명</option>
+        <option value="cat-path">Cat Path · 고양이 경로</option>
+        <option value="hybrid-path">Hybrid Path · 혼혈 경로</option>
+      </select>
+    </label>
+    <div class="research-story-help"><p id="researchStoryRouteInfo" aria-live="polite">분기 판정 데이터 불러오는 중…</p><small>선택한 분기의 선행 선택 연구까지 완료된 것으로 가정합니다. 연구 자체의 영구 배제와 일반 연구의 연쇄 차단을 구분하며, 이벤트 지급·실물 표본·시설 등 별도 조건은 확정 판정하지 않습니다.</small></div>
+  </section>
   <div class="research-legend" aria-label="연구별 해금 유형 범례"><span><i class="research-marker active marker-mission"></i>임무 조건</span><span><i class="research-marker active marker-manufacture"></i>제조</span><span><i class="research-marker active marker-purchase"></i>구매</span><span><i class="research-marker active marker-followup"></i>후속 연구</span><small>빈 칸 = 해당 유형의 직접 연결을 확인하지 못함. 색상만으로 즉시 해금을 보장하지 않습니다.</small></div>
 
   <div class="status">
@@ -69,7 +82,7 @@
   <div id="compareBody"></div>
 </dialog>
 
-<script type="module" src="../items/app.js?v=20261017-game-list-v2"></script>
+<script type="module" src="../items/app.js?v=20261018-research-story-v1"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

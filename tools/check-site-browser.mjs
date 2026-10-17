@@ -328,6 +328,39 @@ try {
         if(content.length<45||htmlError.test(content))errors.push("detail appears empty or errored: "+content.slice(0,120).replace(/\\s+/g," "));
         if(slug==="research"){
           await page.locator("#closeDrawer").click();
+          // Male Touch must block Shakeup via Gals -> Party, not confuse
+          // Bonding's Party_DEP with the research STR_PARTY.
+          await page.locator("#researchStoryRoute").selectOption("male-touch");
+          if(!page.url().includes("story=male-touch"))
+            errors.push("Research branch scenario missing a linkable URL state");
+          const routeInfo=await page.locator("#researchStoryRouteInfo").innerText();
+          if(!routeInfo.includes("Male Touch")||!routeInfo.includes("일반 연구 경로 차단"))
+            errors.push("Male Touch scenario summary missing");
+          await page.locator("#search").fill("STR_SHAKEUP_CEREMONY");
+          const shakeup=page.locator('#tbody tr[data-id="STR_SHAKEUP_CEREMONY"]');
+          await shakeup.waitFor({state:"attached",timeout:12000});
+          if(!(await shakeup.innerText()).includes("선행 경로 차단"))
+            errors.push("Male Touch research list did not label Shakeup route blocked");
+          await shakeup.locator("td").nth(2).click();
+          await page.locator("#detail .research-story-detail").waitFor({state:"visible",timeout:12000});
+          const routeDetails=await page.locator("#detail .research-story-detail").innerText();
+          if(!routeDetails.includes("일반 연구 선행 경로 차단")||!routeDetails.includes("파티"))
+            errors.push("Male Touch Shakeup detail omitted blocked research ancestry");
+          await page.locator("#closeDrawer").click();
+          await page.locator("#researchStoryRoute").selectOption("gals-superior");
+          if((await shakeup.innerText()).includes("선행 경로 차단"))
+            errors.push("Gals route falsely blocked Shakeup");
+          // Shareable scenario deep links must restore both selected route and
+          // its research detail when opened in a fresh page.
+          await page.goto(new URL("research/?story=male-touch#research=STR_SHAKEUP_CEREMONY",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+          await page.waitForFunction(()=>{
+            const detail=document.querySelector("#detail .research-story-detail")?.textContent||"";
+            return document.querySelector("#researchStoryRoute")?.value==="male-touch"&&
+              detail.includes("일반 연구 선행 경로 차단");
+          },{timeout:25000});
+          await page.locator("#closeDrawer").click();
+          await page.locator("#researchStoryRoute").selectOption("");
+          await page.locator("#search").fill("");
           await page.locator('[data-filter="branch"]').selectOption("alternative");
           const audited=await page.locator("#tbody tr").count();
           if(audited!==42)errors.push("Research multi-prerequisite conflict filter expected 42, got "+audited);

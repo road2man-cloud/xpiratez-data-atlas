@@ -1,3 +1,5 @@
+import {buildChoiceIndex} from "../captains/choice-simulator-core.js";
+import {createResearchStoryOverlay,RESEARCH_STORY_ROUTES} from "../research/branch-access.js";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>v==null?"—":typeof v==="number"?v.toLocaleString("ko-KR"):String(v);
@@ -13,8 +15,8 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},listLayout:"game",insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
-let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map(),researchMissionGateMap=new Map();
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:"",routeStatus:""}},storyRoute:(new URLSearchParams(location.search)).get("story")||"",selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},listLayout:"game",insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
+let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map(),researchMissionGateMap=new Map(),storyChoiceIndex=null,researchStoryOverlay=null;
 let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null,detailGeneration=0;
 const modePromises={},searchHay=new WeakMap();
 
@@ -37,11 +39,12 @@ async function ensureMode(mode){
       itemIndex=items.index.map(x=>({...x,...(counts.get(x.id)||{}),originalManufactureReferences:x.manufactureCount}));
       itemMap=new Map(itemIndex.map(x=>[x.id,x]));
     }else{
-      const [research,insight,branchReport,missionGates]=await Promise.all([
+      const [research,insight,branchReport,missionGates,choiceRuntime]=await Promise.all([
         compactJson(`${dataBase}/research-index.json`),
         compactJson(`${dataBase}/research-insight-index.json`),
         json("../data/research-branch-conflicts.json"),
-        json("../data/research-mission-gates.json")
+        json("../data/research-mission-gates.json"),
+        json("../data/choice-simulator-index.json")
       ]);
       if(branchReport?.schemaVersion!==3||branchReport?.meta?.total!==research.index.length||
         branchReport?.meta?.cycleTopics!==new Set((branchReport.cycles||[]).flatMap(g=>g.memberIds)).size)
@@ -59,6 +62,9 @@ async function ensureMode(mode){
         cycleGroupSize:researchCycleMap.get(x.id)?.memberIds.length||0
       }));
       researchMap=new Map(researchIndex.map(x=>[x.id,x]));
+      if(choiceRuntime?.count!==research.index.length)throw new Error("연구 분기 시뮬레이터 데이터 수 불일치");
+      storyChoiceIndex=buildChoiceIndex(choiceRuntime.topics,{inline:true,unresolvedByField:choiceRuntime.unresolvedByField});
+      researchStoryOverlay=createResearchStoryOverlay(storyChoiceIndex,state.storyRoute);
     }
   })().catch(err=>{delete modePromises[mode];throw err});
   return modePromises[mode];
@@ -75,7 +81,7 @@ async function init(){
     $("#metaLine").textContent=pageMode==="items"?
       `${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 아이템 ${fmt(itemIds.size)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`:
       `${m.mod?.name||"X-Piratez"} ${m.mod?.version||""} · 연구 ${fmt(researchIds.size)} · OXCE ${m.mod?.requiredExtendedVersion||"?"}`;
-    bind();renderControls();render();void route();
+    bind();renderControls();renderStoryRouteSummary();render();void route();
   }catch(e){
     $("#statusText").innerHTML=`<span class="error">데이터가 아직 배포되지 않았습니다: ${esc(e.message)}</span>`;
   }
@@ -93,6 +99,23 @@ function bind(){
     render();
   };
   $("#filters").onchange=e=>{const k=e.target.dataset.filter;if(k){state.filter[state.mode][k]=e.target.value;state.page=1;render()}};
+  const storySelect=$("#researchStoryRoute");
+  if(storySelect){
+    if(!RESEARCH_STORY_ROUTES.some(x=>x.id===state.storyRoute))state.storyRoute="";
+    storySelect.value=state.storyRoute;
+    storySelect.onchange=()=>{
+      state.storyRoute=storySelect.value;
+      state.filter.research.routeStatus="";
+      researchStoryOverlay=createResearchStoryOverlay(storyChoiceIndex,state.storyRoute);
+      state.page=1;
+      const address=new URL(location.href);
+      if(state.storyRoute)address.searchParams.set("story",state.storyRoute);
+      else address.searchParams.delete("story");
+      history.replaceState(null,"",address.pathname+address.search+address.hash);
+      renderControls();renderStoryRouteSummary();render();
+      if(state.detail?.mode==="research")void openDetail("research",state.detail.id);
+    };
+  }
   $("#tbody").onclick=e=>{
     const check=e.target.closest("input[data-select]");if(check){e.stopPropagation();toggleSelect(state.mode,check.dataset.select);return}
     const tr=e.target.closest("tr[data-id]");if(tr)openDetail(state.mode,tr.dataset.id);
@@ -113,7 +136,7 @@ function renderControls(){
   $("#sort").innerHTML=base+extra;$("#sort").value=state.sort[mode];
   $("#filters").innerHTML=mode==="items"
     ?`<label><span>종류</span><select data-filter="kind"><option value="">전체</option>${Object.entries(kinds).map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select></label><label><span>연구</span><select data-filter="research"><option value="">전체</option><option value="yes">연결 있음</option><option value="no">없음</option></select></label><label><span>제조</span><select data-filter="manufacture"><option value="">전체</option><option value="yes">연결 있음</option><option value="no">없음</option></select></label>`
-    :`<label><span>실물 표본</span><select data-filter="sample"><option value="">전체</option><option value="yes">필요</option><option value="destroy">소모</option><option value="no">불필요</option></select></label><label><span>생성 아이템</span><select data-filter="outputs"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>효과 유형</span><select data-filter="effect"><option value="">전체</option>${Object.entries(insightRoleLabels).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</select></label><label><span>아이템 연결</span><select data-filter="items"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>선행 분기</span><select data-filter="branch"><option value="">전체</option><option value="alternative">충돌 선행 · 대체 해금 (${researchBranchReport?.meta.affected||0})</option><option value="nested">해금 출처도 선행 충돌 (${researchBranchReport?.meta.nestedConflictTargets||0})</option><option value="self-source">해금 출처가 자신을 배제 (${researchBranchReport?.meta.selfDisablingSourceTargets||0})</option><option value="cycle">명목 선행 순환 (${researchBranchReport?.meta.cycleTopics||0})</option></select></label>`;
+    :`<label><span>실물 표본</span><select data-filter="sample"><option value="">전체</option><option value="yes">필요</option><option value="destroy">소모</option><option value="no">불필요</option></select></label><label><span>생성 아이템</span><select data-filter="outputs"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>효과 유형</span><select data-filter="effect"><option value="">전체</option>${Object.entries(insightRoleLabels).map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</select></label><label><span>아이템 연결</span><select data-filter="items"><option value="">전체</option><option value="yes">있음</option><option value="no">없음</option></select></label><label><span>선행 분기</span><select data-filter="branch"><option value="">전체</option><option value="alternative">충돌 선행 · 대체 해금 (${researchBranchReport?.meta.affected||0})</option><option value="nested">해금 출처도 선행 충돌 (${researchBranchReport?.meta.nestedConflictTargets||0})</option><option value="self-source">해금 출처가 자신을 배제 (${researchBranchReport?.meta.selfDisablingSourceTargets||0})</option><option value="cycle">명목 선행 순환 (${researchBranchReport?.meta.cycleTopics||0})</option></select></label><label><span>선택 분기 판정</span><select data-filter="routeStatus" ${researchStoryOverlay?"":"disabled"}><option value="">전체</option><option value="blocked">직접·연쇄 차단</option><option value="alternative">대체 해금 가능성</option><option value="caution">경로 검증 필요</option></select></label>`;
   for(const [k,v] of Object.entries(state.filter[mode])){const e=$(`[data-filter="${k}"]`);if(e)e.value=v}
 }
 function filtered(){
@@ -137,6 +160,12 @@ function filtered(){
       if(f.branch==="nested"&&!branchConflictMap.get(x.id)?.unlockSourceConflicts.length)return false;
       if(f.branch==="self-source"&&!branchConflictMap.get(x.id)?.selfDisablingUnlockSources.length)return false;
       if(f.branch==="cycle"&&!researchCycleMap.has(x.id))return false;
+      if(f.routeStatus&&researchStoryOverlay){
+        const r=researchStoryOverlay.inspect(x.id);
+        if(f.routeStatus==="blocked"&&!["direct","path-blocked"].includes(r.kind))return false;
+        if(f.routeStatus==="alternative"&&r.kind!=="alternative")return false;
+        if(f.routeStatus==="caution"&&r.kind!=="caution")return false;
+      }
     }
     return true;
   });
@@ -154,6 +183,41 @@ function researchMarkers(x){
   ];
   return `<span class="research-markers" aria-label="${esc(defs.map(([,name,on])=>name+(on?" 관련 있음":" 연결 없음")).join(", "))}">${defs.map(([key,label,on,note])=>`<span class="research-marker ${on?"active marker-"+key:""}" title="${esc(label+" · "+note)}" aria-hidden="true"></span>`).join("")}</span>`;
 }
+function researchStoryName(id){
+  const t=storyChoiceIndex?.byId.get(id),n=researchMap.get(id);
+  return n?.koName||t?.koName||t?.enName||id;
+}
+function researchStoryBadge(id){
+  const st=researchStoryOverlay?.inspect(id);
+  if(!st||st.kind==="other")return "";
+  const labels={completed:"선택 완료",direct:"직접 배제","path-blocked":"선행 경로 차단",alternative:"우회 가능성",caution:"경로 확인"};
+  const hint=st.reasonPath.length?st.reasonPath.map(researchStoryName).join(" → "):
+    st.blockedBy.length?"배제 원인: "+st.blockedBy.map(researchStoryName).join(", "):"선택 분기 기준";
+  return '<span class="research-story-badge research-story-'+esc(st.kind)+'" title="'+esc(hint)+'">'+esc(labels[st.kind]||st.kind)+'</span>';
+}
+function renderStoryRouteSummary(){
+  const target=$("#researchStoryRouteInfo");if(!target)return;
+  if(!researchStoryOverlay){
+    target.textContent="분기를 고르면 직접 배제와 선행 연구 차단을 구분합니다. 선택 전에는 연구의 실제 도달 가능성을 단정하지 않습니다.";
+    return;
+  }
+  const c=researchStoryOverlay.counts();
+  target.textContent=researchStoryOverlay.route.label+" · 선택 완료 "+fmt(c.completed)+"개 · 직접 배제 "+fmt(c.direct)+"개 · 일반 연구 경로 차단 "+fmt(c.pathBlocked)+"개 · 우회/추가 검증 "+fmt(c.alternative+c.caution)+"개. 실물·이벤트·세이브에 따른 예외는 별도 확인.";
+}
+function researchStoryDetail(id){
+  const st=researchStoryOverlay?.inspect(id);if(!st)return "";
+  const kindNames={completed:"이 분기에서 완료한 연구",direct:"직접 영구 배제","path-blocked":"일반 연구 선행 경로 차단",alternative:"대체 해금 경로 후보",caution:"경로 검증 필요",other:"직접 배제 근거 없음"};
+  const chain=st.reasonPath.length?'<p><b>막힌 선행 관계:</b> '+st.reasonPath.map(x=>entity(x,"research")).join(" → ")+'</p>':"";
+  const blockers=st.blockedBy.length?'<p><b>직접 배제의 원인:</b> '+st.blockedBy.map(x=>entity(x,"research")).join(" · ")+'</p>':"";
+  const alternatives=st.alternates.length?'<p><b>다른 해금 출처 후보:</b> '+st.alternates.slice(0,12).map(x=>entity(x.source,"research")+' <small>('+esc(x.kind==="unlock"?"unlocks":x.kind==="free"?"무료 지급":"조건부 무료 지급")+')</small>').join(" · ")+'</p>':"";
+  const note=st.kind==="path-blocked"?"선택된 완료 분기 기준으로 일반 dependencies/requires 및 확인된 unlocks·무료 연구 경로에서 도달할 수 없습니다. 이벤트 직접 지급, 재활성화, 실제 세이브 상태는 별도 검증 대상입니다.":
+    st.kind==="direct"?"선택한 분기의 disables가 연구 자체를 영구 비활성화합니다. unlocks로도 직접 비활성화를 우회할 수 없습니다.":
+    st.kind==="alternative"?"명목 선행이 막혔더라도 아직 차단되지 않은 unlocks 또는 무료 지급 출처가 있습니다. 실제 해금과 지급은 보장되지 않습니다.":
+    st.kind==="caution"?"원본 연구 경로나 순환·우회 가능성을 검증해야 합니다. 영구 차단으로 단정하지 않습니다.":
+    st.kind==="completed"?"선택한 루트에서 완료된 것으로 가정했습니다. 실제 세이브와 다르면 분기를 변경하세요.":
+    "현재 선택한 분기에 의한 직접 또는 연쇄 차단은 확인되지 않았습니다. 당장 연구 가능하다는 뜻은 아닙니다.";
+  return '<section class="research-story-detail"><h3>선택한 분기: '+esc(researchStoryOverlay.route.label)+'</h3><p><b>'+esc(kindNames[st.kind])+'</b></p>'+chain+blockers+alternatives+'<p class="muted">'+esc(note)+'</p><a class="chip" href="../captains/#choiceSimulator">세이브 파일로 현재 상태 검증하기 →</a></section>';
+}
 function render(){
   const rows=filtered(),pages=Math.max(1,Math.ceil(rows.length/state.pageSize));state.page=Math.min(state.page,pages);
   const page=rows.slice((state.page-1)*state.pageSize,state.page*state.pageSize),sel=state.selected[state.mode];
@@ -164,12 +228,12 @@ function render(){
   }else if(state.listLayout==="game"){
     $("#thead").innerHTML='<tr><th>비교</th><th>해금 표시</th><th>주제</th><th>연구량</th><th>필요 물품</th><th>다음의 요구함</th><th>아래의 항목</th></tr>';
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""} aria-label="${esc(x.koName)} 비교"></td>
-      <td>${researchMarkers(x)}</td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${x.requiredByCount>=5?'<span class="badge insight-kind">후속 허브</span>':""}${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">선행 순환</span>':""}</td>
+      <td>${researchMarkers(x)}</td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${x.requiredByCount>=5?'<span class="badge insight-kind">후속 허브</span>':""}${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">선행 순환</span>':""}${researchStoryBadge(x.id)}</td>
       <td class="game-numeric">${fmt(x.cost)}</td><td>${x.needItem?'<span class="game-needed">'+(x.destroyItem?"소모":"비소모")+"</span>":"—"}</td>
       <td class="game-numeric">${fmt(x.requiredByCount)}개</td><td class="game-numeric">${fmt(x.itemReferenceCount)}개 <span class="sub">아이템 연결</span></td></tr>`).join("");
   }else{
     $("#thead").innerHTML="<tr><th>비교</th><th>연구</th><th>해석</th><th>ID</th><th>연구량</th><th>점수</th><th>직접 선행</th><th>후속</th><th>생성</th><th>아이템</th><th>제조</th><th>표본</th></tr>";
-    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td><span class="badge insight-kind">${esc((x.requiredByCount>=5?"후속 허브 · ":"")+(insightRoleLabels[x.primaryInsightKind]||x.primaryInsightKind||"—"))}</span>${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌 · 대체 해금</span>':""}${x.branchNestedCount?'<span class="badge branch-nested">해금 출처 재검토</span>':""}${x.branchSelfDisableCount?'<span class="badge branch-nested">자가 배제 해금 출처</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">명목 선행 순환</span>':""}</td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
+    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${researchStoryBadge(x.id)}</td><td><span class="badge insight-kind">${esc((x.requiredByCount>=5?"후속 허브 · ":"")+(insightRoleLabels[x.primaryInsightKind]||x.primaryInsightKind||"—"))}</span>${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌 · 대체 해금</span>':""}${x.branchNestedCount?'<span class="badge branch-nested">해금 출처 재검토</span>':""}${x.branchSelfDisableCount?'<span class="badge branch-nested">자가 배제 해금 출처</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">명목 선행 순환</span>':""}</td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
   }
   const nums=[1,state.page-2,state.page-1,state.page,state.page+1,state.page+2,pages].filter(x=>x>=1&&x<=pages),uniq=[...new Set(nums)].sort((a,b)=>a-b);
   $("#pager").innerHTML=uniq.map(n=>`<button data-page="${n}" class="${n===state.page?"current":""}">${n}</button>`).join("");
@@ -480,7 +544,7 @@ function renderResearch(d){
   <h3>완료 시 생성된 물품:</h3><div>${gameEntities(spawned,"items")}</div>
   <h3>제조 연결:</h3><div>${relations(d.manufactureReferences)}</div>
   </div></div><div class="game-dossier-foot">${esc(d.enName)} · ${esc(d.id)} · 완료 점수 ${fmt(d.points)}</div></div>`;
-  return`${gamePanel}<details class="game-more"><summary>상세 분석 · 연구 경로 · 경제성 · 원본 근거 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
+  return`${gamePanel}${researchStoryDetail(d.id)}<details class="game-more"><summary>상세 분석 · 연구 경로 · 경제성 · 원본 근거 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
   ${kpis([["연구량",d.cost],["완료 점수",d.points],["연구 표본",d.needItem?(d.destroyItem?"필요·소모":"필요·비소모"):"불필요"]])}
   ${researchBranchConflictMarkup(d)}
   ${researchCycleMarkup(d)}
