@@ -440,6 +440,31 @@ const deploymentSurfaces=Object.values(support.deployments).filter(d=>d.alertId|
 }));
 const missionSurfaces=index.map(x=>({kind:"mission",id:x.id,koName:x.koName,enName:x.enName,scriptCount:x.scriptCount,waveCount:x.waveCount,raceCount:x.raceCount,hasGround:x.hasGround,hasHunter:x.hasHunter,searchText:x.searchText}));
 const eventSurfaces=[...missionSurfaces,...deploymentSurfaces];
+
+const researchMissionMap=new Map();
+function registerMissionGate(id,isPositive,mission,scriptId){
+  if(!researchMap.has(id))return;
+  const row=researchMissionMap.get(id)||{id,enabledMissions:new Map(),blockedMissions:new Map()};
+  const dest=isPositive?row.enabledMissions:row.blockedMissions;
+  const entry=dest.get(mission.id)||{id:mission.id,koName:mission.koName,enName:mission.enName,scripts:[]};
+  if(!entry.scripts.includes(scriptId))entry.scripts.push(scriptId);
+  dest.set(mission.id,entry);researchMissionMap.set(id,row);
+}
+for(const bucketRows of Object.values(details))for(const mission of Object.values(bucketRows)){
+  for(const script of mission.scripts||[])for(const gate of script.triggers?.researchTriggers||[]){
+    if(gate.value===true||gate.value===false)registerMissionGate(gate.id,gate.value===true,mission,script.id);
+  }
+}
+const researchMissionIndex=[...researchMissionMap.values()].sort((a,b)=>a.id.localeCompare(b.id)).map(row=>({
+  id:row.id,
+  enabledMissions:[...row.enabledMissions.values()].sort((a,b)=>a.id.localeCompare(b.id)),
+  blockedMissions:[...row.blockedMissions.values()].sort((a,b)=>a.id.localeCompare(b.id))
+}));
+fs.writeFileSync(path.join(outDir,"research-mission-gates.json"),JSON.stringify({
+  meta:{schemaVersion:1,source:"enemy-force-chunks / missionScripts.researchTriggers",rulesetVersion:"X-Piratez v.o1.1.1",interpretation:"true: required mission script research gate, false: inhibitory research gate; other script gates and mission weights still apply"},
+  index:researchMissionIndex
+}));
+
 const counts={missions:index.length,waves:totalWaves,ufos:ufos.length,trajectories:trajectories.length,races:races.length,units:units.length,deployments:deployments.length,groundMissions:groundMissionCount,hunterMissions:hunterMissionCount,eventLinkedMissions:eventLinkedCount,eventSurfaceMissions:missionSurfaces.length,eventSurfaceDeployments:deploymentSurfaces.length};
 gzipJson(path.join(outDir,"enemy-forces-index.json.gz"),{meta:{version:2,generator:"enemy-force-data-v2",compression:"gzip",sourceVersion:"XPiratez v.o1.1.1"},counts,index,vessels:vesselIndex});
 gzipJson(path.join(outDir,"event-surfaces-index.json.gz"),{meta:{version:1,generator:"event-surface-index-v1",compression:"gzip"},counts:{missions:missionSurfaces.length,deployments:deploymentSurfaces.length,total:eventSurfaces.length},index:eventSurfaces});
