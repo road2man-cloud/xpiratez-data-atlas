@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
   <title>XPiratez Research DB</title>
-  <link rel="stylesheet" href="../items/styles.css?v=20261018-research-story-v1">
+  <link rel="stylesheet" href="../items/styles.css?v=20261018-research-clean-v2">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body class="research-game-list" data-mode="research" data-data-base="../items/data">
@@ -46,7 +46,7 @@
     </label>
     <div class="research-story-help"><p id="researchStoryRouteInfo" aria-live="polite">분기 판정 데이터 불러오는 중…</p><small>선택한 분기의 선행 선택 연구까지 완료된 것으로 가정합니다. 연구 자체의 영구 배제와 일반 연구의 연쇄 차단을 구분하며, 이벤트 지급·실물 표본·시설 등 별도 조건은 확정 판정하지 않습니다.</small></div>
   </section>
-  <div class="research-legend" aria-label="연구별 해금 유형 범례"><span><i class="research-marker active marker-mission"></i>임무 조건</span><span><i class="research-marker active marker-manufacture"></i>제조</span><span><i class="research-marker active marker-purchase"></i>구매</span><span><i class="research-marker active marker-followup"></i>후속 연구</span><small>빈 칸 = 해당 유형의 직접 연결을 확인하지 못함. 색상만으로 즉시 해금을 보장하지 않습니다.</small></div>
+  <div class="research-legend" aria-label="연구별 해금 유형 범례"><span><i class="research-marker active marker-mission"></i>임무 등장 조건</span><span><i class="research-marker active marker-manufacture"></i>제조법 조건</span><span><i class="research-marker active marker-purchase"></i>아이템 구매 조건</span><span><i class="research-marker active marker-followup"></i>후속 연구 연결</span><small>색상은 관련 조건·연결의 존재를 뜻합니다. 연구 완료만으로 즉시 임무·상품·제조법이 열리는 것은 아닙니다.</small></div>
 
   <div class="status">
     <div id="statusText">—</div>
@@ -64,9 +64,9 @@
   </section>
 
   <section class="about">
-    <h2>게임 화면의 구성과 명칭</h2>
-    <p>주제 · 연구량 · 필요 물품 · 다음에서 공짜로 얻음 · 다음의 요구함 · 아래의 항목을 중심으로 표시합니다. 기존의 분석표는 위 「분석표 보기」 버튼으로 열 수 있습니다.</p>
-    <p><strong>GPT 플레이 인사이트</strong>는 한눈에 보는 결론, 해금 조건의 AND/OR·필수/충분 구분, 제조·판매 실익, 후속 연구 조건을 우선 표시합니다. 대체 해금·표본 소모·제조에 필요한 기술자 시간과 환금성 손익분기점을 확인할 수 있으며, 원본 연구·제조·이벤트 역참조는 상세 펼치기에서 계속 확인할 수 있습니다.</p>
+    <h2>연구 DB 읽는 법</h2>
+    <p>게임 화면과 비슷한 배치를 유지하되 「다음의 요구함」은 「이 연구를 필요로 하는 후속 연구」, 「아래의 항목」은 「연관 아이템」처럼 관계가 드러나는 이름으로 표시합니다. 수치 중심 목록은 위 「분석표 보기」 버튼에서 확인합니다.</p>
+    <p><strong>GPT 플레이 인사이트</strong>는 결론, 연구 조건의 AND/OR·필수/충분 구분, 경제성, 위험한 분기를 안내합니다. 연구 상세에는 중복된 옛 분석 목록 대신 이 연구에만 해당하는 추가 판단과 검증 자료만 표시합니다.</p>
     <p class="muted">일반 dependencies는 전체 충족(AND) 또는 명시적 unlocks 경로로 우회할 수 있지만 requires는 우회할 수 없습니다. 후속 연구의 역참조는 충분조건이나 보상 확정이 아닙니다. 환금성 계산은 실제 판매가와 연구 표본 소모량을 반영하며, 기술자 기회비용은 별도입니다.</p>
   </section>
 </main>
@@ -82,7 +82,7 @@
   <div id="compareBody"></div>
 </dialog>
 
-<script type="module" src="../items/app.js?v=20261018-research-story-v1"></script>
+<script type="module" src="../items/app.js?v=20261018-research-clean-v2"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
