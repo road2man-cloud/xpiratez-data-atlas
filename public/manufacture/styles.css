@@ -3,3 +3,16 @@
 @media(max-width:760px){.topnav{align-items:flex-start;flex-direction:column}.explain{grid-template-columns:1fr}.toolbar{display:grid;grid-template-columns:1fr 1fr}.field.grow{grid-column:1/-1}.editorial-row{grid-template-columns:1fr}.table-shell{max-height:none}.drawer{width:100vw}}
 
 @supports(content-visibility:auto){tbody tr{content-visibility:auto;contain-intrinsic-size:auto 90px}}
+
+
+.game-dossier{background:#18090e;border:5px double #426fa9;padding:16px;color:#f0bfd7;margin-bottom:14px;line-height:1.6}
+.game-dossier-title{text-align:center;color:#87b7ff;font-size:27px;font-weight:900}
+.game-dossier-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#9cc4ff;margin:10px 0 16px}
+.game-dossier-columns{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.game-dossier-columns>div{min-width:0;overflow-wrap:anywhere}
+.game-dossier h3{color:#88b8fa;font-size:15px;margin:13px 0 4px}
+.game-dossier p{margin:2px 0 8px}
+.game-dossier .chip{background:#3b192e;color:#ffc2df}
+.game-dossier-foot{margin-top:16px;border-top:1px solid #62364c;padding-top:9px;color:#bc9bac;font-size:12px}
+.game-more{padding:12px}
+@media(max-width:620px){.game-dossier-columns{grid-template-columns:1fr;gap:10px}.game-dossier-title{font-size:21px}}
