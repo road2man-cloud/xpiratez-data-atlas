@@ -14,7 +14,7 @@ const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
 const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},listLayout:"game",insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
-let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map();
+let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map(),researchMissionGateMap=new Map();
 let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null,detailGeneration=0;
 const modePromises={},searchHay=new WeakMap();
 
@@ -37,15 +37,18 @@ async function ensureMode(mode){
       itemIndex=items.index.map(x=>({...x,...(counts.get(x.id)||{}),originalManufactureReferences:x.manufactureCount}));
       itemMap=new Map(itemIndex.map(x=>[x.id,x]));
     }else{
-      const [research,insight,branchReport]=await Promise.all([
+      const [research,insight,branchReport,missionGates]=await Promise.all([
         compactJson(`${dataBase}/research-index.json`),
         compactJson(`${dataBase}/research-insight-index.json`),
-        json("../data/research-branch-conflicts.json")
+        json("../data/research-branch-conflicts.json"),
+        json("../data/research-mission-gates.json")
       ]);
       if(branchReport?.schemaVersion!==3||branchReport?.meta?.total!==research.index.length||
         branchReport?.meta?.cycleTopics!==new Set((branchReport.cycles||[]).flatMap(g=>g.memberIds)).size)
         throw new Error("복수 선행/순환 연구 감사 데이터 버전 불일치");
       researchBranchReport=branchReport;
+      if(missionGates?.meta?.schemaVersion!==1)throw new Error("연구-미션 조건 인덱스 버전 불일치");
+      researchMissionGateMap=new Map((missionGates.index||[]).map(x=>[x.id,x]));
       branchConflictMap=new Map(branchReport.affected.map(row=>[row.id,row]));
       researchCycleMap=new Map(branchReport.cycles.flatMap(group=>group.memberIds.map(id=>[id,group])));
       const insightIndex=new Map((insight.index||[]).map(x=>[x.id,x]));
@@ -144,7 +147,7 @@ function filtered(){
 function researchMarkers(x){
   const roles=new Set(arr(x.insightKinds));
   const defs=[
-    ["mission","임무",roles.has("mission"),"미션 룰에 직접 연결됨 · 실제 임무 발생은 추가 조건을 따름"],
+    ["mission","임무",Boolean(researchMissionGateMap.get(x.id)?.enabledMissions?.length)||roles.has("mission"),"missionScript 연구 true 조건 · 다른 조건/가중치 충족까지 실제 임무 발생은 보장되지 않음"],
     ["manufacture","제조",roles.has("manufacture"),"제조법의 연구 조건을 충족 · 재료/시설 별도 필요"],
     ["purchase","구매",roles.has("purchase"),"아이템 구매 선행조건 · 상점/기타 조건은 별도"],
     ["followup","후속연구",x.requiredByCount>0||roles.has("research-unlock")||roles.has("research-grant"),"후속 연구의 조건 또는 명시 해금 · 즉시 연구 가능 보장 아님"]
@@ -461,6 +464,9 @@ function renderResearch(d){
   const grantedBy=arr(d.insight?.semanticReferences).filter(x=>x.kind==="research-granted-by").map(x=>x.id);
   const sampleId=d.insight?.researchRequirements?.sampleItem||null;
   const sampleLabel=d.needItem?(sampleId?entity(sampleId,"items"):'<span class="empty">실물 표본 필요 · 아이템 ID 별도 확인</span>'):'<span class="empty">없음</span>';
+  const mission=researchMissionGateMap.get(d.id)||{enabledMissions:[],blockedMissions:[]};
+  const missionLinks=ids=>ids.map(id=>`<a class="chip mission-link" href="../forces/#force=${encodeURIComponent(id)}" title="missionScript.researchTriggers"><b>${esc(entityNames[id]?.[0]||id)}</b><span class="sub">${esc(id)}</span></a>`).join(" ");
+
   const gamePanel=`<div class="game-dossier"><div class="game-dossier-title">기술개발도 열람</div><div class="game-dossier-top"><b>주제: ${esc(d.koName)}</b><span>연구량: ${fmt(d.cost)}</span></div><div class="game-dossier-columns"><div>
   <h3>필요 물품:</h3><div>${sampleLabel} ${d.needItem?(d.destroyItem?"· 소모":"· 비소모"):""}</div>
   <h3>다음에서 공짜로 얻음:</h3><div>${gameEntities(grantedBy)}</div>
@@ -468,6 +474,8 @@ function renderResearch(d){
   <h3>선행 연구:</h3><div>${gameEntities(d.dependencies)}</div>
   </div><div><h3>다음의 요구함:</h3><div>${gameEntities(d.requiredBy)}</div>
   <h3>다음의 해금:</h3><div>${gameEntities(d.unlocks)}</div>
+  ${mission.enabledMissions.length?`<h3>다음의 임무 조건:</h3><div>${missionLinks(mission.enabledMissions)}</div><p class="muted">미션 스크립트 true 조건. 발생은 다른 조건과 가중치에 좌우됩니다.</p>`:""}
+  ${mission.blockedMissions.length?`<h3>진행 후 차단될 수 있는 임무:</h3><div>${missionLinks(mission.blockedMissions)}</div><p class="muted">미션 스크립트 false 조건. 다른 스크립트 경로는 남을 수 있습니다.</p>`:""}
   <h3>아래의 항목:</h3><div>${relations(d.itemReferences)}</div>
   <h3>완료 시 생성된 물품:</h3><div>${gameEntities(spawned,"items")}</div>
   <h3>제조 연결:</h3><div>${relations(d.manufactureReferences)}</div>
