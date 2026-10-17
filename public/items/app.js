@@ -161,7 +161,7 @@ function render(){
   }else if(state.listLayout==="game"){
     $("#thead").innerHTML='<tr><th>비교</th><th>해금 표시</th><th>주제</th><th>연구량</th><th>필요 물품</th><th>다음의 요구함</th><th>아래의 항목</th></tr>';
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""} aria-label="${esc(x.koName)} 비교"></td>
-      <td>${researchMarkers(x)}</td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">선행 순환</span>':""}</td>
+      <td>${researchMarkers(x)}</td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${x.requiredByCount>=5?'<span class="badge insight-kind">후속 허브</span>':""}${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">선행 순환</span>':""}</td>
       <td class="game-numeric">${fmt(x.cost)}</td><td>${x.needItem?'<span class="game-needed">'+(x.destroyItem?"소모":"비소모")+"</span>":"—"}</td>
       <td class="game-numeric">${fmt(x.requiredByCount)}개</td><td class="game-numeric">${fmt(x.itemReferenceCount)}개 <span class="sub">아이템 연결</span></td></tr>`).join("");
   }else{
