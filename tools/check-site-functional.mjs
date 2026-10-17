@@ -72,6 +72,24 @@ async function catalogInteractions(page,slug){
 }
 await scenario("items list/sort/pager/compare/drawer/search",p=>catalogInteractions(p,"items"));
 await scenario("research list/sort/pager/compare/drawer/search",p=>catalogInteractions(p,"research"));
+await scenario("research detailed dossier has no duplicated legacy list",async page=>{
+  await page.goto(base+"research/#research=STR_CUNNING",{waitUntil:"domcontentloaded"});
+  await page.locator("#detail .game-dossier").waitFor();
+  assert.equal(await page.locator("#detail .game-dossier").count(),1,"single game-style dossier");
+  assert.equal(await page.locator("#detail details.game-more").count(),0,"old duplicate analysis accordion must be removed");
+  assert.equal(await page.locator("#detail .editorial-panel").count(),1,"decision insight preserved exactly once");
+  assert.equal(await page.locator("#detail .research-deep-dive").count(),1,"unique additional analysis remains available");
+  assert.equal(await page.locator("#detail .research-evidence").count(),1,"original provenance is still available");
+  const headings=await page.locator("#detail .game-dossier h3").allInnerTexts();
+  for(const expected of ["연구에 필요한 실물 표본","일반 선행 연구 (다른 해금으로 우회 가능)","추가 필수 선행 연구 (우회 불가)","이 연구를 필요로 하는 후속 연구","이 연구를 참조하는 아이템 규칙","이 연구를 참조하는 제조법"])
+    assert(headings.includes(expected),"missing understandable heading: "+expected);
+  for(const legacy of ["다음에서 공짜로 얻음:","다음의 요구함:","아래의 항목:"])
+    assert(!headings.includes(legacy),"old ambiguous heading remained: "+legacy);
+  const tableHead=await page.locator("#thead").innerText();
+  assert(tableHead.includes("후속 연구")&&tableHead.includes("연관 아이템"),"game-style list column titles should describe relationships");
+  await page.locator("#detail .research-deep-dive > summary").click();
+  assert(await page.locator("#detail .insight-panel").isVisible(),"advanced route analysis remains accessible");
+});
 await scenario("research alternative/nested/self/cycle count",async page=>{
   await page.goto(base+"research/");await visibleRows(page,"#tbody tr");
   for(const [filter,expected] of [["alternative",42],["nested",8],["self-source",3],["cycle",95]]){

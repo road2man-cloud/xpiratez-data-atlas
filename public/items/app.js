@@ -176,10 +176,10 @@ function filtered(){
 function researchMarkers(x){
   const roles=new Set(arr(x.insightKinds));
   const defs=[
-    ["mission","임무",Boolean(researchMissionGateMap.get(x.id)?.enabledMissions?.length)||roles.has("mission"),"missionScript 연구 true 조건 · 다른 조건/가중치 충족까지 실제 임무 발생은 보장되지 않음"],
-    ["manufacture","제조",roles.has("manufacture"),"제조법의 연구 조건을 충족 · 재료/시설 별도 필요"],
-    ["purchase","구매",roles.has("purchase"),"아이템 구매 선행조건 · 상점/기타 조건은 별도"],
-    ["followup","후속연구",x.requiredByCount>0||roles.has("research-unlock")||roles.has("research-grant"),"후속 연구의 조건 또는 명시 해금 · 즉시 연구 가능 보장 아님"]
+    ["mission","임무 등장 조건",Boolean(researchMissionGateMap.get(x.id)?.enabledMissions?.length)||roles.has("mission"),"missionScript 연구 true 조건 · 다른 조건/가중치 충족까지 실제 임무 발생은 보장되지 않음"],
+    ["manufacture","제조법 조건",roles.has("manufacture"),"제조법의 연구 조건을 충족 · 재료/시설 별도 필요"],
+    ["purchase","아이템 구매 조건",roles.has("purchase"),"아이템 구매 선행조건 · 상점/기타 조건은 별도"],
+    ["followup","후속 연구 연결",x.requiredByCount>0||roles.has("research-unlock")||roles.has("research-grant"),"후속 연구의 조건 또는 명시 해금 · 즉시 연구 가능 보장 아님"]
   ];
   return `<span class="research-markers" aria-label="${esc(defs.map(([,name,on])=>name+(on?" 관련 있음":" 연결 없음")).join(", "))}">${defs.map(([key,label,on,note])=>`<span class="research-marker ${on?"active marker-"+key:""}" title="${esc(label+" · "+note)}" aria-hidden="true"></span>`).join("")}</span>`;
 }
@@ -226,7 +226,7 @@ function render(){
     $("#thead").innerHTML="<tr><th>비교</th><th>아이템</th><th>ID</th><th>종류</th><th>위력</th><th>무게</th><th>창고</th><th>판매가</th><th>월 유지비</th><th>연구</th><th>제조 소비</th><th>제조 생산</th></tr>";
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${esc(kinds[x.kind]||x.kind)}</td><td>${fmt(x.power)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.size)}</td><td>${fmt(x.costSell)}</td><td>${fmt(x.monthlyMaintenance)}</td><td>${fmt(x.researchCount)}</td><td>${fmt(x.materialUses)}</td><td>${fmt(x.manufactureSources)}</td></tr>`).join("");
   }else if(state.listLayout==="game"){
-    $("#thead").innerHTML='<tr><th>비교</th><th>해금 표시</th><th>주제</th><th>연구량</th><th>필요 물품</th><th>다음의 요구함</th><th>아래의 항목</th></tr>';
+    $("#thead").innerHTML='<tr><th>비교</th><th>해금 표시</th><th>주제</th><th>연구량</th><th>연구 표본</th><th>후속 연구</th><th>연관 아이템</th></tr>';
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""} aria-label="${esc(x.koName)} 비교"></td>
       <td>${researchMarkers(x)}</td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${x.requiredByCount>=5?'<span class="badge insight-kind">후속 허브</span>':""}${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">선행 순환</span>':""}${researchStoryBadge(x.id)}</td>
       <td class="game-numeric">${fmt(x.cost)}</td><td>${x.needItem?'<span class="game-needed">'+(x.destroyItem?"소모":"비소모")+"</span>":"—"}</td>
@@ -432,12 +432,11 @@ function researchInsightMarkup(d){
   const p=i.prerequisite||{},pd=prerequisiteDetail(d.id),roles=arr(i.roles),rq=i.researchRequirements||{};
   return`<section class="section insight-panel">
     <div class="insight-heading"><h3>플레이 관점 해석</h3><span class="evidence-tag derived">규칙에서 자동 도출</span></div>
-    <p class="insight-summary">${esc(i.summary||"")}</p>
+    ${!d.editorial&&i.summary?`<p class="insight-summary">${esc(i.summary)}</p>`:""}
     <div class="role-cloud">${roles.map(x=>`<span class="badge insight-kind">${esc(insightRoleLabels[x]||x)}</span>`).join("")}</div>
     ${i.automaticEffect===false?`<div class="callout important"><b>연구 완료만으로 자동 버프가 붙지 않습니다.</b> 아래 후속 훈련/변신을 병사별로 실행해야 실제 효과가 적용됩니다.</div>`:""}
     <div class="insight-kpis"><span>명목 선행 주제 <b>${fmt(p.topicCount||0)}</b></span><span>선행 연구량 <b>${fmt(p.prerequisiteCost||0)}</b></span><span>연구+선행 합계 <b>${fmt((p.prerequisiteCost||0)+(d.cost||0))}</b></span></div>
     <p class="muted derived-note">명목 선행망은 dependencies + requires 재귀 합집합입니다. 이벤트 직접 지급·unlock/getOneFree 우회·분기 때문에 실제 최소 경로와 다를 수 있습니다.</p>
-    ${rq.sampleItem?`<div class="requirement-line"><b>실물 표본</b> ${entity(rq.sampleItem,"items")}</div>`:""}
     ${rq.requiresBaseFunc?.length?`<div class="requirement-line"><b>이 연구에 필요한 기지 기능</b> ${idList(rq.requiresBaseFunc)}</div>`:""}
     ${i.transformations?.length?`<div class="insight-subsection"><h4>연구 후 실제 적용 방법과 효과</h4>${i.transformations.map(transformationMarkup).join("")}</div>`:""}
     ${i.semanticReferences?.length?`<div class="insight-subsection"><h4>연결 시스템·이벤트 (지급·필수·미보유 조건 구분)</h4>${i.semanticReferences.map(semanticRefMarkup).join("")}</div>`:""}
@@ -523,6 +522,8 @@ function researchBranchConflictMarkup(d){
 function renderResearch(d){
   const trainingIds=[...new Set((d.otherReferences||[]).filter(x=>x.section==="soldierTransformation").map(x=>x.owner||x.id).filter(Boolean))];
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
+  const ordinaryDeps=arr(d.raw?.dependencies).filter(id=>researchIds.has(id));
+  const mandatoryDeps=arr(d.raw?.requires).filter(id=>researchIds.has(id));
   const gameEntities=(xs,kind="research")=>xs?.length?xs.map(x=>entity(typeof x==="string"?x:x.id,kind)).join(" "):'<span class="empty">없음</span>';
   const free=Array.isArray(d.getOneFree)?d.getOneFree:[];
   const grantedBy=arr(d.insight?.semanticReferences).filter(x=>x.kind==="research-granted-by").map(x=>x.id);
@@ -531,36 +532,34 @@ function renderResearch(d){
   const mission=researchMissionGateMap.get(d.id)||{enabledMissions:[],blockedMissions:[]};
   const missionLinks=ids=>ids.map(id=>`<a class="chip mission-link" href="../forces/#force=${encodeURIComponent(id)}" title="missionScript.researchTriggers"><b>${esc(entityNames[id]?.[0]||id)}</b><span class="sub">${esc(id)}</span></a>`).join(" ");
 
-  const gamePanel=`<div class="game-dossier"><div class="game-dossier-title">기술개발도 열람</div><div class="game-dossier-top"><b>주제: ${esc(d.koName)}</b><span>연구량: ${fmt(d.cost)}</span></div><div class="game-dossier-columns"><div>
-  <h3>필요 물품:</h3><div>${sampleLabel} ${d.needItem?(d.destroyItem?"· 소모":"· 비소모"):""}</div>
-  <h3>다음에서 공짜로 얻음:</h3><div>${gameEntities(grantedBy)}</div>
-  <h3>완료 시 무료 연구 지급:</h3><div>${gameEntities(free)}</div>
-  <h3>선행 연구:</h3><div>${gameEntities(d.dependencies)}</div>
-  </div><div><h3>다음의 요구함:</h3><div>${gameEntities(d.requiredBy)}</div>
-  <h3>다음의 해금:</h3><div>${gameEntities(d.unlocks)}</div>
-  ${mission.enabledMissions.length?`<h3>다음의 임무 조건:</h3><div>${missionLinks(mission.enabledMissions)}</div><p class="muted">미션 스크립트 true 조건. 발생은 다른 조건과 가중치에 좌우됩니다.</p>`:""}
-  ${mission.blockedMissions.length?`<h3>진행 후 차단될 수 있는 임무:</h3><div>${missionLinks(mission.blockedMissions)}</div><p class="muted">미션 스크립트 false 조건. 다른 스크립트 경로는 남을 수 있습니다.</p>`:""}
-  <h3>아래의 항목:</h3><div>${relations(d.itemReferences)}</div>
-  <h3>완료 시 생성된 물품:</h3><div>${gameEntities(spawned,"items")}</div>
-  <h3>제조 연결:</h3><div>${relations(d.manufactureReferences)}</div>
+  const gamePanel=`<div class="game-dossier"><div class="game-dossier-title">연구 상세 · 조건 및 영향</div><div class="game-dossier-top"><b>연구 주제: ${esc(d.koName)}</b><span>필요 연구량: ${fmt(d.cost)}</span></div><div class="game-dossier-columns"><div>
+  <h3>연구에 필요한 실물 표본</h3><div>${sampleLabel} ${d.needItem?(d.destroyItem?"· 소모":"· 비소모"):""}</div>
+  <h3>이 연구의 무료 지급 출처 (다른 연구)</h3><div>${gameEntities(grantedBy)}</div>
+  <h3>완료 보상: 무료 연구 후보</h3><div>${gameEntities(free)}</div><p class="game-explain">후보 목록으로, 목록에 모두 지급된다는 뜻은 아닙니다.</p>
+  <h3>일반 선행 연구 (다른 해금으로 우회 가능)</h3><div>${gameEntities(ordinaryDeps)}</div>
+  <h3>추가 필수 선행 연구 (우회 불가)</h3><div>${gameEntities(mandatoryDeps)}</div>
+  <p class="game-explain">일반 선행은 명시적 해금(unlocks)으로 우회할 수 있지만, 필수 선행(requires)은 모두 충족해야 합니다.</p>
+  </div><div><h3>이 연구를 필요로 하는 후속 연구</h3><div>${gameEntities(d.requiredBy)}</div><p class="game-explain">후속 연구의 필요조건 또는 참조 관계입니다. 즉시 연구 가능하다는 뜻은 아닙니다.</p>
+  <h3>완료 시 직접 해금하는 연구</h3><div>${gameEntities(d.unlocks)}</div><p class="game-explain">대상 연구의 일반 선행은 우회할 수 있지만, 필수 선행·표본·시설 조건은 별도입니다.</p>
+  ${mission.enabledMissions.length?`<h3>이 연구를 등장 조건으로 쓰는 임무</h3><div>${missionLinks(mission.enabledMissions)}</div><p class="muted">미션 스크립트 true 조건. 발생은 다른 조건과 가중치에 좌우됩니다.</p>`:""}
+  ${mission.blockedMissions.length?`<h3>완료 후 등장 조건이 꺼지는 임무</h3><div>${missionLinks(mission.blockedMissions)}</div><p class="muted">미션 스크립트 false 조건. 다른 스크립트 경로는 남을 수 있습니다.</p>`:""}
+  <h3>이 연구를 참조하는 아이템 규칙</h3><div>${relations(d.itemReferences)}</div><p class="game-explain">아이템 지급 목록이 아니라 연구 ID를 사용하는 규칙의 역참조입니다.</p>
+  <h3>연구 완료 시 생성되는 아이템</h3><div>${gameEntities(spawned,"items")}</div>
+  <h3>이 연구를 참조하는 제조법</h3><div>${relations(d.manufactureReferences)}</div><p class="game-explain">연구와 연결된 제조법입니다. 재료·시설 등 나머지 조건도 확인하세요.</p>
   </div></div><div class="game-dossier-foot">${esc(d.enName)} · ${esc(d.id)} · 완료 점수 ${fmt(d.points)}</div></div>`;
-  return`${gamePanel}${researchStoryDetail(d.id)}<details class="game-more"><summary>상세 분석 · 연구 경로 · 경제성 · 원본 근거 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
-  ${kpis([["연구량",d.cost],["완료 점수",d.points],["연구 표본",d.needItem?(d.destroyItem?"필요·소모":"필요·비소모"):"불필요"]])}
+  return `${gamePanel}${researchStoryDetail(d.id)}
   ${researchBranchConflictMarkup(d)}
   ${researchCycleMarkup(d)}
   ${researchEditorialMarkup(d)}
-  <details class="research-raw-explainer"><summary>원본 룰에서 계산한 선행망·연결 시스템 더 보기</summary>${researchInsightMarkup(d)}</details>
-  ${trainingIds.length?`<section class="section"><h3>연결되는 병사 훈련·변신</h3>${trainingIds.map(id=>`<a class="entity" href="../trainings/?training=${encodeURIComponent(id)}">훈련 조합기에서 ${esc(id)} 확인 →</a>`).join(" ")}</section>`:""}
-  <details class="research-raw-explainer"><summary>선행·후속 전체 목록 / 연구·제조 역참조</summary><section class="section"><h3>명목 직접 선행 (dependencies + requires)</h3><p class="muted">이 목록은 요구조건의 정적 합집합입니다. dependencies는 별도 unlocks로 우회할 수 있지만 requires는 우회하지 못합니다. 선행 연구가 서로 배타적인 경우 위의 감사 판정을 우선하세요.</p>${d.dependencies?.length?d.dependencies.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
-  <section class="section"><h3>후속 연구</h3>${d.requiredBy?.length?d.requiredBy.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
-  ${spawned.length?`<section class="section"><h3>완료 시 생성 아이템</h3>${spawned.map(x=>entity(x,"items")).join("")}</section>`:""}
-  <section class="section"><h3>명시 해금</h3>${d.unlocks?.length?d.unlocks.map(x=>entity(typeof x==="string"?x:x.id,"research")).join(""):'<div class="empty">없음</div>'}</section>
-  <section class="section"><h3>아이템 역참조</h3>${relations(d.itemReferences)}</section><section class="section"><h3>제조 역참조</h3>${relations(d.manufactureReferences)}</section>
-  <details><summary>기타 역참조 ${d.otherReferences?.length||0}개</summary><div>${relations(d.otherReferences)}</div></details>
-  <details><summary>원본 연구 핵심 룰</summary><div>${rawTable(d.raw,schema.researchFieldMeta)}</div></details>
-  ${resourceDetailsMarkup("research",d)}
+  <details class="research-deep-dive"><summary>추가 검증 · 전체 선행 비용 · 기지 조건 · 훈련/이벤트</summary>
+    ${researchInsightMarkup(d)}
+    ${trainingIds.length?`<section class="section"><h3>연결되는 병사 훈련·변신</h3>${trainingIds.map(id=>`<a class="entity" href="../trainings/?training=${encodeURIComponent(id)}">훈련 조합기에서 ${esc(id)} 확인 →</a>`).join(" ")}</section>`:""}
   </details>
-  <section class="section"><h3>출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section></details>`;
+  <details class="research-evidence"><summary>추가 역참조 · 룰셋 출처${d.otherReferences?.length?` (${fmt(d.otherReferences.length)}건)`:""}</summary>
+    ${d.otherReferences?.length?`<section class="section"><h3>다른 시스템에서 연구 참조</h3>${relations(d.otherReferences)}</section>`:""}
+    ${resourceDetailsMarkup("research",d)}
+    <section class="section"><h3>룰셋 파일 출처</h3><p class="muted">${arr(d.sourceFiles).map(esc).join(" → ")}</p></section>
+  </details>`;
 }
 function closeDrawer(){detailGeneration++;state.detail=null;$("#drawer").classList.remove("open");$("#drawer").setAttribute("aria-hidden","true");$("#backdrop").hidden=true;history.replaceState(null,"",location.pathname+location.search)}
 function toggleSelect(mode,id){const s=state.selected[mode],i=s.indexOf(id);if(i>=0)s.splice(i,1);else if(s.length<4)s.push(id);render();updateCompare()}

@@ -53,10 +53,9 @@ try {
   for(const slug of pages){
     if(!ready[slug]){console.log("FAIL "+slug+" unknown-page");results.push(false);continue;}
     const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-    if(slug==="research"||slug==="manufacture"){
-      // The game-first card intentionally folds the former full dossier.
-      // Exercise its expanded state whenever a new detail drawer is rendered,
-      // so existing causality/branch and economics assertions remain strict.
+    if(slug==="manufacture"){
+      // The manufacture dossier still folds its in-depth technical data.
+      // Research no longer renders the legacy duplicated game-more block.
       await page.addInitScript(()=>{
         const reveal=()=>document.querySelectorAll("#detail details.game-more").forEach(node=>{if(!node.open)node.open=true});
         new MutationObserver(reveal).observe(document,{childList:true,subtree:true});

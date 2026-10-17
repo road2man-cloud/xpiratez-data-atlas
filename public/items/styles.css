@@ -73,6 +73,11 @@ dialog{width:min(1200px,96vw);max-height:90vh;border:1px solid var(--line);borde
 .game-dossier .rel{border-bottom:1px solid #603348}
 .game-dossier-foot{margin-top:16px;border-top:1px solid #62364c;padding-top:9px;color:#bc9bac;font-size:12px}
 .game-more{padding:12px}
+.game-dossier .game-explain{margin:4px 0 11px;color:#b39bab;font-size:12px;line-height:1.45}
+.research-deep-dive,.research-evidence{margin:10px 0;border:1px solid #38577b;border-radius:9px;background:#121d30;overflow:hidden}
+.research-deep-dive>summary,.research-evidence>summary{padding:11px 13px;color:#a9ceff;font-size:13px;font-weight:750;cursor:pointer}
+.research-deep-dive[open],.research-evidence[open]{padding:0 10px 10px}
+.research-deep-dive .section,.research-evidence .section{margin-top:12px}
 @media(max-width:620px){.game-dossier-columns{grid-template-columns:1fr;gap:10px}.game-dossier-title{font-size:21px}}
 
 
