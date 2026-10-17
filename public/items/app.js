@@ -13,7 +13,7 @@ const pageMode=document.body.dataset.mode||"items";
 const configuredDataBase=document.body.dataset.dataBase||"";
 const canonicalDataBase=pageMode==="research"?"../items/data":"./data";
 const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalDataBase:configuredDataBase;
-const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
+const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:""}},selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},listLayout:"game",insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map();
 let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null,detailGeneration=0;
 const modePromises={},searchHay=new WeakMap();
@@ -82,6 +82,13 @@ function bind(){
   $("#search").oninput=e=>{state.query=e.target.value;state.page=1;if(searchTimer!==null)clearTimeout(searchTimer);if(!state.query.trim())render();else searchTimer=setTimeout(()=>{searchTimer=null;render()},100)};
   $("#sort").onchange=e=>{state.sort[state.mode]=e.target.value;state.page=1;render()};
   $("#direction").onclick=()=>{state.dir*=-1;$("#direction").textContent=state.dir===1?"↑":"↓";render()};
+  const listLayoutToggle=$("#listLayoutToggle");
+  if(listLayoutToggle)listLayoutToggle.onclick=()=>{
+    state.listLayout=state.listLayout==="game"?"analysis":"game";
+    listLayoutToggle.textContent=state.listLayout==="game"?"분석표 보기":"게임식 목록 보기";
+    document.body.classList.toggle("research-game-list",state.listLayout==="game");
+    render();
+  };
   $("#filters").onchange=e=>{const k=e.target.dataset.filter;if(k){state.filter[state.mode][k]=e.target.value;state.page=1;render()}};
   $("#tbody").onclick=e=>{
     const check=e.target.closest("input[data-select]");if(check){e.stopPropagation();toggleSelect(state.mode,check.dataset.select);return}
@@ -134,6 +141,16 @@ function filtered(){
   out.sort((a,b)=>{const av=get(a),bv=get(b);if(av==null&&bv==null)return a.koName.localeCompare(b.koName,"ko");if(av==null)return 1;if(bv==null)return-1;if(typeof av==="number"&&typeof bv==="number")return(av-bv)*d;return String(av).localeCompare(String(bv),"ko",{numeric:true})*d});
   return out;
 }
+function researchMarkers(x){
+  const roles=new Set(arr(x.insightKinds));
+  const defs=[
+    ["mission","임무",roles.has("mission"),"미션 룰에 직접 연결됨 · 실제 임무 발생은 추가 조건을 따름"],
+    ["manufacture","제조",roles.has("manufacture"),"제조법의 연구 조건을 충족 · 재료/시설 별도 필요"],
+    ["purchase","구매",roles.has("purchase"),"아이템 구매 선행조건 · 상점/기타 조건은 별도"],
+    ["followup","후속연구",x.requiredByCount>0||roles.has("research-unlock")||roles.has("research-grant"),"후속 연구의 조건 또는 명시 해금 · 즉시 연구 가능 보장 아님"]
+  ];
+  return `<span class="research-markers" aria-label="${esc(defs.map(([,name,on])=>name+(on?" 관련 있음":" 연결 없음")).join(", "))}">${defs.map(([key,label,on,note])=>`<span class="research-marker ${on?"active marker-"+key:""}" title="${esc(label+" · "+note)}" aria-hidden="true"></span>`).join("")}</span>`;
+}
 function render(){
   const rows=filtered(),pages=Math.max(1,Math.ceil(rows.length/state.pageSize));state.page=Math.min(state.page,pages);
   const page=rows.slice((state.page-1)*state.pageSize,state.page*state.pageSize),sel=state.selected[state.mode];
@@ -141,6 +158,12 @@ function render(){
   if(state.mode==="items"){
     $("#thead").innerHTML="<tr><th>비교</th><th>아이템</th><th>ID</th><th>종류</th><th>위력</th><th>무게</th><th>창고</th><th>판매가</th><th>월 유지비</th><th>연구</th><th>제조 소비</th><th>제조 생산</th></tr>";
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td class="id">${esc(x.id)}</td><td>${esc(kinds[x.kind]||x.kind)}</td><td>${fmt(x.power)}</td><td>${fmt(x.weight)}</td><td>${fmt(x.size)}</td><td>${fmt(x.costSell)}</td><td>${fmt(x.monthlyMaintenance)}</td><td>${fmt(x.researchCount)}</td><td>${fmt(x.materialUses)}</td><td>${fmt(x.manufactureSources)}</td></tr>`).join("");
+  }else if(state.listLayout==="game"){
+    $("#thead").innerHTML='<tr><th>비교</th><th>해금 표시</th><th>주제</th><th>연구량</th><th>필요 물품</th><th>다음의 요구함</th><th>아래의 항목</th></tr>';
+    $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""} aria-label="${esc(x.koName)} 비교"></td>
+      <td>${researchMarkers(x)}</td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span>${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">선행 순환</span>':""}</td>
+      <td class="game-numeric">${fmt(x.cost)}</td><td>${x.needItem?'<span class="game-needed">'+(x.destroyItem?"소모":"비소모")+"</span>":"—"}</td>
+      <td class="game-numeric">${fmt(x.requiredByCount)}개</td><td class="game-numeric">${fmt(x.itemReferenceCount)}개 <span class="sub">아이템 연결</span></td></tr>`).join("");
   }else{
     $("#thead").innerHTML="<tr><th>비교</th><th>연구</th><th>해석</th><th>ID</th><th>연구량</th><th>점수</th><th>직접 선행</th><th>후속</th><th>생성</th><th>아이템</th><th>제조</th><th>표본</th></tr>";
     $("#tbody").innerHTML=page.map(x=>`<tr data-id="${esc(x.id)}"><td><input class="check" data-select="${esc(x.id)}" type="checkbox" ${sel.includes(x.id)?"checked":""}></td><td><span class="name">${esc(x.koName)}</span><span class="sub">${esc(x.enName)}</span></td><td><span class="badge insight-kind">${esc((x.requiredByCount>=5?"후속 허브 · ":"")+(insightRoleLabels[x.primaryInsightKind]||x.primaryInsightKind||"—"))}</span>${branchConflictMap.has(x.id)?'<span class="badge branch-alt">선행 충돌 · 대체 해금</span>':""}${x.branchNestedCount?'<span class="badge branch-nested">해금 출처 재검토</span>':""}${x.branchSelfDisableCount?'<span class="badge branch-nested">자가 배제 해금 출처</span>':""}${x.cycleGroupSize?'<span class="badge branch-cycle">명목 선행 순환</span>':""}</td><td class="id">${esc(x.id)}</td><td>${fmt(x.cost)}</td><td>${fmt(x.points)}</td><td>${fmt(x.dependencyCount)}</td><td>${fmt(x.requiredByCount)}</td><td>${fmt(x.spawnedItemCount)}</td><td>${fmt(x.itemReferenceCount)}</td><td>${fmt(x.manufactureReferenceCount)}</td><td>${x.needItem?`<span class="badge ${x.destroyItem?"warn":""}">${x.destroyItem?"소모":"필요"}</span>`:"—"}</td></tr>`).join("");
@@ -435,13 +458,18 @@ function renderResearch(d){
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   const gameEntities=(xs,kind="research")=>xs?.length?xs.map(x=>entity(typeof x==="string"?x:x.id,kind)).join(" "):'<span class="empty">없음</span>';
   const free=Array.isArray(d.getOneFree)?d.getOneFree:[];
+  const grantedBy=arr(d.insight?.semanticReferences).filter(x=>x.kind==="research-granted-by").map(x=>x.id);
+  const sampleId=d.insight?.researchRequirements?.sampleItem||null;
+  const sampleLabel=d.needItem?(sampleId?entity(sampleId,"items"):'<span class="empty">실물 표본 필요 · 아이템 ID 별도 확인</span>'):'<span class="empty">없음</span>';
   const gamePanel=`<div class="game-dossier"><div class="game-dossier-title">기술개발도 열람</div><div class="game-dossier-top"><b>주제: ${esc(d.koName)}</b><span>연구량: ${fmt(d.cost)}</span></div><div class="game-dossier-columns"><div>
-  <h3>필요 물품:</h3><p>${d.needItem?(d.destroyItem?"연구 표본 필요 · 소모":"연구 표본 필요 · 비소모"):"없음"}</p>
-  <h3>다음에서 공짜로 얻음:</h3><div>${gameEntities(free)}</div>
+  <h3>필요 물품:</h3><div>${sampleLabel} ${d.needItem?(d.destroyItem?"· 소모":"· 비소모"):""}</div>
+  <h3>다음에서 공짜로 얻음:</h3><div>${gameEntities(grantedBy)}</div>
+  <h3>완료 시 무료 연구 지급:</h3><div>${gameEntities(free)}</div>
   <h3>선행 연구:</h3><div>${gameEntities(d.dependencies)}</div>
   </div><div><h3>다음의 요구함:</h3><div>${gameEntities(d.requiredBy)}</div>
   <h3>다음의 해금:</h3><div>${gameEntities(d.unlocks)}</div>
   <h3>아래의 항목:</h3><div>${relations(d.itemReferences)}</div>
+  <h3>완료 시 생성된 물품:</h3><div>${gameEntities(spawned,"items")}</div>
   <h3>제조 연결:</h3><div>${relations(d.manufactureReferences)}</div>
   </div></div><div class="game-dossier-foot">${esc(d.enName)} · 완료 점수 ${fmt(d.points)}</div></div>`;
   return`${gamePanel}<details class="game-more"><summary>상세 분석 · 연구 경로 · 경제성 · 원본 근거 보기</summary><h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
