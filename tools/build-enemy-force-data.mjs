@@ -457,8 +457,8 @@ for(const bucketRows of Object.values(details))for(const mission of Object.value
 }
 const researchMissionIndex=[...researchMissionMap.values()].sort((a,b)=>a.id.localeCompare(b.id)).map(row=>({
   id:row.id,
-  enabledMissions:[...row.enabledMissions.values()].sort((a,b)=>a.id.localeCompare(b.id)),
-  blockedMissions:[...row.blockedMissions.values()].sort((a,b)=>a.id.localeCompare(b.id))
+  enabledMissions:[...row.enabledMissions.keys()].sort(),
+  blockedMissions:[...row.blockedMissions.keys()].sort()
 }));
 fs.writeFileSync(path.join(outDir,"research-mission-gates.json"),JSON.stringify({
   meta:{schemaVersion:1,source:"enemy-force-chunks / missionScripts.researchTriggers",rulesetVersion:"X-Piratez v.o1.1.1",interpretation:"true: required mission script research gate, false: inhibitory research gate; other script gates and mission weights still apply"},
