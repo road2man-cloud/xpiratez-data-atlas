@@ -15,6 +15,7 @@ const fixed=[
   "public/data/trainings-index.json",
   "public/data/choice-simulator-index.json",
   "public/data/weapons-index.json",
+  "public/data/standard-evaluation.json",
   "public/data/armors-index.json",
   "public/data/progression.json",
   "public/data/progression-research.json"
