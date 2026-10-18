@@ -41,7 +41,7 @@ function initPanel(){
     '<section class="card table-card rank-table-card"><div class="table-shell"><table class="rank-table"><thead><tr>'+
     '<th>비교</th><th>제식점수</th><th>무기명</th><th>추천탄약</th><th>전투점수</th><th>근거리 4</th><th>중거리 14</th><th>원거리 28</th><th>획득단계</th><th>현재상태</th><th>분류/확도</th>'+
     '</tr></thead><tbody id="evalRows"></tbody></table></div><nav class="rank-pager" id="evalPager"></nav></section>'+
-    '<p class="rank-footer">모든 값은 o1.1.1 룰과 저장된 세이브 스냅샷을 기준으로 한 분석입니다. 탄약 구매가·제조 재료의 기회비용·엔지니어 X그로그 순이익이 확인되지 않은 경우 0원으로 환산하지 않습니다.</p>';
+    '<p class="rank-footer">모든 값은 o1.1.1 룰과 저장된 세이브 스냅샷을 기준으로 한 분석입니다. 탄약 구매가·제조 재료의 기회비용·엔지니어 X그로그 순이익이 확인되지 않은 경우 0원으로 환산하지 않습니다. 근접은 1칸 전용이며 4·14·28칸 원거리 피해 순위에서 제외합니다.</p>';
   el("evalSave").parentElement.querySelector("span").textContent=data.meta.saveFile+" 상태";
   el("evalProvenance").textContent="기준 세이브 "+data.meta.saveFile+" · "+new Date(data.meta.saveModifiedAt).toLocaleString("ko-KR")+" · 연구 "+data.meta.researchCompleted+"건 · 실제 일반 GAL "+data.meta.observedGalCount+"명 · "+data.meta.galStatsSource+" · 활성 X그로그 대체수익 "+fmt(data.meta.engineerOpportunityHourly,2)+"$/엔지니어시간";
   el("evalTotals").textContent=data.counts.uniqueRangedWeapons+"종 원거리 · "+data.counts.ranged+"개 탄종조합 · "+data.counts.melee+"개 근접 · "+data.counts.combined+"개 평가행";
@@ -70,7 +70,7 @@ function initPanel(){
 }
 function get(id){return el(id).value}
 const scenarioValue=(r,distance,armor)=>{
-  if(r.type==="근접")return r.dptu;
+  if(r.type==="근접")return distance==="all"&&armor==="all"?r.dptu:null;
   const ss=distance==="all"?r.scenarios:r.scenarios.filter(x=>String(x.distance)===distance);
   const vals=ss.map(s=>armor==="all"?s.tu100Hp:s.armor[armor]).filter(v=>v!=null);
   return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
@@ -108,7 +108,7 @@ function filtered(){
     const conf=get("evalConfidence");
     if(conf==="normal"&&r.confidence==="특수피해 모형 제한")return false;
     if(conf==="special"&&r.confidence!=="특수피해 모형 제한")return false;
-    if((dist!=="all"||armor!=="all")&&r.type==="원거리"&&scenarioValue(r,dist,armor)==null)return false;
+    if((dist!=="all"||armor!=="all")&&scenarioValue(r,dist,armor)==null)return false;
     return true;
   });
   const sort=get("evalSort"),sv=r=>scenarioValue(r,dist,armor);

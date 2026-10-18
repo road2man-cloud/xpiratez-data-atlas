@@ -107,6 +107,12 @@ try{
   console.log("PASS KUNG_FU punch/kick/flurry");
   await js("document.querySelector('#detailDialog').close()");
 
+  await js("(() => { const distance=document.querySelector('#evalDistance'); distance.value='28'; distance.dispatchEvent(new Event('change',{bubbles:true})); return true; })()");
+  assert.equal(await js("document.querySelectorAll('#evalRows tr[data-key]').length"),0,"Melee 1-tile attack must not appear in 28-tile ranks");
+  await js("(() => { const distance=document.querySelector('#evalDistance'); distance.value='all'; distance.dispatchEvent(new Event('change',{bubbles:true})); return true; })()");
+  await until("KUNG_FU restored","document.querySelector('#evalRows')?.textContent.includes('체육복')");
+  console.log("PASS 1-tile melee excluded from ranged distances");
+
   await dispatch("Page.navigate",{url:"http://127.0.0.1:"+sitePort+"/manufacture/#recipe=STR_GROG_BARREL"});
   await until("manufacture deep-link","document.querySelector('#detail')?.textContent.includes('STR_GROG_BARREL')",25000);
   console.log("PASS manufacture deep-link");

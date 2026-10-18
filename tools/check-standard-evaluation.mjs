@@ -45,6 +45,13 @@ check("manufacture batch cost includes materials and engineer opportunity",all.e
 })));
 check("weapon rank page has live comparison and provenance UI",fs.readFileSync("public/weapons/standard-ui.js","utf8").includes("compareSelected()")&&
   fs.readFileSync("public/weapons/standard-ui.js","utf8").includes("engineerOpportunityHourly"));
+const featured18=["STR_MP","STR_PAINBRINGER","STR_SMG_10MM","STR_SMG_50CAL",
+  "STR_MACHINEGUN","STR_MRSHAN_SHOTGUN","STR_MRSHAN_MINIGUN","STR_SAW",
+  "STR_CHAINGUN","STR_MAMMOTH_SHOTGUN","STR_SAW_GYRO","STR_MP_AUTO_CANNON",
+  "STR_HMG_ASSAULT","STR_ASMG","STR_LYNX","STR_SMG_SPIKED","STR_SMG_ADV","STR_ROTOGUN"];
+check("all 18 requested ranged weapon IDs have canonical ammo combos",featured18.every(id=>
+  ranked.ranged.some(r=>r.weaponId===id&&shootPairs.has(r.weaponId+"|"+r.ammoId))));
+check("melee excluded from ranged distance/armor filters",fs.readFileSync("public/weapons/standard-ui.js","utf8").includes('if(r.type==="근접")return distance==="all"&&armor==="all"?r.dptu:null;'));
 check("representative Tommygun and Mutant MG rows",["STR_TOMMYGUN","STR_MUTANT_MG"].every(id=>ranked.ranged.some(r=>r.weaponId===id)));
 check("evidence warns probabilities are estimates",ranked.evidence.engine.includes("미검증")&&ranked.meta.simulation.hitModel.includes("대리지표"));
 console.log(JSON.stringify({checked:all.length,ranged:ranked.ranged.length,melee:ranked.melee.length,scored:all.filter(x=>x.score!=null).length,unscored:all.filter(x=>x.score==null).length,failed:failures.length},null,2));
