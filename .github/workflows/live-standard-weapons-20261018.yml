@@ -1,0 +1,118 @@
+name: Live XPiratez standard weapons smoke 20261018
+on:
+  push:
+    branches:
+      - qa/live-standard-weapons-20261018
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Playwright
+        run: |
+          npm install --no-save --package-lock=false playwright-core@1.64.0
+          if ! command -v google-chrome >/dev/null 2>&1 && ! command -v chromium >/dev/null 2>&1; then npx playwright-core install chromium; fi
+      - name: Exercise published GitHub Pages with actual Chromium
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from "node:assert/strict";
+          import fs from "node:fs";
+          import {chromium} from "playwright-core";
+          const site="https://road2man-cloud.github.io/xpiratez-data-atlas/";
+          const chrome=["/usr/bin/google-chrome","/usr/bin/chromium",chromium.executablePath()].find(fs.existsSync);
+          assert(chrome,"No Chromium executable available");
+          const browser=await chromium.launch({headless:true,executablePath:chrome,args:["--no-sandbox"]});
+          const errors=[],broken=[];
+          try {
+            const page=await browser.newPage({viewport:{width:1280,height:850}});
+            page.setDefaultTimeout(25000);
+            page.on("pageerror",err=>errors.push(err.message));
+            page.on("response",r=>{
+              if(r.status()>=400&&/\/(weapons\/standard|data\/standard-evaluation)/.test(r.url()))broken.push(r.url()+": "+r.status());
+            });
+            await page.goto(site+"weapons/?qa=20261018-published",{waitUntil:"domcontentloaded",timeout:45000});
+            const table=page.locator("#evalRows tr[data-key]");
+            await table.first().waitFor({state:"visible",timeout:45000});
+            assert((await page.locator("#evalTotals").innerText()).includes("804개 평가행"),"804 evaluation rows missing");
+            assert((await page.locator("#evalProvenance").innerText()).includes("16.sav"),"Save provenance not present");
+            console.log("PASS LIVE: 804 rankings, 16.sav");
+            await page.locator("#evalSearch").fill("토미건");
+            await page.waitForFunction(()=>document.querySelector("#evalRows tr[data-key]")?.innerText.includes("토미건"));
+            await table.first().click();
+            await page.locator("#detailDialog[open]").waitFor({state:"visible"});
+            const tommy=await page.locator("#detailBody").innerText();
+            assert(tommy.includes("제식 평가")&&tommy.includes("계산식"),"Tommygun original inspection connection failed");
+            assert(await page.locator('#detailBody a[href^="../items/#item="]').count(),"Tommygun item link missing");
+            await page.locator("#closeDialog").click();
+            console.log("PASS LIVE: Tommygun search, detailed legacy inspector, item link");
+            await page.locator("#evalSearch").fill("");
+            await page.locator("#evalSave").selectOption("research");
+            await table.first().waitFor({state:"visible"});
+            const states=await page.locator("#evalRows .rank-status").allInnerTexts();
+            assert(states.length>0&&states.every(s=>s.includes("연구")),"Research-status filter failed");
+            await page.locator("#evalSave").selectOption("all");
+            await page.locator("#evalType").selectOption("근접");
+            await page.locator("#evalSearch").fill("체육복");
+            await page.waitForFunction(()=>document.querySelector("#evalRows tr[data-key]")?.innerText.includes("체육복"));
+            await table.first().click();
+            await page.locator("#detailDialog[open]").waitFor({state:"visible"});
+            const kung=await page.locator("#detailBody").innerText();
+            assert(kung.includes("발차기")&&kung.includes("5연타"),"Kung-fu kick or five-hit missing");
+            await page.locator("#closeDialog").click();
+            console.log("PASS LIVE: SAV research filter and KUNG_FU punch/kick/flurry");
+            await page.locator("#evalType").selectOption("all");
+            await page.locator(".rank-advanced > summary").click();
+            await page.locator("#evalGroup").selectOption("all");
+            await page.locator("#evalSearch").fill("UAC 체인건");
+            await page.waitForFunction(()=>document.querySelectorAll("#evalRows tr[data-key]").length===2);
+            await table.nth(0).locator("input[data-compare-key]").check();
+            await table.nth(1).locator("input[data-compare-key]").check();
+            await page.locator("#evalCompare").click();
+            await page.locator("#detailDialog[open]").waitFor({state:"visible"});
+            assert((await page.locator("#detailBody").innerText()).includes("제식 무기·탄약 직접 비교"),"Ammo comparison missing");
+            await page.locator("#closeDialog").click();
+            await table.first().click();
+            await page.locator("#detailDialog[open]").waitFor({state:"visible"});
+            assert(await page.locator('#detailBody a[href^="../research/#research="]').count(),"Research deep-link missing");
+            assert(await page.locator('#detailBody a[href^="../manufacture/#recipe="]').count(),"Manufacture deep-link missing");
+            await page.locator('#detailBody a[href^="../research/#research="]').first().click();
+            await page.waitForURL(/\/research\/#research=/);
+            await page.locator("#detail .game-dossier").waitFor({state:"visible",timeout:30000});
+            console.log("PASS LIVE: UAC ChainGun ammo comparison and research navigation");
+            await page.goto(site+"weapons/?qa=return",{waitUntil:"domcontentloaded",timeout:45000});
+            await table.first().waitFor({state:"visible",timeout:45000});
+            await page.locator("#evalSearch").fill("UAC 체인건");
+            await page.waitForFunction(()=>document.querySelector("#evalRows tr[data-key]")?.innerText.includes("UAC 체인건"));
+            await table.first().click();
+            await page.locator("#detailDialog[open]").waitFor({state:"visible"});
+            const manufacturing=page.locator('#detailBody a[href^="../manufacture/#recipe="]').first();
+            const href=await manufacturing.getAttribute("href");
+            const recipe=decodeURIComponent(href.split("#recipe=")[1]);
+            await manufacturing.click();
+            await page.waitForURL(/\/manufacture\/#recipe=/);
+            await page.waitForFunction(id=>document.querySelector("#detail")?.textContent.includes(id),recipe);
+            console.log("PASS LIVE: manufacture recipe hash navigation");
+            await page.goto(site+"weapons/?qa=legacy",{waitUntil:"domcontentloaded",timeout:45000});
+            await page.locator("#legacyTab").click();
+            await page.locator("#weaponTable tbody tr").first().waitFor({state:"visible",timeout:45000});
+            assert(await page.locator("#targetUnit option").count()>1,"Individual enemy profile selector missing");
+            await page.locator("#targetUnit").selectOption({index:1});
+            assert((await page.locator("#targetSummary").innerText()).length>8,"Individual enemy defense summary missing");
+            await page.locator("#weaponTable tbody tr").first().click();
+            await page.locator("#detailDialog[open]").waitFor({state:"visible"});
+            const legacy=await page.locator("#detailBody").innerText();
+            assert(legacy.includes("장비·손 사용")&&legacy.includes("룰셋 유효 정의 전체"),"Legacy weapon details missing");
+            console.log("PASS LIVE: individual enemy resistance selector and original action inspector");
+            assert.deepEqual(broken,[],"Live evaluation resources returned HTTP errors");
+            assert.deepEqual(errors,[],"Uncaught browser JavaScript exceptions");
+            console.log("PASS LIVE: no missing evaluation resources or fatal JavaScript errors");
+          } finally {await browser.close();}
+          NODE
