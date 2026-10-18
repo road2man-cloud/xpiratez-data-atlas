@@ -125,8 +125,73 @@ for(const slug of ["items","research","armors","weapons","soldiers","trainings",
     assert((await visibleRows(page,selector))>0,"decompression error must recover via canonical JSON");
   },{corruptGzip:true});
 }
+await scenario("weapons standard rankings: Tommygun, save filter, kung-fu and live comparison",async page=>{
+  await page.goto(base+"weapons/");
+  const ranked=page.locator("#evalRows tr[data-key]");
+  await ranked.first().waitFor({state:"visible",timeout:35000});
+  assert((await page.locator("#evalTotals").innerText()).includes("804개 평가행"));
+  assert((await page.locator("#evalProvenance").innerText()).includes("16.sav"));
+  await page.locator("#evalSearch").fill("토미건");
+  await page.waitForFunction(()=>document.querySelector("#evalRows tr[data-key]")?.innerText.includes("토미건"));
+  await ranked.first().click();
+  await page.locator("#detailDialog[open]").waitFor();
+  assert((await page.locator("#detailBody").innerText()).includes("제식 평가"));
+  assert((await page.locator('#detailBody a[href^="../items/#item="]').count())>0,"item deep-link absent");
+  await page.locator("#closeDialog").click();
+  await page.locator("#evalSearch").fill("");
+  await page.locator("#evalSave").selectOption("research");
+  await ranked.first().waitFor({state:"visible"});
+  const statuses=await page.locator("#evalRows .rank-status").allInnerTexts();
+  assert(statuses.length>0&&statuses.every(s=>s.includes("연구")),"SAV research filter included wrong state");
+  await page.locator("#evalSave").selectOption("all");
+  await page.locator("#evalType").selectOption("근접");
+  await page.locator("#evalSearch").fill("체육복");
+  await page.waitForFunction(()=>document.querySelector("#evalRows tr[data-key]")?.innerText.includes("체육복"));
+  await ranked.first().click();
+  await page.locator("#detailDialog[open]").waitFor();
+  const kung=await page.locator("#detailBody").innerText();
+  assert(kung.includes("발차기")&&kung.includes("5연타"),"KUNG_FU modes not shown");
+  await page.locator("#closeDialog").click();
+});
+await scenario("weapons UAC chain-gun comparison and research/manufacture deep links",async page=>{
+  await page.goto(base+"weapons/");
+  const ranked=page.locator("#evalRows tr[data-key]");
+  await ranked.first().waitFor({state:"visible",timeout:35000});
+  await page.locator(".rank-advanced > summary").click();
+  await page.locator("#evalGroup").selectOption("all");
+  await page.locator("#evalSearch").fill("UAC 체인건");
+  await page.waitForFunction(()=>document.querySelectorAll("#evalRows tr[data-key]").length===2);
+  await ranked.nth(0).locator("input[data-compare-key]").check();
+  await ranked.nth(1).locator("input[data-compare-key]").check();
+  await page.locator("#evalCompare").click();
+  await page.locator("#detailDialog[open]").waitFor();
+  assert((await page.locator("#detailBody").innerText()).includes("제식 무기·탄약 직접 비교"));
+  await page.locator("#closeDialog").click();
+  await ranked.first().click();
+  await page.locator("#detailDialog[open]").waitFor();
+  assert(await page.locator('#detailBody a[href^="../research/#research="]').count(),"research deep-link absent");
+  assert(await page.locator('#detailBody a[href^="../manufacture/#recipe="]').count(),"manufacture deep-link absent");
+  await page.locator('#detailBody a[href^="../research/#research="]').first().click();
+  await page.waitForURL(/\/research\/#research=/);
+  await page.locator("#detail .game-dossier").waitFor({state:"visible",timeout:30000});
+  await page.goto(base+"weapons/");
+  await ranked.first().waitFor({state:"visible",timeout:35000});
+  await page.locator("#evalSearch").fill("UAC 체인건");
+  await page.waitForFunction(()=>document.querySelector("#evalRows tr[data-key]")?.innerText.includes("UAC 체인건"));
+  await ranked.first().click();
+  await page.locator("#detailDialog[open]").waitFor();
+  const make=page.locator('#detailBody a[href^="../manufacture/#recipe="]').first();
+  const href=await make.getAttribute("href");
+  const recipe=decodeURIComponent(href.split("#recipe=")[1]);
+  await make.click();
+  await page.waitForURL(/\/manufacture\/#recipe=/);
+  await page.waitForFunction(id=>document.querySelector("#detail")?.textContent.includes(id),recipe);
+});
 await scenario("weapons section switch, distance, opponent, sort, detail",async page=>{
-  await page.goto(base+"weapons/");assert.equal(await visibleRows(page,"#weaponTable tbody tr"),100);
+  await page.goto(base+"weapons/");
+  await page.locator("#legacyTab").click();
+  await page.locator("#weaponTable tbody tr").first().waitFor({state:"visible"});
+  assert.equal(await visibleRows(page,"#weaponTable tbody tr"),100);
   await page.locator('#weaponPager button[data-page="1"]').first().click();
   const page1=await page.locator("#weaponTable tbody tr").first().getAttribute("data-id");
   await page.locator('#weaponPager button[data-page="0"]').first().click();
@@ -188,7 +253,10 @@ await scenario("items delayed detail must not overwrite newer selection",async p
 
 await scenario("weapons delayed detail must not replace newer choice",async page=>{
   const catalog=JSON.parse(await readFile(path.join(root,"data/weapons-index.json"),"utf8"));
-  await page.goto(base+"weapons/");await visibleRows(page,"#weaponTable tbody tr");
+  await page.goto(base+"weapons/");
+  await page.locator("#legacyTab").click();
+  await page.locator("#weaponTable tbody tr").first().waitFor({state:"visible"});
+  await visibleRows(page,"#weaponTable tbody tr");
   const display=await page.locator("#weaponTable tbody tr").evaluateAll(elements=>elements.map((el,i)=>({i,itemId:el.querySelector("td .id")?.textContent?.trim(),name:el.querySelector("td .name")?.textContent?.trim()})));
   const first=display.find(x=>catalog.detailIndex[x.itemId]);
   const second=display.find(x=>x.itemId!==first.itemId&&catalog.detailIndex[x.itemId]!==catalog.detailIndex[first.itemId]&&catalog.detailIndex[x.itemId]);
@@ -278,11 +346,13 @@ await scenario("items combined search/sort/filter/page/detail/reset",async page=
 });
 for(const slug of ["armors","weapons"]){
   await scenario(slug+" portrait-landscape table and dialog controls",async page=>{
-    await page.goto(base+slug+"/");await visibleRows(page,loadedSelector[slug]);
+    await page.goto(base+slug+"/");
+    if(slug==="weapons")await page.locator("#legacyTab").click();
+    await visibleRows(page,loadedSelector[slug]);
     for(const [width,height] of [[390,844],[844,390]]){
       await page.setViewportSize({width,height});
       assert.equal(await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position),"static");
-      const scroll=await page.locator(".table-shell").evaluate(el=>{el.scrollLeft=600;return el.scrollLeft;});
+      const scroll=await page.locator(slug==="weapons"?".legacy-only .table-shell":".table-shell").evaluate(el=>{el.scrollLeft=600;return el.scrollLeft;});
       assert(scroll>0,"horizontal table scrolling must remain available");
       await page.locator(loadedSelector[slug]).first().click();
       await page.locator("#detailDialog[open]").waitFor();
