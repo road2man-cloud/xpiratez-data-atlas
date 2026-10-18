@@ -75,6 +75,13 @@ try {
     let count=0,search="skip",detail="skip",display="",trainingStage="opening";
     try{
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+      if(slug==="weapons"&&await page.locator("#standardTab").count()){
+        // First verify the integrated ranking, then switch to the unchanged
+        // individual-enemy/action inspector for the existing play-guide tests.
+        await page.locator("#evalRows tr[data-key]").first().waitFor({state:"visible",timeout:35000});
+        if(!(await page.locator("#evalTotals").innerText()).includes("탄종조합"))errors.push("Standard weapon ranking failed to load");
+        await page.locator("#legacyTab").click();
+      }
       await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
       count=await page.locator(ready[slug]).count();
       if(slug==="captains"){
