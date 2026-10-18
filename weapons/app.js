@@ -539,4 +539,9 @@ $("#weaponTable tbody").addEventListener("click",e=>{
 });
 $("#closeDialog").addEventListener("click",()=>{detailGeneration++;$("#detailDialog").close()});
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){detailGeneration++;e.currentTarget.close()}});
+// One inspector, two views: standard ranking opens this same detailed action sheet.
+window.XPWeaponDB={
+  loadSection,render,openDetail,
+  findRows:(section,itemId,ammoId)=>(SECTION_CACHE[section]||[]).filter(r=>r.itemId===itemId&&(section!=="shooting"||r.ammoId===ammoId))
+};
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
