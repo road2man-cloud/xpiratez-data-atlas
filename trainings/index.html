@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병사훈련·상호배타 조합 DB</title>
-<link rel="stylesheet" href="styles.css?v=large-db-perf-20261011">
+<link rel="stylesheet" href="styles.css?v=training-evidence-audit-20261021">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body>
@@ -50,6 +50,37 @@
         </details>
         <div id="researchRouteHint" class="note" aria-live="polite"></div>
       </section>
+      <section class="evidence-panel" aria-label="현재 세이브와 대원의 실제 조건">
+        <h3>실제 세이브·대원·자원 확인 <span class="tag">선택 사항</span></h3>
+        <div class="evidence-upload">
+          <label for="trainingSaveFile">XPiratez 세이브 (.sav) — 완료·배제 연구만 읽기</label>
+          <input id="trainingSaveFile" type="file" accept=".sav,.yaml,.yml,text/plain" aria-describedby="trainingSaveHelp">
+          <button id="clearTrainingSave" type="button" disabled>세이브 근거 해제</button>
+        </div>
+        <p id="trainingSaveHelp" class="fine">게임 세이브의 최상위 discovered · researchRuleStatus · researchDiary만 브라우저에서 읽습니다. 업로드·저장·자동 분기 선택은 하지 않습니다. 불러오기 전의 선장 및 연구 경로 가정은 별개로 유지됩니다.</p>
+        <div id="trainingSaveSummary" class="evidence-status" role="status" aria-live="polite">세이브 미적용 · 연구 보유 및 영구 배제 여부는 미확인</div>
+        <details id="unitEvidenceDetails">
+          <summary>현재 대원의 계급·능력치 및 보유 재료·시설·훈장 입력</summary>
+          <p class="fine">모두 선택 사항이며 입력하지 않은 수치는 0으로 처리하지 않습니다. 여러 훈련을 선택한 뒤에는 최초 대원의 능력치/계급을 다음 변신에 그대로 적용하지 않습니다. 정확한 값은 게임 내에서 확인하세요.</p>
+          <div class="unit-inputs">
+            <label>현재 계급의 숫자 (원본 minRank 기준)<input type="number" id="unitRank" min="0" max="30" step="1" placeholder="미입력"></label>
+            <label>사망 대원 시체 회수
+              <select id="corpseRecovered"><option value="">미확인</option><option value="yes">회수됨</option><option value="no">회수 안 됨</option></select>
+            </label>
+          </div>
+          <h4>대원 현재 능력치 (게임 화면의 수치, 아는 값만 입력)</h4>
+          <div id="unitStatInputs" class="unit-stats"></div>
+          <div class="evidence-fields">
+            <label>실물 재료 ID=보유수량<textarea id="unitItemEvidence" rows="3" spellcheck="false" placeholder="STR_GOVT_CORPSE=10, STR_GLAMOUR=6"></textarea></label>
+            <label>기지 기능 ID=보유여부 (0 또는 1)<textarea id="unitBaseEvidence" rows="3" spellcheck="false" placeholder="DOJO=1, LIB=0"></textarea></label>
+            <label>훈장 ID=보유 단계/수치<textarea id="unitMedalEvidence" rows="3" spellcheck="false" placeholder="STR_MEDAL_STATGAIN_NAME=1"></textarea></label>
+          </div>
+          <div class="actions"><button id="applyUnitEvidence" type="button">입력 조건 적용</button><button id="clearUnitEvidence" type="button">입력 초기화</button></div>
+          <div id="unitEvidenceStatus" class="fine" role="status" aria-live="polite">직접 입력된 대원·재료 조건 없음</div>
+        </details>
+        <div id="trainingEvidenceSummary" class="fine" aria-live="polite"></div>
+        <p class="fine">이 자료는 변신 순서와 별개인 보조 판정입니다. 연구가 완료돼도 필요한 시설·재료·훈장·능력치·비용·기타 엔진 조건까지 모두 충족됐다는 뜻은 아닙니다.</p>
+      </section>
       <div class="quick-training" aria-label="훈련 빠른 선택">
         <label for="quickTraining">지금 가능한 다음 훈련 (선행 자동 포함)<select id="quickTraining"><option value="">훈련을 선택하세요</option></select></label>
         <button id="quickAdd" type="button" class="btn-add" disabled>선택한 훈련 추가</button>
@@ -88,6 +119,11 @@
         <option value="all">전체</option><option value="ready">변신/분기 조건상 선택 가능</option>
         <option value="prereq">선행 훈련 필요</option><option value="blocked">선택 불가</option>
       </select></label>
+      <label>세이브 연구 근거<select id="saveResearchFilter" disabled>
+        <option value="all">전체 · 세이브 미적용</option>
+        <option value="met">직접 연구 완료</option><option value="missing">미완료 연구 있음</option>
+        <option value="blocked">영구 배제 연구 있음</option><option value="conflict">완료·배제 기록 충돌</option><option value="no-research">직접 연구 조건 없음</option>
+      </select></label>
       <label>배제 규칙<select id="exclusionFilter">
         <option value="all">전체</option><option value="mutual">양방향 상호 배제</option>
         <option value="oneway">단방향·순서 의존</option><option value="self">동일 훈련 재시행 금지</option>
@@ -115,7 +151,7 @@
   </div>
 </main>
 <dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
-<script type="module" src="app.js?v=training-exclusions-audit-20261021"></script>
+<script type="module" src="app.js?v=training-evidence-audit-20261021"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
