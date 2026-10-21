@@ -50,6 +50,7 @@
   <section class="explain card">
     <strong>표 읽는 법</strong>
     <span><b>저항 배율은 낮을수록 좋습니다.</b> 0.70×이면 해당 피해가 방어력 차감 전에 70%로 줄고, 1.20×이면 20% 더 받습니다.</span>
+    <span><b>SPOT 낮/밤</b>은 위장 간파 수치로 높을수록 유리합니다. <b>위장 낮/밤</b>은 원본 camouflageAtDay/Dark의 부호를 반전하여 높을수록 숨기 유리하게 표시합니다. 시야 0은 기본 시야가 없다는 뜻이 아니라 별도 지정값이 없다는 뜻입니다. 모든 병종 전용 복장까지 보려면 '실제 장비 아이템만' 체크를 해제하세요.</span>
     <span>연구의 <code>RuleResearch.cost</code>는 OXCE 8.6에서 <b>scientist-days(인·일)</b> 단위의 명목 작업량입니다. 각 연구 시작 시 실제 cost는 50~150%로 정해지고, 매 게임일 배정 과학자 수만큼 진행됩니다. 제조는 매 시간 배정 엔지니어 수만큼 진행됩니다. 위 인원수를 바꾸면 상세창의 순수 작업시간 환산도 즉시 바뀝니다.</span>
     <span><b>연구량*</b>은 선언된 <code>dependencies + requires</code> closure의 합계입니다. 표에 ⚠가 붙은 경로는 다른 연구의 <code>unlocks</code>로 dependency를 우회할 수 있어 이 숫자가 최단 연구량은 아닙니다.</span>
   </section>
@@ -71,7 +72,7 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script src="app.js?v=20261011-fast-list1"></script>
+<script src="app.js?v=20261021-spot-camo"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

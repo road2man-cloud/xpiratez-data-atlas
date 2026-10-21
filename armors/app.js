@@ -88,6 +88,9 @@ function render(){
   const head=[
     th("방어구","name"),'<th>획득</th>',th("연구량*","mainResearchCost","declared dependencies/requires closure 합계 · scientist-days. ⚠ 표시는 unlocks 우회 후보가 있어 최단 연구량이 아님"),th("제조시간","mainManufactureTime","engineer-hours"),
     th("전","frontArmor"),th("좌","leftArmor"),th("우","rightArmor"),th("후","rearArmor"),th("하","underArmor"),th("무게","weight"),
+    th("SPOT 낮","spotDay","주간 위장 간파력 · antiCamouflageAtDay"),th("SPOT 밤","spotNight","야간 위장 간파력 · antiCamouflageAtDark"),
+    th("위장 낮","camoDay","주간 CAMO (양수가 은폐 이점) · -camouflageAtDay"),th("위장 밤","camoNight","야간 CAMO (양수가 은폐 이점) · -camouflageAtDark"),
+    th("시야 낮","visibilityAtDay","주간 시야 · 미설정 0은 엔진 기본값 적용"),th("시야 밤","visibilityAtDark","야간 시야"),
     th("TU","tu"),th("기력","stamina"),th("체력","health"),th("반응","reactions"),th("사격","firing"),th("근접","melee"),
     th("AP","ap","일반 탄환/Armor Piercing 저항 배율"),th("화염","incendiary"),th("HE","he"),th("레이저","laser"),th("플라즈마","plasma"),th("근접","meleeResist"),th("DT16","dt16")
   ].join("");
@@ -99,7 +102,7 @@ function render(){
     '<td><span class="name">'+esc(r.koName)+'</span><span class="id">'+esc(r.id)+'</span></td>'+
     '<td>'+(r.acquisitionKinds||[]).map(x=>'<span class="tag">'+esc(x)+'</span>').join(" ")+'</td>'+
     '<td>'+fmt(r.mainResearchCost)+(r.mainResearchHasUnlockBypassCandidates?' <span class="warn" title="unlocks로 dependency를 우회할 수 있는 후보가 있어 이 값은 보수적 합계입니다.">⚠</span>':'')+'</td><td>'+fmt(r.mainManufactureTime)+'</td>'+
-    [r.frontArmor,r.leftArmor,r.rightArmor,r.rearArmor,r.underArmor,r.weight,r.tu,r.stamina,r.health,r.reactions,r.firing,r.melee].map(x=>'<td>'+fmt(x)+'</td>').join("")+
+    [r.frontArmor,r.leftArmor,r.rightArmor,r.rearArmor,r.underArmor,r.weight,r.spotDay,r.spotNight,r.camoDay,r.camoNight,r.visibilityAtDay,r.visibilityAtDark,r.tu,r.stamina,r.health,r.reactions,r.firing,r.melee].map(x=>'<td>'+fmt(x)+'</td>').join("")+
     [r.ap,r.incendiary,r.he,r.laser,r.plasma,r.meleeResist,r.dt16].map(x=>'<td>'+resist(x)+'</td>').join("")+
     '</tr>').join("");
   $("#armorPager").innerHTML='<button data-page="'+(page-1)+'" '+(page===0?'disabled':'')+'>← 이전</button>'+
@@ -201,7 +204,7 @@ async function openDetail(id,bucket){
     '</div>';
   html+='<h3>능력치 보정</h3><div class="stats-grid">'+Object.entries(d.stats||{}).map(([k,v])=>'<div class="statbox"><small>'+esc(statLabels[k]||k)+'</small><b class="'+(v>0?"pos":v<0?"neg":"")+'">'+(v>0?"+":"")+fmt(v)+'</b></div>').join("")+'</div>';
   html+='<h3>피해유형별 저항 배율</h3><div class="resist-grid">'+(DATA.damageTypes||[]).map((x,i)=>'<div class="statbox"><small>'+esc(x.ko||x.key)+'</small><b>'+resist(d.damageModifier[i])+'</b></div>').join("")+'</div>';
-  html+='<h3>회피·회복·시야</h3><div class="detail-grid">'+kv("근접 회피 공식",'<code>'+esc(JSON.stringify(d.meleeDodge||{}))+'</code>')+kv("회복 규칙",'<code>'+esc(JSON.stringify(d.recovery||{}))+'</code>')+kv("시야/위장",'야간 '+fmt(d.visibilityAtDark)+' · 주간 '+fmt(d.visibilityAtDay)+' · 위장 '+fmt(d.camouflageAtDark)+'/'+fmt(d.camouflageAtDay))+'</div>';
+  html+='<h3>회피·회복·시야</h3><div class="detail-grid">'+kv("근접 회피 공식",'<code>'+esc(JSON.stringify(d.meleeDodge||{}))+'</code>')+kv("회복 규칙",'<code>'+esc(JSON.stringify(d.recovery||{}))+'</code>')+kv("시야/위장/SPOT",'시야 낮/밤 '+fmt(d.visibilityAtDay)+' / '+fmt(d.visibilityAtDark)+' · SPOT 낮/밤 '+fmt(d.antiCamouflageAtDay)+' / '+fmt(d.antiCamouflageAtDark)+' · CAMO 낮/밤 '+fmt(-d.camouflageAtDay)+' / '+fmt(-d.camouflageAtDark))+'</div>';
 
   html+='<h3>획득 방법과 작업량</h3>';
   const buy=d.acquisition.buyKey?ROUTES.buy?.[d.acquisition.buyKey]:null;
