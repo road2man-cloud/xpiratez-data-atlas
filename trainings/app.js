@@ -1,6 +1,7 @@
 import {loadRuntime} from "../db-runtime.js";
 import {parseXpiratezSave} from "../captains/save-import-core.js";
 import {parseQuantifiedEvidence,assessTrainingReadiness} from "./readiness.js";
+import {readSavePersonnel,facilityEvidence,inventoryEvidence,medalEvidence,effectiveSoldierStats} from "./save-personnel-core.js";
 import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,classifyExclusion,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue,divergentPathCompatibility} from "./planner.js";
 import {buildChoiceIndex,parseCompletedResearch} from "../captains/choice-simulator-core.js";
 import {trainingRouteGate,routeEventReport} from "./route-gates.js";
@@ -18,11 +19,117 @@ const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?
 let DATA,ACCESS,PATH_GATES,choiceIndex,routeContext,researchRouteContext,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
 let selectedCompanions=new Set(),codexChoice="",saintGoal=false;
 let savedResearch=null,saveMeta=null,saveImportGeneration=0;
+let saveWorld=null,facilityRules=null,autoProof=null,saveOriginId=null,originBeforeSave=null;
 const emptyProof=()=>({rank:null,stats:new Map(),items:new Map(),baseFuncs:new Map(),medals:new Map(),corpseRecovered:null});
 let unitProof=emptyProof();
+function overlayMap(base,manual){
+  return new Map([...(base||new Map()),...(manual||new Map())]);
+}
+function currentSaveBase(){
+  const raw=$("#trainingSaveBase").value;
+  return saveWorld&&/^\d+$/.test(raw)?saveWorld.bases[Number(raw)]||null:null;
+}
+function currentSaveSoldier(){
+  const base=currentSaveBase(),raw=$("#trainingSaveSoldier").value;
+  return base&&/^\d+$/.test(raw)?base.soldiers[Number(raw)]||null:null;
+}
+function updateAutoProof(){
+  const base=currentSaveBase(),soldier=currentSaveSoldier();
+  const fac=facilityEvidence(base,facilityRules?.index||[],
+    [...new Set(DATA.transformations.flatMap(t=>t.requiresBaseFunc))]);
+  const stats=effectiveSoldierStats(soldier,DATA.bonuses);
+  autoProof={
+    rank:soldier?.rank??null,stats:stats.stats,
+    items:inventoryEvidence(base,[...new Set(DATA.transformations.flatMap(t=>t.requiredItems.map(x=>x.id)))]),
+    baseFuncs:fac.functions,
+    medals:medalEvidence(soldier,[...new Set(DATA.transformations.flatMap(t=>t.requiredCommendations.map(x=>x.id)))]),
+    facilityUnresolved:fac.unresolved,statBonusesUnknown:stats.missing||[]
+  };
+}
 function evidenceFor(t){
-  return assessTrainingReadiness(t,{...unitProof,research:savedResearch,
-    unitValid:selected.length===0,condition:$("#condition").value});
+  const a=autoProof||emptyProof();
+  // Both stock and soldier statistics are a snapshot. Previously planned
+  // training may change stats and consume materials, which we do not simulate.
+  const original=selected.length===0;
+  return assessTrainingReadiness(t,{
+    research:savedResearch,condition:$("#condition").value,
+    unitValid:original,
+    rank:original?(unitProof.rank??a.rank):null,
+    stats:original?overlayMap(a.stats,unitProof.stats):new Map(),
+    items:original?overlayMap(a.items,unitProof.items):new Map(),
+    medals:overlayMap(a.medals,unitProof.medals),
+    baseFuncs:overlayMap(a.baseFuncs,unitProof.baseFuncs),
+    corpseRecovered:unitProof.corpseRecovered
+  });
+}
+function restoreSaveOrigin(){
+  if(saveOriginId){
+    const selectedValue=$("#origin").value;
+    document.querySelector('#origin [data-saved-unit="1"]')?.remove();
+    origins.delete(saveOriginId);
+    if(selectedValue===saveOriginId)
+      $("#origin").value=origins.has(originBeforeSave)?originBeforeSave:"base:STR_SOLDIER";
+    saveOriginId=null;
+  }
+}
+function applySaveSoldier(){
+  clearManualProof();
+  restoreSaveOrigin();
+  const soldier=currentSaveSoldier();
+  const originalId=$("#origin").value;
+  if(soldier?.recovery!=null)$("#condition").value=soldier.recovery>0?"wounded":"healthy";
+  else if(!soldier)$("#condition").value="healthy";
+  if(soldier&&soldier.historyComplete&&DATA.soldiers.some(s=>s.id===soldier.type)){
+    originBeforeSave=originalId;
+    saveOriginId="saved:"+currentSaveBase().index+":"+soldier.slot;
+    origins.set(saveOriginId,{
+      id:saveOriginId,label:"세이브 대원 · "+soldier.name+" ("+soldier.type+")",
+      soldierType:soldier.type,previousTransformations:soldier.previousTransformations
+    });
+    const option=document.createElement("option");
+    option.value=saveOriginId;
+    option.dataset.savedUnit="1";
+    option.textContent="세이브 대원 · "+soldier.name+" (#"+(soldier.id??soldier.slot)+")";
+    $("#origin").append(option);
+    $("#origin").value=saveOriginId;
+  }
+  updateAutoProof();
+  selected=[];latestAdded=[];
+  const base=currentSaveBase();
+  const messages=[
+    base?"기지 재고 "+(base.itemsComplete?"전체 확인":"부분 확인")+" · 완공 시설만 계산":"기지 미선택",
+    soldier?"대원 "+soldier.name+" · 계급 "+(soldier.rank??"미확인")+" · 초기 능력치 "+soldier.stats.size+"종":"대원 미선택",
+    soldier&&soldier.recovery>0?"부상 회복값 "+soldier.recovery+" · 부상 상태로 분류했으므로 게임에서 확인하십시오":"",
+    soldier&&!soldier.historyComplete?"변신 이력이 완전하지 않아 자동 출발 병종 설정을 생략했습니다":"",
+    autoProof?.statBonusesUnknown?.length?"원본 효과를 찾지 못한 특성 "+autoProof.statBonusesUnknown.join(", "):"",
+    autoProof?.facilityUnresolved?.length?"시설 효과 확인 불가 "+autoProof.facilityUnresolved.length+"곳":""
+  ];
+  $("#trainingSaveRosterHint").textContent=messages.filter(Boolean).join(" · ");
+  redraw();
+}
+function showSaveBases(){
+  const host=$("#trainingSaveRoster");
+  host.hidden=!saveWorld?.bases?.length;
+  $("#trainingSaveBase").innerHTML=(saveWorld?.bases||[]).map((b,i)=>
+    '<option value="'+i+'">'+esc(b.name)+" · 대원 "+b.soldiers.length+"명</option>").join("");
+  $("#trainingSaveBase").value=saveWorld?.bases?.length?"0":"";
+  showSaveSoldiers();
+}
+function clearManualProof(){
+  unitProof=emptyProof();
+  for(const id of ["unitRank","unitItemEvidence","unitBaseEvidence","unitMedalEvidence"])
+    $("#"+id).value="";
+  $("#corpseRecovered").value="";
+  for(const input of document.querySelectorAll("[data-stat-input]"))input.value="";
+  $("#unitEvidenceStatus").textContent="수동 보정 없음 · 세이브 기준 자동 판정(미확인 항목은 별도)";
+}
+function showSaveSoldiers(){
+  const base=currentSaveBase();
+  $("#trainingSaveSoldier").innerHTML='<option value="">대원 미선택 · 기지 재고/시설만 판정</option>'+
+    (base?.soldiers||[]).map((s,i)=>
+      '<option value="'+i+'">'+esc(s.name)+' · '+esc(s.type)+' · #'+esc(s.id??s.slot)+'</option>').join("");
+  $("#trainingSaveSoldier").value="";
+  applySaveSoldier();
 }
 function saveResearchLabel(assessment){
   return {met:"직접 선행연구 완료",missing:"세이브 연구 미완료",
@@ -31,7 +138,7 @@ function saveResearchLabel(assessment){
 }
 function renderEvidenceSummary(){
   const host=$("#trainingEvidenceSummary");
-  if(!savedResearch&&!unitProof.stats.size&&!unitProof.items.size&&!unitProof.medals.size&&!unitProof.baseFuncs.size&&unitProof.rank==null&&unitProof.corpseRecovered==null){
+  if(!savedResearch&&!autoProof&&!unitProof.stats.size&&!unitProof.items.size&&!unitProof.medals.size&&!unitProof.baseFuncs.size&&unitProof.rank==null&&unitProof.corpseRecovered==null){
     host.textContent="실제 조건 미입력 · 기존의 훈련/분기 이론 판정만 적용됩니다.";return;
   }
   const checks=DATA.transformations.map(evidenceFor);
@@ -39,11 +146,15 @@ function renderEvidenceSummary(){
   const direct=checks.filter(x=>x.directMissing.length).length;
   host.textContent=(savedResearch?"세이브 연구 기준: 직접 연구 완료 "+count("met")+"개 · 미완료 "+count("missing")+"개 · 영구 배제 "+count("blocked")+"개":
     "세이브 미적용")+
-    " · 직접 입력 조건 미달 "+direct+"개"+
-    (selected.length?" · 앞 단계 변신 후의 실제 능력치·계급은 미확인으로 유지":"")+
-    " (다른 미확인 조건을 만족한다고 가정하지 않음)";
+    " · 확인된 자격 미달 "+direct+"개"+
+    (currentSaveBase()?" · 기지 "+currentSaveBase().name:"")+
+    (currentSaveSoldier()?" · 대원 "+currentSaveSoldier().name:"")+
+    (selected.length?" · 앞 단계의 재료 소모·능력치 변화는 미확인으로 유지":"")+
+    " (미확인 요구는 충족으로 간주하지 않음)";
 }
 function initEvidence(){
+  $("#trainingSaveBase").addEventListener("change",showSaveSoldiers);
+  $("#trainingSaveSoldier").addEventListener("change",applySaveSoldier);
   $("#unitStatInputs").innerHTML=DATA.statKeys.map(k=>'<label>'+esc(statLabels[k]||k)+
     '<input type="number" min="0" step="any" data-stat-input="'+esc(k)+'" placeholder="미입력"></label>').join("");
   $("#trainingSaveFile").addEventListener("change",async e=>{
@@ -53,21 +164,37 @@ function initEvidence(){
     if(file.size>60*1024*1024){status.textContent="60MB 초과 파일은 브라우저 메모리 보호를 위해 읽지 않습니다.";return;}
     status.textContent="세이브의 연구 기록을 브라우저 안에서 판독 중입니다.";
     try{
-      const parsed=parseXpiratezSave(await file.text(),choiceIndex);
+      const fileText=await file.text();
+      const parsed=parseXpiratezSave(fileText,choiceIndex);
+      const world=readSavePersonnel(fileText);
+      let rules=facilityRules;
+      if(world.bases.length&&!rules){
+        try{
+          const res=await fetch("../data/facilities-index.json");
+          if(!res.ok)throw new Error("시설 DB HTTP "+res.status);
+          rules=await res.json();
+          if(!Array.isArray(rules?.index))throw new Error("시설 DB 데이터 구조 확인 실패");
+        }catch{
+          world.warnings.push("시설 DB를 불러오지 못해 기능 보유 여부는 미확인입니다.");
+        }
+      }
       if(generation!==saveImportGeneration)return;
       if(!parsed.completed.length&&!parsed.disabled.length&&
         (parsed.unknownCompleted.length||parsed.unknownDisabled.length))
         throw new Error("현재 DB와 일치하는 연구 ID가 없습니다. 모드 버전을 확인하세요.");
+      restoreSaveOrigin();
       savedResearch={completed:new Set(parsed.completed),disabled:new Set(parsed.disabled)};
-      saveMeta=parsed;
+      saveMeta=parsed;saveWorld=world;facilityRules=rules||null;
+      selected=[];latestAdded=[];
       $("#saveResearchFilter").disabled=false;
       $("#saveResearchFilter").options[0].textContent="전체 · 세이브 기준 표시";
       $("#clearTrainingSave").disabled=false;
       status.textContent="세이브 "+file.name+" · 확인된 완료 연구 "+parsed.completed.length+
         "개 · 영구 배제 "+parsed.disabled.length+"개 · 연구 일지 "+parsed.diary.length+"건"+
-        (parsed.warnings.length?"\n주의: "+parsed.warnings.join(" / "):"")+
-        "\n가정 시나리오와 별도로 표시합니다. 연구 완료가 훈련 실행을 보장하지 않습니다.";
-      redraw();
+        " · 기지 "+world.bases.length+"곳 · 주둔 대원 "+world.bases.reduce((n,b)=>n+b.soldiers.length,0)+"명"+
+        ([...parsed.warnings,...world.warnings].length?"\n주의: "+[...parsed.warnings,...world.warnings].join(" / "):"")+
+        "\n기지·대원을 선택하면 현황을 연결합니다. 실제 실행 가능 확정은 아닙니다.";
+      showSaveBases();
     }catch(error){
       if(generation!==saveImportGeneration)return;
       status.textContent="세이브 해석 실패: "+error.message+
@@ -76,7 +203,10 @@ function initEvidence(){
     }
   });
   $("#clearTrainingSave").addEventListener("click",()=>{
-    saveImportGeneration++;savedResearch=null;saveMeta=null;
+    saveImportGeneration++;savedResearch=null;saveMeta=null;saveWorld=null;autoProof=null;
+    restoreSaveOrigin();clearManualProof();selected=[];latestAdded=[];
+    $("#trainingSaveRoster").hidden=true;
+    $("#trainingSaveBase").innerHTML="";$("#trainingSaveSoldier").innerHTML="";
     $("#trainingSaveFile").value="";
     $("#clearTrainingSave").disabled=true;
     $("#saveResearchFilter").value="all";
@@ -114,13 +244,7 @@ function initEvidence(){
     }
   });
   $("#clearUnitEvidence").addEventListener("click",()=>{
-    unitProof=emptyProof();
-    for(const id of ["unitRank","unitItemEvidence","unitBaseEvidence","unitMedalEvidence"])
-      $("#"+id).value="";
-    $("#corpseRecovered").value="";
-    for(const el of document.querySelectorAll("[data-stat-input]"))el.value="";
-    $("#unitEvidenceStatus").textContent="직접 입력된 대원·재료 조건 없음";
-    redraw();
+    clearManualProof();redraw();
   });
 }
 
@@ -557,10 +681,10 @@ function renderCampaignEvidence(t){
   }).join("");
   return section("현재 세이브·대원 증빙 (훈련 가능 확정 아님)",
     '<p><b>직접 선행 연구:</b> '+esc(saveResearchLabel(proof))+
-      ' · 현재 입력 미달 '+proof.directMissing.length+'건 · 미확인 '+proof.unknown.length+'건</p>'+
-    (selected.length?'<p class="warning">이전 훈련으로 변경된 능력치·계급을 계산하지 않았으므로 이 단계의 대원 수치 자격은 미확인입니다.</p>':"")+
+      ' · 실제 확인된 미달 '+proof.directMissing.length+'건 · 미확인 '+proof.unknown.length+'건</p>'+
+    (selected.length?'<p class="warning">이전 훈련으로 변경된 능력치·계급 및 재료 소모를 계산하지 않았으므로 이 단계의 수치·재고 자격은 미확인입니다.</p>':"")+
     (proof.all.length?'<ul class="list-clean">'+details+'</ul>':'<p class="muted">연구·시설·아이템·훈장·계급·능력치의 명시적 요구가 없습니다.</p>')+
-    '<p class="fine">세이브의 연구 기록과 직접 입력한 값만 대조합니다. 연구 미완료는 나중에 연구 가능할 수 있으며, 영구 배제 연구는 현재 세이브의 status=2입니다. 보유 시설의 기능, 실제 투입 가능 수량, 수치 보너스 계산, 추가 생존 조건, 금전/기간은 독립적으로 확인하십시오.</p>');
+    '<p class="fine">선택한 기지의 재고·완공 시설과 주둔 대원의 저장 능력치·SoldierBonus·계급·훈장을 대조하고 수동 입력으로 보정합니다. 연구 미완료는 나중에 연구 가능할 수 있으며, 영구 배제 연구는 현재 세이브의 status=2입니다. 병사의 상태·시설의 실제 작동 여부·이동 중 자원·금전 및 추가 조건은 독립적으로 확인하십시오.</p>');
 }
 function showDetail(id){
   const t=byId.get(id);if(!t)return;
@@ -636,7 +760,13 @@ function initOrigins(){
   $("#origin").value=origins.has("base:STR_SOLDIER")?"base:STR_SOLDIER":bases[0].id;
 }
 function bind(){
-  $("#origin").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
+  $("#origin").addEventListener("change",()=>{
+    if(saveOriginId&&$("#origin").value!==saveOriginId){
+      $("#trainingSaveSoldier").value="";restoreSaveOrigin();clearManualProof();updateAutoProof();
+      $("#trainingSaveRosterHint").textContent="대원 선택 해제 · 현재 기지 재고·시설만 반영합니다.";
+    }
+    selected=[];latestAdded=[];redraw();
+  });
   $("#condition").addEventListener("change",()=>{selected=[];latestAdded=[];redraw();});
   for(let i=0;i<4;i++)$("#captainStage"+i).addEventListener("change",()=>{
     for(let j=i+1;j<4;j++)$("#captainStage"+j).value="";
