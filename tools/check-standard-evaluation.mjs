@@ -43,15 +43,27 @@ check("manufacture batch cost includes materials and engineer opportunity",all.e
   return m.economicTotal==null||Math.abs(m.economicTotal*m.producedQty-m.economicBatchTotal)<.1&&
     Math.abs(m.opportunityProfitLost-m.engineerHours*ranked.meta.engineerOpportunityHourly)<.1;
 })));
-check("weapon rank page has live comparison and provenance UI",fs.readFileSync("public/weapons/standard-ui.js","utf8").includes("compareSelected()")&&
-  fs.readFileSync("public/weapons/standard-ui.js","utf8").includes("engineerOpportunityHourly"));
+const weaponHtml=fs.readFileSync("public/weapons/index.html","utf8");
+const standardUi=fs.readFileSync("public/weapons/standard-ui.js","utf8");
+const weaponApp=fs.readFileSync("public/weapons/app.js","utf8");
+check("one unified weapon table offers standard scores and comparison",
+  weaponHtml.includes('id="sortBy"')&&weaponHtml.includes('value="standardScore"')&&
+  weaponHtml.includes('id="scoredOnly"')&&weaponHtml.includes('id="compareSelected"')&&
+  !weaponHtml.includes('id="standardTab"')&&!weaponHtml.includes('id="standardPanel"')&&
+  standardUi.includes("showComparison")&&standardUi.includes("renderDetail")&&
+  weaponApp.includes("XPStandardEvaluation"));
+check("SAV status and remaining research are not presented on weapons page",
+  !weaponHtml.includes(".sav")&&!standardUi.includes("saveFile")&&
+  !standardUi.includes("missingResearch")&&!weaponApp.includes("missingResearch"));
 const featured18=["STR_MP","STR_PAINBRINGER","STR_SMG_10MM","STR_SMG_50CAL",
   "STR_MACHINEGUN","STR_MRSHAN_SHOTGUN","STR_MRSHAN_MINIGUN","STR_SAW",
   "STR_CHAINGUN","STR_MAMMOTH_SHOTGUN","STR_SAW_GYRO","STR_MP_AUTO_CANNON",
   "STR_HMG_ASSAULT","STR_ASMG","STR_LYNX","STR_SMG_SPIKED","STR_SMG_ADV","STR_ROTOGUN"];
 check("all 18 requested ranged weapon IDs have canonical ammo combos",featured18.every(id=>
   ranked.ranged.some(r=>r.weaponId===id&&shootPairs.has(r.weaponId+"|"+r.ammoId))));
-check("melee excluded from ranged distance/armor filters",fs.readFileSync("public/weapons/standard-ui.js","utf8").includes('if(r.type==="근접")return distance==="all"&&armor==="all"?r.dptu:null;'));
+check("melee is supported in the main list and standard score lookup",
+  weaponHtml.includes('value="melee"')&&standardUi.includes('"melee:"+raw.itemId')&&
+  weaponApp.includes('section==="melee"'));
 check("representative Tommygun and Mutant MG rows",["STR_TOMMYGUN","STR_MUTANT_MG"].every(id=>ranked.ranged.some(r=>r.weaponId===id)));
 check("evidence warns probabilities are estimates",ranked.evidence.engine.includes("미검증")&&ranked.meta.simulation.hitModel.includes("대리지표"));
 console.log(JSON.stringify({checked:all.length,ranged:ranked.ranged.length,melee:ranked.melee.length,scored:all.filter(x=>x.score!=null).length,unscored:all.filter(x=>x.score==null).length,failed:failures.length},null,2));

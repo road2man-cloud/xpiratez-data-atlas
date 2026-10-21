@@ -7,6 +7,7 @@ const PAGE_SIZE=100;
 let currentPage=0,searchTimer=null,renderGeneration=0,detailGeneration=0;
 const ASSET_VERSION="20261008-enemy-search1";
 let sort={key:"effPerTu",dir:-1};
+const chosenStandard=new Set();
 
 const $=q=>document.querySelector(q);
 const fmt=(n,d=1)=>n==null||!Number.isFinite(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:d});
@@ -43,6 +44,8 @@ async function load(){
   fillCharacters();
   fillTargets(false);
   renderSummary();
+  // Static standard-issue ratings are optional; the original inspector still works if absent.
+  await window.XPStandardEvaluation?.ready;
   await render();
 }
 function renderSummary(){
@@ -199,9 +202,12 @@ function computed(r){
     physicalThrowRange:phys,costEnergy:Number(r.cost?.energy)||0,requiresText:(r.requires||[]).join(" · ")
   };
   const actual=actualAgainstTarget(out);
+  const rating=window.XPStandardEvaluation?.get(r);
   return {
     ...out,actualPower:actual.value,actualApprox:actual.approx,
-    actualPerTu:tu&&actual.value!=null?actual.value/tu:null,targetUnitId:actual.target?.unitId??null
+    actualPerTu:tu&&actual.value!=null?actual.value/tu:null,targetUnitId:actual.target?.unitId??null,
+    standardScore:rating?.score??null,combatScore:rating?.combatScore??null,
+    standardKey:rating?.key??null,standardStage:rating?.stage??"",standardSupply:rating?.supply?.kind??""
   };
 }
 function sectionRows(){
@@ -213,13 +219,33 @@ function searchBlob(r){
 }
 function rows(){
   const q=$("#search").value.trim().toLowerCase(),mode=$("#mode").value;
+  const scoredOnly=$("#scoredOnly").checked,supply=$("#standardSupply").value,stage=$("#standardStage").value;
   let a=sectionRows().filter(r=>(!q||searchBlob(r).includes(q))&&(!mode||r.mode===mode)).map(computed);
+  a=a.filter(r=>(!scoredOnly||r.standardScore!=null)&&(!supply||r.standardSupply===supply)&&(!stage||r.standardStage===stage));
   a.sort((x,y)=>{
     const av=x[sort.key],bv=y[sort.key];
-    if(typeof av==="string"||typeof bv==="string")return String(av??"").localeCompare(String(bv??""),"ko")*sort.dir;
-    const aa=av==null?NaN:Number(av),bb=bv==null?NaN:Number(bv);
-    return ((Number.isFinite(aa)?aa:-Infinity)-(Number.isFinite(bb)?bb:-Infinity))*sort.dir;
+    if(av==null&&bv!=null)return 1;
+    if(bv==null&&av!=null)return -1;
+    if(av!=null&&bv!=null){
+      if(typeof av==="string"||typeof bv==="string"){
+        const delta=String(av).localeCompare(String(bv),"ko")*sort.dir;
+        if(delta)return delta;
+      }else{
+        const delta=(Number(av)-Number(bv))*sort.dir;
+        if(Number.isFinite(delta)&&delta)return delta;
+      }
+    }
+    return (Number(y.effPerTu)||0)-(Number(x.effPerTu)||0)||x.koName.localeCompare(y.koName,"ko");
   });
+  const group=$("#groupMode").value;
+  if(group!=="all"){
+    const seen=new Set();
+    a=a.filter(r=>{
+      const key=group==="weapon"?r.itemId:r.itemId+"|"+(r.ammoId||"");
+      if(seen.has(key))return false;
+      seen.add(key);return true;
+    });
+  }
   return a;
 }
 function th(label,key){
@@ -339,20 +365,33 @@ async function render(){
     th("무기","koName"),th("피해","damageTypeKo"),th("명목위력","effPower"),th("실제위력","actualPower"),th("실제위력/TU","actualPerTu"),th("TU","tu"),th("위력/TU@거리","effPerTu"),th("ACC@거리","effAccuracy"),
     th("물리 최대거리","physicalThrowRange"),th("규칙 최대거리","throwRange"),th("무게","weight"),th("폭발반경","blastRadius"),th("프라임","primeCost"),th("구매가","costBuy"),th("해금","requiresText")
   ];
+  h.splice(1,0,th("제식점수","standardScore"),th("전투점수","combatScore"),"<th>제식 비교</th>");
   $("#weaponTable thead").innerHTML="<tr>"+h.join("")+"</tr>";
   const a=rows(),pageCount=Math.max(1,Math.ceil(a.length/PAGE_SIZE));
   currentPage=Math.min(currentPage,pageCount-1);
   const shown=a.slice(currentPage*PAGE_SIZE,(currentPage+1)*PAGE_SIZE);
   $("#rowCount").textContent=a.length+"개 · "+(currentPage+1)+"/"+pageCount+"페이지 · "+c.koName+" · 거리 "+($("#distance").value||0)+"칸";
-  $("#weaponTable tbody").innerHTML=shown.map(r=>rowHtml(r,section)).join("");
+  $("#compareSelected").textContent="제식 비교 ("+chosenStandard.size+"/4)";
+  $("#compareSelected").disabled=chosenStandard.size<2;
+  $("#weaponTable tbody").innerHTML=shown.map(r=>rowHtml(r,section)).join("")||
+    '<tr><td colspan="'+h.length+'">현재 검색·제식 조건에 해당하는 무기가 없습니다.</td></tr>';
   const pages=[0,currentPage-2,currentPage-1,currentPage,currentPage+1,currentPage+2,pageCount-1].filter(n=>n>=0&&n<pageCount);
   $("#weaponPager").innerHTML='<button data-page="'+(currentPage-1)+'" '+(currentPage===0?'disabled':'')+'>← 이전</button>'+
     [...new Set(pages)].sort((a,b)=>a-b).map(n=>'<button data-page="'+n+'" class="'+(n===currentPage?'current':'')+'">'+(n+1)+'</button>').join("")+
     '<button data-page="'+(currentPage+1)+'" '+(currentPage===pageCount-1?'disabled':'')+'>다음 →</button>';
-  document.querySelectorAll("#weaponTable th[data-sort]").forEach(el=>el.addEventListener("click",()=>{const k=el.dataset.sort;if(sort.key===k)sort.dir*=-1;else sort={key:k,dir:k==="koName"?1:-1};currentPage=0;void render()}));
+  document.querySelectorAll("#weaponTable th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
+    const k=el.dataset.sort;
+    if(sort.key===k)sort.dir*=-1;else sort={key:k,dir:k==="koName"||k==="costBuy"?1:-1};
+    $("#sortBy").value=[...$("#sortBy").options].some(o=>o.value===k)?k:"column";
+    currentPage=0;void render();
+  }));
 }
 function rowHtml(r,section){
-  const first='<td><span class="name">'+esc(r.koName)+'</span><span class="id">'+esc(r.itemId)+'</span>'+scriptMark(r)+"</td>";
+  const compare=r.standardKey?'<input type="checkbox" data-compare="'+esc(r.standardKey)+'" aria-label="'+esc(r.koName)+' 제식 비교" '+(chosenStandard.has(r.standardKey)?"checked":"")+">":"—";
+  const first='<td><span class="name">'+esc(r.koName)+'</span><span class="id">'+esc(r.itemId)+'</span>'+scriptMark(r)+"</td>"+
+    '<td class="score-value">'+fmt(r.standardScore)+"</td>"+
+    '<td class="score-value">'+fmt(r.combatScore)+"</td>"+
+    '<td class="compare-cell">'+compare+"</td>";
   if(section==="shooting")return '<tr data-id="'+encodeURIComponent(r.id)+'">'+first+
     '<td><span class="ammo">'+esc(r.ammoKoName)+'</span><span class="id">'+esc(r.ammoId)+'</span></td><td>'+esc(r.modeKo)+'</td><td class="damage">'+esc(r.damageTypeKo||"—")+'</td>'+
     '<td class="num-strong">'+fmt(r.effPower)+'</td><td class="num-strong good">'+fmt(r.actionPower)+'</td><td class="num-strong actual">'+actualHtml(r,r.actualPower)+'</td><td class="num-strong actual">'+actualHtml(r,r.actualPerTu,2)+'</td><td class="num-strong">'+rangeNum(r,r.rangeActionPower)+'</td><td>'+fmt(r.tu,0)+'</td><td class="num-strong">'+rangeNum(r,r.effPerTu,2)+'</td><td class="num-strong">'+rangePct(r,r.effAccuracy)+'</td>'+
@@ -517,9 +556,18 @@ async function openDetail(id){
   if(r.ammoId&&r.ammoId!==r.itemId)html+=rawRuleHtml(ammoDetail,"탄약 "+r.ammoId);
   if(r.powerSourceId&&r.powerSourceId!==r.itemId&&r.powerSourceId!==r.ammoId)html+=rawRuleHtml(powerDetail,"위력 출처 "+r.powerSourceId);
   html+='<p class="subtle">명목 위력은 방어력·저항 적용 전 값입니다. 실제위력은 OXCE의 기본 damage type 설정에 룰셋의 damageAlter를 덮어쓴 뒤, 선택한 적의 damageModifier와 전면 방어력을 적용한 명중 시 기대 HP 피해량입니다. 원본 룰 JSON은 명시 필드만 그대로 보여주며, 실제위력 계산에 사용한 엔진 기본값은 위의 유효 피해 보정 항목에 별도로 표시합니다. 커스텀 HitUnit/DamageUnit 계열 스크립트와 전투 중 이미 손상된 방어구 상태는 정적 계산으로 완전히 재현할 수 없어 ≈ 표기로 구분합니다.</p>';
+  const rating=window.XPStandardEvaluation?.get(r);
+  if(rating)html+=window.XPStandardEvaluation.renderDetail(rating);
   $("#detailBody").innerHTML=html;
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
 }
+// Minimal public bridge for the integrated ranking panel. Keep the original
+// weapon mode inspector, armor profiles and lazy-loaded rule details intact.
+window.XPWeaponDB={
+  loadSection,render,openDetail,
+  findRows:(section,itemId,ammoId)=>((SECTION_CACHE[section]||[]).filter(r=>
+    r.itemId===itemId&&(section!=="shooting"||r.ammoId===ammoId)))
+};
 function scheduleRender(){
   if(searchTimer!==null)clearTimeout(searchTimer);
   searchTimer=setTimeout(()=>{searchTimer=null;void render()},100);
@@ -527,21 +575,31 @@ function scheduleRender(){
 $("#search").addEventListener("input",()=>{currentPage=0;scheduleRender()});
 $("#distance").addEventListener("input",scheduleRender);
 $("#targetSearch").addEventListener("input",()=>{fillTargets(true);currentPage=0;scheduleRender()});
-["section","character","band","targetUnit","mode","kneel","oneHandPenalty"].forEach(id=>$("#"+id).addEventListener("change",()=>{if(id==="section"){sort={key:"effPerTu",dir:-1};$("#mode").value=""}currentPage=0;void render()}));
+["section","character","band","targetUnit","mode","kneel","oneHandPenalty","scoredOnly","standardSupply","standardStage","groupMode"].forEach(id=>
+  $("#"+id).addEventListener("change",()=>{if(id==="section")$("#mode").value="";currentPage=0;void render()}));
+$("#sortBy").addEventListener("change",()=>{
+  const key=$("#sortBy").value;if(key==="column")return;
+  sort={key,dir:key==="koName"||key==="costBuy"?1:-1};
+  currentPage=0;void render();
+});
 $("#weaponPager").addEventListener("click",e=>{
   const b=e.target.closest("button[data-page]");
   if(!b||b.disabled)return;
   currentPage=Number(b.dataset.page)||0;void render();
 });
 $("#weaponTable tbody").addEventListener("click",e=>{
+  if(e.target.closest("input[data-compare]"))return;
   const tr=e.target.closest("tr[data-id]");
   if(tr)void openDetail(decodeURIComponent(tr.dataset.id));
 });
+$("#weaponTable tbody").addEventListener("change",e=>{
+  const input=e.target.closest("input[data-compare]");if(!input)return;
+  const key=input.dataset.compare;
+  if(input.checked){if(chosenStandard.size>=4){input.checked=false;return}chosenStandard.add(key)}
+  else chosenStandard.delete(key);
+  void render();
+});
+$("#compareSelected").addEventListener("click",()=>window.XPStandardEvaluation?.showComparison([...chosenStandard]));
 $("#closeDialog").addEventListener("click",()=>{detailGeneration++;$("#detailDialog").close()});
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog"){detailGeneration++;e.currentTarget.close()}});
-// One inspector, two views: standard ranking opens this same detailed action sheet.
-window.XPWeaponDB={
-  loadSection,render,openDetail,
-  findRows:(section,itemId,ammoId)=>(SECTION_CACHE[section]||[]).filter(r=>r.itemId===itemId&&(section!=="shooting"||r.ammoId===ammoId))
-};
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
