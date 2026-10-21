@@ -640,6 +640,59 @@ try {
             errors.push("Research evidence filter stayed enabled after removing the save");
           if((await page.locator("#trainingEvidenceSummary").innerText()).includes("영구 배제 1개"))
             errors.push("Old save conditions remained in training planner after clearing");
+          trainingStage="automatic stationed personnel, inventory and facility evidence";
+          const rosterSave=[
+            "name: Roster Smoke","mods:","  - 'piratez ver: v.o1.1.1'","---",
+            "difficulty: 2","funds: 10000","bases:",
+            "  - lon: 0.1","    name: First Post","    facilities:",
+            "      - type: STR_LIBRARY","        buildTime: 6",
+            "    soldiers:","      - type: STR_SOLDIER_SLAVE",
+            "        id: 21","        name: Test Recruit","        rank: 2",
+            "        currentStats:","          psiStrength: 45","          health: 50","          psiSkill: 0",
+            "        previousTransformations:","          STR_PERSON_OF_CULTURE_TRAINING: 1",
+            "        transformationBonuses:","          STR_THEBAN_ASSAULT_CLONE: 1",
+            "        diary:","          commendations:",
+            "            - {commendationName: STR_MEDAL_UNCONSCIOUS_NAME,decorationLevel: 0}",
+            "    items:","      STR_GOVT_CORPSE: 3","      STR_HANDLE: 1",
+            "  - lon: 0.2","    name: Second Post","    facilities:",
+            "      - type: STR_LIBRARY","    soldiers: []",
+            "    items:","      STR_GOVT_CORPSE: 10","      STR_HANDLE: 1",
+            "discovered: [STR_SIMPLETON_TRAINING]",
+            "researchRuleStatus: {STR_PERSON_OF_CULTURE_TRAINING: 2}"
+          ].join("\n")+"\n";
+          await page.locator("#trainingSaveFile").setInputFiles({
+            name:"roster-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(rosterSave)
+          });
+          await page.waitForFunction(()=>document.querySelector("#trainingSaveSummary")?.textContent.includes("주둔 대원 1명"),null,{timeout:13000});
+          if(!await page.locator("#trainingSaveRoster").isVisible())
+            errors.push("Roster selector missing after reading a real-shaped save");
+          await page.locator("#trainingSaveSoldier").selectOption("0");
+          const autoOrigin=await page.locator("#origin").inputValue();
+          if(!autoOrigin.startsWith("saved:"))
+            errors.push("Saved soldier selection did not apply the actual transformation origin");
+          await input.fill("STR_SIMPLETON_TRAINING");
+          const autoSimpleton=page.locator('#trainingTable tbody tr[data-id="STR_SIMPLETON_TRAINING"]');
+          if(!await autoSimpleton.locator(".blocked").count())
+            errors.push("Prior Culture training in the saved soldier failed to block Simpleton");
+          if(!(await autoSimpleton.innerText()).includes("입력 조건 미달 1건"))
+            errors.push("Saved base short inventory did not flag a 10-item training cost");
+          if(!(await page.locator("#trainingSaveRosterHint").innerText()).includes("계급 2"))
+            errors.push("Saved soldier rank was not connected to readiness UI");
+          await page.locator("#trainingSaveBase").selectOption("1");
+          if((await page.locator("#origin").inputValue()).startsWith("saved:"))
+            errors.push("Changing the selected base left a soldier from the old base selected");
+          if((await page.locator("#trainingSaveSoldier").inputValue())!=="")
+            errors.push("Changing the base failed to clear the previously selected soldier");
+          if((await autoSimpleton.innerText()).includes("입력 조건 미달 1건"))
+            errors.push("Inventory from the previous base leaked into the newly selected base");
+          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
+          await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] td strong').first().click();
+          const secondBaseDetail=await page.locator("#detailBody").innerText();
+          if(!secondBaseDetail.includes("기지 기능")||!secondBaseDetail.includes("충족 확인"))
+            errors.push("A completed library's base function was not recognized");
+          await page.locator("#closeDialog").click();
+          await page.locator("#clearTrainingSave").click();
+          await input.fill("");
           trainingStage="quick-add cultural education";
           await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator("#quickAdd").click({timeout:12000});
