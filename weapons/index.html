@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 무기 비교 DB</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="standard.css?v=20261021-unified">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
-<link rel="stylesheet" href="standard.css?v=20261018">
 </head>
 <body>
 <header class="hero">
@@ -19,11 +19,9 @@
 </header>
 
 <main class="wrap">
-  <nav class="view-tabs" aria-label="무기DB 보기"><button id="standardTab" class="active" type="button">제식 종합 순위</button><button id="legacyTab" type="button">전체 공격 모드 / 원본 수치</button></nav>
-  <section id="standardPanel" aria-label="제식 평가" class="standard-panel"><p>제식 평가 자료 불러오는 중…</p></section>
-  <section id="summary" class="summary legacy-only"></section>
+  <section id="summary" class="summary"></section>
 
-  <section class="toolbar card legacy-only">
+  <section class="toolbar card">
     <div class="field grow">
       <label for="search">검색</label>
       <input id="search" type="search" placeholder="무기, 탄약, 피해유형, 연구조건…">
@@ -36,6 +34,21 @@
         <option value="throwing">투척</option>
       </select>
     </div>
+    <div class="field sort-field">
+      <label for="sortBy">정렬 기준</label>
+      <select id="sortBy">
+        <option value="effPerTu">위력/TU 높은 순</option>
+        <option value="standardScore">제식 종합점수 높은 순</option>
+        <option value="combatScore">제식 전투점수 높은 순</option>
+        <option value="actualPerTu">선택 적 실제위력/TU</option>
+        <option value="effPower">명목위력 높은 순</option>
+        <option value="effAccuracy">정확도 높은 순</option>
+        <option value="costBuy">구매가 낮은 순</option>
+        <option value="koName">무기명 가나다순</option>
+        <option value="column">표 열 직접 정렬</option>
+      </select>
+    </div>
+    <label class="check"><input id="scoredOnly" type="checkbox"> 제식 점수 있는 무기만</label>
     <div class="field char">
       <label for="character">기준 캐릭터</label>
       <select id="character"></select>
@@ -62,9 +75,23 @@
     </div>
     <label class="check"><input id="kneel" type="checkbox"> 무릎쏴</label>
     <label class="check"><input id="oneHandPenalty" type="checkbox"> 양손무기 한손 페널티</label>
+    <details class="std-options">
+      <summary>제식·목록 추가 필터</summary>
+      <div class="std-options-fields">
+        <div class="field"><label for="standardSupply">제식 조달</label><select id="standardSupply">
+          <option value="">전체</option><option value="제식화 가능">제식화 가능</option><option value="전리품 한정">전리품 한정</option><option value="특수조건">특수조건</option>
+        </select></div>
+        <div class="field"><label for="standardStage">획득 시기</label><select id="standardStage">
+          <option value="">전체</option><option value="초반">초반</option><option value="중반">중반</option><option value="중후반">중후반</option><option value="후반">후반</option><option value="최후반">최후반</option>
+        </select></div>
+        <div class="field"><label for="groupMode">목록 표시</label><select id="groupMode">
+          <option value="all">모든 모드·탄약</option><option value="ammo">탄약별 최고 공격 모드</option><option value="weapon">무기별 최고 조합</option>
+        </select></div>
+      </div>
+    </details>
   </section>
 
-  <section class="character-card card legacy-only">
+  <section class="character-card card">
     <div>
       <p class="eyebrow">현재 계산 기준</p>
       <h2 id="characterTitle"></h2>
@@ -73,7 +100,7 @@
     <div id="targetSummary" class="target-summary"></div>
   </section>
 
-  <section class="explain card legacy-only">
+  <section class="explain card">
     <strong>계산 정의</strong>
     <span><b>1타 명목위력</b> = 탄/무기의 power(또는 meleePower) + 룰의 <code>damageBonus / meleeBonus</code>. <b>총 명목위력</b>은 연사수×펠릿수까지 모두 맞았다고 가정한 합계라서 전기톱처럼 여러 번 타격하는 공격도 실제 공격 액션 규모가 드러납니다.</span>
     <span><b>총위력@거리 / ACC@거리</b>는 선택한 거리에서만 적용되는 값입니다. <code>maxRange</code>를 넘으면 위력을 0으로 오표기하지 않고 <b>사거리 밖</b>으로 표시하며, 사거리 안에서만 powerRangeReduction·accuracy dropoff를 적용합니다.</span>
@@ -81,10 +108,10 @@
     <span><b>실제위력</b>은 선택한 개별 적의 전면 방어력과 damageModifier를 적용한 <b>기대 HP 피해량</b>입니다. OXCE의 RandomType, ResistType, ArmorEffectiveness, ToHealth를 반영합니다. 갑옷/무기의 커스텀 전투 스크립트가 개입하는 경우에는 ≈ 표시로 정적 근사임을 알립니다.</span>
   </section>
 
-  <section class="table-card card legacy-only">
+  <section class="table-card card">
     <div class="table-head">
       <div><p class="eyebrow">모든 열 정렬 가능</p><h2 id="tableTitle">사격 무기</h2></div>
-      <p id="rowCount" class="muted"></p>
+      <div class="table-actions"><p id="rowCount" class="muted"></p><button id="compareSelected" type="button" disabled>제식 비교 (0/4)</button></div>
     </div>
     <div class="table-shell"><table id="weaponTable"><thead></thead><tbody></tbody></table></div>
     <div id="weaponPager" class="weapon-pager" aria-label="무기 목록 페이지 이동"></div>
@@ -96,8 +123,8 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script src="app.js?v=20261018-standard"></script>
-<script src="standard-ui.js?v=20261018"></script>
+<script src="app.js?v=20261021-unified"></script>
+<script src="standard-ui.js?v=20261021-unified"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
