@@ -96,6 +96,19 @@ export function compileRelations(rows){
 
 // Exclusions only use the candidate's forbidden PREVIOUS transformations.
 // Origin profiles may include previous transformations before the first click.
+// Directional relations must never be made symmetric by default.
+export function classifyExclusion(t,relations){
+  const relation=relations.get(t.id)||{blockedBy:[],blocksLater:[]};
+  const previous=relation.blockedBy||[],later=relation.blocksLater||[];
+  return{
+    repeatForbidden:previous.includes(t.id),
+    mutual:previous.filter(id=>id!==t.id&&later.includes(id)),
+    incomingOnly:previous.filter(id=>id!==t.id&&!later.includes(id)),
+    outgoingOnly:later.filter(id=>id!==t.id&&!previous.includes(id)),
+    hasPrerequisite:!!t.requiredPreviousTransformations?.length,
+    hasExclusion:previous.length>0||later.length>0
+  };
+}
 export function excludedByPrior(rows,state){
   return rows.flatMap(t=>{
     const blockedBy=list(t.forbiddenPreviousTransformations).filter(id=>state.prior.has(id));

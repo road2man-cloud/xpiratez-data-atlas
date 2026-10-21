@@ -1,5 +1,5 @@
 import {loadRuntime} from "../db-runtime.js";
-import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue,divergentPathCompatibility} from "./planner.js";
+import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,classifyExclusion,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue,divergentPathCompatibility} from "./planner.js";
 import {buildChoiceIndex,parseCompletedResearch} from "../captains/choice-simulator-core.js";
 import {trainingRouteGate,routeEventReport} from "./route-gates.js";
 import {buildStagedCaptainContext,validateCaptainStages} from "./staged-captain.js";
@@ -180,9 +180,13 @@ function renderSummary(){
   const blocked=rows.filter(x=>x.status==="blocked");
   const priorBlocked=blocked.filter(x=>x.issues.some(p=>p.code==="forbidden"));
   const ready=rows.filter(x=>x.status==="ready").length;
+  const kinds=DATA.transformations.map(t=>classifyExclusion(t,relations));
+  const mutualPairs=kinds.reduce((n,k)=>n+k.mutual.length,0)/2;
+  const oneWayPairs=kinds.reduce((n,k)=>n+k.incomingOnly.length,0);
+  const oneShot=kinds.filter(k=>k.repeatForbidden).length;
   const values=[
     ["원본 변신·훈련",DATA.counts.transformations+"개","모든 soldierTransformation 포함"],
-    ["방향성 배제",DATA.counts.directionalExclusions+"건","A → B 실행순서가 중요"],
+    ["방향성 배제",DATA.counts.directionalExclusions+"건","양방향 "+mutualPairs+"쌍 · 단방향 "+oneWayPairs+"쌍 · 재시행 금지 "+oneShot+"건"],
     ["선택한 단계",selected.length+"단계","중복/반복 가능 훈련 포함"],
     ["분기·변신상 가능",ready+"개","연구·재료 충족은 별도"],
     ["분기·변신 차단",blocked.length+"개","변신 이력 "+priorBlocked.length+"개 포함"]
@@ -297,13 +301,18 @@ function renderQuickPicker(){
 }
 function renderTable(){
   const search=$("#search").value.trim().toLowerCase().normalize("NFKC"),
-    filter=$("#statusFilter").value,kind=$("#kindFilter").value,
+    filter=$("#statusFilter").value,kind=$("#kindFilter").value,exclusion=$("#exclusionFilter").value,
     sortBy=$("#sortBy").value,sortKey=sortBy.startsWith("trait:")?sortBy.slice(6):null,
     ascending=$("#sortDirection").value==="asc";
   const sorted=[...rows].filter(x=>{
     if(filter!=="all"&&x.status!==filter)return false;
     if(kind!=="all"&&x.t.kind!==kind)return false;
-    const t=x.t;
+    const t=x.t,rule=classifyExclusion(t,relations);
+    if(exclusion==="mutual"&&!rule.mutual.length)return false;
+    if(exclusion==="oneway"&&!rule.incomingOnly.length&&!rule.outgoingOnly.length)return false;
+    if(exclusion==="self"&&!rule.repeatForbidden)return false;
+    if(exclusion==="prerequisite"&&!rule.hasPrerequisite)return false;
+    if(exclusion==="none"&&(rule.hasExclusion||rule.hasPrerequisite))return false;
     if(!TRAINING_SEARCH.has(t.id))TRAINING_SEARCH.set(t.id,[t.id,t.koName,t.enName,t.kind,t.soldierBonusType||"",
       name(t.soldierBonusType),...t.requires,...t.requires.map(name),
       ...t.requiredItems.map(v=>v.id+" "+v.koName),
@@ -335,6 +344,9 @@ function renderTable(){
     const checkbox='<label class="check-row"><input type="checkbox" data-toggle="'+esc(t.id)+'" '+(checked?'checked ':"")+(toggleable?"":'disabled ')+'aria-label="'+esc(t.koName)+' 선택 또는 해제"> 체크</label>';
     const researchWarn=status==="ready"&&distinctResearchWarnings(t).length;
     const traitStats=bonusStats(t),sortValue=sortKey?traitSortValue(t,DATA.bonuses,sortKey):null;
+    const exclusionKind=classifyExclusion(t,relations);
+    const oneWay=exclusionKind.incomingOnly.length+exclusionKind.outgoingOnly.length;
+    const ruleTypes=[exclusionKind.mutual.length?"상호 "+exclusionKind.mutual.length:"",oneWay?"단방향 "+oneWay:"",exclusionKind.repeatForbidden?"재시행 금지":""].filter(Boolean).join(" · ");
     const sortHighlight=sortKey?'<div class="sort-emphasis">'+esc(sortKey==="total"?"증가 합계":statLabels[sortKey]||sortKey)+' <b>'+(sortValue>0?"+":"")+n(sortValue)+'</b></div>':"";
     return'<tr data-id="'+esc(t.id)+'"'+(sortKey?' data-sort-value="'+sortValue+'"':"")+' title="행 클릭: 상세 규칙 보기">'+
       '<td>'+checkbox+'<strong>'+esc(t.koName)+'</strong><span class="ident">'+esc(t.enName)+' · '+esc(t.id)+'</span></td>'+
@@ -345,7 +357,7 @@ function renderTable(){
       '<td class="tiny">'+esc(rankStat(t).slice(0,170))+'</td>'+
       '<td class="tiny trait-values">'+sortHighlight+esc(entries(traitStats).length?textStats(traitStats,statLabels):"특성 스탯 없음")+'</td>'+
       '<td>'+esc(name(t.soldierBonusType))+'</td>'+
-      '<td>'+n(t.forbiddenPreviousTransformations.length)+'개 배제 / '+n(t.requiredPreviousTransformations.length)+'개 선행</td><td>'+button+'</td></tr>';
+      '<td>'+n(t.forbiddenPreviousTransformations.length)+'개 배제 / '+n(t.requiredPreviousTransformations.length)+'개 선행'+(ruleTypes?'<div class="tiny">'+esc(ruleTypes)+'</div>':"")+'</td><td>'+button+'</td></tr>';
   }).join("");
   if(!sorted.length)$("#trainingTable tbody").innerHTML='<tr><td colspan="10">조건에 맞는 훈련이 없습니다.</td></tr>';
 }
@@ -411,8 +423,9 @@ function showDetail(id){
   const issues=issuesFor(t,state),p=planWithRoute(t,state);
   const routeGate=trainingRouteGate(t,routeContext,ACCESS);
   const relation=relations.get(id);
-  const mutualExclusions=relation.blockedBy.filter(other=>other!==id&&relation.blocksLater.includes(other));
-  const selfExcluded=relation.blockedBy.includes(id);
+  const exclusionKind=classifyExclusion(t,relations);
+  const mutualExclusions=exclusionKind.mutual;
+  const selfExcluded=exclusionKind.repeatForbidden;
   const bonus=t.soldierBonusType?DATA.bonuses[t.soldierBonusType]:null;
   const button=!issues.length?'<button class="btn-add" data-add="'+esc(t.id)+'">현재 계획에 추가</button>':
     p.state?'<button class="btn-prepare" data-chain="'+esc(t.id)+'">필수 선행 포함 추가 ('+p.steps.length+'단계)</button>':
@@ -442,6 +455,8 @@ function showDetail(id){
       valueLine("이 훈련보다 먼저 했으면 불가",idTags(relation.blockedBy))+
       valueLine("이 훈련 후 다른 훈련을 봉쇄할 수 있음",idTags(relation.blocksLater))+
       valueLine("양방향 상호 배제 · 어느 쪽을 먼저 해도 충돌",idTags(mutualExclusions))+
+      valueLine("단방향: 이 훈련 전에 완료했으면 불가",idTags(exclusionKind.incomingOnly))+
+      valueLine("단방향: 이 훈련 이후부터 불가",idTags(exclusionKind.outgoingOnly))+
       valueLine("동일 훈련 재시행",selfExcluded?'<span class="blocked">금지</span>':'<span class="ready">이력 규칙상 가능</span>')+'</div>'+
       '<p class="note">코드의 <code>forbiddenPreviousTransformations</code>는 <b>선행 기록을 확인</b>합니다. 상대방의 역방향 조건까지 자동으로 대칭 처리하지 않습니다. 순서를 바꿔 조합이 가능해지는 경우가 있으며, 연구 분기는 별도 검증 대상입니다.</p>'+
       (t.removeTransformations.length?'<p><b>이 훈련 완료 시 제거되는 과거 변신 기록</b>: '+idTags(t.removeTransformations)+'</p>':"")+
@@ -498,6 +513,7 @@ function bind(){
   $("#search").addEventListener("input",renderTable);
   $("#statusFilter").addEventListener("change",renderTable);
   $("#kindFilter").addEventListener("change",renderTable);
+  $("#exclusionFilter").addEventListener("change",renderTable);
   $("#sortBy").addEventListener("change",renderTable);
   $("#sortDirection").addEventListener("change",renderTable);
   $("#undo").addEventListener("click",()=>{selected.pop();latestAdded=[];redraw();});
