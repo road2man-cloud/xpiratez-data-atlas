@@ -316,6 +316,18 @@ try {
           if(!auditDetail.includes("연구·선장 분기로 실행 불가능한 조합"))
             errors.push("Soldier detail omitted hard research/event branch conflicts");
           await page.locator("#closeDialog").click();
+          await page.locator("#finalBranchFilter").selectOption("all");
+          await page.locator("#search").fill("위어드갈 변신 코르트 구속");
+          await page.waitForTimeout(350);
+          const multiStage=await page.locator("#soldierTable tbody tr[data-row]").count();
+          if(!multiStage)errors.push("Two-stage Weirdgal → Chort conversion missing from final soldier builds");
+          await page.locator("#search").fill("음영 소환");
+          await page.waitForTimeout(350);
+          const corpseOnly=await page.locator("#soldierTable tbody .branch-saint-warning").allInnerTexts();
+          if(!corpseOnly.some(t=>t.includes("사망 대원 전용 전환")))
+            errors.push("Dead-only Spectre summoning conversion not labeled conditional: "+(await page.locator("#rowCount").innerText())+" labels="+corpseOnly.slice(0,4).join("|")+" first="+(await page.locator("#soldierTable tbody tr").first().innerText()).slice(0,240));
+          await page.locator("#search").fill("");
+          await page.waitForTimeout(350);
           await page.locator("#dataset").selectOption("profiles");
           await row.locator("td").first().click();
         }
@@ -577,6 +589,13 @@ try {
         if(slug==="trainings"){
           trainingStage="close detail button";
           await page.locator("#closeDialog").click();
+          trainingStage="all directional exclusion filters";
+          for(const [kind,expected] of [["mutual",44],["oneway",18],["self",69],["prerequisite",16],["none",3]]){
+            await page.locator("#exclusionFilter").selectOption(kind);
+            const found=await page.locator("#trainingTable tbody tr[data-id]").count();
+            if(found!==expected)errors.push("Training "+kind+" filter displayed "+found+" rather than "+expected+" original rules");
+          }
+          await page.locator("#exclusionFilter").selectOption("all");
           trainingStage="quick-add cultural education";
           await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator("#quickAdd").click({timeout:12000});

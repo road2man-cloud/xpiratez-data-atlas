@@ -1,4 +1,5 @@
 import {splitPresentationResources} from "./data-normalize.mjs";
+import {enumerateConversionRoutes} from "../public/soldiers/conversion-routes.js";
 
 export const SOLDIER_STAT_KEYS=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
 
@@ -250,6 +251,8 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       includeBonusesForMaxStats:Boolean(t.includeBonusesForMaxStats),
       rerollStats:readStats(t.rerollStats),
       reset:Boolean(t.reset),removeTransformations:Array.isArray(t.removeTransformations)?t.removeTransformations:[],
+      allowsLiveSoldiers:t.allowsLiveSoldiers??null,allowsWoundedSoldiers:t.allowsWoundedSoldiers??null,
+      allowsDeadSoldiers:t.allowsDeadSoldiers??null,
       traitStats,
       fixedEffectiveDelta:addStats(flat,traitStats),
       cost:t.cost??0,recoveryTime:t.recoveryTime??0,createsClone:t.createsClone??false,
@@ -425,35 +428,13 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   }
 
   function conversionRoutesFor(profile){
-    const startPrior=new Set(Object.entries(profile.previousTransformations||{}).filter(([,v])=>v).map(([k])=>k));
-    const routes=[],seen=new Set();
-    function walk(currentType,prior,sequence){
-      for(const t of transformationIndex){
-        if(!t.producedSoldierType||t.createsClone||sequence.includes(t.id)||prior.has(t.id))continue;
-        if(t.allowedSoldierTypes.length&&!t.allowedSoldierTypes.includes(currentType))continue;
-        if(t.forbiddenSoldierTypes.includes(currentType))continue;
-        if(t.requiredPreviousTransformations.some(x=>!prior.has(x)))continue;
-        if(t.forbiddenPreviousTransformations.some(x=>prior.has(x)))continue;
-        const nextPrior=new Set(prior);
-        for(const id of t.removeTransformations||[])nextPrior.delete(id);
-        nextPrior.add(t.id);
-        const nextType=t.producedSoldierType;
-        const nextSequence=[...sequence,t.id];
-        const key=nextType+"|"+nextSequence.join("|")+"|"+[...nextPrior].sort().join(",");
-        if(seen.has(key))continue;
-        seen.add(key);
-        const priorObject=Object.fromEntries([...nextPrior].map(id=>[id,1]));
-        const set=getEnhancementBuildSet(nextType,priorObject);
-        routes.push({
-          id:"C"+routes.length,
-          transformationIds:nextSequence,
-          finalSoldierType:nextType,
-          enhancementBuildSetId:set.id
-        });
-      }
-    }
-    walk(profile.soldierType,startPrior,[]);
-    return routes;
+    return enumerateConversionRoutes(profile,transformationIndex).map((route,index)=>({
+      id:"C"+index,
+      transformationIds:route.transformationIds,
+      finalSoldierType:route.finalSoldierType,
+      requiresDeadSoldier:route.requiresDeadSoldier,
+      enhancementBuildSetId:getEnhancementBuildSet(route.finalSoldierType,route.previousTransformations).id
+    }));
   }
 
   for(const profile of profiles){

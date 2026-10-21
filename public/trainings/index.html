@@ -88,6 +88,11 @@
         <option value="all">전체</option><option value="ready">변신/분기 조건상 선택 가능</option>
         <option value="prereq">선행 훈련 필요</option><option value="blocked">선택 불가</option>
       </select></label>
+      <label>배제 규칙<select id="exclusionFilter">
+        <option value="all">전체</option><option value="mutual">양방향 상호 배제</option>
+        <option value="oneway">단방향·순서 의존</option><option value="self">동일 훈련 재시행 금지</option>
+        <option value="prerequisite">필수 이전 훈련 있음</option><option value="none">변신 이력 제약 없음</option>
+      </select></label>
       <label>유형<select id="kindFilter"><option value="all">전체 유형</option></select></label>
       <label>특성 스탯 정렬<select id="sortBy"><option value="status">선택 가능 순 (기본)</option></select></label>
       <label>정렬 방향<select id="sortDirection"><option value="desc">큰 값부터</option><option value="asc">작은 값부터</option></select></label>
@@ -110,7 +115,7 @@
   </div>
 </main>
 <dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
-<script type="module" src="app.js?v=large-db-perf-trait-gates-20261011"></script>
+<script type="module" src="app.js?v=training-exclusions-audit-20261021"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

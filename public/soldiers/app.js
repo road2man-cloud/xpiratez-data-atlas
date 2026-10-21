@@ -1,10 +1,11 @@
 import {loadRuntime,debounce,yieldToBrowser} from "../db-runtime.js";
 import {auditSoldierBuild} from "./branch-audit.js";
+import {enumerateConversionRoutes} from "./conversion-routes.js";
 let DATA=null,PROG=null,PATH_GATES=null;
 const ASSET_VERSION="large-db-perf-trait-audit-20261011";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
-let RESEARCH_TOPICS=null,FINAL_ROWS=[];
+let RESEARCH_TOPICS=null,FINAL_ROWS=[],CONVERSION_TRANSFORMS=[];
 let sort={key:"firing",dir:-1},finalPage=0;
 const FINAL_PAGE_SIZE=200;
 
@@ -290,26 +291,13 @@ function dynamicEnhancementBuildSet(soldierType,previousTransformations={}){
   return set;
 }
 function dynamicConversionRoutes(profile){
-  const prior=new Set(Object.entries(profile.previousTransformations||{}).filter(([,v])=>v).map(([id])=>id));
-  const routes=[];
-  for(const t of DATA.transformations||[]){
-    if(!t.producedSoldierType||t.createsClone||prior.has(t.id))continue;
-    if((t.allowedSoldierTypes||[]).length&&!(t.allowedSoldierTypes||[]).includes(profile.soldierType))continue;
-    if((t.forbiddenSoldierTypes||[]).includes(profile.soldierType))continue;
-    if((t.requiredPreviousTransformations||[]).some(x=>!prior.has(x)))continue;
-    if((t.forbiddenPreviousTransformations||[]).some(x=>prior.has(x)))continue;
-    const nextPrior=new Set(prior);
-    for(const id of t.removeTransformations||[])nextPrior.delete(id);
-    nextPrior.add(t.id);
-    const previousTransformations=Object.fromEntries([...nextPrior].map(id=>[id,1]));
-    routes.push({
-      id:"DYN-C"+routes.length,
-      transformationIds:[t.id],
-      finalSoldierType:t.producedSoldierType,
-      dynamicBuildSet:dynamicEnhancementBuildSet(t.producedSoldierType,previousTransformations)
-    });
-  }
-  return routes;
+  return enumerateConversionRoutes(profile,CONVERSION_TRANSFORMS).map((route,index)=>({
+    id:"DYN-C"+index,
+    transformationIds:route.transformationIds,
+    finalSoldierType:route.finalSoldierType,
+    requiresDeadSoldier:route.requiresDeadSoldier,
+    dynamicBuildSet:dynamicEnhancementBuildSet(route.finalSoldierType,route.previousTransformations)
+  }));
 }
 async function buildFinalRows(){
   const rows=[];
@@ -336,7 +324,7 @@ async function buildFinalRows(){
     await yieldToBrowser();
     const routes=[
       {id:"BASE",transformationIds:[],finalSoldierType:profile.soldierType,enhancementBuildSetId:profile.enhancementBuildSetId},
-      ...((profile.conversionRoutes||[]).length?profile.conversionRoutes:dynamicConversionRoutes(profile))
+      ...dynamicConversionRoutes(profile)
     ];
     for(const route of routes){
       const set=BUILD_SET_BY_ID.get(route.enhancementBuildSetId)||route.dynamicBuildSet;if(!set)continue;
@@ -392,7 +380,7 @@ async function buildFinalRows(){
           totalTraitCount:finalTraitNames.length,
           cost:combo.cost||0,recoveryTime:combo.recoveryTime||0,
           growthSensitive:!!combo.growthSensitive,timingSensitive:timingSensitive||preGrowthTotal>0,randomSensitive,
-          sourceId:profile.sourceId,sourceEnName:profile.sourceEnName
+          sourceId:profile.sourceId,sourceEnName:profile.sourceEnName,requiresDeadSoldier:!!route.requiresDeadSoldier
         });
       }
     }
@@ -404,12 +392,19 @@ async function ensureFinalRows(){
   if(finalReady)return;
   if(!finalPromise)finalPromise=(async()=>{
     performance.mark("soldiers:final-start");
-    const [body,gateRes]=await Promise.all([
+    const [body,gateRes,trainingRules]=await Promise.all([
       loadRuntime(versioned("../data/soldiers-builds.json")),
-      fetch(versioned("../data/training-path-gates.json"))
+      fetch(versioned("../data/training-path-gates.json")),
+      loadRuntime(versioned("../data/trainings-runtime.json"))
     ]);
     if(!gateRes.ok)throw new Error("훈련 분기배제 데이터 HTTP "+gateRes.status);
     PATH_GATES=await gateRes.json();
+    const conditions=new Map(trainingRules.transformations.map(t=>[t.id,t]));
+    CONVERSION_TRANSFORMS=DATA.transformations.map(t=>{
+      const rule=conditions.get(t.id);
+      if(!rule)throw new Error("병종 전환 원본 조건이 누락됨: "+t.id);
+      return {...t,allowsLiveSoldiers:rule.allowsLiveSoldiers};
+    });
     DATA.enhancementBuildSets=body.enhancementBuildSets;
     for(const set of body.enhancementBuildSets)BUILD_SET_BY_ID.set(set.id,set);
     FINAL_ROWS=await buildFinalRows();
@@ -622,7 +617,8 @@ function rowHtml(r,band){
     const hardLabel=audit.hard.length?'<span class="tag branch-hard">분기 충돌 '+audit.hard.length+'건 · 실행 불가</span>':
       '<span class="tag branch-conditional">분기·이벤트 실현 여부 별도 확인</span>';
     const saintLabel=audit.sourceWarnings.length?'<span class="tag branch-saint-warning">Saint 지원군으로 획득 시 추가 제한 '+audit.sourceWarnings.length+'건</span>':"";
-    second=hardLabel+' '+saintLabel+'<br>'+sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
+    const deadLabel=r.requiresDeadSoldier?'<span class="tag branch-saint-warning">사망 대원 전용 전환 · 상태 변경 별도</span>':"";
+    second=hardLabel+' '+saintLabel+' '+deadLabel+'<br>'+sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
     c1=fmt(r.totalTraitCount);c2=fmt(r.cost);
   }else if(r._mode==="soldier"){
     second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
@@ -726,6 +722,7 @@ function openDetail(encoded){
       '</strong><span>원본 변신의 선행·배제 및 순서를 검사했지만, 연구 이벤트의 지급 시점·보유 재료·시설·훈련 한계를 모두 충족한 실행 계획은 아닙니다.</span>'+
       (audit.hard.length?'<ul>'+audit.hard.map(x=>'<li>'+esc(x.reason)+' ('+esc(x.ids.join(', '))+')</li>').join("")+'</ul>':"")+
       (audit.sourceWarnings.length?'<ul>'+audit.sourceWarnings.map(x=>'<li>'+esc(x.reason)+'</li>').join("")+'</ul>':"")+'</div>';
+    if(r.requiresDeadSoldier)html+='<p class="warning"><b>병사 상태 조건:</b> 이 병종 전환은 사망 대원에게만 적용됩니다. 사망과 부활의 시점은 자동 계산하지 않았으며, 사망 대원 전용 전환 이후의 추가 변신도 자동 연결하지 않았습니다.</p>';
     html+='<p class="muted"><b>이 조합에서 아직 배제되지 않은 갈림길:</b> '+
       (audit.divergingPaths?.length?audit.divergingPaths.map(x=>esc(x.koName)).join(" · "):"없음")+
       (audit.selectedPath?" · 현재 선택: "+esc(PATH_GATES.paths.find(p=>p.id===audit.selectedPath)?.koName||audit.selectedPath):"")+
