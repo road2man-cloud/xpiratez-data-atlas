@@ -19,7 +19,7 @@ const ready={
   crafts:"#craftTable tbody tr", "craft-weapons":"#weaponTable tbody tr",
   facilities:"#facilityTable tbody tr", armors:"#armorTable tbody tr",
   items:"#tbody tr", research:"#tbody tr", manufacture:"#manufactureTable tbody tr",
-  events:"#eventTable tbody tr", forces:"#forceTable tbody tr", weapons:"#weaponTable tbody tr"
+  events:"#eventTable tbody tr", forces:"#forceTable tbody tr", weapons:"#weaponTable tbody tr[data-id]"
 };
 const htmlError=/데이터를 불러오지 못했습니다|로딩 실패|데이터 불러오기 실패|Error loading|TypeError:|ReferenceError:/i;
 let server;
