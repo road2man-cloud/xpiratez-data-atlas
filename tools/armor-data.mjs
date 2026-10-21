@@ -269,6 +269,8 @@ export function buildArmorData({effectiveMerged,sourceHistory,tr,damageKeys=[]})
       id,bucket,koName:detail.koName,enName:detail.enName,storeItemId,hasStoreItem:detail.hasStoreItem,isArmorItem:detail.isArmorItem,
       frontArmor:front,leftArmor:left,rightArmor:right,rearArmor:rear,underArmor:under,weight:detail.weight,
       tu:stats.tu,stamina:stats.stamina,health:stats.health,bravery:stats.bravery,reactions:stats.reactions,firing:stats.firing,throwing:stats.throwing,strength:stats.strength,melee:stats.melee,
+      spotDay:num(a.antiCamouflageAtDay),spotNight:num(a.antiCamouflageAtDark),camoDay:-num(a.camouflageAtDay),camoNight:-num(a.camouflageAtDark),
+      visibilityAtDay:num(a.visibilityAtDay),visibilityAtDark:num(a.visibilityAtDark),
       ap:damageModifier[1]??1,incendiary:damageModifier[2]??1,he:damageModifier[3]??1,laser:damageModifier[4]??1,plasma:damageModifier[5]??1,stun:damageModifier[6]??1,meleeResist:damageModifier[7]??1,acid:damageModifier[8]??1,dt16:damageModifier[16]??1,
       manufactureCount:manufacture.length,buyable:Boolean(buy),researchRewardCount:rewardResearch.length,eventRefCount:events.length,
       acquisitionKinds,mainResearchCost,mainResearchHasUnlockBypassCandidates,mainManufactureTime,
