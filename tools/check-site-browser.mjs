@@ -596,6 +596,50 @@ try {
             if(found!==expected)errors.push("Training "+kind+" filter displayed "+found+" rather than "+expected+" original rules");
           }
           await page.locator("#exclusionFilter").selectOption("all");
+          trainingStage="private save research and manual readiness evidence";
+          const trainingSave=[
+            "---","name: Training Smoke","---","difficulty: 2","funds: 1000",
+            "discovered: [STR_SIMPLETON_TRAINING]",
+            "researchRuleStatus: {STR_PERSON_OF_CULTURE_TRAINING: 2}",
+            "bases:","  - name: Demo","    research:","      - project: STR_MILITARY_DRILL_TRAINING"
+          ].join("\n")+"\n";
+          await page.locator("#trainingSaveFile").setInputFiles({
+            name:"training-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(trainingSave)
+          });
+          await page.waitForFunction(()=>document.querySelector("#trainingSaveSummary")?.textContent.includes("완료 연구 1개"));
+          const saveSummary=await page.locator("#trainingEvidenceSummary").innerText();
+          if(!saveSummary.includes("영구 배제 1개"))
+            errors.push("Training save evidence did not distinguish one disabled research");
+          await input.fill("STR_SIMPLETON_TRAINING");
+          const saveSimpletonRow=page.locator('#trainingTable tbody tr[data-id="STR_SIMPLETON_TRAINING"]');
+          if(!(await saveSimpletonRow.innerText()).includes("직접 선행연구 완료"))
+            errors.push("Completed Simpleton research not recognized in training");
+          await page.locator("#unitEvidenceDetails summary").click();
+          await page.locator("#unitRank").fill("2");
+          await page.locator('[data-stat-input="psiStrength"]').fill("40");
+          await page.locator("#unitItemEvidence").fill("STR_GOVT_CORPSE=2, STR_HANDLE=1");
+          await page.locator("#unitBaseEvidence").fill("LIB=1");
+          await page.locator("#applyUnitEvidence").click();
+          if(!(await saveSimpletonRow.innerText()).includes("입력 조건 미달 1건"))
+            errors.push("Short Simpleton material inventory was interpreted as sufficient");
+          await saveSimpletonRow.locator("td strong").first().click();
+          const proofDetail=await page.locator("#detailBody").innerText();
+          if(!proofDetail.includes("세이브·대원 증빙")||!proofDetail.includes("현재 미달")||
+             !proofDetail.includes("개인 자료"))
+            errors.push("Training detail omitted evidence and material deficit");
+          await page.locator("#closeDialog").click();
+          await input.fill("");
+          await page.locator("#saveResearchFilter").selectOption("blocked");
+          const blockedSaves=await page.locator("#trainingTable tbody tr[data-id]").allTextContents();
+          if(blockedSaves.length!==1||!blockedSaves[0].includes("문화 교육"))
+            errors.push("Blocked-research filter did not isolate the exact save-disabled training");
+          await page.locator("#saveResearchFilter").selectOption("all");
+          await page.locator("#clearTrainingSave").click();
+          await page.locator("#clearUnitEvidence").click();
+          if(!await page.locator("#saveResearchFilter").isDisabled())
+            errors.push("Research evidence filter stayed enabled after removing the save");
+          if((await page.locator("#trainingEvidenceSummary").innerText()).includes("영구 배제 1개"))
+            errors.push("Old save conditions remained in training planner after clearing");
           trainingStage="quick-add cultural education";
           await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
           await page.locator("#quickAdd").click({timeout:12000});

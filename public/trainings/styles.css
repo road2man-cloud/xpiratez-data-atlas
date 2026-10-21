@@ -19,6 +19,25 @@
 .research-route-panel .note{margin-bottom:0}
 @media(max-width:850px){.research-route-selectors{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:500px){.research-route-selectors{grid-template-columns:minmax(0,1fr)}}
+.evidence-panel{border:1px solid #365779;border-radius:12px;background:#0d2035;padding:12px;margin:10px 0 17px}
+.evidence-panel h3{font-size:.95rem;margin:0 0 9px;color:#d4ebff}
+.evidence-upload{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:.81rem}
+.evidence-upload label{font-weight:700}
+.evidence-upload input{flex:1;max-width:420px;width:auto;font-size:.78rem}
+.evidence-panel p.fine{margin:7px 0}
+.evidence-status{padding:7px 10px;border-radius:7px;background:#152c44;font-size:.78rem;white-space:pre-wrap}
+.evidence-panel details{margin-top:9px;border-top:1px solid #355374;padding-top:9px}
+.evidence-panel details h4{font-size:.8rem;margin:13px 0 7px}
+.unit-inputs,.evidence-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}
+.unit-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.unit-inputs label,.evidence-fields label{display:grid;gap:5px;font-size:.76rem;color:#c5d8f0}
+.evidence-fields textarea{width:100%;resize:vertical;font:inherit;padding:9px;border-radius:8px;background:#081526;border:1px solid #36517b;color:#eaf1ff}
+.unit-stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.unit-stats label{display:grid;gap:4px;font-size:.73rem;color:#c1d4f0}
+.unit-stats input{min-width:0;padding:7px}
+#trainingEvidenceSummary{margin-top:10px}
+@media(max-width:850px){.unit-stats{grid-template-columns:repeat(4,minmax(0,1fr))}.evidence-fields{grid-template-columns:1fr}}
+@media(max-width:550px){.unit-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.unit-inputs{grid-template-columns:1fr}}
 .plan-effects{margin:12px 0}.effects-grid{display:flex;gap:7px;flex-wrap:wrap}.effect-item{border:1px solid #365371;border-radius:8px;padding:7px 9px;background:#0d2032;font-size:.81rem}.effect-item b{color:#9dd6fb}.plan-effects .effect-group{margin-top:10px;font-size:.83rem;color:#bed0e9}.choice-list{display:flex;flex-direction:column;gap:6px;max-height:225px;overflow:auto}.choice{display:flex;gap:5px;align-items:center;border:1px solid #2e405d;background:#0d182a;border-radius:9px;padding:7px 8px;font-size:.8rem}.choice .choice-main{flex:1;min-width:0}.choice strong{display:block}.choice span{display:block;color:var(--muted);font-size:.71rem}.choice button{flex-shrink:0}
 .exclusion-focus{background:#10253c;border:1px solid #385876;border-radius:12px;padding:11px;margin:14px 0}
 .exclusion-focus h3{margin:0 0 5px;color:#e5efff}

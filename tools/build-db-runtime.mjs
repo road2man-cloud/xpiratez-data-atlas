@@ -15,7 +15,7 @@ write('soldiers-builds',{enhancementBuildSets});
 write('soldiers-runtime',soldierRuntime);
 const trainings=read('trainings-index');
 const rawRules={};
-const transformations=trainings.transformations.map(({rawRule,...t})=>{rawRules[t.id]=rawRule;return t;});
+const transformations=trainings.transformations.map(({rawRule,...t})=>{rawRules[t.id]=rawRule;return {...t,needsCorpseRecovered:rawRule?.needsCorpseRecovered===true};});
 // Retain every name for search/labels; only referenced traits need effect fields.
 const used=new Set(transformations.map(t=>t.soldierBonusType).filter(Boolean));
 const bonuses=Object.fromEntries(Object.entries(trainings.bonuses).map(([id,b])=>[id,used.has(id)?b:{id:b.id,koName:b.koName,enName:b.enName}]));

@@ -1,4 +1,6 @@
 import {loadRuntime} from "../db-runtime.js";
+import {parseXpiratezSave} from "../captains/save-import-core.js";
+import {parseQuantifiedEvidence,assessTrainingReadiness} from "./readiness.js";
 import {initialState,evaluate,apply,replay,addWithPrerequisites,findResearchConflicts,compileRelations,classifyExclusion,excludedByPrior,exclusionChanges,traitStatsOf,traitSortValue,divergentPathCompatibility} from "./planner.js";
 import {buildChoiceIndex,parseCompletedResearch} from "../captains/choice-simulator-core.js";
 import {trainingRouteGate,routeEventReport} from "./route-gates.js";
@@ -15,6 +17,113 @@ const entries=o=>Object.entries(o||{}).filter(([,v])=>typeof v==="number"&&v!==0
 const textStats=(stats,labels)=>entries(stats).map(([k,v])=>(labels[k]||k)+(v>0?"+":"")+v).join(" · ")||"변화 없음";
 let DATA,ACCESS,PATH_GATES,choiceIndex,routeContext,researchRouteContext,byId,relations,origins,selected=[],latestAdded=[],state,origin,rows,statLabels;
 let selectedCompanions=new Set(),codexChoice="",saintGoal=false;
+let savedResearch=null,saveMeta=null,saveImportGeneration=0;
+const emptyProof=()=>({rank:null,stats:new Map(),items:new Map(),baseFuncs:new Map(),medals:new Map(),corpseRecovered:null});
+let unitProof=emptyProof();
+function evidenceFor(t){
+  return assessTrainingReadiness(t,{...unitProof,research:savedResearch,
+    unitValid:selected.length===0,condition:$("#condition").value});
+}
+function saveResearchLabel(assessment){
+  return {met:"직접 선행연구 완료",missing:"세이브 연구 미완료",
+    blocked:"세이브 연구 영구배제",conflict:"완료/배제 기록 충돌",
+    "no-research":"직접 선행연구 없음","not-loaded":"세이브 미확인"}[assessment.researchKind]||"미확인";
+}
+function renderEvidenceSummary(){
+  const host=$("#trainingEvidenceSummary");
+  if(!savedResearch&&!unitProof.stats.size&&!unitProof.items.size&&!unitProof.medals.size&&!unitProof.baseFuncs.size&&unitProof.rank==null&&unitProof.corpseRecovered==null){
+    host.textContent="실제 조건 미입력 · 기존의 훈련/분기 이론 판정만 적용됩니다.";return;
+  }
+  const checks=DATA.transformations.map(evidenceFor);
+  const count=kind=>checks.filter(x=>x.researchKind===kind).length;
+  const direct=checks.filter(x=>x.directMissing.length).length;
+  host.textContent=(savedResearch?"세이브 연구 기준: 직접 연구 완료 "+count("met")+"개 · 미완료 "+count("missing")+"개 · 영구 배제 "+count("blocked")+"개":
+    "세이브 미적용")+
+    " · 직접 입력 조건 미달 "+direct+"개"+
+    (selected.length?" · 앞 단계 변신 후의 실제 능력치·계급은 미확인으로 유지":"")+
+    " (다른 미확인 조건을 만족한다고 가정하지 않음)";
+}
+function initEvidence(){
+  $("#unitStatInputs").innerHTML=DATA.statKeys.map(k=>'<label>'+esc(statLabels[k]||k)+
+    '<input type="number" min="0" step="any" data-stat-input="'+esc(k)+'" placeholder="미입력"></label>').join("");
+  $("#trainingSaveFile").addEventListener("change",async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    const generation=++saveImportGeneration;
+    const status=$("#trainingSaveSummary");
+    if(file.size>60*1024*1024){status.textContent="60MB 초과 파일은 브라우저 메모리 보호를 위해 읽지 않습니다.";return;}
+    status.textContent="세이브의 연구 기록을 브라우저 안에서 판독 중입니다.";
+    try{
+      const parsed=parseXpiratezSave(await file.text(),choiceIndex);
+      if(generation!==saveImportGeneration)return;
+      if(!parsed.completed.length&&!parsed.disabled.length&&
+        (parsed.unknownCompleted.length||parsed.unknownDisabled.length))
+        throw new Error("현재 DB와 일치하는 연구 ID가 없습니다. 모드 버전을 확인하세요.");
+      savedResearch={completed:new Set(parsed.completed),disabled:new Set(parsed.disabled)};
+      saveMeta=parsed;
+      $("#saveResearchFilter").disabled=false;
+      $("#saveResearchFilter").options[0].textContent="전체 · 세이브 기준 표시";
+      $("#clearTrainingSave").disabled=false;
+      status.textContent="세이브 "+file.name+" · 확인된 완료 연구 "+parsed.completed.length+
+        "개 · 영구 배제 "+parsed.disabled.length+"개 · 연구 일지 "+parsed.diary.length+"건"+
+        (parsed.warnings.length?"\n주의: "+parsed.warnings.join(" / "):"")+
+        "\n가정 시나리오와 별도로 표시합니다. 연구 완료가 훈련 실행을 보장하지 않습니다.";
+      redraw();
+    }catch(error){
+      if(generation!==saveImportGeneration)return;
+      status.textContent="세이브 해석 실패: "+error.message+
+        "\n기존에 적용한 근거는 변경하지 않았습니다.";
+      e.target.value="";
+    }
+  });
+  $("#clearTrainingSave").addEventListener("click",()=>{
+    saveImportGeneration++;savedResearch=null;saveMeta=null;
+    $("#trainingSaveFile").value="";
+    $("#clearTrainingSave").disabled=true;
+    $("#saveResearchFilter").value="all";
+    $("#saveResearchFilter").disabled=true;
+    $("#saveResearchFilter").options[0].textContent="전체 · 세이브 미적용";
+    $("#trainingSaveSummary").textContent="세이브 미적용 · 연구 보유 및 영구 배제 여부는 미확인";
+    redraw();
+  });
+  $("#applyUnitEvidence").addEventListener("click",()=>{
+    try{
+      const rankRaw=$("#unitRank").value.trim();
+      const rank=rankRaw===""?null:Number(rankRaw);
+      if(rank!=null&&(!Number.isInteger(rank)||rank<0||rank>30))
+        throw new Error("계급은 0~30의 정수로 입력하세요.");
+      const stats=new Map();
+      for(const el of document.querySelectorAll("[data-stat-input]")){
+        if(el.value.trim()==="")continue;
+        const v=Number(el.value);
+        if(!Number.isFinite(v)||v<0)throw new Error("능력치는 0 이상의 숫자여야 합니다: "+el.dataset.statInput);
+        stats.set(el.dataset.statInput,v);
+      }
+      const corpse=$("#corpseRecovered").value;
+      unitProof={rank,stats,
+        items:parseQuantifiedEvidence($("#unitItemEvidence").value),
+        baseFuncs:parseQuantifiedEvidence($("#unitBaseEvidence").value),
+        medals:parseQuantifiedEvidence($("#unitMedalEvidence").value),
+        corpseRecovered:corpse===""?null:corpse==="yes"};
+      $("#unitEvidenceStatus").textContent="조건 적용 · 계급 "+(rank==null?"미확인":rank)+
+        " · 능력치 "+stats.size+"종 · 재료 "+unitProof.items.size+
+        "종 · 시설 "+unitProof.baseFuncs.size+"종 · 훈장 "+unitProof.medals.size+
+        "종 · 미입력은 항상 미확인으로 판정합니다.";
+      redraw();
+    }catch(error){
+      $("#unitEvidenceStatus").textContent="입력 오류: "+error.message+" · 이전 판정 유지";
+    }
+  });
+  $("#clearUnitEvidence").addEventListener("click",()=>{
+    unitProof=emptyProof();
+    for(const id of ["unitRank","unitItemEvidence","unitBaseEvidence","unitMedalEvidence"])
+      $("#"+id).value="";
+    $("#corpseRecovered").value="";
+    for(const el of document.querySelectorAll("[data-stat-input]"))el.value="";
+    $("#unitEvidenceStatus").textContent="직접 입력된 대원·재료 조건 없음";
+    redraw();
+  });
+}
+
 const rankStat=t=>textStats(t.flatOverallStatChange,statLabels);
 const bonusStats=t=>traitStatsOf(t,DATA.bonuses);
 const typeName=id=>DATA.soldiers.find(s=>s.id===id)?.koName||id;
@@ -170,6 +279,14 @@ function renderResearchRoute(){
     ...researchRouteContext.unknownIds.map(id=>"알 수 없는 연구 ID: "+id),
     ...researchRouteContext.contradictions.map(id=>"완료·배제 가정 충돌: "+researchLabel(id))
   ];
+  if(savedResearch){
+    const checked=[...chosen.map(([,id])=>id),
+      ...parseCompletedResearch(choiceIndex,$("#researchRouteExtra").value).ids,
+      ...currentCaptainStages().filter(Boolean)];
+    const impossible=checked.filter(id=>savedResearch.disabled.has(id));
+    if(impossible.length)conflicts.push("현재 세이브에서 영구 배제된 연구를 가정에 포함: "+
+      [...new Set(impossible)].map(researchLabel).join(", "));
+  }
   const blocked=rows.filter(x=>x.issues.some(issue=>issue.code==="research-route-blocked")).length;
   $("#researchRouteHint").innerHTML='<b>현재 후속 분기:</b> '+esc(labels.join(" · ")||"미설정")+
     ' · 추가 연구/이벤트 경로 배제 '+n(blocked)+'개'+
@@ -302,12 +419,14 @@ function renderQuickPicker(){
 function renderTable(){
   const search=$("#search").value.trim().toLowerCase().normalize("NFKC"),
     filter=$("#statusFilter").value,kind=$("#kindFilter").value,exclusion=$("#exclusionFilter").value,
+    saveResearchKind=$("#saveResearchFilter").value,
     sortBy=$("#sortBy").value,sortKey=sortBy.startsWith("trait:")?sortBy.slice(6):null,
     ascending=$("#sortDirection").value==="asc";
   const sorted=[...rows].filter(x=>{
     if(filter!=="all"&&x.status!==filter)return false;
     if(kind!=="all"&&x.t.kind!==kind)return false;
     const t=x.t,rule=classifyExclusion(t,relations);
+    if(saveResearchKind!=="all"&&evidenceFor(t).researchKind!==saveResearchKind)return false;
     if(exclusion==="mutual"&&!rule.mutual.length)return false;
     if(exclusion==="oneway"&&!rule.incomingOnly.length&&!rule.outgoingOnly.length)return false;
     if(exclusion==="self"&&!rule.repeatForbidden)return false;
@@ -333,6 +452,9 @@ function renderTable(){
   $("#rowCount").textContent=sorted.length+" / "+DATA.transformations.length+"개";
   $("#trainingTable tbody").innerHTML=sorted.map(({t,status,issues})=>{
     const routeGate=trainingRouteGate(t,routeContext,ACCESS);
+    const proof=evidenceFor(t);
+    const saveBadge=savedResearch?'<span class="tag '+(proof.researchKind==="met"?"ready":proof.researchKind==="blocked"||proof.researchKind==="conflict"?"blocked":"warning") +'">'+esc(saveResearchLabel(proof))+'</span>':"";
+    const unitBadge=proof.directMissing.length?'<span class="tag warning">입력 조건 미달 '+proof.directMissing.length+'건</span>':"";
     const text=status==="ready"?(selected.includes(t.id)?"조합 가능 · 반복":"분기·변신상 가능"):status==="prereq"?"선행 훈련 필요":"선택 불가";
     const reasons=issues.map(labelIssue).join(" / ");
     const plan=status==="prereq"?planWithRoute(t,state):null;
@@ -350,7 +472,7 @@ function renderTable(){
     const sortHighlight=sortKey?'<div class="sort-emphasis">'+esc(sortKey==="total"?"증가 합계":statLabels[sortKey]||sortKey)+' <b>'+(sortValue>0?"+":"")+n(sortValue)+'</b></div>':"";
     return'<tr data-id="'+esc(t.id)+'"'+(sortKey?' data-sort-value="'+sortValue+'"':"")+' title="행 클릭: 상세 규칙 보기">'+
       '<td>'+checkbox+'<strong>'+esc(t.koName)+'</strong><span class="ident">'+esc(t.enName)+' · '+esc(t.id)+'</span></td>'+
-      '<td><span class="'+status+'">'+esc(text)+'</span>'+(routeGate.kind==="caution"?'<span class="tag warning">연구/이벤트 조건</span>':"")+(researchWarn?'<span class="tag warning">연구분기 주의</span>':"")+
+      '<td><span class="'+status+'">'+esc(text)+'</span>'+saveBadge+unitBadge+(routeGate.kind==="caution"?'<span class="tag warning">연구/이벤트 조건</span>':"")+(researchWarn?'<span class="tag warning">연구분기 주의</span>':"")+
       (reasons?'<div class="tiny">'+esc(reasons.slice(0,110))+'</div>':"")+'</td>'+
       '<td>'+esc(t.kind)+'</td><td>'+esc(t.allowedSoldierTypes.length?t.allowedSoldierTypes.length+"종":"전체 (제외 조건 별도)")+'</td>'+
       '<td>'+n(t.cost)+'$'+(t.transferTime!=null?'<div class="tiny">'+n(t.transferTime)+'h</div>':t.recoveryTime?'<div class="tiny">회복 '+n(t.recoveryTime)+'</div>':"")+'</td>'+
@@ -375,7 +497,7 @@ function redraw(){
   researchRouteContext=buildResearchRouteContext(DATA,researchRouteOptions());
   rows=DATA.transformations.map(t=>{const issues=issuesFor(t,state);return{t,issues,status:statusOf(issues)}});
   renderSummary();renderCaptainModifiers();renderRouteAccess();renderResearchRoute();
-  renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderTable();
+  renderQuickPicker();renderTimeline();renderEffects();renderDecisions();renderEvidenceSummary();renderTable();
 }
 const section=(title,content)=>'<section class="detail-section"><h3>'+esc(title)+'</h3>'+content+'</section>';
 function renderResearchEvidence(t){
@@ -417,6 +539,29 @@ function renderResearchEvidence(t){
         (access.unresolved.length>12?'<li>외 '+(access.unresolved.length-12)+'건</li>':"")+'</ul>':"별도 조건 없음")+
     '</div><p class="fine">공식 이벤트의 긍정·부정 연구 트리거, 연구 대체 해금과 아이템 공급을 대조합니다. 증명된 배제와 획득 여부 미확인을 구분합니다.</p>');
 }
+function renderCampaignEvidence(t){
+  const proof=evidenceFor(t);
+  const names={research:"연구",facility:"기지 기능",item:"재료",medal:"훈장",rank:"계급",
+    "stat-min":"최소 능력치","stat-max":"최대 능력치",corpse:"시체 회수"};
+  const states={met:"충족 확인",missing:"현재 미달",blocked:"세이브상 배제",
+    unknown:"미확인",conflict:"완료·배제 기록 충돌"};
+  const details=proof.all.map(row=>{
+    const label=row.kind==="research"?researchLabel(row.id):
+      row.kind.startsWith("stat")?(statLabels[row.id]||row.id):row.label;
+    const requirement=row.kind==="research"||row.kind==="corpse"?"":row.kind==="facility"?" · 기능 필요":
+      " · 필요 "+n(row.needed);
+    const observed=row.observed==null?"":row.kind==="research"||row.kind==="corpse"?"":" · 입력값 "+n(row.observed);
+    return'<li><b>'+esc(names[row.kind]||row.kind)+'</b> · '+esc(label)+
+      requirement+observed+' — <span class="'+(row.status==="met"?"ready":row.status==="unknown"?"muted":"warning")+
+      '">'+esc(states[row.status])+'</span> <small>'+esc(row.id)+'</small></li>';
+  }).join("");
+  return section("현재 세이브·대원 증빙 (훈련 가능 확정 아님)",
+    '<p><b>직접 선행 연구:</b> '+esc(saveResearchLabel(proof))+
+      ' · 현재 입력 미달 '+proof.directMissing.length+'건 · 미확인 '+proof.unknown.length+'건</p>'+
+    (selected.length?'<p class="warning">이전 훈련으로 변경된 능력치·계급을 계산하지 않았으므로 이 단계의 대원 수치 자격은 미확인입니다.</p>':"")+
+    (proof.all.length?'<ul class="list-clean">'+details+'</ul>':'<p class="muted">연구·시설·아이템·훈장·계급·능력치의 명시적 요구가 없습니다.</p>')+
+    '<p class="fine">세이브의 연구 기록과 직접 입력한 값만 대조합니다. 연구 미완료는 나중에 연구 가능할 수 있으며, 영구 배제 연구는 현재 세이브의 status=2입니다. 보유 시설의 기능, 실제 투입 가능 수량, 수치 보너스 계산, 추가 생존 조건, 금전/기간은 독립적으로 확인하십시오.</p>');
+}
 function showDetail(id){
   const t=byId.get(id);if(!t)return;
   state=currentState();
@@ -449,7 +594,7 @@ function showDetail(id){
       valueLine("회복시간(룰값)",n(t.recoveryTime||0))+
       valueLine("생존 / 부상 / 사망 가능 여부",[["생존",t.allowsLiveSoldiers],["부상",t.allowsWoundedSoldiers],["사망",t.allowsDeadSoldiers]].map(([k,v])=>k+" "+(v==null?"미기재":v?"허용":"불가")).join(" · "))+
       valueLine("필요 아이템",listRequired)+valueLine("필요 훈장",medals)+'</div>')+
-    renderResearchEvidence(t)+
+    renderResearchEvidence(t)+renderCampaignEvidence(t)+
     section("선택 순서 · 배타 관계",'<div class="detail-grid">'+
       valueLine("이 훈련 전에 끝내야 함",idTags(t.requiredPreviousTransformations))+
       valueLine("이 훈련보다 먼저 했으면 불가",idTags(relation.blockedBy))+
@@ -514,6 +659,7 @@ function bind(){
   $("#statusFilter").addEventListener("change",renderTable);
   $("#kindFilter").addEventListener("change",renderTable);
   $("#exclusionFilter").addEventListener("change",renderTable);
+  $("#saveResearchFilter").addEventListener("change",renderTable);
   $("#sortBy").addEventListener("change",renderTable);
   $("#sortDirection").addEventListener("change",renderTable);
   $("#undo").addEventListener("click",()=>{selected.pop();latestAdded=[];redraw();});
@@ -566,7 +712,7 @@ async function init(){
     performance.mark("trainings:load-start");
     const load=async file=>{const r=await fetch(file);if(!r.ok)throw new Error(file+" HTTP "+r.status);return r.json();};
     const [trainings,access,progression,pathGates]=await Promise.all([
-      loadRuntime("../data/trainings-runtime.json?v=large-db-perf-20261011"),load("../data/training-access.json"),
+      loadRuntime("../data/trainings-runtime.json?v=training-evidence-audit-20261021"),load("../data/training-access.json"),
       loadRuntime("../data/choice-simulator-index.json?v=large-db-perf-20261011"),
       load("../data/training-path-gates.json")
     ]);
@@ -591,6 +737,7 @@ async function init(){
     statLabels=DATA.statLabels;
     relations=compileRelations(DATA.transformations);
     initOrigins();
+    initEvidence();
     $("#kindFilter").innerHTML='<option value="all">전체 유형</option>'+Object.entries(DATA.counts.categoryCounts).map(([kind,count])=>'<option value="'+esc(kind)+'">'+esc(kind)+' ('+count+')</option>').join("");
     const usedKeys=new Set(DATA.transformations.flatMap(t=>entries(bonusStats(t)).map(([key])=>key)));
     const sortableKeys=[...new Set([...DATA.statKeys.filter(k=>usedKeys.has(k)),...[...usedKeys].sort()])];

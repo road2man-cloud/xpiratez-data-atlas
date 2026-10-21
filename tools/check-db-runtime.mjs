@@ -10,7 +10,8 @@ for(const name of ['crafts-runtime','soldiers-runtime','soldiers-builds','traini
 const soldiers=read('soldiers-index'),sr=read('soldiers-runtime');
 assert.deepEqual({...sr,...read('soldiers-builds')},soldiers);
 const training=read('trainings-index'),tr=read('trainings-runtime');
-assert.deepEqual(tr.transformations.map(t=>({...t,rawRule:read('training-raw-rules').rawRules[t.id]})),training.transformations);
+assert.deepEqual(tr.transformations.map(({needsCorpseRecovered,...t})=>({...t,rawRule:read('training-raw-rules').rawRules[t.id]})),training.transformations);
+for(const t of tr.transformations)assert.equal(t.needsCorpseRecovered,read('training-raw-rules').rawRules[t.id]?.needsCorpseRecovered===true,t.id+' corpse recovery gate');
 for(const key of Object.keys(training).filter(k=>!['transformations','bonuses'].includes(k)))assert.deepEqual(tr[key],training[key]);
 for(const t of training.transformations)if(t.soldierBonusType)assert.deepEqual(tr.bonuses[t.soldierBonusType],training.bonuses[t.soldierBonusType]);
 for(const [id,b] of Object.entries(training.bonuses))for(const key of ['id','koName','enName'])assert.equal(tr.bonuses[id][key],b[key]);
