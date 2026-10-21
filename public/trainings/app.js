@@ -411,6 +411,8 @@ function showDetail(id){
   const issues=issuesFor(t,state),p=planWithRoute(t,state);
   const routeGate=trainingRouteGate(t,routeContext,ACCESS);
   const relation=relations.get(id);
+  const mutualExclusions=relation.blockedBy.filter(other=>other!==id&&relation.blocksLater.includes(other));
+  const selfExcluded=relation.blockedBy.includes(id);
   const bonus=t.soldierBonusType?DATA.bonuses[t.soldierBonusType]:null;
   const button=!issues.length?'<button class="btn-add" data-add="'+esc(t.id)+'">현재 계획에 추가</button>':
     p.state?'<button class="btn-prepare" data-chain="'+esc(t.id)+'">필수 선행 포함 추가 ('+p.steps.length+'단계)</button>':
@@ -438,7 +440,9 @@ function showDetail(id){
     section("선택 순서 · 배타 관계",'<div class="detail-grid">'+
       valueLine("이 훈련 전에 끝내야 함",idTags(t.requiredPreviousTransformations))+
       valueLine("이 훈련보다 먼저 했으면 불가",idTags(relation.blockedBy))+
-      valueLine("이 훈련 후 다른 훈련을 봉쇄할 수 있음",idTags(relation.blocksLater))+'</div>'+
+      valueLine("이 훈련 후 다른 훈련을 봉쇄할 수 있음",idTags(relation.blocksLater))+
+      valueLine("양방향 상호 배제 · 어느 쪽을 먼저 해도 충돌",idTags(mutualExclusions))+
+      valueLine("동일 훈련 재시행",selfExcluded?'<span class="blocked">금지</span>':'<span class="ready">이력 규칙상 가능</span>')+'</div>'+
       '<p class="note">코드의 <code>forbiddenPreviousTransformations</code>는 <b>선행 기록을 확인</b>합니다. 상대방의 역방향 조건까지 자동으로 대칭 처리하지 않습니다. 순서를 바꿔 조합이 가능해지는 경우가 있으며, 연구 분기는 별도 검증 대상입니다.</p>'+
       (t.removeTransformations.length?'<p><b>이 훈련 완료 시 제거되는 과거 변신 기록</b>: '+idTags(t.removeTransformations)+'</p>':"")+
       (issues.length?'<p class="blocked"><b>현재 선택 불가 사유:</b> '+esc(issues.map(labelIssue).join(" / "))+'</p>':'<p class="ready">현재 순서·병종·선장 분기 기준에서 조합 가능합니다. 실제 연구/아이템 충족은 별도입니다.</p>')+

@@ -671,6 +671,38 @@ try {
           if(await page.locator("#extraBlockedList .choice").count()||
               !await page.locator('#blockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
             errors.push("Undo should remove the added cause while keeping the original blocker");
+          trainingStage="Simpleton self, culture and military exclusions";
+          await page.locator("#origin").selectOption("base:STR_SOLDIER_SLAVE");
+          await input.fill("STR_SIMPLETON_TRAINING");
+          const simpletonRow=page.locator('#trainingTable tbody tr[data-id="STR_SIMPLETON_TRAINING"]');
+          if(await simpletonRow.locator(".blocked").count())errors.push("Simpleton incorrectly blocked for fresh slave");
+          await simpletonRow.locator("td strong").first().click();
+          const simpletonDetail=await page.locator("#detailBody").innerText();
+          if(!simpletonDetail.includes("양방향 상호 배제")||!simpletonDetail.includes("문화 교육")||
+             !simpletonDetail.includes("군사 훈련")||!simpletonDetail.includes("동일 훈련 재시행")||
+             !simpletonDetail.includes("금지"))errors.push("Simpleton mutual exclusion and repeat rule not explained in detail");
+          await page.locator("#closeDialog").click();
+          await page.locator("#quickTraining").selectOption("STR_SIMPLETON_TRAINING");
+          await page.locator("#quickAdd").click({timeout:12000});
+          for(const id of ["STR_SIMPLETON_TRAINING","STR_PERSON_OF_CULTURE_TRAINING","STR_MILITARY_DRILL_TRAINING"]){
+            if(!await page.locator('#newBlockedList [data-info="'+id+'"]').count())
+              errors.push("Simpleton missing newly excluded training "+id);
+          }
+          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
+          if(!await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count())
+            errors.push("Cultural education remained available after Simpleton");
+          await page.locator("#reset").click();
+          await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
+          await page.locator("#quickAdd").click({timeout:12000});
+          await input.fill("STR_SIMPLETON_TRAINING");
+          if(!await simpletonRow.locator(".blocked").count())errors.push("Simpleton remained available after cultural education");
+          await page.locator("#reset").click();
+          await page.locator("#quickTraining").selectOption("STR_MILITARY_DRILL_TRAINING");
+          await page.locator("#quickAdd").click({timeout:12000});
+          if(!await simpletonRow.locator(".blocked").count())errors.push("Simpleton remained available after military drill");
+          await page.locator("#origin").selectOption("base:STR_SOLDIER");
+          if(!await simpletonRow.locator(".blocked").count())errors.push("Simpleton incorrectly available for Gal body");
+          await input.fill("");
           trainingStage="desktop panel beside the training table";
           await page.setViewportSize({width:1500,height:900});
           await page.evaluate(()=>window.scrollTo(0,0));

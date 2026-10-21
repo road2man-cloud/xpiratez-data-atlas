@@ -86,6 +86,35 @@ assert.deepEqual(planned.steps,["STR_BASIC_FIREARMS_TRAINING","STR_BOOT_CAMP_TRA
 verify(evaluate(culture,planned.state).some(x=>x.code==="forbidden"),"Military drill must prevent cultural education");
 verify(newlyExcludedByPrior(data.transformations,initial,planned.state).some(x=>x.id===culture.id),"Full prerequisite chain did not exclude culture");
 verify(addWithPrerequisites(military,afterCulture,byId).state===null,"Blocked prerequisite chain was allowed");
+// Simpleton has three official prior blocks, including its own re-use.
+// Culture and military also explicitly block Simpleton when applied first.
+const simpleton=byId.get("STR_SIMPLETON_TRAINING");
+verify(simpleton,"Missing official Simpleton training");
+assert.deepEqual(simpleton.allowedSoldierTypes,[
+  "STR_SOLDIER_SLAVE","STR_SOLDIER_PEASANT","STR_SOLDIER_DAMSEL","STR_SOLDIER_LAMIA"
+]);
+assert.deepEqual(simpleton.forbiddenPreviousTransformations,[
+  "STR_SIMPLETON_TRAINING","STR_PERSON_OF_CULTURE_TRAINING","STR_MILITARY_DRILL_TRAINING"
+]);
+const slave={soldierType:"STR_SOLDIER_SLAVE",previousTransformations:{}};
+const freshSlave=initialState(slave);
+assert.deepEqual(evaluate(simpleton,freshSlave),[],"Fresh slave must be eligible by transformation history and soldier type");
+verify(evaluate(simpleton,initial).some(x=>x.code==="type"),"Fresh Gal must not qualify for Simpleton");
+const simpletonApplied=apply(simpleton,freshSlave);
+for(const nextId of [simpleton.id,culture.id,military.id]){
+  const forbidden=evaluate(byId.get(nextId),simpletonApplied).find(x=>x.code==="forbidden");
+  verify(forbidden?.ids.includes(simpleton.id),"Simpleton must block "+nextId+" after applying it");
+  verify(newlyExcludedByPrior(data.transformations,freshSlave,simpletonApplied).some(x=>x.id===nextId&&x.blockedBy.includes(simpleton.id)),
+    "Exclusion display must include "+nextId+" as blocked by Simpleton");
+}
+verify(evaluate(simpleton,apply(culture,freshSlave)).some(x=>x.code==="forbidden"&&x.ids.includes(culture.id)),
+  "Earlier culture must block Simpleton");
+const slaveMilitary=addWithPrerequisites(military,freshSlave,byId);
+verify(slaveMilitary.state,"Slave must be able to complete military prerequisite chain");
+verify(evaluate(simpleton,slaveMilitary.state).some(x=>x.code==="forbidden"&&x.ids.includes(military.id)),
+  "Earlier military drill must block Simpleton");
+assert.throws(()=>replay(slave,[simpleton.id,culture.id],byId),/Cannot apply/);
+assert.throws(()=>replay(slave,[culture.id,simpleton.id],byId),/Cannot apply/);
 const weird=byId.get("STR_WEIRDGAL_TRANSFORMATION");
 assert.deepEqual(evaluate(weird,initial),[]);
 assert.equal(apply(weird,initial).soldierType,"STR_SOLDIER_W","Conversion must replace current type");
