@@ -91,3 +91,15 @@ npm run check:item-research -- --data public/items/data
 ## 권리
 
 사이트 코드에는 MIT 라이선스를 적용합니다. X-Piratez, OpenXcom/OXCE, 원본 X-COM 및 모드 데이터/문구에 대한 권리는 각 원저작자에게 있으며 MIT 라이선스의 적용 대상이 아닙니다. 이 저장소는 팬 제작 기술 참고 도구입니다.
+
+## OXCE 엔진 참조표 (2026-10-24)
+
+- **웹 페이지:** [참조표 / reference](./public/reference/) · 배포 URL: https://road2man-cloud.github.io/xpiratez-data-atlas/reference/
+- **기계 판독용 번호 정의:** [engine-codes.json](./public/reference/engine-codes.json) — experienceTrainingMode 0–32, damageType 0–19, damageAlter.RandomType 0–9, 성장 상한 용어
+- **사이트 기본 v.o1.1.1 아이템:** [v-o111-items.json](./public/reference/v-o111-items.json) — 307개 아이템의 experienceTrainingMode 명시 선언
+- **현재 게임 v.o2 / 2.1 아이템:** [v-o2-items.json](./public/reference/v-o2-items.json) — 306개 아이템의 experienceTrainingMode 명시 선언
+- **검증:** `npm run check:reference`. `npm run check` 및 Pages 배포 검사에도 포함됩니다.
+
+**GPT 검색 순서:** 질문의 게임 버전을 먼저 확인 → engine-codes.json에서 번호 의미 확인 → 그 버전의 아이템 JSON에서 `i` (원본 ID), `m` (experienceTrainingMode), `f` / `l` (원문 출처) 확인. `null`로 표시한 `damageType`이나 `power`는 0이 아니라 **해당 아이템 블록에 직접 선언되지 않았다**는 뜻입니다. 상속·탄약·오버라이드·스크립트 적용 결과는 별도 검증해야 합니다.
+
+두 버전의 공통 305개 항목은 experienceTrainingMode 번호 변경이 없지만, 버전별 데이터 수가 307개 대 306개로 다릅니다. 이 차이를 무시하거나 v.o2 데이터를 v.o1.1.1 데이터처럼 표시하지 마세요. `extendedExperienceAwardSystem: true` 및 기절·정신지배 시 경험치 제한도 함께 고려해야 합니다.

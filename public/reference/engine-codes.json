@@ -1,0 +1,424 @@
+{
+  "schema": "xp-atlas.oxce-reference-codes.v1",
+  "verifiedAt": "2026-10-24",
+  "engine": {
+    "name": "OpenXcom Extended",
+    "verifiedSourceRef": "oxce-plus",
+    "sourceCommit": "f0134ef8065799c7723953d64b565f7832bfd782",
+    "sourceLinks": {
+      "enums": "https://github.com/MeridianOXC/OpenXcom/blob/f0134ef8065799c7723953d64b565f7832bfd782/src/Mod/RuleItem.h",
+      "awardLogic": "https://github.com/MeridianOXC/OpenXcom/blob/f0134ef8065799c7723953d64b565f7832bfd782/src/Battlescape/TileEngine.cpp",
+      "documentation": "https://www.ufopaedia.org/Ruleset_Reference_Nightly_%28OpenXcom%29"
+    },
+    "definitionFiles": [
+      "src/Mod/RuleItem.h",
+      "src/Mod/RuleDamageType.h",
+      "src/Mod/RuleDamageType.cpp",
+      "src/Battlescape/TileEngine.cpp"
+    ]
+  },
+  "tables": {
+    "experienceTrainingMode": [
+      {
+        "value": 0,
+        "enum": "ETM_DEFAULT",
+        "ko": "기본 알고리즘",
+        "rule": "무기·공격 방식에 따라 결정"
+      },
+      {
+        "value": 1,
+        "enum": "ETM_MELEE_100",
+        "ko": "근접",
+        "rule": "100%"
+      },
+      {
+        "value": 2,
+        "enum": "ETM_MELEE_50",
+        "ko": "근접",
+        "rule": "50%"
+      },
+      {
+        "value": 3,
+        "enum": "ETM_MELEE_33",
+        "ko": "근접",
+        "rule": "33%"
+      },
+      {
+        "value": 4,
+        "enum": "ETM_FIRING_100",
+        "ko": "사격",
+        "rule": "100%"
+      },
+      {
+        "value": 5,
+        "enum": "ETM_FIRING_50",
+        "ko": "사격",
+        "rule": "50%"
+      },
+      {
+        "value": 6,
+        "enum": "ETM_FIRING_33",
+        "ko": "사격",
+        "rule": "33%"
+      },
+      {
+        "value": 7,
+        "enum": "ETM_THROWING_100",
+        "ko": "투척",
+        "rule": "100%"
+      },
+      {
+        "value": 8,
+        "enum": "ETM_THROWING_50",
+        "ko": "투척",
+        "rule": "50%"
+      },
+      {
+        "value": 9,
+        "enum": "ETM_THROWING_33",
+        "ko": "투척",
+        "rule": "33%"
+      },
+      {
+        "value": 10,
+        "enum": "ETM_FIRING_AND_THROWING",
+        "ko": "사격 + 투척",
+        "rule": "동시 지급"
+      },
+      {
+        "value": 11,
+        "enum": "ETM_FIRING_OR_THROWING",
+        "ko": "사격 또는 투척",
+        "rule": "50:50 선택"
+      },
+      {
+        "value": 12,
+        "enum": "ETM_REACTIONS",
+        "ko": "반응",
+        "rule": "100%"
+      },
+      {
+        "value": 13,
+        "enum": "ETM_REACTIONS_AND_MELEE",
+        "ko": "반응 + 근접",
+        "rule": "동시 지급"
+      },
+      {
+        "value": 14,
+        "enum": "ETM_REACTIONS_AND_FIRING",
+        "ko": "반응 + 사격",
+        "rule": "동시 지급"
+      },
+      {
+        "value": 15,
+        "enum": "ETM_REACTIONS_AND_THROWING",
+        "ko": "반응 + 투척",
+        "rule": "동시 지급"
+      },
+      {
+        "value": 16,
+        "enum": "ETM_REACTIONS_OR_MELEE",
+        "ko": "반응 또는 근접",
+        "rule": "50:50 선택"
+      },
+      {
+        "value": 17,
+        "enum": "ETM_REACTIONS_OR_FIRING",
+        "ko": "반응 또는 사격",
+        "rule": "50:50 선택"
+      },
+      {
+        "value": 18,
+        "enum": "ETM_REACTIONS_OR_THROWING",
+        "ko": "반응 또는 투척",
+        "rule": "50:50 선택"
+      },
+      {
+        "value": 19,
+        "enum": "ETM_BRAVERY",
+        "ko": "용기",
+        "rule": "100%"
+      },
+      {
+        "value": 20,
+        "enum": "ETM_BRAVERY_2X",
+        "ko": "용기",
+        "rule": "경험치 2배"
+      },
+      {
+        "value": 21,
+        "enum": "ETM_BRAVERY_AND_REACTIONS",
+        "ko": "용기 + 반응",
+        "rule": "동시 지급"
+      },
+      {
+        "value": 22,
+        "enum": "ETM_BRAVERY_OR_REACTIONS",
+        "ko": "용기 또는 반응",
+        "rule": "50:50 선택"
+      },
+      {
+        "value": 23,
+        "enum": "ETM_BRAVERY_OR_REACTIONS_2X",
+        "ko": "용기 또는 반응",
+        "rule": "50:50 선택 후 2배"
+      },
+      {
+        "value": 24,
+        "enum": "ETM_PSI_STRENGTH",
+        "ko": "PSI 강도",
+        "rule": "100%"
+      },
+      {
+        "value": 25,
+        "enum": "ETM_PSI_STRENGTH_2X",
+        "ko": "PSI 강도",
+        "rule": "2배"
+      },
+      {
+        "value": 26,
+        "enum": "ETM_PSI_SKILL",
+        "ko": "PSI 기술",
+        "rule": "100%"
+      },
+      {
+        "value": 27,
+        "enum": "ETM_PSI_SKILL_2X",
+        "ko": "PSI 기술",
+        "rule": "2배"
+      },
+      {
+        "value": 28,
+        "enum": "ETM_PSI_STRENGTH_AND_SKILL",
+        "ko": "PSI 강도 + 기술",
+        "rule": "동시 지급"
+      },
+      {
+        "value": 29,
+        "enum": "ETM_PSI_STRENGTH_AND_SKILL_2X",
+        "ko": "PSI 강도 + 기술",
+        "rule": "동시 지급, 2배"
+      },
+      {
+        "value": 30,
+        "enum": "ETM_PSI_STRENGTH_OR_SKILL",
+        "ko": "PSI 강도 또는 기술",
+        "rule": "50:50 선택"
+      },
+      {
+        "value": 31,
+        "enum": "ETM_PSI_STRENGTH_OR_SKILL_2X",
+        "ko": "PSI 강도 또는 기술",
+        "rule": "50:50 선택 후 2배"
+      },
+      {
+        "value": 32,
+        "enum": "ETM_NOTHING",
+        "ko": "지급 없음",
+        "rule": "적립하지 않음"
+      }
+    ],
+    "damageType": [
+      {
+        "value": 0,
+        "ko": "없음",
+        "kind": "vanilla base damage",
+        "enum": "DT_NONE"
+      },
+      {
+        "value": 1,
+        "ko": "철갑",
+        "kind": "vanilla base damage",
+        "enum": "DT_AP"
+      },
+      {
+        "value": 2,
+        "ko": "소이",
+        "kind": "vanilla base damage",
+        "enum": "DT_IN"
+      },
+      {
+        "value": 3,
+        "ko": "고폭",
+        "kind": "vanilla base damage",
+        "enum": "DT_HE"
+      },
+      {
+        "value": 4,
+        "ko": "레이저",
+        "kind": "vanilla base damage",
+        "enum": "DT_LASER"
+      },
+      {
+        "value": 5,
+        "ko": "플라즈마",
+        "kind": "vanilla base damage",
+        "enum": "DT_PLASMA"
+      },
+      {
+        "value": 6,
+        "ko": "기절",
+        "kind": "vanilla base damage",
+        "enum": "DT_STUN"
+      },
+      {
+        "value": 7,
+        "ko": "근접",
+        "kind": "vanilla base damage",
+        "enum": "DT_MELEE"
+      },
+      {
+        "value": 8,
+        "ko": "산",
+        "kind": "vanilla base damage",
+        "enum": "DT_ACID"
+      },
+      {
+        "value": 9,
+        "ko": "연막",
+        "kind": "vanilla base damage",
+        "enum": "DT_SMOKE"
+      },
+      {
+        "value": 10,
+        "ko": "확장형 10",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_10"
+      },
+      {
+        "value": 11,
+        "ko": "확장형 11",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_11"
+      },
+      {
+        "value": 12,
+        "ko": "확장형 12",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_12"
+      },
+      {
+        "value": 13,
+        "ko": "확장형 13",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_13"
+      },
+      {
+        "value": 14,
+        "ko": "확장형 14",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_14"
+      },
+      {
+        "value": 15,
+        "ko": "확장형 15",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_15"
+      },
+      {
+        "value": 16,
+        "ko": "확장형 16",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_16"
+      },
+      {
+        "value": 17,
+        "ko": "확장형 17",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_17"
+      },
+      {
+        "value": 18,
+        "ko": "확장형 18",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_18"
+      },
+      {
+        "value": 19,
+        "ko": "확장형 19",
+        "kind": "OXCE custom slot; exact mechanics require item damageAlter and target resistance",
+        "enum": "DT_19"
+      }
+    ],
+    "RandomType": [
+      {
+        "value": 0,
+        "enum": "DRT_DEFAULT",
+        "ko": "기본 저항 유형별 판정",
+        "rule": "ResistType이 NONE/SMOKE면 0, 소이면 FIRE_DAMAGE_RANGE 범위, 고폭이면 폭발 설정 범위, 그 외에는 일반 설정 범위"
+      },
+      {
+        "value": 1,
+        "enum": "DRT_UFO",
+        "ko": "UFO 난수",
+        "rule": "power × 0~200%"
+      },
+      {
+        "value": 2,
+        "enum": "DRT_TFTD",
+        "ko": "TFTD 난수",
+        "rule": "power × 50~150%"
+      },
+      {
+        "value": 3,
+        "enum": "DRT_FLAT",
+        "ko": "고정 피해",
+        "rule": "power × 100%"
+      },
+      {
+        "value": 4,
+        "enum": "DRT_FIRE",
+        "ko": "화염 난수",
+        "rule": "FIRE_DAMAGE_RANGE[0]~[1]의 절대 피해량 난수 (power 비율이 아님)"
+      },
+      {
+        "value": 5,
+        "enum": "DRT_NONE",
+        "ko": "피해량 없음",
+        "rule": "0"
+      },
+      {
+        "value": 6,
+        "enum": "DRT_UFO_WITH_TWO_DICE",
+        "ko": "UFO 주사위 두 번",
+        "rule": "0~power 난수 두 개를 합산"
+      },
+      {
+        "value": 7,
+        "enum": "DRT_EASY",
+        "ko": "EASY 난수",
+        "rule": "power × 50~200%"
+      },
+      {
+        "value": 8,
+        "enum": "DRT_STANDARD",
+        "ko": "일반 난수",
+        "rule": "power × (100 ± DAMAGE_RANGE)%"
+      },
+      {
+        "value": 9,
+        "enum": "DRT_EXPLOSION",
+        "ko": "폭발 난수",
+        "rule": "power × (100 ± EXPLOSIVE_DAMAGE_RANGE)%"
+      }
+    ]
+  },
+  "statDefinitions": {
+    "minStats": "Initial soldier stat lower bound (creation, not growth).",
+    "maxStats": "Initial soldier stat upper bound (creation, not experience growth cap).",
+    "statCaps": "Experience-based growth cap; final experience increase may overshoot it once.",
+    "trainingStatCaps": "Base facility training cap; defaults to statCaps."
+  },
+  "limits": [
+    "TrainingMode changes award categories, not whether the hit qualifies for XP.",
+    "XPZ adds stun/mind-control anti-farming scripts (Yankes_Scripts.rul).",
+    "PSI modes require current psiSkill > 0 for a geoscape soldier.",
+    "Explicit damageType is a base category, not final effective damage; damageAlter/ResistType/armor modifiers may override."
+  ],
+  "caveats": [
+    "DamageType 10–19 are generic engine slots, not guaranteed semantic damage names across X-Piratez versions.",
+    "RandomType fire mode returns an absolute configured FIRE_DAMAGE_RANGE rather than multiplying power.",
+    "ExperienceTrainingMode selects award fields only; eligible unit/action rules, additional X-Piratez scripts and stat caps still apply.",
+    "Direct item declarations in linked versioned JSON files do not include inherited or merged effective values."
+  ]
+}

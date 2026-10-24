@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../public");
 const home=fs.readFileSync(path.join(root,"index.html"),"utf8");
-const expected=["starting","captains","soldiers","trainings","crafts","craft-weapons","facilities","armors","items","research","manufacture","events","forces","weapons"];
+const expected=["starting","captains","soldiers","trainings","crafts","craft-weapons","facilities","armors","items","research","manufacture","events","forces","weapons","reference"];
 const nav=[...home.matchAll(/<a\s+href="\.\/([a-z-]+)\/(?:\?[^"]*)?"/g)].map(m=>m[1]);
 assert.deepEqual([...new Set(nav)].sort(),[...expected].sort(),"Homepage navigation omits or duplicates a DB");
 
@@ -20,7 +20,7 @@ const selector={
   starting:"cards",captains:"matrixTable",soldiers:"soldierTable",trainings:"trainingTable",crafts:"craftTable",
   "craft-weapons":"weaponTable",facilities:"facilityTable",armors:"armorTable",
   items:"tbody",research:"tbody",manufacture:"manufactureTable",events:"eventTable",
-  forces:"forceTable",weapons:"weaponTable"
+  forces:"forceTable",weapons:"weaponTable",reference:"modes"
 };
 
 for(const rel of pages){
