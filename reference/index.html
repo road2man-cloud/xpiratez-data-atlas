@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="X-Piratez Data Atlas OXCE 엔진 참조표: experienceTrainingMode 0–32, damageType, RandomType, 성장 상한과 버전별 실제 무기 아이템 경험치 모드 검색">
+<meta name="description" content="X-Piratez Data Atlas OXCE 엔진 참조표: experienceTrainingMode 0–32, damageType, RandomType, 성장 상한과 최신 게임의 실제 무기 아이템 경험치 모드 검색">
 <title>참조표 · XPiratez Data Atlas</title>
 <link rel="stylesheet" href="./styles.css?v=20261024">
 </head>
 <body>
 <main>
 <a class="home" href="../">← XPiratez Data Atlas 전체 DB</a>
-<p class="eyebrow">OXCE engine rules · versioned item evidence</p>
+<p class="eyebrow">OXCE engine rules · current item evidence</p>
 <h1>참조표</h1>
-<p class="lead">자주 찾아보는 OXCE 엔진의 숫자형 옵션과 X-Piratez 실제 아이템 적용 사례를 한 곳에서 조회합니다. GPT와 외부 도구가 동일한 근거를 사용할 수 있도록 <strong>번호표 / 버전별 JSON / 소스 해시</strong>를 함께 제공합니다.</p>
-<div class="tags"><span class="tag">OXCE enum 검증</span><span class="tag">v.o1.1.1 (사이트 DB)</span><span class="tag">v.o2 / 2.1 (현재 게임)</span><span class="tag">2026-10-24 추출</span></div>
+<p class="lead">자주 찾아보는 OXCE 엔진의 숫자형 옵션과 X-Piratez 실제 아이템 적용 사례를 한 곳에서 조회합니다. GPT와 외부 도구가 동일한 근거를 사용할 수 있도록 <strong>번호표 / 최신 게임 JSON / 소스 해시</strong>를 함께 제공합니다.</p>
+<div class="tags"><span class="tag">OXCE enum 검증</span><span class="tag">X-Piratez 2.1 · OXCE 8.7.1</span><span class="tag">2026-10-24 확인</span></div>
 <nav class="jump" aria-label="참조표 내부 메뉴">
 <a href="#reference-index">목차</a>
 <a href="#experienceTrainingMode">경험치 모드</a>
@@ -27,7 +27,7 @@
 <h2>참조표 목차</h2>
 <div class="grid">
 <a class="card" href="#experienceTrainingMode"><strong>01. experienceTrainingMode</strong><span>0–32 · 경험치가 적립되는 능력치</span></a>
-<a class="card" href="#item-index"><strong>02. 실제 아이템 적용 목록</strong><span>v.o1.1.1: 307개 / v.o2: 306개 명시 선언</span></a>
+<a class="card" href="#item-index"><strong>02. 실제 아이템 적용 목록</strong><span>최신 게임 룰셋 · 306개 명시 선언</span></a>
 <a class="card" href="#damageType"><strong>03. damageType</strong><span>0–19 · 피해·저항 계열 식별자</span></a>
 <a class="card" href="#RandomType"><strong>04. damageAlter.RandomType</strong><span>0–9 · 피해 난수 생성 방식</span></a>
 <a class="card" href="#statCaps"><strong>05. 성장 상한 키</strong><span>minStats · maxStats · statCaps · trainingStatCaps</span></a>
@@ -82,34 +82,24 @@
 </section>
 <section class="panel" id="item-index">
 <h2>02. 실제 X-Piratez 아이템 적용 사례</h2>
-<p>룰셋에 <code>experienceTrainingMode</code>를 <strong>직접 명시한</strong> 아이템만 표시합니다. 현재 Data Atlas의 주 DB는 v.o1.1.1이며, v.o2는 별도 설치본에서 추출했습니다.</p>
-<p class="info warning"><strong>버전 혼합 금지:</strong> v.o1.1.1과 v.o2의 아이템 개수, 해금 및 후속 규칙은 동일하다고 가정할 수 없습니다. 이 표의 <em>숫자</em>는 명시된 경험치 모드이고, 모든 후속 효과를 합산한 런타임 값이 아닙니다.</p>
+<p><strong>X-Piratez 2.1 (v.o2)</strong> 설치본 룰셋에서 <code>experienceTrainingMode</code>를 직접 명시한 306개 아이템을 검색합니다. 기존 Data Atlas의 다른 DB와는 별도 추출본입니다.</p>
+<p class="info warning"><strong>데이터 범위:</strong> 이 표는 2026-10-24 기준 설치본의 원시 룰셋 선언입니다. 상속·탄약·추가 스크립트를 반영한 최종 전투 경험치와는 다를 수 있습니다.</p>
 <div class="controls">
-<label for="item-version">게임 버전
-<select id="item-version">
-<option value="o111">v.o1.1.1 · 사이트 DB 기준</option>
-<option value="o2">v.o2 / 2.1 · 현재 게임 설치본</option>
-</select></label>
 <label class="grow" for="item-search">한글 · 영문 · 내부 ID 검색
 <input id="item-search" type="search" placeholder="고양이 발바닥 / Cat Paws / STR_CAT_PAWS" autocomplete="off"></label>
 <label for="item-mode">경험치 모드
 <select id="item-mode"><option value="">모든 모드</option></select></label>
 </div>
-<div id="item-status" role="status" aria-live="polite" class="status">버전별 데이터를 불러오는 중…</div>
+<div id="item-status" role="status" aria-live="polite" class="status">최신 게임 데이터를 불러오는 중…</div>
 <div class="tablewrap tall"><table>
 <thead><tr><th>아이템 / 룰 ID</th><th>경험치 모드</th><th>명시 damageType</th><th>명시 power</th><th>출처</th></tr></thead>
-<tbody id="item-rows"><tr><td colspan="5">JavaScript 활성화 시 버전별 검색 목록이 표시됩니다. 아래 JSON 파일에서도 같은 데이터를 조회할 수 있습니다.</td></tr></tbody>
+<tbody id="item-rows"><tr><td colspan="5">JavaScript 활성화 시 최신 게임 검색 목록이 표시됩니다. 아래 JSON 파일에서도 같은 데이터를 조회할 수 있습니다.</td></tr></tbody>
 </table></div>
 <p class="fine"><code>damageType</code>과 <code>power</code>가 없는 항목은 <strong>—</strong>로 표시합니다. 이는 0이라는 뜻이 아닙니다. 다른 룰셋 병합, 상속, 탄약, 추가 <code>damageAlter</code> 등을 반영하지 않은 원시 선언입니다.</p>
-<details id="version-diff">
-<summary>두 버전의 훈련모드 차이 자동 비교</summary>
-<div id="diff-results" class="fine">차이 비교 중…</div>
-</details>
 <h3>GPT · 데이터 분석용 직접 링크</h3>
 <ul>
 <li><a href="./engine-codes.json">엔진 정의 JSON (33+20+10개 번호표)</a></li>
-<li><a href="./v-o111-items.json">v.o1.1.1 아이템 경험치 선언 307개 JSON</a></li>
-<li><a href="./v-o2-items.json">v.o2 아이템 경험치 선언 306개 JSON</a></li>
+<li><a href="./items.json">최신 게임 아이템 경험치 선언 306개 JSON</a></li>
 </ul>
 </section>
 <section class="panel" id="damageType">
@@ -166,7 +156,7 @@
 <section class="panel" id="exceptions">
 <h2>06. 경험치 지급 조건과 실전 예외</h2>
 <ul>
-<li><strong>확장 지급 활성:</strong> 두 버전 모두 <code>extendedExperienceAwardSystem: true</code>가 룰셋 전역 상수에 지정되어 있습니다.</li>
+<li><strong>확장 지급 활성:</strong> 현재 설치본의 룰셋 전역 상수에 <code>extendedExperienceAwardSystem: true</code>가 지정되어 있습니다.</li>
 <li><strong>기절한 적 반복 타격:</strong> X-Piratez의 <code>IXP_CHECK_IF_HOSTILE_UNIT_WILL_BE_STUNNED</code> 및 <code>IXP_NO_XP_FOR_YOU</code> 스크립트가 처음 기절한 이후의 반복 경험치 획득을 제한하도록 설계되어 있습니다.</li>
 <li><strong>정신지배:</strong> 원래 적인 대상이어도 현재 정신지배 등으로 아군화되면 경험치 지급이 제한됩니다.</li>
 <li><strong>PSI 모드 24–31:</strong> 지오스케이프 대원은 원래 PSI 기술이 양수여야 적용되는 엔진 조건이 있습니다.</li>
@@ -177,14 +167,13 @@
 </section>
 <section class="panel">
 <h2>근거와 데이터 출처</h2>
-<p>엔진 OXCE 기준: MeridianOXC/OpenXcom · <a href="https://github.com/MeridianOXC/OpenXcom/tree/f0134ef8065799c7723953d64b565f7832bfd782" target="_blank" rel="noopener">소스 커밋 f0134ef</a>. 기본 데이터: X-Piratez v.o1.1.1 / OXCE 8.6와 X-Piratez v.o2 / OXCE 8.7.1 설치본, 2026-10-24 확인.</p>
-<p>각 JSON의 <code>sourceHashes</code>는 해당 버전의 Ruleset 파일 SHA-256을 포함합니다. GPT는 먼저 이 페이지에서 번호 뜻을 확인하고, 사용자의 게임 버전과 일치하는 아이템 JSON에서 <code>i</code>(ID), <code>m</code>(훈련 모드), <code>f</code>(출처 파일), <code>l</code>(원문 줄 번호)을 조회하면 됩니다.</p>
-<p><a href="./engine-codes.json">engine-codes.json</a> · <a href="./v-o111-items.json">v-o111-items.json</a> · <a href="./v-o2-items.json">v-o2-items.json</a></p>
+<p>엔진 OXCE 기준: MeridianOXC/OpenXcom · <a href="https://github.com/MeridianOXC/OpenXcom/tree/f0134ef8065799c7723953d64b565f7832bfd782" target="_blank" rel="noopener">소스 커밋 f0134ef</a>. 게임 데이터: X-Piratez 2.1 (v.o2) / OXCE 8.7.1 설치본의 룰셋, 2026-10-24 확인.</p>
+<p>아이템 JSON의 <code>sourceHashes</code>에는 설치본 Ruleset 파일의 SHA-256이 포함되어 있습니다. GPT는 번호표에서 뜻을 확인한 후 <code>items.json</code>에서 <code>i</code>(ID), <code>m</code>(훈련 모드), <code>f</code>(출처 파일), <code>l</code>(원문 줄 번호)을 조회하면 됩니다. 게임 데이터가 바뀌면 JSON을 갱신해야 합니다.</p>
+<p><a href="./engine-codes.json">engine-codes.json</a> · <a href="./items.json">items.json</a></p>
 </section>
-<footer>XPiratez Data Atlas · 출처·버전 구분 우선 · 실전 런타임 효과와 정적 룰 선언은 서로 다릅니다.</footer>
+<footer>XPiratez Data Atlas · 최신 게임 설치본을 기준으로 기록 · 실전 런타임 효과와 정적 룰 선언은 서로 다릅니다.</footer>
 </main>
-<script src="./v-o111-items.js?v=20261024" defer></script>
-<script src="./v-o2-items.js?v=20261024" defer></script>
-<script src="./app.js?v=20261024" defer></script>
+<script src="./items.js?v=20261024-latest" defer></script>
+<script src="./app.js?v=20261024-latest" defer></script>
 </body>
 </html>

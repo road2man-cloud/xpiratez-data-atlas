@@ -419,6 +419,6 @@
     "DamageType 10–19 are generic engine slots, not guaranteed semantic damage names across X-Piratez versions.",
     "RandomType fire mode returns an absolute configured FIRE_DAMAGE_RANGE rather than multiplying power.",
     "ExperienceTrainingMode selects award fields only; eligible unit/action rules, additional X-Piratez scripts and stat caps still apply.",
-    "Direct item declarations in linked versioned JSON files do not include inherited or merged effective values."
+    "Direct item declarations in the latest installed X-Piratez 2.1 items.json do not include inherited or merged effective values."
   ]
 }
