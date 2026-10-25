@@ -91,7 +91,18 @@ try{
   if(loaded.rows<1)throw Error("No initial soldier rows");
   if(loaded.summary.includes("[object Object]"))throw Error("Initial summary rendered a list of objects instead of a count");
   console.log("Initial soldiers render:",JSON.stringify({rows:loaded.rows,count:loaded.count,summary:loaded.summary.slice(0,200)}));
-  await evaluate("(()=>{document.querySelector('#dataset').value='final';document.querySelector('#dataset').dispatchEvent(new Event('change',{bubbles:true}));return true})()");
+  const lineage=await evaluate(`(()=>{
+    const select=document.querySelector("#family");select.value="STR_SOLDIER_PEASANT";
+    select.dispatchEvent(new Event("change",{bubbles:true}));
+    const names=[...document.querySelectorAll("#soldierTable tbody tr .name")].map(x=>x.textContent.trim());
+    const caps=document.querySelectorAll("#soldierTable tbody tr:first-child .stat-cap").length;
+    select.value="";select.dispatchEvent(new Event("change",{bubbles:true}));
+    return {names,caps};
+  })()`);
+  if(lineage.names.length!==9||lineage.caps!==5||!lineage.names.includes("반 슈퍼변이체 소녀")||!lineage.names.includes("농부 혁명가"))
+    throw Error("Peasant acquisition lineage regression: "+JSON.stringify(lineage));
+  console.log("Peasant acquisition variants:",JSON.stringify(lineage));
+  await evaluate("(()=>{document.querySelector('#statView').value='all';document.querySelector('#statView').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#dataset').value='final';document.querySelector('#dataset').dispatchEvent(new Event('change',{bubbles:true}));return true})()");
   // The optimized DB defers final-build loading until this view is selected.
   // Do not mistake its one-row loading placeholder for a completed table.
   const actual=await waitFor("(()=>{const rows=document.querySelectorAll('#soldierTable tbody tr');return rows.length&&rows[0].querySelectorAll('.stat-cap').length===12?{count:document.querySelector('#rowCount').textContent,rows:rows.length,first:rows[0].innerText}:null})()","deferred final builds and hard caps",60000);

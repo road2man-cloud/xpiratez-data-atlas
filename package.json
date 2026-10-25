@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:data": "node tools/build-data.mjs && node tools/build-choice-gates.mjs && node tools/build-captain-benefits.mjs && npm run build:db-runtime && npm run build:public-gzip",
+    "build:data": "node tools/build-data.mjs && node tools/build-soldier-route-links.mjs && node tools/build-choice-gates.mjs && node tools/build-captain-benefits.mjs && npm run build:db-runtime && npm run build:public-gzip",
     "build:choice-gates": "node tools/build-choice-gates.mjs && node tools/build-captain-benefits.mjs && npm run build:db-runtime && npm run build:public-gzip",
     "build:facilities": "node tools/build-data.mjs --facility-only",
     "build:trainings": "node tools/build-training-data.mjs && node tools/build-training-access-data.mjs && node tools/build-training-path-gates.mjs && npm run build:db-runtime && npm run build:public-gzip",
@@ -23,6 +23,7 @@
     "check:reference": "node tools/check-reference.mjs",
     "check:functional:browser": "node tools/check-site-functional.mjs",
     "check:starting": "node tools/check-starting-bonuses.mjs public/data/starting-bonuses.json && node tools/check-starting-frontend.mjs",
+    "build:soldier-links": "node tools/build-soldier-route-links.mjs",
     "check:soldiers": "node tools/check-soldiers.mjs --data public/data && node tools/check-soldier-branch-audit.mjs && node tools/check-trait-exclusions.mjs",
     "check:soldiers:browser": "node tools/check-soldier-frontend.mjs",
     "check:trainings": "node tools/check-trainings.mjs && node tools/audit-transformation-exclusions.mjs && node tools/check-training-readiness.mjs && node tools/check-training-save-personnel.mjs && node tools/check-training-access.mjs && node tools/check-training-routes.mjs && node tools/check-staged-captain.mjs",
