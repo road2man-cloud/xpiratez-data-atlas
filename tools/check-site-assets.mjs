@@ -15,7 +15,7 @@ assert.deepEqual([...new Set(nav)].sort(),[...expected].sort(),"Homepage navigat
 
 const errors=[];
 let linkCount=0,scriptCount=0,jsCount=0;
-const pages=["index.html",...expected.map(n=>n+"/index.html")];
+const pages=["index.html",...expected.map(n=>n+"/index.html"),"soldiers/modern/index.html"];
 const selector={
   starting:"cards",captains:"matrixTable",soldiers:"soldierTable",trainings:"trainingTable",crafts:"craftTable",
   "craft-weapons":"weaponTable",facilities:"facilityTable",armors:"armorTable",
@@ -51,7 +51,12 @@ for(const name of expected){
     catch(e){errors.push(name+"/"+file+": JS syntax "+e.stderr?.toString().trim().slice(0,250))}
   }
 }
-for(const essential of ["starting-bonuses.json","soldiers-index.json","trainings-index.json","facilities-index.json","manufacture-index.json","craft-weapons-index.json","weapons-index.json"]){
+for(const file of fs.readdirSync(path.join(root,"soldiers/modern")).filter(x=>x.endsWith(".js"))){
+  jsCount++;
+  try{execFileSync(process.execPath,["--check",path.join(root,"soldiers/modern",file)],{stdio:"pipe"});}
+  catch(e){errors.push("soldiers/modern/"+file+": JS syntax "+e.stderr?.toString().trim().slice(0,250))}
+}
+for(const essential of ["starting-bonuses.json","soldiers-index.json","soldiers-modern-index.json","trainings-index.json","facilities-index.json","manufacture-index.json","craft-weapons-index.json","weapons-index.json"]){
   if(!fs.existsSync(path.join(root,"data",essential)))errors.push("data/"+essential+" missing");
 }
 for(const essential of ["items-index.json","research-index.json","schema.json","entities.json","catalog-ids.json","research-insight-index.json"]){

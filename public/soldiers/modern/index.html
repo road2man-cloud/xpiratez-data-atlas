@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X-Piratez 2.1 병종·최종 강화 상호배제 검증</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <a class="back" href="../../">← Data Atlas</a> <a class="back" href="../">· 기존 병종 DB</a>
+    <p class="eyebrow">X-Piratez 2.1 (v.o2) · OXCE 8.7.1 · 실제 원본 룰 83개 변신</p>
+    <h1>병종·상호배제 검증</h1>
+    <p class="lede">획득형·변신 이력·연구 폐쇄·장비를 <strong>최신 게임 규칙</strong>으로 구분합니다. 일반 갈과 반 슈퍼변이체 농부는 출발 병종과 자동 변신 이력이 다릅니다. 아직 달성 조건을 증명하지 못한 조합은 <strong>확정 최종 능력치로 합산하지 않습니다.</strong></p>
+    <p><a class="back" href="?dataset=transformations&amp;family=STR_SOLDIER">일반 갈 변신 계보</a> · <a class="back" href="?profile=manufacture%3ASTR_HALF_UBER_GIRL_RECRUITMENT">반 슈퍼변이체 농부 획득형</a></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="summary" class="summary"></section>
+
+  <section class="save-inspector card" aria-label="실제 세이브 기반 자동 판정">
+    <h2>35_.sav 등 실제 세이브 자동 판정</h2>
+    <p>세이브의 연구 완료·영구 폐쇄 상태, 현재 기지 재료·시설, 대원의 변신 이력·계급·훈장·능력치를 <strong>브라우저 내부에서 자동 대조</strong>합니다. 세이브는 업로드·저장되지 않습니다.</p>
+    <div class="planner-controls">
+      <label for="modernSaveFile">세이브 파일</label><input id="modernSaveFile" type="file" accept=".sav,.yaml,.yml">
+      <button id="modernClearSave" type="button" disabled>세이브 해제</button>
+      <label for="analysisMode">판정 범위</label><select id="analysisMode"><option value="future">미래 획득 가능성 (조건부)</option><option value="current" disabled>현재 즉시 실행 (세이브 필요)</option></select>
+    </div>
+    <div id="saveRoster" class="planner-controls" hidden>
+      <label for="saveBase">기지</label><select id="saveBase"></select>
+      <label for="saveSoldier">대원</label><select id="saveSoldier"></select>
+    </div>
+    <p id="saveStatus" class="muted" aria-live="polite">세이브 미적용 · 원본 규칙에 근거한 미래 경로만 표시</p>
+    <p id="saveProof" class="muted" aria-live="polite"></p>
+    <div id="saveBattleStats" class="save-battle-stats" aria-live="polite"></div>
+    <p class="muted">보유 중인 자원을 사용해 다음 변신이 가능한지 판정하는 기능입니다. 이벤트 발동 시점·임무 전리품 RNG·미래 연구 분기 및 수치가 확정됐다는 뜻은 아닙니다.</p>
+  </section>
+
+  <section class="toolbar card">
+    <div class="field grow">
+      <label for="search">검색</label>
+      <input id="search" type="search" placeholder="병종, 획득 루트, Saint, 특성, 훈련…">
+    </div>
+    <div class="field"><label for="family">기본 병종별 보기</label><select id="family"><option value="">모든 기본 병종</option></select></div>
+    <div class="field">
+      <label for="dataset">표</label>
+      <select id="dataset">
+        <option value="profiles">실제 획득형</option>
+        <option value="soldiers">기본 바디 규칙</option>
+        <option value="transformations">변신·훈련 루트</option>
+      </select>
+    </div>
+    <div class="field"><label for="statView">표의 수치</label><select id="statView"><option value="key">핵심 5개</option><option value="all">전체 12개</option></select></div>
+    <div class="field">
+      <label for="band">능력치 기준</label>
+      <select id="band">
+        <option value="avg">평균</option>
+        <option value="min">최소</option>
+        <option value="max">최대</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="sortMetric">정렬 기준</label>
+      <select id="sortMetric">
+        <option value="current">현재 능력치</option>
+        <option value="cap">성장캡</option>
+      </select>
+    </div>
+    <label class="check"><input id="traitsOnly" type="checkbox"> 자동 특성 있는 획득형만</label>
+  </section>
+
+  <details class="explain card"><summary>판정 기준·남은 불확실성</summary><p>실제 2.1 기본 바디 생성값 → 획득형 능력치 오버라이드(0은 기존값 유지) → 자동 SoldierBonus 1회 적용. 변신은 순서별로 현재 병종, 필수·금지 이력, 연구·시설·아이템·훈장·능력치를 검사합니다. 방어구는 한 벌만 착용 가능하고, 미획득 장비의 보너스를 자동 합산하지 않습니다. 확정 불가능과 미충족 조건, 단순히 미래에 얻을 수 있는 후보를 구분합니다.</p></details>
+
+  <section id="transformationPlanner" class="explain card" hidden>
+    <strong>변신 경로 상호배제 검증</strong>
+    <span>선택된 대원의 실제 이력과 변신 실행 순서로 재판정합니다. 완성되지 않은 조건은 가능한 것으로 확정하지 않으며, ‘현재 즉시 실행’은 세이브의 기지 자원까지 자동 대조합니다.</span>
+    <div class="planner-controls"><label for="plannerProfile">획득형</label><select id="plannerProfile"></select><label for="previousTransformation">실행할 변신</label><select id="previousTransformation"></select><button id="addTransformation" type="button">순서대로 적용</button><button id="clearTransformations" type="button">변신 초기화</button><label class="check"><input id="compatibleOnly" type="checkbox"> 적용 불가능한 변신 숨김</label></div>
+    <div id="transformationHistory" class="planner-history"></div>
+    <span id="transformationVerdict" class="muted"></span>
+  </section>
+
+  <section class="table-card card">
+    <div class="table-head">
+      <div><p class="eyebrow">정렬 가능</p><h2 id="tableTitle">실제 획득형</h2></div>
+      <p id="rowCount" class="muted"></p>
+    </div>
+    <div class="table-shell">
+      <table id="soldierTable"><thead></thead><tbody></tbody></table>
+    </div>
+  </section>
+</main>
+
+<dialog id="detailDialog">
+  <button id="closeDialog" class="close" aria-label="닫기">×</button>
+  <div id="detailBody"></div>
+</dialog>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

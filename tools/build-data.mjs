@@ -3,6 +3,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import yaml from "js-yaml";
 import {buildSoldierData} from "./soldier-data.mjs";
+import {buildSoldierData as buildSoldierModernData} from "./soldier-modern-data.mjs";
 import {buildArmorData} from "./armor-data.mjs";
 import {buildFacilityData} from "./facility-data.mjs";
 import {buildCraftWeaponData} from "./craft-weapon-data.mjs";
@@ -99,6 +100,28 @@ function tr(key,locale="ko"){
   if(Array.isArray(v))return v.join(" / ");
   if(v&&typeof v==="object")return JSON.stringify(v);
   return String(v).replaceAll("{NEWLINE}","\n").replaceAll("{SMALLLINE}","\n");
+}
+
+// The modern X-Piratez 2.1 soldier database is intentionally isolated from
+// the historical v.o1.1.1 atlas; never overwrite the legacy indexes.
+if(args.includes("--soldiers-modern-only")){
+  if(!/^(?:v[.]o2(?:[.]|$)|2[.]1(?:[.]|$))/i.test(String(META.version||"")))
+    throw new Error("Modern soldier rules require X-Piratez 2.1 / v.o2; detected "+String(META.version));
+  const data=buildSoldierModernData({effectiveMerged,sourceHistory,tr});
+  const modernOut=path.resolve(arg("--modern-out",path.join(outDir,"soldiers-modern-index.json")));
+  fs.mkdirSync(path.dirname(modernOut),{recursive:true});
+  const meta={generatedAt:new Date().toISOString(),
+    mod:{name:META.name||"X-Piratez",version:META.version,id:META.id||"piratez",
+      requiredExtendedVersion:META.requiredExtendedVersion||null},
+    source:{metadataSha256:sha256(metadataPath),
+      rules:ruleFiles.map(file=>({file,sha256:sha256(path.join(rulesDir,file))}))}};
+  fs.writeFileSync(modernOut,JSON.stringify({meta,...data}));
+  console.log("Modern 2.1 soldiers: "+JSON.stringify({
+    output:modernOut,version:META.version,soldiers:data.soldiers.length,
+    acquisitions:data.profiles.length,transformations:data.transformations.length,
+    research:Object.keys(data.researchRules||{}).length,armors:data.armorCatalog?.length,
+    medals:Object.keys(data.commendationIndex||{}).length}));
+  process.exit(0);
 }
 
 const damageKeys=[

@@ -1,0 +1,34 @@
+name: QA 2.1 Save
+version: Extended 8.7.1
+engine: Extended
+mods:
+  - 'piratez ver: v.o2'
+---
+difficulty: 1
+monthsPassed: 1
+funds:
+  - 1000
+  - 4000
+discovered:
+  - STR_VIOLENCE
+researchRuleStatus:
+  STR_SOME_UNRELATED_FLAG: 2
+bases:
+  - name: QA Base
+    facilities:
+      - type: STR_ACCESS_LIFT
+    soldiers:
+      - type: STR_SOLDIER
+        id: 7
+        name: QA Example
+        initialStats: {tu: 45, stamina: 60, health: 35, bravery: 50, reactions: 45, firing: 45, throwing: 40, strength: 25, psiStrength: 40, psiSkill: 0, melee: 40, mana: 60}
+        currentStats: {tu: 45, stamina: 60, health: 35, bravery: 50, reactions: 55, firing: 70, throwing: 40, strength: 25, psiStrength: 40, psiSkill: 0, melee: 40, mana: 60}
+        rank: 1
+        previousTransformations:
+          STR_BASIC_FIREARMS_TRAINING: 1
+        transformationBonuses:
+          STR_BASIC_FIREARMS_TRAINING: 1
+        armor: STR_SCOUT_OUTFIT_UC
+        recovery: 0
+    items:
+      STR_GLAMOUR: 8

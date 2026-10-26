@@ -12,6 +12,7 @@ const fixed=[
   "public/items/data/entities.json",
   "public/items/data/catalog-ids.json",
   "public/data/soldiers-index.json",
+  "public/data/soldiers-modern-index.json",
   "public/data/trainings-index.json",
   "public/data/choice-simulator-index.json",
   "public/data/weapons-index.json",
