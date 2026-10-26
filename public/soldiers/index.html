@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병종 DB</title>
-<link rel="stylesheet" href="styles.css?v=soldier-lineage-20261026">
+<link rel="stylesheet" href="styles.css?v=soldier-trait-origin-20261026">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body>
@@ -88,7 +88,7 @@
 
   <details class="explain card"><summary><strong>고급 계산 기준 · 강화 분기 설명 펼치기</strong></summary>
     <span>기본 Soldier 랜덤치 → 획득 루트의 <code>spawnedSoldier.currentStats</code> 덮어쓰기 → 생성 시 <code>transformationBonuses</code> 능력치 합산 → OXCE 최소치 보정.</span>
-    <span>표의 각 능력치는 <b>현재 실효값 / 성장 하드캡</b>으로 표시합니다. 하드캡은 최종 병종의 <code>statCaps</code>에 보유 특성(SoldierBonus)의 능력치 보너스를 합산한 <b>일반 성장 상한</b>입니다. 훈련캡(<code>trainingStatCaps</code>)은 별도 값이며, 특수 생성·변환으로 일반 성장 상한을 넘는 능력치는 절대 최대치로 잘못 해석하지 않도록 붉게 구별합니다. 방어구 보너스는 포함하지 않습니다.</span>
+    <span>표의 각 능력치는 <b>현재 실효값 / 성장 하드캡</b>으로 표시합니다. 하드캡은 최종 병종의 <code>statCaps</code>에 <b>해당 획득형의 시작 특성</b>과 <b>선택한 강화 경로에서 실제 부여되는 특성</b>만 합산한 일반 성장 상한입니다. 기본 병종이 같다는 이유로 다른 영입형의 특성을 공유하지 않습니다. 예를 들어 일반 영애는 독수리눈이 없고 첩보원 영애는 영입 시에만 독수리눈을 받습니다. 훈련캡(<code>trainingStatCaps</code>)은 별도 값이며, 특수 생성·변환으로 일반 성장 상한을 넘는 능력치는 절대 최대치로 잘못 해석하지 않도록 붉게 구별합니다. 방어구 보너스는 포함하지 않습니다.</span>
     <span><b>최종 강화 조합</b>은 병종·변신 순서만 만족하는 <b>이론적 상한 후보</b>입니다. 선장·Codex·여왕 분기, 연구 획득 이벤트 및 희귀 실물 재료가 모두 충족됐다는 뜻은 아닙니다. 원본에서 확인되는 <b>내부 전용·선장 고유 동시 선택·야만 여왕/Codex·Diverging Paths 분기 상호배제</b>는 기본 표에서 제외합니다. 갈림길을 직접 선택하면 그 분기에서 얻을 수 없는 특성 강화도 제외합니다. <b>남아 있는 조합 역시 이벤트/선장 진행/실물 조건 때문에 실행 가능이 확정된 것은 아닙니다.</b> 연속 병종 전환은 원본의 이력·병종 배제를 매 단계 적용하며, 사망 대원에게만 가능한 전환은 사망·부활 과정을 임의로 가정해 다른 전환과 자동 연결하지 않습니다. 실제 순서·훈련 조건은 <a href="../trainings/" style="color:#93c5fd">병사훈련 DB</a>에서 검토하세요.</span>
   </details>
 
@@ -109,7 +109,7 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=soldier-lineage-20261026"></script>
+<script type="module" src="app.js?v=soldier-trait-origin-20261026"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

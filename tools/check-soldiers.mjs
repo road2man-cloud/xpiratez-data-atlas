@@ -111,4 +111,33 @@ for(const set of d.enhancementBuildSets){
   }
 }
 
+
+const sourceProfiles=new Map(d.profiles.map(p=>[p.sourceId,p]));
+const regularDamsel=sourceProfiles.get("STR_DAMSEL_RECRUITMENT");
+const spyDamsel=sourceProfiles.get("STR_SPY_DAMSEL_RECRUITMENT");
+const eagleEye=d.bonuses.find(b=>b.id==="STR_SNIPER_TRAIT");
+if(!regularDamsel||!spyDamsel||!eagleEye)throw new Error("Missing ordinary/spy Damsel or Eagle Eye rule");
+if(regularDamsel.soldierType!=="STR_SOLDIER_DAMSEL"||spyDamsel.soldierType!==regularDamsel.soldierType)
+  throw new Error("Ordinary and spy Damsel should share a body, not an acquisition template");
+if(regularDamsel.traitNames.includes(eagleEye.id)||!spyDamsel.traitNames.includes(eagleEye.id))
+  throw new Error("Eagle Eye was copied to ordinary Damsel or lost from spy Damsel");
+if(Number(eagleEye.stats.firing)!==15)throw new Error("Eagle Eye firing bonus changed");
+if(d.transformations.some(t=>t.soldierBonusType===eagleEye.id))
+  throw new Error("Eagle Eye can now be gained by transformation; revisit route-specific explanation");
+if(regularDamsel.rawStatCaps.firing!==120||regularDamsel.effectiveStatCaps.firing!==120||
+   spyDamsel.effectiveStatCaps.firing!==138)
+  throw new Error("Ordinary/spy Damsel recruitment firing caps differ from verified source rules");
+const bonusesById=new Map(d.bonuses.map(b=>[b.id,b]));
+for(const p of d.profiles){
+  const applied=new Set(p.traitNames||[]);
+  const bonus=[...applied].reduce((v,id)=>v+(Number(bonusesById.get(id)?.stats?.firing)||0),0);
+  const expectedCap=Math.max(0,Number(p.rawStatCaps.firing)+bonus);
+  if(Number(p.effectiveStatCaps.firing)!==expectedCap)
+    throw new Error("Firing cap contains traits not granted by the acquisition template: "+p.id);
+}
+const regularSet=buildSetById.get(regularDamsel.enhancementBuildSetId);
+if(!regularSet||regularSet.combinations.some(c=>(c.traitIds||[]).includes(eagleEye.id)))
+  throw new Error("Ordinary Damsel final build incorrectly gains Spy Damsel's Eagle Eye");
+console.log("OK Eagle Eye provenance: ordinary Damsel 120; spy Damsel 138; ordinary final builds have no Eagle Eye");
+
 console.log(`OK soldiers: ${d.soldiers.length} base rules, ${d.profiles.length} acquisition profiles, ${d.transformations.length} transformations, ${d.enhancementBuildSets.length} enhancement build sets, ${finalBuildRows} final builds`);

@@ -102,6 +102,36 @@ try{
   if(lineage.names.length!==9||lineage.caps!==5||!lineage.names.includes("반 슈퍼변이체 소녀")||!lineage.names.includes("농부 혁명가"))
     throw Error("Peasant acquisition lineage regression: "+JSON.stringify(lineage));
   console.log("Peasant acquisition variants:",JSON.stringify(lineage));
+  const damselLineage=await evaluate(`(()=>{
+    const family=document.querySelector("#family");
+    family.value="STR_SOLDIER_DAMSEL";
+    family.dispatchEvent(new Event("change",{bubbles:true}));
+    const rows=[...document.querySelectorAll("#soldierTable tbody tr")];
+    const get=id=>rows.find(tr=>decodeURIComponent(tr.dataset.row||"")==="manufacture:"+id);
+    const regular=get("STR_DAMSEL_RECRUITMENT"),spy=get("STR_SPY_DAMSEL_RECRUITMENT");
+    const cap=tr=>Number(tr?.querySelectorAll(".stat-cap")[3]?.textContent.replace(/,/g,"")||0);
+    let regularDetail="",spyDetail="";
+    if(regular){
+      regular.click();regularDetail=document.querySelector("#detailBody").innerText;
+      document.querySelector("#detailDialog").close();
+    }
+    if(spy){
+      spy.click();spyDetail=document.querySelector("#detailBody").innerText;
+      document.querySelector("#detailDialog").close();
+    }
+    const result={count:rows.length,regularCap:cap(regular),spyCap:cap(spy),
+      regularTag:regular?.innerText.includes("영입 시 미보유")||false,
+      spyTag:spy?.innerText.includes("해당 영입형 보유")||false,
+      regularExplained:regularDetail.includes("독수리눈 획득 경로")&&regularDetail.includes("후천 획득하는 훈련"),
+      spyExplained:spyDetail.includes("독수리눈 획득 경로")&&spyDetail.includes("영입 시 부여")};
+    family.value="";family.dispatchEvent(new Event("change",{bubbles:true}));
+    return result;
+  })()`);
+  if(damselLineage.count!==4||damselLineage.regularCap!==120||damselLineage.spyCap!==138||
+    !damselLineage.regularTag||!damselLineage.spyTag||
+    !damselLineage.regularExplained||!damselLineage.spyExplained)
+    throw Error("Eagle Eye acquisition provenance UI regression: "+JSON.stringify(damselLineage));
+  console.log("Damsel acquisition route / Eagle Eye:",JSON.stringify(damselLineage));
   await evaluate("(()=>{document.querySelector('#statView').value='all';document.querySelector('#statView').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#dataset').value='final';document.querySelector('#dataset').dispatchEvent(new Event('change',{bubbles:true}));return true})()");
   // The optimized DB defers final-build loading until this view is selected.
   // Do not mistake its one-row loading placeholder for a completed table.
@@ -112,9 +142,10 @@ try{
   if(pairCount!==12)throw Error("Final builds show only "+pairCount+"/12 stat hard caps");
   const capSort=await evaluate("(()=>{const sort=document.querySelector(\x27#sortMetric\x27);if(sort.disabled)return {enabled:false};sort.value=\x27cap\x27;sort.dispatchEvent(new Event(\x27change\x27,{bubbles:true}));return {enabled:true,caps:[...document.querySelectorAll(\x27#soldierTable tbody tr\x27)].slice(0,5).map(x=>Number(x.querySelectorAll(\x27td\x27)[9]?.querySelector(\x27.stat-cap\x27)?.textContent.replace(/,/g,\x27\x27)||0))}})()");
   if(!capSort.enabled||capSort.caps.some((x,i)=>i>0&&x>capSort.caps[i-1]))throw Error("Final hard-cap sort is not enabled or descending: "+JSON.stringify(capSort));
-  const details=await evaluate("(()=>{document.querySelector('#soldierTable tbody tr').click();return {opened:document.querySelector('#detailDialog').open,text:document.querySelector('#detailBody').innerText.slice(0,600)}})()");
+  const details=await evaluate("(()=>{document.querySelector('#soldierTable tbody tr').click();return {opened:document.querySelector('#detailDialog').open,text:document.querySelector('#detailBody').innerText}})()");
   if(!details.opened)throw Error("Detail dialog did not open");
-  if(!details.text.includes("하드캡"))throw Error("Final detail missing hard caps");
+  if(!details.text.includes("하드캡")||!details.text.includes("사격 성장캡 출처")||!details.text.includes("후속 획득 특성"))
+    throw Error("Final detail missing auditable cap and bonus provenance");
 
   // The new branch selector must really affect the rendered final builds.
   const originalCount=await evaluate("document.querySelector('#rowCount').textContent");

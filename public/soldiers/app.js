@@ -2,7 +2,7 @@ import {loadRuntime,debounce,yieldToBrowser} from "../db-runtime.js";
 import {auditSoldierBuild} from "./branch-audit.js";
 import {enumerateConversionRoutes} from "./conversion-routes.js";
 let DATA=null,PROG=null,PATH_GATES=null;
-const ASSET_VERSION="large-db-perf-trait-audit-20261011";
+const ASSET_VERSION="soldier-trait-origin-20261026";
 const versioned=url=>url+(url.includes("?")?"&":"?")+"v="+encodeURIComponent(ASSET_VERSION);
 const PLAN_BUCKETS=new Map(),PLAN_CACHE=new Map(),TRANSFORM_BY_ID=new Map(),BUILD_SET_BY_ID=new Map(),BONUS_BY_ID=new Map(),SOLDIER_BY_ID=new Map();
 let RESEARCH_TOPICS=null,FINAL_ROWS=[],CONVERSION_TRANSFORMS=[];
@@ -101,6 +101,32 @@ function bonusStatsFor(ids){
   let out={};
   for(const id of new Set(ids||[]))out=addStatsObj(out,BONUS_BY_ID.get(id)?.stats||{});
   return out;
+}
+// Acquisition-specific grants must not be inherited from another profile of the same Soldier Type.
+function traitCapSources(profile,combo){
+  const initialIds=[...new Set(profile?.traitNames||[])];
+  const initialSet=new Set(initialIds);
+  const addedIds=[...new Set((combo?.traitIds||[]).filter(id=>!initialSet.has(id)))];
+  return{initialIds,addedIds,initial:bonusStatsFor(initialIds),added:bonusStatsFor(addedIds)};
+}
+function traitStatLabels(ids,key){
+  return ids.map(id=>{
+    const b=BONUS_BY_ID.get(id),value=Number(b?.stats?.[key])||0;
+    return value?'<span class="trait">'+esc(b?.koName||id)+' '+(value>0?"+":"")+fmt(value)+"</span>":"";
+  }).filter(Boolean).join(" ")||'<span class="muted">해당 능력치 보너스 없음</span>';
+}
+function eagleEyeRouteNote(profile){
+  if(profile?.soldierType!=="STR_SOLDIER_DAMSEL")return"";
+  const held=(profile.traitNames||[]).includes("STR_SNIPER_TRAIT");
+  const viaTraining=(DATA?.transformations||[]).some(t=>t.soldierBonusType==="STR_SNIPER_TRAIT");
+  if(held)return "독수리눈은 이 획득형의 영입 시 부여되는 특성입니다. 같은 기본 병종의 일반 영애에게 자동으로 전해지지 않습니다.";
+  if(!viaTraining)return "이 획득형에는 독수리눈이 없습니다. 원본 규칙에 독수리눈을 후천 획득하는 훈련·변환도 확인되지 않습니다. 첩보원 영애는 별도 영입 경로입니다.";
+  return "이 획득형에는 영입 시 독수리눈이 없습니다. 후속 특성 획득은 훈련·변환 조건을 별도로 확인해야 합니다.";
+}
+function eagleEyeRouteTag(profile){
+  if(profile?.soldierType!=="STR_SOLDIER_DAMSEL")return"";
+  const held=(profile.traitNames||[]).includes("STR_SNIPER_TRAIT");
+  return '<span class="tag trait-source">'+(held?"독수리눈 · 해당 영입형 보유":"독수리눈 · 영입 시 미보유")+"</span>";
 }
 function effectiveStats(raw,bonusIds){
   const out=obeyMinimum(addStatsObj(raw,bonusStatsFor(bonusIds)));
@@ -618,7 +644,7 @@ function rowHtml(r,band){
   let second,c1,c2,c3=null;
   if(r._mode==="profile"){
     const traits=(r.traits||[]).map(t=>'<span class="trait">'+t.koName+'</span>').join("");
-    second=sourceBadges(r)+'<br><span class="route">'+r.sourceKoName+'</span><br>'+traits;
+    second=sourceBadges(r)+' '+eagleEyeRouteTag(r)+'<br><span class="route">'+r.sourceKoName+'</span><br>'+traits;
     c1=fmt(r.cost);c2=fmt(r.time);c3=fmt(r.salary);
   }else if(r._mode==="final"){
     const shown=(r.enhancementNames||[]).slice(0,8).map(x=>'<span class="trait">'+esc(x)+'</span>').join("");
@@ -628,7 +654,7 @@ function rowHtml(r,band){
       '<span class="tag branch-conditional">분기·이벤트 실현 여부 별도 확인</span>';
     const saintLabel=audit.sourceWarnings.length?'<span class="tag branch-saint-warning">Saint 지원군으로 획득 시 추가 제한 '+audit.sourceWarnings.length+'건</span>':"";
     const deadLabel=r.requiresDeadSoldier?'<span class="tag branch-saint-warning">사망 대원 전용 전환 · 상태 변경 별도</span>':"";
-    second=hardLabel+' '+saintLabel+' '+deadLabel+'<br>'+sourceBadges(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
+    second=hardLabel+' '+saintLabel+' '+deadLabel+'<br>'+sourceBadges(r.profile)+' '+eagleEyeRouteTag(r.profile)+'<br><span class="route">'+esc(r.profile.sourceKoName)+'</span><br>'+shown+more;
     c1=fmt(r.totalTraitCount);c2=fmt(r.cost);
   }else if(r._mode==="soldier"){
     second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
@@ -683,19 +709,32 @@ function statsCapGrid(title,row){
     const trait=row.traitStats?.[k]??0;
     const eff=row.effectiveStatCaps?.[k]??raw;
     const over=Number(cur)>Number(eff)?' over-cap':'';
-    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(eff)+'</b><small>본체 하드캡 '+fmt(raw)+' · 훈련캡 '+fmt(training)+(trait?' · 특성 '+(trait>0?'+':'')+fmt(trait):'')+'</small></div>';
-  }).join("")+'</div><p class="muted">앞 숫자는 선택한 생성값, 뒤 숫자는 자동 특성까지 포함한 실효 성장캡입니다. 시작값이 캡보다 높은 특수 생성형은 그대로 유지되지만 일반 성장으로 더 오르지는 않습니다.</p>';
+    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(eff)+'</b><small>본체 하드캡 '+fmt(raw)+' · 훈련캡 '+fmt(training)+(trait?' · 영입 특성 '+(trait>0?'+':'')+fmt(trait):'')+'</small></div>';
+  }).join("")+'</div><p class="muted">앞 숫자는 선택한 생성값, 뒤 숫자는 자동 특성까지 포함한 실효 성장캡입니다. 여기서 영입 특성은 선택한 획득형의 생성 템플릿에 적힌 보너스만 의미합니다. 동일한 기본 병종의 다른 획득형 특성은 공유되지 않습니다. 시작값이 캡보다 높은 특수 생성형은 그대로 유지되지만 일반 성장으로 더 오르지는 않습니다.</p>';
 }
 function finalStatsGrid(row){
   const band=$("#band").value,current=row.finalStats?.[band]||{};
   const soldier=SOLDIER_BY_ID.get(row.finalSoldierType);
-  return '<h3>최종 실효 능력치 / 성장 하드캡</h3><div class="stats-grid">'+statOrder.map(k=>{
+  const sources=traitCapSources(row.profile,row.combo);
+  const signed=v=>(Number(v)>0?"+":"")+fmt(v);
+  const statDetail=statOrder.map(k=>{
     const value=current[k]??0,hardcap=row.finalCap?.[k]??0;
-    const raw=soldier?.statCaps?.[k]??row.profile?.rawStatCaps?.[k]??0;
-    const bonus=hardcap-raw;
+    const raw=Number(soldier?.statCaps?.[k]??row.profile?.rawStatCaps?.[k]??0);
+    const initial=Number(sources.initial[k])||0,added=Number(sources.added[k])||0;
     const over=Number(value)>Number(hardcap)?" over-cap":"";
-    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(value)+' / '+fmt(hardcap)+'</b><small>본체 '+fmt(raw)+(bonus?" · 특성 "+(bonus>0?"+":"")+fmt(bonus):"")+'</small></div>';
-  }).join("")+'</div><p class="muted">왼쪽은 선택한 생성값과 훈련 효과를 반영한 실효 능력치, 오른쪽은 최종 Soldier Type의 statCaps에 획득 특성을 더한 성장 하드캡입니다. 특수 변환·이벤트 효과로 현재 능력치가 이 수치를 넘을 수 있으며, 이 하드캡은 모든 특수 효과까지 포함한 절대 최대치가 아닙니다.</p>';
+    const parts=["본체 "+fmt(raw)];
+    if(initial)parts.push("영입 특성 "+signed(initial));
+    if(added)parts.push("후속 특성 "+signed(added));
+    if(raw+initial+added!==hardcap)parts.push("상한 보정 적용");
+    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(value)+' / '+fmt(hardcap)+'</b><small>'+parts.join(" · ")+"</small></div>";
+  }).join("");
+  const rawFiring=soldier?.statCaps?.firing??row.profile?.rawStatCaps?.firing??0;
+  return '<h3>최종 실효 능력치 / 성장 하드캡</h3><div class="stats-grid">'+statDetail+
+    '</div><div class="trait-provenance"><strong>사격 성장캡 출처 · '+fmt(row.finalCap?.firing)+'</strong>'+
+    '<p>본체 '+fmt(rawFiring)+' · 영입 특성 '+signed(sources.initial.firing)+' · 후속 획득 특성 '+signed(sources.added.firing)+"</p>"+
+    '<div><small>선택한 획득형의 영입 시 사격 특성</small>'+traitStatLabels(sources.initialIds,"firing")+"</div>"+
+    '<div><small>선택한 강화 조합으로 추가한 사격 특성</small>'+traitStatLabels(sources.addedIds,"firing")+"</div></div>"+
+    '<p class="muted">같은 기본 병종의 다른 영입형이 가진 특성은 합산하지 않습니다. 특수 변환·이벤트로 현재 능력치가 일반 성장 하드캡을 초과할 수 있으며, 표시된 조합은 모든 연구·자원 조건을 충족했다는 뜻이 아닙니다.</p>';
 }
 function bonusExtraSummary(id){
   const b=BONUS_BY_ID.get(id);if(!b)return"";
@@ -720,14 +759,16 @@ function openDetail(encoded){
     const salary=salaryRow(r.soldierType,r.rank);
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>현재 월 유지비</strong>'+fmt(r.salary)+'<br><small>'+(salary?esc(salary.koName||salary.id)+' · 기본 '+fmt(salary.base)+(salary.bonus?' + 계급 추가 '+fmt(salary.bonus):''):'계급 '+fmt(r.rank))+'</small></div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
     html+='<p class="identity-line"><strong>기본 병종</strong> '+esc(r.soldierKoName)+' <span>→</span> <strong>획득형</strong> '+esc(variantName(r))+'</p>';
+    if(eagleEyeRouteNote(r))html+='<p class="trait-route-note"><strong>독수리눈 획득 경로:</strong> '+esc(eagleEyeRouteNote(r))+'</p>';
     html+='<div class="cross-links">'+(r.sourceType==="manufacture"?dbLink("manufacture",r.sourceId,"제조 DB에서 영입법"):"")+(r.requires||[]).map(x=>dbLink(x==="STR_RECRUIT_PEASANTS"?"research":"items",x,x)).join("")+'</div>';
-    html+='<h3>같은 기본 병종에서 얻는 다른 병사</h3><div class="family-grid">'+DATA.profiles.filter(p=>p.soldierType===r.soldierType).map(p=>'<button class="family-choice" type="button" data-profile="'+esc(p.id)+'"><strong>'+esc(variantName(p))+'</strong><small>'+esc(p.traits.map(t=>t.koName).join(" · ")||"시작 특성 없음")+'</small></button>').join("")+'</div>';
+    html+='<h3>같은 기본 병종에서 얻는 다른 병사</h3><div class="family-grid">'+DATA.profiles.filter(p=>p.soldierType===r.soldierType).map(p=>'<button class="family-choice" type="button" data-profile="'+esc(p.id)+'"><strong>'+esc(variantName(p))+'</strong><small>영입 시작 특성: '+esc(p.traits.map(t=>t.koName).join(" · ")||"없음")+'</small></button>').join("")+'</div>';
     html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
     html+=statsCapGrid("자동 특성 포함 능력치 / 성장 하드캡",r);
     html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
     html+='<h3>획득 템플릿</h3><div class="detail-grid"><div class="box"><strong>currentStats 덮어쓰기</strong><pre>'+esc(JSON.stringify(r.currentStatsOverride,null,2))+'</pre></div><div class="box"><strong>이전 변환</strong><pre>'+esc(JSON.stringify(r.previousTransformations,null,2))+'</pre></div><div class="box"><strong>필요 연구/조건</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
   }else if(r._mode==="final"){
     const p=r.profile;
+    if(eagleEyeRouteNote(p))html+='<p class="trait-route-note"><strong>독수리눈 획득 경로:</strong> '+esc(eagleEyeRouteNote(p))+'</p>';
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(p)+'<br>'+esc(p.sourceKoName)+'<br><small>'+esc(p.sourceId)+'</small></div><div class="box"><strong>최종 특성 / 추가 강화</strong>'+fmt(r.totalTraitCount)+' / '+fmt(r.enhancementCount)+'</div><div class="box"><strong>추가 비용 / 회복 합계</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div></div>';
     const audit=r.branchAudit||{hard:[],sourceWarnings:[]};
     html+='<div class="'+(audit.hard.length?'compat-hard':'growth-note')+'"><strong>'+
