@@ -284,6 +284,7 @@ try {
         else if(slug==="soldiers"){
           const summary=await page.locator("#summary").innerText();
           if(summary.includes("[object Object]"))errors.push("Soldier initial summary printed objects instead of a branch-conflict count");
+          await page.locator("#statView").selectOption("all");
           const initialCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
           if(initialCaps!==12)errors.push("Initial soldier profiles missing growth hard caps: "+initialCaps+"/12");
           // On mobile, the tall sticky soldier filters blocked row taps.
