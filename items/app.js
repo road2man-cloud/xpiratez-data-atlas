@@ -268,6 +268,17 @@ function bindResourceDetails(){
     try{const x=await json(`${dataBase}/resource-chunks/${el.dataset.resourceKind}/${el.dataset.bucket}.json`),d=x.details?.[el.dataset.id]||{};body.textContent=JSON.stringify(d,null,2)}catch(e){body.textContent="분리 리소스 로드 실패: "+e.message}
   });
 }
+let soldierLinksPromise=null;
+async function showRelatedSoldiers(mode,id,generation){
+  if(!soldierLinksPromise)soldierLinksPromise=json("../data/soldier-route-links.json").catch(error=>{soldierLinksPromise=null;throw error});
+  const data=await soldierLinksPromise;
+  if(generation!==detailGeneration)return;
+  const related=data.profiles.filter(p=>mode==="items"?(p.itemId===id||(p.requirements||[]).includes(id)):(p.requirements||[]).includes(id));
+  if(!related.length)return;
+  $("#detail").insertAdjacentHTML("afterbegin",
+    '<section class="section soldier-route-panel"><h3>이 항목과 연결되는 병종 획득형</h3><p class="muted">같은 기본 병종이어도 획득형마다 자동 특성이 다릅니다. 해당 병종 DB에서 생성 스펙과 고용 경로를 확인하세요.</p>'+
+    related.map(p=>'<a class="chip" href="../soldiers/?q='+encodeURIComponent(p.sourceId)+'"><strong>'+esc(p.name)+'</strong><span class="sub">기본 병종: '+esc(p.base)+' · '+esc(p.traits.join(" · ")||"자동 특성 없음")+'</span></a>').join("")+'</section>');
+}
 async function openDetail(mode,id){
   const generation=++detailGeneration;
   try{
@@ -275,6 +286,7 @@ async function openDetail(mode,id){
     if(generation!==detailGeneration)return;
     state.detail={mode,id};
     $("#detail").innerHTML=mode==="items"?renderItem(d):renderResearch(d);bindResourceDetails();
+    showRelatedSoldiers(mode,id,generation).catch(error=>console.warn("Soldier links unavailable:",error));
     $("#drawer").classList.add("open");$("#drawer").setAttribute("aria-hidden","false");$("#backdrop").hidden=false;
     history.replaceState(null,"","#"+(mode==="items"?"item=":"research=")+encodeURIComponent(id));
   }catch(e){if(generation!==detailGeneration)return;$("#detail").innerHTML=`<p class="error">${esc(e.message)}</p>`;$("#drawer").classList.add("open");$("#backdrop").hidden=false}

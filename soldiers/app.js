@@ -14,7 +14,11 @@ const numberFormat=new Intl.NumberFormat("ko-KR",{maximumFractionDigits:1});
 const fmt=n=>n==null||Number.isNaN(Number(n))?"—":numberFormat.format(Number(n));
 const pct=n=>n==null?"—":(Number(n)*100).toFixed(2)+"%";
 const statOrder=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
-const sourceLabel={direct:"직접 고용",manufacture:"제조/Recruitment",event:"이벤트"};
+const sourceLabel={direct:"직접 고용",manufacture:"고용·제조",event:"이벤트"};
+function variantName(r){if(r.sourceType==="direct")return r.soldierKoName;return (r.sourceKoName||"").replace(/^(고용|Recruitment)\s*[:：·-]?\s*/i,"").trim()||r.soldierKoName}
+function groupCount(id){return DATA?.profiles?.filter(p=>p.soldierType===id).length||0}
+function familyType(r){return r._mode==="profile"?r.soldierType:r._mode==="final"?r.profile?.soldierType:r._mode==="soldier"?r.id:null}
+function dbLink(area,id,label){const h=area==="manufacture"?"#recipe=":area==="research"?"#research=":"#item=";return '<a class="db-link" href="../'+area+'/'+h+encodeURIComponent(id)+'" target="_blank" rel="noopener">'+esc(label)+'</a>'}
 
 async function load(){
   performance.mark("soldiers:load-start");
@@ -22,6 +26,8 @@ async function load(){
   for(const t of DATA.transformations||[])TRANSFORM_BY_ID.set(t.id,t);
   for(const b of DATA.bonuses||[])BONUS_BY_ID.set(b.id,b);
   for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
+  const family=$("#family");family.innerHTML='<option value="">모든 기본 병종</option>'+DATA.soldiers.filter(s=>groupCount(s.id)).map(s=>'<option value="'+esc(s.id)+'">'+esc(s.koName)+' ('+groupCount(s.id)+')</option>').join("");
+  const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
   renderSummary();
   render();
   performance.mark("soldiers:ready");
@@ -465,7 +471,7 @@ function dataset(){
     const rows=(DATA.transformations||[]).map(x=>({...x,_mode:"transformation",_name:x.koName,_id:x.id,_route:(x.allowedSoldierTypes||[]).join(", ")}));
     DATASET_CACHE.set(mode,rows);return rows;
   }
-  const rows=DATA.profiles.map(x=>({...x,_mode:"profile",_name:x.soldierKoName,_id:x.soldierType,_route:x.sourceKoName}));
+  const rows=DATA.profiles.map(x=>({...x,_mode:"profile",_name:variantName(x),_id:x.sourceId,_route:x.sourceKoName}));
   DATASET_CACHE.set(mode,rows);return rows;
 }
 function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
@@ -490,7 +496,7 @@ function sortValue(row,key,band){
 function searchBlob(row){
   if(SEARCH_CACHE.has(row))return SEARCH_CACHE.get(row);
   const blob=[
-    row._name,row._id,row._route,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
+    row._name,row._id,row._route,row.soldierKoName,row.soldierType,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
     ...(row.traitNames||[]),...(row.traits||[]).flatMap(t=>[t.koName,t.enName,t.id]),
     ...(row.requires||[]),...(row.allowedSoldierTypes||[]),...(row.requiredPreviousTransformations||[]),
     ...(row.forbiddenPreviousTransformations||[]),...(row.enhancementNames||[]),...(row.addedTraitNames||[]),...(row.finalTraitNames||[])
@@ -500,7 +506,9 @@ function searchBlob(row){
 function filtered(){
   const q=$("#search").value.trim().toLowerCase();
   const traitsOnly=!$("#traitsOnly").disabled&&$("#traitsOnly").checked;
+  const family=$("#family").value;
   let a=dataset().filter(r=>
+    (!family||familyType(r)===family)&&
     (!q||searchBlob(r).includes(q))&&
     (!traitsOnly||r._mode==="profile"&&r.traitNames.length)&&
     finalFilterMatch(r)
@@ -544,28 +552,30 @@ function render(){
     mode==="final"?"최종 강화 이론 후보 — 훈련 순서 + 분기 배제 검사":
     mode==="soldiers"?"기본 바디 규칙 — 내부 RuleSoldier 29종":
     "변신·훈련 루트 — 본체 능력치 / 특성 보너스 분리";
+  const visibleStats=$("#statView").value==="all"?statOrder:["tu","health","reactions","firing","strength"];
   let head;
   if(mode==="profiles"){
     head=[
-      th("획득형","name"),'<th>획득 루트·자동 특성</th>',th("비용","cost"),th("시간","time"),th("월 유지비","salary"),
-      ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장 하드캡"))
+      th("획득형 / 기본 병종","name"),'<th>획득 방법 · 시작 특성</th>',th("비용","cost"),th("시간","time"),th("월 유지비","salary"),
+      ...visibleStats.map(k=>th(DATA.statLabels[k],k,"능력 / 성장 하드캡"))
     ].join("");
   }else if(mode==="final"){
     head=[
       th("획득형","name"),'<th>조건부 강화 조합 · 분기 경고</th>',th("특성","totalTraitCount"),th("강화비용","cost"),
-      ...statOrder.map(k=>th(DATA.statLabels[k],k,"실효값 / 성장 하드캡"))
+      ...visibleStats.map(k=>th(DATA.statLabels[k],k,"실효값 / 성장 하드캡"))
     ].join("");
   }else if(mode==="soldiers"){
     head=[
       th("기본 바디","name"),'<th>해금 조건</th>',th("구매가","costBuy"),th("월 유지비","costSalary"),
-      ...statOrder.map(k=>th(DATA.statLabels[k],k,"능력 / 성장 하드캡"))
+      ...visibleStats.map(k=>th(DATA.statLabels[k],k,"능력 / 성장 하드캡"))
     ].join("");
   }else{
     head=[
       th("변신/훈련","name"),'<th>적용 대상·특성</th>',th("비용","cost"),th("회복","recoveryTime"),
-      ...statOrder.map(k=>th("Δ "+DATA.statLabels[k],k,"능력 / 특성"))
+      ...visibleStats.map(k=>th("Δ "+DATA.statLabels[k],k,"능력 / 특성"))
     ].join("");
   }
+  $("#soldierTable").classList.toggle("compact",$("#statView").value!=="all");
   $("#soldierTable thead").innerHTML="<tr>"+head+"</tr>";
   const rows=filtered();
   let shown=rows;
@@ -630,8 +640,8 @@ function rowHtml(r,band){
     c1=fmt(r.cost);c2=fmt(r.recoveryTime);
   }
   const costCells='<td>'+c1+'</td><td>'+c2+'</td>'+(r._mode==="profile"?'<td>'+c3+'</td>':'');
-  return '<tr data-row="'+id+'"><td><span class="name">'+r._name+'</span><span class="id">'+r._id+'</span></td><td>'+second+'</td>'+costCells+
-    statOrder.map(k=>{
+  return '<tr data-row="'+id+'"><td><span class="name">'+esc(r._name)+'</span>'+(r._mode==="profile"?'<span class="family">기본 병종: '+esc(r.soldierKoName)+' · 파생 '+groupCount(r.soldierType)+'종</span>':r._mode==="final"?'<span class="family">획득형: '+esc(variantName(r.profile))+'</span>':"")+'<span class="id">'+esc(r._id)+'</span></td><td>'+second+'</td>'+costCells+
+    ($("#statView").value==="all"?statOrder:["tu","health","reactions","firing","strength"]).map(k=>{
       const v=statValue(r,k,band);
       if(r._mode==="transformation"){
         const raw=Number(r.flatOverallStatChange?.[k])||0,trait=Number(r.traitStats?.[k])||0;
@@ -709,6 +719,9 @@ function openDetail(encoded){
   if(r._mode==="profile"){
     const salary=salaryRow(r.soldierType,r.rank);
     html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>현재 월 유지비</strong>'+fmt(r.salary)+'<br><small>'+(salary?esc(salary.koName||salary.id)+' · 기본 '+fmt(salary.base)+(salary.bonus?' + 계급 추가 '+fmt(salary.bonus):''):'계급 '+fmt(r.rank))+'</small></div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
+    html+='<p class="identity-line"><strong>기본 병종</strong> '+esc(r.soldierKoName)+' <span>→</span> <strong>획득형</strong> '+esc(variantName(r))+'</p>';
+    html+='<div class="cross-links">'+(r.sourceType==="manufacture"?dbLink("manufacture",r.sourceId,"제조 DB에서 영입법"):"")+(r.requires||[]).map(x=>dbLink(x==="STR_RECRUIT_PEASANTS"?"research":"items",x,x)).join("")+'</div>';
+    html+='<h3>같은 기본 병종에서 얻는 다른 병사</h3><div class="family-grid">'+DATA.profiles.filter(p=>p.soldierType===r.soldierType).map(p=>'<button class="family-choice" type="button" data-profile="'+esc(p.id)+'"><strong>'+esc(variantName(p))+'</strong><small>'+esc(p.traits.map(t=>t.koName).join(" · ")||"시작 특성 없음")+'</small></button>').join("")+'</div>';
     html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
     html+=statsCapGrid("자동 특성 포함 능력치 / 성장 하드캡",r);
     html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
@@ -752,6 +765,7 @@ function openDetail(encoded){
   const profile=r._mode==="profile"?r:r._mode==="final"?r.profile:null;
   html+='<div id="progressionDetail" role="status">획득 경로·연구 조건을 불러오는 중…</div>';
   $("#detailBody").innerHTML=html;
+  $("#detailBody").querySelectorAll("[data-profile]").forEach(b=>b.onclick=()=>{const p=DATA.profiles.find(p=>p.id===b.dataset.profile);if(p){$("#detailDialog").close();$("#dataset").value="profiles";$("#family").value="";$("#search").value=p.sourceId;DATASET_CACHE.delete("profiles");render();openDetail(encodeURIComponent(p.id))}});
   $("#detailDialog").showModal();
   const target=$("#progressionDetail");
   loadProgression().then(()=>{if(target.isConnected)target.innerHTML=renderProgression(r._id,profile)||"별도 획득 경로 없음";})
@@ -883,7 +897,7 @@ function renderProgression(soldierId,profile=null){
 }
 
 $("#search").addEventListener("input",debounce(()=>{finalPage=0;render()}));
-["dataset","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener("change",()=>{finalPage=0;render()}));
+["dataset","family","statView","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener("change",()=>{finalPage=0;render()}));
 $("#finalPathFilter").addEventListener("change",()=>{
   if(finalReady)updateBranchAudits();
   finalPage=0;

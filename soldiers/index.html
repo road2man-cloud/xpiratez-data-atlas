@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>XPiratez 병종 DB</title>
-<link rel="stylesheet" href="styles.css?v=large-db-perf-20261011">
+<link rel="stylesheet" href="styles.css?v=soldier-lineage-20261026">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
     <a class="back" href="../">← Data Atlas</a> <a class="back" href="../trainings/">· 병사훈련·상호배타 조합</a>
-    <p class="eyebrow">XPiratez v.o1.1.1 · OXCE 8.6</p>
+    <p class="eyebrow">원본 게임 데이터 · 실제 획득형 병종 계보</p>
     <h1>병종 DB</h1>
-    <p class="lede">“병종”을 29개의 내부 바디 규칙으로 축약하지 않습니다. 실제 획득 루트마다 초기 고정 스탯·자동 특성이 다르면 별도 생성형으로 분리하고, 특성 능력치까지 합산한 실전 생성 스펙으로 비교합니다.</p>
+    <p class="lede">실제 게임에서는 같은 <strong>농부</strong>라도 농부 혁명가·반 슈퍼변이체 소녀·돌격 클론 등 <strong>파생 획득형</strong>에 따라 얻는 방법과 시작 특성이 다릅니다. 기본 병종과 획득형 이름을 별도로 보여주고 같은 바디끼리 비교합니다.</p>
   </div>
 </header>
 
@@ -25,6 +25,7 @@
       <label for="search">검색</label>
       <input id="search" type="search" placeholder="병종, 획득 루트, Saint, 특성, 훈련…">
     </div>
+    <div class="field"><label for="family">기본 병종 필터</label><select id="family"><option value="">전체 병종</option></select></div>
     <div class="field">
       <label for="dataset">표</label>
       <select id="dataset">
@@ -34,6 +35,7 @@
         <option value="transformations">변신·훈련 루트</option>
       </select>
     </div>
+    <div class="field"><label for="statView">표시 수치</label><select id="statView"><option value="key">핵심 5개</option><option value="all">전체 12개</option></select></div>
     <div class="field">
       <label for="band">능력치 기준</label>
       <select id="band">
@@ -84,12 +86,11 @@
     <label class="check"><input id="traitsOnly" type="checkbox"> 생성 시 자동 특성 보너스가 붙는 획득형만</label>
   </section>
 
-  <section class="explain card">
-    <strong>실제 획득형 계산</strong>
+  <details class="explain card"><summary><strong>고급 계산 기준 · 강화 분기 설명 펼치기</strong></summary>
     <span>기본 Soldier 랜덤치 → 획득 루트의 <code>spawnedSoldier.currentStats</code> 덮어쓰기 → 생성 시 <code>transformationBonuses</code> 능력치 합산 → OXCE 최소치 보정.</span>
     <span>표의 각 능력치는 <b>현재 실효값 / 성장 하드캡</b>으로 표시합니다. 하드캡은 최종 병종의 <code>statCaps</code>에 보유 특성(SoldierBonus)의 능력치 보너스를 합산한 <b>일반 성장 상한</b>입니다. 훈련캡(<code>trainingStatCaps</code>)은 별도 값이며, 특수 생성·변환으로 일반 성장 상한을 넘는 능력치는 절대 최대치로 잘못 해석하지 않도록 붉게 구별합니다. 방어구 보너스는 포함하지 않습니다.</span>
     <span><b>최종 강화 조합</b>은 병종·변신 순서만 만족하는 <b>이론적 상한 후보</b>입니다. 선장·Codex·여왕 분기, 연구 획득 이벤트 및 희귀 실물 재료가 모두 충족됐다는 뜻은 아닙니다. 원본에서 확인되는 <b>내부 전용·선장 고유 동시 선택·야만 여왕/Codex·Diverging Paths 분기 상호배제</b>는 기본 표에서 제외합니다. 갈림길을 직접 선택하면 그 분기에서 얻을 수 없는 특성 강화도 제외합니다. <b>남아 있는 조합 역시 이벤트/선장 진행/실물 조건 때문에 실행 가능이 확정된 것은 아닙니다.</b> 연속 병종 전환은 원본의 이력·병종 배제를 매 단계 적용하며, 사망 대원에게만 가능한 전환은 사망·부활 과정을 임의로 가정해 다른 전환과 자동 연결하지 않습니다. 실제 순서·훈련 조건은 <a href="../trainings/" style="color:#93c5fd">병사훈련 DB</a>에서 검토하세요.</span>
-  </section>
+  </details>
 
   <section class="table-card card">
     <div class="table-head">
@@ -108,7 +109,7 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=transformation-exclusions-20261021"></script>
+<script type="module" src="app.js?v=soldier-lineage-20261026"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>
