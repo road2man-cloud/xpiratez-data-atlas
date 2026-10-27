@@ -27,8 +27,10 @@ export function importModernSave(text,data){
     history.push(Number(match[1]));
   }
   const inline=body.match(/^funds:[ \t]*([+-]?\d+)[ \t]*$/m);
+  const monthsMatch=body.match(/^monthsPassed:[ \t]*(\d+)[ \t]*$/m);
   return {
     research,personnel,
+    monthsPassed:monthsMatch?Number(monthsMatch[1]):null,
     funds:history.length?history.at(-1):inline?Number(inline[1]):null,
     warnings:[...research.warnings,...personnel.warnings],
     compatible:![...(research.unknownCompleted||[]),...(research.unknownDisabled||[])].some(id=>
@@ -49,7 +51,8 @@ export function modernSoldierProof(data,save,baseIndex,soldierIndex){
   state.armorId=soldier.armor||state.armorId;
   state.history=new Map(Object.entries(soldier.previousTransformations||{}));
   state.historyKnown=soldier.historyComplete;
-  state.bonusIds=new Set(Object.keys(soldier.transformationBonuses||{}));
+  state.bonusCounts=new Map(Object.entries(soldier.transformationBonuses||{}).filter(([,n])=>Number(n)>0).map(([id,n])=>[id,Number(n)]));
+  state.bonusIds=new Set(state.bonusCounts.keys());
   const thresholds=data.woundThresholds||{health:100,mana:200};
   // Missing zero-value recovery/healthMissing/manaMissing fields are normal
   // in an OXCE save; use zero only when the surrounding unit parsed fully.
