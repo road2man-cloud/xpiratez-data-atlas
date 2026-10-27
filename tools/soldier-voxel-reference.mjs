@@ -2,6 +2,14 @@
 // YAML merge as the modern soldier database. Do not conflate unit tile size
 // (Armor::size), height, or the non-rectangular voxel collision loft mask.
 const numberOr=(v,fallback)=>v==null||!Number.isFinite(Number(v))?fallback:Math.trunc(Number(v));
+// Armor::loftempsSet is an array of collision-template IDs, NOT a voxel width.
+// If the armor does not declare one, preserve unknown rather than assuming a hitbox.
+function loftTemplates(armor){
+  if(Array.isArray(armor?.loftempsSet)&&armor.loftempsSet.length)
+    return armor.loftempsSet.filter(x=>Number.isInteger(x));
+  const legacy=numberOr(armor?.loftemps,-1);
+  return legacy>=0?[legacy]:[];
+}
 
 function effectiveShape(soldier,armor){
   const height=(key)=>{const override=numberOr(armor?.[key],-1);return override===-1?numberOr(soldier[key],0):override;};
@@ -10,6 +18,7 @@ function effectiveShape(soldier,armor){
   const size=Math.max(1,numberOr(armor?.size,1));
   return {
     standing,kneeling,floating,size,
+    loftempsSet:loftTemplates(armor),
     // TileEngine::getOriginVoxel: standing/kneeling height + floating - 4
     // for non-throw projectiles on level ground (no terrain adjustment).
     standingShotOrigin:standing+floating-4,
@@ -52,6 +61,7 @@ export function buildSoldierVoxelReference({effectiveMerged,sourceHistory,tr}){
       kneelHeightOverride:numberOr(a.kneelHeight,-1),
       floatHeightOverride:numberOr(a.floatHeight,-1),
       size:Math.max(1,numberOr(a.size,1)),
+      loftempsSet:loftTemplates(a),
       allowsKneeling:typeof a.allowsKneeling==="boolean"?a.allowsKneeling:null,
       sourceFiles:sourceHistory["type:"+a.type]||[]
     };

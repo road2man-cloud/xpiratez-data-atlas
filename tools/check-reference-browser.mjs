@@ -40,6 +40,27 @@ try {
     .slice(1,7).map(x=>x.trim()),["17","11","17","11","13","7"],"Loknar 17/11, standing shot 13, kneeling shot 7");
   await page.locator("#voxel-species").selectOption("");
   assert.equal(await page.locator("#voxel-body-rows tr").count(),29,"all body rows");
+  await page.locator("#voxel-search").fill("블러드하운드");
+  assert((await page.locator("#voxel-body-rows tr").count())>=2,
+    "Bloodhound search includes the Loknar mount and Bloodhound soldier");
+  assert.equal(await page.locator("#voxel-body-STR_SOLDIER_LOKNAR").count(),1,
+    "Bloodhound-mount search links to Loknar body");
+  const mountRow=page.locator("#voxel-armor-STR_LOKNAR_PLATE_MAIL_RIDER_UC-STR_SOLDIER_LOKNAR");
+  assert.equal(await mountRow.count(),1,
+    "Bloodhound-mount appears even with difference-only filter checked");
+  assert.deepEqual((await mountRow.locator("td").allTextContents()).slice(2,7).map(x=>x.trim()),
+    ["17","11","0","13","7"],"mounted Loknar keeps standing/kneeling heights and shot origins");
+  assert.match((await mountRow.locator("td").nth(8).textContent())||"",
+    /4 \(기본 2와 다름\)/,"mount collision template is different from ordinary Loknar");
+  await page.goto(base+"/reference/?species=STR_SOLDIER_LOKNAR"+
+    "#voxel-armor-STR_LOKNAR_PLATE_MAIL_RIDER_UC-STR_SOLDIER_LOKNAR",
+    {waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.querySelector("#voxel-armor-details")?.open===true,
+    {timeout:20000});
+  assert(await page.locator("#voxel-armor-STR_LOKNAR_PLATE_MAIL_RIDER_UC-STR_SOLDIER_LOKNAR").isVisible(),
+    "mounted Loknar direct link must expand armor differences");
+  await page.locator("#voxel-armor-details summary").click();
+  await page.locator("#voxel-species").selectOption("");
   await page.locator("#voxel-search").fill("로크나르");
   assert.equal(await page.locator("#voxel-body-rows tr").count(),1,
     "apostrophe-normalized Korean Loknar search");

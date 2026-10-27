@@ -109,6 +109,18 @@ for(const [id,standing,kneeling] of [
   assert.ok(s,id);
   assert.deepEqual([s.base.standing,s.base.kneeling],[standing,kneeling],id+" source heights");
 }
+const loknar=voxels.soldiers.find(s=>s.id==="STR_SOLDIER_LOKNAR");
+const loknarRider=armorById.get("STR_LOKNAR_PLATE_MAIL_RIDER_UC");
+assert.ok(loknar&&loknarRider,"mounted Bloodhound Loknar rule is indexed");
+assert.deepEqual(loknar.defaultShape.loftempsSet,[2],"basic Loknar collision mask");
+assert.deepEqual(loknarRider.loftempsSet,[4],"Bloodhound rider collision mask differs");
+assert.equal(loknarRider.size,1,"rider occupies one tile");
+assert.equal(loknarRider.standHeightOverride,-1,"rider inherits Loknar standing height");
+assert.equal(loknarRider.kneelHeightOverride,-1,"rider inherits Loknar kneeling height");
+assert.deepEqual([loknar.defaultShape.standingShotOrigin,loknar.defaultShape.kneelingShotOrigin],[13,7]);
+assert.ok(voxels.armors.every(a=>Array.isArray(a.loftempsSet)&&a.loftempsSet.length===a.size*a.size),
+  "full source collision template matrix for every unit armor tile");
+assert.ok(page.includes("블러드하운드") && voxelApp.includes("loftChanged"),"rider exceptions visible");
 assert.ok(voxels.armors.some(a=>a.size===2),"large two-tile armor geometries are indexed");
 assert.ok(voxels.armors.some(a=>a.allowsKneeling===false),"armor-level kneeling restrictions are indexed");
 for(const [file,sha] of Object.entries(voxels.sourceHashes)){

@@ -20,9 +20,17 @@
   };
   const normalize = text => String(text || "").normalize("NFKC").toLocaleLowerCase().replace(/[\s'’_-]/g,"");
   const alias = s => s.id === "STR_SOLDIER" ? "갈 일반갈" : "";
-  const textFor = s => normalize([s.koName,s.enName,s.id,alias(s)].join(" "));
+  const mountAlias = s => s.id === "STR_LOKNAR_PLATE_MAIL_RIDER_UC"
+    ? "블러드하운드 탄 로크나르 블러드하운드 탑승 로크나르 혈견 라이더" : "";
+  const textFor = s => normalize([s.koName,s.enName,s.id,alias(s),mountAlias(s)].join(" "));
   const fmt = n => Number.isFinite(Number(n)) ? String(n) : "—";
   const label = n => n == null ? "미지정" : n === false ? "불가 명시" : "허용 명시";
+  const loftChanged = (soldier, armor) => {
+    const previous = soldier.defaultShape.loftempsSet || [];
+    const current = armor.loftempsSet || [];
+    return previous.length > 0 && current.length > 0 &&
+      (previous.length !== current.length || current.some((id,i) => id !== previous[i]));
+  };
   const shapeFor = (s, a) => {
     const standing = a.standHeightOverride === -1 ? s.base.standing : a.standHeightOverride;
     const kneeling = a.kneelHeightOverride === -1 ? s.base.kneeling : a.kneelHeightOverride;
@@ -31,6 +39,7 @@
       standing, kneeling, floating,
       standingShotOrigin: standing + floating - 4,
       kneelingShotOrigin: kneeling + floating - 4,
+      loftempsSet: a.loftempsSet || [],
       size: a.size,
       allowsKneeling: a.allowsKneeling
     };
@@ -84,7 +93,8 @@
       const visible = available.filter(s =>
         (!selected || s.id === selected) &&
         (!query || textFor(s).includes(query) ||
-          normalize(s.defaultArmor).includes(query)));
+          normalize(s.defaultArmor).includes(query) ||
+          combos.some(({soldier,armor}) => soldier.id === s.id && textFor(armor).includes(query))));
       const ordered = [...visible].sort((a,b) => {
         if (sort.value === "kneel") return a.defaultShape.kneeling -
           b.defaultShape.kneeling || a.koName.localeCompare(b.koName,"ko");
@@ -128,7 +138,7 @@
         if (!onlyDifferences) return true;
         return h.standing !== s.base.standing || h.kneeling !== s.base.kneeling ||
           h.floating !== s.base.floating || h.size !== 1 ||
-          h.allowsKneeling === false;
+          h.allowsKneeling === false || loftChanged(s,a);
       });
       const sortedCombos = [...matches].sort((a,b) =>
         a.shape.kneeling-b.shape.kneeling ||
@@ -141,7 +151,8 @@
         nameLink(tr,s,a.id);
         const td = document.createElement("td");
         const title = document.createElement("strong");
-        title.textContent = a.koName;
+        title.textContent = a.koName + (a.id === "STR_LOKNAR_PLATE_MAIL_RIDER_UC"
+          ? " (블러드하운드 탑승)" : "");
         const small = document.createElement("small");
         small.textContent = a.id;
         td.append(title,small);tr.append(td);
@@ -153,6 +164,8 @@
           ? fmt(h.kneelingShotOrigin) + " (무릎 불가)"
           : fmt(h.kneelingShotOrigin),"num");
         cell(tr,h.size + "×" + h.size + "타일");
+        cell(tr,(a.loftempsSet || []).join(", ") + (loftChanged(s,a)
+          ? " (기본 " + (s.defaultShape.loftempsSet || []).join(", ") + "와 다름)" : ""),"fine");
         cell(tr,label(h.allowsKneeling));
         cell(tr,(a.sourceFiles||[]).join(" · "),"fine");
         afrag.append(tr);
@@ -160,15 +173,26 @@
       armorRows.replaceChildren(afrag);
       armorStatus.textContent = "방어구 × 병종 조합 " + matches.length +
         " / " + combos.length +
-        "개" + (onlyDifferences?" · 기본 병종 높이/점유/자세 제한과 다른 조합":"");
+        "개" + (onlyDifferences?" · 기본 병종의 높이·충돌 템플릿·점유·자세 제한과 다른 조합":"");
       updateQuery();
     }
 
+    function revealArmorLink() {
+      const id = decodeURIComponent(location.hash.slice(1));
+      if (!id.startsWith("voxel-armor-")) return;
+      const tr = document.getElementById(id);
+      if (!tr) return;
+      const panel = $("#voxel-armor-details");
+      if (panel) panel.open = true;
+      tr.scrollIntoView({block:"center"});
+    }
     search.addEventListener("input",render);
     species.addEventListener("change",render);
     sort.addEventListener("change",render);
     exceptions.addEventListener("change",render);
+    window.addEventListener("hashchange",revealArmorLink);
     render();
+    revealArmorLink();
   }
   initialize().catch(error => {
     bodyStatus.textContent = "참조표 데이터 로드 실패: " + error.message +
