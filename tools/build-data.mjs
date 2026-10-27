@@ -68,7 +68,9 @@ function mergeSection(oldValue,newValue){
 const merged={}, sourceHistory={};
 // Vanilla XCOM research loads before Piratez; honor Piratez "delete:" entries.
 // Without this, 25 live inherited research topics are absent from 2.1 paths.
-const hasStandardResearch=fs.existsSync(standardResearchPath);
+// Keep modern v.o2 enrichment isolated. The historical Atlas build must not
+// silently inherit a different game's vanilla research catalog.
+const hasStandardResearch=args.includes("--soldiers-modern-only")&&fs.existsSync(standardResearchPath);
 if(args.includes("--soldiers-modern-only")&&!hasStandardResearch)
   throw new Error("Required standard xcom1 research missing: "+standardResearchPath);
 if(hasStandardResearch){

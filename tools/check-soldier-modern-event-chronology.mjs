@@ -56,6 +56,12 @@ test("one-time event cannot be generated a second time",()=>{
   const v=eventScriptVerdict(rule,{...base,generatedEvents:{A:1}},{mode:"future"});
   assert.equal(v.kind,"blocked");
 });
+test("zero-cost event-only research cannot be silently completed in a lab",()=>{
+  const st={researched:new Set(),disabled:new Set()};
+  const rules={FLAG:{cost:0,requires:[],dependencies:[]}};
+  assert.equal(researchStep(st,"FLAG",rules,{method:"research"}).kind,"conditional");
+  assert.equal(researchStep(st,"FLAG",rules,{method:"event"}).kind,"applied");
+});
 test("research gift for disabled topic is rejected without checking dependency path",()=>{
   const st={researched:new Set(),disabled:new Set(["R"])};
   assert.equal(researchStep(st,"R",{R:{dependencies:["X"]}},{method:"event"}).kind,"blocked");
@@ -119,9 +125,7 @@ test("real captain saint still gated on actual 35_ save",()=>{
     month:save.monthsPassed,
     researched:new Set(save.research.completed),
     disabled:new Set(save.research.disabled),
-    // Generated-event history is not available in this adapter. The verified
-    // red-captain prerequisite still rejects this event independently.
-    generatedEvents:{}
+    generatedEvents:save.generatedEvents
   },{mode:"current"});
   assert.equal(current.kind,"blocked");
   assert(current.blocked.some(x=>x.includes("STR_CAPTAIN_RED")));

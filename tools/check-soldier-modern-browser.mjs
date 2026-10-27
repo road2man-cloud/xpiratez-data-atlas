@@ -42,6 +42,24 @@ try{
   await page.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
+  assert.equal(await page.locator("#rareMapLootPanel summary").count(),1);
+  await page.locator("#rareMapLootPanel summary").click();
+  const mapLootText=await page.locator("#rareMapLootProof").innerText();
+  assert(mapLootText.includes("EMANS_VOID20"));
+  assert(mapLootText.includes("ABASE_03"));
+  assert(mapLootText.includes("STR_BUTCHER_DONE"));
+  assert(mapLootText.includes("STR_GDX_004"));
+  assert(mapLootText.includes("STR_AVATAR_MEDALLION"));
+  assert(mapLootText.includes("임무 발동"));
+  await page.locator("#rareMapLootPanel summary").click();
+  console.log("PASS 2.1 rare mission map: fixed block items, unlock scripts and non-guaranteed recovery");
+  assert.equal(await page.locator("#routeSearchTarget option").count(),83);
+  await page.locator("#family").selectOption("STR_SOLDIER");
+  await page.locator("#dataset").selectOption("transformations");
+  await page.locator("#routeSearchButton").click();
+  assert((await page.locator("#routeSearchResult").innerText()).includes("세이브를 먼저 선택"));
+  await page.locator("#dataset").selectOption("profiles");
+  await page.locator("#family").selectOption("");
   await page.locator("#baselineGrowthCompare summary").click();
   assert.equal(await page.locator("#baselineGrowthTable tbody tr").count(),12);
   assert.equal((await page.locator('[data-gal-cap="firing"]').innerText()).trim(),"120");
@@ -141,6 +159,12 @@ try{
   assert((await page.locator("#futureCompareTable tbody tr").first().innerText()).includes("미완료")||
     (await page.locator("#futureCompareTable tbody tr").first().innerText()).includes("요구 연구"));
   console.log("PASS local fake save import with current-state gating, research-evidence comparison and gear-based stats");
+  await page.locator("#routeSearchTarget").selectOption("STR_CAREER_SOLDIER");
+  await page.locator("#routeSearchButton").click();
+  await page.waitForFunction(()=>document.querySelector("#routeSearchResult")?.textContent?.includes(
+    "동일 대원 계보에서 확정 제외"),{timeout:15000});
+  assert((await page.locator("#routeSearchResult").innerText()).includes("STR_UNAVAILABLE"));
+  console.log("PASS automatic future route UI respects imported save, internal-only blocker and never uploads the save");
 
   const invalid=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8").replace("v.o2","v.o1.1.1");
   await page.locator("#modernSaveFile").setInputFiles({

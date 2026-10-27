@@ -1,4 +1,5 @@
 import {splitPresentationResources} from "./data-normalize.mjs";
+import {buildMapLootSources} from "./soldier-map-provenance.mjs";
 
 export const SOLDIER_STAT_KEYS=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
 
@@ -265,7 +266,10 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       unlocks:Array.isArray(x.unlocks)?x.unlocks:[],
       getOneFree:Array.isArray(x.getOneFree)?x.getOneFree:[],
       getOneFreeProtected:x.getOneFreeProtected??{},
-      needItem:x.needItem??false,neededItem:x.neededItem??x.name,
+      sequentialGetOneFree:x.sequentialGetOneFree??false,
+      repeatable:x.repeatable??false,
+      needItem:x.needItem??false,destroyItem:x.destroyItem??false,
+      returnsItem:x.returnsItem??false,neededItem:x.neededItem??x.name,
       requiresBaseFunc:Array.isArray(x.requiresBaseFunc)?x.requiresBaseFunc:[],
       cost:x.cost??0
     }]));
@@ -366,7 +370,10 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     }]));
   const neededItems=new Set([
     ...transformationIndex.flatMap(x=>Object.keys(x.requiredItems||{})),
-    ...armorCatalog.map(x=>x.storeItem).filter(id=>id&&id!=="STR_NONE")
+    ...armorCatalog.map(x=>x.storeItem).filter(id=>id&&id!=="STR_NONE"),
+    // Explicit near/far progression witnesses that lead to future gear.
+    "STR_DREAM_ECHO","STR_MYSTERY_BOX","STR_GDX_005",
+    "STR_AVATAR_MEDALLION"
   ]);
   // Follow direct materials of future equippable/transform-required items.
   // Do not infer that a supply path's existence guarantees its ingredients.
@@ -385,6 +392,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       requires:Array.isArray(x.requiresBaseFunc)?x.requiresBaseFunc:[],
       research:Array.isArray(x.requires)?x.requires:[]
     }]));
+  const mapLootByItem=buildMapLootSources(effectiveMerged,neededItems);
   const itemSupply={};
   for(const id of neededItems){
     const it=(Array.isArray(effectiveMerged.items)?effectiveMerged.items:[]).find(x=>x?.type===id);
@@ -422,7 +430,8 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     }
     itemSupply[id]={exists:!!it,buyCost:it?.costBuy??0,
       buyRequires:it?.requires??[],buyRequirements:it?.buyRequirements??[],
-      manufacture:recipes,randomManufacture,researchGrants,eventGrants};
+      manufacture:recipes,randomManufacture,researchGrants,eventGrants,
+      mapLoot:mapLootByItem[id]||{sources:[],sourceCount:0,possiblyTruncated:false}};
   }
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,

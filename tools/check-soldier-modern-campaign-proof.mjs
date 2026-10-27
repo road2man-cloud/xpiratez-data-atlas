@@ -67,25 +67,43 @@ test("protected free research requires both researched source and guard",()=>{
   const r={...synthetic,researchRules:{...synthetic.researchRules,CODEX:{
     cost:4,needItem:true,neededItem:"CODEX",requiresBaseFunc:["CPU"],
     getOneFreeProtected:{GUARD:["DARK"]}},GUARD:{},DARK:{}}};
-  const w=world({researched:new Set(["CODEX","GUARD"]),items:{CODEX:1},
+  const w=world({researched:new Set(["GUARD"]),items:{CODEX:1},
     baseFunctions:new Set(["CPU"])});
   const good=verifyCampaignSequence(w,[
+    {type:"research",id:"CODEX"},
     {type:"freeResearch",source:"CODEX",research:"DARK"}],r);
   assert.equal(good.kind,"ruleset-consistent");
   assert(good.world.researched.has("DARK"));
-  const bad=verifyCampaignSequence(world({researched:new Set(["CODEX"]),
-    items:{CODEX:1},baseFunctions:new Set(["CPU"])}),[
+  const bad=verifyCampaignSequence(world({items:{CODEX:1},
+    baseFunctions:new Set(["CPU"])}),[
+      {type:"research",id:"CODEX"},
       {type:"freeResearch",source:"CODEX",research:"DARK"}],r);
   assert.equal(bad.kind,"blocked");
+  // A reward from a research already completed in the save has no token.
+  const historical=verifyCampaignSequence(world({researched:new Set(["CODEX","GUARD"])}),[
+    {type:"freeResearch",source:"CODEX",research:"DARK"}],r);
+  assert.equal(historical.kind,"blocked");
+  const expired=verifyCampaignSequence(w,[
+    {type:"research",id:"CODEX"},{type:"research",id:"C"},
+    {type:"freeResearch",source:"CODEX",research:"DARK"}],r);
+  assert.equal(expired.kind,"blocked");
+  const repeated=verifyCampaignSequence(w,[
+    {type:"research",id:"CODEX"},
+    {type:"freeResearch",source:"CODEX",research:"DARK"},
+    {type:"freeResearch",source:"CODEX",research:"DARK"}],r);
+  assert.equal(repeated.kind,"blocked");
 });
 test("event script negative research gate rejects an already chosen branch",()=>{
   const route=actual.eventResearchSources.STR_CAPTAIN_SAINT[0];
   const deps=["STR_CAPTAIN_RED","STR_CAPTAIN_GREEN","STR_CAPTAIN_GRAY",
     "STR_CAPTAIN_GOLD","STR_CAPTAINS_LOG_01"];
   const a=world({researched:new Set(deps),disabled:new Set(["STR_CAPTAIN_PUSSY"])});
-  const step={type:"eventResearch",event:route.event,script:"STR_CAPTAIN_SAINT",research:"STR_CAPTAIN_SAINT"};
+  const step={type:"eventResearch",event:route.event,script:"STR_CAPTAIN_SAINT",research:"STR_CAPTAIN_SAINT",assumeOutcome:true};
   const pass=verifyCampaignSequence(a,[step],actual);
-  assert.equal(pass.kind,"ruleset-consistent");
+  assert.equal(pass.kind,"conditional","Even a triggered event is not guaranteed to occur in future");
+  const missingAssumption=verifyCampaignSequence(a,[{...step,assumeOutcome:false}],actual);
+  assert.equal(missingAssumption.kind,"conditional");
+  assert(!missingAssumption.world.researched.has("STR_CAPTAIN_SAINT"));
   assert(pass.world.researched.has("STR_CAPTAIN_SAINT"));
   const fail=verifyCampaignSequence(world({researched:new Set([...deps,"STR_CAPTAIN_PUSSY"])}),[step],actual);
   assert.equal(fail.kind,"blocked");
@@ -133,6 +151,41 @@ test("insufficient materials stops manufacture before item creation",()=>{
 test("time cannot be reversed to re-open expired events",()=>{
   const result=verifyCampaignSequence(world({month:12}),[{type:"advanceMonth",month:4}],synthetic);
   assert.equal(result.kind,"blocked");
+});
+test("clone transformation is not a continuation of the same soldier",()=>{
+  const r={...synthetic,transformations:[{
+    id:"CLONE",createsClone:true,allowsLiveSoldiers:true,
+    allowedSoldierTypes:["GAL"],requiredItems:{},
+    requiredCommendations:{},requiredMinStats:{},requiredMaxStats:null,cost:0
+  }]};
+  const result=verifyCampaignSequence(world(),[
+    {type:"transform",soldier:"S",transform:"CLONE"}],r);
+  assert.equal(result.kind,"blocked");
+  assert(!result.world.soldiers[0].state.history.has("CLONE"));
+});
+test("free grant is selected at source completion, not after its guard appeared",()=>{
+  const r={...synthetic,researchRules:{CODEX:{getOneFreeProtected:{GUARD:["DARK"]}},
+    GUARD:{},DARK:{}}};
+  const result=verifyCampaignSequence(world(),[
+    {type:"research",id:"CODEX"},{type:"research",id:"GUARD"},
+    {type:"freeResearch",source:"CODEX",research:"DARK"}],r);
+  assert.equal(result.kind,"blocked");
+});
+test("even deterministic event triggers are still conditional on event scheduler",()=>{
+  const route=actual.eventResearchSources.STR_CAPTAIN_SAINT[0];
+  const deps=["STR_CAPTAIN_RED","STR_CAPTAIN_GREEN","STR_CAPTAIN_GRAY",
+    "STR_CAPTAIN_GOLD","STR_CAPTAINS_LOG_01"];
+  const w=world({researched:new Set(deps),disabled:new Set(["STR_CAPTAIN_PUSSY"]),
+    generatedEvents:null});
+  const step={type:"eventResearch",event:route.event,script:"STR_CAPTAIN_SAINT",
+    research:"STR_CAPTAIN_SAINT"};
+  const missing=verifyCampaignSequence(w,[step],actual);
+  assert.equal(missing.kind,"conditional");
+  const assumed=verifyCampaignSequence(w,[{...step,assumeOutcome:true}],actual);
+  assert.equal(assumed.kind,"conditional");
+  assert(assumed.world.researched.has("STR_CAPTAIN_SAINT"));
+  assert.equal(assumed.world.generatedEvents,null,
+    "unknown historical event list must not be replaced by a falsely complete map");
 });
 test("wrong soldier armor cannot be equipped",()=>{
   const r={...synthetic,armorCatalog:[{id:"P_ONLY",storeItem:"ARMOR",soldierTypes:["PEASANT"]}]};

@@ -8,6 +8,14 @@ import {growStatEnvelope} from "../public/soldiers/modern/growth-envelope.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
 const text=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8");
 const fixture=importModernSave(text,data);
+assert.equal(fixture.generatedEvents,null,"missing one-time history must remain unknown");
+const eventFixture=importModernSave(text.replace("monthsPassed: 1",
+  "monthsPassed: 1\ngeneratedEvents:\n  STR_REPEAT_EVENT: 2\n  STR_UNUSED_EVENT: 0"),data);
+assert.equal(eventFixture.generatedEvents.STR_REPEAT_EVENT,2);
+assert.equal(eventFixture.generatedEvents.STR_UNUSED_EVENT,0);
+assert.equal(importModernSave(text.replace("monthsPassed: 1",
+  "monthsPassed: 1\ngeneratedEvents:\n  STR_REPEAT_EVENT: invalid"),data).generatedEvents,null,
+  "malformed event-history YAML must never turn into known absence");
 assert.equal(fixture.funds,4000,"use LAST finance-history entry");
 assert.equal(fixture.personnel.bases.length,1);
 assert.equal(fixture.personnel.bases[0].soldiers.length,1);
@@ -51,6 +59,8 @@ if(realPath){
   assert.equal(real.personnel.bases.reduce((n,b)=>n+b.soldiers.length,0),53);
   assert.equal(real.research.disabled.length,44);
   assert(real.funds!==null);
+  assert(real.generatedEvents&&Object.keys(real.generatedEvents).length>50,
+    "actual X-Piratez 2.1 save contains one-time event history");
   let checked=0,exactRaw=0,unverifiedRaw=0,displayedWithEquipment=0,overcapStats=0;
   for(let b=0;b<real.personnel.bases.length;b++)
     for(let s=0;s<real.personnel.bases[b].soldiers.length;s++){
