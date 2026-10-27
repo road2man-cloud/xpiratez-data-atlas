@@ -19,7 +19,7 @@
     "check:play-guide": "node tools/check-play-guide.mjs",
     "check": "npm run check:all",
     "check:core": "node tools/check-data.mjs",
-    "check:all": "npm run check:core && npm run check:site && npm run check:public-gzip && npm run check:starting && npm run check:item-research && npm run check:item-usage && npm run check:editorials && npm run check:research-decisions && npm run check:manufacture && npm run check:events && npm run check:enemy-forces && npm run check:craft-weapons && npm run check:soldiers && npm run check:soldiers:modern && npm run check:trainings && npm run check:play-guide && npm run check:progression && npm run check:choices && npm run check:facilities && npm run check:facilities-frontend && npm run check:armors && npm run check:weapons && npm run check:standard && npm run check:db-runtime && npm run check:reference",
+    "check:all": "npm run check:core && npm run check:site && npm run check:public-gzip && npm run check:starting && npm run check:item-research && npm run check:item-usage && npm run check:editorials && npm run check:research-decisions && npm run check:manufacture && npm run check:events && npm run check:enemy-forces && npm run check:craft-weapons && npm run check:soldiers && npm run check:soldiers:modern && npm run check:trainings && npm run check:play-guide && npm run check:progression && npm run check:choices && npm run check:facilities && npm run check:facilities-frontend && npm run check:armors && npm run check:weapons && npm run check:standard && npm run check:db-runtime && npm run check:research-21 && npm run check:reference",
     "check:site": "node tools/check-site-assets.mjs",
     "check:reference": "node tools/check-reference.mjs",
     "check:functional:browser": "node tools/check-site-functional.mjs",
@@ -52,6 +52,9 @@
     "check:craft-weapons": "node tools/check-craft-weapons.mjs --data public/data",
     "check:editorials": "node tools/check-editorial-quality.mjs --data public/items/data",
     "check:research-decisions": "node tools/check-research-decision-insights.mjs --data public/items/data",
+    "build:research-21": "node tools/build-research-exclusivity-21.mjs",
+    "check:research-21": "node tools/check-research-exclusivity-21.mjs",
+    "check:research-21:browser": "node tools/check-research-exclusivity-21-browser.mjs",
     "check:choices": "node tools/check-choice-coverage.mjs && node tools/check-choice-exclusions.mjs && node tools/check-choice-engine-coverage.mjs && node tools/check-choice-simulator.mjs && node tools/check-research-branch-conflicts.mjs && node tools/check-research-story-routes.mjs && node tools/check-captain-benefits.mjs && node tools/check-save-import.mjs",
     "build:db-runtime": "node tools/build-db-runtime.mjs",
     "check:db-runtime": "node tools/check-db-runtime.mjs"

@@ -6,6 +6,7 @@
   <meta name="color-scheme" content="dark">
   <title>XPiratez Research DB</title>
   <link rel="stylesheet" href="../items/styles.css?v=20261018-research-clean-v2">
+  <link rel="stylesheet" href="./exclusivity-21.css?v=20261027-r21">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body class="research-game-list" data-mode="research" data-data-base="../items/data">
@@ -16,7 +17,7 @@
     <p id="metaLine" class="muted">데이터 확인 중…</p>
     <p role="note" class="muted"><strong>데이터 기준: X-Piratez v.o1.1.1 / OXCE 8.6.</strong> <a href="../reference/">최신 2.1 / 8.7.1 엔진 참조표</a>와 버전이 다릅니다. 최신 환경에서는 연구 선행·해금·아이템 연결의 존재와 실제 조건을 다시 확인해야 합니다.</p>
   </div>
-  <div><a class="ghost" href="../items/">아이템 DB</a> <a class="ghost" href="../manufacture/">제조 DB</a> <a class="ghost" href="../trainings/">병사훈련 DB</a> <a class="ghost" href="../">전체 아틀라스</a></div>
+  <div><a class="ghost" href="#researchExclusivity21">2.1 연구 상호배제 검사</a> <a class="ghost" href="../items/">아이템 DB</a> <a class="ghost" href="../manufacture/">제조 DB</a> <a class="ghost" href="../trainings/">병사훈련 DB</a> <a class="ghost" href="../">전체 아틀라스</a></div>
 </header>
 
 <main>
@@ -47,6 +48,32 @@
     </label>
     <div class="research-story-help"><p id="researchStoryRouteInfo" aria-live="polite">분기 판정 데이터 불러오는 중…</p><small>선택한 분기의 선행 선택 연구까지 완료된 것으로 가정합니다. 연구 자체의 영구 배제와 일반 연구의 연쇄 차단을 구분하며, 이벤트 지급·실물 표본·시설 등 별도 조건은 확정 판정하지 않습니다.</small></div>
   </section>
+  <details id="researchExclusivity21" class="r21-panel">
+    <summary><strong>X-Piratez 2.1 / OXCE 8.7.1</strong> 연구 상호배제·이벤트 경로 검사 <span>별도 최신 규칙 · 세이브 로컬 판정</span></summary>
+    <div class="r21-inner">
+      <p class="r21-caution"><strong>버전 구분:</strong> 위 연구 검색·분기표는 기존 v.o1.1.1 자료입니다. 이 검사기는 실제 2.1 연구 규칙 4,645개를 별도로 사용합니다. 두 버전의 판정을 합쳐서 확정하지 않습니다.</p>
+      <p class="r21-caution">직접 <code>disables</code>·<code>reenables</code>, 선행 <code>dependencies</code>/필수 <code>requires</code>, <code>unlocks</code> 및 확률적 <code>getOneFreeProtected</code>, 이벤트의 긍정·부정 연구 조건과 월 제한을 구분합니다. <strong>모든 미래 연구·아이템을 한 번에 합산하는 기능이 아닙니다.</strong></p>
+      <div id="r21Loading" class="r21-muted" aria-live="polite">패널을 열면 2.1 연구 규칙을 불러옵니다.</div>
+      <div id="r21Content" hidden>
+        <div class="r21-import">
+          <label><b>내 게임 세이브 불러오기 (.sav)</b>
+            <input id="r21Save" type="file" accept=".sav,.yaml,.yml,text/plain">
+          </label>
+          <div><button id="r21Preset" type="button">게으른 선장 예시</button> <button id="r21Clear" type="button">모든 가정 초기화</button></div>
+          <small>브라우저 안에서 <code>discovered</code>·<code>researchRuleStatus</code>만 분석합니다. 세이브 내용은 서버로 보내거나 저장하지 않습니다. 이벤트·아이템·시설 등 미확인 조건은 가능으로 확정하지 않습니다.</small>
+          <p id="r21Source" class="r21-muted"></p>
+        </div>
+        <p id="r21Message" class="r21-message" role="status" aria-live="polite"></p>
+        <label class="r21-search"><b>2.1 연구 검색</b><input id="r21Search" type="search" placeholder="STR_DARK_STAR / STR_CAPTAIN_RED / 한글 연구명" autocomplete="off"></label>
+        <div id="r21Results" class="r21-results"></div>
+        <div id="r21Detail" class="r21-detail"></div>
+        <div class="r21-timeline-title"><b>이후 완료 가정 · 시간순</b><button id="r21Undo" type="button" disabled>마지막 가정 취소</button></div>
+        <div id="r21Timeline" class="r21-timeline"></div>
+        <p class="r21-caution">일반 연구를 가정할 때 선행 연구를 검사하며, 이벤트·무료 추첨은 실제 발생/당첨을 주장하지 않고 별도 가정으로만 반영합니다. 일회성 이벤트 발생 이력, 아이템 재고, 기지 시설, 미션 결과와 실제 엔진 전투 QA는 미검증 항목으로 표시됩니다.</p>
+      </div>
+    </div>
+  </details>
+
   <div class="research-legend" aria-label="연구별 해금 유형 범례"><span><i class="research-marker active marker-mission"></i>임무 등장 조건</span><span><i class="research-marker active marker-manufacture"></i>제조법 조건</span><span><i class="research-marker active marker-purchase"></i>아이템 구매 조건</span><span><i class="research-marker active marker-followup"></i>후속 연구 연결</span><small>색상은 관련 조건·연결의 존재를 뜻합니다. 연구 완료만으로 즉시 임무·상품·제조법이 열리는 것은 아닙니다.</small></div>
 
   <div class="status">
@@ -84,6 +111,7 @@
 </dialog>
 
 <script type="module" src="../items/app.js?v=soldier-lineage-20261026"></script>
+<script type="module" src="./exclusivity-21-ui.js?v=20261027-r21"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

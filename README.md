@@ -63,6 +63,26 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 
 병종/탈것의 **명목 누적 연구량**은 표시된 해금 루트의 `dependencies`와 `requires`를 중복 제거해 합산합니다. OXCE는 이미 비활성화된 선행 연구를 검사에서 제외할 수 있고 `unlocks`, `getOneFree`, 이벤트 직접 지급으로 우회하는 경우가 있으므로, 실제 플레이에서 필요한 연구량은 이 명목값보다 작을 수 있습니다. 페이지는 분기 연구·실물 표본·필요 기지기능·이벤트 조건을 함께 표시해 실제 경로를 따로 판단할 수 있게 합니다.
 
+## X-Piratez 2.1 연구 상호배제 검사기 (별도 최신판)
+
+[연구 DB](public/research/index.html)의 접이식 **「X-Piratez 2.1 / OXCE 8.7.1 연구 상호배제·이벤트 경로 검사」**는 기존 v.o1.1.1 연구 DB와 다른 원본을 사용합니다. 2.1 연구 4,645개, `disables` 관계 441건, `getOneFreeProtected` 출처 102개, 연구·아이템 보상을 갖는 이벤트 스크립트 경로 1,478건을 최신 로컬 규칙에서 재추출했습니다. 1.1.1 검색 결과에 2.1의 확정 판정표를 섞지 않습니다.
+
+- OXCE 2.1 세이브 `.sav`의 `discovered`·`researchRuleStatus`를 **사용자 브라우저에서만** 읽습니다. 서버 전송·사이트 저장·저장본 내장 없음.
+- 연구 완료·직접 영구 배제와 일반 선행 미완료를 구분합니다. `dependencies`의 `unlocks` 우회, 우회할 수 없는 `requires`, `getOneFree`·보호된 `getOneFreeProtected`의 원본 추첨 티켓, 조건부 이벤트 직접 연구 지급을 별도로 표시합니다.
+- `STR_CAPTAIN_LAZYASS` 선장 분기, `STR_REJECT_THE_POWER` 차단, 적색 코덱스의 `STR_SHADOW_CHASING` 충족 후 `STR_DARK_STAR` 무료 연구 후보, 황금 선장 이벤트의 `STR_VIP_014` 확률 지급을 회귀 검증했습니다.
+- 이벤트 직접 지급도 `researchRuleStatus=2`이면 엔진이 거부합니다. `reenables`와 일회성 이벤트·아이템/시설 조건의 미검증 부분을 구분합니다. 가능한 미래 경로는 **가능성**이지 게임 내 실제 획득 증명이 아닙니다.
+
+원본 2.1 데이터 재생성 (개인 세이브 **불필요**):
+
+```bash
+npm install
+npm run build:research-21 -- --source "C:/.../Dioxine_XPiratez/user/mods/Piratez"
+npm run check:research-21
+npm run check:research-21:browser
+```
+
+생성 파일은 `public/data/research-exclusivity-21.json` 및 gzip 버전이고, 생성기는 원본 게임 파일을 수정하지 않습니다. 캡틴 시뮬레이터와 기존 v.o1.1.1 연구 DB는 그대로 유지합니다.
+
 ## 로컬에서 데이터 갱신
 
 Node.js 20+ 기준입니다.
