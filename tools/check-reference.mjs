@@ -12,6 +12,9 @@ const current = parse("public/reference/items.json");
 const page = read("public/reference/index.html");
 const home = read("public/index.html");
 const app = read("public/reference/app.js");
+const voxels = parse("public/reference/unit-voxels.json");
+const voxelApp = read("public/reference/voxels.js");
+const modernSoldiers = parse("public/data/soldiers-modern-index.json");
 
 function contiguous(arr, max, field) {
   assert.equal(arr.length, max + 1, field + " count");
@@ -60,4 +63,62 @@ assert.ok(home.includes('href="./reference/"'), "main navigation missing");
 assert.ok(home.includes('class="card" href="./reference/"'), "main card missing");
 assert.ok(!home.includes("v.o1.1.1·v.o2"), "main card still advertises versions");
 
-console.log("PASS latest-only reference: 33 training modes, 20 damage types, 10 random types, 306 current items, original source hashes, no legacy version controls/data.");
+assert.match(voxels.gameVersion, /^v[.]o2/, "voxel table must use the current game");
+assert.equal(voxels.engine, "OXCE 8.7.1");
+assert.deepEqual(voxels.tile,{x:16,y:16,z:24});
+assert.equal(voxels.soldiers.length,29,"all playable species/body types");
+assert.equal(voxels.armors.length,540,"all modern wearable armor rules");
+assert.equal(voxels.counts.soldiers,voxels.soldiers.length);
+assert.equal(voxels.counts.wearableArmors,voxels.armors.length);
+const soldierIds = new Set(voxels.soldiers.map(x=>x.id));
+assert.equal(soldierIds.size,voxels.soldiers.length,"unique soldier IDs");
+const armorIds = new Set(voxels.armors.map(x=>x.id));
+assert.equal(armorIds.size,voxels.armors.length,"unique armor IDs");
+const armorById = new Map(voxels.armors.map(a=>[a.id,a]));
+const originals = new Map(modernSoldiers.soldiers.map(s=>[s.id,s]));
+assert.equal(originals.size,voxels.soldiers.length,"modern soldier dataset alignment");
+for(const row of voxels.soldiers){
+  assert.ok(originals.has(row.id),"soldier present in current 2.1 data: "+row.id);
+  const original = originals.get(row.id);
+  assert.equal(row.base.standing,original.raw.standHeight,row.id+" standHeight");
+  assert.equal(row.base.kneeling,original.raw.kneelHeight,row.id+" kneelHeight");
+  assert.equal(row.defaultArmor,original.armor,row.id+" base armor");
+  assert.ok(row.defaultArmorResolved,"unresolved default armor "+row.id);
+  const armor=armorById.get(row.defaultArmor);
+  assert.ok(armor&&armor.soldierTypes.includes(row.id),"default armor included "+row.id);
+  const shape=row.defaultShape;
+  assert.equal(shape.standing,armor.standHeightOverride===-1?row.base.standing:armor.standHeightOverride);
+  assert.equal(shape.kneeling,armor.kneelHeightOverride===-1?row.base.kneeling:armor.kneelHeightOverride);
+  assert.equal(shape.standingShotOrigin,shape.standing+shape.floating-4);
+  assert.equal(shape.kneelingShotOrigin,shape.kneeling+shape.floating-4);
+  assert.ok(shape.size>=1&&Number.isInteger(shape.size),"valid initial armor footprint "+row.id);
+}
+for(const armor of voxels.armors){
+  assert.ok(armor.soldierTypes.length>0,"all armor rows have a compatible soldier");
+  assert.ok(armor.soldierTypes.every(id=>soldierIds.has(id)),armor.id+" valid soldier types");
+  assert.ok(Number.isInteger(armor.size)&&armor.size>=1);
+}
+for(const [id,standing,kneeling] of [
+  ["STR_SOLDIER",22,14],
+  ["STR_SOLDIER_LOKNAR",17,11],
+  ["STR_SOLDIER_NEKOMIMI",21,13],
+  ["STR_SOLDIER_DOGE",12,12],
+  ["STR_SOLDIER_PUREBLOOD",22,13]
+]){
+  const s=voxels.soldiers.find(x=>x.id===id);
+  assert.ok(s,id);
+  assert.deepEqual([s.base.standing,s.base.kneeling],[standing,kneeling],id+" source heights");
+}
+assert.ok(voxels.armors.some(a=>a.size===2),"large two-tile armor geometries are indexed");
+assert.ok(voxels.armors.some(a=>a.allowsKneeling===false),"armor-level kneeling restrictions are indexed");
+for(const [file,sha] of Object.entries(voxels.sourceHashes)){
+  const origin=modernSoldiers.meta.source.rules.find(r=>r.file===file);
+  assert.ok(origin,file+" modern 2.1 provenance");
+  assert.equal(sha,origin.sha256,file+" input hash matches modern soldier dataset");
+}
+for(const required of ['id="unit-voxels"','id="voxel-body-rows"','id="voxel-armor-rows"',
+  'id="voxel-species"','href="./unit-voxels.json"','src="./voxels.js?']){
+  assert.ok(page.includes(required),"missing voxel reference HTML "+required);
+}
+assert.ok(voxelApp.includes('unit-voxels.json')&&voxelApp.includes('voxel-body-rows'));
+console.log("PASS latest-only reference: 33 training modes, 20 damage types, 10 random types, 306 current items, plus 29 soldier bodies / 540 armors with original-rule SHA-256 and stance heights.");

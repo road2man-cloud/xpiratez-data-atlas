@@ -115,13 +115,14 @@ npm run check:item-research -- --data public/items/data
 
 사이트 코드에는 MIT 라이선스를 적용합니다. X-Piratez, OpenXcom/OXCE, 원본 X-COM 및 모드 데이터/문구에 대한 권리는 각 원저작자에게 있으며 MIT 라이선스의 적용 대상이 아닙니다. 이 저장소는 팬 제작 기술 참고 도구입니다.
 
-## OXCE 엔진 참조표 (2026-10-24)
+## OXCE 엔진 참조표 (최신 데이터: 2026-10-27)
 
 - **웹 페이지:** [참조표 / reference](./public/reference/) · 배포 URL: https://road2man-cloud.github.io/xpiratez-data-atlas/reference/
 - **기계 판독용 번호 정의:** [engine-codes.json](./public/reference/engine-codes.json) — experienceTrainingMode 0–32, damageType 0–19, damageAlter.RandomType 0–9, 성장 상한 용어
 - **최신 게임 X-Piratez 2.1 아이템:** [items.json](./public/reference/items.json) — 현재 설치본 v.o2의 경험치 모드 직접 선언 306개. 참조표에는 이 데이터만 표시하며 이전 버전 데이터는 제공하지 않습니다.
-- **검증:** `npm run check:reference`. `npm run check` 및 Pages 배포 검사에도 포함됩니다.
+- **병종별 복셀 높이:** [병종 29종·방어구 540종 참조표](./public/reference/#unit-voxels) · [unit-voxels.json](./public/reference/unit-voxels.json) — 병종의 서기/무릎 복셀 높이와 방어구 착용 시 실효 높이, 점유 타일, 무릎 허용 선언, 일반 사격 원점 Z를 원본 룰 해시와 함께 제공합니다.
+- **검증:** `npm run check:reference`; 별도 실제 브라우저 QA는 `npm run check:reference:browser`. 정적 체크는 `npm run check` 및 Pages 배포 검사에도 포함됩니다.
 
 **GPT 검색 순서:** engine-codes.json에서 번호 의미를 확인 → 최신 게임 [items.json](./public/reference/items.json)에서 `i` (원본 ID), `m` (experienceTrainingMode), `f` / `l` (원문 출처) 확인. `null`로 표시한 `damageType`이나 `power`는 0이 아니라 **해당 아이템 블록에 직접 선언되지 않았다**는 뜻입니다. 상속·탄약·오버라이드·스크립트 적용 결과는 별도 검증해야 합니다.
 
-현재 참조표는 **2026-10-24에 확인한 X-Piratez 2.1 (v.o2), OXCE 8.7.1** 설치본을 기준으로 합니다. 버전 선택기와 구버전 데이터는 제거했습니다. 새로운 게임 업데이트가 나오면 `items.json`과 브라우저용 `items.js`를 함께 갱신하고 `npm run check:reference`로 검증해야 합니다. `extendedExperienceAwardSystem: true` 및 기절·정신지배 시 경험치 제한도 함께 고려해야 합니다.
+아이템 번호표는 2026-10-24, 병종·방어구 복셀 참조표는 **2026-10-27에 확인한 X-Piratez 2.1 (v.o2), OXCE 8.7.1** 설치본을 기준으로 합니다. `node tools/build-data.mjs --unit-voxels-only --source <.../user/mods/Piratez>`로 복셀 JSON을 재생성할 수 있으며 자세한 근거는 [검증 문서](./docs/reference-voxels-2.1.md)에 있습니다. 버전 선택기와 구버전 데이터는 제거했습니다. 새로운 게임 업데이트가 나오면 `items.json`과 브라우저용 `items.js`를 함께 갱신하고 `npm run check:reference`로 검증해야 합니다. `extendedExperienceAwardSystem: true` 및 기절·정신지배 시 경험치 제한도 함께 고려해야 합니다.

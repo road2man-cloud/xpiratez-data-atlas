@@ -4,6 +4,7 @@ import crypto from "node:crypto";
 import yaml from "js-yaml";
 import {buildSoldierData} from "./soldier-data.mjs";
 import {buildSoldierData as buildSoldierModernData} from "./soldier-modern-data.mjs";
+import {buildSoldierVoxelReference} from "./soldier-voxel-reference.mjs";
 import {buildArmorData} from "./armor-data.mjs";
 import {buildFacilityData} from "./facility-data.mjs";
 import {buildCraftWeaponData} from "./craft-weapon-data.mjs";
@@ -120,9 +121,19 @@ function tr(key,locale="ko"){
 
 // The modern X-Piratez 2.1 soldier database is intentionally isolated from
 // the historical v.o1.1.1 atlas; never overwrite the legacy indexes.
-if(args.includes("--soldiers-modern-only")){
+if(args.includes("--soldiers-modern-only")||args.includes("--unit-voxels-only")){
   if(!/^(?:v[.]o2(?:[.]|$)|2[.]1(?:[.]|$))/i.test(String(META.version||"")))
     throw new Error("Modern soldier rules require X-Piratez 2.1 / v.o2; detected "+String(META.version));
+  const voxels=buildSoldierVoxelReference({effectiveMerged,sourceHistory,tr});
+  const voxelOut=path.resolve(arg("--voxel-out","public/reference/unit-voxels.json"));
+  const voxelSources=["Piratez.rul","Piratez_Armors.rul","Piratez_Wardrobe.rul","Yankes_Scripts.rul"];
+  const voxelMeta={gameVersion:META.version,engine:"OXCE 8.7.1",
+    sourceHashes:Object.fromEntries(voxelSources.filter(f=>ruleFiles.includes(f))
+      .map(f=>[f,sha256(path.join(rulesDir,f))]))};
+  fs.mkdirSync(path.dirname(voxelOut),{recursive:true});
+  fs.writeFileSync(voxelOut,JSON.stringify({...voxelMeta,...voxels}));
+  console.log("Unit voxel reference: "+JSON.stringify({output:voxelOut,...voxels.counts}));
+  if(args.includes("--unit-voxels-only"))process.exit(0);
   const data=buildSoldierModernData({effectiveMerged,sourceHistory,tr});
   const modernOut=path.resolve(arg("--modern-out",path.join(outDir,"soldiers-modern-index.json")));
   fs.mkdirSync(path.dirname(modernOut),{recursive:true});
