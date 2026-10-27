@@ -24,6 +24,7 @@
 <a href="#statCaps">능력치 상한</a>
 <a href="#exceptions">예외·검증</a>
 <a href="#unit-voxels">병종·방어구 복셀 높이</a>
+<a href="#large-unit-voxels">2×2 장비 46종 전체</a>
 </nav>
 <section class="panel" id="reference-index">
 <h2>참조표 목차</h2>
@@ -35,6 +36,7 @@
 <a class="card" href="#statCaps"><strong>05. 성장 상한 키</strong><span>minStats · maxStats · statCaps · trainingStatCaps</span></a>
 <a class="card" href="#exceptions"><strong>06. 실전 경험치 예외</strong><span>기절 · 정신지배 · 의료도구 · PSI</span></a>
 <a class="card" href="#unit-voxels"><strong>07. 병종별 스탠딩·무릎 복셀 높이</strong><span>29개 병종 · 540개 방어구 · 실효 총구 높이</span></a>
+<a class="card" href="#large-unit-voxels"><strong>08. 2×2 탑승·기계 장비 전체</strong><span>46종 전수 · 실제 32×32 충돌 복셀 · 병종별 사격 Z</span></a>
 </div>
 </section>
 <section class="panel" id="experienceTrainingMode">
@@ -197,6 +199,21 @@
 </details>
 <p id="voxel-sources" class="fine"></p>
 <p class="fine">원본: <code>soldiers[].standHeight / kneelHeight</code>, <code>armors[].standHeight / kneelHeight / floatHeight / size / loftempsSet / allowsKneeling</code>. 엔진: <code>BattleUnit::updateArmorFromSoldier()</code>, <code>BattleUnit::getHeight()</code>, <code>TileEngine::getOriginVoxel()</code>. <a href="./unit-voxels.json">GPT·분석용 전체 JSON</a>에는 룰 파일과 실제 <code>LOFTEMPS.DAT</code>의 SHA-256, 각 병종·방어구 ID 및 마스크별 실측 단면이 들어 있습니다.</p>
+</section>
+<section class="panel" id="large-unit-voxels">
+<h2>08. 2×2 탑승·기계 장비 전수표 <span class="tag">2.1 원본 전체</span></h2>
+<p><strong>하이에나 기수를 포함한 아군 착용 가능 2×2 방어구 46종</strong>은 모두 수평 충돌 템플릿 <code>[92, 89, 90, 91]</code>을 사용합니다. 설치본 <code>LOFTEMPS.DAT</code>에 있는 네 개의 16×16 마스크를 합산하면 <strong>32×32복셀 범위 중 실제 점유 780복셀/층</strong>(76.17%)입니다. 외형과 무기가 달라도 이 수평 피격 단면은 동일합니다.</p>
+<p class="info">전부 <code>allowsKneeling:false</code>이므로 <strong>무릎을 꿇거나 무릎 사격할 수 없습니다.</strong> 서 있는 높이와 사격 출발 Z는 장비의 외형이 아니라 착용 병종의 실제 높이 규칙을 상속하므로, 한 장비에도 여러 값이 있을 수 있습니다. 아래 숫자는 착용 가능한 병종별 값을 전부 대조한 것입니다. <strong>780복셀은 높이 1복셀 층의 수평 단면</strong>이며 총 체적이나 명중 확률이 아닙니다. 적 전용 대형 유닛은 이 46종에 포함되지 않습니다.</p>
+<div class="controls">
+<label class="grow" for="voxel-large-search">2×2 장비명·병종·내부 ID 검색
+<input id="voxel-large-search" type="search" placeholder="하이에나, 장갑차, 호버바이크, 메카, XEC" autocomplete="off"></label>
+</div>
+<div id="voxel-large-status" class="status" role="status" aria-live="polite">2×2 장비 데이터를 불러오는 중…</div>
+<div class="tablewrap tall"><table id="voxel-large-table">
+<thead><tr><th>2×2 장비 (장비별 1행)</th><th>사용 가능한 종족·병종</th><th>서기 높이 (복셀)</th><th>서서 사격 Z</th><th>무릎 사격</th><th>실제 충돌 단면/층</th><th>충돌 템플릿 ID</th></tr></thead>
+<tbody id="voxel-large-rows"><tr><td colspan="7">전체 <a href="./unit-voxels.json">원본 JSON</a>에서도 확인할 수 있습니다.</td></tr></tbody>
+</table></div>
+<p class="fine">장비 이름을 누르면 원래 종족별 방어구 비교표로 이동합니다. 한 장비를 여러 종족이 사용할 수 있는 경우 서기 높이·총탄 출발 Z는 가능한 값 모두를 표시합니다. 원본: X-Piratez 2.1 <code>armors[].size / loftempsSet / allowsKneeling / units</code> · <code>soldiers[].standHeight</code> · <code>GEODATA/LOFTEMPS.DAT</code>.</p>
 </section>
 <section class="panel">
 <h2>근거와 데이터 출처</h2>
