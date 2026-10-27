@@ -1,7 +1,8 @@
-import {initialState,eligibleTransformation,applyTransformation,findTransformationPath,structuralTransformationVerdict,availableSoldierArmors} from "./eligibility.js";
+import {initialState,eligibleTransformation,applyTransformation,findTransformationPath,structuralTransformationVerdict,reachableSoldierTypes,availableSoldierArmors} from "./eligibility.js";
 import {modernSoldierProof} from "./save-adapter.js";
 import {loadRuntime} from "../../db-runtime.js";
 import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
+import {initFutureComparison} from "./compare-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
 let previousTransformations=[];
@@ -36,7 +37,7 @@ function transformationVerdict(row){
   if(!PLANNER_STATE)initPlannerState();
   const structural=structuralTransformationVerdict(row,PLANNER_STATE,DATA);
   if(structural.kind==="blocked")return {kind:"blocked",
-    label:"현재 병종 계보에서 불가능 · 허용 병종 "+(row.allowedSoldierTypes||[]).join(", ")};
+    label:"확정 제외 · "+structural.reason};
   const direct=eligibleTransformation(row,PLANNER_STATE,DATA,analysisOptions());
   if(direct.kind==="blocked"){
     if(analysisOptions().mode==="current")return {kind:"not-now",label:"현재 즉시 미충족 · "+direct.blockers.slice(0,2).join(" · ")};
@@ -82,11 +83,16 @@ function renderTransformationPlanner(){
     '<span class="muted">변신을 추가하면 실제 실행 순서대로 재판정합니다.</span>';
   if(PLANNER_ISSUES.length)$("#transformationHistory").innerHTML+='<p class="delta-neg">'+PLANNER_ISSUES.map(esc).join(" · ")+'</p>';
   const excluded=candidates.filter(x=>x.v.kind==="blocked").length;
+  const reachable=reachableSoldierTypes(DATA,PLANNER_STATE.soldierType);
+  const unreachable=candidates.filter(x=>x.v.kind==="blocked"&&
+    !(x.x.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length;
+  const unavailable=candidates.filter(x=>x.v.kind==="blocked"&&(x.x.requires||[]).includes("STR_UNAVAILABLE")&&
+    (x.x.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length;
   const unresolved=candidates.filter(x=>x.v.kind==="unknown").length;
   const notNow=candidates.filter(x=>x.v.kind==="not-now").length;
   const ready=candidates.filter(x=>x.v.kind==="eligible").length;
   $("#transformationVerdict").textContent="현재 계보 "+PLANNER_STATE.soldierType+" · 순서 "+previousTransformations.length+
-    "단계 · 계보상 불가능 "+excluded+"개 · 현재 미충족 "+notNow+"개 · 조건 미확정 "+unresolved+"개 · 현재 판정 충족 "+ready+"개. 이후 단계는 자원 소모·미래 연구를 확정하지 않습니다.";
+    "단계 · 확정 제외 "+excluded+"개 (병종 계보 "+unreachable+" · 내부 전용 "+unavailable+") · 현재 미충족 "+notNow+"개 · 조건 미확정 "+unresolved+"개 · 현재 판정 충족 "+ready+"개. 이후 단계는 자원 소모·미래 연구를 확정하지 않습니다.";
   renderModernSaveResults(candidates,CURRENT_PROOF,analysisOptions().mode,previousTransformations.length);
 }
 function initTransformationPlanner(){
@@ -121,6 +127,7 @@ async function load(){
   const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
   if(["profiles","soldiers","transformations"].includes(params.get("dataset")))$("#dataset").value=params.get("dataset");
   renderSummary();
+  initFutureComparison(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
     SAVE=save;
     CURRENT_PROOF=proof;

@@ -28,6 +28,9 @@ export function researchPlan(ids,rules={},options={}){
   const disabled=new Set(arr(options.disabled)),rev=reverseResearch(rules);
   const nodes=new Set(),dependencies=new Map(),visiting=new Set(),warnings=[],blocked=[],uncertain=[];
   function gather(id){
+    // STR_UNAVAILABLE is an internal sentinel, not a research project.
+    // It cannot be satisfied by normal research unlocks or zero-cost events.
+    if(id==="STR_UNAVAILABLE"){blocked.push("일반 캠페인에서 실행할 수 없는 내부 전용 연구: STR_UNAVAILABLE");return;}
     if(prior.has(id)){nodes.add(id);return;}
     if(nodes.has(id))return;
     const rule=rules[id];
@@ -106,7 +109,7 @@ export function initialState(data,profileOrType,{band="avg",status="healthy",ran
   const soldierType=profile?.soldierType||(typeof profileOrType==="string"&&profileOrType.startsWith("base:")?profileOrType.slice(5):profileOrType)||"";
   const soldier=data.soldiers?.find(x=>x.id===soldierType);
   const starting=profile?.currentStatsBeforeTraits?.[band]||soldier?.[band+"Stats"]||{};
-  const initial=profile?.initialStatsBeforeTraits?.[band]||starting;
+  const initial=profile?.initialStatsBeforeTraits?.[band]||profile?.initialStats?.[band]||starting;
   const originalHistory=profile?.previousTransformations||{};
   return {
     soldierType,sourceId:profile?.id||null,
@@ -148,11 +151,12 @@ export function battleStatsWithEquipment(state,data,options={}){
     return {kind:"blocked",reason:"선택한 방어구가 현재 병종에 허용되지 않음",stats:null};
   const stats={};
   for(const k of STAT_KEYS){
-    const raw=num(state.currentStats?.[k]);
-    let soldierPart=Math.max(k==="health"?1:0,raw+num(extra[k]));
-    if(k==="psiSkill"&&raw<=0&&soldierPart>0)soldierPart=raw;
+    // OXCE Soldier::prepareStatsWithBonuses:
+    // _tmpStatsWithAllBonuses = obeyFixedMinimum(raw + soldier bonuses + armor).
+    // It never applies obeyFixedMinimum between soldier and armor bonuses;
+    // the special psiSkill gate applies ONLY to _tmpStatsWithSoldierBonuses.
     stats[k]=Math.max(k==="health"?1:0,
-      soldierPart+num(armor?.stats?.[k]));
+      num(state.currentStats?.[k])+num(extra[k])+num(armor?.stats?.[k]));
   }
   const supply=armor?.storeItem&&armor.storeItem!=="STR_NONE"
     ?data.itemSupply?.[armor.storeItem]:null;
@@ -163,6 +167,8 @@ export function battleStatsWithEquipment(state,data,options={}){
 export function eligibleTransformation(rule,state,data,options={}){
   const blocked=[],conditions=[],mode=options.mode||"future";
   if(state.retired)blocked.push("병사가 은퇴/아이템으로 전환되어 더는 변신할 수 없음");
+  if(arr(rule.requires).includes("STR_UNAVAILABLE"))
+    blocked.push("일반 캠페인에서 사용할 수 없는 내부 전용 변신 (STR_UNAVAILABLE)");
   if(!arr(rule.allowedSoldierTypes).includes(state.soldierType))blocked.push("현재 병종 "+state.soldierType+"에 적용할 수 없음");
   if(arr(rule.forbiddenSoldierTypes).includes(state.soldierType))blocked.push("금지 병종: "+state.soldierType);
   const status=state.status||"unknown";
@@ -220,7 +226,12 @@ export function eligibleTransformation(rule,state,data,options={}){
   if(mode==="current"&&options.statsKnown===false)conditions.push("원본 능력치·초기값 또는 SoldierBonus 근거 미완전");
   const commendations=options.commendations||{};
   for(const [id,level] of Object.entries(rule.requiredCommendations||{})){
-    if(num(commendations[id])<num(level)){
+    // OXCE Soldier::isEligibleForTransformation iterates owned medal
+    // records and requires a type match BEFORE comparing decoration levels.
+    // Required level 0 still means "medal must EXIST" (not absent=0).
+    const hasMedal=Object.prototype.hasOwnProperty.call(commendations,id)&&
+      Number.isFinite(Number(commendations[id]))&&num(commendations[id])>=0;
+    if(!hasMedal||num(commendations[id])<num(level)){
       if(mode==="future"||options.medalsKnown===false)conditions.push("필수 훈장 "+id+" 등급 "+level+" 미확인");
       else blocked.push("훈장 미달 "+id+" "+level);
     }
@@ -379,6 +390,10 @@ export function reachableSoldierTypes(data,initialType){
   return paths;
 }
 export function structuralTransformationVerdict(rule,startState,data){
+  if(arr(rule.requires).includes("STR_UNAVAILABLE"))
+    return {kind:"blocked",reason:"내부 전용 연구 STR_UNAVAILABLE: 일반 캠페인에서 획득 불가",
+      reachableTypes:[...reachableSoldierTypes(data,startState.soldierType).keys()],
+      path:[],proof:"internal-only research sentinel"};
   const paths=reachableSoldierTypes(data,startState.soldierType);
   const eligibleTypes=arr(rule.allowedSoldierTypes);
   const matches=eligibleTypes.filter(id=>paths.has(id));
