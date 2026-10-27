@@ -10,7 +10,6 @@ import {GROWTH_PHASES,growStatEnvelope} from "./growth-envelope.js";
 import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
 import {searchChronologicalRoute} from "./route-finder.js";
 import {renderRareMapLootProof} from "./map-loot-ui.js";
-import {renderRareMissionFrontier} from "./research-mission-frontier.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
 let previousTransformations=[];
@@ -259,7 +258,6 @@ async function load(){
   if(["profiles","soldiers","transformations"].includes(params.get("dataset")))$("#dataset").value=params.get("dataset");
   renderSummary();
   renderRareMapLootProof($("#rareMapLootProof"),DATA);
-  renderRareMissionFrontier($("#rareMissionFrontier"),DATA);
   const futureComparison=initFutureComparison(DATA);
   initBaselineGrowthComparison(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
@@ -268,16 +266,6 @@ async function load(){
     else if(!save)$("#plannerMonth").value="";
     futureComparison?.setSave(save);
     CURRENT_PROOF=proof;
-    // Research/production stock comes from the SELECTED BASE, not all bases.
-    // The associated mission triggers remain explicitly conditional.
-    const missionSnapshot=save&&proof?.kind==="proof"?{
-      researched:new Set(save.research.completed||[]),
-      disabled:new Set(save.research.disabled||[]),
-      items:Object.fromEntries(proof.base.items||[]),
-      baseFunctions:new Set(proof.options.baseFunctions||[]),
-      month:save.monthsPassed
-    }:null;
-    renderRareMissionFrontier($("#rareMissionFrontier"),DATA,missionSnapshot);
     $("#routeSearchResult").textContent=save?"대원이 변경되었습니다. 목표 변신을 선택해 경로를 자동 탐색할 수 있습니다.":"세이브를 불러오면 연구·기지 재료와 변신 순서를 검증합니다.";
     previousTransformations=[];
     if(proof?.kind==="proof"){
