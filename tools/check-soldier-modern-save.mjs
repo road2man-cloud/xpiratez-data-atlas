@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {importModernSave,modernSoldierProof} from "../public/soldiers/modern/save-adapter.js";
 import {eligibleTransformation,battleStatsWithEquipment,initialState,structuralTransformationVerdict} from "../public/soldiers/modern/eligibility.js";
 import {assessCampaignResearch} from "../public/soldiers/modern/comparison.js";
+import {createStatEnvelope,effectiveEnvelope} from "../public/soldiers/modern/stat-envelope.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
 const text=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8");
 const fixture=importModernSave(text,data);
@@ -49,11 +50,27 @@ if(realPath){
   assert.equal(real.personnel.bases.reduce((n,b)=>n+b.soldiers.length,0),53);
   assert.equal(real.research.disabled.length,44);
   assert(real.funds!==null);
-  let checked=0;
+  let checked=0,exactRaw=0,unverifiedRaw=0,displayedWithEquipment=0;
   for(let b=0;b<real.personnel.bases.length;b++)
     for(let s=0;s<real.personnel.bases[b].soldiers.length;s++){
       const ps=modernSoldierProof(data,real,b,s);
       assert.equal(ps.kind,"proof");
+      const bounds=createStatEnvelope(data,"base:"+ps.state.soldierType,{state:ps.state});
+      if(ps.state.exactStats){
+        exactRaw++;
+        assert.equal(bounds.kind,"ready");
+        for(const k of data.statKeys){
+          assert.equal(bounds.low[k],ps.state.currentStats[k],
+            "real save must never substitute random starting-body stats");
+          assert.equal(bounds.high[k],ps.state.currentStats[k]);
+        }
+        const gear=effectiveEnvelope(bounds,ps.state,data,ps.options);
+        if(gear.kind==="ready")displayedWithEquipment++;
+      }else{
+        unverifiedRaw++;
+        assert.equal(bounds.kind,"unverified",
+          "incomplete live-save stats MUST NOT be fabricated from body creation");
+      }
       checked++;
     }
   const flags={};
@@ -73,7 +90,10 @@ if(realPath){
   }
   assert.equal(flags["base:STR_SOLDIER"].nominal,7);
   assert.equal(flags["manufacture:STR_HALF_UBER_GIRL_RECRUITMENT"].nominal,4);
+  assert.equal(exactRaw+unverifiedRaw,checked);
   console.log("PASS optional local 2.1 save QA: "+checked+
-    " soldiers; 38/38 structural candidates research-checked, 7/4 nominal conflicts never mislabeled as final exclusions; private data not exported");
+    " soldiers; "+exactRaw+" exact raw stat envelopes, "+unverifiedRaw+
+    " conservatively unverified, "+displayedWithEquipment+
+    " one-armor/medal-aware previews; 38/38 structural candidates research-checked, 7/4 nominal conflicts never mislabeled as final exclusions; private data not exported");
 }
 console.log("PASS modern 2.1 local save import, version lock, research, funds, class, automatic evidence, missing-source safeguards");

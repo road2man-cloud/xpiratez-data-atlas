@@ -3,10 +3,12 @@ import {modernSoldierProof} from "./save-adapter.js";
 import {loadRuntime} from "../../db-runtime.js";
 import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
 import {initFutureComparison} from "./compare-ui.js";
+import {createStatEnvelope,advanceStatEnvelope} from "./stat-envelope.js";
+import {renderStatEnvelope} from "./stat-envelope-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
 let previousTransformations=[];
-let PLANNER_STATE=null,PLANNER_ISSUES=[],CURRENT_PROOF=null,SAVE=null;
+let PLANNER_STATE=null,PLANNER_BOUNDS=null,PLANNER_ISSUES=[],CURRENT_PROOF=null,SAVE=null;
 function selectedSaveProof(){
   if(!SAVE)return null;
   const b=Number($("#saveBase").value),s=Number($("#saveSoldier").value);
@@ -16,22 +18,28 @@ function selectedSaveProof(){
 function analysisOptions(){
   const base=CURRENT_PROOF?.kind==="proof"?CURRENT_PROOF.options:{};
   const current=!!CURRENT_PROOF&&$("#analysisMode").value==="current"&&!previousTransformations.length;
-  return {...base,mode:current?"current":"future"};
+  return {...base,mode:current?"current":"future",statEnvelope:PLANNER_BOUNDS};
 }
 function transformationName(id){return DATA?.transformations?.find(x=>x.id===id)?.koName||id}
 function initPlannerState(){
+  PLANNER_BOUNDS=null;
   const profile=$("#plannerProfile").value||"base:"+($("#family").value||"STR_SOLDIER");
   CURRENT_PROOF=selectedSaveProof();
   let state=CURRENT_PROOF?.kind==="proof"?CURRENT_PROOF.state:initialState(DATA,profile);
+  let bounds=createStatEnvelope(DATA,profile,{state:CURRENT_PROOF?state:null});
   PLANNER_ISSUES=CURRENT_PROOF?.kind==="proof"?[...CURRENT_PROOF.issues]:[];
   for(let i=0;i<previousTransformations.length;i++){
     const row=DATA.transformations.find(x=>x.id===previousTransformations[i]);
     if(!row){PLANNER_ISSUES.push("규칙에 없는 이력: "+previousTransformations[i]);continue;}
-    const step=applyTransformation(row,state,DATA,{...analysisOptions(),mode:"future"});
+    const step=applyTransformation(row,state,DATA,{...analysisOptions(),mode:"future",statEnvelope:bounds});
     if(step.verdict.kind==="blocked")PLANNER_ISSUES.push((i+1)+"단계 "+transformationName(row.id)+": "+step.verdict.blockers.join(" · "));
-    else state=step.state;
+    else{
+      bounds=advanceStatEnvelope(row,bounds,DATA,state);
+      state=step.state;
+    }
   }
   PLANNER_STATE=state;
+  PLANNER_BOUNDS=bounds;
 }
 function transformationVerdict(row){
   if(!PLANNER_STATE)initPlannerState();
@@ -95,6 +103,7 @@ function renderTransformationPlanner(){
   $("#transformationVerdict").textContent="현재 계보 "+PLANNER_STATE.soldierType+" · 순서 "+previousTransformations.length+
     "단계 · 확정 제외 "+excluded+"개 (병종 계보 "+unreachable+" · 내부 전용 "+unavailable+" · 이력·선행 불가 "+historical+") · 현재 미충족 "+notNow+"개 · 조건 미확정 "+unresolved+"개 · 현재 판정 충족 "+ready+"개. 이후 단계는 자원 소모·미래 연구를 확정하지 않습니다.";
   renderModernSaveResults(candidates,CURRENT_PROOF,analysisOptions().mode,previousTransformations.length);
+  renderStatEnvelope($("#statEnvelopeContent"),PLANNER_BOUNDS,PLANNER_STATE,DATA,previousTransformations,analysisOptions());
 }
 function initTransformationPlanner(){
   $("#plannerProfile").onchange=()=>{previousTransformations=[];render()};

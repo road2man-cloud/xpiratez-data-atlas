@@ -234,27 +234,39 @@ export function eligibleTransformation(rule,state,data,options={}){
     else blocked.push("요구 계급 "+rule.minRank+" 미달");
   }
   const extra=bonusStats(state,data,options);
+  const envelope=options.statEnvelope?.kind==="ready"?options.statEnvelope:null;
   for(const key of STAT_KEYS){
     const kmin=num(rule.requiredMinStats?.[key]);
     const kmax=rule.requiredMaxStats?.[key]===undefined?9999:num(rule.requiredMaxStats[key]);
-    let minValue=num(state.currentStats?.[key])+(rule.includeBonusesForMinStats?num(extra[key]):0);
-    let maxValue=num(state.currentStats?.[key])+(rule.includeBonusesForMaxStats?num(extra[key]):0);
-    // Soldier::prepareStatsWithBonuses clamps health and prevents a bonus
-    // from unlocking psi skill when raw psi skill is not yet trained.
     const floor=key==="health"?1:0;
-    if(rule.includeBonusesForMinStats)minValue=Math.max(floor,minValue);
-    if(rule.includeBonusesForMaxStats)maxValue=Math.max(floor,maxValue);
-    if(key==="psiSkill"&&num(state.currentStats?.psiSkill)<=0){
-      if(rule.includeBonusesForMinStats&&minValue>0)minValue=num(state.currentStats.psiSkill);
-      if(rule.includeBonusesForMaxStats&&maxValue>0)maxValue=num(state.currentStats.psiSkill);
+    // OXCE Soldier::isEligibleForTransformation uses soldier-only bonuses,
+    // not armor, when the corresponding includeBonuses flag is true.
+    const gate=(raw,include)=>{
+      if(!include)return raw;
+      let value=Math.max(floor,raw+num(extra[key]));
+      if(key==="psiSkill"&&raw<=0&&value>0)value=raw;
+      return value;
+    };
+    const rawLow=envelope?num(envelope.low[key]):num(state.currentStats?.[key]);
+    const rawHigh=envelope?num(envelope.high[key]):num(state.currentStats?.[key]);
+    const minLow=gate(rawLow,rule.includeBonusesForMinStats);
+    const minHigh=gate(rawHigh,rule.includeBonusesForMinStats);
+    const maxLow=gate(rawLow,rule.includeBonusesForMaxStats);
+    const maxHigh=gate(rawHigh,rule.includeBonusesForMaxStats);
+    const unknown=(lower,upper)=>envelope&&lower!==upper;
+    if(kmin&&minLow<kmin){
+      if(unknown(minLow,minHigh)){
+        conditions.push(key+" "+kmin+" 이상: RNG·초기값에 따라 "+minLow+"~"+minHigh+" (확정 충족 아님)");
+      }else if(mode==="future"||options.statsKnown===false){
+        conditions.push(key+" "+kmin+" 이상 성장 필요 (현재 상한 "+minHigh+")");
+      }else blocked.push(key+" 최소 "+kmin+" 미달: "+minLow);
     }
-    if(kmin&&minValue<kmin){
-      if(mode==="future"||options.statsKnown===false)conditions.push(key+" "+kmin+" 이상 필요 (현재 기준 "+minValue+")");
-      else blocked.push(key+" 최소 "+kmin+" 미달: "+minValue);
-    }
-    if(maxValue>kmax){
-      if(mode==="future"||options.statsKnown===false)conditions.push(key+" "+kmax+" 이하 필요 (현재 기준 "+maxValue+")");
-      else blocked.push(key+" 최대 "+kmax+" 초과: "+maxValue);
+    if(maxHigh>kmax){
+      if(unknown(maxLow,maxHigh)){
+        conditions.push(key+" "+kmax+" 이하: RNG·초기값에 따라 "+maxLow+"~"+maxHigh+" (확정 충족 아님)");
+      }else if(mode==="future"||options.statsKnown===false){
+        conditions.push(key+" "+kmax+" 이하 필요 (현재 하한 "+maxLow+")");
+      }else blocked.push(key+" 최대 "+kmax+" 초과: "+maxHigh);
     }
   }
   if(mode==="current"&&options.statsKnown===false)conditions.push("원본 능력치·초기값 또는 SoldierBonus 근거 미완전");

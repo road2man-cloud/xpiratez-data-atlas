@@ -70,6 +70,18 @@ try{
   await page.waitForFunction(()=>document.querySelector("#transformationVerdict")?.textContent?.includes(
     "확정 제외 45개 (병종 계보 31 · 내부 전용 3 · 이력·선행 불가 11)"));
   console.log("PASS 2.1 actual half-super-peasant planner excludes 11 directed-history/predecessor dead ends");
+  assert.equal(await page.locator("#statEnvelopeContent [data-stat]").count(),12);
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim(),"60");
+  assert((await page.locator('#statEnvelopeContent [data-stat="psiStrength"]').innerText()).includes("20 ~ 70"));
+  await page.locator("#previousTransformation").selectOption("STR_REVOLUTIONARY_TRAINING");
+  assert.equal(await page.locator("#addTransformation").isDisabled(),false);
+  await page.locator("#addTransformation").click();
+  await page.waitForFunction(()=>document.querySelector("#statEnvelopeContent [data-stat=firing]")?.textContent?.includes("45 ~ 70"));
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="health"]').innerText()).trim(),"39 ~ 54");
+  assert((await page.locator("#statEnvelopeContent").innerText()).includes("무작위 변화: STR_REVOLUTIONARY_TRAINING"));
+  await page.locator("#clearTransformations").click();
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim(),"60");
+  console.log("PASS OXCE 12-stat minimum/maximum interval: half-super-peasant revolutionary firing 45..70 health 39..54, reset to source");
 
   await page.goto(origin+"/soldiers/modern/");
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("실제 획득형"));
