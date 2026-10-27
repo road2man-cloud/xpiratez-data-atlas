@@ -35,6 +35,24 @@ try {
   await page.goto(base+"/reference/?species=STR_SOLDIER_LOKNAR#unit-voxels",
     {waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#voxel-body-status")?.textContent?.includes("/ 29개"),{timeout:20000});
+  await page.waitForFunction(()=>document.querySelector("#voxel-large-status")?.textContent?.includes("/ 46종"),
+    {timeout:20000});
+  assert.equal(await page.locator("#voxel-large-rows tr").count(),46,"all 46 unique 2x2 armors");
+  await page.locator("#voxel-large-search").fill("하이에나");
+  assert.equal(await page.locator("#voxel-large-rows tr").count(),1,"Hyena 2x2 mount lookup");
+  const hyena=await page.locator("#voxel-large-rows tr").first().innerText();
+  assert(hyena.includes("22")&&hyena.includes("18")&&hyena.includes("불가능"),
+    "Hyena rider inherits Gal 22-voxel height, shot Z 18, no kneeling");
+  assert(hyena.includes("32×32")&&hyena.includes("780/1024")&&hyena.includes("76.17%"),
+    "Hyena exact four-tile collision footprint");
+  assert(hyena.includes("92, 89, 90, 91"),"Hyena four collision mask IDs");
+  for(const [query,expected] of [["노움디스크",3],["메카",5],["장갑차",13],["XEC",9]]){
+    await page.locator("#voxel-large-search").fill(query);
+    assert.equal(await page.locator("#voxel-large-rows tr").count(),expected,
+      "all 2x2 armors in group "+query);
+  }
+  await page.locator("#voxel-large-search").fill("");
+  assert.equal(await page.locator("#voxel-large-rows tr").count(),46);
   assert.equal(await page.locator("#voxel-body-rows tr").count(),1,"species deep link");
   assert.deepEqual((await page.locator("#voxel-body-rows tr td").allTextContents())
     .slice(1,7).map(x=>x.trim()),["17","11","17","11","13","7"],"Loknar 17/11, standing shot 13, kneeling shot 7");
@@ -95,8 +113,16 @@ try {
     "Catgirl 21/13, standing shot 17, kneeling shot 9");
   assert((await page.locator("#voxel-armor-rows tr").count())>0,
     "armor selector keeps compatible rows");
+  await page.goto(base+"/reference/#large-unit-voxels",{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.querySelector("#voxel-large-status")?.textContent?.includes("/ 46종"));
+  await page.locator("#voxel-large-STR_HYENA_RIDER_ARMOR_UC a").click();
+  await page.waitForFunction(()=>document.querySelector("#voxel-armor-details")?.open===true);
+  assert(new URL(page.url()).searchParams.get("species")==="STR_SOLDIER",
+    "2x2 detailed link chooses eligible Gal soldier");
+  assert(await page.locator("#voxel-armor-STR_HYENA_RIDER_ARMOR_UC-STR_SOLDIER").isVisible(),
+    "Hyena 2x2 deep link resolves to detailed per-soldier armor comparison");
   assert.deepEqual(errors,[],"no JS or network errors");
-  console.log("PASS reference browser: 29 species, Korean aliases, standing/kneeling projectile origins (Loknar 13/7 and Catgirl 17/9), 540 armors, unusable kneeling armor warning, exception toggles and page errors");
+  console.log("PASS reference browser: 29 species / 540 armors / all 46 unique 2x2 armors, Hyena 32x32 and 780 voxels, mounted Loknar, no kneeling, accurate shot heights, search and browser errors");
 } finally {
   await browser?.close();
   await new Promise(resolve=>server.close(resolve));

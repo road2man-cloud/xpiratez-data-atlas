@@ -9,7 +9,10 @@
   const armorRows = $("#voxel-armor-rows");
   const bodyStatus = $("#voxel-body-status");
   const armorStatus = $("#voxel-armor-status");
-  if (!search || !species || !bodyRows || !armorRows) return;
+  const largeSearch = $("#voxel-large-search");
+  const largeRows = $("#voxel-large-rows");
+  const largeStatus = $("#voxel-large-status");
+  if (!search || !species || !bodyRows || !armorRows || !largeSearch || !largeRows) return;
 
   const cell = (tr, text, className = "") => {
     const td = document.createElement("td");
@@ -86,6 +89,8 @@
     const combos = data.armors.flatMap(a => a.soldierTypes
       .filter(id => soldiers.has(id))
       .map(id => ({armor:a, soldier:soldiers.get(id), shape:shapeFor(soldiers.get(id),a)})));
+    const largeArmors = data.armors.filter(a => a.size === 2);
+    const uniqueSorted = values => [...new Set(values)].sort((a,b) => a-b).join(" / ");
     const source = $("#voxel-sources");
     if (source) source.textContent =
       "X-Piratez " + data.gameVersion + " · 병종 " + data.soldiers.length +
@@ -182,6 +187,46 @@
       updateQuery();
     }
 
+    function renderLargeArmors() {
+      const query = normalize(largeSearch.value);
+      const visible = largeArmors.filter(a => {
+        if (!query) return true;
+        return textFor(a).includes(query) || a.soldierTypes.some(id => {
+          const soldier = soldiers.get(id);
+          return soldier && textFor(soldier).includes(query);
+        });
+      });
+      const fragment = document.createDocumentFragment();
+      for (const a of visible) {
+        const compatible = a.soldierTypes.map(id => soldiers.get(id)).filter(Boolean);
+        const first = compatible[0];
+        const f = a.collisionFootprint;
+        const tr = document.createElement("tr");
+        tr.id = "voxel-large-" + a.id;
+        const td = document.createElement("td");
+        const link = document.createElement("a");
+        link.href = first ? "?species=" + encodeURIComponent(first.id) +
+          "#voxel-armor-" + a.id + "-" + first.id : "#voxel-large-" + a.id;
+        link.textContent = a.koName;
+        const small = document.createElement("small");
+        small.textContent = a.id;
+        td.append(link,small);
+        tr.append(td);
+        cell(tr,compatible.map(s => s.koName).join(" · ") || "해당 없음");
+        cell(tr,uniqueSorted(compatible.map(s => shapeFor(s,a).standing)),"num");
+        cell(tr,uniqueSorted(compatible.map(s => shapeFor(s,a).standingShotOrigin)),"num");
+        cell(tr,a.allowsKneeling === false ? "불가능" : label(a.allowsKneeling));
+        cell(tr,f ? f.boundsWidth + "×" + f.boundsDepth + " · " +
+          f.occupiedPerLayer + "/" + f.possiblePerLayer + " (" +
+          f.coveragePercent.toFixed(2) + "%)" : "원본 마스크 미확인");
+        cell(tr,"[" + a.loftempsSet.join(", ") + "]","fine");
+        fragment.append(tr);
+      }
+      largeRows.replaceChildren(fragment);
+      if (largeStatus) largeStatus.textContent = "2×2 장비 " + visible.length +
+        " / " + largeArmors.length + "종 · 개별 장비 기준 (중복 병종 합산 안 함)";
+    }
+
     function revealArmorLink() {
       const id = decodeURIComponent(location.hash.slice(1));
       if (!id.startsWith("voxel-armor-")) return;
@@ -192,16 +237,19 @@
       tr.scrollIntoView({block:"center"});
     }
     search.addEventListener("input",render);
+    largeSearch.addEventListener("input",renderLargeArmors);
     species.addEventListener("change",render);
     sort.addEventListener("change",render);
     exceptions.addEventListener("change",render);
     window.addEventListener("hashchange",revealArmorLink);
     render();
+    renderLargeArmors();
     revealArmorLink();
   }
   initialize().catch(error => {
     bodyStatus.textContent = "참조표 데이터 로드 실패: " + error.message +
       " · unit-voxels.json을 직접 확인하세요.";
     armorStatus.textContent = "방어구 표를 표시할 수 없습니다.";
+    if (largeStatus) largeStatus.textContent = "2×2 장비를 표시할 수 없습니다.";
   });
 })();

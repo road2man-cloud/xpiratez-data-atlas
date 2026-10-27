@@ -101,4 +101,34 @@ export function decodeCollisionTemplates(bytes,templateIds){
   }
   return result;
 }
+// The 2×2 four-template order is translated by TileEngine::voxelCheck:
+// tile cells (x0,y0),(x1,y0),(x0,y1),(x1,y1) map to [1,0,3,2].
+// x is mirrored in the collision test; this changes left/right location but
+// not the bounding width, occupied count, or footprint fill measured here.
+export function collisionFootprint(armor, templates) {
+  const size=armor.size, ids=armor.loftempsSet;
+  if(!Number.isInteger(size)||size<1||size>2||ids.length!==size*size)
+    throw new Error("Unsupported armor footprint: "+armor.id);
+  let occupied=0,xMin=Infinity,xMax=-1,yMin=Infinity,yMax=-1;
+  for(let ty=0;ty<size;ty++)for(let tx=0;tx<size;tx++){
+    const tileIndex=tx+ty*size;
+    const part=size===2?[1,0,3,2][tileIndex]:tileIndex;
+    const mask=templates[ids[part]];
+    if(!mask)throw new Error("Missing collision template "+ids[part]+" for "+armor.id);
+    occupied+=mask.occupied;
+    if(mask.occupied===0)continue;
+    xMin=Math.min(xMin,tx*16+15-mask.xMax);
+    xMax=Math.max(xMax,tx*16+15-mask.xMin);
+    yMin=Math.min(yMin,ty*16+mask.yMin);
+    yMax=Math.max(yMax,ty*16+mask.yMax);
+  }
+  const gridWidth=16*size, gridDepth=16*size, possible=gridWidth*gridDepth;
+  return {
+    gridWidth,gridDepth,
+    boundsWidth:xMax<0?0:xMax-xMin+1,
+    boundsDepth:yMax<0?0:yMax-yMin+1,
+    occupiedPerLayer:occupied,possiblePerLayer:possible,
+    coveragePercent:Math.round((occupied/possible)*1e4)/100
+  };
+}
 export {effectiveShape};

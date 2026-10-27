@@ -127,6 +127,34 @@ assert.deepEqual([loknar.defaultShape.standingShotOrigin,loknar.defaultShape.kne
 assert.ok(voxels.armors.every(a=>Array.isArray(a.loftempsSet)&&a.loftempsSet.length===a.size*a.size),
   "full source collision template matrix for every unit armor tile");
 assert.ok(page.includes("블러드하운드") && voxelApp.includes("loftChanged"),"rider exceptions visible");
+assert.ok(page.includes('id="large-unit-voxels"')&&page.includes('id="voxel-large-rows"'),"all 2x2 armors full list in reference");
+assert.ok(voxelApp.includes("renderLargeArmors")&&voxelApp.includes("collisionFootprint"),"2x2 aggregate client view");
+const large=voxels.armors.filter(a=>a.size===2);
+assert.equal(large.length,46,"all 2x2 equippable armors");
+assert.equal(voxels.counts.twoByTwoArmors,46);
+assert.ok(large.every(a=>a.allowsKneeling===false),"all 2x2 armors prohibit kneeling");
+assert.ok(large.every(a=>a.loftempsSet.join(",")==="92,89,90,91"),
+  "2x2 masks must match verified X-Piratez 2.1 rules");
+for(const armor of voxels.armors){
+  const f=armor.collisionFootprint;
+  assert.ok(f,armor.id+" aggregate collision footprint");
+  assert.equal(f.gridWidth,armor.size*16);
+  assert.equal(f.gridDepth,armor.size*16);
+  assert.equal(f.possiblePerLayer,256*armor.size*armor.size);
+  assert.equal(f.occupiedPerLayer,
+    armor.loftempsSet.reduce((sum,id)=>sum+voxels.collisionTemplates[id].occupied,0),
+    armor.id+" horizontal mask area");
+}
+const largeFootprints=large.map(a=>a.collisionFootprint);
+assert.ok(largeFootprints.every(f=>f.gridWidth===32&&f.gridDepth===32 &&
+  f.boundsWidth===32&&f.boundsDepth===32&&f.occupiedPerLayer===780 &&
+  f.possiblePerLayer===1024&&f.coveragePercent===76.17),
+  "all 46 large-armor exact 32x32 collision footprints");
+const baseHeights=[...new Set(large.flatMap(a=>a.soldierTypes.map(id=>{
+  const soldier=voxels.soldiers.find(s=>s.id===id);
+  return a.standHeightOverride===-1?soldier.base.standing:a.standHeightOverride;
+})))].sort((a,b)=>a-b);
+assert.deepEqual(baseHeights,[17,18,21,22],"large armor standing heights by species");
 assert.ok(voxels.armors.some(a=>a.size===2),"large two-tile armor geometries are indexed");
 assert.ok(voxels.armors.some(a=>a.allowsKneeling===false),"armor-level kneeling restrictions are indexed");
 for(const [file,sha] of Object.entries(voxels.sourceHashes)){

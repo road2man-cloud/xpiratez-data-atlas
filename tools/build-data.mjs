@@ -4,7 +4,7 @@ import crypto from "node:crypto";
 import yaml from "js-yaml";
 import {buildSoldierData} from "./soldier-data.mjs";
 import {buildSoldierData as buildSoldierModernData} from "./soldier-modern-data.mjs";
-import {buildSoldierVoxelReference,decodeCollisionTemplates} from "./soldier-voxel-reference.mjs";
+import {buildSoldierVoxelReference,decodeCollisionTemplates,collisionFootprint} from "./soldier-voxel-reference.mjs";
 import {buildArmorData} from "./armor-data.mjs";
 import {buildFacilityData} from "./facility-data.mjs";
 import {buildCraftWeaponData} from "./craft-weapon-data.mjs";
@@ -130,6 +130,9 @@ if(args.includes("--soldiers-modern-only")||args.includes("--unit-voxels-only"))
   const templateIds=[...voxels.soldiers.flatMap(s=>s.defaultShape.loftempsSet),
     ...voxels.armors.flatMap(a=>a.loftempsSet)];
   voxels.collisionTemplates=decodeCollisionTemplates(fs.readFileSync(loftFile),templateIds);
+  for(const armor of voxels.armors)
+    armor.collisionFootprint=collisionFootprint(armor,voxels.collisionTemplates);
+  voxels.counts.twoByTwoArmors=voxels.armors.filter(a=>a.size===2).length;
   const voxelOut=path.resolve(arg("--voxel-out","public/reference/unit-voxels.json"));
   const voxelSources=["Piratez.rul","Piratez_Armors.rul","Piratez_Wardrobe.rul","Yankes_Scripts.rul"];
   const voxelMeta={gameVersion:META.version,engine:"OXCE 8.7.1",
