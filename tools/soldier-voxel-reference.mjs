@@ -74,4 +74,31 @@ export function buildSoldierVoxelReference({effectiveMerged,sourceHistory,tr}){
     counts:{soldiers:soldiers.length,wearableArmors:wearable.length}
   };
 }
+// GEODATA/LOFTEMPS.DAT stores one 16×16 bitmask per 32-byte template:
+// 16 little-endian 16-bit rows, with bit (15-x) representing column x.
+// TileEngine::voxelCheck() repeats that mask through the unit's stance height.
+// These are exact horizontal collision voxels, not approximate sprite width.
+export function decodeCollisionTemplates(bytes,templateIds){
+  if(!bytes||bytes.length%32!==0)
+    throw new Error("Invalid LOFTEMPS.DAT: expected a multiple of 32 bytes");
+  const total=bytes.length/32, result={};
+  for(const id of [...new Set(templateIds)].sort((a,b)=>a-b)){
+    if(!Number.isInteger(id)||id<0||id>=total)
+      throw new Error("Collision template outside LOFTEMPS.DAT: "+id);
+    let xMin=16,xMax=-1,yMin=16,yMax=-1,occupied=0;
+    for(let y=0;y<16;y++){
+      const offset=id*32+y*2;
+      const bits=bytes[offset]|(bytes[offset+1]<<8);
+      for(let x=0;x<16;x++){
+        if(!(bits & (1<<(15-x))))continue;
+        occupied++; xMin=Math.min(xMin,x); xMax=Math.max(xMax,x);
+        yMin=Math.min(yMin,y); yMax=Math.max(yMax,y);
+      }
+    }
+    result[id]={width:xMax<0?0:xMax-xMin+1,depth:yMax<0?0:yMax-yMin+1,
+      occupied,xMin:xMax<0?null:xMin,xMax:xMax<0?null:xMax,
+      yMin:yMax<0?null:yMin,yMax:yMax<0?null:yMax};
+  }
+  return result;
+}
 export {effectiveShape};

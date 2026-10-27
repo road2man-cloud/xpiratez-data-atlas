@@ -114,6 +114,12 @@ const loknarRider=armorById.get("STR_LOKNAR_PLATE_MAIL_RIDER_UC");
 assert.ok(loknar&&loknarRider,"mounted Bloodhound Loknar rule is indexed");
 assert.deepEqual(loknar.defaultShape.loftempsSet,[2],"basic Loknar collision mask");
 assert.deepEqual(loknarRider.loftempsSet,[4],"Bloodhound rider collision mask differs");
+assert.equal(voxels.collisionTemplateSource.file,"GEODATA/LOFTEMPS.DAT");
+assert.match(voxels.collisionTemplateSource.sha256,/^[a-f0-9]{64}$/);
+assert.deepEqual([voxels.collisionTemplates[2].width,voxels.collisionTemplates[2].depth,
+  voxels.collisionTemplates[2].occupied],[5,5,21],"decoded normal Loknar 16x16 collision mask");
+assert.deepEqual([voxels.collisionTemplates[4].width,voxels.collisionTemplates[4].depth,
+  voxels.collisionTemplates[4].occupied],[9,9,61],"decoded mounted Loknar mask");
 assert.equal(loknarRider.size,1,"rider occupies one tile");
 assert.equal(loknarRider.standHeightOverride,-1,"rider inherits Loknar standing height");
 assert.equal(loknarRider.kneelHeightOverride,-1,"rider inherits Loknar kneeling height");

@@ -4,7 +4,7 @@ import crypto from "node:crypto";
 import yaml from "js-yaml";
 import {buildSoldierData} from "./soldier-data.mjs";
 import {buildSoldierData as buildSoldierModernData} from "./soldier-modern-data.mjs";
-import {buildSoldierVoxelReference} from "./soldier-voxel-reference.mjs";
+import {buildSoldierVoxelReference,decodeCollisionTemplates} from "./soldier-voxel-reference.mjs";
 import {buildArmorData} from "./armor-data.mjs";
 import {buildFacilityData} from "./facility-data.mjs";
 import {buildCraftWeaponData} from "./craft-weapon-data.mjs";
@@ -125,9 +125,15 @@ if(args.includes("--soldiers-modern-only")||args.includes("--unit-voxels-only"))
   if(!/^(?:v[.]o2(?:[.]|$)|2[.]1(?:[.]|$))/i.test(String(META.version||"")))
     throw new Error("Modern soldier rules require X-Piratez 2.1 / v.o2; detected "+String(META.version));
   const voxels=buildSoldierVoxelReference({effectiveMerged,sourceHistory,tr});
+  const loftFile=path.join(modRoot,"GEODATA","LOFTEMPS.DAT");
+  if(!fs.existsSync(loftFile))throw new Error("Missing 2.1 collision masks: "+loftFile);
+  const templateIds=[...voxels.soldiers.flatMap(s=>s.defaultShape.loftempsSet),
+    ...voxels.armors.flatMap(a=>a.loftempsSet)];
+  voxels.collisionTemplates=decodeCollisionTemplates(fs.readFileSync(loftFile),templateIds);
   const voxelOut=path.resolve(arg("--voxel-out","public/reference/unit-voxels.json"));
   const voxelSources=["Piratez.rul","Piratez_Armors.rul","Piratez_Wardrobe.rul","Yankes_Scripts.rul"];
   const voxelMeta={gameVersion:META.version,engine:"OXCE 8.7.1",
+    collisionTemplateSource:{file:"GEODATA/LOFTEMPS.DAT",sha256:sha256(loftFile)},
     sourceHashes:Object.fromEntries(voxelSources.filter(f=>ruleFiles.includes(f))
       .map(f=>[f,sha256(path.join(rulesDir,f))]))};
   fs.mkdirSync(path.dirname(voxelOut),{recursive:true});

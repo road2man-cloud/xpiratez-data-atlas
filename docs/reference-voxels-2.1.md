@@ -24,13 +24,13 @@ URL: `/reference/#unit-voxels`. JSON: `/reference/unit-voxels.json`.
 | STR_SOLDIER_PUREBLOOD (순수혈통 병사) | 22 | 13 | 18 | 9 |
 | STR_SOLDIER_DOGE (해적견) | 12 | 12 | 8 | 8 |
 
-**블러드하운드를 탄 로크나르**는 `STR_LOKNAR_PLATE_MAIL_RIDER_UC` (라이더/로크나르) 방어구다. 일반 로크나르와 같은 서기/무릎 높이 **17/11**, 사격 출발 **13/7**, 타일 점유 **1×1**을 유지하지만, **복셀 충돌 템플릿**은 기본 로크나르의 `[2]`가 아니라 **`[4]`**이다 (`Piratez.rul`의 라이더 `loftempsSet: [4]`, 코트/판금갑옷은 `[2]`, `Piratez_Armors.rul`의 `BLOOD_MOUNT_ARMORED`). 사이트는 이 변형을 이름으로 검색할 수 있게 하며, 키가 같아도 예외 필터에서 보여준다. 사격이나 회피 확률의 실제 차이는 OXCE 복셀별 경로 평가가 필요하다.
+**블러드하운드를 탄 로크나르**는 `STR_LOKNAR_PLATE_MAIL_RIDER_UC` (라이더/로크나르) 방어구다. 일반 로크나르와 같은 서기/무릎 높이 **17/11**, 사격 출발 **13/7**, 타일 점유 **1×1**을 유지하지만, **복셀 충돌 템플릿**은 기본 로크나르의 `[2]`가 아니라 **`[4]`**이다 (`Piratez.rul`의 라이더 `loftempsSet: [4]`, 코트/판금갑옷은 `[2]`, `Piratez_Armors.rul`의 `BLOOD_MOUNT_ARMORED`). 사이트는 이 변형을 이름으로 검색할 수 있게 하며, 키가 같아도 예외 필터에서 보여준다. 설치본 `GEODATA/LOFTEMPS.DAT` (SHA-256 `72756b63c8f95e0d97ae2faacf4452d2e39a7d407deb451c526540306ced387c`)를 32바이트/템플릿, 16×16 비트마스크로 해독하면 기본 ID 2는 **최대 5×5 / 실제 점유 21복셀/층**, 탑승 ID 4는 **최대 9×9 / 실제 점유 61복셀/층**이다. 61/21=약 2.90배는 수평 점유 단면적 비율이지 명중률 비율이 아니다. 사격이나 회피 확률의 실제 차이는 OXCE 복셀별 경로 평가가 필요하다.
 
 2026-10-27 설치 룰에서 기본 병종 29종, 이들에게 배정/장착 가능한 방어구 540종을 추출했다. 현재 방어구의 실효 standHeight/kneelHeight 직접 오버라이드는 없었고, `size:2`인 방어구 46종 및 명시적으로 `allowsKneeling:false`인 방어구 99종이 있었다. 따라서 높이 29종과 자세/점유 예외는 **별개**다. 룰 변경 시 이 집계는 다시 생성해야 한다.
 
 ## 데이터 생성 및 검증
 
-`tools/build-data.mjs --unit-voxels-only --source <.../user/mods/Piratez>`는 X-Piratez 2.1 룰셋의 병종/방어구 항목을 기존 `build-data`와 동일한 refNode/동일 ID 병합 처리로 읽고 `public/reference/unit-voxels.json`을 갱신한다.
+`tools/build-data.mjs --unit-voxels-only --source <.../user/mods/Piratez>`는 X-Piratez 2.1 룰셋의 병종/방어구 항목을 기존 `build-data`와 동일한 refNode/동일 ID 병합 처리로 읽고 `GEODATA/LOFTEMPS.DAT`의 실제 16×16 수평 충돌 마스크도 해독해 `public/reference/unit-voxels.json`을 갱신한다.
 
 일반 `--soldiers-modern-only` 작업 역시 참조표를 갱신하지만, 고전 v.o1.1.1 데이터 빌드에서는 참조표를 바꾸지 않는다. JSON의 `sourceHashes`와 해당 병종·방어구 `sourceFiles`로 출처를 확인한다.
 

@@ -50,8 +50,9 @@ try {
     "Bloodhound-mount appears even with difference-only filter checked");
   assert.deepEqual((await mountRow.locator("td").allTextContents()).slice(2,7).map(x=>x.trim()),
     ["17","11","0","13","7"],"mounted Loknar keeps standing/kneeling heights and shot origins");
-  assert.match((await mountRow.locator("td").nth(8).textContent())||"",
-    /4 \(기본 2와 다름\)/,"mount collision template is different from ordinary Loknar");
+  const maskText=(await mountRow.locator("td").nth(8).textContent())||"";
+  assert(maskText.includes("4 (9×9, 61복셀/층)")&&maskText.includes("(기본 2와 다름)"),
+    "mounted Loknar displays decoded collision mask footprint and baseline difference");
   await page.goto(base+"/reference/?species=STR_SOLDIER_LOKNAR"+
     "#voxel-armor-STR_LOKNAR_PLATE_MAIL_RIDER_UC-STR_SOLDIER_LOKNAR",
     {waitUntil:"domcontentloaded"});
