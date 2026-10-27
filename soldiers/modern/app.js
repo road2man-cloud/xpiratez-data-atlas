@@ -10,6 +10,7 @@ import {GROWTH_PHASES,growStatEnvelope} from "./growth-envelope.js";
 import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
 import {searchChronologicalRoute} from "./route-finder.js";
 import {inspectTransformationZeroResearch} from "./auto-zero-research.js";
+import {inspectAutoZeroSourcesForTransform} from "./auto-zero-cascade.js";
 import {renderRareMapLootProof} from "./map-loot-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
@@ -187,6 +188,19 @@ export function showRouteSearchResult(result){
           "획득 미확정")+' · '+gate.reasons.slice(0,4).map(esc).join(" · ")+
         (gate.researchEventSources?" · 이벤트 직접 지급 후보 "+gate.researchEventSources+"개":"")+
         '</p>').join("")+'</details>':"")+
+    (result.zeroCostCascade?.targets?.length?'<details open><summary><strong>'+
+      '비용 0 연구 연쇄 처리 시뮬레이션 (모두 미증명 후보)</strong></summary>'+
+      (result.zeroCostCascade.sources.length?
+        result.zeroCostCascade.sources.slice(0,5).map(s=>
+          '<p class="muted">가정한 원천 연구 완료: <strong>'+esc(s.source)+'</strong>'+
+          ' · 연쇄로 처리될 수 있는 요구 플래그: '+s.produced.map(esc).join(", ")+
+          ' · 후보 처리 순서: '+s.chain.slice(0,12).map(esc).join(" → ")+
+          (s.chain.length>12?" 외 "+(s.chain.length-12)+"개":"")+
+          ' · 미증명 조건: '+s.unverified.slice(0,4).map(esc).join(" · ")+
+          '</p>').join(""):
+        '<p class="muted">현재 세이브 조건에서 직접 확인된 연쇄 후보 없음. '+
+        '자동 연구 자체가 영구 불가능하다는 증명은 아닙니다.</p>')+
+      '</details>':"")+
     (result.pools?'<p class="muted">경로 후보: 변신 '+result.pools.transforms+
       ' / 연구 '+result.pools.research+' / 제조 '+result.pools.recipes+
       ' (확률 보상 '+(result.pools.randomRecipes||0)+
@@ -222,7 +236,12 @@ function initRouteFinder(){
       // A cost-zero flag is not invented as a manually researchable project.
       const zeroCostGates=inspectTransformationZeroResearch(DATA,goal,world,{
         inventoryKnown:proof.base.itemsComplete,functionsKnown:true});
-      showRouteSearchResult({...result,zeroCostGates});
+      const zeroCostCascade=inspectAutoZeroSourcesForTransform(DATA,goal,world,{
+        inventoryKnown:proof.base.itemsComplete,functionsKnown:true,
+        // The modern save parser does not currently prove active research in
+        // the selected base, so candidates can never become certainties.
+        activeResearchKnown:false,maxSteps:35});
+      showRouteSearchResult({...result,zeroCostGates,zeroCostCascade});
     }catch(e){
       out.textContent="자동 경로 판정 불완전: "+e.message;
     }
