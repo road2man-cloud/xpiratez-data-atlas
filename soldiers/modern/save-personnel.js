@@ -40,6 +40,7 @@ function flowFields(text){
 }
 function newBase(index){
   return {index,name:"기지 "+(index+1),soldiers:[],facilities:[],items:new Map(),
+    researchProjects:new Set(),researchComplete:false,researchRows:0,
     itemsComplete:false,facilitiesComplete:false,soldiersComplete:true};
 }
 function newSoldier(index){
@@ -90,6 +91,7 @@ export function readSavePersonnel(text){
   if(section.head!=="")
     return {bases:[],warnings:["지원하지 않는 bases 형식이므로 기지 증빙은 적용하지 않습니다."]};
   let base=null,group=null,facility=null,soldier=null,soldierGroup=null,diaryGroup=null,medal=null;
+  let researchEntry=null;
   const bases=[],warnings=[];
   for(const line of section.lines){
     if(!line.trim()||line.trim().startsWith("#"))continue;
@@ -100,17 +102,18 @@ export function readSavePersonnel(text){
     if(spaces===2&&raw.startsWith("- ")){
       if(bases.length>=150)throw new Error("기지 수가 제한을 초과했습니다.");
       base=newBase(bases.length);
-      bases.push(base);group=null;facility=null;soldier=null;
+      bases.push(base);group=null;facility=null;soldier=null;researchEntry=null;
       const initial=field(raw.slice(2));
       if(initial?.key==="name")base.name=cleanText(initial.value)||base.name;
       continue;
     }
     if(!base)continue;
     if(spaces===4){
-      const f=field(raw);group=f?.key||null;facility=null;soldier=null;soldierGroup=null;diaryGroup=null;medal=null;
+      const f=field(raw);group=f?.key||null;facility=null;soldier=null;soldierGroup=null;diaryGroup=null;medal=null;researchEntry=null;
       if(!f)continue;
       if(f.key==="name")base.name=cleanText(f.value)||base.name;
       if(f.key==="items")base.itemsComplete=true;
+      if(f.key==="research")base.researchComplete=f.value===""||f.value==="[]";
       if(f.key==="facilities")base.facilitiesComplete=true;
       if(f.key==="soldiers")base.soldiersComplete=true;
       if(f.key==="items"&&f.value!==""){
@@ -136,6 +139,29 @@ export function readSavePersonnel(text){
       const f=field(raw),n=f&&num(f.value);
       if(!f||n==null||n<0||base.items.has(f.key))base.itemsComplete=false;
       else base.items.set(f.key,n);
+      continue;
+    }
+    // This is the SAME base's ongoing research-project list, not the global
+    // discovered-research diary. Incomplete/malformed list entries must never
+    // be mistaken for an empty set of active projects.
+    if(spaces===6&&group==="research"&&raw.startsWith("- ")){
+      if(++base.researchRows>6000){base.researchComplete=false;continue;}
+      researchEntry={valid:false};
+      const f=field(raw.slice(2));
+      if(f?.key==="project"&&ID.test(cleanText(f.value)||"")){
+        const id=cleanText(f.value);
+        if(base.researchProjects.has(id))base.researchComplete=false;
+        else{base.researchProjects.add(id);researchEntry.valid=true;}
+      }
+      continue;
+    }
+    if(spaces===8&&group==="research"&&researchEntry){
+      const f=field(raw);
+      if(f?.key==="project"&&ID.test(cleanText(f.value)||"")&&!researchEntry.valid){
+        const id=cleanText(f.value);
+        if(base.researchProjects.has(id))base.researchComplete=false;
+        else{base.researchProjects.add(id);researchEntry.valid=true;}
+      }
       continue;
     }
     if(spaces===6&&group==="facilities"&&raw.startsWith("- ")){
@@ -243,6 +269,8 @@ export function readSavePersonnel(text){
   }
   for(const b of bases){
     if(b.facilities.some(f=>!f.complete||!f.type))b.facilitiesComplete=false;
+    if(b.researchProjects.size!==b.researchRows)b.researchComplete=false;
+    if(!b.researchComplete)warnings.push("일부 기지의 진행 중 연구 프로젝트 파싱 불완전");
     if(b.soldiers.some(s=>!s.type))b.soldiersComplete=false;
     for(const s of b.soldiers){
       // OXCE omits a diary section for a soldier who has no diary record.
