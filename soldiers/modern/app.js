@@ -9,6 +9,7 @@ import {renderStatEnvelope} from "./stat-envelope-ui.js";
 import {GROWTH_PHASES,growStatEnvelope} from "./growth-envelope.js";
 import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
 import {searchChronologicalRoute} from "./route-finder.js";
+import {inspectTransformationZeroResearch} from "./auto-zero-research.js";
 import {renderRareMapLootProof} from "./map-loot-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
@@ -178,6 +179,14 @@ export function showRouteSearchResult(result){
       [...new Set(result.assumptions)].slice(0,8).map(esc).join(" · ")+'</p>':"")+
     (result.topBlocks?.length?'<p class="muted">탐색 중 차단 근거: '+
       result.topBlocks.slice(0,4).map(x=>esc(x.reason)).join(" · ")+'</p>':"")+
+    (result.zeroCostGates?.length?'<details open><summary><strong>비용 0 자동 연구 조건 (완료 보증 아님)</strong></summary>'+
+      result.zeroCostGates.map(gate=>'<p class="muted"><strong>'+esc(gate.id)+'</strong> · '+
+        esc(({completed:"완료 확인",internalOnly:"내부 전용",["internal-only"]:"내부 전용",
+          ["disabled-now"]:"현재 폐쇄",["pending-source"]:"후속 연구 완료 필요",
+          ["eligible-after-source"]:"자동 처리 후보",gated:"선행 조건 미충족"})[gate.kind]||
+          "획득 미확정")+' · '+gate.reasons.slice(0,4).map(esc).join(" · ")+
+        (gate.researchEventSources?" · 이벤트 직접 지급 후보 "+gate.researchEventSources+"개":"")+
+        '</p>').join("")+'</details>':"")+
     (result.pools?'<p class="muted">경로 후보: 변신 '+result.pools.transforms+
       ' / 연구 '+result.pools.research+' / 제조 '+result.pools.recipes+
       ' (확률 보상 '+(result.pools.randomRecipes||0)+
@@ -209,7 +218,11 @@ function initRouteFinder(){
       const world=routeFinderWorld(proof);
       const result=searchChronologicalRoute(DATA,world,{soldierId:"selected",
         goals:[goal],maxStates:170,maxDepth:10,maxAttempts:3400});
-      showRouteSearchResult(result);
+      // This static diagnosis never modifies the verified action sequence.
+      // A cost-zero flag is not invented as a manually researchable project.
+      const zeroCostGates=inspectTransformationZeroResearch(DATA,goal,world,{
+        inventoryKnown:proof.base.itemsComplete,functionsKnown:true});
+      showRouteSearchResult({...result,zeroCostGates});
     }catch(e){
       out.textContent="자동 경로 판정 불완전: "+e.message;
     }
