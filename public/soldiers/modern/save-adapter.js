@@ -97,6 +97,8 @@ export function modernSoldierProof(data,save,baseIndex,soldierIndex){
   const options={
     mode:"current",researched:save.research.completed||[],
     disabled:save.research.disabled||[],
+    activeResearch:base.researchComplete?[...base.researchProjects]:null,
+    activeResearchKnown:base.researchComplete,
     baseFunctions:[...facilities.functions].filter(([,v])=>v>=1).map(([id])=>id),
     // Regions/countries can supply base functions not listed among facilities.
     // Treat a missing facility function as UNKNOWN, not proven absent.
@@ -109,6 +111,7 @@ export function modernSoldierProof(data,save,baseIndex,soldierIndex){
   const issues=[];
   if(!save.compatible)issues.push("연구 데이터 버전·ID 불일치");
   if(!base.itemsComplete)issues.push("기지 재고의 일부를 읽지 못함");
+  if(!base.researchComplete)issues.push("해당 기지의 진행 중 연구 목록 미확인");
   if(!facilities.complete)issues.push("시설 기능 근거 불완전");
   if((data.transformations||[]).some(t=>(t.requiresBaseFunc||[]).some(f=>!facilities.functions.has(f))))
     issues.push("시설 밖 국가·지역 제공 기능의 부재는 아직 확정할 수 없음");

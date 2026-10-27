@@ -84,7 +84,28 @@ test("zero cost follow-up disables are processed chronologically",()=>{
     C:{cost:0,dependencies:["A"]}}};
   const a=inspectAutoZeroCascade(data,"A",w(),o);
   assert.deepEqual(a.automatic,["B"]);
+  assert(a.steps.some(s=>s.id==="C"&&s.disabledWhenPopped));
+  assert(a.finalState.researched.has("C"),"OXCE processes a topic already queued even after disable");
+  assert(a.finalState.disabled.has("C"),"being queued does not clear the disabled status");
   assert(a.notices.some(x=>x.includes("C")));
+});
+test("OXCE std::map research order is ordinal, not locale-dependent",()=>{
+  const data={researchRules:{A:{cost:5},a_LATER:{cost:0,dependencies:["A"]},
+    Z_FIRST:{cost:0,dependencies:["A"],disables:["a_LATER"]}}};
+  const result=inspectAutoZeroCascade(data,"A",w(),o);
+  assert.deepEqual(result.steps.map(s=>s.id),["A","Z_FIRST","a_LATER"]);
+  assert(result.finalState.researched.has("a_LATER"));
+  assert(result.finalState.disabled.has("a_LATER"));
+  assert(!result.automatic.includes("a_LATER"));
+});
+test("previously discovered zero topic can re-run for new protected unlock",()=>{
+  const data={researchRules:{GUARD:{cost:5},OLD:{cost:0,unlocks:["P"]},
+    P:{cost:0,requires:["GUARD"],dependencies:["MISSING"]}}};
+  const result=inspectAutoZeroCascade(data,"GUARD",
+    w({researched:new Set(["OLD"])}),o);
+  assert(result.steps.some(s=>s.id==="OLD"&&s.kind==="revisited-zero"));
+  assert(result.automatic.includes("P"));
+  assert(result.finalState.researched.has("P"));
 });
 test("repeatable source cannot be treated as a simple first-time auto queue",()=>{
   const rulebook={researchRules:{
@@ -105,7 +126,7 @@ test("zero-cost chain does not pretend a free-research RNG grant is automatic",(
   assert(answer.automatic.includes("FOLLOWUP"));
   assert(!answer.automatic.includes("RANDOM_A"));
   assert(!answer.automatic.includes("RANDOM_B"));
-  assert(answer.notices.some(x=>x.includes("별도 RNG")));
+  assert(answer.notices.some(x=>x.includes("자동 추첨하지 않음")));
 });
 test("auto cascade completion is bounded and never mutates input",()=>{
   const source=w();
