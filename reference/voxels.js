@@ -71,6 +71,11 @@
     const data = await response.json();
     if (!Array.isArray(data.soldiers) || !Array.isArray(data.armors))
       throw new Error("병종·방어구 데이터 형식 오류");
+    const maskDescription = id => {
+      const mask = data.collisionTemplates?.[id];
+      return !mask ? String(id) : id + " (" + mask.width + "×" + mask.depth +
+        ", " + mask.occupied + "복셀/층)";
+    };
     const soldiers = new Map(data.soldiers.map(s => [s.id, s]));
     const available = [...data.soldiers].sort((a,b) =>
       a.koName.localeCompare(b.koName,"ko"));
@@ -164,7 +169,7 @@
           ? fmt(h.kneelingShotOrigin) + " (무릎 불가)"
           : fmt(h.kneelingShotOrigin),"num");
         cell(tr,h.size + "×" + h.size + "타일");
-        cell(tr,(a.loftempsSet || []).join(", ") + (loftChanged(s,a)
+        cell(tr,(a.loftempsSet || []).map(maskDescription).join(" · ") + (loftChanged(s,a)
           ? " (기본 " + (s.defaultShape.loftempsSet || []).join(", ") + "와 다름)" : ""),"fine");
         cell(tr,label(h.allowsKneeling));
         cell(tr,(a.sourceFiles||[]).join(" · "),"fine");

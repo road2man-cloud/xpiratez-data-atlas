@@ -172,7 +172,7 @@
 <h2>07. 병종·방어구 스탠딩 / 무릎 꿇기 복셀 높이 <span class="tag">X-Piratez 2.1</span></h2>
 <p>전투 지도 <strong>1타일 = 16 × 16 × 24복셀</strong>입니다. 아래 병종의 <code>standHeight</code>·<code>kneelHeight</code>는 <strong>세로 높이</strong>이며 16×16 직육면체 전체를 차지한다는 뜻이 아닙니다. 실제 피격 판정은 방어구의 복셀 충돌형(<em>loft</em>), 타일 지형 및 탄도에 따릅니다.</p>
 <p class="info"><strong>평지의 총탄 출발 높이</strong> = <code>현재 자세의 실효 높이 + 부양 높이 − 지형 레벨 − 4복셀</code>입니다. 투척은 별도 −3, 발사 위치·계단·고저차·명중 오차·목표 높이는 별도 적용됩니다. <strong>높이 차이만으로 아군 오발 0%를 보증하지 않습니다.</strong></p>
-<p class="info" id="voxel-bloodhound"><strong>블러드하운드를 탄 로크나르:</strong> <code>STR_LOKNAR_PLATE_MAIL_RIDER_UC</code> (라이더/로크나르)의 서기·무릎 높이는 <strong>17 / 11복셀</strong>, 평지 사격 출발 Z는 <strong>13 / 7복셀</strong>, 점유는 <strong>1×1타일</strong>입니다. 다만 일반 로크나르의 복셀 충돌 템플릿 ID <code>2</code>와 달리 탑승형은 <code>4</code>를 사용합니다. <strong>템플릿 번호는 폭(복셀 수)이 아니라 충돌형 식별자</strong>이며, 아군 오발 판정이 동일하다는 뜻은 아닙니다. <a href="?species=STR_SOLDIER_LOKNAR#voxel-armor-STR_LOKNAR_PLATE_MAIL_RIDER_UC-STR_SOLDIER_LOKNAR">라이더 장비 실효 값 보기</a></p>
+<p class="info" id="voxel-bloodhound"><strong>블러드하운드를 탄 로크나르:</strong> <code>STR_LOKNAR_PLATE_MAIL_RIDER_UC</code> (라이더/로크나르)의 서기·무릎 높이는 <strong>17 / 11복셀</strong>, 평지 사격 출발 Z는 <strong>13 / 7복셀</strong>, 점유는 <strong>1×1타일</strong>입니다. 다만 일반 로크나르의 복셀 충돌 템플릿 ID <code>2</code>와 달리 탑승형은 <code>4</code>를 사용합니다. <strong>실제 <code>LOFTEMPS.DAT</code> 해독 결과:</strong> 일반형은 가로 단면 <strong>5×5복셀, 실제 점유 21복셀/층</strong>, 탑승형은 <strong>9×9복셀, 61복셀/층</strong>입니다. 단면적은 약 2.90배지만, 명중 확률이 2.90배라는 뜻은 아닙니다. <strong>템플릿 번호는 폭(복셀 수)이 아니라 충돌형 식별자</strong>입니다. <a href="?species=STR_SOLDIER_LOKNAR#voxel-armor-STR_LOKNAR_PLATE_MAIL_RIDER_UC-STR_SOLDIER_LOKNAR">라이더 장비 실효 값 보기</a></p>
 <div class="controls">
   <label class="grow" for="voxel-search">병종·종족·방어구 검색<input id="voxel-search" type="search" placeholder="로크나르, 캣걸, STR_SOLDIER, 방어구 ID" autocomplete="off"></label>
   <label for="voxel-species">종족/병종<select id="voxel-species"><option value="">모든 병종</option></select></label>
@@ -193,10 +193,10 @@
 <thead><tr><th>적용 병종</th><th>방어구</th><th>실효 서기</th><th>실효 무릎</th><th>부양 높이</th><th>서서 사격 출발 Z</th><th>무릎 사격 출발 Z</th><th>점유 타일</th><th>충돌 복셀 템플릿 ID</th><th>무릎 허용 선언</th><th>원본 룰</th></tr></thead>
 <tbody id="voxel-armor-rows"><tr><td colspan="11">방어구별 실효 복셀 높이를 불러오는 중…</td></tr></tbody>
 </table></div>
-<p class="fine"><strong>충돌 복셀 템플릿</strong>은 <code>loftempsSet</code>의 마스크 식별자입니다. 2·4는 복셀 폭이나 배율이 아닙니다. 높이·점유 타일이 같아도 마스크가 달라지면 실제 아군 피격 경로가 달라질 수 있습니다. <strong>무릎 사격 Z</strong>는 <code>실효 무릎 높이 + 부양 높이 − 4</code>로 계산합니다. <strong>무릎 불가</strong> 방어구에서는 숫자가 보여도 가상 참고값이며 해당 자세로 사격할 수 없습니다. 모드 규칙의 <code>units</code>에 명시된 적용 병종과 대원의 실제 시작 방어구를 포함합니다. 연구 해금·아이템 보유·착용 허용 여부는 별도 조건입니다. 이 표에서 '미지정'은 무릎 허용/금지가 명시되지 않았다는 뜻이지 반드시 가능하다는 뜻이 아닙니다.</p>
+<p class="fine"><strong>충돌 복셀 템플릿</strong>은 <code>loftempsSet</code>의 마스크 식별자입니다. ID 옆의 가로×세로 최대 범위와 실제 점유 복셀/층은 설치본 <code>GEODATA/LOFTEMPS.DAT</code>의 16×16 마스크를 직접 해독한 값입니다. 2·4라는 ID 자체는 폭이나 배율이 아닙니다. 높이·점유 타일이 같아도 마스크가 달라지면 실제 아군 피격 경로가 달라질 수 있습니다. <strong>무릎 사격 Z</strong>는 <code>실효 무릎 높이 + 부양 높이 − 4</code>로 계산합니다. <strong>무릎 불가</strong> 방어구에서는 숫자가 보여도 가상 참고값이며 해당 자세로 사격할 수 없습니다. 모드 규칙의 <code>units</code>에 명시된 적용 병종과 대원의 실제 시작 방어구를 포함합니다. 연구 해금·아이템 보유·착용 허용 여부는 별도 조건입니다. 이 표에서 '미지정'은 무릎 허용/금지가 명시되지 않았다는 뜻이지 반드시 가능하다는 뜻이 아닙니다.</p>
 </details>
 <p id="voxel-sources" class="fine"></p>
-<p class="fine">원본: <code>soldiers[].standHeight / kneelHeight</code>, <code>armors[].standHeight / kneelHeight / floatHeight / size / loftempsSet / allowsKneeling</code>. 엔진: <code>BattleUnit::updateArmorFromSoldier()</code>, <code>BattleUnit::getHeight()</code>, <code>TileEngine::getOriginVoxel()</code>. <a href="./unit-voxels.json">GPT·분석용 전체 JSON</a>에 룰 파일 해시와 각 병종·방어구 내부 ID가 들어 있습니다.</p>
+<p class="fine">원본: <code>soldiers[].standHeight / kneelHeight</code>, <code>armors[].standHeight / kneelHeight / floatHeight / size / loftempsSet / allowsKneeling</code>. 엔진: <code>BattleUnit::updateArmorFromSoldier()</code>, <code>BattleUnit::getHeight()</code>, <code>TileEngine::getOriginVoxel()</code>. <a href="./unit-voxels.json">GPT·분석용 전체 JSON</a>에는 룰 파일과 실제 <code>LOFTEMPS.DAT</code>의 SHA-256, 각 병종·방어구 ID 및 마스크별 실측 단면이 들어 있습니다.</p>
 </section>
 <section class="panel">
 <h2>근거와 데이터 출처</h2>
@@ -208,6 +208,6 @@
 </main>
 <script src="./items.js?v=20261024-latest" defer></script>
 <script src="./app.js?v=20261024-latest" defer></script>
-<script src="./voxels.js?v=20261027-bloodhound-rider-loft" defer></script>
+<script src="./voxels.js?v=20261027-bloodhound-geometry" defer></script>
 </body>
 </html>
