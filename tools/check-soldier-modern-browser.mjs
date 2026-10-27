@@ -183,7 +183,19 @@ try{
   await page.locator("#routeSearchButton").click();
   await page.waitForFunction(()=>document.querySelector("#routeSearchResult")?.textContent?.includes(
     "동일 대원 계보에서 확정 제외"),{timeout:15000});
-  assert((await page.locator("#routeSearchResult").innerText()).includes("STR_UNAVAILABLE"));
+  const internalReport=await page.locator("#routeSearchResult").innerText();
+  assert(internalReport.includes("STR_UNAVAILABLE"));
+  assert(internalReport.includes("비용 0 자동 연구 조건"));
+  assert(internalReport.includes("내부 전용"));
+  await page.locator("#routeSearchTarget").selectOption("STR_HIGH_MAGOS_CEREMONY");
+  await page.locator("#routeSearchButton").click();
+  await page.waitForFunction(()=>document.querySelector("#routeSearchResult")
+    ?.textContent?.includes("STR_HIGH_MAGOS"),null,{timeout:20000});
+  const wizardReport=await page.locator("#routeSearchResult").innerText();
+  assert(wizardReport.includes("STR_HIGH_MAGOS"));
+  assert(wizardReport.includes("STR_BUGEYE_WIZARD_SPECIALIZATION"));
+  assert(wizardReport.includes("연구 완료 후에만 자동 처리 검토"));
+  console.log("PASS saved-game zero-cost auto-research gating distinguishes prerequisites and internal-only flags");
   console.log("PASS automatic future route UI respects imported save, internal-only blocker and never uploads the save");
 
   const invalid=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8").replace("v.o2","v.o1.1.1");
