@@ -195,7 +195,9 @@ try{
   assert(wizardReport.includes("STR_HIGH_MAGOS"));
   assert(wizardReport.includes("STR_BUGEYE_WIZARD_SPECIALIZATION"));
   assert(wizardReport.includes("연구 완료 후에만 자동 처리 검토"));
-  console.log("PASS saved-game zero-cost auto-research gating distinguishes prerequisites and internal-only flags");
+  assert(wizardReport.includes("비용 0 연구 연쇄 처리 시뮬레이션"));
+  assert(wizardReport.includes("모두 미증명 후보"));
+  console.log("PASS saved-game zero-cost auto-research gating and conditional OXCE queue simulation");
   console.log("PASS automatic future route UI respects imported save, internal-only blocker and never uploads the save");
 
   const invalid=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8").replace("v.o2","v.o1.1.1");
