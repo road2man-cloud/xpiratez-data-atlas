@@ -347,6 +347,15 @@ export function applyTransformation(rule,oldState,data,options={}){
   s.exactStats=!!oldState.exactStats&&!estimate.hasUnmodelled;
   if(estimate.hasUnmodelled)s.remarks.push(rule.id+" · 능력치 엔진 정밀 모의 필요");
   if(rule.producedSoldierType)s.soldierType=rule.producedSoldierType;
+  if(s.soldierType!==oldState.soldierType){
+    const newRules=data.soldiers?.find(x=>x.id===s.soldierType);
+    const ranks=newRules?.raw?.rankStrings;
+    // Soldier::performTransformation demotes to rookie for bodies that
+    // disallow promotion; otherwise it caps the rank to the new rank list.
+    if(newRules?.allowPromotion===false)s.rank=0;
+    else if(Array.isArray(ranks)&&ranks.length>0)s.rank=Math.min(s.rank,ranks.length-1);
+    else if(!newRules)s.remarks.push(rule.id+" · 병종 변경 후 계급 규칙 미확정");
+  }
   if(!rule.keepSoldierArmor){
     const newBody=data.soldiers?.find(x=>x.id===s.soldierType);
     s.armorId=rule.producedSoldierArmor||newBody?.armor||null;
