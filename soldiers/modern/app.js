@@ -128,9 +128,10 @@ async function load(){
   const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
   if(["profiles","soldiers","transformations"].includes(params.get("dataset")))$("#dataset").value=params.get("dataset");
   renderSummary();
-  initFutureComparison(DATA);
+  const futureComparison=initFutureComparison(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
     SAVE=save;
+    futureComparison?.setSave(save);
     CURRENT_PROOF=proof;
     previousTransformations=[];
     if(proof?.kind==="proof"){

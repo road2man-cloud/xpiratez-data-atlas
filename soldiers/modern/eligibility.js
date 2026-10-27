@@ -99,9 +99,43 @@ export function researchPlan(ids,rules={},options={}){
     if(escape)uncertain.push("연구 충돌의 이벤트·우회 해금 검증 필요: "+loops.slice(0,8).join(", "));
     else blocked.push("필수 연구 선행·폐쇄 순환: "+loops.slice(0,8).join(", "));
   }
-  const conditions=uniq([...warnings,...uncertain]);
-  return {kind:blocked.length?"blocked":conditions.length?"conditional":"viable",
-    blocked:uniq(blocked),conditions,required:[...nodes],order,hasAlternateUnlock:uncertain.length>0};
+  // An unsatisfied NOMINAL prerequisite is not a permanent impossibility:
+  // OXCE events can call addFinishedResearch directly, and unlocked topics
+  // can skip dependencies. Protected/getOneFree sources can also be relevant.
+  // Thus graph cycles, old disabler history and intermediate closed topics
+  // are diagnostic unless all possible grants have been exhaustively ruled out.
+  // Treat only *actual disabled goals* (subject to re-enables), internal-only
+  // sentinel or simultaneous mutual disables as hard evidence.
+  const hard=[];
+  if(goal.includes("STR_UNAVAILABLE"))
+    hard.push("일반 캠페인에서 사용할 수 없는 내부 전용 연구: STR_UNAVAILABLE");
+  for(const id of goal){
+    if(!disabled.has(id)||prior.has(id))continue;
+    const recover=[...(rev.reenablers.get(id)||[])];
+    if(!recover.length)hard.push("현재 세이브에서 직접 요구 연구가 폐쇄됨: "+id);
+  }
+  if(options.goalSemantics==="simultaneous"){
+    for(let i=0;i<goal.length;i++)for(let j=i+1;j<goal.length;j++){
+      const a=goal[i],b=goal[j];
+      const conflict=arr(rules[a]?.disables).includes(b)||arr(rules[b]?.disables).includes(a);
+      if(!conflict)continue;
+      if(rev.reenablers.has(a)||rev.reenablers.has(b))
+        uncertain.push("동시 요구 연구 "+a+" / "+b+"가 서로 폐쇄되지만 재활성화 경로가 있음");
+      else hard.push("동시에 보유할 수 없는 연구 플래그: "+a+" / "+b);
+    }
+  }
+  const diagnosticBlockers=uniq(blocked).filter(x=>!hard.includes(x));
+  const eventSources=options.eventResearchSources||{};
+  for(const id of goal){
+    const awards=arr(eventSources[id]);
+    if(awards.length&&!prior.has(id))
+      uncertain.push(id+" · 이벤트 직접 연구 지급 후보 "+awards.slice(0,3).map(x=>x.event||x).join(", ")+" (발생·선택 보장 아님)");
+  }
+  const conditions=uniq([...warnings,...uncertain,
+    ...diagnosticBlockers.map(x=>"명목 선행망에서 충돌 (이벤트·우회 지급 미확정): "+x)]);
+  return {kind:hard.length?"blocked":conditions.length?"conditional":"viable",
+    blocked:uniq(hard),conditions,diagnosticBlockers,
+    required:[...nodes],order,hasAlternateUnlock:uncertain.length>0||diagnosticBlockers.length>0};
 }
 
 export function initialState(data,profileOrType,{band="avg",status="healthy",rank}={}){
@@ -243,7 +277,9 @@ export function eligibleTransformation(rule,state,data,options={}){
   // Research route planning is for FUTURE possibilities, not a prerequisite
   // for a project already visible in the actual save.
   const tech=mode==="current"?{kind:"viable",blocked:[],conditions:[],required:arr(rule.requires),order:[]}:
-    researchPlan(arr(rule.requires),data.researchRules,options);
+    researchPlan(arr(rule.requires),data.researchRules,{
+      ...options,goalSemantics:"simultaneous",eventResearchSources:data.eventResearchSources
+    });
   blocked.push(...tech.blocked);
   conditions.push(...tech.conditions);
   if(mode==="current"){
