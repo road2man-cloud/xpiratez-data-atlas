@@ -51,9 +51,31 @@ try{
   assert(mapLootText.includes("STR_GDX_004"));
   assert(mapLootText.includes("STR_AVATAR_MEDALLION"));
   assert(mapLootText.includes("임무 발동"));
+  assert((await page.locator("#rareMissionFrontier").innerText())
+    .includes("세이브를 선택하면"));
   await page.locator("#rareMapLootPanel summary").click();
   console.log("PASS 2.1 rare mission map: fixed block items, unlock scripts and non-guaranteed recovery");
   assert.equal(await page.locator("#routeSearchTarget option").count(),83);
+  await page.evaluate(async()=>{
+    const {showRouteSearchResult}=await import("./app.js");
+    showRouteSearchResult({
+      kind:"conditional",
+      steps:[
+        {type:"manufacture",item:"STR_TEST_PRIZE",count:1,recipe:"STR_TEST_BOX",
+          assumeOutcome:true,weight:1,weightTotal:34},
+        {type:"advanceMonth",month:9,assumeContinuity:true}],
+      assumptions:["RNG와 월 진행을 가정"],
+      pools:{transforms:1,research:1,recipes:2,randomRecipes:1,
+        ambiguousRandomRecipes:1,eventScenarios:1},
+      deterministic:{examined:2},searchLimits:{maxDepth:5},sourceComplete:false
+    });
+  });
+  const renderedRoute=await page.locator("#routeSearchResult").innerText();
+  assert(renderedRoute.includes("확률 제조 보상 가정"));
+  assert(renderedRoute.includes("1/34"));
+  assert(renderedRoute.includes("월 진행 가정: 9개월"));
+  assert(!renderedRoute.includes("undefined"));
+  console.log("PASS uncertain manufacture and future-month route labels render without undefined");
   await page.locator("#family").selectOption("STR_SOLDIER");
   await page.locator("#dataset").selectOption("transformations");
   await page.locator("#routeSearchButton").click();
@@ -149,6 +171,16 @@ try{
   await page.locator("#modernSaveFile").setInputFiles("tools/fixtures/modern-2.1-test.sav");
   await page.waitForFunction(()=>document.querySelector("#saveStatus")?.textContent?.includes("완료 연구 1개"),{timeout:25000});
   assert.equal(await page.locator("#analysisMode").inputValue(),"current");
+  await page.waitForFunction(()=>document.querySelector(
+    '#rareMissionFrontier [data-milestone="STR_GDX_003"]'));
+  const frontierText=await page.locator("#rareMissionFrontier").innerText();
+  assert(frontierText.includes("STR_GDX_003"));
+  assert(frontierText.includes("STR_SECTOID_LEADER"));
+  assert(frontierText.includes("STR_GDX_004"));
+  assert(frontierText.includes("redMageScoutGate"));
+  assert(frontierText.includes("4단계"));
+  assert(frontierText.includes("순수혈통"));
+  console.log("PASS imported save triggers local rare research/mission frontier without claiming loot recovery");
   assert(await page.locator("#saveRoster").isVisible());
   assert((await page.locator("#saveProof").innerText()).includes("실제 세이브"));
   assert((await page.locator("#saveBattleStats").innerText()).includes("현재 대원 · 실제 장착 방어구 한 벌"));
@@ -173,6 +205,8 @@ try{
   await page.waitForFunction(()=>document.querySelector("#saveStatus")?.textContent?.includes("세이브 판독 실패"));
   assert((await page.locator("#futureCompareResearch").innerText()).includes("세이브를 불러오면"),
     "invalid save must clear campaign-specific research decisions");
+  assert((await page.locator("#rareMissionFrontier").innerText()).includes("세이브를 선택하면"),
+    "invalid save must clear rare-research local campaign frontier");
   console.log("PASS reject save from wrong X-Piratez rules version and clear private campaign evidence");
 
   await page.goto(origin+"/soldiers/");

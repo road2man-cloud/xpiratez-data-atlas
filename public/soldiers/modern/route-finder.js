@@ -90,7 +90,7 @@ function itemPool(data,transformations,max=55){
   const goals={};
   for(const t of transformations)for(const [id,amount] of Object.entries(t.requiredItems||{}))
     goals[id]=Math.max(Number(amount)||0,goals[id]||0);
-  const explored=new Set(),recipes=[];
+  const explored=new Set(),recipes=[],ambiguousRandom=new Set();
   let next=Object.keys(goals);
   for(let depth=0;depth<3&&next.length&&explored.size<max;depth++){
     const subsequent=[];
@@ -98,23 +98,62 @@ function itemPool(data,transformations,max=55){
       if(explored.has(id)||explored.size>=max)continue;
       explored.add(id);
       const source=data.itemSupply?.[id];
-      for(const recipe of arr(source?.manufacture)){
-        recipes.push({item:id,recipe});
+      const deterministic=arr(source?.manufacture);
+      const random=arr(source?.randomManufacture).filter(recipe=>
+        Number(recipe.weight)>0&&Number(recipe.weightTotal)>0);
+      // A single recipe may have multiple output rows for one item.
+      // The replayer cannot distinguish different rows with the same ID,
+      // so do not silently pick the wrong reward/quantity/probability.
+      const variants=new Map();
+      for(const recipe of random){
+        const key=recipe.id||"";
+        const prior=variants.get(key)||[];
+        prior.push(recipe);variants.set(key,prior);
+      }
+      for(const [key,rows] of variants){
+        if(rows.length>1&&new Set(rows.map(r=>JSON.stringify([
+          r.count,r.quantity,r.weight,r.weightTotal,r.requiredItems
+        ]))).size>1)ambiguousRandom.add(id+" / "+key);
+      }
+      for(const recipe of deterministic){
+        recipes.push({item:id,recipe,random:false});
+        for(const material of Object.keys(recipe.requiredItems||{}))
+          if(!explored.has(material))subsequent.push(material);
+      }
+      for(const recipe of random){
+        if(ambiguousRandom.has(id+" / "+recipe.id))continue;
+        if(recipes.some(r=>r.item===id&&r.random&&r.recipe.id===recipe.id))continue;
+        recipes.push({item:id,recipe,random:true});
         for(const material of Object.keys(recipe.requiredItems||{}))
           if(!explored.has(material))subsequent.push(material);
       }
     }
     next=uniq(subsequent);
   }
-  return {goals,recipes,truncated:next.length>0};
+  return {goals,recipes,truncated:next.length>0||ambiguousRandom.size>0,
+    ambiguousRandom:[...ambiguousRandom]};
 }
 function previewAlternativeEvents(data,researchIds,limit=12){
   const events=[];
   for(const id of researchIds){
     for(const route of arr(data.eventResearchSources?.[id]).slice(0,2)){
       for(const script of arr(route.scripts).slice(0,2)){
+        // Only advance to months that have a possible positive-weight draw.
+        const positives=arr(script.monthWeights).filter(x=>Number(x.weight)>0)
+          .map(x=>Number(x.month)).filter(Number.isFinite)
+          .sort((a,b)=>a-b);
+        if(script.mode==="weighted"&&!positives.length)continue;
+        const first=Math.max(0,Number(script.firstMonth)||0,
+          script.mode==="weighted"?Math.min(...positives):0);
+        const last=script.lastMonth;
+        if(last!==null&&last!==undefined&&Number(last)>=0&&first>Number(last))
+          continue;
+        const futureWindowStarts=script.mode==="weighted"?
+          uniq([first,...positives.filter(x=>x>=first)]):[first];
         events.push({type:"eventResearch",event:route.event,
-          script:script.script,research:id,assumeOutcome:true});
+          script:script.script,research:id,assumeOutcome:true,
+          firstEligibleMonth:first,lastEligibleMonth:last??null,
+          futureWindowStarts});
         if(events.length>=limit)return events;
       }
     }
@@ -137,6 +176,9 @@ function actionsFor(node,pool,strict,goalIds,soldierId,data){
       actions.push({type:"freeResearch",source:token.source,
         research:id,assumeOutcome:!strict});
     }
+    // The engine selects this result at source completion; no other action
+    // can lawfully interleave with its outstanding one-time roll.
+    return actions;
   }
   // Research actions: never create an arbitrary disabled/zero-cost grant,
   // nor bypass its source/availability requirements.
@@ -170,19 +212,37 @@ function actionsFor(node,pool,strict,goalIds,soldierId,data){
   }
   // Only a modeled manufacturer with verified stock, facility and research
   // may create a material; missing supply stays outside the witness.
-  for(const {item,recipe} of pool.items.recipes){
+  for(const {item,recipe,random} of pool.items.recipes){
+    if(random&&strict)continue;
     const target=pool.items.goals[item]||1;
     const short=Math.max(0,target-owned(w.items,item));
     if(!short||!arr(recipe.requires).every(id=>w.researched.has(id)&&!w.disabled.has(id))||
       arr(recipe.requiresBaseFunc).some(id=>!w.baseFunctions.has(id)))continue;
-    const count=Math.min(20,Math.max(1,Math.ceil(short/Math.max(1,Number(recipe.quantity||1)))));
+    const count=Math.min(20,Math.max(1,Math.ceil(short/Math.max(1,
+      Number(recipe.quantity??recipe.count??1)))));
     if(Object.entries(recipe.requiredItems||{}).some(([id,n])=>owned(w.items,id)<Number(n)*count)||
       (w.funds!=null&&w.funds<Number(recipe.cost||0)*count))continue;
-    actions.push({type:"manufacture",recipe:recipe.id,item,count});
+    actions.push({type:"manufacture",recipe:recipe.id,item,count,
+      ...(random?{assumeOutcome:true,weight:recipe.weight,
+        weightTotal:recipe.weightTotal}:null)});
   }
-  if(!strict)for(const ev of pool.events){
-    if(w.researched.has(ev.research)||w.disabled.has(ev.research))continue;
-    actions.push(ev);
+  if(!strict){
+    const prospectiveMonths=new Set();
+    for(const ev of pool.events){
+      if(w.researched.has(ev.research)||w.disabled.has(ev.research))continue;
+      actions.push(ev);
+      // Time passing also changes financial upkeep and other events. We
+      // can model event eligibility, but NOT these world changes: every
+      // month jump must therefore stay conditional, never a firm witness.
+      if(Number.isInteger(w.month)){
+        const next=arr(ev.futureWindowStarts).find(month=>month>w.month&&
+          (ev.lastEligibleMonth==null||Number(ev.lastEligibleMonth)<0||
+            month<=Number(ev.lastEligibleMonth)));
+        if(next!==undefined)prospectiveMonths.add(next);
+      }
+    }
+    for(const month of [...prospectiveMonths].sort((a,b)=>a-b).slice(0,4))
+      actions.push({type:"advanceMonth",month,assumeContinuity:true});
   }
   return actions;
 }
@@ -199,9 +259,13 @@ function searchPass(pool,data,start,soldierId,goals,strict,limits){
     seen.add(signature);examined++;
     if(node.goalIndex===goals.length){
       const replay=verifyCampaignSequence(start,node.steps,data);
-      if(["ruleset-consistent","conditional"].includes(replay.kind)){
-        return {kind:node.assumptions.length?"conditional":"witness",
-          steps:node.steps,assumptions:node.assumptions,
+      if(["ruleset-consistent","conditional"].includes(replay.kind)&&
+        !replay.world?.pendingFree){
+        const uncertainty=replay.kind==="conditional"||node.assumptions.length>0;
+        return {kind:uncertainty?"conditional":"witness",
+          steps:node.steps,assumptions:uncertainty&&!node.assumptions.length?
+            ["전체 시퀀스 재생 결과가 조건부이므로 확정 획득을 증명할 수 없음"]:
+            node.assumptions,
           replay,examined,attempts,limitsReached:false};
       }
       continue;
@@ -217,13 +281,22 @@ function searchPass(pool,data,start,soldierId,goals,strict,limits){
         if(why)failures.set(why,(failures.get(why)||0)+1);
         continue;
       }
-      if(strict&&result.kind==="conditional")continue;
+      // An unfinished mandatory free-payout token is NOT a random
+      // assumption. Strict search must be allowed to resolve it next.
+      if(strict&&result.kind==="conditional"&&!result.world?.pendingFree)continue;
       const goalIndex=action.type==="transform"&&
         action.transform===goals[node.goalIndex]?node.goalIndex+1:node.goalIndex;
+      const uncertainAction=action.assumeOutcome===true||
+        (result.kind==="conditional"&&!result.world?.pendingFree);
+      const assumptionNotes=uncertainAction?result.trace.flatMap(t=>t.notes||[]):[];
       const next={world:result.world,
         steps:[...node.steps,action],goalIndex,
         assumptions:[...node.assumptions,
-          ...(result.kind==="conditional"?result.trace.flatMap(t=>t.notes||[]):[])]};
+          ...(assumptionNotes.length?assumptionNotes:uncertainAction?[
+            "원본 이벤트·제조의 미증명 결과를 가정"]:[]),
+          ...(action.type==="advanceMonth"?[
+            "월 "+action.month+"까지 캠페인 유지·기지 비용·다른 이벤트의 영향을 모델링하지 않음"
+          ]:[])]};
       queue.push(next);
     }
     if(attempts>limits.maxAttempts)break;
@@ -236,7 +309,8 @@ export function searchChronologicalRoute(data,initial,{
   soldierId,goals,maxStates=300,maxDepth=11,maxAttempts=6000,
   includeConditional=true
 }={}){
-  const goalIds=uniq(arr(goals));
+  // Repeated training goals are distinct chronological actions, not a set.
+  const goalIds=arr(goals).filter(x=>typeof x==="string"&&x.length>0);
   const soldier=arr(initial?.soldiers).find(x=>x.id===soldierId)?.state;
   if(!soldier||!goalIds.length||goalIds.length>4)
     return {kind:"unverified",reason:["대원과 1~4개의 변신 목표를 지정해야 합니다"]};
@@ -266,11 +340,14 @@ export function searchChronologicalRoute(data,initial,{
     searchPass(pool,data,initial,soldierId,goalIds,false,limits);
   const best=strict.kind==="witness"?strict:
     scenario?.kind==="conditional"||scenario?.kind==="witness"?scenario:null;
-  const metadata={scope:"bounded; no purchases, battlefield drops, base construction, rank/XP training, spontaneous events or unindexed resources",
+  const metadata={scope:"bounded; no purchases, battlefield drops, base construction, rank/XP training or unindexed resources; modeled month advances and random manufacture remain conditional",
     goalIds,
     searchLimits:limits,sourceComplete:!transform.truncated&&!items.truncated&&!research.truncated,
     pools:{transforms:transform.rows.length,research:research.ids.length,
-      recipes:items.recipes.length,eventScenarios:events.length},
+      recipes:items.recipes.length,
+      randomRecipes:items.recipes.filter(x=>x.random).length,
+      ambiguousRandomRecipes:items.ambiguousRandom.length,
+      eventScenarios:events.length},
     alternateEventResearch:research.speculative.slice(0,15),
     deterministic:{examined:strict.examined||0,attempts:strict.attempts||0,
       budgetHit:!!strict.limitsReached},
