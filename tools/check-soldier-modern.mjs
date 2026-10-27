@@ -62,6 +62,26 @@ test("required previous history and repeat exclusion",()=>{
   assert.equal(check(b,added).kind,"eligible");
   assert.equal(check(a,added).kind,"blocked");
 });
+test("engine demotes rank when new body does not allow promotion",()=>{
+  const soldierOld={id:"GAL",allowPromotion:true,minStats:{},maxStats:{},statCaps:{},raw:{rankStrings:["R0","R1","R2","R3","R4","R5"]}};
+  const soldierNew={id:"R",allowPromotion:false,minStats:{},maxStats:{},statCaps:{},raw:{rankStrings:["R0"]}};
+  const d={...mini,soldiers:[soldierOld,soldierNew]};
+  const old={...state(),rank:4};
+  const change=applyTransformation(rule("BODY",{producedSoldierType:"R"}),old,d,{mode:"current",funds:1000}).state;
+  assert.equal(change.rank,0);
+  const futureRank=rule("RANK2",{allowedSoldierTypes:["R"],minRank:2});
+  assert.equal(check(futureRank,change,d).kind,"blocked");
+});
+test("engine truncates rank to the new body's rank string list",()=>{
+  const d={...mini,soldiers:[
+    {id:"GAL",allowPromotion:true,minStats:{},maxStats:{},statCaps:{}},
+    {id:"X",allowPromotion:true,minStats:{},maxStats:{},statCaps:{},raw:{rankStrings:["R0","R1","R2"]}}
+  ]};
+  const src={...state(),rank:5};
+  const target=applyTransformation(rule("TO_X",{producedSoldierType:"X"}),src,d,{mode:"current",funds:1000}).state;
+  assert.equal(target.rank,2);
+  assert.equal(applyTransformation(rule("RESET_RANK",{allowedSoldierTypes:["X"],resetRank:true}),target,d,{mode:"current",funds:1000}).state.rank,0);
+});
 test("production soldier type changes subsequent eligibility",()=>{
   const a=rule("A",{producedSoldierType:"OTHER"});
   const b=rule("B");
