@@ -42,15 +42,15 @@ try{
   await page.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
-  await page.waitForFunction(()=>document.querySelector("#futureCompareSummary")?.textContent?.includes("반 슈퍼변이체 농부: 확정 제외 34개"));
-  assert.equal(await page.locator("#futureCompareTable tbody tr").count(),27);
+  await page.waitForFunction(()=>document.querySelector("#futureCompareSummary")?.textContent?.includes("반 슈퍼변이체 농부: 확정 제외 45개"));
+  assert.equal(await page.locator("#futureCompareTable tbody tr").count(),28);
   await page.locator("#futureDifferentOnly").uncheck();
   assert.equal(await page.locator("#futureCompareTable tbody tr").count(),83);
   await page.locator("#futureDifferentOnly").check();
-  console.log("PASS 83-rule future side-by-side Gal vs half-super-peasant comparison and 27 difference filter");
+  console.log("PASS 83-rule future side-by-side Gal vs half-super-peasant comparison and 28 difference filter");
   await page.locator("#family").selectOption("STR_SOLDIER");
   await page.locator("#dataset").selectOption("transformations");
-  await page.waitForFunction(()=>document.querySelector("#transformationVerdict")?.textContent?.includes("확정 제외 45개 (병종 계보 43 · 내부 전용 2)"));
+  await page.waitForFunction(()=>document.querySelector("#transformationVerdict")?.textContent?.includes("확정 제외 45개 (병종 계보 43 · 내부 전용 2 · 이력·선행 불가 0)"));
   assert.equal(await page.locator("#soldierTable tbody tr").count(),83);
   console.log("PASS 2.1 modern browser: 83 transformations / 43 body-only plus 2 internal-only Gal exclusions");
 
@@ -58,10 +58,18 @@ try{
   await page.waitForSelector("#detailDialog[open]",{timeout:30000});
   const detail=await page.locator("#detailBody").innerText();
   assert(detail.includes("획득 즉시 이미 수행한 변신 3개"));
-  assert(detail.includes("이 이력과 직접 충돌하는 변신 3개"));
+  assert(detail.includes("초기 이력으로 인해 영구 제외 2개"));
+  assert(detail.includes("이력 초기화 뒤 재검토 가능한 충돌 1개"));
   assert(!detail.includes("STR_CAREER_SOLDIER"),"internal-only acquisition must not show as an accessible conflicting training");
   assert(detail.includes("미래 방어구 단일 슬롯별 최대 보정 후보"));
-  console.log("PASS half-super-peasant acquisition history / inherent exclusions / non-stacking armor candidates");
+  console.log("PASS half-super-peasant: 2 proven inherited-history bans, 1 resettable collision, non-stacking armor");
+  await page.locator("#detailDialog #closeDialog").click();
+  await page.locator("#family").selectOption("STR_SOLDIER_PEASANT");
+  await page.locator("#dataset").selectOption("transformations");
+  await page.locator("#plannerProfile").selectOption("manufacture:STR_HALF_UBER_GIRL_RECRUITMENT");
+  await page.waitForFunction(()=>document.querySelector("#transformationVerdict")?.textContent?.includes(
+    "확정 제외 45개 (병종 계보 31 · 내부 전용 3 · 이력·선행 불가 11)"));
+  console.log("PASS 2.1 actual half-super-peasant planner excludes 11 directed-history/predecessor dead ends");
 
   await page.goto(origin+"/soldiers/modern/");
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("실제 획득형"));

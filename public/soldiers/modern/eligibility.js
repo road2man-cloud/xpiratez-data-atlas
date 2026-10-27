@@ -398,7 +398,49 @@ export function reachableSoldierTypes(data,initialType){
   all.set(initialType,paths);
   return paths;
 }
-export function structuralTransformationVerdict(rule,startState,data){
+// A conservative ABSTRACT INTERPRETATION of conversion chronology.
+// For each reachable body, keep only transformation-history IDs which appear
+// on EVERY abstract path to that body. All research, materials, stats, rank,
+// resurrection, and required previous transformations are relaxed, so the set
+// of abstract paths is a SUPERSET of real campaign paths. Consequently:
+// a forbidden ID in this MUST set is a sound proof that the target cannot be
+// executed from that body, irrespective of future research/materials.
+const unavoidableCache=new WeakMap();
+export function unavoidableHistoryByBody(data,startState){
+  let memo=unavoidableCache.get(data);
+  if(!memo){memo=new Map();unavoidableCache.set(data,memo);}
+  const key=startState.soldierType+"|"+[...(startState.history?.keys()||[])].sort().join(",");
+  if(memo.has(key))return memo.get(key);
+  const must=new Map([[startState.soldierType,new Set(startState.history?.keys()||[])]]);
+  const rules=(data.transformations||[]).filter(t=>
+    !arr(t.requires).includes("STR_UNAVAILABLE")&&!t.createsClone&&!t.producedItem);
+  let changed=true,rounds=0;
+  while(changed&&rounds++<400){
+    changed=false;
+    for(const t of rules){
+      for(const type of arr(t.allowedSoldierTypes)){
+        const before=must.get(type);
+        if(!before)continue;
+        if(arr(t.forbiddenPreviousTransformations).some(id=>before.has(id)))continue;
+        const target=t.producedSoldierType||type;
+        const after=t.reset?new Set():new Set(before);
+        for(const id of arr(t.removeTransformations))after.delete(id);
+        after.add(t.id);
+        if(!must.has(target)){must.set(target,after);changed=true;continue;}
+        const prior=must.get(target);
+        const intersection=new Set([...prior].filter(x=>after.has(x)));
+        if(intersection.size!==prior.size){must.set(target,intersection);changed=true;}
+      }
+    }
+  }
+  // Reaching the iteration limit only weakens proof, never upgrades an
+  // uncertain transformation to confirmed. 83-rule source stabilizes quickly.
+  if(changed)throw Error("Transformation history fixed-point did not converge");
+  memo.set(key,must);
+  return must;
+}
+
+export function structuralTransformationVerdict(rule,startState,data,visiting=new Set()){
   if(arr(rule.requires).includes("STR_UNAVAILABLE"))
     return {kind:"blocked",reason:"내부 전용 연구 STR_UNAVAILABLE: 일반 캠페인에서 획득 불가",
       reachableTypes:[...reachableSoldierTypes(data,startState.soldierType).keys()],
@@ -407,7 +449,69 @@ export function structuralTransformationVerdict(rule,startState,data){
   const eligibleTypes=arr(rule.allowedSoldierTypes);
   const matches=eligibleTypes.filter(id=>paths.has(id));
   if(!matches.length)return {kind:"blocked",reason:"현재 병종 계보로는 대상 병종에 도달할 수 없음",reachableTypes:[...paths.keys()],path:[]};
-  const shortest=matches.sort((a,b)=>paths.get(a).length-paths.get(b).length)[0];
+  const mustHistory=unavoidableHistoryByBody(data,startState);
+  const historyAllowed=matches.filter(type=>{
+    const guaranteed=mustHistory.get(type);
+    return !!guaranteed&&!arr(rule.forbiddenPreviousTransformations).some(id=>guaranteed.has(id));
+  });
+  if(!historyAllowed.length){
+    const atLeastOneBody=matches.some(type=>mustHistory.has(type));
+    return {kind:"blocked",
+      reason:atLeastOneBody?"가능한 모든 병종 전환 경로에서 금지된 변신 이력이 필수로 남음":
+        "변신 이력의 방향성 금지 때문에 대상 병종에 도달할 수 없음",
+      reachableTypes:[...mustHistory.keys()],path:[],proof:"unavoidable transformation history fixed-point",
+      requiredConflicts:matches.map(type=>({type,bodyReachable:mustHistory.has(type),
+        forbidden:arr(rule.forbiddenPreviousTransformations).filter(id=>mustHistory.get(type)?.has(id))}))};
+  }
+  // A required prior transformation that is itself PROVEN unreachable cannot
+  // be introduced into this existing soldier's history later. An initially
+  // inherited predecessor is valid even when new execution is impossible.
+  const nextVisiting=new Set(visiting);
+  nextVisiting.add(rule.id);
+  for(const id of arr(rule.requiredPreviousTransformations)){
+    if(startState.history?.has(id)||nextVisiting.has(id))continue;
+    const predecessor=(data.transformations||[]).find(t=>t.id===id);
+    if(!predecessor)continue; // Unknown source: do not falsely certify exclusion.
+    const before=structuralTransformationVerdict(predecessor,startState,data,nextVisiting);
+    if(before.kind==="blocked"){
+      return {kind:"blocked",
+        reason:"필수 이전 변신 "+id+"의 실행 경로 자체가 확정 불가능",
+        reachableTypes:[...mustHistory.keys()],path:[],proof:"unreachable required predecessor",
+        predecessor:id,predecessorProof:before.proof||before.reason};
+    }
+  }
+  // A pre-owned forbidden history can only be cleared by a reset or a
+  // selective removeTransformations action. To PROVE permanent exclusion,
+  // over-approximate every reachable body BEFORE the history eraser, and
+  // every reachable body AFTER it. If none can return to a body on which
+  // this transformation is allowed, it is impossible for the SAME soldier,
+  // even if all research, materials, ranks and conditions were free.
+  const conflicts=arr(rule.forbiddenPreviousTransformations).filter(id=>startState.history?.has(id));
+  if(conflicts.length){
+    let canClearAndReturn=false;
+    for(const eraser of data.transformations||[]){
+      const selective=arr(eraser.removeTransformations).some(id=>conflicts.includes(id));
+      if(!eraser.reset&&!selective)continue;
+      if(eraser.producedItem||eraser.createsClone)continue;
+      for(const body of paths.keys()){
+        if(!arr(eraser.allowedSoldierTypes).includes(body))continue;
+        const afterBody=eraser.producedSoldierType||body;
+        const afterPaths=reachableSoldierTypes(data,afterBody);
+        if(matches.some(type=>afterPaths.has(type))){
+          // A selective eraser may remove only one of multiple forbidden
+          // IDs: treating it as removing all is still a safe overestimate.
+          canClearAndReturn=true;
+          break;
+        }
+      }
+      if(canClearAndReturn)break;
+    }
+    if(!canClearAndReturn)return {kind:"blocked",
+      reason:"초기 금지 변신 이력을 지우면 이 변신에 허용되는 병종으로 돌아올 수 없음",
+      reachableTypes:[...paths.keys()],path:[],proof:"no return path after any history eraser",
+      forbidden:conflicts};
+  }
+  const shortest=historyAllowed.sort((a,b)=>paths.get(a).length-paths.get(b).length)[0];
   return {kind:shortest===startState.soldierType?"body-ready":"conditional",
     reason:shortest===startState.soldierType?"현재 병종에 적용 가능":"병종 전환이 선행되어야 함",
     reachableTypes:[...paths.keys()],path:paths.get(shortest),requiredType:shortest};
@@ -447,7 +551,14 @@ export function findTransformationPath(targetId,startState,data,options={}){
     // order may vary. Try each possible first predecessor.
     for(const need of arr(rule.requiredPreviousTransformations))if(!state.history.has(need))candidates.push(need);
     // A transformation changing the body may make another route legal.
+    // The bridge may take MULTIPLE hops (Peasant -> Spectre -> ordinary Gal),
+    // not just an immediate producedSoldierType matching the target.
     if(!arr(rule.allowedSoldierTypes).includes(state.soldierType)){
+      const possibleBodies=reachableSoldierTypes(data,state.soldierType);
+      for(const type of arr(rule.allowedSoldierTypes)){
+        const route=possibleBodies.get(type);
+        if(route?.length)candidates.push(route[0]);
+      }
       for(const bridge of rulesById.values()){
         if(bridge.id!==wanted&&bridge.producedSoldierType&&arr(rule.allowedSoldierTypes).includes(bridge.producedSoldierType))candidates.push(bridge.id);
       }

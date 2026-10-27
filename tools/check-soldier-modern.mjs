@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {initialState,eligibleTransformation,applyTransformation,researchPlan,findTransformationPath,availableSoldierArmors,battleStatsWithEquipment,reachableSoldierTypes} from "../public/soldiers/modern/eligibility.js";
+import {initialState,eligibleTransformation,applyTransformation,researchPlan,findTransformationPath,availableSoldierArmors,battleStatsWithEquipment,reachableSoldierTypes,unavoidableHistoryByBody,structuralTransformationVerdict} from "../public/soldiers/modern/eligibility.js";
 
 const dataPath=process.argv[2]||"public/data/soldiers-modern-index.json";
 const data=JSON.parse(fs.readFileSync(dataPath,"utf8"));
@@ -195,6 +195,80 @@ test("real X-Piratez prerequisite and self-forbidden transformations",()=>{
   const p=applyTransformation(personal,s,data,{mode:"future"});
   assert.notEqual(p.verdict.kind,"blocked");
   assert.equal(future(personal,p.state,data).kind,"blocked");
+});
+test("half-super-peasant unavoidable history proves old-body dead ends",()=>{
+  const half=initialState(data,"manufacture:STR_HALF_UBER_GIRL_RECRUITMENT");
+  const must=unavoidableHistoryByBody(data,half);
+  assert(must.get("STR_SOLDIER_PEASANT").has("STR_UBERIZATION"));
+  assert(must.get("STR_SOLDIER_PEASANT").has("STR_MILITIA_TRAINING"));
+  assert(must.get("STR_SOLDIER").has("STR_SHADE_EMBODIMENT"),
+    "all Peasant -> ordinary Gal paths inherit the Shade Embodiment record");
+  assert(!must.has("STR_SOLDIER_W"),
+    "Weirdgal needs ordinary Gal WITHOUT Shade, so its body must be absent");
+  assert(!must.has("STR_SOLDIER_R"),
+    "ANG_102 needs ordinary Gal WITHOUT Shade, so Red-body cannot be reached");
+  const forced=[
+    "STR_MILITIA_TRAINING","STR_UBERIZATION","STR_WEIRDGAL_TRANSFORMATION",
+    "STR_ANG_102","STR_ZOMBIFICATION","STR_BODY_SWAP","STR_ZOMBI_REVIVAL",
+    "STR_CENOBITE_TRAINING","STR_PSYCHONAUT_TRAINING"
+  ];
+  for(const id of forced){
+    const r=data.transformations.find(t=>t.id===id);
+    const v=structuralTransformationVerdict(r,half,data);
+    assert.equal(v.kind,"blocked",id);
+    assert(v.proof,"missing proof: "+id);
+  }
+  assert.equal(data.transformations.filter(t=>
+    structuralTransformationVerdict(t,half,data).kind==="blocked").length,45);
+  assert.equal(data.transformations.filter(t=>
+    findTransformationPath(t.id,half,data,{maxDepth:10,maxNodes:500}).kind==="unknown").length,0);
+});
+test("history fixed-point exclusion is sound against exhaustive small-graph paths",()=>{
+  // Overapproximation may call a path conditional; it must NEVER call a
+  // sequence executable under exact body/history rules permanently blocked.
+  let seed=0x6A17BC13;
+  const rand=()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed;};
+  const types=["GAL","W","R"];
+  for(let caseId=0;caseId<40;caseId++){
+    const ids=Array.from({length:6},(_,i)=>"T"+i);
+    const transformations=ids.map(id=>{
+      const from=types[rand()%types.length],add=types[rand()%types.length];
+      const allowedSoldierTypes=from===add?[from]:[from,add];
+      return {id,allowedSoldierTypes,
+        producedSoldierType:rand()%3===0?types[rand()%types.length]:null,
+        forbiddenPreviousTransformations:rand()%2?[ids[rand()%ids.length]]:[],
+        requiredPreviousTransformations:rand()%5===0?[ids[rand()%ids.length]]:[],
+        reset:rand()%8===0,removeTransformations:[]};
+    });
+    const d={transformations};
+    const acquired=rand()%2?[["T0",1]]:[];
+    const initial={soldierType:"GAL",history:new Map(acquired)};
+    const must=unavoidableHistoryByBody(d,initial);
+    const seen=new Set();
+    const queue=[{type:"GAL",history:new Map(acquired),steps:0}];
+    while(queue.length){
+      const state=queue.shift();
+      const key=state.type+"|"+[...state.history.keys()].sort().join(",");
+      if(seen.has(key))continue;
+      seen.add(key);
+      const guaranteed=must.get(state.type);
+      assert(guaranteed,"missing overapprox state "+caseId+" "+state.type);
+      for(const id of guaranteed)assert(state.history.has(id),
+        "false must-history at case "+caseId+" "+state.type+" "+id);
+      if(state.steps>=5)continue;
+      for(const t of transformations){
+        if(!t.allowedSoldierTypes.includes(state.type))continue;
+        if(t.forbiddenPreviousTransformations.some(id=>state.history.has(id)))continue;
+        if(t.requiredPreviousTransformations.some(id=>!state.history.has(id)))continue;
+        const verdict=structuralTransformationVerdict(t,initial,d);
+        assert.notEqual(verdict.kind,"blocked",
+          "FALSE PERMANENT EXCLUSION at case "+caseId+" "+key+" -> "+t.id);
+        const history=t.reset?new Map():new Map(state.history);
+        history.set(t.id,(history.get(t.id)||0)+1);
+        queue.push({type:t.producedSoldierType||state.type,history,steps:state.steps+1});
+      }
+    }
+  }
 });
 test("automatic prerequisite witness follows engine chronology",()=>{
   const a=rule("A"),b=rule("B",{requiredPreviousTransformations:["A"]});

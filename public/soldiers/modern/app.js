@@ -88,11 +88,12 @@ function renderTransformationPlanner(){
     !(x.x.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length;
   const unavailable=candidates.filter(x=>x.v.kind==="blocked"&&(x.x.requires||[]).includes("STR_UNAVAILABLE")&&
     (x.x.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length;
+  const historical=excluded-unreachable-unavailable;
   const unresolved=candidates.filter(x=>x.v.kind==="unknown").length;
   const notNow=candidates.filter(x=>x.v.kind==="not-now").length;
   const ready=candidates.filter(x=>x.v.kind==="eligible").length;
   $("#transformationVerdict").textContent="현재 계보 "+PLANNER_STATE.soldierType+" · 순서 "+previousTransformations.length+
-    "단계 · 확정 제외 "+excluded+"개 (병종 계보 "+unreachable+" · 내부 전용 "+unavailable+") · 현재 미충족 "+notNow+"개 · 조건 미확정 "+unresolved+"개 · 현재 판정 충족 "+ready+"개. 이후 단계는 자원 소모·미래 연구를 확정하지 않습니다.";
+    "단계 · 확정 제외 "+excluded+"개 (병종 계보 "+unreachable+" · 내부 전용 "+unavailable+" · 이력·선행 불가 "+historical+") · 현재 미충족 "+notNow+"개 · 조건 미확정 "+unresolved+"개 · 현재 판정 충족 "+ready+"개. 이후 단계는 자원 소모·미래 연구를 확정하지 않습니다.";
   renderModernSaveResults(candidates,CURRENT_PROOF,analysisOptions().mode,previousTransformations.length);
 }
 function initTransformationPlanner(){
@@ -354,14 +355,22 @@ function openDetail(encoded){
     html+='<p class="identity-line">기본 병종 <b>'+esc(r.soldierKoName)+'</b> → 파생 획득형 <b>'+esc(variantName(r))+'</b></p>';
     const origin=initialState(DATA,r.id);
     const previous=[...origin.history.keys()];
+    const reachable=reachableSoldierTypes(DATA,origin.soldierType);
     const inheritedConflicts=DATA.transformations.filter(t=>
-      structuralTransformationVerdict(t,origin,DATA).kind!=="blocked"&&
+      !(t.requires||[]).includes("STR_UNAVAILABLE")&&
+      (t.allowedSoldierTypes||[]).some(id=>reachable.has(id))&&
       (t.forbiddenPreviousTransformations||[]).some(id=>origin.history.has(id)));
+    const inheritedPermanent=inheritedConflicts.filter(t=>
+      structuralTransformationVerdict(t,origin,DATA).kind==="blocked");
+    const inheritedResettable=inheritedConflicts.filter(t=>
+      structuralTransformationVerdict(t,origin,DATA).kind!=="blocked");
+    const showTags=xs=>xs.length?xs.map(t=>'<span class="tag">'+esc(t.koName)+'</span>').join(" "):
+      '<span class="muted">없음</span>';
     html+='<div class="box"><strong>획득 즉시 이미 수행한 변신 '+previous.length+'개</strong><p>'+
       (previous.length?previous.map(id=>'<span class="tag">'+esc(transformationName(id))+'</span>').join(" "):'<span class="muted">이전 변신 이력 없음</span>')+
-      '</p><strong>이 이력과 직접 충돌하는 변신 '+inheritedConflicts.length+'개</strong><p>'+
-      (inheritedConflicts.length?inheritedConflicts.map(t=>'<span class="tag">'+esc(t.koName)+'</span>').join(" "):'<span class="muted">현재 이력으로 인한 직접 충돌 없음</span>')+
-      '</p><small>이력 초기화 변신이 있을 수 있으므로 ‘현재 직접 충돌’과 ‘영구 불가능’을 구별합니다.</small></div>';
+      '</p><strong>초기 이력으로 인해 영구 제외 '+inheritedPermanent.length+'개</strong><p>'+showTags(inheritedPermanent)+
+      '</p><strong>이력 초기화 뒤 재검토 가능한 충돌 '+inheritedResettable.length+'개</strong><p>'+showTags(inheritedResettable)+
+      '</p><small>초기 변신 이력과 병종 전환·초기화 경로를 함께 검사했습니다. 단순 이력 충돌을 자동으로 영구 제외 처리하지 않습니다.</small></div>';
     html+='<button type="button" id="inspectAcquisitionRoute" data-profile-id="'+esc(r.id)+'">이 획득형의 미래 변신 경로 분석</button>';
     html+='<div class="cross-links">'+(r.sourceType==="manufacture"?dbLink("manufacture",r.sourceId,"제조 DB: 영입 방법"):"")+dbLink("items",r.sourceId,"아이템 DB")+(r.requires||[]).map(x=>dbLink("research",x,"연구: "+x)).join("")+'</div>';
     html+='<h3>같은 기본 병종의 획득형 비교</h3><div class="related-list">'+DATA.profiles.filter(x=>x.soldierType===r.soldierType).map(x=>'<button class="related-item" type="button" data-profile="'+esc(x.id)+'">'+esc(variantName(x))+' <small>'+esc(x.traits.map(t=>t.koName).join(" · ")||"자동 특성 없음")+'</small></button>').join("")+'</div>';

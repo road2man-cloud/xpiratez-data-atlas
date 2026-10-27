@@ -5,11 +5,11 @@ const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","
 const view=compareSoldierFutureRoutes(data);
 assert.equal(view.rows.length,83);
 assert.equal(view.gal.excluded,45);
-assert.equal(view.half.excluded,34);
+assert.equal(view.half.excluded,45);
 assert.equal(view.gal.candidates+view.gal.excluded,83);
 assert.equal(view.half.candidates+view.half.excluded,83);
-assert.equal(view.different,27);
-assert.equal(view.half.inheritedHistory,3);
+assert.equal(view.different,28);
+assert.equal(view.half.inheritedHistory,1);
 const rows=new Map(view.rows.map(x=>[x.id,x]));
 const internal=["STR_CAREER_SOLDIER","STR_THEBAN_ASSAULT_CLONE","STR_LONE_WOLF"];
 for(const id of internal){
@@ -24,7 +24,12 @@ assert.equal(firearm.half.kind,"history");
 assert(firearm.half.reason.includes("STR_BASIC_FIREARMS_TRAINING"));
 const uber=rows.get("STR_UBERIZATION");
 assert.equal(uber.gal.kind,"excluded");
-assert.equal(uber.half.kind,"history");
+assert.equal(uber.half.kind,"excluded");
+assert.equal(rows.get("STR_MILITIA_TRAINING").half.kind,"excluded");
+assert.equal(rows.get("STR_WEIRDGAL_TRANSFORMATION").half.kind,"excluded");
+assert.equal(rows.get("STR_ZOMBIFICATION").half.kind,"excluded");
+assert.equal(rows.get("STR_BODY_SWAP").half.kind,"excluded");
+assert.equal(rows.get("STR_ZOMBI_REVIVAL").half.kind,"excluded");
 assert.equal(rows.get("STR_GUN_KATA_TRAINING").gal.kind,"prerequisite");
 for(const row of view.rows){
   for(const key of ["gal","half"]){
@@ -34,4 +39,4 @@ for(const row of view.rows){
   }
 }
 console.log("PASS X-Piratez 2.1 Gal vs half-super-peasant: 83 complete route comparisons, "+
-  view.different+" divergences, 45/34 proven exclusions, 3 inherited history gates, no unproven permanent blocks");
+  view.different+" divergences, 45/45 proven exclusions, 1 resettable initial history gate, no unproven permanent blocks");
