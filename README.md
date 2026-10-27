@@ -121,7 +121,7 @@ npm run check:item-research -- --data public/items/data
 - **웹 페이지:** [참조표 / reference](./public/reference/) · 배포 URL: https://road2man-cloud.github.io/xpiratez-data-atlas/reference/
 - **기계 판독용 번호 정의:** [engine-codes.json](./public/reference/engine-codes.json) — experienceTrainingMode 0–32, damageType 0–19, damageAlter.RandomType 0–9, 성장 상한 용어
 - **최신 게임 X-Piratez 2.1 아이템:** [items.json](./public/reference/items.json) — 현재 설치본 v.o2의 경험치 모드 직접 선언 306개. 참조표에는 이 데이터만 표시하며 이전 버전 데이터는 제공하지 않습니다.
-- **병종별 복셀 높이:** [병종 29종·방어구 540종 참조표](./public/reference/#unit-voxels) · [unit-voxels.json](./public/reference/unit-voxels.json) — 병종의 서기/무릎 복셀 높이와 방어구 착용 시 실효 높이, 점유 타일, 무릎 허용 선언, 일반 사격 원점 Z를 원본 룰 해시와 함께 제공합니다.
+- **병종별 복셀 높이:** [병종 29종·방어구 540종 참조표](./public/reference/#unit-voxels) · [unit-voxels.json](./public/reference/unit-voxels.json) — 병종의 서기/무릎 복셀 높이와 방어구 착용 시 실효 높이, 점유 타일, 무릎 허용 선언, **서서 사격 및 무릎 사격의 각 출발 Z**를 원본 룰 해시와 함께 제공합니다.
 - **검증:** `npm run check:reference`; 별도 실제 브라우저 QA는 `npm run check:reference:browser`. 정적 체크는 `npm run check` 및 Pages 배포 검사에도 포함됩니다.
 
 **GPT 검색 순서:** engine-codes.json에서 번호 의미를 확인 → 최신 게임 [items.json](./public/reference/items.json)에서 `i` (원본 ID), `m` (experienceTrainingMode), `f` / `l` (원문 출처) 확인. `null`로 표시한 `damageType`이나 `power`는 0이 아니라 **해당 아이템 블록에 직접 선언되지 않았다**는 뜻입니다. 상속·탄약·오버라이드·스크립트 적용 결과는 별도 검증해야 합니다.

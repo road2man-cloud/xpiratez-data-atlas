@@ -121,4 +121,8 @@ for(const required of ['id="unit-voxels"','id="voxel-body-rows"','id="voxel-armo
   assert.ok(page.includes(required),"missing voxel reference HTML "+required);
 }
 assert.ok(voxelApp.includes('unit-voxels.json')&&voxelApp.includes('voxel-body-rows'));
+assert.equal((page.match(/<th>무릎 사격 출발 Z<\/th>/g)||[]).length,2,
+  "both soldier and armor reference tables must display kneeling shot height");
+assert.ok(voxelApp.includes("kneelingShotOrigin")&&voxelApp.includes("무릎 불가"),
+  "renderer must show kneeling projectile Z with prohibited-stance warning");
 console.log("PASS latest-only reference: 33 training modes, 20 damage types, 10 random types, 306 current items, plus 29 soldier bodies / 540 armors with original-rule SHA-256 and stance heights.");

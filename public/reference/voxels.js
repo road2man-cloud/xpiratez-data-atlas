@@ -23,13 +23,18 @@
   const textFor = s => normalize([s.koName,s.enName,s.id,alias(s)].join(" "));
   const fmt = n => Number.isFinite(Number(n)) ? String(n) : "—";
   const label = n => n == null ? "미지정" : n === false ? "불가 명시" : "허용 명시";
-  const shapeFor = (s, a) => ({
-    standing: a.standHeightOverride === -1 ? s.base.standing : a.standHeightOverride,
-    kneeling: a.kneelHeightOverride === -1 ? s.base.kneeling : a.kneelHeightOverride,
-    floating: a.floatHeightOverride === -1 ? s.base.floating : a.floatHeightOverride,
-    size: a.size,
-    allowsKneeling: a.allowsKneeling
-  });
+  const shapeFor = (s, a) => {
+    const standing = a.standHeightOverride === -1 ? s.base.standing : a.standHeightOverride;
+    const kneeling = a.kneelHeightOverride === -1 ? s.base.kneeling : a.kneelHeightOverride;
+    const floating = a.floatHeightOverride === -1 ? s.base.floating : a.floatHeightOverride;
+    return {
+      standing, kneeling, floating,
+      standingShotOrigin: standing + floating - 4,
+      kneelingShotOrigin: kneeling + floating - 4,
+      size: a.size,
+      allowsKneeling: a.allowsKneeling
+    };
+  };
   const nameLink = (tr, s, itemId = "") => {
     const td = document.createElement("td");
     const a = document.createElement("a");
@@ -85,6 +90,8 @@
           b.defaultShape.kneeling || a.koName.localeCompare(b.koName,"ko");
         if (sort.value === "stand") return a.defaultShape.standing -
           b.defaultShape.standing || a.koName.localeCompare(b.koName,"ko");
+        if (sort.value === "kneelShot") return a.defaultShape.kneelingShotOrigin -
+          b.defaultShape.kneelingShotOrigin || a.koName.localeCompare(b.koName,"ko");
         return a.koName.localeCompare(b.koName,"ko");
       });
       const fragment = document.createDocumentFragment();
@@ -98,6 +105,9 @@
         cell(tr,shape.standing,"num");
         cell(tr,shape.kneeling,"num");
         cell(tr,fmt(shape.standingShotOrigin),"num");
+        cell(tr,shape.allowsKneeling === false
+          ? fmt(shape.kneelingShotOrigin) + " (무릎 불가)"
+          : fmt(shape.kneelingShotOrigin),"num");
         cell(tr,shape.size + "×" + shape.size + "타일");
         const td = cell(tr,s.defaultArmor || "—");
         const small = document.createElement("small");
@@ -138,7 +148,10 @@
         cell(tr,h.standing,"num");
         cell(tr,h.kneeling,"num");
         cell(tr,h.floating,"num");
-        cell(tr,(h.standing+h.floating-4),"num");
+        cell(tr,fmt(h.standingShotOrigin),"num");
+        cell(tr,h.allowsKneeling === false
+          ? fmt(h.kneelingShotOrigin) + " (무릎 불가)"
+          : fmt(h.kneelingShotOrigin),"num");
         cell(tr,h.size + "×" + h.size + "타일");
         cell(tr,label(h.allowsKneeling));
         cell(tr,(a.sourceFiles||[]).join(" · "),"fine");

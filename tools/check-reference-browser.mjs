@@ -37,7 +37,7 @@ try {
   await page.waitForFunction(()=>document.querySelector("#voxel-body-status")?.textContent?.includes("/ 29개"),{timeout:20000});
   assert.equal(await page.locator("#voxel-body-rows tr").count(),1,"species deep link");
   assert.deepEqual((await page.locator("#voxel-body-rows tr td").allTextContents())
-    .slice(1,6).map(x=>x.trim()),["17","11","17","11","13"],"Loknar 17/11, muzzle 13");
+    .slice(1,7).map(x=>x.trim()),["17","11","17","11","13","7"],"Loknar 17/11, standing shot 13, kneeling shot 7");
   await page.locator("#voxel-species").selectOption("");
   assert.equal(await page.locator("#voxel-body-rows tr").count(),29,"all body rows");
   await page.locator("#voxel-search").fill("로크나르");
@@ -46,27 +46,35 @@ try {
   await page.locator("#voxel-search").fill("갈");
   assert((await page.locator("#voxel-body-rows tr").count())>=1,"Gal alias search");
   assert((await page.locator("#voxel-body-rows").innerText()).includes("일반 갈"));
+  assert.deepEqual((await page.locator("#voxel-body-STR_SOLDIER td").allTextContents())
+    .slice(5,7).map(x=>x.trim()),["18","10"],"Gal standing shot 18 / kneeling shot 10");
   await page.locator("#voxel-search").fill("캣걸");
   assert((await page.locator("#voxel-body-rows tr").count())>=2,"Catgirl body variants");
   await page.locator("#voxel-search").fill("");
   await page.locator("#voxel-sort").selectOption("kneel");
-  assert((await page.locator("#voxel-body-rows tr").first().innerText()).includes("11")||
-    (await page.locator("#voxel-body-rows tr").first().innerText()).includes("12"),
-    "kneeling height sort");
+  assert.equal((await page.locator("#voxel-body-rows tr").first().locator("td").nth(2).innerText()).trim(),"11",
+    "kneeling body height sort");
+  await page.locator("#voxel-sort").selectOption("kneelShot");
+  assert.equal((await page.locator("#voxel-body-rows tr").first().locator("td").nth(6).innerText()).trim(),"7",
+    "kneeling projectile origin sort");
   await page.locator("#voxel-armor-details summary").click();
   const before=await page.locator("#voxel-armor-rows tr").count();
   assert(before>=99,"significant armor exceptions");
   await page.locator("#voxel-armor-exceptions").uncheck();
   const after=await page.locator("#voxel-armor-rows tr").count();
   assert(after>=540 && after>before,"all armored species combinations");
+  const prohibited = page.locator("#voxel-armor-rows tr").filter({hasText:"불가 명시"}).first();
+  assert((await prohibited.count())>0,"kneeling-prohibited armor exists");
+  assert.match(await prohibited.locator("td").nth(6).innerText(),/무릎 불가/,
+    "theoretical kneeling shot Z must be clearly marked as unusable");
   await page.locator("#voxel-species").selectOption("STR_SOLDIER_NEKOMIMI");
   assert((await page.locator("#voxel-body-rows tr td").allTextContents())
-    .slice(1,6).map(x=>x.trim()).join(",")==="21,13,21,13,17",
-    "Catgirl 21/13, muzzle 17");
+    .slice(1,7).map(x=>x.trim()).join(",")==="21,13,21,13,17,9",
+    "Catgirl 21/13, standing shot 17, kneeling shot 9");
   assert((await page.locator("#voxel-armor-rows tr").count())>0,
     "armor selector keeps compatible rows");
   assert.deepEqual(errors,[],"no JS or network errors");
-  console.log("PASS reference browser: 29 species, Korean aliases, 17/11 Loknar, 21/13 Catgirl, 540 armors, exception toggles and page errors");
+  console.log("PASS reference browser: 29 species, Korean aliases, standing/kneeling projectile origins (Loknar 13/7 and Catgirl 17/9), 540 armors, unusable kneeling armor warning, exception toggles and page errors");
 } finally {
   await browser?.close();
   await new Promise(resolve=>server.close(resolve));
