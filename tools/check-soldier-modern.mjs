@@ -157,26 +157,38 @@ test("current base, item, research gates are not inferred from future",()=>{
   assert.equal(check(withReq,state(),d,{researched:["TECH"],baseFunctions:["CULT"],items:{GLAMOUR:6}}).kind,"eligible");
   assert.equal(future(withReq,state(),d).kind,"conditional");
 });
-test("one-sided research disables permit completion in the correct order",()=>{
+test("ordered research history differs from simultaneous transformation requirements",()=>{
   const rules={A:{cost:5,disables:["B"]},B:{cost:5}};
   const p=researchPlan(["A","B"],rules);
-  assert.equal(p.kind,"viable");
+  assert.equal(p.kind,"viable","sequential research plan can complete B then A");
   assert.ok(p.order.indexOf("B")<p.order.indexOf("A"));
-  assert.equal(researchPlan(["B"],rules,{researched:["A"]}).kind,"blocked");
+  assert.equal(researchPlan(["A","B"],rules,{goalSemantics:"simultaneous"}).kind,"blocked",
+    "the transformation requires BOTH still-discovered research flags");
+  assert.equal(researchPlan(["B"],rules,{researched:["A"]}).kind,"conditional",
+    "historical completion alone is not proof of a present disabled status");
+  assert.equal(researchPlan(["B"],rules,{researched:["A"],disabled:["B"]}).kind,"blocked");
 });
-test("symmetric research disables are mutually exclusive",()=>{
+test("symmetric research disables cannot coexist as currently required flags",()=>{
   const rules={A:{cost:5,disables:["B"]},B:{cost:5,disables:["A"]}};
-  assert.equal(researchPlan(["A","B"],rules).kind,"blocked");
+  assert.equal(researchPlan(["A","B"],rules,{goalSemantics:"simultaneous"}).kind,"blocked");
+  assert.equal(researchPlan(["A","B"],rules).kind,"conditional",
+    "sequential goal completion without requiring coexistence is not the same proof");
 });
-test("research dependencies and disables across multiple transformations",()=>{
+test("a disabled nominal ancestor is NOT proof a directly granted goal is impossible",()=>{
   const researchRules={A:{cost:5,dependencies:["B"]},B:{cost:5,disables:["A"]}};
-  assert.equal(researchPlan(["A"],researchRules).kind,"blocked");
+  const estimate=researchPlan(["A"],researchRules);
+  assert.equal(estimate.kind,"conditional");
+  assert(estimate.diagnosticBlockers.some(x=>x.includes("순환")));
   const a=rule("T1",{requires:["A"]}),b=rule("T2",{requires:["B"]});
   const d={...mini,researchRules};
   const s=state();
   const applied=applyTransformation(b,s,d,{mode:"future"});
   assert.equal(applied.verdict.kind,"conditional");
-  assert.equal(eligibleTransformation(a,applied.state,d,{mode:"future"}).kind,"blocked");
+  assert.equal(eligibleTransformation(a,applied.state,d,{mode:"future"}).kind,"conditional");
+  assert.equal(researchPlan(["A"],researchRules,{disabled:["A"]}).kind,"blocked",
+    "an ACTUAL disabled target is a hard blocker in OXCE addFinishedResearch");
+  assert.equal(researchPlan(["A"],researchRules,{disabled:["B"]}).kind,"conditional",
+    "a closed intermediate dependency can be bypassed by a direct event grant");
 });
 test("source acquisition variants preserve automatic traits and initial transformation history",()=>{
   const half=data.profiles.find(x=>x.traitNames.includes("STR_HALF_UBER"));
@@ -294,6 +306,17 @@ test("body-only closure proves 43 exclusions plus 2 additional internal-only Gal
   assert.equal(paths.filter(x=>x.kind==="unknown").length,0);
   assert.ok(paths.find((_,i)=>data.transformations[i].id==="STR_HONOMORED_WARRIOR_TRAINING")==null||
     paths.length===83);
+});
+test("direct event research sources are indexed as possible but never guaranteed rewards",()=>{
+  const names=data.eventResearchSources||{};
+  assert(names.STR_SIVALINGA_RESURRECTION.some(x=>x.event==="STR_SIVALINGA_RESURRECTION_EVENT"));
+  assert(names.STR_PSI_INITIATION.some(x=>x.scriptIds.includes("STR_PSI_INITIATION_EVENT_GRAY")));
+  assert(names.STR_CAPTAINS_11.some(x=>x.event==="STR_CAPTAINS_11"));
+  const plan=researchPlan(["STR_PSI_INITIATION"],data.researchRules,{
+    eventResearchSources:names
+  });
+  assert.notEqual(plan.kind,"blocked");
+  assert(plan.conditions.some(x=>x.includes("이벤트 직접 연구 지급 후보")));
 });
 test("research unlock bypass keeps alternatives conditional, not falsely excluded",()=>{
   const d={A:{cost:9,dependencies:["B"]},B:{cost:9,disables:["A"]},U:{cost:5,unlocks:["A"]}};

@@ -1,7 +1,7 @@
 // Compare only source-backed X-Piratez 2.1 route eligibility.
 // 'Excluded' means a PROVEN rule-level exclusion. A future requirement or
 // initial-history conflict alone is never relabeled as permanently impossible.
-import {initialState,structuralTransformationVerdict,eligibleTransformation} from "./eligibility.js";
+import {initialState,structuralTransformationVerdict,eligibleTransformation,researchPlan} from "./eligibility.js";
 const exists=x=>Array.isArray(x)?x:[];
 
 export const DEFAULT_PROFILES={
@@ -39,6 +39,40 @@ function gate(t,state,data){
     reason:"실제 지급·성장·선장 분기는 아직 증명되지 않음",
     originallyAccessible:true};
 }
+// Save-aware EVIDENCE about research only. Current completion of a research
+// flag doesn't prove a FUTURE transformation can be executed (body, medals,
+// materials, time, rewards, choice history and physical unit are separate).
+export function assessCampaignResearch(data,save,transformation){
+  if(!save?.research)return {kind:"no-save",label:"세이브 미적용",reason:"로컬 세이브 필요"};
+  const goals=exists(transformation.requires);
+  if(goals.includes("STR_UNAVAILABLE"))
+    return {kind:"internal",label:"내부 전용",reason:"STR_UNAVAILABLE"};
+  const completed=new Set(exists(save.research.completed));
+  const disabled=new Set(exists(save.research.disabled));
+  const overlap=goals.filter(id=>completed.has(id)&&disabled.has(id));
+  if(overlap.length)return {kind:"ambiguous",label:"완료·폐쇄 기록 중복",
+    reason:overlap.join(", ")+" · 세이브 기록 상태 상충"};
+  const already=goals.filter(id=>completed.has(id));
+  const plan=researchPlan(goals,data.researchRules,{
+    researched:[...completed],disabled:[...disabled],
+    goalSemantics:"simultaneous",eventResearchSources:data.eventResearchSources
+  });
+  if(plan.kind==="blocked")return {kind:"closed",label:"연구 직접 차단 확인",
+    reason:plan.blocked.join(" · "),completed:already.length};
+  if(already.length===goals.length)return {kind:"complete",label:"요구 연구 완료",
+    reason:"연구 플래그 "+goals.length+"개 보유 · 변신 자격/재료는 별개",completed:already.length};
+  if(plan.diagnosticBlockers.length)return {kind:"nominal",label:"명목 선행망 충돌",
+    reason:plan.diagnosticBlockers.slice(0,2).join(" · ")+
+      " · 이벤트·우회 지급을 증명하거나 배제하지 못함",completed:already.length};
+  const rewards=goals.flatMap(id=>exists(data.eventResearchSources?.[id])
+    .map(x=>x.event));
+  if(rewards.length)return {kind:"event",label:"이벤트 직접 지급 후보",
+    reason:[...new Set(rewards)].slice(0,3).join(", ")+" · 발생 보장 아님",completed:already.length};
+  return {kind:"pending",label:"향후 연구 미완료",
+    reason:"미완료 "+goals.filter(id=>!completed.has(id)).slice(0,4).join(", ")+
+      " · 다른 숨은 분기·전리품 조건은 아직 미검증",completed:already.length};
+}
+
 export function compareSoldierFutureRoutes(data,profileIds=DEFAULT_PROFILES){
   const gal=initialState(data,profileIds.gal),half=initialState(data,profileIds.half);
   if(!gal.soldierType||!half.soldierType)throw Error("Unknown soldier route");

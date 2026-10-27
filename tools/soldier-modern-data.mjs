@@ -269,6 +269,38 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       requiresBaseFunc:Array.isArray(x.requiresBaseFunc)?x.requiresBaseFunc:[],
       cost:x.cost??0
     }]));
+  // Research flags can be granted directly by an OXCE event even when their
+  // nominal research dependency path is closed. Event presence is NOT proof
+  // the script can fire (story/region/captain/score/random gates remain).
+  // Preserve event provenance so nominal graph contradictions aren't silently
+  // promoted to "permanently impossible".
+  const eventScripts=Array.isArray(effectiveMerged.eventScripts)?effectiveMerged.eventScripts:[];
+  const eventScriptMatches=new Map();
+  for(const script of eventScripts){
+    const outputs=new Set([script.type]);
+    for(const group of Object.values(script.eventWeights||{}))
+      if(group&&typeof group==="object"&&!Array.isArray(group))
+        for(const event of Object.keys(group))outputs.add(event);
+    for(const id of [...(Array.isArray(script.oneTimeSequentialEvents)?script.oneTimeSequentialEvents:[]),
+      ...(Array.isArray(script.oneTimeRandomEvents)?script.oneTimeRandomEvents:[])])
+      if(typeof id==="string")outputs.add(id);
+    for(const id of outputs){
+      const found=eventScriptMatches.get(id)||new Set();
+      if(typeof script.type==="string")found.add(script.type);
+      eventScriptMatches.set(id,found);
+    }
+  }
+  const eventResearchSources={};
+  for(const event of events){
+    if(typeof event?.name!=="string")continue;
+    for(const id of Array.isArray(event.researchList)?event.researchList:[]){
+      if(typeof id!=="string"||!researchRules[id])continue;
+      (eventResearchSources[id]??=[]).push({
+        event:event.name,
+        scriptIds:[...(eventScriptMatches.get(event.name)||[])].slice(0,8)
+      });
+    }
+  }
   // A worn armor contributes exactly one Armor::stats record, not a sum
   // of every item a soldier can eventually unlock. Record only armors with
   // explicit player-soldier type eligibility; all acquisition claims stay
@@ -315,7 +347,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   }
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,
-    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,researchRules,itemSupply,armorCatalog,commendationIndex,baseFacilityFunctions,woundThresholds,
+    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,researchRules,eventResearchSources,itemSupply,armorCatalog,commendationIndex,baseFacilityFunctions,woundThresholds,
     counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierBonuses:bonusIndex.length,soldierArmors:armorCatalog.length,soldierMedals:Object.keys(commendationIndex).length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
   };
 }

@@ -81,14 +81,20 @@ try{
   assert((await page.locator("#saveBattleStats").innerText()).includes("현재 대원 · 실제 장착 방어구 한 벌"));
   assert.equal(await page.locator("#saveBattleStats .statbox").count(),12);
   assert.equal(await page.locator("#dataset").inputValue(),"transformations");
-  console.log("PASS local fake save import with current-state gating and gear-based real stats rendering");
+  await page.waitForFunction(()=>document.querySelector("#futureCompareResearch")?.textContent
+    ?.includes("현재 세이브 연구 상태 대조"),{timeout:25000});
+  assert((await page.locator("#futureCompareTable tbody tr").first().innerText()).includes("미완료")||
+    (await page.locator("#futureCompareTable tbody tr").first().innerText()).includes("요구 연구"));
+  console.log("PASS local fake save import with current-state gating, research-evidence comparison and gear-based stats");
 
   const invalid=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8").replace("v.o2","v.o1.1.1");
   await page.locator("#modernSaveFile").setInputFiles({
     name:"wrong-version.sav",mimeType:"text/plain",buffer:Buffer.from(invalid)
   });
   await page.waitForFunction(()=>document.querySelector("#saveStatus")?.textContent?.includes("세이브 판독 실패"));
-  console.log("PASS reject save from wrong X-Piratez rules version");
+  assert((await page.locator("#futureCompareResearch").innerText()).includes("세이브를 불러오면"),
+    "invalid save must clear campaign-specific research decisions");
+  console.log("PASS reject save from wrong X-Piratez rules version and clear private campaign evidence");
 
   await page.goto(origin+"/soldiers/");
   await page.waitForSelector("#dataset",{timeout:25000});
