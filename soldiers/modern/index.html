@@ -91,6 +91,11 @@
     <div class="planner-controls"><label for="plannerProfile">획득형</label><select id="plannerProfile"></select><label for="previousTransformation">실행할 변신</label><select id="previousTransformation"></select><button id="addTransformation" type="button">순서대로 적용</button><button id="clearTransformations" type="button">변신 초기화</button><label class="check"><input id="compatibleOnly" type="checkbox"> 적용 불가능한 변신 숨김</label></div>
     <div id="transformationHistory" class="planner-history"></div>
     <span id="transformationVerdict" class="muted"></span>
+    <details class="stat-envelope-panel" id="statEnvelopePanel" open>
+      <summary>변신 순서별 능력치 안전 범위 (12종)</summary>
+      <p>초기 생성값·변신의 비례 변화·무작위 변화·성장 상한을 OXCE 산식으로 계산한 <strong>보수적 포함 범위</strong>입니다. 범위 내 모든 값이 동시에 가능한 것은 아니며, 미래 전투 경험치 성장, 장비 획득과 미검증 이벤트는 포함되지 않습니다.</p>
+      <div id="statEnvelopeContent" aria-live="polite"></div>
+    </details>
   </section>
 
   <section class="table-card card">
