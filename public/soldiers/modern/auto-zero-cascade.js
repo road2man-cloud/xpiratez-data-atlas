@@ -7,6 +7,21 @@ const set=x=>x instanceof Set?new Set(x):new Set(arr(x));
 const count=(x,id)=>Number(x?.[id]||0);
 const limitNumber=(x,def,max)=>Number.isFinite(Number(x))?
   Math.max(1,Math.min(max,Math.floor(Number(x)))):def;
+// OXCE iterates Mod::getResearchMap(): std::map<std::string, RuleResearch *>.
+// For ruleset IDs (ASCII), JS ordinal comparison matches std::string order;
+// localeCompare is locale-dependent and can change queue order.
+const ordinal=(a,b)=>a<b?-1:a>b?1:0;
+function hasPendingProtectedUnlock(id,rules,state){
+  return arr(rules[id]?.unlocks).some(target=>
+    arr(rules[target]?.requires).length>0 &&
+    !state.disabled.has(target) && !state.researched.has(target));
+}
+function hasPendingFree(rule,state,availableOnly){
+  if(arr(rule.getOneFree).some(id=>!state.disabled.has(id)&&!state.researched.has(id)))return true;
+  return Object.entries(rule.getOneFreeProtected||{}).some(([guard,ids])=>
+    (!availableOnly||state.researched.has(guard))&&
+    arr(ids).some(id=>!state.disabled.has(id)&&!state.researched.has(id)));
+}
 function stateCopy(start){
   return {researched:set(start?.researched),disabled:set(start?.disabled),
     items:start?.items||null,baseFunctions:set(start?.baseFunctions),
@@ -14,7 +29,13 @@ function stateCopy(start){
 }
 function canRunZero(id,rule,rules,state,from,{inventoryKnown,functionsKnown,activeResearchKnown}){
   const reasons=[];
-  if(state.researched.has(id)||state.disabled.has(id))return {ok:false,reasons:["이미 완료/폐쇄"]};
+  if(state.disabled.has(id))return {ok:false,reasons:["폐쇄 상태"]};
+  // OXCE exposes a previously discovered topic again when it still has
+  // unclaimed protected unlocks or an available getOneFree reward. Such a
+  // zero-cost topic may be queued AGAIN without reapplying its disables.
+  if(state.researched.has(id)&&
+      !hasPendingProtectedUnlock(id,rules,state)&&!hasPendingFree(rule,state,true))
+    return {ok:false,reasons:["이미 완료되고 남은 보상 없음"]};
   if(state.activeResearch.has(id))return {ok:false,reasons:["현재 기지에서 진행 중인 연구"]};
   const unlocked=[...state.researched].some(src=>arr(rules[src]?.unlocks).includes(id));
   if(!unlocked){
@@ -59,31 +80,39 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
   const queue=[sourceId],steps=[],held=new Map(),notices=[];
   const seen=new Set();
   const allZero=Object.entries(rules).filter(([,r])=>Number(r.cost)===0)
-    .sort(([a],[b])=>a.localeCompare(b,"en"));
+    .sort(([a],[b])=>ordinal(a,b));
   let i=0;
   while(i<queue.length&&i<maxSteps){
     const id=queue[i++],rule=rules[id];
-    if(st.disabled.has(id)){notices.push("큐 처리 시점에 폐쇄: "+id);continue;}
     if(seen.has(id))continue;
     seen.add(id);
-    if(st.researched.has(id)){
-      // Engine may re-run *already discovered* projects if they possess
-      // a newly available protected unlock. We do not claim that branch.
-      notices.push("재완료·보호 해금 분기 별도 검증: "+id);
-      continue;
+    // addFinishedResearch checks disabled at entry, but does NOT repeat that
+    // check for items already in the queue. A queued project can therefore
+    // be discovered AFTER an earlier queued project disables it.
+    const disabledWhenPopped=st.disabled.has(id);
+    const alreadyDiscovered=st.researched.has(id);
+    const hasProtected=hasPendingProtectedUnlock(id,rules,st);
+    if(!alreadyDiscovered){
+      st.researched.add(id);
+      for(const disabled of arr(rule.disables)){
+        st.researched.delete(disabled);st.disabled.add(disabled);
+      }
     }
-    st.researched.add(id);
-    for(const disabled of arr(rule.disables)){
-      st.researched.delete(disabled);st.disabled.add(disabled);
-    }
+    // Re-enables are processed even when a discovered topic is revisited.
     for(const reenabled of arr(rule.reenables))st.disabled.delete(reenabled);
-    steps.push({id,kind:id===sourceId?"assumed-source":"auto-zero",
+    steps.push({id,kind:id===sourceId?"assumed-source":
+      alreadyDiscovered?"revisited-zero":"auto-zero",
       queuedBy:i===1?null:held.has(id)?held.get(id):null,
-      disables:arr(rule.disables),reenables:arr(rule.reenables),
-      freeRewardPending:arr(rule.getOneFree).length>0||
-        Object.keys(rule.getOneFreeProtected||{}).length>0});
+      disabledWhenPopped,disables:alreadyDiscovered?[]:arr(rule.disables),
+      reenables:arr(rule.reenables),
+      freeRewardPending:hasPendingFree(rule,st,false)});
+    if(disabledWhenPopped)
+      notices.push("큐 등록 후 폐쇄됐지만 엔진은 처리하는 연구: "+id);
     if(steps.at(-1).freeRewardPending)
-      notices.push("무료 연구 보상은 자동 연구 완료와 별도 RNG/순차 선택: "+id);
+      notices.push("getOneFree 보상은 이 비용 0 큐에서 자동 추첨하지 않음 (별도 완료·출처 검증 필요): "+id);
+    // Existing discoveries are rescanned ONLY if an undiscovered protected
+    // unlock remained before this queue item was processed.
+    if(alreadyDiscovered&&!hasProtected)continue;
     for(const [next,project] of allZero){
       if(seen.has(next)||queue.includes(next)||st.disabled.has(next))continue;
       const gate=canRunZero(next,project,rules,st,id,{
@@ -100,7 +129,11 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
   if(!verifiedActive)unverified.push("현재 해당 기지에서 진행 중인 연구");
   unverified.push("원천 연구의 실제 완료와 완료 순서","다른 연구·이벤트의 동시 완료");
   return {kind,source:sourceId,steps,
-    automatic:steps.filter(x=>x.kind==="auto-zero").map(x=>x.id),
+    // A processed-but-disabled topic is NOT a usable transformation flag.
+    automatic:steps.filter(x=>x.kind==="auto-zero"&&
+      st.researched.has(x.id)&&!st.disabled.has(x.id)).map(x=>x.id),
+    processed:steps.filter(x=>x.kind==="auto-zero").map(x=>x.id),
+    finalState:{researched:st.researched,disabled:st.disabled},
     count:steps.length,
     incomplete:i<queue.length,
     unverified,notices,

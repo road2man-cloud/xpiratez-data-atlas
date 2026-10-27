@@ -138,6 +138,14 @@ function routeFinderWorld(proof){
     // Inventory is that of the SELECTED BASE only. Never pool two bases.
     items:Object.fromEntries(proof.base.items||[]),
     baseFunctions:new Set(proof.options.baseFunctions||[]),
+    // Exact active projects are scoped to the selected base. Unknown must
+    // remain null, not an empty set (which would certify no projects).
+    activeResearch:proof.base.researchComplete?
+      new Set(proof.base.researchProjects):null,
+    // The OXCE provided-base-function union can include geography sources.
+    // Facility-only evidence must NOT authorize certified auto completion.
+    autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete&&
+      proof.facilities.complete&&proof.options.baseFunctionsKnown===true,
     funds:SAVE.funds,
     evidenceComplete:proof.base.itemsComplete&&proof.state.exactStats&&
       proof.options.medalsKnown&&proof.soldier.historyComplete&&
@@ -235,12 +243,14 @@ function initRouteFinder(){
       // This static diagnosis never modifies the verified action sequence.
       // A cost-zero flag is not invented as a manually researchable project.
       const zeroCostGates=inspectTransformationZeroResearch(DATA,goal,world,{
-        inventoryKnown:proof.base.itemsComplete,functionsKnown:true});
+        inventoryKnown:proof.base.itemsComplete,
+        functionsKnown:proof.options.baseFunctionsKnown===true});
       const zeroCostCascade=inspectAutoZeroSourcesForTransform(DATA,goal,world,{
-        inventoryKnown:proof.base.itemsComplete,functionsKnown:true,
-        // The modern save parser does not currently prove active research in
-        // the selected base, so candidates can never become certainties.
-        activeResearchKnown:false,maxSteps:35});
+        inventoryKnown:proof.base.itemsComplete,
+        // OXCE adds country/region-provided functions to facilities, so a
+        // facility-only inspection must not claim a complete function list.
+        functionsKnown:proof.options.baseFunctionsKnown===true,
+        activeResearchKnown:proof.base.researchComplete,maxSteps:35});
       showRouteSearchResult({...result,zeroCostGates,zeroCostCascade});
     }catch(e){
       out.textContent="자동 경로 판정 불완전: "+e.message;

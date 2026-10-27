@@ -29,7 +29,9 @@ export function initModernSaveControls(data,onSelection){
         out.textContent="현재 실효 능력치 보류: "+(battle.reason||"방어구·훈장·능력치의 완전한 증거가 없습니다.");
       }
       $("#saveStatus").textContent="OXCE 8.7.1 / v.o2 · 완료 연구 "+save.research.completed.length+
-        "개 · 폐쇄 연구 "+save.research.disabled.length+"개 · 선택 대원 "+proof.soldier.name+
+        "개 · 폐쇄 연구 "+save.research.disabled.length+"개 · 선택 기지 진행 중 연구 "+
+        (proof.base.researchComplete?proof.base.researchProjects.size+"개":"미확인")+
+        " · 선택 대원 "+proof.soldier.name+
         " · 변신 이력 "+proof.state.history.size+"개 · 상태 "+proof.state.status+
         (save.warnings.length?" · 판독 주의 "+save.warnings.length+"건":"");
     }else{

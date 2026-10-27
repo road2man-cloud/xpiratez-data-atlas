@@ -25,7 +25,8 @@ function cloneWorld(w){
     activeResearch:w.activeResearch==null?null:new Set(w.activeResearch),
     autoZeroEvidence:w.autoZeroEvidence===true,
     pendingFree:w.pendingFree?{source:w.pendingFree.source,
-      choices:[...w.pendingFree.choices],sequential:!!w.pendingFree.sequential}:null,
+      choices:[...w.pendingFree.choices],sequential:!!w.pendingFree.sequential,
+      phase:w.pendingFree.phase||"after-source"}:null,
     soldiers:arr(w.soldiers).map(cloneMember)};
 }
 function fail(kind,reason){return {kind,reason:arr(reason).length?reason:[String(reason)]};}
@@ -49,7 +50,29 @@ function haveFunctions(world,required){
   const missing=arr(required).filter(id=>!world.baseFunctions.has(id));
   return missing.length?"필수 기지 기능 미확인: "+missing.join(", "):null;
 }
+function availableFreeCandidates(rule,world){
+  const candidates=[...arr(rule?.getOneFree)];
+  for(const [guard,ids] of Object.entries(rule?.getOneFreeProtected||{}))
+    if(world.researched.has(guard))candidates.push(...arr(ids));
+  return candidates.filter(id=>!world.researched.has(id)&&!world.disabled.has(id));
+}
 function grantResearch(world,id,data,method="research",options={}){
+  const rule=data.researchRules?.[id];
+  // Base-lab completions select their getOneFree BEFORE addFinishedResearch.
+  // The engine pays the free topic and its zero-cost queue before finishing
+  // the source. Keep the source uncommitted until the free outcome is supplied.
+  // Event and mission paths instead select after source completion.
+  if(method==="research"&&!options.resolveBaseFree){
+    const result=researchStep(world,id,data.researchRules||{},{method,...options});
+    if(result.kind!=="applied")return fail(result.kind,result.reason);
+    const bonusBefore=availableFreeCandidates(rule,world);
+    if(bonusBefore.length){
+      world.pendingFree={source:id,choices:bonusBefore,
+        sequential:rule?.sequentialGetOneFree===true,phase:"before-source"};
+      return {kind:"applied",assumed:false,notes:[
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 "+bonusBefore.join(", ")]};
+    }
+  }
   // The cascade must begin with the state BEFORE the source finished.
   // Feeding the post-completion disabled set back into the simulator can
   // erase a valid queue or apply the source's side effects twice.
@@ -69,32 +92,30 @@ function grantResearch(world,id,data,method="research",options={}){
       result.repeatRun!==true){
     const chain=inspectAutoZeroCascade(data,id,beforeResearch,{
       inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:180});
-    if(chain.kind==="conditional"&&!chain.incomplete&&
-        !chain.steps.some(s=>s.freeRewardPending&&s.kind==="auto-zero")){
+    if(chain.kind==="conditional"&&!chain.incomplete&&chain.finalState){
+      // Consume the queue's END state directly. Reapplying its steps to the
+      // partially changed state would drop disabled-but-queued discoveries and
+      // make re-enables or existing-topic rescans order-dependent.
+      world.researched=new Set(chain.finalState.researched);
+      world.disabled=new Set(chain.finalState.disabled);
       for(const zero of chain.steps.slice(1)){
-        // Re-check each queued item against the final evidence snapshot;
-        // applying a partial or inconsistent candidate is forbidden.
-        if(world.disabled.has(zero.id)||world.researched.has(zero.id))continue;
-        const rule=data.researchRules?.[zero.id];
-        if(!rule||Number(rule.cost)!==0)continue;
-        world.researched.add(zero.id);
-        for(const drop of arr(rule.disables)){
-          world.researched.delete(drop);world.disabled.add(drop);
-        }
-        for(const enable of arr(rule.reenables))world.disabled.delete(enable);
         autoAssumed=true;
-        autoNotes.push("조건부 자동 연구 큐(엔진 실행 미검증): "+zero.id+" ← "+zero.queuedBy);
+        autoNotes.push("조건부 자동 연구 큐(엔진 실행 미검증): "+zero.id+
+          " ← "+zero.queuedBy+(zero.disabledWhenPopped?" (큐 처리 시 폐쇄)":""));
+        if(zero.freeRewardPending)
+          autoNotes.push("자동 연구 "+zero.id+"의 getOneFree는 이번 큐에서 추첨하지 않음");
       }
     }
   }
-  // OXCE selects a free topic when THIS source research is completed.
-  // A completed source in an old save is not a reusable free-research voucher.
-  world.pendingFree=method!=="free"&&result.randomFreeCandidates?.length?{
-    source:id,choices:[...result.randomFreeCandidates],
-    sequential:data.researchRules?.[id]?.sequentialGetOneFree===true
+  // Only EVENT/MISSION-style grants select getOneFree after this cascade.
+  // The base-lab selection was already made before finishing the source.
+  const freeCandidates=method==="event"?availableFreeCandidates(rule,world):[];
+  world.pendingFree=freeCandidates.length?{
+    source:id,choices:freeCandidates,
+    sequential:rule?.sequentialGetOneFree===true,phase:"after-source"
   }:null;
-  return {kind:"applied",assumed:autoAssumed,notes:[...autoNotes,...(result.randomFreeCandidates?.length?
-    ["연구 종료 후 별도로 추첨되는 무료 연구 후보 "+result.randomFreeCandidates.join(", ")]:[])]};
+  return {kind:"applied",assumed:autoAssumed,notes:[...autoNotes,...(freeCandidates.length?
+    ["이벤트·임무 원천 완료 후 무료 연구 후보 "+freeCandidates.join(", ")]:[])]};
 }
 function eventResearch(world,step,data){
   if(world.disabled.has(step.research))
@@ -147,9 +168,32 @@ function freeResearch(world,step,data){
   world.pendingFree=null;
   const result=grantResearch(world,step.research,data,"free");
   if(result.kind!=="applied")return result;
-  return {kind:"applied",assumed:!token.sequential&&choices.length>1,
-    notes:!token.sequential&&choices.length>1?
-    ["무료 연구 무작위 선택 "+step.research+"을 가정"]:[]};
+  const notes=[...arr(result.notes)];
+  let assumed=result.assumed===true;
+  if(!token.sequential&&choices.length>1){
+    assumed=true;notes.push("무료 연구 무작위 선택 "+step.research+"을 가정");
+  }
+  if(token.phase==="before-source"){
+    if(world.disabled.has(token.source)){
+      // OXCE addFinishedResearch returns immediately for a disabled source.
+      notes.push("선지급 무료 보상이 원천 연구를 폐쇄하여 원천 완료 플래그가 추가되지 않음: "+token.source);
+      assumed=true;
+    }else if(world.researched.has(token.source)){
+      // Previously discovered source re-runs require separate protected-unlock
+      // evidence; do not apply the same root a second time by assumption.
+      notes.push("무료 보상에서 원천 연구가 이미 완료됨: 재완료 보호 해금은 별도 검증 필요");
+      assumed=true;
+    }else{
+      // Completion was validated as an actual lab project at the previous
+      // action. The engine does not recheck lab availability AFTER a reward;
+      // use direct finish rather than fabricating a second research start.
+      const core=grantResearch(world,token.source,data,"free",{resolveBaseFree:true});
+      if(core.kind!=="applied")return core;
+      assumed ||= core.assumed===true;
+      notes.push(...arr(core.notes));
+    }
+  }
+  return {kind:"applied",assumed,notes};
 }
 function manufacture(world,step,data){
   const supply=data.itemSupply?.[step.item];

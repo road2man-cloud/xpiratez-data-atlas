@@ -19,6 +19,29 @@ assert.equal(importModernSave(text.replace("monthsPassed: 1",
 assert.equal(fixture.funds,4000,"use LAST finance-history entry");
 assert.equal(fixture.personnel.bases.length,1);
 assert.equal(fixture.personnel.bases[0].soldiers.length,1);
+assert.equal(fixture.personnel.bases[0].researchComplete,false,
+  "missing active projects must remain unknown, never an empty proven list");
+const activeText=text.replace("    facilities:",
+  "    research:\n      - project: STR_VIOLENCE\n        assigned: 2\n      - project: STR_GLAMOUR\n        assigned: 0\n    facilities:");
+const active=importModernSave(activeText,data);
+const activeBase=active.personnel.bases[0];
+assert.equal(activeBase.researchComplete,true);
+assert.deepEqual([...activeBase.researchProjects],["STR_VIOLENCE","STR_GLAMOUR"]);
+const activeProof=modernSoldierProof(data,active,0,0);
+assert.equal(activeProof.options.activeResearchKnown,true);
+assert(activeProof.options.activeResearch.includes("STR_GLAMOUR"));
+const emptyResearch=importModernSave(text.replace("    facilities:",
+  "    research: []\n    facilities:"),data);
+assert.equal(emptyResearch.personnel.bases[0].researchComplete,true);
+assert.equal(emptyResearch.personnel.bases[0].researchProjects.size,0);
+const malformedResearch=importModernSave(text.replace("    facilities:",
+  "    research:\n      - assigned: 5\n    facilities:"),data);
+assert.equal(malformedResearch.personnel.bases[0].researchComplete,false);
+assert.equal(modernSoldierProof(data,malformedResearch,0,0).options.activeResearch,null);
+const duplicateResearch=importModernSave(text.replace("    facilities:",
+  "    research:\n      - project: STR_VIOLENCE\n      - project: STR_VIOLENCE\n    facilities:"),data);
+assert.equal(duplicateResearch.personnel.bases[0].researchComplete,false,
+  "duplicate ongoing project is untrusted, not silently deduplicated");
 assert.equal(fixture.research.completed.includes("STR_VIOLENCE"),true);
 const p=modernSoldierProof(data,fixture,0,0);
 assert.equal(p.kind,"proof");

@@ -63,6 +63,79 @@ test("reenabled zero-cost topic is evaluated from the source's pre-completion st
   assert(result.world.researched.has("Z"));
   assert(!result.world.disabled.has("Z"));
 });
+test("queued-but-disabled discovery stays separate from usable research",()=>{
+  const data={...synthetic,researchRules:{
+    A:{cost:5},B:{cost:0,dependencies:["A"],disables:["C"]},
+    C:{cost:0,dependencies:["A"]}
+  }};
+  const done=verifyCampaignSequence(world({activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"A"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("C"));
+  assert(done.world.disabled.has("C"));
+  assert(done.trace[0].notes.some(s=>s.includes("C")&&s.includes("폐쇄")));
+});
+test("base lab getOneFree resolves BEFORE the source and its auto cascade",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,getOneFree:["GIFT"]},
+    ZERO:{cost:0,dependencies:["SOURCE"],disables:["GIFT"]},GIFT:{cost:5}
+  }};
+  const start=world({activeResearch:new Set(),autoZeroEvidence:true});
+  const pending=verifyCampaignSequence(start,[{type:"research",id:"SOURCE"}],data);
+  assert.equal(pending.kind,"conditional");
+  assert.equal(pending.world.pendingFree.phase,"before-source");
+  assert(!pending.world.researched.has("SOURCE"));
+  const done=verifyCampaignSequence(start,[{type:"research",id:"SOURCE"},
+    {type:"freeResearch",source:"SOURCE",research:"GIFT"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("SOURCE"));
+  assert(done.world.researched.has("ZERO"));
+  assert(done.world.disabled.has("GIFT"));
+  assert.equal(done.world.pendingFree,null);
+});
+test("base source cannot claim newly opened protected free award retroactively",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,getOneFreeProtected:{GUARD:["GIFT"]}},
+    GUARD:{cost:0,dependencies:["SOURCE"]},GIFT:{cost:5}
+  }};
+  const start=world({activeResearch:new Set(),autoZeroEvidence:true});
+  const done=verifyCampaignSequence(start,[{type:"research",id:"SOURCE"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("GUARD"));
+  assert.equal(done.world.pendingFree,null);
+  const invalid=verifyCampaignSequence(start,[{type:"research",id:"SOURCE"},
+    {type:"freeResearch",source:"SOURCE",research:"GIFT"}],data);
+  assert.equal(invalid.kind,"blocked");
+});
+test("event research grants protected free AFTER its zero-cost cascade",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,getOneFreeProtected:{GUARD:["GIFT"]}},
+    GUARD:{cost:0,dependencies:["SOURCE"]},GIFT:{cost:5}
+  },eventResearchSources:{SOURCE:[{event:"E",choiceCount:1,scripts:[{
+    script:"E",mode:"fixed",firstMonth:0,executionOdds:100}]}]}};
+  const start=world({activeResearch:new Set(),autoZeroEvidence:true});
+  const steps=[{type:"eventResearch",event:"E",script:"E",research:"SOURCE",assumeOutcome:true},
+    {type:"freeResearch",source:"SOURCE",research:"GIFT"}];
+  const done=verifyCampaignSequence(start,steps,data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("GUARD"));
+  assert(done.world.researched.has("GIFT"));
+});
+test("auto-zero discoveries with getOneFree never auto-award the RNG reward",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5},ZERO:{cost:0,dependencies:["SOURCE"],
+      getOneFree:["RANDOM_A","RANDOM_B"]},
+    RANDOM_A:{cost:5},RANDOM_B:{cost:5}
+  }};
+  const done=verifyCampaignSequence(world({activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("ZERO"));
+  assert(!done.world.researched.has("RANDOM_A"));
+  assert(!done.world.researched.has("RANDOM_B"));
+  assert.equal(done.world.pendingFree,null);
+  assert(done.trace[0].notes.some(s=>s.includes("getOneFree")&&s.includes("추첨하지")));
+});
 test("chronological research A -> transform -> research B preserves history",()=>{
   const result=verifyCampaignSequence([
     ],[],synthetic); // intentionally empty route baseline

@@ -169,6 +169,8 @@ try{
   await page.locator("#modernSaveFile").setInputFiles("tools/fixtures/modern-2.1-test.sav");
   await page.waitForFunction(()=>document.querySelector("#saveStatus")?.textContent?.includes("완료 연구 1개"),{timeout:25000});
   assert.equal(await page.locator("#analysisMode").inputValue(),"current");
+  assert((await page.locator("#saveStatus").innerText()).includes("진행 중 연구 미확인"),
+    "a missing base research-project list must not be certified as empty");
   assert(await page.locator("#saveRoster").isVisible());
   assert((await page.locator("#saveProof").innerText()).includes("실제 세이브"));
   assert((await page.locator("#saveBattleStats").innerText()).includes("현재 대원 · 실제 장착 방어구 한 벌"));
