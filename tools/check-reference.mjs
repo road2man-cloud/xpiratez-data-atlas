@@ -128,6 +128,7 @@ assert.ok(voxels.armors.every(a=>Array.isArray(a.loftempsSet)&&a.loftempsSet.len
   "full source collision template matrix for every unit armor tile");
 assert.ok(page.includes("블러드하운드") && voxelApp.includes("loftChanged"),"rider exceptions visible");
 assert.ok(page.includes('id="large-unit-voxels"')&&page.includes('id="voxel-large-rows"'),"all 2x2 armors full list in reference");
+assert.ok(page.includes("voxels.js?v=20261027-all-46-large-units"),"refresh deployed browser cache for updated 2x2 UI");
 assert.ok(voxelApp.includes("renderLargeArmors")&&voxelApp.includes("collisionFootprint"),"2x2 aggregate client view");
 const large=voxels.armors.filter(a=>a.size===2);
 assert.equal(large.length,46,"all 2x2 equippable armors");
