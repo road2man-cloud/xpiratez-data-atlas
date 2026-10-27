@@ -144,7 +144,7 @@ function routeFinderWorld(proof){
       commendations:proof.options.commendations||{}}]
   };
 }
-function showRouteSearchResult(result){
+export function showRouteSearchResult(result){
   const root=$("#routeSearchResult");
   if(!result)return;
   const heading={
@@ -158,12 +158,16 @@ function showRouteSearchResult(result){
     if(step.type==="research")return "연구 완료: "+step.id;
     if(step.type==="transform")return "동일 대원 변신: "+
       transformationName(step.transform)+" ("+step.transform+")";
-    if(step.type==="manufacture")return "현재 기지에서 제조: "+
-      step.item+" ×"+step.count+" / "+step.recipe;
+    if(step.type==="manufacture")return (step.assumeOutcome?"확률 제조 보상 가정: ":"현재 기지에서 제조: ")+
+      step.item+" ×"+step.count+" / "+step.recipe+
+      (step.assumeOutcome?" · 보상 가중치 "+step.weight+"/"+step.weightTotal+
+        " (개별 제조 성공 보장 아님)":"");
     if(step.type==="freeResearch")return "원천 연구 완료 시 무료 보상: "+
       step.source+" → "+step.research+(step.assumeOutcome?" (RNG 가정)":"");
     if(step.type==="eventResearch")return "이벤트 연구 보상 가정: "+
       step.event+" → "+step.research+(step.assumeOutcome?" (발생·추첨 보장 아님)":"");
+    if(step.type==="advanceMonth")return "월 진행 가정: "+step.month+
+      "개월 (유지비·새 이벤트·재료 소모 미검증)";
     return step.type;
   };
   root.innerHTML='<p><strong>'+esc(heading)+'</strong></p>'+
@@ -176,11 +180,13 @@ function showRouteSearchResult(result){
       result.topBlocks.slice(0,4).map(x=>esc(x.reason)).join(" · ")+'</p>':"")+
     (result.pools?'<p class="muted">경로 후보: 변신 '+result.pools.transforms+
       ' / 연구 '+result.pools.research+' / 제조 '+result.pools.recipes+
+      ' (확률 보상 '+(result.pools.randomRecipes||0)+
+      ' · 변형이 겹쳐 보류 '+(result.pools.ambiguousRandomRecipes||0)+')'+
       ' / 가정한 이벤트 후보 '+result.pools.eventScenarios+
       ' · 실제 검사 상태 '+(result.deterministic?.examined||0)+
       '개 · 탐색 예산 제한 '+(result.searchLimits?.maxDepth||0)+'단계'+
       (!result.sourceComplete?" · 일부 후보가 예산 밖에 있음":"")+'</p>':"")+
-    '<p class="muted">보장하지 않는 영역: 전투 경험치 성장, 임무 전리품, 구매·건설·모든 이벤트 시계, 향후 RNG, 연구실 프로젝트 실제 노출. 경로 미발견을 확정 상호배제로 해석하지 마세요.</p>';
+    '<p class="muted">보장하지 않는 영역: 전투 경험치 성장, 임무 전리품, 구매·건설, 월 유지비·진행 중인 별도 이벤트, 향후 RNG, 연구실 프로젝트 실제 노출. 확률 제조와 월 진행은 항상 조건부이며, 경로 미발견을 확정 상호배제로 해석하지 마세요.</p>';
 }
 function initRouteFinder(){
   const picker=$("#routeSearchTarget");

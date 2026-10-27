@@ -175,13 +175,13 @@
 <div class="controls">
   <label class="grow" for="voxel-search">병종·종족·방어구 검색<input id="voxel-search" type="search" placeholder="로크나르, 캣걸, STR_SOLDIER, 방어구 ID" autocomplete="off"></label>
   <label for="voxel-species">종족/병종<select id="voxel-species"><option value="">모든 병종</option></select></label>
-  <label for="voxel-sort">기본 병종 정렬<select id="voxel-sort"><option value="name">이름 순</option><option value="kneel">무릎 높이 낮은 순</option><option value="stand">서기 높이 낮은 순</option></select></label>
+  <label for="voxel-sort">기본 병종 정렬<select id="voxel-sort"><option value="name">이름 순</option><option value="kneel">무릎 높이 낮은 순</option><option value="kneelShot">무릎 사격 출발 Z 낮은 순</option><option value="stand">서기 높이 낮은 순</option></select></label>
 </div>
 <h3>병종 기본 높이와 초기 방어구 착용 시 실제 높이</h3>
 <div id="voxel-body-status" class="status" role="status" aria-live="polite">최신 병종 데이터를 불러오는 중…</div>
 <div class="tablewrap tall"><table id="voxel-body-table">
-<thead><tr><th>종족/병종</th><th>몸체 서기</th><th>몸체 무릎</th><th>기본 장비 서기</th><th>기본 장비 무릎</th><th>서서 사격 출발 Z</th><th>장비 점유 타일</th><th>기본 방어구</th></tr></thead>
-<tbody id="voxel-body-rows"><tr><td colspan="8">아래 <a href="./unit-voxels.json">원본 JSON</a>에서도 확인할 수 있습니다.</td></tr></tbody>
+<thead><tr><th>종족/병종</th><th>몸체 서기</th><th>몸체 무릎</th><th>기본 장비 서기</th><th>기본 장비 무릎</th><th>서서 사격 출발 Z</th><th>무릎 사격 출발 Z</th><th>장비 점유 타일</th><th>기본 방어구</th></tr></thead>
+<tbody id="voxel-body-rows"><tr><td colspan="9">아래 <a href="./unit-voxels.json">원본 JSON</a>에서도 확인할 수 있습니다.</td></tr></tbody>
 </table></div>
 <p class="fine">이번 2.1 원본에서 아군 착용 가능 방어구는 <code>standHeight</code>/<code>kneelHeight</code>를 별도로 덮어쓰지 않습니다. 따라서 병종별 높이는 유지되며, 일부 장비의 <strong>2×2타일 점유</strong>와 <strong>무릎 꿇기 제한</strong>이 주요 예외입니다. 점유 타일은 <code>Armor::size</code> 기준이며 1×1타일도 내부 복셀 형태는 캐릭터와 방어구마다 다릅니다. 기본 방어구의 <code>standHeight</code>/<code>kneelHeight</code> 오버라이드가 −1이면 병종 수치를 상속합니다. 방어구의 <code>allowsKneeling</code> 및 유닛 상태에 따라 무릎 자세 자체는 제한될 수 있습니다.</p>
 <details id="voxel-armor-details">
@@ -189,10 +189,10 @@
 <div class="controls"><label class="inline-choice"><input id="voxel-armor-exceptions" type="checkbox" checked> 기본 병종 높이·점유·자세 제한과 다른 조합만 표시</label></div>
 <div id="voxel-armor-status" class="status" role="status" aria-live="polite">방어구 데이터를 불러오는 중…</div>
 <div class="tablewrap tall"><table id="voxel-armor-table">
-<thead><tr><th>적용 병종</th><th>방어구</th><th>실효 서기</th><th>실효 무릎</th><th>부양 높이</th><th>서서 사격 출발 Z</th><th>점유 타일</th><th>무릎 허용 선언</th><th>원본 룰</th></tr></thead>
-<tbody id="voxel-armor-rows"><tr><td colspan="9">방어구별 실효 복셀 높이를 불러오는 중…</td></tr></tbody>
+<thead><tr><th>적용 병종</th><th>방어구</th><th>실효 서기</th><th>실효 무릎</th><th>부양 높이</th><th>서서 사격 출발 Z</th><th>무릎 사격 출발 Z</th><th>점유 타일</th><th>무릎 허용 선언</th><th>원본 룰</th></tr></thead>
+<tbody id="voxel-armor-rows"><tr><td colspan="10">방어구별 실효 복셀 높이를 불러오는 중…</td></tr></tbody>
 </table></div>
-<p class="fine">모드 규칙의 <code>units</code>에 명시된 적용 병종과 대원의 실제 시작 방어구를 포함합니다. 연구 해금·아이템 보유·착용 허용 여부는 별도 조건입니다. 이 표에서 '미지정'은 무릎 허용/금지가 명시되지 않았다는 뜻이지 반드시 가능하다는 뜻이 아닙니다.</p>
+<p class="fine"><strong>무릎 사격 Z</strong>는 <code>실효 무릎 높이 + 부양 높이 − 4</code>로 계산합니다. <strong>무릎 불가</strong> 방어구에서는 숫자가 보여도 가상 참고값이며 해당 자세로 사격할 수 없습니다. 모드 규칙의 <code>units</code>에 명시된 적용 병종과 대원의 실제 시작 방어구를 포함합니다. 연구 해금·아이템 보유·착용 허용 여부는 별도 조건입니다. 이 표에서 '미지정'은 무릎 허용/금지가 명시되지 않았다는 뜻이지 반드시 가능하다는 뜻이 아닙니다.</p>
 </details>
 <p id="voxel-sources" class="fine"></p>
 <p class="fine">원본: <code>soldiers[].standHeight / kneelHeight</code>, <code>armors[].standHeight / kneelHeight / floatHeight / size / allowsKneeling</code>. 엔진: <code>BattleUnit::updateArmorFromSoldier()</code>, <code>BattleUnit::getHeight()</code>, <code>TileEngine::getOriginVoxel()</code>. <a href="./unit-voxels.json">GPT·분석용 전체 JSON</a>에 룰 파일 해시와 각 병종·방어구 내부 ID가 들어 있습니다.</p>
@@ -207,6 +207,6 @@
 </main>
 <script src="./items.js?v=20261024-latest" defer></script>
 <script src="./app.js?v=20261024-latest" defer></script>
-<script src="./voxels.js?v=20261027-unit-height" defer></script>
+<script src="./voxels.js?v=20261027-kneel-shot-origin" defer></script>
 </body>
 </html>
