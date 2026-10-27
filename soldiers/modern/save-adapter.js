@@ -28,8 +28,29 @@ export function importModernSave(text,data){
   }
   const inline=body.match(/^funds:[ \t]*([+-]?\d+)[ \t]*$/m);
   const monthsMatch=body.match(/^monthsPassed:[ \t]*(\d+)[ \t]*$/m);
+  // generatedEvents is a top-level YAML integer map, NOT the research-status
+  // map. Missing/malformed evidence remains null (unknown), never "{}".
+  const historyAt=lines.findIndex(line=>/^generatedEvents:[ \t]*(?:\{\})?[ \t]*$/.test(line));
+  let generatedEvents=null;
+  if(historyAt>=0){
+    generatedEvents=Object.create(null);
+    if(!/\{\}/.test(lines[historyAt])){
+      let count=0;
+      for(let j=historyAt+1;j<lines.length;j++){
+        const line=lines[j];
+        if(!line.trim()||/^\s*#/.test(line))continue;
+        if(!line.startsWith(" "))break;
+        const entry=line.match(/^  ([A-Za-z0-9_.:-]+):[ \t]*(\d+)[ \t]*(?:#.*)?$/);
+        if(!entry||Object.prototype.hasOwnProperty.call(generatedEvents,entry[1])||
+          !Number.isSafeInteger(Number(entry[2]))||++count>20000){
+          generatedEvents=null;break;
+        }
+        generatedEvents[entry[1]]=Number(entry[2]);
+      }
+    }
+  }
   return {
-    research,personnel,
+    research,personnel,generatedEvents,
     monthsPassed:monthsMatch?Number(monthsMatch[1]):null,
     funds:history.length?history.at(-1):inline?Number(inline[1]):null,
     warnings:[...research.warnings,...personnel.warnings],

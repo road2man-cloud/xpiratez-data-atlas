@@ -43,6 +43,11 @@
     <p class="muted">전투 주능력치는 경험치 정산 한 번에 최대 6 상승하고, 보조 능력치는 정산 직전에 상한 미만이었다면 상한을 1 초과할 수 있습니다. 특정 방어구의 임무 종료 추가 성장 규칙과 Psi 해금 조건은 별도 유의사항입니다. 더 높은 능력치를 주는 영구 강화 또는 다른 병종으로의 전환은 아래 순서 조합기에서 계산합니다.</p>
   </details>
 
+  <details id="rareMapLootPanel" class="explain card">
+    <summary>희귀 영구 강화·장비 선행 재료: 실제 임무 지도와 회수 경로 증거</summary>
+    <div id="rareMapLootProof" aria-live="polite"></div>
+  </details>
+
   <section class="save-inspector card" aria-label="실제 세이브 기반 자동 판정">
     <h2>35_.sav 등 실제 세이브 자동 판정</h2>
     <p>세이브의 연구 완료·영구 폐쇄 상태, 현재 기지 재료·시설, 대원의 변신 이력·계급·훈장·능력치를 <strong>브라우저 내부에서 자동 대조</strong>합니다. 세이브는 업로드·저장되지 않습니다.</p>
@@ -108,6 +113,15 @@
     </div>
     <div id="transformationHistory" class="planner-history"></div>
     <span id="transformationVerdict" class="muted"></span>
+    <section class="route-finder-panel" aria-label="동일 대원 시간순 연구·제조·변신 경로 자동 탐색">
+      <strong>자동 시간순 도달 경로 검사 (선택한 동일 대원)</strong>
+      <p class="muted">세이브의 해당 기지 재고·연구·이벤트 이력으로 연구 → 재료 제조 → 변신 순서를 자동 탐색합니다. 제한 탐색에서 경로가 발견되지 않아도 영구 불가능으로 결론 내리지 않습니다. 무작위 이벤트·보상은 별도의 조건부 시나리오입니다.</p>
+      <div class="planner-controls">
+        <label for="routeSearchTarget">목표 변신</label><select id="routeSearchTarget"></select>
+        <button id="routeSearchButton" type="button">현재 대원 경로 자동 탐색</button>
+      </div>
+      <div id="routeSearchResult" class="route-search-result" aria-live="polite">세이브를 불러오면 자동으로 연구·자원·변신 순서를 검증할 수 있습니다.</div>
+    </section>
     <details class="stat-envelope-panel" id="statEnvelopePanel" open>
       <summary>변신 순서별 능력치 안전 범위 (12종)</summary>
       <p>초기 생성값·변신의 비례 변화·무작위 변화·성장 상한을 OXCE 산식으로 계산한 <strong>보수적 포함 범위</strong>입니다. 범위 내 모든 값이 동시에 가능한 것은 아니며, 미래 전투 경험치 성장, 장비 획득과 미검증 이벤트는 포함되지 않습니다.</p>

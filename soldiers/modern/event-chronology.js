@@ -42,8 +42,10 @@ export function eventScriptVerdict(script,state={},options={}){
     else pending.push("금지 연구가 미래에 비활성화되어야 함: "+id);
   }
   for(const [positive,negative,collection,label]of [
-    [script.itemPositive,script.itemNegative,state.items,"아이템"],
-    [script.facilityPositive,script.facilityNegative,state.facilities,"시설"],
+    // OXCE isItemObtained scans all bases and craft stores; this is not
+    // necessarily the active base inventory used for research/manufacture.
+    [script.itemPositive,script.itemNegative,Object.hasOwn(state,"triggerItems")?state.triggerItems:state.items,"아이템"],
+    [script.facilityPositive,script.facilityNegative,Object.hasOwn(state,"triggerFacilities")?state.triggerFacilities:state.facilities,"시설"],
     [script.soldierTypePositive,script.soldierTypeNegative,state.soldierTypes,"병종"],
     [script.regionPositive,script.regionNegative,state.regions,"기지 지역"],
     [script.countryPositive,script.countryNegative,state.countries,"기지 국가"],
@@ -172,20 +174,43 @@ export function researchStep(state,id,rules={},options={}){
   if(!rule)return {kind:"unknown",reason:["연구 규칙 누락: "+id],state};
   if(disabled.has(id))return {kind:"blocked",reason:["비활성 연구에 대한 직접 지급·연구는 엔진에서 거부: "+id],state};
   const method=options.method||"research";
+  const candidates=()=>{
+    const result=[...arr(rule.getOneFree)];
+    for(const [guard,values] of Object.entries(rule.getOneFreeProtected||{}))
+      if(completed.has(guard))result.push(...arr(values));
+    return result.filter(x=>!completed.has(x)&&!disabled.has(x));
+  };
   if(method==="research"){
-    const req=arr(rule.requires);
-    const deps=arr(rule.dependencies);
-    for(const r of req)if(!completed.has(r))reason.push("필수 requires 미완료: "+r);
-    const bypass=options.unlocked===true||Object.entries(rules).some(([src,r])=>completed.has(src)&&arr(r.unlocks).includes(id));
-    if(!bypass)for(const dep of deps)if(!completed.has(dep))reason.push("필수 dependencies 미완료: "+dep);
+    // Cost-zero rules often represent auto-processed or event-only flags.
+    // Do not manufacture a manual research action without direct evidence
+    // that the project is selectable in the laboratory.
+    if(rule.cost===0&&!options.labAvailabilityObserved)
+      return {kind:"conditional",reason:["비용 0인 자동·이벤트 연구의 연구실 직접 선택 가능성 미확인: "+id],state};
+    // NewResearchListState filters ALL research having "requires", even
+    // after those flags were discovered; such zero-cost projects are
+    // processed indirectly inside SavedGame::addFinishedResearch.
+    if(arr(rule.requires).length)reason.push("requires 연구는 연구 목록에서 직접 선택 불가: "+id);
+    const bypass=options.unlocked===true||Object.entries(rules).some(([src,r])=>
+      completed.has(src)&&arr(r.unlocks).includes(id));
+    if(!bypass)for(const dep of arr(rule.dependencies))
+      if(!completed.has(dep))reason.push("필수 dependencies 미완료: "+dep);
     if(rule.needItem&&present(state.items,rule.neededItem||id)!==true)
       reason.push("필수 실물 미확인: "+(rule.neededItem||id));
-    for(const f of arr(rule.requiresBaseFunc))if(present(state.baseFunctions,f)!==true)
-      reason.push("필수 기지 기능 미확인: "+f);
-    if(completed.has(id)&&!options.repeatableProof)reason.push("이미 완료된 연구의 재연구 조건 미증명: "+id);
+    for(const f of arr(rule.requiresBaseFunc))
+      if(present(state.baseFunctions,f)!==true)reason.push("필수 기지 기능 미확인: "+f);
+    if(completed.has(id)&&!rule.repeatable&&!candidates().length)
+      reason.push("이미 완료된 연구의 신규 보상·반복 연구 조건 없음: "+id);
   }else if(method!=="event"&&method!=="free")reason.push("지원되지 않은 연구 출처: "+method);
   if(reason.length)return {kind:"blocked",reason,state};
-  if(completed.has(id))return {kind:"conditional",reason:["이미 완료된 연구의 무료 보상은 별도 추첨해야 함"],state};
+  if(completed.has(id)){
+    if(method==="research"&&!options.repeatableProof&&!options.labAvailabilityObserved)
+      return {kind:"conditional",reason:["완료된 연구의 재실행 가능성은 실제 연구실 표시 또는 반복 연구 증거가 필요: "+id],state};
+    if(method!=="research")return {kind:"conditional",
+      reason:["이미 완료된 연구의 이벤트/보상 반복 실행 근거 미증명: "+id],state};
+    return {kind:"applied",reason:[],repeatRun:true,
+      state:{...state,researched:completed,disabled},
+      randomFreeCandidates:candidates(),unlocked:arr(rule.unlocks)};
+  }
   completed.add(id);
   for(const drop of arr(rule.disables)){
     completed.delete(drop);
@@ -193,9 +218,7 @@ export function researchStep(state,id,rules={},options={}){
   }
   for(const enable of arr(rule.reenables))disabled.delete(enable);
   return {kind:"applied",reason:[],state:{...state,researched:completed,disabled},
-    randomFreeCandidates:[...arr(rule.getOneFree),
-      ...Object.entries(rule.getOneFreeProtected||{}).flatMap(([guard,ids])=>
-        completed.has(guard)?arr(ids):[])].filter(x=>!completed.has(x)&&!disabled.has(x)),
+    randomFreeCandidates:candidates(),
     unlocked:arr(rule.unlocks)};
 }
 export function replayResearchSequence(steps,start,rules={}){

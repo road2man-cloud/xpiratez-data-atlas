@@ -8,6 +8,8 @@ import {eventScriptVerdict} from "./event-chronology.js";
 import {renderStatEnvelope} from "./stat-envelope-ui.js";
 import {GROWTH_PHASES,growStatEnvelope} from "./growth-envelope.js";
 import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
+import {searchChronologicalRoute} from "./route-finder.js";
+import {renderRareMapLootProof} from "./map-loot-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
 let previousTransformations=[];
@@ -123,6 +125,93 @@ function renderTransformationPlanner(){
   renderModernSaveResults(candidates,CURRENT_PROOF,analysisOptions().mode,previousTransformations.length);
   renderStatEnvelope($("#statEnvelopeContent"),PLANNER_BOUNDS,PLANNER_STATE,DATA,previousTransformations,analysisOptions());
 }
+function routeFinderWorld(proof){
+  if(proof?.kind!=="proof"||!SAVE)return null;
+  return {
+    month:SAVE.monthsPassed,
+    researched:new Set(SAVE.research.completed||[]),
+    disabled:new Set(SAVE.research.disabled||[]),
+    // Missing generatedEvents is UNKNOWN, never an empty completed list.
+    generatedEvents:SAVE.generatedEvents,
+    // Inventory is that of the SELECTED BASE only. Never pool two bases.
+    items:Object.fromEntries(proof.base.items||[]),
+    baseFunctions:new Set(proof.options.baseFunctions||[]),
+    funds:SAVE.funds,
+    evidenceComplete:proof.base.itemsComplete&&proof.state.exactStats&&
+      proof.options.medalsKnown&&proof.soldier.historyComplete&&
+      proof.options.fundsKnown,
+    soldiers:[{id:"selected",state:proof.state,
+      commendations:proof.options.commendations||{}}]
+  };
+}
+function showRouteSearchResult(result){
+  const root=$("#routeSearchResult");
+  if(!result)return;
+  const heading={
+    witness:"범위 내 시간순 정합성 확인 (실행 성공 보장은 아님)",
+    conditional:"조건부 경로 · 가정 또는 미확인 자료 존재",
+    excluded:"동일 대원 계보에서 확정 제외",
+    inconclusive:"제한 탐색으로는 경로 미발견 · 영구 불가능 증거 아님",
+    unverified:"검증 입력이 부족합니다"
+  }[result.kind]||"검증 상태 미확인";
+  const label=step=>{
+    if(step.type==="research")return "연구 완료: "+step.id;
+    if(step.type==="transform")return "동일 대원 변신: "+
+      transformationName(step.transform)+" ("+step.transform+")";
+    if(step.type==="manufacture")return "현재 기지에서 제조: "+
+      step.item+" ×"+step.count+" / "+step.recipe;
+    if(step.type==="freeResearch")return "원천 연구 완료 시 무료 보상: "+
+      step.source+" → "+step.research+(step.assumeOutcome?" (RNG 가정)":"");
+    if(step.type==="eventResearch")return "이벤트 연구 보상 가정: "+
+      step.event+" → "+step.research+(step.assumeOutcome?" (발생·추첨 보장 아님)":"");
+    return step.type;
+  };
+  root.innerHTML='<p><strong>'+esc(heading)+'</strong></p>'+
+    (result.steps?.length?'<ol>'+result.steps.map(step=>
+      '<li>'+esc(label(step))+'</li>').join("")+'</ol>':"")+
+    (result.reason?.length?'<p class="muted">'+result.reason.map(esc).join(" · ")+'</p>':"")+
+    (result.assumptions?.length?'<p class="muted"><strong>미증명 전제:</strong> '+
+      [...new Set(result.assumptions)].slice(0,8).map(esc).join(" · ")+'</p>':"")+
+    (result.topBlocks?.length?'<p class="muted">탐색 중 차단 근거: '+
+      result.topBlocks.slice(0,4).map(x=>esc(x.reason)).join(" · ")+'</p>':"")+
+    (result.pools?'<p class="muted">경로 후보: 변신 '+result.pools.transforms+
+      ' / 연구 '+result.pools.research+' / 제조 '+result.pools.recipes+
+      ' / 가정한 이벤트 후보 '+result.pools.eventScenarios+
+      ' · 실제 검사 상태 '+(result.deterministic?.examined||0)+
+      '개 · 탐색 예산 제한 '+(result.searchLimits?.maxDepth||0)+'단계'+
+      (!result.sourceComplete?" · 일부 후보가 예산 밖에 있음":"")+'</p>':"")+
+    '<p class="muted">보장하지 않는 영역: 전투 경험치 성장, 임무 전리품, 구매·건설·모든 이벤트 시계, 향후 RNG, 연구실 프로젝트 실제 노출. 경로 미발견을 확정 상호배제로 해석하지 마세요.</p>';
+}
+function initRouteFinder(){
+  const picker=$("#routeSearchTarget");
+  picker.innerHTML=[...(DATA.transformations||[])].sort((a,b)=>a.koName.localeCompare(b.koName,"ko"))
+    .map(x=>'<option value="'+esc(x.id)+'">'+esc(x.koName+" / "+x.id)+'</option>').join("");
+  $("#routeSearchButton").onclick=async()=>{
+    const proof=selectedSaveProof(),out=$("#routeSearchResult");
+    if(!SAVE||proof?.kind!=="proof"){
+      out.textContent="현재 대원의 연구·재료·변신 경로를 검증하려면 2.1 세이브를 먼저 선택해야 합니다.";
+      return;
+    }
+    const goal=picker.value;
+    if(!DATA.transformations.some(x=>x.id===goal)){
+      out.textContent="목표 변신의 원본 규칙을 찾을 수 없습니다.";return;
+    }
+    out.textContent="실제 저장본의 연구·이벤트·기지 재료와 변신 순서를 대조하는 중입니다.";
+    // Yield a paint before bounded CPU search. No external request or upload.
+    await new Promise(resolve=>setTimeout(resolve,0));
+    try{
+      const world=routeFinderWorld(proof);
+      const result=searchChronologicalRoute(DATA,world,{soldierId:"selected",
+        goals:[goal],maxStates:170,maxDepth:10,maxAttempts:3400});
+      showRouteSearchResult(result);
+    }catch(e){
+      out.textContent="자동 경로 판정 불완전: "+e.message;
+    }
+  };
+  picker.onchange=()=>{
+    $("#routeSearchResult").textContent="목표 변신이 변경되었습니다. 현재 세이브로 다시 경로를 계산할 수 있습니다.";
+  };
+}
 function initTransformationPlanner(){
   $("#plannerProfile").onchange=()=>{previousTransformations=[];render()};
   $("#addTransformation").onclick=()=>{
@@ -162,6 +251,7 @@ async function load(){
   const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
   if(["profiles","soldiers","transformations"].includes(params.get("dataset")))$("#dataset").value=params.get("dataset");
   renderSummary();
+  renderRareMapLootProof($("#rareMapLootProof"),DATA);
   const futureComparison=initFutureComparison(DATA);
   initBaselineGrowthComparison(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
@@ -170,6 +260,7 @@ async function load(){
     else if(!save)$("#plannerMonth").value="";
     futureComparison?.setSave(save);
     CURRENT_PROOF=proof;
+    $("#routeSearchResult").textContent=save?"대원이 변경되었습니다. 목표 변신을 선택해 경로를 자동 탐색할 수 있습니다.":"세이브를 불러오면 연구·기지 재료와 변신 순서를 검증합니다.";
     previousTransformations=[];
     if(proof?.kind==="proof"){
       $("#family").value=proof.state.soldierType;
@@ -178,6 +269,7 @@ async function load(){
     render();
   });
   initTransformationPlanner();
+  initRouteFinder();
   render();
   const deepProfile=params.get("profile");
   if(deepProfile&&DATA.profiles.some(p=>p.id===deepProfile)){
