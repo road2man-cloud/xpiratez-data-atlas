@@ -50,6 +50,12 @@ function haveFunctions(world,required){
   return missing.length?"필수 기지 기능 미확인: "+missing.join(", "):null;
 }
 function grantResearch(world,id,data,method="research",options={}){
+  // The cascade must begin with the state BEFORE the source finished.
+  // Feeding the post-completion disabled set back into the simulator can
+  // erase a valid queue or apply the source's side effects twice.
+  const beforeResearch={researched:new Set(world.researched),disabled:new Set(world.disabled),
+    items:world.items,baseFunctions:world.baseFunctions,
+    activeResearch:world.activeResearch};
   const result=researchStep(world,id,data.researchRules||{},{method,...options});
   if(result.kind!=="applied")return fail(result.kind,result.reason);
   world.researched=result.state.researched;world.disabled=result.state.disabled;
@@ -61,11 +67,7 @@ function grantResearch(world,id,data,method="research",options={}){
   if(world.autoZeroEvidence===true && world.items!=null &&
       world.baseFunctions instanceof Set && world.activeResearch instanceof Set &&
       result.repeatRun!==true){
-    const before={researched:new Set(world.researched),disabled:new Set(world.disabled),
-      items:world.items,baseFunctions:world.baseFunctions,
-      activeResearch:world.activeResearch};
-    before.researched.delete(id);
-    const chain=inspectAutoZeroCascade(data,id,before,{
+    const chain=inspectAutoZeroCascade(data,id,beforeResearch,{
       inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:180});
     if(chain.kind==="conditional"&&!chain.incomplete&&
         !chain.steps.some(s=>s.freeRewardPending&&s.kind==="auto-zero")){
