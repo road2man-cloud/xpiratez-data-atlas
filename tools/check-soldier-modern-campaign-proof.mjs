@@ -51,6 +51,18 @@ test("automatic zero-cost flags require explicit complete base evidence and stay
     [{type:"research",id:"SOURCE"}],data);
   assert(!unknownProjects.world.researched.has("PROTECTED"));
 });
+test("reenabled zero-cost topic is evaluated from the source's pre-completion state",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,reenables:["Z"]},
+    Z:{cost:0,dependencies:["SOURCE"]}
+  }};
+  const result=verifyCampaignSequence(world({disabled:new Set(["Z"]),
+    activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(result.kind,"conditional");
+  assert(result.world.researched.has("Z"));
+  assert(!result.world.disabled.has("Z"));
+});
 test("chronological research A -> transform -> research B preserves history",()=>{
   const result=verifyCampaignSequence([
     ],[],synthetic); // intentionally empty route baseline
