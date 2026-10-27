@@ -3,6 +3,7 @@
 // research/event/production/transformation/armor gates in that order.
 // It never proves that RNG, unknown missions or future item drops will occur.
 import {researchStep,eventScriptVerdict} from "./event-chronology.js";
+import {inspectAutoZeroCascade} from "./auto-zero-cascade.js";
 import {eligibleTransformation,applyTransformation} from "./eligibility.js";
 const arr=x=>Array.isArray(x)?x:[];
 const has=(set,id)=>set instanceof Set?set.has(id):arr(set).includes(id);
@@ -21,6 +22,8 @@ function cloneWorld(w){
     otherItems:w.otherItems==null?null:{...w.otherItems},
     globalFacilities:w.globalFacilities==null?null:new Set(w.globalFacilities),
     generatedEvents:w.generatedEvents==null?null:{...w.generatedEvents},
+    activeResearch:w.activeResearch==null?null:new Set(w.activeResearch),
+    autoZeroEvidence:w.autoZeroEvidence===true,
     pendingFree:w.pendingFree?{source:w.pendingFree.source,
       choices:[...w.pendingFree.choices],sequential:!!w.pendingFree.sequential}:null,
     soldiers:arr(w.soldiers).map(cloneMember)};
@@ -50,14 +53,46 @@ function grantResearch(world,id,data,method="research",options={}){
   const result=researchStep(world,id,data.researchRules||{},{method,...options});
   if(result.kind!=="applied")return fail(result.kind,result.reason);
   world.researched=result.state.researched;world.disabled=result.state.disabled;
+  // A candidate cascade is never a witness by itself. Replay only when the
+  // caller attests a complete same-base snapshot, and refuse truncated queues,
+  // unknown active projects and random free-result chains.
+  const autoNotes=[];
+  let autoAssumed=false;
+  if(world.autoZeroEvidence===true && world.items!=null &&
+      world.baseFunctions instanceof Set && world.activeResearch instanceof Set &&
+      result.repeatRun!==true){
+    const before={researched:new Set(world.researched),disabled:new Set(world.disabled),
+      items:world.items,baseFunctions:world.baseFunctions,
+      activeResearch:world.activeResearch};
+    before.researched.delete(id);
+    const chain=inspectAutoZeroCascade(data,id,before,{
+      inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:180});
+    if(chain.kind==="conditional"&&!chain.incomplete&&
+        !chain.steps.some(s=>s.freeRewardPending&&s.kind==="auto-zero")){
+      for(const zero of chain.steps.slice(1)){
+        // Re-check each queued item against the final evidence snapshot;
+        // applying a partial or inconsistent candidate is forbidden.
+        if(world.disabled.has(zero.id)||world.researched.has(zero.id))continue;
+        const rule=data.researchRules?.[zero.id];
+        if(!rule||Number(rule.cost)!==0)continue;
+        world.researched.add(zero.id);
+        for(const drop of arr(rule.disables)){
+          world.researched.delete(drop);world.disabled.add(drop);
+        }
+        for(const enable of arr(rule.reenables))world.disabled.delete(enable);
+        autoAssumed=true;
+        autoNotes.push("조건부 자동 연구 큐(엔진 실행 미검증): "+zero.id+" ← "+zero.queuedBy);
+      }
+    }
+  }
   // OXCE selects a free topic when THIS source research is completed.
   // A completed source in an old save is not a reusable free-research voucher.
   world.pendingFree=method!=="free"&&result.randomFreeCandidates?.length?{
     source:id,choices:[...result.randomFreeCandidates],
     sequential:data.researchRules?.[id]?.sequentialGetOneFree===true
   }:null;
-  return {kind:"applied",assumed:false,notes:result.randomFreeCandidates?.length?
-    ["연구 종료 후 별도로 추첨되는 무료 연구 후보 "+result.randomFreeCandidates.join(", ")]:[]};
+  return {kind:"applied",assumed:autoAssumed,notes:[...autoNotes,...(result.randomFreeCandidates?.length?
+    ["연구 종료 후 별도로 추첨되는 무료 연구 후보 "+result.randomFreeCandidates.join(", ")]:[])]};
 }
 function eventResearch(world,step,data){
   if(world.disabled.has(step.research))

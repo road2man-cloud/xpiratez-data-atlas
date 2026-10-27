@@ -27,6 +27,30 @@ function world(extra={}){
     baseFunctions:new Set(),generatedEvents:{},funds:500,score:0,difficulty:0,
     soldiers:[{id:"S",state:member,commendations:{}}],...extra};
 }
+test("automatic zero-cost flags require explicit complete base evidence and stay conditional",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,unlocks:["PROTECTED"]},GUARD:{cost:5},
+    PROTECTED:{cost:0,requires:["GUARD"],dependencies:["OTHER"]},
+    SAMPLE:{cost:0,dependencies:["SOURCE"],needItem:true,neededItem:"SPECIMEN"}
+  }};
+  const base=world({researched:new Set(["GUARD"]),items:{SPECIMEN:1}});
+  const without=verifyCampaignSequence(base,[{type:"research",id:"SOURCE"}],data);
+  assert(!without.world.researched.has("PROTECTED"));
+  const withEvidence=verifyCampaignSequence(world({researched:new Set(["GUARD"]),
+    items:{SPECIMEN:1},activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(withEvidence.kind,"conditional");
+  assert(withEvidence.world.researched.has("PROTECTED"));
+  assert(withEvidence.world.researched.has("SAMPLE"));
+  const missingSample=verifyCampaignSequence(world({researched:new Set(["GUARD"]),
+    items:{},activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert(!missingSample.world.researched.has("SAMPLE"));
+  const unknownProjects=verifyCampaignSequence(world({researched:new Set(["GUARD"]),
+    items:{SPECIMEN:1},autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert(!unknownProjects.world.researched.has("PROTECTED"));
+});
 test("chronological research A -> transform -> research B preserves history",()=>{
   const result=verifyCampaignSequence([
     ],[],synthetic); // intentionally empty route baseline
