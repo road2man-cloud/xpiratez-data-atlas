@@ -23,7 +23,10 @@ const fixed=[
 ];
 const chunkDir="public/data/weapon-chunks";
 const chunks=fs.existsSync(chunkDir)?fs.readdirSync(chunkDir).filter(x=>x.endsWith(".json")).map(x=>path.join(chunkDir,x)):[];
-const paths=[...fixed,...chunks];
+const selected=process.argv.find(x=>x.startsWith("--only="))?.slice("--only=".length);
+const allPaths=[...fixed,...chunks];
+const paths=selected?allPaths.filter(x=>x.endsWith("/"+selected+".json")):allPaths;
+if(selected&&!paths.length)throw new Error("Unknown compressed asset selection: "+selected);
 if(process.argv.includes("--check")){
   let total=0,compressed=0;
   for(const p of paths){

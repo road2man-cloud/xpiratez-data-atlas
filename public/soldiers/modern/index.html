@@ -32,6 +32,17 @@
     </table></div>
   </section>
 
+  <details class="card baseline-growth" id="baselineGrowthCompare">
+    <summary>일반 갈 vs 반 슈퍼변이체 농부 · 장기 전투 성장 상계 직접 비교</summary>
+    <p>현재 병종에서 변신하기 전까지 무기한 경험치를 얻는다고 가정할 때의 <strong>엔진 성장 상계</strong>입니다. 특성·훈장·장비 수치, 미래 변신, 별도 이벤트 강화는 합산하지 않습니다. 모든 상계를 동시에 획득하거나 실제로 성장시킬 수 있다는 뜻이 아닙니다.</p>
+    <div id="baselineGrowthSummary" class="comparison-summary"></div>
+    <div class="table-shell"><table id="baselineGrowthTable">
+      <thead><tr><th>능력치</th><th>일반 갈 성장캡</th><th>일반 갈 전투 상계</th><th>일반 갈 체력훈련 상계</th><th>반 슈퍼변이체 농부 성장캡</th><th>농부 전투 상계</th><th>농부 체력훈련 상계</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="muted">전투 주능력치는 경험치 정산 한 번에 최대 6 상승하고, 보조 능력치는 정산 직전에 상한 미만이었다면 상한을 1 초과할 수 있습니다. 특정 방어구의 임무 종료 추가 성장 규칙과 Psi 해금 조건은 별도 유의사항입니다. 더 높은 능력치를 주는 영구 강화 또는 다른 병종으로의 전환은 아래 순서 조합기에서 계산합니다.</p>
+  </details>
+
   <section class="save-inspector card" aria-label="실제 세이브 기반 자동 판정">
     <h2>35_.sav 등 실제 세이브 자동 판정</h2>
     <p>세이브의 연구 완료·영구 폐쇄 상태, 현재 기지 재료·시설, 대원의 변신 이력·계급·훈장·능력치를 <strong>브라우저 내부에서 자동 대조</strong>합니다. 세이브는 업로드·저장되지 않습니다.</p>
@@ -88,7 +99,13 @@
   <section id="transformationPlanner" class="explain card" hidden>
     <strong>변신 경로 상호배제 검증</strong>
     <span>선택된 대원의 실제 이력과 변신 실행 순서로 재판정합니다. 완성되지 않은 조건은 가능한 것으로 확정하지 않으며, ‘현재 즉시 실행’은 세이브의 기지 자원까지 자동 대조합니다.</span>
-    <div class="planner-controls"><label for="plannerProfile">획득형</label><select id="plannerProfile"></select><label for="previousTransformation">실행할 변신</label><select id="previousTransformation"></select><button id="addTransformation" type="button">순서대로 적용</button><button id="clearTransformations" type="button">변신 초기화</button><label class="check"><input id="compatibleOnly" type="checkbox"> 적용 불가능한 변신 숨김</label></div>
+    <div class="planner-controls"><label for="plannerProfile">획득형</label><select id="plannerProfile"></select><label for="plannerMonth">게임 경과 월</label><input id="plannerMonth" type="number" min="0" max="999" step="1" placeholder="미지정" style="width:6.5em" title="세이브를 가져오면 월 수가 자동 입력됩니다. 미지정 시 이벤트 종료 여부가 미증명으로 남습니다"><label for="previousTransformation">실행할 변신</label><select id="previousTransformation"></select><button id="addTransformation" type="button">순서대로 적용</button><button id="clearTransformations" type="button">변신 초기화</button><label class="check"><input id="compatibleOnly" type="checkbox"> 적용 불가능한 변신 숨김</label></div>
+    <div class="planner-controls growth-controls">
+      <strong>미래 성장 단계 (가정)</strong>
+      <button id="addBattleGrowth" type="button">반복 전투 성장 잠재치 추가</button>
+      <button id="addPhysicalGrowth" type="button">반복 체력훈련 잠재치 추가</button>
+      <span class="muted">성장 단계와 변신을 원하는 순서대로 배치합니다. 이 단계는 실제 실행 내역이 아닌 장기 성장 상한의 가정이며, 해당 성장량을 획득했다는 증거가 아닙니다.</span>
+    </div>
     <div id="transformationHistory" class="planner-history"></div>
     <span id="transformationVerdict" class="muted"></span>
     <details class="stat-envelope-panel" id="statEnvelopePanel" open>

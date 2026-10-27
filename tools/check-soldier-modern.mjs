@@ -34,6 +34,11 @@ test("83 transformation rules, 72 acquisition profiles, complete research index"
   assert.ok(Object.keys(data.researchRules).length>4600);
   assert.ok(Object.keys(data.itemSupply).length>0);
 });
+test("vanilla XCOM research inheritance is tracked without resurrecting Piratez deletions",()=>{
+  assert.equal(Object.keys(data.researchRules).length,4654);
+  assert.match(data.meta.source.standardResearch.sha256,/^[a-f0-9]{64}$/);
+  assert.equal(data.researchRules.STR_HEAVY_PLASMA,undefined);
+});
 test("every transformation carries engine qualification fields",()=>{
   const fields=["requiredItems","requiredCommendations","requiredMinStats","requiredMaxStats",
     "allowsLiveSoldiers","allowsWoundedSoldiers","allowsDeadSoldiers","needsCorpseRecovered",
@@ -99,6 +104,36 @@ test("reset clears old history and transformation bonus, then adds new history",
   assert.ok(!second.history.has("A"));assert.ok(second.history.has("R"));
   assert.ok(!second.bonusIds.has("BONUS"));
 });
+test("same bonus from two transformations survives removal of only one source",()=>{
+  const a=rule("SOURCE_A",{soldierBonusType:"BONUS"});
+  const b=rule("SOURCE_B",{soldierBonusType:"BONUS"});
+  const remove=rule("REMOVE_A",{removeTransformations:["SOURCE_A"]});
+  const d={...mini,transformations:[a,b,remove],
+    bonuses:[{id:"BONUS",stats:{firing:10}}]};
+  let st=state();
+  st=applyTransformation(a,st,d,{mode:"current",funds:1000}).state;
+  st=applyTransformation(b,st,d,{mode:"current",funds:1000}).state;
+  assert.equal(st.bonusCounts.get("BONUS"),2);
+  st=applyTransformation(remove,st,d,{mode:"current",funds:1000}).state;
+  assert.equal(st.bonusCounts.get("BONUS"),1);
+  assert(st.bonusIds.has("BONUS"));
+  assert(!st.history.has("SOURCE_A")&&st.history.has("SOURCE_B"));
+});
+test("acquisition bonus persists if another source of same bonus is removed",()=>{
+  const a=rule("TEMP",{soldierBonusType:"BONUS"});
+  const remove=rule("REMOVE",{removeTransformations:["TEMP"]});
+  const d={...mini,transformations:[a,remove]};
+  let st=state();st.bonusCounts=new Map([["BONUS",1]]);st.bonusIds=new Set(["BONUS"]);
+  st=applyTransformation(a,st,d,{mode:"current",funds:1000}).state;
+  st=applyTransformation(remove,st,d,{mode:"current",funds:1000}).state;
+  assert.equal(st.bonusCounts.get("BONUS"),1);
+  assert(st.bonusIds.has("BONUS"));
+});
+test("protected free research explicitly records source and guard",()=>{
+  const v=researchPlan(["STR_DARK_STAR"],data.researchRules,{researched:["STR_CODEX_RED"]});
+  assert.equal(v.kind,"conditional");
+  assert(v.conditions.some(x=>x.includes("STR_CODEX_RED + STR_SHADOW_CHASING")));
+});
 test("clone branches start with their own history and traits",()=>{
   const a=rule("A"),c=rule("CLONE",{createsClone:true,soldierBonusType:"BONUS"});
   const earlier=applyTransformation(a,state(),mini,{mode:"current",funds:1000000}).state;
@@ -160,7 +195,7 @@ test("current base, item, research gates are not inferred from future",()=>{
 test("ordered research history differs from simultaneous transformation requirements",()=>{
   const rules={A:{cost:5,disables:["B"]},B:{cost:5}};
   const p=researchPlan(["A","B"],rules);
-  assert.equal(p.kind,"viable","sequential research plan can complete B then A");
+  assert.equal(p.kind,"conditional","static B then A order alone does not prove future execution");
   assert.ok(p.order.indexOf("B")<p.order.indexOf("A"));
   assert.equal(researchPlan(["A","B"],rules,{goalSemantics:"simultaneous"}).kind,"blocked",
     "the transformation requires BOTH still-discovered research flags");

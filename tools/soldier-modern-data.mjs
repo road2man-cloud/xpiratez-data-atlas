@@ -167,7 +167,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       requires:Array.isArray(entry.requires)?entry.requires:[],
       requiresBaseFunc:Array.isArray(entry.requiresBaseFunc)?entry.requiresBaseFunc:[],
       initialStatsBeforeTraits:initial,currentStatsBeforeTraits:current,
-      traitNames,traits:bonusDetails(traitNames),traitStats,
+      traitNames,traitCounts:Object.fromEntries(Object.entries(template.transformationBonuses||{}).filter(([id,n])=>bonusByName.has(id)&&Number(n)>0).map(([id,n])=>[id,Math.trunc(Number(n))])),traits:bonusDetails(traitNames),traitStats,
       effectiveStats:effective,rawStatCaps:caps.raw,effectiveStatCaps:caps.effective,trainingStatCaps:readStats(soldier.trainingStatCaps),
       initialStatsOverride:template.initialStats??null,currentStatsOverride:template.currentStats??null,
       previousTransformations:template.previousTransformations??{},
@@ -277,17 +277,55 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   const eventScripts=Array.isArray(effectiveMerged.eventScripts)?effectiveMerged.eventScripts:[];
   const eventScriptMatches=new Map();
   for(const script of eventScripts){
-    const outputs=new Set([script.type]);
-    for(const group of Object.values(script.eventWeights||{}))
-      if(group&&typeof group==="object"&&!Array.isArray(group))
-        for(const event of Object.keys(group))outputs.add(event);
-    for(const id of [...(Array.isArray(script.oneTimeSequentialEvents)?script.oneTimeSequentialEvents:[]),
-      ...(Array.isArray(script.oneTimeRandomEvents)?script.oneTimeRandomEvents:[])])
-      if(typeof id==="string")outputs.add(id);
-    for(const id of outputs){
-      const found=eventScriptMatches.get(id)||new Set();
-      if(typeof script.type==="string")found.add(script.type);
-      eventScriptMatches.set(id,found);
+    const sources=new Map();
+    const monthWeights=Object.entries(script.eventWeights||{}).map(([month,table])=>({
+      month:Number(month),weights:table||{},
+      totalWeight:Object.values(table||{}).reduce((n,w)=>n+Math.max(0,Number(w)||0),0)
+    })).sort((a,b)=>a.month-b.month);
+    const add=(event,mode,weight=1,order=null)=>{
+      if(typeof event!=="string"||!(Number(weight)>0))return;
+      sources.set(event+"|"+mode,{event,mode,weight:Number(weight),order});
+    };
+    for(const table of monthWeights)for(const [id,weight] of Object.entries(table.weights))
+      add(id,"weighted",weight);
+    (Array.isArray(script.oneTimeSequentialEvents)?script.oneTimeSequentialEvents:[])
+      .forEach((id,idx)=>add(id,"oneTimeSequential",1,idx));
+    for(const [id,weight] of Object.entries(script.oneTimeRandomEvents||{}))
+      add(id,"oneTimeRandom",weight);
+    for(const source of sources.values()){
+      const route={
+        script:script.type,mode:source.mode,
+        monthWeights:source.mode==="weighted"?monthWeights.map(t=>({
+          month:t.month,weight:Number(t.weights[source.event]||0),totalWeight:t.totalWeight
+        })):[],
+        oneTimeEarlier:source.mode==="oneTimeSequential"
+          ?(script.oneTimeSequentialEvents||[]).slice(0,source.order):[],
+        oneTimeWeight:source.mode==="oneTimeRandom"?source.weight:null,
+        oneTimeTotal:source.mode==="oneTimeRandom"
+          ?Object.values(script.oneTimeRandomEvents||{}).reduce((n,w)=>n+Math.max(0,Number(w)||0),0):null,
+        firstMonth:script.firstMonth??0,lastMonth:script.lastMonth??null,
+        executionOdds:script.executionOdds??100,
+        researchPositive:Object.keys(script.researchTriggers||{}).filter(id=>script.researchTriggers[id]===true),
+        researchNegative:Object.keys(script.researchTriggers||{}).filter(id=>script.researchTriggers[id]===false),
+        itemPositive:Object.keys(script.itemTriggers||{}).filter(id=>script.itemTriggers[id]===true),
+        itemNegative:Object.keys(script.itemTriggers||{}).filter(id=>script.itemTriggers[id]===false),
+        facilityPositive:Object.keys(script.facilityTriggers||{}).filter(id=>script.facilityTriggers[id]===true),
+        facilityNegative:Object.keys(script.facilityTriggers||{}).filter(id=>script.facilityTriggers[id]===false),
+        soldierTypePositive:Object.keys(script.soldierTypeTriggers||{}).filter(id=>script.soldierTypeTriggers[id]===true),
+        soldierTypeNegative:Object.keys(script.soldierTypeTriggers||{}).filter(id=>script.soldierTypeTriggers[id]===false),
+        regionPositive:Object.keys(script.xcomBaseInRegionTriggers||{}).filter(id=>script.xcomBaseInRegionTriggers[id]===true),
+        regionNegative:Object.keys(script.xcomBaseInRegionTriggers||{}).filter(id=>script.xcomBaseInRegionTriggers[id]===false),
+        countryPositive:Object.keys(script.xcomBaseInCountryTriggers||{}).filter(id=>script.xcomBaseInCountryTriggers[id]===true),
+        countryNegative:Object.keys(script.xcomBaseInCountryTriggers||{}).filter(id=>script.xcomBaseInCountryTriggers[id]===false),
+        pactPositive:Object.keys(script.pactCountryTriggers||{}).filter(id=>script.pactCountryTriggers[id]===true),
+        pactNegative:Object.keys(script.pactCountryTriggers||{}).filter(id=>script.pactCountryTriggers[id]===false),
+        otherConditions:Object.fromEntries(["minFunds","maxFunds","minScore","maxScore",
+          "minDifficulty","maxDifficulty","counterMin","counterMax","missionVarName",
+          "missionMarkerName"].filter(k=>script[k]!==undefined).map(k=>[k,script[k]]))
+      };
+      const found=eventScriptMatches.get(source.event)||[];
+      found.push(route);
+      eventScriptMatches.set(source.event,found);
     }
   }
   const eventResearchSources={};
@@ -295,9 +333,11 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     if(typeof event?.name!=="string")continue;
     for(const id of Array.isArray(event.researchList)?event.researchList:[]){
       if(typeof id!=="string"||!researchRules[id])continue;
+      const scripts=eventScriptMatches.get(event.name)||[];
       (eventResearchSources[id]??=[]).push({
-        event:event.name,
-        scriptIds:[...(eventScriptMatches.get(event.name)||[])].slice(0,8)
+        event:event.name,resultMode:"oneRandomResearch",
+        choiceCount:event.researchList.length,
+        scriptIds:[...new Set(scripts.map(s=>s.script))].slice(0,8),scripts
       });
     }
   }
@@ -312,6 +352,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       soldierTypes:x.units.filter(id=>soldierIds.has(id)),
       storeItem:x.storeItem??null,requires:Array.isArray(x.requires)?x.requires:[],
       stats:readStats(x.stats),weight:x.weight??null,
+      extraSecondaryGrowthPercent:Number(x.tags?.ARMOR_GAINS_EXTRA_SECONDARY_STATS_PERCENT)||0,
       frontArmor:x.frontArmor??0,sideArmor:x.sideArmor??0,
       rearArmor:x.rearArmor??0,underArmor:x.underArmor??0,
       sourceFiles:sourceHistory["type:"+x.type]||[]
@@ -327,6 +368,16 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     ...transformationIndex.flatMap(x=>Object.keys(x.requiredItems||{})),
     ...armorCatalog.map(x=>x.storeItem).filter(id=>id&&id!=="STR_NONE")
   ]);
+  // Follow direct materials of future equippable/transform-required items.
+  // Do not infer that a supply path's existence guarantees its ingredients.
+  for(let depth=0;depth<2;depth++)for(const m of (Array.isArray(effectiveMerged.manufacture)?effectiveMerged.manufacture:[])){
+    const outputs=new Set(Object.keys(m.producedItems||{}));
+    if(!outputs.size&&!m.spawnedItem&&!(m.randomProducedItems||[]).length)outputs.add(m.name);
+    for(const row of (Array.isArray(m.randomProducedItems)?m.randomProducedItems:[]))
+      if(Number(row?.[0])>0)for(const id of Object.keys(row?.[1]||{}))outputs.add(id);
+    if([...outputs].some(id=>neededItems.has(id)))
+      for(const ingredient of Object.keys(m.requiredItems||{}))neededItems.add(ingredient);
+  }
   const baseFacilityFunctions=Object.fromEntries((Array.isArray(effectiveMerged.facilities)?effectiveMerged.facilities:[])
     .filter(x=>typeof x?.type==="string")
     .map(x=>[x.type,{
@@ -338,16 +389,49 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   for(const id of neededItems){
     const it=(Array.isArray(effectiveMerged.items)?effectiveMerged.items:[]).find(x=>x?.type===id);
     const recipes=(Array.isArray(effectiveMerged.manufacture)?effectiveMerged.manufacture:[])
-      .filter(x=>Number(x?.producedItems?.[id])>0)
-      .map(x=>({id:x.name,quantity:x.producedItems[id],requires:x.requires??[],
-        requiresBaseFunc:x.requiresBaseFunc??[],requiredItems:x.requiredItems??{},cost:x.cost??0}));
+      .filter(x=>Number(x?.producedItems?.[id])>0||
+        (x?.name===id&&!Object.keys(x.producedItems||{}).length&&
+          !(x.randomProducedItems||[]).length&&!x.spawnedItem))
+      .map(x=>({id:x.name,quantity:Number(x.producedItems?.[id])||1,
+        implicit:x.name===id&&!Object.keys(x.producedItems||{}).length,
+        requires:x.requires??[],requiresBaseFunc:x.requiresBaseFunc??[],
+        requiredItems:x.requiredItems??{},cost:x.cost??0}));
+    const randomManufacture=(Array.isArray(effectiveMerged.manufacture)?effectiveMerged.manufacture:[])
+      .flatMap(m=>{
+        const draws=Array.isArray(m.randomProducedItems)?m.randomProducedItems:[];
+        const totalWeight=draws.reduce((n,row)=>n+Math.max(0,Number(row?.[0])||0),0);
+        return draws.filter(row=>Number(row?.[0])>0&&Number(row?.[1]?.[id])>0)
+          .map(row=>({id:m.name,count:row[1][id],weight:row[0],weightTotal:totalWeight,
+            requires:m.requires||[],requiredItems:m.requiredItems||{},
+            requiresBaseFunc:m.requiresBaseFunc||[]}));
+      });
+    const researchGrants=(Array.isArray(effectiveMerged.research)?effectiveMerged.research:[])
+      .filter(r=>r.spawnedItem===id||(Array.isArray(r.spawnedItemList)&&r.spawnedItemList.includes(id)))
+      .map(r=>({research:r.name,count:r.spawnedItem===id?Math.max(1,Number(r.spawnedItemCount)||1):1}));
+    const eventGrants=[];
+    for(const event of events){
+      const grants=[];
+      if((event.everyItemList||[]).includes(id))grants.push({mode:"every",count:1});
+      if(Number(event.everyMultiItemList?.[id])>0)grants.push({mode:"everyMulti",count:event.everyMultiItemList[id]});
+      if((event.randomItemList||[]).includes(id))grants.push({mode:"randomOneOf",choices:event.randomItemList.length});
+      if(Number(event.weightedItemList?.[id])>0)grants.push({mode:"weighted",weight:event.weightedItemList[id]});
+      for(const group of (Array.isArray(event.randomMultiItemList)?event.randomMultiItemList:[]))
+        if(Number(group?.[id])>0)grants.push({mode:"randomMulti",count:group[id],choices:event.randomMultiItemList.length});
+      if(grants.length)eventGrants.push({event:event.name,grants,
+        scriptIds:[...new Set((eventScriptMatches.get(event.name)||[]).map(s=>s.script))]});
+    }
     itemSupply[id]={exists:!!it,buyCost:it?.costBuy??0,
       buyRequires:it?.requires??[],buyRequirements:it?.buyRequirements??[],
-      manufacture:recipes};
+      manufacture:recipes,randomManufacture,researchGrants,eventGrants};
   }
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,
     soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,researchRules,eventResearchSources,itemSupply,armorCatalog,commendationIndex,baseFacilityFunctions,woundThresholds,
+    growthRules:{
+      manaPrimary:effectiveMerged.mana?.trainingPrimary??false,
+      manaSecondary:effectiveMerged.mana?.trainingSecondary??false,
+      maxTaggedArmorSecondaryPercent:Math.max(0,...armorCatalog.map(x=>x.extraSecondaryGrowthPercent))
+    },
     counts:{soldiers:soldiers.length,soldierProfiles:profiles.length,soldierTransformations:transformationIndex.length,soldierBonuses:bonusIndex.length,soldierArmors:armorCatalog.length,soldierMedals:Object.keys(commendationIndex).length,soldierResourceFields:Object.values(resourceDetails).reduce((s,x)=>s+x.effective.length,0)}
   };
 }

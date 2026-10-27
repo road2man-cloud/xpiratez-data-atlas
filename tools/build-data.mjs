@@ -21,6 +21,8 @@ const modRoot=path.resolve(source);
 const rulesDir=path.join(modRoot,"Ruleset");
 const langDir=path.join(modRoot,"Language");
 const metadataPath=path.join(modRoot,"metadata.yml");
+const standardResearchPath=path.resolve(arg("--standard-research",
+  path.join(modRoot,"..","..","..","standard","xcom1","research.rul")));
 for(const p of [rulesDir,langDir,metadataPath]) if(!fs.existsSync(p)) throw new Error("Missing X-Piratez source: "+p);
 
 const read=p=>fs.readFileSync(p,"utf8").replace(/^\uFEFF/,"");
@@ -47,12 +49,13 @@ function identityOf(x){
 function mergeSection(oldValue,newValue){
   if(!Array.isArray(oldValue)||!Array.isArray(newValue)) return deepMerge(oldValue,newValue);
   const out=[...oldValue], pos=new Map();
-  out.forEach((x,i)=>{const id=identityOf(x);if(id)pos.set(id,i)});
+  const rebuild=()=>{pos.clear();out.forEach((x,i)=>{const id=identityOf(x);if(id)pos.set(id,i)})};
+  rebuild();
   for(const x of newValue){
     if(x&&typeof x==="object"&&!Array.isArray(x)&&typeof x.delete==="string"){
       const target=x.delete;
       const idx=out.findIndex(y=>y&&typeof y==="object"&&Object.values(y).includes(target));
-      if(idx>=0)out.splice(idx,1);
+      if(idx>=0){out.splice(idx,1);rebuild();}
       continue;
     }
     const id=identityOf(x);
@@ -63,6 +66,17 @@ function mergeSection(oldValue,newValue){
 }
 
 const merged={}, sourceHistory={};
+// Vanilla XCOM research loads before Piratez; honor Piratez "delete:" entries.
+// Without this, 25 live inherited research topics are absent from 2.1 paths.
+const hasStandardResearch=fs.existsSync(standardResearchPath);
+if(args.includes("--soldiers-modern-only")&&!hasStandardResearch)
+  throw new Error("Required standard xcom1 research missing: "+standardResearchPath);
+if(hasStandardResearch){
+  const vanilla=loadYaml(standardResearchPath).flatMap(doc=>Array.isArray(doc.research)?doc.research:[]);
+  merged.research=[...vanilla];
+  for(const r of vanilla)if(typeof r?.name==="string")
+    (sourceHistory["name:"+r.name]||=[]).push("standard/xcom1/research.rul");
+}
 for(const file of ruleFiles){
   const full=path.join(rulesDir,file);
   for(const doc of loadYaml(full)){
@@ -114,6 +128,7 @@ if(args.includes("--soldiers-modern-only")){
     mod:{name:META.name||"X-Piratez",version:META.version,id:META.id||"piratez",
       requiredExtendedVersion:META.requiredExtendedVersion||null},
     source:{metadataSha256:sha256(metadataPath),
+      standardResearch:hasStandardResearch?{file:"standard/xcom1/research.rul",sha256:sha256(standardResearchPath)}:null,
       rules:ruleFiles.map(file=>({file,sha256:sha256(path.join(rulesDir,file))}))}};
   fs.writeFileSync(modernOut,JSON.stringify({meta,...data}));
   console.log("Modern 2.1 soldiers: "+JSON.stringify({

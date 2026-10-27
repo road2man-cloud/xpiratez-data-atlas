@@ -42,6 +42,16 @@ try{
   await page.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
+  await page.locator("#baselineGrowthCompare summary").click();
+  assert.equal(await page.locator("#baselineGrowthTable tbody tr").count(),12);
+  assert.equal((await page.locator('[data-gal-cap="firing"]').innerText()).trim(),"120");
+  assert.equal((await page.locator('[data-half-cap="firing"]').innerText()).trim(),"120");
+  assert((await page.locator('[data-gal-battle="firing"]').innerText()).includes("125"));
+  assert.equal((await page.locator('[data-half-battle="firing"]').innerText()).trim(),"60 ~ 125");
+  assert.equal((await page.locator('[data-half-physical="firing"]').innerText()).trim(),"60 ~ 85");
+  assert.equal((await page.locator('[data-half-battle="health"]').innerText()).trim(),"45 ~ 56");
+  assert((await page.locator("#baselineGrowthSummary").innerText()).includes("41종"));
+  console.log("PASS Gal vs half-super-peasant 12-stat baseline battle growth cap vs gym training, 41 tagged armors");
   await page.waitForFunction(()=>document.querySelector("#futureCompareSummary")?.textContent?.includes("반 슈퍼변이체 농부: 확정 제외 45개"));
   assert.equal(await page.locator("#futureCompareTable tbody tr").count(),28);
   await page.locator("#futureDifferentOnly").uncheck();
@@ -53,6 +63,18 @@ try{
   await page.waitForFunction(()=>document.querySelector("#transformationVerdict")?.textContent?.includes("확정 제외 45개 (병종 계보 43 · 내부 전용 2 · 이력·선행 불가 0)"));
   assert.equal(await page.locator("#soldierTable tbody tr").count(),83);
   console.log("PASS 2.1 modern browser: 83 transformations / 43 body-only plus 2 internal-only Gal exclusions");
+  await page.locator("#plannerMonth").fill("6");
+  await page.locator("#plannerMonth").dispatchEvent("change");
+  await page.locator('#soldierTable tbody tr[data-row="STR_WEIRDGAL_TRANSFORMATION"]').evaluate(el=>el.click());
+  const eventSummary=page.locator("#detailDialog summary").filter({hasText:"연구 직접 지급 이벤트"});
+  assert.equal(await eventSummary.count(),1,"transformation research event proof must be visible after row activation");
+  await eventSummary.click();
+  const eventText=await page.locator("#detailDialog").innerText();
+  assert(eventText.includes("STR_PSI_INITIATION"),"research event gate uses real source IDs");
+  assert(eventText.includes("월별 가중치")||eventText.includes("이벤트 보상"),
+    "time-aware event evidence should be rendered");
+  await page.locator("#detailDialog #closeDialog").click();
+  console.log("PASS actual X-Piratez research-event month and exclusivity evidence visible in modern detail");
 
   await page.goto(origin+"/soldiers/modern/?profile=manufacture%3ASTR_HALF_UBER_GIRL_RECRUITMENT");
   await page.waitForSelector("#detailDialog[open]",{timeout:30000});
@@ -82,6 +104,27 @@ try{
   await page.locator("#clearTransformations").click();
   assert.equal((await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim(),"60");
   console.log("PASS OXCE 12-stat minimum/maximum interval: half-super-peasant revolutionary firing 45..70 health 39..54, reset to source");
+  assert.equal((await page.locator('#statEnvelopeContent [data-cap="firing"]').innerText()).trim(),"120");
+  assert.equal((await page.locator('#statEnvelopeContent [data-training-cap="firing"]').innerText()).trim(),"85");
+  await page.locator("#addBattleGrowth").click();
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim(),"60 ~ 125");
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="health"]').innerText()).trim(),"45 ~ 56");
+  assert((await page.locator("#transformationHistory").innerText()).includes("향후 반복 전투 성장 가정"));
+  await page.locator("#previousTransformation").selectOption("STR_REVOLUTIONARY_TRAINING");
+  await page.locator("#addTransformation").click();
+  const battleThenRevolution=(await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim();
+  await page.locator("#clearTransformations").click();
+  await page.locator("#previousTransformation").selectOption("STR_REVOLUTIONARY_TRAINING");
+  await page.locator("#addTransformation").click();
+  await page.locator("#addBattleGrowth").click();
+  const revolutionThenBattle=(await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim();
+  assert.notEqual(battleThenRevolution,revolutionThenBattle,"growth and percentage-transform order MUST differ");
+  await page.locator("#clearTransformations").click();
+  await page.locator("#addPhysicalGrowth").click();
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="firing"]').innerText()).trim(),"60 ~ 85");
+  assert.equal((await page.locator('#statEnvelopeContent [data-stat="health"]').innerText()).trim(),"45");
+  console.log("PASS source-linked combat / physical growth stages, 120 vs 85 firing caps, 125 vs 85 theoretical upper and order-sensitive transformation");
+  await page.locator("#clearTransformations").click();
 
   await page.goto(origin+"/soldiers/modern/");
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("실제 획득형"));

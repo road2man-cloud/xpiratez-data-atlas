@@ -4,7 +4,10 @@ import {loadRuntime} from "../../db-runtime.js";
 import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
 import {initFutureComparison} from "./compare-ui.js";
 import {createStatEnvelope,advanceStatEnvelope} from "./stat-envelope.js";
+import {eventScriptVerdict} from "./event-chronology.js";
 import {renderStatEnvelope} from "./stat-envelope-ui.js";
+import {GROWTH_PHASES,growStatEnvelope} from "./growth-envelope.js";
+import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
 let previousTransformations=[];
@@ -20,7 +23,7 @@ function analysisOptions(){
   const current=!!CURRENT_PROOF&&$("#analysisMode").value==="current"&&!previousTransformations.length;
   return {...base,mode:current?"current":"future",statEnvelope:PLANNER_BOUNDS};
 }
-function transformationName(id){return DATA?.transformations?.find(x=>x.id===id)?.koName||id}
+function transformationName(id){return GROWTH_PHASES[id]||DATA?.transformations?.find(x=>x.id===id)?.koName||id}
 function initPlannerState(){
   PLANNER_BOUNDS=null;
   const profile=$("#plannerProfile").value||"base:"+($("#family").value||"STR_SOLDIER");
@@ -29,6 +32,17 @@ function initPlannerState(){
   let bounds=createStatEnvelope(DATA,profile,{state:CURRENT_PROOF?state:null});
   PLANNER_ISSUES=CURRENT_PROOF?.kind==="proof"?[...CURRENT_PROOF.issues]:[];
   for(let i=0;i<previousTransformations.length;i++){
+    const phase=previousTransformations[i];
+    if(Object.prototype.hasOwnProperty.call(GROWTH_PHASES,phase)){
+      if(state.retired||state.status!=="healthy"){
+        PLANNER_ISSUES.push((i+1)+"단계 "+GROWTH_PHASES[phase]+" · 건강·현역 여부 미충족");
+        continue;
+      }
+      bounds=growStatEnvelope(bounds,state,DATA,phase);
+      state={...state,exactStats:false,remarks:[...state.remarks,
+        "미래 전투/체력훈련 성장 가정: 달성 여부·소요 시간 미확정"]};
+      continue;
+    }
     const row=DATA.transformations.find(x=>x.id===previousTransformations[i]);
     if(!row){PLANNER_ISSUES.push("규칙에 없는 이력: "+previousTransformations[i]);continue;}
     const step=applyTransformation(row,state,DATA,{...analysisOptions(),mode:"future",statEnvelope:bounds});
@@ -82,6 +96,10 @@ function renderTransformationPlanner(){
     '>'+esc(x.koName+" ["+(v.kind==="blocked"?"계보상 제외":step.kind==="blocked"?"선행 필요":step.kind==="conditional"?"근거 미확정":"현재 충족")+"]")+'</option>').join("");
   const preferred=candidates.find(x=>x.x.id===old&&selectAllowed(x));
   if(preferred)sel.value=old;else if(candidates.some(selectAllowed))sel.value=candidates.find(selectAllowed).x.id;
+  const canGrow=PLANNER_BOUNDS?.kind==="ready"&&
+    !PLANNER_STATE.retired&&PLANNER_STATE.status==="healthy";
+  $("#addBattleGrowth").disabled=!canGrow;
+  $("#addPhysicalGrowth").disabled=!canGrow;
   const selection=DATA.transformations.find(x=>x.id===sel.value);
   const selectionVerdict=selection?eligibleTransformation(selection,PLANNER_STATE,DATA,analysisOptions()):{kind:"blocked"};
   $("#addTransformation").disabled=!selection||selectionVerdict.kind==="blocked"||
@@ -116,7 +134,14 @@ function initTransformationPlanner(){
     }
   };
   $("#clearTransformations").onclick=()=>{previousTransformations=[];render()};
+  $("#addBattleGrowth").onclick=()=>{
+    previousTransformations.push("@BATTLE_GROWTH");render();
+  };
+  $("#addPhysicalGrowth").onclick=()=>{
+    previousTransformations.push("@PHYS_TRAINING");render();
+  };
   $("#compatibleOnly").onchange=render;
+  $("#plannerMonth").onchange=render;
   $("#transformationHistory").onclick=e=>{
     const b=e.target.closest("[data-remove-index]");
     if(b){previousTransformations.splice(Number(b.dataset.removeIndex),1);render()}
@@ -138,8 +163,11 @@ async function load(){
   if(["profiles","soldiers","transformations"].includes(params.get("dataset")))$("#dataset").value=params.get("dataset");
   renderSummary();
   const futureComparison=initFutureComparison(DATA);
+  initBaselineGrowthComparison(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
     SAVE=save;
+    if(save?.monthsPassed!=null)$("#plannerMonth").value=String(save.monthsPassed);
+    else if(!save)$("#plannerMonth").value="";
     futureComparison?.setSave(save);
     CURRENT_PROOF=proof;
     previousTransformations=[];
@@ -258,7 +286,8 @@ function render(){
     if(sort.key===key)sort.dir*=-1;else sort={key,dir:key==="name"?1:-1};
     render();
   }));
-  document.querySelectorAll("tbody tr").forEach(el=>el.addEventListener("click",()=>openDetail(el.dataset.row)));
+  // Table rows are replaced on every filter/render; handle clicks on the stable
+  // tbody instead of attaching to every transient row (or another table).
 }
 function sourceBadges(r){
   let s='<span class="tag">'+(sourceLabel[r.sourceType]||r.sourceType)+'</span>';
@@ -335,9 +364,12 @@ function armorRouteSummary(armor){
   const supply=DATA.itemSupply?.[armor.storeItem];
   if(!supply?.exists)return "아이템 경로가 확인되지 않음";
   const sources=[];
-  if(supply.buyCost>0)sources.push("구매 "+fmt(supply.buyCost));
-  if(supply.manufacture?.length)sources.push("제조 "+supply.manufacture.length+"경로");
-  return (sources.length?sources.join(" / "):"전리품·이벤트 등 획득 경로")+
+  if(supply.buyCost>0)sources.push("구매 규칙 "+fmt(supply.buyCost));
+  if(supply.manufacture?.length)sources.push("제조법 "+supply.manufacture.length+"개 (재료·연구 미검증)");
+  if(supply.randomManufacture?.length)sources.push("확률 제조 "+supply.randomManufacture.length+"경로");
+  if(supply.researchGrants?.length)sources.push("연구 지급 "+supply.researchGrants.length+"경로");
+  if(supply.eventGrants?.length)sources.push("이벤트 보상 "+supply.eventGrants.length+"경로");
+  return (sources.length?sources.join(" / "):"획득 경로 미증명 · 전리품 별도 조사")+
     ((armor.requires||[]).length?" · 필수 연구 "+armor.requires.join(", "):"");
 }
 function armorProfilePreview(profileId){
@@ -356,6 +388,44 @@ function armorProfilePreview(profileId){
   return '<section class="armor-preview"><h3>미래 방어구 단일 슬롯별 최대 보정 후보</h3>'+
     '<p class="muted">동일 대원은 방어구를 한 벌만 착용합니다. 아래 각 능력치의 1위 방어구는 서로 다를 수 있어 동시 합산할 수 없습니다. 연구·제조·전리품 획득을 보장하지 않으므로 최종 능력치에는 확정 반영하지 않습니다.</p>'+
     '<div class="detail-grid">'+cards.join("")+'</div></section>';
+}
+function eventGateDetails(ids){
+  const sources=[...new Set(ids||[])].flatMap(id=>(DATA.eventResearchSources?.[id]||[]).map(route=>({id,route})));
+  if(!sources.length)return "";
+  const opts=analysisOptions();
+  const researched=new Set(opts.researched||[]),disabled=new Set(opts.disabled||[]);
+  const monthRaw=$("#plannerMonth").value;
+  const month=monthRaw===""?null:Number(monthRaw);
+  const lines=sources.slice(0,24).map(({id,route})=>{
+    const scripts=route.scripts||[];
+    const html=scripts.slice(0,7).map(script=>{
+      const verdict=eventScriptVerdict({...script,eventId:route.event},{
+        month,researched,disabled,
+        // Imported saves have partial item/one-time history, so DO NOT assert
+        // their absence. Unknown inputs remain conditional.
+        items:null,facilities:null,generatedEvents:null
+      },{mode:"future"});
+      const label=verdict.kind==="blocked"?"경로 차단":
+        verdict.kind==="eligible"?"입력 조건 일치":"미확정 · 조건부";
+      const conditions=[...verdict.blocked,...verdict.pending,...verdict.unknown];
+      const weight=verdict.weight===null?"월별 가중치 미확인":
+        "월별 가중치 "+verdict.weight+"/"+verdict.totalWeight;
+      return '<div class="box"><strong>'+esc(script.script)+' · '+esc(label)+'</strong>'+
+        '<p class="muted">'+esc(weight)+' · 실행 시도 확률 '+esc(script.executionOdds)+'%'+
+        ' · '+esc(script.mode)+'</p>'+
+        '<p>필수 연구 '+esc((script.researchPositive||[]).join(", ")||"없음")+
+        ' · 금지 연구 '+esc((script.researchNegative||[]).join(", ")||"없음")+'</p>'+
+        conditions.slice(0,8).map(x=>'<p class="muted">'+esc(x)+'</p>').join("")+
+        (conditions.length>8?'<p class="muted">추가 조건 '+(conditions.length-8)+'개</p>':"")+
+        '</div>';
+    }).join("")||'<p class="muted">관련 월간 이벤트 발생 스크립트를 찾지 못했습니다. 미증명 상태입니다.</p>';
+    return '<section><h3>'+esc(id)+' ← '+esc(route.event)+'</h3>'+
+      '<p class="muted">이 이벤트의 연구 보상 '+route.choiceCount+'개 중 1개를 추첨. 보상 목록은 확정 획득 증거가 아닙니다.</p>'+html+'</section>';
+  }).join("");
+  return '<details class="technical"><summary>연구 직접 지급 이벤트 · 시간순 상호배제 '+sources.length+'경로</summary>'+
+    '<p>현재 비교 월: '+(month===null?"미지정":month+"개월")+
+    ' · 세이브는 이 화면의 판정에만 사용합니다. 무작위 이벤트·임무·아이템 공급은 미증명으로 유지합니다.</p>'+
+    lines+(sources.length>24?'<p class="muted">나머지 '+(sources.length-24)+'개 경로는 데이터에 보존되어 있습니다.</p>':"")+'</details>';
 }
 function openDetail(encoded){
   const r=findRow(encoded);if(!r)return;
@@ -409,6 +479,7 @@ function openDetail(encoded){
     deltaGrid("현재 능력치 비율 (%)",r.percentOverallStatChange);
     html+='<p class="muted">변신 이후 병종 '+esc(r.producedSoldierType||"유지")+' · 이력 초기화 '+(r.reset?"예":"아니요")+' · 복제 '+(r.createsClone?"예":"아니요")+'</p>';
     html+='<div class="detail-grid"><div class="box"><strong>필요 연구</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>필수 이전 변환</strong>'+(r.requiredPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>금지 이전 변환</strong>'+(r.forbiddenPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
+    html+=eventGateDetails(r.requires);
   }
   $("#detailBody").innerHTML=html;
   $("#detailBody").querySelectorAll("[data-profile]").forEach(b=>b.onclick=()=>openDetail(encodeURIComponent(b.dataset.profile)));
@@ -419,6 +490,10 @@ function openDetail(encoded){
 function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
 
 ["search","dataset","family","statView","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",render));
+$("#soldierTable tbody").addEventListener("click",e=>{
+  const row=e.target.closest("tr[data-row]");
+  if(row&&e.currentTarget.contains(row))openDetail(row.dataset.row);
+});
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
 load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+err.message+'</span></article>';console.error(err)});

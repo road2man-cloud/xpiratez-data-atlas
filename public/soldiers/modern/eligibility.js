@@ -10,14 +10,18 @@ const copies=x=>Object.fromEntries(Object.entries(x||{}).map(([k,v])=>[k,v]));
 const reverseResearchCache=new WeakMap();
 function reverseResearch(rules){
   if(reverseResearchCache.has(rules))return reverseResearchCache.get(rules);
-  const bypass=new Map(),reenablers=new Map();
+  const bypass=new Map(),reenablers=new Map(),protectedBypass=new Map();
   const add=(map,id,source)=>{if(typeof id!=="string")return;const set=map.get(id)||new Set();set.add(source);map.set(id,set);};
   for(const [source,rule] of Object.entries(rules)){
     for(const id of [...arr(rule.unlocks),...arr(rule.getOneFree)])add(bypass,id,source);
-    for(const value of Object.values(rule.getOneFreeProtected||{}))for(const id of typeof value==="string"?[value]:arr(value))add(bypass,id,source);
+    for(const [guard,value] of Object.entries(rule.getOneFreeProtected||{}))for(const id of typeof value==="string"?[value]:arr(value)){
+      add(bypass,id,source);
+      const group=protectedBypass.get(id)||[];
+      group.push({source,guard});protectedBypass.set(id,group);
+    }
     for(const id of arr(rule.reenables))add(reenablers,id,source);
   }
-  const index={bypass,reenablers};reverseResearchCache.set(rules,index);return index;
+  const index={bypass,reenablers,protectedBypass};reverseResearchCache.set(rules,index);return index;
 }
 export function researchPlan(ids,rules={},options={}){
   // This is a conservative research *feasibility* plan. Engine
@@ -44,6 +48,8 @@ export function researchPlan(ids,rules={},options={}){
     visiting.add(id);
     const hard=arr(rule.requires);
     const possibleUnlocks=[...(rev.bypass.get(id)||[])];
+    const protectedRoutes=rev.protectedBypass.get(id)||[];
+    if(protectedRoutes.length)uncertain.push(id+" · 조건부 무료 연구는 원천 연구와 보호 조건을 완료한 뒤 재연구/추첨 필요: "+protectedRoutes.map(x=>x.source+" + "+x.guard).join(" / "));
     const deps=possibleUnlocks.length?[]:arr(rule.dependencies);
     if(possibleUnlocks.length&&arr(rule.dependencies).length){
       uncertain.push(id+"의 직접 선행 또는 우회 해금: "+possibleUnlocks.slice(0,4).join(", "));
@@ -56,6 +62,7 @@ export function researchPlan(ids,rules={},options={}){
     if(rule.needItem)warnings.push(id+" · 연구 표본 "+(rule.neededItem||id));
     if(arr(rule.requiresBaseFunc).length)warnings.push(id+" · 기지 기능 "+rule.requiresBaseFunc.join(", "));
     if(num(rule.cost)===0)uncertain.push(id+" · 자동·이벤트 연구 발생 시점");
+    if(!prior.has(id))uncertain.push(id+" · 실제 미래 완료 및 획득 순서 미증명");
   }
   for(const id of goal)gather(id);
   // A completed research may have disabled a requested NEW research even if
@@ -145,12 +152,14 @@ export function initialState(data,profileOrType,{band="avg",status="healthy",ran
   const starting=profile?.currentStatsBeforeTraits?.[band]||soldier?.[band+"Stats"]||{};
   const initial=profile?.initialStatsBeforeTraits?.[band]||profile?.initialStats?.[band]||starting;
   const originalHistory=profile?.previousTransformations||{};
+  const bonusCounts=new Map(Object.entries(profile?.traitCounts||{}).filter(([,n])=>num(n)>0).map(([id,n])=>[id,num(n)]));
+  for(const id of arr(profile?.traitNames))if(!bonusCounts.has(id))bonusCounts.set(id,1);
   return {
     soldierType,sourceId:profile?.id||null,
     armorId:profile?.armor||soldier?.armor||null,
     status,corpseRecovered:false,rank:rank??profile?.rank??0,
     initialStats:copies(initial),currentStats:copies(starting),
-    exactStats:false,bonusIds:new Set(arr(profile?.traitNames)),
+    exactStats:false,bonusCounts,bonusIds:new Set(bonusCounts.keys()),
     history:new Map(Object.entries(originalHistory).filter(([,n])=>num(n)>0)),
     researchIds:new Set(),steps:[],retired:false,
     remarks:[]
@@ -376,19 +385,29 @@ export function applyTransformation(rule,oldState,data,options={}){
   const verdict=eligibleTransformation(rule,oldState,data,options);
   if(verdict.kind==="blocked")return {state:oldState,verdict};
   const clone=!!rule.createsClone;
-  const s={...oldState,history:new Map(clone?[]:oldState.history),bonusIds:new Set(clone?[]:oldState.bonusIds),
+  const existingCounts=oldState.bonusCounts instanceof Map
+    ?oldState.bonusCounts:new Map([...(oldState.bonusIds||[])].map(id=>[id,1]));
+  const s={...oldState,history:new Map(clone?[]:oldState.history),
+    bonusCounts:new Map(clone?[]:existingCounts),bonusIds:new Set(clone?[]:oldState.bonusIds),
     researchIds:new Set([...oldState.researchIds,...arr(rule.requires)]),steps:[...oldState.steps,rule.id],
     remarks:[...oldState.remarks]};
-  if(rule.reset){s.history.clear();s.bonusIds.clear();}
+  if(rule.reset){s.history.clear();s.bonusCounts.clear();}
   else for(const removed of arr(rule.removeTransformations)){
-    if(s.history.has(removed)){
+    const count=num(s.history.get(removed));
+    if(count>0){
       s.history.delete(removed);
-      const prevRule=data.transformations?.find(x=>x.id===removed);
-      if(prevRule?.soldierBonusType)s.bonusIds.delete(prevRule.soldierBonusType);
+      const previous=data.transformations?.find(x=>x.id===removed);
+      if(previous?.soldierBonusType){
+        const id=previous.soldierBonusType;
+        const remaining=num(s.bonusCounts.get(id))-count;
+        if(remaining>0)s.bonusCounts.set(id,remaining);else s.bonusCounts.delete(id);
+      }
     }
   }
   if(!clone)s.history.set(rule.id,(s.history.get(rule.id)||0)+1);
-  if(rule.soldierBonusType)s.bonusIds.add(rule.soldierBonusType);
+  if(rule.soldierBonusType)
+    s.bonusCounts.set(rule.soldierBonusType,num(s.bonusCounts.get(rule.soldierBonusType))+1);
+  s.bonusIds=new Set(s.bonusCounts.keys());
   const estimate=statChangeEngineEstimate(rule,oldState,data);
   s.currentStats=estimate.stats;
   if(clone)s.initialStats=copies(s.currentStats); // Soldier::setBothStats on the newborn clone.

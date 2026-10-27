@@ -4,6 +4,7 @@ import {importModernSave,modernSoldierProof} from "../public/soldiers/modern/sav
 import {eligibleTransformation,battleStatsWithEquipment,initialState,structuralTransformationVerdict} from "../public/soldiers/modern/eligibility.js";
 import {assessCampaignResearch} from "../public/soldiers/modern/comparison.js";
 import {createStatEnvelope,effectiveEnvelope} from "../public/soldiers/modern/stat-envelope.js";
+import {growStatEnvelope} from "../public/soldiers/modern/growth-envelope.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
 const text=fs.readFileSync("tools/fixtures/modern-2.1-test.sav","utf8");
 const fixture=importModernSave(text,data);
@@ -50,7 +51,7 @@ if(realPath){
   assert.equal(real.personnel.bases.reduce((n,b)=>n+b.soldiers.length,0),53);
   assert.equal(real.research.disabled.length,44);
   assert(real.funds!==null);
-  let checked=0,exactRaw=0,unverifiedRaw=0,displayedWithEquipment=0;
+  let checked=0,exactRaw=0,unverifiedRaw=0,displayedWithEquipment=0,overcapStats=0;
   for(let b=0;b<real.personnel.bases.length;b++)
     for(let s=0;s<real.personnel.bases[b].soldiers.length;s++){
       const ps=modernSoldierProof(data,real,b,s);
@@ -63,6 +64,16 @@ if(realPath){
           assert.equal(bounds.low[k],ps.state.currentStats[k],
             "real save must never substitute random starting-body stats");
           assert.equal(bounds.high[k],ps.state.currentStats[k]);
+        }
+        const future=growStatEnvelope(bounds,ps.state,data,"@BATTLE_GROWTH");
+        assert.equal(future.kind,"ready");
+        const classRules=data.soldiers.find(x=>x.id===ps.state.soldierType);
+        for(const k of data.statKeys){
+          assert(future.high[k]>=ps.state.currentStats[k],
+            "never delete a preexisting overcap stat during an estimated future-growth phase");
+          assert.equal(future.low[k],ps.state.currentStats[k],
+            "future growth phase must not falsely imply the soldier has already grown");
+          if(ps.state.currentStats[k]>classRules.statCaps[k])overcapStats++;
         }
         const gear=effectiveEnvelope(bounds,ps.state,data,ps.options);
         if(gear.kind==="ready")displayedWithEquipment++;
@@ -91,9 +102,11 @@ if(realPath){
   assert.equal(flags["base:STR_SOLDIER"].nominal,7);
   assert.equal(flags["manufacture:STR_HALF_UBER_GIRL_RECRUITMENT"].nominal,4);
   assert.equal(exactRaw+unverifiedRaw,checked);
+  assert.equal(overcapStats,48,"existing battle/transform overcap values must be preserved");
   console.log("PASS optional local 2.1 save QA: "+checked+
     " soldiers; "+exactRaw+" exact raw stat envelopes, "+unverifiedRaw+
     " conservatively unverified, "+displayedWithEquipment+
-    " one-armor/medal-aware previews; 38/38 structural candidates research-checked, 7/4 nominal conflicts never mislabeled as final exclusions; private data not exported");
+    " one-armor/medal-aware previews; "+overcapStats+
+    " preexisting above-cap stat instances preserved; 38/38 structural candidates research-checked, 7/4 nominal conflicts never mislabeled as final exclusions; private data not exported");
 }
 console.log("PASS modern 2.1 local save import, version lock, research, funds, class, automatic evidence, missing-source safeguards");
