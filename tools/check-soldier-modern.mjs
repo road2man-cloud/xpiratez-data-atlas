@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {initialState,eligibleTransformation,applyTransformation,researchPlan,findTransformationPath,availableSoldierArmors,battleStatsWithEquipment} from "../public/soldiers/modern/eligibility.js";
+import {initialState,eligibleTransformation,applyTransformation,researchPlan,findTransformationPath,availableSoldierArmors,battleStatsWithEquipment,reachableSoldierTypes} from "../public/soldiers/modern/eligibility.js";
 
 const dataPath=process.argv[2]||"public/data/soldiers-modern-index.json";
 const data=JSON.parse(fs.readFileSync(dataPath,"utf8"));
@@ -96,6 +96,30 @@ test("vital status, corpse requirement, and rank rules",()=>{
   assert.equal(check(rule("PROMO",{minRank:2})).kind,"blocked");
   assert.equal(future(rule("PROMO",{minRank:2})).kind,"conditional");
 });
+test("level-zero medals require an actual owned medal, not a fabricated zero",()=>{
+  const medal=rule("ZERO_MEDAL",{requiredCommendations:{RARE:0}});
+  assert.equal(check(medal).kind,"blocked","absent medal is not decoration level 0");
+  assert.equal(check(medal,state(),mini,{commendations:{RARE:-1}}).kind,"blocked");
+  assert.equal(check(medal,state(),mini,{commendations:{RARE:0}}).kind,"eligible");
+  assert.equal(check(medal,state(),mini,{commendations:{RARE:3}}).kind,"eligible");
+  assert.equal(check(medal,state(),mini,{commendations:{},medalsKnown:false}).kind,"conditional");
+  const real=data.transformations.filter(t=>Object.values(t.requiredCommendations||{}).includes(0));
+  assert.deepEqual(real.map(t=>t.id).sort(),[
+    "STR_SIVALINGA_RESURRECTION","STR_SLEEPING_BEAUTY_REVIVAL","STR_SWIFTPAW_TRAINING"
+  ]);
+});
+test("STR_UNAVAILABLE permanently excludes the three internal-only projects",()=>{
+  const internal=data.transformations.filter(t=>t.requires.includes("STR_UNAVAILABLE"));
+  assert.deepEqual(internal.map(t=>t.id).sort(),[
+    "STR_CAREER_SOLDIER","STR_LONE_WOLF","STR_THEBAN_ASSAULT_CLONE"
+  ]);
+  assert.equal(researchPlan(["STR_UNAVAILABLE"],data.researchRules).kind,"blocked");
+  for(const t of internal){
+    const s=initialState(data,"base:"+t.allowedSoldierTypes[0]);
+    assert.equal(future(t,s,data).kind,"blocked",t.id);
+    assert.equal(check(t,s,data,{researched:["STR_UNAVAILABLE"]}).kind,"blocked",t.id);
+  }
+});
 test("minimum and maximum stats, bonuses, and commendations",()=>{
   let s=state();s.currentStats.firing=45;s.bonusIds=new Set(["BONUS"]);
   mini.bonuses=[{id:"BONUS",stats:{firing:5}}];
@@ -166,11 +190,13 @@ test("automatic future research route is never presented as guaranteed",()=>{
   const witness=findTransformationPath("P",state(),mini);
   assert.equal(witness.kind,"conditional");
 });
-test("body-only engine closure proves 43 Gal-only exclusions",()=>{
+test("body-only closure proves 43 exclusions plus 2 additional internal-only Gal projects",()=>{
   const s=initialState(data,"base:STR_SOLDIER");
+  const bodies=reachableSoldierTypes(data,s.soldierType);
+  assert.equal(data.transformations.filter(t=>!(t.allowedSoldierTypes||[]).some(id=>bodies.has(id))).length,43);
   const paths=data.transformations.map(x=>findTransformationPath(x.id,s,data,{maxDepth:8,maxNodes:300}));
-  assert.equal(paths.filter(x=>x.kind==="blocked").length,43);
-  assert.equal(paths.filter(x=>x.kind==="conditional").length,40);
+  assert.equal(paths.filter(x=>x.kind==="blocked").length,45);
+  assert.equal(paths.filter(x=>x.kind==="conditional").length,38);
   assert.equal(paths.filter(x=>x.kind==="unknown").length,0);
   assert.ok(paths.find((_,i)=>data.transformations[i].id==="STR_HONOMORED_WARRIOR_TRAINING")==null||
     paths.length===83);
@@ -207,6 +233,15 @@ test("template merge zero keeps rolled stats in Rogue and Theban clone",()=>{
   }
 });
 test("current and initial profile stats are distinct for earned-gain percentages",()=>{
+  const divergent={...mini,profiles:[{
+    id:"profile:divergent",soldierType:"GAL",traitNames:[],initialStats:{avg:{firing:40}},
+    currentStatsBeforeTraits:{avg:{firing:70}},previousTransformations:{}
+  }]};
+  const sample=initialState(divergent,"profile:divergent");
+  assert.equal(sample.currentStats.firing,70);
+  assert.equal(sample.initialStats.firing,40);
+  const ratio=rule("GAIN",{percentGainedStatChange:{firing:50}});
+  assert.equal(applyTransformation(ratio,{...sample,exactStats:true},divergent,{mode:"current",funds:1000}).state.currentStats.firing,85);
   for(const p of data.profiles.filter(x=>x.initialStatsOverride)){
     assert.ok(p.initialStatsBeforeTraits?.avg,"initial stats not available for "+p.id);
     const st=initialState(data,p.id);
@@ -269,11 +304,22 @@ test("duplicate commendation and transformation bonus rule is counted once",()=>
   const st=state();st.currentStats.firing=40;st.bonusIds=new Set(["BONUS"]);
   assert.equal(battleStatsWithEquipment(st,m,{commendations:{MEDAL:1}}).stats.firing,50);
 });
-test("untrained psi skill cannot be enabled by a soldier bonus",()=>{
+test("psi skill has separate OXCE rules for soldier gate and final battle stats",()=>{
   const m={...mini,bonuses:[{id:"PSI",stats:{psiSkill:20}}]};
   const st=state();st.currentStats.psiSkill=0;st.bonusIds=new Set(["PSI"]);
-  assert.equal(battleStatsWithEquipment(st,m).stats.psiSkill,0);
+  // Soldier::prepareStatsWithBonuses gates psi only on the soldier-only
+  // temporary stats used by training. Battle/all-bonus stats remain +20.
+  assert.equal(battleStatsWithEquipment(st,m).stats.psiSkill,20);
   assert.equal(check(rule("PSI_GATE",{requiredMinStats:{psiSkill:10},includeBonusesForMinStats:true}),st,m).kind,"blocked");
+});
+test("armor and negative soldier bonus add before a SINGLE final floor",()=>{
+  const m={...mini,bonuses:[{id:"NEG",stats:{health:-50,firing:-30}}],
+    armorCatalog:[{id:"SUIT",soldierTypes:["GAL"],stats:{health:30,firing:40}}]};
+  const st=state();st.currentStats.health=20;st.currentStats.firing=10;
+  st.armorId="SUIT";st.bonusIds=new Set(["NEG"]);
+  const combat=battleStatsWithEquipment(st,m);
+  assert.equal(combat.stats.health,1,"health (20-50+30) is clamped once");
+  assert.equal(combat.stats.firing,20,"firing (10-30+40) must NOT pre-clamp");
 });
 test("real armor and commendation catalogs were indexed from rule sources",()=>{
   assert.equal(data.armorCatalog.length,540);

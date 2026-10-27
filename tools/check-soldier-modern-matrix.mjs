@@ -9,10 +9,15 @@ for(const body of data.soldiers){
   const reachable=reachableSoldierTypes(data,body.id);
   const blocked=data.transformations.filter(t=>structuralTransformationVerdict(t,state,data).kind==="blocked");
   for(const row of blocked){
-    assert.ok(!row.allowedSoldierTypes.some(x=>reachable.has(x)),body.id+"/"+row.id+" inconsistent");
+    assert.ok(row.requires.includes("STR_UNAVAILABLE")||
+      !row.allowedSoldierTypes.some(x=>reachable.has(x)),body.id+"/"+row.id+" inconsistent");
     assert.equal(findTransformationPath(row.id,state,data).kind,"blocked");
   }
   summary.push({body:body.id,koName:body.koName,bodyTypes:reachable.size,excluded:blocked.length,
+    bodyOnlyExcluded:data.transformations.filter(t=>
+      !(t.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length,
+    internalOnlyExcluded:blocked.filter(t=>t.requires.includes("STR_UNAVAILABLE")&&
+      t.allowedSoldierTypes.some(id=>reachable.has(id))).length,
     structuralCandidates:data.transformations.length-blocked.length});
   measured+=data.transformations.length;
 }
@@ -34,7 +39,7 @@ const gal=summary.find(x=>x.body==="STR_SOLDIER");
 const half=variantAudit.find(x=>x.id==="manufacture:STR_HALF_UBER_GIRL_RECRUITMENT");
 assert.ok(gal);
 assert.ok(half);
-assert.equal(gal.excluded,43);
+assert.equal(gal.excluded,45);
 assert.equal(half.body,"STR_SOLDIER_PEASANT");
 console.log(JSON.stringify({
   status:"PASS",game:data.meta?.mod?.version,
