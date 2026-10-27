@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import yaml from "js-yaml";
+import {importModernSave} from "../public/soldiers/modern/save-adapter.js";
 import {eventScriptVerdict,evaluateEventResearch,researchStep,replayResearchSequence}
   from "../public/soldiers/modern/event-chronology.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
@@ -111,15 +111,17 @@ test("real red captain saint event requires all positives and absent captain pus
 });
 if(fs.existsSync("C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav"))
 test("real captain saint still gated on actual 35_ save",()=>{
-  const save=yaml.loadAll(fs.readFileSync(
-    "C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav","utf8"))[1];
+  const save=importModernSave(fs.readFileSync(
+    "C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav","utf8"),data);
   const r=data.eventResearchSources.STR_CAPTAIN_SAINT[0];
   const script=r.scripts[0];
   const current=eventScriptVerdict({...script,eventId:r.event},{
     month:save.monthsPassed,
-    researched:new Set(save.discovered),
-    disabled:new Set(Object.entries(save.researchRuleStatus||{}).filter(([,n])=>n===2).map(([id])=>id)),
-    generatedEvents:save.generatedEvents
+    researched:new Set(save.research.completed),
+    disabled:new Set(save.research.disabled),
+    // Generated-event history is not available in this adapter. The verified
+    // red-captain prerequisite still rejects this event independently.
+    generatedEvents:{}
   },{mode:"current"});
   assert.equal(current.kind,"blocked");
   assert(current.blocked.some(x=>x.includes("STR_CAPTAIN_RED")));
