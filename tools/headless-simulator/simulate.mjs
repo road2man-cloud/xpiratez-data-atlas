@@ -53,8 +53,8 @@ export function parseSave(src) {
 }
 function scalar(s) {
   if (/^-?\d+$/.test(s)) return Number(s);
-  const coords = /^\[\s*(-?\d+)\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\]$/.exec(s);
-  if (coords) return coords.slice(1).map(Number);
+  const nums = /^\[\s*-?\d+(?:\s*,\s*-?\d+)*\s*\]$/.test(s);
+  if (nums) return s.slice(1,-1).split(',').map(v=>Number(v.trim()));
   return s.replace(/^["']|["']$/g, '');
 }
 export function loadTerrain(save, root, loftPath) {
