@@ -1,8 +1,15 @@
 name: Native OXCE offline runtime libraries (no game execution)
 on:
   push:
-    branches: [main, fix/native-headless-only-20261028, fix/native-turn-ack-20261028]
-    paths: ['.github/workflows/headless-native-runtime.yml']
+    branches: [main, fix/native-headless-only-20261028, fix/native-turn-ack-20261028, fix/native-fixed-clock-20261028]
+    paths:
+      - '.github/workflows/headless-native-runtime.yml'
+      - 'tools/headless-simulator/run-native.mjs'
+      - 'tools/headless-simulator/prepare-native.mjs'
+      - 'tools/headless-simulator/compare-replays.mjs'
+      - 'tools/headless-simulator/README.md'
+      - 'tools/headless-simulator/native/*.lock.json'
+      - 'tools/headless-simulator/examples/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -83,7 +90,10 @@ jobs:
               (runner/name).write_bytes(data)
               manifest['runnerFiles'][name] = hashlib.sha256(data).hexdigest()
           shutil.copytree(source/'examples', runner/'examples')
-          shutil.copyfile(source/'native/source.lock.json', runner/'expected-native-source.lock.json')
+          for original,target in [('native/source.lock.json','expected-native-source.lock.json'),('native/clock.lock.json','expected-native-clock.lock.json')]:
+              data = (source/original).read_bytes()
+              (runner/target).write_bytes(data)
+              manifest['runnerFiles'][target] = hashlib.sha256(data).hexdigest()
           (root/'runtime-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
           (root/'README.txt').write_text('Native OXCE runtime libraries only. No game engine, assets or save.\nLibraries remain dynamically replaceable. Copyright notices and distribution/source package versions are in licenses/ and runtime-manifest.json. Obtain corresponding Ubuntu source packages with apt-get source SOURCE_PACKAGE=SOURCE_VERSION using the recorded versions and Ubuntu archive source repositories.\nUse only on compatible Linux x86_64 (glibc >= 2.35). Verify library hashes, then set LD_LIBRARY_PATH to this lib directory for the native process only. Do not install over system libraries.\nThis package is not evidence of combat replay or GUI parity.\n')
           print(json.dumps({'libraries':len(libraries),'expandedBytes':sum(x['bytes'] for x in manifest['libraries'].values()),'path':str(root)}))

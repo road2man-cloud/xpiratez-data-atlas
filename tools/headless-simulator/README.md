@@ -36,7 +36,7 @@ Node.js 18+, CMake, C++17 compiler 및 원본 OXCE의 SDL 1.2/zlib 개발 라이
 ```sh
 sudo apt-get update
 sudo apt-get install -y cmake g++ pkg-config libsdl1.2-dev libsdl-image1.2-dev libsdl-gfx1.2-dev libsdl-mixer1.2-dev zlib1g-dev
-node --test tools/headless-simulator/native.test.mjs
+node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native.clock.test.mjs
 node tools/headless-simulator/build-native.mjs /tmp/xpz-native-build 2
 ```
 
@@ -46,11 +46,15 @@ node tools/headless-simulator/build-native.mjs /tmp/xpz-native-build 2
 
 원본 전체 소스·라이선스는 압축본 안에 있습니다. 기본 저장소는 MeridianOXC/OpenXcom이며, 사용자 개발 변경도 스냅샷에 보존했습니다. 설치 폴더나 개발 원본을 덮어쓰지 않습니다.
 
+원본 소스 압축본은 변경하지 않습니다. 현재 빌드는 검증한 압축본을 임시 디렉터리에 푼 뒤 `clock-patch.mjs`와 `native/ReplayClock.h`를 별도로 적용합니다. 이 추가 계층은 `native/clock.lock.json`의 패처·헤더·원본 소스 해시로 고정됩니다. 원본 전투/AI/RNG 파일은 수정하지 않습니다. Windows 체크아웃에서도 지문이 달라지지 않도록 관련 파일의 줄바꿈을 `.gitattributes`로 LF에 고정합니다.
+
 ## 네트워크가 막힌 GPT 환경의 소형 실행 파일 반입
 
 직접 빌드하거나 패키지 저장소에 접속할 수 없으면 GitHub Actions의 성공한 **전체 Linux 빌드**에서 `xpz-native-linux-<commit>` 산출물을 사용합니다. PR의 무결성 테스트 성공만으로 빌드 성공을 판단하지 마세요. `Native OXCE offline runtime libraries` 워크플로는 별도로 `xpz-native-sdl-runtime-linux-x64` 산출물을 제공합니다. 둘 다 게임 데이터와 개인 세이브는 포함하지 않습니다.
 
-GitHub 연결의 `download_workflow_artifact`로 두 ZIP을 받아 실제 GPT 작업 공간에 도착했는지 확인한 뒤 압축을 해제하세요. 실행 파일은 `chmod +x /path/to/bundle/oxce-native`가 필요할 수 있습니다. 아래 실행 명령에 `--runtime /path/to/runtime-bundle`을 추가하면 라이브러리별 SHA-256을 전부 검사하고 **해당 자식 프로세스에만** 라이브러리 경로를 적용합니다. 시스템 라이브러리를 덮어쓰지 않습니다. 이 런타임은 Linux x86_64 / glibc 2.35 이상용이며 다른 플랫폼의 호환성은 검증하지 않았습니다.
+무결성 검사 워크플로는 `xpz-native-source-kit-<commit>`도 제공합니다. 원본 소스 압축본·실행기·검사 코드만 담으며 게임 자산과 개인 세이브는 없습니다. 새 GPT 대화에서 저장소 전체 대신 이 소형 키트를 가져와 Linux의 실제 C++ 타이머 검사까지 재실행할 수 있습니다. **이 키트가 기존 게임 자산 로더 의존성까지 제거한 것은 아닙니다.**
+
+GitHub 연결의 `download_workflow_artifact`로 실행 파일과 런타임 ZIP을 받아 실제 GPT 작업 공간에 도착했는지 확인한 뒤 압축을 해제하세요. 실행 파일은 `chmod +x /path/to/bundle/oxce-native`가 필요할 수 있습니다. 아래 실행 명령에 `--runtime /path/to/runtime-bundle`을 추가하면 라이브러리별 SHA-256을 전부 검사하고 **해당 자식 프로세스에만** 라이브러리 경로를 적용합니다. 시스템 라이브러리를 덮어쓰지 않습니다. 이 런타임은 Linux x86_64 / glibc 2.35 이상용이며 다른 플랫폼의 호환성은 검증하지 않았습니다.
 
 `native-build.json`의 소스·드라이버 해시가 사용할 `native/source.lock.json`과 일치해야 합니다. 압축파일 반입, 라이브러리 검사, 실행 파일 기동, 실제 전투 체크포인트 생성은 각각 별개의 검증 단계입니다. Actions 산출물은 보존기간이 있으므로 만료 시 동일한 소스에서 다시 빌드해야 합니다.
 
@@ -76,6 +80,16 @@ node tools/headless-simulator/run-native.mjs \
 기본 화면 드라이버는 SDL dummy입니다. 필요하면 `--xvfb`로 가상 디스플레이를 명시하세요. 실행에 실패하면 **실패 그대로 보고**하며 대체 시뮬레이터를 호출하지 않습니다.
 
 기본값은 저장된 RNG 보존입니다. `--seed 123`은 원본 OXCE의 RNG를 명시적으로 바꾸는 별도 실험입니다. 원본 동일 시드 재생과 다른 시드에 대한 전술 평가를 혼동하지 마세요.
+
+## 선택적 고정 시간 실험 — 기본값은 기존 실행 방식
+
+새 빌드에서 위 실행 명령에 `--fixed-clock`을 추가하면 `fixed-1ms-v1` 정책을 사용합니다. 원본 `Timer.cpp`의 시간 읽기 두 곳에만 고정 시간 값을 공급하고, 헤드리스 메인 루프마다 1ms씩 진행합니다. 원본 타이머의 간격·프레임 건너뛰기·콜백 순서·전투 계산식은 다시 구현하지 않습니다. 옵션이 없거나 일반 GUI 실행이면 기존 시간 값을 그대로 사용합니다. 이전 실행의 환경변수만으로 이 옵션이 몰래 켜지지 않도록 실행기에서 초기화합니다.
+
+목적은 실제 경과시간에 따라 저장된 프레임 값이 달랐던 원인을 분리하는 것입니다. **시간 진행 방식을 바꾼 실험이므로 결정적 실행이 곧 GUI 동등성을 뜻하지 않습니다.** 이 수정본의 `17.sav` 전체 필드 재현성 및 GUI 대조는 아직 인증하지 않았습니다. 검사 통과를 해당 인증으로 바꾸지 마세요.
+
+`native.clock.test.mjs`는 실제 소스 압축본의 C++ `Timer.cpp`를 컴파일하여 서로 다른 시간 입력에서도 콜백 순서와 횟수가 일치하는지 검사합니다. 주변 SDL/UI 선언만 검사 장치로 대체하며, 이는 **타이머 단위 검사이지 전투 재생이 아닙니다**. 이 C++ 검사는 Linux CI/GPT에서 실행하며 Windows에서는 명시적으로 건너뜁니다.
+
+실행 기록에는 `clockPolicy`와 `clockAdapterSha256`이 남습니다. 비교기는 서로 다른 시간 정책·추가 패치 해시를 섞으면 거부합니다. 저장된 `animFrame`·피격 프레임 항목을 삭제하거나 덮어써 일치한 것처럼 만들지 않으며, 전체 체크포인트 해시 비교를 유지합니다.
 
 ## 현재 명령 프로토콜
 

@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "backend": "OXCE_NATIVE_CLOCK_ADAPTER",
+  "policy": "fixed-1ms-v1",
+  "defaultEnabled": false,
+  "sourceTreeSha256": "a64bb1a2956fb946e44930b1c97437d7fe10ce130029622bf67f332a87d75d4a",
+  "sourceArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "headerSha256": "646b4999b4f505c806dc4dceb7a13d09c8217154a999f6c39a59672d1ef81607",
+  "patcherSha256": "64c5f1e5ad9c1783c77e13bb7fb836bb840fd8ab2fe9a3c2c22e7479ff5de906",
+  "adapterSha256": "7dd734db37fddd0201750826ed146280f08c354c1bf84b651e27da9a53bbc69d",
+  "fullBattleReplayVerified": false,
+  "interactiveParityCertified": false
+}
