@@ -146,6 +146,9 @@ function routeFinderWorld(proof){
     // Facility-only evidence must NOT authorize certified auto completion.
     autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete&&
       proof.facilities.complete&&proof.options.baseFunctionsKnown===true,
+    // Partial facts feed conditional queue search, not hard proof.
+    inventoryKnown:proof.base.itemsComplete,
+    baseFunctionsKnown:proof.options.baseFunctionsKnown===true,
     funds:SAVE.funds,
     evidenceComplete:proof.base.itemsComplete&&proof.state.exactStats&&
       proof.options.medalsKnown&&proof.soldier.historyComplete&&
