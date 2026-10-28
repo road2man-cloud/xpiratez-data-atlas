@@ -111,27 +111,65 @@ test("incomplete base inventory never upgrades model witness to verified",()=>{
     soldierId:"S",goals:["T_A"]});
   assert.equal(p.kind,"conditional");
 });
-const path="C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav";
-if(fs.existsSync(path)){
-  const s=importModernSave(fs.readFileSync(path,"utf8"),actual);
-  const proof=modernSoldierProof(actual,s,0,0);
-  const stock=Object.fromEntries(proof.base.items);
-  const w={month:s.monthsPassed,researched:new Set(s.research.completed),
-    disabled:new Set(s.research.disabled),
-    generatedEvents:s.generatedEvents,items:stock,
-    baseFunctions:new Set(proof.options.baseFunctions),
-    funds:s.funds,evidenceComplete:proof.base.itemsComplete&&
-      proof.state.exactStats&&proof.options.medalsKnown,
-    soldiers:[{id:"real",state:proof.state,commendations:proof.options.commendations}]};
-  const t=actual.transformations.find(x=>x.id==="STR_BASIC_FIREARMS_TRAINING");
-  const p=searchChronologicalRoute(actual,w,{soldierId:"real",
-    goals:[t.id],maxDepth:6,maxStates:80,maxAttempts:1000});
-  assert(["excluded","inconclusive","conditional","witness"].includes(p.kind));
-  if(p.kind==="witness"){
-    const replay=verifyCampaignSequence(w,p.steps,actual);
-    assert.equal(replay.kind,"ruleset-consistent");
+// Private saves are never checked in or tied to a developer's absolute path.
+// Explicitly request a strict local replay with:
+//   XPIRATEZ_SAVE_PATH=<private path> XPIRATEZ_REQUIRE_SAVE=1 node tools/check-soldier-route-finder.mjs
+// Missing evidence must be visible, not silently treated as a passed save test.
+const savePath=process.env.XPIRATEZ_SAVE_PATH||"";
+const requireSave=process.env.XPIRATEZ_REQUIRE_SAVE==="1";
+if(!savePath||!fs.existsSync(savePath)){
+  if(requireSave)throw new Error("Required local campaign save unavailable: set XPIRATEZ_SAVE_PATH to an existing .sav file");
+  console.log("SKIP local campaign save: XPIRATEZ_SAVE_PATH missing or inaccessible (synthetic tests still ran)");
+}else{
+  const s=importModernSave(fs.readFileSync(savePath,"utf8"),actual);
+  const goal="STR_BASIC_FIREARMS_TRAINING";
+  assert(actual.transformations.some(x=>x.id===goal),"missing target training rule");
+  let tested=0;
+  const categories=[
+    {label:"STR_SOLDIER",matches:x=>x.type==="STR_SOLDIER"},
+    {label:"STR_SOLDIER_PEASANT (origin unproven)",
+      matches:x=>x.type==="STR_SOLDIER_PEASANT"},
+    {label:"HALF_UBER_PEASANT (history + bonus confirmed)",
+      matches:x=>x.type==="STR_SOLDIER_PEASANT"&&
+        Number(x.previousTransformations?.STR_UBERIZATION)>0&&
+        Number(x.transformationBonuses?.STR_HALF_UBER)>0}
+  ];
+  for(const category of categories){
+    let choice=null;
+    for(let baseIndex=0;baseIndex<s.personnel.bases.length&&!choice;baseIndex++){
+      const soldierIndex=s.personnel.bases[baseIndex].soldiers
+        .findIndex(category.matches);
+      if(soldierIndex>=0)choice=modernSoldierProof(actual,s,baseIndex,soldierIndex);
+    }
+    if(choice?.kind!=="proof"){
+      console.log("SKIP local save "+category.label+": no matching, fully identified station unit");
+      continue;
+    }
+    const w={month:s.monthsPassed,researched:new Set(s.research.completed),
+      disabled:new Set(s.research.disabled),generatedEvents:s.generatedEvents,
+      items:Object.fromEntries(choice.base.items),
+      activeResearch:choice.base.researchComplete?
+        new Set(choice.base.researchProjects):null,
+      baseFunctions:new Set(choice.options.baseFunctions),funds:s.funds,
+      // Unknown country/region base functions and future RNG cannot certify
+      // a real-game final ability, even when a structural witness is found.
+      autoZeroEvidence:false,evidenceComplete:false,
+      soldiers:[{id:"selected",state:choice.state,
+        commendations:choice.options.commendations}]};
+    const p=searchChronologicalRoute(actual,w,{soldierId:"selected",
+      goals:[goal],maxDepth:6,maxStates:80,maxAttempts:1000});
+    assert(["excluded","inconclusive","conditional","witness"].includes(p.kind));
+    if(p.kind==="witness"){
+      const replay=verifyCampaignSequence(w,p.steps,actual);
+      assert.equal(replay.kind,"ruleset-consistent");
+    }
+    tested++;
+    console.log("PASS private campaign "+category.label+": "+p.kind+
+      "; examined "+(p.deterministic?.examined||0)+
+      "; active research "+(choice.base.researchComplete?"known":"unknown")+
+      "; personal save content not exported");
   }
-  console.log("PASS actual local 35_.sav strict route search: "+p.kind+
-    ", expanded "+(p.deterministic?.examined||0)+" nodes; no save content exported");
+  if(requireSave)assert(tested>0,"required save contains no supported Gal or Peasant sample");
+  console.log("Local campaign samples checked: "+tested+" (never substituted for a named baseline)");
 }
 console.log("PASS bounded chronological witness search: 9 independent synthetic scenarios");
