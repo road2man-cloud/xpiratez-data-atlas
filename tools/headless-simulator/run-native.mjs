@@ -81,7 +81,7 @@ export async function runNative(a) {
     '-newSeedOnLoad','false','-playIntro','false','-useOpenGL','false','-skipNextTurnScreen','true','-soundVolume','0','-musicVolume','0','-uiVolume','0'];
   if(a['--xvfb']) {cmd='xvfb-run';args=['-a',binary,...args];}
   const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
-    binarySha256:manifest.binarySha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
+    binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
   fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify(provenance,null,2)+'\n');
   const log=fs.openSync(path.join(out,'stdout.log'),'wx'),err=fs.openSync(path.join(out,'stderr.log'),'wx');
@@ -112,7 +112,9 @@ export async function runNative(a) {
     c.snapshotSha256=sha256(fs.readFileSync(file));
   }
   const result={backend:'OXCE_NATIVE',planCompleted:true,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
-    sourceTreeSha256:manifest.sourceTreeSha256,inputSaveSha256:inputHash,checkpoints};
+    sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
+    binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
+    seed:provenance.seed,inputSaveSha256:inputHash,checkpoints};
   fs.writeFileSync(path.join(out,'replay-result.json'),JSON.stringify(result,null,2)+'\n');
   return result;
 }

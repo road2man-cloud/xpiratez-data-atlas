@@ -25,10 +25,24 @@ export function patchGame(text) {
   text = text.replace(/\r\n/g, '\n');
   if (text.includes('XPZ_NATIVE_PLAN')) throw new Error('SOURCE_ALREADY_PATCHED');
   const anchor = '\t\t// Process rendering';
-  return '#include <cstdlib>\n' + once(text, anchor,
-    '\t\t// Native headless mode still constructs the original UI/state objects.\n' +
-    '\t\t// Only rendering is omitted; native think(), timers and AI are not replaced.\n' +
-    '\t\tif (std::getenv("XPZ_NATIVE_PLAN"))\n\t\t{\n\t\t\t_states.back()->think();\n\t\t\tSDL_Delay(1);\n\t\t\tcontinue;\n\t\t}\n\n' + anchor, 'game rendering');
+  return '#include <cstdlib>\n#include <typeinfo>\n#include "../Battlescape/NextTurnState.h"\n' + once(text, anchor,
+    '\t\t// Native headless mode constructs and initializes the original UI states.\n' +
+    '\t\t// Combat think(), timers, environmental effects and AI remain original.\n' +
+    '\t\tif (std::getenv("XPZ_NATIVE_PLAN"))\n\t\t{\n' +
+    '\t\t\tState* nativeActive = _states.back();\n' +
+    '\t\t\tstatic State* nativeLastState = nullptr;\n' +
+    '\t\t\tif (nativeActive != nativeLastState)\n\t\t\t{\n' +
+    '\t\t\t\tnativeLastState = nativeActive;\n' +
+    '\t\t\t\tLog(LOG_INFO) << "[XPZ_NATIVE] active state " << typeid(*nativeActive).name();\n\t\t\t}\n' +
+    '\t\t\tnativeActive->think();\n' +
+    '\t\t\t// A turn banner with messages has no auto-close timer. Acknowledge\n' +
+    '\t\t\t// it through its original close handler, exactly as a key press does.\n' +
+    '\t\t\t// Never close a state already popped by its timer or initialization.\n' +
+    '\t\t\tif (!_states.empty() && _states.back() == nativeActive)\n\t\t\t{\n' +
+    '\t\t\t\tif (auto* banner = dynamic_cast<NextTurnState*>(nativeActive))\n\t\t\t\t{\n' +
+    '\t\t\t\t\tLog(LOG_INFO) << "[XPZ_NATIVE] acknowledge NextTurnState";\n' +
+    '\t\t\t\t\tbanner->close();\n\t\t\t\t}\n\t\t\t}\n' +
+    '\t\t\tSDL_Delay(1);\n\t\t\tcontinue;\n\t\t}\n\n' + anchor, 'game rendering');
 }
 function listFiles(root, relative = '') {
   const out = [];

@@ -6,7 +6,11 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 export function compare(a,b){
   for(const r of [a,b])if(r.backend!=='OXCE_NATIVE'||r.planCompleted!==true||!Array.isArray(r.checkpoints)||!r.checkpoints.length)throw new Error('COMPLETE_NATIVE_REPLAY_REQUIRED');
-  for(const k of ['sourceTreeSha256','inputSaveSha256'])if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
+  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','binarySha256','planSha256','configSha256','inputSaveSha256']) {
+    if(!/^[a-f0-9]{64}$/.test(a[k]||'') || !/^[a-f0-9]{64}$/.test(b[k]||''))throw new Error('REPLAY_FINGERPRINT_MISSING: '+k);
+    if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
+  }
+  if(a.seed!==b.seed || a.seed==null)throw new Error('INCOMPARABLE_INPUT: seed');
   const differences=[];
   if(a.checkpoints.length!==b.checkpoints.length)differences.push({field:'checkpointCount',left:a.checkpoints.length,right:b.checkpoints.length});
   for(let i=0;i<Math.min(a.checkpoints.length,b.checkpoints.length);i++){

@@ -1,7 +1,7 @@
 name: Native OXCE offline runtime libraries (no game execution)
 on:
   push:
-    branches: [main, fix/native-headless-only-20261028]
+    branches: [main, fix/native-headless-only-20261028, fix/native-turn-ack-20261028]
     paths: ['.github/workflows/headless-native-runtime.yml']
   workflow_dispatch:
 permissions:
