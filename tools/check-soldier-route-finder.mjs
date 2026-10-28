@@ -88,7 +88,8 @@ test("event already generated cannot be selected even conditionally",()=>{
 });
 test("protected getOneFree is only available on source completion, with RNG marked",()=>{
   const data={...R,researchRules:{
-    SOURCE:{cost:5,getOneFree:["A","B"]},A:{cost:0},B:{cost:0}},
+    SOURCE:{cost:5,getOneFree:["A","B"]},
+    A:{cost:0,dependencies:["NOT_AUTO"]},B:{cost:0,dependencies:["NOT_AUTO"]}},
     transformations:[{...R.transformations[0],requires:["B"]}]};
   const first=searchChronologicalRoute(data,makeWorld(data),{
     soldierId:"S",goals:["T_A"],maxDepth:5});
@@ -99,6 +100,51 @@ test("protected getOneFree is only available on source completion, with RNG mark
     researched:new Set(["SOURCE"])}),{soldierId:"S",goals:["T_A"],maxDepth:5});
   assert.equal(historical.kind,"inconclusive",
     "completed research in save must not fabricate a pending free-research token");
+});
+test("conditional auto-zero queue can unlock a future transformation without certifying it",()=>{
+  const zero={...R,transformations:[{...R.transformations[0],requires:["ZERO"]}],
+    researchRules:{SOURCE:{cost:5},ZERO:{cost:0,dependencies:["SOURCE"]}}};
+  const start=makeWorld(zero,{activeResearch:null,autoZeroEvidence:false,
+    inventoryKnown:false,baseFunctionsKnown:false,evidenceComplete:false});
+  const direct=verifyCampaignSequence(start,[{type:"research",id:"SOURCE"}],zero);
+  assert.equal(direct.kind,"ruleset-consistent");
+  assert(!direct.world.researched.has("ZERO"),
+    "non-search replay must never invent a zero-cost discovery");
+  const candidate=searchChronologicalRoute(zero,start,{soldierId:"S",
+    goals:["T_A"],maxStates:80,maxDepth:4,maxAttempts:180});
+  assert.equal(candidate.kind,"conditional",JSON.stringify(candidate).slice(0,1500));
+  assert.deepEqual(candidate.steps.map(x=>x.type),["research","transform"]);
+  assert(candidate.replay.world.researched.has("ZERO"));
+  assert(candidate.assumptions.some(x=>x.includes("가상 비용 0 연구 연쇄")));
+  assert(!start.autoZeroScenario&&!start.autoZeroEvidence,
+    "conditional search must not mutate the initial save snapshot");
+  const old=searchChronologicalRoute(zero,makeWorld(zero,{
+    researched:new Set(["SOURCE"]),activeResearch:null,evidenceComplete:false
+  }),{soldierId:"S",goals:["T_A"],maxStates:80,maxDepth:3});
+  assert.equal(old.kind,"inconclusive",
+    "old discovered source must not give a retroactive free zero-cost flag");
+});
+test("conditional auto-zero search respects active-project, item and function gates",()=>{
+  const standard={...R,
+    transformations:[{...R.transformations[0],requires:["ZERO"]}],
+    researchRules:{SOURCE:{cost:5},ZERO:{cost:0,dependencies:["SOURCE"]}}};
+  const options={soldierId:"S",goals:["T_A"],maxStates:75,maxDepth:4};
+  const pending=searchChronologicalRoute(standard,makeWorld(standard,{
+    activeResearch:new Set(["ZERO"]),evidenceComplete:false
+  }),options);
+  assert.equal(pending.kind,"inconclusive");
+  const samples={...standard,researchRules:{...standard.researchRules,
+    ZERO:{cost:0,dependencies:["SOURCE"],needItem:true,neededItem:"SAMPLE"}}};
+  const stock=searchChronologicalRoute(samples,makeWorld(samples,{
+    inventoryKnown:false,items:{},evidenceComplete:false
+  }),options);
+  assert.equal(stock.kind,"inconclusive");
+  const functions={...standard,researchRules:{...standard.researchRules,
+    ZERO:{cost:0,dependencies:["SOURCE"],requiresBaseFunc:["REMOTE_FUNCTION"]}}};
+  const notProved=searchChronologicalRoute(functions,makeWorld(functions,{
+    baseFunctions:new Set(),baseFunctionsKnown:false,evidenceComplete:false
+  }),options);
+  assert.equal(notProved.kind,"inconclusive");
 });
 test("search budget exhaustion never proves a path is impossible",()=>{
   const p=searchChronologicalRoute(R,makeWorld(),{
@@ -111,15 +157,20 @@ test("incomplete base inventory never upgrades model witness to verified",()=>{
     soldierId:"S",goals:["T_A"]});
   assert.equal(p.kind,"conditional");
 });
-const path="C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav";
-if(fs.existsSync(path)){
-  const s=importModernSave(fs.readFileSync(path,"utf8"),actual);
+// Never publish private save paths or silently read a particular campaign.
+// A local maintainer may opt in to an integration check via environment.
+const privateSave=process.env.XPZ_PRIVATE_SAVE_PATH;
+if(privateSave&&fs.existsSync(privateSave)){
+  const s=importModernSave(fs.readFileSync(privateSave,"utf8"),actual);
   const proof=modernSoldierProof(actual,s,0,0);
   const stock=Object.fromEntries(proof.base.items);
   const w={month:s.monthsPassed,researched:new Set(s.research.completed),
     disabled:new Set(s.research.disabled),
     generatedEvents:s.generatedEvents,items:stock,
     baseFunctions:new Set(proof.options.baseFunctions),
+    activeResearch:proof.base.researchComplete?new Set(proof.base.researchProjects):null,
+    inventoryKnown:proof.base.itemsComplete,
+    baseFunctionsKnown:proof.options.baseFunctionsKnown===true,
     funds:s.funds,evidenceComplete:proof.base.itemsComplete&&
       proof.state.exactStats&&proof.options.medalsKnown,
     soldiers:[{id:"real",state:proof.state,commendations:proof.options.commendations}]};
@@ -131,7 +182,7 @@ if(fs.existsSync(path)){
     const replay=verifyCampaignSequence(w,p.steps,actual);
     assert.equal(replay.kind,"ruleset-consistent");
   }
-  console.log("PASS actual local 35_.sav strict route search: "+p.kind+
+  console.log("PASS opt-in private save route test: "+p.kind+
     ", expanded "+(p.deterministic?.examined||0)+" nodes; no save content exported");
 }
 console.log("PASS bounded chronological witness search: 9 independent synthetic scenarios");

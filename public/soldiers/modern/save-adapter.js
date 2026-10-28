@@ -102,7 +102,9 @@ export function modernSoldierProof(data,save,baseIndex,soldierIndex){
     baseFunctions:[...facilities.functions].filter(([,v])=>v>=1).map(([id])=>id),
     // Regions/countries can supply base functions not listed among facilities.
     // Treat a missing facility function as UNKNOWN, not proven absent.
-    baseFunctionsKnown:false,items:Object.fromEntries(stock),
+    // Research needItem and manufacturing use materials not limited to
+    // transformation costs. Keep every parsed item in this local-only world.
+    baseFunctionsKnown:false,items:Object.fromEntries(base.items),
     itemsKnown:base.itemsComplete,commendations:Object.fromEntries(medalMap),
     medalsKnown:soldier.medalsComplete,
     funds:save.funds,fundsKnown:save.funds!==null,

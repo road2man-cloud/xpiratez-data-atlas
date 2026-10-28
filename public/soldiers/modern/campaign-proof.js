@@ -3,7 +3,7 @@
 // research/event/production/transformation/armor gates in that order.
 // It never proves that RNG, unknown missions or future item drops will occur.
 import {researchStep,eventScriptVerdict} from "./event-chronology.js";
-import {inspectAutoZeroCascade} from "./auto-zero-cascade.js";
+import {inspectAutoZeroCascade,inspectInvariantAutoZeroCascade} from "./auto-zero-cascade.js";
 import {eligibleTransformation,applyTransformation} from "./eligibility.js";
 const arr=x=>Array.isArray(x)?x:[];
 const has=(set,id)=>set instanceof Set?set.has(id):arr(set).includes(id);
@@ -24,6 +24,8 @@ function cloneWorld(w){
     generatedEvents:w.generatedEvents==null?null:{...w.generatedEvents},
     activeResearch:w.activeResearch==null?null:new Set(w.activeResearch),
     autoZeroEvidence:w.autoZeroEvidence===true,
+    // Search-only hypothesis. Never asserted by import or certified by strict replay.
+    autoZeroScenario:w.autoZeroScenario===true,
     pendingFree:w.pendingFree?{source:w.pendingFree.source,
       choices:[...w.pendingFree.choices],sequential:!!w.pendingFree.sequential,
       phase:w.pendingFree.phase||"after-source"}:null,
@@ -87,12 +89,37 @@ function grantResearch(world,id,data,method="research",options={}){
   // unknown active projects and random free-result chains.
   const autoNotes=[];
   let autoAssumed=false;
-  if(world.autoZeroEvidence===true && world.items!=null &&
-      world.baseFunctions instanceof Set && world.activeResearch instanceof Set &&
+  const speculativeAuto=world.autoZeroScenario===true;
+  if((world.autoZeroEvidence===true||speculativeAuto) && world.items!=null &&
+      world.baseFunctions instanceof Set &&
+      (world.activeResearch instanceof Set||speculativeAuto) &&
       result.repeatRun!==true){
-    const chain=inspectAutoZeroCascade(data,id,beforeResearch,{
-      inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:180});
+    const chain=world.autoZeroEvidence===true?
+      inspectInvariantAutoZeroCascade(data,id,beforeResearch,{
+        inventoryKnown:true,activeResearchKnown:true,maxSteps:180}):
+      inspectAutoZeroCascade(data,id,beforeResearch,{
+        inventoryKnown:world.inventoryKnown===true,
+        functionsKnown:world.baseFunctionsKnown===true,
+        activeResearchKnown:world.activeResearch instanceof Set,maxSteps:180});
+    // A confirmed base snapshot must never reuse ONE guessed geographical
+    // assignment. If any assignment changes the terminal flags, suspend the
+    // proof instead of certifying an impossible mixed research history.
+    if(world.autoZeroEvidence===true&&
+        (chain.kind!=="conditional"||chain.incomplete||!chain.finalState))
+      return fail("conditional",["지리적 기지 기능별 자동 연구 상태 미증명: "+
+        (chain.reason||"자동 큐 재생 불완전")]);
     if(chain.kind==="conditional"&&!chain.incomplete&&chain.finalState){
+      // A hypothetical chain is *always* conditional, even if all observed
+      // prerequisites match. Its unobserved active projects, regional base
+      // functions and future actions cannot become hard proof.
+      if(speculativeAuto&&chain.steps.length>1){
+        autoAssumed=true;
+        autoNotes.push("가상 비용 0 연구 연쇄: 엔진 실행 미증명 · "+
+          chain.unverified.join(" · "));
+      }
+      if(chain.invariantAcrossBaseFunctions&&chain.variantCount>1)
+        autoNotes.push("미확인 기지 기능 "+chain.unknownFunctions.join(", ")+
+          "의 "+chain.variantCount+"개 대입에서 최종 연구·폐쇄 상태 일치");
       // Consume the queue's END state directly. Reapplying its steps to the
       // partially changed state would drop disabled-but-queued discoveries and
       // make re-enables or existing-topic rescans order-dependent.
@@ -107,15 +134,37 @@ function grantResearch(world,id,data,method="research",options={}){
       }
     }
   }
-  // Only EVENT/MISSION-style grants select getOneFree after this cascade.
-  // The base-lab selection was already made before finishing the source.
+  // GeoscapeState and GeoscapeEventState execute the directly awarded
+  // topic's getLookup() with addFinishedResearch(), including its own
+  // zero-cost cascade. Zero-cost topics merely queued by addFinishedResearch
+  // do NOT implicitly execute their lookup, and lookup-of-lookup is not run.
+  const lookup=rule?.lookup;
+  if(lookup&&options.skipLookup!==true){
+    if(!data.researchRules?.[lookup])
+      return fail("unknown","원천 연구 "+id+"의 lookup 규칙 누락: "+lookup);
+    if(world.disabled.has(lookup)){
+      autoNotes.push("lookup "+lookup+"은 현재 폐쇄 상태여서 엔진에서 완료를 거부함");
+    }else if(world.researched.has(lookup)){
+      // A discovered lookup may run its re-enables/protected unlocks again;
+      // skipping it is NOT an engine-equivalent proof of the final state.
+      autoAssumed=true;
+      autoNotes.push("이미 완료된 lookup "+lookup+"의 재실행·보호 해금은 미검증");
+    }else{
+      const extra=grantResearch(world,lookup,data,"free",{skipLookup:true});
+      if(extra.kind!=="applied")return extra;
+      autoAssumed ||= extra.assumed===true;
+      autoNotes.push("OXCE lookup 후속 연구: "+id+" → "+lookup,...arr(extra.notes));
+    }
+  }
+  // Base lab selects getOneFree BEFORE the source/lookup; event/mission
+  // selects AFTER both source and its lookup have finished.
   const freeCandidates=method==="event"?availableFreeCandidates(rule,world):[];
   world.pendingFree=freeCandidates.length?{
     source:id,choices:freeCandidates,
     sequential:rule?.sequentialGetOneFree===true,phase:"after-source"
   }:null;
   return {kind:"applied",assumed:autoAssumed,notes:[...autoNotes,...(freeCandidates.length?
-    ["이벤트·임무 원천 완료 후 무료 연구 후보 "+freeCandidates.join(", ")]:[])]};
+    ["이벤트·임무 원천·lookup 완료 후 무료 연구 후보 "+freeCandidates.join(", ")]:[])]};
 }
 function eventResearch(world,step,data){
   if(world.disabled.has(step.research))

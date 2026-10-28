@@ -144,11 +144,19 @@ function routeFinderWorld(proof){
       new Set(proof.base.researchProjects):null,
     // The OXCE provided-base-function union can include geography sources.
     // Facility-only evidence must NOT authorize certified auto completion.
-    autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete&&
-      proof.facilities.complete&&proof.options.baseFunctionsKnown===true,
+    // Geographic functions are unknown, but the zero-cost replay now checks
+    // every possible missing base-function assignment before using flags.
+    autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete,
+    // Incomplete evidence is used by the *conditional* search only, never to
+    // certify the native queue or promote a speculative transformation.
+    inventoryKnown:proof.base.itemsComplete,
+    baseFunctionsKnown:proof.options.baseFunctionsKnown===true,
     funds:SAVE.funds,
-    evidenceComplete:proof.base.itemsComplete&&proof.state.exactStats&&
-      proof.options.medalsKnown&&proof.soldier.historyComplete&&
+    // Without a complete same-base active-project list, a manual research
+    // path can omit an OXCE auto queue or reuse an already running project.
+    // Such a route may be conditional, but is not a verified witness.
+    evidenceComplete:proof.base.itemsComplete&&proof.base.researchComplete&&
+      proof.state.exactStats&&proof.options.medalsKnown&&proof.soldier.historyComplete&&
       proof.options.fundsKnown,
     soldiers:[{id:"selected",state:proof.state,
       commendations:proof.options.commendations||{}}]

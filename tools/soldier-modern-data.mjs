@@ -264,6 +264,10 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       disables:Array.isArray(x.disables)?x.disables:[],
       reenables:Array.isArray(x.reenables)?x.reenables:[],
       unlocks:Array.isArray(x.unlocks)?x.unlocks:[],
+      // OXCE executes getLookup() as an additional addFinishedResearch()
+      // after each directly completed source/free/event topic. Omitting this
+      // link loses real chronology and can make future transformations vanish.
+      lookup:typeof x.lookup==='string'?x.lookup:null,
       getOneFree:Array.isArray(x.getOneFree)?x.getOneFree:[],
       getOneFreeProtected:x.getOneFreeProtected??{},
       sequentialGetOneFree:x.sequentialGetOneFree??false,

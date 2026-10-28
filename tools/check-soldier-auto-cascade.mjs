@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {inspectAutoZeroCascade,inspectAutoZeroSourcesForTransform}
+import {inspectAutoZeroCascade,inspectInvariantAutoZeroCascade,
+  inspectAutoZeroSourcesForTransform}
  from "../public/soldiers/modern/auto-zero-cascade.js";
 const tests=[];
 function test(name,fn){fn();tests.push(name);console.log("PASS "+name)}
@@ -20,6 +21,33 @@ const d={researchRules:rules,transformations:[{id:"FINISH",requires:["PROTECTED"
 const w=(data={})=>({researched:new Set(["GUARD"]),disabled:new Set(),items:{SPECIMEN:1},
   baseFunctions:new Set(["BIO_LAB"]),activeResearch:new Set(),...data});
 const o={inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:30};
+test("invariant proof replays every unknown geographical function combination",()=>{
+  const rules={SOURCE:{cost:7},FREE:{cost:0,dependencies:["SOURCE"]},
+    OPTIONAL:{cost:0,dependencies:["UNREACHED"],requiresBaseFunc:["GEO"]}};
+  const initial={researched:new Set(),disabled:new Set(),items:{},
+    activeResearch:new Set(),baseFunctions:new Set()};
+  const original=new Set(initial.baseFunctions);
+  const result=inspectInvariantAutoZeroCascade({researchRules:rules},"SOURCE",initial,{
+    inventoryKnown:true,activeResearchKnown:true,maxSteps:20});
+  assert.equal(result.kind,"conditional");
+  assert.equal(result.invariantAcrossBaseFunctions,true);
+  assert.equal(result.variantCount,2);
+  assert(result.finalState.researched.has("FREE"));
+  assert.deepEqual(initial.baseFunctions,original,"function variants must not mutate the save");
+});
+test("geographical functions affecting auto research prohibit certified replay",()=>{
+  const rules={SOURCE:{cost:7},FREE:{cost:0,dependencies:["SOURCE"]},
+    GEO_ONLY:{cost:0,dependencies:["SOURCE"],requiresBaseFunc:["GEO"]}};
+  const initial={researched:new Set(),disabled:new Set(),items:{},
+    activeResearch:new Set(),baseFunctions:new Set()};
+  const result=inspectInvariantAutoZeroCascade({researchRules:rules},"SOURCE",initial,{
+    inventoryKnown:true,activeResearchKnown:true,maxSteps:20});
+  assert.equal(result.kind,"uncertain-functions");
+  assert.equal(result.variantCount,2);
+  assert.equal(result.finalState,undefined);
+  assert.equal(inspectInvariantAutoZeroCascade({researchRules:rules},"SOURCE",initial,{
+    inventoryKnown:false,activeResearchKnown:true}).kind,"unverified");
+});
 test("research completion cascades zero-cost unprotected and direct protected flags",()=>{
   const result=inspectAutoZeroCascade(d,"SOURCE",w(),o);
   assert.equal(result.kind,"conditional");

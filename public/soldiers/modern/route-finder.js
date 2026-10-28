@@ -247,7 +247,11 @@ function actionsFor(node,pool,strict,goalIds,soldierId,data){
   return actions;
 }
 function searchPass(pool,data,start,soldierId,goals,strict,limits){
-  const seed=verifyCampaignSequence(start,[],data);
+  // Only the conditional pass may hypothesize zero-cost queue results when
+  // base-function / in-progress research evidence is incomplete. The strict
+  // pass MUST replay without hypothetical research flags.
+  const candidateStart={...start,autoZeroScenario:!strict};
+  const seed=verifyCampaignSequence(candidateStart,[],data);
   if(seed.kind!=="ruleset-consistent")return {kind:"inconclusive",reason:["초기 세계 상태를 해석할 수 없음"]};
   const queue=[{world:seed.world,steps:[],assumptions:[],goalIndex:0}];
   const seen=new Set(),failures=new Map();
@@ -258,7 +262,7 @@ function searchPass(pool,data,start,soldierId,goals,strict,limits){
     if(seen.has(signature))continue;
     seen.add(signature);examined++;
     if(node.goalIndex===goals.length){
-      const replay=verifyCampaignSequence(start,node.steps,data);
+      const replay=verifyCampaignSequence(candidateStart,node.steps,data);
       if(["ruleset-consistent","conditional"].includes(replay.kind)&&
         !replay.world?.pendingFree){
         const uncertainty=replay.kind==="conditional"||node.assumptions.length>0;

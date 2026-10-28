@@ -115,10 +115,11 @@ test("real red captain saint event requires all positives and absent captain pus
   },{mode:"current"});
   assert.equal(forbidden.kind,"blocked");
 });
-if(fs.existsSync("C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav"))
-test("real captain saint still gated on actual 35_ save",()=>{
-  const save=importModernSave(fs.readFileSync(
-    "C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez/user/piratez/35_.sav","utf8"),data);
+// Optional local integration fixture; never hardcode a private campaign path.
+const privateSave=process.env.XPZ_PRIVATE_SAVE_PATH;
+if(privateSave&&fs.existsSync(privateSave))
+test("opt-in private save event-gate consistency",()=>{
+  const save=importModernSave(fs.readFileSync(privateSave,"utf8"),data);
   const r=data.eventResearchSources.STR_CAPTAIN_SAINT[0];
   const script=r.scripts[0];
   const current=eventScriptVerdict({...script,eventId:r.event},{
@@ -127,8 +128,11 @@ test("real captain saint still gated on actual 35_ save",()=>{
     disabled:new Set(save.research.disabled),
     generatedEvents:save.generatedEvents
   },{mode:"current"});
-  assert.equal(current.kind,"blocked");
-  assert(current.blocked.some(x=>x.includes("STR_CAPTAIN_RED")));
+  assert(["eligible","conditional","blocked"].includes(current.kind));
+  const hasAllRequired=script.researchPositive.every(id=>
+    save.research.completed.includes(id)&&!save.research.disabled.includes(id));
+  if(!hasAllRequired)assert(current.kind!=="eligible",
+    "missing current positive research must never be marked eligible");
 });
 test("real research direct payout candidate is singular, even for multi-entry list",()=>{
   const item=Object.values(data.eventResearchSources).flat().find(x=>x.choiceCount>1);

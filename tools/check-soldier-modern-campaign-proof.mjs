@@ -27,6 +27,22 @@ function world(extra={}){
     baseFunctions:new Set(),generatedEvents:{},funds:500,score:0,difficulty:0,
     soldiers:[{id:"S",state:member,commendations:{}}],...extra};
 }
+test("unknown geography never creates a mixed verified research history",()=>{
+  const researchRules={SOURCE:{cost:5},FREE:{cost:0,dependencies:["SOURCE"]},
+    GEO_ONLY:{cost:0,dependencies:["SOURCE"],requiresBaseFunc:["GEO"]}};
+  const data={...synthetic,researchRules};
+  const partial=verifyCampaignSequence(world({activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(partial.kind,"conditional");
+  assert(partial.trace[0].reason.some(x=>x.includes("지리적 기지 기능")));
+  assert(!partial.world.researched.has("SOURCE"));
+  const exact=verifyCampaignSequence(world({activeResearch:new Set(),
+    baseFunctions:new Set(["GEO"]),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(exact.kind,"conditional");
+  assert(exact.world.researched.has("GEO_ONLY"));
+  assert(exact.world.researched.has("FREE"));
+});
 test("automatic zero-cost flags require explicit complete base evidence and stay conditional",()=>{
   const data={...synthetic,researchRules:{
     SOURCE:{cost:5,unlocks:["PROTECTED"]},GUARD:{cost:5},
@@ -135,6 +151,72 @@ test("auto-zero discoveries with getOneFree never auto-award the RNG reward",()=
   assert(!done.world.researched.has("RANDOM_B"));
   assert.equal(done.world.pendingFree,null);
   assert(done.trace[0].notes.some(s=>s.includes("getOneFree")&&s.includes("추첨하지")));
+});
+test("direct lab lookup completes after the source and cascades from lookup",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,lookup:"LOOK"},LOOK:{cost:5},
+    AFTER_LOOK:{cost:0,dependencies:["LOOK"]}
+  }};
+  const done=verifyCampaignSequence(world({activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("SOURCE"));
+  assert(done.world.researched.has("LOOK"));
+  assert(done.world.researched.has("AFTER_LOOK"));
+  assert(done.trace[0].notes.some(x=>x.includes("lookup")&&x.includes("LOOK")));
+});
+test("lab free bonus and its lookup finish BEFORE the source",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,getOneFree:["BONUS"]},BONUS:{cost:5,lookup:"LOOK"},
+    LOOK:{cost:5,disables:["SOURCE"]}
+  }};
+  const start=world({activeResearch:new Set(),autoZeroEvidence:true});
+  const done=verifyCampaignSequence(start,[
+    {type:"research",id:"SOURCE"},
+    {type:"freeResearch",source:"SOURCE",research:"BONUS"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("BONUS"));
+  assert(done.world.researched.has("LOOK"));
+  assert(done.world.disabled.has("SOURCE"));
+  assert(!done.world.researched.has("SOURCE"));
+});
+test("event source lookup can unlock a protected free payout on time",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5,lookup:"GUARD",getOneFreeProtected:{GUARD:["GIFT"]}},
+    GUARD:{cost:5},GIFT:{cost:5}
+  },eventResearchSources:{SOURCE:[{event:"E",choiceCount:1,scripts:[{
+    script:"E",mode:"fixed",firstMonth:0,executionOdds:100}]}]}};
+  const done=verifyCampaignSequence(world(),[
+    {type:"eventResearch",event:"E",script:"E",research:"SOURCE",assumeOutcome:true},
+    {type:"freeResearch",source:"SOURCE",research:"GIFT"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("GUARD"));
+  assert(done.world.researched.has("GIFT"));
+  assert.equal(done.world.pendingFree,null);
+});
+test("automatically queued zero-cost topic does not recursively grant lookup",()=>{
+  const data={...synthetic,researchRules:{
+    SOURCE:{cost:5},ZERO:{cost:0,dependencies:["SOURCE"],lookup:"SHOULD_NOT_GRANT"},
+    SHOULD_NOT_GRANT:{cost:5}
+  }};
+  const done=verifyCampaignSequence(world({activeResearch:new Set(),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.world.researched.has("ZERO"));
+  assert(!done.world.researched.has("SHOULD_NOT_GRANT"));
+});
+test("lookup must have a rule; missing target never makes an apparent witness",()=>{
+  const data={...synthetic,researchRules:{SOURCE:{cost:5,lookup:"ABSENT"}}};
+  const done=verifyCampaignSequence(world(),[{type:"research",id:"SOURCE"}],data);
+  assert.equal(done.kind,"unknown");
+  assert(!done.world.researched.has("SOURCE"));
+});
+test("previously discovered lookup is not silently certified as fully replayed",()=>{
+  const data={...synthetic,researchRules:{SOURCE:{cost:5,lookup:"OLD"},OLD:{cost:5}}};
+  const done=verifyCampaignSequence(world({researched:new Set(["OLD"])}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(done.kind,"conditional");
+  assert(done.trace[0].notes.some(x=>x.includes("재실행")));
 });
 test("chronological research A -> transform -> research B preserves history",()=>{
   const result=verifyCampaignSequence([
