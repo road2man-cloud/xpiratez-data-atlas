@@ -128,12 +128,15 @@ export async function runNative(a) {
     if(!fs.existsSync(file))throw new Error('NATIVE_SNAPSHOT_MISSING: '+c.file);
     c.snapshotSha256=sha256(fs.readFileSync(file));
   }
-  let nativeMissionOutcome=null,finishSnapshotSha256=null;
+  let nativeMissionOutcome=null,finishSnapshotSha256=null,entrySnapshotSha256=null;
   if(finish){
-    if(finish.file!=='xpz-native-battle-finish.sav'||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(finish.outcome)||
+    if(finish.entryFile!=='xpz-native-battle-entry.sav'||finish.file!=='xpz-native-battle-finish.sav'||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(finish.outcome)||
        typeof finish.aborted!=='boolean'||typeof finish.nextStage!=='boolean'||typeof finish.preview!=='boolean'||
        !Number.isInteger(finish.survivorsOrExit)||!/^[0-9]+$/.test(finish.rng||''))
       throw new Error('INVALID_NATIVE_BATTLE_FINISH_EVENT');
+    const entry=path.join(user,master,finish.entryFile);
+    if(!fs.existsSync(entry)||!fs.lstatSync(entry).isFile())throw new Error('NATIVE_ENTRY_SAVE_MISSING');
+    entrySnapshotSha256=sha256(fs.readFileSync(entry));
     const f=path.join(user,master,finish.file);
     if(!fs.existsSync(f)||!fs.lstatSync(f).isFile())throw new Error('NATIVE_FINISH_SAVE_MISSING');
     finishSnapshotSha256=sha256(fs.readFileSync(f));
@@ -141,7 +144,8 @@ export async function runNative(a) {
   }
   const result={backend:'OXCE_NATIVE',planCompleted,nativeBattleFinished:!!finish,
     nativeMissionOutcome,nativeBattleWonObserved:nativeMissionOutcome==='WON',
-    nativeFinishSnapshotSha256:finishSnapshotSha256,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
+    nativeEntrySnapshotSha256:entrySnapshotSha256,nativeFinishSnapshotSha256:finishSnapshotSha256,
+    parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
     clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
     seed:provenance.seed,inputSaveSha256:inputHash,runtimeManifestSha256:provenance.runtimeManifestSha256,

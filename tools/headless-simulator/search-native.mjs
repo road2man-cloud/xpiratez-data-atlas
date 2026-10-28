@@ -181,8 +181,11 @@ export async function runNativeBatch(batch){
           nativeBattleFinished:result.nativeBattleFinished,planCompleted:result.planCompleted,
           terminalSnapshotSha256:result.nativeFinishSnapshotSha256||null,score:null};
         if(result.nativeBattleFinished){
-          const finishFile=path.join(dir,'user',args['--master']||'piratez','xpz-native-battle-finish.sav');
-          const final=parseBattleUnits(fs.readFileSync(finishFile,'utf8'));
+          // Read casualties at the ORIGINAL finishBattle() ENTRY, before the
+          // engine removes summoned units or replaces the tactical mission.
+          // The post-finish snapshot is still kept and byte-checked separately.
+          const entryFile=path.join(dir,'user',args['--master']||'piratez','xpz-native-battle-entry.sav');
+          const final=parseBattleUnits(fs.readFileSync(entryFile,'utf8'));
           row.score=scoreNativeTerminal(initial,final,result.nativeMissionOutcome);
           if(result.nativeMissionOutcome==='WON'){
             summary.finishWon++;

@@ -17,6 +17,20 @@ export function patchFinishBattle(src) {
     '#include "../Engine/Timer.h"\n#include "../Engine/RNG.h"\n#include "../Headless/NativeOutcome.h"','BattlescapeState includes');
   const method='void BattlescapeState::finishBattle(bool abort, int inExitArea)\n{';
   if(src.split(method).length!==2)throw new Error('UNSUPPORTED_NATIVE_OUTCOME_LAYOUT: finishBattle signature');
+  // Capture the last complete tactical state BEFORE original finishBattle()
+  // drops summoned units, replaces the mission stage or clears preview battle data.
+  // Saving is read-only with respect to gameplay RNG; fail if this assumption
+  // is violated rather than silently changing the experiment.
+  const entrance=[
+    '    if (NativeOutcome::enabled()) {',
+    '        const std::uint64_t entryRng = RNG::getSeed();',
+    '        _game->getSavedGame()->save("xpz-native-battle-entry.sav", _game->getMod());',
+    '        if (RNG::getSeed() != entryRng)',
+    '            throw std::runtime_error("NATIVE_BATTLE_ENTRY_SNAPSHOT_CHANGED_RNG");',
+    '    }',
+    ''
+  ].join('\n');
+  src=once(src,method,method+'\n'+entrance,'finishBattle entry');
   const at=src.indexOf(method);
   const end='\n}\n\n/**\n * Shows the launch button.';
   const tail=src.indexOf(end,at);

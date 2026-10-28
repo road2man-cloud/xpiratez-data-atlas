@@ -77,15 +77,19 @@ export function verifyRunEvidence(directory,master='piratez') {
     if(!fs.lstatSync(file).isFile()||sha256(fs.readFileSync(file))!==snapshotSha256)
       throw new Error('CHECKPOINT_BYTES_CHANGED: '+c.file);
   }
-  if(result.nativeBattleFinished!==true && (result.nativeBattleWonObserved===true||result.nativeMissionOutcome!=null||result.nativeFinishSnapshotSha256))
+  if(result.nativeBattleFinished!==true && (result.nativeBattleWonObserved===true||result.nativeMissionOutcome!=null||result.nativeEntrySnapshotSha256||result.nativeFinishSnapshotSha256))
     throw new Error('NATIVE_FINISH_EVENT_RESULT_MISMATCH');
   if(result.nativeBattleFinished===true){
     const claimedOutcome=terminal.preview?'PREVIEW':terminal.nextStage?'NEXT_STAGE':terminal.aborted?'ABORTED':terminal.survivorsOrExit>0?'WON':'LOST';
     if(result.planCompleted===true||terminal.outcome!==claimedOutcome||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(terminal.outcome)||
-        terminal.file!=='xpz-native-battle-finish.sav'||result.nativeMissionOutcome!==terminal.outcome||
+        terminal.entryFile!=='xpz-native-battle-entry.sav'||terminal.file!=='xpz-native-battle-finish.sav'||result.nativeMissionOutcome!==terminal.outcome||
         result.nativeBattleWonObserved!==(terminal.outcome==='WON')||
+        !/^[a-f0-9]{64}$/.test(result.nativeEntrySnapshotSha256||'')||
         !/^[a-f0-9]{64}$/.test(result.nativeFinishSnapshotSha256||''))
       throw new Error('NATIVE_FINISH_EVENT_RESULT_MISMATCH');
+    const entry=path.join(directory,'user',master,terminal.entryFile);
+    if(!fs.lstatSync(entry).isFile()||sha256(fs.readFileSync(entry))!==result.nativeEntrySnapshotSha256)
+      throw new Error('NATIVE_ENTRY_SNAPSHOT_CHANGED');
     const file=path.join(directory,'user',master,terminal.file);
     if(!fs.lstatSync(file).isFile()||sha256(fs.readFileSync(file))!==result.nativeFinishSnapshotSha256)
       throw new Error('NATIVE_FINISH_SNAPSHOT_CHANGED');

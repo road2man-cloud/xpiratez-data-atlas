@@ -104,7 +104,10 @@ test('native finish hook records original finishBattle without inventing a win r
   ].join('\n');
   const patched=patchFinishBattle(source);
   assert.ok(patched.includes('NativeOutcome::recordFinish(abort, inExitArea'));
+  assert.ok(patched.includes('getSavedGame()->save("xpz-native-battle-entry.sav"'));
   assert.ok(patched.includes('getSavedGame()->save("xpz-native-battle-finish.sav"'));
+  assert.ok(patched.indexOf('save("xpz-native-battle-entry.sav"') < patched.indexOf('std::string nextStage;'));
+  assert.ok(patched.indexOf('save("xpz-native-battle-finish.sav"') > patched.indexOf('std::string nextStage;'));
   assert.ok(patched.includes('RNG::getSeed()'));
   assert.ok(patched.includes(' std::string nextStage; bool isPreview=false;'));
   assert.throws(()=>patchFinishBattle(patched),/ALREADY_PATCHED/);

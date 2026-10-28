@@ -72,11 +72,15 @@ test('synthetic original-engine finish evidence is checked against terminal save
   const f=fixture();
   try {
     const saved=Buffer.from('SYNTHETIC NATIVE END SNAPSHOT - NOT A REAL BATTLE\n');
+    const entry=Buffer.from('SYNTHETIC NATIVE ENTRY SNAPSHOT - NOT A REAL BATTLE\n');
     const terminal={event:'battle_finished',outcome:'WON',aborted:false,nextStage:false,
-      preview:false,survivorsOrExit:11,rng:'18446744073709551615',file:'xpz-native-battle-finish.sav'};
+      preview:false,survivorsOrExit:11,rng:'18446744073709551615',
+      entryFile:'xpz-native-battle-entry.sav',file:'xpz-native-battle-finish.sav'};
+    fs.writeFileSync(path.join(f.dir,'user/piratez',terminal.entryFile),entry);
     fs.writeFileSync(path.join(f.dir,'user/piratez',terminal.file),saved);
     const result={...f.result,planCompleted:false,nativeBattleFinished:true,
-      nativeMissionOutcome:'WON',nativeBattleWonObserved:true,nativeFinishSnapshotSha256:sha256(saved)};
+      nativeMissionOutcome:'WON',nativeBattleWonObserved:true,
+      nativeEntrySnapshotSha256:sha256(entry),nativeFinishSnapshotSha256:sha256(saved)};
     fs.writeFileSync(path.join(f.dir,'replay-result.json'),JSON.stringify(result));
     fs.writeFileSync(path.join(f.dir,'native-events.jsonl'),[
       {event:'native_ready',backend:'OXCE_NATIVE',protocol:1},f.event,terminal
@@ -85,6 +89,22 @@ test('synthetic original-engine finish evidence is checked against terminal save
     assert.equal(compare(result,structuredClone(result)).nativeReplayIdentical,true);
     const altered=structuredClone(result);altered.nativeMissionOutcome='LOST';
     assert.equal(compare(result,altered).nativeReplayIdentical,false);
+    altered.nativeMissionOutcome='WON';
+    altered.nativeEntrySnapshotSha256='0'.repeat(64);
+    assert.equal(compare(result,altered).nativeReplayIdentical,false);
+    const missing=structuredClone(result);delete missing.nativeEntrySnapshotSha256;
+    assert.throws(()=>compare(result,missing),/VALID_NATIVE_FINISH_SNAPSHOT_REQUIRED/);
+    fs.appendFileSync(path.join(f.dir,'user/piratez',terminal.entryFile),'tamper');
+    assert.throws(()=>verifyRunEvidence(f.dir),/NATIVE_ENTRY_SNAPSHOT_CHANGED/);
+    fs.writeFileSync(path.join(f.dir,'user/piratez',terminal.entryFile),entry);
+    const missingEntryEvent={...terminal};delete missingEntryEvent.entryFile;
+    fs.writeFileSync(path.join(f.dir,'native-events.jsonl'),[
+      {event:'native_ready',backend:'OXCE_NATIVE',protocol:1},f.event,missingEntryEvent
+    ].map(JSON.stringify).join('\n')+'\n');
+    assert.throws(()=>verifyRunEvidence(f.dir),/NATIVE_FINISH_EVENT_RESULT_MISMATCH/);
+    fs.writeFileSync(path.join(f.dir,'native-events.jsonl'),[
+      {event:'native_ready',backend:'OXCE_NATIVE',protocol:1},f.event,terminal
+    ].map(JSON.stringify).join('\n')+'\n');
     fs.appendFileSync(path.join(f.dir,'user/piratez',terminal.file),'tamper');
     assert.throws(()=>verifyRunEvidence(f.dir),/NATIVE_FINISH_SNAPSHOT_CHANGED/);
   }finally{f.clean();}

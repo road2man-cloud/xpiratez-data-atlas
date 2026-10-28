@@ -37,7 +37,8 @@ inline void recordFinish(bool abort, int survivorsOrExit,
         << ",\"preview\":" << (preview ? "true" : "false")
         << ",\"survivorsOrExit\":" << survivorsOrExit
         << ",\"rng\":\"" << rng
-        << "\",\"file\":\"xpz-native-battle-finish.sav\"}\n";
+        << "\",\"file\":\"xpz-native-battle-finish.sav\""
+        << ",\"entryFile\":\"xpz-native-battle-entry.sav\"}\n";
     out.flush();
     if (!out) throw std::runtime_error("NATIVE_OUTCOME_TRACE_WRITE_FAILED");
     terminalFlag() = true;

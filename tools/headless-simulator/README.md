@@ -10,14 +10,15 @@
 
 ### 원본 엔진 승패 기록 (실험적 빌드)
 
-원본 `BattlescapeState::finishBattle()` 메서드가 실제로 실행될 때만 `battle_finished` 이벤트를 발생시킵니다. 해당 메서드가 끝난 후 원본 전체 상태를 `xpz-native-battle-finish.sav`로 저장합니다. Game 루프는 메서드가 반환한 뒤 종료합니다. 게임의 전투 중 `tallyUnits()`를 단지 승률을 측정하기 위해 호출하지 않습니다. 그 함수는 일부 적의 항복 상태를 변경할 수 있으므로 관측을 위해 재호출하면 결과가 달라질 위험이 있습니다.
+원본 `BattlescapeState::finishBattle()` 메서드가 실제로 실행될 때만 `battle_finished` 이벤트를 발생시킵니다. **함수 진입 즉시**, 유닛 삭제·전리품 회수·다음 스테이지 생성보다 먼저 `xpz-native-battle-entry.sav`에 마지막 전투 상태를 보존합니다. 이어서 원본 메서드가 끝난 후 `xpz-native-battle-finish.sav`를 별도로 저장합니다. Game 루프는 메서드가 반환한 뒤 종료합니다. 게임의 전투 중 `tallyUnits()`를 단지 승률을 측정하기 위해 호출하지 않습니다. 그 함수는 일부 적의 항복 상태를 변경할 수 있으므로 관측을 위해 재호출하면 결과가 달라질 위험이 있습니다.
 
 - `nativeMissionOutcome`: 원본 메서드에서 나온 `WON`, `LOST`, `ABORTED`, `NEXT_STAGE`, `PREVIEW` 중 하나입니다.
 - `nativeBattleWonObserved=true`: 원본 승리 분기를 실제 통과했다는 기록일 뿐 사용자 GUI와의 완전 동등성 인증은 아닙니다.
 - `NEXT_STAGE`는 **최종 승리가 아니라 다단계 미션 전환**이며 이후 단계 자동 이어하기는 아직 미지원입니다.
 - `battleVictoryCertified=false`, `parityCertified=false`는 GUI 동등성 검증 완료 전까지 유지됩니다.
 - 계획을 다 수행하면 `planCompleted=true`로 종료합니다. 실제 `finishBattle()`이 계획 중 발생하면 `planCompleted=false`, `nativeBattleFinished=true`와 별도의 최종 세이브 해시가 기록됩니다.
-- 최종 상태는 추측한 적 수가 아니라 원본 엔진이 만든 `xpz-native-battle-finish.sav`를 기준으로 판단합니다. 반복 검증은 끝 저장 파일의 SHA-256을 **제외 없이** 대조합니다.
+- 무손실·사망·기절 계산은 전투가 끝난 바로 그 순간의 `xpz-native-battle-entry.sav`에 있는 **원래 아군**으로 수행합니다. 이후 원본 엔진이 소환 유닛을 제거하거나 새 스테이지로 전환하더라도 생존자 목록이 누락되지 않습니다. 종료 후 상태 `xpz-native-battle-finish.sav`는 별도로 보존합니다. 반복 검증은 **진입 및 종료 두 전체 저장 파일**의 SHA-256을 모두 비교합니다.
+- 두 저장 작업 전후의 게임플레이 RNG가 변하면 엔진 실행을 실패 처리합니다. 아직 다른 비RNG 상태에 대한 직렬화 부작용이 전혀 없다는 GUI 동등성 검증은 수행되지 않았습니다.
 
 이 종료 관측 패치도 원본 GUI와 재생 비교를 통과하기 전에는 **실험 기능**입니다. 컴파일과 가짜 테스트만으로 승리 사례가 생성되지는 않습니다.
 
