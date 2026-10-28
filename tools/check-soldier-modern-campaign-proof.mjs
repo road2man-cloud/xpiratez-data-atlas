@@ -27,6 +27,22 @@ function world(extra={}){
     baseFunctions:new Set(),generatedEvents:{},funds:500,score:0,difficulty:0,
     soldiers:[{id:"S",state:member,commendations:{}}],...extra};
 }
+test("unknown geographical functions block a mixed research witness",()=>{
+  const data={...synthetic,researchRules:{SOURCE:{cost:5},
+    FREE:{cost:0,dependencies:["SOURCE"]},
+    GEO_ONLY:{cost:0,dependencies:["SOURCE"],requiresBaseFunc:["GEO"]}}};
+  const incomplete=verifyCampaignSequence(world({activeResearch:new Set(),
+    autoZeroEvidence:true}),[{type:"research",id:"SOURCE"}],data);
+  assert.equal(incomplete.kind,"conditional");
+  assert(incomplete.trace[0].reason.some(x=>x.includes("지리적 기지 기능")));
+  assert(!incomplete.world.researched.has("SOURCE"));
+  const known=verifyCampaignSequence(world({activeResearch:new Set(),
+    baseFunctions:new Set(["GEO"]),autoZeroEvidence:true}),
+    [{type:"research",id:"SOURCE"}],data);
+  assert.equal(known.kind,"conditional");
+  assert(known.world.researched.has("GEO_ONLY"));
+  assert(known.world.researched.has("FREE"));
+});
 test("automatic zero-cost flags require explicit complete base evidence and stay conditional",()=>{
   const data={...synthetic,researchRules:{
     SOURCE:{cost:5,unlocks:["PROTECTED"]},GUARD:{cost:5},

@@ -140,6 +140,50 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
     note:"후보 큐 진단은 실제 완료/도달 증명이 아닙니다. 탐색기는 별도로 기존 조건을 재생합니다."
   };
 }
+// Countries and regions supply extra base functions not present in the
+// facility-only save snapshot. Exhaustively test every unknown function used
+// by zero-cost rules. Apply a queue only if ALL terminal research/disable
+// results agree; otherwise its final flags remain unverified.
+export function inspectInvariantAutoZeroCascade(data,sourceId,initial={},opts={}){
+  if(opts.inventoryKnown!==true||opts.activeResearchKnown!==true||
+      !(initial?.baseFunctions instanceof Set)||
+      !(initial?.activeResearch instanceof Set)||initial?.items==null)
+    return {kind:"unverified",source:sourceId,
+      reason:"같은 기지의 재고·진행 중 연구·기지 기능 하한 증거 불완전"};
+  const unknown=[...new Set(Object.values(data?.researchRules||{})
+    .filter(rule=>Number(rule.cost)===0)
+    .flatMap(rule=>arr(rule.requiresBaseFunc)))]
+    .filter(id=>!initial.baseFunctions.has(id)).sort(ordinal);
+  const limit=8;
+  if(unknown.length>limit)return {kind:"unverified",source:sourceId,
+    reason:"미확인 기지 기능 조합 수가 완전 탐색 제한을 초과",unknownFunctions:unknown};
+  let representative=null,signature=null;
+  const variants=2**unknown.length;
+  for(let mask=0;mask<variants;mask++){
+    const functions=new Set(initial.baseFunctions);
+    for(let j=0;j<unknown.length;j++)if(mask&(2**j))functions.add(unknown[j]);
+    const result=inspectAutoZeroCascade(data,sourceId,
+      {...initial,baseFunctions:functions},
+      {...opts,inventoryKnown:true,functionsKnown:true,activeResearchKnown:true});
+    if(result.kind!=="conditional"||result.incomplete||!result.finalState)
+      return {kind:"unverified",source:sourceId,
+        reason:"기지 기능 대입 중 자동 연구 시퀀스가 중단 또는 미확정",unknownFunctions:unknown};
+    const stateSignature=JSON.stringify([
+      [...result.finalState.researched].sort(ordinal),
+      [...result.finalState.disabled].sort(ordinal)]);
+    if(signature!==null&&signature!==stateSignature)
+      return {kind:"uncertain-functions",source:sourceId,
+        reason:"국가·지역 기지 기능에 따라 실제 자동 연구 완료·폐쇄 결과가 달라짐",
+        unknownFunctions:unknown,variantCount:variants};
+    signature=stateSignature;
+    if(!representative)representative=result;
+  }
+  return {...representative,invariantAcrossBaseFunctions:true,
+    unknownFunctions:unknown,variantCount:variants,
+    notices:[...representative.notices,
+      "기지 기능 "+unknown.length+"종의 가능한 "+variants+
+      "개 조합 모두 동일한 최종 연구·폐쇄 상태 (원천 완료 자체는 별도 증빙)"]};
+}
 export function inspectAutoZeroSourcesForTransform(data,transformId,start={},opts={}){
   const row=arr(data?.transformations).find(x=>x.id===transformId);
   if(!row)return {kind:"unverified",target:transformId,sources:[]};

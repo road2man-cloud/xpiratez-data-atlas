@@ -144,14 +144,16 @@ function routeFinderWorld(proof){
       new Set(proof.base.researchProjects):null,
     // The OXCE provided-base-function union can include geography sources.
     // Facility-only evidence must NOT authorize certified auto completion.
-    autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete&&
-      proof.facilities.complete&&proof.options.baseFunctionsKnown===true,
-    // Partial facts feed conditional queue search, not hard proof.
+    // For actual snapshots all unknown geographical-function assignments
+    // must produce identical terminal flags; otherwise we refuse proof.
+    autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete,
+    // Partial facts additionally feed hypothetical conditional search.
     inventoryKnown:proof.base.itemsComplete,
     baseFunctionsKnown:proof.options.baseFunctionsKnown===true,
     funds:SAVE.funds,
-    evidenceComplete:proof.base.itemsComplete&&proof.state.exactStats&&
-      proof.options.medalsKnown&&proof.soldier.historyComplete&&
+    // Unknown same-base active projects cannot yield a verified witness.
+    evidenceComplete:proof.base.itemsComplete&&proof.base.researchComplete&&
+      proof.state.exactStats&&proof.options.medalsKnown&&proof.soldier.historyComplete&&
       proof.options.fundsKnown,
     soldiers:[{id:"selected",state:proof.state,
       commendations:proof.options.commendations||{}}]

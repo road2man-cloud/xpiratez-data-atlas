@@ -53,6 +53,10 @@ assert.equal(p.state.history.has("STR_BASIC_FIREARMS_TRAINING"),true);
 assert.equal(p.options.medalsKnown,true,"missing diary means no medals in complete soldier block");
 assert.equal(p.state.exactStats,true);
 assert.equal(p.options.items.STR_GLAMOUR,8);
+const sampleOnly=importModernSave(text.replace("      STR_GLAMOUR: 8",
+  "      STR_GLAMOUR: 8\n      STR_QA_RESEARCH_SPECIMEN: 3"),data);
+assert.equal(modernSoldierProof(data,sampleOnly,0,0).options.items.STR_QA_RESEARCH_SPECIMEN,3,
+  "research samples outside transformation-material lists must be visible");
 assert.equal(p.options.funds,4000);
 assert.equal(p.options.baseFunctionsKnown,false,"country/region base-functions cannot be ruled out by facilities alone");
 assert.throws(()=>importModernSave(text.replace("v.o2","v.o1.1.1"),data),/2[.]1/);

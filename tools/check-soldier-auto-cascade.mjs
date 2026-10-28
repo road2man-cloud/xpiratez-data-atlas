@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {inspectAutoZeroCascade,inspectAutoZeroSourcesForTransform}
+import {inspectAutoZeroCascade,inspectInvariantAutoZeroCascade,
+  inspectAutoZeroSourcesForTransform}
  from "../public/soldiers/modern/auto-zero-cascade.js";
 const tests=[];
 function test(name,fn){fn();tests.push(name);console.log("PASS "+name)}
@@ -20,6 +21,33 @@ const d={researchRules:rules,transformations:[{id:"FINISH",requires:["PROTECTED"
 const w=(data={})=>({researched:new Set(["GUARD"]),disabled:new Set(),items:{SPECIMEN:1},
   baseFunctions:new Set(["BIO_LAB"]),activeResearch:new Set(),...data});
 const o={inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:30};
+test("all unknown country and region function assignments yield the same flags",()=>{
+  const data={researchRules:{SOURCE:{cost:5},FREE:{cost:0,dependencies:["SOURCE"]},
+    BLOCKED:{cost:0,dependencies:["UNREACHED"],requiresBaseFunc:["GEO"]}}};
+  const start={researched:new Set(),disabled:new Set(),items:{},
+    activeResearch:new Set(),baseFunctions:new Set()};
+  const before=new Set(start.baseFunctions);
+  const got=inspectInvariantAutoZeroCascade(data,"SOURCE",start,{
+    inventoryKnown:true,activeResearchKnown:true,maxSteps:20});
+  assert.equal(got.kind,"conditional");
+  assert.equal(got.invariantAcrossBaseFunctions,true);
+  assert.equal(got.variantCount,2);
+  assert(got.finalState.researched.has("FREE"));
+  assert.deepEqual(start.baseFunctions,before);
+});
+test("possible geography-dependent flag prevents any certified auto chain",()=>{
+  const data={researchRules:{SOURCE:{cost:5},FREE:{cost:0,dependencies:["SOURCE"]},
+    GEO_ONLY:{cost:0,dependencies:["SOURCE"],requiresBaseFunc:["GEO"]}}};
+  const start={researched:new Set(),disabled:new Set(),items:{},
+    activeResearch:new Set(),baseFunctions:new Set()};
+  const got=inspectInvariantAutoZeroCascade(data,"SOURCE",start,{
+    inventoryKnown:true,activeResearchKnown:true,maxSteps:20});
+  assert.equal(got.kind,"uncertain-functions");
+  assert.equal(got.variantCount,2);
+  assert.equal(got.finalState,undefined);
+  assert.equal(inspectInvariantAutoZeroCascade(data,"SOURCE",start,{
+    inventoryKnown:false,activeResearchKnown:true}).kind,"unverified");
+});
 test("research completion cascades zero-cost unprotected and direct protected flags",()=>{
   const result=inspectAutoZeroCascade(d,"SOURCE",w(),o);
   assert.equal(result.kind,"conditional");
