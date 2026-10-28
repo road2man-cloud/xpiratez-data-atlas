@@ -119,6 +119,54 @@ node tools/headless-simulator/prepare-runtime-archive.mjs \
 
 압축을 개인용 Linux 작업 폴더에 해제한 뒤 `--data`에는 압축 해제 루트, `--user`에는 해당 루트의 `user`, `--save`에는 `inputs/3.sav`, `--config`에는 `config/options.cfg`를 전달합니다. 원본 OXCE의 `Options::mute` 기능을 사용하되, **헤드리스 모드의 `Game::initAudio()` 진입 직후에만** 이 값을 `true`로 설정하고 오디오 초기화를 건너뜁니다. 원본 오디오 초기화 함수의 나머지 부분은 그대로 보존합니다. Linux SDL1.2가 존재하지 않는 오디오 드라이버 이름을 무시하고 다른 장치를 자동 선택한다는 사실을 CI에서 확인했으므로, 환경변수만으로 음소거한다고 가정하는 방식은 **폐기**했습니다. 오디오 패치는 `native-audio-patch.json`, 바이너리 `native-build.json.audioPatchSha256`으로 고정하며 실행기가 영수증을 검증합니다. **원본 `Game::initAudio()` 바깥의 전투·AI·복셀·난수 연산은 수정하지 않았지만, 이 실행 경로와 GUI 사이의 실측 동등성은 여전히 미검증입니다.**
 
+## `3.sav` 아군 2턴 실측 탐색 (기존 47HP 첫 턴 이후)
+
+**현재 실측 근거:** 원본 RC17 엔진에서 첫 적 턴 종료 후 아군 11명 생존,
+의식불명 0, 누적 순 HP 감소 47을 확인했습니다. 이 저장 RNG를 포함하는
+**아군 2턴 시작 세이브**를 입력으로 해야 하며, `3.sav` 최초 세이브를
+2턴 세이브인 것처럼 사용하면 안 됩니다. 게임 GUI와의 완전한 일치는
+별도 검증 대상입니다.
+
+```sh
+# 반드시 GPT Linux에서 진행; Windows에서 전투를 실행하지 않습니다.
+node tools/headless-simulator/generate-native-turn-plans.mjs \
+  /private/3sav/turn2-after-47hp.sav /private/3sav/turn2-proposals \
+  --focus 1 --supports 12,19,33,48 --radius 2 --max-plans 160
+
+# 원본 저장 RNG 그대로, 각 행동열을 독립 OXCE 프로세스로 실행합니다.
+node tools/headless-simulator/search-native.mjs \
+  --experimental \
+  --binary /private/native-rc17/oxce-native \
+  --manifest /private/native-rc17/native-build.json \
+  --runtime /private/native-sdl-runtime \
+  --data /private/3sav/resources \
+  --user /private/3sav/resources/user \
+  --config /private/3sav/resources/user/options.cfg \
+  --save /private/3sav/turn2-after-47hp.sav \
+  --plans /private/3sav/turn2-proposals \
+  --out /private/3sav/turn2-experiments \
+  --continue-on-error
+```
+
+이 단계는 **두 번째 적 턴 종료 후 아군 3턴으로 복귀할 수 있는 전술**을
+먼저 비교합니다. `search-native.mjs`의 `firstTurnSafety`는
+“입력 세이브 이후 첫 번째 적 턴”의 피해를 뜻하므로, 여기서는
+원본 2턴 세이브 대비 3턴 체력 손실을 표시합니다. 전투가 완료되지
+않은 실행은 반드시 `UNFINISHED`로 기록하고 임무 승리로 세지 않습니다.
+
+후보 생성기는 손에 든 장비와 `visible: true`인 적만 사격 대상으로
+제시하며, 사선·명중·TU·탄약·AI를 새로 계산하지 않습니다.
+`kneeled: true`인 대원은 `kneel`이 자세 **토글**임을 고려해
+다시 일으키는 명령을 생성하지 않습니다. 반대로 이미 알려진 적이
+현재 보이지 않으면 비가시 적의 좌표를 활용한 사격 후보를 만들지
+않습니다. 후보 수가 제한보다 많으면 `plan-manifest.json`에
+`allCandidates`, `selectedCount`, `truncated: true`를 명시해
+탐색 누락을 숨기지 않습니다.
+
+이 명령을 실제 실행하기 전에는 **2턴 전술의 성공률이나 승리 여부가
+확정되지 않았습니다.** 종료 이후에도 `finishBattle()`에서
+`WON`이 나와야 전체 승리로 집계합니다.
+
 ## `3.sav` 전용 첫 턴 실제 네이티브 검증 자동 실행기
 
 아래 명령은 **실제 GPT Linux 작업 환경에 RC17 원본 네이티브 바이너리와 개인용 104MB 리소스 압축본이 도착한 뒤** 실행합니다. 이 툴은 Windows에서 전투를 돌리지 않습니다. 게임 리소스와 `3.sav`는 개인용 출력 폴더에만 풉니다.

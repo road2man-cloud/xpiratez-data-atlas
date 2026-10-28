@@ -51,7 +51,7 @@ export function parseTacticalSave(source){
       seen[active].add(id);item={id};sections[active].push(item);continue;
     }
     if(!item)continue;
-    const prop=/^      (type|genUnitType|faction|originalFaction|status|position|visible|health|stunlevel|inventoryslot|owner|ammoItem|ammoqty):\s*(.*)\s*$/.exec(line);
+    const prop=/^      (type|genUnitType|faction|originalFaction|status|position|visible|kneeled|health|stunlevel|inventoryslot|owner|ammoItem|ammoqty|fuseTimer):\s*(.*)\s*$/.exec(line);
     if(prop)item[prop[1]]=scalar(prop[2]);
   }
   if(count.units!==1||count.items!==1||sections.units.length===0||sections.items.length===0)
