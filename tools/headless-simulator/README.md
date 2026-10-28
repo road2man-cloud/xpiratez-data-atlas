@@ -113,6 +113,24 @@ node tools/headless-simulator/prepare-runtime-archive.mjs \
 
 압축을 개인용 Linux 작업 폴더에 해제한 뒤 `--data`에는 압축 해제 루트, `--user`에는 해당 루트의 `user`, `--save`에는 `inputs/3.sav`, `--config`에는 `config/options.cfg`를 전달합니다. 원본 OXCE의 `Options::mute` 기능을 사용하되, **헤드리스 모드의 `Game::initAudio()` 진입 직후에만** 이 값을 `true`로 설정하고 오디오 초기화를 건너뜁니다. 원본 오디오 초기화 함수의 나머지 부분은 그대로 보존합니다. Linux SDL1.2가 존재하지 않는 오디오 드라이버 이름을 무시하고 다른 장치를 자동 선택한다는 사실을 CI에서 확인했으므로, 환경변수만으로 음소거한다고 가정하는 방식은 **폐기**했습니다. 오디오 패치는 `native-audio-patch.json`, 바이너리 `native-build.json.audioPatchSha256`으로 고정하며 실행기가 영수증을 검증합니다. **원본 `Game::initAudio()` 바깥의 전투·AI·복셀·난수 연산은 수정하지 않았지만, 이 실행 경로와 GUI 사이의 실측 동등성은 여전히 미검증입니다.**
 
+## `3.sav` 전용 첫 턴 실제 네이티브 검증 자동 실행기
+
+아래 명령은 **실제 GPT Linux 작업 환경에 RC17 원본 네이티브 바이너리와 개인용 104MB 리소스 압축본이 도착한 뒤** 실행합니다. 이 툴은 Windows에서 전투를 돌리지 않습니다. 게임 리소스와 `3.sav`는 개인용 출력 폴더에만 풉니다.
+
+```sh
+node tools/headless-simulator/run-3sav-native.mjs \
+  --archive /private/input/oxce-3sav-resources.tar.gz \
+  --binary /private/rc17/oxce-native \
+  --manifest /private/rc17/native-build.json \
+  --out /private/3sav-native-study --xvfb --smoke-only
+```
+
+입력 아카이브 SHA-256·원본 `3.sav` SHA-256·활성 모드 2개를 확인한 뒤, **원본 OXCE `end_turn`을 한 번 실제 처리**하고 체크포인트/손실/오류를 저장합니다. `--smoke-only`는 첫 턴 검증에서 정지합니다. 원본의 게임플레이 RNG를 보존하므로 이 모드가 최초 실행 재현성 판단에 유용합니다.
+
+검증에 성공하면 새 출력 경로로 `--smoke-only`를 제거해 가시 적 2명에 대한 60개 후보를 실제 네이티브 엔진으로 평가합니다. 예시: `--count 10 --start-seed 10000`은 **60개 행동 후보 × 10개 명시적 난수 시드 = 600회** 실험 요청입니다. 결과 파일 `native-search/native-search-report.json`에는 실패도 포함해 기록하며, OXCE에서 `WON` 종료 이벤트가 없으면 **전투 승리로 집계하지 않습니다**. 첫 턴 안전성은 별도 평가입니다.
+
+`run-3sav-native.mjs`의 명령/아카이브 검사 테스트는 실제 게임 시뮬레이션이 아닙니다. 이 프로세스는 게임 리소스 약 100MB를 개인 Linux 환경에 복원하므로 그 환경은 필요한 디스크 용량과 SDL1.2 런타임을 제공해야 합니다. `--runtime` 옵션으로 해시 고정된 별도 SDL 런타임을 지정할 수 있습니다. **아직 바이너리·개인 입력 자료를 같은 GPT Linux 환경으로 반입해 실행한 사례는 없습니다.**
+
 ## GPT Linux 환경에서만 실험 실행
 
 `run-native.mjs`는 Windows에서 전투를 실행하지 않도록 차단합니다. 실행 파일의 SHA-256, 입력 파일, 출력 폴더를 검사하고 원본 세이브 복사본을 별도의 사용자/설정 폴더에서 사용합니다.
