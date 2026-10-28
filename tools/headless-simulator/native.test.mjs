@@ -8,6 +8,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
+import {patchTimerHeader,patchTimerCpp,patchGameCpp,applyNativeClock} from './deterministic-clock.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
 import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
 import {compare} from './compare-replays.mjs';
@@ -49,6 +50,35 @@ test('turn banner acknowledgement preserves native initialization and avoids dou
   assert.equal(patched.includes('applyEnvironmentalCondition'),false);
   assert.equal(patched.includes('RNG::setSeed'),false);
 });
+test('headless deterministic clock replaces wall-clock scheduling only',()=>{
+  const header=patchTimerHeader('class Timer {\nstatic Uint32 gameSlowSpeed;\n};');
+  assert.match(header,/advanceNativeClock/);
+  const cpp=patchTimerCpp('#include "Timer.h"\nnamespace OpenXcom {\nnamespace {\nconst Uint32 accurate = 4;\nUint32 slowTick()\n{\n return 0;\n}\n}\nUint32 Timer::gameSlowSpeed = 1;');
+  assert.match(cpp,/nativeClockScaled/);
+  assert.match(cpp,/XPZ_NATIVE_PLAN/);
+  const game=patchGameCpp('#include "../Battlescape/NextTurnState.h"\n\t\t\tnativeActive->think();\n\t\t\tSDL_Delay(1);\n\t\t\tcontinue;');
+  assert.match(game,/Timer::advanceNativeClock\(16\)/);
+  assert.doesNotMatch(game,/SDL_Delay\(1\)/);
+  assert.throws(()=>patchTimerCpp(cpp),/ALREADY_PATCHED/);
+  assert.throws(()=>patchGameCpp(game),/ALREADY_PATCHED/);
+});
+test('clock patch applies to exact archived OXCE source, not combat algorithms',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-clock-'));
+  try{
+    const x=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',dir],{encoding:'utf8',cwd:ROOT});
+    assert.equal(x.status,0,x.stderr);
+    const manifest=JSON.parse(fs.readFileSync(path.join(dir,'native-source-manifest.json'),'utf8'));
+    verifySource(dir,manifest);
+    const result=applyNativeClock(dir);
+    assert.equal(result.stepMilliseconds,16);
+    assert.deepEqual(Object.keys(result.patchedFiles),['src/Engine/Timer.h','src/Engine/Timer.cpp','src/Engine/Game.cpp']);
+    for(const [f,digest] of Object.entries(result.patchedFiles))
+      assert.equal(sha256(fs.readFileSync(path.join(dir,f))),digest);
+    for(const f of ['src/Engine/RNG.cpp','src/Battlescape/TileEngine.cpp','src/Battlescape/AIModule.cpp'])
+      assert.equal(sha256(fs.readFileSync(path.join(dir,f))),manifest.sourceFiles[f]);
+    assert.throws(()=>applyNativeClock(dir),/ALREADY_PATCHED/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
 test('unverified native execution requires explicit opt-in',()=>{
   assert.throws(()=>preflight({},'linux'),/NATIVE_PARITY_NOT_CERTIFIED/);
 });
@@ -66,7 +96,9 @@ test('source archive and every expected native source file match the lock',()=>{
   const archive=path.join(ROOT,'native/oxce-source.tar.gz');
   assert.equal(sha256(fs.readFileSync(archive)),lock.archiveSha256);
   assert.equal(fs.statSync(archive).size,lock.archiveBytes);
-  assert.equal(sha256(fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'))),lock.driverSha256);
+  // Git for Windows may check out the text header with CRLF. Pin its LF-normalized source bytes.
+  const driver=fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8').replace(/\r\n/g,'\n');
+  assert.equal(sha256(Buffer.from(driver)),lock.driverSha256);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-integrity-'));
   try{
     const r=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',temp],{encoding:'utf8',cwd:ROOT});
@@ -132,7 +164,7 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
   const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
-  const fields=['sourceTreeSha256','driverSha256','archiveSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
+  const fields=['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);
   for(const k of fields){const b=structuredClone(a);b[k]='c'.repeat(64);assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT/);delete b[k];assert.throws(()=>compare(a,b),/REPLAY_FINGERPRINT_MISSING/);}

@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
+import {applyNativeClock} from './deterministic-clock.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export function checked(command,args,options={}){
   const r=spawnSync(command,args,{stdio:'inherit',shell:false,...options});
@@ -52,6 +53,11 @@ export function buildNative(out,jobs=2){
   const manifest=JSON.parse(fs.readFileSync(path.join(source,'native-source-manifest.json'),'utf8'));
   if(manifest.sourceTreeSha256!==lock.sourceTreeSha256||manifest.driverSha256!==lock.driverSha256)throw new Error('SOURCE_LOCK_MISMATCH');
   verifySource(source,manifest);
+  // Source manifest is verified BEFORE patching. Only native timer scheduling
+  // and the original GUI loop are changed, with a separate hash receipt.
+  const clockPatch=applyNativeClock(source);
+  const clockPatchSha256=sha256(JSON.stringify(clockPatch));
+  fs.writeFileSync(path.join(source,'native-clock-patch.json'),JSON.stringify(clockPatch,null,2)+'\n');
   prepareBuildAssetDirectories(source);
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
   checked('cmake',configure);
@@ -63,9 +69,11 @@ export function buildNative(out,jobs=2){
   fs.chmodSync(path.join(bundle,'oxce-native'),0o755);
   fs.copyFileSync(path.join(source,'LICENSE.txt'),path.join(bundle,'LICENSE.txt'));
   fs.copyFileSync(path.join(source,'native-source-manifest.json'),path.join(bundle,'native-source-manifest.json'));
+  fs.copyFileSync(path.join(source,'native-clock-patch.json'),path.join(bundle,'native-clock-patch.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
   const record={schema:1,backend:'OXCE_NATIVE',parityCertified:false,binarySha256:sha256(fs.readFileSync(binary)),
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
+    clockPatchSha256,
     platform:process.platform,arch:process.arch,buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
   console.log(JSON.stringify({bundle,...record},null,2));

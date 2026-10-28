@@ -45,6 +45,11 @@ export function preflight(a, platform=process.platform) {
   const manifest=JSON.parse(fs.readFileSync(a['--manifest'],'utf8'));
   if (manifest.schema!==1 || manifest.backend!=='OXCE_NATIVE' || !/^[a-f0-9]{64}$/.test(manifest.sourceTreeSha256||'') || !/^[a-f0-9]{64}$/.test(manifest.driverSha256||''))
     throw new Error('INVALID_NATIVE_BUILD_MANIFEST');
+  if (!/^[a-f0-9]{64}$/.test(manifest.clockPatchSha256||'')) throw new Error('DETERMINISTIC_NATIVE_CLOCK_REQUIRED');
+  const clockFile=path.join(path.dirname(a['--manifest']),'native-clock-patch.json');
+  const clock=JSON.parse(fs.readFileSync(clockFile,'utf8'));
+  if(clock.schema!==1||clock.stepMilliseconds!==16||clock.mode!=='DETERMINISTIC_NATIVE_TIMER_NO_SURROGATE'||sha256(JSON.stringify(clock))!==manifest.clockPatchSha256)
+    throw new Error('NATIVE_CLOCK_PATCH_HASH_MISMATCH');
   if (sha256(fs.readFileSync(a['--binary']))!==manifest.binarySha256) throw new Error('NATIVE_BINARY_HASH_MISMATCH');
   const out=path.resolve(a['--out']);
   if (fs.existsSync(out)) throw new Error('OUTPUT_ALREADY_EXISTS: use a fresh output directory');
@@ -81,7 +86,7 @@ export async function runNative(a) {
     '-newSeedOnLoad','false','-playIntro','false','-useOpenGL','false','-skipNextTurnScreen','true','-soundVolume','0','-musicVolume','0','-uiVolume','0'];
   if(a['--xvfb']) {cmd='xvfb-run';args=['-a',binary,...args];}
   const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
-    binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
+    binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,clockPatchSha256:manifest.clockPatchSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
   fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify(provenance,null,2)+'\n');
   const log=fs.openSync(path.join(out,'stdout.log'),'wx'),err=fs.openSync(path.join(out,'stderr.log'),'wx');
@@ -113,7 +118,7 @@ export async function runNative(a) {
   }
   const result={backend:'OXCE_NATIVE',planCompleted:true,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
-    binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
+    clockPatchSha256:manifest.clockPatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
     seed:provenance.seed,inputSaveSha256:inputHash,checkpoints};
   fs.writeFileSync(path.join(out,'replay-result.json'),JSON.stringify(result,null,2)+'\n');
   return result;

@@ -1,7 +1,7 @@
 name: Native OXCE integrity and build (not combat validation)
 on:
   push:
-    branches: [main, fix/native-headless-only-20261028, fix/native-turn-ack-20261028]
+    branches: [main, feat/native-deterministic-clock-20261028]
     paths:
       - 'tools/headless-simulator/**'
       - '.github/workflows/headless-simulator-test.yml'
@@ -24,7 +24,6 @@ jobs:
       - run: node --test tools/headless-simulator/native.test.mjs
   native-build:
     name: Compile original OXCE (no campaign or combat run)
-    if: github.event_name != 'pull_request'
     needs: integrity
     runs-on: ubuntu-22.04
     timeout-minutes: 30
