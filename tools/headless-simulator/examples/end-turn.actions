@@ -1,0 +1,5 @@
+# Original OXCE end-turn smoke replay. Not a victory policy.
+observe
+end_turn
+observe
+stop

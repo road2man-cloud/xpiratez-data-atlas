@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "backend": "OXCE_NATIVE",
+  "upstream": "https://github.com/MeridianOXC/OpenXcom",
+  "localBaseCommit": "8f3f6e2b5314f4f6529958fd218c5bbe0ffa0bd2",
+  "includesUncommittedSourceChanges": true,
+  "archive": "oxce-source.tar.gz",
+  "archiveSha256": "d5a055749751e92be02ca5a3a5275b597f6d822634c55a9174420df1eb52d9d9",
+  "archiveBytes": 2417862,
+  "sourceTreeSha256": "8e4942a31ee0cefa3356454fd634a6435d5e6cabb445b6c6eeee04e5f8ddfae4",
+  "driverSha256": "9ecb50f3bcc527728aea7c8d81bdbe993bcd3c7632031960bb15bb5d85398901",
+  "originalSourceFiles": 954,
+  "engineVersion": "Extended 8.7.1",
+  "sourceVersionHeaderFallback": "v2026-10-24 R43-QA-RC9-NEIGHBOR-RISER",
+  "exactInstalledExecutableMatchVerified": false,
+  "save17ReplayVerified": false,
+  "interactiveParityCertified": false,
+  "license": "GPL-3.0-or-later; see LICENSE.txt and per-file notices in the source archive"
+}
