@@ -90,6 +90,29 @@ GitHub 연결의 `download_workflow_artifact`로 두 ZIP을 받아 실제 GPT �
 
 `native-build.json`의 소스·드라이버 해시가 사용할 `native/source.lock.json`과 일치해야 합니다. 압축파일 반입, 라이브러리 검사, 실행 파일 기동, 실제 전투 체크포인트 생성은 각각 별개의 검증 단계입니다. Actions 산출물은 보존기간이 있으므로 만료 시 동일한 소스에서 다시 빌드해야 합니다.
 
+## 3.sav 게임 데이터 경량 패키지 (음원 제외, 로컬 전용)
+
+원본 OXCE는 게임 규칙을 모두 로드하며 비싼 리소스는 UI/소리 파일에 집중됩니다. 별도 "전투 계산 근사 엔진"이 아니라 **원본 게임 파일을 보존하는 입력 압축본**을 만들 수 있습니다. 현재 활성 모드는 `piratez`와 `ratlingVillageVisibility` **둘 다**이며, 시야/맵 판정에 영향을 줄 수 있으므로 두 모드 모두 반드시 포함해야 합니다.
+
+```sh
+node tools/headless-simulator/prepare-runtime-archive.mjs \
+  ORIGINAL_DIOXINE_GAME_ROOT ORIGINAL_USER/piratez/3.sav NEW_LOCAL_OUTPUT_DIRECTORY
+
+node tools/headless-simulator/prepare-runtime-archive.mjs \
+  --verify NEW_LOCAL_OUTPUT_DIRECTORY
+```
+
+음악·효과음·음원 폴더와 원본 백업/다른 세이브 파일을 제외하되, 원본 룰셋·복셀/지형·맵·스프라이트·활성 모드는 보존합니다. `user/options.cfg`는 인증/비밀번호 관련 항목만 삭제한 복사본으로 보존하며 **원본 설정 파일을 바꾸지 않습니다**. `inputs/3.sav`만 포함하고 SHA-256으로 검증합니다. 생성된 아카이브에는 원본 사용자 캠페인 정보가 들어 있으므로 **공개 GitHub 저장소나 Actions 산출물에 게시하면 안 됩니다**. 도구는 외부 업로드를 수행하지 않습니다.
+
+2026-10-28 기준 사용자 PC에서 생성된 로컬 패키지의 검증 기록:
+
+- 파일 크기: **103,957,577바이트 (약 99.1MiB)**, 포함 경로 24,009개
+- 아카이브 SHA-256: `0d01f3d29e53726803e42575206a8182e8a96490c2c643d257e8ac0b9b8c2f0e`
+- 입력 `3.sav` SHA-256: `28faf3920b016b81ad041b12f63de94548634375b33b2c07fa1fddb184c38a61`
+- 이 검증은 **압축 무결성·포함 경로 검증이며 실제 OXCE Linux 기동 및 전투 재생 결과가 아닙니다**.
+
+압축을 개인용 Linux 작업 폴더에 해제한 뒤 `--data`에는 압축 해제 루트, `--user`에는 해당 루트의 `user`, `--save`에는 `inputs/3.sav`, `--config`에는 `config/options.cfg`를 전달합니다. 원본 `Game::initAudio`는 SDL1.2 오디오 장치 초기화가 실패할 때 `Options::mute=true`로 전환합니다. 헤드리스 실행기는 의도적으로 사용할 수 없는 오디오 드라이버를 지정해 이 **원본의 기존 무음 경로**를 사용하며, 음원 로드가 필요하지 않게 합니다. GitHub CI의 `test-native-audio.mjs`는 해당 SDL 초기화 실패를 실제 Linux SDL1.2에서 확인합니다. **이 실행 경로도 GUI와 RNG/전투 결과가 동일한지 별도 실측 검증이 필요합니다.**
+
 ## GPT Linux 환경에서만 실험 실행
 
 `run-native.mjs`는 Windows에서 전투를 실행하지 않도록 차단합니다. 실행 파일의 SHA-256, 입력 파일, 출력 폴더를 검사하고 원본 세이브 복사본을 별도의 사용자/설정 폴더에서 사용합니다.

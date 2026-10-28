@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native-verification.test.mjs tools/headless-simulator/search-native.test.mjs tools/headless-simulator/generate-native-plans.test.mjs
+      - run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native-verification.test.mjs tools/headless-simulator/search-native.test.mjs tools/headless-simulator/generate-native-plans.test.mjs tools/headless-simulator/prepare-runtime-assets.test.mjs tools/headless-simulator/prepare-runtime-archive.test.mjs
   native-build:
     name: Compile original OXCE ${{ matrix.variant }} (no battle run)
     needs: integrity
@@ -40,6 +40,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake g++ pkg-config libsdl1.2-dev libsdl-image1.2-dev libsdl-gfx1.2-dev libsdl-mixer1.2-dev zlib1g-dev
+      - name: Verify SDL audio is disabled by original OXCE fallback
+        run: node tools/headless-simulator/test-native-audio.mjs
       - name: Build fingerprinted source snapshot
         run: node tools/headless-simulator/build-native.mjs "$RUNNER_TEMP/xpz-native-${{ matrix.variant }}" 2 "${{ matrix.variant }}"
       - name: Publish native build artifact, not a gameplay certificate

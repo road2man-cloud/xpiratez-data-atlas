@@ -20,7 +20,8 @@ export function compare(a,b){
       throw new Error('REPLAY_RUNTIME_IDENTITY_MISSING');
     if(!['dummy','xvfb'].includes(r.display))throw new Error('REPLAY_DISPLAY_IDENTITY_MISSING');
   }
-  for(const k of ['runtimeManifestSha256','display','sourceVariant','sourceVariantArchiveSha256'])if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
+  for(const k of ['runtimeManifestSha256','display','sourceVariant','sourceVariantArchiveSha256','audioPolicy'])if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
+  if(a.audioPolicy!=='ORIGINAL_OXCE_SDL_INIT_FAILURE_MUTE')throw new Error('REPLAY_AUDIO_POLICY_MISSING');
   if(!['R43_RC17_ORIGINAL_SOURCE','RC18_SOURCE_BASELINE'].includes(a.sourceVariant))throw new Error('REPLAY_SOURCE_VARIANT_MISSING');
   if(a.seed!==b.seed || a.seed==null)throw new Error('INCOMPARABLE_INPUT: seed');
   const differences=[];
