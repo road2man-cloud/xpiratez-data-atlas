@@ -107,15 +107,36 @@ function grantResearch(world,id,data,method="research",options={}){
       }
     }
   }
-  // Only EVENT/MISSION-style grants select getOneFree after this cascade.
-  // The base-lab selection was already made before finishing the source.
+  // OXCE lab/event/mission code explicitly completes a directly rewarded
+  // topic's getLookup() AFTER that topic's cascade. Auto-queued zero-cost
+  // topics do not automatically execute lookup; lookup-of-lookup is omitted.
+  const lookup=rule?.lookup;
+  if(lookup&&options.skipLookup!==true){
+    if(!data.researchRules?.[lookup])
+      return fail("unknown","원천 연구 "+id+"의 lookup 규칙 누락: "+lookup);
+    if(world.disabled.has(lookup)){
+      autoNotes.push("lookup "+lookup+"은 현재 폐쇄 상태여서 엔진에서 완료를 거부함");
+    }else if(world.researched.has(lookup)){
+      // An already discovered lookup may still re-enable or unlock research.
+      // Never claim this unmodeled repeat is a certified world state.
+      autoAssumed=true;
+      autoNotes.push("이미 완료된 lookup "+lookup+"의 재실행·보호 해금은 미검증");
+    }else{
+      const extra=grantResearch(world,lookup,data,"free",{skipLookup:true});
+      if(extra.kind!=="applied")return extra;
+      autoAssumed ||= extra.assumed===true;
+      autoNotes.push("OXCE lookup 후속 연구: "+id+" → "+lookup,...arr(extra.notes));
+    }
+  }
+  // Base lab selects getOneFree BEFORE the source/lookup, while event/mission
+  // selects AFTER both source and lookup have finished.
   const freeCandidates=method==="event"?availableFreeCandidates(rule,world):[];
   world.pendingFree=freeCandidates.length?{
     source:id,choices:freeCandidates,
     sequential:rule?.sequentialGetOneFree===true,phase:"after-source"
   }:null;
   return {kind:"applied",assumed:autoAssumed,notes:[...autoNotes,...(freeCandidates.length?
-    ["이벤트·임무 원천 완료 후 무료 연구 후보 "+freeCandidates.join(", ")]:[])]};
+    ["이벤트·임무 원천·lookup 완료 후 무료 연구 후보 "+freeCandidates.join(", ")]:[])]};
 }
 function eventResearch(world,step,data){
   if(world.disabled.has(step.research))

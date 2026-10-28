@@ -60,8 +60,15 @@ function relevantTransformations(data,goals,startType,limit=45){
 }
 function researchPool(data,roots,limit=110){
   const rules=data.researchRules||{};
-  const unlock=new Map(),free=new Map();
+  const unlock=new Map(),free=new Map(),lookups=new Map();
   for(const [id,r] of Object.entries(rules)){
+    // A research's direct lookup is completed after it in OXCE, even when
+    // the lookup topic's nominal dependencies were not met. The search must
+    // consider the source when a transformation requires the lookup target.
+    if(typeof r.lookup==="string"){
+      const prior=lookups.get(r.lookup)||[];prior.push(id);
+      lookups.set(r.lookup,prior);
+    }
     for(const target of arr(r.unlocks)){
       const prior=unlock.get(target)||[];prior.push(id);unlock.set(target,prior);
     }
@@ -77,6 +84,7 @@ function researchPool(data,roots,limit=110){
     found.add(id);
     if(depth>=7)continue;
     for(const next of uniq([...arr(rule.requires),...arr(rule.dependencies),
+      ...arr(lookups.get(id)).slice(0,4),
       ...arr(unlock.get(id)).slice(0,3),...arr(free.get(id)).slice(0,2)]))
       if(!found.has(next))queue.push({id:next,depth:depth+1});
     // A research's potential result may be a guarded free grant.

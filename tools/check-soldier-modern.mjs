@@ -34,6 +34,15 @@ test("83 transformation rules, 72 acquisition profiles, complete research index"
   assert.ok(Object.keys(data.researchRules).length>4600);
   assert.ok(Object.keys(data.itemSupply).length>0);
 });
+test("OXCE lookup-linked research is preserved for chronological replay",()=>{
+  const entries=Object.entries(data.researchRules).filter(([,r])=>r.lookup);
+  assert.equal(entries.length,203,"merged X-Piratez 2.1 lookup source coverage");
+  assert.equal(entries.filter(([,r])=>!data.researchRules[r.lookup]).length,0,
+    "every lookup must point to a real research rule");
+  assert.equal(data.researchRules.STR_PEASANT_REVOLUTION_PREQ.lookup,
+    "STR_PEASANT_REVOLUTION",
+    "actual peasant route must include its forced follow-up research");
+});
 test("vanilla XCOM research inheritance is tracked without resurrecting Piratez deletions",()=>{
   assert.equal(Object.keys(data.researchRules).length,4654);
   assert.match(data.meta.source.standardResearch.sha256,/^[a-f0-9]{64}$/);

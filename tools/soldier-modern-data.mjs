@@ -264,6 +264,9 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       disables:Array.isArray(x.disables)?x.disables:[],
       reenables:Array.isArray(x.reenables)?x.reenables:[],
       unlocks:Array.isArray(x.unlocks)?x.unlocks:[],
+      // OXCE runs getLookup() as an additional finished research after
+      // explicit lab/event/mission/free awards. Preserve the source link.
+      lookup:typeof x.lookup==='string'?x.lookup:null,
       getOneFree:Array.isArray(x.getOneFree)?x.getOneFree:[],
       getOneFreeProtected:x.getOneFreeProtected??{},
       sequentialGetOneFree:x.sequentialGetOneFree??false,
