@@ -146,6 +146,18 @@ test("conditional auto-zero search respects active-project, item and function ga
   }),options);
   assert.equal(notProved.kind,"inconclusive");
 });
+test("reverse lookup edge finds source when transformation requires its result",()=>{
+  const data={...R,researchRules:{
+    SOURCE:{cost:5,lookup:"TARGET"},
+    TARGET:{cost:0,dependencies:["UNREACHABLE"]}},
+    transformations:[{...R.transformations[0],requires:["TARGET"]}]};
+  const result=searchChronologicalRoute(data,makeWorld(data),{
+    soldierId:"S",goals:["T_A"],maxDepth:4,maxStates:100,maxAttempts:200});
+  assert.equal(result.kind,"witness",JSON.stringify(result).slice(0,1100));
+  assert.deepEqual(result.steps.map(x=>x.type+":"+(x.id||x.transform)),
+    ["research:SOURCE","transform:T_A"]);
+  assert(result.replay.world.researched.has("TARGET"));
+});
 test("search budget exhaustion never proves a path is impossible",()=>{
   const p=searchChronologicalRoute(R,makeWorld(),{
     soldierId:"S",goals:["T_A","T_B"],maxDepth:1,maxStates:10});
