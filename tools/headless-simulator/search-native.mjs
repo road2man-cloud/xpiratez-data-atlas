@@ -75,36 +75,57 @@ export function parseBattleUnits(saveText){
       if(!Number.isSafeInteger(id)||ids.has(id))throw new Error('INVALID_BATTLE_UNIT_ID');
       ids.add(id);u={id};continue;
     }
-    const prop=/^      (faction|status|health|stunlevel):\s*(-?\d+)\s*$/.exec(line);
+    const prop=/^      (faction|originalFaction|status|health|stunlevel):\s*(-?\d+)\s*$/.exec(line);
     if(prop&&u){u[prop[1]]=Number(prop[2]);}
   }
   if(u)units.push(u);
   if(!units.length||units.some(u=>!Number.isInteger(u.faction)||!Number.isInteger(u.status)||
-      !Number.isInteger(u.health)||!Number.isInteger(u.stunlevel)))
+      !Number.isInteger(u.health)||!Number.isInteger(u.stunlevel)||
+      (u.originalFaction!==undefined&&!Number.isInteger(u.originalFaction))))
     throw new Error('INCOMPLETE_BATTLE_UNIT_STATE');
+  // Original OXCE writes originalFaction ONLY when it differs from faction.
+  // A mind-controlled original ally must still count toward survival/losses.
+  for(const unit of units)unit.originalFaction ??= unit.faction;
   return units;
 }
 export function scoreNativeTerminal(initial,final,outcome){
   if(outcome!=='WON'&&outcome!=='LOST'&&outcome!=='ABORTED'&&outcome!=='NEXT_STAGE'&&outcome!=='PREVIEW')
     throw new Error('NATIVE_MISSION_OUTCOME_REQUIRED');
-  const allies=initial.filter(x=>x.faction===0);
+  const allies=initial.filter(x=>(x.originalFaction??x.faction)===0);
   if(!allies.length)throw new Error('NO_ORIGINAL_PLAYER_UNITS');
   const finalById=new Map(final.map(x=>[x.id,x]));
-  let dead=0,unconscious=0,netHpLoss=0,lostControl=0;
+  let dead=0,unconscious=0,netHpLoss=0,netStunIncrease=0,lostControl=0;
   for(const a of allies){
     const after=finalById.get(a.id);
     if(!after)throw new Error('ORIGINAL_PLAYER_UNIT_MISSING: '+a.id);
+    if((after.originalFaction??after.faction)!==0)throw new Error('ORIGINAL_PLAYER_IDENTITY_CHANGED: '+a.id);
     // STATUS_IGNORE_ME / STATUS_COLLAPSING are not safe to call alive.
     if(after.status===10||after.status===5)throw new Error('AMBIGUOUS_PLAYER_TERMINAL_STATUS: '+a.id);
     if(after.faction!==0)lostControl++;
     if(after.status===6||after.health<=0)dead++;
     if(after.status===7||after.stunlevel>=after.health&&after.health>0)unconscious++;
     netHpLoss+=Math.max(0,a.health-Math.max(0,after.health));
+    netStunIncrease+=Math.max(0,after.stunlevel-a.stunlevel);
   }
+  const nativeWin=outcome==='WON';
   return {outcome,initialAllies:allies.length,dead,unconscious,lostControl,alive:allies.length-dead,
-    netHpLoss,zeroDeathNativeWin:outcome==='WON'&&dead===0,
-    zeroHpLossNativeWin:outcome==='WON'&&dead===0&&netHpLoss===0,
+    netHpLoss,netStunIncrease,
+    zeroDeathNativeWin:nativeWin&&dead===0,
+    zeroConsciousNativeWin:nativeWin&&dead===0&&unconscious===0&&lostControl===0,
+    zeroHpLossNativeWin:nativeWin&&dead===0&&netHpLoss===0,
+    zeroNetHpAndStunLossNativeWin:nativeWin&&dead===0&&unconscious===0&&lostControl===0&&netHpLoss===0&&netStunIncrease===0,
     parityCertified:false,battleVictoryCertified:false};
+}
+export function betterNativeScore(candidate,best){
+  // Lexicographic safety priority: death, unconsciousness, loss of control,
+  // net HP loss, new stun. A native "WON" event is required before calling.
+  if(best===null)return true;
+  for(const field of ['dead','unconscious','lostControl','netHpLoss','netStunIncrease']){
+    if(!Number.isInteger(candidate[field])||!Number.isInteger(best[field]))
+      throw new Error('INVALID_NATIVE_RANKING_SCORE: '+field);
+    if(candidate[field]!==best[field])return candidate[field]<best[field];
+  }
+  return false;
 }
 function verifyUnchanged(files){
   for(const p of files)if(sha256(fs.readFileSync(p.file))!==p.sha256)
@@ -128,8 +149,10 @@ export async function runNativeBatch(batch){
   fs.mkdirSync(outputRoot,{recursive:true});
   const rows=[],tally=Object.fromEntries(plans.map(p=>[p.name,{
     attempts:0,finishWon:0,finishLost:0,finishedAborted:0,nextStage:0,
-    unfinished:0,errors:0,zeroDeathNativeWins:0,zeroHpLossNativeWins:0,
-    fewestDeadOfNativeWins:null,lowestNetHpLossOfNativeWins:null,bestSeed:null,bestTrial:null
+    unfinished:0,errors:0,zeroDeathNativeWins:0,zeroConsciousNativeWins:0,zeroHpLossNativeWins:0,
+    zeroNetHpAndStunLossNativeWins:0,
+    fewestDeadOfNativeWins:null,fewestUnconsciousOfNativeWins:null,fewestLostControlOfNativeWins:null,
+    lowestNetHpLossOfNativeWins:null,lowestNetStunIncreaseOfNativeWins:null,bestSeed:null,bestTrial:null
   }]));
   const report={schema:1,backend:'OXCE_NATIVE',mode:'EXPLICIT_ACTION_PLAN_BY_SEED',
     model:'ORIGINAL_OXCE_NO_NUMERICAL_SURROGATE',parityCertified:false,
@@ -164,12 +187,22 @@ export async function runNativeBatch(batch){
           if(result.nativeMissionOutcome==='WON'){
             summary.finishWon++;
             if(row.score.zeroDeathNativeWin)summary.zeroDeathNativeWins++;
+            if(row.score.zeroConsciousNativeWin)summary.zeroConsciousNativeWins++;
             if(row.score.zeroHpLossNativeWin)summary.zeroHpLossNativeWins++;
-            const best=summary.lowestNetHpLossOfNativeWins;
-            if(summary.fewestDeadOfNativeWins===null||row.score.dead<summary.fewestDeadOfNativeWins||
-               row.score.dead===summary.fewestDeadOfNativeWins&&(best===null||row.score.netHpLoss<best)){
+            if(row.score.zeroNetHpAndStunLossNativeWin)summary.zeroNetHpAndStunLossNativeWins++;
+            const oldBest=summary.fewestDeadOfNativeWins===null?null:{
+              dead:summary.fewestDeadOfNativeWins,
+              unconscious:summary.fewestUnconsciousOfNativeWins,
+              lostControl:summary.fewestLostControlOfNativeWins,
+              netHpLoss:summary.lowestNetHpLossOfNativeWins,
+              netStunIncrease:summary.lowestNetStunIncreaseOfNativeWins
+            };
+            if(betterNativeScore(row.score,oldBest)){
               summary.fewestDeadOfNativeWins=row.score.dead;
+              summary.fewestUnconsciousOfNativeWins=row.score.unconscious;
+              summary.fewestLostControlOfNativeWins=row.score.lostControl;
               summary.lowestNetHpLossOfNativeWins=row.score.netHpLoss;
+              summary.lowestNetStunIncreaseOfNativeWins=row.score.netStunIncrease;
               summary.bestSeed=row.seed;summary.bestTrial=trial;
             }
           }else if(result.nativeMissionOutcome==='LOST')summary.finishLost++;

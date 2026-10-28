@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {parseBatchArgs,listPlans,parseBattleUnits,scoreNativeTerminal,runNativeBatch} from './search-native.mjs';
+import {parseBatchArgs,listPlans,parseBattleUnits,scoreNativeTerminal,betterNativeScore,runNativeBatch} from './search-native.mjs';
 const fakeUnits=(hp,status=0,stun=0)=>[
   '---','battleGame:','  units:',
   '    - id: 1','      faction: 0',`      status: ${status}`, `      health: ${hp}`, `      stunlevel: ${stun}`,
@@ -40,7 +40,7 @@ test('only regular explicit action plans are accepted',()=>{
 });
 test('unit metadata is read from literal full OXCE save, without simulating',()=>{
   const units=parseBattleUnits(fakeUnits(240));
-  assert.equal(units.length,2);assert.deepEqual(units[0],{id:1,faction:0,status:0,health:240,stunlevel:0});
+  assert.equal(units.length,2);assert.deepEqual(units[0],{id:1,faction:0,status:0,health:240,stunlevel:0,originalFaction:0});
   assert.throws(()=>parseBattleUnits('---\n  items:\n'),/MISSING_OR_AMBIGUOUS/);
   assert.throws(()=>parseBattleUnits(fakeUnits(240).replace('      health: 240\n','')),/INCOMPLETE_BATTLE_UNIT/);
 });
@@ -67,6 +67,48 @@ test('unconscious is not automatically dead; death is scored separately',()=>{
 test('missing original player cannot be scored as zero casualties',()=>{
   const initial=parseBattleUnits(fakeUnits(240));
   assert.throws(()=>scoreNativeTerminal(initial,parseBattleUnits(fakeUnits(240).replace('    - id: 1','    - id: 2')),'WON'),/ORIGINAL_PLAYER_UNIT_MISSING/);
+});
+test('mind-controlled ORIGINAL ally remains in casualty denominator',()=>{
+  const original= fakeUnits(240).replace('      faction: 0\n      status: 0',
+    '      faction: 1\n      originalFaction: 0\n      status: 0');
+  const initial=parseBattleUnits(original);
+  assert.equal(initial[0].originalFaction,0);
+  const after=parseBattleUnits(fakeUnits(240));
+  const score=scoreNativeTerminal(initial,after,'WON');
+  assert.equal(score.initialAllies,1);
+  assert.equal(score.lostControl,0);
+  assert.equal(score.zeroConsciousNativeWin,true);
+  const stillControlled=scoreNativeTerminal(initial,initial,'WON');
+  assert.equal(stillControlled.lostControl,1);
+  assert.equal(stillControlled.zeroConsciousNativeWin,false);
+  assert.equal(stillControlled.zeroDeathNativeWin,true);
+  const hostileTemporarilyControlled=fakeUnits(240).replace(
+    '      faction: 1\n      status: 0',
+    '      faction: 0\n      originalFaction: 1\n      status: 0');
+  assert.equal(scoreNativeTerminal(parseBattleUnits(hostileTemporarilyControlled),
+    parseBattleUnits(hostileTemporarilyControlled),'WON').initialAllies,1);
+});
+test('full intact win requires no new stun or unconsciousness',()=>{
+  const start=parseBattleUnits(fakeUnits(240));
+  const stunned=scoreNativeTerminal(start,parseBattleUnits(fakeUnits(240,0,3)),'WON');
+  assert.equal(stunned.netHpLoss,0);
+  assert.equal(stunned.netStunIncrease,3);
+  assert.equal(stunned.zeroHpLossNativeWin,true);
+  assert.equal(stunned.zeroNetHpAndStunLossNativeWin,false);
+  const unconscious=scoreNativeTerminal(start,parseBattleUnits(fakeUnits(240,7,3)),'WON');
+  assert.equal(unconscious.zeroConsciousNativeWin,false);
+  assert.equal(unconscious.zeroNetHpAndStunLossNativeWin,false);
+  const intact=scoreNativeTerminal(start,start,'WON');
+  assert.equal(intact.zeroNetHpAndStunLossNativeWin,true);
+});
+test('native ranking prioritizes original-team safety above HP',()=>{
+  const best={dead:0,unconscious:0,lostControl:1,netHpLoss:0,netStunIncrease:0};
+  const candidate={dead:0,unconscious:0,lostControl:0,netHpLoss:90,netStunIncrease:1};
+  assert.equal(betterNativeScore(candidate,best),true);
+  assert.equal(betterNativeScore(best,candidate),false);
+  assert.equal(betterNativeScore(candidate,null),true);
+  assert.equal(betterNativeScore(candidate,candidate),false);
+  assert.throws(()=>betterNativeScore({dead:0},{dead:0}),/INVALID_NATIVE_RANKING_SCORE/);
 });
 test('native batch execution is rejected on Windows source machine',async()=>{
   if(process.platform==='win32')await assert.rejects(()=>runNativeBatch({}),/GPT_LINUX_EXECUTION_REQUIRED/);
