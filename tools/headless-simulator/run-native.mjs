@@ -35,6 +35,13 @@ export function verifyRuntime(dir) {
   }
   return {lib:fs.realpathSync(path.join(dir,'lib')),manifestSha256:sha256(bytes)};
 }
+export function requiredSourceVariantFromSave(saveText){
+  if(typeof saveText!=='string')throw new Error('INVALID_SAVE_BUILD_HEADER');
+  const build=/^build:\s*([^\r\n]*)/m.exec(saveText);
+  if(!build) return null;
+  if(/\bR43-RC17(?:-|\b)/.test(build[1]))return 'R43_RC17_ORIGINAL_SOURCE';
+  return null; // For unknown saves do not pretend this engine is proven exact.
+}
 export function preflight(a, platform=process.platform) {
   if (!a['--experimental']) throw new Error('NATIVE_PARITY_NOT_CERTIFIED: explicit --experimental is required; no surrogate fallback exists');
   if (platform !== 'linux') throw new Error('GPT_LINUX_EXECUTION_REQUIRED: this runner will not replay battles on the Windows source PC');
@@ -76,6 +83,9 @@ export function preflight(a, platform=process.platform) {
       throw new Error('RC17_SOURCE_VARIANT_MANIFEST_MISMATCH');
   }else if(manifest.sourceVariantArchiveSha256!==null)
     throw new Error('RC18_SOURCE_VARIANT_ARCHIVE_UNEXPECTED');
+  const sourceSaveBuild=requiredSourceVariantFromSave(fs.readFileSync(a['--save'],'utf8'));
+  if(sourceSaveBuild && manifest.sourceVariant!==sourceSaveBuild)
+    throw new Error('SAVE_ENGINE_VERSION_VARIANT_MISMATCH: '+sourceSaveBuild);
   if (!/^[a-f0-9]{64}$/.test(manifest.clockPatchSha256||'')) throw new Error('DETERMINISTIC_NATIVE_CLOCK_REQUIRED');
   const clockFile=path.join(path.dirname(a['--manifest']),'native-clock-patch.json');
   const clock=JSON.parse(fs.readFileSync(clockFile,'utf8'));

@@ -10,7 +10,7 @@ import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {patchTimerHeader,patchTimerCpp,patchGameCpp,applyNativeClock} from './deterministic-clock.mjs';
 import {patchFinishBattle,patchOutcomeGame,applyNativeOutcome} from './native-outcome.mjs';
-import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
+import {parseArgs,preflight,verifyRuntime,requiredSourceVariantFromSave} from './run-native.mjs';
 import {verifySource,applyNativeDriverOverride,prepareBuildAssetDirectories} from './build-native.mjs';
 import {applyOriginalSourceVariant} from './source-variant.mjs';
 import {compare} from './compare-replays.mjs';
@@ -148,6 +148,13 @@ test('native finish hook records original finishBattle without inventing a win r
 });
 test('unverified native execution requires explicit opt-in',()=>{
   assert.throws(()=>preflight({},'linux'),/NATIVE_PARITY_NOT_CERTIFIED/);
+});
+test('RC17 tactical saves require a matching native source variant, no silent RC18 fallback',()=>{
+  const rc17='name: 3\nversion: Extended 8.7.1\nbuild: " (v2026-10-25 R43-RC17-SKYRAMP-QUAD-FIX)"\n---\n';
+  assert.equal(requiredSourceVariantFromSave(rc17),'R43_RC17_ORIGINAL_SOURCE');
+  assert.equal(requiredSourceVariantFromSave('build: "v2026-10-28 R43-RC53"\n'),null);
+  assert.equal(requiredSourceVariantFromSave('name: 17\n---\n'),null);
+  assert.throws(()=>requiredSourceVariantFromSave(null),/INVALID_SAVE_BUILD_HEADER/);
 });
 test('Windows source PC cannot become an accidental battle execution fallback',()=>{
   assert.throws(()=>preflight({'--experimental':true},'win32'),/GPT_LINUX_EXECUTION_REQUIRED/);
