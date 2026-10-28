@@ -163,7 +163,7 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
-  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
+  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
   const fields=['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);

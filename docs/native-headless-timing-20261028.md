@@ -18,10 +18,18 @@ No replacement attack model, pathfinder, ballistics or AI exists. Core files `AI
 
 ## Test gates
 
-1. 17 integrity/adapter tests must pass. These tests do **not** prove battle victory.
+1. 26 integrity/adapter/evidence-validator tests pass after the follow-up verifier changes. Some use explicitly synthetic fixtures; no native combat executes in these tests. These tests do **not** prove battle victory.
 2. The new Linux native build must compile successfully.
 3. With the exact same `17.sav`, config and saved RNG, run at least two separate native processes. Compare full serializations and all checkpoints, **without removing or masking animation tags**.
 4. If the strict comparator still fails, retain failure. Fix the underlying scheduling or state semantics before claiming determinism.
 5. Run actual combat actions (movement, firing, reaction fire) and compare the GUI under the same RNG before certifying parity. A stable headless build is not automatically identical to the user's installed GUI build.
+
+## Follow-up verification status
+
+- The full Linux native build of `494ad2b04dad14b5f72c7966e0a2aa02b81498c6` succeeded in Actions run `40631715028`; artifact `12792765413` is 5,989,896 bytes. This is compile/package evidence, not replay evidence.
+- A subsequent attempt to run the new binary in the GPT environment was blocked because both container and Python execution calls returned a `ClientError`. No Windows or CI battle simulation was substituted. **The deterministic-clock build has not yet completed a new actual replay comparison in this follow-up.**
+- Added `verify-native-replays.mjs`: repeated original native processes, identical RNG/plan/config, complete raw snapshot rehashing, native-event consistency, and checks that game resource bytes remain unchanged. Repetitions are 2–20 for repeatability checks, not statistical tactical evaluation.
+- Added runtime/display identity comparisons and launcher checks against the pinned source archive; the build artifact also carries the matching runner scripts. Failed or incomplete requests remain failures in `verification.json`.
+- Keep this work experimental until the full native checkpoint-byte equality gate passes on actual GPT Linux runs. Do not merge it as a certified exact engine or present tactical success probabilities from it.
 
 No individual campaign save or private battle-state snapshot is committed to the public repository.

@@ -71,6 +71,12 @@ export function buildNative(out,jobs=2){
   fs.copyFileSync(path.join(source,'native-source-manifest.json'),path.join(bundle,'native-source-manifest.json'));
   fs.copyFileSync(path.join(source,'native-clock-patch.json'),path.join(bundle,'native-clock-patch.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
+  // The binary artifact also carries the matching launcher/verifier. This avoids
+  // accidentally mixing an old offline runner with a newer native binary.
+  for(const rel of ['run-native.mjs','prepare-native.mjs','compare-replays.mjs','verify-native-replays.mjs','README.md','examples/end-turn.actions','native/source.lock.json']) {
+    const dest=path.join(bundle,'runner',rel);
+    fs.mkdirSync(path.dirname(dest),{recursive:true});fs.copyFileSync(path.join(HERE,rel),dest);
+  }
   const record={schema:1,backend:'OXCE_NATIVE',parityCertified:false,binarySha256:sha256(fs.readFileSync(binary)),
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
     clockPatchSha256,

@@ -10,6 +10,12 @@ export function compare(a,b){
     if(!/^[a-f0-9]{64}$/.test(a[k]||'') || !/^[a-f0-9]{64}$/.test(b[k]||''))throw new Error('REPLAY_FINGERPRINT_MISSING: '+k);
     if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
   }
+  for(const r of [a,b]) {
+    if(!Object.hasOwn(r,'runtimeManifestSha256')||(r.runtimeManifestSha256!==null&&!/^[a-f0-9]{64}$/.test(r.runtimeManifestSha256)))
+      throw new Error('REPLAY_RUNTIME_IDENTITY_MISSING');
+    if(!['dummy','xvfb'].includes(r.display))throw new Error('REPLAY_DISPLAY_IDENTITY_MISSING');
+  }
+  for(const k of ['runtimeManifestSha256','display'])if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
   if(a.seed!==b.seed || a.seed==null)throw new Error('INCOMPARABLE_INPUT: seed');
   const differences=[];
   if(a.checkpoints.length!==b.checkpoints.length)differences.push({field:'checkpointCount',left:a.checkpoints.length,right:b.checkpoints.length});

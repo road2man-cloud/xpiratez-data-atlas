@@ -14,6 +14,8 @@
 
 이 패치는 **전투 규칙의 근사 구현이 아닙니다.** X-Piratez `HitFX-basic.rul`의 피해 효과 스크립트가 `animFrame`을 참조하므로, 기존 실행의 23개 저장 필드 불일치를 방치하지 않기 위한 수정입니다. 빌드 산출물은 `native-clock-patch.json`과 `native-build.json.clockPatchSha256`으로 수정된 Timer/Game 파일의 무결성을 고정합니다. 다른 버전의 바이너리로 실행하거나 비교하면 즉시 실패합니다.
 
+고정 틱 적용 커밋 `494ad2b`의 **전체 Linux 컴파일은 GitHub Actions 실행 `40631715028`에서 성공**했고, 실행 파일 산출물 `12792765413`이 생성되었습니다. 후속 반복 검증기와 무결성 테스트는 현재 26개가 통과했습니다. 이 26개는 검증용 합성 자료를 사용하는 코드 검사도 포함하며, 실제 전투 26회를 뜻하지 않습니다.
+
 고정 틱이 동일 입력에서 완전히 동일한 전체 세이브를 만든다는 것은 **두 차례 이상의 실제 Linux 재생으로 별도 확인해야 합니다**. 이 조치만으로 게임 GUI의 프레임과 물리적 시간이 완전히 같다고 인증하는 것은 아닙니다. 16ms는 헤드리스 실험의 고정 실행 간격이며, 데스크톱의 실제 FPS가 아닙니다.
 
 ### 현재 검증 상태 — 완료된 엔진이라고 오인하지 마세요
@@ -119,6 +121,30 @@ node tools/headless-simulator/compare-replays.mjs \
 ```
 
 이 비교의 통과는 두 native 실행의 일치만 뜻합니다. GUI와의 동등성이나 모든 게임 상황의 정확성을 증명하지 않습니다.
+
+## 반복 재현성 검사: 한 명령으로 실행 및 전체 저장 파일 비교
+
+`verify-native-replays.mjs`는 `run-native.mjs`와 같은 옵션에 `--repetitions 3`을 추가하여 사용합니다. 매번 **별도 원본 OXCE 프로세스**를 실행하고, 원본 세이브를 덮어쓰지 않습니다. 결과 JSON의 주장만 비교하는 것이 아니라, 각 실행의 실제 `native-events.jsonl` 및 모든 `.sav` 체크포인트 바이트를 다시 읽어 검사합니다.
+
+```sh
+node tools/headless-simulator/verify-native-replays.mjs \
+  --repetitions 3 --experimental \
+  --binary /path/to/bundle/oxce-native \
+  --manifest /path/to/bundle/native-build.json \
+  --runtime /path/to/runtime-bundle \
+  --data /path/to/Dioxine_XPiratez \
+  --user /path/to/Dioxine_XPiratez/user \
+  --config /path/to/Dioxine_XPiratez/user/options.cfg \
+  --save /path/to/17.sav \
+  --plan tools/headless-simulator/examples/end-turn.actions \
+  --out /mnt/data/xpz-native-verification-001
+```
+
+출력 루트의 `verification.json`에는 요청/완료 실행 수, 각 실행의 턴·RNG·체크포인트, 불일치 내역이 남습니다. 실패하면 `status: failed` 또는 `mismatch`를 기록합니다. 모든 요청 실행과 전체 저장 바이트 비교가 완료되기 전에는 `passed`를 기록하지 않습니다. 게임 자료도 실제 파일 내용의 SHA-256으로 검사하며 중간에 바뀌면 실패합니다. 대용량 파일을 다시 다운로드하는 작업이 아니라 이미 있는 자료를 읽는 작업입니다.
+
+이 명령은 **같은 RNG로 2~20회 재현성을 검증하는 용도**입니다. 서로 다른 RNG의 전술 5,000회 탐색, GUI 동등성 인증, 전투 승리 인증과는 다릅니다. `battleVictoryCertified`와 `interactiveParityCertified`는 `false`를 유지합니다. 사용한 SDL 런타임과 화면 드라이버도 달라지면 직접 비교를 거부합니다.
+
+새 빌드 산출물에는 `runner/` 아래에 해당 바이너리와 짝을 이루는 실행기·비교기·검증기를 함께 포함합니다. 산출물이 존재하는 것과 GPT 환경에서 실제 실행된 것은 별개입니다. 실행 도구 오류나 누락 자료를 근사 엔진으로 우회하지 않습니다. **기존 리소스 로더가 필요한 게임 자산은 여전히 필요하며, 본체 자산 제거는 아직 완료되지 않았습니다.**
 
 ## 다음 대화 지시문
 

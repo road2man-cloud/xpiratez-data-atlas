@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
+const HERE=path.dirname(fileURLToPath(import.meta.url));
 
 export function parseArgs(argv) {
   const flags = new Set(['--experimental','--xvfb']);
@@ -45,6 +46,9 @@ export function preflight(a, platform=process.platform) {
   const manifest=JSON.parse(fs.readFileSync(a['--manifest'],'utf8'));
   if (manifest.schema!==1 || manifest.backend!=='OXCE_NATIVE' || !/^[a-f0-9]{64}$/.test(manifest.sourceTreeSha256||'') || !/^[a-f0-9]{64}$/.test(manifest.driverSha256||''))
     throw new Error('INVALID_NATIVE_BUILD_MANIFEST');
+  const sourceLock=JSON.parse(fs.readFileSync(path.join(HERE,'native/source.lock.json'),'utf8'));
+  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256'])
+    if(!/^[a-f0-9]{64}$/.test(sourceLock[k]||'')||sourceLock[k]!==manifest[k])throw new Error('RUNNER_SOURCE_LOCK_MISMATCH: '+k);
   if (!/^[a-f0-9]{64}$/.test(manifest.clockPatchSha256||'')) throw new Error('DETERMINISTIC_NATIVE_CLOCK_REQUIRED');
   const clockFile=path.join(path.dirname(a['--manifest']),'native-clock-patch.json');
   const clock=JSON.parse(fs.readFileSync(clockFile,'utf8'));
@@ -119,7 +123,8 @@ export async function runNative(a) {
   const result={backend:'OXCE_NATIVE',planCompleted:true,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
     clockPatchSha256:manifest.clockPatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
-    seed:provenance.seed,inputSaveSha256:inputHash,checkpoints};
+    seed:provenance.seed,inputSaveSha256:inputHash,runtimeManifestSha256:provenance.runtimeManifestSha256,
+    display:provenance.display,checkpoints};
   fs.writeFileSync(path.join(out,'replay-result.json'),JSON.stringify(result,null,2)+'\n');
   return result;
 }
