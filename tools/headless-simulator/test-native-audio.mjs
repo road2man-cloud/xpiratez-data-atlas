@@ -1,43 +1,40 @@
 #!/usr/bin/env node
 // SPDX-License-Identifier: GPL-3.0-or-later
-// SDL1.2 Linux smoke test ONLY. Never runs OpenXcom or a battle.
-// Proves the ORIGINAL Game::initAudio failure/mute route can be used to
-// avoid shipping hundreds of MiB of music and sound files.
+// Source-level only audit of headless-only mute. No SDL heuristic, no battle.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {HEADLESS_AUDIO_DRIVER,HEADLESS_AUDIO_POLICY} from './run-native.mjs';
-if(process.platform!=='linux')throw new Error('SDL_AUDIO_SMOKE_REQUIRES_LINUX');
-const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-sdl-noaudio-'));
+import {fileURLToPath} from 'node:url';
+import {sha256} from './prepare-native.mjs';
+import {applyNativeAudio} from './native-audio.mjs';
+const HERE=path.dirname(fileURLToPath(import.meta.url));
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-audio-'));
 try{
-  const src=path.join(temp,'test.cpp'),bin=path.join(temp,'noaudio');
-  fs.writeFileSync(src,[
-    '#include <SDL.h>',
-    '#include <cstdio>',
-    'int main(){',
-    '  if(SDL_Init(SDL_INIT_AUDIO)==0){',
-    '    std::fputs("SDL AUDIO UNEXPECTEDLY INITIALIZED\\n",stderr);',
-    '    SDL_Quit();',
-    '    return 1;',
-    '  }',
-    '  std::puts("SDL AUDIO UNAVAILABLE AS EXPECTED");',
-    '  return 0;',
-    '}',
-    ''
-  ].join('\n'));
-  const flags=spawnSync('sdl-config',['--cflags','--libs'],{encoding:'utf8'});
-  if(flags.error||flags.status!==0)throw new Error('SDL1_2_BUILD_DEPS_MISSING');
-  const args=['-std=c++17',src,'-o',bin,...flags.stdout.trim().split(/\s+/)];
-  const build=spawnSync('g++',args,{encoding:'utf8'});
-  if(build.error||build.status!==0)
-    throw new Error('SDL1_2_BUILD_FAILED: '+String(build.stderr||build.error).slice(-1500));
-  const proof=spawnSync(bin,[],{encoding:'utf8',env:{
-    ...process.env,SDL_AUDIODRIVER:HEADLESS_AUDIO_DRIVER
-  }});
-  if(proof.error||proof.status!==0||!proof.stdout?.includes('SDL AUDIO UNAVAILABLE AS EXPECTED'))
-    throw new Error('SDL_AUDIO_MUTE_ASSUMPTION_FAILED: '+JSON.stringify({status:proof.status,stderr:proof.stderr,stdout:proof.stdout}));
-  console.log(JSON.stringify({schema:1,audioPolicy:HEADLESS_AUDIO_POLICY,
-    driver:HEADLESS_AUDIO_DRIVER,sdlInitializationRejected:true,
-    originalOXCEMuteFallbackExpected:true,gameExecuted:false,battleExecuted:false},null,2));
-}finally{fs.rmSync(temp,{recursive:true,force:true});}
+  const lock=JSON.parse(fs.readFileSync(path.join(HERE,'native/source.lock.json'),'utf8'));
+  if(sha256(fs.readFileSync(path.join(HERE,'native/oxce-source.tar.gz')))!==lock.archiveSha256)
+    throw new Error('NATIVE_SOURCE_ARCHIVE_CHANGED');
+  const extract=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',tmp],{
+    cwd:HERE,encoding:'utf8'
+  });
+  if(extract.error||extract.status!==0)
+    throw new Error('EXTRACT_NATIVE_SOURCE_FAILED');
+  const gameFile=path.join(tmp,'src/Engine/Game.cpp');
+  const before=fs.readFileSync(gameFile,'utf8');
+  const receipt=applyNativeAudio(tmp);
+  const after=fs.readFileSync(gameFile,'utf8');
+  if(receipt.schema!==1||
+     receipt.mode!=='ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE'||
+     receipt.noGameplayCodeModified!==true||
+     !after.includes('if (std::getenv("XPZ_NATIVE_PLAN"))')||
+     !after.includes('Options::mute = true;')||
+     !after.includes('if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)')||
+     after.indexOf('Options::mute = true;')>=after.indexOf('if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)')||
+     sha256(Buffer.from(after))!==receipt.patchedFiles['src/Engine/Game.cpp']||
+     !after.includes(before.slice(before.indexOf('if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)'))))
+    throw new Error('NATIVE_AUDIO_SOURCE_GUARD_INVALID');
+  console.log(JSON.stringify({mode:receipt.mode,sourceHash:lock.archiveSha256,
+    audioPatchSha256:sha256(JSON.stringify(receipt)),
+    originalAudioFunctionBodyPreserved:true,
+    gameplaySimulated:false,parityCertified:false},null,2));
+}finally{fs.rmSync(tmp,{recursive:true,force:true});}

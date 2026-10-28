@@ -11,6 +11,7 @@ import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {patchTimerHeader,patchTimerCpp,patchGameCpp,applyNativeClock} from './deterministic-clock.mjs';
 import {patchFinishBattle,patchOutcomeGame,applyNativeOutcome} from './native-outcome.mjs';
 import {parseArgs,preflight,verifyRuntime,requiredSourceVariantFromSave,HEADLESS_AUDIO_DRIVER,HEADLESS_AUDIO_POLICY} from './run-native.mjs';
+import {patchNativeAudio,applyNativeAudio} from './native-audio.mjs';
 import {verifySource,applyNativeDriverOverride,prepareBuildAssetDirectories} from './build-native.mjs';
 import {applyOriginalSourceVariant} from './source-variant.mjs';
 import {compare} from './compare-replays.mjs';
@@ -43,9 +44,16 @@ test('headless hook suppresses rendering without replacing state think',()=>{
   assert.ok(patched.includes('original_render_body();'));
   assert.throws(()=>patchGame(patched),/ALREADY_PATCHED/);
 });
-test('soundless runtime follows ORIGINAL OXCE Game::initAudio mute fallback',()=>{
-  assert.equal(HEADLESS_AUDIO_DRIVER,'__XPZ_NO_AUDIO_DEVICE__');
-  assert.equal(HEADLESS_AUDIO_POLICY,'ORIGINAL_OXCE_SDL_INIT_FAILURE_MUTE');
+test('soundless runtime explicitly guards original OXCE Game::initAudio in native mode only',()=>{
+  assert.equal(HEADLESS_AUDIO_DRIVER,'dummy');
+  assert.equal(HEADLESS_AUDIO_POLICY,'ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE');
+  const source='#include <cstdlib>\nvoid Game::initAudio()\n{\nint x = 0;\n}';
+  const patched=patchNativeAudio(source);
+  assert.match(patched,/if \(std::getenv\("XPZ_NATIVE_PLAN"\)\)/);
+  assert.match(patched,/Options::mute = true;/);
+  assert.ok(patched.includes('int x = 0;'));
+  assert.throws(()=>patchNativeAudio(patched),/ALREADY_PATCHED/);
+  assert.throws(()=>patchNativeAudio('void invalid();'),/UNSUPPORTED_NATIVE_AUDIO_LAYOUT/);
   const driver=fs.readFileSync(path.join(ROOT,'run-native.mjs'),'utf8');
   assert.match(driver,/SDL_AUDIODRIVER:HEADLESS_AUDIO_DRIVER/);
   assert.doesNotMatch(driver,/SDL_AUDIODRIVER:'dummy'/);
@@ -282,8 +290,8 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
-  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,audioPolicy:'ORIGINAL_OXCE_SDL_INIT_FAILURE_MUTE',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
-  const fields=['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
+  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,audioPolicy:'ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
+  const fields=['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','audioPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);
   for(const k of fields){const b=structuredClone(a);b[k]='c'.repeat(64);assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT/);delete b[k];assert.throws(()=>compare(a,b),/REPLAY_FINGERPRINT_MISSING/);}

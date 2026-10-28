@@ -111,7 +111,7 @@ node tools/headless-simulator/prepare-runtime-archive.mjs \
 - 입력 `3.sav` SHA-256: `28faf3920b016b81ad041b12f63de94548634375b33b2c07fa1fddb184c38a61`
 - 이 검증은 **압축 무결성·포함 경로 검증이며 실제 OXCE Linux 기동 및 전투 재생 결과가 아닙니다**.
 
-압축을 개인용 Linux 작업 폴더에 해제한 뒤 `--data`에는 압축 해제 루트, `--user`에는 해당 루트의 `user`, `--save`에는 `inputs/3.sav`, `--config`에는 `config/options.cfg`를 전달합니다. 원본 `Game::initAudio`는 SDL1.2 오디오 장치 초기화가 실패할 때 `Options::mute=true`로 전환합니다. 헤드리스 실행기는 의도적으로 사용할 수 없는 오디오 드라이버를 지정해 이 **원본의 기존 무음 경로**를 사용하며, 음원 로드가 필요하지 않게 합니다. GitHub CI의 `test-native-audio.mjs`는 해당 SDL 초기화 실패를 실제 Linux SDL1.2에서 확인합니다. **이 실행 경로도 GUI와 RNG/전투 결과가 동일한지 별도 실측 검증이 필요합니다.**
+압축을 개인용 Linux 작업 폴더에 해제한 뒤 `--data`에는 압축 해제 루트, `--user`에는 해당 루트의 `user`, `--save`에는 `inputs/3.sav`, `--config`에는 `config/options.cfg`를 전달합니다. 원본 OXCE의 `Options::mute` 기능을 사용하되, **헤드리스 모드의 `Game::initAudio()` 진입 직후에만** 이 값을 `true`로 설정하고 오디오 초기화를 건너뜁니다. 원본 오디오 초기화 함수의 나머지 부분은 그대로 보존합니다. Linux SDL1.2가 존재하지 않는 오디오 드라이버 이름을 무시하고 다른 장치를 자동 선택한다는 사실을 CI에서 확인했으므로, 환경변수만으로 음소거한다고 가정하는 방식은 **폐기**했습니다. 오디오 패치는 `native-audio-patch.json`, 바이너리 `native-build.json.audioPatchSha256`으로 고정하며 실행기가 영수증을 검증합니다. **원본 `Game::initAudio()` 바깥의 전투·AI·복셀·난수 연산은 수정하지 않았지만, 이 실행 경로와 GUI 사이의 실측 동등성은 여전히 미검증입니다.**
 
 ## GPT Linux 환경에서만 실험 실행
 

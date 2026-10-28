@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 import {applyNativeClock} from './deterministic-clock.mjs';
 import {applyNativeOutcome} from './native-outcome.mjs';
+import {applyNativeAudio} from './native-audio.mjs';
 import {applyOriginalSourceVariant} from './source-variant.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export function checked(command,args,options={}){
@@ -85,6 +86,9 @@ export function buildNative(out,jobs=2,variant='rc18'){
   const outcomePatch=applyNativeOutcome(source);
   const outcomePatchSha256=sha256(JSON.stringify(outcomePatch));
   fs.writeFileSync(path.join(source,'native-outcome-patch.json'),JSON.stringify(outcomePatch,null,2)+'\n');
+  const audioPatch=applyNativeAudio(source);
+  const audioPatchSha256=sha256(JSON.stringify(audioPatch));
+  fs.writeFileSync(path.join(source,'native-audio-patch.json'),JSON.stringify(audioPatch,null,2)+'\n');
   prepareBuildAssetDirectories(source);
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
   checked('cmake',configure);
@@ -100,6 +104,7 @@ export function buildNative(out,jobs=2,variant='rc18'){
   fs.copyFileSync(path.join(source,'native-source-variant.json'),path.join(bundle,'native-source-variant.json'));
   fs.copyFileSync(path.join(source,'native-clock-patch.json'),path.join(bundle,'native-clock-patch.json'));
   fs.copyFileSync(path.join(source,'native-outcome-patch.json'),path.join(bundle,'native-outcome-patch.json'));
+  fs.copyFileSync(path.join(source,'native-audio-patch.json'),path.join(bundle,'native-audio-patch.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
   // The binary artifact also carries the matching launcher/verifier. This avoids
   // accidentally mixing an old offline runner with a newer native binary.
@@ -112,7 +117,7 @@ export function buildNative(out,jobs=2,variant='rc18'){
     driverOverrideSha256:driverOverride.driverOverrideSha256,driverOverrideReceiptSha256,
     sourceVariant:sourceVariant.sourceVariant,sourceVariantReceiptSha256,
     sourceVariantArchiveSha256:sourceVariant.rc17OverlayArchiveSha256,
-    clockPatchSha256,outcomePatchSha256,
+    clockPatchSha256,outcomePatchSha256,audioPatchSha256,
     platform:process.platform,arch:process.arch,buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
   console.log(JSON.stringify({bundle,...record},null,2));

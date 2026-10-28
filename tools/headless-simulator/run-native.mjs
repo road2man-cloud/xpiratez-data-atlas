@@ -7,8 +7,8 @@ import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
-export const HEADLESS_AUDIO_DRIVER='__XPZ_NO_AUDIO_DEVICE__';
-export const HEADLESS_AUDIO_POLICY='ORIGINAL_OXCE_SDL_INIT_FAILURE_MUTE';
+export const HEADLESS_AUDIO_DRIVER='dummy';
+export const HEADLESS_AUDIO_POLICY='ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE';
 
 export function parseArgs(argv) {
   const flags = new Set(['--experimental','--xvfb']);
@@ -97,6 +97,14 @@ export function preflight(a, platform=process.platform) {
   const outcome=JSON.parse(fs.readFileSync(path.join(path.dirname(a['--manifest']),'native-outcome-patch.json'),'utf8'));
   if(outcome.schema!==1||outcome.mode!=='ORIGINAL_OXCE_FINISHBATTLE_OBSERVER'||sha256(JSON.stringify(outcome))!==manifest.outcomePatchSha256)
     throw new Error('NATIVE_OUTCOME_PATCH_HASH_MISMATCH');
+  if(!/^[a-f0-9]{64}$/.test(manifest.audioPatchSha256||''))
+    throw new Error('NATIVE_AUDIO_MUTE_PATCH_REQUIRED');
+  const audioPatch=JSON.parse(fs.readFileSync(path.join(path.dirname(a['--manifest']),'native-audio-patch.json'),'utf8'));
+  if(audioPatch.schema!==1||audioPatch.mode!==HEADLESS_AUDIO_POLICY||
+     audioPatch.path!=='src/Engine/Game.cpp'||audioPatch.noGameplayCodeModified!==true||
+     !/^[a-f0-9]{64}$/.test(audioPatch.patchedFiles?.['src/Engine/Game.cpp']||'')||
+     sha256(JSON.stringify(audioPatch))!==manifest.audioPatchSha256)
+    throw new Error('NATIVE_AUDIO_MUTE_PATCH_IDENTITY_MISMATCH');
   if (sha256(fs.readFileSync(a['--binary']))!==manifest.binarySha256) throw new Error('NATIVE_BINARY_HASH_MISMATCH');
   const out=path.resolve(a['--out']);
   if (fs.existsSync(out)) throw new Error('OUTPUT_ALREADY_EXISTS: use a fresh output directory');
@@ -124,9 +132,8 @@ export async function runNative(a) {
   if (fs.existsSync(mods)) fs.symlinkSync(mods,path.join(user,'mods'),'dir');
   const tracePath=path.join(out,'native-events.jsonl');
   const env={...process.env,XPZ_NATIVE_PLAN:fs.realpathSync(a['--plan']),XPZ_NATIVE_TRACE:tracePath,
-    // Original Game::initAudio explicitly sets Options::mute=true if SDL_InitSubSystem
-    // rejects the driver. This avoids loading hundreds of MiB of sound files;
-    // no original gameplay, AI, movement, damage or RNG implementation is patched.
+    // Game::initAudio uses explicit Options::mute=true only under XPZ_NATIVE_PLAN.
+    // Do not rely on SDL's fallback behavior for an invalid driver name.
     SDL_AUDIODRIVER:HEADLESS_AUDIO_DRIVER,SDL_VIDEODRIVER:a['--xvfb']?'x11':'dummy'};
   if(runtime)env.LD_LIBRARY_PATH=runtime.lib;
   delete env.XPZ_NATIVE_SEED;
@@ -140,6 +147,7 @@ export async function runNative(a) {
     driverOverrideSha256:manifest.driverOverrideSha256,driverOverrideReceiptSha256:manifest.driverOverrideReceiptSha256,
     sourceVariant:manifest.sourceVariant,sourceVariantReceiptSha256:manifest.sourceVariantReceiptSha256,
     sourceVariantArchiveSha256:manifest.sourceVariantArchiveSha256,
+    audioPatchSha256:manifest.audioPatchSha256,
     binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     audioPolicy:HEADLESS_AUDIO_POLICY,
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
@@ -197,7 +205,7 @@ export async function runNative(a) {
     driverOverrideSha256:manifest.driverOverrideSha256,driverOverrideReceiptSha256:manifest.driverOverrideReceiptSha256,
     sourceVariant:manifest.sourceVariant,sourceVariantReceiptSha256:manifest.sourceVariantReceiptSha256,
     sourceVariantArchiveSha256:manifest.sourceVariantArchiveSha256,
-    clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
+    clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,audioPatchSha256:manifest.audioPatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
     seed:provenance.seed,inputSaveSha256:inputHash,runtimeManifestSha256:provenance.runtimeManifestSha256,
     display:provenance.display,audioPolicy:provenance.audioPolicy,checkpoints};
   fs.writeFileSync(path.join(out,'replay-result.json'),JSON.stringify(result,null,2)+'\n');

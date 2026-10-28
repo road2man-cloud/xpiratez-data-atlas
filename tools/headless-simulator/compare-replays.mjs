@@ -11,7 +11,7 @@ export function compare(a,b){
       !/^[a-f0-9]{64}$/.test(r.nativeFinishSnapshotSha256||'')||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(r.nativeMissionOutcome)))
       throw new Error('VALID_NATIVE_FINISH_SNAPSHOT_REQUIRED');
   }
-  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256']) {
+  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','audioPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256']) {
     if(!/^[a-f0-9]{64}$/.test(a[k]||'') || !/^[a-f0-9]{64}$/.test(b[k]||''))throw new Error('REPLAY_FINGERPRINT_MISSING: '+k);
     if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
   }
@@ -21,7 +21,7 @@ export function compare(a,b){
     if(!['dummy','xvfb'].includes(r.display))throw new Error('REPLAY_DISPLAY_IDENTITY_MISSING');
   }
   for(const k of ['runtimeManifestSha256','display','sourceVariant','sourceVariantArchiveSha256','audioPolicy'])if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
-  if(a.audioPolicy!=='ORIGINAL_OXCE_SDL_INIT_FAILURE_MUTE')throw new Error('REPLAY_AUDIO_POLICY_MISSING');
+  if(a.audioPolicy!=='ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE')throw new Error('REPLAY_AUDIO_POLICY_MISSING');
   if(!['R43_RC17_ORIGINAL_SOURCE','RC18_SOURCE_BASELINE'].includes(a.sourceVariant))throw new Error('REPLAY_SOURCE_VARIANT_MISSING');
   if(a.seed!==b.seed || a.seed==null)throw new Error('INCOMPARABLE_INPUT: seed');
   const differences=[];
