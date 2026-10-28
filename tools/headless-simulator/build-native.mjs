@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
+import {applyClockAdapter} from './clock-patch.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export function checked(command,args,options={}){
   const r=spawnSync(command,args,{stdio:'inherit',shell:false,...options});
@@ -49,8 +50,12 @@ export function buildNative(out,jobs=2){
   const source=path.join(out,'source'),build=path.join(out,'build'),bundle=path.join(out,'bundle');
   fs.mkdirSync(source,{recursive:true});
   checked('tar',['-xzf',archive,'-C',source]);
-  const manifest=JSON.parse(fs.readFileSync(path.join(source,'native-source-manifest.json'),'utf8'));
+  let manifest=JSON.parse(fs.readFileSync(path.join(source,'native-source-manifest.json'),'utf8'));
   if(manifest.sourceTreeSha256!==lock.sourceTreeSha256||manifest.driverSha256!==lock.driverSha256)throw new Error('SOURCE_LOCK_MISMATCH');
+  verifySource(source,manifest);
+  // The archive is immutable. Apply a separately locked scheduling adapter
+  // in the disposable build tree, leaving all original battle algorithms intact.
+  manifest=applyClockAdapter(source,manifest);
   verifySource(source,manifest);
   prepareBuildAssetDirectories(source);
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
@@ -64,8 +69,10 @@ export function buildNative(out,jobs=2){
   fs.copyFileSync(path.join(source,'LICENSE.txt'),path.join(bundle,'LICENSE.txt'));
   fs.copyFileSync(path.join(source,'native-source-manifest.json'),path.join(bundle,'native-source-manifest.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
+  fs.copyFileSync(path.join(HERE,'native/clock.lock.json'),path.join(bundle,'clock.lock.json'));
   const record={schema:1,backend:'OXCE_NATIVE',parityCertified:false,binarySha256:sha256(fs.readFileSync(binary)),
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
+    clockAdapterSha256:manifest.clockAdapterSha256,fixedClockPolicy:manifest.fixedClockPolicy,fixedClockDefault:false,
     platform:process.platform,arch:process.arch,buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
   console.log(JSON.stringify({bundle,...record},null,2));

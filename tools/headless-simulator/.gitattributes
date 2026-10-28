@@ -1,0 +1,7 @@
+# Native fingerprints must be identical on Windows and Linux checkouts.
+*.mjs text eol=lf
+*.md text eol=lf
+native/*.h text eol=lf
+native/*.json text eol=lf
+native/*.gz -text
+examples/*.actions text eol=lf

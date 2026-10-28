@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 
 export function parseArgs(argv) {
-  const flags = new Set(['--experimental','--xvfb']);
+  const flags = new Set(['--experimental','--xvfb','--fixed-clock']);
   const values = new Set(['--binary','--manifest','--data','--user','--config','--save','--plan','--out','--master','--seed','--timeout','--runtime']);
   const a = {};
   for (let i=0;i<argv.length;i++) {
@@ -19,6 +19,13 @@ export function parseArgs(argv) {
     else throw new Error('UNSUPPORTED_OR_MISSING_ARGUMENT: '+k);
   }
   return a;
+}
+export function nativeClockEnvironment(a, base=process.env) {
+  const env={...base};
+  // A previous experiment must not silently select a different timing policy.
+  delete env.XPZ_NATIVE_LOGICAL_CLOCK;
+  if(a['--fixed-clock'])env.XPZ_NATIVE_LOGICAL_CLOCK='fixed-1ms-v1';
+  return env;
 }
 export function verifyRuntime(dir) {
   dir=fs.realpathSync(dir);
@@ -46,6 +53,9 @@ export function preflight(a, platform=process.platform) {
   if (manifest.schema!==1 || manifest.backend!=='OXCE_NATIVE' || !/^[a-f0-9]{64}$/.test(manifest.sourceTreeSha256||'') || !/^[a-f0-9]{64}$/.test(manifest.driverSha256||''))
     throw new Error('INVALID_NATIVE_BUILD_MANIFEST');
   if (sha256(fs.readFileSync(a['--binary']))!==manifest.binarySha256) throw new Error('NATIVE_BINARY_HASH_MISMATCH');
+  const clockPolicy=a['--fixed-clock']?'fixed-1ms-v1':'wall-clock';
+  if(a['--fixed-clock']&&(manifest.fixedClockPolicy!==clockPolicy||!/^[a-f0-9]{64}$/.test(manifest.clockAdapterSha256||'')))
+    throw new Error('NATIVE_FIXED_CLOCK_UNSUPPORTED: rebuild the original engine with the locked clock adapter');
   const out=path.resolve(a['--out']);
   if (fs.existsSync(out)) throw new Error('OUTPUT_ALREADY_EXISTS: use a fresh output directory');
   for (const k of ['--data','--user']) {
@@ -58,10 +68,10 @@ export function preflight(a, platform=process.platform) {
   if (!Number.isFinite(timeout)||timeout<1||timeout>86400) throw new Error('INVALID_TIMEOUT');
   if (a['--seed'] && (!/^[1-9][0-9]*$/.test(a['--seed']) || BigInt(a['--seed'])>18446744073709551615n)) throw new Error('INVALID_UINT64_SEED');
   const runtime=a['--runtime']?verifyRuntime(a['--runtime']):null;
-  return {manifest,out,master,timeout,runtime};
+  return {manifest,out,master,timeout,runtime,clockPolicy};
 }
 export async function runNative(a) {
-  const {manifest,out,master,timeout,runtime}=preflight(a);
+  const {manifest,out,master,timeout,runtime,clockPolicy}=preflight(a);
   const sourceSave=fs.realpathSync(a['--save']);
   const inputHash=sha256(fs.readFileSync(sourceSave));
   const user=path.join(out,'user'),cfg=path.join(out,'config');
@@ -71,7 +81,7 @@ export async function runNative(a) {
   const mods=path.join(fs.realpathSync(a['--user']),'mods');
   if (fs.existsSync(mods)) fs.symlinkSync(mods,path.join(user,'mods'),'dir');
   const tracePath=path.join(out,'native-events.jsonl');
-  const env={...process.env,XPZ_NATIVE_PLAN:fs.realpathSync(a['--plan']),XPZ_NATIVE_TRACE:tracePath,SDL_AUDIODRIVER:'dummy',SDL_VIDEODRIVER:a['--xvfb']?'x11':'dummy'};
+  const env={...nativeClockEnvironment(a),XPZ_NATIVE_PLAN:fs.realpathSync(a['--plan']),XPZ_NATIVE_TRACE:tracePath,SDL_AUDIODRIVER:'dummy',SDL_VIDEODRIVER:a['--xvfb']?'x11':'dummy'};
   if(runtime)env.LD_LIBRARY_PATH=runtime.lib;
   delete env.XPZ_NATIVE_SEED;
   if(a['--seed'])env.XPZ_NATIVE_SEED=a['--seed'];
@@ -80,7 +90,7 @@ export async function runNative(a) {
   let args=['-data',fs.realpathSync(a['--data']),'-user',user+path.sep,'-config',cfg+path.sep,'-master',master,'-load','input.sav',
     '-newSeedOnLoad','false','-playIntro','false','-useOpenGL','false','-skipNextTurnScreen','true','-soundVolume','0','-musicVolume','0','-uiVolume','0'];
   if(a['--xvfb']) {cmd='xvfb-run';args=['-a',binary,...args];}
-  const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
+  const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,clockPolicy,clockAdapterSha256:manifest.clockAdapterSha256||null,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
     binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
   fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify(provenance,null,2)+'\n');
@@ -112,6 +122,7 @@ export async function runNative(a) {
     c.snapshotSha256=sha256(fs.readFileSync(file));
   }
   const result={backend:'OXCE_NATIVE',planCompleted:true,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
+    clockPolicy,clockAdapterSha256:manifest.clockAdapterSha256||null,
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
     binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
     seed:provenance.seed,inputSaveSha256:inputHash,checkpoints};

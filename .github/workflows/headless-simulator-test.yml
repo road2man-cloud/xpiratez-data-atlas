@@ -1,7 +1,7 @@
 name: Native OXCE integrity and build (not combat validation)
 on:
   push:
-    branches: [main, fix/native-headless-only-20261028, fix/native-turn-ack-20261028]
+    branches: [main, fix/native-headless-only-20261028, fix/native-turn-ack-20261028, fix/native-fixed-clock-20261028]
     paths:
       - 'tools/headless-simulator/**'
       - '.github/workflows/headless-simulator-test.yml'
@@ -21,7 +21,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tools/headless-simulator/native.test.mjs
+      - name: Integrity and original C++ timer scheduling tests (not battle replays)
+        run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native.clock.test.mjs
+      - name: Small offline source and adapter kit (no game assets or saves)
+        uses: actions/upload-artifact@v4
+        with:
+          name: xpz-native-source-kit-${{ github.sha }}
+          path: tools/headless-simulator/
+          if-no-files-found: error
   native-build:
     name: Compile original OXCE (no campaign or combat run)
     if: github.event_name != 'pull_request'
