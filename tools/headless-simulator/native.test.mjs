@@ -12,6 +12,7 @@ import {patchTimerHeader,patchTimerCpp,patchGameCpp,applyNativeClock} from './de
 import {patchFinishBattle,patchOutcomeGame,applyNativeOutcome} from './native-outcome.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
 import {verifySource,applyNativeDriverOverride,prepareBuildAssetDirectories} from './build-native.mjs';
+import {applyOriginalSourceVariant} from './source-variant.mjs';
 import {compare} from './compare-replays.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
@@ -186,6 +187,36 @@ test('source archive and every expected native source file match the lock',()=>{
     assert.throws(()=>verifySource(temp,m),/SOURCE_FILE_HASH_MISMATCH/);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
+test('RC17 original-source variant overlays exact authored bytes without changing combat math',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-rc17-'));
+  try{
+    const extracted=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',root],
+      {cwd:ROOT,encoding:'utf8'});
+    assert.equal(extracted.status,0,extracted.stderr);
+    const base=JSON.parse(fs.readFileSync(path.join(root,'native-source-manifest.json'),'utf8'));
+    verifySource(root,base);
+    const meta=JSON.parse(fs.readFileSync(path.join(ROOT,'native/rc17-source-overlay.json'),'utf8'));
+    const source=fs.readFileSync(path.join(ROOT,'native/rc17-source-overlay.tar.gz'));
+    assert.equal(sha256(source),meta.archiveSha256);
+    assert.equal(meta.originalRc17FileCount,823);
+    assert.equal(Object.keys(meta.changed).length,16);
+    assert.equal(Object.keys(meta.removed).length,9);
+    const receipt=applyOriginalSourceVariant(root,'rc17');
+    assert.equal(receipt.mode,'PINNED_ORIGINAL_SOURCE_OVERLAY');
+    assert.equal(receipt.changedFiles,16);
+    assert.equal(receipt.removedFiles,9);
+    for(const [p,entry] of Object.entries(meta.changed))
+      assert.equal(sha256(fs.readFileSync(path.join(root,p))),entry.sha256);
+    for(const p of Object.keys(meta.removed))
+      assert.equal(fs.existsSync(path.join(root,p)),false);
+    for(const p of ['src/Battlescape/TileEngine.cpp','src/Battlescape/Pathfinding.cpp',
+                    'src/Battlescape/AIModule.cpp','src/Engine/RNG.cpp'])
+      assert.equal(sha256(fs.readFileSync(path.join(root,p))),base.sourceFiles[p]);
+    assert.throws(()=>applyOriginalSourceVariant(root,'rc17'),/RC17_REPLACEMENT_BYTES_MISMATCH/);
+    assert.equal(applyOriginalSourceVariant(root,'rc18').sourceVariant,'RC18_SOURCE_BASELINE');
+    assert.throws(()=>applyOriginalSourceVariant(root,'approx'),/UNSUPPORTED_NATIVE_SOURCE_VARIANT/);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
 test('explicit authoritative src overlay is fingerprinted without changing either original tree',()=>{
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-overlay-'));
   const base=path.join(temp,'base'),overlay=path.join(temp,'overlay'),out=path.join(temp,'prepared');
@@ -234,8 +265,8 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
-  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
-  const fields=['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
+  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
+  const fields=['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);
   for(const k of fields){const b=structuredClone(a);b[k]='c'.repeat(64);assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT/);delete b[k];assert.throws(()=>compare(a,b),/REPLAY_FINGERPRINT_MISSING/);}

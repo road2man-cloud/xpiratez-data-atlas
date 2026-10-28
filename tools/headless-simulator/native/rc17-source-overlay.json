@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "variant": "R43_RC17_ORIGINAL_SOURCE",
+  "baseArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "baseSourceTreeSha256": "a64bb1a2956fb946e44930b1c97437d7fe10ce130029622bf67f332a87d75d4a",
+  "originalRc17FileCount": 823,
+  "originalRc17TreeDigest": "231fbdcc86e93b0a2f659c66a53c981d2c6c648fc4cf24cc28eaf3c0db2448db",
+  "archiveSha256": "0434e437409f33d3020a81a7129557e2d06ef6bb8c946ba036c24d598150842b",
+  "changed": {
+    "src/Battlescape/BattlescapeState.cpp": {
+      "sha256": "e2ea102720e88cf5302d03f152cfdfffd353c814f71fe994a0cbec206acc4923",
+      "size": 132983,
+      "beforeSha256": "b31c73cebff0e21105b5a6863942715d94bf8b70fa12128745bc57764bbf3e76"
+    },
+    "src/Battlescape/BattlescapeState.h": {
+      "sha256": "3b4fab4d4a0f1799787b76cd7857128cacdf8b9c38897602e1f44bca9c59c4e4",
+      "size": 12134,
+      "beforeSha256": "bb3edd47831f731386e3662b71501e79811d177a1e9014fba9bd755b7a06bff9"
+    },
+    "src/Battlescape/Camera.cpp": {
+      "sha256": "98788e55101f7536a18d8a41a7e2b978521685337504298e739efdf17184d8ca",
+      "size": 17513,
+      "beforeSha256": "a66b3000e9da076bf85de40003239a5f42f995debe5e76777404ba7130d31297"
+    },
+    "src/Battlescape/Camera.h": {
+      "sha256": "a5e5b125c7009c9ad1239b0b401df98bff66cac05ee7675405004fff9b3ede0f",
+      "size": 4204,
+      "beforeSha256": "84e2846cd9fd01f69156518a24a508b8b0616975a07299ee62ad99353d8d4d57"
+    },
+    "src/Battlescape/Map.cpp": {
+      "sha256": "19cade118c6092ec76a2c65b900387e83b10d1888f9b1d52f8e9d40c80c3242b",
+      "size": 251460,
+      "beforeSha256": "d2a4f72cdc99939f57426b7c31759695e06c69a2eb66f1e450b0d76d6f0ee64e"
+    },
+    "src/Battlescape/Map.h": {
+      "sha256": "c70fc0db66f1cef2f87db59f2a97c464cc381dacda8a55ba5ce386e4a72dfbd0",
+      "size": 14787,
+      "beforeSha256": "08ab1d3381bccfb2dcd6e42466f9bdacd64ea53dd2857bd34908bf2951e0f9d7"
+    },
+    "src/Battlescape/MiniMapView.cpp": {
+      "sha256": "c5f37a4c606e5ccad321479f588fd52335c5e4725dcd7d5e3f7211d0b7c252ea",
+      "size": 16190,
+      "beforeSha256": "eb912ab387a38b13d4780336c1ad507c633fd000336dc54485f51068c75f6926"
+    },
+    "src/Battlescape/TurnDiaryState.cpp": {
+      "sha256": "29f89baaf725cbc188d762ec3c59fce5ee871abf07cc456c5b322ddf58c9fea7",
+      "size": 3225,
+      "beforeSha256": "dccdbcda24008e51ad8bbd505ed5577e528980f22abfa21ad01a73da5cc2f69a"
+    },
+    "src/Battlescape/UnitInfoState.cpp": {
+      "sha256": "e21833cad6b2414ef4859139f68bc0beca2cba76935d92011ffaf19f17ec453a",
+      "size": 21673,
+      "beforeSha256": "f9978b6491d9f2195d2b35e0a028e71416932882b21e99a7319a44c17d7d0be6"
+    },
+    "src/Battlescape/UnitInfoState.h": {
+      "sha256": "961d9d35a526b5ee94d825820b0fce77e73f20cdf2a50e3ac38bd2b6c4add55d",
+      "size": 2812,
+      "beforeSha256": "6c1be33807355f288769d3842dc8fc8c2ecec1c3ecd69425a120c8769a462d0b"
+    },
+    "src/Menu/OptionsAdvancedState.cpp": {
+      "sha256": "49f2601642f9d7af7464ccb91a95e41a72259ced4709eeb4274fad93b8c408c8",
+      "size": 13351,
+      "beforeSha256": "52657aaa0ec4cd88544ba877bb67297e1da82593e120c99c24bfd7d388f9ea6d"
+    },
+    "src/Mod/Mod.cpp": {
+      "sha256": "cfffd095b6e37921eee4475e3bc53563d1d929b5aea873eda768224370005eda",
+      "size": 198521,
+      "beforeSha256": "e5ad34678925d4a8ed03672a666911a375129bc7fd3ca214fd15189ac7868cc6"
+    },
+    "src/Savegame/BattleUnit.h": {
+      "sha256": "fb3687feced77cf92ac97f4f9462b3793db2d378413c32227f37e466e7156556",
+      "size": 37593,
+      "beforeSha256": "085285197d8e34f274b10daeb82a01a3832b84be848bc62b73153d12069ab763"
+    },
+    "src/Savegame/HitLog.cpp": {
+      "sha256": "1840b1b143e602997f262264f55c4c42de927a14eaada71219cc6931b91dd2fc",
+      "size": 3757,
+      "beforeSha256": "93fba2b352fb43cd0a3f7b9896e60c141e4848b9680a77ff9d4c0a4d5e355481"
+    },
+    "src/Savegame/HitLog.h": {
+      "sha256": "acdd5b43ffd8bde137ae2f2b0b7078e9663eacff520cdc22efb811db9bfda24e",
+      "size": 1992,
+      "beforeSha256": "89d6b9c0db8d2216a452446f853891557cad65af85da0e09144488e660be00f6"
+    },
+    "src/Savegame/SavedBattleGame.cpp": {
+      "sha256": "11e95771d30a1b1ed9e775b2e91e709c2d738f56a8991a4322e90d8049da45d4",
+      "size": 102070,
+      "beforeSha256": "b4e553d54b503f531a2cfe2d78f92e156823391c83bc0a706e70e4c4ad89ec70"
+    }
+  },
+  "removed": {
+    "src/Battlescape/CameraScrollBounds.h": "df07b3f326dd5279e6052f6f190289780bd385684c59e04dd6b6e6b96c53f65c",
+    "src/Battlescape/Map_RC40_HULL_YFACE_QA.cpp": "76cd2f628c032698d1ee1bbf169ad6d4043fe665060865a0a84f5f42bf580831",
+    "src/Battlescape/Map_RC41_COLOR_PROVENANCE_QA.cpp": "1e2b2281461f693aaddc10979b2fd248c1aeb555f6acb4e86bc96c40d0928c44",
+    "src/Battlescape/Map_RC42_ALL_OBJECT_PROVENANCE_QA.cpp": "a400a7a663e3a1c50a69f413433a24f5e6e982f109e9da82b7a2cadce20d010a",
+    "src/Battlescape/Map_RC43_FRAME_MASK_QA.cpp": "a0b859cf2e6edb5a98f973aec8fbf690e5af59a6893bddc5a80d4b311ce832d7",
+    "src/Battlescape/Map_RC44_FRAME_RANGE_QA.cpp": "6b983e6a378bc29ee015191fd8f61033833086faeae56096563aaad9c64280da",
+    "src/Battlescape/Map_RC47_PSI_PROB_QA.cpp": "f84b353af199a80a9680a3bf6d6d9d546c6ba92886ea296d78aeabb2be4af057",
+    "src/Battlescape/Rc49FriendlyFireQa.inc": "a63399d6f334fec1bb2396fc880381a462060bdd8ed684604d97a2351255a1bb",
+    "src/Battlescape/Rc50FriendlyFireVariantsQa.inc": "f6f6c9f411e609dbd89583e24cdfc0289724f50f68a167b42ab3644f876d4e7d"
+  }
+}

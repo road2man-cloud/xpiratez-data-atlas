@@ -8,6 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 import {applyNativeClock} from './deterministic-clock.mjs';
 import {applyNativeOutcome} from './native-outcome.mjs';
+import {applyOriginalSourceVariant} from './source-variant.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export function checked(command,args,options={}){
   const r=spawnSync(command,args,{stdio:'inherit',shell:false,...options});
@@ -52,7 +53,7 @@ export function prepareBuildAssetDirectories(source){
     fs.mkdirSync(dir,{recursive:true});
   }
 }
-export function buildNative(out,jobs=2){
+export function buildNative(out,jobs=2,variant='rc18'){
   if(process.platform!=='linux')throw new Error('LINUX_BUILD_REQUIRED: Windows builds may check compilation only');
   out=path.resolve(out);
   if(fs.existsSync(out))throw new Error('OUTPUT_ALREADY_EXISTS');
@@ -70,6 +71,9 @@ export function buildNative(out,jobs=2){
   const manifest=JSON.parse(fs.readFileSync(path.join(source,'native-source-manifest.json'),'utf8'));
   if(manifest.sourceTreeSha256!==lock.sourceTreeSha256||manifest.driverSha256!==lock.driverSha256)throw new Error('SOURCE_LOCK_MISMATCH');
   verifySource(source,manifest);
+  const sourceVariant=applyOriginalSourceVariant(source,variant);
+  const sourceVariantReceiptSha256=sha256(JSON.stringify(sourceVariant));
+  fs.writeFileSync(path.join(source,'native-source-variant.json'),JSON.stringify(sourceVariant,null,2)+'\n');
   const driverOverride=applyNativeDriverOverride(source,lock);
   const driverOverrideReceiptSha256=sha256(JSON.stringify(driverOverride));
   fs.writeFileSync(path.join(source,'native-driver-override.json'),JSON.stringify(driverOverride,null,2)+'\n');
@@ -93,18 +97,21 @@ export function buildNative(out,jobs=2){
   fs.copyFileSync(path.join(source,'LICENSE.txt'),path.join(bundle,'LICENSE.txt'));
   fs.copyFileSync(path.join(source,'native-source-manifest.json'),path.join(bundle,'native-source-manifest.json'));
   fs.copyFileSync(path.join(source,'native-driver-override.json'),path.join(bundle,'native-driver-override.json'));
+  fs.copyFileSync(path.join(source,'native-source-variant.json'),path.join(bundle,'native-source-variant.json'));
   fs.copyFileSync(path.join(source,'native-clock-patch.json'),path.join(bundle,'native-clock-patch.json'));
   fs.copyFileSync(path.join(source,'native-outcome-patch.json'),path.join(bundle,'native-outcome-patch.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
   // The binary artifact also carries the matching launcher/verifier. This avoids
   // accidentally mixing an old offline runner with a newer native binary.
-  for(const rel of ['run-native.mjs','prepare-native.mjs','compare-replays.mjs','verify-native-replays.mjs','README.md','examples/end-turn.actions','native/source.lock.json']) {
+  for(const rel of ['run-native.mjs','prepare-native.mjs','compare-replays.mjs','verify-native-replays.mjs','README.md','examples/end-turn.actions','native/source.lock.json','native/rc17-source-overlay.json']) {
     const dest=path.join(bundle,'runner',rel);
     fs.mkdirSync(path.dirname(dest),{recursive:true});fs.copyFileSync(path.join(HERE,rel),dest);
   }
   const record={schema:1,backend:'OXCE_NATIVE',parityCertified:false,binarySha256:sha256(fs.readFileSync(binary)),
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
     driverOverrideSha256:driverOverride.driverOverrideSha256,driverOverrideReceiptSha256,
+    sourceVariant:sourceVariant.sourceVariant,sourceVariantReceiptSha256,
+    sourceVariantArchiveSha256:sourceVariant.rc17OverlayArchiveSha256,
     clockPatchSha256,outcomePatchSha256,
     platform:process.platform,arch:process.arch,buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
@@ -112,6 +119,6 @@ export function buildNative(out,jobs=2){
   return record;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  try{const [out,jobs]=process.argv.slice(2);if(!out)throw new Error('Usage: node build-native.mjs NEW_OUTPUT_DIR [JOBS=2]');buildNative(out,Number(jobs||2));}
+  try{const [out,jobs,variant,...extra]=process.argv.slice(2);if(!out||extra.length)throw new Error('Usage: node build-native.mjs NEW_OUTPUT_DIR [JOBS=2] [rc18|rc17]');buildNative(out,Number(jobs||2),variant||'rc18');}
   catch(e){console.error(e.message);process.exitCode=1;}
 }

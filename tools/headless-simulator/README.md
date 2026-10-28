@@ -22,6 +22,18 @@
 
 이 종료 관측 패치도 원본 GUI와 재생 비교를 통과하기 전에는 **실험 기능**입니다. 컴파일과 가짜 테스트만으로 승리 사례가 생성되지는 않습니다.
 
+### `3.sav`와 RC17 원본 소스 일치 빌드
+
+`3.sav`는 `v2026-10-25 R43-RC17-SKYRAMP-QUAD-FIX`에서 생성됐습니다. 기존 헤드리스 보관 소스에는 RC18 이후 변경이 섞여 있으므로, 이제 **RC17 원본 소스 전용 빌드**를 명시적으로 선택할 수 있습니다.
+
+```sh
+node tools/headless-simulator/build-native.mjs /tmp/xpz-native-rc17 2 rc17
+```
+
+원본 `native/oxce-source.tar.gz` 파일은 손대지 않습니다. `native/rc17-source-overlay.tar.gz` (196,043바이트)에는 서로 다른 **16개의 RC17 원본 소스/헤더**만 들어 있고, RC18에만 존재하는 신규 9개 파일은 RC17 빌드 단계에서 제거합니다. 아카이브와 교체 전후 SHA-256을 검사하며, 결과에는 `native-source-variant.json`과 `native-build.json.sourceVariantReceiptSha256`을 기록합니다. 헤드리스 명령 입력에 삽입된 `BattlescapeGame.cpp`, `Game.cpp`의 공통 훅은 유지합니다.
+
+RC18 소스의 기본 빌드는 기존처럼 `build-native.mjs OUTPUT 2 rc18` 또는 마지막 인수 생략으로 유지합니다. GitHub Actions는 두 버전을 별도로 컴파일하며 각 실행 파일 이름에 `rc17`/`rc18`을 붙입니다. **RC17 소스 일치가 사용자의 RC17 게임 실행 파일과의 완전한 바이너리/GUI 동등성을 인증하는 것은 아닙니다.** 또한 원본 게임 리소스와 실제 네이티브 런타임 재생은 별도 검증이 필요합니다.
+
 ### 원본 엔진 결정적 시간 진행 (실험적 빌드)
 
 원본 전투 로직은 `RNG`, `AIModule`, `TileEngine`, `Pathfinding`에서 그대로 실행합니다. 화면 없는 실행에서만 `Timer::slowTick()`을 벽시계 대신 **게임 루프마다 16ms 증가하는 고정 틱**으로 구동합니다. `Game::run`의 헤드리스 전용 `SDL_Delay(1)`도 제거합니다. 일반 GUI 경로의 시간 처리에는 변경이 없습니다.
