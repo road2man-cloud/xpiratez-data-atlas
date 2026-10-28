@@ -38,6 +38,8 @@ node tools/headless-simulator/build-native.mjs /tmp/xpz-native-build 2
 
 빌드 산출물: `/tmp/xpz-native-build/bundle/oxce-native`, `native-build.json`, 소스 매니페스트, GPL 라이선스. 실행 바이너리는 현재 동적 링크이므로 실행 환경에도 해당 라이브러리가 필요합니다. CI 산출물은 **빌드 결과일 뿐, 전투 재현 성공 인증이 아닙니다**.
 
+원본 CMake는 링크 후 `bin/TFTD`, `bin/UFO`, `bin/common`, `bin/standard` 폴더를 복사합니다. 소스 전용 빌드 스크립트는 이 단계에 필요한 **빈 폴더만** 준비합니다. 가짜 게임 자산을 생성하지 않으며, 실행 시에는 실제 데이터가 별도로 필요합니다.
+
 원본 전체 소스·라이선스는 압축본 안에 있습니다. 기본 저장소는 MeridianOXC/OpenXcom이며, 사용자 개발 변경도 스냅샷에 보존했습니다. 설치 폴더나 개발 원본을 덮어쓰지 않습니다.
 
 ## GPT Linux 환경에서만 실험 실행

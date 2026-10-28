@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256} from './prepare-native.mjs';
 import {parseArgs,preflight} from './run-native.mjs';
-import {verifySource} from './build-native.mjs';
+import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
 test('retired numerical simulator and its success-looking tests do not exist',()=>{
@@ -71,6 +71,16 @@ test('source archive and every expected native source file match the lock',()=>{
     }
     fs.appendFileSync(path.join(temp,'src/Engine/RNG.cpp'),'\n// tamper\n');
     assert.throws(()=>verifySource(temp,m),/SOURCE_FILE_HASH_MISMATCH/);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+test('source-only build stages empty resource folders without inventing game data',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-packaging-'));
+  try{
+    prepareBuildAssetDirectories(temp);
+    prepareBuildAssetDirectories(temp);
+    for(const name of ['TFTD','UFO','common','standard'])
+      assert.deepEqual(fs.readdirSync(path.join(temp,'bin',name)),[]);
+    assert.deepEqual(fs.readdirSync(temp),['bin']);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 test('native driver forwards commands and never generates outcome probabilities',()=>{

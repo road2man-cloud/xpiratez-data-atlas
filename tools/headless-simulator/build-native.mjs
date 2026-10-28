@@ -24,6 +24,16 @@ export function verifySource(root,manifest){
   }
   if(sha256(fs.readFileSync(path.join(root,'src/Headless/ReplayDriver.h')))!==manifest.driverSha256)throw new Error('DRIVER_HASH_MISMATCH');
 }
+export function prepareBuildAssetDirectories(source){
+  // Upstream CMake copies these folders after linking even when EMBED_ASSETS=OFF.
+  // The source-only archive intentionally contains no game assets. Empty build
+  // staging directories satisfy that packaging step without changing native
+  // source or manufacturing runtime resources. Actual assets remain required.
+  for(const name of ['TFTD','UFO','common','standard']){
+    const dir=path.join(source,'bin',name);
+    fs.mkdirSync(dir,{recursive:true});
+  }
+}
 export function buildNative(out,jobs=2){
   if(process.platform!=='linux')throw new Error('LINUX_BUILD_REQUIRED: Windows builds may check compilation only');
   out=path.resolve(out);
@@ -42,6 +52,7 @@ export function buildNative(out,jobs=2){
   const manifest=JSON.parse(fs.readFileSync(path.join(source,'native-source-manifest.json'),'utf8'));
   if(manifest.sourceTreeSha256!==lock.sourceTreeSha256||manifest.driverSha256!==lock.driverSha256)throw new Error('SOURCE_LOCK_MISMATCH');
   verifySource(source,manifest);
+  prepareBuildAssetDirectories(source);
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
   checked('cmake',configure);
   checked('cmake',['--build',build,'--target','openxcom','--parallel',String(jobs)]);
