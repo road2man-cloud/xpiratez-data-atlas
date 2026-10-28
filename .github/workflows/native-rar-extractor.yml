@@ -1,0 +1,32 @@
+name: Native RAR5 extraction helper (Linux x64)
+on:
+  push:
+    paths:
+      - '.github/workflows/native-rar-extractor.yml'
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install distro RAR5 decoder
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y unrar
+          command -v unrar
+      - name: Package decoder, licenses and runner scripts
+        run: |
+          mkdir -p staging
+          cp "$(command -v unrar)" staging/unrar
+          chmod +x staging/unrar
+          ldd staging/unrar > staging/linked-libraries.txt
+          printf '%s\n' 'Ubuntu unrar decoder for user-provided multi-volume RAR5 archives. This helper performs no battle calculations. Redistribution notice: copyright.txt.' > staging/README.txt
+          sha256sum staging/unrar > staging/SHA256SUMS
+          dpkg-query -s unrar > staging/ubuntu-package.txt
+          cp /usr/share/doc/unrar/copyright staging/copyright.txt
+          cp -R tools/headless-simulator staging/headless-simulator
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-rar5-helper-linux-x64
+          path: staging/
+          retention-days: 7
