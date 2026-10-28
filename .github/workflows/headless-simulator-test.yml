@@ -1,0 +1,21 @@
+name: Headless Simulator Selftest
+on:
+  push:
+    paths:
+      - 'tools/headless-simulator/**'
+      - '.github/workflows/headless-simulator-test.yml'
+  pull_request:
+    paths:
+      - 'tools/headless-simulator/**'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: node --check tools/headless-simulator/simulate.mjs
+      - name: Unit tests
+        run: node --test tools/headless-simulator/test.mjs
