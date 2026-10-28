@@ -34,6 +34,12 @@ node tools/headless-simulator/build-native.mjs /tmp/xpz-native-rc17 2 rc17
 
 RC18 소스의 기본 빌드는 기존처럼 `build-native.mjs OUTPUT 2 rc18` 또는 마지막 인수 생략으로 유지합니다. GitHub Actions는 두 버전을 별도로 컴파일하며 각 실행 파일 이름에 `rc17`/`rc18`을 붙입니다. **RC17 소스 일치가 사용자의 RC17 게임 실행 파일과의 완전한 바이너리/GUI 동등성을 인증하는 것은 아닙니다.** 또한 원본 게임 리소스와 실제 네이티브 런타임 재생은 별도 검증이 필요합니다.
 
+### `3.sav` 적 턴에서 발생하는 원본 사망·기절 확인창 처리
+
+`3.sav`의 적 턴을 GPT Linux 원본 RC17 엔진으로 실행했을 때, 적 투척 이후 `InfoboxOKState`가 표시되며 헤드리스 입력을 기다려 **턴이 진행되지 않는 문제**를 관측했습니다. 원본 `InfoboxOKState::btnOkClick(nullptr)`는 `Game::popState()`를 호출하는 확인 동작이므로, 헤드리스 실행에서 원본 `think()` 후 그 알림창이 그대로 활성 상태일 때만 해당 핸들러를 호출합니다. 원본 `UnitDieBState`, `TileEngine`, `RNG`, `AIModule` 및 전투 계산은 변경하지 않습니다. 다른 UI 상태를 무조건 종료하지 않습니다.
+
+이 수정은 코드 테스트와 Linux 컴파일을 통과한 뒤 실제 `3.sav` 재생으로 **다시 검증해야** 합니다. 이 확인창의 발생·닫힘만으로 피해량, 턴 완료 또는 승리를 확정하지 않습니다.
+
 ### 원본 엔진 결정적 시간 진행 (실험적 빌드)
 
 원본 전투 로직은 `RNG`, `AIModule`, `TileEngine`, `Pathfinding`에서 그대로 실행합니다. 화면 없는 실행에서만 `Timer::slowTick()`을 벽시계 대신 **게임 루프마다 16ms 증가하는 고정 틱**으로 구동합니다. `Game::run`의 헤드리스 전용 `SDL_Delay(1)`도 제거합니다. 일반 GUI 경로의 시간 처리에는 변경이 없습니다.

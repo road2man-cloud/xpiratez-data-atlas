@@ -100,8 +100,12 @@ test('headless deterministic clock replaces wall-clock scheduling only',()=>{
   const cpp=patchTimerCpp('#include "Timer.h"\nnamespace OpenXcom {\nnamespace {\nconst Uint32 accurate = 4;\nUint32 slowTick()\n{\n return 0;\n}\n}\nUint32 Timer::gameSlowSpeed = 1;');
   assert.match(cpp,/nativeClockScaled/);
   assert.match(cpp,/XPZ_NATIVE_PLAN/);
-  const game=patchGameCpp('#include "../Battlescape/NextTurnState.h"\n\t\t\tnativeActive->think();\n\t\t\tSDL_Delay(1);\n\t\t\tcontinue;');
+  const game=patchGameCpp('#include "../Battlescape/NextTurnState.h"\n\t\t\tnativeActive->think();\n\t\t\t\t\tbanner->close();\n\t\t\t\t}\n\t\t\tSDL_Delay(1);\n\t\t\tcontinue;');
   assert.match(game,/Timer::advanceNativeClock\(16\)/);
+  assert.match(game,/dynamic_cast<InfoboxOKState\*>\(nativeActive\)/);
+  assert.match(game,/info->btnOkClick\(nullptr\)/);
+  assert.match(game,/\[XPZ_NATIVE\] acknowledge InfoboxOKState/);
+  assert.ok(game.indexOf('nativeActive->think();')<game.indexOf('info->btnOkClick(nullptr);'));
   assert.doesNotMatch(game,/SDL_Delay\(1\)/);
   assert.throws(()=>patchTimerCpp(cpp),/ALREADY_PATCHED/);
   assert.throws(()=>patchGameCpp(game),/ALREADY_PATCHED/);

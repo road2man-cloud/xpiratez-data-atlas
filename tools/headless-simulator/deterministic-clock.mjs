@@ -35,9 +35,12 @@ export function patchGameCpp(src) {
   src=src.replace(/\r\n/g,'\n');
   if(src.includes('advanceNativeClock'))throw new Error('NATIVE_CLOCK_ALREADY_PATCHED');
   src=replaceOnce(src,'#include "../Battlescape/NextTurnState.h"',
-    '#include "../Battlescape/NextTurnState.h"\n#include "Timer.h"','Game.cpp Timer include');
+    '#include "../Battlescape/NextTurnState.h"\n#include "../Battlescape/InfoboxOKState.h"\n#include "Timer.h"','Game.cpp Timer include');
   src=replaceOnce(src,'\t\t\tnativeActive->think();',
     '\t\t\t// Fixed 16ms simulation tick: no wall-clock jitter between seeded runs.\n\t\t\tTimer::advanceNativeClock(16);\n\t\t\tnativeActive->think();','Game.cpp native think');
+  src=replaceOnce(src,'\t\t\t\t\tbanner->close();\n\t\t\t\t}',
+    '\t\t\t\t\tbanner->close();\n\t\t\t\t}\n\t\t\t\telse if (auto* info = dynamic_cast<InfoboxOKState*>(nativeActive))\n\t\t\t\t{\n\t\t\t\t\t// Original OK handler; only a modal UI acknowledgement, not game logic.\n\t\t\t\t\tLog(LOG_INFO) << "[XPZ_NATIVE] acknowledge InfoboxOKState";\n\t\t\t\t\tinfo->btnOkClick(nullptr);\n\t\t\t\t}',
+    'Game.cpp native info acknowledgement');
   src=replaceOnce(src,'\t\t\tSDL_Delay(1);\n\t\t\tcontinue;',
     '\t\t\t// Native input/think runs without real-time throttling.\n\t\t\tcontinue;', 'Game.cpp headless delay');
   return src;
