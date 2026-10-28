@@ -10,6 +10,7 @@ import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
 import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
+import {compare} from './compare-replays.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
 test('retired numerical simulator and its success-looking tests do not exist',()=>{
@@ -35,9 +36,18 @@ test('an unfamiliar engine layout is not silently patched',()=>{
 });
 test('headless hook suppresses rendering without replacing state think',()=>{
   const patched=patchGame('\t\t// Process rendering\noriginal_render_body();');
-  assert.ok(patched.includes('_states.back()->think();'));
+  assert.ok(patched.includes('nativeActive->think();'));
   assert.ok(patched.includes('original_render_body();'));
   assert.throws(()=>patchGame(patched),/ALREADY_PATCHED/);
+});
+test('turn banner acknowledgement preserves native initialization and avoids double-pop',()=>{
+  const patched=patchGame('\t\t// Process rendering\noriginal_render_body();');
+  assert.ok(patched.includes('dynamic_cast<NextTurnState*>(nativeActive)'));
+  assert.ok(patched.includes('!_states.empty() && _states.back() == nativeActive'));
+  assert.ok(patched.indexOf('nativeActive->think();') < patched.indexOf('banner->close();'));
+  assert.equal(patched.includes('determineReinforcements('),false);
+  assert.equal(patched.includes('applyEnvironmentalCondition'),false);
+  assert.equal(patched.includes('RNG::setSeed'),false);
 });
 test('unverified native execution requires explicit opt-in',()=>{
   assert.throws(()=>preflight({},'linux'),/NATIVE_PARITY_NOT_CERTIFIED/);
@@ -119,6 +129,15 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
     fs.appendFileSync(path.join(dir,'lib',names[0]),'tamper');
     assert.throws(()=>verifyRuntime(dir),/RUNTIME_LIBRARY_HASH_MISMATCH/);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
+  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
+  const fields=['sourceTreeSha256','driverSha256','archiveSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
+  for(const k of fields)a[k]='a'.repeat(64);
+  assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);
+  for(const k of fields){const b=structuredClone(a);b[k]='c'.repeat(64);assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT/);delete b[k];assert.throws(()=>compare(a,b),/REPLAY_FINGERPRINT_MISSING/);}
+  const b=structuredClone(a);b.seed='1';assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT: seed/);
+  b.seed=a.seed;b.checkpoints[0].rng='18446744073709551614';assert.equal(compare(a,b).nativeReplayIdentical,false);
 });
 test('native driver forwards commands and never generates outcome probabilities',()=>{
   const code=fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8');
