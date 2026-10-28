@@ -167,6 +167,52 @@ node tools/headless-simulator/search-native.mjs \
 확정되지 않았습니다.** 종료 이후에도 `finishBattle()`에서
 `WON`이 나와야 전체 승리로 집계합니다.
 
+### 후속 턴 자동 분기 탐색 — 원본 엔진만 실행
+
+같은 2턴 세이브를 출발점으로 각 행동열을 **별도 원본 OXCE 프로세스**에서
+실행하고, 아군 다음 턴 전체 세이브를 새 탐색 노드로 삼는
+`native-turn-beam.mjs`도 지원합니다. 턴별로 스스로 피해량이나 AI를
+근사 계산하지 않습니다. 각 `trial`은 `run-native.mjs`를 그대로
+사용하고, 결과의 실제 `checkpoint`와 `finishBattle()`만 평가합니다.
+
+```sh
+node tools/headless-simulator/native-turn-beam.mjs \
+  --experimental \
+  --binary /private/rc17/bundle/oxce-native \
+  --manifest /private/rc17/bundle/native-build.json \
+  --runtime /private/sdl-runtime \
+  --data /private/3sav/resources \
+  --user /private/3sav/resources/user \
+  --config /private/3sav/resources/user/options.cfg \
+  --save /private/3sav/turn2-after-47hp.sav \
+  --baseline-save /private/3sav/original-3.sav \
+  --focus 1 --supports 12,19,33,48 \
+  --depth 5 --width 3 --candidates 48 --max-trials 700 \
+  --out /private/3sav/multiturn-native-search
+```
+
+`--baseline-save`는 원본 3.sav의 아군 체력/신원과 비교하기 위한
+**읽기 전용 데이터**입니다. 전투 RNG는 여전히 `--save`로 지정한
+실제 2턴 세이브의 저장값을 보존하므로, 이전 첫 턴의 47HP 손실도
+**누적 순 체력 차이**에 포함시킬 수 있습니다. 이 옵션이 없을 때에는
+2턴 세이브 이후의 추가 순 체력 감소만 집계하므로 둘을 혼동하지 마세요.
+
+각 깊이에서 최대 `--width`개의 서로 다른 원본 체크포인트만
+유지하고, `--candidates`개 이하의 동작 후보를 시험합니다.
+`--max-trials`는 전체 원본 실행 횟수의 상한이며, 그 수만큼
+실행 성공을 보장하지 않습니다. 잘못된 명령과 중단된 엔진 실행은
+`errors`로 기록됩니다. 진행 내역, 행동열 해시, 생존/기절/체력,
+원본 종료 이벤트는 `native-beam-report.json`에 매 실험 후
+원자적으로 누적합니다. `ALL_NATIVE_TRIALS_FAILED` 등 실패
+상태도 별도로 남기며 성공률을 만들어내지 않습니다.
+
+`bestNativeWin`은 원본 `finishBattle()`에서 `WON`이
+관측됐을 때에만 저장됩니다. 반면 `bestSafety`는
+**일부 턴을 생존한 미완료 전술**입니다. 서로 섞어 승리라고
+보고하지 마세요. 지금은 코드 경로와 입력·순위 테스트가
+준비된 상태이며, 해당 명령이 GPT Linux에서 완료되기 전까지
+원본 `3.sav` 전체 승리 인증은 아닙니다.
+
 ## `3.sav` 전용 첫 턴 실제 네이티브 검증 자동 실행기
 
 아래 명령은 **실제 GPT Linux 작업 환경에 RC17 원본 네이티브 바이너리와 개인용 104MB 리소스 압축본이 도착한 뒤** 실행합니다. 이 툴은 Windows에서 전투를 돌리지 않습니다. 게임 리소스와 `3.sav`는 개인용 출력 폴더에만 풉니다.

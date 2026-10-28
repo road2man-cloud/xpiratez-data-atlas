@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native-verification.test.mjs tools/headless-simulator/search-native.test.mjs tools/headless-simulator/generate-native-plans.test.mjs tools/headless-simulator/generate-native-turn-plans.test.mjs tools/headless-simulator/prepare-runtime-assets.test.mjs tools/headless-simulator/prepare-runtime-archive.test.mjs
+      - run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native-verification.test.mjs tools/headless-simulator/search-native.test.mjs tools/headless-simulator/generate-native-plans.test.mjs tools/headless-simulator/generate-native-turn-plans.test.mjs tools/headless-simulator/native-turn-beam.test.mjs tools/headless-simulator/prepare-runtime-assets.test.mjs tools/headless-simulator/prepare-runtime-archive.test.mjs
   native-build:
     name: Compile original OXCE ${{ matrix.variant }} (no battle run)
     needs: integrity

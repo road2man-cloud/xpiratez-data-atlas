@@ -197,9 +197,9 @@ export function writeNativeTurnPlans(savePath,outputDir,opts={}){
   if(!stat.isFile()||stat.size>50*1024*1024)throw new Error('INVALID_INPUT_SAVE');
   outputDir=path.resolve(outputDir);
   if(fs.existsSync(outputDir))throw new Error('OUTPUT_ALREADY_EXISTS');
-  const saveDir=path.dirname(savePath);
-  if(outputDir===saveDir||outputDir.startsWith(saveDir+path.sep))
-    throw new Error('OUTPUT_INSIDE_INPUT_SAVE_DIRECTORY');
+  // A new sibling plan directory is safe: only reject reusing an existing
+  // path. Never modify or overwrite the input save itself.
+  if(outputDir===savePath)throw new Error('OUTPUT_CONFLICTS_WITH_INPUT_SAVE');
   const contents=fs.readFileSync(savePath);
   const battle=parseTacticalSave(contents.toString('utf8'));
   const result=enumerateNativeTurnPlans(battle,opts);
