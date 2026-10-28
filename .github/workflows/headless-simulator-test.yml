@@ -1,21 +1,47 @@
-name: Headless Simulator Selftest
+name: Native OXCE integrity and build (not combat validation)
 on:
   push:
+    branches: [main, fix/native-headless-only-20261028]
     paths:
       - 'tools/headless-simulator/**'
       - '.github/workflows/headless-simulator-test.yml'
   pull_request:
     paths:
       - 'tools/headless-simulator/**'
+      - '.github/workflows/headless-simulator-test.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  integrity:
+    name: Native source integrity and fail-closed adapters
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax check
-        run: node --check tools/headless-simulator/simulate.mjs
-      - name: Unit tests
-        run: node --test tools/headless-simulator/test.mjs
+      - run: node --test tools/headless-simulator/native.test.mjs
+  native-build:
+    name: Compile original OXCE (no campaign or combat run)
+    if: github.event_name != 'pull_request'
+    needs: integrity
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Original engine build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ pkg-config libsdl1.2-dev libsdl-image1.2-dev libsdl-gfx1.2-dev libsdl-mixer1.2-dev zlib1g-dev
+      - name: Build fingerprinted source snapshot
+        run: node tools/headless-simulator/build-native.mjs "$RUNNER_TEMP/xpz-native" 2
+      - name: Publish native build artifact, not a gameplay certificate
+        uses: actions/upload-artifact@v4
+        with:
+          name: xpz-native-linux-${{ github.sha }}
+          path: ${{ runner.temp }}/xpz-native/bundle/
+          if-no-files-found: error

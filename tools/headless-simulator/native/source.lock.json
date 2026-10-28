@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "backend": "OXCE_NATIVE",
+  "upstream": "https://github.com/MeridianOXC/OpenXcom",
+  "localBaseCommit": "8f3f6e2b5314f4f6529958fd218c5bbe0ffa0bd2",
+  "includesUncommittedSourceChanges": true,
+  "sourceOverlay": "XPZ_R42_ROTATION_LAB/RC18_CAMERA_SCROLL_FIX_SOURCE/src",
+  "sourceOverlayFiles": 832,
+  "archive": "oxce-source.tar.gz",
+  "archiveSha256": "b44314744aba7609b01cdd303070592be83717211d64e9b428fde3d3fbf6bb33",
+  "archiveBytes": 2857102,
+  "sourceTreeSha256": "a64bb1a2956fb946e44930b1c97437d7fe10ce130029622bf67f332a87d75d4a",
+  "driverSha256": "9ecb50f3bcc527728aea7c8d81bdbe993bcd3c7632031960bb15bb5d85398901",
+  "originalSourceFiles": 963,
+  "engineVersion": "Extended 8.7.1",
+  "sourceVersionHeaderFallback": "v2026-10-25 R43-RC17-SKYRAMP-QUAD-FIX",
+  "exactInstalledExecutableMatchVerified": false,
+  "save17ReplayVerified": false,
+  "interactiveParityCertified": false,
+  "license": "GPL-3.0-or-later; see LICENSE.txt and per-file notices in the source archive"
+}
