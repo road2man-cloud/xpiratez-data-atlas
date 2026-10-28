@@ -24,10 +24,14 @@ try{
   const receipt=applyNativeAudio(tmp);
   const after=fs.readFileSync(gameFile,'utf8');
   if(receipt.schema!==1||
-     receipt.mode!=='ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE'||
+     receipt.mode!=='ORIGINAL_OXCE_GAME_NATIVE_MUTE_AND_MODAL_ACK'||
      receipt.noGameplayCodeModified!==true||
      !after.includes('if (std::getenv("XPZ_NATIVE_PLAN"))')||
      !after.includes('Options::mute = true;')||
+     !after.includes('dynamic_cast<InfoboxOKState*>(nativeActive)')||
+     !after.includes('dialog->btnOkClick(nullptr);')||
+     !after.includes('!_states.empty() && _states.back() == nativeActive')||
+     receipt.modalAck!=='ORIGINAL_INFOBOX_OK_BUTTON_HANDLER'||
      !after.includes('if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)')||
      after.indexOf('Options::mute = true;')>=after.indexOf('if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0)')||
      sha256(Buffer.from(after))!==receipt.patchedFiles['src/Engine/Game.cpp']||
@@ -36,5 +40,6 @@ try{
   console.log(JSON.stringify({mode:receipt.mode,sourceHash:lock.archiveSha256,
     audioPatchSha256:sha256(JSON.stringify(receipt)),
     originalAudioFunctionBodyPreserved:true,
+    blockingOKDialogsAcknowledgedByOriginalHandler:true,
     gameplaySimulated:false,parityCertified:false},null,2));
 }finally{fs.rmSync(tmp,{recursive:true,force:true});}

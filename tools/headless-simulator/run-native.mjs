@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export const HEADLESS_AUDIO_DRIVER='dummy';
-export const HEADLESS_AUDIO_POLICY='ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE';
+export const HEADLESS_AUDIO_POLICY='ORIGINAL_OXCE_GAME_NATIVE_MUTE_AND_MODAL_ACK';
 
 export function parseArgs(argv) {
   const flags = new Set(['--experimental','--xvfb']);

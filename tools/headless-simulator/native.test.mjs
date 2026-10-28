@@ -46,11 +46,13 @@ test('headless hook suppresses rendering without replacing state think',()=>{
 });
 test('soundless runtime explicitly guards original OXCE Game::initAudio in native mode only',()=>{
   assert.equal(HEADLESS_AUDIO_DRIVER,'dummy');
-  assert.equal(HEADLESS_AUDIO_POLICY,'ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE');
-  const source='#include <cstdlib>\nvoid Game::initAudio()\n{\nint x = 0;\n}';
+  assert.equal(HEADLESS_AUDIO_POLICY,'ORIGINAL_OXCE_GAME_NATIVE_MUTE_AND_MODAL_ACK');
+  const source='#include <cstdlib>\n#include "../Battlescape/NextTurnState.h"\nvoid Game::initAudio()\n{\nint x = 0;\n}\nif (!_states.empty() && _states.back() == nativeActive) {\n\t\t\t\t\tbanner->close();\n\t\t\t\t}';
   const patched=patchNativeAudio(source);
   assert.match(patched,/if \(std::getenv\("XPZ_NATIVE_PLAN"\)\)/);
   assert.match(patched,/Options::mute = true;/);
+  assert.match(patched,/dynamic_cast<InfoboxOKState\*>\(nativeActive\)/);
+  assert.match(patched,/dialog->btnOkClick\(nullptr\)/);
   assert.ok(patched.includes('int x = 0;'));
   assert.throws(()=>patchNativeAudio(patched),/ALREADY_PATCHED/);
   assert.throws(()=>patchNativeAudio('void invalid();'),/UNSUPPORTED_NATIVE_AUDIO_LAYOUT/);
@@ -294,7 +296,7 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
-  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,audioPolicy:'ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
+  const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,audioPolicy:'ORIGINAL_OXCE_GAME_NATIVE_MUTE_AND_MODAL_ACK',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
   const fields=['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','audioPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);

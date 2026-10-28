@@ -14,7 +14,7 @@ function fixture() {
   fs.mkdirSync(path.join(dir,'user/piratez'),{recursive:true});
   const bytes=Buffer.from('SYNTHETIC VALIDATOR FIXTURE; NOT AN OXCE SAVE\n');
   const event={event:'checkpoint',phase:'final',file:'xpz-native-0.sav',turn:2,side:0,rng:'18446744073709551615',command_index:2,units:[]};
-  const result={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,audioPolicy:'ORIGINAL_OXCE_GAME_NATIVE_MUTE_NO_SURROGATE',
+  const result={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',sourceVariant:'RC18_SOURCE_BASELINE',sourceVariantArchiveSha256:null,audioPolicy:'ORIGINAL_OXCE_GAME_NATIVE_MUTE_AND_MODAL_ACK',
     checkpoints:[{...event,snapshotSha256:sha256(bytes)}]};
   for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','sourceVariantReceiptSha256','clockPatchSha256','outcomePatchSha256','audioPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'])result[k]='a'.repeat(64);
   fs.writeFileSync(path.join(dir,'user/piratez/xpz-native-0.sav'),bytes);
