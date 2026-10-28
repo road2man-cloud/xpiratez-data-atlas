@@ -1,0 +1,82 @@
+name: Native OXCE offline runtime libraries (no game execution)
+on:
+  push:
+    branches: [main, fix/native-headless-only-20261028]
+    paths: ['.github/workflows/headless-native-runtime.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Install original SDL runtime dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl1.2debian libsdl-image1.2 libsdl-gfx1.2-5 libsdl-mixer1.2
+      - name: Package non-glibc shared libraries with hashes and notices
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re, shutil, subprocess
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'xpz-native-runtime'
+          lib = root / 'lib'
+          notices = root / 'licenses'
+          lib.mkdir(parents=True)
+          notices.mkdir()
+          names = ['libSDL-1.2.so.0', 'libSDL_image-1.2.so.0', 'libSDL_gfx.so.15', 'libSDL_mixer-1.2.so.0']
+          excluded = {'libc.so.6','libm.so.6','libdl.so.2','libpthread.so.0','librt.so.1','libresolv.so.2','libutil.so.1','libanl.so.1','libnss_dns.so.2','libnss_files.so.2','libstdc++.so.6','libgcc_s.so.1'}
+          libraries = {}
+          for name in names:
+              p = pathlib.Path('/usr/lib/x86_64-linux-gnu') / name
+              if not p.is_file():
+                  raise SystemExit('Missing SDL runtime: ' + str(p))
+              libraries[name] = p
+              result = subprocess.run(['ldd', str(p)], capture_output=True, text=True, check=True)
+              if 'not found' in result.stdout:
+                  raise SystemExit('Unresolved native dependency')
+              for line in result.stdout.splitlines():
+                  m = re.match(r'\s*(\S+)\s+=>\s+(/\S+)\s+\(', line)
+                  if m and m[1] not in excluded:
+                      libraries[m[1]] = pathlib.Path(m[2])
+          manifest = {'schema':1,'purpose':'ORIGINAL_SDL_RUNTIME_ONLY','distribution':'Ubuntu 22.04','arch':'x86_64','containsGameData':False,'containsGameEngine':False,'requiresHostGlibcAtLeast':'2.35','hostLibrariesExcluded':sorted(excluded),'libraries':{},'packages':{}}
+          for name,p in sorted(libraries.items()):
+              if pathlib.Path(name).name != name:
+                  raise SystemExit('Unexpected shared-library name')
+              target = lib / name
+              shutil.copyfile(p, target)
+              manifest['libraries'][name] = {'bytes':target.stat().st_size,'sha256':hashlib.sha256(target.read_bytes()).hexdigest()}
+              candidates = [str(p),str(p.resolve())]
+              for candidate in candidates[:]:
+                  if candidate.startswith('/usr/lib/'):
+                      candidates.append(candidate.replace('/usr/lib/','/lib/',1))
+                  elif candidate.startswith('/lib/'):
+                      candidates.append('/usr' + candidate)
+              for candidate in dict.fromkeys(candidates):
+                  owners = subprocess.run(['dpkg-query','-S',candidate],capture_output=True,text=True)
+                  if owners.returncode == 0:
+                      break
+              if owners.returncode:
+                  raise SystemExit('Package provenance not found: ' + str(p))
+              for line in owners.stdout.splitlines():
+                  package = line.split(': ',1)[0]
+                  if package in manifest['packages']:
+                      continue
+                  metadata = subprocess.run(['dpkg-query','-W','-f=${binary:Package}\t${Version}\t${source:Package}\t${source:Version}',package],capture_output=True,text=True,check=True).stdout
+                  manifest['packages'][package] = metadata
+                  notice = pathlib.Path('/usr/share/doc') / package.split(':')[0] / 'copyright'
+                  if not notice.is_file():
+                      raise SystemExit('Copyright notice missing: ' + package)
+                  shutil.copyfile(notice, notices / (package.replace(':','_') + '.copyright'))
+          shutil.copytree('/usr/share/common-licenses', notices / 'common-licenses')
+          (root/'runtime-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+          (root/'README.txt').write_text('Native OXCE runtime libraries only. No game engine, assets or save.\nLibraries remain dynamically replaceable. Copyright notices and distribution/source package versions are in licenses/ and runtime-manifest.json. Obtain corresponding Ubuntu source packages with apt-get source SOURCE_PACKAGE=SOURCE_VERSION using the recorded versions and Ubuntu archive source repositories.\nUse only on compatible Linux x86_64 (glibc >= 2.35). Verify library hashes, then set LD_LIBRARY_PATH to this lib directory for the native process only. Do not install over system libraries.\nThis package is not evidence of combat replay or GUI parity.\n')
+          print(json.dumps({'libraries':len(libraries),'expandedBytes':sum(x['bytes'] for x in manifest['libraries'].values()),'path':str(root)}))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xpz-native-sdl-runtime-linux-x64
+          path: ${{ runner.temp }}/xpz-native-runtime/
+          if-no-files-found: error
+          retention-days: 90

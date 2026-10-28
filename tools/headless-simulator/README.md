@@ -44,6 +44,14 @@ node tools/headless-simulator/build-native.mjs /tmp/xpz-native-build 2
 
 원본 전체 소스·라이선스는 압축본 안에 있습니다. 기본 저장소는 MeridianOXC/OpenXcom이며, 사용자 개발 변경도 스냅샷에 보존했습니다. 설치 폴더나 개발 원본을 덮어쓰지 않습니다.
 
+## 네트워크가 막힌 GPT 환경의 소형 실행 파일 반입
+
+직접 빌드하거나 패키지 저장소에 접속할 수 없으면 GitHub Actions의 성공한 **전체 Linux 빌드**에서 `xpz-native-linux-<commit>` 산출물을 사용합니다. PR의 무결성 테스트 성공만으로 빌드 성공을 판단하지 마세요. `Native OXCE offline runtime libraries` 워크플로는 별도로 `xpz-native-sdl-runtime-linux-x64` 산출물을 제공합니다. 둘 다 게임 데이터와 개인 세이브는 포함하지 않습니다.
+
+GitHub 연결의 `download_workflow_artifact`로 두 ZIP을 받아 실제 GPT 작업 공간에 도착했는지 확인한 뒤 압축을 해제하세요. 실행 파일은 `chmod +x /path/to/bundle/oxce-native`가 필요할 수 있습니다. 아래 실행 명령에 `--runtime /path/to/runtime-bundle`을 추가하면 라이브러리별 SHA-256을 전부 검사하고 **해당 자식 프로세스에만** 라이브러리 경로를 적용합니다. 시스템 라이브러리를 덮어쓰지 않습니다. 이 런타임은 Linux x86_64 / glibc 2.35 이상용이며 다른 플랫폼의 호환성은 검증하지 않았습니다.
+
+`native-build.json`의 소스·드라이버 해시가 사용할 `native/source.lock.json`과 일치해야 합니다. 압축파일 반입, 라이브러리 검사, 실행 파일 기동, 실제 전투 체크포인트 생성은 각각 별개의 검증 단계입니다. Actions 산출물은 보존기간이 있으므로 만료 시 동일한 소스에서 다시 빌드해야 합니다.
+
 ## GPT Linux 환경에서만 실험 실행
 
 `run-native.mjs`는 Windows에서 전투를 실행하지 않도록 차단합니다. 실행 파일의 SHA-256, 입력 파일, 출력 폴더를 검사하고 원본 세이브 복사본을 별도의 사용자/설정 폴더에서 사용합니다.

@@ -9,7 +9,7 @@ import {sha256} from './prepare-native.mjs';
 
 export function parseArgs(argv) {
   const flags = new Set(['--experimental','--xvfb']);
-  const values = new Set(['--binary','--manifest','--data','--user','--config','--save','--plan','--out','--master','--seed','--timeout']);
+  const values = new Set(['--binary','--manifest','--data','--user','--config','--save','--plan','--out','--master','--seed','--timeout','--runtime']);
   const a = {};
   for (let i=0;i<argv.length;i++) {
     const k=argv[i];
@@ -19,6 +19,20 @@ export function parseArgs(argv) {
     else throw new Error('UNSUPPORTED_OR_MISSING_ARGUMENT: '+k);
   }
   return a;
+}
+export function verifyRuntime(dir) {
+  dir=fs.realpathSync(dir);
+  const bytes=fs.readFileSync(path.join(dir,'runtime-manifest.json'));
+  const m=JSON.parse(bytes.toString('utf8'));
+  if(m.schema!==1 || m.purpose!=='ORIGINAL_SDL_RUNTIME_ONLY' || m.arch!=='x86_64' || !m.libraries || Array.isArray(m.libraries)) throw new Error('INVALID_NATIVE_RUNTIME_MANIFEST');
+  for(const name of ['libSDL-1.2.so.0','libSDL_image-1.2.so.0','libSDL_gfx.so.15','libSDL_mixer-1.2.so.0'])
+    if(!Object.hasOwn(m.libraries,name))throw new Error('MISSING_SDL_RUNTIME_LIBRARY: '+name);
+  for(const [name,entry] of Object.entries(m.libraries)) {
+    if(name!==path.basename(name) || name==='.' || name==='..' || !/^[a-f0-9]{64}$/.test(entry.sha256||''))throw new Error('INVALID_RUNTIME_LIBRARY_ENTRY');
+    const file=path.join(dir,'lib',name);
+    if(!fs.lstatSync(file).isFile() || sha256(fs.readFileSync(file))!==entry.sha256)throw new Error('RUNTIME_LIBRARY_HASH_MISMATCH: '+name);
+  }
+  return {lib:fs.realpathSync(path.join(dir,'lib')),manifestSha256:sha256(bytes)};
 }
 export function preflight(a, platform=process.platform) {
   if (!a['--experimental']) throw new Error('NATIVE_PARITY_NOT_CERTIFIED: explicit --experimental is required; no surrogate fallback exists');
@@ -43,10 +57,11 @@ export function preflight(a, platform=process.platform) {
   const timeout=Number(a['--timeout']||'180');
   if (!Number.isFinite(timeout)||timeout<1||timeout>86400) throw new Error('INVALID_TIMEOUT');
   if (a['--seed'] && (!/^[1-9][0-9]*$/.test(a['--seed']) || BigInt(a['--seed'])>18446744073709551615n)) throw new Error('INVALID_UINT64_SEED');
-  return {manifest,out,master,timeout};
+  const runtime=a['--runtime']?verifyRuntime(a['--runtime']):null;
+  return {manifest,out,master,timeout,runtime};
 }
 export async function runNative(a) {
-  const {manifest,out,master,timeout}=preflight(a);
+  const {manifest,out,master,timeout,runtime}=preflight(a);
   const sourceSave=fs.realpathSync(a['--save']);
   const inputHash=sha256(fs.readFileSync(sourceSave));
   const user=path.join(out,'user'),cfg=path.join(out,'config');
@@ -57,6 +72,7 @@ export async function runNative(a) {
   if (fs.existsSync(mods)) fs.symlinkSync(mods,path.join(user,'mods'),'dir');
   const tracePath=path.join(out,'native-events.jsonl');
   const env={...process.env,XPZ_NATIVE_PLAN:fs.realpathSync(a['--plan']),XPZ_NATIVE_TRACE:tracePath,SDL_AUDIODRIVER:'dummy',SDL_VIDEODRIVER:a['--xvfb']?'x11':'dummy'};
+  if(runtime)env.LD_LIBRARY_PATH=runtime.lib;
   delete env.XPZ_NATIVE_SEED;
   if(a['--seed'])env.XPZ_NATIVE_SEED=a['--seed'];
   const binary=fs.realpathSync(a['--binary']);
@@ -65,7 +81,7 @@ export async function runNative(a) {
     '-newSeedOnLoad','false','-playIntro','false','-useOpenGL','false','-skipNextTurnScreen','true','-soundVolume','0','-musicVolume','0','-uiVolume','0'];
   if(a['--xvfb']) {cmd='xvfb-run';args=['-a',binary,...args];}
   const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
-    binarySha256:manifest.binarySha256,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
+    binarySha256:manifest.binarySha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
   fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify(provenance,null,2)+'\n');
   const log=fs.openSync(path.join(out,'stdout.log'),'wx'),err=fs.openSync(path.join(out,'stderr.log'),'wx');

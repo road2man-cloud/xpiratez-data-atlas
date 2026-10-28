@@ -8,7 +8,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
-import {parseArgs,preflight} from './run-native.mjs';
+import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
 import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
@@ -105,6 +105,20 @@ test('source-only build stages empty resource folders without inventing game dat
       assert.deepEqual(fs.readdirSync(path.join(temp,'bin',name)),[]);
     assert.deepEqual(fs.readdirSync(temp),['bin']);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+test('offline SDL runtime validates every library hash and rejects tampering',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-runtime-integrity-'));
+  const names=['libSDL-1.2.so.0','libSDL_image-1.2.so.0','libSDL_gfx.so.15','libSDL_mixer-1.2.so.0'];
+  try{
+    fs.mkdirSync(path.join(dir,'lib'));
+    const m={schema:1,purpose:'ORIGINAL_SDL_RUNTIME_ONLY',arch:'x86_64',libraries:{}};
+    for(const name of names){const b=Buffer.from('hash fixture only; not executable: '+name);fs.writeFileSync(path.join(dir,'lib',name),b);m.libraries[name]={sha256:sha256(b)};}
+    fs.writeFileSync(path.join(dir,'runtime-manifest.json'),JSON.stringify(m));
+    const runtime=verifyRuntime(dir);
+    assert.match(runtime.manifestSha256,/^[a-f0-9]{64}$/);
+    fs.appendFileSync(path.join(dir,'lib',names[0]),'tamper');
+    assert.throws(()=>verifyRuntime(dir),/RUNTIME_LIBRARY_HASH_MISMATCH/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
 test('native driver forwards commands and never generates outcome probabilities',()=>{
   const code=fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8');
