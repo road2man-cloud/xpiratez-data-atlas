@@ -159,6 +159,31 @@ node tools/headless-simulator/verify-native-replays.mjs \
 
 새 빌드 산출물에는 `runner/` 아래에 해당 바이너리와 짝을 이루는 실행기·비교기·검증기를 함께 포함합니다. 산출물이 존재하는 것과 GPT 환경에서 실제 실행된 것은 별개입니다. 실행 도구 오류나 누락 자료를 근사 엔진으로 우회하지 않습니다. **기존 리소스 로더가 필요한 게임 자산은 여전히 필요하며, 본체 자산 제거는 아직 완료되지 않았습니다.**
 
+## 원본 OXCE 대량 전술 실험 (계획 파일 × RNG 시드)
+
+원본 C++ 엔진을 매번 새 프로세스로 시작하여 **별도의 계획 파일과 난수 시드 조합**을 실행하는 `search-native.mjs`를 제공합니다. Node.js가 사격, 피해량 또는 AI 판단을 계산하지 않습니다. 각 실험은 `run-native.mjs`를 통해 OXCE 실행 파일을 기동합니다.
+
+```sh
+node tools/headless-simulator/search-native.mjs \
+  --experimental \
+  --binary /tmp/xpz-native-build/bundle/oxce-native \
+  --manifest /tmp/xpz-native-build/bundle/native-build.json \
+  --runtime /path/to/runtime-bundle \
+  --data /path/to/Dioxine_XPiratez \
+  --user /path/to/Dioxine_XPiratez/user \
+  --config /path/to/Dioxine_XPiratez/user/options.cfg \
+  --save /path/to/17.sav \
+  --plans /path/to/action-plans \
+  --start-seed 10000 --count 1000 \
+  --out /mnt/data/xpz-native-search-001
+```
+
+`--plans` 폴더에는 하나 이상의 `.actions` 파일이 필요합니다. 각 파일에는 위 명령 프로토콜의 실제 OXCE 행동만 씁니다. 한 계획 파일당 `--count`개의 **서로 다른 명시적 시드**를 실행합니다. `--count`를 생략하면 각 계획을 원본 세이브에 저장된 RNG로 한 번 실행합니다. 독립 시드 1,000개를 통한 강건성 평가와 현재 저장 RNG의 정확한 예측은 목적이 다르므로 반드시 구별해야 합니다. 전체 실행 횟수 제한은 10,000회이며 파일·게임 자료·바이너리를 교체하면 실패합니다.
+
+`native-search-report.json`은 각 시도별 실제 종료 상태와 원본 최종 세이브 기반 아군 사망·기절·순 체력 감소를 기록합니다. **`WON` 종료 이벤트가 발생하지 않으면 승리 횟수에 포함되지 않습니다.** `NEXT_STAGE`는 중간 단계이지 승리가 아니며, 지원하지 않는 행동이나 미완료 실행도 승리로 처리하지 않습니다. 우수 전술은 아군 사망 최소화 → 순 체력 감소 최소화 순서로 정렬할 수 있습니다. 순 체력 감소는 치유를 반영한 최종 HP 차이이며 누적 피해 총량을 의미하지 않습니다.
+
+현재 계획 생성 및 전략 탐색 자체는 자동화되지 않았습니다. 제공된 행동 계획을 원본 엔진에서 시험하는 **배치 실행기**입니다. 5,000회라는 숫자는 위 명령을 실제 실행하고 로그를 검증하기 전에는 단지 설정값일 뿐이며, GUI 동등성 검증이 완료된 네이티브 승리 인증도 아닙니다. 실행 시간과 디스크 사용량은 계획 수·게임 데이터·맵에 따라 상당할 수 있습니다.
+
 ## 다음 대화 지시문
 
 > road2man-cloud/xpiratez-data-atlas의 최신 tools/headless-simulator/README.md와 native/source.lock.json을 먼저 읽으세요. 폐기된 simulate.mjs 및 독립 근사 모델은 사용하지 마세요. 원본 OXCE 소스·바이너리 해시를 확인하고 GPT Linux 환경에서 native 실험을 수행하세요. Windows는 원본 자료 읽기/빌드에만 사용하고 전투는 실행하지 마세요. 실제 네이티브 실행이 불가능하면 실패를 보고하세요. 단위 테스트, 컴파일 성공, 명령열 완료, GUI 일치, 실제 전투 승리를 서로 구분하세요. 미완성 상태에서 수천 회 승률을 생성하지 마세요.

@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native-verification.test.mjs
+      - run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native-verification.test.mjs tools/headless-simulator/search-native.test.mjs
   native-build:
     name: Compile original OXCE (no campaign or combat run)
     needs: integrity
