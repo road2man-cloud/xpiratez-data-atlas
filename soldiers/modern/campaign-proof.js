@@ -3,7 +3,7 @@
 // research/event/production/transformation/armor gates in that order.
 // It never proves that RNG, unknown missions or future item drops will occur.
 import {researchStep,eventScriptVerdict} from "./event-chronology.js";
-import {inspectAutoZeroCascade} from "./auto-zero-cascade.js";
+import {inspectAutoZeroCascade,inspectInvariantAutoZeroCascade} from "./auto-zero-cascade.js";
 import {eligibleTransformation,applyTransformation} from "./eligibility.js";
 const arr=x=>Array.isArray(x)?x:[];
 const has=(set,id)=>set instanceof Set?set.has(id):arr(set).includes(id);
@@ -94,18 +94,28 @@ function grantResearch(world,id,data,method="research",options={}){
       world.baseFunctions instanceof Set &&
       (world.activeResearch instanceof Set||speculativeAuto) &&
       result.repeatRun!==true){
-    const chain=inspectAutoZeroCascade(data,id,beforeResearch,{
-      inventoryKnown:world.autoZeroEvidence===true||world.inventoryKnown===true,
-      functionsKnown:world.autoZeroEvidence===true||world.baseFunctionsKnown===true,
-      activeResearchKnown:world.activeResearch instanceof Set,maxSteps:180});
+    const chain=speculativeAuto?
+      inspectAutoZeroCascade(data,id,beforeResearch,{
+        inventoryKnown:world.autoZeroEvidence===true||world.inventoryKnown===true,
+        functionsKnown:world.baseFunctionsKnown===true,
+        activeResearchKnown:world.activeResearch instanceof Set,maxSteps:180}):
+      inspectInvariantAutoZeroCascade(data,id,beforeResearch,{
+        inventoryKnown:true,activeResearchKnown:true,maxSteps:180});
+    // A strict replay must never choose one guessed country/region value.
+    // The hypothetical pass remains conditional and cannot upgrade proof.
+    if(!speculativeAuto&&
+        (chain.kind!=="conditional"||chain.incomplete||!chain.finalState))
+      return fail("conditional",["지리적 기지 기능별 자동 연구 상태 미증명: "+
+        (chain.reason||"자동 큐 재생 불완전")]);
     if(chain.kind==="conditional"&&!chain.incomplete&&chain.finalState){
-      // Every search-hypothesized queue is conditional. Missing project,
-      // stock, geographical functions and future timing cannot be certified.
       if(speculativeAuto&&chain.steps.length>1){
         autoAssumed=true;
         autoNotes.push("가상 비용 0 연구 연쇄: 엔진 실행 미증명 · "+
           chain.unverified.join(" · "));
       }
+      if(!speculativeAuto&&chain.invariantAcrossBaseFunctions&&chain.variantCount>1)
+        autoNotes.push("미확인 기지 기능 "+chain.unknownFunctions.join(", ")+
+          "의 "+chain.variantCount+"개 대입에서 최종 연구·폐쇄 상태 일치");
       // Consume the queue's END state directly. Reapplying its steps to the
       // partially changed state would drop disabled-but-queued discoveries and
       // make re-enables or existing-topic rescans order-dependent.
