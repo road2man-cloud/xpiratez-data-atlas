@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Install original SDL runtime dependencies
         run: |
           sudo apt-get update
@@ -70,6 +73,17 @@ jobs:
                       raise SystemExit('Copyright notice missing: ' + package)
                   shutil.copyfile(notice, notices / (package.replace(':','_') + '.copyright'))
           shutil.copytree('/usr/share/common-licenses', notices / 'common-licenses')
+          runner = root / 'runner'
+          runner.mkdir()
+          source = pathlib.Path('tools/headless-simulator')
+          manifest['runnerCommit'] = os.environ['GITHUB_SHA']
+          manifest['runnerFiles'] = {}
+          for name in ['run-native.mjs','prepare-native.mjs','compare-replays.mjs','README.md']:
+              data = (source/name).read_bytes()
+              (runner/name).write_bytes(data)
+              manifest['runnerFiles'][name] = hashlib.sha256(data).hexdigest()
+          shutil.copytree(source/'examples', runner/'examples')
+          shutil.copyfile(source/'native/source.lock.json', runner/'expected-native-source.lock.json')
           (root/'runtime-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
           (root/'README.txt').write_text('Native OXCE runtime libraries only. No game engine, assets or save.\nLibraries remain dynamically replaceable. Copyright notices and distribution/source package versions are in licenses/ and runtime-manifest.json. Obtain corresponding Ubuntu source packages with apt-get source SOURCE_PACKAGE=SOURCE_VERSION using the recorded versions and Ubuntu archive source repositories.\nUse only on compatible Linux x86_64 (glibc >= 2.35). Verify library hashes, then set LD_LIBRARY_PATH to this lib directory for the native process only. Do not install over system libraries.\nThis package is not evidence of combat replay or GUI parity.\n')
           print(json.dumps({'libraries':len(libraries),'expandedBytes':sum(x['bytes'] for x in manifest['libraries'].values()),'path':str(root)}))
