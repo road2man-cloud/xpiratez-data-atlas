@@ -8,6 +8,19 @@
 
 기본 빌드 구조·라이브러리는 OXCE 8.7.1 작업 트리에서 가져오고, 실제 프로젝트 개발 기준인 `XPZ_R42_ROTATION_LAB/RC18_CAMERA_SCROLL_FIX_SOURCE/src`의 832개 파일을 우선 적용했습니다. 이전 작업 트리로 되돌아가지 않도록 결합된 소스의 해시를 고정했습니다. 어느 소스에서 무엇을 가져왔는지는 매니페스트의 `sourceOverlayApplied`, `overlayFiles`와 `source.lock.json`으로 확인할 수 있습니다.
 
+### 원본 엔진 승패 기록 (실험적 빌드)
+
+원본 `BattlescapeState::finishBattle()` 메서드가 실제로 실행될 때만 `battle_finished` 이벤트를 발생시킵니다. 해당 메서드가 끝난 후 원본 전체 상태를 `xpz-native-battle-finish.sav`로 저장합니다. Game 루프는 메서드가 반환한 뒤 종료합니다. 게임의 전투 중 `tallyUnits()`를 단지 승률을 측정하기 위해 호출하지 않습니다. 그 함수는 일부 적의 항복 상태를 변경할 수 있으므로 관측을 위해 재호출하면 결과가 달라질 위험이 있습니다.
+
+- `nativeMissionOutcome`: 원본 메서드에서 나온 `WON`, `LOST`, `ABORTED`, `NEXT_STAGE`, `PREVIEW` 중 하나입니다.
+- `nativeBattleWonObserved=true`: 원본 승리 분기를 실제 통과했다는 기록일 뿐 사용자 GUI와의 완전 동등성 인증은 아닙니다.
+- `NEXT_STAGE`는 **최종 승리가 아니라 다단계 미션 전환**이며 이후 단계 자동 이어하기는 아직 미지원입니다.
+- `battleVictoryCertified=false`, `parityCertified=false`는 GUI 동등성 검증 완료 전까지 유지됩니다.
+- 계획을 다 수행하면 `planCompleted=true`로 종료합니다. 실제 `finishBattle()`이 계획 중 발생하면 `planCompleted=false`, `nativeBattleFinished=true`와 별도의 최종 세이브 해시가 기록됩니다.
+- 최종 상태는 추측한 적 수가 아니라 원본 엔진이 만든 `xpz-native-battle-finish.sav`를 기준으로 판단합니다. 반복 검증은 끝 저장 파일의 SHA-256을 **제외 없이** 대조합니다.
+
+이 종료 관측 패치도 원본 GUI와 재생 비교를 통과하기 전에는 **실험 기능**입니다. 컴파일과 가짜 테스트만으로 승리 사례가 생성되지는 않습니다.
+
 ### 원본 엔진 결정적 시간 진행 (실험적 빌드)
 
 원본 전투 로직은 `RNG`, `AIModule`, `TileEngine`, `Pathfinding`에서 그대로 실행합니다. 화면 없는 실행에서만 `Timer::slowTick()`을 벽시계 대신 **게임 루프마다 16ms 증가하는 고정 틱**으로 구동합니다. `Game::run`의 헤드리스 전용 `SDL_Delay(1)`도 제거합니다. 일반 GUI 경로의 시간 처리에는 변경이 없습니다.
@@ -107,11 +120,11 @@ stop
 
 ## 결과 해석
 
-`native-events.jsonl`: 원본 엔진이 기록한 RNG/유닛 상태 및 체크포인트.
+`native-events.jsonl`: 원본 엔진이 기록한 RNG/유닛 상태 및 체크포인트. 실제 종료 시에는 `battle_finished` 이벤트를 추가로 기록합니다.
 
 `user/piratez/xpz-native-*.sav`: 원본 전체 세이브 직렬화 결과. 타일·아이템·AI 등은 이 파일을 기준으로 비교합니다.
 
-`replay-result.json`: 명령열 완료 여부와 체크포인트 해시. `planCompleted`는 **전투 승리와 다릅니다**. `parityCertified`와 `battleVictoryCertified`는 현재 항상 `false`입니다.
+`replay-result.json`: 명령열 완료 여부, 실제 `finishBattle()` 종료 상태 및 체크포인트 해시. `planCompleted`는 **전투 승리와 다릅니다**. `parityCertified`와 `battleVictoryCertified`는 현재 항상 `false`입니다.
 
 같은 입력·소스·행동·RNG의 두 실제 실행을 비교합니다. 비교기는 원본 소스뿐 아니라 패치 포함 압축본·바이너리·행동열·설정·입력 세이브 해시까지 같아야 진행하며, 필수 해시가 없는 구형 결과는 거부합니다:
 

@@ -54,6 +54,10 @@ export function preflight(a, platform=process.platform) {
   const clock=JSON.parse(fs.readFileSync(clockFile,'utf8'));
   if(clock.schema!==1||clock.stepMilliseconds!==16||clock.mode!=='DETERMINISTIC_NATIVE_TIMER_NO_SURROGATE'||sha256(JSON.stringify(clock))!==manifest.clockPatchSha256)
     throw new Error('NATIVE_CLOCK_PATCH_HASH_MISMATCH');
+  if (!/^[a-f0-9]{64}$/.test(manifest.outcomePatchSha256||'')) throw new Error('NATIVE_OUTCOME_OBSERVER_REQUIRED');
+  const outcome=JSON.parse(fs.readFileSync(path.join(path.dirname(a['--manifest']),'native-outcome-patch.json'),'utf8'));
+  if(outcome.schema!==1||outcome.mode!=='ORIGINAL_OXCE_FINISHBATTLE_OBSERVER'||sha256(JSON.stringify(outcome))!==manifest.outcomePatchSha256)
+    throw new Error('NATIVE_OUTCOME_PATCH_HASH_MISMATCH');
   if (sha256(fs.readFileSync(a['--binary']))!==manifest.binarySha256) throw new Error('NATIVE_BINARY_HASH_MISMATCH');
   const out=path.resolve(a['--out']);
   if (fs.existsSync(out)) throw new Error('OUTPUT_ALREADY_EXISTS: use a fresh output directory');
@@ -90,7 +94,7 @@ export async function runNative(a) {
     '-newSeedOnLoad','false','-playIntro','false','-useOpenGL','false','-skipNextTurnScreen','true','-soundVolume','0','-musicVolume','0','-uiVolume','0'];
   if(a['--xvfb']) {cmd='xvfb-run';args=['-a',binary,...args];}
   const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
-    binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,clockPatchSha256:manifest.clockPatchSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
+    binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
   fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify(provenance,null,2)+'\n');
   const log=fs.openSync(path.join(out,'stdout.log'),'wx'),err=fs.openSync(path.join(out,'stderr.log'),'wx');
@@ -111,7 +115,11 @@ export async function runNative(a) {
   if(!fs.existsSync(tracePath))throw new Error('NATIVE_PROTOCOL_MISSING: executable did not produce replay events');
   const events=fs.readFileSync(tracePath,'utf8').trim().split(/\r?\n/).map(s=>JSON.parse(s));
   if(events[0]?.event!=='native_ready'||events[0]?.backend!=='OXCE_NATIVE'||events[0]?.protocol!==1)throw new Error('NATIVE_PROTOCOL_INVALID');
-  if(events.some(e=>e.event==='error')||events.at(-1)?.event!=='plan_completed')throw new Error('NATIVE_PLAN_INCOMPLETE');
+  const planCompleted=events.at(-1)?.event==='plan_completed';
+  const finishEvents=events.filter(e=>e.event==='battle_finished');
+  const finish=finishEvents.length===1 && events.at(-1)?.event==='battle_finished'?finishEvents[0]:null;
+  if(events.some(e=>e.event==='error')||finishEvents.length>1||(!planCompleted&&!finish)||
+      (planCompleted&&finishEvents.length))throw new Error('NATIVE_PLAN_OR_MISSION_INCOMPLETE');
   const checkpoints=events.filter(e=>e.event==='checkpoint');
   if(!checkpoints.length)throw new Error('NATIVE_CHECKPOINTS_MISSING');
   for(const c of checkpoints){
@@ -120,15 +128,28 @@ export async function runNative(a) {
     if(!fs.existsSync(file))throw new Error('NATIVE_SNAPSHOT_MISSING: '+c.file);
     c.snapshotSha256=sha256(fs.readFileSync(file));
   }
-  const result={backend:'OXCE_NATIVE',planCompleted:true,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
+  let nativeMissionOutcome=null,finishSnapshotSha256=null;
+  if(finish){
+    if(finish.file!=='xpz-native-battle-finish.sav'||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(finish.outcome)||
+       typeof finish.aborted!=='boolean'||typeof finish.nextStage!=='boolean'||typeof finish.preview!=='boolean'||
+       !Number.isInteger(finish.survivorsOrExit)||!/^[0-9]+$/.test(finish.rng||''))
+      throw new Error('INVALID_NATIVE_BATTLE_FINISH_EVENT');
+    const f=path.join(user,master,finish.file);
+    if(!fs.existsSync(f)||!fs.lstatSync(f).isFile())throw new Error('NATIVE_FINISH_SAVE_MISSING');
+    finishSnapshotSha256=sha256(fs.readFileSync(f));
+    nativeMissionOutcome=finish.outcome;
+  }
+  const result={backend:'OXCE_NATIVE',planCompleted,nativeBattleFinished:!!finish,
+    nativeMissionOutcome,nativeBattleWonObserved:nativeMissionOutcome==='WON',
+    nativeFinishSnapshotSha256:finishSnapshotSha256,parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
-    clockPatchSha256:manifest.clockPatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
+    clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
     seed:provenance.seed,inputSaveSha256:inputHash,runtimeManifestSha256:provenance.runtimeManifestSha256,
     display:provenance.display,checkpoints};
   fs.writeFileSync(path.join(out,'replay-result.json'),JSON.stringify(result,null,2)+'\n');
   return result;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  try{const r=await runNative(parseArgs(process.argv.slice(2)));console.log(JSON.stringify({backend:r.backend,planCompleted:r.planCompleted,checkpointCount:r.checkpointCount,parityCertified:false,battleVictoryCertified:false},null,2));}
+  try{const r=await runNative(parseArgs(process.argv.slice(2)));console.log(JSON.stringify({backend:r.backend,planCompleted:r.planCompleted,nativeMissionOutcome:r.nativeMissionOutcome,nativeBattleWonObserved:r.nativeBattleWonObserved,checkpointCount:r.checkpointCount,parityCertified:false,battleVictoryCertified:false},null,2));}
   catch(e){console.error('NATIVE_REPLAY_ERROR: '+e.message);process.exitCode=1;}
 }

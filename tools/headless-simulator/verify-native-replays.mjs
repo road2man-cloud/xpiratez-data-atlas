@@ -56,10 +56,14 @@ export async function fingerprintGameInputs(args) {
 export function verifyRunEvidence(directory,master='piratez') {
   if(!/^[A-Za-z0-9_-]+$/.test(master))throw new Error('INVALID_MASTER_ID');
   const result=JSON.parse(fs.readFileSync(path.join(directory,'replay-result.json'),'utf8'));
-  if(result.backend!=='OXCE_NATIVE'||result.planCompleted!==true||!Array.isArray(result.checkpoints)||!result.checkpoints.length)
+  if(result.backend!=='OXCE_NATIVE'||(result.planCompleted!==true&&result.nativeBattleFinished!==true)||!Array.isArray(result.checkpoints)||!result.checkpoints.length)
     throw new Error('COMPLETE_NATIVE_REPLAY_REQUIRED');
   const events=fs.readFileSync(path.join(directory,'native-events.jsonl'),'utf8').trim().split(/\r?\n/).map(JSON.parse);
-  if(events[0]?.event!=='native_ready'||events[0]?.backend!=='OXCE_NATIVE'||events.at(-1)?.event!=='plan_completed'||events.some(e=>e.event==='error'))
+  const terminal=events.at(-1);
+  const finishEvents=events.filter(e=>e.event==='battle_finished');
+  const validTerminal=result.nativeBattleFinished===true ? terminal?.event==='battle_finished' : terminal?.event==='plan_completed';
+  if(events[0]?.event!=='native_ready'||events[0]?.backend!=='OXCE_NATIVE'||!validTerminal||
+      finishEvents.length!==(result.nativeBattleFinished===true?1:0)||events.some(e=>e.event==='error'))
     throw new Error('NATIVE_EVENT_LOG_INCOMPLETE');
   const actual=events.filter(e=>e.event==='checkpoint');
   if(actual.length!==result.checkpoints.length)throw new Error('NATIVE_EVENT_COUNT_MISMATCH');
@@ -72,6 +76,19 @@ export function verifyRunEvidence(directory,master='piratez') {
     const file=path.join(directory,'user',master,c.file);
     if(!fs.lstatSync(file).isFile()||sha256(fs.readFileSync(file))!==snapshotSha256)
       throw new Error('CHECKPOINT_BYTES_CHANGED: '+c.file);
+  }
+  if(result.nativeBattleFinished!==true && (result.nativeBattleWonObserved===true||result.nativeMissionOutcome!=null||result.nativeFinishSnapshotSha256))
+    throw new Error('NATIVE_FINISH_EVENT_RESULT_MISMATCH');
+  if(result.nativeBattleFinished===true){
+    const claimedOutcome=terminal.preview?'PREVIEW':terminal.nextStage?'NEXT_STAGE':terminal.aborted?'ABORTED':terminal.survivorsOrExit>0?'WON':'LOST';
+    if(result.planCompleted===true||terminal.outcome!==claimedOutcome||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(terminal.outcome)||
+        terminal.file!=='xpz-native-battle-finish.sav'||result.nativeMissionOutcome!==terminal.outcome||
+        result.nativeBattleWonObserved!==(terminal.outcome==='WON')||
+        !/^[a-f0-9]{64}$/.test(result.nativeFinishSnapshotSha256||''))
+      throw new Error('NATIVE_FINISH_EVENT_RESULT_MISMATCH');
+    const file=path.join(directory,'user',master,terminal.file);
+    if(!fs.lstatSync(file).isFile()||sha256(fs.readFileSync(file))!==result.nativeFinishSnapshotSha256)
+      throw new Error('NATIVE_FINISH_SNAPSHOT_CHANGED');
   }
   return result;
 }

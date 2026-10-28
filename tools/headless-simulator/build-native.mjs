@@ -7,6 +7,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 import {applyNativeClock} from './deterministic-clock.mjs';
+import {applyNativeOutcome} from './native-outcome.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 export function checked(command,args,options={}){
   const r=spawnSync(command,args,{stdio:'inherit',shell:false,...options});
@@ -58,6 +59,9 @@ export function buildNative(out,jobs=2){
   const clockPatch=applyNativeClock(source);
   const clockPatchSha256=sha256(JSON.stringify(clockPatch));
   fs.writeFileSync(path.join(source,'native-clock-patch.json'),JSON.stringify(clockPatch,null,2)+'\n');
+  const outcomePatch=applyNativeOutcome(source);
+  const outcomePatchSha256=sha256(JSON.stringify(outcomePatch));
+  fs.writeFileSync(path.join(source,'native-outcome-patch.json'),JSON.stringify(outcomePatch,null,2)+'\n');
   prepareBuildAssetDirectories(source);
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
   checked('cmake',configure);
@@ -70,6 +74,7 @@ export function buildNative(out,jobs=2){
   fs.copyFileSync(path.join(source,'LICENSE.txt'),path.join(bundle,'LICENSE.txt'));
   fs.copyFileSync(path.join(source,'native-source-manifest.json'),path.join(bundle,'native-source-manifest.json'));
   fs.copyFileSync(path.join(source,'native-clock-patch.json'),path.join(bundle,'native-clock-patch.json'));
+  fs.copyFileSync(path.join(source,'native-outcome-patch.json'),path.join(bundle,'native-outcome-patch.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
   // The binary artifact also carries the matching launcher/verifier. This avoids
   // accidentally mixing an old offline runner with a newer native binary.
@@ -79,7 +84,7 @@ export function buildNative(out,jobs=2){
   }
   const record={schema:1,backend:'OXCE_NATIVE',parityCertified:false,binarySha256:sha256(fs.readFileSync(binary)),
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
-    clockPatchSha256,
+    clockPatchSha256,outcomePatchSha256,
     platform:process.platform,arch:process.arch,buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
   console.log(JSON.stringify({bundle,...record},null,2));

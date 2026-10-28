@@ -16,7 +16,7 @@ function fixture() {
   const event={event:'checkpoint',phase:'final',file:'xpz-native-0.sav',turn:2,side:0,rng:'18446744073709551615',command_index:2,units:[]};
   const result={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',
     checkpoints:[{...event,snapshotSha256:sha256(bytes)}]};
-  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'])result[k]='a'.repeat(64);
+  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'])result[k]='a'.repeat(64);
   fs.writeFileSync(path.join(dir,'user/piratez/xpz-native-0.sav'),bytes);
   fs.writeFileSync(path.join(dir,'replay-result.json'),JSON.stringify(result));
   const events=[{event:'native_ready',backend:'OXCE_NATIVE',protocol:1},event,{event:'plan_completed',battleVictoryCertified:false}];
@@ -66,6 +66,35 @@ test('complete exact equality is limited to evidence, never certified GUI parity
     assert.equal(r.nativeReplayIdentical,true);assert.equal(r.battleVictoryCertified,false);
     assert.equal(r.interactiveParityCertified,false);
     assert.throws(()=>summarizeComparisons([f.result],2),/ALL_REQUESTED/);
+  }finally{f.clean();}
+});
+test('synthetic original-engine finish evidence is checked against terminal save bytes',()=>{
+  const f=fixture();
+  try {
+    const saved=Buffer.from('SYNTHETIC NATIVE END SNAPSHOT - NOT A REAL BATTLE\n');
+    const terminal={event:'battle_finished',outcome:'WON',aborted:false,nextStage:false,
+      preview:false,survivorsOrExit:11,rng:'18446744073709551615',file:'xpz-native-battle-finish.sav'};
+    fs.writeFileSync(path.join(f.dir,'user/piratez',terminal.file),saved);
+    const result={...f.result,planCompleted:false,nativeBattleFinished:true,
+      nativeMissionOutcome:'WON',nativeBattleWonObserved:true,nativeFinishSnapshotSha256:sha256(saved)};
+    fs.writeFileSync(path.join(f.dir,'replay-result.json'),JSON.stringify(result));
+    fs.writeFileSync(path.join(f.dir,'native-events.jsonl'),[
+      {event:'native_ready',backend:'OXCE_NATIVE',protocol:1},f.event,terminal
+    ].map(JSON.stringify).join('\n')+'\n');
+    assert.deepEqual(verifyRunEvidence(f.dir),result);
+    assert.equal(compare(result,structuredClone(result)).nativeReplayIdentical,true);
+    const altered=structuredClone(result);altered.nativeMissionOutcome='LOST';
+    assert.equal(compare(result,altered).nativeReplayIdentical,false);
+    fs.appendFileSync(path.join(f.dir,'user/piratez',terminal.file),'tamper');
+    assert.throws(()=>verifyRunEvidence(f.dir),/NATIVE_FINISH_SNAPSHOT_CHANGED/);
+  }finally{f.clean();}
+});
+test('terminal event cannot forge native victory in the ordinary plan-completed path',()=>{
+  const f=fixture();
+  try {
+    f.result.nativeBattleWonObserved=true;
+    fs.writeFileSync(path.join(f.dir,'replay-result.json'),JSON.stringify(f.result));
+    assert.throws(()=>verifyRunEvidence(f.dir),/NATIVE_FINISH_EVENT_RESULT_MISMATCH|NATIVE_EVENT_LOG_INCOMPLETE/);
   }finally{f.clean();}
 });
 test('runtime identity and display mode must be equal for a strict comparison',()=>{

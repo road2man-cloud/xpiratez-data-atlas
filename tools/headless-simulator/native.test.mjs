@@ -9,6 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {patchTimerHeader,patchTimerCpp,patchGameCpp,applyNativeClock} from './deterministic-clock.mjs';
+import {patchFinishBattle,patchOutcomeGame,applyNativeOutcome} from './native-outcome.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
 import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
 import {compare} from './compare-replays.mjs';
@@ -71,13 +72,48 @@ test('clock patch applies to exact archived OXCE source, not combat algorithms',
     verifySource(dir,manifest);
     const result=applyNativeClock(dir);
     assert.equal(result.stepMilliseconds,16);
-    assert.deepEqual(Object.keys(result.patchedFiles),['src/Engine/Timer.h','src/Engine/Timer.cpp','src/Engine/Game.cpp']);
-    for(const [f,digest] of Object.entries(result.patchedFiles))
+    const observer=applyNativeOutcome(dir);
+    assert.equal(observer.mode,'ORIGINAL_OXCE_FINISHBATTLE_OBSERVER');
+    assert.deepEqual(Object.keys(observer.patchedFiles),[
+      'src/Battlescape/BattlescapeState.cpp','src/Engine/Game.cpp','src/Headless/NativeOutcome.h'
+    ]);
+    for(const [f,digest] of Object.entries(observer.patchedFiles))
       assert.equal(sha256(fs.readFileSync(path.join(dir,f))),digest);
+    assert.deepEqual(Object.keys(result.patchedFiles),['src/Engine/Timer.h','src/Engine/Timer.cpp','src/Engine/Game.cpp']);
+    for(const [f,digest] of Object.entries(result.patchedFiles)) {
+      if(f==='src/Engine/Game.cpp')continue; // Followed by the outcome observer hook.
+      assert.equal(sha256(fs.readFileSync(path.join(dir,f))),digest);
+    }
     for(const f of ['src/Engine/RNG.cpp','src/Battlescape/TileEngine.cpp','src/Battlescape/AIModule.cpp'])
       assert.equal(sha256(fs.readFileSync(path.join(dir,f))),manifest.sourceFiles[f]);
     assert.throws(()=>applyNativeClock(dir),/ALREADY_PATCHED/);
+    assert.throws(()=>applyNativeOutcome(dir),/ALREADY_PATCHED/);
   }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('native finish hook records original finishBattle without inventing a win rule',()=>{
+  const source=[
+    '#include "../Engine/Timer.h"',
+    'void BattlescapeState::finishBattle(bool abort, int inExitArea)',
+    '{',
+    ' std::string nextStage; bool isPreview=false;',
+    '}',
+    '',
+    '/**',
+    ' * Shows the launch button.',
+    ' */'
+  ].join('\n');
+  const patched=patchFinishBattle(source);
+  assert.ok(patched.includes('NativeOutcome::recordFinish(abort, inExitArea'));
+  assert.ok(patched.includes('getSavedGame()->save("xpz-native-battle-finish.sav"'));
+  assert.ok(patched.includes('RNG::getSeed()'));
+  assert.ok(patched.includes(' std::string nextStage; bool isPreview=false;'));
+  assert.throws(()=>patchFinishBattle(patched),/ALREADY_PATCHED/);
+  const game=patchOutcomeGame('#include "Timer.h"\n\t\t\tnativeActive->think();\n\t\t\t\t\tbanner->close();');
+  assert.ok(game.includes('NativeOutcome::finished()'));
+  assert.ok(game.indexOf('nativeActive->think();')<game.indexOf('NativeOutcome::finished()'));
+  assert.equal((game.match(/NativeOutcome::finished\(\)/g)||[]).length,2);
+  assert.ok(game.indexOf('banner->close();')<game.lastIndexOf('NativeOutcome::finished()'));
+  assert.throws(()=>patchOutcomeGame(game),/ALREADY_PATCHED/);
 });
 test('unverified native execution requires explicit opt-in',()=>{
   assert.throws(()=>preflight({},'linux'),/NATIVE_PARITY_NOT_CERTIFIED/);
@@ -164,7 +200,7 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
   const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
-  const fields=['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
+  const fields=['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);
   for(const k of fields){const b=structuredClone(a);b[k]='c'.repeat(64);assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT/);delete b[k];assert.throws(()=>compare(a,b),/REPLAY_FINGERPRINT_MISSING/);}
