@@ -7,8 +7,9 @@ import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
-import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
-import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
+import {patchBattle,patchBattleFinish,patchGame,sha256,prepare} from './prepare-native.mjs';
+import {parseArgs,preflight,verifyRuntime,summarizeNativeEvents} from './run-native.mjs';
+import {parseBatchArgs} from './run-batch.mjs';
 import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
 import {compare} from './compare-replays.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
@@ -29,6 +30,13 @@ test('native insertion preserves the original battle think body',()=>{
   assert.ok(patched.includes(' int ret = -1;\n return ret;'));
   assert.ok(patched.includes('_playerPanicHandled'));
   assert.throws(()=>patchBattle(patched),/ALREADY_PATCHED/);
+});
+test('native battle finish instrumentation only reports original mission completion',()=>{
+  const source='\nnamespace OpenXcom\n{\nvoid BattlescapeState::finishBattle(bool abort, int inExitArea)\n{\n original_finish();\n}\n}\n';
+  const patched=patchBattleFinish(source);
+  assert.ok(patched.includes('NativeReplay::onBattleFinished(_battleGame, abort, inExitArea);'));
+  assert.ok(patched.includes(' original_finish();'));
+  assert.throws(()=>patchBattleFinish(patched),/ALREADY_PATCHED/);
 });
 test('an unfamiliar engine layout is not silently patched',()=>{
   assert.throws(()=>patchBattle('not an OXCE source'),/UNSUPPORTED_SOURCE_LAYOUT/);
@@ -55,18 +63,44 @@ test('unverified native execution requires explicit opt-in',()=>{
 test('Windows source PC cannot become an accidental battle execution fallback',()=>{
   assert.throws(()=>preflight({'--experimental':true},'win32'),/GPT_LINUX_EXECUTION_REQUIRED/);
 });
+test('native end-of-plan is not a native mission victory',()=>{
+  const ready={event:'native_ready',backend:'OXCE_NATIVE',protocol:2};
+  const plan=summarizeNativeEvents([ready,{event:'plan_completed'}]);
+  assert.equal(plan.planCompleted,true);
+  assert.equal(plan.battleEnded,false);
+  assert.equal(plan.nativeOutcome,null);
+  const end={event:'battle_finished',source:'ORIGINAL_FINISH_BATTLE',
+    native_outcome:'FINISHED_WITH_SURVIVORS',abort:false,
+    live_soldiers:2,live_aliens:0,in_exit_area:2};
+  const terminal=summarizeNativeEvents([ready,end]);
+  assert.equal(terminal.battleEnded,true);
+  assert.equal(terminal.nativeOutcome,'FINISHED_WITH_SURVIVORS');
+  assert.throws(()=>summarizeNativeEvents([ready]),/NATIVE_TERMINAL_EVENT_MISSING/);
+  assert.throws(()=>summarizeNativeEvents([ready,end,{event:'plan_completed'}]),/NATIVE_FINISH_EVENT_CONTRADICTION/);
+  assert.throws(()=>summarizeNativeEvents([ready,{event:'error'}]),/NATIVE_PLAN_INCOMPLETE/);
+});
+test('batch runner requires explicit plans and genuine native seeds',()=>{
+  assert.throws(()=>parseBatchArgs([]),/ONE_OF_PLAN_OR_PLANS_REQUIRED/);
+  assert.throws(()=>parseBatchArgs(['--plan','x','--plans','y']),/ONE_OF_PLAN_OR_PLANS_REQUIRED/);
+  assert.throws(()=>parseBatchArgs(['--plan','x','--seeds','0']),/INVALID_NATIVE_SEED_LIST/);
+  assert.throws(()=>parseBatchArgs(['--plan','x','--seeds','1,1']),/DUPLICATE_SEED_IN_LIST/);
+  const batch=parseBatchArgs(['--plan','test.actions','--seeds','save,42','--repeat','3']);
+  assert.equal(batch.repeat,3);
+  assert.deepEqual(batch.seeds,['save','42']);
+});
 test('unknown options and duplicates fail closed',()=>{
   assert.throws(()=>parseArgs(['--runs','5000']),/UNSUPPORTED/);
   assert.throws(()=>parseArgs(['--seed','1','--seed','2']),/DUPLICATE/);
   assert.throws(()=>parseArgs(['--binary']),/MISSING/);
   assert.equal(parseArgs(['--experimental','--seed','123'])['--seed'],'123');
+  assert.equal(parseArgs(['--experimental','--checkpoint-mode','turns'])['--checkpoint-mode'],'turns');
 });
 test('source archive and every expected native source file match the lock',()=>{
   const lock=JSON.parse(fs.readFileSync(path.join(ROOT,'native/source.lock.json'),'utf8'));
   const archive=path.join(ROOT,'native/oxce-source.tar.gz');
   assert.equal(sha256(fs.readFileSync(archive)),lock.archiveSha256);
   assert.equal(fs.statSync(archive).size,lock.archiveBytes);
-  assert.equal(sha256(fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'))),lock.driverSha256);
+  assert.equal(sha256(fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8').replace(/\r\n/g,'\n')),lock.driverSha256);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-integrity-'));
   try{
     const r=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',temp],{encoding:'utf8',cwd:ROOT});
@@ -89,6 +123,7 @@ test('explicit authoritative src overlay is fingerprinted without changing eithe
   const fixture={
     'CMakeLists.txt':'# build fixture only\n','LICENSE.txt':'test fixture\n',
     'src/Battlescape/BattlescapeGame.cpp':'\nnamespace OpenXcom\n{\nint BattlescapeGame::think()\n{\n return -1;\n}\n}\n',
+    'src/Battlescape/BattlescapeState.cpp':'\nnamespace OpenXcom\n{\nvoid BattlescapeState::finishBattle(bool abort, int inExitArea)\n{\n original_finish();\n}\n}\n',
     'src/Engine/Game.cpp':'\t\t// Process rendering\nrender();\n',
     'src/Engine/RNG.cpp':'// base RNG fixture\n'
   };
@@ -141,6 +176,6 @@ test('native comparison rejects different binary, adapter archive, plan or RNG i
 });
 test('native driver forwards commands and never generates outcome probabilities',()=>{
   const code=fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8');
-  for(const x of ['game->primaryAction(target)','game->requestEndTurn(false)','RNG::getSeed()','getGeoscapeSave()->save'])assert.ok(code.includes(x),x);
+  for(const x of ['game->primaryAction(target)','game->requestEndTurn(false)','RNG::getSeed()','getGeoscapeSave()->save','game->handleNonTargetAction()','itemMoveInventory','onBattleFinished'])assert.ok(code.includes(x),x);
   for(const x of ['xorshift','std::mt19937','winRate','resolveFire','meanDeaths'])assert.equal(code.includes(x),false,x);
 });

@@ -12,7 +12,7 @@
 
 - 원본 소스와 핵심 전투/AI/RNG 파일의 SHA-256을 고정했습니다.
 - RC18 개발 소스 반영본의 **전체 Linux 컴파일에 성공**했습니다. 검증 코드 커밋은 `196ab7d`, 빌드 실행은 `40619712731`입니다.
-- `native.test.mjs`의 무결성·입력 어댑터 검사 15개가 통과했습니다. **전투 15회 성공이라는 뜻은 아닙니다.**
+- `native.test.mjs`의 무결성·입력 어댑터 검사 18개가 Windows 작업트리에서 통과했습니다. **전투 18회 성공이라는 뜻은 아닙니다.** 전체 Linux 컴파일과 신규 명령 실전 테스트는 별개입니다.
 - GPT Linux에서 원본 엔진으로 `17.sav` 로드·재저장에 성공했고 초기 전투 상태 전체와 RNG가 입력과 일치했습니다. 원본 세이브는 변경하지 않았습니다.
 - 무릎쏴·방향 전환·사격을 원본 명령으로 실행하고 실제 TU·탄약 변화가 저장되는 것을 확인했습니다.
 - 수정본에서 같은 입력으로 적 턴을 **두 번 실제 재생하여 각각 아군 2턴으로 복귀**했습니다. RNG·전투 수치·AI·지형 등은 일치했지만, 저장된 애니메이션/피격 연출 프레임 항목 23곳은 달랐습니다. 따라서 엄격한 전체 세이브 비교는 `nativeReplayIdentical: false`를 유지합니다. 이 차이를 숨기거나 삭제하여 성공으로 처리하지 않습니다.
@@ -88,12 +88,22 @@ kneel UNIT_ID
 fire UNIT_ID ITEM_ID snap X Y Z
 fire UNIT_ID ITEM_ID aimed X Y Z
 fire UNIT_ID ITEM_ID auto X Y Z
+fire_visible UNIT_ID ITEM_ID snap|aimed|auto ENEMY_UNIT_ID
+fire_nearest UNIT_ID ITEM_ID snap|aimed|auto
+prime UNIT_ID GRENADE_ITEM_ID FUSE_0_TO_23
+unprime UNIT_ID GRENADE_ITEM_ID
+throw UNIT_ID GRENADE_ITEM_ID X Y Z
+equip UNIT_ID ITEM_ID INVENTORY_SLOT X Y
 stop
 ```
 
 여기서 `ITEM_ID`는 규칙 이름이 아닌 세이브의 실제 무기 아이템 번호입니다. 무기는 해당 대원의 손에 있어야 합니다. 이동이 새 적 발견 등으로 중단되면 후속 명령을 무작정 실행하지 않고 오류와 실제 체크포인트를 남깁니다.
 
-투척, 장전, 인벤토리 조작, 스킬, 조건 분기, 자동 승리 판정 및 전술 탐색기는 이 입력 어댑터에 아직 연결하지 않았습니다. 원본 엔진에 기능이 존재하는 것과 이 어댑터로 자동 제어할 수 있는 것은 다릅니다. 지원하지 않는 명령은 실패합니다.
+추가 명령은 현재 **구현 단계**입니다. `prime`/`unprime`은 원본 `handleNonTargetAction`, `throw`는 원본 `primaryAction`/복셀 궤적, `equip`은 원본 인벤토리 이동/비용 함수를 사용합니다. `fire_visible`은 명시한 적이 해당 대원의 시야에 없거나 생존하지 않으면 건너뜁니다. `fire_nearest`는 보이는 적 중 가장 가까운 적을 선택하는 **전술 정책**이며 명중/피해 판정은 원본 엔진에 맡깁니다. 장전, 스킬, 범용 조건 분기, 완전한 자율 전술 탐색은 아직 미구현이며 지원하지 않는 명령은 실패합니다.
+
+전투 종료는 행동열 종료가 아닌 원본 `BattlescapeState::finishBattle`에서 별도 `battle_finished` 이벤트로 기록합니다. `FINISHED_WITH_SURVIVORS`는 그 함수의 인수와 생존자를 기준으로 한 네이티브 종료 결과이며 **GUI 대조검증을 통과한 승리 인증이 아닙니다**. 다단계 임무의 마지막 스테이지인지도 별도로 판단해야 합니다. `planCompleted`만으로 승리했다고 보고하지 않습니다.
+
+`--checkpoint-mode turns`는 모든 개별 행동 직후 세이브 파일을 남기지 않고 초기·턴 종료·최종·실제 전투 종료 세이브만 보존합니다.
 
 ## 결과 해석
 
@@ -101,7 +111,9 @@ stop
 
 `user/piratez/xpz-native-*.sav`: 원본 전체 세이브 직렬화 결과. 타일·아이템·AI 등은 이 파일을 기준으로 비교합니다.
 
-`replay-result.json`: 명령열 완료 여부와 체크포인트 해시. `planCompleted`는 **전투 승리와 다릅니다**. `parityCertified`와 `battleVictoryCertified`는 현재 항상 `false`입니다.
+`replay-result.json`: 명령열 완료 여부, 원본 종료 이벤트 여부 및 체크포인트 해시. `planCompleted`는 **전투 승리와 다릅니다**. `battleEnded`와 `nativeOutcome`은 원본 종료 함수 이벤트가 있어야만 기록합니다. `parityCertified`와 `battleVictoryCertified`는 현재 항상 `false`입니다.
+
+반복 실행은 `run-batch.mjs`에서 제공합니다. 예: `node tools/headless-simulator/run-batch.mjs --experimental --binary BINARY --manifest MANIFEST --data GAME_ROOT --user GAME_USER --config OPTIONS --save 3.sav --plans PLAN_DIRECTORY --seeds save,1,2 --checkpoint-mode turns --out NEW_BATCH_DIRECTORY`. 하나의 세이브 RNG를 반복하면 독립 시행이 아닙니다. 다른 RNG 시드는 원래 세이브의 결정론적 결과가 아닌 반사실 실험입니다. 실패한 네이티브 프로세스와 전투 미종료 계획은 승리/패배로 취급하지 않습니다.
 
 같은 입력·소스·행동·RNG의 두 실제 실행을 비교합니다. 비교기는 원본 소스뿐 아니라 패치 포함 압축본·바이너리·행동열·설정·입력 세이브 해시까지 같아야 진행하며, 필수 해시가 없는 구형 결과는 거부합니다:
 

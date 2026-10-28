@@ -21,6 +21,17 @@ export function patchBattle(text) {
   const anchor = 'int BattlescapeGame::think()\n{';
   return once(text, anchor, anchor + '\n\t// Native replay adapter: original state machine and gameplay RNG remain in control.\n\tif (NativeReplay::enabled() && _states.empty() && !_endTurnRequested\n\t\t&& !_save->getUnitsFalling() && _save->getSide() == FACTION_PLAYER && _playerPanicHandled)\n\t{\n\t\tNativeReplay::tick(this);\n\t\treturn -1;\n\t}\n', 'battle think');
 }
+export function patchBattleFinish(text) {
+  text = text.replace(/\r\n/g, '\n');
+  if (text.includes('NativeReplay::onBattleFinished')) throw new Error('SOURCE_ALREADY_PATCHED');
+  text = once(text, '\nnamespace OpenXcom\n{',
+    '\n#include "../Headless/ReplayDriver.h"\n\nnamespace OpenXcom\n{', 'battle finish namespace');
+  const anchor = 'void BattlescapeState::finishBattle(bool abort, int inExitArea)\n{';
+  return once(text, anchor, anchor +
+    '\n\t// Report ONLY the original OXCE mission-finish trigger.\n' +
+    '\tif (NativeReplay::enabled()) NativeReplay::onBattleFinished(_battleGame, abort, inExitArea);\n',
+    'battle finish');
+}
 export function patchGame(text) {
   text = text.replace(/\r\n/g, '\n');
   if (text.includes('XPZ_NATIVE_PLAN')) throw new Error('SOURCE_ALREADY_PATCHED');
@@ -60,7 +71,7 @@ export function prepare(source, output, sourceOverlay = null) {
   for (const original of [source, sourceOverlay].filter(Boolean))
     if (output === original || output.startsWith(original + path.sep)) throw new Error('OUTPUT_MUST_BE_OUTSIDE_ORIGINAL_SOURCE');
   if (fs.existsSync(output)) throw new Error('OUTPUT_ALREADY_EXISTS');
-  for (const f of ['CMakeLists.txt','LICENSE.txt','src/Battlescape/BattlescapeGame.cpp','src/Engine/Game.cpp','src/Engine/RNG.cpp'])
+  for (const f of ['CMakeLists.txt','LICENSE.txt','src/Battlescape/BattlescapeGame.cpp','src/Battlescape/BattlescapeState.cpp','src/Engine/Game.cpp','src/Engine/RNG.cpp'])
     if (!fs.existsSync(path.join(source,f))) throw new Error('MISSING_NATIVE_SOURCE: ' + f);
   const origins = new Map();
   for (const f of ROOT_FILES) if (fs.existsSync(path.join(source,f))) origins.set(f,path.join(source,f));
@@ -78,6 +89,7 @@ export function prepare(source, output, sourceOverlay = null) {
   const files = [...origins.keys()].sort();
   // Validate supported insertion points before copying anything.
   const battle = patchBattle(fs.readFileSync(origins.get('src/Battlescape/BattlescapeGame.cpp'),'utf8'));
+  const finish = patchBattleFinish(fs.readFileSync(origins.get('src/Battlescape/BattlescapeState.cpp'),'utf8'));
   const game = patchGame(fs.readFileSync(origins.get('src/Engine/Game.cpp'),'utf8'));
   const manifest = {schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceOverlayApplied:!!sourceOverlay,overlayFiles:overlayFiles.sort(),sourceFiles:{}};
   for (const f of files) manifest.sourceFiles[f] = sha256(fs.readFileSync(origins.get(f)));
@@ -89,10 +101,11 @@ export function prepare(source, output, sourceOverlay = null) {
     fs.copyFileSync(origins.get(f),dest);
   }
   fs.writeFileSync(path.join(output,'src/Battlescape/BattlescapeGame.cpp'),battle);
+  fs.writeFileSync(path.join(output,'src/Battlescape/BattlescapeState.cpp'),finish);
   fs.writeFileSync(path.join(output,'src/Engine/Game.cpp'),game);
   fs.mkdirSync(path.join(output,'src/Headless'),{recursive:true});
   fs.copyFileSync(path.join(HERE,'native/ReplayDriver.h'),path.join(output,'src/Headless/ReplayDriver.h'));
-  manifest.patchedFiles = Object.fromEntries(['src/Battlescape/BattlescapeGame.cpp','src/Engine/Game.cpp','src/Headless/ReplayDriver.h'].map(f=>[f,sha256(fs.readFileSync(path.join(output,f)))]));
+  manifest.patchedFiles = Object.fromEntries(['src/Battlescape/BattlescapeGame.cpp','src/Battlescape/BattlescapeState.cpp','src/Engine/Game.cpp','src/Headless/ReplayDriver.h'].map(f=>[f,sha256(fs.readFileSync(path.join(output,f)))]));
   fs.writeFileSync(path.join(output,'native-source-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
   return manifest;
 }
