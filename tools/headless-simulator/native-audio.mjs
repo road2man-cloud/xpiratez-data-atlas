@@ -31,14 +31,15 @@ export function patchNativeAudio(text){
   const include='#include "../Battlescape/NextTurnState.h"';
   if(text.split(include).length!==2)throw new Error('NATIVE_MODAL_INCLUDE_ANCHOR_MISSING');
   text=text.replace(include,include+'\n#include "../Battlescape/InfoboxOKState.h"');
-  const bannerClose='\t\t\t\t\tbanner->close();\n\t\t\t\t}';
-  if(text.split(bannerClose).length!==2)throw new Error('NATIVE_MODAL_HANDLER_ANCHOR_MISSING');
-  text=text.replace(bannerClose,bannerClose+
-    '\n\t\t\t\telse if (auto* dialog = dynamic_cast<InfoboxOKState*>(nativeActive))'+
+  const nextTurn='if (auto* banner = dynamic_cast<NextTurnState*>(nativeActive))';
+  if(text.split(nextTurn).length!==2)throw new Error('NATIVE_MODAL_HANDLER_ANCHOR_MISSING');
+  text=text.replace(nextTurn,
+    'if (auto* dialog = dynamic_cast<InfoboxOKState*>(nativeActive))'+
     '\n\t\t\t\t{'+
     '\n\t\t\t\t\tLog(LOG_INFO) << "[XPZ_NATIVE] acknowledge InfoboxOKState";'+
     '\n\t\t\t\t\tdialog->btnOkClick(nullptr);'+
-    '\n\t\t\t\t}');
+    '\n\t\t\t\t}'+
+    '\n\t\t\t\telse '+nextTurn);
   return text;
 }
 export function applyNativeAudio(root){

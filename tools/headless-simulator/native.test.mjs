@@ -47,7 +47,7 @@ test('headless hook suppresses rendering without replacing state think',()=>{
 test('soundless runtime explicitly guards original OXCE Game::initAudio in native mode only',()=>{
   assert.equal(HEADLESS_AUDIO_DRIVER,'dummy');
   assert.equal(HEADLESS_AUDIO_POLICY,'ORIGINAL_OXCE_GAME_NATIVE_MUTE_AND_MODAL_ACK');
-  const source='#include <cstdlib>\n#include "../Battlescape/NextTurnState.h"\nvoid Game::initAudio()\n{\nint x = 0;\n}\nif (!_states.empty() && _states.back() == nativeActive) {\n\t\t\t\t\tbanner->close();\n\t\t\t\t}';
+  const source='#include <cstdlib>\n#include "../Battlescape/NextTurnState.h"\nvoid Game::initAudio()\n{\nint x = 0;\n}\nif (!_states.empty() && _states.back() == nativeActive) {\n\t\t\t\tif (auto* banner = dynamic_cast<NextTurnState*>(nativeActive)) {\n\t\t\t\t\tbanner->close();\n\t\t\t\t}\n}';
   const patched=patchNativeAudio(source);
   assert.match(patched,/if \(std::getenv\("XPZ_NATIVE_PLAN"\)\)/);
   assert.match(patched,/Options::mute = true;/);
