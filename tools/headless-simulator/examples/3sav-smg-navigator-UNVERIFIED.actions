@@ -1,0 +1,9 @@
+# 3.sav source SHA-256: 28faf3920b016b81ad041b12f63de94548634375b33b2c07fa1fddb184c38a61
+# CANDIDATE ONLY. No OXCE battle run has validated fire legality, damage or survival.
+# Unit 19 right-hand 10mm SMG item 113, hostile 1000017 visible at (22,25,0).
+observe
+fire 19 113 aimed 22 25 0
+observe
+end_turn
+observe
+stop

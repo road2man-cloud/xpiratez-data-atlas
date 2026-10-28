@@ -1,0 +1,12 @@
+# 3.sav source SHA-256: 28faf3920b016b81ad041b12f63de94548634375b33b2c07fa1fddb184c38a61
+# CANDIDATE ONLY. No OXCE battle run has validated the actions or safety.
+# Unit 19: SMG item 113 in right hand; SSRL_2 item 174 in backpack at (3,0).
+# Hostile 1000025: currently visible Chryssalid at (28,26,0).
+observe
+inventory 19 174 left 0 0
+inventory 19 113 backpack 3 0
+fire 19 174 aimed 28 26 0
+observe
+end_turn
+observe
+stop
