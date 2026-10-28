@@ -11,7 +11,7 @@ export function compare(a,b){
       !/^[a-f0-9]{64}$/.test(r.nativeFinishSnapshotSha256||'')||!['WON','LOST','ABORTED','NEXT_STAGE','PREVIEW'].includes(r.nativeMissionOutcome)))
       throw new Error('VALID_NATIVE_FINISH_SNAPSHOT_REQUIRED');
   }
-  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256']) {
+  for(const k of ['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256']) {
     if(!/^[a-f0-9]{64}$/.test(a[k]||'') || !/^[a-f0-9]{64}$/.test(b[k]||''))throw new Error('REPLAY_FINGERPRINT_MISSING: '+k);
     if(a[k]!==b[k])throw new Error('INCOMPARABLE_INPUT: '+k);
   }

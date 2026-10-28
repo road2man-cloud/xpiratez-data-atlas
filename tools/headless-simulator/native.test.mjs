@@ -11,7 +11,7 @@ import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {patchTimerHeader,patchTimerCpp,patchGameCpp,applyNativeClock} from './deterministic-clock.mjs';
 import {patchFinishBattle,patchOutcomeGame,applyNativeOutcome} from './native-outcome.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
-import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
+import {verifySource,applyNativeDriverOverride,prepareBuildAssetDirectories} from './build-native.mjs';
 import {compare} from './compare-replays.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
@@ -41,6 +41,27 @@ test('headless hook suppresses rendering without replacing state think',()=>{
   assert.ok(patched.includes('nativeActive->think();'));
   assert.ok(patched.includes('original_render_body();'));
   assert.throws(()=>patchGame(patched),/ALREADY_PATCHED/);
+});
+test('native inventory, grenade prime and throw use original OXCE methods, never JS combat approximations',()=>{
+  const src=fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8');
+  for(const symbol of [
+    'c.op == "inventory"','c.op == "prime"','c.op == "throw"',
+    'game->getTileEngine()->itemMoveInventory(',
+    'weapon->getMoveToCost(dest)',
+    'u->spendTimeUnits(timeCost)',
+    'dest->fitItemInSlot(',
+    'held->occupiesSlot(',
+    'game->handleNonTargetAction()',
+    'weapon->getFuseTimer() != c.x',
+    'a->type = BA_THROW',
+    'game->primaryAction(target)',
+    'save->canUseWeapon(',
+    'save->getGeoscapeSave()->isResearched('
+  ])assert.ok(src.includes(symbol),symbol);
+  assert.ok(src.includes('INVENTORY_NOT_ENOUGH_TU'));
+  assert.ok(src.includes('THROW_NOT_QUEUED'));
+  assert.ok(src.includes('PRIME_NOT_AVAILABLE'));
+  assert.equal(src.includes('xorshift'),false);
 });
 test('turn banner acknowledgement preserves native initialization and avoids double-pop',()=>{
   const patched=patchGame('\t\t// Process rendering\noriginal_render_body();');
@@ -137,7 +158,7 @@ test('source archive and every expected native source file match the lock',()=>{
   assert.equal(fs.statSync(archive).size,lock.archiveBytes);
   // Git for Windows may check out the text header with CRLF. Pin its LF-normalized source bytes.
   const driver=fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'),'utf8').replace(/\r\n/g,'\n');
-  assert.equal(sha256(Buffer.from(driver)),lock.driverSha256);
+  assert.equal(sha256(Buffer.from(driver)),lock.driverOverrideSha256);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-integrity-'));
   try{
     const r=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',temp],{encoding:'utf8',cwd:ROOT});
@@ -146,6 +167,11 @@ test('source archive and every expected native source file match the lock',()=>{
     assert.equal(m.sourceTreeSha256,lock.sourceTreeSha256);
     assert.equal(Object.keys(m.sourceFiles).length,lock.originalSourceFiles);
     verifySource(temp,m);
+    const override=applyNativeDriverOverride(temp,lock);
+    assert.equal(override.archivedDriverSha256,lock.driverSha256);
+    assert.equal(override.driverOverrideSha256,lock.driverOverrideSha256);
+    assert.equal(sha256(fs.readFileSync(path.join(temp,'src/Headless/ReplayDriver.h'))),lock.driverOverrideSha256);
+    assert.throws(()=>applyNativeDriverOverride(temp,lock),/ARCHIVED_NATIVE_DRIVER_CHANGED/);
     for(const f of ['src/Battlescape/AIModule.cpp','src/Battlescape/TileEngine.cpp','src/Battlescape/Pathfinding.cpp','src/Savegame/BattleUnit.cpp','src/Savegame/BattleItem.cpp','src/Engine/RNG.cpp']){
       assert.equal(sha256(fs.readFileSync(path.join(temp,f))),m.sourceFiles[f]);
       assert.equal(Object.hasOwn(m.patchedFiles,f),false,'Combat algorithm was modified: '+f);
@@ -203,7 +229,7 @@ test('offline SDL runtime validates every library hash and rejects tampering',()
 });
 test('native comparison rejects different binary, adapter archive, plan or RNG inputs',()=>{
   const a={backend:'OXCE_NATIVE',planCompleted:true,seed:'PRESERVE_SAVE_RNG',runtimeManifestSha256:null,display:'dummy',checkpoints:[{phase:'final',turn:2,side:0,rng:'18446744073709551615',command_index:2,snapshotSha256:'b'.repeat(64)}]};
-  const fields=['sourceTreeSha256','driverSha256','archiveSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
+  const fields=['sourceTreeSha256','driverSha256','archiveSha256','driverOverrideSha256','driverOverrideReceiptSha256','clockPatchSha256','outcomePatchSha256','binarySha256','planSha256','configSha256','inputSaveSha256'];
   for(const k of fields)a[k]='a'.repeat(64);
   assert.equal(compare(a,structuredClone(a)).nativeReplayIdentical,true);
   for(const k of fields){const b=structuredClone(a);b[k]='c'.repeat(64);assert.throws(()=>compare(a,b),/INCOMPARABLE_INPUT/);delete b[k];assert.throws(()=>compare(a,b),/REPLAY_FINGERPRINT_MISSING/);}

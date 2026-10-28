@@ -11,6 +11,7 @@
   "archiveBytes": 2857359,
   "sourceTreeSha256": "a64bb1a2956fb946e44930b1c97437d7fe10ce130029622bf67f332a87d75d4a",
   "driverSha256": "9ecb50f3bcc527728aea7c8d81bdbe993bcd3c7632031960bb15bb5d85398901",
+  "driverOverrideSha256": "c9319ac56ab73ff0cea5b2c33430fcfce27e38f20c2bea17c36a322f783af15d",
   "originalSourceFiles": 963,
   "engineVersion": "Extended 8.7.1",
   "sourceVersionHeaderFallback": "v2026-10-25 R43-RC17-SKYRAMP-QUAD-FIX",

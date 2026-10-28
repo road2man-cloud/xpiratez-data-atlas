@@ -49,6 +49,17 @@ export function preflight(a, platform=process.platform) {
   const sourceLock=JSON.parse(fs.readFileSync(path.join(HERE,'native/source.lock.json'),'utf8'));
   for(const k of ['sourceTreeSha256','driverSha256','archiveSha256'])
     if(!/^[a-f0-9]{64}$/.test(sourceLock[k]||'')||sourceLock[k]!==manifest[k])throw new Error('RUNNER_SOURCE_LOCK_MISMATCH: '+k);
+  if(!/^[a-f0-9]{64}$/.test(manifest.driverOverrideSha256||'') ||
+     !/^[a-f0-9]{64}$/.test(manifest.driverOverrideReceiptSha256||'') ||
+     manifest.driverOverrideSha256!==sourceLock.driverOverrideSha256)
+    throw new Error('RUNNER_NATIVE_DRIVER_OVERRIDE_MISMATCH');
+  const driverReceipt=JSON.parse(fs.readFileSync(path.join(path.dirname(a['--manifest']),'native-driver-override.json'),'utf8'));
+  if(driverReceipt.schema!==1||driverReceipt.mode!=='IMMUTABLE_NATIVE_ENGINE_PINNED_INPUT_ADAPTER'||
+     driverReceipt.archivedDriverSha256!==manifest.driverSha256||
+     driverReceipt.driverOverrideSha256!==manifest.driverOverrideSha256||
+     driverReceipt.path!=='src/Headless/ReplayDriver.h'||
+     sha256(JSON.stringify(driverReceipt))!==manifest.driverOverrideReceiptSha256)
+    throw new Error('NATIVE_DRIVER_OVERRIDE_RECEIPT_CHANGED');
   if (!/^[a-f0-9]{64}$/.test(manifest.clockPatchSha256||'')) throw new Error('DETERMINISTIC_NATIVE_CLOCK_REQUIRED');
   const clockFile=path.join(path.dirname(a['--manifest']),'native-clock-patch.json');
   const clock=JSON.parse(fs.readFileSync(clockFile,'utf8'));
@@ -94,6 +105,7 @@ export async function runNative(a) {
     '-newSeedOnLoad','false','-playIntro','false','-useOpenGL','false','-skipNextTurnScreen','true','-soundVolume','0','-musicVolume','0','-uiVolume','0'];
   if(a['--xvfb']) {cmd='xvfb-run';args=['-a',binary,...args];}
   const provenance={schema:1,backend:'OXCE_NATIVE',parityCertified:false,sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,
+    driverOverrideSha256:manifest.driverOverrideSha256,driverOverrideReceiptSha256:manifest.driverOverrideReceiptSha256,
     binarySha256:manifest.binarySha256,archiveSha256:manifest.archiveSha256,clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,runtimeManifestSha256:runtime?.manifestSha256||null,saveSha256:inputHash,planSha256:sha256(fs.readFileSync(a['--plan'])),configSha256:sha256(fs.readFileSync(a['--config'])),
     seed:a['--seed']||'PRESERVE_SAVE_RNG',display:a['--xvfb']?'xvfb':'dummy',startedAt:new Date().toISOString(),command:[cmd,...args]};
   fs.writeFileSync(path.join(out,'provenance.json'),JSON.stringify(provenance,null,2)+'\n');
@@ -147,6 +159,7 @@ export async function runNative(a) {
     nativeEntrySnapshotSha256:entrySnapshotSha256,nativeFinishSnapshotSha256:finishSnapshotSha256,
     parityCertified:false,battleVictoryCertified:false,checkpointCount:checkpoints.length,
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:manifest.archiveSha256,
+    driverOverrideSha256:manifest.driverOverrideSha256,driverOverrideReceiptSha256:manifest.driverOverrideReceiptSha256,
     clockPatchSha256:manifest.clockPatchSha256,outcomePatchSha256:manifest.outcomePatchSha256,binarySha256:manifest.binarySha256,planSha256:provenance.planSha256,configSha256:provenance.configSha256,
     seed:provenance.seed,inputSaveSha256:inputHash,runtimeManifestSha256:provenance.runtimeManifestSha256,
     display:provenance.display,checkpoints};

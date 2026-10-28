@@ -112,12 +112,15 @@ kneel UNIT_ID
 fire UNIT_ID ITEM_ID snap X Y Z
 fire UNIT_ID ITEM_ID aimed X Y Z
 fire UNIT_ID ITEM_ID auto X Y Z
+inventory UNIT_ID ITEM_ID right|left|belt|backpack SLOT_X SLOT_Y
+prime UNIT_ID ITEM_ID FUSE_TURNS
+throw UNIT_ID ITEM_ID X Y Z
 stop
 ```
 
-여기서 `ITEM_ID`는 규칙 이름이 아닌 세이브의 실제 무기 아이템 번호입니다. 무기는 해당 대원의 손에 있어야 합니다. 이동이 새 적 발견 등으로 중단되면 후속 명령을 무작정 실행하지 않고 오류와 실제 체크포인트를 남깁니다.
+여기서 `ITEM_ID`는 규칙 이름이 아닌 세이브의 실제 아이템 번호입니다. 사격·투척·신관 조작 시 아이템은 해당 대원의 손에 있어야 합니다. `inventory`는 원본 `TileEngine::itemMoveInventory` 및 장비 슬롯 규칙·인벤토리 이동 TU를 사용하며, 슬롯이 가득 찼거나 허용되지 않는 아이템이면 실패합니다. 손 좌표는 반드시 `0 0`입니다. `prime`은 원본 `BattlescapeGame::handleNonTargetAction`을 호출합니다. `throw`는 원본 R41 투척 2회 클릭 및 3D 탄도 검사 경로를 사용합니다. **실제 행동이 가능한지 여부는 원본 OXCE가 판정하며, 지금은 실행 재현성과 GUI 일치가 검증되지 않았습니다.** 이동이 새 적 발견 등으로 중단되면 후속 명령을 무작정 실행하지 않고 오류와 실제 체크포인트를 남깁니다.
 
-투척, 장전, 인벤토리 조작, 스킬, 조건 분기, 자동 승리 판정 및 전술 탐색기는 이 입력 어댑터에 아직 연결하지 않았습니다. 원본 엔진에 기능이 존재하는 것과 이 어댑터로 자동 제어할 수 있는 것은 다릅니다. 지원하지 않는 명령은 실패합니다.
+**아직 미지원:** 직접 장전, 근접공격/스킬, 인벤토리에서 탄창 끼우기, 아군 병행 행동, 전술 상황별 자동 분기. 인벤토리·신관·투척 명령은 소스 연결과 컴파일 검증 단계이며 `3.sav` 실제 엔진 동작은 별도 검증해야 합니다. 지원하지 않는 명령은 실패합니다.
 
 ## 결과 해석
 
@@ -195,6 +198,8 @@ node tools/headless-simulator/search-native.mjs \
 node tools/headless-simulator/generate-native-plans.mjs \
   /path/to/17.sav /tmp/xpz-first-shot-plans --modes snap,aimed,auto --max-plans 600
 ```
+
+원본 OXCE 소스 압축본은 그대로 보존합니다. 네이티브 입력 명령의 변경은 `native/ReplayDriver.h`만 별도의 `source.lock.json.driverOverrideSha256`으로 고정하고, 빌드 시 `native-driver-override.json`에 원본/교체 해시를 함께 기록합니다. 게임플레이 코드는 이 방법으로 수정하지 않으며, 실행기는 교체 영수증이 누락되거나 변조되면 시작을 거부합니다.
 
 해당 `17.sav`를 읽기 전용 검사한 결과, 원래 아군 11명·가시 적 3명·손에 든 아이템 13개 조합에서 **117개 초기 사격 후보 파일**이 생성될 수 있음을 확인했습니다.
 

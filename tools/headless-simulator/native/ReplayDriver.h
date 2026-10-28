@@ -17,6 +17,9 @@
 #include "../Savegame/SavedBattleGame.h"
 #include "../Savegame/SavedGame.h"
 #include "../Mod/RuleInventory.h"
+#include "../Mod/RuleItem.h"
+#include "../Mod/Mod.h"
+#include "../Battlescape/TileEngine.h"
 
 namespace OpenXcom { namespace NativeReplay {
 inline bool enabled() { return std::getenv("XPZ_NATIVE_PLAN") != nullptr; }
@@ -95,6 +98,21 @@ public:
             } else if (c.op == "fire") {
                 if (!(in >> c.actor >> c.item >> c.mode >> c.x >> c.y >> c.z)) fail("INVALID_FIRE_COMMAND");
                 if (c.mode != "snap" && c.mode != "aimed" && c.mode != "auto") fail("UNSUPPORTED_FIRE_MODE");
+            } else if (c.op == "inventory") {
+                if (!(in >> c.actor >> c.item >> c.mode >> c.x >> c.y))
+                    fail("INVALID_INVENTORY_COMMAND");
+                if (c.mode != "right" && c.mode != "left" &&
+                    c.mode != "belt" && c.mode != "backpack")
+                    fail("UNSUPPORTED_INVENTORY_SLOT");
+                if (c.x < 0 || c.y < 0 ||
+                    ((c.mode == "right" || c.mode == "left") && (c.x != 0 || c.y != 0)))
+                    fail("INVALID_INVENTORY_COORDINATES");
+            } else if (c.op == "prime") {
+                if (!(in >> c.actor >> c.item >> c.x) || c.x < 0 || c.x > 23)
+                    fail("INVALID_PRIME_COMMAND");
+            } else if (c.op == "throw") {
+                if (!(in >> c.actor >> c.item >> c.x >> c.y >> c.z))
+                    fail("INVALID_THROW_COMMAND");
             } else fail("UNSUPPORTED_COMMAND");
             std::string extra;
             if (in >> extra) fail("EXTRA_COMMAND_ARGUMENT");
@@ -148,7 +166,8 @@ public:
         save->setSelectedUnit(u);
         game->getCurrentAction()->actor = u;
         const Position target(c.x, c.y, c.z);
-        if (c.op != "kneel" && !save->getTile(target)) fail("TARGET_OUT_OF_MAP");
+        if ((c.op == "move" || c.op == "turn" || c.op == "fire" || c.op == "throw") &&
+            !save->getTile(target)) fail("TARGET_OUT_OF_MAP");
         if (c.op == "kneel") {
             if (!game->kneel(u)) fail("KNEEL_REJECTED");
         } else if (c.op == "turn") {
@@ -158,19 +177,91 @@ public:
             // A second click confirms the engine's own path preview, if present.
             if (!game->isBusy() && u->getPosition() != target) game->primaryAction(target);
             if (!game->isBusy() && u->getPosition() != target) fail("MOVE_NOT_QUEUED");
-        } else if (c.op == "fire") {
+        } else if (c.op == "fire" || c.op == "throw" ||
+                   c.op == "prime" || c.op == "inventory") {
             BattleItem* weapon = nullptr;
             for (auto* i : *save->getItems()) if (i->getId() == c.item) weapon = i;
-            if (!weapon || weapon->getOwner() != u || !weapon->getSlot() || weapon->getSlot()->getType() != INV_HAND)
+            if (!weapon || weapon->getOwner() != u || !weapon->getSlot())
+                fail("ITEM_NOT_OWNED_BY_ACTOR");
+            if (c.op == "inventory") {
+                const RuleInventory* dest = c.mode == "right" ? game->getMod()->getInventoryRightHand()
+                    : c.mode == "left" ? game->getMod()->getInventoryLeftHand()
+                    : c.mode == "belt" ? game->getMod()->getInventoryBelt()
+                    : game->getMod()->getInventoryBackpack();
+                if (!dest || weapon->getRules()->isFixed() ||
+                    !weapon->getRules()->canBePlacedIntoInventorySection(dest) ||
+                    !dest->fitItemInSlot(weapon->getRules(), c.x, c.y))
+                    fail("ITEM_CANNOT_FIT_DESTINATION");
+                for (auto* held : *u->getInventory())
+                    if (held != weapon && held->getSlot() == dest &&
+                        held->occupiesSlot(c.x, c.y, weapon))
+                        fail("INVENTORY_SLOT_OCCUPIED");
+                if (weapon->getSlot() == dest && weapon->getSlotX() == c.x &&
+                    weapon->getSlotY() == c.y)
+                    fail("INVENTORY_NO_OP");
+                const int timeCost = weapon->getMoveToCost(dest);
+                if (!u->spendTimeUnits(timeCost)) fail("INVENTORY_NOT_ENOUGH_TU");
+                // Same native itemMoveInventory() as the OXCE inventory UI.
+                game->getTileEngine()->itemMoveInventory(u->getTile(), u, weapon, dest, c.x, c.y);
+                pending = true;
+                return;
+            }
+            if (weapon->getSlot()->getType() != INV_HAND)
                 fail("WEAPON_NOT_IN_ACTORS_HAND");
+            if (c.op == "prime") {
+                const auto* rule = weapon->getRules();
+                if (u->getOriginalFaction() == FACTION_PLAYER &&
+                    !save->getGeoscapeSave()->isResearched(rule->getRequirements()))
+                    fail("ITEM_RESEARCH_REJECTED");
+                std::string reason;
+                if (!save->canUseWeapon(weapon, u, false, BA_PRIME, &reason))
+                    fail("NATIVE_CAN_USE_WEAPON_REJECTED");
+                if (rule->getFuseTimerType() == BFT_NONE || rule->getCostPrime().Time <= 0 ||
+                    weapon->getFuseTimer() >= 0)
+                    fail("PRIME_NOT_AVAILABLE");
+                if (rule->getFuseTimerType() != BFT_SET &&
+                    c.x != rule->getFuseTimerDefault())
+                    fail("INVALID_NATIVE_FUSE_TIMER");
+                auto* a = game->getCurrentAction();
+                a->type = BA_PRIME; a->actor = u; a->weapon = weapon;
+                a->value = c.x; a->targeting = false; a->updateTU();
+                if (!a->haveTU()) fail("PRIME_NOT_ENOUGH_TU");
+                // Original ActionMenuState delegates priming to this handler.
+                game->handleNonTargetAction();
+                if (weapon->getFuseTimer() != c.x) fail("NATIVE_PRIME_REJECTED");
+                pending = true;
+                return;
+            }
             auto* a = game->getCurrentAction();
-            a->type = c.mode == "snap" ? BA_SNAPSHOT : c.mode == "aimed" ? BA_AIMEDSHOT : BA_AUTOSHOT;
+            if (c.op == "throw") {
+                if (weapon->getRules()->isFixed() ||
+                    weapon->getRules()->getCostThrow().Time <= 0)
+                    fail("THROW_NOT_AVAILABLE");
+                a->type = BA_THROW;
+            } else {
+                const auto* rule = weapon->getRules();
+                if (rule->getBattleType() != BT_FIREARM)
+                    fail("FIRE_NOT_AVAILABLE_FOR_ITEM");
+                a->type = c.mode == "snap" ? BA_SNAPSHOT
+                    : c.mode == "aimed" ? BA_AIMEDSHOT : BA_AUTOSHOT;
+                if ((a->type == BA_SNAPSHOT && rule->getCostSnap().Time <= 0) ||
+                    (a->type == BA_AIMEDSHOT && rule->getCostAimed().Time <= 0) ||
+                    (a->type == BA_AUTOSHOT && rule->getCostAuto().Time <= 0))
+                    fail("FIRE_MODE_NOT_AVAILABLE");
+                if (u->getOriginalFaction() == FACTION_PLAYER &&
+                    !save->getGeoscapeSave()->isResearched(rule->getRequirements()))
+                    fail("ITEM_RESEARCH_REJECTED");
+                std::string reason;
+                if (!save->canUseWeapon(weapon, u, false, a->type, &reason))
+                    fail("NATIVE_CAN_USE_WEAPON_REJECTED");
+            }
             a->actor = u; a->weapon = weapon; a->targeting = true;
             a->updateTU();
             if (!a->haveTU()) fail("NATIVE_ACTION_COST_REJECTED");
             game->primaryAction(target);
             if (!game->isBusy()) game->primaryAction(target);
-            if (!game->isBusy()) fail("FIRE_NOT_QUEUED");
+            if (!game->isBusy())
+                fail(c.op == "throw" ? "THROW_NOT_QUEUED" : "FIRE_NOT_QUEUED");
         }
         pending = true;
     }
