@@ -13,6 +13,7 @@
 #include "../Engine/Game.h"
 #include "../Engine/RNG.h"
 #include "../Savegame/BattleUnit.h"
+#include "../Savegame/BattleUnitStatistics.h"
 #include "../Savegame/BattleItem.h"
 #include "../Savegame/SavedBattleGame.h"
 #include "../Savegame/SavedGame.h"
@@ -32,7 +33,7 @@ class Driver {
     std::size_t cursor = 0;
     std::ofstream trace;
     bool started = false, pending = false;
-    int checkpoint = 0, beforeTurn = -1;
+    int checkpoint = 0, beforeTurn = -1, beforeShotsFired = -1;
     Command previous;
 
     [[noreturn]] void fail(const std::string& code) {
@@ -144,6 +145,21 @@ public:
                 if (!u || u->isOut() || u->getPosition() != Position(previous.x, previous.y, previous.z))
                     fail("MOVE_INTERRUPTED_OR_REJECTED");
             }
+            if (previous.op == "fire") {
+                auto* u = actor(game, previous.actor);
+                if (!u || !u->getStatistics() ||
+                    u->getStatistics()->shotsFiredCounter <= beforeShotsFired)
+                    fail("NATIVE_FIRE_DID_NOT_LAUNCH_PROJECTILE");
+            }
+            if (previous.op == "throw") {
+                // A successful throw relinquishes the weapon even when the
+                // impact consumes it immediately. A rejected arc leaves it held.
+                auto* u = actor(game, previous.actor);
+                if (!u) fail("THROW_ACTOR_DISAPPEARED");
+                for (auto* item : *save->getItems())
+                    if (item->getId() == previous.item && item->getOwner() == u)
+                        fail("NATIVE_THROW_DID_NOT_RELEASE_ITEM");
+            }
         }
         if (cursor == commands.size() || commands[cursor].op == "stop") {
             observe(game, "final");
@@ -203,6 +219,11 @@ public:
                 if (!u->spendTimeUnits(timeCost)) fail("INVENTORY_NOT_ENOUGH_TU");
                 // Same native itemMoveInventory() as the OXCE inventory UI.
                 game->getTileEngine()->itemMoveInventory(u->getTile(), u, weapon, dest, c.x, c.y);
+                // InventoryState::close() performs these original calculations
+                // after rearranging items. Retain lighting and enemy FOV rules.
+                if (u->getTile()) game->getTileEngine()->applyGravity(u->getTile());
+                game->getTileEngine()->calculateLighting(LL_ITEMS);
+                game->getTileEngine()->recalculateFOV();
                 pending = true;
                 return;
             }
@@ -258,6 +279,7 @@ public:
             a->actor = u; a->weapon = weapon; a->targeting = true;
             a->updateTU();
             if (!a->haveTU()) fail("NATIVE_ACTION_COST_REJECTED");
+            beforeShotsFired = c.op == "fire" ? u->getStatistics()->shotsFiredCounter : -1;
             game->primaryAction(target);
             if (!game->isBusy()) game->primaryAction(target);
             if (!game->isBusy())
