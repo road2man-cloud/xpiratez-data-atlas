@@ -10,6 +10,21 @@ import {sha256} from './prepare-native.mjs';
 
 const SHOT_MODES=['snap','aimed','auto'];
 const BAD_STATUS=new Set([5,6,7,10]); // SOURCE enum: collapsing/dead/unconscious/ignored
+function selectedIds(csv,field){
+  if(!/^[0-9]+(?:,[0-9]+)*$/.test(csv||''))throw new Error('INVALID_'+field+'_IDS');
+  const nums=csv.split(',').map(Number);
+  if(nums.some(n=>!Number.isSafeInteger(n))||new Set(nums).size!==nums.length)
+    throw new Error('DUPLICATE_OR_INVALID_'+field+'_IDS');
+  return nums;
+}
+function restrictKnown(list,ids,field){
+  if(ids===null)return list;
+  if(!Array.isArray(ids)||!ids.length||ids.some(v=>!Number.isSafeInteger(v))||
+     new Set(ids).size!==ids.length)throw new Error('INVALID_'+field+'_IDS');
+  const allowed=new Set(ids);
+  if(ids.some(id=>!list.some(v=>v.id===id)))throw new Error('UNKNOWN_OR_NOT_ELIGIBLE_'+field+'_ID');
+  return list.filter(v=>allowed.has(v.id));
+}
 function scalar(v){
   const s=v.trim();
   if(/^-?\d+$/.test(s))return Number(s);
@@ -49,7 +64,7 @@ export function parseTacticalSave(source){
   for(const it of sections.items)if(typeof it.type!=='string')throw new Error('MISSING_ITEM_TYPE: '+it.id);
   return sections;
 }
-export function enumerateNativePlans(save,{modes=SHOT_MODES,endTurn=true,maxPlans=600}={}){
+export function enumerateNativePlans(save,{modes=SHOT_MODES,endTurn=true,maxPlans=600,actorIds=null,itemIds=null,targetIds=null}={}){
   if(!Array.isArray(modes)||!modes.length||modes.some(m=>!SHOT_MODES.includes(m))||new Set(modes).size!==modes.length)
     throw new Error('INVALID_SHOT_MODES');
   if(!Number.isSafeInteger(maxPlans)||maxPlans<1||maxPlans>10000)throw new Error('MAX_PLANS_OUT_OF_RANGE');
@@ -58,13 +73,18 @@ export function enumerateNativePlans(save,{modes=SHOT_MODES,endTurn=true,maxPlan
   const enemy=units.filter(u=>u.originalFaction===1&&u.faction===1&&u.visible===true&&!BAD_STATUS.has(u.status)).sort((a,b)=>a.id-b.id);
   const equipment=items.filter(i=>allies.some(u=>u.id===i.owner)&&['STR_LEFT_HAND','STR_RIGHT_HAND'].includes(i.inventoryslot))
     .sort((a,b)=>a.id-b.id);
-  if(!allies.length)throw new Error('NO_CONTROLLABLE_ORIGINAL_ALLIES');
-  if(!enemy.length)throw new Error('NO_VISIBLE_ORIGINAL_HOSTILES');
-  if(!equipment.length)throw new Error('NO_HAND_ITEMS_FOR_ORIGINAL_ALLIES');
+  // Explicit selection only: never guess an item is a ranged weapon from its name,
+  // or claim a target is shootable merely because some allied unit sees it.
+  const chosenAllies=restrictKnown(allies,actorIds,'ACTOR');
+  const chosenHostiles=restrictKnown(enemy,targetIds,'TARGET');
+  const chosenEquipment=restrictKnown(equipment.filter(i=>chosenAllies.some(u=>u.id===i.owner)),itemIds,'ITEM');
+  if(!chosenAllies.length)throw new Error('NO_CONTROLLABLE_ORIGINAL_ALLIES');
+  if(!chosenHostiles.length)throw new Error('NO_VISIBLE_ORIGINAL_HOSTILES');
+  if(!chosenEquipment.length)throw new Error('NO_HAND_ITEMS_FOR_ORIGINAL_ALLIES');
   const plans=[];
-  for(const unit of allies){
-    for(const item of equipment.filter(i=>i.owner===unit.id)){
-      for(const hostile of enemy){
+  for(const unit of chosenAllies){
+    for(const item of chosenEquipment.filter(i=>i.owner===unit.id)){
+      for(const hostile of chosenHostiles){
         for(const mode of modes){
           const [x,y,z]=hostile.position;
           // The engine may reject this mode, LOS, TU or ammo. This is a proposal only.
@@ -87,11 +107,11 @@ export function enumerateNativePlans(save,{modes=SHOT_MODES,endTurn=true,maxPlan
     }
   }
   return {source:'SAVE_STATE_PROPOSALS_ONLY',engineEvaluated:false,
-    originalAllies:allies.length,visibleOriginalHostiles:enemy.length,
-    handItems:equipment.length,plans};
+    originalAllies:chosenAllies.length,visibleOriginalHostiles:chosenHostiles.length,
+    handItems:chosenEquipment.length,plans};
 }
 export function parseGenerationArgs(argv){
-  if(argv.length<2)throw new Error('Usage: node generate-native-plans.mjs 17.sav NEW_PLAN_DIRECTORY [--modes snap,aimed,auto] [--no-end-turn] [--max-plans 600]');
+  if(argv.length<2)throw new Error('Usage: node generate-native-plans.mjs SAVE.sav NEW_PLAN_DIRECTORY [--modes snap,aimed,auto] [--actors 1,19] [--items 113,114] [--targets 1000017,1000025] [--no-end-turn] [--max-plans 600]');
   const [save,out,...rest]=argv;
   const options={modes:[...SHOT_MODES],endTurn:true,maxPlans:600};
   const seen=new Set();
@@ -107,6 +127,10 @@ export function parseGenerationArgs(argv){
       const n=rest[++i];
       if(!/^[1-9]\d*$/.test(n||''))throw new Error('INVALID_MAX_PLANS');
       options.maxPlans=Number(n);
+    }else if(['--actors','--items','--targets'].includes(a)){
+      const v=rest[++i];
+      options[a==='--actors'?'actorIds':a==='--items'?'itemIds':'targetIds']=
+        selectedIds(v,a.slice(2).toUpperCase());
     }else throw new Error('UNSUPPORTED_ARGUMENT: '+a);
   }
   return {save,out,options};

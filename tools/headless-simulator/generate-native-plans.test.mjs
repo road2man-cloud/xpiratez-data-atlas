@@ -87,6 +87,26 @@ test('writes independently hash-pinned .actions; never copies or alters source s
     assert.throws(()=>writeNativePlans(src,path.join(root,'save','inside-save-dir')),/PLAN_OUTPUT_MUST_BE_OUTSIDE_SAVE_DIRECTORY/);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+test('explicit actor, item and visible-target IDs narrow OXCE candidates without predicted legality',()=>{
+  const parsed=parseGenerationArgs(['3.sav','plans','--actors','1','--items','126',
+    '--targets','1000001','--modes','snap,aimed']);
+  assert.deepEqual(parsed.options.actorIds,[1]);
+  assert.deepEqual(parsed.options.itemIds,[126]);
+  assert.deepEqual(parsed.options.targetIds,[1000001]);
+  const save=parseTacticalSave(fixture);
+  const options=parsed.options;
+  const result=enumerateNativePlans(save,options);
+  assert.equal(result.plans.length,2);
+  assert.deepEqual(result.plans.map(p=>p.mode),['snap','aimed']);
+  assert.ok(result.plans.every(p=>p.target===1000001&&p.item===126));
+  assert.equal(result.engineEvaluated,false);
+  assert.throws(()=>enumerateNativePlans(save,{itemIds:[999]}),/UNKNOWN_OR_NOT_ELIGIBLE_ITEM_ID/);
+  assert.throws(()=>enumerateNativePlans(save,{actorIds:[42]}),/UNKNOWN_OR_NOT_ELIGIBLE_ACTOR_ID/);
+  assert.throws(()=>enumerateNativePlans(save,{targetIds:[1000002]}),/UNKNOWN_OR_NOT_ELIGIBLE_TARGET_ID/);
+  assert.throws(()=>enumerateNativePlans(save,{itemIds:[126,126]}),/INVALID_ITEM_IDS/);
+  assert.throws(()=>parseGenerationArgs(['3.sav','plans','--items','126,126']),/DUPLICATE_OR_INVALID_ITEMS_IDS/);
+  assert.throws(()=>parseGenerationArgs(['3.sav','plans','--targets','1,x']),/INVALID_TARGETS_IDS/);
+});
 test('argument grammar does not permit silently invented modes or duplicates',()=>{
   const parsed=parseGenerationArgs(['17.sav','plans','--modes','snap,aimed','--no-end-turn','--max-plans','2']);
   assert.deepEqual(parsed.options,{modes:['snap','aimed'],endTurn:false,maxPlans:2});
