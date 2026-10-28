@@ -24,6 +24,8 @@ function cloneWorld(w){
     generatedEvents:w.generatedEvents==null?null:{...w.generatedEvents},
     activeResearch:w.activeResearch==null?null:new Set(w.activeResearch),
     autoZeroEvidence:w.autoZeroEvidence===true,
+    // Search-only hypothesis, never certified as actual research evidence.
+    autoZeroScenario:w.autoZeroScenario===true,
     pendingFree:w.pendingFree?{source:w.pendingFree.source,
       choices:[...w.pendingFree.choices],sequential:!!w.pendingFree.sequential,
       phase:w.pendingFree.phase||"after-source"}:null,
@@ -87,12 +89,23 @@ function grantResearch(world,id,data,method="research",options={}){
   // unknown active projects and random free-result chains.
   const autoNotes=[];
   let autoAssumed=false;
-  if(world.autoZeroEvidence===true && world.items!=null &&
-      world.baseFunctions instanceof Set && world.activeResearch instanceof Set &&
+  const speculativeAuto=world.autoZeroScenario===true;
+  if((world.autoZeroEvidence===true||speculativeAuto) && world.items!=null &&
+      world.baseFunctions instanceof Set &&
+      (world.activeResearch instanceof Set||speculativeAuto) &&
       result.repeatRun!==true){
     const chain=inspectAutoZeroCascade(data,id,beforeResearch,{
-      inventoryKnown:true,functionsKnown:true,activeResearchKnown:true,maxSteps:180});
+      inventoryKnown:world.autoZeroEvidence===true||world.inventoryKnown===true,
+      functionsKnown:world.autoZeroEvidence===true||world.baseFunctionsKnown===true,
+      activeResearchKnown:world.activeResearch instanceof Set,maxSteps:180});
     if(chain.kind==="conditional"&&!chain.incomplete&&chain.finalState){
+      // Every search-hypothesized queue is conditional. Missing project,
+      // stock, geographical functions and future timing cannot be certified.
+      if(speculativeAuto&&chain.steps.length>1){
+        autoAssumed=true;
+        autoNotes.push("가상 비용 0 연구 연쇄: 엔진 실행 미증명 · "+
+          chain.unverified.join(" · "));
+      }
       // Consume the queue's END state directly. Reapplying its steps to the
       // partially changed state would drop disabled-but-queued discoveries and
       // make re-enables or existing-topic rescans order-dependent.

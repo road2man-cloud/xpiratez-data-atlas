@@ -5,8 +5,11 @@ import yaml from "js-yaml";
 
 const args=process.argv.slice(2);
 const arg=(flag,defaultValue)=>{const i=args.indexOf(flag);return i<0?defaultValue:args[i+1]};
-const root=path.resolve(arg("--root","D:/daphne_auto"));
-const game=path.resolve(arg("--game","C:/Dioxine_XPiratez_o1.1.1/Dioxine_XPiratez"));
+// Game data is supplied explicitly, not embedded as private machine paths.
+const root=path.resolve(arg("--root",process.env.XPZ_RAW_DATA_DIR||process.cwd()));
+const gameInput=arg("--game",process.env.XPZ_GAME_DIR);
+if(!gameInput)throw new Error("Supply --game or XPZ_GAME_DIR for local game data");
+const game=path.resolve(gameInput);
 const output=path.resolve(arg("--out","public/data/standard-evaluation.json"));
 const saveDir=path.resolve(arg("--saves",path.join(game,"user/piratez")));
 const sha256=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
