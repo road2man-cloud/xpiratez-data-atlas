@@ -56,6 +56,30 @@ test('reads original kneeled state and only visible enemies',()=>{
   assert.equal(data.engineEvaluated,false);
   assert.equal(data.truncated,false);
 });
+test('original-engine two-action tactical macros include move-plus-attack and two attackers',()=>{
+  const s=parseTacticalSave(fakeSave());
+  const data=enumerateNativeTurnPlans(s,{
+    focusId:1,supportIds:[12,19],moveRadius:1,maxPlans:600,comboPairs:64
+  });
+  assert.equal(data.comboPairsRequested,64);
+  assert.ok(data.generatedComboCandidates>0&&data.generatedComboCandidates<=64);
+  const attackAfterMove=data.plans.find(p=>p.kind==='FOCUS_MOVE_NATIVE_SHOT');
+  assert.ok(attackAfterMove);
+  assert.match(attackAfterMove.script,/move 1 \d+ \d+ 0\nfire /);
+  const rocketAfterMove=data.plans.find(p=>p.kind==='FOCUS_MOVE_NATIVE_ROCKET');
+  assert.ok(rocketAfterMove);
+  assert.match(rocketAfterMove.script,/inventory 19 174 left 0 0\nfire 19 174/);
+  const doubleShot=data.plans.find(p=>p.kind==='NATIVE_DOUBLE_SHOT');
+  assert.ok(doubleShot);
+  assert.equal((doubleShot.script.match(/^fire /gm)||[]).length,2);
+  assert.ok(data.plans.every(p=>p.script.includes('\nend_turn\nobserve\nstop\n')));
+  assert.ok(data.plans.every(p=>!p.script.includes('1000017')));
+  assert.equal(data.engineEvaluated,false);
+  assert.throws(()=>enumerateNativeTurnPlans(s,{comboPairs:-1}),/INVALID_COMBO_PAIR_LIMIT/);
+  assert.throws(()=>enumerateNativeTurnPlans(s,{comboPairs:1001}),/INVALID_COMBO_PAIR_LIMIT/);
+  assert.equal(enumerateNativeTurnPlans(s,{comboPairs:15,includeShots:false})
+    .generatedComboCandidates,0);
+});
 test('plan generation is deterministic, bounded, and never claims a simulated win',()=>{
   const s=parseTacticalSave(fakeSave());
   const a=enumerateNativeTurnPlans(s,{focusId:1,moveRadius:2,maxPlans:9});
@@ -82,10 +106,11 @@ test('invalid, duplicated, hidden and unconscious identifiers are rejected',()=>
 });
 test('CLI rejects unknown flags and requires ids and range',()=>{
   const p=parseNativeTurnArgs(['turn2.sav','plans','--focus','1','--supports','12,19',
-    '--targets','1000024,1000025','--radius','2','--max-plans','50']);
+    '--targets','1000024,1000025','--radius','2','--max-plans','50','--pairs','64']);
   assert.equal(p.opts.focusId,1);
   assert.deepEqual(p.opts.supportIds,[12,19]);
   assert.deepEqual(p.opts.targetIds,[1000024,1000025]);
+  assert.equal(p.opts.comboPairs,64);
   for(const args of [
     [],['3.sav','x','--focus','x'],['3.sav','x','--radius','-1'],
     ['3.sav','x','--supports','19,foo'],['3.sav','x','--wat'],

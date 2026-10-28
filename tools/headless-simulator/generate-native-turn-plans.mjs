@@ -18,12 +18,14 @@ function safeIds(v,name){
   return v;
 }
 export function enumerateNativeTurnPlans(battle,{focusId=1,supportIds=null,
-    targetIds=null,moveRadius=2,maxPlans=160,includeShots=true}={}){
+    targetIds=null,moveRadius=2,maxPlans=160,includeShots=true,comboPairs=0}={}){
   if(!Number.isSafeInteger(focusId)||focusId<0)throw new Error('INVALID_FOCUS_ID');
   if(!Number.isSafeInteger(moveRadius)||moveRadius<0||moveRadius>5)
     throw new Error('INVALID_MOVE_RADIUS');
   if(!Number.isSafeInteger(maxPlans)||maxPlans<1||maxPlans>2000)
     throw new Error('INVALID_MAX_PLANS');
+  if(!Number.isSafeInteger(comboPairs)||comboPairs<0||comboPairs>1000)
+    throw new Error('INVALID_COMBO_PAIR_LIMIT');
   safeIds(supportIds,'SUPPORT');safeIds(targetIds,'TARGET');
   const ally=battle.units.filter(u=>u.originalFaction===0&&u.faction===0&&!BAD_STATUS.has(u.status))
     .sort((a,b)=>a.id-b.id);
@@ -53,7 +55,7 @@ export function enumerateNativeTurnPlans(battle,{focusId=1,supportIds=null,
     const script=commands.join('\n');
     if(seen.has(script))return;
     seen.add(script);
-    proposed.push({name,kind,script,sha256:sha256(Buffer.from(script)),...meta});
+    proposed.push({name,kind,actions:[...actions],script,sha256:sha256(Buffer.from(script)),...meta});
   };
   offer('baseline-endturn.actions',[],'NO_ACTION_BASELINE');
   for(const s of kneelEligible)offer('kneel-u'+s.id+'.actions',['kneel '+s.id],'SUPPORT_KNEEL',{support:s.id});
@@ -130,6 +132,76 @@ export function enumerateNativeTurnPlans(battle,{focusId=1,supportIds=null,
       }
     }
   }
+
+  if(comboPairs>0){
+    // Build bounded TWO-ACTION sequences, not a guessed battle model.
+    // An OXCE process must still validate TU, reactions, LOS, inventory, AI
+    // and the true impact of every action. This is essential when a single
+    // action per turn leaves 27 enemies untouched.
+    const pick=(kind,limit)=>proposed.filter(p=>p.kind===kind).slice(0,limit);
+    const spreadActors=(kind,limit)=>{
+      const buckets=new Map();
+      for(const p of proposed.filter(p=>p.kind===kind)){
+        const id=p.actor;
+        if(!buckets.has(id))buckets.set(id,[]);
+        buckets.get(id).push(p);
+      }
+      const chosen=[];
+      while(chosen.length<limit){
+        let added=false;
+        for(const items of buckets.values())if(items.length){
+          chosen.push(items.shift());added=true;
+          if(chosen.length===limit)break;
+        }
+        if(!added)break;
+      }
+      return chosen;
+    };
+    const moves=pick('FOCUS_MOVE',8);
+    const turns=pick('FOCUS_TURN',6);
+    const kneels=pick('SUPPORT_KNEEL',6);
+    const shots=spreadActors('NATIVE_SHOT_PROPOSAL',24);
+    const rockets=spreadActors('NATIVE_STORED_WEAPON_EQUIP_FIRE_PROPOSAL',10);
+    const grenades=spreadActors('NATIVE_GRENADE_THROW_PROPOSAL',12);
+    const patterns=[
+      ['FOCUS_MOVE_NATIVE_SHOT',moves,shots],
+      ['FOCUS_TURN_NATIVE_SHOT',turns,shots],
+      ['NATIVE_DOUBLE_SHOT',shots,shots],
+      ['FOCUS_MOVE_NATIVE_ROCKET',moves,rockets],
+      ['FOCUS_MOVE_NATIVE_GRENADE',moves,grenades],
+      ['SUPPORT_KNEEL_NATIVE_SHOT',kneels,shots],
+      ['FOCUS_TURN_NATIVE_ROCKET',turns,rockets],
+    ];
+    const pools=patterns.map(([kind,a,b])=>{
+      const choices=[];
+      for(const p of a)for(const q of b){
+        if(p===q)continue;
+        // Two independent shooters are easier to validate than inventing
+        // a second shot's remaining TU. Both actions remain engine-validated.
+        if(kind==='NATIVE_DOUBLE_SHOT'&&p.actor===q.actor)continue;
+        choices.push({kind,p,q});
+      }
+      return choices;
+    });
+    let pairCount=0,progress=true;
+    while(pairCount<comboPairs&&progress){
+      progress=false;
+      for(const pool of pools){
+        if(!pool.length)continue;
+        const {kind,p,q}=pool.shift();
+        const actions=[...p.actions,...q.actions];
+        const key=sha256(Buffer.from(actions.join('\n'))).slice(0,14);
+        const name='combo-'+kind.toLowerCase()+'-'+String(pairCount).padStart(4,'0')+
+          '-'+key+'.actions';
+        offer(name,actions,kind,{componentKinds:[p.kind,q.kind],
+          componentNames:[p.name,q.name]});
+        pairCount++;
+        progress=true;
+        if(pairCount>=comboPairs)break;
+      }
+    }
+  }
+
   // Round robin across tactical categories prevents limited budgets from
   // silently starving rocket/grenade candidates behind mundane moves.
   // The manifest explicitly states how much of the proposed space was cut.
@@ -141,6 +213,9 @@ export function enumerateNativeTurnPlans(battle,{focusId=1,supportIds=null,
   const order=['NO_ACTION_BASELINE','FOCUS_MOVE','FOCUS_TURN',
     'NATIVE_SHOT_PROPOSAL','NATIVE_STORED_WEAPON_EQUIP_FIRE_PROPOSAL',
     'NATIVE_GRENADE_THROW_PROPOSAL','SUPPORT_KNEEL',
+    'FOCUS_MOVE_NATIVE_SHOT','FOCUS_TURN_NATIVE_SHOT','NATIVE_DOUBLE_SHOT',
+    'FOCUS_MOVE_NATIVE_ROCKET','FOCUS_MOVE_NATIVE_GRENADE',
+    'SUPPORT_KNEEL_NATIVE_SHOT','FOCUS_TURN_NATIVE_ROCKET',
     'FOCUS_MOVE_SUPPORT_KNEEL','FOCUS_TURN_SUPPORT_KNEEL'];
   const kinds=[...order.filter(k=>byKind.has(k)),
     ...[...byKind.keys()].filter(k=>!order.includes(k))];
@@ -158,7 +233,9 @@ export function enumerateNativeTurnPlans(battle,{focusId=1,supportIds=null,
     }
   }
   return {source:'ACTUAL_SAVE_CANDIDATES_ONLY',engineEvaluated:false,
-    focusId:focus.id,focusPosition:[...focus.position],supportIds:supports.map(u=>u.id),
+    focusId:focus.id,focusPosition:[...focus.position],comboPairsRequested:comboPairs,
+    generatedComboCandidates:proposed.filter(p=>p.name.startsWith('combo-')).length,
+    supportIds:supports.map(u=>u.id),
     kneelEligibleSupportIds:kneelEligible.map(u=>u.id),
     visibleTargetIds:targets.map(u=>u.id),allCandidates:proposed.length,
     selectedCount:subset.length,truncated:proposed.length>maxPlans,
@@ -166,15 +243,16 @@ export function enumerateNativeTurnPlans(battle,{focusId=1,supportIds=null,
 }
 export function parseNativeTurnArgs(argv){
   const [save,out,...flags]=argv;
-  if(!save||!out)throw new Error('Usage: node generate-native-turn-plans.mjs TURN2.sav NEW_PLAN_DIRECTORY --focus 1 [--supports 12,19,33] [--targets 1000024,1000025] [--radius 2] [--max-plans 160] [--no-shots]');
-  const opts={focusId:1,supportIds:null,targetIds:null,moveRadius:2,maxPlans:160,includeShots:true};
+  if(!save||!out)throw new Error('Usage: node generate-native-turn-plans.mjs TURN2.sav NEW_PLAN_DIRECTORY --focus 1 [--supports 12,19,33] [--targets 1000024,1000025] [--radius 2] [--max-plans 160] [--pairs 48] [--no-shots]');
+  const opts={focusId:1,supportIds:null,targetIds:null,moveRadius:2,maxPlans:160,
+    comboPairs:0,includeShots:true};
   const seen=new Set();
   for(let i=0;i<flags.length;i++){
     const f=flags[i];
     if(seen.has(f))throw new Error('DUPLICATE_ARGUMENT: '+f);
     seen.add(f);
     if(f==='--no-shots')opts.includeShots=false;
-    else if(['--focus','--supports','--targets','--radius','--max-plans'].includes(f)){
+    else if(['--focus','--supports','--targets','--radius','--max-plans','--pairs'].includes(f)){
       const val=flags[++i];if(!val||val.startsWith('--'))throw new Error('MISSING_ARGUMENT: '+f);
       if(f==='--supports'||f==='--targets'){
         if(!/^\d+(?:,\d+)*$/.test(val))throw new Error('INVALID_IDS: '+f);
@@ -183,9 +261,11 @@ export function parseNativeTurnArgs(argv){
         if(!/^\d+$/.test(val))throw new Error('INVALID_NUMBER: '+f);
         const n=Number(val);
         if((f==='--max-plans' && (n<1||n>2000))||
-           (f==='--radius' && n>5)||!Number.isSafeInteger(n))
+           (f==='--radius' && n>5)||
+           (f==='--pairs' && n>1000)||!Number.isSafeInteger(n))
           throw new Error('NUMBER_OUT_OF_RANGE: '+f);
-        opts[f==='--focus'?'focusId':f==='--radius'?'moveRadius':'maxPlans']=n;
+        opts[f==='--focus'?'focusId':
+          f==='--radius'?'moveRadius':f==='--pairs'?'comboPairs':'maxPlans']=n;
       }
     }else throw new Error('UNSUPPORTED_ARGUMENT: '+f);
   }
@@ -208,6 +288,8 @@ export function writeNativeTurnPlans(savePath,outputDir,opts={}){
   const manifest={schema:1,backend:'OXCE_NATIVE_SECOND_TURN_PLAN_ENUMERATOR',
     engineEvaluated:false,sourceSaveSha256:sha256(contents),
     source:result.source,focusId:result.focusId,focusPosition:result.focusPosition,
+    comboPairsRequested:result.comboPairsRequested,
+    generatedComboCandidates:result.generatedComboCandidates,
     supportIds:result.supportIds,kneelEligibleSupportIds:result.kneelEligibleSupportIds,
     visibleTargetIds:result.visibleTargetIds,
     allCandidates:result.allCandidates,selectedCount:result.selectedCount,

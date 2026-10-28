@@ -187,7 +187,7 @@ node tools/headless-simulator/native-turn-beam.mjs \
   --save /private/3sav/turn2-after-47hp.sav \
   --baseline-save /private/3sav/original-3.sav \
   --focus 1 --supports 12,19,33,48 \
-  --depth 5 --width 3 --candidates 48 --max-trials 700 \
+  --depth 5 --width 3 --candidates 96 --pairs 64 --max-trials 900 \
   --out /private/3sav/multiturn-native-search
 ```
 
@@ -196,6 +196,21 @@ node tools/headless-simulator/native-turn-beam.mjs \
 실제 2턴 세이브의 저장값을 보존하므로, 이전 첫 턴의 47HP 손실도
 **누적 순 체력 차이**에 포함시킬 수 있습니다. 이 옵션이 없을 때에는
 2턴 세이브 이후의 추가 순 체력 감소만 집계하므로 둘을 혼동하지 마세요.
+
+후속 턴 탐색은 `--pairs 64`처럼 명시한 경우 이동+사격,
+회전+사격, 서로 다른 대원 두 명의 사격, 이동+로켓 장착·발사,
+이동+수류탄 준비·투척 등 **같은 턴 안의 2개 행동 묶음 후보**도 생성합니다.
+이것은 행동 명령을 연결할 뿐 TU·반응사격·사선·폭발 결과를 계산하는
+근사 엔진이 아닙니다. 행동 하나라도 원본 OXCE에서 거절되면 해당 후보는
+실패로 기록합니다. `--pairs 0`은 이 조합을 끕니다.
+
+또한 각 깊이에서 단순히 아군 체력 손실만 최소화하면 적을 공격하지
+않는 후보에 갇힐 수 있습니다. 이제 실제 OXCE 체크포인트에서 관찰된
+**적 사망·기절·HP 감소**를 계산해, 아군의 사망·의식불명·제어권 손실이
+최선 후보와 동일한 경우에 한해 최대 1개 공격 진전 후보를 추가로
+유지합니다. 적이 체크포인트에서 사라졌다면 원인 불명이므로
+무력화한 것으로 추정하지 않습니다. 공격이 가능한지, 실제 명중했는지,
+그 뒤 적 AI가 어떻게 움직이는지는 계속 원본 엔진이 판정합니다.
 
 각 깊이에서 최대 `--width`개의 서로 다른 원본 체크포인트만
 유지하고, `--candidates`개 이하의 동작 후보를 시험합니다.

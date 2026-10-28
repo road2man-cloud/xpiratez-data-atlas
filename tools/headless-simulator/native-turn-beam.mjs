@@ -21,14 +21,60 @@ export function compareNativeSafety(a,b) {
   }
   return 0;
 }
+
+export function observedNativeEnemyProgress(original,checkpoint) {
+  // ONLY read actual OXCE unit state. Missing hostiles are UNKNOWN rather than
+  // scored as kills; no damage, hit-probability or AI modelling is performed.
+  if(!Array.isArray(original)||!Array.isArray(checkpoint?.units))
+    throw new Error('INVALID_NATIVE_ENEMY_PROGRESS_INPUT');
+  const originalEnemies=original.filter(u=>(u.originalFaction??u.faction)===1);
+  if(!originalEnemies.length)throw new Error('ORIGINAL_HOSTILES_NOT_PRESENT');
+  const observed=new Map();
+  for(const u of checkpoint.units){
+    if(!Number.isSafeInteger(u.id)||observed.has(u.id)||
+       ![u.faction,u.status,u.health,u.stun].every(Number.isInteger))
+      throw new Error('INVALID_NATIVE_ENEMY_CHECKPOINT');
+    observed.set(u.id,u);
+  }
+  let neutralized=0,injuredHp=0,missing=0,alteredFaction=0;
+  for(const enemy of originalEnemies){
+    const current=observed.get(enemy.id);
+    if(!current){missing++;continue;}
+    if(current.status===6||current.status===7||current.health<=0||
+       (current.health>0&&current.stun>=current.health))
+      neutralized++;
+    if(current.faction!==1)alteredFaction++;
+    injuredHp+=Math.max(0,enemy.health-Math.max(0,current.health));
+  }
+  return {originalEnemyCount:originalEnemies.length,
+    observedEnemyNeutralized:neutralized,observedEnemyHpLoss:injuredHp,
+    observedEnemyFactionChanges:alteredFaction,unresolvedEnemyCount:missing,
+    progressSource:'ORIGINAL_OXCE_UNIT_CHECKPOINT_NOT_A_SIMULATION'};
+}
+function sameIrreversibleLoss(a,b){
+  return ['dead','unconscious','lostControl'].every(k=>a.score[k]===b.score[k]);
+}
+function betterObservedPressure(a,b){
+  if(!b)return true;
+  const aa=a.enemyProgress,bb=b.enemyProgress;
+  if(!aa||!bb)return false;
+  if(aa.unresolvedEnemyCount!==bb.unresolvedEnemyCount)
+    return aa.unresolvedEnemyCount<bb.unresolvedEnemyCount;
+  if(aa.observedEnemyNeutralized!==bb.observedEnemyNeutralized)
+    return aa.observedEnemyNeutralized>bb.observedEnemyNeutralized;
+  if(aa.observedEnemyHpLoss!==bb.observedEnemyHpLoss)
+    return aa.observedEnemyHpLoss>bb.observedEnemyHpLoss;
+  return compareNativeSafety(a.score,b.score)<0;
+}
+
 export function parseNativeBeamArgs(argv){
   const rest=[];
   const cfg={depth:4,width:3,candidates:48,maxTrials:600,focusId:1,
-    supportIds:null,baselineSave:null};
+    supportIds:null,baselineSave:null,pairActions:48};
   const seen=new Set();
   for(let i=0;i<argv.length;i++){
     const key=argv[i];
-    if(['--depth','--width','--candidates','--max-trials','--focus','--supports','--baseline-save'].includes(key)){
+    if(['--depth','--width','--candidates','--max-trials','--focus','--supports','--baseline-save','--pairs'].includes(key)){
       if(seen.has(key))throw new Error('DUPLICATE_BEAM_OPTION: '+key);
       seen.add(key);
       const value=argv[++i];
@@ -43,12 +89,14 @@ export function parseNativeBeamArgs(argv){
         if(!/^\d+$/.test(value)||!Number.isSafeInteger(Number(value)))
           throw new Error('INVALID_BEAM_OPTION_VALUE: '+key);
         cfg[key==='--max-trials'?'maxTrials':
-            key==='--focus'?'focusId':key.slice(2)]=Number(value);
+            key==='--focus'?'focusId':
+            key==='--pairs'?'pairActions':key.slice(2)]=Number(value);
       }
     }else rest.push(key);
   }
   if(cfg.depth<1||cfg.depth>25||cfg.width<1||cfg.width>20||
-     cfg.candidates<1||cfg.candidates>1000||cfg.maxTrials<1||cfg.maxTrials>10000)
+     cfg.candidates<1||cfg.candidates>1000||cfg.maxTrials<1||cfg.maxTrials>10000||
+     cfg.pairActions<0||cfg.pairActions>1000)
     throw new Error('BEAM_SEARCH_BOUNDS_EXCEEDED');
   if(cfg.supportIds?.some(n=>!Number.isSafeInteger(n)||n<0))
     throw new Error('INVALID_SUPPORT_ID');
@@ -66,15 +114,30 @@ export function dedupeAndRankNativeNodes(nodes,maxNodes) {
     const d=compareNativeSafety(a.score,b.score);
     return d||a.trail.length-b.trail.length||a.id.localeCompare(b.id);
   });
-  const ids=new Set(),list=[];
+  const ids=new Set(),unique=[];
   for(const n of sorted){
     if(!/^[a-f0-9]{64}$/.test(n.snapshotSha256||''))
       throw new Error('INVALID_NATIVE_CHECKPOINT_HASH');
     if(ids.has(n.snapshotSha256))continue;
-    ids.add(n.snapshotSha256);list.push(n);
-    if(list.length>=maxNodes)break;
+    ids.add(n.snapshotSha256);unique.push(n);
   }
-  return list;
+  const keep=unique.slice(0,maxNodes);
+  if(maxNodes>1&&unique.length>maxNodes){
+    // Reserve ONE frontier slot for confirmed offensive progress, but only
+    // among states that have the SAME death/unconscious/control losses as
+    // the safest state. Never trade a casualty for extra target damage here.
+    const eligible=unique.filter(n=>n.enemyProgress&&sameIrreversibleLoss(n,unique[0]));
+    eligible.sort((a,b)=>betterObservedPressure(a,b)?-1:betterObservedPressure(b,a)?1:0);
+    const attack=eligible[0];
+    const currentBest=keep.filter(n=>n.enemyProgress)
+      .sort((a,b)=>betterObservedPressure(a,b)?-1:betterObservedPressure(b,a)?1:0)[0];
+    if(attack&&!keep.includes(attack)&&betterObservedPressure(attack,currentBest)&&
+       (attack.enemyProgress.observedEnemyNeutralized>0||
+        attack.enemyProgress.observedEnemyHpLoss>0)){
+      keep[maxNodes-1]=attack;
+    }
+  }
+  return keep;
 }
 export async function runNativeBeam({cfg,args}){
   // Deliberate refusal to replay the game on the Windows source computer.
@@ -122,7 +185,8 @@ export async function runNativeBeam({cfg,args}){
         const plansDir=path.join(root,'plans-'+nodeId);
         const manifest=writeNativeTurnPlans(parent.save,plansDir,{
           focusId:cfg.focusId,supportIds:cfg.supportIds,
-          moveRadius:2,maxPlans:cfg.candidates,includeShots:true
+          moveRadius:2,maxPlans:cfg.candidates,includeShots:true,
+          comboPairs:cfg.pairActions
         });
         for(let i=0;i<manifest.plans.length;i++){
           if(report.trials>=cfg.maxTrials)break;
@@ -159,9 +223,12 @@ export async function runNativeBeam({cfg,args}){
               record.snapshotSha256=sha256(fs.readFileSync(snapshot));
               if(record.snapshotSha256!==cp.snapshotSha256)
                 throw new Error('NATIVE_CHECKPOINT_CHANGED_AFTER_VERIFICATION');
+              const enemyProgress=observedNativeEnemyProgress(initial,cp);
               record.score=safety;
+              record.enemyProgress=enemyProgress;
               next.push({id,save:snapshot,trail:[...parent.trail,p.name],
-                score:safety,snapshotSha256:record.snapshotSha256,turn:cp.turn});
+                score:safety,enemyProgress,
+                snapshotSha256:record.snapshotSha256,turn:cp.turn});
               if(!report.bestSafety||compareNativeSafety(safety,report.bestSafety.score)<0)
                 report.bestSafety={id,depth,score:safety,trial:dir,trail:[...parent.trail,p.name]};
             }
@@ -177,6 +244,7 @@ export async function runNativeBeam({cfg,args}){
       }
       frontier=dedupeAndRankNativeNodes(next,cfg.width);
       report.frontier=frontier.map(n=>({id:n.id,turn:n.turn,score:n.score,
+        enemyProgress:n.enemyProgress||null,
         snapshotSha256:n.snapshotSha256,trail:n.trail,trialSave:n.save}));
       report.depthCompleted=depth;
       persist();
