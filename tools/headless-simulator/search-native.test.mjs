@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {parseBatchArgs,listPlans,parseBattleUnits,scoreNativeTerminal,betterNativeScore,runNativeBatch} from './search-native.mjs';
+import {parseBatchArgs,listPlans,parseBattleUnits,scoreNativeTerminal,scoreNativeCheckpoint,betterNativeScore,runNativeBatch} from './search-native.mjs';
 const fakeUnits=(hp,status=0,stun=0)=>[
   '---','battleGame:','  units:',
   '    - id: 1','      faction: 0',`      status: ${status}`, `      health: ${hp}`, `      stunlevel: ${stun}`,
@@ -109,6 +109,34 @@ test('native ranking prioritizes original-team safety above HP',()=>{
   assert.equal(betterNativeScore(candidate,null),true);
   assert.equal(betterNativeScore(candidate,candidate),false);
   assert.throws(()=>betterNativeScore({dead:0},{dead:0}),/INVALID_NATIVE_RANKING_SCORE/);
+});
+test('first-turn ranking reads original native checkpoint only, never implies battle victory',()=>{
+  const original=parseBattleUnits(fakeUnits(240));
+  const sample={phase:'final',turn:2,side:0,units:[
+    {id:1,faction:0,status:0,health:87,stun:61},
+    {id:1000014,faction:1,status:0,health:70,stun:0}
+  ]};
+  const safety=scoreNativeCheckpoint(original,sample,1);
+  assert.equal(safety.kind,'NONTERMINAL_NATIVE_CHECKPOINT_ONLY');
+  assert.equal(safety.netHpLoss,153);
+  assert.equal(safety.netStunIncrease,61);
+  assert.equal(safety.dead,0);
+  assert.equal(safety.nativeMissionOutcome,null);
+  assert.equal(safety.battleVictoryCertified,false);
+  assert.equal(scoreNativeCheckpoint(original,{...sample,turn:1},1),null);
+  assert.equal(scoreNativeCheckpoint(original,{...sample,side:1},1),null);
+  assert.equal(scoreNativeCheckpoint(original,{...sample,phase:'requested'},1),null);
+  assert.throws(()=>scoreNativeCheckpoint(original,{...sample,units:[]},1),/UNITS_MISSING/);
+  const controlled=scoreNativeCheckpoint(original,{...sample,units:[
+    {id:1,faction:1,status:7,health:87,stun:90},
+    {id:1000014,faction:1,status:0,health:70,stun:0}
+  ]},1);
+  assert.equal(controlled.lostControl,1);
+  assert.equal(controlled.unconscious,1);
+  assert.equal(controlled.dead,0);
+  assert.throws(()=>scoreNativeCheckpoint(original,{...sample,units:[
+    {...sample.units[0],status:5},sample.units[1]
+  ]},1),/AMBIGUOUS_PLAYER_CHECKPOINT_STATUS/);
 });
 test('native batch execution is rejected on Windows source machine',async()=>{
   if(process.platform==='win32')await assert.rejects(()=>runNativeBatch({}),/GPT_LINUX_EXECUTION_REQUIRED/);

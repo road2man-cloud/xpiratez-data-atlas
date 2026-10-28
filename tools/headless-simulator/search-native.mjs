@@ -116,6 +116,42 @@ export function scoreNativeTerminal(initial,final,outcome){
     zeroNetHpAndStunLossNativeWin:nativeWin&&dead===0&&unconscious===0&&lostControl===0&&netHpLoss===0&&netStunIncrease===0,
     parityCertified:false,battleVictoryCertified:false};
 }
+export function scoreNativeCheckpoint(initial,checkpoint,startTurn){
+  // This is a report over actual OXCE-emitted unit snapshots, NEVER a
+  // calculated battle turn. Requires completed enemy turn -> player's next turn.
+  if(!Number.isInteger(startTurn)||!checkpoint||checkpoint.phase!=='final'||
+     !Number.isInteger(checkpoint.turn)||checkpoint.turn<=startTurn||checkpoint.side!==0)
+    return null;
+  if(!Array.isArray(checkpoint.units)||!checkpoint.units.length)
+    throw new Error('NATIVE_PLAYER_TURN_CHECKPOINT_UNITS_MISSING');
+  const originals=initial.filter(u=>(u.originalFaction??u.faction)===0);
+  if(!originals.length)throw new Error('NO_ORIGINAL_PLAYER_UNITS');
+  const byId=new Map();
+  for(const u of checkpoint.units){
+    if(!Number.isSafeInteger(u.id)||byId.has(u.id)||
+       ![u.faction,u.status,u.health,u.stun].every(Number.isInteger))
+      throw new Error('INVALID_NATIVE_CHECKPOINT_UNIT');
+    byId.set(u.id,u);
+  }
+  let dead=0,unconscious=0,lostControl=0,netHpLoss=0,netStunIncrease=0;
+  for(const a of originals){
+    const u=byId.get(a.id);
+    if(!u)throw new Error('ORIGINAL_PLAYER_UNIT_MISSING: '+a.id);
+    // Checkpoints expose currentFaction, not originalFaction. Identity is the
+    // original unit ID from the immutable input .sav, including mind control.
+    if(u.status===5||u.status===10)throw new Error('AMBIGUOUS_PLAYER_CHECKPOINT_STATUS: '+a.id);
+    if(u.faction!==0)lostControl++;
+    if(u.status===6||u.health<=0)dead++;
+    if(u.status===7||(u.health>0&&u.stun>=u.health))unconscious++;
+    netHpLoss+=Math.max(0,a.health-Math.max(0,u.health));
+    netStunIncrease+=Math.max(0,u.stun-a.stunlevel);
+  }
+  return {kind:'NONTERMINAL_NATIVE_CHECKPOINT_ONLY',turn:checkpoint.turn,
+    originalAllies:originals.length,dead,unconscious,lostControl,
+    alive:originals.length-dead,netHpLoss,netStunIncrease,
+    nativeMissionOutcome:null,battleVictoryCertified:false,parityCertified:false};
+}
+
 export function betterNativeScore(candidate,best){
   // Lexicographic safety priority: death, unconsciousness, loss of control,
   // net HP loss, new stun. A native "WON" event is required before calling.
@@ -152,7 +188,8 @@ export async function runNativeBatch(batch){
     unfinished:0,errors:0,zeroDeathNativeWins:0,zeroConsciousNativeWins:0,zeroHpLossNativeWins:0,
     zeroNetHpAndStunLossNativeWins:0,
     fewestDeadOfNativeWins:null,fewestUnconsciousOfNativeWins:null,fewestLostControlOfNativeWins:null,
-    lowestNetHpLossOfNativeWins:null,lowestNetStunIncreaseOfNativeWins:null,bestSeed:null,bestTrial:null
+    lowestNetHpLossOfNativeWins:null,lowestNetStunIncreaseOfNativeWins:null,bestSeed:null,bestTrial:null,
+    playerTurnCheckpoints:0,bestFirstTurnSafety:null,bestFirstTurnSeed:null,bestFirstTurnTrial:null
   }]));
   const report={schema:1,backend:'OXCE_NATIVE',mode:'EXPLICIT_ACTION_PLAN_BY_SEED',
     model:'ORIGINAL_OXCE_NO_NUMERICAL_SURROGATE',parityCertified:false,
@@ -211,7 +248,20 @@ export async function runNativeBatch(batch){
           }else if(result.nativeMissionOutcome==='LOST')summary.finishLost++;
           else if(result.nativeMissionOutcome==='ABORTED')summary.finishedAborted++;
           else summary.nextStage++;
-        }else summary.unfinished++;
+        }else {
+          summary.unfinished++;
+          const checkpoint=result.checkpoints.at(-1);
+          const startTurn=result.checkpoints[0].turn;
+          const safety=scoreNativeCheckpoint(initial,checkpoint,startTurn);
+          if(safety){
+            row.firstTurnSafety=safety;summary.playerTurnCheckpoints++;
+            if(betterNativeScore(safety,summary.bestFirstTurnSafety)){
+              summary.bestFirstTurnSafety=safety;
+              summary.bestFirstTurnSeed=row.seed;
+              summary.bestFirstTurnTrial=trial;
+            }
+          }
+        }
         rows.push(row);
       }catch(e){
         summary.errors++;
