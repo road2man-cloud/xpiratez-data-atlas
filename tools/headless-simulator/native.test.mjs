@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
-import {patchBattle,patchGame,sha256} from './prepare-native.mjs';
+import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {parseArgs,preflight} from './run-native.mjs';
 import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
@@ -71,6 +71,29 @@ test('source archive and every expected native source file match the lock',()=>{
     }
     fs.appendFileSync(path.join(temp,'src/Engine/RNG.cpp'),'\n// tamper\n');
     assert.throws(()=>verifySource(temp,m),/SOURCE_FILE_HASH_MISMATCH/);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+test('explicit authoritative src overlay is fingerprinted without changing either original tree',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-overlay-'));
+  const base=path.join(temp,'base'),overlay=path.join(temp,'overlay'),out=path.join(temp,'prepared');
+  const fixture={
+    'CMakeLists.txt':'# build fixture only\n','LICENSE.txt':'test fixture\n',
+    'src/Battlescape/BattlescapeGame.cpp':'\nnamespace OpenXcom\n{\nint BattlescapeGame::think()\n{\n return -1;\n}\n}\n',
+    'src/Engine/Game.cpp':'\t\t// Process rendering\nrender();\n',
+    'src/Engine/RNG.cpp':'// base RNG fixture\n'
+  };
+  try{
+    for(const [p,text] of Object.entries(fixture)){
+      const dest=path.join(base,p);fs.mkdirSync(path.dirname(dest),{recursive:true});fs.writeFileSync(dest,text);
+    }
+    fs.mkdirSync(path.join(overlay,'src/Engine'),{recursive:true});
+    fs.writeFileSync(path.join(overlay,'src/Engine/RNG.cpp'),'// authoritative RNG fixture\n');
+    const m=prepare(base,out,overlay);
+    assert.equal(m.sourceOverlayApplied,true);
+    assert.deepEqual(m.overlayFiles,['src/Engine/RNG.cpp']);
+    assert.equal(fs.readFileSync(path.join(base,'src/Engine/RNG.cpp'),'utf8'),fixture['src/Engine/RNG.cpp']);
+    assert.equal(fs.readFileSync(path.join(out,'src/Engine/RNG.cpp'),'utf8'),'// authoritative RNG fixture\n');
+    verifySource(out,m);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 test('source-only build stages empty resource folders without inventing game data',()=>{
