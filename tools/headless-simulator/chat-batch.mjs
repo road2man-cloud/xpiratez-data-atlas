@@ -13,7 +13,7 @@ import {sha256} from './prepare-native.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const MAX_UINT64=(1n<<64n)-1n;
 const ACTIONS=new Set(['observe','stop','end_turn','move','turn','kneel','fire']);
-const NATIVE_FIELDS=new Set(['binary','manifest','runtime','data','user','config','save','master','fixedClock','xvfb','timeoutSeconds','experimentalAcknowledged']);
+const NATIVE_FIELDS=new Set(['binary','manifest','runtime','data','user','config','save','master','fixedClock','xvfb','timeoutSeconds','experimentalAcknowledged','experimentalWindows']);
 const REQUEST_FIELDS=new Set(['schema','backend','native','output','plans','sampling','continueOnError']);
 const SAMPLE_FIELDS=new Set(['runsPerPlan','firstSeed']);
 const ACTION_FIELDS=new Map([
@@ -83,6 +83,9 @@ export function normalizeRequest(request){
     if(n[flag])engine[flag==='fixedClock'?'--fixed-clock':'--xvfb']=true;
   }
   if(n.experimentalAcknowledged!==true)throw new Error('EXPLICIT_NATIVE_EXPERIMENTAL_ACKNOWLEDGMENT_REQUIRED');
+  if(n.experimentalWindows!==undefined&&typeof n.experimentalWindows!=='boolean')
+    throw new Error('EXPERIMENTAL_WINDOWS_MUST_BE_BOOLEAN');
+  if(n.experimentalWindows)engine['--experimental-windows']=true;
   engine['--experimental']=true; // Still unverified vs. the user's GUI; no surrogate fallback.
   if(typeof request.output!=='string'||!path.isAbsolute(request.output))throw new Error('ABSOLUTE_OUTPUT_PATH_REQUIRED');
   if(!Array.isArray(request.plans)||!request.plans.length||request.plans.length>100)
@@ -241,7 +244,8 @@ export function summarizeTotals(totals){
 }
 export async function runDialogueBatch(request){
   const job=normalizeRequest(request);
-  if(process.platform!=='linux')throw new Error('GPT_LINUX_EXECUTION_REQUIRED');
+  if(process.platform!=='linux' && !(process.platform==='win32' && job.engine['--experimental-windows']===true))
+    throw new Error('NATIVE_PLATFORM_NOT_AUTHORIZED');
   const root=path.resolve(job.output);
   if(fs.existsSync(root))throw new Error('OUTPUT_ALREADY_EXISTS');
   const lock=JSON.parse(fs.readFileSync(path.join(HERE,'native/source.lock.json'),'utf8'));

@@ -129,7 +129,9 @@ test('game resources are hashed from bytes and detect real modifications',async(
     assert.notEqual(first.sha256,changed.sha256);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
-test('must not silently fall back to another engine on Windows',async()=>{
+test('Windows native engine is blocked without explicit Windows experimental gate',async()=>{
   if(process.platform==='win32')
-    await assert.rejects(()=>runDialogueBatch(request()),/GPT_LINUX_EXECUTION_REQUIRED/);
+    await assert.rejects(()=>runDialogueBatch(request()),/NATIVE_PLATFORM_NOT_AUTHORIZED/);
+  const a=request();a.native.experimentalWindows=true;
+  assert.equal(normalizeRequest(a).engine['--experimental-windows'],true);
 });

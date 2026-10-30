@@ -35,8 +35,9 @@ export function prepareBuildAssetDirectories(source){
     fs.mkdirSync(dir,{recursive:true});
   }
 }
-export function buildNative(out,jobs=2){
-  if(process.platform!=='linux')throw new Error('LINUX_BUILD_REQUIRED: Windows builds may check compilation only');
+export function buildNative(out,jobs=2,experimentalWindows=false){
+  if(process.platform!=='linux' && !(process.platform==='win32' && experimentalWindows===true))
+    throw new Error('NATIVE_BUILD_PLATFORM_NOT_AUTHORIZED: win32 requires --experimental-windows');
   out=path.resolve(out);
   if(fs.existsSync(out))throw new Error('OUTPUT_ALREADY_EXISTS');
   if(!Number.isSafeInteger(jobs)||jobs<1||jobs>32)throw new Error('INVALID_BUILD_PARALLELISM');
@@ -61,11 +62,15 @@ export function buildNative(out,jobs=2){
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
   checked('cmake',configure);
   checked('cmake',['--build',build,'--target','openxcom','--parallel',String(jobs)]);
-  const binary=[path.join(build,'bin/openxcom'),path.join(build,'bin/OpenXcom'),path.join(build,'src/openxcom')].find(p=>fs.existsSync(p));
+  const candidates=process.platform==='win32'
+    ? [path.join(build,'bin/openxcom.exe'),path.join(build,'bin/OpenXcom.exe'),path.join(build,'src/openxcom.exe')]
+    : [path.join(build,'bin/openxcom'),path.join(build,'bin/OpenXcom'),path.join(build,'src/openxcom')];
+  const binary=candidates.find(p=>fs.existsSync(p));
   if(!binary)throw new Error('COMPILED_NATIVE_EXECUTABLE_NOT_FOUND');
   fs.mkdirSync(bundle,{recursive:true});
-  fs.copyFileSync(binary,path.join(bundle,'oxce-native'));
-  fs.chmodSync(path.join(bundle,'oxce-native'),0o755);
+  const outputBinary=path.join(bundle,process.platform==='win32'?'oxce-native.exe':'oxce-native');
+  fs.copyFileSync(binary,outputBinary);
+  if(process.platform==='linux')fs.chmodSync(outputBinary,0o755);
   fs.copyFileSync(path.join(source,'LICENSE.txt'),path.join(bundle,'LICENSE.txt'));
   fs.copyFileSync(path.join(source,'native-source-manifest.json'),path.join(bundle,'native-source-manifest.json'));
   fs.copyFileSync(path.join(HERE,'native/source.lock.json'),path.join(bundle,'source.lock.json'));
@@ -73,12 +78,16 @@ export function buildNative(out,jobs=2){
   const record={schema:1,backend:'OXCE_NATIVE',parityCertified:false,binarySha256:sha256(fs.readFileSync(binary)),
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
     clockAdapterSha256:manifest.clockAdapterSha256,fixedClockPolicy:manifest.fixedClockPolicy,fixedClockDefault:false,
-    platform:process.platform,arch:process.arch,buildTime:new Date().toISOString(),configuration:configure.slice(4)};
+    platform:process.platform,arch:process.arch,experimentalWindowsBuild:process.platform==='win32',
+    buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
   console.log(JSON.stringify({bundle,...record},null,2));
   return record;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  try{const [out,jobs]=process.argv.slice(2);if(!out)throw new Error('Usage: node build-native.mjs NEW_OUTPUT_DIR [JOBS=2]');buildNative(out,Number(jobs||2));}
+  try{const [out,jobs,flag]=process.argv.slice(2);
+    if(!out|| (flag && flag!=='--experimental-windows'))
+      throw new Error('Usage: node build-native.mjs NEW_OUTPUT_DIR [JOBS=2] [--experimental-windows]');
+    buildNative(out,Number(jobs||2),flag==='--experimental-windows');}
   catch(e){console.error(e.message);process.exitCode=1;}
 }

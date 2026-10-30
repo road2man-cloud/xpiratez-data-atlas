@@ -52,8 +52,9 @@ test('turn banner acknowledgement preserves native initialization and avoids dou
 test('unverified native execution requires explicit opt-in',()=>{
   assert.throws(()=>preflight({},'linux'),/NATIVE_PARITY_NOT_CERTIFIED/);
 });
-test('Windows source PC cannot become an accidental battle execution fallback',()=>{
-  assert.throws(()=>preflight({'--experimental':true},'win32'),/GPT_LINUX_EXECUTION_REQUIRED/);
+test('Windows native replay is blocked without explicit Windows experimental gate',()=>{
+  assert.throws(()=>preflight({'--experimental':true},'win32'),/NATIVE_PLATFORM_NOT_AUTHORIZED/);
+  assert.throws(()=>preflight({'--experimental':true,'--experimental-windows':true,'--xvfb':true},'win32'),/WINDOWS_NATIVE_INVALID_LINUX_RUNTIME_OPTION/);
 });
 test('unknown options and duplicates fail closed',()=>{
   assert.throws(()=>parseArgs(['--runs','5000']),/UNSUPPORTED/);

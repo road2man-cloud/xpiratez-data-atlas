@@ -1,0 +1,57 @@
+name: Original OXCE experimental Windows native build (no gameplay certificate)
+
+on:
+  push:
+    branches: [feat/gpt-dialogue-native-batch-20261031]
+    paths:
+      - 'tools/headless-simulator/**'
+      - '.github/workflows/headless-native-windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-win64:
+    runs-on: windows-2022
+    timeout-minutes: 50
+    steps:
+      - name: Protect original source hashes from Git checkout CRLF conversion
+        shell: pwsh
+        run: git config --global core.autocrlf input
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-SDL
+            mingw-w64-x86_64-SDL_image
+            mingw-w64-x86_64-SDL_gfx
+            mingw-w64-x86_64-SDL_mixer
+            mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-ntldd
+      - name: Test native source lock and Windows replay safety gates
+        shell: msys2 {0}
+        run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/chat-batch.test.mjs tools/headless-simulator/windows-runtime.test.mjs
+      - name: Build original pinned OXCE C++ on Windows
+        shell: msys2 {0}
+        env:
+          CMAKE_GENERATOR: Ninja
+        run: |
+          node tools/headless-simulator/build-native.mjs "$RUNNER_TEMP/xpz-native-windows" 3 --experimental-windows
+          node tools/headless-simulator/windows-runtime.mjs "$RUNNER_TEMP/xpz-native-windows/bundle/oxce-native.exe"
+      - name: Publish Windows artifact (never includes personal saves/game data)
+        uses: actions/upload-artifact@v4
+        with:
+          name: xpz-original-native-win64-${{ github.sha }}
+          path: ${{ runner.temp }}/xpz-native-windows/bundle/
+          if-no-files-found: error
+          retention-days: 7

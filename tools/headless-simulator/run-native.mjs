@@ -6,9 +6,10 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
+import {verifyWinDllBundle} from './windows-runtime.mjs';
 
 export function parseArgs(argv) {
-  const flags = new Set(['--experimental','--xvfb','--fixed-clock']);
+  const flags = new Set(['--experimental','--experimental-windows','--xvfb','--fixed-clock']);
   const values = new Set(['--binary','--manifest','--data','--user','--config','--save','--plan','--out','--master','--seed','--timeout','--runtime']);
   const a = {};
   for (let i=0;i<argv.length;i++) {
@@ -43,7 +44,11 @@ export function verifyRuntime(dir) {
 }
 export function preflight(a, platform=process.platform) {
   if (!a['--experimental']) throw new Error('NATIVE_PARITY_NOT_CERTIFIED: explicit --experimental is required; no surrogate fallback exists');
-  if (platform !== 'linux') throw new Error('GPT_LINUX_EXECUTION_REQUIRED: this runner will not replay battles on the Windows source PC');
+  const windows=platform==='win32' && a['--experimental-windows']===true;
+  if(platform!=='linux' && !windows)
+    throw new Error('NATIVE_PLATFORM_NOT_AUTHORIZED: Windows requires --experimental-windows');
+  if(windows && (a['--xvfb']||a['--runtime']))
+    throw new Error('WINDOWS_NATIVE_INVALID_LINUX_RUNTIME_OPTION');
   for (const k of ['--binary','--manifest','--data','--user','--config','--save','--plan','--out'])
     if (!a[k]) throw new Error('REQUIRED_ARGUMENT: '+k);
   for (const k of ['--binary','--manifest','--config','--save','--plan'])
@@ -52,6 +57,8 @@ export function preflight(a, platform=process.platform) {
   const manifest=JSON.parse(fs.readFileSync(a['--manifest'],'utf8'));
   if (manifest.schema!==1 || manifest.backend!=='OXCE_NATIVE' || !/^[a-f0-9]{64}$/.test(manifest.sourceTreeSha256||'') || !/^[a-f0-9]{64}$/.test(manifest.driverSha256||''))
     throw new Error('INVALID_NATIVE_BUILD_MANIFEST');
+  if(manifest.platform!==platform)throw new Error('NATIVE_PLATFORM_BUILD_MISMATCH');
+  if(windows)verifyWinDllBundle(path.dirname(fs.realpathSync(a['--binary'])),manifest);
   if (sha256(fs.readFileSync(a['--binary']))!==manifest.binarySha256) throw new Error('NATIVE_BINARY_HASH_MISMATCH');
   const clockPolicy=a['--fixed-clock']?'fixed-1ms-v1':'wall-clock';
   if(a['--fixed-clock']&&(manifest.fixedClockPolicy!==clockPolicy||!/^[a-f0-9]{64}$/.test(manifest.clockAdapterSha256||'')))
@@ -79,7 +86,7 @@ export async function runNative(a) {
   fs.copyFileSync(sourceSave,path.join(user,master,'input.sav'));
   fs.copyFileSync(a['--config'],path.join(cfg,'options.cfg'));
   const mods=path.join(fs.realpathSync(a['--user']),'mods');
-  if (fs.existsSync(mods)) fs.symlinkSync(mods,path.join(user,'mods'),'dir');
+  if (fs.existsSync(mods)) fs.symlinkSync(mods,path.join(user,'mods'),process.platform==='win32'?'junction':'dir');
   const tracePath=path.join(out,'native-events.jsonl');
   const env={...nativeClockEnvironment(a),XPZ_NATIVE_PLAN:fs.realpathSync(a['--plan']),XPZ_NATIVE_TRACE:tracePath,SDL_AUDIODRIVER:'dummy',SDL_VIDEODRIVER:a['--xvfb']?'x11':'dummy'};
   if(runtime)env.LD_LIBRARY_PATH=runtime.lib;
@@ -98,9 +105,16 @@ export async function runNative(a) {
   let outcome;
   try {
     outcome=await new Promise((resolve,reject)=>{
-      const p=spawn(cmd,args,{env,cwd:out,stdio:['ignore',log,err],detached:true});
+      const p=spawn(cmd,args,{env,cwd:out,stdio:['ignore',log,err],detached:process.platform==='linux',windowsHide:true});
       let timedOut=false;
-      const killGroup=s=>{try{process.kill(-p.pid,s);}catch{try{p.kill(s);}catch{}}};
+      const killGroup=s=>{
+        if(process.platform==='win32'){
+          try{spawn('taskkill.exe',['/T','/F','/PID',String(p.pid)],{stdio:'ignore',windowsHide:true});}catch{}
+          try{p.kill();}catch{}
+          return;
+        }
+        try{process.kill(-p.pid,s);}catch{try{p.kill(s);}catch{}}
+      };
       const timer=setTimeout(()=>{timedOut=true;killGroup('SIGKILL');},timeout*1000);
       p.on('error',e=>{clearTimeout(timer);reject(e);});
       p.on('close',(code,signal)=>{clearTimeout(timer);resolve({code,signal,timedOut});});
