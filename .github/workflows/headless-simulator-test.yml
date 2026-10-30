@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: '22'
       - name: Integrity and original C++ timer scheduling tests (not battle replays)
-        run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native.clock.test.mjs
+        run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native.clock.test.mjs tools/headless-simulator/chat-batch.test.mjs
       - name: Small offline source and adapter kit (no game assets or saves)
         uses: actions/upload-artifact@v4
         with:

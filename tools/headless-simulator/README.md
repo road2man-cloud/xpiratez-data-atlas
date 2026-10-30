@@ -126,6 +126,17 @@ node tools/headless-simulator/compare-replays.mjs \
 
 이 비교의 통과는 두 native 실행의 일치만 뜻합니다. GUI와의 동등성이나 모든 게임 상황의 정확성을 증명하지 않습니다.
 
+## 대화형 전술 요청 및 수천 회 원본 재생 어댑터 (실험)
+
+`chat-batch.mjs`는 GPT가 생성한 JSON 전술 요청을 이 폴더의 원본 C++ 헤드리스 명령열로 변환하고, 같은 원본 세이브와 여러 명시적 RNG 시드를 사용해 실제 네이티브 프로세스를 반복 실행합니다. **수학적 근사 엔진을 도입하지 않습니다.** 입력 구조와 GPT 작업 절차는 [chatgpt-combat-bridge.md](../../docs/chatgpt-combat-bridge.md), 예시는 [chat-native-request.example.json](examples/chat-native-request.example.json)을 참조하세요.
+
+```sh
+node tools/headless-simulator/chat-batch.mjs /absolute/path/to/chat-request.json
+node --test tools/headless-simulator/chat-batch.test.mjs
+```
+
+요청마다 1~10,000회의 원본 실행을 지정할 수 있으나, 실제 완료한 횟수만 결과에 기록합니다. 현재 입력 어댑터가 지원하지 않는 투척·장전·능력 사용 등은 거부합니다. 원본 게임의 실제 임무 승패 이벤트도 아직 수집되지 않으므로, 기록된 HP·위치 변화와 **전투 승리 판정**을 혼동해서는 안 됩니다. GUI 동등성은 여전히 미인증이며 실제 전투 수천 회가 완료되었다는 주장이 아닙니다.
+
 ## 다음 대화 지시문
 
 > road2man-cloud/xpiratez-data-atlas의 최신 tools/headless-simulator/README.md와 native/source.lock.json을 먼저 읽으세요. 폐기된 simulate.mjs 및 독립 근사 모델은 사용하지 마세요. 원본 OXCE 소스·바이너리 해시를 확인하고 GPT Linux 환경에서 native 실험을 수행하세요. Windows는 원본 자료 읽기/빌드에만 사용하고 전투는 실행하지 마세요. 실제 네이티브 실행이 불가능하면 실패를 보고하세요. 단위 테스트, 컴파일 성공, 명령열 완료, GUI 일치, 실제 전투 승리를 서로 구분하세요. 미완성 상태에서 수천 회 승률을 생성하지 마세요.

@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "backend": "OXCE_NATIVE",
+  "native": {
+    "binary": "/workspace/native-build/bundle/oxce-native",
+    "manifest": "/workspace/native-build/bundle/native-build.json",
+    "runtime": "/workspace/native-runtime",
+    "data": "/workspace/Dioxine_XPiratez",
+    "user": "/workspace/Dioxine_XPiratez/user",
+    "config": "/workspace/Dioxine_XPiratez/user/options.cfg",
+    "save": "/workspace/private-saves/5__.sav",
+    "master": "piratez",
+    "fixedClock": false,
+    "experimentalAcknowledged": true,
+    "timeoutSeconds": 240
+  },
+  "output": "/workspace/results/xpz-dialogue-trial-001",
+  "plans": [
+    {
+      "id": "aimed_then_endturn",
+      "actions": [
+        {"op": "observe"},
+        {"op": "fire", "unitId": 9, "itemId": 115, "mode": "aimed", "target": {"x": 12, "y": 3, "z": 1}},
+        {"op": "end_turn"},
+        {"op": "stop"}
+      ]
+    },
+    {
+      "id": "kneel_then_aimed",
+      "actions": [
+        {"op": "observe"},
+        {"op": "kneel", "unitId": 9},
+        {"op": "fire", "unitId": 9, "itemId": 115, "mode": "aimed", "target": {"x": 12, "y": 3, "z": 1}},
+        {"op": "end_turn"},
+        {"op": "stop"}
+      ]
+    }
+  ],
+  "sampling": {
+    "runsPerPlan": 1000,
+    "firstSeed": "100000"
+  },
+  "continueOnError": false
+}
