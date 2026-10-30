@@ -35,6 +35,37 @@ export function verifySource(root,manifest){
   }
   if(sha256(fs.readFileSync(path.join(root,'src/Headless/ReplayDriver.h')))!==manifest.driverSha256)throw new Error('DRIVER_HASH_MISMATCH');
 }
+// Windows-only CMake *linker* adaptation in disposable extracted source.
+// Prefers DLL import libraries to static SDL archives that require transitive
+// libmad/jpeg/png/directinput dependencies; no battle/AI/RNG code is touched.
+export function patchWindowsDllImports(source,manifest) {
+  const file=path.join(source,'CMakeLists.txt');
+  const original=fs.readFileSync(file,'utf8');
+  const marker='  set(PKG_DEPS_LDFLAGS ${PKG_SDL_LDFLAGS} ${PKG_ZLIB_LDFLAGS} ${PKG_SDLIMAGE_LDFLAGS} ${PKG_SDLGFX_LDFLAGS} ${PKG_SDLMIXER_LDFLAGS} ${OPENGL_LIBRARIES})';
+  if(original.includes('Experimental Windows native build: prefer SDL DLL')||original.split(marker).length!==2)
+    throw new Error('UNSUPPORTED_OR_ALREADY_PATCHED_CMAKE_LAYOUT');
+  const snippet=`
+  # Experimental Windows native build: prefer SDL DLL import archives over
+  # static libSDL*.a (that otherwise require unrelated transitive libs).
+  if(MINGW)
+    list(GET PKG_SDL_LIBRARY_DIRS 0 _xpz_sdl_libdir)
+    foreach(_xpz_dll SDL SDL_image SDL_gfx SDL_mixer)
+      set(_xpz_import_lib "\${_xpz_sdl_libdir}/lib\${_xpz_dll}.dll.a")
+      if(NOT EXISTS "\${_xpz_import_lib}")
+        message(FATAL_ERROR "Original SDL DLL import library missing: \${_xpz_import_lib}")
+      endif()
+      list(REMOVE_ITEM PKG_DEPS_LDFLAGS "-l\${_xpz_dll}")
+      list(APPEND PKG_DEPS_LDFLAGS "\${_xpz_import_lib}")
+    endforeach()
+  endif()
+`;
+  const patched=original.replace(marker,marker+'\n'+snippet);
+  fs.writeFileSync(file,patched);
+  manifest.patchedFiles={...manifest.patchedFiles,'CMakeLists.txt':sha256(Buffer.from(patched))};
+  manifest.windowsLinkPatchSha256=sha256(Buffer.from(snippet));
+  fs.writeFileSync(path.join(source,'native-source-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
+  return manifest;
+}
 export function prepareBuildAssetDirectories(source){
   // Upstream CMake copies these folders after linking even when EMBED_ASSETS=OFF.
   // The source-only archive intentionally contains no game assets. Empty build
@@ -67,6 +98,7 @@ export function buildNative(out,jobs=2,experimentalWindows=false){
   // The archive is immutable. Apply a separately locked scheduling adapter
   // in the disposable build tree, leaving all original battle algorithms intact.
   manifest=applyClockAdapter(source,manifest);
+  if(process.platform==='win32')manifest=patchWindowsDllImports(source,manifest);
   verifySource(source,manifest);
   prepareBuildAssetDirectories(source);
   const configure=['-S',source,'-B',build,'-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'];
@@ -89,6 +121,7 @@ export function buildNative(out,jobs=2,experimentalWindows=false){
     sourceTreeSha256:manifest.sourceTreeSha256,driverSha256:manifest.driverSha256,archiveSha256:lock.archiveSha256,
     clockAdapterSha256:manifest.clockAdapterSha256,fixedClockPolicy:manifest.fixedClockPolicy,fixedClockDefault:false,
     platform:process.platform,arch:process.arch,experimentalWindowsBuild:process.platform==='win32',
+    windowsLinkPatchSha256:manifest.windowsLinkPatchSha256??null,
     buildTime:new Date().toISOString(),configuration:configure.slice(4)};
   fs.writeFileSync(path.join(bundle,'native-build.json'),JSON.stringify(record,null,2)+'\n');
   console.log(JSON.stringify({bundle,...record},null,2));

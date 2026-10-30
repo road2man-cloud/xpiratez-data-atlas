@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
-import {verifySource,prepareBuildAssetDirectories,nativeTarCommand} from './build-native.mjs';
+import {verifySource,prepareBuildAssetDirectories,nativeTarCommand,patchWindowsDllImports} from './build-native.mjs';
 import {compare} from './compare-replays.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
@@ -105,6 +105,23 @@ test('explicit authoritative src overlay is fingerprinted without changing eithe
     assert.equal(fs.readFileSync(path.join(base,'src/Engine/RNG.cpp'),'utf8'),fixture['src/Engine/RNG.cpp']);
     assert.equal(fs.readFileSync(path.join(out,'src/Engine/RNG.cpp'),'utf8'),'// authoritative RNG fixture\n');
     verifySource(out,m);
+  }finally{fs.rmSync(temp,{recursive:true,force:true});}
+});
+test('Windows SDL import linker patch changes only a disposable CMakeLists and is hash locked',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-win-cmake-'));
+  try{
+    const file=path.join(temp,'CMakeLists.txt');
+    const marker='  set(PKG_DEPS_LDFLAGS ${PKG_SDL_LDFLAGS} ${PKG_ZLIB_LDFLAGS} ${PKG_SDLIMAGE_LDFLAGS} ${PKG_SDLGFX_LDFLAGS} ${PKG_SDLMIXER_LDFLAGS} ${OPENGL_LIBRARIES})';
+    const orig='cmake_minimum_required(VERSION 3.5)\n'+marker+'\n';
+    fs.writeFileSync(file,orig);
+    const m=patchWindowsDllImports(temp,{patchedFiles:{}});
+    const result=fs.readFileSync(file,'utf8');
+    assert.ok(result.includes('list(REMOVE_ITEM PKG_DEPS_LDFLAGS'));
+    assert.ok(result.includes('lib${_xpz_dll}.dll.a'));
+    assert.equal(sha256(Buffer.from(result)),m.patchedFiles['CMakeLists.txt']);
+    assert.match(m.windowsLinkPatchSha256,/^[a-f0-9]{64}$/);
+    assert.throws(()=>patchWindowsDllImports(temp,m),/UNSUPPORTED_OR_ALREADY_PATCHED_CMAKE_LAYOUT/);
+    assert.equal(orig.includes('libSDL.dll.a'),false);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
 test('source-only build stages empty resource folders without inventing game data',()=>{
