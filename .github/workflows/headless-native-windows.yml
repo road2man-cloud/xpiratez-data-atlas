@@ -23,6 +23,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Share setup-node executable with isolated MSYS2 shell
+        shell: pwsh
+        run: |
+          $nodeDir = Split-Path -Parent (Get-Command node.exe).Source
+          "NODE_DIR=$nodeDir" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -40,12 +45,16 @@ jobs:
             mingw-w64-x86_64-ntldd
       - name: Test native source lock and Windows replay safety gates
         shell: msys2 {0}
-        run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/chat-batch.test.mjs tools/headless-simulator/windows-runtime.test.mjs
+        run: |
+          export PATH="$(cygpath -u "$NODE_DIR"):$PATH"
+          node --version
+          node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/chat-batch.test.mjs tools/headless-simulator/windows-runtime.test.mjs
       - name: Build original pinned OXCE C++ on Windows
         shell: msys2 {0}
         env:
           CMAKE_GENERATOR: Ninja
         run: |
+          export PATH="$(cygpath -u "$NODE_DIR"):$PATH"
           node tools/headless-simulator/build-native.mjs "$RUNNER_TEMP/xpz-native-windows" 3 --experimental-windows
           node tools/headless-simulator/windows-runtime.mjs "$RUNNER_TEMP/xpz-native-windows/bundle/oxce-native.exe"
       - name: Publish Windows artifact (never includes personal saves/game data)
