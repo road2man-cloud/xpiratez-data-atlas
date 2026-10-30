@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {patchBattle,patchGame,sha256,prepare} from './prepare-native.mjs';
 import {parseArgs,preflight,verifyRuntime} from './run-native.mjs';
-import {verifySource,prepareBuildAssetDirectories} from './build-native.mjs';
+import {verifySource,prepareBuildAssetDirectories,nativeTarCommand} from './build-native.mjs';
 import {compare} from './compare-replays.mjs';
 const ROOT=path.dirname(fileURLToPath(import.meta.url));
 
@@ -70,7 +70,7 @@ test('source archive and every expected native source file match the lock',()=>{
   assert.equal(sha256(fs.readFileSync(path.join(ROOT,'native/ReplayDriver.h'))),lock.driverSha256);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-native-integrity-'));
   try{
-    const r=spawnSync('tar',['-xzf','native/oxce-source.tar.gz','-C',temp],{encoding:'utf8',cwd:ROOT});
+    const r=spawnSync(nativeTarCommand(),['-xzf','native/oxce-source.tar.gz','-C',temp],{encoding:'utf8',cwd:ROOT});
     assert.equal(r.status,0,r.stderr);
     const m=JSON.parse(fs.readFileSync(path.join(temp,'native-source-manifest.json'),'utf8'));
     assert.equal(m.sourceTreeSha256,lock.sourceTreeSha256);

@@ -8,6 +8,16 @@ import {fileURLToPath} from 'node:url';
 import {sha256} from './prepare-native.mjs';
 import {applyClockAdapter} from './clock-patch.mjs';
 const HERE=path.dirname(fileURLToPath(import.meta.url));
+export function nativeTarCommand(platform=process.platform) {
+  // MSYS tar interprets C:\\ and D:\\ from Node as escaped strings.
+  // Windows' bundled bsdtar accepts the native absolute paths without translation.
+  if(platform==='win32'){
+    const exe=path.join(process.env.SystemRoot||process.env.WINDIR||'C:\\Windows','System32','tar.exe');
+    if(!fs.existsSync(exe))throw new Error('WINDOWS_BSDTAR_NOT_FOUND');
+    return exe;
+  }
+  return 'tar';
+}
 export function checked(command,args,options={}){
   const r=spawnSync(command,args,{stdio:'inherit',shell:false,...options});
   if(r.error)throw r.error;
@@ -44,13 +54,13 @@ export function buildNative(out,jobs=2,experimentalWindows=false){
   const lock=JSON.parse(fs.readFileSync(path.join(HERE,'native/source.lock.json'),'utf8'));
   const archive=path.join(HERE,'native/oxce-source.tar.gz');
   if(sha256(fs.readFileSync(archive))!==lock.archiveSha256)throw new Error('SOURCE_ARCHIVE_HASH_MISMATCH');
-  const listing=spawnSync('tar',['-tzf',archive],{encoding:'utf8',maxBuffer:4*1024*1024});
+  const listing=spawnSync(nativeTarCommand(),['-tzf',archive],{encoding:'utf8',maxBuffer:4*1024*1024});
   if(listing.status!==0||listing.error)throw new Error('SOURCE_ARCHIVE_LIST_FAILED');
   for(const name of listing.stdout.split('\n').filter(Boolean))
     if(name.startsWith('/')||name.split('/').includes('..'))throw new Error('UNSAFE_ARCHIVE_PATH');
   const source=path.join(out,'source'),build=path.join(out,'build'),bundle=path.join(out,'bundle');
   fs.mkdirSync(source,{recursive:true});
-  checked('tar',['-xzf',archive,'-C',source]);
+  checked(nativeTarCommand(),['-xzf',archive,'-C',source]);
   let manifest=JSON.parse(fs.readFileSync(path.join(source,'native-source-manifest.json'),'utf8'));
   if(manifest.sourceTreeSha256!==lock.sourceTreeSha256||manifest.driverSha256!==lock.driverSha256)throw new Error('SOURCE_LOCK_MISMATCH');
   verifySource(source,manifest);
