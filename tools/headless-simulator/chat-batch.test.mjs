@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {normalizeRequest,actionLine,scoreNativeCheckpoints,runDialogueBatch,fingerprintGameResources,newPlanTotals,recordNativeTrial,summarizeTotals} from './chat-batch.mjs';
+import {normalizeRequest,actionLine,scoreNativeCheckpoints,runDialogueBatch,fingerprintGameResources,newPlanTotals,recordNativeTrial,summarizeTotals,assertNativeFireEvidence} from './chat-batch.mjs';
 
 const request=()=>({
   schema:1,backend:'OXCE_NATIVE',
@@ -112,6 +112,19 @@ test('ten-thousand-trial tallies count only native completed results',()=>{
   assert.equal(sum[0].nativeWins,'UNOBSERVABLE_IN_THIS_ADAPTER');
   assert.equal(sum[1].playerHpNonpositiveObserved,1);
   assert.throws(()=>recordNativeTrial(totals,{plan:'missing',status:'error'}),/UNKNOWN_TRIAL_PLAN/);
+});
+test('a completed fire instruction without RNG movement is NOT proof of projectile launch',()=>{
+  const c=[{phase:'initial',command_index:0,rng:'500'},
+    {phase:'requested',command_index:1,rng:'500'},
+    {phase:'after_action',command_index:2,rng:'500'},
+    {phase:'final',command_index:2,rng:'500'}];
+  const actions=[{op:'observe'},{op:'fire'},{op:'stop'}];
+  assert.throws(()=>assertNativeFireEvidence(c,actions),/FIRE_PROJECTILE_NOT_PROVEN_BY_ORIGINAL_RNG/);
+  c[2].rng='501';
+  assert.doesNotThrow(()=>assertNativeFireEvidence(c,actions));
+  assert.doesNotThrow(()=>assertNativeFireEvidence(c,[{op:'observe'},{op:'turn'},{op:'stop'}]));
+  c.splice(2,1);
+  assert.throws(()=>assertNativeFireEvidence(c,actions),/FIRE_ACTION_CHECKPOINT_MISSING/);
 });
 test('game resources are hashed from bytes and detect real modifications',async()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'xpz-resources-'));

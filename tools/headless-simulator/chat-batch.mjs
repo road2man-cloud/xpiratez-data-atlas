@@ -102,7 +102,7 @@ export function normalizeRequest(request){
     const stops=lines.filter(a=>a==='stop').length;
     if(stops>1||(stops===1&&lines.at(-1)!=='stop'))throw new Error('STOP_MUST_BE_LAST');
     const text=lines.join('\n')+'\n';
-    return {id:p.id,text,sha256:sha256(Buffer.from(text,'utf8'))};
+    return {id:p.id,text,sha256:sha256(Buffer.from(text,'utf8')),actions:p.actions};
   });
   const s=request.sampling??{runsPerPlan:1};
   exactKeys(s,SAMPLE_FIELDS,'sampling');
@@ -191,7 +191,23 @@ function verifyInputLock(paths){
   for(const [label,{path:file,digest}] of Object.entries(paths))
     if(shaFile(file)!==digest)throw new Error('INPUT_CHANGED: '+label);
 }
-function validatedEvidence(root,result,master){
+// A completed input plan is NOT proof that requested shooting occurred.
+// On real saves, facing the target can be acknowledged as action completion
+// without releasing the projectile. Requiring per-shot original RNG movement
+// fails closed instead of fabricating a hit/miss when ammo is unchanged.
+export function assertNativeFireEvidence(checkpoints,actions){
+  for(let i=0;i<actions.length;i++){
+    if(actions[i].op!=='fire')continue;
+    const commandIndex=i+1;
+    const post=checkpoints.find(c=>c.command_index===commandIndex&&c.phase==='after_action');
+    if(!post)throw new Error('FIRE_ACTION_CHECKPOINT_MISSING: '+commandIndex);
+    const prior=[...checkpoints].reverse().find(c=>c.command_index<commandIndex);
+    if(!prior||typeof prior.rng!=='string'||typeof post.rng!=='string'||
+       prior.rng===post.rng)
+      throw new Error('FIRE_PROJECTILE_NOT_PROVEN_BY_ORIGINAL_RNG: '+commandIndex);
+  }
+}
+function validatedEvidence(root,result,master,actions){
   if(result.backend!=='OXCE_NATIVE'||result.planCompleted!==true||
       result.parityCertified!==false||!Array.isArray(result.checkpoints)||result.checkpoints.length<2)
     throw new Error('NATIVE_REPLAY_NOT_COMPLETE');
@@ -211,6 +227,7 @@ function validatedEvidence(root,result,master){
       throw new Error('NATIVE_SAVE_BYTES_MISMATCH');
     units.push(c);
   }
+  assertNativeFireEvidence(units,actions);
   return scoreNativeCheckpoints(units);
 }
 // Incremental aggregation is O(1) per trial. Never rewrite a growing
@@ -301,7 +318,7 @@ export async function runDialogueBatch(request){
       let row;
       try{
         const native=await runNative(args);
-        const observation=validatedEvidence(dir,native,job.engine['--master']||'piratez');
+        const observation=validatedEvidence(dir,native,job.engine['--master']||'piratez',p.actions);
         row={plan:p.id,trial:trialName,seed:seed??'PRESERVE_SAVED_RNG',status:'completed',
           checkpointCount:native.checkpointCount,observation,
           nativeVictory:'NOT_OBSERVABLE'};
