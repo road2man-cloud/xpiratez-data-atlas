@@ -30,3 +30,16 @@ For full native build instructions and explicit non-verified portions, consult [
 ## Safety of the existing site
 
 The new files live only in `experiments/` and `docs/` and do not replace the existing website's public data or build commands. **The website's complete CI test suite was not run from this tool environment**; native prototype tests are reported separately.
+
+## Development direction adopted 2026-11-02: optional Silent Storm 3D battlescape
+
+The **primary deliverable** is a playable optional X-Piratez 3D tactical mode backed by a legally usable Silent Storm-derived engine, **not** bit-for-bit or outcome parity with OXCE. OXCE continues to own geoscape, base management, research, manufacturing, soldier progression, mission generation, authoritative campaign saves and post-battle resolution. The 3D engine owns 3D combat execution, collision, movement, cover, destruction and tactical AI.
+
+- Keep the original OXCE 2D tactical mode available; unsupported 3D mission rules must be diagnosed and can fall back to 2D before battle begins.
+- Reuse X-Piratez 2.1 rules and OXCE formulas where sensible, but explicitly classify each mechanic as **original / adapted / replaced / not implemented**. OXCE instrumentation and paired-combat comparison are optional diagnostic tools, never a parity release gate.
+- Exchange battle-start and battle-result records with immutable campaign, battle, soldier and item identifiers plus an explicit schema version; no direct 3D-engine writes to OXCE saves. Validate mission conditions, inventory conservation, survivor/captive handling, one-time application and safe rollback before authoritative OXCE commit.
+- First vertical slice: OXCE mission selection -> engine-launched 3D scene with real X-Piratez units/gear -> movement, attack, damage and local terrain destruction -> structured battle result -> OXCE campaign continuation. Preserve a reproducible test seed/log for debugging without requiring 2D/3D outcomes to match.
+- Prioritize **source provenance, actual engine boot, and licensing feasibility** before claiming Silent Storm integration. A stand-alone voxel/ballistics prototype is not proof that the Silent Storm engine runs. Separate verified compilations, runtime evidence, mock contracts and untested designs.
+- Do not assume publicly available Nival source, OXCE code or X-Piratez assets may be combined or redistributed; audit each license and asset permission separately before importing.
+
+Detailed execution gates and compatibility ledger: [2026-11-02 direction and vertical slice](../../docs/xpiratez-3d/3D_BATTLESCAPE_DIRECTION_2026-11-02.md).
