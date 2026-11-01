@@ -45,3 +45,15 @@ Continue `road2man-cloud/xpiratez-data-atlas`, particularly `experiments/xpirate
 
 ## Next immediate engineering task
 Inventory the currently accessible Silent Storm source and verify license/build prerequisites. Then add the smallest engine boot smoke test with explicit pass/fail evidence. Until it boots, any bridge or 3D-scene claim must be labeled prototype or mock.
+
+## 2026-11-02: engine source and Windows host check (observed)
+
+**Upstream reconstruction:** `met-nikita/Silent-Storm-Reconstruction`, branch `develop`. Its `README.en.md` (as read on 2026-11-02) reports a 2026-10-18 developer-confirmed build/run with Steam game assets and completion of an allied campaign. That is an **upstream report**, not a successful X-Piratez build or our runtime test. The upstream `CMakeLists.txt` explicitly rejects non-MSVC and non-32-bit toolchains. Requirements: Windows, Visual Studio 2022 or newer with C++ desktop workload, MSVC v143, Windows SDK 10, CMake 3.21+, and legally obtained Silent Storm game files to run. Optional DX SDK June 2010 affects only ShaderCompiler. MapEdit is specifically excluded from the normal build.
+
+**Source links:** [Reconstruction instructions](https://github.com/met-nikita/Silent-Storm-Reconstruction/blob/develop/README.en.md), [Reconstruction CMake](https://github.com/met-nikita/Silent-Storm-Reconstruction/blob/develop/CMakeLists.txt), [Nival license](https://github.com/nival/Silent-Storm/blob/main/LICENSE.md).
+
+**Connected Windows command probe:** On the accessible Windows host the Git executable resolved at `E:\\Program Files\\Git\\cmd\\git.exe`. Neither `cmake`, `msbuild`, nor `cl` resolved from the current PowerShell environment. A `C:\\Program Files (x86)\\Microsoft Visual Studio\\2019` directory exists, but this does not prove the required C++ workload. Neither `E:\\SteamLibrary\\steamapps\\common\\Silent Storm` nor `D:\\Games\\Silent Storm` exists; an alternate installation path has not been ruled out. The existing checkout directory `D:\\daphne_auto\\xpiratez-data-atlas` does exist. **No actual Silent Storm build or launch has been attempted or passed in this probe.**
+
+**Gate status:** Source identified = PASS (metadata and instructions). Required modern Win32 build environment = NOT VERIFIED / known missing from PATH. Required proprietary game assets = NOT LOCATED in the probed locations. Actual Game.exe build = NOT RUN. Engine launch = NOT RUN. X-Piratez soldier spawn = NOT RUN. Do not promote a gate based on an upstream screenshot or a prior standalone Linux prototype.
+
+**Next blocking actions:** (1) locate or legitimately install Silent Storm game assets; (2) provision VS2022+ x86 C++ tools and CMake 3.21+; (3) check out the reconstruction at a recorded commit; (4) execute `cmake -S . -B build -A Win32` then `cmake --build build --config Release`; (5) run a separate-named executable in the game directory, save a reproducible boot log and scene screenshot. Do not replace original Steam binaries or publish proprietary asset files.
