@@ -1,0 +1,46 @@
+name: X-Piratez 3D stage06 portable source seam
+
+on:
+  push:
+    paths:
+      - "experiments/xpiratez3d/stage06/**"
+      - ".github/workflows/xpiratez3d-stage06-native-seam.yml"
+  pull_request:
+    paths:
+      - "experiments/xpiratez3d/stage06/**"
+      - ".github/workflows/xpiratez3d-stage06-native-seam.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-bridge:
+    name: Linux C++14 parser and 19 regression checks (not native game)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: experiments/xpiratez3d/stage06
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect toolchains
+        run: |
+          python3 --version
+          c++ --version | head -1
+      - name: Execute isolated read-only contract tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -v
+      - name: Strict portable C++14 compilation
+        run: |
+          set -euo pipefail
+          c++ -std=c++14 -Wall -Wextra -Werror -pedantic \
+            ss/XPZVisualFeed.cpp ss/visual_feed_test.cpp -o /tmp/xpz3d-stage06-feed
+      - name: Verify that the suite does not claim a native engine run
+        run: |
+          set -euo pipefail
+          grep -F -q "'native_binary_authenticated':False" tools/export_visual_feed.py
+          grep -F -q "requested_target_not_impact" tools/make_optin_patches.py
+          test ! -e Game.exe
+          test ! -e oxce-native
