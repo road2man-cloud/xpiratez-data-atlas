@@ -1,0 +1,37 @@
+name: X-Piratez 3D stage08 native process startup smoke
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/xpiratez3d/stage08/smoke-native.mjs'
+      - '.github/workflows/xpiratez3d-stage08-boot-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  actual-original-engine-startup:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install original OXCE runtime libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl1.2debian libsdl-image1.2 libsdl-gfx1.2-5 libsdl-mixer1.2
+      - name: Download SHA-pinned ORIGINAL OXCE paired binary artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 41292451467 --repo road2man-cloud/xpiratez-data-atlas --name xpz3d-stage08-original-control-observer-f56c54c401c7afd0e5fdcd545cdff25aef38e8b7 --dir "$RUNNER_TEMP/xpz3d-pair"
+      - name: Run both native OXCE engines (no game data; not combat)
+        run: |
+          chmod +x "$RUNNER_TEMP/xpz3d-pair/control/bundle/oxce-native" "$RUNNER_TEMP/xpz3d-pair/observer/bundle/oxce-native"
+          node experiments/xpiratez3d/stage08/smoke-native.mjs "$RUNNER_TEMP/xpz3d-pair" > "$RUNNER_TEMP/native-startup-smoke.json"
+          cat "$RUNNER_TEMP/native-startup-smoke.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xpz3d-stage08-actual-native-process-smoke-${{ github.sha }}
+          path: ${{ runner.temp }}/native-startup-smoke.json
+          if-no-files-found: error
