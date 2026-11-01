@@ -66,7 +66,15 @@ try{
   assert.equal((await page.locator("#maximaTable tbody tr").first()
     .locator("td").nth(3).innerText()).trim(),"128");
   await page.locator("#maximaTable .maxima-show").first().click();
-  assert((await page.locator("#maximaDetails").innerText()).includes("STR_PARIAH_TRAINING"));
+  const maximaDetail=await page.locator("#maximaDetails").innerText();
+  assert(maximaDetail.includes("STR_PARIAH_TRAINING"));
+  assert(maximaDetail.includes("연구 선행·이벤트 출처 감사"));
+  assert(maximaDetail.includes("STR_CAPTAIN_THIEF"));
+  assert(maximaDetail.includes("STR_QUEEN_SAVAGE"));
+  assert(maximaDetail.includes("STR_CAPTAINS_11"));
+  assert(maximaDetail.includes("전체 경로 인증: 0회"));
+  assert(maximaDetail.includes("이력 제약 통과 순서"));
+  assert(maximaDetail.includes("연구 완료 시점"));
   await page.locator("#maximaDetailClose").click();
   await page.locator("#researchExclusionAudit summary").click();
   assert.equal(await page.locator("#researchExclusionTable tbody tr").count(),441);

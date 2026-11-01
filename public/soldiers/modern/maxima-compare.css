@@ -28,6 +28,13 @@
 .maxima-detail-head button{background:#1b3550;border:1px solid #577799;color:#d5ebff;padding:7px 15px;border-radius:8px;cursor:pointer}
 .maxima-details p,.maxima-details li{font-size:.85rem;color:#c6d4ea;line-height:1.6}
 .maxima-details a{color:#a7d2ff;overflow-wrap:anywhere}
+.maxima-source-evidence{border:1px solid #526d91;border-radius:10px;background:#172b44;margin:15px 0;padding:12px 15px}
+.maxima-source-evidence h4{font-size:.97rem;margin:2px 0 9px;color:#e2ecfd}
+.maxima-source-evidence h5{font-size:.86rem;margin:13px 0 5px;color:#bed6f6}
+.maxima-source-evidence p{margin:7px 0}
+.maxima-source-evidence ul{margin:5px 0 9px;padding-left:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:5px 14px}
+.maxima-source-evidence li{color:#c6d4ea;overflow-wrap:anywhere}
+.maxima-source-evidence code{font-size:.74rem;white-space:normal;overflow-wrap:anywhere}
 .maxima-unverified{border:1px solid #9a763c;background:#33271550;padding:11px 13px;border-radius:8px;margin:14px 0}
 .maxima-unverified strong{color:#f8dca1}
 .maxima-unverified ul{margin:8px 0;padding-left:22px}

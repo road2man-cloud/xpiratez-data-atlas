@@ -2,7 +2,8 @@
 // X-Piratez 2.1 soldier page. Run together with the existing modern tests.
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {validateResearchMaxima,maximaTableRows,MAXIMA_STATS}
+import {execFileSync} from "node:child_process";
+import {validateResearchMaxima,validateResearchTriage,maximaTableRows,MAXIMA_STATS}
   from "../public/soldiers/modern/maxima-compare.js";
 import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
   from "../public/soldiers/modern/research-training-locks.js";
@@ -14,6 +15,42 @@ import {routeContext,trainingRouteAccess}
   from "../public/trainings/route-access.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
 const report=JSON.parse(fs.readFileSync("public/data/soldier-research-maxima-20261101.json","utf8"));
+const triage=JSON.parse(fs.readFileSync("public/data/soldier-research-triage-20261101.json","utf8"));
+const calculatedTriage=JSON.parse(execFileSync(process.execPath,
+  ["tools/audit-soldier-maxima-research-roots.mjs","--json"],{
+    encoding:"utf8",maxBuffer:1024*1024,timeout:90000
+  }));
+assert.deepEqual(triage,calculatedTriage,
+  "Published root research / event and six-group choice audit must match source calculation");
+const byClass=validateResearchTriage(triage,report);
+assert.equal(byClass.size,29);
+assert.equal(triage.summary.saveVerified,0);
+assert.equal(triage.summary.chronologyExecuted,0);
+assert.equal(triage.summary.sourceEventGrantRows,19);
+for(const route of triage.rows){
+  const done=new Set();
+  for(const id of route.historyOrder){
+    const t=data.transformations.find(x=>x.id===id);
+    assert(t,"Unknown transformation in ordered witness "+id);
+    assert((t.requiredPreviousTransformations||[]).every(x=>done.has(x)),
+      route.id+" missing required past transformation before "+id);
+    assert((t.forbiddenPreviousTransformations||[]).every(x=>x===id||!done.has(x)),
+      route.id+" has forbidden already-completed training before "+id);
+    done.add(id);
+  }
+  assert.equal(done.size,route.transformationGoals);
+}
+assert.equal(triage.summary.nominalUnscheduledRows,0);
+for(const id of ["STR_SOLDIER_DAMSEL","STR_SOLDIER_HERO"]){
+  const provenance=byClass.get(id);
+  assert.equal(provenance.proofStatus,"UNPROVEN");
+  assert.equal(provenance.branchChoice.captain,"STR_CAPTAIN_THIEF");
+  assert(provenance.eventGrantGoals.some(x=>x.id==="STR_CAPTAINS_11"));
+}
+assert.equal(byClass.get("STR_SOLDIER_HERO").branchChoice.codex,
+  "STR_CODEX_RED_AWAKENED");
+assert.equal(byClass.get("STR_SOLDIER_DAMSEL").branchChoice.queen,
+  "STR_QUEEN_SAVAGE");
 const check=validateResearchMaxima(report,data);
 assert.equal(check.classes,29);
 assert.equal(check.sourceExclusions,441);
