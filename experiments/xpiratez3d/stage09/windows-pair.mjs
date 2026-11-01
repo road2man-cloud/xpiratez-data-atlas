@@ -103,6 +103,7 @@ export function configure(root,kind){
   run(cmake,['-S',src,'-B',build,'-G','MinGW Makefiles',
     '-DCMAKE_C_COMPILER='+mingw+'/gcc.exe','-DCMAKE_CXX_COMPILER='+mingw+'/g++.exe',
     '-DCMAKE_MAKE_PROGRAM='+mingw+'/mingw32-make.exe',
+    '-DDEPS_DIR='+path.join(root,'deps').replaceAll('\\','/'),
     '-DBUILD_PACKAGE=OFF','-DEMBED_ASSETS=OFF',
     '-DCMAKE_BUILD_TYPE=Release','-DCMAKE_DISABLE_FIND_PACKAGE_OpenGL=TRUE'],env);
   return {configured:true,role:kind};
