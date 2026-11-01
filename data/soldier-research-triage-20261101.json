@@ -1,0 +1,1489 @@
+{
+  "schemaVersion": 1,
+  "kind": "XPIRATEZ_RESEARCH_ROUTE_TRIAGE",
+  "release": "XPiratez 2.1 / OXCE 8.7.1",
+  "basedOn": "soldier-research-maxima-20261101.json",
+  "criteria": "Each training's source research root checked with site 4654 research rules; six main branch choices jointly constrained including event-gated captain and inferred color/queen/cause. Necessary only.",
+  "explicitLimitations": [
+    "A topological research plan can include future/auto research not actually awarded; it is NOT a chronology witness.",
+    "No class has been replayed from a real save through all research, event, free-reward RNG, facilities, materials and transformations.",
+    "One compatible six-choice selector is necessary, not a sufficient condition for obtainable research or maximum displayed stats.",
+    "Research-plan counts are diagnostics, not probabilities or expected research costs."
+  ],
+  "summary": {
+    "classes": 29,
+    "saveVerified": 0,
+    "chronologyExecuted": 0,
+    "nominalUnscheduledRows": 0,
+    "sourceEventGrantRows": 19,
+    "sourceEventGrantGoals": 19
+  },
+  "rows": [
+    {
+      "id": "STR_SOLDIER_DAMSEL",
+      "score": 411,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_AUGMENTATION",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CAPTAINS_11",
+        "STR_CENOBITE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_MILITIA_TRAINING",
+        "STR_NEPHILIM_LEGACY",
+        "STR_NIGHTSHADE_AUGMENTATION",
+        "STR_OFFICER_TRAINING",
+        "STR_PARIAH_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_RED_KNIGHT",
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 18,
+      "rootGoals": 18,
+      "nominalPrerequisiteNodes": 452,
+      "nominalTopologicalSteps": 452,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 12,
+      "conditionalFlags": 881,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_SAVAGE",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_SAVAGE"
+      },
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_HERO",
+      "score": 282,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_CAPTAINS_11",
+        "STR_HERO_RED_TRAINING",
+        "STR_JUDICAL_EDUCATION",
+        "STR_NEPHILIM_LEGACY",
+        "STR_OFFICER_TRAINING",
+        "STR_PARIAH_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SUN_WARRIORS_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 10,
+      "rootGoals": 10,
+      "nominalPrerequisiteNodes": 151,
+      "nominalTopologicalSteps": 151,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 7,
+      "conditionalFlags": 278,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_SAVAGE",
+        "codex": "STR_CODEX_RED_AWAKENED",
+        "god": "STR_GODS_E5"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "queen": "STR_QUEEN_SAVAGE",
+        "codex": "STR_CODEX_RED_AWAKENED",
+        "god": "STR_GODS_E5"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_SLAVE",
+      "score": 275,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_HEROIC_FORM_AUGMENTATION",
+        "STR_NEPOTISM",
+        "STR_OFFICER_TRAINING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_RED_FANATIC",
+        "STR_SADIST_TRAINING",
+        "STR_UBERIZATION"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 15,
+      "rootGoals": 15,
+      "nominalPrerequisiteNodes": 787,
+      "nominalTopologicalSteps": 787,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 2,
+      "conditionalFlags": 1531,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_PEOPLES_ARMY_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_PEOPLES_ARMY_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_GNOME",
+      "score": 268,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ABYSSAL_TRAINING",
+        "STR_ART_OF_TROUNCING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_JUDICAL_EDUCATION",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_TENTACLEHIVE_PET"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 15,
+      "rootGoals": 15,
+      "nominalPrerequisiteNodes": 292,
+      "nominalTopologicalSteps": 292,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 0,
+      "conditionalFlags": 576,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_PEASANT",
+      "score": 261,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_AUGMENTATION",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CAPTAINS_11",
+        "STR_CHAPLAIN_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_MILITIA_TRAINING",
+        "STR_NEPOTISM",
+        "STR_NIGHTSHADE_AUGMENTATION",
+        "STR_OFFICER_TRAINING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_RED_FANATIC",
+        "STR_UBERIZATION"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 17,
+      "rootGoals": 17,
+      "nominalPrerequisiteNodes": 465,
+      "nominalTopologicalSteps": 465,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 897,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_PEOPLES_ARMY_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_PEOPLES_ARMY_PREQ"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_OGRE",
+      "score": 259,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_DESTRUCTOR_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_JUDICAL_EDUCATION",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_SADIST_TRAINING",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 13,
+      "rootGoals": 13,
+      "nominalPrerequisiteNodes": 778,
+      "nominalTopologicalSteps": 778,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1519,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 9,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_PUREBLOOD",
+      "score": 255,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_HEROIC_FORM_AUGMENTATION",
+        "STR_NEPHILIM_LEGACY",
+        "STR_NEPOTISM",
+        "STR_OFFICER_TRAINING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_SADIST_TRAINING",
+        "STR_SARGEANT_TRAINING",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 15,
+      "rootGoals": 15,
+      "nominalPrerequisiteNodes": 787,
+      "nominalTopologicalSteps": 787,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 2,
+      "conditionalFlags": 1529,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 9,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER",
+      "score": 238,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_RED_KNIGHT",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 13,
+      "rootGoals": 13,
+      "nominalPrerequisiteNodes": 777,
+      "nominalTopologicalSteps": 777,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1515,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_M",
+      "score": 238,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_RED_KNIGHT",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 13,
+      "rootGoals": 13,
+      "nominalPrerequisiteNodes": 777,
+      "nominalTopologicalSteps": 777,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1515,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_S",
+      "score": 238,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_RED_KNIGHT",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 13,
+      "rootGoals": 13,
+      "nominalPrerequisiteNodes": 777,
+      "nominalTopologicalSteps": 777,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1515,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_V",
+      "score": 238,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_RED_KNIGHT",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 13,
+      "rootGoals": 13,
+      "nominalPrerequisiteNodes": 777,
+      "nominalTopologicalSteps": 777,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1515,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_X",
+      "score": 237,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_CAPTAINS_11",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_RED_KNIGHT",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 12,
+      "rootGoals": 12,
+      "nominalPrerequisiteNodes": 777,
+      "nominalTopologicalSteps": 777,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1515,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_LAMIA",
+      "score": 209,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_CAPTAINS_11",
+        "STR_CENOBITE_TRAINING",
+        "STR_CHAPLAIN_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_HUNTRESS_TRAINING",
+        "STR_JUDICAL_EDUCATION",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_REVOLUTIONARY_TRAINING",
+        "STR_RED_FANATIC",
+        "STR_RUNESMITH_TRAINING",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 13,
+      "rootGoals": 13,
+      "nominalPrerequisiteNodes": 773,
+      "nominalTopologicalSteps": 773,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1506,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_PEOPLES_ARMY_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_PEASANT_REVOLUTION_PREQ",
+        "cause": "STR_PEOPLES_ARMY_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 8,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_LOKNAR",
+      "score": 173,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CAPTAINS_11",
+        "STR_CENOBITE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_TENTACLEHIVE_PET"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 11,
+      "rootGoals": 11,
+      "nominalPrerequisiteNodes": 256,
+      "nominalTopologicalSteps": 256,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 9,
+      "conditionalFlags": 499,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF"
+      },
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_HYBRID",
+      "score": 169,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_MAGOS_CEREMONY",
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_SEER_CEREMONY"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 10,
+      "rootGoals": 10,
+      "nominalPrerequisiteNodes": 784,
+      "nominalTopologicalSteps": 784,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 2,
+      "conditionalFlags": 1534,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_SEER"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_HYBRID_PATH_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 11,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_W",
+      "score": 157,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CHARMY_DANCE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_MMA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_RED_KNIGHT",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 12,
+      "rootGoals": 12,
+      "nominalPrerequisiteNodes": 775,
+      "nominalTopologicalSteps": 775,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1509,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_JACKASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 9,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI",
+      "score": 153,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CAPTAINS_11",
+        "STR_GLADIATOR_TRAINING",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_PROUD_WARRIOR",
+        "STR_SWIFTPAW_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 11,
+      "rootGoals": 11,
+      "nominalPrerequisiteNodes": 223,
+      "nominalTopologicalSteps": 223,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 434,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF"
+      },
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_O",
+      "score": 153,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CAPTAINS_11",
+        "STR_GLADIATOR_TRAINING",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_PROUD_WARRIOR",
+        "STR_SWIFTPAW_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 11,
+      "rootGoals": 11,
+      "nominalPrerequisiteNodes": 223,
+      "nominalTopologicalSteps": 223,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 434,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11",
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF"
+      },
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_R",
+      "score": 150,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BATTLE_FORM_GAL_AUGMENTATION",
+        "STR_CENOBITE_TRAINING",
+        "STR_FUSION_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_GREEN_BEAUTY",
+        "STR_GUN_KATA_TRAINING",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_SADIST_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 9,
+      "rootGoals": 9,
+      "nominalPrerequisiteNodes": 793,
+      "nominalTopologicalSteps": 793,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 1546,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_JACKASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GREEN",
+        "codex": "STR_CODEX_GREEN_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "codex": "STR_CODEX_GREEN_AWAKENED"
+      },
+      "branchSearchChecked": 9,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_BLOODOGE",
+      "score": 131,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_CAPTAINS_11",
+        "STR_GLADIATOR_TRAINING",
+        "STR_HERO_RED_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 3,
+      "rootGoals": 3,
+      "nominalPrerequisiteNodes": 92,
+      "nominalTopologicalSteps": 92,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 2,
+      "conditionalFlags": 163,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_RED",
+        "codex": "STR_CODEX_RED_AWAKENED",
+        "god": "STR_GODS_E5"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "codex": "STR_CODEX_RED_AWAKENED",
+        "god": "STR_GODS_E5"
+      },
+      "branchSearchChecked": 9,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_H",
+      "score": 91,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_CHAPLAIN_TRAINING",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_PROUD_WARRIOR"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 9,
+      "rootGoals": 9,
+      "nominalPrerequisiteNodes": 221,
+      "nominalTopologicalSteps": 221,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 432,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_W",
+      "score": 89,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ART_OF_TROUNCING",
+        "STR_BEAUTY_FORMULA_USE",
+        "STR_GLADIATOR_TRAINING",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_HUNTRESS_TRAINING",
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN",
+        "STR_PROUD_WARRIOR"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 10,
+      "rootGoals": 10,
+      "nominalPrerequisiteNodes": 223,
+      "nominalTopologicalSteps": 223,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 433,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_SYNTH",
+      "score": 53,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_SYN_ACCEPTANCE_TRAINING",
+        "STR_TENTACLEHIVE_PET"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 4,
+      "rootGoals": 4,
+      "nominalPrerequisiteNodes": 506,
+      "nominalTopologicalSteps": 506,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 0,
+      "conditionalFlags": 957,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [
+        "STR_PROUD_WARRIOR"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_DOGE",
+      "score": 51,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_CAPTAINS_11",
+        "STR_GLADIATOR_TRAINING"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 2,
+      "rootGoals": 2,
+      "nominalPrerequisiteNodes": 51,
+      "nominalTopologicalSteps": 51,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 86,
+      "eventGrantGoalCount": 1,
+      "eventGrantGoals": [
+        {
+          "id": "STR_CAPTAINS_11",
+          "events": [
+            "STR_CAPTAINS_11"
+          ]
+        }
+      ],
+      "costZeroGoals": [
+        "STR_CAPTAINS_11"
+      ],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_THIEF",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {
+        "captain": "STR_CAPTAIN_THIEF"
+      },
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_KILLBOT",
+      "score": 15,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ALPHA_PROTOCOLS"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 1,
+      "rootGoals": 1,
+      "nominalPrerequisiteNodes": 1,
+      "nominalTopologicalSteps": 1,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 0,
+      "conditionalFlags": 3,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_XENFORCER",
+      "score": 15,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_ALPHA_PROTOCOLS"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 1,
+      "rootGoals": 1,
+      "nominalPrerequisiteNodes": 1,
+      "nominalTopologicalSteps": 1,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 0,
+      "conditionalFlags": 3,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_CHORT",
+      "score": 6,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 3,
+      "rootGoals": 3,
+      "nominalPrerequisiteNodes": 195,
+      "nominalTopologicalSteps": 195,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 363,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_DOLL",
+      "score": 6,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [
+        "STR_NEPOTISM",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BRIDES_TO_THE_QUEEN"
+      ],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 3,
+      "rootGoals": 3,
+      "nominalPrerequisiteNodes": 195,
+      "nominalTopologicalSteps": 195,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 1,
+      "conditionalFlags": 363,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    },
+    {
+      "id": "STR_SOLDIER_SPECTRE",
+      "score": 0,
+      "proofStatus": "UNPROVEN",
+      "historyOrder": [],
+      "historyConstraintsSatisfied": true,
+      "saveExecuted": false,
+      "fullResearchChronologyExecuted": false,
+      "transformationGoals": 0,
+      "rootGoals": 0,
+      "nominalPrerequisiteNodes": 0,
+      "nominalTopologicalSteps": 0,
+      "nominalUnscheduledGoals": [],
+      "reportedUnresolvedRoots": 0,
+      "conditionalFlags": 0,
+      "eventGrantGoalCount": 0,
+      "eventGrantGoals": [],
+      "costZeroGoals": [],
+      "branchChoice": {
+        "captain": "STR_CAPTAIN_DUMBASS",
+        "path": "STR_GALS_ARE_SUPERIOR_PREQ",
+        "cause": "STR_RED_KNIGHT_PREQ",
+        "queen": "STR_QUEEN_GOLD",
+        "codex": "STR_CODEX_GOLD_AWAKENED",
+        "god": "STR_GODS_E1"
+      },
+      "forcedBySource": {},
+      "branchSearchChecked": 7,
+      "researchHardBlockers": [],
+      "knownNecessaryCheck": "Research choice consistency, not complete chronological/event/material proof"
+    }
+  ]
+}
