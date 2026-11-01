@@ -80,13 +80,41 @@ export function validateResearchTriage(triage,report){
     throw new Error("세이브 및 연구 순서 증명 없는 인증을 허용하지 않습니다");
   return byClass;
 }
+export function validateStatGateAudit(gates,report){
+  if(gates?.schemaVersion!==1||
+    gates.kind!=="SOLDIER_MAXIMA_NECESSARY_STAT_GATES"||
+    gates.rows?.length!==report.rows.length||
+    gates.summary?.classes!==29)throw new Error("능력치 최소조건 감사 자료 불일치");
+  const map=new Map(gates.rows.map(x=>[x.id,x]));
+  if(map.size!==29)throw new Error("능력치 감사 병종 중복");
+  for(const row of report.rows){
+    const gate=map.get(row.id);
+    if(!gate||gate.score!==row.score||
+      gate.noSelectedOnlyDeficitDetected!==!gate.deficits.length||
+      gate.selectionNeedsExternalStatSource!==!!gate.deficits.length)
+      throw new Error("조건부 최대 후보와 능력치 검사 불일치: "+row.id);
+    for(const x of gate.deficits){
+      if(!row.transformations.includes(x.training)||x.shortfall<=0||
+        x.ceiling+x.shortfall!==x.required||
+        x.proof!=="ZERO_PERCENT_AND_ALL_SELECTED_FIXED_GAINS_INCLUDED")
+        throw new Error("근거 없는 능력치 부족 주장: "+row.id);
+    }
+  }
+  if(gates.summary.externallyDependent!==4||
+    gates.summary.deficits!==4)throw new Error("원본 스탯 부족 감사 범위가 달라졌습니다");
+  return map;
+}
+const STAT_LABELS={tu:"행동력",stamina:"기력",health:"체력",
+  bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",
+  strength:"힘",psiStrength:"사이오닉 강도",psiSkill:"사이오닉 기술",melee:"근접"};
 const BRANCH_LABELS={captain:"선장",path:"세력",cause:"대의",queen:"여왕",codex:"코덱스",god:"신"};
-function renderDetails(report,data,id,triageById){
+function renderDetails(report,data,id,triageById,statGateById){
   const r=report.rows.find(x=>x.id===id);
   const box=document.querySelector("#maximaDetails");
   if(!r){box.hidden=true;box.innerHTML="";return}
   const soldier=byId(data.soldiers,r.id);
   const triage=triageById.get(r.id);
+  const gate=statGateById.get(r.id);
   const rows=(triage.historyOrder||[]).map((tid,index)=>{
     const t=byId(data.transformations,tid);
     const roots=t?.requires||[];
@@ -116,6 +144,21 @@ function renderDetails(report,data,id,triageById){
     (sources?'<h5>직접 연구 목표의 이벤트 지급 출처</h5><ul>'+sources+'</ul>':
       '<p class="muted">직접 목표에 이벤트 지급이 색인되지 않았더라도 간접 연구에 이벤트가 필요할 수 있습니다.</p>')+
     '</section>';
+  const statRisks=gate.deficits.map(x=>{
+    const t=byId(data.transformations,x.training);
+    return '<li>'+esc(t?.koName||x.training)+' ('+linkResearch(x.training)+
+      ') : <strong>'+esc(STAT_LABELS[x.key]||x.key)+' 최소 '+x.required+
+      '</strong> / 선택 훈련만으로 가능한 넉넉한 상한 '+x.ceiling+
+      ' / 추가 보정 최소 <strong>'+x.shortfall+'</strong></li>';
+  }).join("");
+  const statNote=statRisks?
+    '<section class="maxima-unverified"><h4>추가 능력치 상승 수단 필요 ('+
+    gate.deficits.length+'건)</h4><p>현재 표의 선택된 변신을 모두 유리한 순서로 고려하고 시작 능력치를 병종 하드캡까지 높여도 '+
+    '이 조건이 부족합니다. 별도의 훈장·선행 강화 등으로 채울 수 있다는 실전 증거는 아직 없습니다. '+
+    '따라서 해당 보너스 합계가 자동으로 달성된다는 뜻이 아닙니다.</p><ul>'+statRisks+
+    '</ul></section>':
+    '<p class="muted">선택된 변신 목록에서 추가 능력치 부족이 정적으로 검출되지는 않았습니다. '+
+    '실제 순서·훈장·RNG 요구조건을 전부 통과했다는 의미는 아닙니다.</p>';
   box.hidden=false;
   box.innerHTML='<div class="maxima-detail-head"><h3>'+esc(soldier.koName)+
     ' · 영구 보너스 '+fmt(r.score)+'</h3><button id="maximaDetailClose" type="button">닫기</button></div>'+
@@ -124,7 +167,7 @@ function renderDetails(report,data,id,triageById){
     (unresolved?'<details class="maxima-unverified"><summary>기존 단순 최적화기의 우회 해금 미해결 표시 ('+
        (r.unreachableResearchRoots?.length||0)+'건)</summary><p>이 항목은 연구 불가능 판정이 아닙니다. 위의 출처 감사는 대체 해금·조건부 연구 지급을 포함해 명목상 선행연구를 정렬했습니다. 실제 연구 실행은 여전히 미인증입니다.</p><ul>'+
        unresolved+'</ul></details>':'')+
-    proof+
+    proof+statNote+
     '<p class="muted">아래 변신은 필수·금지 이력에 위배되지 않게 정렬한 순서입니다. '+
     '연구 완료 시점·능력치 최소 조건·재료 보유를 확인한 실행 순서는 아닙니다.</p>'+
     '<div class="maxima-route-table"><table><thead><tr><th>이력 제약 통과 순서 ('+
@@ -140,15 +183,19 @@ export async function initResearchMaxima(data){
   const host=document.querySelector("#researchMaxima");
   if(!host)return;
   try{
-    const [maxResponse,triageResponse]=await Promise.all([
-      fetch("../../data/soldier-research-maxima-20261101.json?audit=source-20261101c",{cache:"no-store"}),
-      fetch("../../data/soldier-research-triage-20261101.json?audit=source-20261101c",{cache:"no-store"})
+    const [maxResponse,triageResponse,gateResponse]=await Promise.all([
+      fetch("../../data/soldier-research-maxima-20261101.json?audit=stat-gate-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-research-triage-20261101.json?audit=stat-gate-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-stat-gate-audit-20261102.json?audit=stat-gate-20261102",{cache:"no-store"})
     ]);
-    if(!maxResponse.ok||!triageResponse.ok)
-      throw new Error("연구 자료 HTTP "+maxResponse.status+"/"+triageResponse.status);
-    const [report,triage]=await Promise.all([maxResponse.json(),triageResponse.json()]);
+    if(!maxResponse.ok||!triageResponse.ok||!gateResponse.ok)
+      throw new Error("연구·능력치 자료 HTTP "+maxResponse.status+"/"+triageResponse.status+"/"+gateResponse.status);
+    const [report,triage,gates]=await Promise.all([
+      maxResponse.json(),triageResponse.json(),gateResponse.json()
+    ]);
     const check=validateResearchMaxima(report,data);
     const triageById=validateResearchTriage(triage,report);
+    const statGateById=validateStatGateAudit(gates,report);
     const mode=document.querySelector("#maximaStatMode");
     const search=document.querySelector("#maximaSearch");
     const out=document.querySelector("#maximaTable");
@@ -160,7 +207,8 @@ export async function initResearchMaxima(data){
       "종 · 설치 규칙 직접 연구 배제 "+check.sourceExclusions+
       "건 · 사이트 병합 연구 "+check.researchRules+
       "종 · 세이브에서 최종 경로 입증 "+(report.audit.verifiedInSaveCount||0)+
-      "/"+check.classes+"종 · 예전 최적화기 추가 진단 "+chronologicallyUnresolved+"종";
+      "/"+check.classes+"종 · 선택 훈련만으로 능력치 게이트 미달 "+
+      gates.summary.externallyDependent+"종 · 예전 최적화기 추가 진단 "+chronologicallyUnresolved+"종";
     const columns=MAXIMA_STATS.map(k=>'<th scope="col">'+
       esc(data.statLabels?.[k]||k)+'</th>').join("");
     function render(){
@@ -170,8 +218,11 @@ export async function initResearchMaxima(data){
         '<th scope="col">연구 증명 상태</th>'+columns+'</tr>';
       out.querySelector("tbody").innerHTML=rows.map(r=>{
         const rootAudit=triageById.get(r.id);
-        const proof='전체 경로 미인증'+(rootAudit.eventGrantGoalCount?
-          ' · 직접 이벤트 '+rootAudit.eventGrantGoalCount+'건':'');
+        const gate=statGateById.get(r.id);
+        const proof=(gate.selectionNeedsExternalStatSource?
+          '추가 능력치 보정 '+gate.deficits.length+'건 필요':'전체 경로 미인증')+
+          (rootAudit.eventGrantGoalCount?' · 직접 이벤트 '+
+            rootAudit.eventGrantGoalCount+'건':'');
         return '<tr><td><button class="maxima-show" type="button" data-maxima-type="'+
           esc(r.id)+'">'+esc(r.name)+'</button><small class="id">'+esc(r.id)+'</small>'+
           '<small class="route">'+r.transformCount+'개 변신 · 자세히 보기</small></td>'+
@@ -188,7 +239,7 @@ export async function initResearchMaxima(data){
     search.addEventListener("input",render);
     out.querySelector("tbody").addEventListener("click",e=>{
       const btn=e.target.closest("button[data-maxima-type]");
-      if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById);
+      if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById,statGateById);
     });
     render();
   }catch(error){
