@@ -10,10 +10,15 @@ int main(int argc,char** argv) {
  XPZVisual::Scene state;std::string error;
  if(!XPZVisual::Parse(wire,&state,&error)){std::cerr<<"REJECTED: "<<error<<"\n";return 3;}
  std::cout<<"ACCEPTED visual-only seq="<<state.seq<<" turn="<<state.turn<<" side="<<state.side
-          <<" units="<<state.units.size()<<" requested_aims="<<state.aims.size()<<"\n";
+          <<" units="<<state.units.size()<<" requested_aims="<<state.aims.size()
+          <<" damage_application_voxels="<<state.impacts.size()<<"\n";
  for(const auto& pair:state.units){const auto& u=pair.second;
     std::cout<<u.id<<" tile=["<<u.x<<","<<u.y<<","<<u.z<<"] hp="<<u.health<<" tu="<<u.tu<<"\n";}
  for(const auto& a:state.aims)std::cout<<"REQUESTED_AIM_ONLY actor="<<a.actor<<" item="<<a.item
     <<" target=["<<a.x<<","<<a.y<<","<<a.z<<"] mode="<<a.mode<<"\n";
+ for(const auto& h:state.impacts)std::cout<<"OXCE_TILE_ENGINE_HIT actor="<<h.actor
+    <<" voxel=["<<h.vx<<","<<h.vy<<","<<h.vz<<"] part="<<h.part
+    <<" rolled_damage="<<h.rolled_damage<<" tile_damage="<<h.tile_damage
+    <<" visibility_candidate="<<h.terrain_visibility_changed<<" (NOT full projectile trajectory)\n";
  return 0;
 }
