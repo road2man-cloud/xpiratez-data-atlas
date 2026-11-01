@@ -1,0 +1,53 @@
+name: X-Piratez 3D stage07 original-impact bridge tests
+
+on:
+  push:
+    paths:
+      - "experiments/xpiratez3d/stage06/**"
+      - "experiments/xpiratez3d/stage07/**"
+      - ".github/workflows/xpiratez3d-stage07-impact.yml"
+  pull_request:
+    paths:
+      - "experiments/xpiratez3d/stage06/**"
+      - "experiments/xpiratez3d/stage07/**"
+      - ".github/workflows/xpiratez3d-stage07-impact.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-impact-bridge:
+    name: Source-handoff regression (NOT actual game execution)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect toolchain
+        run: |
+          python3 --version
+          c++ --version | head -1
+      - name: Previous visual receiver protocol regression
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/xpiratez3d/stage06/tests -v
+      - name: OXCE original hit voxel read-only source and wire regression
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s experiments/xpiratez3d/stage07/tests -v
+      - name: Native thread-safe observer must remain opt-in
+        run: |
+          set -euo pipefail
+          c++ -std=c++14 -Wall -Wextra -Werror -pedantic -pthread \
+            -Iexperiments/xpiratez3d/stage07/native \
+            experiments/xpiratez3d/stage07/native/impact_queue_test.cpp -o /tmp/xpz3d-impact-queue
+          /tmp/xpz3d-impact-queue
+      - name: Guard against accidental native-game success claims
+        run: |
+          set -euo pipefail
+          grep -Fq "'original_engine_compiled':False" experiments/xpiratez3d/stage07/tools/apply_impact_overlay.py
+          grep -Fq "'actual_silent_storm_runtime_attached':False" experiments/xpiratez3d/stage07/tools/export_impact_feed.py
+          test ! -e Game.exe
+          test ! -e oxce-native
