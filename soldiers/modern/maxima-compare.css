@@ -1,0 +1,43 @@
+/* The existing X-Piratez 2.1 soldier page: research-aware maximum comparison. */
+.maxima-panel{margin:14px 0;padding:18px 20px}
+.maxima-header{display:flex;align-items:start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.maxima-header h2{font-size:1.32rem;margin:4px 0 10px}
+.maxima-header p{margin:5px 0;color:#c4d1e8;max-width:900px}
+.maxima-controls{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.maxima-controls label{display:grid;gap:5px;font-size:.79rem;color:#b8cce9;font-weight:750}
+.maxima-controls select,.maxima-controls input{background:#0e1a2e;color:#f4f7ff;border:1px solid #456085;border-radius:9px;padding:9px 11px;font:inherit;min-width:200px;max-width:100%}
+.maxima-disclaimer{font-size:.87rem;border-left:3px solid #7ea9de;background:#15263f;padding:12px 15px;margin:16px 0;color:#d1e0f5;line-height:1.65}
+.maxima-panel #maximaAudit,.maxima-panel #maximaStatus{font-size:.81rem;margin:8px 0}
+.maxima-panel .maxima-scroll{max-height:620px;margin-top:12px;scrollbar-color:#54769e #101a2c}
+.maxima-panel #maximaTable{min-width:1510px;width:100%;font-size:.8rem}
+.maxima-panel #maximaTable th,.maxima-panel #maximaTable td{padding:10px 8px;text-align:right;min-width:73px;font-variant-numeric:tabular-nums}
+.maxima-panel #maximaTable th:first-child,.maxima-panel #maximaTable td:first-child{min-width:205px;max-width:205px;text-align:left}
+.maxima-panel #maximaTable th:nth-child(2),.maxima-panel #maximaTable td:nth-child(2){min-width:105px}
+.maxima-panel #maximaTable th:nth-child(3),.maxima-panel #maximaTable td:nth-child(3){min-width:135px;text-align:center}
+.maxima-panel .maxima-show{color:#bbdcff;background:none;border:none;font:inherit;font-weight:850;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:3px 0;text-align:left}
+.maxima-panel .maxima-show:focus-visible{outline:2px solid #90c7ff;outline-offset:3px;border-radius:3px}
+.maxima-panel .maxima-show:hover{color:#ffffff}
+.maxima-panel .maxima-score{font-size:1rem;font-weight:900;color:#a4e8bd}
+.maxima-panel .maxima-stat{color:#e8eefc;font-weight:700}
+.maxima-panel .maxima-uncertain{white-space:normal;font-size:.75rem;color:#eecb89}
+.maxima-panel #maximaTable td:first-child small{display:block;line-height:1.35;margin-top:3px}
+.maxima-details{margin-top:16px;padding:17px;border:1px solid #4d6789;border-radius:12px;background:#15253b}
+.maxima-details[hidden]{display:none}
+.maxima-detail-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.maxima-detail-head h3{font-size:1.1rem;margin:0}
+.maxima-detail-head button{background:#1b3550;border:1px solid #577799;color:#d5ebff;padding:7px 15px;border-radius:8px;cursor:pointer}
+.maxima-details p,.maxima-details li{font-size:.85rem;color:#c6d4ea;line-height:1.6}
+.maxima-details a{color:#a7d2ff;overflow-wrap:anywhere}
+.maxima-unverified{border:1px solid #9a763c;background:#33271550;padding:11px 13px;border-radius:8px;margin:14px 0}
+.maxima-unverified strong{color:#f8dca1}
+.maxima-unverified ul{margin:8px 0;padding-left:22px}
+.maxima-route-table{overflow:auto;max-height:410px;border:1px solid #354967;border-radius:9px;margin-top:12px}
+.maxima-route-table table{min-width:540px;width:100%;font-size:.79rem}
+.maxima-route-table th,.maxima-route-table td{white-space:normal;text-align:left;min-width:0;position:static;max-width:none}
+.maxima-route-table td:first-child{min-width:225px}
+@media(max-width:640px){
+  .maxima-panel{padding:13px 11px}
+  .maxima-controls{width:100%}
+  .maxima-controls label{flex:1;min-width:180px}
+  .maxima-controls select,.maxima-controls input{width:100%;min-width:0}
+}
