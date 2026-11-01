@@ -121,9 +121,9 @@ function renderDetails(report,data,id,triageById){
     ' · 영구 보너스 '+fmt(r.score)+'</h3><button id="maximaDetailClose" type="button">닫기</button></div>'+
     '<p>연구·변신의 정적 배타성 제약을 적용한 <strong>조건부 최적 조합</strong>입니다. '+
     '선장 분기 충돌을 포함한 알려진 배제는 제외했지만 세이브의 재료·훈장·시설·임무·무료 연구 난수가 모두 충족됐다는 증명이 아닙니다.</p>'+
-    (unresolved?'<div class="maxima-unverified"><strong>연구 시간순 추가 검증 필요 ('+
-       (r.unreachableResearchRoots?.length||0)+'건)</strong><ul>'+unresolved+'</ul></div>':
-       '<p class="muted">정적 연구 그래프에 표시된 미도달 직접 연구 목표는 없습니다. 실제 연구 완료의 증명은 아닙니다.</p>')+
+    (unresolved?'<details class="maxima-unverified"><summary>기존 단순 최적화기의 우회 해금 미해결 표시 ('+
+       (r.unreachableResearchRoots?.length||0)+'건)</summary><p>이 항목은 연구 불가능 판정이 아닙니다. 위의 출처 감사는 대체 해금·조건부 연구 지급을 포함해 명목상 선행연구를 정렬했습니다. 실제 연구 실행은 여전히 미인증입니다.</p><ul>'+
+       unresolved+'</ul></details>':'')+
     proof+
     '<p class="muted">아래 변신은 필수·금지 이력에 위배되지 않게 정렬한 순서입니다. '+
     '연구 완료 시점·능력치 최소 조건·재료 보유를 확인한 실행 순서는 아닙니다.</p>'+
@@ -160,7 +160,7 @@ export async function initResearchMaxima(data){
       "종 · 설치 규칙 직접 연구 배제 "+check.sourceExclusions+
       "건 · 사이트 병합 연구 "+check.researchRules+
       "종 · 세이브에서 최종 경로 입증 "+(report.audit.verifiedInSaveCount||0)+
-      "/"+check.classes+"종 · 정적 연구 순서 추가 검증 "+chronologicallyUnresolved+"종";
+      "/"+check.classes+"종 · 예전 최적화기 추가 진단 "+chronologicallyUnresolved+"종";
     const columns=MAXIMA_STATS.map(k=>'<th scope="col">'+
       esc(data.statLabels?.[k]||k)+'</th>').join("");
     function render(){
@@ -169,8 +169,9 @@ export async function initResearchMaxima(data){
         '<th scope="col">마나 제외<br>영구 보너스 합</th>'+
         '<th scope="col">연구 증명 상태</th>'+columns+'</tr>';
       out.querySelector("tbody").innerHTML=rows.map(r=>{
-        const src=report.rows.find(x=>x.id===r.id);
-        const proof=r.uncertainRoots?'연구 순서 미증명 '+r.uncertainRoots+'건':'실전 전체 경로 미증명';
+        const rootAudit=triageById.get(r.id);
+        const proof='전체 경로 미인증'+(rootAudit.eventGrantGoalCount?
+          ' · 직접 이벤트 '+rootAudit.eventGrantGoalCount+'건':'');
         return '<tr><td><button class="maxima-show" type="button" data-maxima-type="'+
           esc(r.id)+'">'+esc(r.name)+'</button><small class="id">'+esc(r.id)+'</small>'+
           '<small class="route">'+r.transformCount+'개 변신 · 자세히 보기</small></td>'+

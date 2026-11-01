@@ -50,7 +50,7 @@ try{
   const auditText=await page.locator("#maximaAudit").innerText();
   assert(auditText.includes("441"));
   assert(auditText.includes("입증 0/29"));
-  assert(auditText.includes("추가 검증 24종"));
+  assert(auditText.includes("예전 최적화기 추가 진단 24종"));
   assert((await page.locator("#researchMaxima h2").innerText()).includes("조건부 최대 후보"));
   await page.locator("#maximaSearch").fill("STR_SOLDIER_HERO");
   assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
