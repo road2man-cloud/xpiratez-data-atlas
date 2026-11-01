@@ -13,10 +13,16 @@ struct Aim {
     int command_index, actor, item, x, y, z;
     std::string mode;
 };
+// Original OXCE TileEngine::hit damage-application voxel, NOT a projectile path.
+struct ImpactVoxel {
+    int command_index, actor, vx, vy, vz, part, power;
+    int rolled_damage, tile_damage, terrain_visibility_changed, ranged;
+};
 struct Scene {
     int seq = -1, turn = 0, side = 0, command_index = 0;
     std::map<int, Unit> units;
     std::vector<Aim> aims;
+    std::vector<ImpactVoxel> impacts;
     std::string trace_sha256, session_id, checkpoint_file, checkpoint_sha256;
 };
 // Strict, read-only import of an entire atomic feed file.
