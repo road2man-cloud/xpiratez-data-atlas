@@ -1,0 +1,73 @@
+name: X-Piratez 3D stage08 original OXCE paired binary build
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experiments/xpiratez3d/stage08/**'
+      - 'experiments/xpiratez3d/stage07/**'
+      - 'experiments/xpiratez3d/stage06/**'
+      - 'tools/headless-simulator/**'
+      - '.github/workflows/xpiratez3d-stage08-oxce-binary-pair.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+
+jobs:
+  verify-contract:
+    name: Control/observer source and full native checkpoint comparator tests
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Stage08 strict native identity tests (synthetic fixtures are NOT battles)
+        run: node --test experiments/xpiratez3d/stage08/native-pair.test.mjs
+      - name: Stage06 old visual stream backward compatibility
+        run: python3 -m unittest discover -s experiments/xpiratez3d/stage06/tests -v
+      - name: Stage07 real original OXCE source-hook and wire regression tests
+        run: python3 -m unittest discover -s experiments/xpiratez3d/stage07/tests -v
+      - name: Stage07 native telemetry queue concurrency regression
+        run: |
+          c++ -std=c++14 -Wall -Wextra -Werror -pedantic -pthread \
+            -I experiments/xpiratez3d/stage07/native \
+            experiments/xpiratez3d/stage07/native/impact_queue_test.cpp \
+            -o /tmp/xpz3d-impact-queue
+          /tmp/xpz3d-impact-queue
+
+  build-two-original-binaries:
+    name: Original OXCE Linux control and instrumented binaries (NO battle run)
+    needs: verify-contract
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install original OXCE SDL 1.2 build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++ pkg-config libsdl1.2-dev libsdl-image1.2-dev libsdl-gfx1.2-dev libsdl-mixer1.2-dev zlib1g-dev
+      - name: Original C++ engine source/clock adapter integrity
+        run: node --test tools/headless-simulator/native.test.mjs tools/headless-simulator/native.clock.test.mjs
+      - name: Compile original OXCE native control and read-only observer
+        run: node experiments/xpiratez3d/stage08/build-paired.mjs "$RUNNER_TEMP/xpz3d-native-binary-pair" 2
+      - name: Verify compiled actual ELF binaries and separate fingerprinted pair
+        run: |
+          test -f "$RUNNER_TEMP/xpz3d-native-binary-pair/binary-pair.json"
+          test -x "$RUNNER_TEMP/xpz3d-native-binary-pair/control/bundle/oxce-native"
+          test -x "$RUNNER_TEMP/xpz3d-native-binary-pair/observer/bundle/oxce-native"
+          file "$RUNNER_TEMP/xpz3d-native-binary-pair/control/bundle/oxce-native"
+          file "$RUNNER_TEMP/xpz3d-native-binary-pair/observer/bundle/oxce-native"
+      - name: Upload native binaries for separate authorized actual game run
+        uses: actions/upload-artifact@v4
+        with:
+          name: xpz3d-stage08-original-control-observer-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/xpz3d-native-binary-pair/binary-pair.json
+            ${{ runner.temp }}/xpz3d-native-binary-pair/control/bundle/
+            ${{ runner.temp }}/xpz3d-native-binary-pair/observer/bundle/
+            ${{ runner.temp }}/xpz3d-native-binary-pair/observer/overlay/patch-manifest.json
+          if-no-files-found: error
+          retention-days: 30
