@@ -104,17 +104,55 @@ export function validateStatGateAudit(gates,report){
     gates.summary.deficits!==4)throw new Error("원본 스탯 부족 감사 범위가 달라졌습니다");
   return map;
 }
+export function validateStatGateResolutions(resolutions,gates,report){
+  if(resolutions?.schemaVersion!==1||
+    resolutions.kind!=="SOLDIER_MAXIMA_STAT_GATE_SOURCE_RESOLUTIONS"||
+    resolutions.summary?.classesAudited!==29||
+    resolutions.summary?.selectedOnlyDeficitClasses!==4||
+    resolutions.summary?.eventBornBypassCases!==1||
+    resolutions.summary?.confirmedCompleteAcquisitionRoutes!==0)
+    throw new Error("보정 수단 획득 출처 감사 자료가 유효하지 않습니다");
+  const matches=new Map(resolutions.rows.map(r=>[r.id,r]));
+  if(matches.size!==4)throw new Error("보정 출처의 병종 수 불일치");
+  for(const g of gates.rows){
+    if(!g.deficits.length)continue;
+    const r=matches.get(g.id),candidate=report.rows.find(row=>row.id===g.id);
+    if(!r||!candidate||r.score!==candidate.score||
+      r.shortfall!==g.deficits[0].shortfall||
+      r.required!==g.deficits[0].required||
+      r.key!==g.deficits[0].key||
+      !r.directAttempt.minStatBlocked||
+      r.directAttempt.observed!==g.deficits[0].ceiling)
+      throw new Error("원본 최소 능력치 및 보정 출처 불일치: "+g.id);
+    if(r.minimalSingleMedalCandidate &&
+      (r.hypotheticalMedalClearsGate?.minStatBlocked!==false||
+      r.hypotheticalMedalClearsGate.observed<r.required))
+      throw new Error("훈장이 최소 조건을 해소한다는 근거 부족: "+g.id);
+  }
+  const hound=matches.get("STR_SOLDIER_BLOODOGE");
+  if(hound?.sourceBornAlternatives?.length!==1||
+    hound.sourceBornAlternatives[0].event!=="STR_CODEX_BONUS_G5"||
+    hound.postEventReplay?.status!=="ASSUMPTION_SEEDED_POST_EVENT_CONTINUATION"||
+    hound.postEventReplay.postEventTotalPermanentBonus!==hound.score)
+    throw new Error("블러드하운드 이벤트 출생 이력 검증 누락");
+  const synth=matches.get("STR_SOLDIER_SYNTH");
+  if(synth?.optimisticMinDistinctMedals!==11||
+    synth.absoluteAllMedalUpperBound!==52)
+    throw new Error("신스 훈장 낙관 상한 비교 불일치");
+  return matches;
+}
 const STAT_LABELS={tu:"행동력",stamina:"기력",health:"체력",
   bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",
   strength:"힘",psiStrength:"사이오닉 강도",psiSkill:"사이오닉 기술",melee:"근접"};
 const BRANCH_LABELS={captain:"선장",path:"세력",cause:"대의",queen:"여왕",codex:"코덱스",god:"신"};
-function renderDetails(report,data,id,triageById,statGateById){
+function renderDetails(report,data,id,triageById,statGateById,sourceById){
   const r=report.rows.find(x=>x.id===id);
   const box=document.querySelector("#maximaDetails");
   if(!r){box.hidden=true;box.innerHTML="";return}
   const soldier=byId(data.soldiers,r.id);
   const triage=triageById.get(r.id);
   const gate=statGateById.get(r.id);
+  const source=sourceById.get(r.id)||null;
   const rows=(triage.historyOrder||[]).map((tid,index)=>{
     const t=byId(data.transformations,tid);
     const roots=t?.requires||[];
@@ -152,13 +190,58 @@ function renderDetails(report,data,id,triageById,statGateById){
       ' / 추가 보정 최소 <strong>'+x.shortfall+'</strong></li>';
   }).join("");
   const statNote=statRisks?
-    '<section class="maxima-unverified"><h4>추가 능력치 상승 수단 필요 ('+
-    gate.deficits.length+'건)</h4><p>현재 표의 선택된 변신을 모두 유리한 순서로 고려하고 시작 능력치를 병종 하드캡까지 높여도 '+
-    '이 조건이 부족합니다. 별도의 훈장·선행 강화 등으로 채울 수 있다는 실전 증거는 아직 없습니다. '+
-    '따라서 해당 보너스 합계가 자동으로 달성된다는 뜻이 아닙니다.</p><ul>'+statRisks+
+    '<section class="maxima-unverified"><h4>'+(
+      source?.sourceBornAlternatives?.length?
+        '일반 직접 시술의 최소 능력치 미달 (이벤트 출생 예외 있음)':
+        '추가 능력치 상승 수단 필요'
+    )+' ('+gate.deficits.length+'건)</h4><p>현재 표의 선택된 변신을 모두 유리한 순서로 고려하고 시작 능력치를 병종 하드캡까지 높여도 '+
+    '일반적인 직접 시술에는 이 능력치가 부족합니다. '+
+    (source?.sourceBornAlternatives?.length?
+      '다만 아래의 원본 이벤트에서 해당 훈련 이력과 보너스를 미리 받은 새 대원을 획득하는 별도의 경로가 존재합니다. ':
+      '실제 훈장·선행 강화 등으로 이 부족분을 채웠다는 실전 증거는 아직 없습니다. ')+
+    '해당 영구 보너스가 자동으로 달성된다는 뜻은 아닙니다.</p><ul>'+statRisks+
     '</ul></section>':
     '<p class="muted">선택된 변신 목록에서 추가 능력치 부족이 정적으로 검출되지는 않았습니다. '+
     '실제 순서·훈장·RNG 요구조건을 전부 통과했다는 의미는 아닙니다.</p>';
+  const sourceMedal=source?.minimalSingleMedalCandidate;
+  const sourceBorn=source?.sourceBornAlternatives?.[0];
+  const medals=source?.optimisticMedalTopCombination||[];
+  const sourceNote=source?
+    '<section class="maxima-source-evidence"><h4>부족 조건의 원본 출처 대안 (실전 미검증)</h4>'+
+    (sourceMedal?'<p><strong>훈장 가정:</strong> '+
+      esc(sourceMedal.name)+' '+sourceMedal.level+'단계 ('+linkResearch(sourceMedal.id)+
+      ')는 '+esc(STAT_LABELS[source.key]||source.key)+' +'+sourceMedal.increase+
+      '를 부여합니다. '+sourceMedal.criterion.map(c=>
+        '<code>'+esc(c.kind)+' ≥ '+esc(c.threshold)+'</code>').join(', ')+
+      ' 조건이며, 실제 병종이 시술 전에 훈장을 얻었다는 증명은 아닙니다.</p>':'')+
+    (sourceBorn?'<p><strong>이벤트 출생 예외:</strong> '+
+      esc(sourceBorn.eventKoName)+' ('+linkResearch(sourceBorn.event)+
+      ')는 '+linkResearch(sourceBorn.awardedHistory)+' 이력과 '+
+      linkResearch(sourceBorn.awardedBonus)+' 보너스를 가진 병사를 직접 생성합니다. '+
+      '일반 병사의 붉은 영웅 훈련 시술과 다르므로 힘 80 자격 관문을 소급 적용하지 않습니다.</p>'+
+      '<p>이벤트 발생 조건: '+sourceBorn.requiredPositiveTriggers.map(x=>
+        linkResearch(x.id)+' 필요').join(', ')+
+      '; '+sourceBorn.requiredNegativeTriggers.map(x=>
+        linkResearch(x.id)+' 미완료').join(', ')+
+      '. 실행 확률 지정값 '+sourceBorn.minExecutionOdds+
+      '%(조건 만족 후의 추첨값, 발생 보장 아님).</p>'+
+      '<p><strong>시술 후속 재생 검사:</strong> 원본 이벤트 출생 개체에 '+
+      '연구·재료·시설·자금이 이미 있다고 가정하면, '+
+      source.postEventReplay.modeledSteps.map(s=>linkResearch(s.transform)).join(' → ')+
+      ' 두 시술은 OXCE 기반 판정기를 순서대로 통과하며 보너스 합계 '+
+      fmt(source.postEventReplay.postEventTotalPermanentBonus)+
+      '입니다. 이벤트 획득과 재료 조달부터 재생한 실제 세이브 증명은 아닙니다.</p>':'')+
+    (source.optimisticMinDistinctMedals>1?
+      '<p><strong>훈장 다종 필요:</strong> 이 능력치에 양수 보너스를 주는 모든 훈장 '+
+      source.medalSourcesWithPositiveBonus+'종의 최고 단계 증가분 합은 +'+
+      source.absoluteAllMedalUpperBound+'입니다. 필요한 +'+source.shortfall+
+      '를 채우려면 이론적으로 최소 '+source.optimisticMinDistinctMedals+
+      '종의 서로 다른 훈장을 필요로 합니다. 이 값은 각 훈장을 원하는 만큼 얻을 수 있다고 가정한 '+
+      '<strong>낙관적 하한</strong>이며, 실제 획득 가능성을 증명하지 않습니다.</p>'+
+      '<details><summary>낙관적 최소 훈장 조합의 최대 단계 보기</summary><ol>'+
+      medals.map(x=>'<li>'+esc(x.koName)+' ('+linkResearch(x.id)+
+        ') '+x.maxAtLevel+'단계, 최대 +'+x.max+'</li>').join('')+'</ol></details>':'')+
+    '</section>':'';
   box.hidden=false;
   box.innerHTML='<div class="maxima-detail-head"><h3>'+esc(soldier.koName)+
     ' · 영구 보너스 '+fmt(r.score)+'</h3><button id="maximaDetailClose" type="button">닫기</button></div>'+
@@ -167,7 +250,7 @@ function renderDetails(report,data,id,triageById,statGateById){
     (unresolved?'<details class="maxima-unverified"><summary>기존 단순 최적화기의 우회 해금 미해결 표시 ('+
        (r.unreachableResearchRoots?.length||0)+'건)</summary><p>이 항목은 연구 불가능 판정이 아닙니다. 위의 출처 감사는 대체 해금·조건부 연구 지급을 포함해 명목상 선행연구를 정렬했습니다. 실제 연구 실행은 여전히 미인증입니다.</p><ul>'+
        unresolved+'</ul></details>':'')+
-    proof+statNote+
+    proof+statNote+sourceNote+
     '<p class="muted">아래 변신은 필수·금지 이력에 위배되지 않게 정렬한 순서입니다. '+
     '연구 완료 시점·능력치 최소 조건·재료 보유를 확인한 실행 순서는 아닙니다.</p>'+
     '<div class="maxima-route-table"><table><thead><tr><th>이력 제약 통과 순서 ('+
@@ -183,19 +266,22 @@ export async function initResearchMaxima(data){
   const host=document.querySelector("#researchMaxima");
   if(!host)return;
   try{
-    const [maxResponse,triageResponse,gateResponse]=await Promise.all([
-      fetch("../../data/soldier-research-maxima-20261101.json?audit=stat-gate-20261102",{cache:"no-store"}),
-      fetch("../../data/soldier-research-triage-20261101.json?audit=stat-gate-20261102",{cache:"no-store"}),
-      fetch("../../data/soldier-stat-gate-audit-20261102.json?audit=stat-gate-20261102",{cache:"no-store"})
+    const [maxResponse,triageResponse,gateResponse,sourceResponse]=await Promise.all([
+      fetch("../../data/soldier-research-maxima-20261101.json?audit=acquisition-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-research-triage-20261101.json?audit=acquisition-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-stat-gate-audit-20261102.json?audit=acquisition-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-stat-gate-resolutions-20261102.json?audit=acquisition-20261102",{cache:"no-store"})
     ]);
-    if(!maxResponse.ok||!triageResponse.ok||!gateResponse.ok)
-      throw new Error("연구·능력치 자료 HTTP "+maxResponse.status+"/"+triageResponse.status+"/"+gateResponse.status);
-    const [report,triage,gates]=await Promise.all([
-      maxResponse.json(),triageResponse.json(),gateResponse.json()
+    if(!maxResponse.ok||!triageResponse.ok||!gateResponse.ok||!sourceResponse.ok)
+      throw new Error("연구·능력치 자료 HTTP "+maxResponse.status+"/"+triageResponse.status+
+        "/"+gateResponse.status+"/"+sourceResponse.status);
+    const [report,triage,gates,resolutions]=await Promise.all([
+      maxResponse.json(),triageResponse.json(),gateResponse.json(),sourceResponse.json()
     ]);
     const check=validateResearchMaxima(report,data);
     const triageById=validateResearchTriage(triage,report);
     const statGateById=validateStatGateAudit(gates,report);
+    const sourceById=validateStatGateResolutions(resolutions,gates,report);
     const mode=document.querySelector("#maximaStatMode");
     const search=document.querySelector("#maximaSearch");
     const out=document.querySelector("#maximaTable");
@@ -208,7 +294,8 @@ export async function initResearchMaxima(data){
       "건 · 사이트 병합 연구 "+check.researchRules+
       "종 · 세이브에서 최종 경로 입증 "+(report.audit.verifiedInSaveCount||0)+
       "/"+check.classes+"종 · 선택 훈련만으로 능력치 게이트 미달 "+
-      gates.summary.externallyDependent+"종 · 예전 최적화기 추가 진단 "+chronologicallyUnresolved+"종";
+      gates.summary.externallyDependent+"종 (이벤트 출생 예외 "+
+      resolutions.summary.eventBornBypassCases+"종) · 예전 최적화기 추가 진단 "+chronologicallyUnresolved+"종";
     const columns=MAXIMA_STATS.map(k=>'<th scope="col">'+
       esc(data.statLabels?.[k]||k)+'</th>').join("");
     function render(){
@@ -219,9 +306,15 @@ export async function initResearchMaxima(data){
       out.querySelector("tbody").innerHTML=rows.map(r=>{
         const rootAudit=triageById.get(r.id);
         const gate=statGateById.get(r.id);
-        const proof=(gate.selectionNeedsExternalStatSource?
-          '추가 능력치 보정 '+gate.deficits.length+'건 필요':'전체 경로 미인증')+
-          (rootAudit.eventGrantGoalCount?' · 직접 이벤트 '+
+        const resolution=sourceById.get(r.id);
+        const proof=(resolution?.sourceBornAlternatives?.length?
+          '출생 이벤트로 시술 조건 우회 · 미인증':
+          gate.selectionNeedsExternalStatSource?
+            resolution?.minimalSingleMedalCandidate?
+              '훈장 등 추가 보정 필요 · 미인증':
+              '다수 훈장 등 보정 필요 · 미인증':
+            '전체 경로 미인증')+
+          (rootAudit.eventGrantGoalCount?' · 직접 연구 이벤트 '+
             rootAudit.eventGrantGoalCount+'건':'');
         return '<tr><td><button class="maxima-show" type="button" data-maxima-type="'+
           esc(r.id)+'">'+esc(r.name)+'</button><small class="id">'+esc(r.id)+'</small>'+
@@ -239,7 +332,7 @@ export async function initResearchMaxima(data){
     search.addEventListener("input",render);
     out.querySelector("tbody").addEventListener("click",e=>{
       const btn=e.target.closest("button[data-maxima-type]");
-      if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById,statGateById);
+      if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById,statGateById,sourceById);
     });
     render();
   }catch(error){
