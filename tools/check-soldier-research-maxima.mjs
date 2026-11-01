@@ -4,15 +4,31 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {validateResearchMaxima,maximaTableRows,MAXIMA_STATS}
   from "../public/soldiers/modern/maxima-compare.js";
-import {permanentResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
+import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
   from "../public/soldiers/modern/research-training-locks.js";
 import {eligibleTransformation,initialState}
   from "../public/soldiers/modern/eligibility.js";
+import {completeResearchDisables,researchSourceDetail}
+  from "../public/soldiers/modern/research-exclusion-audit.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
 const report=JSON.parse(fs.readFileSync("public/data/soldier-research-maxima-20261101.json","utf8"));
 const check=validateResearchMaxima(report,data);
 assert.equal(check.classes,29);
 assert.equal(check.sourceExclusions,441);
+const fullAudit=completeResearchDisables(data.researchRules);
+assert.equal(fullAudit.counts.namedResearch,4654);
+assert.equal(fullAudit.counts.directEdges,441);
+assert.equal(fullAudit.counts.reciprocalPairs,134);
+assert.equal(fullAudit.counts.onewayEdges,172);
+assert.equal(fullAudit.counts.selfEdges,1);
+const codexResearch=researchSourceDetail("STR_CODEX_GREEN",data);
+assert(codexResearch.disables.includes("STR_CODEX_RED"));
+assert(codexResearch.disables.includes("STR_CODEX_GOLD"));
+const sludge=researchSourceDetail("STR_SLUDGE_VATS",data);
+assert(sludge.dependencies.includes("STR_CODEX_GREEN"));
+assert(fullAudit.pairs.some(x=>x.source==="STR_CODEX_RED"&&
+  x.target==="STR_CODEX_GREEN"&&x.type==="reciprocal"));
+
 assert.equal(MAXIMA_STATS.length,11);
 assert.equal(report.rows.length,29);
 const best=report.rows.find(x=>x.id==="STR_SOLDIER_DAMSEL");
@@ -57,6 +73,15 @@ assert.equal(permanentResearchTransformLocks(
   data.researchRules).length,0,"matching green branch may coexist");
 assert(nominalResearchTransformRisks(
   new Set(["STR_PURE_MAIDEN_TRAINING"]),"STR_REVOLUTIONARY_TRAINING").length);
+// Automatic direct-requires graph rejects every reciprocal pair, with no
+// hand-maintained research ID list, while preserving directional sequencing.
+const pairsData={researchRules:{A:{disables:["B"]},B:{disables:["A"]}},
+  transformations:[{id:"TA",requires:["A"]},{id:"TB",requires:["B"]}]};
+assert.equal(directResearchTransformLocks(new Map([["TA",1]]),"TB",pairsData).length,1);
+const oneWayData={...pairsData,researchRules:{A:{disables:["B"]},B:{disables:[]}}};
+assert.equal(directResearchTransformLocks(new Map([["TA",1]]),"TB",oneWayData).length,0);
+const canReenable={...pairsData,researchRules:{...pairsData.researchRules,C:{reenables:["B"]}}};
+assert.equal(directResearchTransformLocks(new Map([["TA",1]]),"TB",canReenable).length,0);
 const heroState=initialState(data,"base:STR_SOLDIER_HERO");
 heroState.history=new Map([["STR_HERO_RED_TRAINING",1]]);
 const green=data.transformations.find(t=>t.id==="STR_HERO_GREEN_TRAINING");
@@ -64,4 +89,4 @@ const blocked=eligibleTransformation(green,heroState,data,{mode:"future"});
 assert.equal(blocked.kind,"blocked");
 assert(blocked.blockers.some(s=>s.includes("STR_CODEX_RED")&&s.includes("STR_CODEX_GREEN")));
 assert.equal(new Set(report.rows.map(x=>x.id)).size,29);
-console.log("PASS 29 class maxima, 11 stats, computed caps, all score sums, six reciprocal research locks, and live trainer enforcement");
+console.log("PASS 29 class maxima, 11 stats, 441 audited source exclusions (134 mutual pairs, 172 directional, 1 self), six permanent research training locks, and live planner enforcement");

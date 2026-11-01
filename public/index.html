@@ -21,7 +21,7 @@ p{color:#b9c7df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(
 <body><main>
 <p class="eyebrow">Ruleset-backed reference</p>
 <nav class="quicknav" aria-label="데이터베이스 빠른 메뉴">
-<a href="./starting/">스타팅 보너스</a><a href="./captains/">영구 선택·분기 DB</a><a href="./soldiers/?v=soldiers-20261007-route-effects-final-simple2">병종</a><a href="./trainings/">병사훈련·조합 DB</a><a href="./crafts/">탈것·기체 DB</a><a href="./craft-weapons/">기체무장 DB</a><a href="./facilities/">기지시설 DB</a><a href="./armors/">방어구</a><a href="./items/">아이템</a><a href="./research/">연구</a><a href="./manufacture/">제조</a><a href="./events/">이벤트</a><a href="./forces/">적부대·작전</a><a href="./weapons/">무기</a><a href="./reference/">참조표</a>
+<a href="./starting/">스타팅 보너스</a><a href="./captains/">영구 선택·분기 DB</a><a href="./soldiers/?v=soldiers-20261007-route-effects-final-simple2">병종</a><a href="./soldiers/modern/#researchMaxima">2.1 병종별 최대치·연구 배제</a><a href="./trainings/">병사훈련·조합 DB</a><a href="./crafts/">탈것·기체 DB</a><a href="./craft-weapons/">기체무장 DB</a><a href="./facilities/">기지시설 DB</a><a href="./armors/">방어구</a><a href="./items/">아이템</a><a href="./research/">연구</a><a href="./manufacture/">제조</a><a href="./events/">이벤트</a><a href="./forces/">적부대·작전</a><a href="./weapons/">무기</a><a href="./reference/">참조표</a>
 </nav>
 <h1>XPiratez<br>Data Atlas</h1>
 <p>아이템·연구·이벤트·선장·시설·전투 시스템을 실제 XPiratez 룰셋과 OXCE 엔진 동작을 기준으로 정리하는 데이터 아틀라스.</p>
@@ -30,6 +30,7 @@ p{color:#b9c7df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(
 <a class="card" href="./starting/"><span class="tag">START DB</span><br><strong>스타팅 보너스 DB</strong><p>Month 0 첫 기지 위치로 결정되는 지역·국가 보너스 39개 원본 이벤트를 비교. 중앙아시아 Medusa·중국 2차 이벤트 같은 중첩 보너스도 합산해서 표시.</p></a>
 <a class="card" href="./captains/"><span class="tag">CHOICE DB</span><br><strong>영구 선택·분기 DB</strong><p>선장·Codex·사회·병종·세력·스토리의 상호배타 선택을 비교하고, 선행·보상·후속 해금·영구 손실·복구 가능성까지 추적.</p></a>
 <a class="card" href="./soldiers/?v=soldiers-20261007-route-effects-final-simple2"><span class="tag">LIVE DB</span><br><strong>병종 DB</strong><p>같은 농부도 반 슈퍼변이체 소녀·돌격 클론·혁명가 등 획득형마다 별도 표시. 고용법, 자동 특성, 기본 병종 계보, 최종 강화까지 비교.</p></a>
+<a class="card" href="./soldiers/modern/#researchMaxima"><span class="tag">XPIRATEZ 2.1 · RESEARCH AUDIT</span><br><strong>29개 병종 최대 능력치 · 연구 상호배제 441건</strong><p>최신 2.1 원본 연구 4,654종의 직접 배제 441건(양방향·단방향·자기 비활성화)을 전수 조회. 병종 29종의 마나 제외 영구 보너스 최고 후보와 성장 하드캡 합산값 11종을 비교하고 변신별 선행연구·미증명 조건을 확인합니다. 실제 세이브 가능성과는 구분합니다.</p></a>
 <a class="card" href="./trainings/"><span class="tag">TRAINING PLANNER</span><br><strong>병사훈련·상호배타 조합 DB</strong><p>83개 훈련·개조·변신을 단계별로 선택하고, 209건 방향성 배제와 이전 훈련 필수조건을 판정. 병종·획득형별 가능한 다음 선택과 봉쇄 사유, 능력치·특성·비용·재료·연구를 확인합니다.</p></a>
 <a class="card" href="./crafts/"><span class="tag">LIVE DB</span><br><strong>탈것·기체 DB</strong><p>96종의 탑승인원·속도·연료·무장과 구매/제조, 이벤트 재료, 명목 누적 연구량, 분기 전용 조건 비교.</p></a>
 <a class="card" href="./craft-weapons/"><span class="tag">CRAFT WEAPON DB</span><br><strong>기체무장 DB</strong><p>155종 기체무장·지원장비의 위력·사거리·명중·탄약·재장전·호환 기체와 launcher/clip 아이템 재사용 여부를 비교.</p></a>

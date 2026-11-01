@@ -41,3 +41,24 @@
   .maxima-controls label{flex:1;min-width:180px}
   .maxima-controls select,.maxima-controls input{width:100%;min-width:0}
 }
+.research-exclusion-audit{margin:14px 0;padding:16px 20px}
+.research-exclusion-audit summary{font-size:1.05rem;font-weight:800;cursor:pointer}
+.research-exclusion-audit>p{font-size:.84rem;line-height:1.65;color:#c8d6e9}
+.research-audit-controls{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:14px 0}
+.research-audit-controls label{display:grid;gap:5px;font-weight:750;color:#b8cce9;font-size:.8rem}
+.research-audit-controls input,.research-audit-controls select{background:#0e1a2e;color:#f4f7ff;border:1px solid #456085;border-radius:9px;padding:8px 11px;min-width:240px;max-width:100%;font:inherit}
+.research-audit-scroll{overflow:auto;max-height:470px;margin:11px 0;border:1px solid #324760;border-radius:9px}
+.research-exclusion-audit #researchExclusionTable{min-width:730px;width:100%;font-size:.82rem}
+.research-exclusion-audit #researchExclusionTable th,.research-exclusion-audit #researchExclusionTable td{padding:9px 12px;text-align:left;min-width:0;max-width:none}
+.research-exclusion-audit #researchExclusionTable th:first-child,.research-exclusion-audit #researchExclusionTable td:first-child{min-width:265px}
+.research-exclusion-audit #researchExclusionTable th:nth-child(2),.research-exclusion-audit #researchExclusionTable td:nth-child(2){min-width:265px}
+.research-audit-pair{border:none;background:none;font:inherit;font-weight:750;color:#b4dcff;text-decoration:underline;text-underline-offset:2px;padding:3px 0;text-align:left;cursor:pointer}
+.research-audit-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.research-audit-detail-grid section{padding:10px 13px;border:1px solid #385474;border-radius:10px;min-width:0}
+.research-audit-detail-grid code,.research-audit-detail-grid p{overflow-wrap:anywhere;white-space:normal}
+.research-audit-detail-grid strong{color:#d6e6fb}
+@media(max-width:640px){.research-exclusion-audit{padding:12px 10px}
+ .research-audit-controls label{width:100%}
+ .research-audit-controls input,.research-audit-controls select{width:100%;min-width:0}
+ .research-audit-detail-grid{grid-template-columns:1fr}}
+

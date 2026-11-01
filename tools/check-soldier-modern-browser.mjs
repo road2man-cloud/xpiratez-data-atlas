@@ -42,6 +42,38 @@ try{
   await page.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
+  await page.waitForFunction(()=>document.querySelectorAll("#maximaTable tbody tr").length===29,
+    {timeout:30000});
+  assert.equal(await page.locator("#maximaTable thead th").count(),14);
+  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+411"),
+    "Damsel maxima must be shown, not old illegal +445");
+  assert((await page.locator("#maximaAudit").innerText()).includes("441"));
+  await page.locator("#maximaStatMode").selectOption("bonus");
+  assert.equal((await page.locator("#maximaTable tbody tr").first()
+    .locator("td").nth(3).innerText()).trim(),"+48");
+  await page.locator("#maximaStatMode").selectOption("capPlusBonus");
+  assert.equal((await page.locator("#maximaTable tbody tr").first()
+    .locator("td").nth(3).innerText()).trim(),"128");
+  await page.locator("#maximaTable .maxima-show").first().click();
+  assert((await page.locator("#maximaDetails").innerText()).includes("STR_PARIAH_TRAINING"));
+  await page.locator("#maximaDetailClose").click();
+  await page.locator("#researchExclusionAudit summary").click();
+  assert.equal(await page.locator("#researchExclusionTable tbody tr").count(),441);
+  await page.locator("#researchExclusionKind").selectOption("reciprocal");
+  assert.equal(await page.locator("#researchExclusionTable tbody tr").count(),268);
+  await page.locator("#researchExclusionKind").selectOption("oneway");
+  assert.equal(await page.locator("#researchExclusionTable tbody tr").count(),172);
+  await page.locator("#researchExclusionKind").selectOption("self");
+  assert.equal(await page.locator("#researchExclusionTable tbody tr").count(),1);
+  await page.locator("#researchExclusionKind").selectOption("all");
+  await page.locator("#researchExclusionSearch").fill("STR_CODEX_RED");
+  assert(await page.locator("#researchExclusionTable tbody tr").count()>2);
+  await page.locator("#researchExclusionTable .research-audit-pair").first().click();
+  assert((await page.locator("#researchExclusionDetail").innerText()).includes("원본 근거"));
+  await page.locator("#researchAuditClose").click();
+  await page.locator("#researchExclusionSearch").fill("");
+  await page.locator("#researchExclusionAudit summary").click();
+  console.log("PASS 29-class audited maximum stat table + 441 complete 2.1 direct research disables with proof/filter controls");
   assert.equal(await page.locator("#rareMapLootPanel summary").count(),1);
   await page.locator("#rareMapLootPanel summary").click();
   const mapLootText=await page.locator("#rareMapLootProof").innerText();
