@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {execFileSync} from "node:child_process";
-import {validateResearchMaxima,validateResearchTriage,validateStatGateAudit,validateStatGateResolutions,maximaTableRows,MAXIMA_STATS}
+import {validateResearchMaxima,validateResearchTriage,validateStatGateAudit,validateStatGateResolutions,validateClassAcquisition,maximaTableRows,MAXIMA_STATS}
   from "../public/soldiers/modern/maxima-compare.js";
 import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
   from "../public/soldiers/modern/research-training-locks.js";
@@ -44,6 +44,32 @@ assert.deepEqual(resolution,sourceResolution,
 const sourceById=validateStatGateResolutions(resolution,gates,report);
 assert.equal(sourceById.size,4);
 assert.equal(resolution.summary.confirmedCompleteAcquisitionRoutes,0);
+const classSources=JSON.parse(fs.readFileSync(
+  "public/data/soldier-class-acquisition-audit-20261102.json","utf8"));
+const regeneratedClassSources=JSON.parse(execFileSync(process.execPath,
+  ["tools/audit-soldier-maxima-class-acquisition.mjs","--json"],{
+    encoding:"utf8",maxBuffer:1024*1024,timeout:50000
+  }));
+assert.deepEqual(classSources,regeneratedClassSources,
+  "Class source paths and type reset semantics must match effective rules");
+const classById=validateClassAcquisition(classSources,report,data);
+assert.equal(classById.size,29);
+assert.equal(classSources.summary.acquiredOnlyByTypeChange,5);
+assert.equal(classSources.summary.typeChangeResetClasses,3);
+assert.equal(classSources.summary.cannotDirectlyRecruitDueUnavailable,9);
+assert.equal(classSources.summary.fullyProvenCampaignAcquisitions,0);
+for(const id of ["STR_SOLDIER_R","STR_SOLDIER_CHORT","STR_SOLDIER_SPECTRE"]){
+  assert(classById.get(id).requiresTypeChange);
+  assert(classById.get(id).resetByIncomingTypeChange);
+}
+for(const id of ["STR_SOLDIER_W","STR_SOLDIER_NEKOMIMI_H"]){
+  assert(classById.get(id).requiresTypeChange);
+  assert(!classById.get(id).resetByIncomingTypeChange);
+}
+assert(classById.get("STR_SOLDIER_BLOODOGE")
+  .automaticallyPreAwardedSelectedTransformations.some(x=>
+    x.profile==="event:STR_CODEX_BONUS_G5"&&
+    x.training==="STR_HERO_RED_TRAINING"));
 const houndSource=sourceById.get("STR_SOLDIER_BLOODOGE");
 assert.equal(houndSource.sourceBornAlternatives[0].minExecutionOdds,23);
 assert.deepEqual(houndSource.sourceBornAlternatives[0].requiredPositiveTriggers.map(x=>x.id),

@@ -51,6 +51,8 @@ try{
   assert(auditText.includes("441"));
   assert(auditText.includes("능력치 게이트 미달 4종"));
   assert(auditText.includes("이벤트 출생 예외 1종"));
+  assert(auditText.includes("병종 유형 변환 필수 5종"));
+  assert(auditText.includes("이력 초기화 3종"));
   assert(auditText.includes("입증 0/29"));
   assert(auditText.includes("예전 최적화기 추가 진단 24종"));
   assert((await page.locator("#researchMaxima h2").innerText()).includes("조건부 최대 후보"));
@@ -81,6 +83,16 @@ try{
   assert(houndEvidence.includes("STR_HERO_RED_TRAINING"));
   assert(houndEvidence.includes("STR_CAPTAINS_11"));
   assert(houndEvidence.includes("보너스 합계 +131"));
+  await page.locator("#maximaDetailClose").click();
+  await page.locator("#maximaSearch").fill("STR_SOLDIER_CHORT");
+  assert((await page.locator("#maximaTable tbody tr").first().innerText())
+    .includes("병종 유형 변환 선행 필요"));
+  await page.locator("#maximaTable .maxima-show").first().click();
+  const chortEvidence=await page.locator("#maximaDetails").innerText();
+  assert(chortEvidence.includes("원본 획득 프로필이 없는 병종"));
+  assert(chortEvidence.includes("STR_CHORT_SUMMONING"));
+  assert(chortEvidence.includes("reset: true"));
+  assert(chortEvidence.includes("STR_UNAVAILABLE"));
   await page.locator("#maximaDetailClose").click();
   await page.locator("#maximaSearch").fill("STR_SOLDIER_NEKOMIMI");
   await page.locator("#maximaTable .maxima-show").first().click();

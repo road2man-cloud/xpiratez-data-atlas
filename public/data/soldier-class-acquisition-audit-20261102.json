@@ -1,0 +1,2158 @@
+{
+  "schemaVersion": 1,
+  "kind": "SOLDIER_MAXIMA_CLASS_ACQUISITION",
+  "source": "2.1 soldiers, 72 acquisition profiles, 83 transformations",
+  "status": "INDEXED_PROVENANCE_NOT_VERIFIED_ACQUISITION",
+  "summary": {
+    "classes": 29,
+    "noDirectAcquisitionProfiles": 5,
+    "acquiredOnlyByTypeChange": 5,
+    "typeChangeResetClasses": 3,
+    "cannotDirectlyRecruitDueUnavailable": 9,
+    "noKnownAcquisitionSource": 0,
+    "fullyProvenCampaignAcquisitions": 0
+  },
+  "caveats": [
+    "Direct SoldierType requires STR_UNAVAILABLE does not prove the body unobtainable via manufacturing, mission or type-changing transformation.",
+    "A listed direct acquisition profile is a ruleset source, not proof that the profile can be unlocked in the current campaign.",
+    "A type-changing rule can reset transformation history and alter base stats. A theoretical body stat-cap starting point is not a simulated acquisition.",
+    "Previously awarded source traits must not be re-applied; reward items and research branches still must be obtained.",
+    "All 29 candidates still lack a complete real-campaign chronological acquisition and development witness."
+  ],
+  "rows": [
+    {
+      "id": "STR_SOLDIER_DAMSEL",
+      "name": "영애",
+      "score": 411,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 4,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_REVOLUTIONARY_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_MAGICIENNE_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_ORTHODOX_MAGE_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_MAGICIENNE",
+              "count": 1
+            },
+            {
+              "id": "STR_REVOLUTIONARY",
+              "count": 1
+            },
+            {
+              "id": "STR_INDESTRUCTIBLE_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_SPY_DAMSEL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SPY_DAMSEL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_SADIST_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_SNIPER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_GLAMOUROUS_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_FORMER_SPY_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SADIST_BONUS",
+              "count": 1
+            },
+            {
+              "id": "STR_LADY_LUCK_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_DAMSEL_OF_WAR_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_DAMSEL_OF_WAR_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_GLAMOUROUS_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SUPERSOLDIER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_DAMSEL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_DAMSEL_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "manufacture:STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+          "sourceId": "STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+          "training": "STR_REVOLUTIONARY_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+          "sourceId": "STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+          "training": "STR_MAGICIENNE_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_SPY_DAMSEL_RECRUITMENT",
+          "sourceId": "STR_SPY_DAMSEL_RECRUITMENT",
+          "training": "STR_SADIST_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_HERO",
+      "name": "영웅",
+      "score": 282,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 1,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_HERO_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_HERO_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HEROIC",
+              "count": 1
+            },
+            {
+              "id": "STR_IRON_SKIN_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_SLAVE",
+      "name": "노예병",
+      "score": 275,
+      "directPurchaseResearch": [
+        "STR_WE_NEED_MALE_TOUCH"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 8,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_SOLDIER_SLAVE_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SOLDIER_SLAVE_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_REVOLUTIONARY_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HEROIC",
+              "count": 1
+            },
+            {
+              "id": "STR_SUPERFAST_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_NIGHTSTALKER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_REVOLUTIONARY",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_MILITIAMAN_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_MILITIAMAN_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_VOLUNTEER_SOLDIER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_VOLUNTEER_SOLDIER_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_VOLUNTEER",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_SURVIVOR_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SURVIVOR_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_SUN_WARRIORS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_SNIPER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_TOUGH_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_WILD_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_LUCKY_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SUN_WARRIOR",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_ZONE_STALKER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_ZONE_STALKER_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_LONE_WOLF",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HEROIC",
+              "count": 1
+            },
+            {
+              "id": "STR_INDESTRUCTIBLE_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_LONE_WOLF",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_START_COUNTRY_NIGERIA_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_START_COUNTRY_NIGERIA_EVENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_UBERIZATION",
+              "count": 1
+            },
+            {
+              "id": "STR_JUDICAL_EDUCATION",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HEROIC",
+              "count": 1
+            },
+            {
+              "id": "STR_TOUGH_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_JUDGE",
+              "count": 1
+            },
+            {
+              "id": "STR_HALF_UBER",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_SLAVE",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_SLAVE",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+          "sourceId": "STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+          "training": "STR_REVOLUTIONARY_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_SURVIVOR_RECRUITMENT",
+          "sourceId": "STR_SURVIVOR_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_ZONE_STALKER_RECRUITMENT",
+          "sourceId": "STR_ZONE_STALKER_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "event:STR_START_COUNTRY_NIGERIA_EVENT",
+          "sourceId": "STR_START_COUNTRY_NIGERIA_EVENT",
+          "training": "STR_UBERIZATION",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_GNOME",
+      "name": "노움",
+      "score": 268,
+      "directPurchaseResearch": [
+        "STR_GNOME"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 3,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_GNOME_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_GNOME_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_WILD_GNOME_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_WILD_GNOME_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_WILD_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_START_COUNTRY_GERMANY_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_START_COUNTRY_GERMANY_EVENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_PEASANT",
+      "name": "농부",
+      "score": 261,
+      "directPurchaseResearch": [
+        "STR_RECRUIT_PEASANTS"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 9,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_REVOLUTIONARY_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_NIGHTSHADE_AUGMENTATION",
+              "count": 1
+            },
+            {
+              "id": "STR_MILITIA_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_REVOLUTIONARY",
+              "count": 1
+            },
+            {
+              "id": "STR_NIGHTSHADE",
+              "count": 1
+            },
+            {
+              "id": "STR_MILITIA_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_WILD_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SUPERSOLDIER_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_SNIPER_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SNIPER_GIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_LONE_WOLF",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_SNIPER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_LONE_WOLF",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_REVOLUTIONARY_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_REVOLUTIONARY",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_HALF_UBER_GIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_MILITIA_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_UBERIZATION",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HALF_UBER",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_MILITIA_TRAINING",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_WILD_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_WILD_GIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_HUNTRESS_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_LONE_WOLF",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HUNTRESS",
+              "count": 1
+            },
+            {
+              "id": "STR_WILD_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_LONE_WOLF",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_ROGUE_CLONE_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_ROGUE_CLONE_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            },
+            {
+              "id": "STR_HEROIC",
+              "count": 1
+            },
+            {
+              "id": "STR_GLAMOUROUS_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SUPERSOLDIER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_INDESTRUCTIBLE_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SUPERFAST_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_WASTELAND_GIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_WASTELAND_GIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_WASTELANDER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_BASIC_FIREARMS_TRAINING",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+          "sourceType": "manufacture",
+          "sourceId": "STR_THEBAN_ASSAULT_CLONE",
+          "inheritedHistory": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_PEASANT",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_PEASANT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "sourceId": "STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "training": "STR_REVOLUTIONARY_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "sourceId": "STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "training": "STR_NIGHTSHADE_AUGMENTATION",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "sourceId": "STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "training": "STR_MILITIA_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "sourceId": "STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_SNIPER_GIRL_RECRUITMENT",
+          "sourceId": "STR_SNIPER_GIRL_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "sourceId": "STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "training": "STR_REVOLUTIONARY_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "sourceId": "STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT",
+          "sourceId": "STR_HALF_UBER_GIRL_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT",
+          "sourceId": "STR_HALF_UBER_GIRL_RECRUITMENT",
+          "training": "STR_MILITIA_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT",
+          "sourceId": "STR_HALF_UBER_GIRL_RECRUITMENT",
+          "training": "STR_UBERIZATION",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_WILD_GIRL_RECRUITMENT",
+          "sourceId": "STR_WILD_GIRL_RECRUITMENT",
+          "training": "STR_HUNTRESS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_WASTELAND_GIRL_RECRUITMENT",
+          "sourceId": "STR_WASTELAND_GIRL_RECRUITMENT",
+          "training": "STR_BASIC_FIREARMS_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_OGRE",
+      "name": "오우거",
+      "score": 259,
+      "directPurchaseResearch": [
+        "STR_OGRE_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_OGRE_SPY_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_OGRE_SPY_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_FORMER_SPY_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_OGRE",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_OGRE",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_PUREBLOOD",
+      "name": "순수혈통 병사",
+      "score": 255,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 1,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_RECRUIT_PUREBLOOD",
+          "sourceType": "manufacture",
+          "sourceId": "STR_RECRUIT_PUREBLOOD",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER",
+      "name": "미치광이",
+      "score": 238,
+      "directPurchaseResearch": [],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_SISTER_VICTIM_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SISTER_VICTIM_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_STASIS_POD_GREEN_GAL_EXTRACTION",
+          "sourceType": "manufacture",
+          "sourceId": "STR_STASIS_POD_GREEN_GAL_EXTRACTION",
+          "inheritedHistory": [
+            {
+              "id": "STR_GREEN_BEAUTY",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_GREEN_BEAUTY",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_SHADE_EMBODIMENT",
+          "koName": "음영 구현",
+          "requires": [
+            "STR_SHADE_EMBODIMENT"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER_SPECTRE"
+          ],
+          "requiredMinStats": {},
+          "requiredItems": {
+            "STR_ZOMBIE_ESSENCE": 20,
+            "STR_VAMPIRE_ESSENCE": 8,
+            "STR_GLAMOUR": 10
+          },
+          "requiredFacilities": [
+            "BDSWAP"
+          ],
+          "requiredRank": 0,
+          "forbiddenPreviousTransformations": [],
+          "reset": false,
+          "previousHistoryRetained": true
+        }
+      ],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "manufacture:STR_STASIS_POD_GREEN_GAL_EXTRACTION",
+          "sourceId": "STR_STASIS_POD_GREEN_GAL_EXTRACTION",
+          "training": "STR_GREEN_BEAUTY",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_M",
+      "name": "전사",
+      "score": 238,
+      "directPurchaseResearch": [
+        "STR_SOLDIER_M_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 4,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_RAIDER_FLAME_GUARD_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_RAIDER_FLAME_GUARD_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_FORMER_RAIDER_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_AGGRESSOR_GAL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_AGGRESSOR_GAL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_SUN_WARRIORS_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_SUN_WARRIOR",
+              "count": 1
+            },
+            {
+              "id": "STR_SOCIALLY_AWKWARD_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_TURANIAN_UBER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_TURANIAN_UBER_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HUNTRESS",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_M",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_M",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_S",
+      "name": "싸움꾼",
+      "score": 238,
+      "directPurchaseResearch": [
+        "STR_GALS_ARE_SUPERIOR"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 4,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_RAIDER_SCOUT_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_RAIDER_SCOUT_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_FORMER_RAIDER_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_YOUNG_UBER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_YOUNG_UBER_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_YOUNG_UBER_RECRUITMENT_SPY",
+          "sourceType": "manufacture",
+          "sourceId": "STR_YOUNG_UBER_RECRUITMENT_SPY",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_FORMER_SPY_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_S",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_S",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_SHAKEUP",
+          "koName": "정신개조",
+          "requires": [
+            "STR_SHAKEUP_CEREMONY"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER_S"
+          ],
+          "requiredMinStats": {},
+          "requiredItems": {
+            "STR_NOOSE": 2,
+            "STR_MOONSHINE": 10
+          },
+          "requiredFacilities": [
+            "WELL"
+          ],
+          "requiredRank": 0,
+          "forbiddenPreviousTransformations": [
+            "STR_SHAKEUP"
+          ],
+          "reset": false,
+          "previousHistoryRetained": true
+        }
+      ],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_V",
+      "name": "숙련병",
+      "score": 238,
+      "directPurchaseResearch": [
+        "STR_SOLDIER_V_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_GLAMOUR_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_GLAMOUR_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_GLAMOUROUS_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_V",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_V",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_X",
+      "name": "괴짜",
+      "score": 237,
+      "directPurchaseResearch": [
+        "STR_BOUNTY_HUNTING_PRIZE_SOLDIER_X"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 4,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_FREAK_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_FREAK_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_POLTERGEIST_EMBODIMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_ZOMBIFICATION",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_ZOMBIGAL",
+              "count": 1
+            },
+            {
+              "id": "STR_FORMER_ZOMBIE_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_FORMER_ENERGETIC_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_ZOMBIE_EMBODIMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_ZOMBIE_EMBODIMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_ZOMBIFICATION",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_ZOMBIGAL",
+              "count": 1
+            },
+            {
+              "id": "STR_FORMER_ZOMBIE_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_X",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_X",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_LAMIA",
+      "name": "라미아",
+      "score": 209,
+      "directPurchaseResearch": [
+        "STR_LAMIA_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "event:STR_START_LOCATION_EVENT_MEDUSA",
+          "sourceType": "event",
+          "sourceId": "STR_START_LOCATION_EVENT_MEDUSA",
+          "inheritedHistory": [
+            {
+              "id": "STR_PROUD_WARRIOR",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_BEEFY_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_TOUGH_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_PROUD_WARRIOR",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_LAMIA",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_LAMIA",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "event:STR_START_LOCATION_EVENT_MEDUSA",
+          "sourceId": "STR_START_LOCATION_EVENT_MEDUSA",
+          "training": "STR_PROUD_WARRIOR",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_LOKNAR",
+      "name": "로크'나르",
+      "score": 173,
+      "directPurchaseResearch": [
+        "STR_LOKNAR_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 1,
+      "acquisitionProfiles": [
+        {
+          "id": "direct:STR_SOLDIER_LOKNAR",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_LOKNAR",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_HYBRID",
+      "name": "버그아이",
+      "score": 169,
+      "directPurchaseResearch": [
+        "STR_HYBRID_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 5,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_HYBRID_LONER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_HYBRID_LONER_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_SOCIALLY_AWKWARD_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_HYBRID_HIVER_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_HYBRID_HIVER_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [
+            {
+              "id": "STR_HIVER_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_HYBRID_OF_TWILIGHT_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_HYBRID_OF_TWILIGHT_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_REVOLUTIONARY_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_SUN_WARRIORS_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_REVOLUTIONARY",
+              "count": 1
+            },
+            {
+              "id": "STR_SUN_WARRIOR",
+              "count": 1
+            },
+            {
+              "id": "STR_BEEFY_TRAIT",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_START_COUNTRY_BRAZIL_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_START_COUNTRY_BRAZIL_EVENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_MAGOS_CEREMONY",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_MAGOS",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_HYBRID",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_HYBRID",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "event:STR_START_COUNTRY_BRAZIL_EVENT",
+          "sourceId": "STR_START_COUNTRY_BRAZIL_EVENT",
+          "training": "STR_MAGOS_CEREMONY",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_W",
+      "name": "위어드갈",
+      "score": 157,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 0,
+      "acquisitionProfiles": [],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_WEIRDGAL_TRANSFORMATION",
+          "koName": "위어드갈 변신",
+          "requires": [
+            "STR_PSI_INITIATION"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER",
+            "STR_SOLDIER_S",
+            "STR_SOLDIER_M",
+            "STR_SOLDIER_V",
+            "STR_SOLDIER_X"
+          ],
+          "requiredMinStats": {
+            "bravery": 50,
+            "psiStrength": 50
+          },
+          "requiredItems": {
+            "STR_GOLDEN_CUP": 1
+          },
+          "requiredFacilities": [],
+          "requiredRank": 0,
+          "forbiddenPreviousTransformations": [
+            "STR_ZOMBIFICATION",
+            "STR_SHADE_EMBODIMENT",
+            "STR_SUN_WARRIORS_TRAINING",
+            "STR_BATTLE_FORM_GAL_AUGMENTATION",
+            "STR_BREAD_AND_FISHES_TRAINING"
+          ],
+          "reset": false,
+          "previousHistoryRetained": true
+        }
+      ],
+      "requiresTypeChange": true,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI",
+      "name": "캣걸",
+      "score": 153,
+      "directPurchaseResearch": [
+        "STR_CATGIRL_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 5,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_CATGIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_CATGIRL_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_CATGIRL_TOURIST_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_CATGIRL_TOURIST_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_CATGIRL_FROM_LAPUTA_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_CATGIRL_FROM_LAPUTA_EVENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_MRSHAN_ADVENTURER_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_MRSHAN_ADVENTURER_EVENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_NEKOMIMI",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_NEKOMIMI",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_O",
+      "name": "무법자 캣걸",
+      "score": 153,
+      "directPurchaseResearch": [
+        "STR_CAT_PATH"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_CATGIRL_VICTIM_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_CATGIRL_VICTIM_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "direct:STR_SOLDIER_NEKOMIMI_O",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_NEKOMIMI_O",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_R",
+      "name": "회개자",
+      "score": 150,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 0,
+      "acquisitionProfiles": [],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_ANG_102",
+          "koName": "회개",
+          "requires": [
+            "STR_ANG_102"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER",
+            "STR_SOLDIER_S",
+            "STR_SOLDIER_M",
+            "STR_SOLDIER_V",
+            "STR_SOLDIER_X"
+          ],
+          "requiredMinStats": {},
+          "requiredItems": {
+            "STR_PORN": 16,
+            "STR_VAMPIRE_ESSENCE": 1
+          },
+          "requiredFacilities": [],
+          "requiredRank": 0,
+          "forbiddenPreviousTransformations": [
+            "STR_ZOMBIFICATION",
+            "STR_SHADE_EMBODIMENT"
+          ],
+          "reset": true,
+          "previousHistoryRetained": false
+        }
+      ],
+      "requiresTypeChange": true,
+      "resetByIncomingTypeChange": true,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_BLOODOGE",
+      "name": "해적 블러드하운드",
+      "score": 131,
+      "directPurchaseResearch": [
+        "STR_BLOODOGE_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "direct:STR_SOLDIER_BLOODOGE",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_BLOODOGE",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_CODEX_BONUS_G5",
+          "sourceType": "event",
+          "sourceId": "STR_CODEX_BONUS_G5",
+          "inheritedHistory": [
+            {
+              "id": "STR_HERO_RED_TRAINING",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_BLESSING_OF_WAR",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "event:STR_CODEX_BONUS_G5",
+          "sourceId": "STR_CODEX_BONUS_G5",
+          "training": "STR_HERO_RED_TRAINING",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_H",
+      "name": "약초사",
+      "score": 91,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 0,
+      "acquisitionProfiles": [],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_HERBALIST_TRAINING",
+          "koName": "약초의 길",
+          "requires": [
+            "STR_HERBALIST_TRAINING"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER_NEKOMIMI"
+          ],
+          "requiredMinStats": {},
+          "requiredItems": {
+            "STR_APPLE": 10,
+            "STR_MEDI_KIT": 10,
+            "STR_SECTOWEED": 10
+          },
+          "requiredFacilities": [
+            "LIB"
+          ],
+          "requiredRank": 0,
+          "forbiddenPreviousTransformations": [
+            "STR_HERBALIST_TRAINING",
+            "STR_SWIFTPAW_TRAINING",
+            "STR_NEKO_BODYBUILDER_TRAINING",
+            "STR_GLADIATOR_TRAINING",
+            "STR_MILITARY_DRILL_TRAINING"
+          ],
+          "reset": false,
+          "previousHistoryRetained": true
+        }
+      ],
+      "requiresTypeChange": true,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_W",
+      "name": "캣전사",
+      "score": 89,
+      "directPurchaseResearch": [
+        "STR_SOLDIER_TYPE_NEKOMIMI"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 4,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_CATGIRL_WARRIOR_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "inheritedHistory": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "count": 1
+            },
+            {
+              "id": "STR_SWIFTPAW_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_MAGICIENNE_TRAINING",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            },
+            {
+              "id": "STR_NEPOTISM",
+              "count": 1
+            },
+            {
+              "id": "STR_PERSONAL_ATTENTION",
+              "count": 1
+            },
+            {
+              "id": "STR_BRIDES_TO_THE_QUEEN",
+              "count": 1
+            }
+          ],
+          "inheritedBonuses": [
+            {
+              "id": "STR_THEBAN_ASSAULT_CLONE",
+              "count": 1
+            },
+            {
+              "id": "STR_GLAMOUROUS_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_SUPERSOLDIER_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_NEKO_SWIFTPAW",
+              "count": 1
+            },
+            {
+              "id": "STR_MAGICIENNE",
+              "count": 1
+            },
+            {
+              "id": "STR_HYPNOTIC_TRAIT",
+              "count": 1
+            },
+            {
+              "id": "STR_CAREER_SOLDIER",
+              "count": 1
+            },
+            {
+              "id": "STR_NEPOTISM",
+              "count": 1
+            },
+            {
+              "id": "STR_PERSONAL_ATTENTION",
+              "count": 1
+            },
+            {
+              "id": "STR_BRIDE",
+              "count": 1
+            }
+          ],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_MRSHAN_FIGHTER_EVENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "event:STR_MRSHAN_WARRIOR_EVENT",
+          "sourceType": "event",
+          "sourceId": "STR_MRSHAN_WARRIOR_EVENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [
+        {
+          "profile": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "sourceId": "STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "training": "STR_NEPOTISM",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "sourceId": "STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "training": "STR_PERSONAL_ATTENTION",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        },
+        {
+          "profile": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "sourceId": "STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+          "training": "STR_BRIDES_TO_THE_QUEEN",
+          "alreadyHasHistoryCount": 1,
+          "doNotRepeat": true
+        }
+      ],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_SYNTH",
+      "name": "신스",
+      "score": 53,
+      "directPurchaseResearch": [
+        "STR_SYNTH_RECRUITMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_SYNTH_RECRUITMENT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SYNTH_RECRUITMENT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_SOLDIER_TYPE_SYNTH_REPAIR",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SOLDIER_TYPE_SYNTH_REPAIR",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_DOGE",
+      "name": "해적견",
+      "score": 51,
+      "directPurchaseResearch": [
+        "STR_DOGE_PROCUREMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 1,
+      "acquisitionProfiles": [
+        {
+          "id": "direct:STR_SOLDIER_DOGE",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_DOGE",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_KILLBOT",
+      "name": "데스트로이드",
+      "score": 15,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 2,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_RECRUIT_KILLBOT",
+          "sourceType": "manufacture",
+          "sourceId": "STR_RECRUIT_KILLBOT",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        },
+        {
+          "id": "manufacture:STR_SDD_SUMMONING",
+          "sourceType": "manufacture",
+          "sourceId": "STR_SDD_SUMMONING",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_XENFORCER",
+      "name": "젠포서",
+      "score": 15,
+      "directPurchaseResearch": [
+        "STR_XENFORCER_REPAIR"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 1,
+      "acquisitionProfiles": [
+        {
+          "id": "manufacture:STR_XENFORCER_REPAIR",
+          "sourceType": "manufacture",
+          "sourceId": "STR_XENFORCER_REPAIR",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_CHORT",
+      "name": "코르트",
+      "score": 6,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 0,
+      "acquisitionProfiles": [],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_CHORT_SUMMONING",
+          "koName": "코르트 구속",
+          "requires": [
+            "STR_CHORT_SUMMONING"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER",
+            "STR_SOLDIER_S",
+            "STR_SOLDIER_M",
+            "STR_SOLDIER_V",
+            "STR_SOLDIER_X",
+            "STR_SOLDIER_R",
+            "STR_SOLDIER_W",
+            "STR_SOLDIER_PEASANT",
+            "STR_SOLDIER_DAMSEL",
+            "STR_SOLDIER_LOKNAR",
+            "STR_SOLDIER_SPECTRE",
+            "STR_SOLDIER_NEKOMIMI",
+            "STR_SOLDIER_NEKOMIMI_O",
+            "STR_SOLDIER_NEKOMIMI_W",
+            "STR_SOLDIER_NEKOMIMI_H",
+            "STR_SOLDIER_DOLL"
+          ],
+          "requiredMinStats": {
+            "psiStrength": 40
+          },
+          "requiredItems": {
+            "STR_SIMULACRUM_INACTIVE": 1,
+            "STR_ZORTRIUM_CRYSTAL": 3
+          },
+          "requiredFacilities": [
+            "REDM"
+          ],
+          "requiredRank": 1,
+          "forbiddenPreviousTransformations": [
+            "STR_SUN_WARRIORS_TRAINING"
+          ],
+          "reset": true,
+          "previousHistoryRetained": false
+        }
+      ],
+      "requiresTypeChange": true,
+      "resetByIncomingTypeChange": true,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_DOLL",
+      "name": "영혼 인형",
+      "score": 6,
+      "directPurchaseResearch": [
+        "STR_SOUL_DOLL_PROCUREMENT"
+      ],
+      "directPurchaseBlockedByUnavailable": false,
+      "acquisitionProfileCount": 1,
+      "acquisitionProfiles": [
+        {
+          "id": "direct:STR_SOLDIER_DOLL",
+          "sourceType": "direct",
+          "sourceId": "STR_SOLDIER_DOLL",
+          "inheritedHistory": [],
+          "inheritedBonuses": [],
+          "availableSourceOnly": true
+        }
+      ],
+      "incomingTypeChangeCount": 0,
+      "incomingTypeChanges": [],
+      "requiresTypeChange": false,
+      "resetByIncomingTypeChange": false,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    },
+    {
+      "id": "STR_SOLDIER_SPECTRE",
+      "name": "음영",
+      "score": 0,
+      "directPurchaseResearch": [
+        "STR_UNAVAILABLE"
+      ],
+      "directPurchaseBlockedByUnavailable": true,
+      "acquisitionProfileCount": 0,
+      "acquisitionProfiles": [],
+      "incomingTypeChangeCount": 1,
+      "incomingTypeChanges": [
+        {
+          "id": "STR_SPECTRE_SUMMONING",
+          "koName": "음영 소환",
+          "requires": [
+            "STR_SPECTRE_SUMMONING"
+          ],
+          "allowedSourceTypes": [
+            "STR_SOLDIER",
+            "STR_SOLDIER_S",
+            "STR_SOLDIER_M",
+            "STR_SOLDIER_V",
+            "STR_SOLDIER_X",
+            "STR_SOLDIER_R",
+            "STR_SOLDIER_W",
+            "STR_SOLDIER_PEASANT",
+            "STR_SOLDIER_DAMSEL",
+            "STR_SOLDIER_DOLL",
+            "STR_SOLDIER_SPECTRE"
+          ],
+          "requiredMinStats": {
+            "bravery": 60,
+            "reactions": 60,
+            "psiStrength": 40
+          },
+          "requiredItems": {
+            "STR_RAIDER_CORPSE": 1,
+            "STR_MEDALLION": 1,
+            "STR_SECTOWEED": 50
+          },
+          "requiredFacilities": [],
+          "requiredRank": 0,
+          "forbiddenPreviousTransformations": [
+            "STR_SUN_WARRIORS_TRAINING"
+          ],
+          "reset": true,
+          "previousHistoryRetained": false
+        }
+      ],
+      "requiresTypeChange": true,
+      "resetByIncomingTypeChange": true,
+      "automaticallyPreAwardedSelectedTransformations": [],
+      "sourceStatus": "INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN"
+    }
+  ]
+}
