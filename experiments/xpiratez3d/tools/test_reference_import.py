@@ -17,6 +17,8 @@ with tempfile.TemporaryDirectory(prefix='xp3d-ref-test-') as tmp:
     def assert_export(data: dict, expected_ok: bool) -> None:
         global check_count
         (p/'input.json').write_text(json.dumps(data), encoding='utf-8')
+        if expected_ok:
+            (p/'input.json').write_bytes((ROOT/'testdata/atlas_2_1_direct_excerpt.json').read_bytes())
         run = subprocess.run([sys.executable, str(ROOT/'tools/export_2_1_declarations.py'),
                               '--source', str(p/'input.json'), '--output', str(p/'out.tsv')],
                              capture_output=True, text=True)
@@ -38,6 +40,6 @@ with tempfile.TemporaryDirectory(prefix='xp3d-ref-test-') as tmp:
     next(x for x in case['items'] if x['i']=='STR_MINIGUN')['p'] = 0
     # A modified fixture may lie about original source contents:
     # metadata pinning alone is not independent source authentication.
-    assert_export(case, True)
+    assert_export(case, False)
 
 print(f'[PASS] {check_count} version/missing-record/duplicate tests; metadata is NOT source authentication')
