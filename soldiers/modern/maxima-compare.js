@@ -55,7 +55,9 @@ export function maximaTableRows(report,data,mode="capPlusBonus",filter=""){
 }
 
 function linkResearch(id){
-  return '<a href="../../research/#research='+encodeURIComponent(id)+'">'+esc(id)+'</a>';
+  // The legacy research page uses X-Piratez 1.1.1, not the 2.1 ruleset.
+  // Keep current-version research IDs local instead of linking to stale rules.
+  return "<code>"+esc(id)+"</code>";
 }
 function renderDetails(report,data,id){
   const r=report.rows.find(x=>x.id===id);

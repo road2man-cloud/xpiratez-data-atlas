@@ -1,4 +1,4 @@
-import {permanentResearchTransformLocks,nominalResearchTransformRisks} from "./research-training-locks.js";
+import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks} from "./research-training-locks.js";
 // OXCE 8.7.x transformation gate model, generated X-Piratez 2.1 rules.
 // Distinguish a proven engine rejection from a future condition and an exact approval.
 // This module is also imported directly by Node regression tests.
@@ -241,6 +241,7 @@ export function eligibleTransformation(rule,state,data,options={}){
   // former transformation's research was later removed from _discovered.
   blocked.push(...permanentResearchTransformLocks(state.history,rule.id,
     data.researchRules||{}));
+  blocked.push(...directResearchTransformLocks(state.history,rule.id,data));
   if(mode==="future")
     conditions.push(...nominalResearchTransformRisks(state.history,rule.id));
   if(mode==="current"&&state.historyKnown===false)conditions.push("변신 이력 일부 누락 · 배제 완전 검증 불가");
