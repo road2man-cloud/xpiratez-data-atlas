@@ -1,0 +1,28 @@
+{
+  "schema": "xp-atlas.latest-item-training.v1",
+  "game": "X-Piratez",
+  "gameVersion": "v.o2 / 2.1",
+  "ruleset": "v.o2 (installed local)",
+  "engine": "OXCE 8.7.1",
+  "verifiedAt": "2026-10-24",
+  "sourceHashes": {
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6"
+  },
+  "sourceSnapshot": {
+    "path": "road2man-cloud/xpiratez-data-atlas/public/reference/items.json",
+    "gitBlobSha": "75e96cc753f78dbd51a813a0bccdf38dedac6486",
+    "subsetOnly": true,
+    "warning": "Only explicit declarations; not merged, inherited or ammunition/script effective stats"
+  },
+  "items": [
+    {"i":"STR_GATLING_LASER","k":"패티","e":"Fatty","m":5,"d":4,"p":44,"f":"Piratez.rul","l":44997},
+    {"i":"STR_FLECHETTE_CANNON","k":"플레쉐트 멀티캐논","e":"Flechette Multicannon","m":5,"d":16,"p":40,"f":"Piratez.rul","l":43831},
+    {"i":"STR_BORING_PISTOL","k":"천공 권총","e":"Boring Pistol","m":5,"d":16,"p":30,"f":"Piratez.rul","l":59168},
+    {"i":"STR_STUN_BATON","k":"기절봉","e":"Stun Baton","m":13,"d":12,"p":22,"f":"Piratez.rul","l":15299},
+    {"i":"STR_MINIGUN","k":"미니건","e":"Minigun","m":5,"d":null,"p":null,"f":"Piratez.rul","l":44670},
+    {"i":"STR_PIR_CANNON","k":"돌격대포","e":"Assault Cannon","m":4,"d":null,"p":null,"f":"Piratez.rul","l":46826},
+    {"i":"STR_WAKIZASHI","k":"스도쿠 칼날","e":"Sudoku Blade","m":13,"d":16,"p":25,"f":"Piratez.rul","l":16452},
+    {"i":"STR_HELL_CHAINGUN","k":"저주받은 체인건","e":"Cursed Chaingun","m":5,"d":5,"p":35,"f":"Piratez.rul","l":44616},
+    {"i":"AUX_TANK_LASER","k":"오토레이저(탱크)","e":"Autolaser (Tank)","m":5,"d":4,"p":50,"f":"Piratez.rul","l":12581}
+  ]
+}
