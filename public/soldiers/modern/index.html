@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>X-Piratez 2.1 병종·최종 강화 상호배제 검증</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="maxima-compare.css?v=20261101">
 </head>
 <body>
 <header class="hero">
@@ -19,6 +20,39 @@
 
 <main class="wrap">
   <section id="summary" class="summary"></section>
+
+  <section id="researchMaxima" class="card maxima-panel" aria-label="29개 병종 연구 상호배제 반영 최대 능력치">
+    <div class="maxima-header">
+      <div>
+        <p class="eyebrow">X-PIRATEZ 2.1 · RESEARCH-EXCLUSIVE STAT CEILINGS</p>
+        <h2>병종 29종 · 연구 상호배제 적용 최대치 비교</h2>
+        <p>연구 <code>disables</code> · 선행 연구 · 변신 배타성에 따라 병종별 하나의 최적 후보를 선택합니다.
+        <strong>마나 제외 11개 능력치</strong>를 비교하며, 다른 연구 분기의 보너스를 중복 합산하지 않습니다.</p>
+      </div>
+      <div class="maxima-controls">
+        <label for="maximaStatMode">수치 기준
+          <select id="maximaStatMode">
+            <option value="capPlusBonus">성장 하드캡 + 영구 보너스</option>
+            <option value="bonus">영구 보너스 증가분만</option>
+          </select>
+        </label>
+        <label for="maximaSearch">병종 검색
+          <input id="maximaSearch" type="search" placeholder="아가씨 · 영웅 · STR_SOLDIER">
+        </label>
+      </div>
+    </div>
+    <p class="maxima-disclaimer"><strong>조건부 이론 최대 후보:</strong>
+      아래 표는 연구·변신 규칙의 정적 최적화 값입니다. 특정 세이브에서 희귀 재료·무료 연구 추첨·이벤트·훈장·최소 능력치가 확보됐다는 증명은 아닙니다.
+      특히 ‘하드캡 + 보너스’는 실제 최종 능력치를 재현한 값이 아닙니다. 선택한 병종의 자세히 보기에서 미증명 연구를 확인하세요.</p>
+    <p id="maximaAudit" class="muted"></p>
+    <p id="maximaStatus" class="muted" aria-live="polite">2.1 연구 상호배제 감사 데이터를 확인하는 중…</p>
+    <div class="table-shell maxima-scroll" tabindex="0" aria-label="병종 최대치 횡스크롤 표">
+      <table id="maximaTable" aria-label="29종 병종 연구 배타성 적용 영구 보너스 및 하드캡 비교">
+        <thead></thead><tbody></tbody>
+      </table>
+    </div>
+    <div id="maximaDetails" class="maxima-details" hidden aria-live="polite"></div>
+  </section>
 
   <section id="futureCompare" class="card route-compare" aria-label="일반 갈과 반 슈퍼변이체 농부의 미래 상호배제 대조">
     <h2>미래 변신 경로 전수 비교 · 일반 갈 vs 반 슈퍼변이체 농부</h2>
