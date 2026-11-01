@@ -78,7 +78,7 @@ function renderDetails(report,data,id){
   box.innerHTML='<div class="maxima-detail-head"><h3>'+esc(soldier.koName)+
     ' · 영구 보너스 '+fmt(r.score)+'</h3><button id="maximaDetailClose" type="button">닫기</button></div>'+
     '<p>연구·변신의 정적 배타성 제약을 적용한 <strong>조건부 최적 조합</strong>입니다. '+
-    '세이브의 재료·훈장·시설·임무·무료 연구 난수가 모두 충족됐다는 증명이 아닙니다.</p>'+
+    '선장 분기 충돌을 포함한 알려진 배제는 제외했지만 세이브의 재료·훈장·시설·임무·무료 연구 난수가 모두 충족됐다는 증명이 아닙니다.</p>'+
     (unresolved?'<div class="maxima-unverified"><strong>연구 시간순 추가 검증 필요 ('+
        (r.unreachableResearchRoots?.length||0)+'건)</strong><ul>'+unresolved+'</ul></div>':
        '<p class="muted">정적 연구 그래프에 표시된 미도달 직접 연구 목표는 없습니다. 실제 연구 완료의 증명은 아닙니다.</p>')+
@@ -95,7 +95,7 @@ export async function initResearchMaxima(data){
   const host=document.querySelector("#researchMaxima");
   if(!host)return;
   try{
-    const response=await fetch("../../data/soldier-research-maxima-20261101.json");
+    const response=await fetch("../../data/soldier-research-maxima-20261101.json?captain-route=20261101b",{cache:"no-store"});
     if(!response.ok)throw new Error("감사 자료 HTTP "+response.status);
     const report=await response.json();
     const check=validateResearchMaxima(report,data);
@@ -104,9 +104,12 @@ export async function initResearchMaxima(data){
     const out=document.querySelector("#maximaTable");
     const status=document.querySelector("#maximaStatus");
     const audit=document.querySelector("#maximaAudit");
+    const chronologicallyUnresolved=report.rows.filter(x=>(x.unreachableResearchRoots||[]).length).length;
     audit.textContent=check.classes+"종 병종 · 변신 "+check.transformations+
       "종 · 설치 규칙 직접 연구 배제 "+check.sourceExclusions+
-      "건 · 사이트 병합 연구 "+check.researchRules+"종";
+      "건 · 사이트 병합 연구 "+check.researchRules+
+      "종 · 세이브에서 최종 경로 입증 "+(report.audit.verifiedInSaveCount||0)+
+      "/"+check.classes+"종 · 정적 연구 순서 추가 검증 "+chronologicallyUnresolved+"종";
     const columns=MAXIMA_STATS.map(k=>'<th scope="col">'+
       esc(data.statLabels?.[k]||k)+'</th>').join("");
     function render(){
@@ -116,7 +119,7 @@ export async function initResearchMaxima(data){
         '<th scope="col">연구 증명 상태</th>'+columns+'</tr>';
       out.querySelector("tbody").innerHTML=rows.map(r=>{
         const src=report.rows.find(x=>x.id===r.id);
-        const proof=r.uncertainRoots?'시간순 연구 미증명 '+r.uncertainRoots+'건':'시술 조건 미증명';
+        const proof=r.uncertainRoots?'연구 순서 미증명 '+r.uncertainRoots+'건':'실전 전체 경로 미증명';
         return '<tr><td><button class="maxima-show" type="button" data-maxima-type="'+
           esc(r.id)+'">'+esc(r.name)+'</button><small class="id">'+esc(r.id)+'</small>'+
           '<small class="route">'+r.transformCount+'개 변신 · 자세히 보기</small></td>'+
@@ -127,7 +130,7 @@ export async function initResearchMaxima(data){
       }).join("")||'<tr><td colspan="14">해당 병종 없음</td></tr>';
       status.textContent=rows.length+"종 표시 · "+(mode.value==="bonus"?
         "변신으로 획득하는 영구 능력치 보너스":"기본 병종의 statCaps + 영구 변신 보너스 (기본 능력치 무작위 변화는 제외)")+
-        " · 모든 행은 조건부 후보";
+        " · 최적화 후보이며 실전 인증 0/"+check.classes+"종";
     }
     mode.addEventListener("change",render);
     search.addEventListener("input",render);
