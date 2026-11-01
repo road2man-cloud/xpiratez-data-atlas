@@ -38,7 +38,9 @@ bool Parse(const std::string& input, Scene* out, std::string* why) {
     std::istringstream stream(input); std::string line;
     if(!std::getline(stream,line))return fail(why,"missing header");
     const auto header=split(line);
-    if(header.size()!=3||header[0]!="XPZ3D2"||!hex64(header[1])||!hex64(header[2])) return fail(why,"invalid stream header");
+    if(header.size()!=3||(header[0]!="XPZ3D2"&&header[0]!="XPZ3D3")||
+       !hex64(header[1])||!hex64(header[2])) return fail(why,"invalid stream header");
+    const bool v3 = header[0]=="XPZ3D3";
     Scene next; next.trace_sha256=header[1]; next.session_id=header[2];
     bool active=false;bool completed=false;int lastSeq=-1;int totalFrames=0;
     std::set<int> ids;
@@ -80,6 +82,21 @@ bool Parse(const std::string& input, Scene* out, std::string* why) {
             a.mode=t[4];
             if(next.aims.size()==64) next.aims.erase(next.aims.begin());
             next.aims.push_back(a);
+        }else if(t[0]=="I"){
+            if(!active||!v3||t.size()!=13)return fail(why,"invalid OXCE hit event");
+            ImpactVoxel impact{};
+            int* dest[]={&impact.command_index,&impact.actor,&impact.vx,&impact.vy,&impact.vz,
+                         &impact.part,&impact.power,&impact.rolled_damage,&impact.tile_damage,
+                         &impact.terrain_visibility_changed,&impact.ranged};
+            const int lo[]={0,-1,-100000,-100000,-1000,-10,1,-1000000,-1000000,0,0};
+            const int hi[]={10000000,10000000,100000,100000,1000,1000,1000000,1000000,1000000,1,1};
+            for(int i=0;i<11;++i)
+                if(!number(t[i+1],dest[i],lo[i],hi[i]))return fail(why,"invalid hit value");
+            if(impact.command_index!=next.command_index ||
+               t[12]!="tile_engine_hit_damage_application_voxel")
+               return fail(why,"hit identity/command mismatch");
+            if(next.impacts.size()>=1024) next.impacts.erase(next.impacts.begin());
+            next.impacts.push_back(impact);
         }else if(t[0]=="E"){
             int seq;
             if(!active||t.size()!=2||!number(t[1],&seq,0,999999)||seq!=lastSeq)return fail(why,"bad frame closing");
@@ -117,7 +134,8 @@ void PollWin32() {
     if(g_scene.seq>=0 && candidate.session_id==g_scene.session_id && candidate.seq<=g_scene.seq)return;
     g_scene=candidate;g_previousFile=data;
     std::ostringstream msg;msg<<"[XPZ3D] visual checkpoint seq="<<g_scene.seq
-        <<" units="<<g_scene.units.size()<<" aim_events="<<g_scene.aims.size()<<" (NO game authority)\n";
+        <<" units="<<g_scene.units.size()<<" aim_events="<<g_scene.aims.size()
+        <<" damage_voxel_events="<<g_scene.impacts.size()<<" (NO game authority)\n";
     OutputDebugStringA(msg.str().c_str());
 }
 #endif
