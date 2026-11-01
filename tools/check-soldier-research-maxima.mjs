@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {execFileSync} from "node:child_process";
-import {validateResearchMaxima,validateResearchTriage,validateStatGateAudit,maximaTableRows,MAXIMA_STATS}
+import {validateResearchMaxima,validateResearchTriage,validateStatGateAudit,validateStatGateResolutions,maximaTableRows,MAXIMA_STATS}
   from "../public/soldiers/modern/maxima-compare.js";
 import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
   from "../public/soldiers/modern/research-training-locks.js";
@@ -33,6 +33,32 @@ assert.deepEqual(gates,sourceGateAudit,
   "Published stat-gate deficits must be recalculated from source and checked");
 const byGateClass=validateStatGateAudit(gates,report);
 assert.equal(gates.summary.externallyDependent,4);
+const resolution=JSON.parse(fs.readFileSync(
+  "public/data/soldier-stat-gate-resolutions-20261102.json","utf8"));
+const sourceResolution=JSON.parse(execFileSync(process.execPath,
+  ["tools/audit-soldier-maxima-gate-resolutions.mjs","--json"],{
+    encoding:"utf8",maxBuffer:1024*1024,timeout:50000
+  }));
+assert.deepEqual(resolution,sourceResolution,
+  "Published medal and event pre-award sources must exactly match ruleset calculation");
+const sourceById=validateStatGateResolutions(resolution,gates,report);
+assert.equal(sourceById.size,4);
+assert.equal(resolution.summary.confirmedCompleteAcquisitionRoutes,0);
+const houndSource=sourceById.get("STR_SOLDIER_BLOODOGE");
+assert.equal(houndSource.sourceBornAlternatives[0].minExecutionOdds,23);
+assert.deepEqual(houndSource.sourceBornAlternatives[0].requiredPositiveTriggers.map(x=>x.id),
+  ["STR_CODEX_RED","STR_GODS_E5","STR_CODEX_RED_AWAKENED"]);
+assert.deepEqual(houndSource.sourceBornAlternatives[0].requiredNegativeTriggers.map(x=>x.id),
+  ["STR_CAPTAIN_SAINT"]);
+assert.equal(houndSource.postEventReplay.postEventTotalPermanentBonus,131);
+for(const id of ["STR_SOLDIER_NEKOMIMI","STR_SOLDIER_NEKOMIMI_O"]){
+  const s=sourceById.get(id);
+  assert.equal(s.minimalSingleMedalCandidate.id,"STR_MEDAL_SERVICE_TIME_NAME");
+  assert.equal(s.minimalSingleMedalCandidate.level,1);
+  assert.equal(s.minimalSingleMedalCandidate.criterion[0].threshold,6);
+  assert.equal(s.hypotheticalMedalClearsGate.minStatBlocked,false);
+}
+assert.equal(sourceById.get("STR_SOLDIER_SYNTH").optimisticMinDistinctMedals,11);
 const expectedDeficits=[
   ["STR_SOLDIER_NEKOMIMI","health",50,49,1],
   ["STR_SOLDIER_NEKOMIMI_O","health",50,49,1],

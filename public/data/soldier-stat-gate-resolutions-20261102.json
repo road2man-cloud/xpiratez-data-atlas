@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "kind": "SOLDIER_MAXIMA_STAT_GATE_SOURCE_RESOLUTIONS",
+  "ruleset": "X-Piratez 2.1 / OXCE 8.7.1 effective indexes",
+  "evidence": "SOURCE-ATTESTED CONDITIONAL ALTERNATIVES, not achieved save",
+  "summary": {
+    "classesAudited": 29,
+    "selectedOnlyDeficitClasses": 4,
+    "eventBornBypassCases": 1,
+    "catMedalCases": 2,
+    "confirmedCompleteAcquisitionRoutes": 0
+  },
+  "rows": [
+    {
+      "id": "STR_SOLDIER_NEKOMIMI",
+      "score": 153,
+      "key": "health",
+      "required": 50,
+      "postEventReplay": null,
+      "selectedOnlyGenerousCeiling": 49,
+      "shortfall": 1,
+      "directAttempt": {
+        "source": "current OXCE mode eligibility",
+        "observed": 49,
+        "minimum": 50,
+        "minStatBlocked": true,
+        "kind": "blocked",
+        "allBlockers": [
+          "health 최소 50 미달: 49"
+        ]
+      },
+      "minimalSingleMedalCandidate": {
+        "id": "STR_MEDAL_SERVICE_TIME_NAME",
+        "name": "생일케이크",
+        "level": 1,
+        "engineLevel": 0,
+        "increase": 1,
+        "criterion": [
+          {
+            "kind": "totalMonthlyService",
+            "threshold": 6
+          }
+        ]
+      },
+      "hypotheticalMedalClearsGate": {
+        "observed": 50,
+        "minimum": 50,
+        "minStatBlocked": false,
+        "kind": "eligible",
+        "allBlockers": []
+      },
+      "sourceBornAlternatives": [],
+      "absoluteAllMedalUpperBound": 172,
+      "medalSourcesWithPositiveBonus": 28,
+      "optimisticMinDistinctMedals": 1,
+      "optimisticMedalTopCombination": [
+        {
+          "id": "STR_MEDAL_IMMORTAL_NAME",
+          "koName": "불사신",
+          "max": 20,
+          "maxAtLevel": 10
+        }
+      ],
+      "caveats": [
+        "Medal criteria must be achieved by THIS soldier before the transformation. This is not verified.",
+        "High medal levels, random loot, and equipment may be impossible or mutually exclusive; the optimistic sum does not prove access.",
+        "An event-born soldier already contains the listed transformation history and bonus: do NOT apply it again.",
+        "A synthetic stat-cap test is a gate calculation, not a real campaign save or chronology."
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_O",
+      "score": 153,
+      "key": "health",
+      "required": 50,
+      "postEventReplay": null,
+      "selectedOnlyGenerousCeiling": 49,
+      "shortfall": 1,
+      "directAttempt": {
+        "source": "current OXCE mode eligibility",
+        "observed": 49,
+        "minimum": 50,
+        "minStatBlocked": true,
+        "kind": "blocked",
+        "allBlockers": [
+          "health 최소 50 미달: 49"
+        ]
+      },
+      "minimalSingleMedalCandidate": {
+        "id": "STR_MEDAL_SERVICE_TIME_NAME",
+        "name": "생일케이크",
+        "level": 1,
+        "engineLevel": 0,
+        "increase": 1,
+        "criterion": [
+          {
+            "kind": "totalMonthlyService",
+            "threshold": 6
+          }
+        ]
+      },
+      "hypotheticalMedalClearsGate": {
+        "observed": 50,
+        "minimum": 50,
+        "minStatBlocked": false,
+        "kind": "eligible",
+        "allBlockers": []
+      },
+      "sourceBornAlternatives": [],
+      "absoluteAllMedalUpperBound": 172,
+      "medalSourcesWithPositiveBonus": 28,
+      "optimisticMinDistinctMedals": 1,
+      "optimisticMedalTopCombination": [
+        {
+          "id": "STR_MEDAL_IMMORTAL_NAME",
+          "koName": "불사신",
+          "max": 20,
+          "maxAtLevel": 10
+        }
+      ],
+      "caveats": [
+        "Medal criteria must be achieved by THIS soldier before the transformation. This is not verified.",
+        "High medal levels, random loot, and equipment may be impossible or mutually exclusive; the optimistic sum does not prove access.",
+        "An event-born soldier already contains the listed transformation history and bonus: do NOT apply it again.",
+        "A synthetic stat-cap test is a gate calculation, not a real campaign save or chronology."
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_BLOODOGE",
+      "score": 131,
+      "key": "strength",
+      "required": 80,
+      "postEventReplay": {
+        "status": "ASSUMPTION_SEEDED_POST_EVENT_CONTINUATION",
+        "modeledSteps": [
+          {
+            "type": "transform",
+            "soldier": "HOUND",
+            "transform": "STR_GLADIATOR_TRAINING"
+          },
+          {
+            "type": "transform",
+            "soldier": "HOUND",
+            "transform": "STR_CAPTAINS_11"
+          }
+        ],
+        "postEventEligible": true,
+        "postEventTotalPermanentBonus": 131,
+        "assumedStartingEvent": "STR_CODEX_BONUS_G5",
+        "assumedResearched": [
+          "STR_GLADIATOR_TRAINING",
+          "STR_CAPTAINS_11"
+        ],
+        "assumedItems": {
+          "STR_GLAMOUR": 21,
+          "STR_CAPTAINS_11_TOKEN": 1
+        },
+        "assumedFacilityFunctions": [
+          "DEN"
+        ],
+        "assumedFunds": 500000,
+        "exactStatsMode": "AVG_SOURCE_STATS_ASSUMED",
+        "proofLimit": "Only the two later transforms were replayed. Prior event, captain research, item stock, facility, funds and overall campaign are NOT proved."
+      },
+      "selectedOnlyGenerousCeiling": 76,
+      "shortfall": 4,
+      "directAttempt": {
+        "source": "current OXCE mode eligibility",
+        "observed": 76,
+        "minimum": 80,
+        "minStatBlocked": true,
+        "kind": "blocked",
+        "allBlockers": [
+          "strength 최소 80 미달: 76"
+        ]
+      },
+      "minimalSingleMedalCandidate": {
+        "id": "STR_MEDAL_PRIMAL_NAME",
+        "name": "원시인",
+        "level": 8,
+        "engineLevel": 7,
+        "increase": 4,
+        "criterion": [
+          {
+            "kind": "killsWithCriteriaCareer",
+            "threshold": 125
+          }
+        ]
+      },
+      "hypotheticalMedalClearsGate": {
+        "observed": 80,
+        "minimum": 80,
+        "minStatBlocked": false,
+        "kind": "eligible",
+        "allBlockers": []
+      },
+      "sourceBornAlternatives": [
+        {
+          "profile": "event:STR_CODEX_BONUS_G5",
+          "event": "STR_CODEX_BONUS_G5",
+          "eventKoName": "피의 선물",
+          "eventEnName": "Gifts of Blood",
+          "awardedHistory": "STR_HERO_RED_TRAINING",
+          "awardedBonus": "STR_BLESSING_OF_WAR",
+          "bonusStrength": 30,
+          "requiredPositiveTriggers": [
+            {
+              "type": "itemTriggers",
+              "id": "STR_CODEX_RED",
+              "value": true
+            },
+            {
+              "type": "researchTriggers",
+              "id": "STR_GODS_E5",
+              "value": true
+            },
+            {
+              "type": "researchTriggers",
+              "id": "STR_CODEX_RED_AWAKENED",
+              "value": true
+            }
+          ],
+          "requiredNegativeTriggers": [
+            {
+              "type": "researchTriggers",
+              "id": "STR_CAPTAIN_SAINT",
+              "value": false
+            }
+          ],
+          "minExecutionOdds": 23,
+          "maxExecutionOdds": 23,
+          "positiveTriggers": 3,
+          "negativeTriggers": 1,
+          "conditional": true,
+          "guaranteed": false
+        }
+      ],
+      "absoluteAllMedalUpperBound": 122,
+      "medalSourcesWithPositiveBonus": 22,
+      "optimisticMinDistinctMedals": 1,
+      "optimisticMedalTopCombination": [
+        {
+          "id": "STR_MEDAL_CANNONEER_NAME",
+          "koName": "포수",
+          "max": 25,
+          "maxAtLevel": 10
+        }
+      ],
+      "caveats": [
+        "Medal criteria must be achieved by THIS soldier before the transformation. This is not verified.",
+        "High medal levels, random loot, and equipment may be impossible or mutually exclusive; the optimistic sum does not prove access.",
+        "An event-born soldier already contains the listed transformation history and bonus: do NOT apply it again.",
+        "A synthetic stat-cap test is a gate calculation, not a real campaign save or chronology."
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_SYNTH",
+      "score": 53,
+      "key": "psiStrength",
+      "required": 45,
+      "postEventReplay": null,
+      "selectedOnlyGenerousCeiling": 1,
+      "shortfall": 44,
+      "directAttempt": {
+        "source": "current OXCE mode eligibility",
+        "observed": 1,
+        "minimum": 45,
+        "minStatBlocked": true,
+        "kind": "blocked",
+        "allBlockers": [
+          "psiStrength 최소 45 미달: 1"
+        ]
+      },
+      "minimalSingleMedalCandidate": null,
+      "hypotheticalMedalClearsGate": null,
+      "sourceBornAlternatives": [],
+      "absoluteAllMedalUpperBound": 52,
+      "medalSourcesWithPositiveBonus": 17,
+      "optimisticMinDistinctMedals": 11,
+      "optimisticMedalTopCombination": [
+        {
+          "id": "STR_MEDAL_CARREER_KILLS_NAME",
+          "koName": "죽음천사",
+          "max": 10,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_IDOL_NAME",
+          "koName": "아이돌",
+          "max": 5,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_SHADOWREALMS_MISSIONS_NAME",
+          "koName": "신비주의자",
+          "max": 4,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_MAGICKILL_NAME",
+          "koName": "흑마법사",
+          "max": 4,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_CARREER_SCORE_NAME",
+          "koName": "공공의적",
+          "max": 3,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_RACE_KILLS_NAME",
+          "koName": "{0} 종족살해자",
+          "max": 3,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_VOIDKILL_NAME",
+          "koName": "팜므파탈",
+          "max": 3,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_MAXDAKKA_NAME",
+          "koName": "추수꾼",
+          "max": 3,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_JOKER_NAME",
+          "koName": "익살꾼",
+          "max": 3,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_BATTLEMAGE_NAME",
+          "koName": "전투마법사",
+          "max": 3,
+          "maxAtLevel": 10
+        },
+        {
+          "id": "STR_MEDAL_POSTMORTEM_KILL_NAME",
+          "koName": "복수자",
+          "max": 3,
+          "maxAtLevel": 1
+        }
+      ],
+      "caveats": [
+        "Medal criteria must be achieved by THIS soldier before the transformation. This is not verified.",
+        "High medal levels, random loot, and equipment may be impossible or mutually exclusive; the optimistic sum does not prove access.",
+        "An event-born soldier already contains the listed transformation history and bonus: do NOT apply it again.",
+        "A synthetic stat-cap test is a gate calculation, not a real campaign save or chronology."
+      ]
+    }
+  ]
+}
