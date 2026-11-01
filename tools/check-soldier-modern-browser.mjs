@@ -47,7 +47,18 @@ try{
   assert.equal(await page.locator("#maximaTable thead th").count(),14);
   assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+411"),
     "Damsel maxima must be shown, not old illegal +445");
-  assert((await page.locator("#maximaAudit").innerText()).includes("441"));
+  const auditText=await page.locator("#maximaAudit").innerText();
+  assert(auditText.includes("441"));
+  assert(auditText.includes("입증 0/29"));
+  assert(auditText.includes("추가 검증 24종"));
+  assert((await page.locator("#researchMaxima h2").innerText()).includes("조건부 최대 후보"));
+  await page.locator("#maximaSearch").fill("STR_SOLDIER_HERO");
+  assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
+  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+282"));
+  await page.locator("#maximaSearch").fill("STR_SOLDIER_PEASANT");
+  assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
+  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+261"));
+  await page.locator("#maximaSearch").fill("");
   await page.locator("#maximaStatMode").selectOption("bonus");
   assert.equal((await page.locator("#maximaTable tbody tr").first()
     .locator("td").nth(3).innerText()).trim(),"+48");

@@ -10,6 +10,8 @@ import {eligibleTransformation,initialState}
   from "../public/soldiers/modern/eligibility.js";
 import {completeResearchDisables,researchSourceDetail}
   from "../public/soldiers/modern/research-exclusion-audit.js";
+import {routeContext,trainingRouteAccess}
+  from "../public/trainings/route-access.js";
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json","utf8"));
 const report=JSON.parse(fs.readFileSync("public/data/soldier-research-maxima-20261101.json","utf8"));
 const check=validateResearchMaxima(report,data);
@@ -34,11 +36,58 @@ assert.equal(report.rows.length,29);
 const best=report.rows.find(x=>x.id==="STR_SOLDIER_DAMSEL");
 const hero=report.rows.find(x=>x.id==="STR_SOLDIER_HERO");
 assert.equal(best.score,411);
-assert.equal(hero.score,300);
-assert.equal(report.rows.find(x=>x.id==="STR_SOLDIER_PEASANT").score,276);
+assert.equal(hero.score,282);
+assert.equal(report.rows.find(x=>x.id==="STR_SOLDIER_PEASANT").score,261);
 assert.equal(report.rows.find(x=>x.id==="STR_SOLDIER_SLAVE").score,275);
 assert.equal(report.rows.find(x=>x.id==="STR_SOLDIER_GNOME").score,268);
 assert.equal(best.transformations.length,18);
+assert.equal(report.audit.verifiedInSaveCount,0,
+  "No static maximum may be passed off as a save-verified route");
+assert(report.audit.provenInvalidPriorRows.includes("STR_SOLDIER_HERO:300"));
+assert(report.audit.provenInvalidPriorRows.includes("STR_SOLDIER_PEASANT:276"));
+// Verify one terminal captain choice can accommodate the WHOLE recommended
+// set, not merely that each of the trainings is independently reachable.
+const trainingData=JSON.parse(fs.readFileSync("public/data/trainings-index.json","utf8"));
+const trainingById=new Map(trainingData.transformations.map(t=>[t.id,t]));
+const captainBranches=trainingData.routeChoices.find(g=>g.id==="captain").choices
+  .map(c=>c.id).filter(id=>id!=="STR_CAPTAIN_PUSSY");
+function allowedWithCaptain(steps,captain){
+  const context=routeContext(trainingData,{captain});
+  return steps.every(id=>{
+    const source=trainingById.get(id);
+    assert(source,"Missing source transformation "+id);
+    return !trainingRouteAccess(source,context,trainingData).blocked;
+  });
+}
+for(const row of report.rows){
+  const valid=captainBranches.filter(cap=>allowedWithCaptain(row.transformations,cap));
+  assert(valid.length>0,
+    row.id+" has ZERO achievable captain branches; candidate includes mutually exclusive gated event rewards");
+  // At least one alternative within EACH major research choice group must
+  // remain compatible with the selected transformations. This is a necessary
+  // condition, not a time-ordered source acquisition certificate.
+  for(const group of trainingData.routeChoices){
+    const candidates=group.choices.map(c=>c.id)
+      .filter(id=>group.id!=="captain"||id!=="STR_CAPTAIN_PUSSY");
+    const compatible=candidates.filter(choice=>{
+      const context=routeContext(trainingData,{[group.id]:choice});
+      return row.transformations.every(id=>
+        !trainingRouteAccess(trainingById.get(id),context,trainingData).blocked);
+    });
+    assert(compatible.length>0,
+      row.id+" has NO known compatible branch for "+group.id+
+      " (invalid research/loot event path)");
+  }
+}
+for(const id of ["STR_SOLDIER_HERO","STR_SOLDIER_PEASANT"]){
+  const existing=report.rows.find(x=>x.id===id);
+  assert(!existing.transformations.includes("STR_CAPTAINS_11")||
+    !existing.transformations.includes("STR_BREAD_AND_FISHES_TRAINING"),
+    id+" must not combine thief-only Captain's 11 with priest-only Bread and Fishes");
+}
+assert(captainBranches.every(c=>!allowedWithCaptain([
+  "STR_CAPTAINS_11","STR_BREAD_AND_FISHES_TRAINING"],c)),
+  "Prior illegal 300/276 combinations must be rejected by every terminal captain choice");
 assert(!hero.transformations.includes("STR_HERO_GREEN_TRAINING")||
        !hero.transformations.includes("STR_HERO_RED_TRAINING"));
 assert(!hero.transformations.includes("STR_HERO_GOLD_TRAINING")||
@@ -89,4 +138,4 @@ const blocked=eligibleTransformation(green,heroState,data,{mode:"future"});
 assert.equal(blocked.kind,"blocked");
 assert(blocked.blockers.some(s=>s.includes("STR_CODEX_RED")&&s.includes("STR_CODEX_GREEN")));
 assert.equal(new Set(report.rows.map(x=>x.id)).size,29);
-console.log("PASS 29 class maxima, 11 stats, 441 audited source exclusions (134 mutual pairs, 172 directional, 1 self), six permanent research training locks, and live planner enforcement");
+console.log("PASS 29 conditional class candidates and 11 stats; source-backed thief/priest route conflict rejected, 441 research disables, six permanent training locks, and live planner enforcement");
