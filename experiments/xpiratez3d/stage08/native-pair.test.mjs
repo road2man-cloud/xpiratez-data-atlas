@@ -56,7 +56,7 @@ test('reject control/observer plan difference even if checkpoint matches',()=>{
 });
 test('reject source code difference beyond allowed observer changes',()=>{
   const f=fixture();f.observedBuild.sourceTreeSha256=hash('9');
-  assert.throws(()=>valid(f),/DIFFERENT_NATIVE_INPUT_sourceTreeSha256/);
+  assert.throws(()=>valid(f),/DIFFERENT_NATIVE_INPUT: sourceTreeSha256/);
 });
 test('reject missing source file or binary identity hashes',()=>{
   const f=fixture();delete f.observed.binarySha256;
@@ -82,7 +82,7 @@ test('reject changing or removing the native fixed time clock',()=>{
   const f=fixture();f.observed.clockPolicy='wall-clock';
   assert.throws(()=>valid(f),/REQUIRES_FIXED_CLOCK/);
   const x=fixture();x.observedBuild.fixedClockPolicy='wall-clock';
-  assert.throws(()=>valid(x),/DIFFERENT_NATIVE_INPUT_fixedClockPolicy/);
+  assert.throws(()=>valid(x),/DIFFERENT_NATIVE_INPUT: fixedClockPolicy/);
 });
 test('reject untraceable observer driver patch',()=>{
   const f=fixture();f.observedBuild.impactInstrumentation.baseDriverSha256=hash('a');
