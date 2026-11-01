@@ -7,7 +7,7 @@ import {validateResearchMaxima,validateResearchTriage,validateStatGateAudit,maxi
   from "../public/soldiers/modern/maxima-compare.js";
 import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
   from "../public/soldiers/modern/research-training-locks.js";
-import {eligibleTransformation,initialState}
+import {eligibleTransformation,initialState,bonusStats}
   from "../public/soldiers/modern/eligibility.js";
 import {completeResearchDisables,researchSourceDetail}
   from "../public/soldiers/modern/research-exclusion-audit.js";
@@ -45,6 +45,30 @@ for(const [id,key,required,ceiling,shortfall] of expectedDeficits){
   assert.deepEqual([r.deficits[0].key,r.deficits[0].required,
       r.deficits[0].ceiling,r.deficits[0].shortfall],
     [key,required,ceiling,shortfall]);
+  // Independently replay OXCE-mode eligibility on an optimistic stat-cap
+  // fixture with all the OTHER published transformation bonuses pregranted.
+  // It contains no medal or unselected training and is NOT a save witness.
+  const soldier=data.soldiers.find(s=>s.id===id);
+  const state=initialState(data,"base:"+id,{rank:5});
+  state.currentStats={...soldier.statCaps};
+  state.initialStats={...soldier.maxStats};
+  state.exactStats=true;
+  const row=report.rows.find(s=>s.id===id);
+  const bonusIds=row.transformations.filter(n=>n!==r.deficits[0].training)
+    .map(n=>data.transformations.find(t=>t.id===n)?.soldierBonusType)
+    .filter(Boolean);
+  state.bonusIds=new Set(bonusIds);
+  state.bonusCounts=new Map([...state.bonusIds].map(x=>[x,1]));
+  const t=data.transformations.find(x=>x.id===r.deficits[0].training);
+  const verdict=eligibleTransformation(t,state,data,{
+    mode:"current",researched:t.requires,disabled:[],
+    baseFunctions:t.requiresBaseFunc,items:t.requiredItems,
+    funds:1000000000,commendations:{},statsKnown:true
+  });
+  assert.equal(state.currentStats[key]+(bonusStats(state,data)[key]||0),ceiling,
+    id+" independent engine-mode cap plus trait mismatch");
+  assert(verdict.blockers.some(x=>x.includes(key+" 최소 "+required+" 미달: "+ceiling)),
+    id+" independent OXCE-mode gate must block unsupported requirement");
 }
 assert(gates.rows.filter(x=>x.noSelectedOnlyDeficitDetected).length===25,
   "This is ONLY a necessary-bounds screening, not a proof that 25 builds are obtainable");
