@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import {execFileSync} from "node:child_process";
-import {validateResearchMaxima,validateResearchTriage,maximaTableRows,MAXIMA_STATS}
+import {validateResearchMaxima,validateResearchTriage,validateStatGateAudit,maximaTableRows,MAXIMA_STATS}
   from "../public/soldiers/modern/maxima-compare.js";
 import {permanentResearchTransformLocks,directResearchTransformLocks,nominalResearchTransformRisks,RESEARCH_LOCK_CASES}
   from "../public/soldiers/modern/research-training-locks.js";
@@ -24,6 +24,30 @@ assert.deepEqual(triage,calculatedTriage,
   "Published root research / event and six-group choice audit must match source calculation");
 const byClass=validateResearchTriage(triage,report);
 assert.equal(byClass.size,29);
+const gates=JSON.parse(fs.readFileSync("public/data/soldier-stat-gate-audit-20261102.json","utf8"));
+const sourceGateAudit=JSON.parse(execFileSync(process.execPath,
+  ["tools/audit-soldier-maxima-stat-necessary.mjs","--json"],{
+    encoding:"utf8",maxBuffer:1024*1024,timeout:45000
+  }));
+assert.deepEqual(gates,sourceGateAudit,
+  "Published stat-gate deficits must be recalculated from source and checked");
+const byGateClass=validateStatGateAudit(gates,report);
+assert.equal(gates.summary.externallyDependent,4);
+const expectedDeficits=[
+  ["STR_SOLDIER_NEKOMIMI","health",50,49,1],
+  ["STR_SOLDIER_NEKOMIMI_O","health",50,49,1],
+  ["STR_SOLDIER_BLOODOGE","strength",80,76,4],
+  ["STR_SOLDIER_SYNTH","psiStrength",45,1,44]
+];
+for(const [id,key,required,ceiling,shortfall] of expectedDeficits){
+  const r=byGateClass.get(id);
+  assert.equal(r.deficits.length,1);
+  assert.deepEqual([r.deficits[0].key,r.deficits[0].required,
+      r.deficits[0].ceiling,r.deficits[0].shortfall],
+    [key,required,ceiling,shortfall]);
+}
+assert(gates.rows.filter(x=>x.noSelectedOnlyDeficitDetected).length===25,
+  "This is ONLY a necessary-bounds screening, not a proof that 25 builds are obtainable");
 assert.equal(triage.summary.saveVerified,0);
 assert.equal(triage.summary.chronologyExecuted,0);
 assert.equal(triage.summary.sourceEventGrantRows,19);

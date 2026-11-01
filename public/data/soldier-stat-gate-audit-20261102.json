@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "kind": "SOLDIER_MAXIMA_NECESSARY_STAT_GATES",
+  "scope": "Generous cap-bounded, selected-transformations-only necessary test. No medals, armors, stat-raising unselected transformations, save evidence or actual research execution. A deficit is evidence of a MISSING EXTERNAL SOURCE, not a universal impossibility.",
+  "methods": [
+    "start at max(creationMax,statCaps,trainingStatCaps) for every stat, even where impractical",
+    "grant every other chosen positive permanent bonus in advance, ignoring negative bonuses and required order",
+    "grant every other chosen positive unbounded raw change and clamp cap-bound changes",
+    "calculate all requiredMinStats including includeBonusesForMinStats, special psiSkill gate",
+    "only report a shortfall if all other selected transformations have ZERO percent changes in the target stat",
+    "no lower gate, random invalidation, event research, medal, item, history or rank progression certification"
+  ],
+  "summary": {
+    "classes": 29,
+    "externallyDependent": 4,
+    "deficits": 4
+  },
+  "rows": [
+    {
+      "id": "STR_SOLDIER_DAMSEL",
+      "score": 411,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_HERO",
+      "score": 282,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_SLAVE",
+      "score": 275,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_GNOME",
+      "score": 268,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_PEASANT",
+      "score": 261,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_OGRE",
+      "score": 259,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_PUREBLOOD",
+      "score": 255,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER",
+      "score": 238,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_M",
+      "score": 238,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_S",
+      "score": 238,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_V",
+      "score": 238,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_X",
+      "score": 237,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_LAMIA",
+      "score": 209,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_LOKNAR",
+      "score": 173,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_HYBRID",
+      "score": 169,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_W",
+      "score": 157,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI",
+      "score": 153,
+      "noSelectedOnlyDeficitDetected": false,
+      "selectionNeedsExternalStatSource": true,
+      "deficits": [
+        {
+          "training": "STR_BEAUTY_FORMULA_USE",
+          "key": "health",
+          "required": 50,
+          "ceiling": 49,
+          "shortfall": 1,
+          "rawCeiling": 45,
+          "selectedBonusCeiling": 4,
+          "ignoredNegativeBonus": 0,
+          "effectiveCeiling": 49,
+          "initialGenerousCeiling": 45,
+          "includesSoldierBonuses": true,
+          "proof": "ZERO_PERCENT_AND_ALL_SELECTED_FIXED_GAINS_INCLUDED",
+          "reason": "ADVERTISED_TRANSFORMATIONS_ONLY"
+        }
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_O",
+      "score": 153,
+      "noSelectedOnlyDeficitDetected": false,
+      "selectionNeedsExternalStatSource": true,
+      "deficits": [
+        {
+          "training": "STR_BEAUTY_FORMULA_USE",
+          "key": "health",
+          "required": 50,
+          "ceiling": 49,
+          "shortfall": 1,
+          "rawCeiling": 45,
+          "selectedBonusCeiling": 4,
+          "ignoredNegativeBonus": 0,
+          "effectiveCeiling": 49,
+          "initialGenerousCeiling": 45,
+          "includesSoldierBonuses": true,
+          "proof": "ZERO_PERCENT_AND_ALL_SELECTED_FIXED_GAINS_INCLUDED",
+          "reason": "ADVERTISED_TRANSFORMATIONS_ONLY"
+        }
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_R",
+      "score": 150,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_BLOODOGE",
+      "score": 131,
+      "noSelectedOnlyDeficitDetected": false,
+      "selectionNeedsExternalStatSource": true,
+      "deficits": [
+        {
+          "training": "STR_HERO_RED_TRAINING",
+          "key": "strength",
+          "required": 80,
+          "ceiling": 76,
+          "shortfall": 4,
+          "rawCeiling": 75,
+          "selectedBonusCeiling": 1,
+          "ignoredNegativeBonus": 0,
+          "effectiveCeiling": 76,
+          "initialGenerousCeiling": 75,
+          "includesSoldierBonuses": true,
+          "proof": "ZERO_PERCENT_AND_ALL_SELECTED_FIXED_GAINS_INCLUDED",
+          "reason": "ADVERTISED_TRANSFORMATIONS_ONLY"
+        }
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_H",
+      "score": 91,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_W",
+      "score": 89,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_SYNTH",
+      "score": 53,
+      "noSelectedOnlyDeficitDetected": false,
+      "selectionNeedsExternalStatSource": true,
+      "deficits": [
+        {
+          "training": "STR_PERSON_OF_CULTURE_TRAINING",
+          "key": "psiStrength",
+          "required": 45,
+          "ceiling": 1,
+          "shortfall": 44,
+          "rawCeiling": 0,
+          "selectedBonusCeiling": 1,
+          "ignoredNegativeBonus": 0,
+          "effectiveCeiling": 1,
+          "initialGenerousCeiling": 0,
+          "includesSoldierBonuses": true,
+          "proof": "ZERO_PERCENT_AND_ALL_SELECTED_FIXED_GAINS_INCLUDED",
+          "reason": "ADVERTISED_TRANSFORMATIONS_ONLY"
+        }
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_DOGE",
+      "score": 51,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_KILLBOT",
+      "score": 15,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_XENFORCER",
+      "score": 15,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_CHORT",
+      "score": 6,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_DOLL",
+      "score": 6,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    },
+    {
+      "id": "STR_SOLDIER_SPECTRE",
+      "score": 0,
+      "noSelectedOnlyDeficitDetected": true,
+      "selectionNeedsExternalStatSource": false,
+      "deficits": []
+    }
+  ]
+}

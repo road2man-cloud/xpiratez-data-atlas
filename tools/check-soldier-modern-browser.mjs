@@ -49,6 +49,7 @@ try{
     "Damsel maxima must be shown, not old illegal +445");
   const auditText=await page.locator("#maximaAudit").innerText();
   assert(auditText.includes("441"));
+  assert(auditText.includes("능력치 게이트 미달 4종"));
   assert(auditText.includes("입증 0/29"));
   assert(auditText.includes("예전 최적화기 추가 진단 24종"));
   assert((await page.locator("#researchMaxima h2").innerText()).includes("조건부 최대 후보"));
@@ -58,6 +59,15 @@ try{
   await page.locator("#maximaSearch").fill("STR_SOLDIER_PEASANT");
   assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
   assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+261"));
+  await page.locator("#maximaSearch").fill("STR_SOLDIER_SYNTH");
+  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("추가 능력치 보정 1건 필요"));
+  await page.locator("#maximaTable .maxima-show").first().click();
+  const synthEvidence=await page.locator("#maximaDetails").innerText();
+  assert(synthEvidence.includes("추가 능력치 상승 수단 필요"));
+  assert(synthEvidence.includes("사이오닉 강도 최소 45"));
+  assert(synthEvidence.includes("상한 1"));
+  assert(synthEvidence.includes("44"));
+  await page.locator("#maximaDetailClose").click();
   await page.locator("#maximaSearch").fill("");
   await page.locator("#maximaStatMode").selectOption("bonus");
   assert.equal((await page.locator("#maximaTable tbody tr").first()
