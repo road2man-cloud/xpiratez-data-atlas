@@ -33,7 +33,7 @@ The complete tested source, tools, tests, executable reproduction instructions, 
 
 - `X-Piratez-3D-Stage06-Engine-Seam-Linux.zip`
 - SHA256: `46b285e9d9200cffcb92b95ad492ed569c912a08a5273302a4c0eb25ccbb8a37`
-- It is a **conversation artifact, not a GitHub source archive**. This checked-in document is not evidence the code has been committed to GitHub.
+- The ZIP remains a conversation artifact, while the tested C++ receiver, native-trace exporter, source overlay generator, and 19 portable regression tests are now **actually committed** at [experiments/xpiratez3d/stage06/](../../experiments/xpiratez3d/stage06/). Each committed core source/test file has been verified against the tested local Git blob SHA. The synthetic GLB/PNG output remains in the conversation ZIP, not the repository.
 - Root commands after extraction: `python3 -m unittest discover -s tests -v`, `c++ -std=c++14 -Wall -Wextra -Werror -pedantic ss/XPZVisualFeed.cpp ss/visual_feed_test.cpp -o visual_feed_test`, `./visual_feed_test output/synthetic_visual.feed`.
 
 ## Critical limitations
