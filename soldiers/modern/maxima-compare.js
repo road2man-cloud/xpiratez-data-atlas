@@ -141,11 +141,41 @@ export function validateStatGateResolutions(resolutions,gates,report){
     throw new Error("신스 훈장 낙관 상한 비교 불일치");
   return matches;
 }
+export function validateClassAcquisition(acquisition,report,data){
+  if(acquisition?.schemaVersion!==1||
+    acquisition.kind!=="SOLDIER_MAXIMA_CLASS_ACQUISITION"||
+    acquisition.rows?.length!==29||acquisition.summary?.classes!==29||
+    acquisition.summary?.acquiredOnlyByTypeChange!==5||
+    acquisition.summary?.typeChangeResetClasses!==3||
+    acquisition.summary?.cannotDirectlyRecruitDueUnavailable!==9||
+    acquisition.summary?.fullyProvenCampaignAcquisitions!==0)
+    throw new Error("병종 초기 획득 출처 전수 감사가 불일치합니다");
+  const byId=new Map(acquisition.rows.map(x=>[x.id,x]));
+  if(byId.size!==29)throw new Error("병종 획득 감사의 중복 기록");
+  for(const row of report.rows){
+    const audit=byId.get(row.id);
+    const s=byIdValue(data.soldiers,row.id);
+    if(!audit||!s||audit.score!==row.score||
+      audit.sourceStatus!=="INDEXED_SOURCE_ONLY_NOT_CAMPAIGN_PROVEN")
+      throw new Error("기존 병종 표와 획득 출처가 다른 병종: "+row.id);
+    const originalSources=data.profiles.filter(x=>x.soldierType===row.id);
+    const incoming=data.transformations.filter(t=>
+      t.producedSoldierType===row.id&&!t.createsClone);
+    if(audit.acquisitionProfileCount!==originalSources.length||
+      audit.incomingTypeChangeCount!==incoming.length||
+      audit.requiresTypeChange!==(!originalSources.length&&incoming.length>0)||
+      audit.resetByIncomingTypeChange!==(
+        audit.requiresTypeChange&&incoming.some(t=>t.reset===true)))
+      throw new Error("원본 획득/유형 변환 출처 변화: "+row.id);
+  }
+  return byId;
+}
+function byIdValue(list,id){return list?.find(x=>x.id===id)}
 const STAT_LABELS={tu:"행동력",stamina:"기력",health:"체력",
   bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",
   strength:"힘",psiStrength:"사이오닉 강도",psiSkill:"사이오닉 기술",melee:"근접"};
 const BRANCH_LABELS={captain:"선장",path:"세력",cause:"대의",queen:"여왕",codex:"코덱스",god:"신"};
-function renderDetails(report,data,id,triageById,statGateById,sourceById){
+function renderDetails(report,data,id,triageById,statGateById,sourceById,classById){
   const r=report.rows.find(x=>x.id===id);
   const box=document.querySelector("#maximaDetails");
   if(!r){box.hidden=true;box.innerHTML="";return}
@@ -153,6 +183,7 @@ function renderDetails(report,data,id,triageById,statGateById,sourceById){
   const triage=triageById.get(r.id);
   const gate=statGateById.get(r.id);
   const source=sourceById.get(r.id)||null;
+  const acquisition=classById.get(r.id);
   const rows=(triage.historyOrder||[]).map((tid,index)=>{
     const t=byId(data.transformations,tid);
     const roots=t?.requires||[];
@@ -242,6 +273,36 @@ function renderDetails(report,data,id,triageById,statGateById,sourceById){
       medals.map(x=>'<li>'+esc(x.koName)+' ('+linkResearch(x.id)+
         ') '+x.maxAtLevel+'단계, 최대 +'+x.max+'</li>').join('')+'</ol></details>':'')+
     '</section>':'';
+  const conversionDetails=acquisition.incomingTypeChanges.map(t=>
+    '<li>'+linkResearch(t.id)+(t.reset?
+      ' · <strong>reset: true (과거 변신 이력 초기화)</strong>':
+      ' · 과거 변신 이력 유지')+
+    (t.requiredRank?' · 요구 계급 '+t.requiredRank:'')+
+    (t.requires?.length?' · 연구 '+t.requires.map(linkResearch).join(', '):'')+
+    (Object.keys(t.requiredItems||{}).length?
+      ' · 필요 재료 '+Object.entries(t.requiredItems).map(([id,n])=>
+        linkResearch(id)+' ×'+n).join(', '):'')+
+    '</li>').join('');
+  const sourceProfileRows=acquisition.acquisitionProfiles.slice(0,12).map(p=>
+    '<li>'+linkResearch(p.id)+' · '+esc(p.sourceType)+
+    (p.inheritedHistory.length?' · 처음부터 보유한 변신: '+
+      p.inheritedHistory.map(x=>linkResearch(x.id)).join(', '):'')+
+    '</li>').join('');
+  const classNote='<section class="maxima-source-evidence">'+
+    '<h4>해당 병종의 최초 획득 경로 (실전 미증명)</h4>'+
+    (acquisition.requiresTypeChange?
+      '<p><strong>원본 획득 프로필이 없는 병종입니다.</strong> 다른 병종에서 아래의 유형 변환을 완료해야 '+
+      '이 병종이 생성됩니다. 따라서 표시된 하드캡을 초기 대원의 실제 능력치로 간주하지 않습니다.</p>':
+      '<p>원본 획득 프로필 '+acquisition.acquisitionProfileCount+
+      '종(모집·제조·이벤트 중 색인된 출처). 연구·재료·임무 달성은 미증명입니다.</p>')+
+    (acquisition.directPurchaseBlockedByUnavailable?
+      '<p><code>STR_UNAVAILABLE</code>로 병종 자체의 직접 모집이 제한됩니다. '+
+      '표시된 제조·이벤트·유형변환 등 별도 출처가 있더라도 실제 획득은 검증되지 않았습니다.</p>':'')+
+    (conversionDetails?'<ul>'+conversionDetails+'</ul>':'')+
+    (sourceProfileRows?
+      '<details><summary>획득 프로필 '+acquisition.acquisitionProfileCount+
+      '종 보기</summary><ul>'+sourceProfileRows+'</ul></details>':'')+
+    '</section>';
   box.hidden=false;
   box.innerHTML='<div class="maxima-detail-head"><h3>'+esc(soldier.koName)+
     ' · 영구 보너스 '+fmt(r.score)+'</h3><button id="maximaDetailClose" type="button">닫기</button></div>'+
@@ -250,7 +311,7 @@ function renderDetails(report,data,id,triageById,statGateById,sourceById){
     (unresolved?'<details class="maxima-unverified"><summary>기존 단순 최적화기의 우회 해금 미해결 표시 ('+
        (r.unreachableResearchRoots?.length||0)+'건)</summary><p>이 항목은 연구 불가능 판정이 아닙니다. 위의 출처 감사는 대체 해금·조건부 연구 지급을 포함해 명목상 선행연구를 정렬했습니다. 실제 연구 실행은 여전히 미인증입니다.</p><ul>'+
        unresolved+'</ul></details>':'')+
-    proof+statNote+sourceNote+
+    proof+statNote+sourceNote+classNote+
     '<p class="muted">아래 변신은 필수·금지 이력에 위배되지 않게 정렬한 순서입니다. '+
     '연구 완료 시점·능력치 최소 조건·재료 보유를 확인한 실행 순서는 아닙니다.</p>'+
     '<div class="maxima-route-table"><table><thead><tr><th>이력 제약 통과 순서 ('+
@@ -266,22 +327,25 @@ export async function initResearchMaxima(data){
   const host=document.querySelector("#researchMaxima");
   if(!host)return;
   try{
-    const [maxResponse,triageResponse,gateResponse,sourceResponse]=await Promise.all([
-      fetch("../../data/soldier-research-maxima-20261101.json?audit=acquisition-20261102",{cache:"no-store"}),
-      fetch("../../data/soldier-research-triage-20261101.json?audit=acquisition-20261102",{cache:"no-store"}),
-      fetch("../../data/soldier-stat-gate-audit-20261102.json?audit=acquisition-20261102",{cache:"no-store"}),
-      fetch("../../data/soldier-stat-gate-resolutions-20261102.json?audit=acquisition-20261102",{cache:"no-store"})
+    const [maxResponse,triageResponse,gateResponse,sourceResponse,classResponse]=await Promise.all([
+      fetch("../../data/soldier-research-maxima-20261101.json?audit=class-source-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-research-triage-20261101.json?audit=class-source-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-stat-gate-audit-20261102.json?audit=class-source-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-stat-gate-resolutions-20261102.json?audit=class-source-20261102",{cache:"no-store"}),
+      fetch("../../data/soldier-class-acquisition-audit-20261102.json?audit=class-source-20261102",{cache:"no-store"})
     ]);
-    if(!maxResponse.ok||!triageResponse.ok||!gateResponse.ok||!sourceResponse.ok)
-      throw new Error("연구·능력치 자료 HTTP "+maxResponse.status+"/"+triageResponse.status+
-        "/"+gateResponse.status+"/"+sourceResponse.status);
-    const [report,triage,gates,resolutions]=await Promise.all([
-      maxResponse.json(),triageResponse.json(),gateResponse.json(),sourceResponse.json()
+    if(!maxResponse.ok||!triageResponse.ok||!gateResponse.ok||!sourceResponse.ok||!classResponse.ok)
+      throw new Error("연구·획득 자료 HTTP "+maxResponse.status+"/"+triageResponse.status+
+        "/"+gateResponse.status+"/"+sourceResponse.status+"/"+classResponse.status);
+    const [report,triage,gates,resolutions,acquisition]=await Promise.all([
+      maxResponse.json(),triageResponse.json(),gateResponse.json(),
+      sourceResponse.json(),classResponse.json()
     ]);
     const check=validateResearchMaxima(report,data);
     const triageById=validateResearchTriage(triage,report);
     const statGateById=validateStatGateAudit(gates,report);
     const sourceById=validateStatGateResolutions(resolutions,gates,report);
+    const classById=validateClassAcquisition(acquisition,report,data);
     const mode=document.querySelector("#maximaStatMode");
     const search=document.querySelector("#maximaSearch");
     const out=document.querySelector("#maximaTable");
@@ -295,7 +359,10 @@ export async function initResearchMaxima(data){
       "종 · 세이브에서 최종 경로 입증 "+(report.audit.verifiedInSaveCount||0)+
       "/"+check.classes+"종 · 선택 훈련만으로 능력치 게이트 미달 "+
       gates.summary.externallyDependent+"종 (이벤트 출생 예외 "+
-      resolutions.summary.eventBornBypassCases+"종) · 예전 최적화기 추가 진단 "+chronologicallyUnresolved+"종";
+      resolutions.summary.eventBornBypassCases+"종) · 병종 유형 변환 필수 "+
+      acquisition.summary.acquiredOnlyByTypeChange+"종 (이력 초기화 "+
+      acquisition.summary.typeChangeResetClasses+"종) · 예전 최적화기 추가 진단 "+
+      chronologicallyUnresolved+"종";
     const columns=MAXIMA_STATS.map(k=>'<th scope="col">'+
       esc(data.statLabels?.[k]||k)+'</th>').join("");
     function render(){
@@ -307,7 +374,10 @@ export async function initResearchMaxima(data){
         const rootAudit=triageById.get(r.id);
         const gate=statGateById.get(r.id);
         const resolution=sourceById.get(r.id);
-        const proof=(resolution?.sourceBornAlternatives?.length?
+        const origin=classById.get(r.id);
+        const proof=(origin?.requiresTypeChange?
+          '병종 유형 변환 선행 필요 · 미인증':
+          resolution?.sourceBornAlternatives?.length?
           '출생 이벤트로 시술 조건 우회 · 미인증':
           gate.selectionNeedsExternalStatSource?
             resolution?.minimalSingleMedalCandidate?
@@ -332,7 +402,7 @@ export async function initResearchMaxima(data){
     search.addEventListener("input",render);
     out.querySelector("tbody").addEventListener("click",e=>{
       const btn=e.target.closest("button[data-maxima-type]");
-      if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById,statGateById,sourceById);
+      if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById,statGateById,sourceById,classById);
     });
     render();
   }catch(error){
