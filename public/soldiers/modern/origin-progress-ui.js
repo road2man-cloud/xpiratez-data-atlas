@@ -3,6 +3,8 @@
 // reinterpret old 29-body conditional maxima as final per-person results.
 import {directResearchTransformLocks,permanentResearchTransformLocks}
   from "./research-training-locks.js";
+import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
+  from "./origin-same-body-bridge.js";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const STAT_LABELS={tu:"행동력",stamina:"기력",health:"체력",bravery:"용기",
   reactions:"반응",firing:"사격",throwing:"투척",strength:"힘",
@@ -19,13 +21,16 @@ const linkableId=id=>'<code>'+esc(id)+'</code>';
 // Re-play only the *structural* type-change history to reject forged origins.
 // Not a campaign replay: we deliberately never certify the availability of
 // research, items, stats, medals, RNG, healing or corpse recovery here.
-function validateRootedAncestry(row,sourceMap,transforms){
+function validateRootedAncestry(row,sourceMap,transforms,data){
   const a=row.candidateSourceAncestry;
   if(!a||a.id!==row.id||a.candidateCount!==a.candidates?.length||
     a.rootProfileIds?.length!==new Set(a.rootProfileIds).size)
     throw new Error("출발 획득처별 병종변경 계보 훼손: "+row.id);
   const allRoots=new Set(),unique=new Set();
   let direct=0,indirect=0,largest=0,resets=0,deathContinuity=0,sameBody=0;
+  const trainingTotals={initialProfilesAudited:0,sourceRootedPathsAudited:0,
+    structuralInsertionWitnesses:0,distinctTargetWitnesses:0,
+    targetsWithPositiveSurvivingBonus:0,chronologicallyVerifiedTrainingRoutes:0};
   for(const candidate of a.candidates){
     const origin=sourceMap.get(candidate.rootProfileId);
     const steps=candidate.steps;
@@ -69,6 +74,14 @@ function validateRootedAncestry(row,sourceMap,transforms){
       if(vitals.length===1&&vitals[0]==="dead")oldDeadOnly=true;
       type=t.producedSoldierType;
     }
+    const training=auditSingleSameBodyTraining(data,origin,candidate);
+    if(JSON.stringify(training)!==JSON.stringify(candidate.optionalSameBodyTrainingAudit))
+      throw new Error("출생처 기점 일반 훈련 삽입 감사 조작/누락: "+sig);
+    trainingTotals.sourceRootedPathsAudited++;
+    trainingTotals.structuralInsertionWitnesses+=training.insertionSequenceWitnesses;
+    trainingTotals.distinctTargetWitnesses+=training.distinctTrainingsWithHistoryWitness;
+    trainingTotals.targetsWithPositiveSurvivingBonus+=
+      training.targetsWithPositiveSurvivingBonus;
     const last=steps.at(-1);
     if(last.transformationId!==row.sourceId||
       last.fromType!==row.parentSoldierType||
@@ -91,7 +104,7 @@ function validateRootedAncestry(row,sourceMap,transforms){
     (a.candidateCount===0&&!a.noRecordedPathMeaning))
     throw new Error("획득처별 계보 후보 집계 불일치: "+row.id);
   return {count:a.candidateCount,roots:allRoots,resets,deathContinuity,
-    sameBody,maxDepth:largest};
+    sameBody,maxDepth:largest,trainingTotals};
 }
 
 
@@ -128,6 +141,13 @@ export function validateOriginProgression(report,data,oldMaxima){
   const cumulativeLineage={
     count:0,roots:new Set(),resets:0,deathContinuity:0,sameBody:0,maxDepth:0
   };
+  const cumulativeTraining={initialProfilesAudited:0,sourceRootedPathsAudited:0,
+    structuralInsertionWitnesses:0,distinctTargetWitnesses:0,
+    targetsWithPositiveSurvivingBonus:0,chronologicallyVerifiedTrainingRoutes:0};
+  function accountTraining(t){
+    for(const id of Object.keys(cumulativeTraining))
+      cumulativeTraining[id]+=t[id]||0;
+  }
   const seen=new Set();
   for(const row of report.rows){
     if(seen.has(row.id)||!candidates.has(row.soldierType)||row.proof?.status!=="미검증")
@@ -218,6 +238,13 @@ export function validateOriginProgression(report,data,oldMaxima){
           x.kind==="researchTriggers"&&x.id==="STR_CAPTAIN_SAINT")||
           row.prerequisites.event.minExecutionOdds!==23))
         throw new Error("블러드하운드 획득 이벤트의 음성 가드 및 확률 누락");
+      const training=birthOnlyTrainingAudit(data,p);
+      if(JSON.stringify(row.birthSameBodyTrainingAudit)!==JSON.stringify(training))
+        throw new Error("최초 출생 직후 일반 훈련/선행 순서 왜곡: "+row.id);
+      accountTraining({...training,initialProfilesAudited:1,
+        sourceRootedPathsAudited:0,structuralInsertionWitnesses:training.insertionSequenceWitnesses,
+        distinctTargetWitnesses:training.distinctTrainingsWithHistoryWitness,
+        targetsWithPositiveSurvivingBonus:training.targetsWithPositiveSurvivingBonus});
       const audit=row.legacyCandidateBirthHistoryAudit;
       if(audit?.scope!=="UNCHANGED_BIRTH_HISTORY_ONLY"||
         audit.possibleHistoryResetOrRemovalNotEvaluated!==true)
@@ -256,7 +283,8 @@ export function validateOriginProgression(report,data,oldMaxima){
         row.legacyCandidateBirthHistoryAudit!==null||
         row.proof.unresolvedParent!==true)
         throw new Error("변신 출생 경로 / reset 초기화 불일치: "+row.id);
-      const lineage=validateRootedAncestry(row,original,transformations);
+      const lineage=validateRootedAncestry(row,original,transformations,data);
+      accountTraining(lineage.trainingTotals);
       cumulativeLineage.count+=lineage.count;
       for(const id of lineage.roots)cumulativeLineage.roots.add(id);
       cumulativeLineage.resets+=lineage.resets;
@@ -274,6 +302,9 @@ export function validateOriginProgression(report,data,oldMaxima){
     ancestral.candidatesWithSameBodyProducedType!==cumulativeLineage.sameBody||
     ancestral.longestBodyChangeChain!==cumulativeLineage.maxDepth)
     throw new Error("출생처 기점 다단계 변신 집계 오류");
+  if(JSON.stringify(s.sameBodyTrainingInsertions)!==
+      JSON.stringify(cumulativeTraining))
+    throw new Error("동일병종 일반 훈련 삽입 기회 집계/증명 상태 오류");
   const birth=report.rows.filter(r=>r.kind==="SOURCE_SPAWN");
   const diag={
     birthProfilesWithAlreadyCompletedCandidate:birth.filter(r=>
@@ -314,6 +345,80 @@ function statTable(row,stats) {
       '<td>'+cell(sumStats(values,stats))+'</td></tr>').join("")+
     '<tr><th>최종 실현 능력치</th><td colspan="12">미검증 · 숫자 표시 금지</td></tr></tbody></table></div>';
 }
+function trainingStructuralSynopsis(audit){
+  if(!audit)return '<p class="muted">일반 훈련 탐색 자료 없음 · 미검증</p>';
+  const best=audit.strongestOneTargetStructuralCandidate;
+  const preview=best?
+    '<p><strong>추가 단일 훈련 사슬의 최대 조건부 특성 차분 후보(전역 최댓값 아님):</strong> '+
+      linkableId(best.targetId)+' · 선행 포함 순서 '+idItems(best.prerequisiteAndTargetIds)+
+      ' · 병종 변경 '+cell(best.beforeBodyChangeIndex)+'단계 이후 적용'+
+      ' · 해당 시점 병종 '+linkableId(best.stageSoldierType)+
+      ' · 마지막 단계까지 새로 남는 SoldierBonus '+idItems(best.survivingNewBonusIds)+
+      ' · 마나 제외 보너스 항목 합 '+cell(best.extraUniqueBonusNonManaSum)+
+      ' (출생/변신 원시 능력치 변동과 확률을 더하지 않음)</p>':
+    '<p>이 제한적인 한 가지 훈련 삽입 탐색에서 추가 경로를 찾지 못했습니다. 불가능 증명은 아닙니다.</p>';
+  return '<p><strong>동일 병종 일반 훈련:</strong> 구조상 삽입 순서 '+
+    cell(audit.insertionSequenceWitnesses)+'건 · 서로 다른 목표 훈련 '+
+    cell(audit.distinctTrainingsWithHistoryWitness)+'종 · 신규 영구 특성이 양수인 목표 '+
+    cell(audit.targetsWithPositiveSurvivingBonus)+'종</p>'+
+    preview+
+    '<p class="muted">하나의 선택 훈련과 그 필수 선행 훈련만 조합했습니다. '+
+    '연구 상호배제·표본·기지·계급·훈장·성장·생존 상태·시간은 미검증이며, '+
+    '특성 수치 차분은 최종 능력치도 최종 가능한 보너스 최댓값도 아닙니다.</p>';
+}
+function trainingSourceRequirementRows(w,data){
+  const byId=new Map((data.transformations||[]).map(t=>[t.id,t]));
+  const body=data.soldiers?.find(s=>s.id===w.stageSoldierType);
+  return '<ol class="origin-training-gates">'+w.prerequisiteAndTargetIds.map(id=>{
+    const t=byId.get(id);
+    if(!t)return '<li>원본 훈련 규칙 누락: '+linkableId(id)+'</li>';
+    const items=Object.entries(t.requiredItems||{});
+    const medals=Object.entries(t.requiredCommendations||{});
+    const mins=Object.entries(t.requiredMinStats||{}).filter(([k,v])=>
+      k!=="mana"&&Number(v)>0);
+    const maxes=Object.entries(t.requiredMaxStats||{}).filter(([k,v])=>
+      k!=="mana"&&Number.isFinite(Number(v)));
+    const vital=[
+      t.allowsLiveSoldiers?"생존":null,
+      t.allowsWoundedSoldiers?"부상":null,
+      t.allowsDeadSoldiers?"사망":null
+    ].filter(Boolean).join("/")||"원본 확인 필요";
+    const promotionRisk=body?.allowPromotion===false&&Number(t.minRank)>0?
+      ' · <strong>이 단계 병종은 승진 불가: 획득 시 이미 계급 충족했는지 검증 필요</strong>':'';
+    return '<li>'+linkableId(id)+' · 필요 연구 '+idItems(t.requires)+
+      ' · 기지 기능 '+idItems(t.requiresBaseFunc)+
+      ' · 아이템 '+(items.length?items.map(([k,v])=>
+        linkableId(k)+' ×'+cell(v)).join(', '):'없음')+
+      ' · 요구 계급 '+cell(t.minRank??0)+promotionRisk+
+      ' · 훈장 '+(medals.length?medals.map(([k,v])=>
+        linkableId(k)+' 등급 '+cell(v)).join(', '):'없음')+
+      ' · 최소 능력치 '+(mins.length?mins.map(([k,v])=>
+        esc(STAT_LABELS[k]||k)+' '+cell(v)).join(', '):'없음')+
+      ' · 최대 능력치 '+(maxes.length?maxes.map(([k,v])=>
+        esc(STAT_LABELS[k]||k)+' '+cell(v)).join(', '):'없음')+
+      ' · 대상 상태 '+esc(vital)+
+      ' · 시술 자금 '+cell(t.cost??0)+'</li>';
+  }).join('')+'</ol>';
+}
+function trainingTargetList(audit,data){
+  const list=audit.targetWitnesses||[];
+  if(!list.length)return '<p class="muted">선택 가능한 삽입 순서를 기록하지 못함 · 불가능 판정 아님</p>';
+  return '<div class="origin-training-target-list"><p>서로 다른 목표 훈련 '+
+    cell(list.length)+'종. 아래 수치는 <strong>실현 확정 능력치가 아니라</strong> '+
+    '단일 목표 훈련·필수 선행만 넣었을 때 말단에 새로 남을 수 있는 고유 SoldierBonus 차분입니다.</p>'+
+    '<ol>'+list.map(w=>'<li><strong>'+esc(w.targetName)+'</strong> '+
+      linkableId(w.targetId)+
+      ' · 변신 '+cell(w.beforeBodyChangeIndex)+'단계 이후 · '+
+      '추가 마나 제외 특성 차분 '+cell(w.extraUniqueBonusNonManaSum)+
+      '<p>선행 → 목표 훈련: '+idItems(w.prerequisiteAndTargetIds)+
+      ' · 신규 특성: '+idItems(w.survivingNewBonusIds)+'</p>'+
+      trainingSourceRequirementRows(w,data)+
+      '<p class="muted">'+(w.hasUnresolvedStatChange?
+        '원시 능력치 변동 미계산 · ':'')+
+      (w.requiresUnverifiedVitalContinuity?'사망·생존 연속성 미검증 · ':'')+
+      '연구·재료·훈장·계급·능력치·시간순 미검증</p></li>').join('')+
+      '</ol></div>';
+}
 function sourceAncestryDetails(row,sourceNames){
   const a=row.candidateSourceAncestry;
   if(!a)return "";
@@ -332,7 +437,11 @@ function sourceAncestryDetails(row,sourceNames){
       '<p class="muted">최종 남는 변신 이력: '+idItems(c.terminalHistory)+
       (c.vitalContinuityUnverified?
         ' · 사망 후 후속 변신이 실제 가능하려면 생존 상태의 별도 재검증이 필요함':'')+
-      ' · <strong>연구·시설·재료·훈장·능력치 미검증</strong></p></li>';
+      ' · <strong>연구·시설·재료·훈장·능력치 미검증</strong></p>'+
+      trainingStructuralSynopsis(c.optionalSameBodyTrainingAudit)+
+      '<button class="maxima-show" type="button" data-training-path-index="'+i+
+      '">해당 출생처·변신 사슬의 일반 훈련 후보 전부 보기</button>'+
+      '<div data-training-panel-index="'+i+'"></div></li>';
   }).join('');
   return '<h4>최초 획득처에서 연결되는 병종변경 사슬</h4>'+
     '<p>출생 프로필 '+cell(a.rootProfileIds.length)+'개에서 시작하는 '+
@@ -340,13 +449,14 @@ function sourceAncestryDetails(row,sourceNames){
     cell(a.directRootCount)+'개, 다른 병종을 경유 '+cell(a.viaOtherBodyChangeCount)+
     '개 · 최대 '+cell(a.maxDepth)+'단계</p>'+
     '<p class="muted">출생 당시 변신 이력, 방향성 금지 규칙, 병종 변경의 reset 및 '+
-    '한 규칙의 중복 사용 금지를 반영했습니다. 일반 훈련·연구·재료·전투 성장·훈장·사망/부활은 '+
-    '실행하지 않은 탐색이므로 후보가 존재해도 실제로 가능한 최종 육성을 의미하지 않습니다. '+
+    '한 규칙의 중복 사용 금지를 반영했습니다. 동일 병종 훈련은 추가 목표 한 가지와 '+
+    '필수 선행 훈련을 삽입하는 제한 모델로만 탐색했습니다. '+
+    '연구·재료·전투 성장·훈장·사망/부활은 검증되지 않았으므로 실제 최종 육성 가능성을 의미하지 않습니다. '+
     '탐색 범위 밖 경로를 불가능하다고 단정하지 않습니다.</p>'+
     (a.candidateCount?'<details class="origin-lineage-candidates"><summary>출생처별 구조 경로 '+
       cell(a.candidateCount)+'개 펼치기</summary><ol>'+entries+'</ol></details>':empty);
 }
-function showDetails(row,stats,host,sourceNames){
+function showDetails(row,stats,host,sourceNames,data){
   const source=row.kind==="SOURCE_SPAWN";
   host.hidden=false;
   let html='<div class="maxima-detail-head"><h3>'+esc(row.soldierName)+
@@ -365,6 +475,10 @@ function showDetails(row,stats,host,sourceNames){
     '<p><strong>이후 자연 성장 가능 능력치(상계 기준):</strong> '+
       (row.naturalGrowthCanIncrease.map(k=>esc(STAT_LABELS[k])).join(" · ")||"추가 상승 없음")+'</p>'+
     '<p>'+esc(row.naturalGrowthAssumption)+'</p>'+
+    '<h4>출생 직후 일반 훈련·필수 선행 순서의 제한적 탐색</h4>'+
+    trainingStructuralSynopsis(row.birthSameBodyTrainingAudit)+
+    '<button type="button" class="maxima-show" id="originTrainingBirthButton">출생 직후 훈련 목표 전체 보기</button>'+
+    '<div id="originTrainingBirthPanel"></div>'+
     '<h4>기존 병종별 보너스 후보와 출생 이력 충돌 진단</h4>'+
     '<p><strong>출생 시 이미 받은 후보 훈련 (재시술 금지):</strong> '+
       idItems(row.legacyCandidateBirthHistoryAudit.alreadyCompleted)+'</p>'+
@@ -449,6 +563,29 @@ function showDetails(row,stats,host,sourceNames){
   host.querySelector("#originDetailClose").addEventListener("click",()=>{
     host.hidden=true;host.innerHTML="";
   });
+  // Compute complete individual target inventories only on a user click;
+  // data, proof state and the 112-row display remain a single shared source.
+  host.onclick=event=>{
+    const birth=event.target.closest("#originTrainingBirthButton");
+    if(birth&&source){
+      const panel=host.querySelector("#originTrainingBirthPanel");
+      if(panel.innerHTML){panel.innerHTML="";return;}
+      const profile=data.profiles.find(p=>p.id===row.id);
+      panel.innerHTML=trainingTargetList(birthOnlyTrainingAudit(
+        data,profile,{includeAll:true}),data);
+      return;
+    }
+    const button=event.target.closest("button[data-training-path-index]");
+    if(!button||source)return;
+    const index=Number(button.dataset.trainingPathIndex);
+    const candidate=row.candidateSourceAncestry?.candidates[index];
+    const panel=host.querySelector('[data-training-panel-index="'+index+'"]');
+    if(!candidate||!panel)return;
+    if(panel.innerHTML){panel.innerHTML="";return;}
+    const profile=data.profiles.find(p=>p.id===candidate.rootProfileId);
+    panel.innerHTML=trainingTargetList(auditSingleSameBodyTraining(
+      data,profile,candidate,{includeAll:true}),data);
+  };
 }
 export async function initOriginProgression(data){
   const section=document.querySelector("#originMaxima");
@@ -477,7 +614,9 @@ export async function initOriginProgression(data){
       "개 · 직접 금지 이력 충돌 "+report.summary.birthProfilesWithDirectForbiddenCandidate+
       "개 · 출생처 기점 구조 사슬 "+report.summary.sourceRootedAncestry.sourceAnchoredCandidates+
       "개(최대 "+report.summary.sourceRootedAncestry.longestBodyChangeChain+
-      "단계, 미실행) · 실행 검증 0개 · 최종 능력치 확정 0개";
+      "단계, 미실행) · 동일병종 훈련 삽입 순서 후보 "+
+      report.summary.sameBodyTrainingInsertions.structuralInsertionWitnesses+
+      "건(미실행) · 실행 검증 0개 · 최종 능력치 확정 0개";
     const classNames=new Map(data.soldiers.map(x=>[x.id,x.koName]));
     type.innerHTML='<option value="">전체 병종 (29종)</option>'+
       report.classes.map(x=>'<option value="'+esc(x.soldierType)+'">'+
@@ -508,6 +647,9 @@ export async function initOriginProgression(data){
           (row.legacyCandidateBirthHistoryAudit?.directHistoryConflicts?.length?
             ' · 출생 이력 경고 '+row.legacyCandidateBirthHistoryAudit.directHistoryConflicts.length+'건':'')+
           (row.prerequisites?.reset?' · 이력 초기화':'')+
+          (row.birthSameBodyTrainingAudit?' · 출생 직후 훈련 구조 후보 '+
+            row.birthSameBodyTrainingAudit.distinctTrainingsWithHistoryWitness+
+            '종(미실행)':'')+
           (row.candidateSourceAncestry?' · 출생처 추적 후보 '+
             row.candidateSourceAncestry.candidateCount+'건(미실행)':'')+
           '<small class="id">'+esc(label)+'</small></td>'+
@@ -527,7 +669,7 @@ export async function initOriginProgression(data){
       const b=event.target.closest("button[data-origin-id]");
       if(!b)return;
       const row=report.rows.find(r=>r.id===b.dataset.originId);
-      if(row)showDetails(row,stats,detail,sourceNames);
+      if(row)showDetails(row,stats,detail,sourceNames,data);
     });
     render();
   }catch(error){

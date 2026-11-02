@@ -5,6 +5,8 @@ import assert from "node:assert/strict";
 import {buildSoldierOriginProgression,STATS} from "./build-soldier-origin-progression.mjs";
 import {enumerateSourceBodyChangeLineages}
   from "./soldier-origin-lineage-census.mjs";
+import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
+  from "../public/soldiers/modern/origin-same-body-bridge.js";
 import {validateOriginProgression} from "../public/soldiers/modern/origin-progress-ui.js";
 import {initialState,bonusStats} from "../public/soldiers/modern/eligibility.js";
 import {buildAcquisitionLedger,validateAcquisitionLedger}
@@ -45,9 +47,17 @@ assert.deepEqual({
 for(const edge of lineage.branches){
   const row=published.rows.find(x=>x.id===edge.id);
   assert(row,"source-rooted edge exists in the 112-row ledger: "+edge.id);
-  assert.deepEqual(row.candidateSourceAncestry,edge,
-    "bounded source chain must remain separate for each incoming edge: "+edge.id);
+  assert.deepEqual({
+    ...row.candidateSourceAncestry,
+    candidates:row.candidateSourceAncestry.candidates.map(
+      ({optionalSameBodyTrainingAudit,...rest})=>rest)
+  },edge,"bounded source chain must remain separate for each incoming edge: "+edge.id);
 }
+assert.deepEqual(published.summary.sameBodyTrainingInsertions,{
+  initialProfilesAudited:72,sourceRootedPathsAudited:401,
+  structuralInsertionWitnesses:22686,distinctTargetWitnesses:12429,
+  targetsWithPositiveSurvivingBonus:2611,chronologicallyVerifiedTrainingRoutes:0
+});
 const unlinked=lineage.branches.find(x=>
   x.id==="transform:STR_SPECTRE_SUMMONING:from:STR_SOLDIER_SPECTRE");
 assert.equal(unlinked.candidateCount,0);
@@ -88,6 +98,76 @@ for(const p of data.profiles){
       p.id+" upper should not erase birth overcaps: "+k);
   }
 }
+const peasantTraining=birthOnlyTrainingAudit(data,data.profiles.find(
+  p=>p.id==="direct:STR_SOLDIER_PEASANT"),{includeAll:true});
+const assaultTraining=birthOnlyTrainingAudit(data,data.profiles.find(
+  p=>p.id==="manufacture:STR_THEBAN_ASSAULT_CLONE"),{includeAll:true});
+const halfTraining=birthOnlyTrainingAudit(data,data.profiles.find(
+  p=>p.id==="manufacture:STR_HALF_UBER_GIRL_RECRUITMENT"),{includeAll:true});
+assert.equal(peasantTraining.indexedSameBodyRules,73,
+  "all 76 same-body rules are audited, but 3 internal-only rules are excluded");
+assert.equal(peasantTraining.distinctTrainingsWithHistoryWitness,30);
+assert.equal(assaultTraining.distinctTrainingsWithHistoryWitness,18);
+assert.equal(halfTraining.distinctTrainingsWithHistoryWitness,27);
+assert(peasantTraining.targetWitnesses.some(x=>
+  x.targetId==="STR_MILITARY_DRILL_TRAINING"&&
+  JSON.stringify(x.prerequisiteAndTargetIds)===JSON.stringify([
+    "STR_BASIC_FIREARMS_TRAINING","STR_BOOT_CAMP_TRAINING",
+    "STR_MILITARY_DRILL_TRAINING"
+  ])), "three-step same-body training needs ordered prerequisites");
+assert(halfTraining.targetWitnesses.some(x=>
+  x.targetId==="STR_MILITARY_DRILL_TRAINING"&&
+  JSON.stringify(x.prerequisiteAndTargetIds)===JSON.stringify([
+    "STR_BOOT_CAMP_TRAINING","STR_MILITARY_DRILL_TRAINING"
+  ])), "pre-owned basic training must not be retrospectively performed");
+assert(!assaultTraining.targetWitnesses.some(x=>
+  x.targetId==="STR_MILITARY_DRILL_TRAINING"||
+  x.targetId==="STR_BATTLE_FORM_AUGMENTATION"),
+  "assault clone's inherited forbidden training history must not be erased");
+const originMap=new Map(data.profiles.map(p=>[p.id,p]));
+const chortFromPeasant=byId.get(
+  "transform:STR_CHORT_SUMMONING:from:STR_SOLDIER_PEASANT");
+const chortCandidate=chortFromPeasant.candidateSourceAncestry.candidates.find(
+  x=>x.rootProfileId==="direct:STR_SOLDIER_PEASANT");
+const chortTraining=auditSingleSameBodyTraining(data,
+  originMap.get(chortCandidate.rootProfileId),chortCandidate,{includeAll:true});
+const brides=chortTraining.targetWitnesses.find(x=>
+  x.targetId==="STR_BRIDES_TO_THE_QUEEN");
+assert(brides&&brides.beforeBodyChangeIndex===1&&
+  brides.stageSoldierType==="STR_SOLDIER_CHORT");
+assert.deepEqual(brides.prerequisiteAndTargetIds,[
+  "STR_NEPOTISM","STR_PERSONAL_ATTENTION","STR_BRIDES_TO_THE_QUEEN"
+]);
+assert.deepEqual(brides.survivingNewBonusIds,[
+  "STR_BRIDE","STR_NEPOTISM","STR_PERSONAL_ATTENTION"
+]);
+assert.equal(brides.extraUniqueBonusNonManaSum,6);
+assert.equal(brides.researchProven,false);
+assert.equal(brides.finalStats,null);
+const spectreCandidate=byId.get(
+  "transform:STR_SPECTRE_SUMMONING:from:STR_SOLDIER_PEASANT")
+  .candidateSourceAncestry.candidates.find(x=>
+    x.rootProfileId==="direct:STR_SOLDIER_PEASANT");
+const beforeReset=auditSingleSameBodyTraining(data,
+  originMap.get(spectreCandidate.rootProfileId),
+  spectreCandidate,{includeEveryInsertion:true}).allInsertionWitnesses.find(x=>
+    x.targetId==="STR_PERSONAL_ATTENTION"&&
+    x.beforeBodyChangeIndex===0);
+assert(beforeReset&&beforeReset.extraUniqueBonusNonManaSum===0&&
+  beforeReset.survivingNewBonusIds.length===0,
+  "new SoldierBonus earned before reset: true must not survive the body change");
+assert.equal(beforeReset.requiresUnverifiedVitalContinuity,true,
+  "corpse-only body changes must retain unresolved vital continuity evidence");
+assert(peasantTraining.targetWitnesses.some(w=>
+  w.targetId==="STR_SUN_WARRIORS_TRAINING"));
+assert(!auditSingleSameBodyTraining(data,originMap.get(spectreCandidate.rootProfileId),
+  spectreCandidate,{includeEveryInsertion:true}).allInsertionWitnesses.some(w=>
+    w.targetId==="STR_SUN_WARRIORS_TRAINING"),
+  "a training legal at birth must be rejected if a later body change forbids its history");
+assert(peasantTraining.targetWitnesses.every(w=>
+  w.historyTypeOnly&&w.researchProven===false&&w.materialsProven===false&&
+  w.medalsProven===false&&w.statsProven===false&&w.calendarProven===false&&
+  w.finalStats===null&&w.finalSum===null));
 const half=byId.get("manufacture:STR_HALF_UBER_GIRL_RECRUITMENT");
 const peasant=byId.get("direct:STR_SOLDIER_PEASANT");
 assert.equal(half.soldierType,peasant.soldierType);
@@ -252,6 +332,32 @@ mustReject("cannot claim post-corpse living status was executed",r=>{
   const x=r.rows.find(y=>y.id===lineageRowId).candidateSourceAncestry.candidates
     .find(y=>y.vitalContinuityUnverified);
   x.vitalContinuityUnverified=false;
+});
+mustReject("cannot forge a birth-only bonus opportunity",r=>{
+  r.rows.find(x=>x.id===peasant.id)
+    .birthSameBodyTrainingAudit.strongestOneTargetStructuralCandidate
+    .extraUniqueBonusNonManaSum=999;
+});
+mustReject("cannot borrow an ordinary Peasant's extra drill training for its clone",r=>{
+  r.rows.find(x=>x.id===assault.id).birthSameBodyTrainingAudit=
+    structuredClone(peasant.birthSameBodyTrainingAudit);
+});
+mustReject("cannot claim insertion research completion from history-only proof",r=>{
+  const candidate=r.rows.find(x=>x.id===chortFromPeasant.id)
+    .candidateSourceAncestry.candidates.find(x=>
+      x.rootProfileId==="direct:STR_SOLDIER_PEASANT");
+  candidate.optionalSameBodyTrainingAudit.strongestOneTargetStructuralCandidate
+    .researchProven=true;
+});
+mustReject("cannot miscount prerequisite closure or bonus reset",r=>{
+  const candidate=r.rows.find(x=>x.id===chortFromPeasant.id)
+    .candidateSourceAncestry.candidates.find(x=>
+      x.rootProfileId==="direct:STR_SOLDIER_PEASANT");
+  candidate.optionalSameBodyTrainingAudit.strongestOneTargetStructuralCandidate
+    .prerequisiteAndTargetIds=["STR_BRIDES_TO_THE_QUEEN"];
+});
+mustReject("cannot relabel 22686 structural insertions as proven paths",r=>{
+  r.summary.sameBodyTrainingInsertions.chronologicallyVerifiedTrainingRoutes=22686;
 });
 // Cross-check the independent source-first ledger already in the same atlas.
 const ledger=buildAcquisitionLedger(data);

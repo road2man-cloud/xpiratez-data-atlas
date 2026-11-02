@@ -7,6 +7,8 @@ import {initialState,bonusStats} from "../public/soldiers/modern/eligibility.js"
 import {createStatEnvelope} from "../public/soldiers/modern/stat-envelope.js";
 import {growStatEnvelope} from "../public/soldiers/modern/growth-envelope.js";
 import {enumerateSourceBodyChangeLineages} from "./soldier-origin-lineage-census.mjs";
+import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
+  from "../public/soldiers/modern/origin-same-body-bridge.js";
 import {directResearchTransformLocks,permanentResearchTransformLocks}
   from "../public/soldiers/modern/research-training-locks.js";
 
@@ -152,8 +154,23 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     throw new Error("획득처별 감사의 원본은 X-Piratez v.o2이어야 합니다");
   const ancestry=enumerateSourceBodyChangeLineages(data);
   const lineageByEdge=new Map(ancestry.branches.map(x=>[x.id,x]));
+  const profileById=new Map(data.profiles.map(x=>[x.id,x]));
   if(ancestry.summary.incomingEdges!==40)
     throw new Error("병종변경 입력 간선 개수와 출생계보 결과 불일치");
+  const trainingTotals={initialProfilesAudited:0,sourceRootedPathsAudited:0,
+    structuralInsertionWitnesses:0,distinctTargetWitnesses:0,
+    targetsWithPositiveSurvivingBonus:0,chronologicallyVerifiedTrainingRoutes:0};
+  function recordTrainingAudit(a,kind){
+    if(a.status!=="HISTORY_AND_TYPE_ONLY_NOT_EXECUTED"||
+      a.finalStats!==null||a.finalSum!==null)
+      throw new Error("미증명 일반 훈련이 최종 능력치 확정으로 승격됨");
+    if(kind==="birth")trainingTotals.initialProfilesAudited++;
+    else trainingTotals.sourceRootedPathsAudited++;
+    trainingTotals.structuralInsertionWitnesses+=a.insertionSequenceWitnesses;
+    trainingTotals.distinctTargetWitnesses+=a.distinctTrainingsWithHistoryWitness;
+    trainingTotals.targetsWithPositiveSurvivingBonus+=
+      a.targetsWithPositiveSurvivingBonus;
+  }
   const direct=[],transformed=[];
   for(const profile of data.profiles){
     const s=soldiers.get(profile.soldierType);
@@ -165,6 +182,8 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       throw new Error("v.o2 제조 재료 원본 누락: "+profile.id);
     const materialGates=profile.acquisitionRequiredItems||{};
     const trigger=eventSourceGates(profile);
+    const initialTraining=birthOnlyTrainingAudit(data,profile);
+    recordTrainingAudit(initialTraining,"birth");
     direct.push({
       id:profile.id,soldierType:s.id,soldierName:s.koName,
       acquisitionType:profile.sourceType,sourceId:profile.sourceId,
@@ -180,6 +199,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       initialHistory:entries(profile.previousTransformations),
       initialBonuses:entries(profile.traitCounts),
       bornPermanentBonus:n.bornPermanentBonus,
+      birthSameBodyTrainingAudit:initialTraining,
       legacyCandidateBirthHistoryAudit:inheritedCandidateGateAudit(
         data,profile,maxima.get(s.id)),
       rawStatCaps:pick(s.statCaps),
@@ -202,8 +222,17 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       if(!soldiers.has(sourceType))throw new Error("알 수 없는 변신 출발 병종: "+t.id+"/"+sourceType);
       const parentProfiles=data.profiles.filter(p=>p.soldierType===sourceType).map(p=>p.id);
       const edgeId="transform:"+t.id+":from:"+sourceType;
-      const lineage=lineageByEdge.get(edgeId);
-      if(!lineage)throw new Error("출생 근원 계보 간선 누락: "+edgeId);
+      const indexedLineage=lineageByEdge.get(edgeId);
+      if(!indexedLineage)throw new Error("출생 근원 계보 간선 누락: "+edgeId);
+      const lineage={...indexedLineage,
+        candidates:indexedLineage.candidates.map(candidate=>{
+          const origin=profileById.get(candidate.rootProfileId);
+          if(!origin)throw new Error("연결된 출생처 원본 누락: "+candidate.rootProfileId);
+          const trainingAudit=auditSingleSameBodyTraining(data,origin,candidate);
+          recordTrainingAudit(trainingAudit,"chain");
+          return {...candidate,optionalSameBodyTrainingAudit:trainingAudit};
+        })
+      };
       transformed.push({
         id:"transform:"+t.id+":from:"+sourceType,soldierType:output.id,
         soldierName:output.koName,acquisitionType:"typeChange",
@@ -296,6 +325,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       eventOriginsWithTriggerEvidence:direct.filter(r=>r.acquisitionType==="event"&&
         r.prerequisites.event).length,
       sourceRootedAncestry:ancestry.summary,
+      sameBodyTrainingInsertions:trainingTotals,
       chronologicalPathsVerified:0,
       finalStatRoutesVerified:0,saveVerified:0,...historyDiagnostics},
     statusDefinitions:{
@@ -308,6 +338,8 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       "72개 출생 프로필과 7개 병종변경 규칙의 입력 병종 40개 조합을 색인; 출생처 기점 다단계 병종 변경 간선 그래프는 탐색하였으나 중간 동일병종 훈련과 연구/확률/훈장/신체상태를 재생하지 않아 완전한 경로 증명은 아님.",
       "제조 requiredItems와 이벤트 script 가드는 2.1 병종 원본과 동일한 룰 병합에서 추출했으며, 1.1.1 제조/이벤트 웹 DB를 교차 적용하지 않음.",
       "여러 이벤트 script가 한 출생 유형을 지급할 경우 각각을 독립적인 대체 경로로 보존하고 공통 가드만 요약함.",
+      "출생 후/병종 변경 전후 하나의 선택된 동일병종 훈련과 그 필수 선행 훈련만 삽입해 이력·병종 정합성을 재검사; 서로 다른 선택 훈련 여러 개를 최적 결합한 검증은 아님.",
+      "동일병종 훈련의 중복 없는 SoldierBonus 중 최종 단계에 남는 값만 조건부 참고로 산정하며, 변신의 원시 능력치·기초 능력치 변동과 확률을 최종 수치로 계산하지 않음.",
       "제조 요구 연구와 실물 requiredItems는 별도 원본 필드이며, 공급 후보는 반드시 실제 보유 및 이벤트 발동으로 검증해야 함.",
       "제조에서 생성되는 새 병사는 기존 대원의 훈장·이력을 자동 상속하지 않음.",
       "출생 effectiveStats는 원본 출생 보너스를 1회 적용한 범위; 일반적인 성장 상계는 엔진 룰 기반의 매우 낙관적인 상계일 뿐 달성 인증이 아님.",
