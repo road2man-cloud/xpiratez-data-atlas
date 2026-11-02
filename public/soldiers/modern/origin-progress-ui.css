@@ -1,0 +1,22 @@
+/* Acquisition-origin comparison on the existing soldier atlas page. */
+.origin-panel #originSummary,.origin-panel #originStatus{font-size:.81rem;margin:9px 0;line-height:1.5}
+.origin-panel .origin-scroll{max-height:660px;margin:13px 0;scrollbar-color:#54769e #101a2c}
+.origin-panel #originTable{min-width:1550px;width:100%;font-size:.79rem}
+.origin-panel #originTable th,.origin-panel #originTable td{padding:9px 8px;min-width:71px;text-align:right;vertical-align:top;font-variant-numeric:tabular-nums}
+.origin-panel #originTable th:first-child,.origin-panel #originTable td:first-child{min-width:245px;max-width:310px;text-align:left}
+.origin-panel #originTable th:nth-child(2),.origin-panel #originTable td:nth-child(2){min-width:110px;text-align:left}
+.origin-panel #originTable th:nth-child(3),.origin-panel #originTable td:nth-child(3){min-width:130px;text-align:left}
+.origin-panel #originTable th:nth-child(4),.origin-panel #originTable td:nth-child(4){min-width:92px}
+.origin-panel #originTable td:first-child small,.origin-panel #originTable td:nth-child(3) small{display:block;margin:3px 0 0;line-height:1.4;overflow-wrap:anywhere}
+.origin-panel #originTable td:nth-child(3){color:#eecb89}
+.origin-panel .origin-detail-scroll{max-width:100%;max-height:360px;overflow:auto;border:1px solid #354967;border-radius:9px;margin:11px 0}
+.origin-panel .origin-detail-scroll table{min-width:1400px;width:100%;font-size:.78rem}
+.origin-panel .origin-detail-scroll th,.origin-panel .origin-detail-scroll td{min-width:78px;padding:9px 10px;text-align:right;white-space:normal}
+.origin-panel .origin-detail-scroll th:first-child,.origin-panel .origin-detail-scroll td:first-child{min-width:188px;text-align:left}
+.origin-panel .origin-detail-scroll td[colspan]{text-align:center;color:#eecb89}
+.origin-panel #originDetails p{overflow-wrap:anywhere}
+.origin-panel #originDetails code{white-space:normal;overflow-wrap:anywhere}
+.origin-panel .maxima-show{display:inline-block}
+@media(max-width:640px){
+  .origin-panel #originTable th:first-child,.origin-panel #originTable td:first-child{min-width:225px}
+}

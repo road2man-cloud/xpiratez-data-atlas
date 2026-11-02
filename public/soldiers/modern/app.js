@@ -4,6 +4,7 @@ import {loadRuntime} from "../../db-runtime.js";
 import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
 import {initFutureComparison} from "./compare-ui.js";
 import {initResearchMaxima} from "./maxima-compare.js";
+import {initOriginProgression} from "./origin-progress-ui.js";
 import {initResearchExclusionAudit} from "./research-exclusion-audit.js";
 import {createStatEnvelope,advanceStatEnvelope} from "./stat-envelope.js";
 import {eventScriptVerdict} from "./event-chronology.js";
@@ -311,6 +312,7 @@ async function load(){
   initBaselineGrowthComparison(DATA);
   // Independent read-only maxima module; errors must not block the save/planner UI.
   void initResearchMaxima(DATA);
+  void initOriginProgression(DATA);
   initResearchExclusionAudit(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
     SAVE=save;
