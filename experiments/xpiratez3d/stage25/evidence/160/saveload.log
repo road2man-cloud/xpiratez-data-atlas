@@ -1,0 +1,10 @@
+BOOT harness (no auto-load)
+[harness] READY session=s25e335d27e25fc48 pid=28284
+[harness] ACK session=s25e335d27e25fc48 seq=1 pid=28284 command=console mainmenu
+[harness] DISPATCH session=s25e335d27e25fc48 seq=1 console-returned
+[harness] ACK session=s25e335d27e25fc48 seq=2 pid=28284 command=console xpz3d_tutorial_smoke
+[harness] DISPATCH session=s25e335d27e25fc48 seq=2 console-returned
+[harness] ACK session=s25e335d27e25fc48 seq=3 pid=28284 command=console summonunit 730
+[harness] DISPATCH session=s25e335d27e25fc48 seq=3 console-returned
+[harness] ACK session=s25e335d27e25fc48 seq=4 pid=28284 command=quit
+[harness] DISPATCH session=s25e335d27e25fc48 seq=4 quit

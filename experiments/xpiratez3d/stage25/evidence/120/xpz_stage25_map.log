@@ -1,0 +1,10 @@
+event=native_nav_begin size=120 floors=12 height_range_m=40
+event=native_checkpoint step=layers_group_created
+event=native_checkpoint step=fake_terrain_created width=80 height=80
+event=native_checkpoint step=rpg_game_created
+event=native_checkpoint step=terrain_created
+event=native_hull_source_linked
+event=native_hulls_registered decks=10 count=50 collision_api=CAIMap::AddHull reachable_floors=UNVERIFIED
+event=native_checkpoint step=aimap_synced
+event=native_nav_coloured size=120 terrain_m=80
+event=native_3d_tower_created levels=10 meshes=50 last_deck_z=22.5 renderer_meshes=YES collision=SEPARATE_WORLD_SOURCE nav_floor_links=UNVERIFIED

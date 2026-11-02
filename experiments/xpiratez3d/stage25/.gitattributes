@@ -1,0 +1,4 @@
+# Preserve local runtime evidence as independent text captures without Git normalization.
+evidence/** -text -diff
+# A patch contains intentional leading context whitespace and tabs.
+s2-native-120x120x10.patch -whitespace

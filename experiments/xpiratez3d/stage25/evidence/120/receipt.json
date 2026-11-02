@@ -1,0 +1,33 @@
+{
+    "schema":  "xpz3d.stage25.engine-run.v1",
+    "result":  "PASS_NATIVE_SCENE_AND_NAV_SETUP",
+    "session":  "s25e0c876a1674f40",
+    "engineSha256":  "AA220903D3D383CCE7294B01F2CB3883FB709E45A6859513FB16CC8B9A2CDC74",
+    "nativeWorldExecuted":  true,
+    "navigationRequested":  [
+                                120,
+                                120
+                            ],
+    "floorSlotsCompiled":  12,
+    "navigationExtentMeters":  [
+                                   75,
+                                   75
+                               ],
+    "backingTerrainMeters":  80,
+    "towerLevelsRendered":  10,
+    "nivalMeshObjectsCreated":  50,
+    "nativeAIHullRegistrations":  50,
+    "spawnedNativeActor":  {
+                               "IsPresent":  true
+                           },
+    "nativeCameraMissionReached":  true,
+    "pathToDeck10Verified":  false,
+    "highFloorCollisionAPIRegistered":  {
+                                            "IsPresent":  true
+                                        },
+    "physicalCollisionTested":  false,
+    "highFloorVisibilityOcclusionVerified":  false,
+    "crossFloorShotVerified":  false,
+    "highFloorExplosionVerified":  false,
+    "scope":  "Real GOG Silent Storm process and real native S2 scene generation, not a complete high-floor battle."
+}

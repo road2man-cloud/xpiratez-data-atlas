@@ -1,0 +1,309 @@
+diff --git a/Main/aiGrid.h b/Main/aiGrid.h
+index ce9301b..c1c04de 100644
+--- a/Main/aiGrid.h
++++ b/Main/aiGrid.h
+@@ -55,9 +55,11 @@ const float F_LADDER_STEP = 0.625f;
+ //! by CPathNetwork::GetCP/GetCPNoHeight/GetDirection/GetFloor (retail @0x41d20 etc.).
+ const float F_3D_STEP = 0.1f;
+ //! limit on height range (minimum is always 0)
+-const float F_MAX_HEIGHT = 25.0f;
++// XPZ3D Stage25 isolated engine: 12-floor navigation height envelope (was 25m).
++// Not proof that high-floor path nodes exist until real hulls are registered.
++const float F_MAX_HEIGHT = 40.0f;
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+-const int N_MAX_FLOORS = 8;
++const int N_MAX_FLOORS = 12; // XPZ3D Stage25: 10 storeys + reserved floors
+ // Height-field slots without a supporting surface. Never a playable floor.
+ const int N_NO_SURFACE_FLOOR = 100;
+ // retail = 3 (disasm: RegisterFloorLayer @0x3f610 / SetOnBaseLayer @0x77ba0 `lea eax,[eax+eax*2]`,
+
+diff --git a/Main/RPGVision.cpp b/Main/RPGVision.cpp
+index 5575c09..5a0374e 100644
+--- a/Main/RPGVision.cpp
++++ b/Main/RPGVision.cpp
+@@ -280,7 +280,9 @@ CVisionTracker::CVisionTracker( NAI::IAIMap *_pAIMap, const STerrainInfo &terrai
+ 	FlushCubeCache();
+ 	CalcGrassInfo( terrainInfo );
+ 	// here comes hotstepper
+-	grid.SetSizes( 32, 32, 4 );
++	// XPZ3D Stage25: 40m vertical visibility envelope, 8 x 5m cube bands.
++	// Allocation is still full-grid; adaptive/lazy cube tracking is a later step.
++	grid.SetSizes( 32, 32, 8 );
+ 	for ( int z = 0; z < grid.GetZSize(); ++z )
+ 	{
+ 		for ( int y = 0; y < grid.GetYSize(); ++y )
+
+diff --git a/Main/wExplTracker.cpp b/Main/wExplTracker.cpp
+index cfc7017..845c20a 100644
+--- a/Main/wExplTracker.cpp
++++ b/Main/wExplTracker.cpp
+@@ -728,7 +728,7 @@ C3DLookupTable::C3DLookupTable( CExplosionSpace *_pSpace ):
+ {
+ 	if ( _pSpace )
+ 		_pSpace->cacheList.RegisterCache( this );
+-	grid.SetSizes( 0x40, 0x40, 8 );
++	grid.SetSizes( 0x40, 0x40, 16 ); // XPZ3D Stage25 51.2m vertical
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ // retail @0x3583d0: clear *pRes unconditionally, then walk the grid z (outer) -> y -> x with linear
+@@ -860,7 +860,7 @@ void CExplosionCube::Recalc()
+ CExplosionSpace::CExplosionSpace( NAI::IAIMap *_pAIMap ):
+ 	pAIMap( _pAIMap ), nObjectsEnd( 0 )
+ {
+-	grid.SetSizes( 0x40, 0x40, 8 );
++	grid.SetSizes( 0x40, 0x40, 16 ); // XPZ3D Stage25 51.2m vertical
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ // retail @0x358c60: one reconciliation of the voxel grid with the AI map -- drain the deferred-flush
+@@ -920,8 +920,10 @@ void CExplosionSpace::GetCoord( const CVec3 *pPos, SExplVoxelCoords *pRes )
+ 	int nZ = Float2Int( pPos->z / F_VOXEL_SIZE - 0.5f );
+ 	if ( nZ < 1 )
+ 		nZ = 1;
+-	else if ( nZ > 0x7e )
+-		nZ = 0x7e;
++	// Stage25 isolated 16-cube vertical explosion envelope (256 x 0.2m = 51.2m).
++	// The original bound was 0x7e (= 25.2m); it silently clipped high floors.
++	else if ( nZ > 0xfe )
++		nZ = 0xfe;
+ 	pRes->nX = (unsigned short)nX;
+ 	pRes->nY = (unsigned short)nY;
+ 	pRes->nZ = (unsigned short)nZ;
+
+diff --git a/Main/wMain.cpp b/Main/wMain.cpp
+index 97772ee..bbb4da3 100644
+--- a/Main/wMain.cpp
++++ b/Main/wMain.cpp
+@@ -40,6 +40,8 @@
+ #include "wAckBase.h"
+ #include "wAck.h"
+ #include "wTerrain.h"
++#include "MemObject.h" // XPZ3D native procedural AI collision hulls
++#include "wInterfaceVisitors.h"
+ #include "..\DBFormat\DataAck.h"
+ #include "wMainMoves.h"
+ #include "wMainTrace.h"
+@@ -91,6 +93,45 @@ externA5 CPtr<NScript::CScript> pScript;
+ 
+ namespace NWorld
+ {
++// XPZ3D Stage25: ten-deck procedural geometry enters the SAME Nival world
++// source/visitor sync pipeline as normal buildings and terrain. The AI map's
++// RegisterBase requires an active source object: direct AddHull outside Sync
++// dereferenced null pStuff. This object remains alive in miscObjects.
++class CStage25CollisionTower : public IDynamicObject, public IVisObj
++{
++	OBJECT_NOCOPY_METHODS(CStage25CollisionTower);
++	CSyncSrcBind<IVisObj> bindGlobal;
++public:
++	CStage25CollisionTower() {}
++	CStage25CollisionTower(CSyncSrc<IVisObj> *src) { bindGlobal.Link(src, this); }
++	virtual bool Segment() { return false; }
++	virtual void Visit(IAIVisitor *p)
++	{
++		const int flags = TS_TERRAINS | TS_PASS_BLOCKER | TS_WEAPON_BLOCKER |
++			TS_VISION | TS_VISION_SOLID | TS_PICK | TS_COVER;
++		SFBTransform identity;
++		Identity(&identity.forward); Identity(&identity.backward);
++		int hullCount = 0;
++		for (int deck=0; deck<10; ++deck)
++		{
++			const float z = deck*2.5f;
++			CMemObject *slab = new CMemObject;
++			slab->CreateCube(CVec3(25,25,z), CVec3(20,20,0.22f));
++			if(p->AddHull(slab,identity,0,deck,flags,10000+deck)) ++hullCount;
++			for(int corner=0;corner<4;++corner)
++			{
++				const float x=25.0f+((corner&1)?19.6f:0);
++				const float y=25.0f+((corner&2)?19.6f:0);
++				CMemObject *column = new CMemObject;
++				column->CreateCube(CVec3(x,y,z), CVec3(0.4f,0.4f,2.5f));
++				if(p->AddHull(column,identity,0,deck,flags,10050+deck*4+corner)) ++hullCount;
++			}
++		}
++		FILE *f=0;
++		if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f)
++		{fprintf(f,"event=native_hulls_registered decks=10 count=%d collision_api=CAIMap::AddHull reachable_floors=UNVERIFIED\n",hullCount);fclose(f);}
++	}
++};
+ const int DW_SEGMENT_TIME = 50;
+ const int N_SOUND_PARTICLE_ID = 48;
+ const int N_SOUND_MARKER_MODEL_ID = 3899;   // @0x369110: the heard-not-seen noise-marker DB mesh (0xf3b)
+@@ -863,8 +904,18 @@ void CWorld::CreateFakeTerrainInfo( STerrainInfo *pTerrain )
+ {
+ 	STerrainInfo &terrain = *pTerrain;
+ 	
+-	terrain.nWidth = 128;
+-	terrain.nHeight = 128;
++	// The native terrain heightfield uses metres; path tiles use 0.625m.
++	// Native 120 x 120 movement cells cover 75m; 160 x 160 cover 100m.
++	char xpzStage25[8] = { 0 };
++	const bool stage25 = GetEnvironmentVariableA( "XPZ3D_STAGE25_NATIVE_MAP", xpzStage25, sizeof(xpzStage25) ) == 1 && xpzStage25[0] == '1';
++	char sizeFlag[8] = { 0 };
++	const bool size160 = GetEnvironmentVariableA( "XPZ3D_STAGE25_SIZE160", sizeFlag, sizeof(sizeFlag) ) == 1 && sizeFlag[0] == '1';
++	// Native NTerrain::CBuilder groups the terrain in 8m regions without
++	// clipping the last group. Round upward to 8m so 75m/100m tactical
++	// extents have safe backing fields (80m/104m); the navigable area remains
++	// exactly 120x120 or 160x160 cells of 0.625m.
++	terrain.nWidth = stage25 ? ( size160 ? 104 : 80 ) : 128;
++	terrain.nHeight = terrain.nWidth;
+ 	terrain.typeMap.SetSizes( terrain.nWidth + 1, terrain.nHeight + 1 );
+ 	terrain.heightMap.SetSizes( terrain.nWidth + 1, terrain.nHeight + 1 );
+ 	terrain.color.SetSizes( terrain.nWidth + 1, terrain.nHeight + 1 );
+@@ -1924,21 +1975,67 @@ void CWorld::CreateDefault()
+ 	// retail CreateDefault @0x36dc30: same as CreateRandom -- the explosion master right after the nodes network
+ 	pExplosionMaster = CreateExplosionMaster( this );
+ 
+-	nRootLayersGroup = pPathNetwork->CreateLayersGroup( 16, 16, CVec2(0,0), 0, 0 );
++	char xpzStage25[8] = { 0 }, sizeFlag[8] = { 0 };
++	const bool stage25 = GetEnvironmentVariableA( "XPZ3D_STAGE25_NATIVE_MAP", xpzStage25, sizeof(xpzStage25) ) == 1 && xpzStage25[0] == '1';
++	const bool size160 = GetEnvironmentVariableA( "XPZ3D_STAGE25_SIZE160", sizeFlag, sizeof(sizeFlag) ) == 1 && sizeFlag[0] == '1';
++	const int navSize = stage25 ? ( size160 ? 160 : 120 ) : 16;
++	if ( stage25 )
++	{
++		FILE *fp = 0;
++		if ( fopen_s( &fp, "_xpz_stage25_map.log", "a" ) == 0 && fp )
++		{
++			fprintf( fp, "event=native_nav_begin size=%d floors=12 height_range_m=40\n", navSize ); fclose( fp );
++		}
++	}
++	nRootLayersGroup = pPathNetwork->CreateLayersGroup( navSize, navSize, CVec2(0,0), 0, 0 );
++	if(stage25){FILE* f=0;if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f){fprintf(f,"event=native_checkpoint step=layers_group_created\n");fclose(f);}}
+ 
+ 	STerrainInfo sInfo;
+ 	CreateFakeTerrainInfo( &sInfo );
++	if(stage25){FILE* f=0;if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f){fprintf(f,"event=native_checkpoint step=fake_terrain_created width=%d height=%d\n",sInfo.nWidth,sInfo.nHeight);fclose(f);}}
+ 	pRPGGame = NRPG::CreateGame( pAIMap, pPathNetwork, sInfo );
++	if(stage25){FILE* f=0;if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f){fprintf(f,"event=native_checkpoint step=rpg_game_created\n");fclose(f);}}
+ 	pTerrainInfo = new CTerrainInfoHolder( sInfo );
+ 	list<SMapHole> holes;
+ 	list<SMapWall> walls;
+ 	pTerrain = new NWorld::CTerrain( pShow, pTerrainInfo, pAIMap, pTime, nRootLayersGroup, holes, walls );
++	if(stage25){FILE* f=0;if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f){fprintf(f,"event=native_checkpoint step=terrain_created\n");fclose(f);}}
++
++	if ( stage25 )
++	{
++		char hullFlag[8] = { 0 };
++		const bool enableHulls = GetEnvironmentVariableA("XPZ3D_STAGE25_NATIVE_HULLS", hullFlag, sizeof(hullFlag)) == 1 && hullFlag[0] == '1';
++		if(enableHulls)
++		{
++			// Bound to pShow, so CAIMap::Sync() invokes Visit(IAIVisitor*) with a
++			// valid COrdinarySyncDst::pStuff / source context.
++			miscObjects.push_back(new CStage25CollisionTower(pShow));
++			FILE *f=0;
++			if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f)
++			{fprintf(f,"event=native_hull_source_linked\n");fclose(f);}
++		}
++		else
++		{
++			FILE *f=0;
++			if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f)
++			{fprintf(f,"event=native_hulls_registered decks=10 count=0 mode=visual_only\n");fclose(f);}
++		}
++	}
+ 
+ 	pAIMap->Sync();
++	if(stage25){FILE* f=0;if(fopen_s(&f,"_xpz_stage25_map.log","a")==0&&f){fprintf(f,"event=native_checkpoint step=aimap_synced\n");fclose(f);}}
+ 
+ 	vector<NAI::SPathPlace> empty;
+ 	pPathNetwork->UpdateColouring( empty );
+ 
++	if ( stage25 )
++	{
++		FILE *fp = 0;
++		if ( fopen_s( &fp, "_xpz_stage25_map.log", "a" ) == 0 && fp )
++		{
++			fprintf( fp, "event=native_nav_coloured size=%d terrain_m=%d\n", navSize, sInfo.nWidth ); fclose( fp );
++		}
++	}
+ 	StartGame();
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+diff --git a/Main/iMissionInternal.h b/Main/iMissionInternal.h
+index 86bd5bf..7472266 100644
+--- a/Main/iMissionInternal.h
++++ b/Main/iMissionInternal.h
+@@ -176,6 +176,8 @@ private:
+ 	CObj<CObjectBase> pLightSource;
+ 	CObj<CVisibleTracker> pVisibleTracker;
+ 	vector<CObj<CObjectBase> > buildingSchemas;
++	// Stage25 transient native render meshes; not serialized or added to the base campaign.
++	vector<CObj<CObjectBase> > xpzStage25Visuals;
+ 	CObj<CObjectBase> pIntersectHolder;
+ 	CObj<NGScene::CPolyline> pIntersectLineHolder;
+ 	CVec3 vPrevCameraPosition;
+
+diff --git a/Main/iMission.cpp b/Main/iMission.cpp
+index 26cad82..1d964b1 100644
+--- a/Main/iMission.cpp
++++ b/Main/iMission.cpp
+@@ -228,13 +228,17 @@ bool CMission::Initialize( int _nTemplateID, int _nVariantID, NScenario::CScenar
+ 		}
+ 	}
+ 
++	// Stage25 is a standalone X-Piratez 3D large-map experiment. The live game
++	// continues to use original maps when this environment flag is absent.
++	char xpzStage25Flag[8] = { 0 };
++	const bool stage25 = GetEnvironmentVariableA( "XPZ3D_STAGE25_NATIVE_MAP", xpzStage25Flag, sizeof(xpzStage25Flag) ) == 1 && xpzStage25Flag[0] == '1';
+ 	// Tier-1 discrete loading-bar checkpoints (release drives a smooth 25..100 sweep via the banded
+ 	// NGame::CLoadingCounter [25,50]/[50,75]/[75,100]; here we paint the band boundaries directly).
+ 	ShowLoadingScreen( 25 );   // pre-world setup done; world load+build occupies the release band [25,50]
+ 
+ 	// retail @0x200690: the re-enter save is per zone AND template ("%d_%d.sav") -- a linked
+ 	// (multi-template) zone saves each sub-map separately; a missing file just leaves pWorld null.
+-	if ( IsValid( pZone ) )
++	if ( IsValid( pZone ) && !stage25 )
+ 		LoadWorld( NStr::Format( "%d_%d.sav", pZone->GetDBZone()->GetRecordID(), nTemplateID ) );
+ 
+ 	CObj<NWorld::CPostWorldCreateInfo> pPostInfo;
+@@ -242,7 +246,7 @@ bool CMission::Initialize( int _nTemplateID, int _nVariantID, NScenario::CScenar
+ 	{
+ 		pWorld = NWorld::CreateWorld( _pGlobalGame );
+ 		// Retail Initialize also supports the template-less hotseat setup world.
+-		if ( nVariantID == -1 )
++		if ( nVariantID == -1 || stage25 )
+ 			pWorld->CreateDefault();
+ 		else
+ 			pWorld->CreateRandom( nVariantID, params, true, clues,
+@@ -277,7 +281,41 @@ bool CMission::Initialize( int _nTemplateID, int _nVariantID, NScenario::CScenar
+ 		}
+ 	}
+ 
++	if ( stage25 )
++	{
++		nMinCutFloor = 0;
++		nMaxCutFloor = 11; // 10 visible decks + reserved 11th/12th positions
++	}
+ 	pScene = NGScene::CreateNewView();
++	if ( stage25 )
++	{
++		// Native CMemObject meshes in the real S2 render scene; unlike a Python/GLB
++		// export this renders with the original engine. These are VISUAL test decks,
++		// not collision, AI, or hit-test objects until hull registration is added.
++		for ( int level = 0; level < 10; ++level )
++		{
++			const float z = level * 2.5f;
++			CMemObject *slab = new CMemObject;
++			slab->CreateCube( CVec3( 25.0f, 25.0f, z ), CVec3( 20.0f, 20.0f, 0.22f ) );
++			xpzStage25Visuals.push_back( pScene->CreateMesh( slab,
++				CVec4( 0.28f + ( level % 2 ) * 0.12f, 0.64f, 0.85f, 1.0f ), 0 ) );
++			for ( int corner = 0; corner < 4; ++corner )
++			{
++				const float x = 25.0f + ( corner & 1 ? 19.6f : 0.0f );
++				const float y = 25.0f + ( corner & 2 ? 19.6f : 0.0f );
++				CMemObject *pillar = new CMemObject;
++				pillar->CreateCube( CVec3( x, y, z ), CVec3( 0.4f, 0.4f, 2.5f ) );
++				xpzStage25Visuals.push_back( pScene->CreateMesh( pillar,
++					CVec4( 0.84f, 0.72f, 0.45f, 1.0f ), 0 ) );
++			}
++		}
++		FILE *fp = 0;
++		if ( fopen_s( &fp, "_xpz_stage25_map.log", "a" ) == 0 && fp )
++		{
++			fprintf( fp, "event=native_3d_tower_created levels=10 meshes=%u last_deck_z=22.5 renderer_meshes=YES collision=SEPARATE_WORLD_SOURCE nav_floor_links=UNVERIFIED\n",
++				(unsigned)xpzStage25Visuals.size() ); fclose( fp );
++		}
++	}
+ 	// retail CBaseCamera::SetCutFloorRange @0xcba10: install the variant's inclusive range on the
+ 	// scene (dev keeps floors on the scene); it re-clamps the current floor and gates EVERY later
+ 	// SetCutFloor (level-switch bar, UICmdSetFloor, unit focus) like retail SetCutFloor @0xd0050 --
