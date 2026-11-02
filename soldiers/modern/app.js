@@ -14,6 +14,16 @@ import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
 import {searchChronologicalRoute} from "./route-finder.js";
 import {inspectTransformationZeroResearch} from "./auto-zero-research.js";
 import {inspectAutoZeroSourcesForTransform} from "./auto-zero-cascade.js";
+// Preserve historical #researchMaxima links while keeping the 29-class
+// theoretical candidates visibly subordinate to the origin-first proof view.
+function openStaticResearchArchive(){
+  if(location.hash==="#legacyMaximaArchive"||location.hash==="#researchMaxima"){
+    const archive=document.querySelector("#legacyMaximaArchive");
+    if(archive)archive.open=true;
+  }
+}
+window.addEventListener("hashchange",openStaticResearchArchive);
+openStaticResearchArchive();
 import {renderRareMapLootProof} from "./map-loot-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};

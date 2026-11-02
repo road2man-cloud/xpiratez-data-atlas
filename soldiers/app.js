@@ -28,6 +28,8 @@ async function load(){
   for(const s of DATA.soldiers||[])SOLDIER_BY_ID.set(s.id,s);
   const family=$("#family");family.innerHTML='<option value="">모든 기본 병종</option>'+DATA.soldiers.filter(s=>groupCount(s.id)).map(s=>'<option value="'+esc(s.id)+'">'+esc(s.koName)+' ('+groupCount(s.id)+')</option>').join("");
   const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
+  const requestedDataset=params.get("dataset");
+  if(["profiles","final","soldiers","transformations"].includes(requestedDataset))$("#dataset").value=requestedDataset;
   renderSummary();
   render();
   performance.mark("soldiers:ready");
@@ -938,7 +940,14 @@ function renderProgression(soldierId,profile=null){
 }
 
 $("#search").addEventListener("input",debounce(()=>{finalPage=0;render()}));
-["dataset","family","statView","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener("change",()=>{finalPage=0;render()}));
+// The 2.1 modes are Soldier DB views, not 1.1.1 rows: navigate instead of mixing incompatible data.
+const modernSoldierViews={originMaxima:"./modern/#originMaxima",legacyMaximaArchive:"./modern/#legacyMaximaArchive"};
+$("#dataset").addEventListener("change",()=>{
+  const target=modernSoldierViews[$("#dataset").value];
+  if(target){window.location.assign(target);return;}
+  finalPage=0;render();
+});
+["family","statView","band","sortMetric","traitsOnly","finalSourceRegular","finalSourceSaint","finalBranchFilter"].forEach(id=>$("#"+id).addEventListener("change",()=>{finalPage=0;render()}));
 $("#finalPathFilter").addEventListener("change",()=>{
   if(finalReady)updateBranchAudits();
   finalPage=0;

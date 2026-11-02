@@ -3,22 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>X-Piratez 2.1 획득처별 육성·능력치 검증 원장</title>
+<title>XPiratez 병종 DB · 2.1 획득처별 능력치 검증</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../db-views.css?v=20261102-unified-soldier-db">
 <link rel="stylesheet" href="maxima-compare.css?v=20261101">
 <link rel="stylesheet" href="origin-progress-ui.css?v=20261102-proof-renewal">
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
-    <a class="back" href="../../">← Data Atlas</a> <a class="back" href="../">· 기존 병종 DB</a>
-    <p class="eyebrow">X-Piratez 2.1 (v.o2) · OXCE 8.7.1 · 실제 원본 룰 83개 변신</p>
-    <h1>획득처별 육성·능력치 검증 원장</h1>
-    <p class="lede">같은 병종이라도 <strong>출생처·기존 훈련 이력·연구 선택·이후 성장 기회</strong>가 다르면 별개로 조사합니다. 병종의 이론 보너스나 최선의 확률 결과를 서로 다른 대원에게서 가져와 한 명의 확정 최종값으로 합산하지 않습니다.</p>
+    <a class="back" href="../../">← Data Atlas</a> <a class="back" href="../">· 병종 DB</a>
+    <p class="eyebrow">통합 병종 DB · X-Piratez 2.1 (v.o2) · OXCE 8.7.1</p>
+    <h1>병종 DB <span class="soldier-db-heading-detail">/ 획득처별 능력치 검증</span></h1>
+    <p class="lede">병종 DB의 <strong>2.1 능력치·연구 검증 옵션</strong>입니다. 같은 병종이라도 <strong>출생처·기존 훈련 이력·연구 선택·이후 성장 기회</strong>가 다르면 별개로 조사합니다. 한 명의 확정 최종값에 다른 대원의 보너스를 합산하지 않습니다.</p>
+    <nav class="soldier-db-views" aria-label="병종 DB 통합 보기">
+      <a class="soldier-db-view" href="../?dataset=profiles"><strong>1.1.1 · 병종·획득형</strong><small>기존 데이터 · 생성 능력치, 특성, 이론 강화 조합</small></a>
+      <a class="soldier-db-view active" aria-current="page" href="#originMaxima"><strong>2.1 · 획득처별 최대 능력치 검증</strong><small>112개 획득 관련 분기 · 확정 최종 최대치 0건</small></a>
+    </nav>
     <nav class="origin-quick-nav" aria-label="육성 검증 바로가기">
       <a href="#originMaxima">획득처 112분기</a>
       <a href="#originProofMeaning">증명 기준</a>
-      <a href="#legacyMaximaArchive">과거 이론 후보 (분리 보관)</a>
+      <a href="#legacyMaximaArchive">29개 병종 정적 연구 후보 (미검증)</a>
       <a href="#researchExclusionAudit">연구 상호배제</a>
       <a href="#baselineGrowthCompare">전투·체육관 성장</a>
       <a href="#modernSaveFile">내 세이브 확인</a>
@@ -65,6 +70,7 @@
             <option value="">모든 상태</option>
             <option value="history">출생 이력 충돌 (직접 시술)</option>
             <option value="event">확률·대체 이벤트 확인</option>
+            <option value="research">비용 0·자동/무료 지급 연구가 필요한 경로</option>
             <option value="ancestry">출생처가 연결된 변신 분기</option>
             <option value="unlinked">구조 탐색에서 출생처 미발견</option>
             <option value="reset">이력 초기화 변신</option>
@@ -82,6 +88,7 @@
       여러 능력치를 한 대원이 동시에 달성한다는 증거가 아닙니다.
       병종 변경 출생은 이전 개인의 전체 경로가 재생되지 않았으므로 숫자를 비워 둡니다.
       훈장·변신·연구·RNG·재료의 시간순 증명 전에는 최종 능력치와 총합을 확정 게시하지 않습니다.
+      연구의 직접 <code>disables</code>가 서로 충돌하는지 계산한 경로라도, 비용 0 자동 연구·무료 추첨·연구 표본·시설과 이벤트 획득을 실제로 재생하지 않았다면 계속 <strong>미검증</strong>입니다.
     </p>
     <div id="originProofDashboard" class="origin-proof-dashboard" aria-live="polite">
       <p class="muted">원본 데이터와 검증 결과를 교차 대조하는 중…</p>
@@ -101,11 +108,11 @@
     </div>
     <div id="originDetails" class="maxima-details" hidden aria-live="polite"></div>
     <p class="muted">변신 선행 이력·원본 연구 상호배제 검사는 이 페이지의 아래 섹션과 연결됩니다.
-      <a href="#researchMaxima">병종별 기존 조건부 후보</a>는 독립적으로 보존합니다.</p>
+      <a href="#legacyMaximaArchive">29개 병종 정적 연구 후보 (미검증)</a>는 같은 DB의 참고 옵션으로 보존합니다.</p>
   </section>
 
   <details id="legacyMaximaArchive" class="legacy-maxima-archive">
-    <summary>과거 29병종 정적 보너스 후보 보기 — 실현 가능한 최종 능력치가 아닙니다</summary>
+    <summary>추가 분석 옵션 · 29개 병종 정적 연구 보너스 후보 (미검증, 최종 능력치 아님)</summary>
     <section id="researchMaxima" class="card maxima-panel" aria-label="과거 29개 병종 연구 배타성 정적 후보, 실현성 미검증">
     <div class="maxima-header">
       <div>
@@ -301,6 +308,6 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=20261102-proof-renewal"></script>
+<script type="module" src="app.js?v=20261102-unified-soldier-db"></script>
 </body>
 </html>

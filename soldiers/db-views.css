@@ -1,0 +1,12 @@
+/* Shared navigation and version boundaries for the one Soldier DB. */
+.soldier-db-views{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0 4px;max-width:1100px}
+.soldier-db-view{display:flex;flex-direction:column;gap:4px;justify-content:center;min-height:78px;padding:12px 16px;border:1px solid #345174;border-radius:12px;background:#111e33;color:#b8cbe5;text-decoration:none;transition:border-color .16s,background .16s}
+.soldier-db-view strong{font-size:1rem;line-height:1.4;color:#dcecff}
+.soldier-db-view small{font-size:.75rem;line-height:1.5;color:#a9bbd5}
+.soldier-db-view.active{background:#1a3150;border-color:#79b7ff}
+.soldier-db-view.active strong{color:#d5e9ff}
+.soldier-db-view:hover,.soldier-db-view:focus-visible{background:#213755;border-color:#93c5fd;outline-offset:3px}
+.soldier-db-heading-detail{font-size:.52em;letter-spacing:-.025em;color:#b7d3f4;vertical-align:middle}
+.dataset-version-note{padding:12px 16px;margin:0 0 16px;border:1px solid #364b69;border-radius:12px;color:#c4d3e7;background:#111f35;font-size:.87rem;line-height:1.6}
+.dataset-version-note strong{color:#dfeeff}
+@media(max-width:660px){.soldier-db-views{grid-template-columns:1fr}.soldier-db-view{min-height:66px}.soldier-db-heading-detail{display:block;margin-top:9px;font-size:.37em;line-height:1.35}}
