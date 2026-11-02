@@ -77,6 +77,10 @@ const pure=create(["STR_CAPTAIN_PUSSY","STR_CAPTAIN_UNCLASSED_UP","STR_CAPTAIN_P
 assert.equal(pure.route.isTerminal,true);
 assert.equal(pure.saintPossible,false);
 const html=fs.readFileSync("public/trainings/index.html","utf8");
-for(const id of ["captainStage0","captainStage1","captainStage2","captainStage3","captainCompanions","captainCodex","saintMilestone","researchRouteSelectors"])
-  assert(html.includes('id="'+id+'"'));
+const historicalUI=fs.readFileSync("tools/legacy-trainings-ui.js","utf8");
+assert(html.includes('src="app-2.1.js')&&!html.includes("captainStage0"),
+  "2.1 Training DB must not display legacy captain-route selectors");
+assert(historicalUI.includes("buildStagedCaptainContext")&&
+  historicalUI.includes("captainCompanions")&&historicalUI.includes("captainCodex"),
+  "Historical route calculations must remain testable offline, not be served");
 console.log("OK staged captain planner: 22 choice nodes, 19 terminal paths, conditional extra traits/Codex/Saint, Savage exclusions, Thief-only 11, Orthodox and Rogue grants");

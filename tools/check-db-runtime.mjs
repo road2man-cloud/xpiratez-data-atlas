@@ -22,7 +22,7 @@ for(let i=0;i<mr.index.length;i++)for(const key of Object.keys(mr.index[i]))asse
 assert.deepEqual(read('soldier-research-labels').topics,read('progression-research').topics.map(({id,koName,enName})=>({id,koName,enName})));
 // Numerical/sequence parity across every actual profile and final combination.
 const baseline=execFileSync('git',['show','a2205f2:public/soldiers/app.js'],{encoding:'utf8'});
-const current=fs.readFileSync('public/soldiers/app.js','utf8');
+const current=fs.readFileSync('tools/legacy-soldiers-ui.js','utf8');
 const sourceConditions=Object.fromEntries(tr.transformations.map(t=>[t.id,t.allowsLiveSoldiers]));
 async function rows(source){
   const start=source.indexOf('function renderProgression(');

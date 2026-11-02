@@ -36,5 +36,6 @@ jobs:
       - name: Verify compact progression data
         run: |
           node tools/check-progression.mjs --data public/data
-          node --check public/soldiers/app.js
+          node --check public/soldiers/modern/app.js
+          node --check public/trainings/app-2.1.js
           node --check public/crafts/app.js

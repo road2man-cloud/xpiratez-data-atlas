@@ -114,6 +114,47 @@ try {
         await page.close();
         continue;
       }
+      if(slug==="trainings"){
+        // Current 2.1 source-first training DB. Legacy branch/captain scenarios
+        // are covered by offline regressions, not exposed as 1.1.1 UI.
+        await page.waitForFunction(()=>document.querySelector("#loadStatus")
+          ?.dataset.state==="validated",{timeout:40000});
+        count=await page.locator("#trainingTable tbody tr[data-id]").count();
+        if(count!==83)errors.push("Expected 83 modern training rules, got "+count);
+        if(await page.locator("#origin option").count()!==72)
+          errors.push("Expected 72 real birth origins in modern training DB");
+        if((await page.locator("header").textContent()).includes("1.1.1"))
+          errors.push("Old 1.1.1 training UI remains visible");
+        await page.locator("#search").fill("STR_BASIC_FIREARMS_TRAINING");
+        const row=page.locator('#trainingTable tbody tr[data-id="STR_BASIC_FIREARMS_TRAINING"]');
+        await row.click();
+        const dossier=await page.locator("#detailPanel").innerText();
+        detail=String(dossier.length);
+        search=count+"->"+await page.locator("#trainingTable tbody tr[data-id]").count();
+        if(!dossier.includes("필요 연구")||!dossier.includes("영구 특성 증가"))
+          errors.push("2.1 training detail omitted source-grounded research or trait values");
+        if(!(await page.locator("#addTraining").isEnabled()))
+          errors.push("Initial conditional Gun Training is not plannable");
+        else{
+          await page.locator("#addTraining").click();
+          if((await page.locator("#timeline").innerText()).includes("기본 총기 훈련")===false)
+            errors.push("Training sequence did not retain source event");
+          if(await page.locator("#addTraining").isEnabled())
+            errors.push("One-shot training incorrectly remained repeatable");
+          await page.locator("#undo").click();
+        }
+        const networkPaths=await page.evaluate(()=>performance.getEntriesByType("resource")
+          .map(e=>new URL(e.name).pathname));
+        if(networkPaths.some(x=>/trainings-runtime|training-access|soldiers-runtime|play-guide\/trainings/.test(x)))
+          errors.push("Legacy 1.1.1 training runtime loaded");
+        const ok=count===83&&!errors.length&&!httpErrors.length;
+        results.push(ok);
+        console.log((ok?"PASS":"FAIL")+" trainings rows="+count+
+          " search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+
+          " http="+JSON.stringify(httpErrors.slice(0,6)));
+        await page.close();
+        continue;
+      }
       if(slug==="weapons"&&await page.locator("#standardTab").count()){
         // First verify the integrated ranking, then switch to the unchanged
         // individual-enemy/action inspector for the existing play-guide tests.
@@ -573,347 +614,6 @@ try {
           if(!weightedText.includes("추첨칸")||!weightedText.includes("무료 지급 후보"))
             errors.push("Weighted free research candidate preview missing");
           detail+=" + engine unlock bypass + weighted bonus research + historical completion + undo";
-        }
-        if(slug==="trainings"){
-          trainingStage="close detail button";
-          await page.locator("#closeDialog").click();
-          trainingStage="all directional exclusion filters";
-          for(const [kind,expected] of [["mutual",44],["oneway",18],["self",69],["prerequisite",16],["none",3]]){
-            await page.locator("#exclusionFilter").selectOption(kind);
-            const found=await page.locator("#trainingTable tbody tr[data-id]").count();
-            if(found!==expected)errors.push("Training "+kind+" filter displayed "+found+" rather than "+expected+" original rules");
-          }
-          await page.locator("#exclusionFilter").selectOption("all");
-          trainingStage="private save research and manual readiness evidence";
-          const trainingSave=[
-            "---","name: Training Smoke","---","difficulty: 2","funds: 1000",
-            "discovered: [STR_SIMPLETON_TRAINING]",
-            "researchRuleStatus: {STR_PERSON_OF_CULTURE_TRAINING: 2}",
-            "bases:","  - name: Demo","    research:","      - project: STR_MILITARY_DRILL_TRAINING"
-          ].join("\n")+"\n";
-          await page.locator("#trainingSaveFile").setInputFiles({
-            name:"training-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(trainingSave)
-          });
-          await page.waitForFunction(()=>document.querySelector("#trainingSaveSummary")?.textContent.includes("완료 연구 1개"));
-          const saveSummary=await page.locator("#trainingEvidenceSummary").innerText();
-          if(!saveSummary.includes("영구 배제 1개"))
-            errors.push("Training save evidence did not distinguish one disabled research");
-          await input.fill("STR_SIMPLETON_TRAINING");
-          const saveSimpletonRow=page.locator('#trainingTable tbody tr[data-id="STR_SIMPLETON_TRAINING"]');
-          if(!(await saveSimpletonRow.innerText()).includes("직접 선행연구 완료"))
-            errors.push("Completed Simpleton research not recognized in training");
-          await page.locator("#unitEvidenceDetails summary").click();
-          await page.locator("#unitRank").fill("2");
-          await page.locator('[data-stat-input="psiStrength"]').fill("40");
-          await page.locator("#unitItemEvidence").fill("STR_GOVT_CORPSE=2, STR_HANDLE=1");
-          await page.locator("#unitBaseEvidence").fill("LIB=1");
-          await page.locator("#applyUnitEvidence").click();
-          if(!(await saveSimpletonRow.innerText()).includes("입력 조건 미달 1건"))
-            errors.push("Short Simpleton material inventory was interpreted as sufficient");
-          await saveSimpletonRow.locator("td strong").first().click();
-          const proofDetail=await page.locator("#detailBody").innerText();
-          if(!proofDetail.includes("세이브·대원 증빙")||!proofDetail.includes("현재 미달")||
-             !proofDetail.includes("개인 자료"))
-            errors.push("Training detail omitted evidence and material deficit");
-          await page.locator("#closeDialog").click();
-          await input.fill("");
-          await page.locator("#saveResearchFilter").selectOption("blocked");
-          const blockedSaves=await page.locator("#trainingTable tbody tr[data-id]").allTextContents();
-          if(blockedSaves.length!==1||!blockedSaves[0].includes("문화 교육"))
-            errors.push("Blocked-research filter did not isolate the exact save-disabled training");
-          await page.locator("#saveResearchFilter").selectOption("all");
-          await page.locator("#clearTrainingSave").click();
-          await page.locator("#clearUnitEvidence").click();
-          if(!await page.locator("#saveResearchFilter").isDisabled())
-            errors.push("Research evidence filter stayed enabled after removing the save");
-          if((await page.locator("#trainingEvidenceSummary").innerText()).includes("영구 배제 1개"))
-            errors.push("Old save conditions remained in training planner after clearing");
-          trainingStage="automatic stationed personnel, inventory and facility evidence";
-          const rosterSave=[
-            "name: Roster Smoke","mods:","  - 'piratez ver: v.o1.1.1'","---",
-            "difficulty: 2","funds: 10000","bases:",
-            "  - lon: 0.1","    name: First Post","    facilities:",
-            "      - type: STR_LIBRARY","        buildTime: 6",
-            "    soldiers:","      - type: STR_SOLDIER_SLAVE",
-            "        id: 21","        name: Test Recruit","        rank: 2",
-            "        currentStats:","          psiStrength: 45","          health: 50","          psiSkill: 0",
-            "        previousTransformations:","          STR_PERSON_OF_CULTURE_TRAINING: 1",
-            "        transformationBonuses:","          STR_THEBAN_ASSAULT_CLONE: 1",
-            "        diary:","          commendations:",
-            "            - {commendationName: STR_MEDAL_UNCONSCIOUS_NAME,decorationLevel: 0}",
-            "    items:","      STR_GOVT_CORPSE: 3","      STR_HANDLE: 1",
-            "  - lon: 0.2","    name: Second Post","    facilities:",
-            "      - type: STR_LIBRARY","    soldiers: []",
-            "    items:","      STR_GOVT_CORPSE: 10","      STR_HANDLE: 1",
-            "discovered: [STR_SIMPLETON_TRAINING]",
-            "researchRuleStatus: {STR_PERSON_OF_CULTURE_TRAINING: 2}"
-          ].join("\n")+"\n";
-          await page.locator("#trainingSaveFile").setInputFiles({
-            name:"roster-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(rosterSave)
-          });
-          await page.waitForFunction(()=>document.querySelector("#trainingSaveSummary")?.textContent.includes("주둔 대원 1명"),null,{timeout:13000});
-          if(!await page.locator("#trainingSaveRoster").isVisible())
-            errors.push("Roster selector missing after reading a real-shaped save");
-          await page.locator("#trainingSaveSoldier").selectOption("0");
-          const autoOrigin=await page.locator("#origin").inputValue();
-          if(!autoOrigin.startsWith("saved:"))
-            errors.push("Saved soldier selection did not apply the actual transformation origin");
-          await input.fill("STR_SIMPLETON_TRAINING");
-          const autoSimpleton=page.locator('#trainingTable tbody tr[data-id="STR_SIMPLETON_TRAINING"]');
-          if(!await autoSimpleton.locator(".blocked").count())
-            errors.push("Prior Culture training in the saved soldier failed to block Simpleton");
-          if(!(await autoSimpleton.innerText()).includes("입력 조건 미달 1건"))
-            errors.push("Saved base short inventory did not flag a 10-item training cost");
-          if(!(await page.locator("#trainingSaveRosterHint").innerText()).includes("계급 2"))
-            errors.push("Saved soldier rank was not connected to readiness UI");
-          await page.locator("#trainingSaveBase").selectOption("1");
-          if((await page.locator("#origin").inputValue()).startsWith("saved:"))
-            errors.push("Changing the selected base left a soldier from the old base selected");
-          if((await page.locator("#trainingSaveSoldier").inputValue())!=="")
-            errors.push("Changing the base failed to clear the previously selected soldier");
-          if((await autoSimpleton.innerText()).includes("입력 조건 미달 1건"))
-            errors.push("Inventory from the previous base leaked into the newly selected base");
-          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
-          await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] td strong').first().click();
-          const secondBaseDetail=await page.locator("#detailBody").innerText();
-          if(!secondBaseDetail.includes("기지 기능")||!secondBaseDetail.includes("충족 확인"))
-            errors.push("A completed library's base function was not recognized");
-          await page.locator("#closeDialog").click();
-          await page.locator("#clearTrainingSave").click();
-          await input.fill("");
-          trainingStage="quick-add cultural education";
-          await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
-          const culture=page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]');
-          if(!await culture.locator('[data-toggle]').isChecked())errors.push("Table checkbox did not reflect selected cultural education");
-          if(await page.locator("#timeline .timeline-row").count()!==1)errors.push("Quick add did not select cultural education");
-          if(!await page.locator('#newBlockedList [data-info="STR_NEPOTISM"]').count())errors.push("Newly blocked list omitted nepotism");
-          if(!await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())errors.push("Newly blocked list omitted military drill");
-          if(!await page.locator("#latestSelectionHint").innerText().then(t=>t.includes("문화 교육")))errors.push("No selected training reason shown next to exclusions");
-          const mobileTitle=await page.locator("#mobileExclusionTitle").innerText();
-          if(!mobileTitle.includes("4개"))errors.push("Mobile live exclusion title did not show the four newly blocked trainings: "+mobileTitle);
-          const mobileNames=await page.locator("#mobileExclusionNames").innerText();
-          if(!mobileNames.includes("혈연중시")||!mobileNames.includes("군사 훈련"))
-            errors.push("Mobile checklist-adjacent exclusion names missing");
-          if(await page.locator(".mobile-exclusion-brief").evaluate(el=>getComputedStyle(el).position)!=="sticky")
-            errors.push("Mobile exclusion summary does not stay visible during table scrolling");
-          await page.locator("#mobileExclusionDetails summary").click();
-          if(!(await page.locator("#mobileExclusionFull").innerText()).includes("배제 원인: 문화 교육"))
-            errors.push("Mobile full exclusion list omitted ruleset-backed reasons");
-          await page.locator("#mobileExclusionDetails summary").click();
-          const cultureCells=await culture.locator("td").allTextContents();
-          if(!cultureCells[5].includes("사격+2")||!cultureCells[6].includes("사격+1"))
-            errors.push("Direct vs SoldierBonus firing bonuses not separately displayed: "+cultureCells.slice(5,7));
-          trainingStage="trait stats sort";
-          await input.fill("");
-          await page.locator("#sortBy").selectOption("trait:firing");
-          let statOrder=await page.locator("#trainingTable tbody tr[data-sort-value]").evaluateAll(trs=>trs.map(t=>Number(t.dataset.sortValue)));
-          if(statOrder.length!==83||!statOrder.some(v=>v>0)||statOrder.some((v,i)=>i>0&&statOrder[i-1]<v))
-            errors.push("Trait firing descending sort incorrect: count="+statOrder.length+" first="+statOrder.slice(0,12).join(",")+" max="+Math.max(...statOrder));
-          await page.locator("#sortDirection").selectOption("asc");
-          statOrder=await page.locator("#trainingTable tbody tr[data-sort-value]").evaluateAll(trs=>trs.map(t=>Number(t.dataset.sortValue)));
-          if(statOrder.length!==83||statOrder.some((v,i)=>i>0&&statOrder[i-1]>v))
-            errors.push("Trait firing ascending sort incorrect: count="+statOrder.length+" first="+statOrder.slice(0,12).join(",")+" max="+Math.max(...statOrder));
-          await page.locator("#sortBy").selectOption("status");
-          await input.fill("STR_NEPOTISM");
-          await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"]').waitFor({state:"attached",timeout:10000});
-          if(await page.locator('#trainingTable tbody tr[data-id="STR_NEPOTISM"] .blocked').count()!==1)errors.push("Nepotism was not blocked after cultural education");
-          trainingStage="undo cultural education";
-          await page.locator("#undo").click();
-          if(await page.locator("#newBlockedList .choice").count())errors.push("Undo left stale newly blocked training rows");
-          if(!(await page.locator("#mobileExclusionTitle").innerText()).includes("0개"))
-            errors.push("Undo left stale exclusion count in the mobile summary");
-          trainingStage="select and deselect via checkbox";
-          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
-          await culture.locator("[data-toggle]").check();
-          if(!await page.locator('#newBlockedList [data-info="STR_NEPOTISM"]').count())
-            errors.push("Checkbox click did not update the adjacent exclusion list");
-          await culture.locator("[data-toggle]").uncheck();
-          if(await page.locator("#timeline .timeline-row").count()||await page.locator("#newBlockedList .choice").count())
-            errors.push("Unchecking did not clear the planning sequence and newly excluded list");
-          if(!(await page.locator("#mobileExclusionTitle").innerText()).includes("0개"))
-            errors.push("Unchecking did not clear the mobile exclusion summary");
-          await input.fill("");
-          trainingStage="quick-add military drill prerequisite chain";
-          await page.locator("#quickTraining").selectOption("STR_MILITARY_DRILL_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          if(await page.locator("#timeline .timeline-row").count()!==3)errors.push("Three-step military prerequisite chain not added");
-          if(!await page.locator('#newBlockedList [data-info="STR_PERSON_OF_CULTURE_TRAINING"]').count())
-            errors.push("Newly blocked list omitted culture after military chain");
-          if(!(await page.locator("#latestSelectionHint").innerText()).includes("자동 선행 포함"))
-            errors.push("New exclusion list failed to indicate automatically added prerequisites");
-          await input.fill("STR_MILITARY_DRILL_TRAINING");
-          if(!await page.locator('#trainingTable tbody tr[data-id="STR_MILITARY_DRILL_TRAINING"] [data-toggle]').isChecked())errors.push("Military drill checkbox was not retained after rerender");
-          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
-          await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"]').waitFor({state:"attached",timeout:10000});
-          if(await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count()!==1)errors.push("Cultural education not blocked after military drill");
-          trainingStage="overlapping exclusion causes after two valid choices";
-          await page.locator("#reset").click();
-          await input.fill("");
-          await page.locator("#quickTraining").selectOption("STR_BREAD_AND_FISHES_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          if(!await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
-            errors.push("Bread and Fishes did not initially exclude military drill");
-          await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          if(await page.locator("#timeline .timeline-row").count()!==2)
-            errors.push("Two separate training selections were not retained in sequence");
-          if(await page.locator('#newBlockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
-            errors.push("Overlapping military drill exclusion incorrectly counted as a new target");
-          const extraRow=page.locator('#extraBlockedList .choice:has([data-info="STR_MILITARY_DRILL_TRAINING"])');
-          if(!await extraRow.count()||!(await extraRow.innerText()).includes("이번 선택이 추가한 배제 원인: 문화 교육"))
-            errors.push("Second choice omitted shared military drill exclusion cause");
-          const previousRow=page.locator('#blockedList .choice:has([data-info="STR_MILITARY_DRILL_TRAINING"])');
-          if(!await previousRow.count()||!(await previousRow.innerText()).includes("건강미 훈련")||
-              !(await previousRow.innerText()).includes("문화 교육"))
-            errors.push("Cumulative exclusion row does not retain BOTH blockers");
-          if(!(await page.locator("#mobileExclusionTitle").innerText()).includes("원인 추가 1개")||
-              !(await page.locator("#mobileExclusionNames").innerText()).includes("군사 훈련 · 원인 추가"))
-            errors.push("Mobile exclusion summary concealed the second blocker");
-          await page.locator("#undo").click();
-          if(await page.locator("#extraBlockedList .choice").count()||
-              !await page.locator('#blockedList [data-info="STR_MILITARY_DRILL_TRAINING"]').count())
-            errors.push("Undo should remove the added cause while keeping the original blocker");
-          trainingStage="Simpleton self, culture and military exclusions";
-          await page.locator("#origin").selectOption("base:STR_SOLDIER_SLAVE");
-          await input.fill("STR_SIMPLETON_TRAINING");
-          const simpletonRow=page.locator('#trainingTable tbody tr[data-id="STR_SIMPLETON_TRAINING"]');
-          if(await simpletonRow.locator(".blocked").count())errors.push("Simpleton incorrectly blocked for fresh slave");
-          await simpletonRow.locator("td strong").first().click();
-          const simpletonDetail=await page.locator("#detailBody").innerText();
-          if(!simpletonDetail.includes("양방향 상호 배제")||!simpletonDetail.includes("문화 교육")||
-             !simpletonDetail.includes("군사 훈련")||!simpletonDetail.includes("동일 훈련 재시행")||
-             !simpletonDetail.includes("금지"))errors.push("Simpleton mutual exclusion and repeat rule not explained in detail");
-          await page.locator("#closeDialog").click();
-          await page.locator("#quickTraining").selectOption("STR_SIMPLETON_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          for(const id of ["STR_SIMPLETON_TRAINING","STR_PERSON_OF_CULTURE_TRAINING","STR_MILITARY_DRILL_TRAINING"]){
-            if(!await page.locator('#newBlockedList [data-info="'+id+'"]').count())
-              errors.push("Simpleton missing newly excluded training "+id);
-          }
-          await input.fill("STR_PERSON_OF_CULTURE_TRAINING");
-          if(!await page.locator('#trainingTable tbody tr[data-id="STR_PERSON_OF_CULTURE_TRAINING"] .blocked').count())
-            errors.push("Cultural education remained available after Simpleton");
-          await page.locator("#reset").click();
-          await page.locator("#quickTraining").selectOption("STR_PERSON_OF_CULTURE_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          await input.fill("STR_SIMPLETON_TRAINING");
-          if(!await simpletonRow.locator(".blocked").count())errors.push("Simpleton remained available after cultural education");
-          await page.locator("#reset").click();
-          await page.locator("#quickTraining").selectOption("STR_MILITARY_DRILL_TRAINING");
-          await page.locator("#quickAdd").click({timeout:12000});
-          if(!await simpletonRow.locator(".blocked").count())errors.push("Simpleton remained available after military drill");
-          await page.locator("#origin").selectOption("base:STR_SOLDIER");
-          if(!await simpletonRow.locator(".blocked").count())errors.push("Simpleton incorrectly available for Gal body");
-          await input.fill("");
-          trainingStage="desktop panel beside the training table";
-          await page.setViewportSize({width:1500,height:900});
-          await page.evaluate(()=>window.scrollTo(0,0));
-          const layout=await page.evaluate(()=>{
-            const table=document.querySelector(".training-workspace .listing").getBoundingClientRect();
-            const side=document.querySelector(".training-workspace .decision").getBoundingClientRect();
-            return{tableRight:table.right,sideLeft:side.left,tableTop:table.top,sideTop:side.top,
-              sidePosition:getComputedStyle(document.querySelector(".training-workspace .decision")).position,
-              mobileHidden:getComputedStyle(document.querySelector(".mobile-exclusion-brief")).display==="none",
-              bodyScrollWidth:document.documentElement.scrollWidth,windowWidth:window.innerWidth};
-          });
-          if(layout.tableRight>=layout.sideLeft||Math.abs(layout.tableTop-layout.sideTop)>3||
-            layout.sidePosition!=="sticky"||!layout.mobileHidden||layout.bodyScrollWidth>layout.windowWidth+1)
-            errors.push("Training table and exclusion panel are not side-by-side on desktop: "+JSON.stringify(layout));
-          await page.setViewportSize({width:390,height:844});
-          trainingStage="captain route exclusivity";
-          const counts=await Promise.all([0,1,2,3].map(i=>
-            page.locator("#captainStage"+i+" option").count()));
-          if(counts.join(",")!=="6,6,8,6")
-            errors.push("Four captain stages do not expose all 22 rule-based choices: "+counts);
-          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_DUMBASS");
-          if(await page.locator("#saintMilestone").isEnabled())
-            errors.push("Saint became enabled without the fourth Codex color");
-          await page.locator("#captainCodex").selectOption("GRAY");
-          await page.locator('[data-companion="STR_CAPTAIN_DUMBLAZY"]').check();
-          await page.locator("#saintMilestone").check();
-          if(!(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — Saint 증원")||
-              !(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — DumbLazy 방문")||
-              !(await page.locator("#routeAccessSummary").innerText()).includes("Rogue 클론 — TroubleSeeking"))
-            errors.push("Dumbass+Saint must expose all THREE repeatable Rogue recruitment event sources");
-          await input.fill("STR_CAPTAINS_11");
-          const cap11=page.locator('#trainingTable tbody tr[data-id="STR_CAPTAINS_11"]');
-          if(!await cap11.locator('[data-toggle]').isDisabled()||
-             !await page.locator('#branchBlockedList [data-info="STR_CAPTAINS_11"]').count())
-            errors.push("Dumbass+Saint incorrectly allowed Thief-only Captains 11");
-          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_PUSSY");
-          if(!await page.locator("#captainStage1Wrap").isVisible())
-            errors.push("Pussy failed to reveal the job choices");
-          await page.locator("#captainStage1").selectOption("STR_CAPTAIN_THIEF");
-          await input.fill("STR_CAPTAINS_11");
-          if(await cap11.locator('[data-toggle]').isDisabled())
-            errors.push("Thief must be able to plan Captains 11 with further event prerequisites");
-          if(!(await page.locator("#routeAccessSummary").innerText()).includes("선택 분기에서는 불가"))
-            errors.push("Thief route did not display Saint conflict");
-          await page.locator("#captainStage1").selectOption("STR_CAPTAIN_PRIEST");
-          await input.fill("STR_BREAD_AND_FISHES_TRAINING");
-          if(await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
-            errors.push("Priest-exclusive Bread and Fishes was blocked in Priest branch");
-          await page.locator("#captainStage1").selectOption("STR_CAPTAIN_UNCLASSED_UP");
-          await page.locator("#captainStage2").selectOption("STR_CAPTAIN_PURE_UP");
-          if(!await page.locator("#captainStage3Wrap").isVisible())
-            errors.push("Pure gate failed to reveal the fourth stage");
-          await page.locator("#captainStage3").selectOption("STR_CAPTAIN_RED_UP");
-          if(await page.locator("#saintMilestone").isEnabled())
-            errors.push("Pussy + Pure was incorrectly eligible for Saint");
-          await page.locator("#captainStage0").selectOption("");
-          await page.locator("#origin").selectOption("profile:manufacture:STR_THEBAN_ASSAULT_CLONE");
-          await input.fill("STR_BATTLE_FORM_AUGMENTATION");
-          if(!await page.locator('#trainingTable tbody tr[data-id="STR_BATTLE_FORM_AUGMENTATION"] [data-toggle]').isDisabled())
-            errors.push("Egyptian Assault Clone was permitted forbidden Battle Form");
-          await input.fill("STR_CAREER_SOLDIER");
-          if(!await page.locator('#trainingTable tbody tr[data-id="STR_CAREER_SOLDIER"] [data-toggle]').isDisabled())
-            errors.push("STR_UNAVAILABLE internal transformation became executable");
-          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_DUMBASS");
-          await page.locator("#captainCodex").selectOption("GRAY");
-          await page.locator('[data-companion="STR_CAPTAIN_DUMBLAZY"]').check();
-          await page.locator("#saintMilestone").check();
-          await page.locator("#origin").selectOption("profile:manufacture:STR_ROGUE_CLONE_RECRUITMENT");
-          await input.fill("STR_BREAD_AND_FISHES_TRAINING");
-          if(!await page.locator('#trainingTable tbody tr[data-id="STR_BREAD_AND_FISHES_TRAINING"] [data-toggle]').isDisabled())
-            errors.push("Rogue clone omitted prior Theban transformation exclusion");
-          trainingStage="additional research branch exclusions";
-          await page.locator("#captainStage0").selectOption("");
-          await page.locator("#origin").selectOption("base:STR_SOLDIER");
-          if(await page.locator("#researchRouteSelectors select").count()<4)
-            errors.push("Cross-branch training DB selectors not present");
-          await page.locator("#research-route-path").selectOption("STR_PEASANT_REVOLUTION_PREQ");
-          await input.fill("STR_PURE_MAIDEN_TRAINING");
-          if(!await page.locator('#branchBlockedList [data-info="STR_PURE_MAIDEN_TRAINING"]').count())
-            errors.push("Peasant Revolution failed to close Pure Maiden training");
-          await page.locator("#research-route-path").selectOption("STR_CAT_PATH_PREQ");
-          if(await page.locator('#branchBlockedList [data-info="STR_PURE_MAIDEN_TRAINING"]').count())
-            errors.push("Cat path falsely inherited Peasant Revolution block");
-          await page.locator("#research-route-path").selectOption("STR_HYBRID_PATH_PREQ");
-          if(await page.locator('#branchBlockedList [data-info="STR_PURE_MAIDEN_TRAINING"]').count())
-            errors.push("Hybrid path falsely inherited Peasant Revolution block");
-          await page.locator(".research-route-panel details.extra-research summary").click();
-          await page.locator("#researchRouteExtra").fill("STR_UNKNOWN_RESEARCH_SMOKE");
-          await page.locator("#researchRouteExtra").dispatchEvent("change");
-          if(!(await page.locator("#researchRouteHint").innerText()).includes("STR_UNKNOWN_RESEARCH_SMOKE"))
-            errors.push("Unknown research IDs silently ignored in training branch planner");
-          await page.locator("#researchRouteExtra").fill("");
-          await page.locator("#researchRouteExtra").dispatchEvent("change");
-          await page.locator("#captainStage0").selectOption("STR_CAPTAIN_DUMBASS");
-          await page.locator("#captainCodex").selectOption("GRAY");
-          await page.locator('[data-companion="STR_CAPTAIN_DUMBLAZY"]').check();
-          await page.locator("#saintMilestone").check();
-          await input.fill("STR_CAPTAINS_11");
-          await page.locator('#trainingTable tbody tr[data-id="STR_CAPTAINS_11"] td').first().click();
-          const capEvidence=await page.locator("#detailBody").innerText();
-          if(!capEvidence.includes("동일 이벤트 연구+전용 재료")||
-             !capEvidence.includes("STR_CAPTAINS_11_TOKEN")||
-             !capEvidence.includes("STR_CAPTAIN_THIEF"))
-            errors.push("Captain's 11 detail omitted event-to-research/token/Thief evidence");
-          await page.locator("#closeDialog").click();
-          trainingStage="completed";
-          detail+=" + checkbox / exclusion deltas / trait stat sort / prerequisite chain / captain branch + Rogue clone";
         }
         if(slug==="items"){
           // Regression: the real-world item page must expose the relationships,

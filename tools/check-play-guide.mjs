@@ -18,6 +18,12 @@ for(const kind of kinds){
     // Never attach it to the canonical 2.1-only Soldier DB.
     assert(html.includes("location.replace(target.href)"));
     assert(!html.includes('src="../play-guide.js"'));
+  }else if(kind==="trainings"){
+    // The current Soldier Training DB uses the canonical 2.1 rulebook.
+    // Outdated 1.1.1 guide cards are verified offline but never attached to it.
+    assert(html.includes('src="app-2.1.js'));
+    assert(!html.includes('src="../play-guide.js"'));
+    assert(!html.includes("v.o1.1.1"));
   }else{
     assert.match(html,/\.\.\/play-guide\.js/,kind+": missing guide script");
     assert.match(html,/\.\.\/play-guide\.css/,kind+": missing guide CSS");

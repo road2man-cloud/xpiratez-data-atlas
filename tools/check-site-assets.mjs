@@ -35,7 +35,17 @@ const modernLoot=fs.readFileSync(path.join(root,"soldiers/modern/map-loot-ui.js"
 assert(!modernSoldierApp.includes('function dbLink(')&&
   !modernLoot.includes('../../items/#item='),
   "Current Soldier details must not cross-link into legacy 1.1.1 item, research or manufacture");
-
+assert(!soldierCatalog.includes("1.1.1")&&!fs.existsSync(path.join(root,"soldiers/app.js")),
+  "Legacy Soldier UI must be removed, not merely linked out");
+const modernTraining=fs.readFileSync(path.join(root,"trainings/index.html"),"utf8");
+assert(modernTraining.includes('app-2.1.js')&&modernTraining.includes('id="trainingTable"')&&
+  modernTraining.includes('id="origin"')&&!modernTraining.includes("1.1.1"),
+  "Training DB must be a single 2.1 origin-grounded UI");
+assert(!fs.existsSync(path.join(root,"trainings/app.js"))&&
+  !fs.existsSync(path.join(root,"trainings/styles.css")),
+  "The old training 1.1.1 UI assets must not be published");
+assert.equal(home.split('class="card" href="./trainings/').length-1,1,
+  "Atlas must have one Training DB entrance");
 const errors=[];
 let linkCount=0,scriptCount=0,jsCount=0;
 const pages=["index.html",...expected.map(n=>n+"/index.html"),"soldiers/modern/index.html"];

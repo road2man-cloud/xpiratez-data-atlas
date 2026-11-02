@@ -62,7 +62,7 @@ assert(hard>1000&&unavailable>1000&&captain>500&&queenCodex>50,
   "Known impossible builds disappeared unexpectedly; recheck source and algorithm");
 assert(saintEleven>0);
 const markup=fs.readFileSync("public/soldiers/index.html","utf8");
-const app=fs.readFileSync("public/soldiers/app.js","utf8");
+const app=fs.readFileSync("tools/legacy-soldiers-ui.js","utf8");
 assert(markup.includes("location.replace(target.href)")&&
   !markup.includes('id="finalBranchFilter"'),
   "Legacy branch selector must be retired from the public Soldier DB");
