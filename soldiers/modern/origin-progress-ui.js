@@ -30,8 +30,10 @@ export function validateOriginProgression(report,data,oldMaxima){
     throw new Error("획득처 인덱스 / 실행 인증 상태와 원본 불일치");
   if(report.stats?.length!==11||new Set(report.stats).size!==11||
     report.stats.includes("mana")||report.classes?.length!==29||
-    oldMaxima.rows?.length!==29)
-    throw new Error("11개 능력치 또는 병종 집계 범위 불일치");
+    oldMaxima.rows?.length!==29||report.sourceVersion!=="v.o2"||
+    data.meta?.mod?.version!=="v.o2"||
+    report.source.some(x=>/public\/data\/(?:manufacture|event)[-/]/.test(x)))
+    throw new Error("11개 능력치/병종/2.1 단일 원본 범위 불일치");
   const candidates=new Map(oldMaxima.rows.map(x=>[x.id,x]));
   const original=new Map(data.profiles.map(p=>[p.id,p]));
   const transformations=new Map(data.transformations.map(t=>[t.id,t]));
@@ -65,6 +67,48 @@ export function validateOriginProgression(report,data,oldMaxima){
         !Array.isArray(row.sourceFiles)||!row.sourceFiles.length)
         throw new Error("출생처별 자연 성장 상계/원본 파일 누락: "+row.id);
       const requiredItems=row.prerequisites.items||{};
+      if(row.acquisitionType==="manufacture"&&
+        JSON.stringify(requiredItems)!==JSON.stringify(p.acquisitionRequiredItems||{}))
+        throw new Error("2.1 원본 제조 requiredItems와 불일치: "+row.id);
+      if(row.acquisitionType==="event"){
+        const originRoutes=p.acquisitionEventScripts||[];
+        const observed=row.prerequisites.event?.alternatives||[];
+        if(observed.length!==originRoutes.length||
+          row.prerequisites.event?.alternativeCount!==originRoutes.length||
+          row.prerequisites.event?.ruleset!=="v.o2")
+          throw new Error("2.1 이벤트 스크립트 대체 경로 누락: "+row.id);
+        const fields={
+          researchTriggers:["researchPositive","researchNegative"],
+          itemTriggers:["itemPositive","itemNegative"],
+          facilityTriggers:["facilityPositive","facilityNegative"],
+          soldierTypeTriggers:["soldierTypePositive","soldierTypeNegative"],
+          xcomBaseInRegionTriggers:["regionPositive","regionNegative"],
+          xcomBaseInCountryTriggers:["countryPositive","countryNegative"],
+          pactCountryTriggers:["pactPositive","pactNegative"]
+        };
+        for(let i=0;i<originRoutes.length;i++){
+          const src=originRoutes[i],route=observed[i];
+          if(route.script!==src.script||route.mode!==src.mode||
+            route.firstMonth!==(src.firstMonth??null)||
+            route.lastMonth!==(src.lastMonth??null)||
+            route.executionOdds!==(src.executionOdds??null)||
+            route.oneTime!==(src.mode==="oneTimeRandom"||
+              src.mode==="oneTimeSequential"))
+            throw new Error("이벤트 선택 스크립트 조건이 서로 다른 버전과 혼합됨: "+row.id);
+          for(const [kind,[pos,neg]] of Object.entries(fields)){
+            for(const [side,key] of [["positiveTriggers",pos],["negativeTriggers",neg]])
+              for(const id of src[key]||[])
+                if(!route[side]?.some(x=>x.kind===kind&&x.id===id))
+                  throw new Error("2.1 이벤트 분기 트리거 누락: "+row.id+"/"+id);
+          }
+        }
+        for(const side of ["positiveTriggers","negativeTriggers"]){
+          const expected=observed[0]?.[side]?.filter(x=>observed.every(r=>
+            r[side].some(y=>y.kind===x.kind&&y.id===x.id)))||[];
+          if(JSON.stringify(row.prerequisites.event[side])!==JSON.stringify(expected))
+            throw new Error("이벤트 대체 분기 공통 조건 왜곡: "+row.id+"/"+side);
+        }
+      }
       if(row.acquisitionType==="manufacture"&&
         (!Object.keys(requiredItems).length||
           Object.keys(requiredItems).some(id=>
@@ -215,13 +259,36 @@ function showDetails(row,stats,host){
       (events?' · 이벤트 지급 후보: '+events:'')+'</li>';
   }).join("");
   const eventGate=requirements.event;
-  const eventEvidence=eventGate?'<p><strong>이벤트 실행 가드:</strong> 최초 월 '+
-    (eventGate.firstMonth==null?'상한 없음':cell(eventGate.firstMonth))+
-    ' · 마지막 월 '+(eventGate.lastMonth==null?'상한 없음':cell(eventGate.lastMonth))+
-    ' · 실행 확률 지정 '+(eventGate.minExecutionOdds==null?'미상':cell(eventGate.minExecutionOdds)+'%')+
-    ' (스케줄러/추첨 조건까지 만족해야 하며 발생 보장 아님)</p>'+
-    '<p><strong>필수 트리거:</strong> '+idItems(eventGate.positiveTriggers)+
-    ' · <strong>금지 트리거:</strong> '+idItems(eventGate.negativeTriggers)+'</p>':'';
+  const triggers=items=>(items||[]).length?items.map(x=>
+    '<code>'+esc(x.kind)+': '+esc(x.id)+'</code>').join(' · '):'없음';
+  const alternatives=(eventGate?.alternatives||[]).map((route,i)=>{
+    const weighted=(route.monthWeights||[]).filter(w=>Number(w.weight)>0);
+    return '<li><strong>대체 출처 '+(i+1)+': </strong><code>'+esc(route.script)+
+      '</code> · '+esc(route.mode)+' · 최초 월 '+cell(route.firstMonth)+
+      ' · 마지막 월 '+(route.lastMonth==null?'제한 없음':cell(route.lastMonth))+
+      ' · 스크립트 실행 확률 '+cell(route.executionOdds)+'%'+
+      ' · 일회성 분기 '+(route.oneTime?'예':'아니요')+
+      '<p><strong>필수 조건:</strong> '+triggers(route.positiveTriggers)+
+      ' · <strong>금지 조건:</strong> '+triggers(route.negativeTriggers)+'</p>'+
+      (route.oneTimeEarlier?.length?
+        '<p>일회성 선행 이벤트: '+idItems(route.oneTimeEarlier)+'</p>':'')+
+      (weighted.length?'<p>양수 가중치 달: '+weighted.slice(0,12).map(x=>
+        cell(x.month)+'월: '+cell(x.weight)+' / '+cell(x.totalWeight)).join(' · ')+
+        (weighted.length>12?' 등 총 '+weighted.length+'개 월':'')+'</p>':'')+
+      (Object.keys(route.otherConditions||{}).length?'<p>추가 스크립트 조건: '+
+        Object.entries(route.otherConditions).map(([k,v])=>
+          '<code>'+esc(k)+': '+esc(v)+'</code>').join(' · ')+'</p>':'')+'</li>';
+  }).join('');
+  const eventEvidence=eventGate?'<p><strong>2.1 원본 이벤트 출처:</strong> '+
+    cell(eventGate.alternativeCount)+'개 스크립트 분기 · '+
+    '각 분기는 별도의 시간·조건·추첨을 가지며 아래 조건을 모두 동시에 요구하지 않습니다. '+
+    '게임 내 발생 및 생성 획득은 아직 미검증입니다.</p>'+
+    '<p><strong>모든 대체 출처에 공통인 필수 조건:</strong> '+
+      triggers(eventGate.positiveTriggers)+
+      ' · <strong>공통 금지 조건:</strong> '+triggers(eventGate.negativeTriggers)+'</p>'+
+    (alternatives?'<details><summary>대체 이벤트별 원본 스크립트 조건 '+
+      eventGate.alternativeCount+'개 보기</summary><ol>'+alternatives+'</ol></details>':
+      '<p>직접 생성 이벤트를 지급하는 스크립트 경로는 색인되지 않았습니다. 이벤트 발생 가능성을 추정하지 않습니다.</p>'):'';
   html+='<section class="maxima-source-evidence"><h4>획득 조건 및 증명에 남은 작업</h4>'+
     '<p>필요 연구: '+idItems(requirements.research)+
     ' · 기지 기능: '+idItems(requirements.facilities)+'</p>'+
