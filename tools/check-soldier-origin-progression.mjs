@@ -51,7 +51,8 @@ for(const edge of lineage.branches){
     ...row.candidateSourceAncestry,
     candidates:row.candidateSourceAncestry.candidates.map(
       ({optionalSameBodyTrainingAudit,conditionalBodyStatCapTimeline,
-        conditionalOneTrainingStatCapTimeline,...rest})=>rest)
+        conditionalOneTrainingStatCapTimeline,conditionalBodyResearchAudit,
+        conditionalOneTrainingResearchAudit,...rest})=>rest)
   },edge,"bounded source chain must remain separate for each incoming edge: "+edge.id);
 }
 assert.deepEqual(published.summary.sameBodyTrainingInsertions,{
@@ -327,6 +328,29 @@ mustReject("cannot certify hardcaps without global proof",r=>{
 });
 mustReject("cannot fake executed research and stat growth",r=>{
   r.summary.chronologicalStatCapAudit.chronologicallyExecutedStatPlans=401;
+});
+mustReject("cannot promote a virtual grant schedule to actually executed research",r=>{
+  r.rows.find(x=>x.id===peasant.id).birthResearchNecessityAudit.researchOrderExecuted=true;
+});
+mustReject("cannot merge mutually exclusive event script research guards",r=>{
+  r.rows.find(x=>x.id===fighter.id)
+    .birthResearchNecessityAudit.variants[1]
+    .eventResearchPositive.push("STR_CONTACT_SMUGGLERS");
+});
+mustReject("cannot invent fulfilled zero-cost automatic research on a clone",r=>{
+  r.rows.find(x=>x.id===assault.id)
+    .birthResearchNecessityAudit.actualResearchCompletionsReplayed=1;
+});
+mustReject("cannot detach a source's later required research from its stage",r=>{
+  r.rows.find(x=>x.id===chortFromPeasant.id)
+    .candidateSourceAncestry.candidates[0]
+    .conditionalBodyResearchAudit.variants[0].stepOrder[1].required=[];
+});
+mustReject("cannot falsely claim every event research alternative was executed",r=>{
+  r.summary.researchOrderNecessityAudit.fullyExecutedResearchPaths=874;
+});
+mustReject("cannot count alternative event research as a guaranteed single combined grant",r=>{
+  r.summary.researchOrderNecessityAudit.actualEventScriptVariantsAudited=1;
 });
 const lineageRowId="transform:STR_SHADE_EMBODIMENT:from:STR_SOLDIER_SPECTRE";
 const lineageRow=published.rows.find(r=>r.id===lineageRowId);

@@ -39,7 +39,19 @@ try{
   const errors=[],network=[];
   page.on("pageerror",e=>errors.push(e.message));
   page.on("request",r=>{if(r.method()!=="GET")network.push(r.method()+" "+r.url())});
-  await page.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
+  // The Atlas has one Soldier DB entrance. Maxima are an option within that DB.
+  await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
+  assert.equal(await page.locator('.grid a.card[href="./soldiers/"]').count(),1);
+  assert.equal(await page.locator('.grid a.card[href*="soldiers/modern/"]').count(),0);
+  await page.locator('.grid a.card[href="./soldiers/"]').click();
+  await page.locator("#soldierTable tbody tr").first().waitFor({timeout:30000});
+  assert((await page.locator(".dataset-version-note").innerText()).includes("v.o1.1.1"));
+  assert.equal(await page.locator('#dataset option[value="originMaxima"]').count(),1);
+  assert.equal(await page.locator('#dataset option[value="legacyMaximaArchive"]').count(),1);
+  await page.locator("#dataset").selectOption("originMaxima");
+  await page.waitForURL(url=>url.pathname.endsWith("/soldiers/modern/")&&url.hash==="#originMaxima",
+    {timeout:30000});
+  assert.equal(await page.locator(".soldier-db-views [aria-current='page']").count(),1);
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
   try{
@@ -68,6 +80,12 @@ try{
   assert((await page.locator("#originSummary").innerText()).includes("구조 사슬 401개"));
   assert((await page.locator("#originSummary").innerText()).includes("훈련 삽입 순서 후보 22686건(미실행)"));
   assert((await page.locator("#originSummary").innerText()).includes("현재능력·하드캡 시간순 구조 계산 3559단계(미실행)"));
+  const researchOverview=await page.locator("#originSummary").innerText();
+  assert(researchOverview.includes("원본 연구 직접 disables 시점 필요조건 887회"));
+  assert(researchOverview.includes("이벤트 스크립트 분기 38회"));
+  assert(researchOverview.includes("조건부 필수 연구 확보 조건 3731회"));
+  assert(researchOverview.includes("중복 검사 포함"));
+  assert(researchOverview.includes("실제 연구 경로 미실행"));
   assert.equal(await page.locator("#originMetric").inputValue(),"verified",
     "confirmed full-route maxima must be the default display");
   assert.equal((await page.locator("#originTable tbody tr").first().locator("td").nth(3).innerText()).trim(),"—");
@@ -115,6 +133,16 @@ try{
   const peasantCapEvidence=await peasantCapPreview.innerText();
   assert(peasantCapEvidence.includes("최종 능력치 미산출"));
   assert(peasantCapEvidence.includes("실제 statCaps"));
+  assert.equal(await page.locator("#originBirthCapTimelinePanel .origin-research-order").count(),2);
+  const peasantResearch=page.locator("#originBirthCapTimelinePanel .origin-research-order").first();
+  assert.equal(await peasantResearch.locator(".origin-research-variant").count(),1);
+  assert.equal(await peasantResearch.locator(".origin-research-stage").count(),1);
+  assert((await peasantResearch.innerText()).includes("STR_RECRUIT_PEASANTS"));
+  assert((await peasantResearch.innerText()).includes("실제 가능한 경로·최종 능력치가 아닙니다"));
+  assert((await peasantResearch.textContent()).includes("비용이 있는 연구실 후보"));
+  const peasantAddedResearch=page.locator("#originBirthCapTimelinePanel .origin-research-order").nth(1);
+  assert((await peasantAddedResearch.textContent()).includes("STR_BATTLE_FORM_AUGMENTATION"));
+  assert((await peasantAddedResearch.innerText()).includes("단계 1"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("manufacture:STR_THEBAN_ASSAULT_CLONE");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -146,6 +174,10 @@ try{
   const cloneCaps=page.locator("#originBirthCapTimelinePanel .origin-stage-cap-projection").first();
   assert.equal((await cloneCaps.locator("tbody tr").nth(5).locator("td").nth(2).innerText()).trim(),"55");
   assert.equal((await cloneCaps.locator("tbody tr").nth(8).locator("td").nth(2).innerText()).trim(),"65");
+  const cloneResearch=page.locator("#originBirthCapTimelinePanel .origin-research-order").first();
+  assert((await cloneResearch.innerText()).includes("STR_THEBAN_ASSAULT_CLONE_LICENSE"));
+  assert((await cloneResearch.textContent()).includes("연구실 직접 접근 증명 없음")||
+    (await cloneResearch.textContent()).includes("연구 비용"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("event:STR_CODEX_BONUS_G5");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -171,6 +203,14 @@ try{
   assert(fighterEvidence.includes("STR_MRSHAN_FIGHTER_EVENT_CATPATH"));
   assert(fighterEvidence.includes("대체 출처 3"));
   assert(fighterEvidence.includes("서로 독립된 발생 조건·추첨"));
+  await page.locator("#originBirthCapTimelineButton").click();
+  const fighterResearch=page.locator("#originBirthCapTimelinePanel .origin-research-order").first();
+  assert.equal(await fighterResearch.locator(".origin-research-variant").count(),3);
+  assert((await fighterResearch.textContent()).includes("STR_MRSHAN_FIGHTER_EVENT_CATPATH_2"));
+  assert((await fighterResearch.textContent()).includes("STR_CONTACT_SMUGGLERS"));
+  assert((await fighterResearch.textContent()).includes("STR_FIREFOX_TRANSPORT"));
+  assert((await fighterResearch.innerText()).includes("서로 독립된 이벤트 스크립트"));
+  assert((await fighterResearch.innerText()).includes("무상으로 즉시 얻는다는 가정"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("direct:STR_SOLDIER_PEASANT");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -207,6 +247,13 @@ try{
   assert((await chortCaps.innerText()).includes("최종 능력치 미산출"));
   assert((await chortCaps.textContent()).includes("STR_BRIDES_TO_THE_QUEEN"));
   assert((await chortCaps.textContent()).includes("원시 전투 성장 하드캡"));
+  assert.equal(await chortCaps.locator(".origin-research-order").count(),2);
+  const chortResearch=chortCaps.locator(".origin-research-order").nth(1);
+  assert.equal(await chortResearch.locator(".origin-research-stage").count(),5);
+  assert((await chortResearch.textContent()).includes("STR_CHORT_SUMMONING"));
+  assert((await chortResearch.textContent()).includes("STR_BRIDES_TO_THE_QUEEN"));
+  assert((await chortResearch.textContent()).includes("자동·이벤트·무료 보상 등 별도 획득 출처 확인 필요"));
+  assert((await chortResearch.innerText()).includes("실제 가능한 경로·최종 능력치가 아닙니다"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("transform:STR_SHADE_EMBODIMENT:from:STR_SOLDIER_SPECTRE");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -258,6 +305,9 @@ try{
   assert.equal(await page.locator("#originTable tbody tr").count(),15);
   await page.locator("#originFocus").selectOption("event");
   assert.equal(await page.locator("#originTable tbody tr").count(),9);
+  await page.locator("#originFocus").selectOption("research");
+  assert.equal(await page.locator("#originTable tbody tr").count(),44,
+    "Zero-cost or grant-only research is never silently declared obtained");
   await page.locator("#originFocus").selectOption("ancestry");
   assert.equal(await page.locator("#originTable tbody tr").count(),39);
   await page.locator("#originFocus").selectOption("unlinked");
@@ -562,6 +612,27 @@ try{
   assert(!(await corruptOrigin.locator("#maximaTable").innerText()).includes("+411"));
   await corruptOrigin.close();
 
+  const corruptResearch=await browser.newPage({viewport:{width:1120,height:740}});
+  await corruptResearch.route("**/data/soldier-acquisition-progression-20261102.json*",async route=>{
+    const response=await route.fetch();
+    const json=await response.json();
+    const peasant=json.rows.find(x=>x.id==="direct:STR_SOLDIER_PEASANT");
+    peasant.birthResearchNecessityAudit.variants[0].stepOrder[0].required=
+      ["STR_CODEX_RED","STR_CODEX_GREEN"];
+    await route.fulfill({response,body:JSON.stringify(json),contentType:"application/json"});
+  });
+  await corruptResearch.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
+  await corruptResearch.waitForFunction(()=>
+    document.querySelector("#originMaxima")?.dataset.validation==="rejected",
+    {timeout:30000});
+  assert.equal(await corruptResearch.locator("#originTable tbody tr").count(),0);
+  assert.equal(await corruptResearch.locator("#maximaTable tbody tr").count(),0);
+  assert((await corruptResearch.locator("#originStatus").innerText())
+    .includes("검사 실패"));
+  assert((await corruptResearch.locator("#maximaStatus").textContent())
+    .includes("표시 중단"));
+  await corruptResearch.close();
+
   // Origin ledger valid, but second independently fetched archived source
   // diverges. The historical table must fail closed instead of publishing.
   const corruptArchive=await browser.newPage({viewport:{width:1200,height:800}});
@@ -591,9 +662,16 @@ try{
   await page.goto(origin+"/soldiers/");
   await page.waitForSelector("#dataset",{timeout:25000});
   assert.equal(await page.locator("#dataset option[value=final]").count(),1);
-  assert(await page.locator('a[href="./modern/"]').count()>0);
+  assert.equal(await page.locator('.soldier-db-views a[href="./modern/#originMaxima"]').count(),1);
+  assert.equal(await page.locator('#dataset option[value="originMaxima"]').count(),1);
+  assert.equal(await page.locator('#dataset option[value="legacyMaximaArchive"]').count(),1);
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("72개"),{timeout:25000});
-  console.log("PASS legacy 1.1.1 soldiers page remains intact and links to separate 2.1 data");
+  console.log("PASS unified Soldier DB: 1.1.1 catalog intact, 2.1 source maxima and 29-class archive are selectable modes");
+  await page.locator("#dataset").selectOption("legacyMaximaArchive");
+  await page.waitForURL(url=>url.pathname.endsWith("/soldiers/modern/")&&url.hash==="#legacyMaximaArchive");
+  await page.waitForFunction(()=>document.querySelector("#legacyMaximaArchive")?.open===true,{timeout:30000});
+  assert((await page.locator("#legacyMaximaArchive > summary").innerText()).includes("미검증"));
+  console.log("PASS 29-class archived research candidates open from the Soldier DB option, never as certified maxima");
   assert.deepEqual(errors,[],errors.join("\n"));
   assert.deepEqual(network,[], "Save must stay local: "+network.join("; "));
   console.log("PASS all modern browser smoke assertions and no non-GET save uploads");

@@ -11,6 +11,8 @@ import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
   from "../public/soldiers/modern/origin-same-body-bridge.js";
 import {buildOriginCapTimeline,originBirthCapSnapshot,compactOriginCapTimeline}
   from "../public/soldiers/modern/origin-stat-cap-chronology.js";
+import {auditOriginResearchChronology,compactOriginResearchAudit}
+  from "../public/soldiers/modern/origin-research-chronology.js";
 import {directResearchTransformLocks,permanentResearchTransformLocks}
   from "../public/soldiers/modern/research-training-locks.js";
 
@@ -177,6 +179,25 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     oneTrainingScenarioCandidates:0,provisionalStageSnapshots:0,
     exactObservedFinalStats:0,chronologicallyExecutedStatPlans:0,
     globalMaximaCertified:0};
+  const researchAudit={birthProfiles:0,rootedConversionCandidates:0,
+    singleTrainingScenarios:0,researchScheduleAlternativesAudited:0,
+    actualEventScriptVariantsAudited:0,
+    conditionalMandatoryGrantGates:0,directDisableContradictedScenarios:0,
+    researchedInActualCampaign:0,fullyExecutedResearchPaths:0};
+  function countResearch(chronology,kind){
+    if(chronology.researchOrderExecuted||chronology.finalStats!==null)
+      throw new Error("가상 연구 grants 스케줄을 캠페인 실행으로 인증할 수 없음");
+    if(kind==="birth")researchAudit.birthProfiles++;
+    else if(kind==="body")researchAudit.rootedConversionCandidates++;
+    else researchAudit.singleTrainingScenarios++;
+    researchAudit.researchScheduleAlternativesAudited+=chronology.variants.length;
+    researchAudit.actualEventScriptVariantsAudited+=chronology.variants.filter(v=>
+      v.eventScriptId!==null).length;
+    researchAudit.conditionalMandatoryGrantGates+=
+      chronology.variants.reduce((n,v)=>n+v.requiredResearch.length,0);
+    if(chronology.allAlternativesContradicted)
+      researchAudit.directDisableContradictedScenarios++;
+  }
   // Serialize compact stage summaries only; on-demand the view reconstructs
   // all intermediate current stats/cap changes from the same rule source.
   const capProjection=compactOriginCapTimeline;
@@ -194,6 +215,8 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     const initialTraining=birthOnlyTrainingAudit(data,profile);
     recordTrainingAudit(initialTraining,"birth");
     const birthCap=originBirthCapSnapshot(data,profile);
+    const birthResearch=auditOriginResearchChronology(data,profile);
+    countResearch(birthResearch,"birth");
     capAudit.birthProfiles++;
     capAudit.provisionalStageSnapshots++;
     direct.push({
@@ -213,6 +236,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       bornPermanentBonus:n.bornPermanentBonus,
       birthSameBodyTrainingAudit:initialTraining,
       birthStatCapSnapshot:birthCap,
+      birthResearchNecessityAudit:compactOriginResearchAudit(birthResearch),
       legacyCandidateBirthHistoryAudit:inheritedCandidateGateAudit(
         data,profile,maxima.get(s.id)),
       rawStatCaps:pick(s.statCaps),
@@ -249,6 +273,12 @@ export function buildSoldierOriginProgression(data,oldMaxima){
           const optionalTimeline=oneTraining?buildOriginCapTimeline(data,origin,
             {typeChanges:candidate.steps,sameBodyInsert:oneTraining,
               previewGrowth:false}):null;
+          const baselineResearch=auditOriginResearchChronology(data,origin,
+            {timeline:bodyTimeline});
+          countResearch(baselineResearch,"body");
+          const optionalResearch=optionalTimeline?
+            auditOriginResearchChronology(data,origin,{timeline:optionalTimeline}):null;
+          if(optionalResearch)countResearch(optionalResearch,"training");
           capAudit.rootedConversionCandidates++;
           capAudit.provisionalStageSnapshots+=bodyTimeline.stageCount;
           if(optionalTimeline){
@@ -258,7 +288,10 @@ export function buildSoldierOriginProgression(data,oldMaxima){
           return {...candidate,optionalSameBodyTrainingAudit:trainingAudit,
             conditionalBodyStatCapTimeline:capProjection(bodyTimeline),
             conditionalOneTrainingStatCapTimeline:optionalTimeline?
-              capProjection(optionalTimeline):null};
+              capProjection(optionalTimeline):null,
+            conditionalBodyResearchAudit:compactOriginResearchAudit(baselineResearch),
+            conditionalOneTrainingResearchAudit:optionalResearch?
+              compactOriginResearchAudit(optionalResearch):null};
         })
       };
       transformed.push({
@@ -355,6 +388,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       sourceRootedAncestry:ancestry.summary,
       sameBodyTrainingInsertions:trainingTotals,
       chronologicalStatCapAudit:capAudit,
+      researchOrderNecessityAudit:researchAudit,
       chronologicalPathsVerified:0,
       finalStatRoutesVerified:0,saveVerified:0,...historyDiagnostics},
     statusDefinitions:{
@@ -372,6 +406,8 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       "모든 출생 72건과 병종 변환 구조 후보 401건의 시간순 원시 능력치 범위, 병종 statCaps, physical trainingStatCaps, 중복 제거 SoldierBonus, statCaps+bonus 참조를 단계별로 산출; 능력치 범위는 조건부이고 실제 생존·훈련·성장·연구 실행이 증명되지 않음.",
       "statCaps+bonus 값은 표시용 실효 상한 참조로서 실제 전투 성장이나 upperBoundAtStatCaps의 원시 성장 하드캡을 임의 증가시키지 않음.",
       "모든 출생처 전체 훈련 조합의 최적성을 입증하기 전에는 캠페인 모델의 한 경로가 통과해도 확정 최댓값이 될 수 없음.",
+      "72개 실제 출생, 401개 병종 변경 구조 사슬, 401개 추가 단일 훈련 시나리오에 원본 연구 disables의 시점별 필요조건을 적용; 필수 연구를 가상으로 즉시 지급하는 낙관적 일정이므로 충돌을 발견하지 않아도 연구를 실제 완료할 수 있다는 증명이 절대 아님.",
+      "이벤트 출생의 대체 스크립트 1개를 모든 후보에 함께 적용하지 않고 스크립트별 연구 긍정/부정 트리거와 월·확률 정보를 독립 감사하며, 비용 0 연구는 엔진 자동/이벤트/무료 연구 공급 경로를 검증하기 전까지 미획득으로 표시함.",
       "제조 요구 연구와 실물 requiredItems는 별도 원본 필드이며, 공급 후보는 반드시 실제 보유 및 이벤트 발동으로 검증해야 함.",
       "제조에서 생성되는 새 병사는 기존 대원의 훈장·이력을 자동 상속하지 않음.",
       "출생 effectiveStats는 원본 출생 보너스를 1회 적용한 범위; 일반적인 성장 상계는 엔진 룰 기반의 매우 낙관적인 상계일 뿐 달성 인증이 아님.",
