@@ -1,0 +1,3 @@
+# A unified diff necessarily contains context lines with leading spaces/tabs.
+# Treat this source patch as an opaque diff, not prose needing whitespace fixes.
+oxce-briefing-preview.patch -whitespace
