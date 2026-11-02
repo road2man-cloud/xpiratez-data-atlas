@@ -55,4 +55,3 @@ The actual Win32/x86 `Silent-Storm-Reconstruction` C++ `Game.exe` now builds wit
 ## Current native GOG milestone — Stage 22 (2026-11-02)
 
 [Stage 22 native spawn + hint-chain completion](stage22/README.md) verifies actual interactive GOG-runtime engine execution, session-scoped command ACK/dispatch, correct dismissal of two successive tutorial hints, sustained world segment updates, and two real additions at `CWorld::AddUnitInGame` (world 6→7→8; player 1→2→3), with duplicate/stale-session and invalid-person negative controls. The Win32 Release engine SHA-256, repeatable bounded smoke script, engine-source patch and verbatim trace evidence are recorded there. **This is not yet a playable X-Piratez 3D tactical mode**: movement, shooting, X-Piratez unit import and OXCE campaign return remain unimplemented or unverified. The earlier Stage 11 proof remains historical and should not be mistaken for the latest milestone.
-
