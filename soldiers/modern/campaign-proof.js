@@ -103,8 +103,7 @@ function grantResearch(world,id,data,method="research",options={}){
         inventoryKnown:true,activeResearchKnown:true,maxSteps:180});
     // A strict replay must never choose one guessed country/region value.
     // The hypothetical pass remains conditional and cannot upgrade proof.
-    if(!speculativeAuto&&
-        (chain.kind!=="conditional"||chain.incomplete||!chain.finalState))
+    if(chain.kind!=="conditional"||chain.incomplete||!chain.finalState)
       return fail("conditional",["지리적 기지 기능별 자동 연구 상태 미증명: "+
         (chain.reason||"자동 큐 재생 불완전")]);
     if(chain.kind==="conditional"&&!chain.incomplete&&chain.finalState){

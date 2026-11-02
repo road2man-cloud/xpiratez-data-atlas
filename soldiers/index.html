@@ -11,7 +11,7 @@
   // All Soldier DB entries now resolve to one current v.o2 ruleset.
   const target = new URL("./modern/", location.href);
   const from = new URLSearchParams(location.search);
-  for (const key of ["family","q","profile"]) {
+  for (const key of ["family","q","profile","training","research"]) {
     if (from.has(key)) target.searchParams.set(key,from.get(key));
   }
   if (["profiles","soldiers","transformations"].includes(from.get("dataset")))
