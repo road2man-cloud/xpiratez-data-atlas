@@ -1,0 +1,32 @@
+BOOT harness (no auto-load)
+[harness] READY session=s2394e2749387c6497e8d pid=30676
+[harness] ACK session=s2394e2749387c6497e8d seq=1 pid=30676 command=console mainmenu
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=1 console-returned
+[harness] DUPLICATE session=s2394e2749387c6497e8d seq=1 pid=30676 ignored
+[harness] FAIL reason=stale-session pid=30676
+[harness] ACK session=s2394e2749387c6497e8d seq=2 pid=30676 command=console xpz3d_tutorial_smoke
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=2 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=3 pid=30676 command=console xpz3d_dismiss_hint
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=3 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=4 pid=30676 command=console xpz3d_dismiss_hint
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=4 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=5 pid=30676 command=console summonunit 730
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=5 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=6 pid=30676 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=6 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=7 pid=30676 command=console xpz3d_stage23 blocked
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=7 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=8 pid=30676 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=8 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=9 pid=30676 command=console xpz3d_stage23 move
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=9 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=10 pid=30676 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=10 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=11 pid=30676 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=11 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=12 pid=30676 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=12 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=13 pid=30676 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=13 console-returned
+[harness] ACK session=s2394e2749387c6497e8d seq=14 pid=30676 command=quit
+[harness] DISPATCH session=s2394e2749387c6497e8d seq=14 quit

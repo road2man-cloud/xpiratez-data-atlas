@@ -1,0 +1,3 @@
+FINAL=NATIVE_MOVEMENT_PASS
+REASON=Native path command executed, reached target tile, rendered 3D position changed, world segments advanced
+SESSION=s2394e2749387c6497e8d

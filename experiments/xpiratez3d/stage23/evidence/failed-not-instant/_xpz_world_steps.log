@@ -1,0 +1,57 @@
+event=world_segment count=1 players=1 pending_players=0 pending_events=0 units=0 realtime=1 sequence=0 tick=1103273906
+event=can_render active=1 scene3d=1 tick=1103273921
+event=world_update calls=1 scene_time=0 current_time=10050 hidden_delta=10050 tick=1103273921
+event=world_segment count=9 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1103276578
+event=world_update calls=32 scene_time=0 current_time=10050 hidden_delta=10050 tick=1103276578
+event=mission_step calls=1 paused=0 current_time=1103278234 last_frame_time=0 tick=1103278234
+event=can_render active=1 scene3d=1 tick=1103278234
+event=world_update calls=182 scene_time=328 current_time=10400 hidden_delta=10050 tick=1103278578
+event=world_segment count=18 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1103278609
+event=can_render active=1 scene3d=1 tick=1103280234
+event=mission_step calls=609 paused=0 current_time=1103280296 last_frame_time=1103279765 tick=1103280296
+event=world_update calls=796 scene_time=1594 current_time=11650 hidden_delta=10050 tick=1103280578
+event=world_segment count=44 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1103280640
+event=can_render active=1 scene3d=1 tick=1103282234
+event=mission_step calls=1763 paused=0 current_time=1103282296 last_frame_time=1103282281 tick=1103282296
+event=world_update calls=1955 scene_time=3594 current_time=13650 hidden_delta=10050 tick=1103282578
+event=world_segment count=84 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1103282640
+event=can_render active=1 scene3d=1 tick=1103284234
+event=mission_step calls=2776 paused=0 current_time=1103284296 last_frame_time=1103284281 tick=1103284296
+event=world_update calls=2959 scene_time=5594 current_time=15650 hidden_delta=10050 tick=1103284578
+event=world_segment count=124 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103284640
+event=mission_step calls=3603 paused=0 current_time=1103286468 last_frame_time=1103285890 tick=1103286468
+event=can_render active=1 scene3d=1 tick=1103286468
+event=world_update calls=3679 scene_time=7166 current_time=17250 hidden_delta=10050 tick=1103286578
+event=world_segment count=156 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103286671
+event=mission_step calls=4496 paused=0 current_time=1103288468 last_frame_time=1103288453 tick=1103288468
+event=can_render active=1 scene3d=1 tick=1103288468
+event=world_update calls=4582 scene_time=9166 current_time=19250 hidden_delta=10050 tick=1103288578
+event=world_segment count=196 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103288671
+event=mission_step calls=5542 paused=0 current_time=1103290468 last_frame_time=1103290453 tick=1103290468
+event=can_render active=1 scene3d=1 tick=1103290468
+event=world_update calls=5640 scene_time=11166 current_time=21250 hidden_delta=10050 tick=1103290578
+event=world_segment count=236 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103290671
+event=mission_step calls=6264 paused=0 current_time=1103292468 last_frame_time=1103292453 tick=1103292468
+event=can_render active=1 scene3d=1 tick=1103292468
+event=world_update calls=6343 scene_time=12644 current_time=22700 hidden_delta=10050 tick=1103292578
+event=world_segment count=266 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103292687
+event=mission_step calls=7276 paused=0 current_time=1103294468 last_frame_time=1103294453 tick=1103294468
+event=can_render active=1 scene3d=1 tick=1103294468
+event=world_update calls=7374 scene_time=14644 current_time=24700 hidden_delta=10050 tick=1103294578
+event=world_segment count=306 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103294687
+event=mission_step calls=8362 paused=0 current_time=1103296468 last_frame_time=1103296453 tick=1103296468
+event=can_render active=1 scene3d=1 tick=1103296468
+event=world_update calls=8447 scene_time=16644 current_time=26700 hidden_delta=10050 tick=1103296578
+event=world_segment count=346 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103296687
+event=mission_step calls=9402 paused=0 current_time=1103298468 last_frame_time=1103298453 tick=1103298468
+event=can_render active=1 scene3d=1 tick=1103298468
+event=world_update calls=9493 scene_time=18644 current_time=28700 hidden_delta=10050 tick=1103298578
+event=world_segment count=386 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103298687
+event=mission_step calls=10417 paused=0 current_time=1103300468 last_frame_time=1103300453 tick=1103300468
+event=can_render active=1 scene3d=1 tick=1103300468
+event=world_update calls=10507 scene_time=20644 current_time=30700 hidden_delta=10050 tick=1103300578
+event=world_segment count=426 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103300687
+event=mission_step calls=11454 paused=0 current_time=1103302468 last_frame_time=1103302453 tick=1103302468
+event=can_render active=1 scene3d=1 tick=1103302468
+event=world_update calls=11558 scene_time=22644 current_time=32700 hidden_delta=10050 tick=1103302578
+event=world_segment count=466 players=2 pending_players=0 pending_events=0 units=7 realtime=1 sequence=0 tick=1103302687

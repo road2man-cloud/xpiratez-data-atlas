@@ -1,0 +1,23 @@
+pid=30676 tick=1104377140 event=probe mode=status friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104377140 event=snapshot index=0 unit=06540C78 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=1 moving=0 path=0 real=11.928,55.387,5.947
+pid=30676 tick=1104377140 event=snapshot index=1 unit=1C7FE9F8 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+pid=30676 tick=1104377359 event=probe mode=blocked friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104377375 event=blocked_preflight from=7,10 target=7,6 passable=0 destination=1 cando=8 submitted=0 unit=1C7FE9F8
+pid=30676 tick=1104378421 event=blocked_order_result unit=1C7FE9F8 preview=8 result=8 same_tile=1 same_ap=1 same_path=1 path_before=0 path_after=0
+pid=30676 tick=1104379140 event=probe mode=status friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104379140 event=snapshot index=0 unit=06540C78 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=1 moving=0 path=0 real=11.928,55.387,5.947
+pid=30676 tick=1104379140 event=snapshot index=1 unit=1C7FE9F8 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+pid=30676 tick=1104379875 event=probe mode=move friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104379875 event=move_submit index=1 unit=1C7FE9F8 from=7,10 to=10,10 layer=11 preview=1 result=1 ap_before=53 selected=1
+pid=30676 tick=1104380093 event=probe mode=status friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104380093 event=snapshot index=0 unit=06540C78 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=30676 tick=1104380093 event=snapshot index=1 unit=1C7FE9F8 tile=7,10 layer=11 dir=0 pose=2 ap=53 selected=1 moving=1 path=1 real=12.539,55.306,5.947
+pid=30676 tick=1104380718 event=probe mode=status friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104380718 event=snapshot index=0 unit=06540C78 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=30676 tick=1104380718 event=snapshot index=1 unit=1C7FE9F8 tile=9,10 layer=11 dir=0 pose=2 ap=53 selected=1 moving=1 path=0 real=12.576,56.116,5.931
+pid=30676 tick=1104381531 event=probe mode=status friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104381531 event=snapshot index=0 unit=06540C78 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=30676 tick=1104381531 event=snapshot index=1 unit=1C7FE9F8 tile=10,10 layer=11 dir=0 pose=2 ap=53 selected=1 moving=1 path=0 real=12.554,57.176,5.926
+pid=30676 tick=1104382203 event=probe mode=status friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=30676 tick=1104382203 event=snapshot index=0 unit=06540C78 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=30676 tick=1104382203 event=snapshot index=1 unit=1C7FE9F8 tile=10,10 layer=11 dir=0 pose=2 ap=53 selected=1 moving=0 path=0 real=12.555,57.175,5.947

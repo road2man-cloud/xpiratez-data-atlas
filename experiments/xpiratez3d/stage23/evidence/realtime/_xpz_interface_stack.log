@@ -1,0 +1,39 @@
+event=set_interface depth=1 top=class CInterMissionInterface top_ptr=095C19D0 pending_cmds=1 active=1 tick=1104367531
+event=stack_item index=0 type=class CInterMissionInterface ptr=095C19D0 tick=1104367531
+event=set_interface depth=1 top=class NGame::CMainMenuInterface top_ptr=05B9BDC0 pending_cmds=0 active=1 tick=1104367562
+event=stack_item index=0 type=class NGame::CMainMenuInterface ptr=05B9BDC0 tick=1104367562
+event=step_app depth=1 top=class NGame::CMainMenuInterface top_ptr=05B9BDC0 pending_cmds=0 active=1 tick=1104367562
+event=stack_item index=0 type=class NGame::CMainMenuInterface ptr=05B9BDC0 tick=1104367562
+event=set_interface depth=1 top=class NGame::CMainMenuInterface top_ptr=05B9B0F0 pending_cmds=0 active=1 tick=1104368625
+event=stack_item index=0 type=class NGame::CMainMenuInterface ptr=05B9B0F0 tick=1104368625
+event=set_interface depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=1 active=1 tick=1104370703
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104370703
+event=step_app depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104371125
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104371125
+event=push_interface depth=2 top=class NGame::CShowHintInterface top_ptr=07F7D358 pending_cmds=0 active=1 tick=1104372328
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104372328
+event=stack_item index=1 type=class NGame::CShowHintInterface ptr=07F7D358 tick=1104372328
+event=dismiss_hint_queued depth=2 top=class NGame::CShowHintInterface top_ptr=07F7D358 pending_cmds=1 active=1 tick=1104372562
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104372562
+event=stack_item index=1 type=class NGame::CShowHintInterface ptr=07F7D358 tick=1104372562
+event=pop_interface depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104372562
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104372562
+event=push_interface depth=2 top=class NGame::CShowHintInterface top_ptr=07F7D710 pending_cmds=0 active=1 tick=1104372734
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104372734
+event=stack_item index=1 type=class NGame::CShowHintInterface ptr=07F7D710 tick=1104372734
+event=step_app depth=2 top=class NGame::CShowHintInterface top_ptr=07F7D710 pending_cmds=0 active=1 tick=1104373125
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104373125
+event=stack_item index=1 type=class NGame::CShowHintInterface ptr=07F7D710 tick=1104373125
+event=dismiss_hint_queued depth=2 top=class NGame::CShowHintInterface top_ptr=07F7D710 pending_cmds=1 active=1 tick=1104373234
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104373234
+event=stack_item index=1 type=class NGame::CShowHintInterface ptr=07F7D710 tick=1104373234
+event=pop_interface depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104373234
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104373234
+event=step_app depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104375125
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104375125
+event=step_app depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104377125
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104377125
+event=step_app depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104379125
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104379125
+event=step_app depth=1 top=class NGame::CMission top_ptr=086B9088 pending_cmds=0 active=1 tick=1104381125
+event=stack_item index=0 type=class NGame::CMission ptr=086B9088 tick=1104381125

@@ -1,0 +1,301 @@
+diff --git a/Main/iMain.cpp b/Main/iMain.cpp
+index 52bd932..f039bbf 100644
+--- a/Main/iMain.cpp
++++ b/Main/iMain.cpp
+@@ -17,11 +17,14 @@
+ #include "iExitMenu.h"
+ #include "Interface.h"
+ #include "iInterMission.h"
++#include "iMission.h"          // Stage 23: inspect real mission units and submit native movement
++#include "RPGUnitInfo.h"       // Stage 23: read actual AP, never synthesize it
+ #include "GResource.h"
+ #include "iLoading.h"   // NGame::ShowLoadingScreen / TermLoadingScreen -- loading-screen lifecycle on the load path
+ #include "ModManager.h" // CModManager -- retail saves carry the active-mod list in the header (CICLoad/CICSave)
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ void DumpMemoryStats() {}
++namespace NGame { bool XPZ3DTestCloseHintIfTop( NMainLoop::IInterfaceBase *pTop ); }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ namespace NMainLoop
+ {
+@@ -120,6 +123,33 @@ bool MakeScreenShot()
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ // CInterfaceCommand
++// Stage 21: read-only opt-in logging of the ACTUAL top interface, not merely the
++// rendered mission background. No changes to interface dispatch or game saves.
++static void XPZ3DTraceInterfaceStack( const char *event, bool periodic = false )
++{
++	char gate[8] = { 0 };
++	if ( GetEnvironmentVariableA( "XPZ3D_INTERFACE_STACK_DIAG", gate, sizeof(gate) ) != 1 || gate[0] != '1' )
++		return;
++	static DWORD lastReport = 0;
++	DWORD now = GetTickCount();
++	if ( periodic && lastReport != 0 && now - lastReport < 2000 ) return;
++	if ( periodic ) lastReport = now;
++	FILE *f = 0;
++	if ( fopen_s( &f, "_xpz_interface_stack.log", "a" ) != 0 || !f ) return;
++	IInterfaceBase *pTop = interfaces.empty() ? 0 : interfaces.back().GetPtr();
++	fprintf( f, "event=%s depth=%u top=%s top_ptr=%p pending_cmds=%u active=%d tick=%lu\n",
++		event, (unsigned)interfaces.size(), pTop ? typeid(*pTop).name() : "none",
++		(void*)pTop, (unsigned)cmds.size(), bAppIsActive ? 1 : 0, (unsigned long)now );
++	unsigned int index = 0;
++	for ( list< CObj<IInterfaceBase> >::const_iterator i = interfaces.begin(); i != interfaces.end(); ++i, ++index )
++	{
++		IInterfaceBase *p = i->GetPtr();
++		fprintf( f, "event=stack_item index=%u type=%s ptr=%p tick=%lu\n",
++			index, p ? typeid(*p).name() : "none", (void*)p, (unsigned long)now );
++	}
++	fclose( f );
++}
++////////////////////////////////////////////////////////////////////////////////////////////////////
+ void CInterfaceCommand::ResetStack()
+ {
+ 	interfaces.clear();
+@@ -131,6 +161,7 @@ void CInterfaceCommand::SetInterface( IInterfaceBase *pNewInterface )
+ 	interfaces.clear();
+ 	interfaces.push_back( pNewInterface );
+ 	pNewInterface->OnGetFocus();
++	XPZ3DTraceInterfaceStack( "set_interface" );
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ IInterfaceBase* CInterfaceCommand::GetInterface() const
+@@ -148,6 +179,7 @@ void CInterfaceCommand::PushInterface( IInterfaceBase *pNewInterface )
+ 	if ( !interfaces.empty() )
+ 		interfaces.back()->OnLostFocus();
+ 	interfaces.push_back( pNewInterface );
++	XPZ3DTraceInterfaceStack( "push_interface" );
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ void CInterfaceCommand::PopInterface()
+@@ -158,6 +190,7 @@ void CInterfaceCommand::PopInterface()
+ 	interfaces.pop_back();
+ 	if ( !interfaces.empty() )
+ 		interfaces.back()->OnGetFocus();
++	XPZ3DTraceInterfaceStack( "pop_interface" );
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ // CInterfaceObject
+@@ -171,6 +204,22 @@ const STime IInterfaceObject::GetTime()
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ bool IInterfaceBase::CanRender()
+ {
++	char diagValue[8] = { 0 };
++	if ( GetEnvironmentVariableA( "XPZ3D_WORLD_STEP_DIAG", diagValue, sizeof(diagValue) ) == 1 && diagValue[0] == '1' )
++	{
++		static DWORD lastReport = 0;
++		DWORD now = GetTickCount();
++		if ( lastReport == 0 || now - lastReport >= 2000 )
++		{
++			lastReport = now;
++			FILE *f = 0;
++			if ( fopen_s( &f, "_xpz_world_steps.log", "a" ) == 0 && f )
++			{
++				fprintf( f, "event=can_render active=%d scene3d=%d tick=%lu\n", bAppIsActive ? 1 : 0, NGScene::Is3DActive() ? 1 : 0, (unsigned long)now );
++				fclose( f );
++			}
++		}
++	}
+ 	if ( bAppIsActive && NGScene::Is3DActive() )
+ 		return true;
+ 	Sleep( 10 );
+@@ -478,6 +527,7 @@ bool StepApp( bool bActive, bool bSetGamma, bool bInput )
+ 	if ( !ProcessInterfaceCmds() )
+ 		return false;
+ 	ASSERT( IsValid( interfaces.back() ) );
++	XPZ3DTraceInterfaceStack( "step_app", true );
+ 
+ 	if ( bInput )
+ 	{
+@@ -536,6 +586,183 @@ int GetInterfaceStackDepth()
+ 	return interfaces.size();
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
++// Stage 23: opt-in real-engine unit movement probe. No serialized fields, no
++// instant position writes, no extra gameplay rules. Only runs when the actual
++// mission is topmost and the isolated test explicitly enables the gate.
++static void XPZ3DMoveTestLog( const char *fmt, ... )
++{
++	FILE *f = 0;
++	if ( fopen_s( &f, "_xpz_stage23_move.log", "a" ) != 0 || !f ) return;
++	fprintf( f, "pid=%lu tick=%lu ", (unsigned long)GetCurrentProcessId(), (unsigned long)GetTickCount() );
++	va_list args;
++	va_start( args, fmt );
++	vfprintf( f, fmt, args );
++	va_end( args );
++	fprintf( f, "\n" );
++	fclose( f );
++}
++static void XPZ3DNativeMoveProbe( const string &szID, const vector<wstring> &szParams, void *pContext )
++{
++	char enabled[8] = { 0 };
++	if ( GetEnvironmentVariableA( "XPZ3D_MOVE_TEST", enabled, sizeof(enabled) ) != 1 || enabled[0] != '1' )
++		return;
++	if ( interfaces.size() != 1 )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=modal_depth depth=%u", (unsigned)interfaces.size() );
++		return;
++	}
++	NGame::IMission *mission = dynamic_cast<NGame::IMission*>( interfaces.back().GetPtr() );
++	if ( !mission || !mission->GetActivePlayer() || !mission->IsReady() || mission->IsGamePaused() ||
++		mission->IsSequence() )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=mission_gate valid=%d",
++			mission != 0 ? 1 : 0 );
++		return;
++	}
++	vector< CPtr<NGame::IUnitTracker> > units;
++	mission->GetUnits( &units );
++	if ( units.empty() )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=no_friendly_units" );
++		return;
++	}
++	const string command = szParams.empty() ? "status" : NStr::ToAscii( szParams[0].c_str() );
++	XPZ3DMoveTestLog( "event=probe mode=%s friendly_count=%u selected=%d realtime=%d player_turn=%d",
++		command.c_str(), (unsigned)units.size(), mission->CountSelected(), mission->IsRealTime() ? 1 : 0,
++		mission->IsPlayerTurn() ? 1 : 0 );
++	if ( command == "status" )
++	{
++		for ( unsigned i = 0; i < units.size(); ++i )
++		{
++			NWorld::CUnit *unit = units[i]->GetUnit();
++			if ( !unit ) continue;
++			const NAI::SUnitPosition &pos = unit->GetPosition();
++			CVec3 realPosition( 0, 0, 0 );
++			unit->GetRealPosition( &realPosition );
++			XPZ3DMoveTestLog( "event=snapshot index=%u unit=%p tile=%u,%u layer=%u dir=%u pose=%d ap=%d selected=%d moving=%d path=%d real=%.3f,%.3f,%.3f",
++				i, (void*)unit, (unsigned)pos.pos.p.GetX(), (unsigned)pos.pos.p.GetY(),
++				(unsigned)pos.pos.p.GetLayer(), (unsigned)pos.pos.p.GetDirection(), (int)unit->GetPose(),
++				unit->GetRPG() ? unit->GetRPG()->GetAP() : -1, units[i]->IsSelected() ? 1 : 0,
++				unit->IsMoving() ? 1 : 0, unit->GetCurrentPath() ? 1 : 0,
++				(double)realPosition.x, (double)realPosition.y, (double)realPosition.z );
++		}
++		return;
++	}
++	if ( command == "combat" )
++	{
++		if ( !mission->IsRealTime() || !mission->IsPlayerTurn() || !units.front()->GetUnit() )
++		{
++			XPZ3DMoveTestLog( "event=combat_refused realtime=%d player_turn=%d",
++				mission->IsRealTime() ? 1 : 0, mission->IsPlayerTurn() ? 1 : 0 );
++			return;
++		}
++		// Identical to CMission::ProcessEvent for the native start-of-turn binding.
++		mission->Command( units.front()->GetUnit(), new NWorld::CCmdStartCombat );
++		XPZ3DMoveTestLog( "event=combat_requested unit=%p", (void*)units.front()->GetUnit() );
++		return;
++	}
++	if ( !mission->IsPlayerTurn() )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=enemy_turn mode=%s", command.c_str() );
++		return;
++	}
++	// Limit the mutation to the last spawned friendly unit. Tests summon one
++	// additional unit first, and verify its distinct runtime identity.
++	if ( units.size() < 2 )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=no_spawned_friendly" );
++		return;
++	}
++	NGame::IUnitTracker *tracker = units.back().GetPtr();
++	NWorld::CUnit *unit = tracker ? tracker->GetUnit() : 0;
++	if ( !unit || !unit->CanFight() )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=unusable_unit" );
++		return;
++	}
++	NAI::SPosition from = unit->GetPosition().pos;
++	NAI::IPathNetwork *network = from.GetNetwork();
++	if ( !network )
++	{
++		XPZ3DMoveTestLog( "event=refused reason=no_path_network" );
++		return;
++	}
++	// Candidates are nearby destinations in the existing native grid.
++	// Try a bounded set and use the unit's real CanDo(CCmdPath) preflight.
++	const int dx[] = {3,0,-3,0,2,-2,2,-2,4,0,-4,0,1,-1,0,0, 3,3,-3,-3};
++	const int dy[] = {0,3,0,-3,2,2,-2,-2,0,4,0,-4,0,0,1,-1, 3,-3,3,-3};
++	const unsigned nCandidates = sizeof(dx)/sizeof(dx[0]);
++	for ( unsigned i = 0; i < nCandidates; ++i )
++	{
++		int x = (int)from.p.GetX() + dx[i];
++		int y = (int)from.p.GetY() + dy[i];
++		if ( x < 1 || y < 1 || x > 254 || y > 254 ) continue;
++		NAI::SPosition to = from;
++		to.p.SetXY( x, y );
++		const bool passable = network->IsPassable( to.p );
++		const bool destination = network->IsValidDestination( to.p );
++		if ( command == "blocked" )
++		{
++			if ( passable && destination ) continue;
++			CObj<NWorld::CCmd> probe( new NWorld::CCmdPath( to, NAI::PF_DEFAULT ) );
++			NWorld::EUnitCommandResult res = unit->CanDo( probe );
++			XPZ3DMoveTestLog( "event=blocked_preflight from=%u,%u target=%d,%d passable=%d destination=%d cando=%d submitted=0 unit=%p",
++				(unsigned)from.p.GetX(), (unsigned)from.p.GetY(), x, y,
++				passable ? 1 : 0, destination ? 1 : 0, (int)res, (void*)unit );
++			if ( res == NWorld::UCR_OK || res == NWorld::UCR_NOT_ENOUGH_AP )
++			{
++				XPZ3DMoveTestLog( "event=blocked_refused reason=unexpected_reachable unit=%p", (void*)unit );
++				return;
++			}
++			const int apBefore = unit->GetRPG() ? unit->GetRPG()->GetAP() : -1;
++			const bool pathBefore = unit->GetCurrentPath() != 0;
++			NWorld::EUnitCommandResult order = tracker->SetTargetPosition( to, true, false );
++			const NAI::SPosition after = unit->GetPosition().pos;
++			const int apAfter = unit->GetRPG() ? unit->GetRPG()->GetAP() : -1;
++			const bool pathAfter = unit->GetCurrentPath() != 0;
++			XPZ3DMoveTestLog( "event=blocked_order_result unit=%p preview=%d result=%d same_tile=%d same_ap=%d same_path=%d path_before=%d path_after=%d",
++				(void*)unit, (int)res, (int)order, after.p.GetData() == from.p.GetData() ? 1 : 0,
++				apBefore == apAfter ? 1 : 0, pathBefore == pathAfter ? 1 : 0, pathBefore ? 1 : 0, pathAfter ? 1 : 0 );
++			return;
++		}
++		if ( command != "move" ) break;
++		if ( !passable || !destination ) continue;
++		CObj<NWorld::CCmd> probe( new NWorld::CCmdPath( to, NAI::PF_DEFAULT ) );
++		NWorld::EUnitCommandResult res = unit->CanDo( probe );
++		if ( res != NWorld::UCR_OK && res != NWorld::UCR_NOT_ENOUGH_AP )
++			continue;
++		const int beforeAP = unit->GetRPG() ? unit->GetRPG()->GetAP() : -1;
++		mission->Select( unit, false );
++		// Native click path passes bInstant=true (CStateMove::DoMove). A false
++		// value only prepares pExec and leaves it idle until CCmdContinue.
++		NWorld::EUnitCommandResult submitted = tracker->SetTargetPosition( to, true, false );
++		XPZ3DMoveTestLog( "event=move_submit index=%u unit=%p from=%u,%u to=%d,%d layer=%u preview=%d result=%d ap_before=%d selected=%d",
++			(unsigned)(units.size()-1), (void*)unit, (unsigned)from.p.GetX(), (unsigned)from.p.GetY(),
++			x, y, (unsigned)from.p.GetLayer(), (int)res, (int)submitted, beforeAP, tracker->IsSelected() ? 1 : 0 );
++		return;
++	}
++	XPZ3DMoveTestLog( "event=refused reason=no_eligible_destination mode=%s unit=%p from=%u,%u",
++		command.c_str(), (void*)unit, (unsigned)from.p.GetX(), (unsigned)from.p.GetY() );
++}
++// Separate compilation unit owns the hint's private event ID; this call performs
++// exactly the native cancel action only when the top is a CShowHintInterface.
++static void XPZ3DSafeDismissHint( const string &szID, const vector<wstring> &szParams, void *pContext )
++{
++	char gate[8] = { 0 };
++	if ( GetEnvironmentVariableA( "XPZ3D_HINT_CLOSE_TEST", gate, sizeof(gate) ) != 1 || gate[0] != '1' )
++		return;
++	if ( interfaces.size() != 2 )
++	{
++		XPZ3DTraceInterfaceStack( "dismiss_refused_depth" );
++		return;
++	}
++	IInterfaceBase *pTop = interfaces.back().GetPtr();
++	if ( !NGame::XPZ3DTestCloseHintIfTop( pTop ) )
++		XPZ3DTraceInterfaceStack( "dismiss_refused_type" );
++	else
++		XPZ3DTraceInterfaceStack( "dismiss_hint_queued" );
++}
++////////////////////////////////////////////////////////////////////////////////////////////////////
+ static void LoadSavedGame( const string &szID, const vector<wstring> &szParams, void *pContext )
+ {
+ 	if ( szParams.size() < 1 )
+@@ -581,6 +808,8 @@ static void SetProfile( const string &szID, const vector<wstring> &szParams, voi
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ START_REGISTER(iMain)
++	REGISTER_CMD( "xpz3d_dismiss_hint", XPZ3DSafeDismissHint )
++	REGISTER_CMD( "xpz3d_stage23", XPZ3DNativeMoveProbe )
+ 	REGISTER_CMD( "load", LoadSavedGame )
+ 	REGISTER_CMD( "save", SaveGame )
+ 	REGISTER_CMD( "profile", SetProfile )

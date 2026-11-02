@@ -1,0 +1,24 @@
+pid=31416 tick=1104436046 event=probe mode=combat friendly_count=2 selected=1 realtime=1 player_turn=1
+pid=31416 tick=1104436046 event=combat_requested unit=066804E0
+pid=31416 tick=1104436265 event=probe mode=status friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104436265 event=snapshot index=0 unit=066804E0 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=1 moving=0 path=0 real=11.928,55.387,5.947
+pid=31416 tick=1104436265 event=snapshot index=1 unit=1C7273C0 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+pid=31416 tick=1104436468 event=probe mode=status friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104436609 event=snapshot index=0 unit=066804E0 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=1 moving=0 path=0 real=11.928,55.387,5.947
+pid=31416 tick=1104436609 event=snapshot index=1 unit=1C7273C0 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+pid=31416 tick=1104436687 event=probe mode=blocked friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104436703 event=blocked_preflight from=7,10 target=7,6 passable=0 destination=1 cando=8 submitted=0 unit=1C7273C0
+pid=31416 tick=1104436703 event=blocked_order_result unit=1C7273C0 preview=8 result=8 same_tile=1 same_ap=1 same_path=1 path_before=0 path_after=0
+pid=31416 tick=1104437453 event=probe mode=status friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104437453 event=snapshot index=0 unit=066804E0 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=1 moving=0 path=0 real=11.928,55.387,5.947
+pid=31416 tick=1104437453 event=snapshot index=1 unit=1C7273C0 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+pid=31416 tick=1104437671 event=probe mode=move friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104437671 event=move_submit index=1 unit=1C7273C0 from=7,10 to=10,10 layer=11 preview=1 result=1 ap_before=53 selected=1
+pid=31416 tick=1104437890 event=refused reason=mission_gate valid=1
+pid=31416 tick=1104438734 event=refused reason=mission_gate valid=1
+pid=31416 tick=1104439562 event=probe mode=status friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104439562 event=snapshot index=0 unit=066804E0 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=31416 tick=1104439562 event=snapshot index=1 unit=1C7273C0 tile=10,10 layer=11 dir=0 pose=2 ap=41 selected=1 moving=0 path=0 real=12.555,57.175,5.947
+pid=31416 tick=1104440031 event=probe mode=status friendly_count=2 selected=1 realtime=0 player_turn=1
+pid=31416 tick=1104440031 event=snapshot index=0 unit=066804E0 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=31416 tick=1104440031 event=snapshot index=1 unit=1C7273C0 tile=10,10 layer=11 dir=0 pose=2 ap=41 selected=1 moving=0 path=0 real=12.555,57.175,5.947

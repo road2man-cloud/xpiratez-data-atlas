@@ -1,0 +1,3 @@
+FINAL=FAIL
+REASON=Native movement not proved: tile=False real=False pathObserved=True samples=24
+SESSION=s23db5432f398af4970be

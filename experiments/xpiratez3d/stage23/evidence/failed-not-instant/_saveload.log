@@ -1,0 +1,70 @@
+BOOT harness (no auto-load)
+[harness] READY session=s23db5432f398af4970be pid=5296
+[harness] ACK session=s23db5432f398af4970be seq=1 pid=5296 command=console mainmenu
+[harness] DISPATCH session=s23db5432f398af4970be seq=1 console-returned
+[harness] DUPLICATE session=s23db5432f398af4970be seq=1 pid=5296 ignored
+[harness] FAIL reason=stale-session pid=5296
+[harness] ACK session=s23db5432f398af4970be seq=2 pid=5296 command=console xpz3d_tutorial_smoke
+[harness] DISPATCH session=s23db5432f398af4970be seq=2 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=3 pid=5296 command=console xpz3d_dismiss_hint
+[harness] DISPATCH session=s23db5432f398af4970be seq=3 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=4 pid=5296 command=console xpz3d_dismiss_hint
+[harness] DISPATCH session=s23db5432f398af4970be seq=4 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=5 pid=5296 command=console summonunit 730
+[harness] DISPATCH session=s23db5432f398af4970be seq=5 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=6 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=6 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=7 pid=5296 command=console xpz3d_stage23 blocked
+[harness] DISPATCH session=s23db5432f398af4970be seq=7 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=8 pid=5296 command=console xpz3d_stage23 move
+[harness] DISPATCH session=s23db5432f398af4970be seq=8 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=9 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=9 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=10 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=10 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=11 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=11 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=12 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=12 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=13 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=13 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=14 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=14 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=15 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=15 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=16 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=16 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=17 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=17 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=18 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=18 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=19 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=19 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=20 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=20 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=21 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=21 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=22 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=22 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=23 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=23 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=24 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=24 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=25 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=25 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=26 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=26 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=27 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=27 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=28 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=28 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=29 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=29 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=30 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=30 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=31 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=31 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=32 pid=5296 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s23db5432f398af4970be seq=32 console-returned
+[harness] ACK session=s23db5432f398af4970be seq=33 pid=5296 command=quit
+[harness] DISPATCH session=s23db5432f398af4970be seq=33 quit

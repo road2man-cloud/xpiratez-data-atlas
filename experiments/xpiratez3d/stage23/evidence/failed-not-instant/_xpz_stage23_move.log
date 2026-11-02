@@ -1,0 +1,79 @@
+pid=5296 tick=1103284218 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103284218 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=1 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103284218 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+pid=5296 tick=1103284437 event=probe mode=blocked friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103284453 event=blocked_preflight from=7,10 target=7,6 passable=0 destination=1 cando=8 submitted=0 unit=1D8B8B78
+pid=5296 tick=1103284640 event=probe mode=move friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103284640 event=move_submit index=1 unit=1D8B8B78 from=7,10 to=10,10 layer=11 preview=1 result=1 ap_before=53 selected=1
+pid=5296 tick=1103284859 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103284859 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103284859 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103285687 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103285687 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103285687 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103287078 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103287078 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103287078 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103287890 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103287890 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103287890 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103288703 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103288703 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103288703 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103289312 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103289312 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103289312 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103290125 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103290125 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103290125 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103290750 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103290750 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103290750 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103291984 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103291984 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103291984 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103292796 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103292796 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103292796 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103293406 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103293406 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103293406 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103294218 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103294218 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103294218 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103295031 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103295031 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103295031 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103295640 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103295640 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103295640 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103296453 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103296453 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103296453 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103297265 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103297265 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103297265 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103298078 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103298078 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103298078 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103298890 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103298890 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103298890 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103299703 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103299703 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103299703 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103300343 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103300343 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103300343 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103301156 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103301156 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103301156 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103301968 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103301968 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103301968 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103302781 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103302781 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103302781 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+pid=5296 tick=1103303593 event=probe mode=status friendly_count=2 selected=1 realtime=1
+pid=5296 tick=1103303593 event=snapshot index=0 unit=06AEF190 tile=7,11 layer=11 dir=4 pose=2 ap=53 selected=0 moving=0 path=0 real=11.928,55.387,5.947
+pid=5296 tick=1103303593 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947

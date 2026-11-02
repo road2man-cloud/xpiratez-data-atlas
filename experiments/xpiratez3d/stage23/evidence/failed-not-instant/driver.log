@@ -1,0 +1,75 @@
+﻿2026-11-02T14:28:15.2503180+09:00 BUILD_SHA256=B4E99F87C3351952C397019ED5809E3B54AAC9254DEEC165CDC7599973FE96F4 SESSION=s23db5432f398af4970be
+2026-11-02T14:28:15.3850993+09:00 ENGINE_STARTED pid=5296 sessionId=1
+2026-11-02T14:28:17.2620522+09:00 ENGINE_READY pid=5296
+2026-11-02T14:28:17.9044847+09:00 ACK+DISPATCH seq=1 console mainmenu
+2026-11-02T14:28:17.9117961+09:00 DUPLICATE_REJECTED
+2026-11-02T14:28:17.9180572+09:00 STALE_SESSION_REJECTED
+2026-11-02T14:28:17.9233146+09:00 ACK+DISPATCH seq=2 console xpz3d_tutorial_smoke
+2026-11-02T14:28:20.3750217+09:00 TUTORIAL_ENTERED event=set_interface depth=1 top=class NGame::CMission top_ptr=07E1F310 pending_cmds=1 active=1 tick=1103277046
+2026-11-02T14:28:22.8408034+09:00 FIRST_HINT_VISIBLE event=push_interface depth=2 top=class NGame::CShowHintInterface top_ptr=1AC10C08 pending_cmds=0 active=1 tick=1103279421
+2026-11-02T14:28:22.9328048+09:00 ACK+DISPATCH seq=3 console xpz3d_dismiss_hint
+2026-11-02T14:28:22.9531446+09:00 HINT_POP_OK number=1 top=event=pop_interface depth=1 top=class NGame::CMission top_ptr=07E1F310 pending_cmds=0 active=1 tick=1103279609
+2026-11-02T14:28:23.6203149+09:00 ACK+DISPATCH seq=4 console xpz3d_dismiss_hint
+2026-11-02T14:28:23.6251159+09:00 HINT_POP_OK number=2 top=event=pop_interface depth=1 top=class NGame::CMission top_ptr=07E1F310 pending_cmds=0 active=1 tick=1103280296
+2026-11-02T14:28:27.2992754+09:00 WORLD_STEP_PASS before=44 after=84 hints=2
+2026-11-02T14:28:27.3101804+09:00 ACK+DISPATCH seq=5 console summonunit 730
+2026-11-02T14:28:27.5385862+09:00 NATIVE_SPAWN_PASS actor=1D8B8A10 event=world_add_completed world_before=6 world_after=7 player_before=1 player_after=2 actor_ptr=1D8B8A10 player_ptr=077AC580 tick=1103284046
+2026-11-02T14:28:27.7436561+09:00 ACK+DISPATCH seq=6 console xpz3d_stage23 status
+2026-11-02T14:28:27.7530145+09:00 NATIVE_UNIT_BASELINE ptr=1D8B8B78 tile=7,10 real=12.524,55.313 pid=5296 tick=1103284218 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=0 moving=0 path=0 real=12.524,55.313,5.947
+2026-11-02T14:28:27.9585606+09:00 ACK+DISPATCH seq=7 console xpz3d_stage23 blocked
+2026-11-02T14:28:27.9637681+09:00 BLOCKED_PROBE_NON_MUTATING pid=5296 tick=1103284453 event=blocked_preflight from=7,10 target=7,6 passable=0 destination=1 cando=8 submitted=0 unit=1D8B8B78
+2026-11-02T14:28:28.1700710+09:00 ACK+DISPATCH seq=8 console xpz3d_stage23 move
+2026-11-02T14:28:28.1778928+09:00 NATIVE_MOVE_SUBMIT pid=5296 tick=1103284640 event=move_submit index=1 unit=1D8B8B78 from=7,10 to=10,10 layer=11 preview=1 result=1 ap_before=53 selected=1
+2026-11-02T14:28:28.3870455+09:00 ACK+DISPATCH seq=9 console xpz3d_stage23 status
+2026-11-02T14:28:28.3995850+09:00 UNIT_MOTION_SAMPLE index=0 pid=5296 tick=1103284859 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:29.2068097+09:00 ACK+DISPATCH seq=10 console xpz3d_stage23 status
+2026-11-02T14:28:29.7881165+09:00 UNIT_MOTION_SAMPLE index=1 pid=5296 tick=1103285687 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:30.6034866+09:00 ACK+DISPATCH seq=11 console xpz3d_stage23 status
+2026-11-02T14:28:30.6055497+09:00 UNIT_MOTION_SAMPLE index=2 pid=5296 tick=1103287078 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:31.4162271+09:00 ACK+DISPATCH seq=12 console xpz3d_stage23 status
+2026-11-02T14:28:31.4188195+09:00 UNIT_MOTION_SAMPLE index=3 pid=5296 tick=1103287890 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:32.0258438+09:00 ACK+DISPATCH seq=13 console xpz3d_stage23 status
+2026-11-02T14:28:32.0279104+09:00 UNIT_MOTION_SAMPLE index=4 pid=5296 tick=1103288703 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:32.8370676+09:00 ACK+DISPATCH seq=14 console xpz3d_stage23 status
+2026-11-02T14:28:32.8433409+09:00 UNIT_MOTION_SAMPLE index=5 pid=5296 tick=1103289312 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:33.4507339+09:00 ACK+DISPATCH seq=15 console xpz3d_stage23 status
+2026-11-02T14:28:33.4533349+09:00 UNIT_MOTION_SAMPLE index=6 pid=5296 tick=1103290125 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:34.2753927+09:00 ACK+DISPATCH seq=16 console xpz3d_stage23 status
+2026-11-02T14:28:34.2785084+09:00 UNIT_MOTION_SAMPLE index=7 pid=5296 tick=1103290750 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:35.5066804+09:00 ACK+DISPATCH seq=17 console xpz3d_stage23 status
+2026-11-02T14:28:35.5092639+09:00 UNIT_MOTION_SAMPLE index=8 pid=5296 tick=1103291984 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:36.1168312+09:00 ACK+DISPATCH seq=18 console xpz3d_stage23 status
+2026-11-02T14:28:36.1199594+09:00 UNIT_MOTION_SAMPLE index=9 pid=5296 tick=1103292796 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:36.9293249+09:00 ACK+DISPATCH seq=19 console xpz3d_stage23 status
+2026-11-02T14:28:36.9324843+09:00 UNIT_MOTION_SAMPLE index=10 pid=5296 tick=1103293406 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:37.7414946+09:00 ACK+DISPATCH seq=20 console xpz3d_stage23 status
+2026-11-02T14:28:37.7441119+09:00 UNIT_MOTION_SAMPLE index=11 pid=5296 tick=1103294218 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:38.3499841+09:00 ACK+DISPATCH seq=21 console xpz3d_stage23 status
+2026-11-02T14:28:38.3536127+09:00 UNIT_MOTION_SAMPLE index=12 pid=5296 tick=1103295031 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:39.1624373+09:00 ACK+DISPATCH seq=22 console xpz3d_stage23 status
+2026-11-02T14:28:39.1661309+09:00 UNIT_MOTION_SAMPLE index=13 pid=5296 tick=1103295640 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:39.9760508+09:00 ACK+DISPATCH seq=23 console xpz3d_stage23 status
+2026-11-02T14:28:39.9786415+09:00 UNIT_MOTION_SAMPLE index=14 pid=5296 tick=1103296453 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:40.7871507+09:00 ACK+DISPATCH seq=24 console xpz3d_stage23 status
+2026-11-02T14:28:40.7902756+09:00 UNIT_MOTION_SAMPLE index=15 pid=5296 tick=1103297265 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:41.5999688+09:00 ACK+DISPATCH seq=25 console xpz3d_stage23 status
+2026-11-02T14:28:41.6025668+09:00 UNIT_MOTION_SAMPLE index=16 pid=5296 tick=1103298078 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:42.4121885+09:00 ACK+DISPATCH seq=26 console xpz3d_stage23 status
+2026-11-02T14:28:42.4153129+09:00 UNIT_MOTION_SAMPLE index=17 pid=5296 tick=1103298890 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:43.0227872+09:00 ACK+DISPATCH seq=27 console xpz3d_stage23 status
+2026-11-02T14:28:43.0269836+09:00 UNIT_MOTION_SAMPLE index=18 pid=5296 tick=1103299703 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:43.8669586+09:00 ACK+DISPATCH seq=28 console xpz3d_stage23 status
+2026-11-02T14:28:43.8695258+09:00 UNIT_MOTION_SAMPLE index=19 pid=5296 tick=1103300343 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:44.6777725+09:00 ACK+DISPATCH seq=29 console xpz3d_stage23 status
+2026-11-02T14:28:44.6814171+09:00 UNIT_MOTION_SAMPLE index=20 pid=5296 tick=1103301156 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:45.4907885+09:00 ACK+DISPATCH seq=30 console xpz3d_stage23 status
+2026-11-02T14:28:45.4939085+09:00 UNIT_MOTION_SAMPLE index=21 pid=5296 tick=1103301968 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:46.3034259+09:00 ACK+DISPATCH seq=31 console xpz3d_stage23 status
+2026-11-02T14:28:46.3065328+09:00 UNIT_MOTION_SAMPLE index=22 pid=5296 tick=1103302781 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:47.1157256+09:00 ACK+DISPATCH seq=32 console xpz3d_stage23 status
+2026-11-02T14:28:47.1188383+09:00 UNIT_MOTION_SAMPLE index=23 pid=5296 tick=1103303593 event=snapshot index=1 unit=1D8B8B78 tile=7,10 layer=11 dir=7 pose=2 ap=53 selected=1 moving=1 path=1 real=12.524,55.313,5.947
+2026-11-02T14:28:47.7290813+09:00 ERROR: Native movement not proved: tile=False real=False pathObserved=True samples=24
+2026-11-02T14:28:47.7347891+09:00 QUIT_REQUEST_SENT seq=33
+2026-11-02T14:28:48.1945028+09:00 CURSOR_CLIP_RELEASED
+2026-11-02T14:28:48.2197081+09:00 FINAL=FAIL reason=Native movement not proved: tile=False real=False pathObserved=True samples=24
+2026-11-02T14:28:48.2233394+09:00 EVIDENCE=D:\daphne_auto\XPZ3D_ENGINE_BUILD_20261102\gog-runtime-smoke-stage-002\stage23-evidence-s23db5432f398af4970be

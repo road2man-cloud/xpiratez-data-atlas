@@ -1,0 +1,3 @@
+# Evidence captures are byte-for-byte copies of original Windows engine logs.
+# Disable Git newline normalization so SHA-256 manifests remain valid after checkout.
+evidence/** -text -diff
