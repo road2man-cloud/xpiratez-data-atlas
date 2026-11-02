@@ -3,19 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>X-Piratez 2.1 병종·최종 강화 상호배제 검증</title>
+<title>X-Piratez 2.1 획득처별 육성·능력치 검증 원장</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="maxima-compare.css?v=20261101">
-<link rel="stylesheet" href="origin-progress-ui.css?v=20261102">
+<link rel="stylesheet" href="origin-progress-ui.css?v=20261102-proof-renewal">
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
     <a class="back" href="../../">← Data Atlas</a> <a class="back" href="../">· 기존 병종 DB</a>
     <p class="eyebrow">X-Piratez 2.1 (v.o2) · OXCE 8.7.1 · 실제 원본 룰 83개 변신</p>
-    <h1>병종·상호배제 검증</h1>
-    <p class="lede">획득형·변신 이력·연구 폐쇄·장비를 <strong>최신 게임 규칙</strong>으로 구분합니다. 일반 갈과 반 슈퍼변이체 농부는 출발 병종과 자동 변신 이력이 다릅니다. 아직 달성 조건을 증명하지 못한 조합은 <strong>확정 최종 능력치로 합산하지 않습니다.</strong></p>
-    <p><a class="back" href="?dataset=transformations&amp;family=STR_SOLDIER">일반 갈 변신 계보</a> · <a class="back" href="?profile=manufacture%3ASTR_HALF_UBER_GIRL_RECRUITMENT">반 슈퍼변이체 농부 획득형</a> · <a class="back" href="../../reference/#unit-voxels">29종 스탠딩·무릎 복셀 높이 참조</a></p>
+    <h1>획득처별 육성·능력치 검증 원장</h1>
+    <p class="lede">같은 병종이라도 <strong>출생처·기존 훈련 이력·연구 선택·이후 성장 기회</strong>가 다르면 별개로 조사합니다. 병종의 이론 보너스나 최선의 확률 결과를 서로 다른 대원에게서 가져와 한 명의 확정 최종값으로 합산하지 않습니다.</p>
+    <nav class="origin-quick-nav" aria-label="육성 검증 바로가기">
+      <a href="#originMaxima">획득처 112분기</a>
+      <a href="#originProofMeaning">증명 기준</a>
+      <a href="#legacyMaximaArchive">과거 이론 후보 (분리 보관)</a>
+      <a href="#researchExclusionAudit">연구 상호배제</a>
+      <a href="#baselineGrowthCompare">전투·체육관 성장</a>
+      <a href="#modernSaveFile">내 세이브 확인</a>
+    </nav>
+    <p class="origin-hero-links"><a class="back" href="?dataset=transformations&amp;family=STR_SOLDIER">일반 갈 변신 계보</a> · <a class="back" href="?profile=manufacture%3ASTR_HALF_UBER_GIRL_RECRUITMENT">반 슈퍼변이체 농부 획득형</a> · <a class="back" href="../../reference/#unit-voxels">29종 복셀 높이 참조</a></p>
   </div>
 </header>
 
@@ -26,9 +34,8 @@
     <div class="maxima-header">
       <div>
         <p class="eyebrow">X-PIRATEZ 2.1 · PER-ACQUISITION PROGRESSION</p>
-        <h2>획득처별 출생 상태 · 성장 상계 · 최종 능력치 증명</h2>
-        <p>같은 병종도 직접 모집, 제조, 이벤트, 이전 병종에서의 변신을 서로 다른 분석 대상으로 취급합니다.
-          기존 29종 영구 보너스 후보는 개별 획득처의 실현 가능한 최댓값으로 간주하지 않습니다.</p>
+        <h2>출생 상태 → 연구·훈련 → 현재 능력치·하드캡 → 최종 증명</h2>
+        <p>72개 실제 출생 프로필과 40개 병종 변경 분기를 구분합니다. 단계별 계산이 성공했더라도 <strong>실제 연구·재료·훈장·성장·변신 순서와 전역 최적성이 확인되기 전에는 최종 능력치를 게시하지 않습니다.</strong></p>
       </div>
       <div class="maxima-controls">
         <label for="originType">병종 선택
@@ -38,10 +45,29 @@
           <select id="originMetric">
             <option value="verified" selected>확정 최종 능력치 (완결된 실행·최적성 증명만)</option>
             <option value="max">출생 최댓값 (원본 범위)</option>
-            <option value="avg">출생 평균 (기댓값)</option>
+            <option value="avg">출생 설정 평균값 (기댓값 보장 아님)</option>
             <option value="min">출생 최솟값</option>
             <option value="growth">장기 자연 성장 낙관적 상계 (조건부)</option>
 
+          </select>
+        </label>
+        <label for="originSourceType">획득 유형
+          <select id="originSourceType">
+            <option value="">모든 획득 유형</option>
+            <option value="direct">직접 모집</option>
+            <option value="manufacture">제조·특수 모집</option>
+            <option value="event">이벤트 지급</option>
+            <option value="typeChange">병종 변경</option>
+          </select>
+        </label>
+        <label for="originFocus">증명 조사 항목
+          <select id="originFocus">
+            <option value="">모든 상태</option>
+            <option value="history">출생 이력 충돌 (직접 시술)</option>
+            <option value="event">확률·대체 이벤트 확인</option>
+            <option value="ancestry">출생처가 연결된 변신 분기</option>
+            <option value="unlinked">구조 탐색에서 출생처 미발견</option>
+            <option value="reset">이력 초기화 변신</option>
           </select>
         </label>
         <label for="originSearch">획득처 ID·명칭 검색
@@ -57,6 +83,17 @@
       병종 변경 출생은 이전 개인의 전체 경로가 재생되지 않았으므로 숫자를 비워 둡니다.
       훈장·변신·연구·RNG·재료의 시간순 증명 전에는 최종 능력치와 총합을 확정 게시하지 않습니다.
     </p>
+    <div id="originProofDashboard" class="origin-proof-dashboard" aria-live="polite">
+      <p class="muted">원본 데이터와 검증 결과를 교차 대조하는 중…</p>
+    </div>
+    <details id="originProofMeaning" class="origin-proof-explainer">
+      <summary>검증 상태의 의미 · 무엇을 증명해야 확정인가?</summary>
+      <p><strong>원본 대조 완료</strong>는 2.1 룰에 존재하는 출생·훈련·변신 규칙이 일치한다는 뜻입니다.
+        <strong>구조 계산</strong>은 선택된 병종·변신 이력의 수치 변화를 계산했다는 뜻이며 실제 수행 가능한 연구·시술이라는 주장이 아닙니다.</p>
+      <p><strong>확정 최댓값</strong>은 해당 획득처에서 생성된 한 병사의 실제 연구·이벤트·재료·계급·훈장·전투 성장·훈련·변신을 시간순으로 재생해 통과하고,
+        그보다 높은 최종 11종 합계의 다른 경로가 없음을 증명했을 때만 게시합니다. 기존 게임 세이브 재현은 별도 증거입니다.</p>
+      <p><strong>불가능 판정</strong>은 원본 선행/금지 조건의 반증이 있을 때만 내릴 수 있습니다. 조사 범위가 좁아 발견하지 못한 경로를 곧바로 불가능이라고 표시하지 않습니다.</p>
+    </details>
     <p id="originSummary" class="muted"></p>
     <p id="originStatus" class="muted" aria-live="polite">원본 출생·성장 감사 자료를 검증하는 중…</p>
     <div class="table-shell maxima-scroll origin-scroll" tabindex="0" aria-label="획득처별 능력치 11종 횡스크롤 표">
@@ -67,19 +104,21 @@
       <a href="#researchMaxima">병종별 기존 조건부 후보</a>는 독립적으로 보존합니다.</p>
   </section>
 
-  <section id="researchMaxima" class="card maxima-panel" aria-label="29개 병종 연구 상호배제 반영 최대 능력치">
+  <details id="legacyMaximaArchive" class="legacy-maxima-archive">
+    <summary>과거 29병종 정적 보너스 후보 보기 — 실현 가능한 최종 능력치가 아닙니다</summary>
+    <section id="researchMaxima" class="card maxima-panel" aria-label="과거 29개 병종 연구 배타성 정적 후보, 실현성 미검증">
     <div class="maxima-header">
       <div>
         <p class="eyebrow">X-PIRATEZ 2.1 · RESEARCH-EXCLUSIVE STAT CEILINGS</p>
-        <h2>병종 29종 · 과거 조건부 최대 후보 (획득처별 확정값 아님)</h2>
+        <h2>과거 연구 배타성 정적 점수 — 획득처별 최댓값으로 사용 금지</h2>
         <p>연구 <code>disables</code> · 선행 연구 · 변신 배타성에 따라 병종별 하나의 최적 후보를 선택합니다.
         <strong>마나 제외 11개 능력치</strong>를 비교하며, 다른 연구 분기의 보너스를 중복 합산하지 않습니다.</p>
       </div>
       <div class="maxima-controls">
         <label for="maximaStatMode">수치 기준
           <select id="maximaStatMode">
-            <option value="capPlusBonus">성장 하드캡 + 영구 보너스</option>
-            <option value="bonus">영구 보너스 증가분만</option>
+            <option value="bonus" selected>정적 영구 보너스 후보만 (기본)</option>
+            <option value="capPlusBonus">원시 하드캡 + 후보 보너스 산술합 (성장 가능 최대 아님)</option>
           </select>
         </label>
         <label for="maximaSearch">병종 검색
@@ -102,7 +141,8 @@
       </table>
     </div>
     <div id="maximaDetails" class="maxima-details" hidden aria-live="polite"></div>
-  </section>
+    </section>
+  </details>
 
   <details id="researchExclusionAudit" class="card research-exclusion-audit">
     <summary>XPiratez 2.1 연구 상호배제 원본 전수 목록 · 441건</summary>
@@ -261,6 +301,6 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=20261102-origin-progress"></script>
+<script type="module" src="app.js?v=20261102-proof-renewal"></script>
 </body>
 </html>

@@ -50,6 +50,16 @@ try{
     throw error;
   }
   assert.equal(await page.locator("#originTable thead th").count(),15);
+  assert.equal(await page.locator("#originMaxima").getAttribute("data-validation"),"validated");
+  const proofDashboard=await page.locator("#originProofDashboard").innerText();
+  assert(proofDashboard.includes("0 / 112"),"No unverified maximum may be silently published");
+  assert(proofDashboard.includes("72"));
+  assert(proofDashboard.includes("40"));
+  assert(proofDashboard.includes("3,559"));
+  assert(proofDashboard.includes("불가능 확정 0건"));
+  await page.locator("#originProofMeaning > summary").click();
+  assert((await page.locator("#originProofMeaning").innerText()).includes("그보다 높은 최종"));
+  await page.locator("#originProofMeaning > summary").click();
   assert((await page.locator("#originSummary").innerText()).includes("72개"));
   assert((await page.locator("#originSummary").innerText()).includes("40개"));
   assert((await page.locator("#originSummary").innerText()).includes("확정 0개"));
@@ -77,6 +87,11 @@ try{
   assert(originEvidence.includes("미검증 · 숫자 표시 금지"));
   assert(originEvidence.includes("출생 직후 일반 훈련·필수 선행 순서의 제한적 탐색"));
   assert(originEvidence.includes("서로 다른 목표 훈련 27종"));
+  assert(originEvidence.includes("아직 완료되지 않은 증명"));
+  assert(originEvidence.includes("전역 최적성"));
+  assert.equal(await page.locator("#originDetails [data-gate]").count(),10);
+  assert.equal(await page.locator('#originDetails [data-gate-status="UNPROVEN"]').count(),7);
+  assert.equal(await page.locator('#originDetails [data-gate-status="RULE_INDEXED"]').count(),2);
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("direct:STR_SOLDIER_PEASANT");
   await page.locator("#originTable .maxima-show").first().click();
@@ -118,6 +133,8 @@ try{
   assert(assaultEvidence.includes("STR_START_COUNTRY_EGYPT_EVENT"));
   assert(assaultEvidence.includes("STR_REVOLUTIONARY_SPEECH_THEBES"));
   assert(assaultEvidence.includes("서로 다른 목표 훈련 18종"));
+  assert(assaultEvidence.includes("7개 훈련은 출생 직후 이력을 유지한 직접 시도에서 차단됨"));
+  assert(assaultEvidence.includes("우회 경로 전체가 불가능하다는 뜻은 아님"));
   await page.locator("#originTrainingBirthButton").click();
   const cloneTraining=await page.locator("#originTrainingBirthPanel").innerText();
   assert(cloneTraining.includes("STR_CAPTAINS_11"));
@@ -136,7 +153,8 @@ try{
   let houndOriginEvidence=await page.locator("#originDetails").innerText();
   assert(houndOriginEvidence.includes("2.1 원본 이벤트 출처"));
   assert(houndOriginEvidence.includes("1개 스크립트 분기"));
-  await page.locator("#originDetails details summary").click();
+  await page.locator("#originDetails details summary")
+    .filter({hasText:"대체 이벤트별"}).click();
   houndOriginEvidence=await page.locator("#originDetails").innerText();
   assert(houndOriginEvidence.includes("스크립트 실행 확률 23%"));
   assert(houndOriginEvidence.includes("STR_CAPTAIN_SAINT"));
@@ -146,11 +164,13 @@ try{
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
   await page.locator("#originTable .maxima-show").first().click();
   assert((await page.locator("#originDetails").innerText()).includes("3개 스크립트 분기"));
-  await page.locator("#originDetails details summary").click();
+  await page.locator("#originDetails details summary")
+    .filter({hasText:"대체 이벤트별"}).click();
   const fighterEvidence=await page.locator("#originDetails").innerText();
   assert(fighterEvidence.includes("STR_MRSHAN_FIGHTER_EVENT_CATPATH_2"));
   assert(fighterEvidence.includes("STR_MRSHAN_FIGHTER_EVENT_CATPATH"));
   assert(fighterEvidence.includes("대체 출처 3"));
+  assert(fighterEvidence.includes("서로 독립된 발생 조건·추첨"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("direct:STR_SOLDIER_PEASANT");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -205,6 +225,8 @@ try{
   const zeroAncestry=await page.locator("#originDetails").innerText();
   assert(zeroAncestry.includes("0개 구조 후보"));
   assert(zeroAncestry.includes("획득 불가능하다는 뜻이 아닙니다"));
+  assert(zeroAncestry.includes("출발 개인을 찾지 못해 조건부 수치조차 산출하지 않음"));
+  assert.equal(await page.locator('#originDetails [data-gate-status="UNPROVEN"]').count(),8);
   await page.locator("#originDetailClose").click();
   await page.locator("#originMetric").selectOption("verified");
   assert.equal((await page.locator("#originTable tbody tr").first().locator("td").nth(3).innerText()).trim(),"—");
@@ -223,7 +245,33 @@ try{
   assert((await page.locator("#originStatus").innerText()).includes("최초 획득처 1개"));
   await page.locator("#originSearch").fill("");
   assert.equal(await page.locator("#originTable tbody tr").count(),112);
+  await page.locator("#originSourceType").selectOption("direct");
+  assert.equal(await page.locator("#originTable tbody tr").count(),15);
+  await page.locator("#originSourceType").selectOption("manufacture");
+  assert.equal(await page.locator("#originTable tbody tr").count(),48);
+  await page.locator("#originSourceType").selectOption("event");
+  assert.equal(await page.locator("#originTable tbody tr").count(),9);
+  await page.locator("#originSourceType").selectOption("typeChange");
+  assert.equal(await page.locator("#originTable tbody tr").count(),40);
+  await page.locator("#originSourceType").selectOption("");
+  await page.locator("#originFocus").selectOption("history");
+  assert.equal(await page.locator("#originTable tbody tr").count(),15);
+  await page.locator("#originFocus").selectOption("event");
+  assert.equal(await page.locator("#originTable tbody tr").count(),9);
+  await page.locator("#originFocus").selectOption("ancestry");
+  assert.equal(await page.locator("#originTable tbody tr").count(),39);
+  await page.locator("#originFocus").selectOption("unlinked");
+  assert.equal(await page.locator("#originTable tbody tr").count(),1);
+  await page.locator("#originFocus").selectOption("reset");
+  assert.equal(await page.locator("#originTable tbody tr").count(),32);
+  await page.locator("#originFocus").selectOption("");
+  assert.equal(await page.locator("#originTable tbody tr").count(),112);
   console.log("PASS 112 acquisition routes: 72 independent birth profiles, 40 body-change branches, reset history, 11 stats, 401 source-anchored type-change candidates, no invented final maximum");
+  assert.equal(await page.locator("#legacyMaximaArchive").getAttribute("open"),null,
+    "historical body-only scores must not be shown by default");
+  await page.locator("#legacyMaximaArchive > summary").click();
+  assert.equal(await page.locator("#maximaStatMode").inputValue(),"bonus",
+    "historical cap-plus-bonus arithmetic cannot be the default view");
   await page.waitForFunction(()=>document.querySelectorAll("#maximaTable tbody tr").length===29,
     {timeout:30000});
   assert.equal(await page.locator("#maximaTable thead th").count(),14);
@@ -237,7 +285,7 @@ try{
   assert(auditText.includes("이력 초기화 3종"));
   assert(auditText.includes("입증 0/29"));
   assert(auditText.includes("예전 최적화기 추가 진단 24종"));
-  assert((await page.locator("#researchMaxima h2").innerText()).includes("조건부 최대 후보"));
+  assert((await page.locator("#researchMaxima h2").innerText()).includes("정적 점수"));
   await page.locator("#maximaSearch").fill("STR_SOLDIER_HERO");
   assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
   assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+282"));
@@ -486,6 +534,59 @@ try{
   assert((await page.locator("#futureCompareResearch").innerText()).includes("세이브를 불러오면"),
     "invalid save must clear campaign-specific research decisions");
   console.log("PASS reject save from wrong X-Piratez rules version and clear private campaign evidence");
+
+  // Negative deployment tests: no old 29-body scores, no numeric source
+  // table, and no local fallback whenever the current 2.1 ledger is corrupt.
+  const corruptOrigin=await browser.newPage({viewport:{width:1200,height:800}});
+  await corruptOrigin.route("**/data/soldier-acquisition-progression-20261102.json*",async route=>{
+    const original=await route.fetch();
+    const json=await original.json();
+    json.rows.find(x=>x.id==="manufacture:STR_THEBAN_ASSAULT_CLONE")
+      .birthStatCapSnapshot.rawGrowthCaps.health=999;
+    await route.fulfill({response:original,body:JSON.stringify(json),
+      contentType:"application/json"});
+  });
+  await corruptOrigin.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
+  await corruptOrigin.waitForFunction(()=>document.querySelector("#originMaxima")?.dataset.validation==="rejected",
+    {timeout:30000});
+  await corruptOrigin.waitForFunction(()=>document.querySelector("#maximaStatus")
+    ?.textContent?.includes("표시 중단"),{timeout:15000});
+  assert.equal(await corruptOrigin.locator("#originTable tbody tr").count(),0);
+  assert.equal(await corruptOrigin.locator("#maximaTable tbody tr").count(),0);
+  assert((await corruptOrigin.locator("#originProofDashboard").innerText())
+    .includes("모든 획득처 수치 표시 중단"));
+  assert((await corruptOrigin.locator("#originStatus").innerText()).includes("검사 실패"));
+  assert(await corruptOrigin.locator("#originMetric").isDisabled());
+  await corruptOrigin.locator("#legacyMaximaArchive > summary").click();
+  assert.equal(await corruptOrigin.locator("#maximaTable tbody tr").count(),0);
+  assert(!(await corruptOrigin.locator("#maximaTable").innerText()).includes("+411"));
+  await corruptOrigin.close();
+
+  // Origin ledger valid, but second independently fetched archived source
+  // diverges. The historical table must fail closed instead of publishing.
+  const corruptArchive=await browser.newPage({viewport:{width:1200,height:800}});
+  let archivalFetches=0;
+  await corruptArchive.route("**/data/soldier-research-maxima-20261101.json*",async route=>{
+    archivalFetches++;
+    const response=await route.fetch();
+    if(archivalFetches===1){await route.fulfill({response});return;}
+    const json=await response.json();
+    json.rows[0].bonus.tu=99999;
+    await route.fulfill({response,body:JSON.stringify(json),contentType:"application/json"});
+  });
+  await corruptArchive.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
+  await corruptArchive.waitForFunction(()=>document.querySelector("#originMaxima")?.dataset.validation==="validated",
+    {timeout:30000});
+  await corruptArchive.waitForFunction(()=>document.querySelector("#researchMaxima")?.dataset.proofGate==="rejected",
+    {timeout:30000});
+  assert.equal(archivalFetches,2,
+    "Archived report may load only AFTER successful source-ledger validation");
+  assert.equal(await corruptArchive.locator("#originTable tbody tr").count(),112);
+  assert.equal(await corruptArchive.locator("#maximaTable tbody tr").count(),0);
+  assert((await corruptArchive.locator("#maximaStatus").textContent()).includes("모든 숫자 차단"));
+  await corruptArchive.close();
+  console.log("PASS strict fail-closed deployment: corrupt birth caps block source AND historical tables; "+
+    "stale legacy maxima never leak through a validated origin ledger");
 
   await page.goto(origin+"/soldiers/");
   await page.waitForSelector("#dataset",{timeout:25000});

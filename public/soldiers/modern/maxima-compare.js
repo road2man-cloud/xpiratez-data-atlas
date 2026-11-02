@@ -323,10 +323,15 @@ function renderDetails(report,data,id,triageById,statGateById,sourceById,classBy
   box.querySelector("#maximaDetailClose").addEventListener("click",()=>{box.hidden=true;box.innerHTML=""});
 }
 
-export async function initResearchMaxima(data){
+export async function initResearchMaxima(data,originProof){
   const host=document.querySelector("#researchMaxima");
-  if(!host)return;
+  if(!host)return {kind:"not-rendered"};
   try{
+    if(originProof?.kind!=="validated"||originProof.rows!==112||
+      originProof.sourceVersion!==data?.meta?.mod?.version||
+      JSON.stringify(originProof.sourceHashes)!==
+        JSON.stringify(data?.meta?.source?.rules))
+      throw new Error("획득처별 원본 증명 원장의 선행 검증 실패. 이전 병종 후보는 제공하지 않음");
     const [maxResponse,triageResponse,gateResponse,sourceResponse,classResponse]=await Promise.all([
       fetch("../../data/soldier-research-maxima-20261101.json?audit=class-source-20261102",{cache:"no-store"}),
       fetch("../../data/soldier-research-triage-20261101.json?audit=class-source-20261102",{cache:"no-store"}),
@@ -342,6 +347,7 @@ export async function initResearchMaxima(data){
       sourceResponse.json(),classResponse.json()
     ]);
     const check=validateResearchMaxima(report,data);
+    host.dataset.proofGate="validated";
     const triageById=validateResearchTriage(triage,report);
     const statGateById=validateStatGateAudit(gates,report);
     const sourceById=validateStatGateResolutions(resolutions,gates,report);
@@ -367,9 +373,9 @@ export async function initResearchMaxima(data){
       esc(data.statLabels?.[k]||k)+'</th>').join("");
     function render(){
       const rows=maximaTableRows(report,data,mode.value,search.value);
-      out.querySelector("thead").innerHTML='<tr><th scope="col">병종 / 후보</th>'+
-        '<th scope="col">마나 제외<br>영구 보너스 합</th>'+
-        '<th scope="col">연구 증명 상태</th>'+columns+'</tr>';
+      out.querySelector("thead").innerHTML='<tr><th scope="col">병종 / 정적 참고</th>'+
+        '<th scope="col">마나 제외<br>미검증 후보 보너스 합</th>'+
+        '<th scope="col">실제 달성 여부</th>'+columns+'</tr>';
       out.querySelector("tbody").innerHTML=rows.map(r=>{
         const rootAudit=triageById.get(r.id);
         const gate=statGateById.get(r.id);
@@ -389,14 +395,15 @@ export async function initResearchMaxima(data){
         return '<tr><td><button class="maxima-show" type="button" data-maxima-type="'+
           esc(r.id)+'">'+esc(r.name)+'</button><small class="id">'+esc(r.id)+'</small>'+
           '<small class="route">'+r.transformCount+'개 변신 · 자세히 보기</small></td>'+
-          '<td class="maxima-score">'+fmt(r.score)+'</td><td class="maxima-uncertain">'+
+          '<td class="maxima-score" title="정적 후보 합계, 실제 달성 최댓값 아님">'+
+          fmt(r.score)+'</td><td class="maxima-uncertain">'+
           esc(proof)+'</td>'+MAXIMA_STATS.map(k=>'<td class="maxima-stat">'+
           (mode.value==="bonus"?fmt(r.values[k]):num(r.values[k]).toLocaleString("ko-KR"))+
           '</td>').join("")+'</tr>';
       }).join("")||'<tr><td colspan="14">해당 병종 없음</td></tr>';
-      status.textContent=rows.length+"종 표시 · "+(mode.value==="bonus"?
-        "변신으로 획득하는 영구 능력치 보너스":"기본 병종의 statCaps + 영구 변신 보너스 (기본 능력치 무작위 변화는 제외)")+
-        " · 최적화 후보이며 실전 인증 0/"+check.classes+"종";
+      status.textContent=rows.length+"종 보관 자료 · "+(mode.value==="bonus"?
+        "정적 Solver의 영구 보너스 후보 단순합":"원시 statCaps + 미검증 영구 보너스의 참고 산술합 (실제 성장 가능 하드캡·최종 능력치 아님)")+
+        " · 모든 획득처별 시간순 연구·시술·성장 실전 인증 0/"+check.classes+"종 · 최종 최대치로 인용 금지";
     }
     mode.addEventListener("change",render);
     search.addEventListener("input",render);
@@ -405,9 +412,17 @@ export async function initResearchMaxima(data){
       if(btn)renderDetails(report,data,btn.dataset.maximaType,triageById,statGateById,sourceById,classById);
     });
     render();
+    return {kind:"archived-validated",classes:check.classes};
   }catch(error){
-    document.querySelector("#maximaStatus").textContent=
-      "최대치 표 검증 실패: "+error.message+" · 오래된/다른 버전 계산을 대신 보여주지 않습니다.";
+    host.dataset.proofGate="rejected";
+    host.querySelector("#maximaTable thead").innerHTML="";
+    host.querySelector("#maximaTable tbody").innerHTML="";
+    const detail=host.querySelector("#maximaDetails");
+    detail.innerHTML="";detail.hidden=true;
+    host.querySelector("#maximaStatus").textContent=
+      "과거 정적 후보 자료 검증 실패 · 모든 숫자 차단: "+error.message+
+      " · 다른 버전 자료나 이전 계산 결과로 대체하지 않습니다.";
     console.error("Research maxima validation",error);
+    return {kind:"rejected",reason:error.message};
   }
 }

@@ -7,6 +7,8 @@ import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
   from "./origin-same-body-bridge.js";
 import {buildOriginCapTimeline,originBirthCapSnapshot,compactOriginCapTimeline,
   checkPublishedMaximumCertificate} from "./origin-stat-cap-chronology.js";
+import {auditOriginPublication,verifyOriginPublicationAggregate,
+  ORIGIN_EVIDENCE_LEVELS} from "./origin-evidence-gates.js";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const STAT_LABELS={tu:"행동력",stamina:"기력",health:"체력",bravery:"용기",
   reactions:"반응",firing:"사격",throwing:"투척",strength:"힘",
@@ -19,6 +21,55 @@ const cell=n=>Number.isFinite(Number(n))?Number(n).toLocaleString("ko-KR",{maxim
 const idItems=a=>(a||[]).length?a.map(x=>'<code>'+esc(typeof x==="string"?x:x.id)+
   (typeof x==="object"&&x.count!==1?" ×"+esc(x.count):"")+'</code>').join(" · "):"없음";
 const linkableId=id=>'<code>'+esc(id)+'</code>';
+function originOverviewHtml(report,aggregate){
+  const cards=[
+    ["확정 최종 능력치",aggregate.verifiedFinalRoutes,
+      "완전 실행·실측·전역 최적성 증명 전까지 공란"],
+    ["실제 출생 프로필",aggregate.sourceProfiles,
+      "직접 모집·제조·이벤트 출생 각각 독립"],
+    ["병종 변경 입력 분기",aggregate.bodyBranches,
+      "출생 근원을 보존한 구조 사슬 "+report.summary.sourceRootedAncestry.sourceAnchoredCandidates+"건"],
+    ["단계별 조건부 계산",report.summary.chronologicalStatCapAudit.provisionalStageSnapshots,
+      "연구·훈련을 실제 수행한 횟수 아님"]
+  ];
+  return cards.map(([title,value,description],i)=>
+    '<article class="origin-proof-metric" data-proof-metric="'+i+'">'+
+    '<small>'+esc(title)+'</small><strong>'+cell(value)+
+    (i===0?' / '+cell(aggregate.total):"")+'</strong>'+
+    '<p>'+esc(description)+'</p></article>').join("")+
+    '<div class="origin-proof-banner"><strong>확정 최종 능력치 '+aggregate.verifiedFinalRoutes+
+    '건 · 불가능 확정 '+aggregate.provenImpossibleRoutes+'건 · 미검증 '+
+    aggregate.unverifiedFinalRoutes+'건.</strong> 원본 수치와 선택한 훈련의 능력치 변화는 확인할 수 있지만 '+
+    '실제 연구·재료·훈장·성장·변신 순서와 더 높은 경로 부재가 검증되지 않은 결과는 최종값에 넣지 않습니다. '+
+    '각 획득처 상세의 증명 관문에서 누락 사유를 확인하세요.</div>';
+}
+function originEvidenceHtml(audit,report){
+  const known=audit.checklist.filter(x=>x.level!=="UNPROVEN");
+  const unknown=audit.checklist.filter(x=>x.level==="UNPROVEN");
+  const items=xs=>xs.map(x=>'<div class="origin-evidence-item" data-gate="'+esc(x.id)+
+    '" data-gate-status="'+esc(x.level)+'"><strong>'+
+    esc(x.title)+' · '+esc(ORIGIN_EVIDENCE_LEVELS[x.level])+'</strong>'+
+    '<p>'+esc(x.reason)+'</p></div>').join('');
+  return '<section class="origin-evidence" aria-label="획득처별 검증 근거와 미완결 조건">'+
+    '<h4>이 획득처에서 확인된 사실과 미완결 증명</h4>'+
+    '<p class="muted">현재 상태: <strong>미검증</strong> · 원본 대조 '+
+    cell(audit.ruleIndexedCount)+'개 항목 · 구조 계산 '+cell(audit.structuralOnlyCount)+
+    '개 항목 · 추가 검증 '+cell(audit.unresolvedRequirementCount)+
+    '개 항목. 아래 개수는 최종 능력치 검증 완료 비율이 아닙니다.</p>'+
+    '<div class="origin-evidence-grid">'+
+      '<section><h4>원본으로 확인한 정보 / 제한된 산술</h4>'+items(known)+'</section>'+
+      '<section><h4>아직 완료되지 않은 증명</h4>'+items(unknown)+'</section>'+
+    '</div>'+
+    (audit.conditionNotes.length?'<div class="origin-evidence-warning">'+
+      audit.conditionNotes.map(x=>'<p>'+esc(x)+'</p>').join("")+'</div>':"")+
+    '<details class="origin-provenance-details"><summary>원본 규칙 출처 · 검증 데이터 버전</summary>'+
+      '<p>데이터 버전: '+linkableId(report.sourceVersion)+' · 출생/변신 원본 파일: '+
+      idItems(audit.sourcePaths)+'</p>'+
+      '<p>연구·훈련·획득 규칙은 X-Piratez 2.1 단일 원본과 정합성 검사한 자료입니다. '+
+      '파일명은 출처 증명이며 실제 임무·이벤트 획득이나 세이브 재현 증명이 아닙니다.</p>'+
+    '</details></section>';
+}
+
 
 // Re-play only the *structural* type-change history to reject forged origins.
 // Not a campaign replay: we deliberately never certify the availability of
@@ -373,17 +424,19 @@ export function validateOriginProgression(report,data,oldMaxima){
 function statTable(row,stats) {
   const bands=row.birth?[
     ["출생 최소",row.birth.min],
-    ["출생 평균(기댓값)",row.birth.avg],
+    ["출생 설정 평균값(확률적 기댓값 아님)",row.birth.avg],
     ["출생 최대",row.birth.max],
     ["체육관 장기 상계 (조건부)",row.naturalGrowthUpper.physical],
     ["체육관 → 전투 장기 상계 (조건부)",row.naturalGrowthUpper.physicalThenBattle]
   ]:[];
   return '<div class="table-shell origin-detail-scroll"><table><thead><tr><th>단계</th>'+
     stats.map(k=>'<th>'+esc(STAT_LABELS[k]||k)+'</th>').join("")+
-    '<th>11종 합계</th></tr></thead><tbody>'+bands.map(([name,values])=>
+    '<th>11종 단순합*</th></tr></thead><tbody>'+bands.map(([name,values])=>
       '<tr><th>'+esc(name)+'</th>'+stats.map(k=>'<td>'+cell(values[k])+'</td>').join("")+
       '<td>'+cell(sumStats(values,stats))+'</td></tr>').join("")+
-    '<tr><th>최종 실현 능력치</th><td colspan="12">미검증 · 숫자 표시 금지</td></tr></tbody></table></div>';
+    '<tr><th>최종 실현 능력치</th><td colspan="12">미검증 · 숫자 표시 금지</td></tr></tbody></table></div>'+
+    '<p class="muted">* 11종 단순합은 선택된 출생 데이터 또는 조건부 상계 항목을 산술 합산한 참고값입니다. '+
+    '각 능력치의 최댓값이 같은 병사에게 동시에 나타나거나, 이 수치가 최종 육성 결과라는 증명은 아닙니다.</p>';
 }
 function stageCapChronologyHtml(timeline){
   if(timeline?.status!=="STRUCTURAL_STAT_CAP_PROJECTION_ONLY"||
@@ -569,14 +622,18 @@ function sourceAncestryDetails(row,sourceNames){
     (a.candidateCount?'<details class="origin-lineage-candidates"><summary>출생처별 구조 경로 '+
       cell(a.candidateCount)+'개 펼치기</summary><ol>'+entries+'</ol></details>':empty);
 }
-function showDetails(row,stats,host,sourceNames,data){
+function showDetails(row,stats,host,sourceNames,data,report){
   const source=row.kind==="SOURCE_SPAWN";
+  const audit=auditOriginPublication(row,report,data);
   host.hidden=false;
   let html='<div class="maxima-detail-head"><h3>'+esc(row.soldierName)+
     ' · '+esc(row.sourceName)+'</h3><button id="originDetailClose" type="button">닫기</button></div>'+
-    '<p>'+linkableId(row.id)+' · <strong>미검증</strong> · 병종별 조건부 영구 보너스 '+
-    cell(row.provisionalBodyBonusCandidate.score)+
-    '는 이 획득처가 달성 가능한 보너스로 인정하지 않습니다.</p>';
+    '<p>'+linkableId(row.id)+' · <strong>최종 최댓값 미검증</strong> · 실제 연구·획득·훈련·훈장·성장·변신 전 과정을 재생하지 않았습니다.</p>'+
+    originEvidenceHtml(audit,report)+
+    '<details class="origin-provenance-details"><summary>과거 병종별 정적 보너스 후보 참고 (획득처에 적용 금지)</summary>'+
+      '<p>원본 29병종 정적 보너스 후보 점수: '+cell(row.provisionalBodyBonusCandidate.score)+
+      '. 특정 출생 배경의 실제 달성 가능한 영구 보너스도, 최종 능력치도 아닙니다.</p>'+
+    '</details>';
   html+=source?
     '<p>출생 ID '+linkableId(row.sourceId)+' · 출생 계급 '+cell(row.rank)+
     ' · 보너스를 중복 부여하지 않은 원본 출생 상태입니다.</p>'+
@@ -607,7 +664,7 @@ function showDetails(row,stats,host,sourceNames,data){
       '중간 이력 삭제·병종 변환·리셋 경로를 모두 검사한 불가능 판정은 아닙니다.</p>':
     '<p><strong>출발 병종:</strong> '+linkableId(row.parentSoldierType)+
     ' · <strong>원본 병종 변경:</strong> '+linkableId(row.sourceId)+'</p>'+
-    '<p><strong>최초 출생 상태가 비어 있는 이유:</strong> 병종 변경 이전의 특정 개인 획득처, 능력치, 훈장, 성장 및 변신 이력의 완전한 선후관계가 아직 재생되지 않았습니다.</p>'+
+    '<p><strong>변신 이전 실제 병사 상태가 미확정인 이유:</strong> 최초 출생처에서 이어지는 일부 구조 사슬은 조사했지만, 어느 개체가 연구·성장·훈장·중간 시술까지 실제로 통과할지는 미검증입니다. 서로 다른 출생처의 능력치를 조합하지 않습니다.</p>'+
     '<p><strong>변신 이력 초기화:</strong> '+
     (row.prerequisites.reset?'<strong>reset: true · 이전 이력을 자동 상속하면 안 됨</strong>':
       'reset: false · 이전 이력을 유지할 수 있으나 실제 출발 개인을 확인해야 함')+'</p>'+
@@ -757,12 +814,22 @@ export async function initOriginProgression(data){
     if(!originResponse.ok||!oldResponse.ok)throw new Error("획득처 자료 응답 오류");
     const [report,old]=await Promise.all([originResponse.json(),oldResponse.json()]);
     const verified=validateOriginProgression(report,data,old);
+    const publication=verifyOriginPublicationAggregate(report,data);
+    if(publication.total!==verified.rows)
+      throw new Error("획득처 데이터와 검증 관문 조사 범위 불일치");
     const type=section.querySelector("#originType"),query=section.querySelector("#originSearch"),
+      sourceFilter=section.querySelector("#originSourceType"),
+      focus=section.querySelector("#originFocus"),
       metric=section.querySelector("#originMetric"),table=section.querySelector("#originTable"),
       detail=section.querySelector("#originDetails"),summary=section.querySelector("#originSummary");
     const stats=report.stats;
     const sourceNames=new Map(report.rows.filter(r=>r.kind==="SOURCE_SPAWN")
       .map(r=>[r.id,r.sourceName]));
+    const proofById=new Map(report.rows.map(r=>
+      [r.id,auditOriginPublication(r,report,data)]));
+    section.dataset.validation="validated";
+    section.querySelector("#originProofDashboard").innerHTML=
+      originOverviewHtml(report,publication);
     const statHead=stats.map(k=>'<th>'+esc(STAT_LABELS[k]||k)+'</th>').join("");
     table.querySelector("thead").innerHTML='<tr><th>획득처 / 출생 병종</th><th>형식</th>'+
       '<th>검증 상태</th><th>11종 합계</th>'+statHead+'</tr>';
@@ -787,23 +854,37 @@ export async function initOriginProgression(data){
       const term=(rootMode?rawTerm.slice(5):rawTerm).trim();
       const matchedRoots=rootMode?new Set([...sourceNames].filter(([id,name])=>
         (id+" "+name).toLocaleLowerCase("ko").includes(term)).map(([id])=>id)):null;
-      const rows=report.rows.filter(r=>(!type.value||r.soldierType===type.value)&&
+      const rows=report.rows.filter(r=>
+        (!type.value||r.soldierType===type.value)&&
+        (!sourceFilter.value||r.acquisitionType===sourceFilter.value)&&
+        (!focus.value||
+          (focus.value==="history"&&proofById.get(r.id).directHistoryConflictCount>0)||
+          (focus.value==="event"&&proofById.get(r.id).eventAlternativeCount>0)||
+          (focus.value==="ancestry"&&r.kind!=="SOURCE_SPAWN"&&
+            r.candidateSourceAncestry?.candidateCount>0)||
+          (focus.value==="unlinked"&&r.kind!=="SOURCE_SPAWN"&&
+            r.candidateSourceAncestry?.candidateCount===0)||
+          (focus.value==="reset"&&r.prerequisites?.reset===true))&&
         (rootMode?
           (r.kind==="SOURCE_SPAWN"?matchedRoots.has(r.id):
             r.candidateSourceAncestry?.rootProfileIds.some(id=>matchedRoots.has(id))):
           (!term||(r.id+" "+r.soldierName+" "+r.sourceName+" "+
             (r.parentSoldierType||"")).toLocaleLowerCase("ko").includes(term))));
       table.querySelector("tbody").innerHTML=rows.map(row=>{
-        const value=metric.value==="verified"?row.finalStats:
+        const proof=proofById.get(row.id);
+        if(proof.finalStatus!=="UNVERIFIED"||proof.finalStats!==null)
+          throw new Error("출생처 검증 실패 상태에서 최종 능력치 표시 차단: "+row.id);
+        const value=metric.value==="verified"?null:
           metric.value==="growth"?row.naturalGrowthUpper?.physicalThenBattle:
           row.birth?.[metric.value]||null;
         const total=value?sumStats(value,stats):null;
         const label=value?metric.value==="growth"?"조건부 성장 상계":"출생 원본 범위":"—";
-        return '<tr><td><button type="button" class="maxima-show" data-origin-id="'+
+        return '<tr data-origin-kind="'+esc(row.acquisitionType)+
+          '" data-origin-proof="UNVERIFIED"><td><button type="button" class="maxima-show" data-origin-id="'+
           esc(row.id)+'">'+esc(row.soldierName)+'</button><small class="id">'+
           esc(row.sourceName)+'</small><small class="id">'+esc(row.id)+'</small></td>'+
           '<td>'+esc(TYPES[row.acquisitionType]||row.acquisitionType)+'</td>'+
-          '<td class="maxima-uncertain">미검증'+
+          '<td class="maxima-uncertain" data-cert-status="UNVERIFIED">최종 미검증'+
           (row.legacyCandidateBirthHistoryAudit?.directHistoryConflicts?.length?
             ' · 출생 이력 경고 '+row.legacyCandidateBirthHistoryAudit.directHistoryConflicts.length+'건':'')+
           (row.prerequisites?.reset?' · 이력 초기화':'')+
@@ -812,31 +893,53 @@ export async function initOriginProgression(data){
             '종(미실행)':'')+
           (row.candidateSourceAncestry?' · 출생처 추적 후보 '+
             row.candidateSourceAncestry.candidateCount+'건(미실행)':'')+
-          '<small class="id">'+esc(label)+'</small></td>'+
-          '<td>'+(total==null?"—":cell(total))+'</td>'+
+          '<small class="id">'+esc(label)+' · 증명 관문 미완결 '+
+            proof.unresolvedRequirementCount+'건</small></td>'+
+          '<td class="'+(total==null?"origin-not-published":"origin-conditional-number")+
+          '">'+(total==null?"—":cell(total))+'</td>'+
           stats.map(k=>'<td class="maxima-stat">'+(value?cell(value[k]):"—")+'</td>').join("")+
           '</tr>';
       }).join("")||'<tr><td colspan="15">해당하는 획득 프로필 없음</td></tr>';
       status.textContent=rows.length+"/"+verified.rows+
-        "개 획득 분기 표시"+(rootMode?" · 최초 획득처 "+matchedRoots.size+
+        "개 획득 분기 표시 · 획득 유형 "+(sourceFilter.value||"전체")+
+        " · 조사 항목 "+(focus.value||"전체")+(rootMode?" · 최초 획득처 "+matchedRoots.size+
         "개에서 연결된 구조 후보(실행 미검증)":"")+
         (metric.value==="verified"?
           " · 최종 능력치 확정 0건: 실제 연구·훈련·성장·훈장·변신 순서 및 전역 최적성 완결 검증까지 미완료. 수치를 게시하지 않습니다.":
           " · 표시 숫자는 출생 원본 범위 또는 낙관적 성장 상계로서 확정 최종값이 아닙니다.");
       detail.hidden=true;detail.innerHTML="";
     }
-    [type,metric].forEach(el=>el.addEventListener("change",render));
+    [type,sourceFilter,focus,metric].forEach(el=>el.addEventListener("change",render));
     query.addEventListener("input",render);
     table.querySelector("tbody").addEventListener("click",event=>{
       const b=event.target.closest("button[data-origin-id]");
       if(!b)return;
       const row=report.rows.find(r=>r.id===b.dataset.originId);
-      if(row)showDetails(row,stats,detail,sourceNames,data);
+      if(row)showDetails(row,stats,detail,sourceNames,data,report);
     });
     render();
+    return {kind:"validated",sourceVersion:report.sourceVersion,
+      sourceHashes:report.sourceHashes,rows:publication.total,
+      verifiedFinalRoutes:publication.verifiedFinalRoutes};
   }catch(error){
-    status.textContent="획득처별 자료 검사 실패: "+error.message+
-      " · 검증되지 않은 과거 병종 최대치를 대체 수치로 표시하지 않습니다.";
+    section.dataset.validation="rejected";
+    const failure="획득처별 자료 검사 실패: "+error.message+
+      " · 검증되지 않은 과거 병종 수치로 대체하지 않습니다.";
+    const table=section.querySelector("#originTable");
+    table.querySelector("thead").innerHTML="";
+    table.querySelector("tbody").innerHTML="";
+    const detail=section.querySelector("#originDetails");
+    detail.innerHTML="";detail.hidden=true;
+    const dashboard=section.querySelector("#originProofDashboard");
+    dashboard.innerHTML='<div class="origin-failure" role="alert"><strong>검증 실패 · 모든 획득처 수치 표시 중단</strong>'+
+      '<p>'+esc(error.message)+'</p>'+
+      '<p>데이터 버전 또는 출생처·연구·훈련 원본 정합성을 확인한 뒤에만 다시 공개할 수 있습니다.</p></div>';
+    for(const id of ["#originType","#originSourceType","#originFocus",
+      "#originMetric","#originSearch"])
+      section.querySelector(id).disabled=true;
+    section.querySelector("#originSummary").textContent="";
+    status.textContent=failure;
     console.error("Origin progression validation",error);
+    return {kind:"rejected",reason:error.message};
   }
 }
