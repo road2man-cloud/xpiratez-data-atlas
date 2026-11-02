@@ -6,6 +6,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {createRequire} from 'node:module';
 import {fileURLToPath} from 'node:url';
+import {planSpatialConversion} from '../tools/spatial-contract.mjs';
+import {extractBattle} from '../stage24/bridge.mjs';
 const require=createRequire(import.meta.url);
 const yaml=require('js-yaml');
 const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
@@ -30,11 +32,11 @@ export function readBattle(save,battleFile){
   need(d&&d.battleGame,'Missing generated OXCE battle');
   const b=d.battleGame,dims=[b.width,b.length,b.height];
   need(dims.every(x=>Number.isInteger(x)&&x>0&&x<=512),'Invalid battle extent');
-  const battle=battleFile?JSON.parse(fs.readFileSync(battleFile,'utf8')):null;
-  if(battle){
-    need(battle.schema==='xpz3d.battle-start.v1'&&battle.origin.sourceSha256===sourceHash,'Battle manifest/save mismatch');
-    need(JSON.stringify(dims)===JSON.stringify(battle.mission.mapSize),'Battle map dimensions mismatch');
-  }
+  // Always bind the converted geometry to the Stage24 stable OXCE battle ID
+  // and the exact source-save hash, even if --battle was omitted.
+  const battle=battleFile?JSON.parse(fs.readFileSync(battleFile,'utf8')):extractBattle(save);
+  need(battle.schema==='xpz3d.battle-start.v1'&&battle.origin.sourceSha256===sourceHash,'Battle manifest/save mismatch');
+  need(JSON.stringify(dims)===JSON.stringify(battle.mission.mapSize),'Battle map dimensions mismatch');
   const k={index:width(b.tileIndexSize,4),id:width(b.tileIDSize,2),
     set:width(b.tileSetIDSize,2),smoke:width(b.tileSmokeSize,1),
     fire:width(b.tileFireSize,1),bool:width(b.tileBoolFieldsSize,1),
@@ -135,13 +137,20 @@ const COLORS=[
   [0.56,0.54,0.53],[0.5,0.49,0.48],[0.5,0.49,0.48],[0.5,0.48,0.48]
 ];
 export function makeScene(battle,game,opts={}){
-  need(battle.dims[0]===60&&battle.dims[1]===60,'Stage26 S2 preview currently supports 60x60 saves');
-  const region=opts.region||[0,0,60,60],chunk=opts.chunk||6,scale=opts.scale||120;
+  const [sourceW,sourceH]=battle.dims;
+  const region=opts.region||[0,0,sourceW,sourceH],chunk=opts.chunk||6;
   const [rx,ry,rw,rh]=region;
-  need(scale===120||scale===160,'Only 120/160 S2 scale available');
   need(Number.isInteger(chunk)&&chunk>=1&&chunk<=20,'Invalid chunk');
-  need([rx,ry,rw,rh].every(Number.isInteger)&&rx>=0&&ry>=0&&rw>0&&rh>0&&rx+rw<=60&&ry+rh<=60,'Invalid crop region');
-  const spacing=scale*0.625/60,loftFile=asset(game,'GEODATA/LOFTEMPS.DAT');
+  need([rx,ry,rw,rh].every(Number.isInteger)&&rx>=0&&ry>=0&&rw>0&&rh>0&&rx+rw<=sourceW&&ry+rh<=sourceH,'Invalid crop region');
+  // A larger S2 nav grid is PADDING, never an excuse to change the source
+  // physical tile pitch. Legacy --scale 120/160 now requests a square grid.
+  // Use --grid W,H for proper rectangular map dimensions.
+  const spatial=planSpatialConversion({mapSize:battle.dims,
+    xyTileMeters:opts.tileMeters??1.25,
+    nativeGrid:opts.grid??(opts.scale==null?null:[opts.scale,opts.scale])});
+  const spacing=spatial.xyTileMeters;
+  const [offsetX,offsetY]=spatial.contentOriginMeters;
+  const loftFile=asset(game,'GEODATA/LOFTEMPS.DAT');
   const loft=fs.readFileSync(loftFile);
   need(loft.length>0&&loft.length%32===0,'Invalid LOFTEMPS');
   const datasets=new Map(),shapes=new Map(),batches=new Map(),datasetUse=new Map();
@@ -186,7 +195,8 @@ export function makeScene(battle,game,opts={}){
       need(i.shape.verts.length<60000,'Oversized single-asset mesh');
       const base=verts.length/3;
       for(const p of i.shape.verts)
-        verts.push((i.tile.x+p[0]/16)*spacing,(i.tile.y+p[1]/16)*spacing,(i.tile.z+p[2]/12)*2.5);
+        verts.push(offsetX+(i.tile.x+p[0]/16)*spacing,
+          offsetY+(i.tile.y+p[1]/16)*spacing,(i.tile.z+p[2]/12)*spatial.floorMeters);
       for(const t of i.shape.tris)tris.push(base+t[0],base+t[1],base+t[2]);
       count++;
     }
@@ -196,8 +206,11 @@ export function makeScene(battle,game,opts={}){
     schema:'xpz3d.oxce-terrain-mesh.v1',
     source:{saveSha256:battle.sourceHash,battleId:battle.battleId,mission:battle.mission,
       mapSize:battle.dims,terrainSets:battle.terrainSets,originalTilesDecoded:battle.tiles.length},
-    conversion:{region,partial:rx!==0||ry!==0||rw!==60||rh!==60,
-      s2Grid:[scale,scale],s2CellMeters:0.625,sourceTileMeters:spacing,floorHeightMeters:2.5,
+    conversion:{region,partial:rx!==0||ry!==0||rw!==sourceW||rh!==sourceH,
+      s2Grid:[...spatial.nativeGrid],s2CellMeters:spatial.s2CellMeters,
+      sourceTileMeters:spacing,floorHeightMeters:spatial.floorMeters,
+      sourceOffsetMeters:[offsetX,offsetY],navMarginCells:spatial.marginsCells,
+      scalePolicy:'fixed-source-pitch-grid-padding-only',
       geometry:'MCD LOFT voxel surface greedy meshing',materials:'category flat-color proxies',
       exactSpriteTextures:false,oxceMcdRulesetPatchesApplied:false,
       physicalCollisionVerified:false,highFloorNavigationVerified:false,
@@ -210,7 +223,8 @@ export function makeScene(battle,game,opts={}){
     colorMaterials:Object.fromEntries([...new Set(meshes.map(m=>m.material))].map(n=>[n,COLORS[n]])),
     provisionalSpawns:battle.unitSpawns.filter(u=>u.tile&&u.tile[0]>=rx&&u.tile[0]<rx+rw&&u.tile[1]>=ry&&u.tile[1]<ry+rh)
       .map(u=>({unitId:u.id,faction:u.faction,armorRule:u.armorRule,tile:u.tile,
-        meters:[(u.tile[0]+0.5)*spacing,(u.tile[1]+0.5)*spacing,u.tile[2]*2.5],
+        meters:[offsetX+(u.tile[0]+0.5)*spacing,
+          offsetY+(u.tile[1]+0.5)*spacing,u.tile[2]*spatial.floorMeters],
         nativePlacementVerified:false})),
     caveats:['Geometry from actual saved map and LOFT, not a re-authored photoreal art asset',
       'MCD ruleset patch overrides not yet processed; material textures and destruction mapping incomplete',
@@ -242,8 +256,11 @@ export function convert(opts){
   need(opts.save&&opts['game-root']&&opts.out,'Required --save --game-root --out');
   const battle=readBattle(opts.save,opts.battle);
   const region=opts.region?opts.region.split(',').map(Number):undefined;
+  const grid=opts.grid?opts.grid.split(',').map(Number):null;
   const scene=makeScene(battle,opts['game-root'],{region,
-    chunk:opts.chunk==null?6:Number(opts.chunk),scale:opts.scale==null?120:Number(opts.scale)});
+    chunk:opts.chunk==null?6:Number(opts.chunk),
+    grid,scale:opts.scale==null?null:Number(opts.scale),
+    tileMeters:opts['tile-meters']==null?1.25:Number(opts['tile-meters'])});
   const binary=encodeNativeScene(scene),out=path.resolve(opts.out);
   fs.mkdirSync(out,{recursive:true});
   const binPath=path.join(out,'xpz3d-terrain-v1.meshbin'),metaPath=path.join(out,'terrain-manifest.json');

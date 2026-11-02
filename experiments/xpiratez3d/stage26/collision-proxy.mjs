@@ -9,6 +9,7 @@ import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 import {readBattle,loftMesh,encodeNativeScene} from './convert-terrain.mjs';
+import {planSpatialConversion} from '../tools/spatial-contract.mjs';
 function check(v,msg){if(!v)throw Error(msg);}
 function args(argv){
  const a={};
@@ -61,13 +62,15 @@ function box(tris,verts,base,size){
  for(const a of src)tris.push(a.map(i=>n+i));
 }
 export function makeProxy(b,game,opts={}){
- const region=opts.region||[0,0,60,60],chunk=opts.chunk||6;
- const scale=opts.scale||120;
+ const [sourceW,sourceH]=b.dims;
+ const region=opts.region||[0,0,sourceW,sourceH],chunk=opts.chunk||6;
  const [rx,ry,rw,rh]=region;
- check(b.dims[0]===60&&b.dims[1]===60,'Only 60x60 source battle');
- check([rx,ry,rw,rh].every(Number.isInteger)&&rx>=0&&ry>=0&&rw>0&&rh>0&&rx+rw<=60&&ry+rh<=60,'Bad region');
- check(scale===120||scale===160,'Only 120 or 160 scale');
- const xy=scale*.625/60,fo=2.5;
+ check([rx,ry,rw,rh].every(Number.isInteger)&&rx>=0&&ry>=0&&rw>0&&rh>0&&rx+rw<=sourceW&&ry+rh<=sourceH,'Bad region');
+ const spatial=planSpatialConversion({mapSize:b.dims,
+   xyTileMeters:opts.tileMeters??1.25,
+   nativeGrid:opts.grid??(opts.scale==null?null:[opts.scale,opts.scale])});
+ const xy=spatial.xyTileMeters,fo=spatial.floorMeters;
+ const [offsetX,offsetY]=spatial.contentOriginMeters;
  const loft=fs.readFileSync(resolve(game,'GEODATA/LOFTEMPS.DAT'));
  const cache=new Map(),shapes=new Map();
  const rows=new Map(),objs=[];
@@ -103,7 +106,7 @@ export function makeProxy(b,game,opts={}){
     const z0=tile.z*fo+(bounds.z0/12)*fo;
     const z1=tile.z*fo+(bounds.z1/12)*fo;
     const edge=.10; // navigation seam: narrower than one S2 cell
-    objs.push({x:(tile.x+(part===1?0:0))*xy,y:(tile.y+(part===1?0:0))*xy,z:z0,
+    objs.push({x:offsetX+tile.x*xy,y:offsetY+tile.y*xy,z:z0,
       dx:(part===1?edge:xy),dy:(part===1?xy:edge),dz:Math.max(z1-z0,.1),
       floor:tile.z,part});
    }else{
@@ -114,8 +117,10 @@ export function makeProxy(b,game,opts={}){
     const lower=bboxFromShape(shape,6)||bboxFromShape(shape,12);
     if(!lower)continue;
     const inset=.03;
-    const minX=(tile.x+lower.x0/16)*xy+inset,minY=(tile.y+lower.y0/16)*xy+inset;
-    const maxX=(tile.x+lower.x1/16)*xy-inset,maxY=(tile.y+lower.y1/16)*xy-inset;
+    const minX=offsetX+(tile.x+lower.x0/16)*xy+inset;
+    const minY=offsetY+(tile.y+lower.y0/16)*xy+inset;
+    const maxX=offsetX+(tile.x+lower.x1/16)*xy-inset;
+    const maxY=offsetY+(tile.y+lower.y1/16)*xy-inset;
     if(maxX<=minX||maxY<=minY)continue;
     // The footprint is grounded in the real LOFT lower occupied mask, but
     // the vertical hull is a LOW-LOD approximation, not exact foliage/limbs.
@@ -132,7 +137,7 @@ export function makeProxy(b,game,opts={}){
   let start=null,end=null;
   const push=()=>{
    if(start===null)return;
-   primitives.push({x:start*xy,y:y*xy,z:z*fo-.10,dx:(end-start+1)*xy,dy:xy,dz:.10,
+   primitives.push({x:offsetX+start*xy,y:offsetY+y*xy,z:z*fo-.10,dx:(end-start+1)*xy,dy:xy,dz:.10,
     floor:z,part:0});
   };
   for(const x of unique){
@@ -173,8 +178,10 @@ export function makeProxy(b,game,opts={}){
    schema:'xpz3d.oxce-terrain-collision-proxy.v1',
    source:{saveSha256:b.sourceHash,battleId:b.battleId,mapSize:b.dims},
    conversion:{
-     region,partial:!(rx===0&&ry===0&&rw===60&&rh===60),
-     s2Grid:[scale,scale],sourceTileMeters:xy,floorHeightMeters:fo,
+     region,partial:!(rx===0&&ry===0&&rw===sourceW&&rh===sourceH),
+     s2Grid:[...spatial.nativeGrid],sourceTileMeters:xy,floorHeightMeters:fo,
+     sourceOffsetMeters:[offsetX,offsetY],navMarginCells:spatial.marginsCells,
+     scalePolicy:'fixed-source-pitch-grid-padding-only',
      derivedFromOriginalLOFT:true,accurateGeometry:false,
      sourceWalkTU255GroundObjectBlocks:true,
      clearOpenDoors:true,windowAperturePreserved:false,
@@ -198,7 +205,9 @@ export function convert(opts){
  const b=readBattle(opts.save,opts.battle);
  const options={region:opts.region?opts.region.split(',').map(Number):undefined,
    chunk:opts.chunk==null?6:Number(opts.chunk),
-   scale:opts.scale==null?120:Number(opts.scale)};
+   scale:opts.scale==null?null:Number(opts.scale),
+   grid:opts.grid?opts.grid.split(',').map(Number):null,
+   tileMeters:opts['tile-meters']==null?1.25:Number(opts['tile-meters'])};
  const s=makeProxy(b,opts['game-root'],options);
  // Re-use strict S2 scene binary format with own real-source collision mesh
  // source map dimensions and tile scale.
