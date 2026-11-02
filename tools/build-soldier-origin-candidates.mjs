@@ -21,6 +21,9 @@ for(const p of data.profiles)labels[p.sourceId]=p.sourceKoName;
 const amount=x=>WITNESS_STATS.reduce((s,k)=>s+Number(x?.[k]||0),0);
 const planner=createFoundationResearchPlanner(data,{maxAttempts:260,maxDepth:38,maxSteps:430});
 const unresolvedOnly=process.argv.includes('--unresolved-only');
+const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
+if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
+  throw Error('Unknown source profile: '+focusProfile);
 function branchEvidence(replay){
   const choices=[],seen=new Set();
   for(const entry of replay.trace)for(const id of entry.added){
@@ -172,16 +175,22 @@ function attachMetadata(report){
   return report;
 }
 if(process.argv.includes('--refresh-metadata')){
-  const report=attachMetadata(read(output));report.sourceHash=sourceHash;fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
+  const report=attachMetadata(read(output));report.sourceHash=sourceHash;fs.writeFileSync(output,JSON.stringify(report)+'\n');
   console.log('Updated candidate evidence fingerprints and exact v.o2 birth guards');
 }else if(process.argv.includes('--check')){
   const report=read(output);const checked=validateReport(report);
   console.log('PASS origin provisional registry: 72 original profiles, '+checked+' complete conditional witnesses; no fake research flags or certified maxima');
 }else{
   const prior=fs.existsSync(output)?read(output):null;
+  if(focusProfile&&(!prior||prior.sourceHash!==sourceHash||prior.records.length!==72))
+    throw Error('Focused update requires an intact, matching 72-origin registry');
   const records=[];
   for(const [index,p] of data.profiles.entries()){
     const previous=JSON.stringify(prior?.sourceHashes)===JSON.stringify(data.meta.source.rules)?prior.records.find(r=>r.profileId===p.id):null;
+    if(focusProfile&&p.id!==focusProfile){
+      assert(previous,'Focused update cannot discard an unselected origin: '+p.id);
+      records.push(previous);continue;
+    }
     if(unresolvedOnly&&previous?.candidates?.length){records.push(previous);continue;}
     const candidates=(previous?.candidates||[]).filter(c=>{const r=replayOriginWitness(c.steps,data);return r.ok&&r.exact&&JSON.stringify(r.stats)===JSON.stringify(c.stats)});
     const acquisition=obtain(p);const attempts=[];
@@ -212,7 +221,9 @@ if(process.argv.includes('--refresh-metadata')){
     }
     candidates.sort((a,b)=>b.total-a.total||a.steps.length-b.steps.length||a.id.localeCompare(b.id));
     const best=candidates[0]||null,bestBonus=[...candidates].sort((a,b)=>b.bonusTotal-a.bonusTotal||b.total-a.total)[0]||null;
-    const keep=[...new Map([...candidates.slice(0,3),...(bestBonus?[bestBonus]:[])].map(c=>[c.id,c])).values()];
+    // Never prune by present total alone: a lower-scoring branch may preserve
+    // prerequisites or transformation options needed for a better future path.
+    const keep=[...new Map(candidates.map(c=>[c.id,c])).values()];
     records.push({profileId:p.id,soldierType:p.soldierType,name:p.sourceKoName,soldierName:p.soldierKoName,
       status:best?'PROVISIONAL_CONDITIONAL':'RESEARCH_PATH_UNRESOLVED',certifiedMaximum:false,
       bestCandidateId:best?.id||null,bestBonusCandidateId:bestBonus?.id||null,
@@ -232,6 +243,6 @@ if(process.argv.includes('--refresh-metadata')){
     notes:['모든 후보는 빈 연구 상태부터 재생함','잠정값은 자원·출생 RNG 등 가정을 가진 완결 경로의 최고 발견값이며 성장 하드캡이 아님','미완료 프로필에도 출생 원본과 병목을 등록하고 거짓 최종값을 채우지 않음'],records};
   attachMetadata(report);
   validateReport(report);
-  fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');
+  fs.writeFileSync(output,JSON.stringify(report)+'\n');
   console.log(JSON.stringify(report.summary));
 }

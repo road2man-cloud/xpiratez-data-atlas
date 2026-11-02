@@ -19,10 +19,12 @@ try{
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
  assert.equal(await page.locator('#catalogMetric').inputValue(),'provisional');
- assert((await page.locator('#catalogSummary').innerText()).includes('64/72'));
- assert((await page.locator('#catalogSummary').innerText()).includes('154'));
+ const expectedSummary=(await (await page.request.get(url('data/soldier-origin-candidates.json'))).json()).summary;
+ assert.equal(expectedSummary.profiles,72);
+ assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
+ assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses)));
  assert.equal(await page.locator('#originTable thead th').count(),14);
- console.log('PASS published origin registry: 72 births, 64 complete conditional paths, 154 candidates, 11 stats; no save/custom trainer');
+ console.log('PASS published origin registry: 72 births, '+expectedSummary.withCompleteResearch+' complete conditional paths, '+expectedSummary.witnesses+' candidates, 11 stats; no save/custom trainer');
  await page.locator('#search').fill('direct:STR_SOLDIER_PEASANT');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  const provisional=Number((await page.locator('#originTable .score').innerText()).replaceAll(',',''));
