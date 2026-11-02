@@ -97,8 +97,11 @@ assert.equal(examined,1841);
 assert(newlyBlocked>=80,"Known unfiltered branch-incompatible final builds were lost unexpectedly");
 const markup=fs.readFileSync("public/soldiers/index.html","utf8");
 const browser=fs.readFileSync("public/soldiers/app.js","utf8");
-assert(markup.includes('id="finalPathFilter"'));
-assert(browser.includes('training-path-gates.json')&&browser.includes('updateBranchAudits()'));
+assert(markup.includes("location.replace(target.href)")&&
+  !markup.includes('id="finalPathFilter"'),
+  "Legacy 1.1.1 diverging-path control must not be displayed");
+assert(browser.includes('training-path-gates.json')&&browser.includes('updateBranchAudits()'),
+  "Keep the historical branch engine available for offline regression only");
 const planner=fs.readFileSync("public/trainings/app.js","utf8");
 assert(planner.includes('pathIssues([...selected,...plan.steps])'),
   "Training planner must reject incompatibility introduced by auto-added prerequisites");

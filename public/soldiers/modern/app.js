@@ -3,7 +3,6 @@ import {modernSoldierProof} from "./save-adapter.js";
 import {loadRuntime} from "../../db-runtime.js";
 import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
 import {initFutureComparison} from "./compare-ui.js";
-import {initResearchMaxima} from "./maxima-compare.js?v=20261102-proof-renewal";
 import {initOriginProgression} from "./origin-progress-ui.js?v=20261102-proof-renewal";
 import {initResearchExclusionAudit} from "./research-exclusion-audit.js";
 import {createStatEnvelope,advanceStatEnvelope} from "./stat-envelope.js";
@@ -14,16 +13,21 @@ import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
 import {searchChronologicalRoute} from "./route-finder.js";
 import {inspectTransformationZeroResearch} from "./auto-zero-research.js";
 import {inspectAutoZeroSourcesForTransform} from "./auto-zero-cascade.js";
-// Preserve historical #researchMaxima links while keeping the 29-class
-// theoretical candidates visibly subordinate to the origin-first proof view.
-function openStaticResearchArchive(){
-  if(location.hash==="#legacyMaximaArchive"||location.hash==="#researchMaxima"){
-    const archive=document.querySelector("#legacyMaximaArchive");
-    if(archive)archive.open=true;
+// Historical links resolve to the canonical origin ledger. No static 29-class
+// theoretical-maxima screen remains in the published Soldier DB.
+function openSoldierSection(){
+  const h=location.hash;
+  if(h==="#researchMaxima"||h==="#legacyMaximaArchive"){
+    history.replaceState(null,"",location.pathname+location.search+"#originMaxima");
+    return;
   }
+  if(["#soldierTools","#transformationPlanner","#soldierTable"].includes(h))
+    document.querySelector("#soldierTools").open=true;
+  if(["#researchTools","#researchExclusionAudit","#futureCompare","#baselineGrowthCompare","#rareMapLootPanel"].includes(h))
+    document.querySelector("#researchTools").open=true;
 }
-window.addEventListener("hashchange",openStaticResearchArchive);
-openStaticResearchArchive();
+window.addEventListener("hashchange",openSoldierSection);
+openSoldierSection();
 import {renderRareMapLootProof} from "./map-loot-ui.js";
 let DATA=null;
 let sort={key:"firing",dir:-1};
@@ -315,29 +319,21 @@ async function load(){
   DATA=await loadRuntime("../../data/soldiers-modern-index.json");
   const family=$("#family");family.innerHTML='<option value="">모든 기본 병종</option>'+DATA.soldiers.filter(x=>DATA.profiles.some(p=>p.soldierType===x.id)).map(x=>'<option value="'+esc(x.id)+'">'+esc(x.koName)+' ('+familyCount(x.id)+')</option>').join("");
   const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
-  if(["profiles","soldiers","transformations"].includes(params.get("dataset")))$("#dataset").value=params.get("dataset");
+  if(["profiles","soldiers","transformations"].includes(params.get("dataset"))){
+    $("#dataset").value=params.get("dataset");
+    $("#soldierTools").open=true;
+  }
+  openSoldierSection();
   renderSummary();
   renderRareMapLootProof($("#rareMapLootProof"),DATA);
   const futureComparison=initFutureComparison(DATA);
   initBaselineGrowthComparison(DATA);
-  // Proof-first, fail-closed: the archived 29-body arithmetic report is
-  // NEVER loaded when the canonical 112-origin proof ledger is invalid.
-  // Other game-reference and local-save tools remain available independently.
-  void initOriginProgression(DATA).then(originProof=>{
-    if(originProof?.kind==="validated"){
-      void initResearchMaxima(DATA,originProof);
-      return;
-    }
-    const status=$("#maximaStatus");
-    if(status)status.textContent="과거 병종별 보너스 후보 자료 표시 중단: "+
-      "획득처별 2.1 증명 원장 정합성 실패. 이전 수치로 대체하지 않습니다.";
-    const archive=$("#legacyMaximaArchive");
-    if(archive)archive.dataset.proofGate="rejected";
-  }).catch(error=>{
-    const status=$("#maximaStatus");
-    if(status)status.textContent="증명 원장 예외: "+error.message+
-      " · 병종별 후보 수치 공개 중단";
-    console.error("Origin-first maxima gating",error);
+  // Only the 2.1 source-first ledger is published. The old 29-body solver
+  // remains usable by offline proof regressions, but is never rendered/fetched
+  // as an independent maxima table.
+  void initOriginProgression(DATA).catch(error=>{
+    $("#originStatus").textContent="2.1 획득처 검증 오류 · 숫자 표시 중단: "+error.message;
+    console.error("Origin-first validation",error);
   });
   initResearchExclusionAudit(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
@@ -359,6 +355,7 @@ async function load(){
   render();
   const deepProfile=params.get("profile");
   if(deepProfile&&DATA.profiles.some(p=>p.id===deepProfile)){
+    $("#soldierTools").open=true;
     $("#dataset").value="profiles";render();openDetail(encodeURIComponent(deepProfile));
   }
 }
@@ -662,7 +659,7 @@ function openDetail(encoded){
   $("#detailBody").innerHTML=html;
   $("#detailBody").querySelectorAll("[data-profile]").forEach(b=>b.onclick=()=>openDetail(encodeURIComponent(b.dataset.profile)));
   const inspect=$("#inspectAcquisitionRoute");
-  if(inspect)inspect.onclick=()=>{$("#detailDialog").close();$("#dataset").value="transformations";$("#family").value=r.soldierType;previousTransformations=[];render();$("#plannerProfile").value=r.id;render()};
+  if(inspect)inspect.onclick=()=>{$("#detailDialog").close();$("#soldierTools").open=true;$("#dataset").value="transformations";$("#family").value=r.soldierType;previousTransformations=[];render();$("#plannerProfile").value=r.id;render()};
   if(!$("#detailDialog").open)$("#detailDialog").showModal();
 }
 function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
@@ -674,4 +671,4 @@ $("#soldierTable tbody").addEventListener("click",e=>{
 });
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
-load().catch(err=>{$("#summary").innerHTML='<article class="card metric"><strong>데이터 로드 실패</strong><span>'+err.message+'</span></article>';console.error(err)});
+load().catch(err=>{$("#originStatus").textContent="2.1 병종 DB 데이터 로드 실패: "+err.message;console.error(err)});

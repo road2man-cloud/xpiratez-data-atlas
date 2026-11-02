@@ -134,14 +134,14 @@ await scenario("items research cross-reference opens correct detail",async page=
 for(const slug of ["items","research","armors","weapons","soldiers","trainings","crafts","manufacture"]){
   await scenario(slug+" no DecompressionStream fallback",async page=>{
     await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
-    const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#soldierTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
+    const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#originTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
     assert((await visibleRows(page,selector))>0,"page must load on old browsers");
   },{noGzip:true});
 }
 for(const slug of ["items","research","armors","weapons","soldiers","trainings","crafts","manufacture"]){
   await scenario(slug+" corrupted gzip fallback",async page=>{
     await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
-    const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#soldierTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
+    const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#originTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
     assert((await visibleRows(page,selector))>0,"decompression error must recover via canonical JSON");
   },{corruptGzip:true});
 }
@@ -315,7 +315,7 @@ await scenario("armors closed and replaced dialog ignores late load",async page=
 // Additional multi-step and failure-recovery paths. Keep canonical data untouched.
 const loadedSelector={
   items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",
-  weapons:"#weaponTable tbody tr",soldiers:"#soldierTable tbody tr",
+  weapons:"#weaponTable tbody tr",soldiers:"#originTable tbody tr",
   trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",
   manufacture:"#manufactureTable tbody tr"
 };

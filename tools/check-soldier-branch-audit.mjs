@@ -63,9 +63,15 @@ assert(hard>1000&&unavailable>1000&&captain>500&&queenCodex>50,
 assert(saintEleven>0);
 const markup=fs.readFileSync("public/soldiers/index.html","utf8");
 const app=fs.readFileSync("public/soldiers/app.js","utf8");
-assert(markup.includes('id="finalBranchFilter"')&&markup.includes('value="no-hard"'));
-assert(markup.includes('type="module" src="app.js'));
-assert(app.includes("auditSoldierBuild")&&app.includes("branchAudit")&&app.includes("sourceWarnings"));
+assert(markup.includes("location.replace(target.href)")&&
+  !markup.includes('id="finalBranchFilter"'),
+  "Legacy branch selector must be retired from the public Soldier DB");
+const modernMarkup=fs.readFileSync("public/soldiers/modern/index.html","utf8");
+assert(modernMarkup.includes('id="originMaxima"')&&
+  !modernMarkup.includes('id="maximaTable"'),
+  "Only the 2.1 source-proof ledger may publish maxima");
+assert(app.includes("auditSoldierBuild")&&app.includes("branchAudit")&&app.includes("sourceWarnings"),
+  "Offline 1.1.1 historical arithmetic regression remains intact");
 console.log("OK soldiers branch audit: "+inspected+" generated source/build rows; "+hard+
   " definitive branch/internal-only conflicts ("+unavailable+" internal-only, "+captain+
   " mixed captain roots, "+queenCodex+" Savage vs Codex), "+saintEleven+

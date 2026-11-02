@@ -13,8 +13,15 @@ const guides={};
 let count=0;
 for(const kind of kinds){
   const html=fs.readFileSync("public/"+kind+"/index.html","utf8");
-  assert.match(html,/\.\.\/play-guide\.js/,kind+": missing guide script");
-  assert.match(html,/\.\.\/play-guide\.css/,kind+": missing guide CSS");
+  if(kind==="soldiers"){
+    // The legacy 1.1.1 Soldier guide stays as offline regression data only.
+    // Never attach it to the canonical 2.1-only Soldier DB.
+    assert(html.includes("location.replace(target.href)"));
+    assert(!html.includes('src="../play-guide.js"'));
+  }else{
+    assert.match(html,/\.\.\/play-guide\.js/,kind+": missing guide script");
+    assert.match(html,/\.\.\/play-guide\.css/,kind+": missing guide CSS");
+  }
   const guide=gunzip(path.join(root,kind+".json.gz"));
   const teaser=gunzip(path.join(root,kind+".teasers.json.gz"));
   const cards=Object.values(guide.cards||{});

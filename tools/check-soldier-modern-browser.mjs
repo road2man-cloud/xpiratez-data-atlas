@@ -39,19 +39,26 @@ try{
   const errors=[],network=[];
   page.on("pageerror",e=>errors.push(e.message));
   page.on("request",r=>{if(r.method()!=="GET")network.push(r.method()+" "+r.url())});
-  // The Atlas has one Soldier DB entrance. Maxima are an option within that DB.
+  // A single 2.1 Soldier DB: the former 1.1.1 landing only redirects.
   await page.goto(origin+"/",{waitUntil:"domcontentloaded"});
   assert.equal(await page.locator('.grid a.card[href="./soldiers/"]').count(),1);
   assert.equal(await page.locator('.grid a.card[href*="soldiers/modern/"]').count(),0);
   await page.locator('.grid a.card[href="./soldiers/"]').click();
+  await page.waitForURL(url=>url.pathname.endsWith("/soldiers/modern/"),{timeout:30000});
+  assert.equal(await page.locator("#legacyMaximaArchive").count(),0);
+  assert.equal(await page.locator("#maximaTable").count(),0);
+  assert.equal(await page.locator(".soldier-db-views").count(),0);
+  assert.equal(await page.locator("#researchTools").getAttribute("open"),null);
+  assert.equal(await page.locator("#soldierTools").getAttribute("open"),null);
+  assert((await page.locator("header.hero .eyebrow").textContent()).includes("2.1"));
+  assert(!(await page.locator("header.hero").textContent()).includes("1.1.1"));
+  await page.locator("#originTable tbody tr").first().waitFor({timeout:30000});
+  assert.equal(await page.locator("#originMetric").inputValue(),"verified");
+  await page.locator(".origin-advanced-filters").evaluate(el=>el.open=true);
+  await page.locator(".origin-audit-summary").evaluate(el=>el.open=true);
+  await page.locator("#researchTools").evaluate(el=>el.open=true);
+  await page.locator("#soldierTools").evaluate(el=>el.open=true);
   await page.locator("#soldierTable tbody tr").first().waitFor({timeout:30000});
-  assert((await page.locator(".dataset-version-note").innerText()).includes("v.o1.1.1"));
-  assert.equal(await page.locator('#dataset option[value="originMaxima"]').count(),1);
-  assert.equal(await page.locator('#dataset option[value="legacyMaximaArchive"]').count(),1);
-  await page.locator("#dataset").selectOption("originMaxima");
-  await page.waitForURL(url=>url.pathname.endsWith("/soldiers/modern/")&&url.hash==="#originMaxima",
-    {timeout:30000});
-  assert.equal(await page.locator(".soldier-db-views [aria-current='page']").count(),1);
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
   try{
@@ -317,88 +324,8 @@ try{
   await page.locator("#originFocus").selectOption("");
   assert.equal(await page.locator("#originTable tbody tr").count(),112);
   console.log("PASS 112 acquisition routes: 72 independent birth profiles, 40 body-change branches, reset history, 11 stats, 401 source-anchored type-change candidates, no invented final maximum");
-  assert.equal(await page.locator("#legacyMaximaArchive").getAttribute("open"),null,
-    "historical body-only scores must not be shown by default");
-  await page.locator("#legacyMaximaArchive > summary").click();
-  assert.equal(await page.locator("#maximaStatMode").inputValue(),"bonus",
-    "historical cap-plus-bonus arithmetic cannot be the default view");
-  await page.waitForFunction(()=>document.querySelectorAll("#maximaTable tbody tr").length===29,
-    {timeout:30000});
-  assert.equal(await page.locator("#maximaTable thead th").count(),14);
-  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+411"),
-    "Damsel maxima must be shown, not old illegal +445");
-  const auditText=await page.locator("#maximaAudit").innerText();
-  assert(auditText.includes("441"));
-  assert(auditText.includes("능력치 게이트 미달 4종"));
-  assert(auditText.includes("이벤트 출생 예외 1종"));
-  assert(auditText.includes("병종 유형 변환 필수 5종"));
-  assert(auditText.includes("이력 초기화 3종"));
-  assert(auditText.includes("입증 0/29"));
-  assert(auditText.includes("예전 최적화기 추가 진단 24종"));
-  assert((await page.locator("#researchMaxima h2").innerText()).includes("정적 점수"));
-  await page.locator("#maximaSearch").fill("STR_SOLDIER_HERO");
-  assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
-  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+282"));
-  await page.locator("#maximaSearch").fill("STR_SOLDIER_PEASANT");
-  assert.equal(await page.locator("#maximaTable tbody tr").count(),1);
-  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("+261"));
-  await page.locator("#maximaSearch").fill("STR_SOLDIER_SYNTH");
-  assert((await page.locator("#maximaTable tbody tr").first().innerText()).includes("다수 훈장 등 보정 필요"));
-  await page.locator("#maximaTable .maxima-show").first().click();
-  const synthEvidence=await page.locator("#maximaDetails").innerText();
-  assert(synthEvidence.includes("추가 능력치 상승 수단 필요"));
-  assert(synthEvidence.includes("사이오닉 강도 최소 45"));
-  assert(synthEvidence.includes("상한 1"));
-  assert(synthEvidence.includes("44"));
-  assert(synthEvidence.includes("최소 11종"));
-  assert(synthEvidence.includes("합은 +52"));
-  await page.locator("#maximaDetailClose").click();
-  await page.locator("#maximaSearch").fill("STR_SOLDIER_BLOODOGE");
-  await page.locator("#maximaTable .maxima-show").first().click();
-  const houndEvidence=await page.locator("#maximaDetails").innerText();
-  assert(houndEvidence.includes("이벤트 출생 예외"));
-  assert(houndEvidence.includes("STR_CODEX_BONUS_G5"));
-  assert(houndEvidence.includes("STR_GODS_E5"));
-  assert(houndEvidence.includes("STR_CAPTAIN_SAINT"));
-  assert(houndEvidence.includes("STR_HERO_RED_TRAINING"));
-  assert(houndEvidence.includes("STR_CAPTAINS_11"));
-  assert(houndEvidence.includes("보너스 합계 +131"));
-  await page.locator("#maximaDetailClose").click();
-  await page.locator("#maximaSearch").fill("STR_SOLDIER_CHORT");
-  assert((await page.locator("#maximaTable tbody tr").first().innerText())
-    .includes("병종 유형 변환 선행 필요"));
-  await page.locator("#maximaTable .maxima-show").first().click();
-  const chortEvidence=await page.locator("#maximaDetails").innerText();
-  assert(chortEvidence.includes("원본 획득 프로필이 없는 병종"));
-  assert(chortEvidence.includes("STR_CHORT_SUMMONING"));
-  assert(chortEvidence.includes("reset: true"));
-  assert(chortEvidence.includes("STR_UNAVAILABLE"));
-  await page.locator("#maximaDetailClose").click();
-  await page.locator("#maximaSearch").fill("STR_SOLDIER_NEKOMIMI");
-  await page.locator("#maximaTable .maxima-show").first().click();
-  const nekoEvidence=await page.locator("#maximaDetails").innerText();
-  assert(nekoEvidence.includes("STR_MEDAL_SERVICE_TIME_NAME"));
-  assert(nekoEvidence.includes("totalMonthlyService"));
-  assert(nekoEvidence.includes("≥ 6"));
-  await page.locator("#maximaDetailClose").click();
-  await page.locator("#maximaSearch").fill("");
-  await page.locator("#maximaStatMode").selectOption("bonus");
-  assert.equal((await page.locator("#maximaTable tbody tr").first()
-    .locator("td").nth(3).innerText()).trim(),"+48");
-  await page.locator("#maximaStatMode").selectOption("capPlusBonus");
-  assert.equal((await page.locator("#maximaTable tbody tr").first()
-    .locator("td").nth(3).innerText()).trim(),"128");
-  await page.locator("#maximaTable .maxima-show").first().click();
-  const maximaDetail=await page.locator("#maximaDetails").innerText();
-  assert(maximaDetail.includes("STR_PARIAH_TRAINING"));
-  assert(maximaDetail.includes("연구 선행·이벤트 출처 감사"));
-  assert(maximaDetail.includes("STR_CAPTAIN_THIEF"));
-  assert(maximaDetail.includes("STR_QUEEN_SAVAGE"));
-  assert(maximaDetail.includes("STR_CAPTAINS_11"));
-  assert(maximaDetail.includes("전체 경로 인증: 0회"));
-  assert(maximaDetail.includes("이력 제약 통과 순서"));
-  assert(maximaDetail.includes("연구 완료 시점"));
-  await page.locator("#maximaDetailClose").click();
+  assert.equal(await page.locator("#maximaTable").count(),0,
+    "Only the acquisition-grounded 2.1 ledger may display maxima");
   await page.locator("#researchExclusionAudit summary").click();
   assert.equal(await page.locator("#researchExclusionTable tbody tr").count(),441);
   await page.locator("#researchExclusionKind").selectOption("reciprocal");
@@ -415,7 +342,7 @@ try{
   await page.locator("#researchAuditClose").click();
   await page.locator("#researchExclusionSearch").fill("");
   await page.locator("#researchExclusionAudit summary").click();
-  console.log("PASS 29-class audited maximum stat table + 441 complete 2.1 direct research disables with proof/filter controls");
+  console.log("PASS one 2.1 source-first table + 441 direct research disables, with the static 29-class maxima table removed");
   assert.equal(await page.locator("#rareMapLootPanel summary").count(),1);
   await page.locator("#rareMapLootPanel summary").click();
   const mapLootText=await page.locator("#rareMapLootProof").innerText();
@@ -539,6 +466,8 @@ try{
   await page.locator("#clearTransformations").click();
 
   await page.goto(origin+"/soldiers/modern/");
+  await page.locator("#researchTools").evaluate(el=>el.open=true);
+  await page.locator("#soldierTools").evaluate(el=>el.open=true);
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("실제 획득형"));
   await page.locator("#modernSaveFile").setInputFiles("tools/fixtures/modern-2.1-test.sav");
   await page.waitForFunction(()=>document.querySelector("#saveStatus")?.textContent?.includes("완료 연구 1개"),{timeout:25000});
@@ -585,31 +514,26 @@ try{
     "invalid save must clear campaign-specific research decisions");
   console.log("PASS reject save from wrong X-Piratez rules version and clear private campaign evidence");
 
-  // Negative deployment tests: no old 29-body scores, no numeric source
-  // table, and no local fallback whenever the current 2.1 ledger is corrupt.
+  // Fail closed: corrupted source or mismatched supporting proof cannot
+  // silently fall back to legacy 1.1.1 or the retired 29-class solver.
   const corruptOrigin=await browser.newPage({viewport:{width:1200,height:800}});
   await corruptOrigin.route("**/data/soldier-acquisition-progression-20261102.json*",async route=>{
-    const original=await route.fetch();
-    const json=await original.json();
+    const response=await route.fetch();
+    const json=await response.json();
     json.rows.find(x=>x.id==="manufacture:STR_THEBAN_ASSAULT_CLONE")
       .birthStatCapSnapshot.rawGrowthCaps.health=999;
-    await route.fulfill({response:original,body:JSON.stringify(json),
-      contentType:"application/json"});
+    await route.fulfill({response,body:JSON.stringify(json),contentType:"application/json"});
   });
   await corruptOrigin.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
-  await corruptOrigin.waitForFunction(()=>document.querySelector("#originMaxima")?.dataset.validation==="rejected",
+  await corruptOrigin.waitForFunction(()=>
+    document.querySelector("#originMaxima")?.dataset.validation==="rejected",
     {timeout:30000});
-  await corruptOrigin.waitForFunction(()=>document.querySelector("#maximaStatus")
-    ?.textContent?.includes("표시 중단"),{timeout:15000});
   assert.equal(await corruptOrigin.locator("#originTable tbody tr").count(),0);
-  assert.equal(await corruptOrigin.locator("#maximaTable tbody tr").count(),0);
+  assert.equal(await corruptOrigin.locator("#maximaTable").count(),0);
+  assert((await corruptOrigin.locator("#originStatus").innerText()).includes("검사 실패"));
   assert((await corruptOrigin.locator("#originProofDashboard").innerText())
     .includes("모든 획득처 수치 표시 중단"));
-  assert((await corruptOrigin.locator("#originStatus").innerText()).includes("검사 실패"));
   assert(await corruptOrigin.locator("#originMetric").isDisabled());
-  await corruptOrigin.locator("#legacyMaximaArchive > summary").click();
-  assert.equal(await corruptOrigin.locator("#maximaTable tbody tr").count(),0);
-  assert(!(await corruptOrigin.locator("#maximaTable").innerText()).includes("+411"));
   await corruptOrigin.close();
 
   const corruptResearch=await browser.newPage({viewport:{width:1120,height:740}});
@@ -626,52 +550,37 @@ try{
     document.querySelector("#originMaxima")?.dataset.validation==="rejected",
     {timeout:30000});
   assert.equal(await corruptResearch.locator("#originTable tbody tr").count(),0);
-  assert.equal(await corruptResearch.locator("#maximaTable tbody tr").count(),0);
-  assert((await corruptResearch.locator("#originStatus").innerText())
-    .includes("검사 실패"));
-  assert((await corruptResearch.locator("#maximaStatus").textContent())
-    .includes("표시 중단"));
+  assert((await corruptResearch.locator("#originStatus").innerText()).includes("검사 실패"));
   await corruptResearch.close();
 
-  // Origin ledger valid, but second independently fetched archived source
-  // diverges. The historical table must fail closed instead of publishing.
-  const corruptArchive=await browser.newPage({viewport:{width:1200,height:800}});
-  let archivalFetches=0;
-  await corruptArchive.route("**/data/soldier-research-maxima-20261101.json*",async route=>{
-    archivalFetches++;
+  const corruptSupport=await browser.newPage({viewport:{width:1100,height:750}});
+  await corruptSupport.route("**/data/soldier-research-maxima-20261101.json*",async route=>{
     const response=await route.fetch();
-    if(archivalFetches===1){await route.fulfill({response});return;}
     const json=await response.json();
     json.rows[0].bonus.tu=99999;
     await route.fulfill({response,body:JSON.stringify(json),contentType:"application/json"});
   });
-  await corruptArchive.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
-  await corruptArchive.waitForFunction(()=>document.querySelector("#originMaxima")?.dataset.validation==="validated",
+  await corruptSupport.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
+  await corruptSupport.waitForFunction(()=>
+    document.querySelector("#originMaxima")?.dataset.validation==="validated",
     {timeout:30000});
-  await corruptArchive.waitForFunction(()=>document.querySelector("#researchMaxima")?.dataset.proofGate==="rejected",
-    {timeout:30000});
-  assert.equal(archivalFetches,2,
-    "Archived report may load only AFTER successful source-ledger validation");
-  assert.equal(await corruptArchive.locator("#originTable tbody tr").count(),112);
-  assert.equal(await corruptArchive.locator("#maximaTable tbody tr").count(),0);
-  assert((await corruptArchive.locator("#maximaStatus").textContent()).includes("모든 숫자 차단"));
-  await corruptArchive.close();
-  console.log("PASS strict fail-closed deployment: corrupt birth caps block source AND historical tables; "+
-    "stale legacy maxima never leak through a validated origin ledger");
+  assert.equal(await corruptSupport.locator("#originTable tbody tr").count(),112);
+  assert.equal(await corruptSupport.locator("#maximaTable").count(),0,
+    "Historical candidate report may be an offline comparator, never a live second maxima table");
+  await corruptSupport.close();
+  console.log("PASS source-only fail-closed proof: invalid source or research blocks publication; legacy solver cannot create visible maxima");
 
-  await page.goto(origin+"/soldiers/");
-  await page.waitForSelector("#dataset",{timeout:25000});
-  assert.equal(await page.locator("#dataset option[value=final]").count(),1);
-  assert.equal(await page.locator('.soldier-db-views a[href="./modern/#originMaxima"]').count(),1);
-  assert.equal(await page.locator('#dataset option[value="originMaxima"]').count(),1);
-  assert.equal(await page.locator('#dataset option[value="legacyMaximaArchive"]').count(),1);
-  await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("72개"),{timeout:25000});
-  console.log("PASS unified Soldier DB: 1.1.1 catalog intact, 2.1 source maxima and 29-class archive are selectable modes");
-  await page.locator("#dataset").selectOption("legacyMaximaArchive");
-  await page.waitForURL(url=>url.pathname.endsWith("/soldiers/modern/")&&url.hash==="#legacyMaximaArchive");
-  await page.waitForFunction(()=>document.querySelector("#legacyMaximaArchive")?.open===true,{timeout:30000});
-  assert((await page.locator("#legacyMaximaArchive > summary").innerText()).includes("미검증"));
-  console.log("PASS 29-class archived research candidates open from the Soldier DB option, never as certified maxima");
+  await page.goto(origin+"/soldiers/?dataset=soldiers");
+  await page.waitForURL(url=>url.pathname.endsWith("/soldiers/modern/")&&url.searchParams.get("dataset")==="soldiers",{timeout:30000});
+  assert.equal(await page.locator("#soldierTools").getAttribute("open"),"");
+  assert.equal(await page.locator('#dataset').inputValue(),"soldiers");
+  assert.equal(await page.locator('#dataset option[value="final"]').count(),0);
+  assert.equal(await page.locator("#legacyMaximaArchive").count(),0);
+  await page.goto(origin+"/soldiers/modern/#researchMaxima");
+  await page.waitForURL(url=>url.hash==="#originMaxima",{timeout:30000});
+  await page.waitForFunction(()=>document.querySelectorAll("#originTable tbody tr").length===112,{timeout:30000});
+  assert.equal(await page.locator("#originTable tbody tr").count(),112);
+  console.log("PASS 2.1-only Soldier DB, original links and hidden 29-body reference tools; 1.1.1 UI retired");
   assert.deepEqual(errors,[],errors.join("\n"));
   assert.deepEqual(network,[], "Save must stay local: "+network.join("; "));
   console.log("PASS all modern browser smoke assertions and no non-GET save uploads");

@@ -17,20 +17,25 @@ assert.equal([...home.matchAll(/class="card" href="\.\/soldiers\//g)].length,1,
 assert(!home.includes('href="./soldiers/modern/'),"Atlas must not advertise a detached Soldier maxima entrance");
 const soldierCatalog=fs.readFileSync(path.join(root,"soldiers/index.html"),"utf8");
 const soldierModern=fs.readFileSync(path.join(root,"soldiers/modern/index.html"),"utf8");
-assert(soldierCatalog.includes('value="originMaxima"')&&soldierCatalog.includes('value="legacyMaximaArchive"'),
-  "2.1 source-first maxima and unverified 29-class archive must be Soldier DB options");
-assert(soldierCatalog.includes("v.o1.1.1")&&soldierModern.includes("X-Piratez 2.1"),
-  "The shared Soldier DB must distinguish ruleset versions");
-assert(soldierModern.includes('href="../?dataset=profiles"')&&soldierModern.includes('id="originMaxima"'),
-  "The 2.1 Soldier DB must offer a route back to the original catalog");
+assert(soldierCatalog.includes("location.replace(target.href)")&&
+  soldierCatalog.includes('["#researchMaxima","#legacyMaximaArchive"]'),
+  "The retired 1.1.1 Soldier landing must redirect historic links to 2.1");
+assert(!soldierCatalog.includes('id="soldierTable"')&&!soldierModern.includes("1.1.1"),
+  "Do not republish 1.1.1 Soldier tables or cross-version toggles");
+assert(soldierModern.includes('id="originMaxima"')&&
+  soldierModern.includes('id="soldierTools"')&&soldierModern.includes('id="researchTools"'),
+  "The 2.1 Soldier DB must have one primary source ledger and collapsed detailed tools");
+assert(!soldierModern.includes('id="legacyMaximaArchive"')&&
+  !soldierModern.includes('id="maximaTable"'),
+  "Do not publish a second theoretical 29-class maxima table");
 assert(soldierModern.includes('option value="verified" selected'),
-  "The Soldier DB maxima view must default to certified-only numbers");
+  "The canonical Soldier DB must default to certified-only numbers");
 
 const errors=[];
 let linkCount=0,scriptCount=0,jsCount=0;
 const pages=["index.html",...expected.map(n=>n+"/index.html"),"soldiers/modern/index.html"];
 const selector={
-  starting:"cards",captains:"matrixTable",soldiers:"soldierTable",trainings:"trainingTable",crafts:"craftTable",
+  starting:"cards",captains:"matrixTable",soldiers:"originTable",trainings:"trainingTable",crafts:"craftTable",
   "craft-weapons":"weaponTable",facilities:"facilityTable",armors:"armorTable",
   items:"tbody",research:"tbody",manufacture:"manufactureTable",events:"eventTable",
   forces:"forceTable",weapons:"weaponTable",reference:"modes"
@@ -39,8 +44,8 @@ const selector={
 for(const rel of pages){
   const filename=path.join(root,rel),html=fs.readFileSync(filename,"utf8");
   const slug=rel.split("/")[0];
-  if(selector[slug]&&!html.includes('id="'+selector[slug]+'"'))errors.push(rel+": main view #"+selector[slug]+" missing");
-  if(rel!=="index.html"&&!html.includes('id="search"'))errors.push(rel+": #search missing");
+  if(selector[slug]&&rel!=="soldiers/index.html"&&!html.includes('id="'+selector[slug]+'"'))errors.push(rel+": main view #"+selector[slug]+" missing");
+  if(rel!=="index.html"&&rel!=="soldiers/index.html"&&!html.includes('id="search"'))errors.push(rel+": #search missing");
   const refRe=/\b(?:src|href)="([^"]+)"/g;
   for(const [,href] of html.matchAll(refRe)){
     if(/^(?:https?:|data:|mailto:|tel:|javascript:|#|\/\/)/i.test(href))continue;
@@ -53,7 +58,7 @@ for(const rel of pages){
     linkCount++;
     if(/\.js(?:$|[?#])/.test(href))scriptCount++;
   }
-  if(rel!=="index.html"&&!/\b(?:src)=["'][^"']+\.js(?:\?[^"']*)?["']/.test(html)){
+  if(rel!=="index.html"&&rel!=="soldiers/index.html"&&!/\b(?:src)=["'][^"']+\.js(?:\?[^"']*)?["']/.test(html)){
     errors.push(rel+": no JavaScript loaded");
   }
 }

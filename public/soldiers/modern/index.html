@@ -3,46 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>XPiratez 병종 DB · 2.1 획득처별 능력치 검증</title>
+<title>X-Piratez 2.1 · 병종 DB</title>
 <link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="../db-views.css?v=20261102-unified-soldier-db">
 <link rel="stylesheet" href="maxima-compare.css?v=20261101">
 <link rel="stylesheet" href="origin-progress-ui.css?v=20261102-proof-renewal">
+<link rel="stylesheet" href="soldier-focus.css?v=20261102-21-only">
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
-    <a class="back" href="../../">← Data Atlas</a> <a class="back" href="../">· 병종 DB</a>
-    <p class="eyebrow">통합 병종 DB · X-Piratez 2.1 (v.o2) · OXCE 8.7.1</p>
-    <h1>병종 DB <span class="soldier-db-heading-detail">/ 획득처별 능력치 검증</span></h1>
-    <p class="lede">병종 DB의 <strong>2.1 능력치·연구 검증 옵션</strong>입니다. 같은 병종이라도 <strong>출생처·기존 훈련 이력·연구 선택·이후 성장 기회</strong>가 다르면 별개로 조사합니다. 한 명의 확정 최종값에 다른 대원의 보너스를 합산하지 않습니다.</p>
-    <nav class="soldier-db-views" aria-label="병종 DB 통합 보기">
-      <a class="soldier-db-view" href="../?dataset=profiles"><strong>1.1.1 · 병종·획득형</strong><small>기존 데이터 · 생성 능력치, 특성, 이론 강화 조합</small></a>
-      <a class="soldier-db-view active" aria-current="page" href="#originMaxima"><strong>2.1 · 획득처별 최대 능력치 검증</strong><small>112개 획득 관련 분기 · 확정 최종 최대치 0건</small></a>
-    </nav>
-    <nav class="origin-quick-nav" aria-label="육성 검증 바로가기">
-      <a href="#originMaxima">획득처 112분기</a>
-      <a href="#originProofMeaning">증명 기준</a>
-      <a href="#legacyMaximaArchive">29개 병종 정적 연구 후보 (미검증)</a>
-      <a href="#researchExclusionAudit">연구 상호배제</a>
-      <a href="#baselineGrowthCompare">전투·체육관 성장</a>
-      <a href="#modernSaveFile">내 세이브 확인</a>
-    </nav>
-    <p class="origin-hero-links"><a class="back" href="?dataset=transformations&amp;family=STR_SOLDIER">일반 갈 변신 계보</a> · <a class="back" href="?profile=manufacture%3ASTR_HALF_UBER_GIRL_RECRUITMENT">반 슈퍼변이체 농부 획득형</a> · <a class="back" href="../../reference/#unit-voxels">29종 복셀 높이 참조</a></p>
+    <a class="back" href="../../">← Data Atlas</a>
+    <p class="eyebrow">X-Piratez 2.1 (v.o2) · OXCE 8.7.1</p>
+    <h1>병종 DB</h1>
+    <p class="lede">29개 병종의 규칙과 <strong>서로 다른 출생처 72개</strong>를 한곳에서 조회합니다. 획득·변신 조건을 따라 분석하되, 실행과 최적성이 증명되지 않은 최종 능력치는 표시하지 않습니다.</p>
+    <p class="soldier-navigation-note">획득처별 능력치가 기본 화면입니다. 병종 규칙·연구·변신은 아래 <a href="#soldierTools">상세 도구</a>에 있습니다.</p>
   </div>
 </header>
 
 <main class="wrap">
-  <section id="summary" class="summary"></section>
+  <section id="summary" class="summary" hidden aria-label="상세 분석 개요"></section>
 
   <section id="originMaxima" class="card maxima-panel origin-panel" aria-label="X-Piratez 2.1 획득처별 성장 및 검증 상태">
     <div class="maxima-header">
       <div>
-        <p class="eyebrow">X-PIRATEZ 2.1 · PER-ACQUISITION PROGRESSION</p>
-        <h2>출생 상태 → 연구·훈련 → 현재 능력치·하드캡 → 최종 증명</h2>
-        <p>72개 실제 출생 프로필과 40개 병종 변경 분기를 구분합니다. 단계별 계산이 성공했더라도 <strong>실제 연구·재료·훈장·성장·변신 순서와 전역 최적성이 확인되기 전에는 최종 능력치를 게시하지 않습니다.</strong></p>
+        <p class="eyebrow">ACQUISITION · STAT EVIDENCE</p>
+        <h2>획득처별 능력치</h2>
+        <p>출생 72개와 병종 변경 분기 40개를 구분합니다. <strong>최종 최대치 인증 0건</strong> — 실제로 가능한 전체 경로가 증명되기 전에는 확정값을 게시하지 않습니다.</p>
       </div>
       <div class="maxima-controls">
+        <label for="originSearch" class="origin-primary-search">획득처·병종 검색
+          <input id="originSearch" type="search" placeholder="농부 · CODEX · root:STR_THEBAN_ASSAULT_CLONE">
+          <small>root: 뒤에 출생 ID를 입력하면 그 출생처의 후속 변신 후보도 함께 검색합니다.</small>
+        </label>
         <label for="originType">병종 선택
           <select id="originType"><option>불러오는 중…</option></select>
         </label>
@@ -56,6 +48,9 @@
 
           </select>
         </label>
+        <details class="origin-advanced-filters">
+          <summary>세부 필터</summary>
+          <div class="origin-advanced-control-row">
         <label for="originSourceType">획득 유형
           <select id="originSourceType">
             <option value="">모든 획득 유형</option>
@@ -76,20 +71,11 @@
             <option value="reset">이력 초기화 변신</option>
           </select>
         </label>
-        <label for="originSearch">획득처 ID·명칭 검색
-          <input id="originSearch" type="search" placeholder="농부 · CODEX · root:STR_THEBAN_ASSAULT_CLONE">
-          <small>최초 획득처와 그 후속 병종 변경 후보를 함께 보려면 root: 뒤에 출생 ID·명칭을 입력</small>
-        </label>
+          </div>
+        </details>
       </div>
     </div>
-    <p class="maxima-disclaimer">
-      <strong>출생값·조건부 성장 상계와 확정 최종값을 구분합니다.</strong>
-      출생값은 원본 프로필의 실제 생성 범위입니다. 성장 상계는 장기 XP·체육관을 매우 유리하게 가정한 범위의 상단이며,
-      여러 능력치를 한 대원이 동시에 달성한다는 증거가 아닙니다.
-      병종 변경 출생은 이전 개인의 전체 경로가 재생되지 않았으므로 숫자를 비워 둡니다.
-      훈장·변신·연구·RNG·재료의 시간순 증명 전에는 최종 능력치와 총합을 확정 게시하지 않습니다.
-      연구의 직접 <code>disables</code>가 서로 충돌하는지 계산한 경로라도, 비용 0 자동 연구·무료 추첨·연구 표본·시설과 이벤트 획득을 실제로 재생하지 않았다면 계속 <strong>미검증</strong>입니다.
-    </p>
+    <p class="maxima-disclaimer"><strong>수치의 의미:</strong> 출생값은 원본 생성 범위, 성장 상계는 낙관적 조건부 계산입니다. 11종 합계 및 확정 최종 최대치는 실제 성장·연구·훈장·변신 순서와 전역 최적성이 입증된 경우에만 게시합니다.</p>
     <div id="originProofDashboard" class="origin-proof-dashboard" aria-live="polite">
       <p class="muted">원본 데이터와 검증 결과를 교차 대조하는 중…</p>
     </div>
@@ -101,56 +87,18 @@
         그보다 높은 최종 11종 합계의 다른 경로가 없음을 증명했을 때만 게시합니다. 기존 게임 세이브 재현은 별도 증거입니다.</p>
       <p><strong>불가능 판정</strong>은 원본 선행/금지 조건의 반증이 있을 때만 내릴 수 있습니다. 조사 범위가 좁아 발견하지 못한 경로를 곧바로 불가능이라고 표시하지 않습니다.</p>
     </details>
-    <p id="originSummary" class="muted"></p>
+    <details class="origin-audit-summary"><summary>검사 범위와 연구 순서 감사 수치</summary><p id="originSummary" class="muted"></p></details>
     <p id="originStatus" class="muted" aria-live="polite">원본 출생·성장 감사 자료를 검증하는 중…</p>
     <div class="table-shell maxima-scroll origin-scroll" tabindex="0" aria-label="획득처별 능력치 11종 횡스크롤 표">
       <table id="originTable" aria-label="획득처별 초기 상태 및 증명 상태"><thead></thead><tbody></tbody></table>
     </div>
     <div id="originDetails" class="maxima-details" hidden aria-live="polite"></div>
-    <p class="muted">변신 선행 이력·원본 연구 상호배제 검사는 이 페이지의 아래 섹션과 연결됩니다.
-      <a href="#legacyMaximaArchive">29개 병종 정적 연구 후보 (미검증)</a>는 같은 DB의 참고 옵션으로 보존합니다.</p>
+
   </section>
 
-  <details id="legacyMaximaArchive" class="legacy-maxima-archive">
-    <summary>추가 분석 옵션 · 29개 병종 정적 연구 보너스 후보 (미검증, 최종 능력치 아님)</summary>
-    <section id="researchMaxima" class="card maxima-panel" aria-label="과거 29개 병종 연구 배타성 정적 후보, 실현성 미검증">
-    <div class="maxima-header">
-      <div>
-        <p class="eyebrow">X-PIRATEZ 2.1 · RESEARCH-EXCLUSIVE STAT CEILINGS</p>
-        <h2>과거 연구 배타성 정적 점수 — 획득처별 최댓값으로 사용 금지</h2>
-        <p>연구 <code>disables</code> · 선행 연구 · 변신 배타성에 따라 병종별 하나의 최적 후보를 선택합니다.
-        <strong>마나 제외 11개 능력치</strong>를 비교하며, 다른 연구 분기의 보너스를 중복 합산하지 않습니다.</p>
-      </div>
-      <div class="maxima-controls">
-        <label for="maximaStatMode">수치 기준
-          <select id="maximaStatMode">
-            <option value="bonus" selected>정적 영구 보너스 후보만 (기본)</option>
-            <option value="capPlusBonus">원시 하드캡 + 후보 보너스 산술합 (성장 가능 최대 아님)</option>
-          </select>
-        </label>
-        <label for="maximaSearch">병종 검색
-          <input id="maximaSearch" type="search" placeholder="아가씨 · 영웅 · STR_SOLDIER">
-        </label>
-      </div>
-    </div>
-    <p class="maxima-disclaimer"><strong>확정 획득 수치가 아닙니다.</strong>
-      아래 표는 연구·변신의 정적 최적화 후보입니다. 선장 도둑 전용 Captain's 11과 사제 전용 빵과 물고기 훈련을 함께 합산했던
-      <strong>영웅 +300·농부 +276은 불가능한 조합으로 확인되어 폐기했습니다.</strong>
-      재계산한 후보 역시 실제 연구·이벤트·무료 연구 추첨·재료·계급·훈장의 전체 순서가 증명된 것은 아닙니다.
-      기존 변신 목록만으로는 최소 능력치 조건을 충족하지 못하는 4종을 조사했습니다. 그중 블러드하운드는 전용 이벤트가 붉은 영웅 이력을 가진 개체를 직접 생성하는 예외가 있고, 나머지는 훈장 등 별도 상승 수단을 확인해야 합니다. 모든 획득 출처는 조건부입니다.
-      원본 획득 프로필이 없는 5종은 다른 병종에서 유형 변환이 필요하고, 그중 3종은 이전 변신 이력이 초기화됩니다.
-      ‘성장 하드캡 + 보너스’는 실전 최종 능력치의 절대 최댓값이 아닙니다.</p>
-    <p id="maximaAudit" class="muted"></p>
-    <p id="maximaStatus" class="muted" aria-live="polite">2.1 연구 상호배제 감사 데이터를 확인하는 중…</p>
-    <div class="table-shell maxima-scroll" tabindex="0" aria-label="병종 최대치 횡스크롤 표">
-      <table id="maximaTable" aria-label="29종 병종 연구 배타성 적용 영구 보너스 및 하드캡 비교">
-        <thead></thead><tbody></tbody>
-      </table>
-    </div>
-    <div id="maximaDetails" class="maxima-details" hidden aria-live="polite"></div>
-    </section>
-  </details>
-
+  <details id="researchTools" class="soldier-tool-group">
+    <summary>검증 근거 · 연구, 변신 비교, 성장 상계</summary>
+    <div class="soldier-tool-content">
   <details id="researchExclusionAudit" class="card research-exclusion-audit">
     <summary>XPiratez 2.1 연구 상호배제 원본 전수 목록 · 441건</summary>
     <p>같은 2.1 병종 페이지의 원본 병합 연구 데이터에서 <code>disables</code> 441건을 직접 추출합니다.
@@ -211,6 +159,9 @@
     <div id="rareMapLootProof" aria-live="polite"></div>
   </details>
 
+    </div>
+  </details>
+
   <section class="save-inspector card" aria-label="실제 세이브 기반 자동 판정">
     <h2>로컬 게임 세이브 자동 판정</h2>
     <p>세이브의 연구 완료·영구 폐쇄 상태, 현재 기지 재료·시설, 대원의 변신 이력·계급·훈장·능력치를 <strong>브라우저 내부에서 자동 대조</strong>합니다. 세이브는 업로드·저장되지 않습니다.</p>
@@ -229,6 +180,9 @@
     <p class="muted">보유 중인 자원을 사용해 다음 변신이 가능한지 판정하는 기능입니다. 이벤트 발동 시점·임무 전리품 RNG·미래 연구 분기 및 수치가 확정됐다는 뜻은 아닙니다.</p>
   </section>
 
+  <details id="soldierTools" class="soldier-tool-group">
+    <summary>기본 병종 규칙 · 변신·훈련 상세</summary>
+    <div class="soldier-tool-content">
   <section class="toolbar card">
     <div class="field grow">
       <label for="search">검색</label>
@@ -236,11 +190,11 @@
     </div>
     <div class="field"><label for="family">기본 병종별 보기</label><select id="family"><option value="">모든 기본 병종</option></select></div>
     <div class="field">
-      <label for="dataset">표</label>
+      <label for="dataset">상세 항목</label>
       <select id="dataset">
-        <option value="profiles">실제 획득형</option>
-        <option value="soldiers">기본 바디 규칙</option>
-        <option value="transformations">변신·훈련 루트</option>
+        <option value="soldiers">기본 병종 규칙 (29종)</option>
+        <option value="transformations">변신·훈련 (83종)</option>
+        <option value="profiles" hidden>출생형 세부 스펙</option>
       </select>
     </div>
     <div class="field"><label for="statView">표의 수치</label><select id="statView"><option value="key">핵심 5개</option><option value="all">전체 12개</option></select></div>
@@ -301,6 +255,8 @@
       <table id="soldierTable"><thead></thead><tbody></tbody></table>
     </div>
   </section>
+    </div>
+  </details>
 </main>
 
 <dialog id="detailDialog">
@@ -308,6 +264,6 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=20261102-unified-soldier-db"></script>
+<script type="module" src="app.js?v=20261102-21-only"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ const args=process.argv.slice(2);
 const option=(prefix)=>args.find(x=>x.startsWith(prefix+"="))?.slice(prefix.length+1);
 const pages=(option("--pages")||"starting,captains,soldiers,trainings,crafts,craft-weapons,facilities,armors,items,research,manufacture,events,forces,weapons").split(",");
 const ready={
-  starting:"#cards .card", captains:"#matrixTable tbody tr", soldiers:"#soldierTable tbody tr", trainings:"#trainingTable tbody tr[data-id]",
+  starting:"#cards .card", captains:"#matrixTable tbody tr", soldiers:"#originTable tbody tr", trainings:"#trainingTable tbody tr[data-id]",
   crafts:"#craftTable tbody tr", "craft-weapons":"#weaponTable tbody tr",
   facilities:"#facilityTable tbody tr", armors:"#armorTable tbody tr",
   items:"#tbody tr", research:"#tbody tr", manufacture:"#manufactureTable tbody tr",
@@ -75,6 +75,45 @@ try {
     let count=0,search="skip",detail="skip",display="",trainingStage="opening";
     try{
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+      if(slug==="soldiers"){
+        // The old 1.1.1 catalog no longer exists. Verify only 2.1 source evidence.
+        await page.waitForURL(u=>u.pathname.endsWith("/soldiers/modern/"),{timeout:30000});
+        await page.waitForFunction(()=>document.querySelector("#originMaxima")
+          ?.dataset.validation==="validated",{timeout:30000});
+        count=await page.locator("#originTable tbody tr").count();
+        if(count!==112)errors.push("2.1 Soldier acquisition rows: "+count+"/112");
+        if(await page.locator("#legacyMaximaArchive").count()||
+          await page.locator(".soldier-db-views").count())
+          errors.push("Duplicate or 1.1.1 Soldier navigation remains");
+        if(await page.locator("#originMetric").inputValue()!=="verified")
+          errors.push("Unverified maxima selected by default");
+        if((await page.locator("#originTable tbody tr").first().locator("td").nth(3).innerText()).trim()!=="—")
+          errors.push("Unproven final numbers published");
+        await page.locator("#originSearch").fill("direct:STR_SOLDIER_PEASANT");
+        const narrowed=await page.locator("#originTable tbody tr").count();
+        search=count+"->"+narrowed;
+        if(narrowed!==1)errors.push("Acquisition source search mismatch "+narrowed);
+        await page.locator("#originTable .maxima-show").first().click();
+        detail=String((await page.locator("#originDetails").innerText()).length);
+        if(Number(detail)<150)errors.push("2.1 acquisition proof detail incomplete");
+        await page.locator("#originMetric").selectOption("max");
+        if((await page.locator("#originTable tbody tr").first().locator("td").nth(9).innerText()).trim()!=="36")
+          errors.push("Source raw stat max unexpectedly changed");
+        await page.locator("#originMetric").selectOption("verified");
+        if((await page.locator("#originTable tbody tr").first().locator("td").nth(9).innerText()).trim()!=="—")
+          errors.push("Source max was silently elevated to certified");
+        const networkPaths=await page.evaluate(()=>performance.getEntriesByType("resource")
+          .map(r=>new URL(r.name).pathname));
+        if(networkPaths.some(x=>x.endsWith("/soldiers-runtime.json.gz")))
+          errors.push("Retired 1.1.1 Soldier runtime loaded");
+        const ok=count===112&&!errors.length&&!httpErrors.length;
+        results.push(ok);
+        console.log((ok?"PASS":"FAIL")+" soldiers rows="+count+
+          " search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+
+          " http="+JSON.stringify(httpErrors.slice(0,6)));
+        await page.close();
+        continue;
+      }
       if(slug==="weapons"&&await page.locator("#standardTab").count()){
         // First verify the integrated ranking, then switch to the unchanged
         // individual-enemy/action inspector for the existing play-guide tests.
@@ -219,7 +258,6 @@ try {
       const compressedRequired={
         items:["items-index.json.gz","item-usage-index.json.gz","catalog-ids.json.gz"],
         research:["research-index.json.gz","research-insight-index.json.gz","catalog-ids.json.gz"],
-        soldiers:["soldiers-runtime.json.gz"],
         trainings:["trainings-runtime.json.gz"],
         crafts:["crafts-runtime.json.gz"],
         weapons:["weapons-index.json.gz"],
@@ -281,57 +319,6 @@ try {
         const row=page.locator(ready[slug]).first();
         // Item/research first table cell is a comparison checkbox; click the name instead.
         if(slug==="items"||slug==="research")await row.locator("td").nth(1).click();
-        else if(slug==="soldiers"){
-          const summary=await page.locator("#summary").innerText();
-          if(summary.includes("[object Object]"))errors.push("Soldier initial summary printed objects instead of a branch-conflict count");
-          await page.locator("#statView").selectOption("all");
-          const initialCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
-          if(initialCaps!==12)errors.push("Initial soldier profiles missing growth hard caps: "+initialCaps+"/12");
-          // On mobile, the tall sticky soldier filters blocked row taps.
-          const portrait=await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position);
-          if(portrait==="sticky")errors.push("portrait soldier toolbar overlays the table");
-          await page.setViewportSize({width:844,height:390});
-          const landscape=await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position);
-          if(landscape==="sticky")errors.push("landscape soldier toolbar overlays the table");
-          await page.setViewportSize({width:390,height:844});
-          await page.locator("#dataset").selectOption("final");
-          await page.locator("#soldierTable tbody tr[data-row]").first().waitFor({state:"attached",timeout:60000});
-          const finalCaps=await page.locator("#soldierTable tbody tr").first().locator(".stat-cap").count();
-          if(finalCaps!==12)errors.push("Final soldier builds missing growth hard caps: "+finalCaps+"/12");
-          if(await page.locator("#sortMetric").isDisabled())errors.push("Final hard-cap sorting selector was disabled");
-          await page.locator("#sortMetric").selectOption("cap");
-          const sortedCaps=await page.locator("#soldierTable tbody tr").evaluateAll(rows=>rows.slice(0,6).map(row=>Number(row.querySelectorAll("td")[9]?.querySelector(".stat-cap")?.textContent.replace(/,/g,"")||0)));
-          if(sortedCaps.some((v,i)=>i>0&&v>sortedCaps[i-1]))errors.push("Final firing hard-cap sorting was not descending: "+sortedCaps.join(","));
-          const safeRows=Number((await page.locator("#rowCount").innerText()).match(/^\d+/)?.[0]||0);
-          if(!safeRows)errors.push("All soldier final builds vanished after hard-gate filtering");
-          await page.locator("#finalBranchFilter").selectOption("all");
-          const allRows=Number((await page.locator("#rowCount").innerText()).match(/^\d+/)?.[0]||0);
-          if(allRows<=safeRows)errors.push("Soldier final build selector did not expose known theoretical conflicts");
-          await page.locator("#finalBranchFilter").selectOption("hard");
-          if(!await page.locator("#soldierTable tbody .branch-hard").count())
-            errors.push("Known impossible soldier final build has no visible exclusion badge");
-          const excludedRow=page.locator("#soldierTable tbody tr").first();
-          await excludedRow.locator("td").first().click();
-          const auditDetail=await page.locator("#detailBody").innerText();
-          if(!auditDetail.includes("최종 실효 능력치 / 성장 하드캡"))errors.push("Final soldier detail omitted growth hard caps");
-          if(!auditDetail.includes("연구·선장 분기로 실행 불가능한 조합"))
-            errors.push("Soldier detail omitted hard research/event branch conflicts");
-          await page.locator("#closeDialog").click();
-          await page.locator("#finalBranchFilter").selectOption("all");
-          await page.locator("#search").fill("위어드갈 변신 코르트 구속");
-          await page.waitForTimeout(350);
-          const multiStage=await page.locator("#soldierTable tbody tr[data-row]").count();
-          if(!multiStage)errors.push("Two-stage Weirdgal → Chort conversion missing from final soldier builds");
-          await page.locator("#search").fill("음영 소환");
-          await page.waitForTimeout(350);
-          const corpseOnly=await page.locator("#soldierTable tbody .branch-saint-warning").allInnerTexts();
-          if(!corpseOnly.some(t=>t.includes("사망 대원 전용 전환")))
-            errors.push("Dead-only Spectre summoning conversion not labeled conditional: "+(await page.locator("#rowCount").innerText())+" labels="+corpseOnly.slice(0,4).join("|")+" first="+(await page.locator("#soldierTable tbody tr").first().innerText()).slice(0,240));
-          await page.locator("#search").fill("");
-          await page.waitForTimeout(350);
-          await page.locator("#dataset").selectOption("profiles");
-          await row.locator("td").first().click();
-        }
         else await row.click();
         const selector=await page.locator("#detailDialog").count()?"#detailDialog[open]":"#drawer.open";
         await page.locator(selector).waitFor({state:"visible",timeout:14000});
