@@ -167,6 +167,11 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       monthlyBuyLimit:direct?(soldier.monthlyBuyLimit??null):null,
       requires:Array.isArray(entry.requires)?entry.requires:[],
       requiresBaseFunc:Array.isArray(entry.requiresBaseFunc)?entry.requiresBaseFunc:[],
+      // Canonical v.o2 manufacture ingredient gates. Never join the site's
+      // legacy v.o1.1.1 recipes to a v.o2 birth using only a matching ID.
+      acquisitionRequiredItems:sourceType==="manufacture"&&
+        entry.requiredItems&&typeof entry.requiredItems==="object"?
+          {...entry.requiredItems}:{},
       initialStatsBeforeTraits:initial,currentStatsBeforeTraits:current,
       traitNames,traitCounts:Object.fromEntries(Object.entries(template.transformationBonuses||{}).filter(([id,n])=>bonusByName.has(id)&&Number(n)>0).map(([id,n])=>[id,Math.trunc(Number(n))])),traits:bonusDetails(traitNames),traitStats,
       effectiveStats:effective,rawStatCaps:caps.raw,effectiveStatCaps:caps.effective,trainingStatCaps:readStats(soldier.trainingStatCaps),
@@ -335,6 +340,12 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       eventScriptMatches.set(source.event,found);
     }
   }
+  // Each event script is an ALTERNATIVE timed/conditional event source;
+  // do not combine gates from mutually exclusive scripts into one path.
+  // These routes come from the same v.o2 merge and provenance hashes as
+  // the birth profile itself, not from the older website event database.
+  for(const profile of profiles)if(profile.sourceType==="event")
+    profile.acquisitionEventScripts=eventScriptMatches.get(profile.sourceId)||[];
   const eventResearchSources={};
   for(const event of events){
     if(typeof event?.name!=="string")continue;

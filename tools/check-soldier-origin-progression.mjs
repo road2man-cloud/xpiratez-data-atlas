@@ -15,6 +15,11 @@ assert.deepEqual(published,computed,
   "published report must be re-generated from the current 2.1 source");
 const result=validateOriginProgression(published,data,max);
 assert.deepEqual(result,{rows:112,births:72,transformBranches:40,verified:0});
+assert.equal(data.meta.mod.version,"v.o2");
+assert.equal(published.sourceVersion,data.meta.mod.version);
+assert.deepEqual(published.sourceHashes,data.meta.source.rules);
+assert(!published.source.some(x=>/public\/data\/(?:manufacture|event)[-/]/.test(x)),
+  "1.1.1 manufacture/event catalogs must not serve as 2.1 acquisition evidence");
 const byId=new Map(published.rows.map(r=>[r.id,r]));
 assert.equal(published.classes.length,29);
 assert.equal(new Set(published.classes.map(r=>r.soldierType)).size,29);
@@ -36,6 +41,12 @@ assert(published.rows.every(r=>r.proof.status==="미검증"&&
 for(const p of data.profiles){
   const r=byId.get(p.id),born=initialState(data,p);
   assert(r&&r.soldierType===p.soldierType,"missing source "+p.id);
+  if(p.sourceType==="manufacture")assert.deepEqual(
+    r.prerequisites.items,p.acquisitionRequiredItems,
+    "2.1 source manufacturer gates differ from published record: "+p.id);
+  if(p.sourceType==="event")assert.equal(
+    r.prerequisites.event.alternatives.length,p.acquisitionEventScripts.length,
+    "2.1 alternative event script count differs: "+p.id);
   assert.deepEqual(r.initialHistory,Object.entries(p.previousTransformations||{})
     .filter(([,n])=>Number(n)>0).map(([id,count])=>({id,count:Number(count)})));
   assert.deepEqual(r.initialBonuses,Object.entries(p.traitCounts||{})
@@ -92,6 +103,8 @@ assert.equal(published.summary.eventOriginsWithTriggerEvidence,9);
 const nigeria=byId.get("event:STR_START_COUNTRY_NIGERIA_EVENT");
 assert.equal(nigeria.prerequisites.event.firstMonth,0);
 assert.equal(nigeria.prerequisites.event.lastMonth,0);
+assert.equal(nigeria.prerequisites.event.oneTime,false,
+  "bounded country-start timing does not mean OXCE one-time scheduler");
 assert(nigeria.prerequisites.event.positiveTriggers.some(x=>
   x.kind==="xcomBaseInCountryTriggers"&&x.id==="STR_NIGERIA"));
 assert(!peasant.initialHistory.some(x=>x.id==="STR_THEBAN_ASSAULT_CLONE"));
@@ -109,6 +122,14 @@ assert(hound.prerequisites.event.positiveTriggers.some(x=>
 assert(hound.prerequisites.event.negativeTriggers.some(x=>
   x.kind==="researchTriggers"&&x.id==="STR_CAPTAIN_SAINT"));
 assert.equal(hound.finalStats,null);
+const fighter=byId.get("event:STR_MRSHAN_FIGHTER_EVENT");
+assert.equal(fighter.prerequisites.event.alternativeCount,3,
+  "event script branches must remain independent, never AND-combined");
+assert.equal(fighter.prerequisites.event.alternatives.length,3);
+assert(fighter.prerequisites.event.alternatives.some(x=>
+  x.script==="STR_MRSHAN_FIGHTER_EVENT_CATPATH_2"&&x.firstMonth===24));
+assert.equal(fighter.prerequisites.event.positiveTriggers.length,0,
+  "mutually independent source-script research gates must not be conjoined");
 for(const [id,expected] of [
   ["STR_CHORT_SUMMONING",true],
   ["STR_ANG_102",true],
@@ -138,6 +159,15 @@ mustReject("cannot give assault clone an ordinary peasant birth",r=>{
 });
 mustReject("cannot waive physical clone license",r=>{
   r.rows.find(x=>x.id===assault.id).prerequisites.items={};
+});
+mustReject("cannot import old-version source provenance",r=>{
+  r.sourceVersion="v.o1.1.1";
+});
+mustReject("cannot replace v.o2 script odds with old DB odds",r=>{
+  r.rows.find(x=>x.id===hound.id).prerequisites.event.alternatives[0].executionOdds=100;
+});
+mustReject("cannot remove another event script alternative",r=>{
+  r.rows.find(x=>x.id===fighter.id).prerequisites.event.alternatives.pop();
 });
 mustReject("cannot erase event branch exclusivity",r=>{
   r.rows.find(x=>x.id===hound.id).prerequisites.event.negativeTriggers=[];

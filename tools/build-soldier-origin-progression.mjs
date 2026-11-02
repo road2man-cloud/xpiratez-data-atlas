@@ -3,10 +3,10 @@
 import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {resolve} from "node:path";
-import {gunzipSync} from "node:zlib";
 import {initialState,bonusStats} from "../public/soldiers/modern/eligibility.js";
 import {createStatEnvelope} from "../public/soldiers/modern/stat-envelope.js";
 import {growStatEnvelope} from "../public/soldiers/modern/growth-envelope.js";
+import {enumerateSourceBodyChangeLineages} from "./soldier-origin-lineage-census.mjs";
 import {directResearchTransformLocks,permanentResearchTransformLocks}
   from "../public/soldiers/modern/research-training-locks.js";
 
@@ -20,36 +20,57 @@ const entries=x=>Object.entries(x||{}).filter(([,v])=>num(v)>0)
 const proof=()=>({status:"미검증",ruleSourceIndexed:true,
   chronologicalReplay:false,saveVerified:false,finalStatsVerified:false,
   conditionalEventOrRng:false,blockerEvidence:[]});
-// Link each candidate origin to its exact craft recipe / event script.
-// Research gates are NOT physical item requirements, even when the IDs match.
-function loadAcquisitionSourceRules(){
-  const root=resolve(fileURLToPath(new URL("../",import.meta.url)));
-  const read=path=>JSON.parse(fs.readFileSync(resolve(root,path),"utf8"));
-  const unzip=path=>JSON.parse(gunzipSync(fs.readFileSync(resolve(root,path))));
-  const manufacture=read("public/data/manufacture-index.json").index;
-  const events=unzip("public/data/events-index.json.gz").index;
-  const byManufacture=new Map(manufacture.map(r=>[r.id,r]));
-  const byEvent=new Map(events.map(r=>[r.id,r]));
-  const recipeCache=new Map(),eventCache=new Map();
-  return {
-    manufacture(id){
-      const ref=byManufacture.get(id);
-      if(!ref)throw new Error("획득 제조 원본 인덱스 누락: "+id);
-      if(!recipeCache.has(ref.bucket))
-        recipeCache.set(ref.bucket,read("public/data/manufacture-chunks/"+ref.bucket+".json").details);
-      const detail=recipeCache.get(ref.bucket)[id];
-      if(!detail)throw new Error("획득 제조 상세 원본 누락: "+id);
-      return detail;
-    },
-    event(id){
-      const ref=byEvent.get(id);
-      if(!ref)throw new Error("획득 이벤트 원본 인덱스 누락: "+id);
-      if(!eventCache.has(ref.bucket))
-        eventCache.set(ref.bucket,unzip("public/data/event-chunks/"+ref.bucket+".json.gz").details);
-      const detail=eventCache.get(ref.bucket)[id];
-      if(!detail)throw new Error("획득 이벤트 상세 원본 누락: "+id);
-      return detail;
+// These v.o2 event schedules are extracted from the SAME rule merge as the
+// acquired soldier's birth state. Never join the historical 1.1.1 website
+// manufacture/event catalogs to a 2.1 soldier merely by matching an ID.
+const EVENT_TRIGGER_FIELDS={
+  researchTriggers:["researchPositive","researchNegative"],
+  itemTriggers:["itemPositive","itemNegative"],
+  facilityTriggers:["facilityPositive","facilityNegative"],
+  soldierTypeTriggers:["soldierTypePositive","soldierTypeNegative"],
+  xcomBaseInRegionTriggers:["regionPositive","regionNegative"],
+  xcomBaseInCountryTriggers:["countryPositive","countryNegative"],
+  pactCountryTriggers:["pactPositive","pactNegative"]
+};
+function eventSourceGates(profile){
+  if(profile.sourceType!=="event")return null;
+  if(!Array.isArray(profile.acquisitionEventScripts))
+    throw new Error("v.o2 이벤트 생성 원본 가드가 색인되지 않음: "+profile.id);
+  const routes=profile.acquisitionEventScripts.map(r=>{
+    const positiveTriggers=[],negativeTriggers=[];
+    for(const [kind,[positive,negative]] of Object.entries(EVENT_TRIGGER_FIELDS)){
+      for(const id of r[positive]||[])positiveTriggers.push({kind,id});
+      for(const id of r[negative]||[])negativeTriggers.push({kind,id});
     }
+    return {
+      script:r.script,mode:r.mode,firstMonth:r.firstMonth??null,
+      lastMonth:r.lastMonth??null,executionOdds:r.executionOdds??null,
+      positiveTriggers,negativeTriggers,
+      oneTime:r.mode==="oneTimeRandom"||r.mode==="oneTimeSequential",
+      oneTimeEarlier:r.oneTimeEarlier||[],
+      oneTimeWeight:r.oneTimeWeight??null,oneTimeTotal:r.oneTimeTotal??null,
+      monthWeights:r.monthWeights||[],
+      otherConditions:r.otherConditions||{}
+    };
+  });
+  // A merged summary contains ONLY conditions common to *all* alternative
+  // scripts, never a conjunction of opposing branch prerequisites.
+  const shared=key=>routes.length?
+    routes[0][key].filter(t=>routes.every(r=>r[key].some(x=>
+      x.kind===t.kind&&x.id===t.id))):[];
+  return {
+    ruleset:"v.o2",alternatives:routes,alternativeCount:routes.length,
+    firstMonth:routes.length?Math.min(...routes.map(r=>Number(r.firstMonth??0))):null,
+    lastMonth:routes.length&&routes.every(r=>r.lastMonth!=null)?
+      Math.max(...routes.map(r=>Number(r.lastMonth))):null,
+    minExecutionOdds:routes.length?Math.min(...routes.map(r=>Number(r.executionOdds??100))):null,
+    maxExecutionOdds:routes.length?Math.max(...routes.map(r=>Number(r.executionOdds??100))):null,
+    positiveTriggers:shared("positiveTriggers"),
+    negativeTriggers:shared("negativeTriggers"),
+    selectionRefs:routes.map(r=>({script:r.script,mode:r.mode})),
+    oneTime:routes.length?routes.every(r=>r.oneTime):null,
+    boundedMonthWindow:routes.length&&routes.every(r=>r.lastMonth!=null),
+    note:"공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
   };
 }
 const inventorySources=(data,items)=>Object.fromEntries(
@@ -127,44 +148,31 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     throw new Error("소스 범위 변경: 원본 29병종 / 72프로필 / 83변신 재감사 필요");
   const soldiers=new Map(data.soldiers.map(s=>[s.id,s]));
   const maxima=new Map(oldMaxima.rows.map(r=>[r.id,r]));
-  const sources=loadAcquisitionSourceRules();
+  if(data.meta?.mod?.version!=="v.o2")
+    throw new Error("획득처별 감사의 원본은 X-Piratez v.o2이어야 합니다");
+  const ancestry=enumerateSourceBodyChangeLineages(data);
+  const lineageByEdge=new Map(ancestry.branches.map(x=>[x.id,x]));
+  if(ancestry.summary.incomingEdges!==40)
+    throw new Error("병종변경 입력 간선 개수와 출생계보 결과 불일치");
   const direct=[],transformed=[];
   for(const profile of data.profiles){
     const s=soldiers.get(profile.soldierType);
     if(!s||!maxima.has(s.id))throw new Error("알 수 없는 획득 병종: "+profile.id);
     const n=naturalPotential(data,profile);
     if(n.status!=="조건부 성장 상계")throw new Error(profile.id+" "+n.reason);
-    const craft=profile.sourceType==="manufacture"?sources.manufacture(profile.sourceId):null;
-    const event=profile.sourceType==="event"?sources.event(profile.sourceId):null;
-    if(craft&&craft.spawnedPersonType!==profile.soldierType)
-      throw new Error("제조 출생 병종 원본 불일치: "+profile.id);
-    if(event&&event.effects?.spawnedPersonType!==profile.soldierType)
-      throw new Error("이벤트 출생 병종 원본 불일치: "+profile.id);
-    const materialGates=Object.fromEntries((craft?.requiredItems||[]).map(x=>[x.id,num(x.qty)]));
-    const trigger=event?.triggerSummary||null;
+    if(profile.sourceType==="manufacture"&&
+      !Object.hasOwn(profile,"acquisitionRequiredItems"))
+      throw new Error("v.o2 제조 재료 원본 누락: "+profile.id);
+    const materialGates=profile.acquisitionRequiredItems||{};
+    const trigger=eventSourceGates(profile);
     direct.push({
       id:profile.id,soldierType:s.id,soldierName:s.koName,
       acquisitionType:profile.sourceType,sourceId:profile.sourceId,
       sourceName:profile.sourceKoName||profile.id,kind:"SOURCE_SPAWN",
-      sourceFiles:[...new Set([...(profile.sourceFiles||[]),
-        ...(craft?.sourceFiles||[]),...(event?.sourceFiles||[])])],
+      sourceFiles:profile.sourceFiles||[],
       prerequisites:{research:profile.requires||[],facilities:profile.requiresBaseFunc||[],
         items:materialGates,itemSources:inventorySources(data,materialGates),
-        event:trigger?{
-          firstMonth:trigger.months?.earliest??null,
-          lastMonth:trigger.months?.latest??null,
-          minExecutionOdds:trigger.odds?.min??null,
-          maxExecutionOdds:trigger.odds?.max??null,
-          positiveTriggers:(trigger.positive||[]).map(x=>({kind:x.kind,id:x.id})),
-          negativeTriggers:(trigger.negative||[]).map(x=>({kind:x.kind,id:x.id})),
-          selectionRefs:(trigger.selectionRefs||[]).map(x=>({
-            kind:x.kind,bucket:x.bucket,weight:x.weight,totalWeight:x.totalWeight
-          })),
-          boundedMonthWindow:trigger.months?.hasBounded===true,
-          // A bounded time window alone is NOT proof that the event is
-          // one-shot. That requires the full source event scheduler.
-          oneTime:null
-        }:null,
+        event:trigger,
         monthlyLimit:profile.monthlyBuyLimit??null,
         cost:profile.cost??null,time:profile.time??null,spawnedPersons:profile.spawnedPersons??1},
       birth:n.birth,unbonusedBirth:n.baseBirth,
@@ -193,6 +201,9 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     for(const sourceType of t.allowedSoldierTypes||[]){
       if(!soldiers.has(sourceType))throw new Error("알 수 없는 변신 출발 병종: "+t.id+"/"+sourceType);
       const parentProfiles=data.profiles.filter(p=>p.soldierType===sourceType).map(p=>p.id);
+      const edgeId="transform:"+t.id+":from:"+sourceType;
+      const lineage=lineageByEdge.get(edgeId);
+      if(!lineage)throw new Error("출생 근원 계보 간선 누락: "+edgeId);
       transformed.push({
         id:"transform:"+t.id+":from:"+sourceType,soldierType:output.id,
         soldierName:output.koName,acquisitionType:"typeChange",
@@ -200,6 +211,9 @@ export function buildSoldierOriginProgression(data,oldMaxima){
         sourceId:t.id,sourceName:t.koName||t.id,
         kind:"TYPE_CHANGE_WITH_UNRESOLVED_PARENT",parentSoldierType:sourceType,
         parentAcquisitionProfiles:parentProfiles,
+        // Source-rooted chain doesn't certify parent identity, resources,
+        // stats, badges, status, calendar or exact sequential execution.
+        candidateSourceAncestry:lineage,
         prerequisites:{research:t.requires||[],facilities:t.requiresBaseFunc||[],
           items:t.requiredItems||{},itemSources:inventorySources(data,t.requiredItems),
           requiredCommendations:t.requiredCommendations||{},
@@ -267,10 +281,11 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     ruleset:"X-Piratez 2.1 / OXCE 8.7.1",
     source:["public/data/soldiers-modern-index.json",
       "public/data/soldier-research-maxima-20261101.json",
-      "public/data/manufacture-index.json",
-      "public/data/manufacture-chunks/*.json",
-      "public/data/events-index.json.gz",
-      "public/data/event-chunks/*.json.gz"],
+      "Piratez 2.1 / Ruleset/manufacture",
+      "Piratez 2.1 / Ruleset/events",
+      "Piratez 2.1 / Ruleset/eventScripts"],
+    sourceHashes:data.meta?.source?.rules||[],
+    sourceVersion:"v.o2",
     stats:STATS,summary:{
       classes:29,originalSpawnProfiles:direct.length,incomingTypeChangeRules:
         data.transformations.filter(t=>t.producedSoldierType).length,
@@ -280,6 +295,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
         Object.keys(r.prerequisites.items).length>0).length,
       eventOriginsWithTriggerEvidence:direct.filter(r=>r.acquisitionType==="event"&&
         r.prerequisites.event).length,
+      sourceRootedAncestry:ancestry.summary,
       chronologicalPathsVerified:0,
       finalStatRoutesVerified:0,saveVerified:0,...historyDiagnostics},
     statusDefinitions:{
@@ -289,7 +305,9 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       "미검증":"재생 증명이나 불가능 증명이 아직 없는 경로"
     },
     limitations:[
-      "72개 출생 프로필과 7개 병종변경 규칙의 입력 병종 40개 조합을 색인; 변신 이전의 개별 획득 프로필 연결 및 다단계 변신은 아직 완전 전개하지 않음.",
+      "72개 출생 프로필과 7개 병종변경 규칙의 입력 병종 40개 조합을 색인; 출생처 기점 다단계 병종 변경 간선 그래프는 탐색하였으나 중간 동일병종 훈련과 연구/확률/훈장/신체상태를 재생하지 않아 완전한 경로 증명은 아님.",
+      "제조 requiredItems와 이벤트 script 가드는 2.1 병종 원본과 동일한 룰 병합에서 추출했으며, 1.1.1 제조/이벤트 웹 DB를 교차 적용하지 않음.",
+      "여러 이벤트 script가 한 출생 유형을 지급할 경우 각각을 독립적인 대체 경로로 보존하고 공통 가드만 요약함.",
       "제조 요구 연구와 실물 requiredItems는 별도 원본 필드이며, 공급 후보는 반드시 실제 보유 및 이벤트 발동으로 검증해야 함.",
       "제조에서 생성되는 새 병사는 기존 대원의 훈장·이력을 자동 상속하지 않음.",
       "출생 effectiveStats는 원본 출생 보너스를 1회 적용한 범위; 일반적인 성장 상계는 엔진 룰 기반의 매우 낙관적인 상계일 뿐 달성 인증이 아님.",

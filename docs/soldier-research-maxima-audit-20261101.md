@@ -151,3 +151,12 @@
 - **테베 돌격 클론** `manufacture:STR_THEBAN_ASSAULT_CLONE`과 직접 모집 농부 `direct:STR_SOLDIER_PEASANT`는 둘 다 `STR_SOLDIER_PEASANT`이지만, 출생 계급 **1 대 0**, 출생 최대 사격 **80 대 36**, 체력 **55 대 40**, 근접 **80 대 36**이며 클론에만 `STR_THEBAN_ASSAULT_CLONE` 출생 이력이 있다. 두 출생처의 능력치·훈장·이력을 절대 합치지 않는 회귀검사를 추가했다.
 - **사이오닉 기술 예외**: `manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT`는 보너스 `psiSkill +3`을 출생 시 보유하지만 원본 출생 `psiSkill`은 **0**이다. 보너스 항목과 출생 최종 실효값은 같은 항목이 아니므로 전자를 후자의 값으로 무조건 대체하지 않는다.
 - 출생 이력 진단·제조 재료·이벤트 트리거 출처는 여전히 **정적 조건 충족 여부 검사**이며 캠페인 실행 증명이 아니다. 병종 변경 40개 분기는 출발 개인을 완전하게 재생하지 않았으므로 최종값을 공란으로 유지한다.
+
+### 2.1 획득처 재료·이벤트 스크립트의 버전 일치 보강 (2026-11-02)
+
+- 공개 사이트의 기존 `public/data/manufacture-index.json`은 **X-Piratez v.o1.1.1** 원본이다. 같은 ID라는 이유만으로 이 제조/이벤트 인덱스의 조건을 2.1 획득처의 실제 원본으로 활용해서는 안 된다. 이 혼합의 위험을 확인한 뒤 **기존 사이트 2.1 데이터 생성 과정 자체**를 보강했다.
+- 2.1 `tools/soldier-modern-data.mjs`의 출생 프로필 생성 시 제조의 `acquisitionRequiredItems`를 직접 보존하고, 원본 `eventScripts`를 추적한 `acquisitionEventScripts`를 이벤트 출생 프로필에 연결했다. 기준은 설치된 v.o2의 `Piratez.rul` SHA-256 `ac42ed92d3f86f8414e5a1451dc207b0f949e93371e172b32f6`, `Piratez_Events.rul` SHA-256 `00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6`이다. 기존 `soldiers-modern-index.json` 원본 해시와 일치함을 독립 재확인했다.
+- `tools/build-soldier-origin-progression.mjs`는 더 이상 v.o1.1.1 제조/이벤트 카탈로그를 열지 않고, **2.1 `soldiers-modern-index.json`의 출생과 같은 룰에서 나온 재료·이벤트 가드만** 사용한다. 두 사이트를 병행한 것이 아니라 기존 2.1 병종 데이터 생성과 감사 결과를 연결한 것이다.
+- 이벤트가 여러 `eventScripts`에서 생성될 수 있으면 **각 스크립트의 연구·아이템·국가·시설 가드, 월 범위, 확률, 일회성 유형을 별도 대안**으로 기록한다. 공통 필요/금지 조건 요약은 모든 대안의 교집합으로 계산하여 상호배타적인 대체 조건을 강제로 동시에 요구하지 않는다. 예: `STR_MRSHAN_FIGHTER_EVENT`는 서로 다른 이벤트 스크립트 3개, `STR_CODEX_BONUS_G5`는 출처 1개·`executionOdds: 23`.
+- 시작 국가 이벤트처럼 `lastMonth: 0`인 유한 월 범위는 **일회성 보장 근거가 아니다**. `oneTimeRandomEvents`/ `oneTimeSequentialEvents`에 실제 등재된 출처만 일회성 스크립트 분기로 표시한다.
+- 72개 프로필/40개 유형 변환 분기/모든 원본 연구 배제 441건과 기존 브라우저 출력에 대해 재생성 및 회귀검사를 연결했다. 모든 최종 11개 능력치와 합계는 실제 개인의 연구·훈장·성장·변신 전체 순서가 증명될 때까지 **null / 미검증** 상태로 유지한다.

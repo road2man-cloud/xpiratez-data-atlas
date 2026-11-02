@@ -42,8 +42,13 @@ try{
   await page.goto(origin+"/soldiers/modern/",{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
-  await page.waitForFunction(()=>document.querySelectorAll("#originTable tbody tr").length===112,
-    {timeout:30000});
+  try{
+    await page.waitForFunction(()=>document.querySelectorAll("#originTable tbody tr").length===112,
+      {timeout:30000});
+  }catch(error){
+    console.error("Origin table not ready:",await page.locator("#originStatus").innerText(),errors);
+    throw error;
+  }
   assert.equal(await page.locator("#originTable thead th").count(),15);
   assert((await page.locator("#originSummary").innerText()).includes("72개"));
   assert((await page.locator("#originSummary").innerText()).includes("40개"));
@@ -83,10 +88,24 @@ try{
   await page.locator("#originSearch").fill("event:STR_CODEX_BONUS_G5");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
   await page.locator("#originTable .maxima-show").first().click();
-  const houndOriginEvidence=await page.locator("#originDetails").innerText();
-  assert(houndOriginEvidence.includes("실행 확률 지정 23%"));
+  let houndOriginEvidence=await page.locator("#originDetails").innerText();
+  assert(houndOriginEvidence.includes("2.1 원본 이벤트 출처"));
+  assert(houndOriginEvidence.includes("1개 스크립트 분기"));
+  await page.locator("#originDetails details summary").click();
+  houndOriginEvidence=await page.locator("#originDetails").innerText();
+  assert(houndOriginEvidence.includes("스크립트 실행 확률 23%"));
   assert(houndOriginEvidence.includes("STR_CAPTAIN_SAINT"));
   assert(houndOriginEvidence.includes("STR_GODS_E5"));
+  await page.locator("#originDetailClose").click();
+  await page.locator("#originSearch").fill("event:STR_MRSHAN_FIGHTER_EVENT");
+  assert.equal(await page.locator("#originTable tbody tr").count(),1);
+  await page.locator("#originTable .maxima-show").first().click();
+  assert((await page.locator("#originDetails").innerText()).includes("3개 스크립트 분기"));
+  await page.locator("#originDetails details summary").click();
+  const fighterEvidence=await page.locator("#originDetails").innerText();
+  assert(fighterEvidence.includes("STR_MRSHAN_FIGHTER_EVENT_CATPATH_2"));
+  assert(fighterEvidence.includes("STR_MRSHAN_FIGHTER_EVENT_CATPATH"));
+  assert(fighterEvidence.includes("대체 출처 3"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("direct:STR_SOLDIER_PEASANT");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);

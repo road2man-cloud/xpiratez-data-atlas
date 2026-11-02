@@ -5,11 +5,77 @@
   "source": [
     "public/data/soldiers-modern-index.json",
     "public/data/soldier-research-maxima-20261101.json",
-    "public/data/manufacture-index.json",
-    "public/data/manufacture-chunks/*.json",
-    "public/data/events-index.json.gz",
-    "public/data/event-chunks/*.json.gz"
+    "Piratez 2.1 / Ruleset/manufacture",
+    "Piratez 2.1 / Ruleset/events",
+    "Piratez 2.1 / Ruleset/eventScripts"
   ],
+  "sourceHashes": [
+    {
+      "file": "HitFX-basic.rul",
+      "sha256": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf"
+    },
+    {
+      "file": "Piratez_Armors.rul",
+      "sha256": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc"
+    },
+    {
+      "file": "Piratez_BaseNames.rul",
+      "sha256": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff"
+    },
+    {
+      "file": "Piratez_Bonuses.rul",
+      "sha256": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23"
+    },
+    {
+      "file": "Piratez_Events.rul",
+      "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+    },
+    {
+      "file": "Piratez_Factions.rul",
+      "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+    },
+    {
+      "file": "Piratez_Globals.rul",
+      "sha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104"
+    },
+    {
+      "file": "Piratez_Mapscripts.rul",
+      "sha256": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b"
+    },
+    {
+      "file": "Piratez_Planet.rul",
+      "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a"
+    },
+    {
+      "file": "Piratez_Resources.rul",
+      "sha256": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c"
+    },
+    {
+      "file": "Piratez_Transformations.rul",
+      "sha256": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba"
+    },
+    {
+      "file": "Piratez_Wardrobe.rul",
+      "sha256": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503"
+    },
+    {
+      "file": "Piratez.rul",
+      "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6"
+    },
+    {
+      "file": "Recolr.rul",
+      "sha256": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0"
+    },
+    {
+      "file": "Shotguns_Rebalance.rul",
+      "sha256": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b"
+    },
+    {
+      "file": "Yankes_Scripts.rul",
+      "sha256": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+    }
+  ],
+  "sourceVersion": "v.o2",
   "stats": [
     "tu",
     "stamina",
@@ -48,6 +114,8 @@
   },
   "limitations": [
     "72개 출생 프로필과 7개 병종변경 규칙의 입력 병종 40개 조합을 색인; 변신 이전의 개별 획득 프로필 연결 및 다단계 변신은 아직 완전 전개하지 않음.",
+    "제조 requiredItems와 이벤트 script 가드는 2.1 병종 원본과 동일한 룰 병합에서 추출했으며, 1.1.1 제조/이벤트 웹 DB를 교차 적용하지 않음.",
+    "여러 이벤트 script가 한 출생 유형을 지급할 경우 각각을 독립적인 대체 경로로 보존하고 공통 가드만 요약함.",
     "제조 요구 연구와 실물 requiredItems는 별도 원본 필드이며, 공급 후보는 반드시 실제 보유 및 이벤트 발동으로 검증해야 함.",
     "제조에서 생성되는 새 병사는 기존 대원의 훈장·이력을 자동 상속하지 않음.",
     "출생 effectiveStats는 원본 출생 보너스를 1회 적용한 범위; 일반적인 성장 상계는 엔진 룰 기반의 매우 낙관적인 상계일 뿐 달성 인증이 아님.",
@@ -5183,6 +5251,36 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_START_COUNTRY_NIGERIA_EVENT",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": 0,
+              "executionOdds": 100,
+              "positiveTriggers": [
+                {
+                  "kind": "xcomBaseInCountryTriggers",
+                  "id": "STR_NIGERIA"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 100
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
           "firstMonth": 0,
           "lastMonth": 0,
           "minExecutionOdds": 100,
@@ -5196,14 +5294,13 @@
           "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_START_COUNTRY_NIGERIA_EVENT",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": true,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -6252,6 +6349,36 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_START_COUNTRY_GERMANY_EVENT",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": 0,
+              "executionOdds": 100,
+              "positiveTriggers": [
+                {
+                  "kind": "xcomBaseInCountryTriggers",
+                  "id": "STR_GERMANY"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 100
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
           "firstMonth": 0,
           "lastMonth": 0,
           "minExecutionOdds": 100,
@@ -6265,14 +6392,13 @@
           "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_START_COUNTRY_GERMANY_EVENT",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": true,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -10889,6 +11015,36 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_START_LOCATION_EVENT_MEDUSA",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": 0,
+              "executionOdds": 100,
+              "positiveTriggers": [
+                {
+                  "kind": "xcomBaseInRegionTriggers",
+                  "id": "STR_CENTRAL_ASIA"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 100
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
           "firstMonth": 0,
           "lastMonth": 0,
           "minExecutionOdds": 100,
@@ -10902,14 +11058,13 @@
           "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_START_LOCATION_EVENT_MEDUSA",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": true,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -13704,6 +13859,36 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_START_COUNTRY_BRAZIL_EVENT",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": 0,
+              "executionOdds": 100,
+              "positiveTriggers": [
+                {
+                  "kind": "xcomBaseInCountryTriggers",
+                  "id": "STR_BRAZIL"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 100
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
           "firstMonth": 0,
           "lastMonth": 0,
           "minExecutionOdds": 100,
@@ -13717,14 +13902,13 @@
           "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_START_COUNTRY_BRAZIL_EVENT",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": true,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -26167,6 +26351,30 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_CATGIRL_FROM_LAPUTA",
+              "mode": "oneTimeRandom",
+              "firstMonth": 0,
+              "lastMonth": null,
+              "executionOdds": 100,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_PRIZE_NEKOMIMI_001"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": true,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": 100,
+              "oneTimeTotal": 100,
+              "monthWeights": [],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
           "firstMonth": 0,
           "lastMonth": null,
           "minExecutionOdds": 100,
@@ -26180,14 +26388,13 @@
           "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "oneTimeRandomEvents",
-              "bucket": null,
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_CATGIRL_FROM_LAPUTA",
+              "mode": "oneTimeRandom"
             }
           ],
+          "oneTime": true,
           "boundedMonthWindow": false,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -26392,6 +26599,95 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_CATGIRL_FROM_SPACE_EARLY",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": null,
+              "executionOdds": 13,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_SMUGGLERS"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_NEKOMIMI"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CHRONICLES_001"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_HYPERWAVES"
+                }
+              ],
+              "negativeTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_NEKOMIMI"
+                }
+              ],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 100
+                }
+              ],
+              "otherConditions": {}
+            },
+            {
+              "script": "STR_CATGIRL_FROM_SPACE",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": null,
+              "executionOdds": 13,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_SMUGGLERS"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_NEKOMIMI"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CHRONICLES_001"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_HYPERWAVES"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_NEKOMIMI"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 200,
+                  "totalWeight": 300
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 2,
           "firstMonth": 0,
           "lastMonth": null,
           "minExecutionOdds": 13,
@@ -26412,50 +26708,22 @@
             {
               "kind": "researchTriggers",
               "id": "STR_HYPERWAVES"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CONTACT_SMUGGLERS"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_NEKOMIMI"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CHRONICLES_001"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_HYPERWAVES"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CONTACT_NEKOMIMI"
             }
           ],
-          "negativeTriggers": [
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CONTACT_NEKOMIMI"
-            }
-          ],
+          "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_CATGIRL_FROM_SPACE_EARLY",
+              "mode": "weighted"
             },
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 200,
-              "totalWeight": 300
+              "script": "STR_CATGIRL_FROM_SPACE",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": false,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -28477,68 +28745,114 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_MRSHAN_FIGHTER_EVENT",
+              "mode": "oneTimeRandom",
+              "firstMonth": 12,
+              "lastMonth": null,
+              "executionOdds": 3,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_SMUGGLERS"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_NEKOMIMI"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CHRONICLES_001"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_HYPERWAVES"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_NEKOMIMI"
+                }
+              ],
+              "negativeTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CAPTAIN_SOREASS"
+                }
+              ],
+              "oneTime": true,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": 100,
+              "oneTimeTotal": 100,
+              "monthWeights": [],
+              "otherConditions": {}
+            },
+            {
+              "script": "STR_MRSHAN_FIGHTER_EVENT_CATPATH",
+              "mode": "oneTimeRandom",
+              "firstMonth": 15,
+              "lastMonth": null,
+              "executionOdds": 7,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_FIREFOX_TRANSPORT"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": true,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": 100,
+              "oneTimeTotal": 100,
+              "monthWeights": [],
+              "otherConditions": {}
+            },
+            {
+              "script": "STR_MRSHAN_FIGHTER_EVENT_CATPATH_2",
+              "mode": "oneTimeRandom",
+              "firstMonth": 24,
+              "lastMonth": null,
+              "executionOdds": 6,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_FIREFOX_TRANSPORT"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": true,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": 100,
+              "oneTimeTotal": 100,
+              "monthWeights": [],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 3,
           "firstMonth": 12,
           "lastMonth": null,
           "minExecutionOdds": 3,
           "maxExecutionOdds": 7,
-          "positiveTriggers": [
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CONTACT_SMUGGLERS"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_NEKOMIMI"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CHRONICLES_001"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_HYPERWAVES"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CONTACT_NEKOMIMI"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_FIREFOX_TRANSPORT"
-            },
-            {
-              "kind": "researchTriggers",
-              "id": "STR_FIREFOX_TRANSPORT"
-            }
-          ],
-          "negativeTriggers": [
-            {
-              "kind": "researchTriggers",
-              "id": "STR_CAPTAIN_SOREASS"
-            }
-          ],
+          "positiveTriggers": [],
+          "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "oneTimeRandomEvents",
-              "bucket": null,
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_MRSHAN_FIGHTER_EVENT",
+              "mode": "oneTimeRandom"
             },
             {
-              "kind": "oneTimeRandomEvents",
-              "bucket": null,
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_MRSHAN_FIGHTER_EVENT_CATPATH",
+              "mode": "oneTimeRandom"
             },
             {
-              "kind": "oneTimeRandomEvents",
-              "bucket": null,
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_MRSHAN_FIGHTER_EVENT_CATPATH_2",
+              "mode": "oneTimeRandom"
             }
           ],
+          "oneTime": true,
           "boundedMonthWindow": false,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -28743,6 +29057,52 @@
         "items": {},
         "itemSources": {},
         "event": {
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_CATGIRL_FROM_SPACE",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": null,
+              "executionOdds": 13,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_SMUGGLERS"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_NEKOMIMI"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CHRONICLES_001"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_HYPERWAVES"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CONTACT_NEKOMIMI"
+                }
+              ],
+              "negativeTriggers": [],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 300
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
           "firstMonth": 0,
           "lastMonth": null,
           "minExecutionOdds": 13,
@@ -28772,14 +29132,13 @@
           "negativeTriggers": [],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 300
+              "script": "STR_CATGIRL_FROM_SPACE",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": false,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
@@ -29189,15 +29548,54 @@
         "items": {},
         "itemSources": {},
         "event": {
-          "firstMonth": null,
+          "ruleset": "v.o2",
+          "alternatives": [
+            {
+              "script": "STR_CODEX_BONUS_G5",
+              "mode": "weighted",
+              "firstMonth": 0,
+              "lastMonth": null,
+              "executionOdds": 23,
+              "positiveTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_GODS_E5"
+                },
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CODEX_RED_AWAKENED"
+                },
+                {
+                  "kind": "itemTriggers",
+                  "id": "STR_CODEX_RED"
+                }
+              ],
+              "negativeTriggers": [
+                {
+                  "kind": "researchTriggers",
+                  "id": "STR_CAPTAIN_SAINT"
+                }
+              ],
+              "oneTime": false,
+              "oneTimeEarlier": [],
+              "oneTimeWeight": null,
+              "oneTimeTotal": null,
+              "monthWeights": [
+                {
+                  "month": 0,
+                  "weight": 100,
+                  "totalWeight": 100
+                }
+              ],
+              "otherConditions": {}
+            }
+          ],
+          "alternativeCount": 1,
+          "firstMonth": 0,
           "lastMonth": null,
           "minExecutionOdds": 23,
           "maxExecutionOdds": 23,
           "positiveTriggers": [
-            {
-              "kind": "itemTriggers",
-              "id": "STR_CODEX_RED"
-            },
             {
               "kind": "researchTriggers",
               "id": "STR_GODS_E5"
@@ -29205,6 +29603,10 @@
             {
               "kind": "researchTriggers",
               "id": "STR_CODEX_RED_AWAKENED"
+            },
+            {
+              "kind": "itemTriggers",
+              "id": "STR_CODEX_RED"
             }
           ],
           "negativeTriggers": [
@@ -29215,14 +29617,13 @@
           ],
           "selectionRefs": [
             {
-              "kind": "eventWeights",
-              "bucket": "0",
-              "weight": 100,
-              "totalWeight": 100
+              "script": "STR_CODEX_BONUS_G5",
+              "mode": "weighted"
             }
           ],
+          "oneTime": false,
           "boundedMonthWindow": false,
-          "oneTime": null
+          "note": "공통 트리거 요약이며 세부 조건은 서로 독립적인 대체 이벤트 스크립트별로 검증해야 함"
         },
         "monthlyLimit": null,
         "cost": null,
