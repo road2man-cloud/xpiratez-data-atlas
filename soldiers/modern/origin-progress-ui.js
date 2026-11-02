@@ -483,10 +483,17 @@ export async function initOriginProgression(data){
       report.classes.map(x=>'<option value="'+esc(x.soldierType)+'">'+
         esc(classNames.get(x.soldierType)||x.soldierType)+'</option>').join("");
     function render(){
-      const term=query.value.trim().toLocaleLowerCase("ko");
+      const rawTerm=query.value.trim().toLocaleLowerCase("ko");
+      const rootMode=rawTerm.startsWith("root:");
+      const term=(rootMode?rawTerm.slice(5):rawTerm).trim();
+      const matchedRoots=rootMode?new Set([...sourceNames].filter(([id,name])=>
+        (id+" "+name).toLocaleLowerCase("ko").includes(term)).map(([id])=>id)):null;
       const rows=report.rows.filter(r=>(!type.value||r.soldierType===type.value)&&
-        (!term||(r.id+" "+r.soldierName+" "+r.sourceName+" "+
-          (r.parentSoldierType||"")).toLocaleLowerCase("ko").includes(term)));
+        (rootMode?
+          (r.kind==="SOURCE_SPAWN"?matchedRoots.has(r.id):
+            r.candidateSourceAncestry?.rootProfileIds.some(id=>matchedRoots.has(id))):
+          (!term||(r.id+" "+r.soldierName+" "+r.sourceName+" "+
+            (r.parentSoldierType||"")).toLocaleLowerCase("ko").includes(term))));
       table.querySelector("tbody").innerHTML=rows.map(row=>{
         const value=metric.value==="verified"?row.finalStats:
           metric.value==="growth"?row.naturalGrowthUpper?.physicalThenBattle:
@@ -509,7 +516,9 @@ export async function initOriginProgression(data){
           '</tr>';
       }).join("")||'<tr><td colspan="15">해당하는 획득 프로필 없음</td></tr>';
       status.textContent=rows.length+"/"+verified.rows+
-        "개 획득 분기 표시 · 숫자는 선택한 출생값/조건부 성장 상계이며 확정 최종값이 아닙니다.";
+        "개 획득 분기 표시"+(rootMode?" · 최초 획득처 "+matchedRoots.size+
+        "개에서 연결된 구조 후보(실행 미검증)":"")+
+        " · 숫자는 선택한 출생값/조건부 성장 상계이며 확정 최종값이 아닙니다.";
       detail.hidden=true;detail.innerHTML="";
     }
     [type,metric].forEach(el=>el.addEventListener("change",render));
