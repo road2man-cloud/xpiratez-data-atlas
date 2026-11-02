@@ -30,6 +30,11 @@ assert(!soldierModern.includes('id="legacyMaximaArchive"')&&
   "Do not publish a second theoretical 29-class maxima table");
 assert(soldierModern.includes('option value="verified" selected'),
   "The canonical Soldier DB must default to certified-only numbers");
+const modernSoldierApp=fs.readFileSync(path.join(root,"soldiers/modern/app.js"),"utf8");
+const modernLoot=fs.readFileSync(path.join(root,"soldiers/modern/map-loot-ui.js"),"utf8");
+assert(!modernSoldierApp.includes('function dbLink(')&&
+  !modernLoot.includes('../../items/#item='),
+  "Current Soldier details must not cross-link into legacy 1.1.1 item, research or manufacture");
 
 const errors=[];
 let linkCount=0,scriptCount=0,jsCount=0;

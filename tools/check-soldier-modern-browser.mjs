@@ -59,6 +59,14 @@ try{
   await page.locator("#researchTools").evaluate(el=>el.open=true);
   await page.locator("#soldierTools").evaluate(el=>el.open=true);
   await page.locator("#soldierTable tbody tr").first().waitFor({timeout:30000});
+  await page.locator("#dataset").selectOption("profiles");
+  await page.locator("#soldierTable tbody tr").first().click();
+  assert(await page.locator("#detailBody .source-reference").count()>0,
+    "The 2.1 Soldier detail must show rule IDs in place, not link to 1.1.1");
+  assert.equal(await page.locator("#detailBody a[href^='../../items/'], #detailBody a[href^='../../research/'], #detailBody a[href^='../../manufacture/']").count(),0,
+    "A 2.1 Soldier must never link to a 1.1.1 catalog as if its source were current");
+  await page.locator("#closeDialog").click();
+  await page.locator("#dataset").selectOption("soldiers");
   await page.waitForFunction(()=>document.querySelector("#summary")?.textContent?.includes("변신·훈련 83개"),{timeout:30000});
   assert(await page.locator("#soldierTable tbody tr").count()>20);
   try{
