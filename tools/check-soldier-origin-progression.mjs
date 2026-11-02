@@ -129,6 +129,7 @@ function mustReject(reason,mutator){
 }
 mustReject("false final stats",r=>{r.rows[0].finalStats=Object.fromEntries(STATS.map(k=>[k,999]));});
 mustReject("false certification",r=>{r.rows[0].proof.status="실행 경로 검증";r.rows[0].proof.chronologicalReplay=true;});
+mustReject("status-only promotion without evidence",r=>{r.rows[0].proof.status="실행 경로 검증";});
 mustReject("cannot migrate peasant birth to other profile",r=>{
   r.rows.find(x=>x.id===half.id).birth=r.rows.find(x=>x.id===peasant.id).birth;
 });
