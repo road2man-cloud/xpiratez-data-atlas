@@ -55,6 +55,7 @@ try{
   assert((await page.locator("#originSummary").innerText()).includes("확정 0개"));
   assert((await page.locator("#originSummary").innerText()).includes("선보유 17개"));
   assert((await page.locator("#originSummary").innerText()).includes("충돌 15개"));
+  assert((await page.locator("#originSummary").innerText()).includes("구조 사슬 401개"));
   await page.locator("#originSearch").fill("manufacture:STR_HALF_UBER_GIRL_RECRUITMENT");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
   const halfBirth=await page.locator("#originTable tbody tr").first().innerText();
@@ -115,7 +116,32 @@ try{
   assert((await page.locator("#originTable tbody tr").first().innerText()).includes("이력 초기화"));
   assert.equal((await page.locator("#originTable tbody tr").first().locator("td").nth(9).innerText()).trim(),"—");
   await page.locator("#originTable .maxima-show").first().click();
-  assert((await page.locator("#originDetails").innerText()).includes("reset: true"));
+  let chortOriginDetail=await page.locator("#originDetails").innerText();
+  assert(chortOriginDetail.includes("reset: true"),
+    "Chort reset detail not visible: "+chortOriginDetail.slice(0,1700));
+  assert(chortOriginDetail.includes("최초 획득처에서 연결되는 병종변경 사슬"));
+  await page.locator("#originDetails .origin-lineage-candidates summary").click();
+  chortOriginDetail=await page.locator("#originDetails").innerText();
+  assert(chortOriginDetail.includes("direct:STR_SOLDIER_PEASANT"));
+  assert(chortOriginDetail.includes("일반 훈련·연구·재료·전투 성장·훈장"));
+  await page.locator("#originDetailClose").click();
+  await page.locator("#originSearch").fill("transform:STR_SHADE_EMBODIMENT:from:STR_SOLDIER_SPECTRE");
+  assert.equal(await page.locator("#originTable tbody tr").count(),1);
+  assert((await page.locator("#originTable tbody tr").first().innerText())
+    .includes("출생처 추적 후보 68건(미실행)"));
+  await page.locator("#originTable .maxima-show").first().click();
+  await page.locator("#originDetails .origin-lineage-candidates summary").click();
+  const shadeAncestry=await page.locator("#originDetails").innerText();
+  assert(shadeAncestry.includes("direct:STR_SOLDIER_PEASANT"));
+  assert(shadeAncestry.includes("STR_SPECTRE_SUMMONING"));
+  assert(shadeAncestry.includes("사망 후 후속 변신"));
+  await page.locator("#originDetailClose").click();
+  await page.locator("#originSearch").fill("transform:STR_SPECTRE_SUMMONING:from:STR_SOLDIER_SPECTRE");
+  assert.equal(await page.locator("#originTable tbody tr").count(),1);
+  await page.locator("#originTable .maxima-show").first().click();
+  const zeroAncestry=await page.locator("#originDetails").innerText();
+  assert(zeroAncestry.includes("0개 구조 후보"));
+  assert(zeroAncestry.includes("획득 불가능하다는 뜻이 아닙니다"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originMetric").selectOption("verified");
   assert.equal((await page.locator("#originTable tbody tr").first().locator("td").nth(3).innerText()).trim(),"—");
