@@ -78,8 +78,8 @@ assert.equal(pure.route.isTerminal,true);
 assert.equal(pure.saintPossible,false);
 const html=fs.readFileSync("public/trainings/index.html","utf8");
 const historicalUI=fs.readFileSync("tools/legacy-trainings-ui.js","utf8");
-assert(html.includes('src="app-2.1.js')&&!html.includes("captainStage0"),
-  "2.1 Training DB must not display legacy captain-route selectors");
+assert(html.includes('location.replace(target.href)')&&!html.includes('type="file"')&&!html.includes("captainStage0"),
+  "Retired training URL must not display custom selectors or save inputs");
 assert(historicalUI.includes("buildStagedCaptainContext")&&
   historicalUI.includes("captainCompanions")&&historicalUI.includes("captainCodex"),
   "Historical route calculations must remain testable offline, not be served");

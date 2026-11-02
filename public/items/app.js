@@ -1,4 +1,6 @@
 import {buildChoiceIndex} from "../captains/choice-simulator-core.js";
+import {RESEARCH_TERMS,researchRelations} from "../research-relations.js";
+let researchRelationRules={};
 import {createResearchStoryOverlay,RESEARCH_STORY_ROUTES} from "../research/branch-access.js";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -6,7 +8,7 @@ const fmt=v=>v==null?"—":typeof v==="number"?v.toLocaleString("ko-KR"):String(
 const arr=v=>Array.isArray(v)?v:[];
 const kinds={weapon:"총기",ammo:"탄약",melee:"근접",grenade:"투척/폭발",medical:"의료",scanner:"스캐너",psi:"사이오닉",flare:"조명탄",corpse:"시체/잔해","damage-item":"공격 아이템",item:"기타"};
 const sections={research:"연구",manufacture:"제조",items:"아이템",events:"이벤트",eventScripts:"이벤트 스크립트",units:"유닛",soldiers:"병종",soldierTransformation:"훈련/변신",soldierBonuses:"병사 특성",crafts:"기체",facilities:"시설",armors:"방어구",factions:"세력",missionScripts:"미션 스크립트",alienMissions:"미션",alienDeployments:"전투 배치",terrains:"지형",ufopaedia:"UFOPEDIA"};
-const pathNames={dependencies:"선행 연구",requires:"필요 조건",unlocks:"해금",requiresBuy:"구매 해금",requiredItems:"필요 아이템",producedItems:"제조 결과",getOneFree:"무료 획득",researchList:"이벤트 연구 지급",researchTriggers:"이벤트 연구 조건",facilityTriggers:"이벤트 시설 조건",itemTriggers:"이벤트 아이템 조건",requiredPreviousTransformations:"필수 선행 훈련",forbiddenPreviousTransformations:"금지 선행 훈련",compatibleAmmo:"호환 탄약",spawnUnit:"생성 유닛"};
+const pathNames={dependencies:RESEARCH_TERMS.dependencies,requires:RESEARCH_TERMS.requires,unlocks:RESEARCH_TERMS.unlocks,requiresBuy:"구매 해금",requiredItems:"필요 아이템",producedItems:"제조 결과",getOneFree:RESEARCH_TERMS.getOneFree,researchList:"이벤트 연구 지급",researchTriggers:"이벤트 연구 조건",facilityTriggers:"이벤트 시설 조건",itemTriggers:"이벤트 아이템 조건",requiredPreviousTransformations:"필수 선행 훈련",forbiddenPreviousTransformations:"금지 선행 훈련",compatibleAmmo:"호환 탄약",spawnUnit:"생성 유닛"};
 const sourceLabel=v=>v==="engineDefault"?"OXCE 기본값":v==="modGlobal"?"XPZ 전역값":v==="ruleset"?"아이템 룰":"";
 const insightRoleLabels={"soldier-training":"병사 훈련/변신",manufacture:"제조 해금","event-unlock":"이벤트 조건","event-grant":"이벤트 획득/지급","event-research-link":"이벤트 연구 연결",facility:"시설 해금",recruitment:"고용/병종 해금",craft:"기체 해금",purchase:"구매 해금","item-gate":"아이템 사용 조건",mission:"미션 진행","branch-choice":"분기/배타","research-unlock":"후속 연구 해금","research-grant":"추가 연구 지급","research-granted-by":"다른 연구 보상으로 획득","item-reward":"아이템 지급",ufopaedia:"정보/도감 해금",progression:"진행 플래그",other:"기타/특수"};
 const statLabels={tu:"TU",stamina:"기력",health:"체력",bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",strength:"근력",psiStrength:"Psi 강도",psiSkill:"Psi 기술",melee:"근접",mana:"Mana"};
@@ -63,6 +65,7 @@ async function ensureMode(mode){
       }));
       researchMap=new Map(researchIndex.map(x=>[x.id,x]));
       if(choiceRuntime?.count!==research.index.length)throw new Error("연구 분기 시뮬레이터 데이터 수 불일치");
+      researchRelationRules=Object.fromEntries(choiceRuntime.topics.map(t=>[t.id,t]));
       storyChoiceIndex=buildChoiceIndex(choiceRuntime.topics,{inline:true,unresolvedByField:choiceRuntime.unresolvedByField});
       researchStoryOverlay=createResearchStoryOverlay(storyChoiceIndex,state.storyRoute);
     }
@@ -527,8 +530,8 @@ function researchBranchConflictMarkup(d){
       <div><p class="muted">${esc(action)} 아래 A → B는 A 연구가 B를 직접 disables한다는 뜻이며, 양방향 차단은 별개의 규칙입니다.</p>
       ${conflicts.map(pair=>`<div class="semantic-ref">${entity(pair.from,"research")} <b>→ disables →</b> ${entity(pair.to,"research")}</div>`).join("")}
       </div></details>
-    <p class="muted">실제 가능 여부는 분기 DB에서 세이브를 불러와 직접 배제 상태와 현재 완료된 해금 출처를 확인하세요. 단지 명목 선행 충돌만으로 영구 불가능 처리하지 않습니다.</p>
-    <a class="chip" href="../captains/#choiceSimulator">분기 시뮬레이터에서 내 세이브 확인 →</a>
+    <p class="muted">직접 배제 상태와 해당 경로에서 완료한 직접 해금 출처를 순서별로 확인하세요. 단지 명목 선행 충돌만으로 영구 불가능 처리하지 않습니다.</p>
+    <a class="chip" href="../captains/#choiceSimulator">연구 분기와 배제 원인 확인 →</a>
   </section>`;
 }
 function renderResearch(d){
@@ -536,6 +539,7 @@ function renderResearch(d){
   const spawned=Array.isArray(d.raw?.spawnedItem)?d.raw.spawnedItem:(typeof d.raw?.spawnedItem==="string"?[d.raw.spawnedItem]:[]);
   const ordinaryDeps=arr(d.raw?.dependencies).filter(id=>researchIds.has(id));
   const mandatoryDeps=arr(d.raw?.requires).filter(id=>researchIds.has(id));
+  const relation=researchRelations(d.id,researchRelationRules)||{incomingUnlocks:[],requiredBy:[],conditionFor:[],disables:[],getOneFreeProtected:{}};
   const gameEntities=(xs,kind="research")=>xs?.length?xs.map(x=>entity(typeof x==="string"?x:x.id,kind)).join(" "):'<span class="empty">없음</span>';
   const free=Array.isArray(d.getOneFree)?d.getOneFree:[];
   const grantedBy=arr(d.insight?.semanticReferences).filter(x=>x.kind==="research-granted-by").map(x=>x.id);
@@ -545,14 +549,21 @@ function renderResearch(d){
   const missionLinks=ids=>ids.map(id=>`<a class="chip mission-link" href="../forces/#force=${encodeURIComponent(id)}" title="missionScript.researchTriggers"><b>${esc(entityNames[id]?.[0]||id)}</b><span class="sub">${esc(id)}</span></a>`).join(" ");
 
   const gamePanel=`<div class="game-dossier"><div class="game-dossier-title">연구 상세 · 조건 및 영향</div><div class="game-dossier-top"><b>연구 주제: ${esc(d.koName)}</b><span>필요 연구량: ${fmt(d.cost)}</span></div><div class="game-dossier-columns"><div>
+  <h2>좌측 · ${RESEARCH_TERMS.incomingTitle}</h2>
+  <h3>${RESEARCH_TERMS.requires}</h3><div>${gameEntities(mandatoryDeps)}</div>
+  <h3>${RESEARCH_TERMS.dependencies}</h3><div>${gameEntities(ordinaryDeps)}</div>
+  <h3>${RESEARCH_TERMS.incomingUnlocks}</h3><div>${gameEntities(relation.incomingUnlocks)}</div>
+  <p class="game-explain">조건 충족(dependencies)은 직접 해금(unlocks)으로 대체될 수 있지만 무조건 필요(requires)는 별도 충족해야 합니다.</p>
   <h3>연구에 필요한 실물 표본</h3><div>${sampleLabel} ${d.needItem?(d.destroyItem?"· 소모":"· 비소모"):""}</div>
   <h3>이 연구의 무료 지급 출처 (다른 연구)</h3><div>${gameEntities(grantedBy)}</div>
-  <h3>완료 보상: 무료 연구 후보</h3><div>${gameEntities(free)}</div><p class="game-explain">후보 목록으로, 목록에 모두 지급된다는 뜻은 아닙니다.</p>
-  <h3>일반 선행 연구 (다른 해금으로 우회 가능)</h3><div>${gameEntities(ordinaryDeps)}</div>
-  <h3>추가 필수 선행 연구 (우회 불가)</h3><div>${gameEntities(mandatoryDeps)}</div>
-  <p class="game-explain">일반 선행은 명시적 해금(unlocks)으로 우회할 수 있지만, 필수 선행(requires)은 모두 충족해야 합니다.</p>
-  </div><div><h3>이 연구를 필요로 하는 후속 연구</h3><div>${gameEntities(d.requiredBy)}</div><p class="game-explain">후속 연구의 필요조건 또는 참조 관계입니다. 즉시 연구 가능하다는 뜻은 아닙니다.</p>
-  <h3>완료 시 직접 해금하는 연구</h3><div>${gameEntities(d.unlocks)}</div><p class="game-explain">대상 연구의 일반 선행은 우회할 수 있지만, 필수 선행·표본·시설 조건은 별도입니다.</p>
+  </div><div><h2>우측 · ${RESEARCH_TERMS.outgoingTitle}</h2>
+  <h3>${RESEARCH_TERMS.requiredBy}</h3><div>${gameEntities(relation.requiredBy)}</div>
+  <h3>${RESEARCH_TERMS.conditionFor}</h3><div>${gameEntities(relation.conditionFor)}</div>
+  <h3>${RESEARCH_TERMS.unlocks}</h3><div>${gameEntities(d.unlocks)}</div>
+  <p class="game-explain">직접 해금은 해당 연구를 즉시 완료하거나 무조건 필요·표본·시설을 지급하는 것이 아닙니다.</p>
+  <h3>${RESEARCH_TERMS.getOneFree}</h3><div>${gameEntities(free)}</div><p class="game-explain">getOneFree는 추첨 후보입니다. 전부 지급되거나 직접 해금되는 것으로 계산하지 않습니다.</p>
+  <h3>${RESEARCH_TERMS.getOneFreeProtected}</h3>${Object.entries(relation.getOneFreeProtected||{}).map(([guard,ids])=>`<p>${gameEntities([guard])} 보유 시 ${gameEntities(ids)}</p>`).join("")||'<span class="empty">없음</span>'}
+  <details><summary>이 선택으로 배제되는 연구 · 방향 구분</summary>${relation.disables.map(e=>`<p>${gameEntities([e.from])} ${e.direction==="bidirectional"?"↔":"→"} ${gameEntities([e.to])} · ${{oneway:"일방향 배제",bidirectional:"양방향 배제",self:"자기 비활성화"}[e.direction]}</p>`).join("")||'<p>없음</p>'}<p>일방향 배제의 반대 방향을 자동으로 차단하지 않습니다.</p></details>
   ${mission.enabledMissions.length?`<h3>이 연구를 등장 조건으로 쓰는 임무</h3><div>${missionLinks(mission.enabledMissions)}</div><p class="muted">미션 스크립트 true 조건. 발생은 다른 조건과 가중치에 좌우됩니다.</p>`:""}
   ${mission.blockedMissions.length?`<h3>완료 후 등장 조건이 꺼지는 임무</h3><div>${missionLinks(mission.blockedMissions)}</div><p class="muted">미션 스크립트 false 조건. 다른 스크립트 경로는 남을 수 있습니다.</p>`:""}
   <h3>이 연구를 참조하는 아이템 규칙</h3><div>${relations(d.itemReferences)}</div><p class="game-explain">아이템 지급 목록이 아니라 연구 ID를 사용하는 규칙의 역참조입니다.</p>
@@ -565,7 +576,7 @@ function renderResearch(d){
   ${researchEditorialMarkup(d)}
   <details class="research-deep-dive"><summary>추가 검증 · 전체 선행 비용 · 기지 조건 · 훈련/이벤트</summary>
     ${researchInsightMarkup(d)}
-    ${trainingIds.length?`<section class="section"><h3>연결되는 병사 훈련·변신</h3>${trainingIds.map(id=>`<a class="entity" href="../trainings/?training=${encodeURIComponent(id)}">훈련 조합기에서 ${esc(id)} 확인 →</a>`).join(" ")}</section>`:""}
+    ${trainingIds.length?`<section class="section"><h3>구버전 병사 훈련·변신 참조</h3><p class="muted">이 연구 화면의 훈련 참조는 v.o1.1.1 원본입니다. 동일한 ID라도 X-Piratez 2.1의 연구·시술 조건으로 자동 연결하지 않습니다.</p>${trainingIds.map(id=>`<code>${esc(id)}</code>`).join(" · ")}</section>`:""}
   </details>
   <details class="research-evidence"><summary>추가 역참조 · 룰셋 출처${d.otherReferences?.length?` (${fmt(d.otherReferences.length)}건)`:""}</summary>
     ${d.otherReferences?.length?`<section class="section"><h3>다른 시스템에서 연구 참조</h3>${relations(d.otherReferences)}</section>`:""}

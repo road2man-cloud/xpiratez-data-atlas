@@ -2,7 +2,6 @@ import {
   buildChoiceIndex, choiceLabel, computeChoiceScenario, choiceStatus,
   choiceImpact, choiceGrantCandidates, parseCompletedResearch
 } from "./choice-simulator-core.js";
-import {parseXpiratezSave} from "./save-import-core.js";
 
 const panel=document.querySelector("#choiceSimulator");
 const loading=document.querySelector("#choiceSimulatorLoading");
@@ -307,7 +306,7 @@ function refresh(){
   if(!index)return;
   state=computeChoiceScenario(index,previouslyCompleted,proposed,{snapshot:sourceMode==="save",disabledIds:importedDisabled});
   statusCache.clear();
-  selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMultiPrerequisites();renderMessage();renderSearch();renderSaveEvidence();
+  selectedStat();cardStatuses();renderTimeline();renderBlocked();renderMultiPrerequisites();renderMessage();renderSearch();
 }
 
 function renderSearch(){
@@ -368,7 +367,7 @@ function applyPast(){
   importGeneration++;
   previouslyCompleted=parsed.ids;
   proposed=[];importedDisabled=[];sourceMode="manual";saveInfo=null;saveEvidence=null;
-  saveSummary.textContent="수동 목록 적용: 이전 세이브의 연구 배제 상태는 초기화되었습니다.";
+  if(saveSummary)saveSummary.textContent="수동 시작 가정을 적용했습니다.";
   if(saveFile)saveFile.value="";
   updateCompletedField();
   notice="수동 완료 연구 "+parsed.ids.length+"개 적용. 이후 가정과 기존 .sav 배제 상태를 초기화했습니다."+
@@ -412,7 +411,7 @@ document.querySelector("#choiceScenarioReset").addEventListener("click",()=>{
   previouslyCompleted=[];proposed=[];importedDisabled=[];sourceMode="manual";saveInfo=null;saveEvidence=null;
   completedInput.value="";search.value="";
   if(saveFile)saveFile.value="";
-  saveSummary.textContent="";
+  if(saveSummary)saveSummary.textContent="";
   notice="완료·영구 배제 상태 및 이후 가정을 모두 초기화했습니다.";refresh();
 });
 search.addEventListener("input",()=>{
@@ -420,42 +419,7 @@ search.addEventListener("input",()=>{
   searchTimer=setTimeout(()=>{searchTimer=null;if(index)renderSearch();},100);
 });
 
-async function importSave(file){
-  if(!index){saveSummary.textContent="연구 데이터 준비 전에는 파일을 분석할 수 없습니다.";return;}
-  if(!file)return;
-  const limit=60*1024*1024;
-  if(file.size>limit){saveSummary.textContent="60MB를 넘는 세이브는 브라우저 메모리 보호를 위해 지원하지 않습니다.";return;}
-  const generation=++importGeneration;
-  saveSummary.textContent="선택한 파일을 브라우저 내부에서 분석하는 중입니다. 외부로 전송하지 않습니다.";
-  try{
-    const fileText=await file.text();
-    if(generation!==importGeneration)return;
-    const parsed=parseXpiratezSave(fileText,index);
-    const known=parsed.completed.length+parsed.disabled.length;
-    if(!known&&(parsed.unknownCompleted.length||parsed.unknownDisabled.length))
-      throw new Error("현재 XPiratez DB와 일치하는 연구가 0개입니다. 모드 버전을 확인하세요.");
-    previouslyCompleted=parsed.completed;
-    importedDisabled=parsed.disabled;
-    sourceMode="save";saveInfo=parsed.meta;saveEvidence=parsed;proposed=[];
-    updateCompletedField();
-    const title=file.name+" · 현재 완료 "+parsed.completed.length+"개 · 영구 배제 "+
-      parsed.disabled.length+"개 · 연구 일지 "+parsed.diary.length+"건 · 배제 원인 후보 "+
-      parsed.disableCauses.length+"건";
-    saveSummary.textContent=title+(parsed.warnings.length?"\n주의: "+parsed.warnings.join(" / "):"")+
-      "\n출처: 두 번째 YAML 문서의 discovered / researchRuleStatus (2=영구 배제) / researchDiary. 진행 중 연구·일반 지급 목록은 제외.";
-    notice=title+". 이후 선택은 OXCE의 실제 disables 처리(완료 플래그 제거 및 영구 배제)를 따릅니다.";
-    refresh();
-  }catch(error){
-    if(generation!==importGeneration)return;
-    saveSummary.textContent="세이브 분석 실패: "+error.message+
-      "\n기존 선택 상태는 변경하지 않았습니다. 텍스트형 OXCE .sav인지 확인하세요.";
-    saveFile.value="";
-  }
-}
-saveFile?.addEventListener("change",event=>{
-  const file=event.target.files?.[0];
-  if(file)importSave(file);
-});
+// File import was removed. Only explicitly entered hypothetical research states are accepted.
 
 async function initialize(){
   try{

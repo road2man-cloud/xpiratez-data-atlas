@@ -216,7 +216,7 @@
     const rows=Array.from(document.querySelectorAll("#matrixTable tbody tr[data-id]"));
     const labels=window.CAPTAIN_ROWS||[];
     host.innerHTML='<div class="god-planner-controls"><label for="godRewardCaptainChoice"><b>선장 선택 후 받을 수 있는 G보상</b> '+
-      '<small>기본 예시는 게으른 선장 · 실제 세이브는 연구/아이템 완료 여부 확인</small></label>'+
+      '<small>기본 예시는 게으른 선장 · 연구·아이템 확보 여부는 별도 검증</small></label>'+
       '<select id="godRewardCaptainChoice">'+labels.map(r=>
       '<option value="'+esc(r.id)+'" '+(selected===r.id?'selected':'')+'>'+esc(r.name)+' · '+esc(r.stageName||"")+'</option>').join("")+'</select></div>'+
       '<div id="godRewardPlannerList" class="god-planner-results"></div>';
@@ -246,7 +246,7 @@
       if(!row)continue;
       const headline=benefitShort(row);
       const highlight=id==="thief"?
-        '<a href="../trainings/?training=STR_CAPTAINS_11">Captain’s 11 훈련 상세</a> · '+
+        '<a href="../soldiers/?training=STR_CAPTAINS_11">Captain’s 11 훈련 근거</a> · '+
         '<a href="../events/#event=STR_CAPTAINS_11">지급 이벤트</a>':'';
       card.innerHTML='<b>선장 전용 보상·후속 이점</b><strong>'+esc(headline.main)+'</strong>'+
         '<small>'+esc(headline.tag)+'</small>'+
@@ -328,7 +328,7 @@
       ', 기절 회복 +'+(b.recovery?.stun?.flatOne||0)+
       '. 일반 훈련 증가와 SoldierBonus를 구분해 평가해야 합니다.</p>'+
       '<p>토큰 11개는 <b>추가 공급이 없다는 가정 아래 최대 11회분</b>이며, 11명이 즉시 생성되는 보상이 아닙니다.</p>'+
-      '<p><a href="../trainings/?training=STR_CAPTAINS_11">병사훈련 DB에서 효과·상한·재료 확인</a> · '+
+      '<p><a href="../soldiers/?training=STR_CAPTAINS_11">병종 DB에서 효과·상한·재료 확인</a> · '+
       '<a href="../events/#event=STR_CAPTAINS_11">지급 이벤트 원본 보기</a></p></article>';
   }
   function commonVisitorMarkup(row,detail){

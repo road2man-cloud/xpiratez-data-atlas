@@ -305,7 +305,7 @@
   heading.className="card";
   heading.innerHTML='<p class="eyebrow">원본 ruleset 상호배타 감사</p>'+
     '<h3>선장·Codex·갈라지는 길 외 추가 분기</h3>'+
-    '<p class="muted">v.o1.1.1 정규화 연구 DB의 <b>disables 보유 연구 163개, 방향성 관계 440건</b>을 검사했습니다. 이 중 단방향 관계 171건은 임의로 역방향 차단으로 취급하지 않습니다. 내부 PREQ·결과·후처리 플래그는 플레이어 선택 카드에서 분리했습니다. 상단 시뮬레이터에서 XPiratez .sav의 현재 완료·영구 배제 상태를 불러올 수 있습니다. 아래 카드의 효과 설명은 원본 룰셋의 구조이며, 단순 선택 가정만으로 실제 선행·시설·이벤트 조건이 충족되는 것은 아닙니다.</p>';
+    '<p class="muted">v.o1.1.1 정규화 연구 DB의 <b>disables 보유 연구 163개, 방향성 관계 440건</b>을 검사했습니다. 이 중 단방향 관계 171건은 임의로 역방향 차단으로 취급하지 않습니다. 내부 PREQ·결과·후처리 플래그는 플레이어 선택 카드에서 분리했습니다. 상단 시뮬레이터는 연구 완료를 가정한 분기 상태만 계산합니다. 아래 카드의 효과 설명은 원본 룰셋의 구조이며, 단순 선택 가정만으로 실제 선행·시설·이벤트 조건이 충족되는 것은 아닙니다.</p>';
   root.appendChild(heading);
   root.insertAdjacentHTML("beforeend", groups.map(renderGroup).join(""));
 })();

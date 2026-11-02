@@ -141,8 +141,8 @@ assert.equal(info("PRIEST").orthodoxSaint.kind,"blocked");
 
 const markup=fs.readFileSync("public/trainings/index.html","utf8");
 const app=fs.readFileSync("tools/legacy-trainings-ui.js","utf8");
-assert(markup.includes('src="app-2.1.js')&&markup.includes('id="trainingTable"')&&
-  !markup.includes("v.o1.1.1")&& !markup.includes("captainStage0"),
-  "The current training DB must use a single 2.1 source-first interface");
+assert(markup.includes('location.replace(target.href)')&&!markup.includes('id="trainingTable"')&&
+  !markup.includes('type="file"'),
+  "Training DB is retired; old links must redirect to read-only Soldier evidence");
 assert(app.includes("trainingRouteGate")&&app.includes("planWithRoute"));
 console.log("OK training route gates: "+CAPTAIN_ROUTES.length+" captain profiles, all four Saint/Gray-Green-Red-Gold vs Savage rejection, Thief's 11, Pussy/JackLazy Orthodox Mage, Priest/Ruler exclusivity, 3 internal-only transforms, clone and Proud Warrior alternate unlock");

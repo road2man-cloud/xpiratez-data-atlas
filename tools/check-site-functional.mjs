@@ -101,7 +101,7 @@ await scenario("research detailed dossier has no duplicated legacy list",async p
   assert.equal(await page.locator("#detail .research-deep-dive").count(),1,"unique additional analysis remains available");
   assert.equal(await page.locator("#detail .research-evidence").count(),1,"original provenance is still available");
   const headings=await page.locator("#detail .game-dossier h3").allInnerTexts();
-  for(const expected of ["연구에 필요한 실물 표본","일반 선행 연구 (다른 해금으로 우회 가능)","추가 필수 선행 연구 (우회 불가)","이 연구를 필요로 하는 후속 연구","이 연구를 참조하는 아이템 규칙","이 연구를 참조하는 제조법"])
+  for(const expected of ["연구에 필요한 실물 표본","무조건 필요","조건 충족","직접 해금","필수로 요구됨","조건으로 사용됨","직접 해금함","무료 지급 후보","이 연구를 참조하는 아이템 규칙","이 연구를 참조하는 제조법"])
     assert(headings.includes(expected),"missing understandable heading: "+expected);
   for(const legacy of ["다음에서 공짜로 얻음:","다음의 요구함:","아래의 항목:"])
     assert(!headings.includes(legacy),"old ambiguous heading remained: "+legacy);
@@ -135,14 +135,14 @@ for(const slug of ["items","research","armors","weapons","soldiers","trainings",
   await scenario(slug+" no DecompressionStream fallback",async page=>{
     await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
     const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#originTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
-    assert((await visibleRows(page,selector))>0,"page must load on old browsers");
+    assert((await visibleRows(page,slug==='trainings'?'#originTable tbody tr':selector))>0,"page must load on old browsers; retired training links open Soldier DB");
   },{noGzip:true});
 }
 for(const slug of ["items","research","armors","weapons","soldiers","trainings","crafts","manufacture"]){
   await scenario(slug+" corrupted gzip fallback",async page=>{
     await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
     const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#originTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
-    assert((await visibleRows(page,selector))>0,"decompression error must recover via canonical JSON");
+    assert((await visibleRows(page,slug==='trainings'?'#originTable tbody tr':selector))>0,"decompression error must recover via canonical JSON");
   },{corruptGzip:true});
 }
 await scenario("weapons unified standard rankings: Tommygun, filters, kung-fu and live comparison",async page=>{
@@ -323,7 +323,7 @@ for(const slug of Object.keys(loadedSelector)){
   await scenario(slug+" missing gzip HTTP 404 fallback",async page=>{
     await page.route(/\.json\.gz(?:\?|$)/,route=>route.fulfill({status:404,body:"not found"}));
     await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
-    assert((await visibleRows(page,loadedSelector[slug]))>0,"HTTP 404 gzip must fall back to JSON");
+    assert((await visibleRows(page,slug==='trainings'?'#originTable tbody tr':loadedSelector[slug]))>0,"HTTP 404 gzip must fall back to JSON");
   });
 }
 await scenario("transient network failure permits same-page runtime retry",async page=>{

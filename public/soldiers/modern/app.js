@@ -1,674 +1,148 @@
-import {initialState,eligibleTransformation,applyTransformation,findTransformationPath,structuralTransformationVerdict,reachableSoldierTypes,availableSoldierArmors} from "./eligibility.js";
-import {modernSoldierProof} from "./save-adapter.js";
-import {loadRuntime} from "../../db-runtime.js";
-import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
-import {initFutureComparison} from "./compare-ui.js";
-import {initOriginProgression} from "./origin-progress-ui.js?v=20261102-proof-renewal";
-import {initResearchExclusionAudit} from "./research-exclusion-audit.js";
-import {createStatEnvelope,advanceStatEnvelope} from "./stat-envelope.js";
-import {eventScriptVerdict} from "./event-chronology.js";
-import {renderStatEnvelope} from "./stat-envelope-ui.js";
-import {GROWTH_PHASES,growStatEnvelope} from "./growth-envelope.js";
-import {initBaselineGrowthComparison} from "./growth-compare-ui.js";
-import {searchChronologicalRoute} from "./route-finder.js";
-import {inspectTransformationZeroResearch} from "./auto-zero-research.js";
-import {inspectAutoZeroSourcesForTransform} from "./auto-zero-cascade.js";
-// Historical links resolve to the canonical origin ledger. No static 29-class
-// theoretical-maxima screen remains in the published Soldier DB.
-function openSoldierSection(){
-  const h=location.hash;
-  if(h==="#researchMaxima"||h==="#legacyMaximaArchive"){
-    history.replaceState(null,"",location.pathname+location.search+"#originMaxima");
-    return;
-  }
-  if(["#soldierTools","#transformationPlanner","#soldierTable"].includes(h))
-    document.querySelector("#soldierTools").open=true;
-  if(["#researchTools","#researchExclusionAudit","#futureCompare","#baselineGrowthCompare","#rareMapLootPanel"].includes(h))
-    document.querySelector("#researchTools").open=true;
+// Read-only, source-first Soldier DB. No local-save input or custom planner.
+import {loadRuntime} from '../../db-runtime.js';
+import {renderResearchRelations,researchRelations} from '../../research-relations.js';
+import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js';
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
+const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
+let DATA,REPORT,CATALOG,selected=null,replayGeneration=0,blocked=false;
+const verified=new Map();
+const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
+const node=id=>'<button type="button" class="research-node" data-research-node="'+esc(id)+'">'+esc(name(id))+'</button>';
+const best=r=>r.candidates.find(c=>c.id===r.bestCandidateId)||null;
+function sourceFail(message){
+  blocked=true;$('#originMaxima').dataset.validation='rejected';
+  $('#catalogStatus').textContent='자료 검증 실패 · 잠정/확정 수치 표시 중단: '+message;
+  $('#originTable tbody').innerHTML='';$('#originDetails').hidden=true;
+  $('#catalogSummary').innerHTML='<p class="failure">원본과 경로 자료가 일치하지 않습니다. 이전 버전이나 과거 점수로 대체하지 않습니다.</p>';
 }
-window.addEventListener("hashchange",openSoldierSection);
-openSoldierSection();
-import {renderRareMapLootProof} from "./map-loot-ui.js";
-let DATA=null;
-let sort={key:"firing",dir:-1};
-let previousTransformations=[];
-let PLANNER_STATE=null,PLANNER_BOUNDS=null,PLANNER_ISSUES=[],CURRENT_PROOF=null,SAVE=null;
-function selectedSaveProof(){
-  if(!SAVE)return null;
-  const b=Number($("#saveBase").value),s=Number($("#saveSoldier").value);
-  if(!Number.isInteger(b)||!Number.isInteger(s))return null;
-  return modernSoldierProof(DATA,SAVE,b,s);
-}
-function analysisOptions(){
-  const base=CURRENT_PROOF?.kind==="proof"?CURRENT_PROOF.options:{};
-  const current=!!CURRENT_PROOF&&$("#analysisMode").value==="current"&&!previousTransformations.length;
-  return {...base,mode:current?"current":"future",statEnvelope:PLANNER_BOUNDS};
-}
-function transformationName(id){return GROWTH_PHASES[id]||DATA?.transformations?.find(x=>x.id===id)?.koName||id}
-function initPlannerState(){
-  PLANNER_BOUNDS=null;
-  const profile=$("#plannerProfile").value||"base:"+($("#family").value||"STR_SOLDIER");
-  CURRENT_PROOF=selectedSaveProof();
-  let state=CURRENT_PROOF?.kind==="proof"?CURRENT_PROOF.state:initialState(DATA,profile);
-  let bounds=createStatEnvelope(DATA,profile,{state:CURRENT_PROOF?state:null});
-  PLANNER_ISSUES=CURRENT_PROOF?.kind==="proof"?[...CURRENT_PROOF.issues]:[];
-  for(let i=0;i<previousTransformations.length;i++){
-    const phase=previousTransformations[i];
-    if(Object.prototype.hasOwnProperty.call(GROWTH_PHASES,phase)){
-      if(state.retired||state.status!=="healthy"){
-        PLANNER_ISSUES.push((i+1)+"단계 "+GROWTH_PHASES[phase]+" · 건강·현역 여부 미충족");
-        continue;
+async function validate(){
+  if(DATA.meta.mod.version!=='v.o2'||REPORT.sourceVersion!=='v.o2'||CATALOG.sourceVersion!=='v.o2')throw Error('원본 버전 불일치');
+  if(JSON.stringify(DATA.meta.source.rules)!==JSON.stringify(REPORT.sourceHashes)||JSON.stringify(DATA.meta.source.rules)!==JSON.stringify(CATALOG.sourceHashes))throw Error('원본 파일 해시 불일치');
+  if(REPORT.records.length!==72||new Set(REPORT.records.map(r=>r.profileId)).size!==72)throw Error('출생처 72개 정합성 실패');
+  const originSources=REPORT.records.map(r=>r.sourceProof).sort((a,b)=>a.id.localeCompare(b.id,'en'));
+  const digest=await sha({rules:DATA.meta.source.rules,profiles:DATA.profiles,soldiers:DATA.soldiers,bonuses:DATA.bonuses,transforms:DATA.transformations,research:DATA.researchRules,itemIds:CATALOG.itemIds,originSources});
+  if(digest!==REPORT.sourceHash)throw Error('현재 능력치·연구·출생·표본 색인 해시 불일치');
+  for(const record of REPORT.records){
+    if(!DATA.profiles.some(p=>p.id===record.profileId)||record.certifiedMaximum!==false)throw Error('출생처 병합 또는 근거 없는 최종 인증');
+    for(const c of record.candidates){
+      if(c.profileId!==record.profileId||c.certifiedMaximum||!c.researchSequenceComplete||!c.startsWithNoResearch)throw Error('불완전 경로를 완료로 표시함');
+      if(c.total!==WITNESS_STATS.reduce((s,k)=>s+c.stats[k],0))throw Error('잠정 11종 합계 불일치');
+      if(c.resultHash!==await sha({steps:c.steps,raw:c.raw,stats:c.stats,total:c.total,branches:c.branchChoices}))throw Error('등록 결과 지문 불일치');
+      for(const choice of c.branchChoices)for(const e of choice.excludes){
+        if(!DATA.researchRules[choice.id]?.disables.includes(e.id))throw Error('원본에 없는 연구 배제');
+        const expected=choice.id===e.id?'self':DATA.researchRules[e.id]?.disables.includes(choice.id)?'bidirectional':'oneway';
+        if(expected!==e.direction)throw Error('배제 방향 변조');
       }
-      bounds=growStatEnvelope(bounds,state,DATA,phase);
-      state={...state,exactStats:false,remarks:[...state.remarks,
-        "미래 전투/체력훈련 성장 가정: 달성 여부·소요 시간 미확정"]};
-      continue;
     }
-    const row=DATA.transformations.find(x=>x.id===previousTransformations[i]);
-    if(!row){PLANNER_ISSUES.push("규칙에 없는 이력: "+previousTransformations[i]);continue;}
-    const step=applyTransformation(row,state,DATA,{...analysisOptions(),mode:"future",statEnvelope:bounds});
-    if(step.verdict.kind==="blocked")PLANNER_ISSUES.push((i+1)+"단계 "+transformationName(row.id)+": "+step.verdict.blockers.join(" · "));
-    else{
-      bounds=advanceStatEnvelope(row,bounds,DATA,state);
-      state=step.state;
-    }
+    if(record.bestCandidateId&&!record.candidates.some(c=>c.id===record.bestCandidateId))throw Error('최고 후보 참조 누락');
+    if(!record.candidates.length&&(!Array.isArray(record.researchBottlenecks)||!record.researchBottlenecks.length))
+      throw Error('미해결 출생처에 연구 병목 근거 없음');
+    for(const gap of record.researchBottlenecks||[])
+      if(!gap.id||!gap.kind||!gap.reason)throw Error('미해결 연구 병목 자료 훼손');
+    if(record.researchBottlenecks?.length&&record.bottleneckHash!==
+      await sha({profileId:record.profileId,unresolved:record.unresolved,gates:record.researchBottlenecks}))
+      throw Error('미해결 연구 병목 근거 지문 불일치');
   }
-  PLANNER_STATE=state;
-  PLANNER_BOUNDS=bounds;
-}
-function transformationVerdict(row){
-  if(!PLANNER_STATE)initPlannerState();
-  const structural=structuralTransformationVerdict(row,PLANNER_STATE,DATA);
-  if(structural.kind==="blocked")return {kind:"blocked",
-    label:"확정 제외 · "+structural.reason};
-  const direct=eligibleTransformation(row,PLANNER_STATE,DATA,analysisOptions());
-  if(direct.kind==="blocked"){
-    if(analysisOptions().mode==="current")return {kind:"not-now",label:"현재 즉시 미충족 · "+direct.blockers.slice(0,2).join(" · ")};
-    const witness=findTransformationPath(row.id,PLANNER_STATE,DATA,analysisOptions());
-    if(witness.path.length)return {kind:"conditional",label:"선행 변신 경로 · "+witness.path.map(transformationName).join(" → ")+" (가상 가능성)"};
-    return {kind:"unknown",label:"변신 경로 탐색 미완료 · "+direct.blockers.slice(0,2).join(" · ")};
-  }
-  const items=direct.conditions;
-  return {...direct,label:(direct.kind==="eligible"?"현재 조건 확인":"미충족 조건")+
-    (items.length?": "+items.slice(0,2).join(" · ")+(items.length>2?" 외 "+(items.length-2)+"건":""):"")};
-}
-function renderTransformationPlanner(){
-  const active=$("#dataset").value==="transformations";
-  $("#transformationPlanner").hidden=!active;
-  if(!active)return;
-  const profileSel=$("#plannerProfile"),current=profileSel.value;
-  profileSel.disabled=!!SAVE;
-  const family=$("#family").value;
-  const profiles=DATA.profiles.filter(x=>!family||x.soldierType===family);
-  const baseTypes=DATA.soldiers.filter(x=>!family||x.id===family);
-  profileSel.innerHTML=baseTypes.map(x=>'<option value="base:'+esc(x.id)+'">'+esc(x.koName+" / 기본 바디 (초기 특성 없음)")+'</option>').join("")+
-    profiles.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.soldierKoName+" / "+variantName(x))+'</option>').join("");
-  const defaultId=family?"base:"+family:"base:STR_SOLDIER";
-  const next=[...profileSel.options].some(x=>x.value===current)?current:([...profileSel.options].some(x=>x.value===defaultId)?defaultId:profileSel.options[0]?.value);
-  if(next)profileSel.value=next;
-  if(current&&current!==next)previousTransformations=[];
-  initPlannerState();
-  const sel=$("#previousTransformation"),old=sel.value;
-  const candidates=DATA.transformations.map(x=>({x,v:transformationVerdict(x),step:eligibleTransformation(x,PLANNER_STATE,DATA,analysisOptions())}))
-    .sort((a,b)=>(a.v.kind==="blocked")-(b.v.kind==="blocked")||a.x.koName.localeCompare(b.x.koName,"ko"));
-  const selectAllowed=c=>c.step.kind!=="blocked"&&
-    (analysisOptions().mode!=="current"||c.step.kind==="eligible");
-  sel.innerHTML=candidates.map(({x,v,step})=>'<option value="'+esc(x.id)+'"'+(!selectAllowed({step})?' disabled':'')+
-    '>'+esc(x.koName+" ["+(v.kind==="blocked"?"계보상 제외":step.kind==="blocked"?"선행 필요":step.kind==="conditional"?"근거 미확정":"현재 충족")+"]")+'</option>').join("");
-  const preferred=candidates.find(x=>x.x.id===old&&selectAllowed(x));
-  if(preferred)sel.value=old;else if(candidates.some(selectAllowed))sel.value=candidates.find(selectAllowed).x.id;
-  const canGrow=PLANNER_BOUNDS?.kind==="ready"&&
-    !PLANNER_STATE.retired&&PLANNER_STATE.status==="healthy";
-  $("#addBattleGrowth").disabled=!canGrow;
-  $("#addPhysicalGrowth").disabled=!canGrow;
-  const selection=DATA.transformations.find(x=>x.id===sel.value);
-  const selectionVerdict=selection?eligibleTransformation(selection,PLANNER_STATE,DATA,analysisOptions()):{kind:"blocked"};
-  $("#addTransformation").disabled=!selection||selectionVerdict.kind==="blocked"||
-    (analysisOptions().mode==="current"&&selectionVerdict.kind!=="eligible");
-  $("#transformationHistory").innerHTML=previousTransformations.map((id,i)=>
-    '<button type="button" data-remove-index="'+i+'">'+(i+1)+'. '+esc(transformationName(id))+' ×</button>').join("")||
-    '<span class="muted">변신을 추가하면 실제 실행 순서대로 재판정합니다.</span>';
-  if(PLANNER_ISSUES.length)$("#transformationHistory").innerHTML+='<p class="delta-neg">'+PLANNER_ISSUES.map(esc).join(" · ")+'</p>';
-  const excluded=candidates.filter(x=>x.v.kind==="blocked").length;
-  const reachable=reachableSoldierTypes(DATA,PLANNER_STATE.soldierType);
-  const unreachable=candidates.filter(x=>x.v.kind==="blocked"&&
-    !(x.x.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length;
-  const unavailable=candidates.filter(x=>x.v.kind==="blocked"&&(x.x.requires||[]).includes("STR_UNAVAILABLE")&&
-    (x.x.allowedSoldierTypes||[]).some(id=>reachable.has(id))).length;
-  const historical=excluded-unreachable-unavailable;
-  const unresolved=candidates.filter(x=>x.v.kind==="unknown").length;
-  const notNow=candidates.filter(x=>x.v.kind==="not-now").length;
-  const ready=candidates.filter(x=>x.v.kind==="eligible").length;
-  $("#transformationVerdict").textContent="현재 계보 "+PLANNER_STATE.soldierType+" · 순서 "+previousTransformations.length+
-    "단계 · 확정 제외 "+excluded+"개 (병종 계보 "+unreachable+" · 내부 전용 "+unavailable+" · 이력·선행 불가 "+historical+") · 현재 미충족 "+notNow+"개 · 조건 미확정 "+unresolved+"개 · 현재 판정 충족 "+ready+"개. 이후 단계는 자원 소모·미래 연구를 확정하지 않습니다.";
-  renderModernSaveResults(candidates,CURRENT_PROOF,analysisOptions().mode,previousTransformations.length);
-  renderStatEnvelope($("#statEnvelopeContent"),PLANNER_BOUNDS,PLANNER_STATE,DATA,previousTransformations,analysisOptions());
-}
-function routeFinderWorld(proof){
-  if(proof?.kind!=="proof"||!SAVE)return null;
-  return {
-    month:SAVE.monthsPassed,
-    researched:new Set(SAVE.research.completed||[]),
-    disabled:new Set(SAVE.research.disabled||[]),
-    // Missing generatedEvents is UNKNOWN, never an empty completed list.
-    generatedEvents:SAVE.generatedEvents,
-    // Inventory is that of the SELECTED BASE only. Never pool two bases.
-    items:Object.fromEntries(proof.base.items||[]),
-    baseFunctions:new Set(proof.options.baseFunctions||[]),
-    // Exact active projects are scoped to the selected base. Unknown must
-    // remain null, not an empty set (which would certify no projects).
-    activeResearch:proof.base.researchComplete?
-      new Set(proof.base.researchProjects):null,
-    // The OXCE provided-base-function union can include geography sources.
-    // Facility-only evidence must NOT authorize certified auto completion.
-    // For actual snapshots all unknown geographical-function assignments
-    // must produce identical terminal flags; otherwise we refuse proof.
-    autoZeroEvidence:proof.base.itemsComplete&&proof.base.researchComplete,
-    // Partial facts additionally feed hypothetical conditional search.
-    inventoryKnown:proof.base.itemsComplete,
-    baseFunctionsKnown:proof.options.baseFunctionsKnown===true,
-    funds:SAVE.funds,
-    // Unknown same-base active projects cannot yield a verified witness.
-    evidenceComplete:proof.base.itemsComplete&&proof.base.researchComplete&&
-      proof.state.exactStats&&proof.options.medalsKnown&&proof.soldier.historyComplete&&
-      proof.options.fundsKnown,
-    soldiers:[{id:"selected",state:proof.state,
-      commendations:proof.options.commendations||{}}]
-  };
-}
-export function showRouteSearchResult(result){
-  const root=$("#routeSearchResult");
-  if(!result)return;
-  const heading={
-    witness:"범위 내 시간순 정합성 확인 (실행 성공 보장은 아님)",
-    conditional:"조건부 경로 · 가정 또는 미확인 자료 존재",
-    excluded:"동일 대원 계보에서 확정 제외",
-    inconclusive:"제한 탐색으로는 경로 미발견 · 영구 불가능 증거 아님",
-    unverified:"검증 입력이 부족합니다"
-  }[result.kind]||"검증 상태 미확인";
-  const label=step=>{
-    if(step.type==="research")return "연구 완료: "+step.id;
-    if(step.type==="transform")return "동일 대원 변신: "+
-      transformationName(step.transform)+" ("+step.transform+")";
-    if(step.type==="manufacture")return (step.assumeOutcome?"확률 제조 보상 가정: ":"현재 기지에서 제조: ")+
-      step.item+" ×"+step.count+" / "+step.recipe+
-      (step.assumeOutcome?" · 보상 가중치 "+step.weight+"/"+step.weightTotal+
-        " (개별 제조 성공 보장 아님)":"");
-    if(step.type==="freeResearch")return "원천 연구 완료 시 무료 보상: "+
-      step.source+" → "+step.research+(step.assumeOutcome?" (RNG 가정)":"");
-    if(step.type==="eventResearch")return "이벤트 연구 보상 가정: "+
-      step.event+" → "+step.research+(step.assumeOutcome?" (발생·추첨 보장 아님)":"");
-    if(step.type==="advanceMonth")return "월 진행 가정: "+step.month+
-      "개월 (유지비·새 이벤트·재료 소모 미검증)";
-    return step.type;
-  };
-  root.innerHTML='<p><strong>'+esc(heading)+'</strong></p>'+
-    (result.steps?.length?'<ol>'+result.steps.map(step=>
-      '<li>'+esc(label(step))+'</li>').join("")+'</ol>':"")+
-    (result.reason?.length?'<p class="muted">'+result.reason.map(esc).join(" · ")+'</p>':"")+
-    (result.assumptions?.length?'<p class="muted"><strong>미증명 전제:</strong> '+
-      [...new Set(result.assumptions)].slice(0,8).map(esc).join(" · ")+'</p>':"")+
-    (result.topBlocks?.length?'<p class="muted">탐색 중 차단 근거: '+
-      result.topBlocks.slice(0,4).map(x=>esc(x.reason)).join(" · ")+'</p>':"")+
-    (result.zeroCostGates?.length?'<details open><summary><strong>비용 0 자동 연구 조건 (완료 보증 아님)</strong></summary>'+
-      result.zeroCostGates.map(gate=>'<p class="muted"><strong>'+esc(gate.id)+'</strong> · '+
-        esc(({completed:"완료 확인",internalOnly:"내부 전용",["internal-only"]:"내부 전용",
-          ["disabled-now"]:"현재 폐쇄",["pending-source"]:"후속 연구 완료 필요",
-          ["eligible-after-source"]:"자동 처리 후보",gated:"선행 조건 미충족"})[gate.kind]||
-          "획득 미확정")+' · '+gate.reasons.slice(0,4).map(esc).join(" · ")+
-        (gate.researchEventSources?" · 이벤트 직접 지급 후보 "+gate.researchEventSources+"개":"")+
-        '</p>').join("")+'</details>':"")+
-    (result.zeroCostCascade?.targets?.length?'<details open><summary><strong>'+
-      '비용 0 연구 연쇄 처리 시뮬레이션 (모두 미증명 후보)</strong></summary>'+
-      (result.zeroCostCascade.sources.length?
-        result.zeroCostCascade.sources.slice(0,5).map(s=>
-          '<p class="muted">가정한 원천 연구 완료: <strong>'+esc(s.source)+'</strong>'+
-          ' · 연쇄로 처리될 수 있는 요구 플래그: '+s.produced.map(esc).join(", ")+
-          ' · 후보 처리 순서: '+s.chain.slice(0,12).map(esc).join(" → ")+
-          (s.chain.length>12?" 외 "+(s.chain.length-12)+"개":"")+
-          ' · 미증명 조건: '+s.unverified.slice(0,4).map(esc).join(" · ")+
-          '</p>').join(""):
-        '<p class="muted">현재 세이브 조건에서 직접 확인된 연쇄 후보 없음. '+
-        '자동 연구 자체가 영구 불가능하다는 증명은 아닙니다.</p>')+
-      '</details>':"")+
-    (result.pools?'<p class="muted">경로 후보: 변신 '+result.pools.transforms+
-      ' / 연구 '+result.pools.research+' / 제조 '+result.pools.recipes+
-      ' (확률 보상 '+(result.pools.randomRecipes||0)+
-      ' · 변형이 겹쳐 보류 '+(result.pools.ambiguousRandomRecipes||0)+')'+
-      ' / 가정한 이벤트 후보 '+result.pools.eventScenarios+
-      ' · 실제 검사 상태 '+(result.deterministic?.examined||0)+
-      '개 · 탐색 예산 제한 '+(result.searchLimits?.maxDepth||0)+'단계'+
-      (!result.sourceComplete?" · 일부 후보가 예산 밖에 있음":"")+'</p>':"")+
-    '<p class="muted">보장하지 않는 영역: 전투 경험치 성장, 임무 전리품, 구매·건설, 월 유지비·진행 중인 별도 이벤트, 향후 RNG, 연구실 프로젝트 실제 노출. 확률 제조와 월 진행은 항상 조건부이며, 경로 미발견을 확정 상호배제로 해석하지 마세요.</p>';
-}
-function initRouteFinder(){
-  const picker=$("#routeSearchTarget");
-  picker.innerHTML=[...(DATA.transformations||[])].sort((a,b)=>a.koName.localeCompare(b.koName,"ko"))
-    .map(x=>'<option value="'+esc(x.id)+'">'+esc(x.koName+" / "+x.id)+'</option>').join("");
-  $("#routeSearchButton").onclick=async()=>{
-    const proof=selectedSaveProof(),out=$("#routeSearchResult");
-    if(!SAVE||proof?.kind!=="proof"){
-      out.textContent="현재 대원의 연구·재료·변신 경로를 검증하려면 2.1 세이브를 먼저 선택해야 합니다.";
-      return;
-    }
-    const goal=picker.value;
-    if(!DATA.transformations.some(x=>x.id===goal)){
-      out.textContent="목표 변신의 원본 규칙을 찾을 수 없습니다.";return;
-    }
-    out.textContent="실제 저장본의 연구·이벤트·기지 재료와 변신 순서를 대조하는 중입니다.";
-    // Yield a paint before bounded CPU search. No external request or upload.
-    await new Promise(resolve=>setTimeout(resolve,0));
-    try{
-      const world=routeFinderWorld(proof);
-      const result=searchChronologicalRoute(DATA,world,{soldierId:"selected",
-        goals:[goal],maxStates:170,maxDepth:10,maxAttempts:3400});
-      // This static diagnosis never modifies the verified action sequence.
-      // A cost-zero flag is not invented as a manually researchable project.
-      const zeroCostGates=inspectTransformationZeroResearch(DATA,goal,world,{
-        inventoryKnown:proof.base.itemsComplete,
-        functionsKnown:proof.options.baseFunctionsKnown===true});
-      const zeroCostCascade=inspectAutoZeroSourcesForTransform(DATA,goal,world,{
-        inventoryKnown:proof.base.itemsComplete,
-        // OXCE adds country/region-provided functions to facilities, so a
-        // facility-only inspection must not claim a complete function list.
-        functionsKnown:proof.options.baseFunctionsKnown===true,
-        activeResearchKnown:proof.base.researchComplete,maxSteps:35});
-      showRouteSearchResult({...result,zeroCostGates,zeroCostCascade});
-    }catch(e){
-      out.textContent="자동 경로 판정 불완전: "+e.message;
-    }
-  };
-  picker.onchange=()=>{
-    $("#routeSearchResult").textContent="목표 변신이 변경되었습니다. 현재 세이브로 다시 경로를 계산할 수 있습니다.";
-  };
-}
-function initTransformationPlanner(){
-  $("#plannerProfile").onchange=()=>{previousTransformations=[];render()};
-  $("#addTransformation").onclick=()=>{
-    const id=$("#previousTransformation").value,row=DATA.transformations.find(x=>x.id===id);
-    if(!row)return;
-    const verdict=eligibleTransformation(row,PLANNER_STATE,DATA,analysisOptions());
-    if(verdict.kind!=="blocked"&&(analysisOptions().mode!=="current"||verdict.kind==="eligible")){
-      previousTransformations.push(id);render();
-    }
-  };
-  $("#clearTransformations").onclick=()=>{previousTransformations=[];render()};
-  $("#addBattleGrowth").onclick=()=>{
-    previousTransformations.push("@BATTLE_GROWTH");render();
-  };
-  $("#addPhysicalGrowth").onclick=()=>{
-    previousTransformations.push("@PHYS_TRAINING");render();
-  };
-  $("#compatibleOnly").onchange=render;
-  $("#plannerMonth").onchange=render;
-  $("#transformationHistory").onclick=e=>{
-    const b=e.target.closest("[data-remove-index]");
-    if(b){previousTransformations.splice(Number(b.dataset.removeIndex),1);render()}
-  };
-}
-const $=q=>document.querySelector(q);
-const fmt=n=>n==null||Number.isNaN(Number(n))?"—":Number(n).toLocaleString("ko-KR",{maximumFractionDigits:1});
-const pct=n=>n==null?"—":(Number(n)*100).toFixed(2)+"%";
-const statOrder=["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana"];
-const sourceLabel={direct:"직접 고용",manufacture:"고용·제조",event:"이벤트"};
-function variantName(r){const n=(r.sourceKoName||"").replace(/^(고용|Recruitment|직접 고용)\s*[:：·-]?\s*/i,"").trim();return r.sourceType==="direct"?r.soldierKoName:(n||r.sourceKoName||r.soldierKoName)}
-function familyCount(id){return DATA.profiles.filter(x=>x.soldierType===id).length}
-function sourceReference(label,id){return '<span class="source-reference"><small>'+esc(label)+'</small><code>'+esc(id)+'</code></span>'}
-
-async function load(){
-  DATA=await loadRuntime("../../data/soldiers-modern-index.json");
-  const family=$("#family");family.innerHTML='<option value="">모든 기본 병종</option>'+DATA.soldiers.filter(x=>DATA.profiles.some(p=>p.soldierType===x.id)).map(x=>'<option value="'+esc(x.id)+'">'+esc(x.koName)+' ('+familyCount(x.id)+')</option>').join("");
-  const params=new URLSearchParams(location.search);if(params.has("family"))family.value=params.get("family");if(params.has("q"))$("#search").value=params.get("q");
-  if(["profiles","soldiers","transformations"].includes(params.get("dataset"))){
-    $("#dataset").value=params.get("dataset");
-    $("#soldierTools").open=true;
-  }
-  openSoldierSection();
-  renderSummary();
-  renderRareMapLootProof($("#rareMapLootProof"),DATA);
-  const futureComparison=initFutureComparison(DATA);
-  initBaselineGrowthComparison(DATA);
-  // Only the 2.1 source-first ledger is published. The old 29-body solver
-  // remains usable by offline proof regressions, but is never rendered/fetched
-  // as an independent maxima table.
-  void initOriginProgression(DATA).catch(error=>{
-    $("#originStatus").textContent="2.1 획득처 검증 오류 · 숫자 표시 중단: "+error.message;
-    console.error("Origin-first validation",error);
-  });
-  initResearchExclusionAudit(DATA);
-  initModernSaveControls(DATA,(save,proof)=>{
-    SAVE=save;
-    if(save?.monthsPassed!=null)$("#plannerMonth").value=String(save.monthsPassed);
-    else if(!save)$("#plannerMonth").value="";
-    futureComparison?.setSave(save);
-    CURRENT_PROOF=proof;
-    $("#routeSearchResult").textContent=save?"대원이 변경되었습니다. 목표 변신을 선택해 경로를 자동 탐색할 수 있습니다.":"세이브를 불러오면 연구·기지 재료와 변신 순서를 검증합니다.";
-    previousTransformations=[];
-    if(proof?.kind==="proof"){
-      $("#family").value=proof.state.soldierType;
-      $("#dataset").value="transformations";
-    }
-    render();
-  });
-  initTransformationPlanner();
-  initRouteFinder();
-  render();
-  const deepProfile=params.get("profile");
-  if(deepProfile&&DATA.profiles.some(p=>p.id===deepProfile)){
-    $("#soldierTools").open=true;
-    $("#dataset").value="profiles";render();openDetail(encodeURIComponent(deepProfile));
-  }
-}
-function renderSummary(){
-  const pc=DATA.profileCounts||{};
-  $("#summary").innerHTML=[
-    ["실제 획득형",DATA.profiles.length+"개","직접 "+(pc.direct||0)+" · 제조 "+(pc.manufacture||0)+" · 이벤트 "+(pc.event||0)],
-    ["기본 바디 규칙",DATA.soldiers.length+"종","내부 RuleSoldier / 성장 규칙"],
-    ["Saint 지원군",pc.saintUnique+"종","고유 결과 · 가중 슬롯 "+pc.saintSlots+"칸"],
-    ["변신·훈련",DATA.transformations?.length+"개","초기 획득 후 파생 루트"]
-  ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
-}
-function dataset(){
-  const mode=$("#dataset").value;
-  if(mode==="soldiers"){
-    return DATA.soldiers.map(x=>({...x,_mode:"soldier",_name:x.koName,_id:x.id,_route:(x.requires||[]).join(", ")}));
-  }
-  if(mode==="transformations"){
-    return (DATA.transformations||[]).map(x=>({...x,_mode:"transformation",_name:x.koName,_id:x.id,_route:(x.allowedSoldierTypes||[]).join(", ")}));
-  }
-  return DATA.profiles.map(x=>({...x,_mode:"profile",_name:variantName(x),_id:x.sourceId,_route:x.sourceKoName}));
-}
-function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
-function statValue(row,key,band){
-  if(row._mode==="soldier")return row["base"+cap(band)+"_"+key];
-  if(row._mode==="profile")return row["effective"+cap(band)+"_"+key];
-  if(row._mode==="transformation")return row.fixedEffectiveDelta?.[key]??0;
-  return 0;
-}
-function growthCapValue(row,key){
-  if(row._mode==="soldier")return row.statCaps?.[key]??0;
-  if(row._mode==="profile")return row.effectiveStatCaps?.[key]??row.rawStatCaps?.[key]??0;
-  return 0;
-}
-function sortValue(row,key,band){
-  if(!statOrder.includes(key))return row[key]??0;
-  if(row._mode==="transformation")return statValue(row,key,band);
-  return $("#sortMetric").value==="cap"?growthCapValue(row,key):statValue(row,key,band);
-}
-function searchBlob(row){
-  return [
-    row._name,row._id,row._route,row.soldierKoName,row.soldierType,row.sourceId,row.sourceEnName,row.soldierBonusType,row.producedSoldierType,
-    ...(row.traitNames||[]),...(row.traits||[]).flatMap(t=>[t.koName,t.enName,t.id]),
-    ...(row.requires||[]),...(row.allowedSoldierTypes||[]),...(row.requiredPreviousTransformations||[]),
-    ...(row.forbiddenPreviousTransformations||[])
-  ].filter(Boolean).join(" ").toLowerCase();
-}
-function filtered(){
-  const q=$("#search").value.trim().toLowerCase();
-  const traitsOnly=$("#traitsOnly").checked;
-  const family=$("#family").value;
-  let a=dataset().filter(r=>!family||(r._mode==="profile"?r.soldierType:r._mode==="soldier"?r.id:family)===family).filter(r=>(!q||searchBlob(r).includes(q))&&(!traitsOnly||r._mode==="profile"&&r.traitNames.length)&&!(r._mode==="transformation"&&$("#compatibleOnly").checked&&transformationVerdict(r).kind==="blocked"));
-  const band=$("#band").value;
-  a.sort((x,y)=>{
-    let av,bv;
-    if(statOrder.includes(sort.key)){av=sortValue(x,sort.key,band);bv=sortValue(y,sort.key,band)}
-    else if(sort.key==="name"){return x._name.localeCompare(y._name,"ko")*sort.dir}
-    else{av=x[sort.key]??0;bv=y[sort.key]??0}
-    return ((Number(av)||0)-(Number(bv)||0))*sort.dir;
-  });
-  return a;
-}
-function th(label,key,sub=""){
-  const on=sort.key===key?" sort-on":"";
-  const arrow=sort.key===key?(sort.dir>0?" ▲":" ▼"):"";
-  return '<th data-sort="'+key+'" class="'+on+'">'+label+arrow+(sub?'<small class="th-sub">'+sub+'</small>':'')+'</th>';
+  DATA.sourceItemIds=new Set(CATALOG.itemIds);DATA.originRows=REPORT.records.map(r=>r.sourceProof);
+  $('#originMaxima').dataset.validation='validated';
 }
 function render(){
-  if(!DATA)return;
-  const mode=$("#dataset").value,band=$("#band").value;
-  $("#traitsOnly").disabled=mode!=="profiles";
-  $("#band").disabled=mode==="transformations";
-  $("#sortMetric").disabled=mode==="transformations";
-  renderTransformationPlanner();
-  $("#tableTitle").textContent=
-    mode==="profiles"?"실제 획득형 — 초기 특성 포함 실전 스펙":
-    mode==="soldiers"?"기본 바디 규칙 — 내부 RuleSoldier 29종":
-    "변신·훈련 루트 — 고정 변화량";
-  const visibleStats=$("#statView").value==="all"?statOrder:["tu","health","reactions","firing","strength"];
-  let head;
-  if(mode==="profiles"){
-    head=[
-      th("생성형 / 기본 병종","name"),'<th>얻는 방법 · 자동 특성</th>',th("비용","cost"),th("시간","time"),
-      ...visibleStats.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
-    ].join("");
-  }else if(mode==="soldiers"){
-    head=[
-      th("기본 바디","name"),'<th>해금 조건</th>',th("구매가","costBuy"),th("월급","costSalary"),
-      ...visibleStats.map(k=>th(DATA.statLabels[k],k,"능력 / 성장캡"))
-    ].join("");
-  }else{
-    head=[
-      th("변신/훈련","name"),'<th>적용 대상·특성</th>',th("비용","cost"),th("회복","recoveryTime"),
-      ...visibleStats.map(k=>th("Δ "+DATA.statLabels[k],k))
-    ].join("");
+  if(blocked||!REPORT)return;
+  const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
+  const rows=REPORT.records.filter(r=>(!family||r.soldierType===family)&&(!q||
+    [r.profileId,r.name,r.soldierName,...r.candidates.flatMap(c=>c.transforms.map(name))].join(' ').toLocaleLowerCase('ko').includes(q)));
+  rows.sort((a,b)=>(best(b)?.total??-1)-(best(a)?.total??-1)||a.name.localeCompare(b.name,'ko'));
+  $('#rowCount').textContent=rows.length+' / 72개 출생처';
+  $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>11종 합계</th>'+WITNESS_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
+  $('#originTable tbody').innerHTML=rows.map(r=>{
+    const c=best(r),values=metric==='birth'?r.birthReference:metric==='certified'?null:c?.stats;
+    const total=values?WITNESS_STATS.reduce((s,k)=>s+values[k],0):null;
+    return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small><small class="id">'+esc(r.profileId)+'</small></td><td>'+
+      (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?'조건부 잠정 최고':'연구 경로 보완 중')+
+      '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+WITNESS_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
+  }).join('')||'<tr><td colspan="14">해당 출생처 없음</td></tr>';
+  $('#catalogStatus').textContent=metric==='provisional'?'조건부 잠정값: 출생 최솟값에서 시작한 완결 연구·획득·훈련 경로. 자원·이벤트/RNG 가정과 분기 배제는 상세에 표시합니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
+}
+function statGrid(c){return '<div class="stat-grid">'+WITNESS_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(c.stats[k])+'</strong><small>원시 '+fmt(c.raw[k])+' + 영구 특성 '+fmt(c.bonus[k])+'</small></div>').join('')+'</div>';}
+function choiceHtml(c){
+  if(!c.branchChoices.length)return '<p>이 경로에는 직접 disables를 실행하는 연구 분기가 없습니다.</p>';
+  return c.branchChoices.map(x=>{
+    const action=c.steps[x.at],direct=action.id===x.id||action.research===x.id;
+    const label=direct?(action.assumeOutcome?'무료 지급/이벤트 결과 가정':'선택한 연구'):'자동·연결 연구의 효과';
+    return '<details class="branch-choice"><summary>'+esc(name(x.id))+' <small>'+label+' · 배제 '+x.excludes.length+'개</small></summary><p>'+node(x.id)+'</p>'+x.excludes.map(e=>
+      '<p data-exclusion="'+e.direction+'">'+node(x.id)+(e.direction==='bidirectional'?' ↔ ':' → ')+node(e.id)+' <b>'+({oneway:'일방향 배제',bidirectional:'양방향 배제',self:'자기 비활성화'}[e.direction])+'</b>'+(e.actuallyClosed?' · 최종 시점 폐쇄':' · 최종 시점은 별도 상태')+'</p>').join('')+
+      '<p class="muted">배제 전 이미 시행한 훈련의 보존 여부는 이 경로의 동일 병사 이력으로 재생했습니다.</p></details>';
+  }).join('');
+}
+function assumptionHtml(c){return c.assumptions.map(s=>{
+  if(s.type==='externalInputs')return '<li>'+esc(s.reason)+'<br>'+Object.entries(s.items||{}).map(([id,n])=>esc(name(id))+' ×'+fmt(n)).join(' · ')+(s.functions?.length?' · 기지 기능 '+s.functions.map(esc).join(', '):'')+(s.funds?' · 자금 '+fmt(s.funds):'')+'</li>';
+  if(s.type==='freeResearch')return '<li>'+node(s.source)+' 완료 시 '+node(s.research)+' 무료 지급 추첨 결과를 가정</li>';
+  if(s.type==='eventResearch')return '<li>이벤트 '+esc(s.event)+' / '+esc(s.script)+'에서 '+node(s.research)+' 지급을 가정</li>';
+  if(s.type==='recruit')return '<li>출생 최솟값 벡터 · 실제 생성 난수 미실측'+(s.script?' · 출생 이벤트 '+esc(s.script):'')+'</li>';
+  return '<li>게임 경과 '+fmt(s.month)+'개월 · 유지비·외부 사건 미검증</li>';
+}).join('');}
+async function openOrigin(id,candidateId=null){
+  if(blocked)return;const generation=++replayGeneration;
+  const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
+  selected=id;const c=record.candidates.find(c=>c.id===(candidateId||record.bestCandidateId));
+  const host=$('#originDetails');host.hidden=false;
+  host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div><p class="muted">등록 경로의 원본·현재 수치를 재대조하는 중…</p>';
+  await new Promise(ok=>setTimeout(ok,0));
+  if(!c){
+    const gaps=(record.researchBottlenecks||[]).map(g=>
+      '<li>'+node(g.id)+' <strong>'+({NOT_INDEXED:'이벤트·지급 출처 미색인',NO_SUPPLY_METHOD:'현재 공급 방법 미확보',UPSTREAM_UNRESOLVED:'상위 선행 경로 미해결',CHRONOLOGY_UNRESOLVED:'시간순 연구 재생 미완결',SEARCH_LIMIT:'제한 탐색 미완결'}[g.kind]||'추가 검증 필요')+'</strong> · '+esc(g.reason)+'</li>').join('');
+    host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div>'+
+      '<p><strong>출생처 등록 완료 · 완결 연구 경로 미확보</strong></p><p>'+node(record.unresolved?.id||record.profileId)+'</p>'+
+      '<p>'+esc(record.unresolved?.reason||'조사 중')+'</p><h3>추가 확인이 필요한 상위 연구·이벤트 근거</h3><ul>'+gaps+'</ul>'+
+      '<p>이것은 현재 탐색기가 발견하지 못한 공급·시간순 경로입니다. 제한 탐색의 실패는 영구 불가능 판정이 아닙니다. 실제 획득을 증명하기 전에는 잠정 수치를 만들어 넣지 않습니다.</p>';
+    return;
   }
-  $("#soldierTable thead").innerHTML="<tr>"+head+"</tr>";
-  const rows=filtered();
-  $("#rowCount").textContent=rows.length+"개"+(mode==="transformations"?" · 고정 변화량(Flat + SoldierBonus)":" · "+({min:"최소",avg:"평균",max:"최대"}[band])+" 능력치 · "+($("#sortMetric").value==="cap"?"성장캡":"현재 능력치")+" 정렬");
-  $("#soldierTable tbody").innerHTML=rows.map(r=>rowHtml(r,band)).join("");
-  document.querySelectorAll("th[data-sort]").forEach(el=>el.addEventListener("click",()=>{
-    const key=el.dataset.sort;
-    if(sort.key===key)sort.dir*=-1;else sort={key,dir:key==="name"?1:-1};
-    render();
-  }));
-  // Table rows are replaced on every filter/render; handle clicks on the stable
-  // tbody instead of attaching to every transient row (or another table).
-}
-function sourceBadges(r){
-  let s='<span class="tag">'+(sourceLabel[r.sourceType]||r.sourceType)+'</span>';
-  if(r.saintSlots>0)s+=' <span class="tag saint">Saint '+r.saintSlots+'/31 · '+pct(r.saintProbability)+'</span>';
-  return s;
-}
-function rowHtml(r,band){
-  const id=encodeURIComponent(r.id);
-  let second,c1,c2;
-  if(r._mode==="profile"){
-    const traits=(r.traits||[]).map(t=>'<span class="trait">'+t.koName+'</span>').join("");
-    second=sourceBadges(r)+'<br><span class="route">'+r.sourceKoName+'</span><br>'+traits;
-    c1=fmt(r.cost);c2=fmt(r.time);
-  }else if(r._mode==="soldier"){
-    second=(r.requires||[]).length?'<span class="route">'+r.requires.join("<br>")+'</span>':'<span class="muted">직접 조건 없음/특수</span>';
-    c1=fmt(r.costBuy);c2=fmt(r.costSalary);
-  }else{
-    const trait=r.soldierBonusType?'<span class="trait">'+r.soldierBonusType+'</span>':'';
-    const produced=r.producedSoldierType?'<span class="tag">→ '+r.producedSoldierType+'</span>':'';
-    const verdict=transformationVerdict(r);
-    second='<span class="route">적용 '+(r.allowedSoldierTypes?.length||0)+'종</span><br>'+trait+' '+produced+'<br><span class="'+(verdict.kind==="blocked"?'delta-neg':'muted')+'">'+esc(verdict.label)+'</span>';
-    c1=fmt(r.cost);c2=fmt(r.recoveryTime);
+  let replay=verified.get(c.id);
+  if(!replay){replay=replayOriginWitness(c.steps,DATA);verified.set(c.id,replay);}
+  if(generation!==replayGeneration)return;
+  if(!replay.ok||!replay.exact||replay.total!==c.total||JSON.stringify(replay.stats)!==JSON.stringify(c.stats)){
+    sourceFail('선택 경로 재생 불일치: '+(replay.reason||c.id));return;
   }
-  return '<tr data-row="'+id+'"><td><span class="name">'+esc(r._name)+'</span>'+(r._mode==="profile"?'<span class="family">기본 병종: '+esc(r.soldierKoName)+' · 같은 병종 '+familyCount(r.soldierType)+'종</span>':"")+'<span class="id">'+esc(r._id)+'</span></td><td>'+second+'</td><td>'+c1+'</td><td>'+c2+'</td>'+
-    ($("#statView").value==="all"?statOrder:["tu","health","reactions","firing","strength"]).map(k=>{
-      const v=statValue(r,k,band);
-      if(r._mode==="transformation"){
-        const cls=v>0?"delta-pos":v<0?"delta-neg":"";
-        const shown=v>0?"+"+fmt(v):fmt(v);
-        return '<td><span class="'+cls+'">'+shown+'</span></td>';
-      }
-      const capV=growthCapValue(r,k);
-      const d=r._mode==="profile"?(r.traitStats?.[k]||0):0;
-      const over=Number(v)>Number(capV)?" over-cap":"";
-      const dc=d>0?'<small class="delta-pos">특성 +'+fmt(d)+'</small>':d<0?'<small class="delta-neg">특성 '+fmt(d)+'</small>':'';
-      return '<td><div class="stat-pair'+over+'"><span class="stat-current">'+fmt(v)+'</span><span class="stat-slash">/</span><span class="stat-cap">'+fmt(capV)+'</span></div>'+dc+'</td>';
-    }).join("")+'</tr>';
+  const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='freeResearch').at(-1);
+  const bonus=record.candidates.find(x=>x.id===record.bestBonusCandidateId);
+  host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
+    '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>11종 합계 '+fmt(c.total)+'</strong> · 영구 특성 합 '+fmt(c.bonusTotal)+'</p>'+
+    '<p class="scope-note">'+esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.</p>'+statGrid(c)+
+    '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
+    '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
+    '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+
+    '<details class="assumptions"><summary>필수 확인 · 남은 자원·출생·확률 가정 '+c.assumptions.length+'건</summary><ul>'+assumptionHtml(c)+'</ul><h4>모델의 미검증 조건</h4><ul>'+(c.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><details><summary>자동 연구·lookup 조건부 처리 기록</summary><ul>'+(c.modelAssumptions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details></details>'+
+    '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 합 최고 '+fmt(bonus?.bonusTotal)+' / 목표 B 최종 11종 합 최고 '+fmt(best(record)?.total)+'. 서로 다른 경로의 유리한 수치를 합치지 않습니다.</p>'+record.candidates.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 합계 '+fmt(x.total)+'</button></p>').join('')+'</details>'+
+    '<p class="fine">재생: 통과 · 실제 게임 실측: 없음 · 전역 최적성: 미증명 · 원본 v.o2. 더 높은 경로는 같은 출생처의 비교 후보로 등록한 뒤 갱신합니다.</p>';
 }
-function findRow(encoded){
-  const id=decodeURIComponent(encoded);
-  return dataset().find(x=>x.id===id);
+function showResearch(id){
+  const dialog=$('#researchDialog');$('#researchDetail').innerHTML='<p class="eyebrow">X-PIRATEZ 2.1 연구 원본</p><h2>'+esc(name(id))+'</h2><p class="id">'+esc(id)+'</p>'+renderResearchRelations(id,DATA.researchRules,CATALOG.names);
+  if(!dialog.open)dialog.showModal();
 }
-function statsGrid(title,range,bonus=null){
-  const band=$("#band").value;
-  const vals=range?.[band]||{};
-  return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
-    const d=bonus?.[k]||0;
-    const delta=d>0?'<small class="delta-pos">특성 +'+fmt(d)+'</small>':d<0?'<small class="delta-neg">특성 '+fmt(d)+'</small>':'';
-    return '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(vals[k])+'</b>'+delta+'</div>';
-  }).join("")+'</div>';
+function showTraining(id){
+  const t=DATA.transformations.find(t=>t.id===id);if(!t)return;
+  $('#researchDetail').innerHTML='<p class="eyebrow">병종 DB · 훈련 원본 근거</p><h2>'+esc(t.koName)+'</h2><p>'+esc(id)+'</p><h3>무조건 필요</h3><p>'+t.requires.map(node).join(' ')+'</p><h3>필수 이전 훈련</h3><p>'+t.requiredPreviousTransformations.map(esc).join(' · ')+'</p><h3>금지 이전 훈련</h3><p>'+t.forbiddenPreviousTransformations.map(esc).join(' · ')+'</p><p>이 정보는 병종 경로의 근거입니다. 별도 훈련 조합기나 저장 파일 입력 화면은 없습니다.</p><h3>직접 변화 / 영구 특성</h3><div class="stat-grid">'+WITNESS_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(t.flatOverallStatChange?.[k])+' / '+fmt(t.traitStats?.[k])+'</strong></div>').join('')+'</div>';
+  $('#researchDialog').showModal();
 }
-function statsCapGrid(title,row){
-  const band=$("#band").value;
-  const current=row.effectiveStats?.[band]||{};
-  return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
-    const cur=current[k]??0;
-    const raw=row.rawStatCaps?.[k]??0;
-    const training=row.trainingStatCaps?.[k]??0;
-    const trait=row.traitStats?.[k]??0;
-    const eff=row.effectiveStatCaps?.[k]??raw;
-    const over=Number(cur)>Number(eff)?' over-cap':'';
-    return '<div class="statbox'+over+'"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(cur)+' / '+fmt(eff)+'</b><small>본체 성장캡 '+fmt(raw)+' · 훈련캡 '+fmt(training)+(trait?' · 특성 '+(trait>0?'+':'')+fmt(trait):'')+'</small></div>';
-  }).join("")+'</div><p class="muted">앞 숫자는 선택한 생성값, 뒤 숫자는 자동 특성까지 포함한 실효 성장캡입니다. 시작값이 캡보다 높은 특수 생성형은 그대로 유지되지만 일반 성장으로 더 오르지는 않습니다.</p>';
-}
-function deltaGrid(title,stats){
-  return '<h3>'+title+'</h3><div class="stats-grid">'+statOrder.map(k=>{
-    const v=stats?.[k]||0;
-    const cls=v>0?"delta-pos":v<0?"delta-neg":"muted";
-    return '<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b class="'+cls+'">'+(v>0?"+":"")+fmt(v)+'</b></div>';
-  }).join("")+'</div>';
-}
-function armorRouteSummary(armor){
-  if(!armor.storeItem||armor.storeItem==="STR_NONE")return "기본/특수 방어구 · 일반 아이템 입수 경로 없음";
-  const supply=DATA.itemSupply?.[armor.storeItem];
-  if(!supply?.exists)return "아이템 경로가 확인되지 않음";
-  const sources=[];
-  if(supply.buyCost>0)sources.push("구매 규칙 "+fmt(supply.buyCost));
-  if(supply.manufacture?.length)sources.push("제조법 "+supply.manufacture.length+"개 (재료·연구 미검증)");
-  if(supply.randomManufacture?.length)sources.push("확률 제조 "+supply.randomManufacture.length+"경로");
-  if(supply.researchGrants?.length)sources.push("연구 지급 "+supply.researchGrants.length+"경로");
-  if(supply.eventGrants?.length)sources.push("이벤트 보상 "+supply.eventGrants.length+"경로");
-  return (sources.length?sources.join(" / "):"획득 경로 미증명 · 전리품 별도 조사")+
-    ((armor.requires||[]).length?" · 필수 연구 "+armor.requires.join(", "):"");
-}
-function armorProfilePreview(profileId){
-  const state=initialState(DATA,profileId);
-  const armorList=availableSoldierArmors(state,DATA)
-    .filter(a=>a.storeItem&&a.storeItem!=="STR_NONE");
-  const keys=["tu","health","reactions","firing","strength","stamina","melee","psiStrength","mana"];
-  const cards=keys.map(key=>{
-    const best=[...armorList].sort((a,b)=>(b.stats[key]||0)-(a.stats[key]||0))[0];
-    if(!best||!(best.stats[key]>0))return "";
-    return '<div class="box"><strong>'+esc(DATA.statLabels[key])+
-      ' · 최고 장비 보정 +'+fmt(best.stats[key])+'</strong><div>'+esc(best.koName)+'</div>'+
-      '<small>'+esc(best.id)+' · '+esc(best.storeItem)+'</small>'+
-      '<p class="muted">'+esc(armorRouteSummary(best))+'</p></div>';
-  }).filter(Boolean);
-  return '<section class="armor-preview"><h3>미래 방어구 단일 슬롯별 최대 보정 후보</h3>'+
-    '<p class="muted">동일 대원은 방어구를 한 벌만 착용합니다. 아래 각 능력치의 1위 방어구는 서로 다를 수 있어 동시 합산할 수 없습니다. 연구·제조·전리품 획득을 보장하지 않으므로 최종 능력치에는 확정 반영하지 않습니다.</p>'+
-    '<div class="detail-grid">'+cards.join("")+'</div></section>';
-}
-function eventGateDetails(ids){
-  const sources=[...new Set(ids||[])].flatMap(id=>(DATA.eventResearchSources?.[id]||[]).map(route=>({id,route})));
-  if(!sources.length)return "";
-  const opts=analysisOptions();
-  const researched=new Set(opts.researched||[]),disabled=new Set(opts.disabled||[]);
-  const monthRaw=$("#plannerMonth").value;
-  const month=monthRaw===""?null:Number(monthRaw);
-  const lines=sources.slice(0,24).map(({id,route})=>{
-    const scripts=route.scripts||[];
-    const html=scripts.slice(0,7).map(script=>{
-      const verdict=eventScriptVerdict({...script,eventId:route.event},{
-        month,researched,disabled,
-        // Imported saves have partial item/one-time history, so DO NOT assert
-        // their absence. Unknown inputs remain conditional.
-        items:null,facilities:null,generatedEvents:null
-      },{mode:"future"});
-      const label=verdict.kind==="blocked"?"경로 차단":
-        verdict.kind==="eligible"?"입력 조건 일치":"미확정 · 조건부";
-      const conditions=[...verdict.blocked,...verdict.pending,...verdict.unknown];
-      const weight=verdict.weight===null?"월별 가중치 미확인":
-        "월별 가중치 "+verdict.weight+"/"+verdict.totalWeight;
-      return '<div class="box"><strong>'+esc(script.script)+' · '+esc(label)+'</strong>'+
-        '<p class="muted">'+esc(weight)+' · 실행 시도 확률 '+esc(script.executionOdds)+'%'+
-        ' · '+esc(script.mode)+'</p>'+
-        '<p>필수 연구 '+esc((script.researchPositive||[]).join(", ")||"없음")+
-        ' · 금지 연구 '+esc((script.researchNegative||[]).join(", ")||"없음")+'</p>'+
-        conditions.slice(0,8).map(x=>'<p class="muted">'+esc(x)+'</p>').join("")+
-        (conditions.length>8?'<p class="muted">추가 조건 '+(conditions.length-8)+'개</p>':"")+
-        '</div>';
-    }).join("")||'<p class="muted">관련 월간 이벤트 발생 스크립트를 찾지 못했습니다. 미증명 상태입니다.</p>';
-    return '<section><h3>'+esc(id)+' ← '+esc(route.event)+'</h3>'+
-      '<p class="muted">이 이벤트의 연구 보상 '+route.choiceCount+'개 중 1개를 추첨. 보상 목록은 확정 획득 증거가 아닙니다.</p>'+html+'</section>';
-  }).join("");
-  return '<details class="technical"><summary>연구 직접 지급 이벤트 · 시간순 상호배제 '+sources.length+'경로</summary>'+
-    '<p>현재 비교 월: '+(month===null?"미지정":month+"개월")+
-    ' · 세이브는 이 화면의 판정에만 사용합니다. 무작위 이벤트·임무·아이템 공급은 미증명으로 유지합니다.</p>'+
-    lines+(sources.length>24?'<p class="muted">나머지 '+(sources.length-24)+'개 경로는 데이터에 보존되어 있습니다.</p>':"")+'</details>';
-}
-function openDetail(encoded){
-  const r=findRow(encoded);if(!r)return;
-  let html='<p class="eyebrow">'+(r._mode==="profile"?"실제 획득형":r._mode==="soldier"?"기본 바디 규칙":"변신·훈련 루트")+'</p><h2>'+r._name+'</h2><p class="muted">'+r._id+'</p>';
-  if(r._mode==="profile"){
-    html+='<div class="detail-grid"><div class="box"><strong>획득 루트</strong>'+sourceBadges(r)+'<br>'+r.sourceKoName+'<br><small>'+r.sourceId+'</small></div><div class="box"><strong>비용 / 시간</strong>'+fmt(r.cost)+' / '+fmt(r.time)+'</div><div class="box"><strong>내부 바디</strong>'+r.soldierType+'<br><small>장갑 '+String(r.armor||"—")+'</small></div></div>';
-    html+='<p class="identity-line">기본 병종 <b>'+esc(r.soldierKoName)+'</b> → 파생 획득형 <b>'+esc(variantName(r))+'</b></p>';
-    const origin=initialState(DATA,r.id);
-    const previous=[...origin.history.keys()];
-    const reachable=reachableSoldierTypes(DATA,origin.soldierType);
-    const inheritedConflicts=DATA.transformations.filter(t=>
-      !(t.requires||[]).includes("STR_UNAVAILABLE")&&
-      (t.allowedSoldierTypes||[]).some(id=>reachable.has(id))&&
-      (t.forbiddenPreviousTransformations||[]).some(id=>origin.history.has(id)));
-    const inheritedPermanent=inheritedConflicts.filter(t=>
-      structuralTransformationVerdict(t,origin,DATA).kind==="blocked");
-    const inheritedResettable=inheritedConflicts.filter(t=>
-      structuralTransformationVerdict(t,origin,DATA).kind!=="blocked");
-    const showTags=xs=>xs.length?xs.map(t=>'<span class="tag">'+esc(t.koName)+'</span>').join(" "):
-      '<span class="muted">없음</span>';
-    html+='<div class="box"><strong>획득 즉시 이미 수행한 변신 '+previous.length+'개</strong><p>'+
-      (previous.length?previous.map(id=>'<span class="tag">'+esc(transformationName(id))+'</span>').join(" "):'<span class="muted">이전 변신 이력 없음</span>')+
-      '</p><strong>초기 이력으로 인해 영구 제외 '+inheritedPermanent.length+'개</strong><p>'+showTags(inheritedPermanent)+
-      '</p><strong>이력 초기화 뒤 재검토 가능한 충돌 '+inheritedResettable.length+'개</strong><p>'+showTags(inheritedResettable)+
-      '</p><small>초기 변신 이력과 병종 전환·초기화 경로를 함께 검사했습니다. 단순 이력 충돌을 자동으로 영구 제외 처리하지 않습니다.</small></div>';
-    html+='<button type="button" id="inspectAcquisitionRoute" data-profile-id="'+esc(r.id)+'">이 획득형의 미래 변신 경로 분석</button>';
-    html+='<div class="cross-links" aria-label="2.1 원본 획득과 연구 ID">'+sourceReference("2.1 획득 규칙",r.sourceId)+(r.requires||[]).map(x=>sourceReference("2.1 필요 연구",x)).join("")+'</div>';
-    html+='<h3>같은 기본 병종의 획득형 비교</h3><div class="related-list">'+DATA.profiles.filter(x=>x.soldierType===r.soldierType).map(x=>'<button class="related-item" type="button" data-profile="'+esc(x.id)+'">'+esc(variantName(x))+' <small>'+esc(x.traits.map(t=>t.koName).join(" · ")||"자동 특성 없음")+'</small></button>').join("")+'</div>';
-    html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
-    html+=statsCapGrid("자동 특성 포함 능력치 / 성장캡",r);
-    html+=armorProfilePreview(r.id);
-    html+='<h3>생성 시 자동 특성</h3><div class="traits">'+(r.traits.length?r.traits.map(t=>'<div class="trait-card"><strong>'+t.koName+'</strong><small>'+t.id+'</small><div>'+statOrder.filter(k=>t.stats[k]).map(k=>DATA.statLabels[k]+" "+(t.stats[k]>0?"+":"")+t.stats[k]).join(" · ")+'</div></div>').join(""):'<span class="muted">없음</span>')+'</div>';
-    html+='<details class="technical"><summary>원본 생성 규칙 확인</summary><pre>'+esc(JSON.stringify({currentStats:r.currentStatsOverride,previousTransformations:r.previousTransformations,requires:r.requires},null,2))+'</pre></details>';
-  }else if(r._mode==="soldier"){
-    html+='<div class="detail-grid"><div class="box"><strong>구매 / 월급</strong>'+fmt(r.costBuy)+' / '+fmt(r.costSalary)+'</div><div class="box"><strong>월 고용 제한</strong>'+fmt(r.monthlyBuyLimit)+'</div><div class="box"><strong>기본 장갑</strong>'+String(r.armor||"—")+'</div></div>';
-    html+=statsGrid("기본 생성 최소", {min:r.minStats,avg:r.minStats,max:r.minStats});
-    html+=statsGrid("기본 생성 평균", {min:r.avgStats,avg:r.avgStats,max:r.avgStats});
-    html+=statsGrid("기본 생성 최대", {min:r.maxStats,avg:r.maxStats,max:r.maxStats});
-    html+='<h3>성장 상한</h3><div class="stats-grid">'+statOrder.map(k=>'<div class="statbox"><small>'+DATA.statLabels[k]+'</small><b>'+fmt(r.statCaps[k])+'</b><small>훈련 '+fmt(r.trainingStatCaps[k])+'</small></div>').join("")+'</div>';
-  }else{
-    const verdict=transformationVerdict(r);
-    html+='<div class="box"><strong>현재 검증 판정</strong><p class="'+(verdict.kind==="blocked"?'delta-neg':'muted')+'">'+esc(verdict.label)+"</p><small>검증되지 않은 경로는 최종 능력치 합산에서 사용하면 안 됩니다.</small></div>";
-    const path=findTransformationPath(r.id,PLANNER_STATE||initialState(DATA,"base:STR_SOLDIER"),DATA);
-    html+='<div class="box"><strong>필수 선행·병종 변환 자동 경로</strong><p>'+(path.path.length?path.path.map(transformationName).map(esc).join(" → "):esc(path.reason||""))+'</p><small>'+(path.path.length?"구성 가능한 변신 순서 후보입니다. 연구·재료·훈장 등 획득 전제는 확정 검증이 아닙니다.":"찾지 못한 경로가 불가능하다는 뜻은 아닙니다.")+'</small></div>';
-    html+='<div class="detail-grid"><div class="box"><strong>비용 / 회복</strong>'+fmt(r.cost)+' / '+fmt(r.recoveryTime)+'일</div><div class="box"><strong>적용 병종</strong>'+(r.allowedSoldierTypes||[]).length+'종</div><div class="box"><strong>생산 Soldier Type</strong>'+String(r.producedSoldierType||"유지")+'</div></div>';
-    deltaGrid("직접 Flat 스탯 변화",r.flatOverallStatChange);
-    deltaGrid("부여 특성의 스탯",r.traitStats);
-    deltaGrid("고정 변화 + 신규 특성 (중복 특성은 재합산 금지)",r.fixedEffectiveDelta);
-    html+='<h3>성장분 비례 변화</h3><p class="muted">변화량은 참고용입니다. 비례 변화·재굴림·상한·중복 특성·병종 변경을 무시한 단순 합산을 최종 수치로 사용하지 않습니다.</p>';
-    deltaGrid("성장분 비율 (%)",r.percentGainedStatChange);
-    deltaGrid("현재 능력치 비율 (%)",r.percentOverallStatChange);
-    html+='<p class="muted">변신 이후 병종 '+esc(r.producedSoldierType||"유지")+' · 이력 초기화 '+(r.reset?"예":"아니요")+' · 복제 '+(r.createsClone?"예":"아니요")+'</p>';
-    html+='<div class="detail-grid"><div class="box"><strong>필요 연구</strong>'+(r.requires||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>필수 이전 변환</strong>'+(r.requiredPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div><div class="box"><strong>금지 이전 변환</strong>'+(r.forbiddenPreviousTransformations||[]).map(x=>'<span class="tag">'+x+'</span>').join(" ")+'</div></div>';
-    html+=eventGateDetails(r.requires);
-  }
-  $("#detailBody").innerHTML=html;
-  $("#detailBody").querySelectorAll("[data-profile]").forEach(b=>b.onclick=()=>openDetail(encodeURIComponent(b.dataset.profile)));
-  const inspect=$("#inspectAcquisitionRoute");
-  if(inspect)inspect.onclick=()=>{$("#detailDialog").close();$("#soldierTools").open=true;$("#dataset").value="transformations";$("#family").value=r.soldierType;previousTransformations=[];render();$("#plannerProfile").value=r.id;render()};
-  if(!$("#detailDialog").open)$("#detailDialog").showModal();
-}
-function esc(s){return String(s).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]))}
-
-["search","dataset","family","statView","band","sortMetric","traitsOnly"].forEach(id=>$("#"+id).addEventListener(id==="search"?"input":"change",render));
-$("#soldierTable tbody").addEventListener("click",e=>{
-  const row=e.target.closest("tr[data-row]");
-  if(row&&e.currentTarget.contains(row))openDetail(row.dataset.row);
-});
-$("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
-$("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
-load().catch(err=>{$("#originStatus").textContent="2.1 병종 DB 데이터 로드 실패: "+err.message;console.error(err)});
+async function init(){try{
+  const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
+  [DATA,REPORT,CATALOG]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json'),json('../../data/soldier-source-catalog.json')]);
+  await validate();
+  const complete=REPORT.records.filter(r=>r.candidates.length).length;
+  $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 경로 완결',complete+'/72','자원·이벤트 가정은 조건부'],['등록 후보',REPORT.summary.witnesses,'실제 재생을 통과한 경로'],['최종 최대치 인증','0','잠정값과 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
+  $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('');
+  const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
+  $('#search').addEventListener('input',render);$('#family').addEventListener('change',render);$('#catalogMetric').addEventListener('change',render);
+  document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
+    if(origin)void openOrigin(origin.dataset.openOrigin);if(research)showResearch(research.dataset.researchNode);if(candidate)void openOrigin(selected,candidate.dataset.candidate);
+    if(e.target.id==='originDetailClose'){$('#originDetails').hidden=true;replayGeneration++;}
+  });
+  $('#closeResearchDialog').onclick=()=>$('#researchDialog').close();$('#researchDialog').addEventListener('click',e=>{if(e.target===$('#researchDialog'))$('#researchDialog').close()});
+  $('#researchSearch').addEventListener('input',()=>{const q=$('#researchSearch').value.toLocaleLowerCase('ko');$('#researchMatches').innerHTML=q?Object.keys(DATA.researchRules).filter(id=>(id+' '+name(id)).toLocaleLowerCase('ko').includes(q)).slice(0,35).map(node).join(' '):''});
+  render();
+  if(params.has('profile'))void openOrigin(params.get('profile'));
+  if(params.has('training'))showTraining(params.get('training'));
+  if(params.has('research'))showResearch(params.get('research'));
+}catch(error){sourceFail(error.message);console.error(error)}}
+void init();

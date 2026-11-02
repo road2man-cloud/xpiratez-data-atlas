@@ -21,7 +21,7 @@ for(const kind of kinds){
   }else if(kind==="trainings"){
     // The current Soldier Training DB uses the canonical 2.1 rulebook.
     // Outdated 1.1.1 guide cards are verified offline but never attached to it.
-    assert(html.includes('src="app-2.1.js'));
+    assert(html.includes('location.replace(target.href)')&&!html.includes('id="trainingTable"'));
     assert(!html.includes('src="../play-guide.js"'));
     assert(!html.includes("v.o1.1.1"));
   }else{

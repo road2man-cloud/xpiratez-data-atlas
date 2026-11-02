@@ -13,7 +13,7 @@ import {chromium} from "playwright-core";
 const publicDir=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../public");
 const args=process.argv.slice(2);
 const option=(prefix)=>args.find(x=>x.startsWith(prefix+"="))?.slice(prefix.length+1);
-const pages=(option("--pages")||"starting,captains,soldiers,trainings,crafts,craft-weapons,facilities,armors,items,research,manufacture,events,forces,weapons").split(",");
+const pages=(option("--pages")||"starting,captains,soldiers,crafts,craft-weapons,facilities,armors,items,research,manufacture,events,forces,weapons").split(",");
 const ready={
   starting:"#cards .card", captains:"#matrixTable tbody tr", soldiers:"#originTable tbody tr", trainings:"#trainingTable tbody tr[data-id]",
   crafts:"#craftTable tbody tr", "craft-weapons":"#weaponTable tbody tr",
@@ -81,32 +81,30 @@ try {
         await page.waitForFunction(()=>document.querySelector("#originMaxima")
           ?.dataset.validation==="validated",{timeout:30000});
         count=await page.locator("#originTable tbody tr").count();
-        if(count!==112)errors.push("2.1 Soldier acquisition rows: "+count+"/112");
+        if(count!==72)errors.push("2.1 original birth profiles: "+count+"/72");
         if(await page.locator("#legacyMaximaArchive").count()||
           await page.locator(".soldier-db-views").count())
           errors.push("Duplicate or 1.1.1 Soldier navigation remains");
-        if(await page.locator("#originMetric").inputValue()!=="verified")
-          errors.push("Unverified maxima selected by default");
-        if((await page.locator("#originTable tbody tr").first().locator("td").nth(3).innerText()).trim()!=="—")
-          errors.push("Unproven final numbers published");
-        await page.locator("#originSearch").fill("direct:STR_SOLDIER_PEASANT");
+        if(await page.locator("#catalogMetric").inputValue()!=="provisional")
+          errors.push("Registered conditional provisional candidates must be the default");
+        if(await page.locator('input[type="file"]').count())errors.push("Local save interface was not removed");
+        await page.locator("#search").fill("direct:STR_SOLDIER_PEASANT");
         const narrowed=await page.locator("#originTable tbody tr").count();
         search=count+"->"+narrowed;
         if(narrowed!==1)errors.push("Acquisition source search mismatch "+narrowed);
-        await page.locator("#originTable .maxima-show").first().click();
+        await page.locator("#originTable .origin-open").first().click();
+        await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:45000});
         detail=String((await page.locator("#originDetails").innerText()).length);
         if(Number(detail)<150)errors.push("2.1 acquisition proof detail incomplete");
-        await page.locator("#originMetric").selectOption("max");
-        if((await page.locator("#originTable tbody tr").first().locator("td").nth(9).innerText()).trim()!=="36")
-          errors.push("Source raw stat max unexpectedly changed");
-        await page.locator("#originMetric").selectOption("verified");
-        if((await page.locator("#originTable tbody tr").first().locator("td").nth(9).innerText()).trim()!=="—")
-          errors.push("Source max was silently elevated to certified");
+        await page.locator('#catalogMetric').selectOption('certified');
+        if((await page.locator('#originTable .score').innerText()).trim()!=='—')errors.push('Provisional silently upgraded to certified');
+        await page.locator('#catalogMetric').selectOption('provisional');
+        if(!(await page.locator('#catalogStatus').innerText()).includes('조건부'))errors.push('Provisional assumptions hidden');
         const networkPaths=await page.evaluate(()=>performance.getEntriesByType("resource")
           .map(r=>new URL(r.name).pathname));
         if(networkPaths.some(x=>x.endsWith("/soldiers-runtime.json.gz")))
           errors.push("Retired 1.1.1 Soldier runtime loaded");
-        const ok=count===112&&!errors.length&&!httpErrors.length;
+        const ok=count===72&&!errors.length&&!httpErrors.length;
         results.push(ok);
         console.log((ok?"PASS":"FAIL")+" soldiers rows="+count+
           " search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+
@@ -548,29 +546,8 @@ try {
           const blockedPanel=await page.locator("#choiceScenarioBlocked").innerText();
           if(!blockedPanel.includes("무모한 선장"))errors.push("Blocked branch reason is not visible");
           await page.locator("#choiceScenarioReset").click();
-          const sampleSave=[
-            "name: Smoke Save","---","difficulty: 2","funds: 1000",
-            "bases:","  - name: Demo","    research:","      - project: STR_CAPTAIN_LAZYASS",
-            "discovered:","  - STR_GDX_012",
-            "researchRuleStatus:","  STR_TEC_169: 2","  STR_GDX_013: 2",
-            "researchDiary:",
-            "  - {date: [2601, 1, 29], name: STR_TEC_168, sourceType: 4, sourceName: STR_AURORA_EVENT}"
-          ].join("\\n")+"\\n";
-          await page.locator("#choiceSaveFile").setInputFiles({
-            name:"choice-smoke.sav",mimeType:"text/plain",buffer:Buffer.from(sampleSave.replaceAll("\\n","\n"))
-          });
-          await page.waitForFunction(()=>document.querySelector("#choiceSaveSummary")?.textContent.includes("영구 배제 2개"),{timeout:10000});
-          if(!await page.locator("#choiceSaveEvidence").isVisible())
-            errors.push("Research diary evidence panel did not appear");
-          const evidence=await page.locator("#choiceSaveEvidenceContent").innerText();
-          if(!evidence.includes("배제 원인 후보")||!evidence.includes("이벤트 보상"))
-            errors.push("Research diary evidence failed to connect event source with ruleset disables");
-          if(await page.locator('#exclusiveRules .choice-option[data-choice-id="STR_GDX_012"]').getAttribute("data-sim-state")!=="completed")
-            errors.push("Save discovered was not marked completed");
-          if(await page.locator('#exclusiveRules .choice-option[data-choice-id="STR_TEC_169"]').getAttribute("data-sim-state")!=="blocked")
-            errors.push("Save researchRuleStatus=2 was ignored");
-          if((await page.locator("#choiceScenarioStats").innerText()).includes("연구 직접 봉쇄")===false)
-            errors.push("Missing save-backed exclusions metric");
+          if(await page.locator('input[type="file"],#choiceSaveFile,#choiceSaveEvidence').count())
+            errors.push('Local save input and evidence panels must remain deleted');
           await page.locator("#choiceScenarioReset").click();
           await page.locator("#choiceCompletedInput").fill("STR_GDX_012");
           await page.locator("#choiceCompletedApply").click();
