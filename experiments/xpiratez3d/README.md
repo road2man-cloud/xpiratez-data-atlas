@@ -2,6 +2,8 @@
 
 This directory belongs to the **existing X-Piratez Data Atlas**. It is not a second, competing ruleset.
 
+**Conversion-first priority (2026-11-03):** [Native S2 conversion contract](./CONVERSION_CONTRACT.md) — support real 40/50/60-sized and future rectangular maps, consistent tile/voxel/actor scale, saved terrain-part identity, native collisions and correct source-unit footprints. Stage25's 10-floor tower is now a deferred edge-case regression, **not a critical-path goal**. The shared spatial and armor/terrain audit tools live in the existing `tools/` directory.
+
 **Canonical data:** `../../public/reference/items.json`, X-Piratez v.o2 / 2.1, OXCE 8.7.1, Git blob `75e96cc753f78dbd51a813a0bccdf38dedac6486`. Source revision pin and validation claims: [Experiment 04](../../docs/xpiratez-3d/EXPERIMENT_04_LINUX.md).
 
 ## Currently committed here
@@ -62,4 +64,4 @@ The actual Win32/x86 `Silent-Storm-Reconstruction` C++ `Game.exe` now builds wit
 
 ## Current native large-battle milestone — Stage 25 (2026-11-02)
 
-[Stage 25 real Silent Storm 120×120 / 160×160 ten-deck tactical engine](stage25/README.md) creates and runs independent x86 S2 battle worlds with 10 deck slabs and 40 pillars each, registered as both 50 native renderer meshes and **50 actual S2 AI-map collision hulls**, using the original world-object synchronization path. Both size variants reached native `CMission`, spawned one real native actor, exited cleanly and released the mouse. Floor slot envelope 12, 40m LOS allocation and 51.2m explosion-volume expansion compile and run, but traversable upper-floor graphs, stairs, high-floor combat/visibility, genuine X-Piratez terrain conversion, and campaign return are still outstanding. The production OXCE game is untouched.
+[Stage 25 real Silent Storm 120×120 / 160×160 ten-deck tactical engine](stage25/README.md) creates and runs independent x86 S2 battle worlds with 10 deck slabs and 40 pillars each, registered as both 50 native renderer meshes and **50 actual S2 AI-map collision hulls**, using the original world-object synchronization path. Both size variants reached native `CMission`, spawned one real native actor, exited cleanly and released the mouse. Floor slot envelope 12, 40m LOS allocation and 51.2m explosion-volume expansion compile and run; follow-up native diagnostics found 10/10 representative floor nodes with standing and adjacent horizontal movement. **Floor-to-floor ascent, imported actor movement on high floors, high-floor combat, genuine playable map conversion, and OXCE campaign return remain unverified or unimplemented.** The tower work is now lower priority than general source map and unit conversion. The production OXCE game is untouched.
