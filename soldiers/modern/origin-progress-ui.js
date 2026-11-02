@@ -16,6 +16,85 @@ const idItems=a=>(a||[]).length?a.map(x=>'<code>'+esc(typeof x==="string"?x:x.id
   (typeof x==="object"&&x.count!==1?" ×"+esc(x.count):"")+'</code>').join(" · "):"없음";
 const linkableId=id=>'<code>'+esc(id)+'</code>';
 
+// Re-play only the *structural* type-change history to reject forged origins.
+// Not a campaign replay: we deliberately never certify the availability of
+// research, items, stats, medals, RNG, healing or corpse recovery here.
+function validateRootedAncestry(row,sourceMap,transforms){
+  const a=row.candidateSourceAncestry;
+  if(!a||a.id!==row.id||a.candidateCount!==a.candidates?.length||
+    a.rootProfileIds?.length!==new Set(a.rootProfileIds).size)
+    throw new Error("출발 획득처별 병종변경 계보 훼손: "+row.id);
+  const allRoots=new Set(),unique=new Set();
+  let direct=0,indirect=0,largest=0,resets=0,deathContinuity=0,sameBody=0;
+  for(const candidate of a.candidates){
+    const origin=sourceMap.get(candidate.rootProfileId);
+    const steps=candidate.steps;
+    if(!origin||!Array.isArray(steps)||steps.length<1||steps.length>7||
+      candidate.rootSoldierType!==origin.soldierType||
+      candidate.status!=="TYPE_CHANGE_GRAPH_ONLY_NOT_EXECUTED"||
+      candidate.finalStats!==null||candidate.finalSum!==null||
+      !candidate.proof||
+      Object.values(candidate.proof).some(value=>value!==false))
+      throw new Error("획득처 계보를 실행 확정으로 가장하거나 루트 오류: "+row.id);
+    const sig=candidate.rootProfileId+"|"+steps.map(x=>x.transformationId).join(">");
+    if(unique.has(sig))throw new Error("획득처 계보 중복: "+sig);
+    unique.add(sig);
+    let type=origin.soldierType,oldDeadOnly=false,needsDeathRecovery=false,seenReset=false;
+    const history=new Set(Object.entries(origin.previousTransformations||{})
+      .filter(([,n])=>Number(n)>0).map(([id])=>id));
+    const used=new Set();
+    for(const step of steps){
+      const t=transforms.get(step.transformationId);
+      const vitals=[
+        t?.allowsLiveSoldiers?"live":null,
+        t?.allowsWoundedSoldiers?"wounded":null,
+        t?.allowsDeadSoldiers?"dead":null
+      ].filter(Boolean);
+      if(!t||!t.producedSoldierType||t.createsClone||t.producedItem||
+        (t.requires||[]).includes("STR_UNAVAILABLE")||
+        used.has(t.id)||!t.allowedSoldierTypes.includes(type)||
+        (t.forbiddenSoldierTypes||[]).includes(type)||
+        (t.requiredPreviousTransformations||[]).some(id=>!history.has(id))||
+        (t.forbiddenPreviousTransformations||[]).some(id=>history.has(id))||
+        step.fromType!==type||step.toType!==t.producedSoldierType||
+        step.historyReset!==(t.reset===true)||
+        step.corpseRecoveryRequired!==(t.needsCorpseRecovered===true)||
+        !vitals.length||JSON.stringify(step.requiredVitals)!==JSON.stringify(vitals))
+        throw new Error("2.1 변신 전/후 병종·이력·생존 게이트 불일치: "+sig);
+      if(t.reset){history.clear();seenReset=true;}
+      else for(const erased of t.removeTransformations||[])history.delete(erased);
+      history.add(t.id);
+      used.add(t.id);
+      if(oldDeadOnly)needsDeathRecovery=true;
+      if(vitals.length===1&&vitals[0]==="dead")oldDeadOnly=true;
+      type=t.producedSoldierType;
+    }
+    const last=steps.at(-1);
+    if(last.transformationId!==row.sourceId||
+      last.fromType!==row.parentSoldierType||
+      type!==row.soldierType||
+      candidate.hasHistoryReset!==seenReset||
+      candidate.vitalContinuityUnverified!==needsDeathRecovery||
+      JSON.stringify(candidate.terminalHistory)!==
+        JSON.stringify([...history].sort()))
+      throw new Error("획득처별 계보 종착 병종·리셋 이력 불일치: "+sig);
+    if(steps.length===1)direct++;else indirect++;
+    if(seenReset)resets++;
+    if(needsDeathRecovery)deathContinuity++;
+    if(last.fromType===last.toType)sameBody++;
+    largest=Math.max(largest,steps.length);
+    allRoots.add(candidate.rootProfileId);
+  }
+  if(a.directRootCount!==direct||a.viaOtherBodyChangeCount!==indirect||
+    a.maxDepth!==largest||
+    JSON.stringify(a.rootProfileIds)!==JSON.stringify([...allRoots].sort())||
+    (a.candidateCount===0&&!a.noRecordedPathMeaning))
+    throw new Error("획득처별 계보 후보 집계 불일치: "+row.id);
+  return {count:a.candidateCount,roots:allRoots,resets,deathContinuity,
+    sameBody,maxDepth:largest};
+}
+
+
 export function validateOriginProgression(report,data,oldMaxima){
   if(report?.schemaVersion!==1||report.kind!=="SOLDIER_ACQUISITION_PROGRESSION")
     throw new Error("획득처별 성장 데이터 버전 불일치");
@@ -32,11 +111,23 @@ export function validateOriginProgression(report,data,oldMaxima){
     report.stats.includes("mana")||report.classes?.length!==29||
     oldMaxima.rows?.length!==29||report.sourceVersion!=="v.o2"||
     data.meta?.mod?.version!=="v.o2"||
+    JSON.stringify(report.sourceHashes)!==JSON.stringify(data.meta?.source?.rules)||
     report.source.some(x=>/public\/data\/(?:manufacture|event)[-/]/.test(x)))
     throw new Error("11개 능력치/병종/2.1 단일 원본 범위 불일치");
   const candidates=new Map(oldMaxima.rows.map(x=>[x.id,x]));
   const original=new Map(data.profiles.map(p=>[p.id,p]));
   const transformations=new Map(data.transformations.map(t=>[t.id,t]));
+  const ancestral=s.sourceRootedAncestry;
+  if(ancestral?.originalSpawnProfiles!==data.profiles.length||
+    ancestral.examinedBodyChangeRules!==data.transformations.filter(t=>
+      t.producedSoldierType&&!t.createsClone&&!t.producedItem).length||
+    ancestral.incomingEdges!==s.incomingTypeChangeBranches||
+    ancestral.fullyExecutedCandidates!==0||
+    ancestral.verifiedFinalStatCandidates!==0)
+    throw new Error("출생처 기점 병종 변경 색인 또는 검증 상태 불일치");
+  const cumulativeLineage={
+    count:0,roots:new Set(),resets:0,deathContinuity:0,sameBody:0,maxDepth:0
+  };
   const seen=new Set();
   for(const row of report.rows){
     if(seen.has(row.id)||!candidates.has(row.soldierType)||row.proof?.status!=="미검증")
@@ -165,9 +256,24 @@ export function validateOriginProgression(report,data,oldMaxima){
         row.legacyCandidateBirthHistoryAudit!==null||
         row.proof.unresolvedParent!==true)
         throw new Error("변신 출생 경로 / reset 초기화 불일치: "+row.id);
+      const lineage=validateRootedAncestry(row,original,transformations);
+      cumulativeLineage.count+=lineage.count;
+      for(const id of lineage.roots)cumulativeLineage.roots.add(id);
+      cumulativeLineage.resets+=lineage.resets;
+      cumulativeLineage.deathContinuity+=lineage.deathContinuity;
+      cumulativeLineage.sameBody+=lineage.sameBody;
+      cumulativeLineage.maxDepth=Math.max(cumulativeLineage.maxDepth,lineage.maxDepth);
     }else throw new Error("출생 형식 알 수 없음: "+row.id);
   }
   for(const p of data.profiles)if(!seen.has(p.id))throw new Error("출생처 누락: "+p.id);
+  if(ancestral.sourceAnchoredCandidates!==cumulativeLineage.count||
+    ancestral.rootsWithCandidatePath!==cumulativeLineage.roots.size||
+    ancestral.candidatesWithHistoryReset!==cumulativeLineage.resets||
+    ancestral.candidatesRequiringUnverifiedPostDeathContinuity!==
+      cumulativeLineage.deathContinuity||
+    ancestral.candidatesWithSameBodyProducedType!==cumulativeLineage.sameBody||
+    ancestral.longestBodyChangeChain!==cumulativeLineage.maxDepth)
+    throw new Error("출생처 기점 다단계 변신 집계 오류");
   const birth=report.rows.filter(r=>r.kind==="SOURCE_SPAWN");
   const diag={
     birthProfilesWithAlreadyCompletedCandidate:birth.filter(r=>
@@ -208,7 +314,39 @@ function statTable(row,stats) {
       '<td>'+cell(sumStats(values,stats))+'</td></tr>').join("")+
     '<tr><th>최종 실현 능력치</th><td colspan="12">미검증 · 숫자 표시 금지</td></tr></tbody></table></div>';
 }
-function showDetails(row,stats,host){
+function sourceAncestryDetails(row,sourceNames){
+  const a=row.candidateSourceAncestry;
+  if(!a)return "";
+  const empty='<p class="muted">이 제한된 병종변경 사슬 탐색에서는 최초 출생처로 거슬러 올라가는 경로를 찾지 못했습니다. '+
+    '<strong>이 병종이 획득 불가능하다는 뜻이 아닙니다.</strong> 일반 훈련, 반복 변신 및 시간순 사건은 아직 누락되어 있습니다.</p>';
+  const entries=a.candidates.map((c,i)=>{
+    const sourceName=sourceNames.get(c.rootProfileId)||c.rootProfileId;
+    const sequence=c.steps.map((s,j)=>
+      (j===0?'<code>'+esc(s.fromType)+'</code> → ':'')+
+      '<code>'+esc(s.transformationId)+'</code> → <code>'+esc(s.toType)+'</code>'+
+      (s.historyReset?' <strong>(이력 초기화)</strong>':'')+
+      (s.requiredVitals.includes('dead')?' <strong>(사망 상태 조건)</strong>':'')
+    ).join(' · ');
+    return '<li><strong>'+esc(sourceName)+'</strong> '+
+      '<code>'+esc(c.rootProfileId)+'</code><p>'+sequence+'</p>'+
+      '<p class="muted">최종 남는 변신 이력: '+idItems(c.terminalHistory)+
+      (c.vitalContinuityUnverified?
+        ' · 사망 후 후속 변신이 실제 가능하려면 생존 상태의 별도 재검증이 필요함':'')+
+      ' · <strong>연구·시설·재료·훈장·능력치 미검증</strong></p></li>';
+  }).join('');
+  return '<h4>최초 획득처에서 연결되는 병종변경 사슬</h4>'+
+    '<p>출생 프로필 '+cell(a.rootProfileIds.length)+'개에서 시작하는 '+
+    '<strong>'+cell(a.candidateCount)+'개 구조 후보</strong> · 그중 최초 병종에서 바로 전환 '+
+    cell(a.directRootCount)+'개, 다른 병종을 경유 '+cell(a.viaOtherBodyChangeCount)+
+    '개 · 최대 '+cell(a.maxDepth)+'단계</p>'+
+    '<p class="muted">출생 당시 변신 이력, 방향성 금지 규칙, 병종 변경의 reset 및 '+
+    '한 규칙의 중복 사용 금지를 반영했습니다. 일반 훈련·연구·재료·전투 성장·훈장·사망/부활은 '+
+    '실행하지 않은 탐색이므로 후보가 존재해도 실제로 가능한 최종 육성을 의미하지 않습니다. '+
+    '탐색 범위 밖 경로를 불가능하다고 단정하지 않습니다.</p>'+
+    (a.candidateCount?'<details class="origin-lineage-candidates"><summary>출생처별 구조 경로 '+
+      cell(a.candidateCount)+'개 펼치기</summary><ol>'+entries+'</ol></details>':empty);
+}
+function showDetails(row,stats,host,sourceNames){
   const source=row.kind==="SOURCE_SPAWN";
   host.hidden=false;
   let html='<div class="maxima-detail-head"><h3>'+esc(row.soldierName)+
@@ -246,6 +384,7 @@ function showDetails(row,stats,host){
       'reset: false · 이전 이력을 유지할 수 있으나 실제 출발 개인을 확인해야 함')+'</p>'+
     '<p><strong>알려진 직접 출발 프로필:</strong> '+
       idItems(row.parentAcquisitionProfiles)+'</p>';
+  if(!source)html+=sourceAncestryDetails(row,sourceNames);
   const requirements=row.prerequisites;
   const materialRows=Object.entries(requirements.items||{}).map(([id,n])=>{
     const provenance=requirements.itemSources?.[id];
@@ -327,14 +466,18 @@ export async function initOriginProgression(data){
       metric=section.querySelector("#originMetric"),table=section.querySelector("#originTable"),
       detail=section.querySelector("#originDetails"),summary=section.querySelector("#originSummary");
     const stats=report.stats;
+    const sourceNames=new Map(report.rows.filter(r=>r.kind==="SOURCE_SPAWN")
+      .map(r=>[r.id,r.sourceName]));
     const statHead=stats.map(k=>'<th>'+esc(STAT_LABELS[k]||k)+'</th>').join("");
     table.querySelector("thead").innerHTML='<tr><th>획득처 / 출생 병종</th><th>형식</th>'+
       '<th>검증 상태</th><th>11종 합계</th>'+statHead+'</tr>';
     summary.textContent=report.summary.classes+"개 병종 · 실제 출생 프로필 "+
       verified.births+"개 · 병종 변경 출발유형 "+verified.transformBranches+
-      "개 · 출생 시 후보 훈련 선보유 "+report.summary.birthProfilesWithAlreadyCompletedCandidate+
-      "개 · 원본 직접 금지 이력 충돌 "+report.summary.birthProfilesWithDirectForbiddenCandidate+
-      "개 · 실행 검증 0개 · 최종 능력치 확정 0개";
+      "개 · 출생 이력 선보유 "+report.summary.birthProfilesWithAlreadyCompletedCandidate+
+      "개 · 직접 금지 이력 충돌 "+report.summary.birthProfilesWithDirectForbiddenCandidate+
+      "개 · 출생처 기점 구조 사슬 "+report.summary.sourceRootedAncestry.sourceAnchoredCandidates+
+      "개(최대 "+report.summary.sourceRootedAncestry.longestBodyChangeChain+
+      "단계, 미실행) · 실행 검증 0개 · 최종 능력치 확정 0개";
     const classNames=new Map(data.soldiers.map(x=>[x.id,x.koName]));
     type.innerHTML='<option value="">전체 병종 (29종)</option>'+
       report.classes.map(x=>'<option value="'+esc(x.soldierType)+'">'+
@@ -358,6 +501,8 @@ export async function initOriginProgression(data){
           (row.legacyCandidateBirthHistoryAudit?.directHistoryConflicts?.length?
             ' · 출생 이력 경고 '+row.legacyCandidateBirthHistoryAudit.directHistoryConflicts.length+'건':'')+
           (row.prerequisites?.reset?' · 이력 초기화':'')+
+          (row.candidateSourceAncestry?' · 출생처 추적 후보 '+
+            row.candidateSourceAncestry.candidateCount+'건(미실행)':'')+
           '<small class="id">'+esc(label)+'</small></td>'+
           '<td>'+(total==null?"—":cell(total))+'</td>'+
           stats.map(k=>'<td class="maxima-stat">'+(value?cell(value[k]):"—")+'</td>').join("")+
@@ -373,7 +518,7 @@ export async function initOriginProgression(data){
       const b=event.target.closest("button[data-origin-id]");
       if(!b)return;
       const row=report.rows.find(r=>r.id===b.dataset.originId);
-      if(row)showDetails(row,stats,detail);
+      if(row)showDetails(row,stats,detail,sourceNames);
     });
     render();
   }catch(error){
