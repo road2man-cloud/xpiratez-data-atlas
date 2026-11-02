@@ -19,7 +19,8 @@ try{
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
  assert.equal(await page.locator('#catalogMetric').inputValue(),'provisional');
- const expectedSummary=(await (await page.request.get(url('data/soldier-origin-candidates.json'))).json()).summary;
+ const expectedReport=await (await page.request.get(url('data/soldier-origin-candidates.json'))).json();
+ const expectedSummary=expectedReport.summary;
  assert.equal(expectedSummary.profiles,72);
  assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
  assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses)));
@@ -60,14 +61,30 @@ try{
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
- await page.locator('#search').fill('manufacture:STR_POLTERGEIST_EMBODIMENT');
- assert.equal((await page.locator('#originTable .score').innerText()).trim(),'—');
+ const poltergeist=expectedReport.records.find(r=>r.profileId==='manufacture:STR_POLTERGEIST_EMBODIMENT');
+ const poltergeistBest=poltergeist.candidates.find(c=>c.id===poltergeist.bestCandidateId);
+ assert(poltergeistBest&&poltergeistBest.total>=453);
+ await page.locator('#search').fill(poltergeist.profileId);
+ assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),poltergeistBest.total);
  await page.locator('#originTable .origin-open').click();
- await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('완결 연구 경로 미확보'));
- assert((await page.locator('#originDetails').innerText()).includes('영구 불가능 판정이 아닙니다'));
- assert((await page.locator('#originDetails').innerText()).includes('상위 연구·이벤트 근거'));
- assert(await page.locator('#originDetails li [data-research-node]').count()>0,
-   'Unresolved origins must identify the first missing research/event evidence, not a fabricated stat');
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
+ await page.locator('#originDetails .assumptions').evaluate(el=>el.open=true);
+ const poltergeistDetail=await page.locator('#originDetails').innerText();
+ assert(poltergeistDetail.includes('STR_ENJOYING_THE_DREAM'));
+ assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
+ console.log('PASS previously unresolved Poltergeist birth now has a replayed conditional route, not an invented cap');
+ const pending=expectedReport.records.find(r=>!r.candidates.length);
+ if(pending){
+   await page.locator('#search').fill(pending.profileId);
+   assert.equal((await page.locator('#originTable .score').innerText()).trim(),'—');
+   await page.locator('#originTable .origin-open').click();
+   await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('완결 연구 경로 미확보'));
+   assert((await page.locator('#originDetails').innerText()).includes('영구 불가능 판정이 아닙니다'));
+   assert((await page.locator('#originDetails').innerText()).includes('상위 연구·이벤트 근거'));
+   assert(await page.locator('#originDetails li [data-research-node]').count()>0,
+     'Unresolved origins must identify the first missing research/event evidence, not a fabricated stat');
+ }
  console.log('PASS independent clone/farmer origins and unresolved paths never receive fabricated maxima');
  await page.goto(url('trainings/?training=STR_BASIC_FIREARMS_TRAINING'));
  await page.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',null,{timeout:60000});

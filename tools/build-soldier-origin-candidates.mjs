@@ -26,6 +26,14 @@ const unresolvedOnly=process.argv.includes('--unresolved-only');
 const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
 if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
   throw Error('Unknown source profile: '+focusProfile);
+// These are ordered SEARCH GOALS, never pre-completed flags. All prerequisites,
+// samples, free-award timing and event guards still pass the existing verifier.
+const researchFirst=[...new Set(process.argv.filter(x=>x.startsWith('--research-first='))
+  .map(x=>x.slice('--research-first='.length)))];
+if(researchFirst.length&&!focusProfile)throw Error('--research-first requires --profile to keep other origins untouched');
+if(researchFirst.length>24)throw Error('At most 24 ordered research goals are supported');
+for(const id of researchFirst)if(!id||id==='STR_UNAVAILABLE'||!data.researchRules[id])
+  throw Error('Unknown or unavailable ordered research goal: '+id);
 const branchEvidence=replay=>researchBranchEvidence(replay,data.researchRules);
 function candidate(node,p,description){
   const replay=replayOriginWitness(node.steps,data);
@@ -53,7 +61,7 @@ function obtain(p){
   for(const alt of alternatives){
     let node=planner.newNode();
     const event=alt?originEventScript(alt,p.sourceId):null;
-    const goals=[...p.requires,...(event?.researchPositive||[])];
+    const goals=[...researchFirst,...p.requires,...(event?.researchPositive||[])];
     const required=planner.ensure(goals,node);
     if(!required.ok){last={id:required.unresolved,reason:required.reason};continue;}
     node=required.node;
