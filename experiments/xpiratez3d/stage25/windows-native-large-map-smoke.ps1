@@ -6,6 +6,8 @@ param(
  [ValidateSet(120,160)][int]$Size=120,
  [switch]$WithHulls,
  [switch]$SpawnActor,
+ [switch]$MoveActor,
+ [switch]$DeckScan,
  [switch]$LeaveOpen
 )
 $ErrorActionPreference='Stop'
@@ -17,7 +19,8 @@ $inbox=Join-Path $Runtime '_harness_cmd.txt'
 $ack=Join-Path $Runtime '_saveload.log'
 $stack=Join-Path $Runtime '_xpz_interface_stack.log'
 $mapLog=Join-Path $Runtime '_xpz_stage25_map.log'
-$script:seq=0;$game=$null;$completed=$false;$reason='not-started'
+$moveLog=Join-Path $Runtime '_xpz_stage23_move.log'
+$script:seq=0;$game=$null;$completed=$false;$reason='not-started';$deckScanResult=$null
 function Log([string]$msg){
  $line=([DateTimeOffset]::Now.ToString('O')+' '+$msg)
  $line | Out-File -FilePath (Join-Path $evidence 'driver.log') -Append -Encoding UTF8
@@ -62,6 +65,7 @@ function Send([string]$cmd){
  Log ('CMD '+$cmd)
 }
 try{
+ if(($MoveActor -or $DeckScan) -and -not $SpawnActor){throw 'MoveActor/DeckScan require SpawnActor'}
  if(-not(Test-Path -LiteralPath $BuildExe)){throw 'Stage25 Game.exe absent'}
  if(-not(Test-Path -LiteralPath (Join-Path $Runtime 'game.db'))){throw 'No isolated GOG game.db'}
  $foreign=@(Get-CimInstance Win32_Process | Where-Object {
@@ -87,6 +91,7 @@ try{
  $env:XPZ3D_INTERFACE_STACK_DIAG='1'
  $env:XPZ3D_WORLD_STEP_DIAG='1'
  $env:XPZ3D_NATIVE_SPAWN_DIAG='1'
+ $env:XPZ3D_MOVE_TEST=$(if($MoveActor){'1'}else{'0'})
  $env:XPZ3D_SPAWN_TEST_EVENT='0'
  $game=Start-Process -FilePath $exe -WorkingDirectory $Runtime -ArgumentList @(
    '-harness','-windowed','-nosound','-cfg','xpz-start-no-video.cfg') -PassThru
@@ -124,6 +129,72 @@ try{
   }
   Log 'NATIVE_ACTOR_SPAWNED_ON_LARGE_MAP'
  }
+ if($DeckScan){
+  # Diagnostic has no moving/deployment mutation: the native path network
+  # reports which layers are usable at a fixed point inside the test tower.
+  $existing=(Read-Live $moveLog)
+  $beforeScanCount=[regex]::Matches($existing,'event=deckscan_end ').Count
+  Send 'console xpz3d_stage23 deckscan'
+  if(-not(Until { [regex]::Matches((Read-Live $moveLog),'event=deckscan_end ').Count -gt $beforeScanCount } 25)){
+   throw ('Native deckscan did not finish: '+(Read-Live $moveLog))
+  }
+  $results=@(([regex]::Matches((Read-Live $moveLog),'(?m)^.*event=deckscan_end .*')).Value)
+  $line=([string]$results[-1]).Trim()
+  $match=[regex]::Match($line,'layers=(\d+) valid_layers=(\d+) floor_mask=(\d+) complete_ten_decks=([01]) stand_mask=(\d+) adjacent_edge_mask=(\d+) routes_verified=0')
+  if(-not $match.Success){throw ('Malformed native deckscan result: '+$line)}
+  $deckScanResult=[ordered]@{layerCount=[int]$match.Groups[1].Value;validLayers=[int]$match.Groups[2].Value;floorMask=[int]$match.Groups[3].Value;completeTenDecks=($match.Groups[4].Value -eq '1');standMask=[int]$match.Groups[5].Value;adjacentEdgeMask=[int]$match.Groups[6].Value;routesVerified=$false}
+  Log ('NATIVE_DECKSCAN_RECORDED '+$line)
+  if(-not $deckScanResult.completeTenDecks){throw ('Native 10-floor destination mask incomplete: '+$line)}
+ }
+ if($MoveActor){
+  # Reuse the Stage23 native tracker/path command, but require genuine grid AND
+  # 3D-world displacement and a fully settled animation on this larger map.
+  Send 'console xpz3d_stage23 status'
+  $snap=@(([regex]::Matches((Read-Live $moveLog),'(?m)^.*event=snapshot index=1 .*')).Value)
+  if($snap.Count -lt 1){throw 'Stage23 native unit baseline absent'}
+  $before=[regex]::Match([string]$snap[-1], 'unit=(\S+) tile=(\d+),(\d+) layer=(\d+).* ap=(-?\d+) selected=(\d+) moving=(\d+) path=(\d+) real=([-0-9.]+),([-0-9.]+),([-0-9.]+)')
+  if(-not $before.Success){throw ('Malformed native unit baseline: '+[string]$snap[-1])}
+  $actor=[string]$before.Groups[1].Value
+  $bx=[int]$before.Groups[2].Value; $by=[int]$before.Groups[3].Value
+  $blayer=[int]$before.Groups[4].Value
+  $rx=[double]::Parse($before.Groups[9].Value,[Globalization.CultureInfo]::InvariantCulture)
+  $ry=[double]::Parse($before.Groups[10].Value,[Globalization.CultureInfo]::InvariantCulture)
+  Log ('GROUND_MOVE_BASELINE actor='+$actor+' tile='+$bx+','+$by+' layer='+$blayer)
+  Send 'console xpz3d_stage23 move'
+  $orders=@(([regex]::Matches((Read-Live $moveLog),'(?m)^.*event=move_submit .*')).Value)
+  if($orders.Count -ne 1){throw ('Native path order not submitted: '+(Read-Live $moveLog))}
+  $order=([string]$orders[0]).Trim()
+  if($order -notmatch 'result=1 ' -or $order -notmatch 'selected=1$' -or
+     $order -notmatch ('unit='+[regex]::Escape($actor)+' ')){
+   throw ('Native movement order was not accepted: '+$order)
+  }
+  $dest=[regex]::Match($order,' to=(\d+),(\d+) layer=(\d+) ')
+  if(-not $dest.Success){throw ('Malformed destination: '+$order)}
+  $tx=[int]$dest.Groups[1].Value; $ty=[int]$dest.Groups[2].Value
+  if([int]$dest.Groups[3].Value -ne $blayer){throw 'Ground order changed layer unexpectedly'}
+  Log ('GROUND_MOVE_SUBMITTED '+$order)
+  $arrived=$false; $displaced=$false; $settled=$false; $changedTile=$false
+  for($i=0;$i -lt 32;$i++){
+   if((Top) -notmatch 'top=class NGame::CMission '){throw ('Mission interrupted movement: '+(Top))}
+   Send 'console xpz3d_stage23 status'
+   $snap=@(([regex]::Matches((Read-Live $moveLog),'(?m)^.*event=snapshot index=1 .*')).Value)
+   $last=[regex]::Match([string]$snap[-1], 'unit=(\S+) tile=(\d+),(\d+) layer=(\d+).* ap=(-?\d+) selected=(\d+) moving=(\d+) path=(\d+) real=([-0-9.]+),([-0-9.]+),([-0-9.]+)')
+   if(-not $last.Success -or $last.Groups[1].Value -ne $actor){throw ('Native actor identity/snapshot mismatch: '+[string]$snap[-1])}
+   $x=[int]$last.Groups[2].Value; $y=[int]$last.Groups[3].Value
+   $px=[double]::Parse($last.Groups[9].Value,[Globalization.CultureInfo]::InvariantCulture)
+   $py=[double]::Parse($last.Groups[10].Value,[Globalization.CultureInfo]::InvariantCulture)
+   $changedTile=$changedTile -or ($x -ne $bx -or $y -ne $by)
+   $displaced=$displaced -or ([math]::Sqrt(($px-$rx)*($px-$rx)+($py-$ry)*($py-$ry)) -ge 0.25)
+   $arrived=$arrived -or ($x -eq $tx -and $y -eq $ty)
+   $settled=$arrived -and $last.Groups[7].Value -eq '0' -and $last.Groups[8].Value -eq '0'
+   if($settled -and $displaced -and $changedTile){break}
+   Start-Sleep -Milliseconds 600
+  }
+  if(-not($settled -and $displaced -and $changedTile)){
+   throw ('Actual native ground movement incomplete: settled='+$settled+' displaced='+$displaced+' changedTile='+$changedTile+' arrived='+$arrived)
+  }
+  Log ('NATIVE_GROUND_MOVEMENT_PASS size='+$Size+' actor='+$actor+' from='+$bx+','+$by+' to='+$tx+','+$ty)
+ }
  $receipt=[ordered]@{
   schema='xpz3d.stage25.engine-run.v1';result='PASS_NATIVE_SCENE_AND_NAV_SETUP'
   session=$session;engineSha256=$exeHash;nativeWorldExecuted=$true
@@ -131,19 +202,21 @@ try{
   navigationExtentMeters=@($(if($Size -eq 120){75}else{100}),$(if($Size -eq 120){75}else{100}))
   backingTerrainMeters=$(if($Size -eq 120){80}else{104})
   towerLevelsRendered=10;nivalMeshObjectsCreated=50;nativeAIHullRegistrations=$expectedHulls
-  spawnedNativeActor=[bool]$SpawnActor.IsPresent
+  spawnedNativeActor=($SpawnActor.IsPresent -eq $true)
+  nativeGroundMovementVerified=($MoveActor.IsPresent -eq $true)
+  nativeDeckScan=$deckScanResult
   nativeCameraMissionReached=$true
-  pathToDeck10Verified=$false;highFloorCollisionAPIRegistered=[bool]$WithHulls.IsPresent
+  pathToDeck10Verified=$false;highFloorCollisionAPIRegistered=($WithHulls.IsPresent -eq $true)
   physicalCollisionTested=$false
   highFloorVisibilityOcclusionVerified=$false;crossFloorShotVerified=$false
   highFloorExplosionVerified=$false
-  scope='Real GOG Silent Storm process and real native S2 scene generation, not a complete high-floor battle.'
+  scope='Real GOG Silent Storm process with grid and mesh creation, optional actual ground movement and read-only floor scan. Vertical routes and high-floor combat remain unverified.'
  }
  $out=Join-Path $evidence 'receipt.json'
  [IO.File]::WriteAllText($out,($receipt|ConvertTo-Json -Depth 15),
     (New-Object System.Text.UTF8Encoding($false)))
  $completed=$true
- Log ('PASS_NATIVE_SCENE_AND_NAV_SETUP size='+$Size+' meshes=50')
+ Log ('PASS_NATIVE_SCENE_AND_NAV_SETUP size='+$Size+' meshes=50 groundMovement='+$MoveActor.IsPresent)
 }catch{
  $reason=$_.Exception.Message
  Log ('FAIL '+$reason)
@@ -176,7 +249,7 @@ public static class XPZStage25Clip {
   }catch{Log ('CURSOR_RELEASE_ERROR '+$_.Exception.Message)}
  }
  foreach($name in @('_saveload.log','_console.log','_xpz_interface_stack.log',
-  '_xpz_world_steps.log','_xpz_native_units.log','_xpz_stage25_map.log')){
+  '_xpz_world_steps.log','_xpz_native_units.log','_xpz_stage23_move.log','_xpz_stage25_map.log')){
   $live=Join-Path $Runtime $name
   if(Test-Path $live){Copy-Item -LiteralPath $live -Destination (Join-Path $evidence $name) -Force -ErrorAction SilentlyContinue}
  }

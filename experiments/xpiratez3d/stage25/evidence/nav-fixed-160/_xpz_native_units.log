@@ -1,0 +1,6 @@
+event=summon_requested persona=730 player_tracker_before=1 tick=1136373093
+event=tracker_submit_begin commander_pending=0 paused=0 ready=1 event_route=0 tick=1136373093
+event=tracker_submit_end commander_pending=1 event_route=0 tick=1136373093
+event=world_execute_add_begin world_count=1 tick=1136373156
+event=world_add_completed world_before=1 world_after=2 player_before=1 player_after=2 actor_ptr=0ABCD9F8 player_ptr=0A21DF70 tick=1136373156
+event=world_execute_add_end world_count=2 tick=1136373156

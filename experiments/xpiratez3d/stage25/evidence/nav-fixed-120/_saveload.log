@@ -1,0 +1,24 @@
+BOOT harness (no auto-load)
+[harness] READY session=s257eae66fb904d47 pid=25832
+[harness] ACK session=s257eae66fb904d47 seq=1 pid=25832 command=console mainmenu
+[harness] DISPATCH session=s257eae66fb904d47 seq=1 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=2 pid=25832 command=console xpz3d_tutorial_smoke
+[harness] DISPATCH session=s257eae66fb904d47 seq=2 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=3 pid=25832 command=console summonunit 730
+[harness] DISPATCH session=s257eae66fb904d47 seq=3 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=4 pid=25832 command=console xpz3d_stage23 deckscan
+[harness] DISPATCH session=s257eae66fb904d47 seq=4 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=5 pid=25832 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s257eae66fb904d47 seq=5 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=6 pid=25832 command=console xpz3d_stage23 move
+[harness] DISPATCH session=s257eae66fb904d47 seq=6 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=7 pid=25832 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s257eae66fb904d47 seq=7 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=8 pid=25832 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s257eae66fb904d47 seq=8 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=9 pid=25832 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s257eae66fb904d47 seq=9 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=10 pid=25832 command=console xpz3d_stage23 status
+[harness] DISPATCH session=s257eae66fb904d47 seq=10 console-returned
+[harness] ACK session=s257eae66fb904d47 seq=11 pid=25832 command=quit
+[harness] DISPATCH session=s257eae66fb904d47 seq=11 quit

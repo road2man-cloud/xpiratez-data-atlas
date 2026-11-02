@@ -2,3 +2,5 @@
 evidence/** -text -diff
 # A patch contains intentional leading context whitespace and tabs.
 s2-native-120x120x10.patch -whitespace
+s2-native-stage25-floor-nav-followup.patch -whitespace
+verify-native-deck-evidence.py text eol=lf

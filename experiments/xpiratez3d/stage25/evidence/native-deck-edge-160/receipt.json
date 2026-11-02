@@ -1,0 +1,39 @@
+{
+    "schema":  "xpz3d.stage25.engine-run.v1",
+    "result":  "PASS_NATIVE_SCENE_AND_NAV_SETUP",
+    "session":  "s25e3f85a2ec5da49",
+    "engineSha256":  "627CCE6F1FD25645B3389541455102F9C7166EBF634E9A8C009E9FB7E8F5D6FF",
+    "nativeWorldExecuted":  true,
+    "navigationRequested":  [
+                                160,
+                                160
+                            ],
+    "floorSlotsCompiled":  12,
+    "navigationExtentMeters":  [
+                                   100,
+                                   100
+                               ],
+    "backingTerrainMeters":  104,
+    "towerLevelsRendered":  10,
+    "nivalMeshObjectsCreated":  50,
+    "nativeAIHullRegistrations":  50,
+    "spawnedNativeActor":  true,
+    "nativeGroundMovementVerified":  true,
+    "nativeDeckScan":  {
+                           "layerCount":  11,
+                           "validLayers":  10,
+                           "floorMask":  1023,
+                           "completeTenDecks":  true,
+                           "standMask":  1023,
+                           "adjacentEdgeMask":  1023,
+                           "routesVerified":  false
+                       },
+    "nativeCameraMissionReached":  true,
+    "pathToDeck10Verified":  false,
+    "highFloorCollisionAPIRegistered":  true,
+    "physicalCollisionTested":  false,
+    "highFloorVisibilityOcclusionVerified":  false,
+    "crossFloorShotVerified":  false,
+    "highFloorExplosionVerified":  false,
+    "scope":  "Real GOG Silent Storm process with grid and mesh creation, optional actual ground movement and read-only floor scan. Vertical routes and high-floor combat remain unverified."
+}

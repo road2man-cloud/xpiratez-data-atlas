@@ -1,0 +1,110 @@
+diff --git a/Main/aiPassCalcer.cpp b/Main/aiPassCalcer.cpp
+index 7f0b010..4de39c0 100644
+--- a/Main/aiPassCalcer.cpp
++++ b/Main/aiPassCalcer.cpp
+@@ -880,10 +880,14 @@ void CPassCalcer::CreateAdditionalLayers()
+ 					bBadFloor = true;
+ 					nFloorIndex = 0;
+ 				}
+-				if ( nFloorIndex > 7 )
++				// Stage25: the original 8-floor clamp silently folded the 9th and
++				// 10th slabs into floor 8, despite allocating 12 floor slots.
++				// Keep the original saturation behavior, but against the actual
++				// supported N_MAX_FLOORS rather than the retail constant 7.
++				if ( nFloorIndex >= N_MAX_FLOORS )
+ 				{
+ 					bBadFloor = true;
+-					nFloorIndex = 7;
++					nFloorIndex = N_MAX_FLOORS - 1;
+ 				}
+ 				// negative-height diagnostic (dev debug, kept)
+ 				if ( p->fExit < fBadHeight )
+@@ -986,7 +990,7 @@ void CPassCalcer::CreateAdditionalLayers()
+ 		OutputDebugString( buf ); 
+ 	}
+ 	if ( bBadFloor )
+-		OutputDebugString("[[ ERROR ]] DETECTED FLOOR < 0\n");
++		OutputDebugString("[[ ERROR ]] DETECTED FLOOR OUTSIDE SUPPORTED RANGE\n");
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ void CPassCalcer::MarkLadderUps()
+
+diff --git a/Main/iMain.cpp b/Main/iMain.cpp
+index f039bbf..c3e3c86 100644
+--- a/Main/iMain.cpp
++++ b/Main/iMain.cpp
+@@ -19,6 +19,7 @@
+ #include "iInterMission.h"
+ #include "iMission.h"          // Stage 23: inspect real mission units and submit native movement
+ #include "RPGUnitInfo.h"       // Stage 23: read actual AP, never synthesize it
++#include "aiMoves.h"           // Stage 25: read actual adjacent navigation transition on high decks
+ #include "GResource.h"
+ #include "iLoading.h"   // NGame::ShowLoadingScreen / TermLoadingScreen -- loading-screen lifecycle on the load path
+ #include "ModManager.h" // CModManager -- retail saves carry the active-mod list in the header (CICLoad/CICSave)
+@@ -687,6 +688,66 @@ static void XPZ3DNativeMoveProbe( const string &szID, const vector<wstring> &szP
+ 		XPZ3DMoveTestLog( "event=refused reason=no_path_network" );
+ 		return;
+ 	}
++	// Stage25: observe the actual native floor/path layers under the visual
++	// tower. A declared floor slot or an AI hull is NOT proof of a traversable
++	// deck. This is a read-only probe and cannot create floor links.
++	if ( command == "deckscan" )
++	{
++		char stage25Flag[8] = { 0 };
++		if ( GetEnvironmentVariableA( "XPZ3D_STAGE25_NATIVE_MAP", stage25Flag, sizeof(stage25Flag) ) != 1 ||
++			stage25Flag[0] != '1' )
++		{
++			XPZ3DMoveTestLog( "event=deckscan_refused reason=not_stage25" );
++			return;
++		}
++		const int layerCount = network->GetNumLayers();
++		const int sampleX = 56, sampleY = 56; // 35m,35m inside the 20x20m tower
++		int validLayerCount = 0, reachableFloorMask = 0, standingFloorMask = 0, edgeFloorMask = 0;
++		XPZ3DMoveTestLog( "event=deckscan_begin layers=%d sample=%d,%d slots=12", layerCount, sampleX, sampleY );
++		for ( int layer = 0; layer < layerCount && layer < 128; ++layer )
++		{
++			NAI::SPathPlace point( sampleX, sampleY, layer );
++			const int floor = network->GetFloor( layer );
++			const NAI::EPassable pass = network->GetPassability( point );
++			bool dest = false;
++			int standing = -1, adjacent = -1, edge = -1;
++			float surfaceHeight = -1.0f;
++			if ( pass == NAI::AIP_YES )
++			{
++				dest = network->IsValidDestination( point );
++				NAI::SPosition pp = from;
++				pp.p = point;
++				surfaceHeight = pp.GetCP().z;
++				if ( dest )
++				{
++					++validLayerCount;
++					if ( floor >= 0 && floor < 10 && fabs( surfaceHeight - (float)floor * 2.5f ) < 0.4f )
++					{
++						reachableFloorMask |= ( 1 << floor );
++						NAI::SPathPlace standPoint( point );
++						standPoint.SetPose( NAI::CM_STAND );
++						NAI::SPathPlace nextPoint( sampleX + 1, sampleY, layer );
++						nextPoint.SetPose( NAI::CM_STAND );
++						standing = (int)network->GetPassability( standPoint );
++						adjacent = (int)network->GetPassability( nextPoint );
++						if ( standing == NAI::AIP_YES )
++							standingFloorMask |= ( 1 << floor );
++						if ( standing == NAI::AIP_YES && adjacent == NAI::AIP_YES )
++						{
++							edge = (int)NAI::GetTransitionType( network, standPoint, nextPoint );
++							if ( edge == NAI::TT_MOVE ) edgeFloorMask |= ( 1 << floor );
++						}
++					}
++				}
++			}
++			XPZ3DMoveTestLog( "event=deckscan_layer index=%d floor=%d pass=%d destination=%d z=%.3f stand=%d adjacent_stand=%d lateral_transition=%d",
++				layer, floor, (int)pass, dest ? 1 : 0, (double)surfaceHeight, standing, adjacent, edge );
++		}
++		XPZ3DMoveTestLog( "event=deckscan_end layers=%d valid_layers=%d floor_mask=%d complete_ten_decks=%d stand_mask=%d adjacent_edge_mask=%d routes_verified=0",
++			layerCount, validLayerCount, reachableFloorMask, reachableFloorMask == 1023 ? 1 : 0,
++			standingFloorMask, edgeFloorMask );
++		return;
++	}
+ 	// Candidates are nearby destinations in the existing native grid.
+ 	// Try a bounded set and use the unit's real CanDo(CCmdPath) preflight.
+ 	const int dx[] = {3,0,-3,0,2,-2,2,-2,4,0,-4,0,1,-1,0,0, 3,3,-3,-3};
