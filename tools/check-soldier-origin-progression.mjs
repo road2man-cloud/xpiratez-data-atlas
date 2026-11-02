@@ -3,6 +3,8 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import {buildSoldierOriginProgression,STATS} from "./build-soldier-origin-progression.mjs";
+import {enumerateSourceBodyChangeLineages}
+  from "./soldier-origin-lineage-census.mjs";
 import {validateOriginProgression} from "../public/soldiers/modern/origin-progress-ui.js";
 import {initialState,bonusStats} from "../public/soldiers/modern/eligibility.js";
 import {buildAcquisitionLedger,validateAcquisitionLedger}
@@ -27,6 +29,29 @@ assert.equal(STATS.length,11);
 assert(!STATS.includes("mana"));
 assert.equal(published.rows.filter(r=>r.kind==="SOURCE_SPAWN").length,72);
 assert.equal(published.rows.filter(r=>r.kind==="TYPE_CHANGE_WITH_UNRESOLVED_PARENT").length,40);
+const lineage=enumerateSourceBodyChangeLineages(data);
+assert.deepEqual(published.summary.sourceRootedAncestry,lineage.summary);
+assert.deepEqual({
+  roots:lineage.summary.originalSpawnProfiles,
+  rules:lineage.summary.examinedBodyChangeRules,
+  edges:lineage.summary.incomingEdges,
+  candidates:lineage.summary.sourceAnchoredCandidates,
+  longest:lineage.summary.longestBodyChangeChain,
+  reset:lineage.summary.candidatesWithHistoryReset,
+  postDeath:lineage.summary.candidatesRequiringUnverifiedPostDeathContinuity,
+  verified:lineage.summary.fullyExecutedCandidates
+},{roots:72,rules:7,edges:40,candidates:401,longest:5,reset:375,
+  postDeath:204,verified:0});
+for(const edge of lineage.branches){
+  const row=published.rows.find(x=>x.id===edge.id);
+  assert(row,"source-rooted edge exists in the 112-row ledger: "+edge.id);
+  assert.deepEqual(row.candidateSourceAncestry,edge,
+    "bounded source chain must remain separate for each incoming edge: "+edge.id);
+}
+const unlinked=lineage.branches.find(x=>
+  x.id==="transform:STR_SPECTRE_SUMMONING:from:STR_SOLDIER_SPECTRE");
+assert.equal(unlinked.candidateCount,0);
+assert(unlinked.noRecordedPathMeaning.includes("NOT proven impossible"));
 assert.equal(published.summary.birthProfilesWithAlreadyCompletedCandidate,17);
 assert.equal(published.summary.candidateTransformationsAlreadyCompleted,26);
 assert.equal(published.summary.birthProfilesWithDirectForbiddenCandidate,15);
@@ -193,6 +218,40 @@ mustReject("cannot falsify direct-history audit aggregate",r=>{
 });
 mustReject("cannot claim acquisition branch has inherited legacy theoretical maximum",r=>{
   r.rows[0].provisionalBodyBonusCandidate.attributableToThisPerson=true;
+});
+const lineageRowId="transform:STR_SHADE_EMBODIMENT:from:STR_SOLDIER_SPECTRE";
+const lineageRow=published.rows.find(r=>r.id===lineageRowId);
+assert.equal(lineageRow.candidateSourceAncestry.candidateCount,68);
+assert(lineageRow.candidateSourceAncestry.candidates.some(c=>
+  c.rootProfileId==="direct:STR_SOLDIER_PEASANT"&&
+  c.steps.some(s=>s.transformationId==="STR_SPECTRE_SUMMONING")&&
+  c.vitalContinuityUnverified));
+mustReject("cannot invent an unrelated original source",r=>{
+  r.rows.find(x=>x.id===lineageRowId)
+    .candidateSourceAncestry.candidates[0].rootProfileId="direct:STR_SOLDIER_CHORT";
+});
+mustReject("cannot silently change a body conversion's target",r=>{
+  r.rows.find(x=>x.id===lineageRowId)
+    .candidateSourceAncestry.candidates[0].steps.at(-1).toType="STR_SOLDIER_CHORT";
+});
+mustReject("cannot turn a type-only candidate into a verified campaign",r=>{
+  r.rows.find(x=>x.id===lineageRowId)
+    .candidateSourceAncestry.candidates[0].proof.research=true;
+});
+mustReject("cannot forge history resets",r=>{
+  r.rows.find(x=>x.id===lineageRowId)
+    .candidateSourceAncestry.candidates[0].steps[0].historyReset=false;
+});
+mustReject("cannot inflate root-anchored candidate count",r=>{
+  r.summary.sourceRootedAncestry.sourceAnchoredCandidates=999;
+});
+mustReject("cannot erase one conditional original-source route",r=>{
+  r.rows.find(x=>x.id===lineageRowId).candidateSourceAncestry.candidates.pop();
+});
+mustReject("cannot claim post-corpse living status was executed",r=>{
+  const x=r.rows.find(y=>y.id===lineageRowId).candidateSourceAncestry.candidates
+    .find(y=>y.vitalContinuityUnverified);
+  x.vitalContinuityUnverified=false;
 });
 // Cross-check the independent source-first ledger already in the same atlas.
 const ledger=buildAcquisitionLedger(data);
