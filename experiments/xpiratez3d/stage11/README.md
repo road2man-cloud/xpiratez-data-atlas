@@ -48,6 +48,17 @@ The script's `-ConfigureOnly` branch was **actually smoke tested** against a new
 
 Microsoft x86 C++ compilation of Stage06 `XPZVisualFeed.cpp` + `visual_feed_test.cpp` succeeded. The synthetic smoke test passed **4/4**: accepted valid full frame, rejected invalid header, rejected duplicate unit ID, rejected unclosed frame. All failures correctly returned the negative-test rejection code. These are **standalone parser tests**, not a running Silent Storm game's feed ingestion. Source `XPZ3D_VISUAL_FEED` remains opt-in; it only parses and stores snapshots and writes debug logging. **Nothing moves/appears in the game world yet.**
 
+## Native 3D world-unit creation path (source-verified, not runtime-verified)
+
+The pinned real engine already contains a useful **actual world-object spawning route**, so a separate fake object simulator is unnecessary. The following chain was traced in the checked-out source; it has not yet been exercised in a running Steam scene:
+
+1. `Game/Main.cpp` (lines ~201, 338): `-harness` enables `g_bHarnessLog`. Once per frame, `HarnessPoll()` consumes `_harness_cmd.txt` from the current working directory; a `console <command>` line is passed to `ProcessCommand`.
+2. `Main/iMission.cpp` (lines ~158, 3190-3205): `CMission` registers `summonunit`. The handler validates a **native Nival character database ID** through `NDb::GetPers` and runs `GetActivePlayer()->AddUnit(NRPG::CreateMerc(pPers))`. An invalid ID is rejected; it does not invent a model.
+3. `Main/PlayerTracker.cpp` (lines ~58-64): `CPlayerTracker::AddUnit` obtains the active player's deployment spot and enqueues `NWorld::CCmdAddUnit`.
+4. `Main/wMain.cpp` (lines ~2566-2569 and ~710-722): the real world command dispatcher consumes `CCmdAddUnit`, calls `AddUnitInGame`, and places the game object on a passable tile with position and visibility updates.
+
+A future **engine runtime** smoke can therefore start the game with `-harness` in an **isolated staging copy of legally installed Steam assets**, load a genuine mission, send `console summonunit <valid-native-persona-id>`, and observe actual before/after world-unit counts and a captured scene. This test requires an initialized mission, valid game database/model and working path network. It must **not** be called an X-Piratez unit yet: the next substantial job is a version-pinned X-Piratez acquisition-profile/stats/equipment to Silent Storm native persona/model conversion. The 3D engine remains responsible for subsequent combat results.
+
 ## Blocking integration gate: Steam game resources and world objects
 
 The accessible host's Steam manifests (24 files across registered C:, E:, and G: libraries at inspection) did not contain an installed Silent Storm application; adjacent retail `fmod.dll`, `LifeStudioHeadAPI.dll`, `GDPFile.dll`, and `binkw32.dll` were likewise absent from the build output. An owned Steam license alone does not provide runtime files. No working 3D game boot is claimed.
