@@ -31,6 +31,9 @@ main.wrap{padding-top:14px}
 .soldier-tool-group[open]>summary{border-bottom:1px solid #304761}
 .soldier-tool-content{padding:10px 14px 16px}
 .soldier-tool-content>.card,.soldier-tool-content>.table-card{box-shadow:none}
+.source-reference{display:inline-flex;flex-direction:column;gap:3px;border:1px solid #405779;border-radius:9px;background:#182940;padding:7px 11px;min-width:0}
+.source-reference small{color:#a8bed9;font-size:.72rem}
+.source-reference code{color:#d9ebff;white-space:normal;overflow-wrap:anywhere;font-size:.8rem}
 .save-inspector{margin:14px 0}
 .save-inspector h2{font-size:1.16rem}
 .save-inspector p{max-width:1100px}

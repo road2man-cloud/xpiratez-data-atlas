@@ -38,8 +38,7 @@ export function renderRareMapLootProof(node,data){
       '<li><code>'+esc(x.id)+'</code> · 결과 가중치 '+
       esc(x.weight)+'/'+esc(x.weightTotal)+' · 재료 '+esc(Object.entries(x.requiredItems||{})
         .map(([k,n])=>k+" ×"+n).join(", ")||"없음")+'</li>').join("");
-    return '<article class="box"><h3>'+esc(label)+'</h3><p><code>'+esc(id)+'</code> · '+
-      '<a href="../../items/#item='+encodeURIComponent(id)+'">아이템 DB</a></p>'+
+    return '<article class="box"><h3>'+esc(label)+'</h3><p>2.1 원본 아이템 <code>'+esc(id)+'</code></p>'+
       (selected.length?'<ul>'+summaries+'</ul>':
         '<p class="muted">확인된 고정 전술 지도 배치 없음. 이벤트/제조/다른 전리품 출처는 별도 검증</p>')+
       (randomMan?'<p><strong>확률 제조</strong></p><ul>'+randomMan+'</ul>':"")+

@@ -313,7 +313,7 @@ const statOrder=["tu","stamina","health","bravery","reactions","firing","throwin
 const sourceLabel={direct:"직접 고용",manufacture:"고용·제조",event:"이벤트"};
 function variantName(r){const n=(r.sourceKoName||"").replace(/^(고용|Recruitment|직접 고용)\s*[:：·-]?\s*/i,"").trim();return r.sourceType==="direct"?r.soldierKoName:(n||r.sourceKoName||r.soldierKoName)}
 function familyCount(id){return DATA.profiles.filter(x=>x.soldierType===id).length}
-function dbLink(area,id,label){const hash=area==='manufacture'?'#recipe=':area==='research'?'#research=':'#item=';return '<a class="db-link" href="../../'+area+'/'+hash+encodeURIComponent(id)+'" onclick="event.stopPropagation()">'+esc(label)+'</a>'}
+function sourceReference(label,id){return '<span class="source-reference"><small>'+esc(label)+'</small><code>'+esc(id)+'</code></span>'}
 
 async function load(){
   DATA=await loadRuntime("../../data/soldiers-modern-index.json");
@@ -627,7 +627,7 @@ function openDetail(encoded){
       '</p><strong>이력 초기화 뒤 재검토 가능한 충돌 '+inheritedResettable.length+'개</strong><p>'+showTags(inheritedResettable)+
       '</p><small>초기 변신 이력과 병종 전환·초기화 경로를 함께 검사했습니다. 단순 이력 충돌을 자동으로 영구 제외 처리하지 않습니다.</small></div>';
     html+='<button type="button" id="inspectAcquisitionRoute" data-profile-id="'+esc(r.id)+'">이 획득형의 미래 변신 경로 분석</button>';
-    html+='<div class="cross-links">'+(r.sourceType==="manufacture"?dbLink("manufacture",r.sourceId,"제조 DB: 영입 방법"):"")+dbLink("items",r.sourceId,"아이템 DB")+(r.requires||[]).map(x=>dbLink("research",x,"연구: "+x)).join("")+'</div>';
+    html+='<div class="cross-links" aria-label="2.1 원본 획득과 연구 ID">'+sourceReference("2.1 획득 규칙",r.sourceId)+(r.requires||[]).map(x=>sourceReference("2.1 필요 연구",x)).join("")+'</div>';
     html+='<h3>같은 기본 병종의 획득형 비교</h3><div class="related-list">'+DATA.profiles.filter(x=>x.soldierType===r.soldierType).map(x=>'<button class="related-item" type="button" data-profile="'+esc(x.id)+'">'+esc(variantName(x))+' <small>'+esc(x.traits.map(t=>t.koName).join(" · ")||"자동 특성 없음")+'</small></button>').join("")+'</div>';
     html+=statsGrid("특성 적용 전 생성 스펙",r.currentStatsBeforeTraits);
     html+=statsCapGrid("자동 특성 포함 능력치 / 성장캡",r);
