@@ -6,6 +6,7 @@
 <title>X-Piratez 2.1 병종·최종 강화 상호배제 검증</title>
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="maxima-compare.css?v=20261101">
+<link rel="stylesheet" href="origin-progress-ui.css?v=20261102">
 </head>
 <body>
 <header class="hero">
@@ -21,11 +22,54 @@
 <main class="wrap">
   <section id="summary" class="summary"></section>
 
+  <section id="originMaxima" class="card maxima-panel origin-panel" aria-label="X-Piratez 2.1 획득처별 성장 및 검증 상태">
+    <div class="maxima-header">
+      <div>
+        <p class="eyebrow">X-PIRATEZ 2.1 · PER-ACQUISITION PROGRESSION</p>
+        <h2>획득처별 출생 상태 · 성장 상계 · 최종 능력치 증명</h2>
+        <p>같은 병종도 직접 모집, 제조, 이벤트, 이전 병종에서의 변신을 서로 다른 분석 대상으로 취급합니다.
+          기존 29종 영구 보너스 후보는 개별 획득처의 실현 가능한 최댓값으로 간주하지 않습니다.</p>
+      </div>
+      <div class="maxima-controls">
+        <label for="originType">병종 선택
+          <select id="originType"><option>불러오는 중…</option></select>
+        </label>
+        <label for="originMetric">능력치 단계
+          <select id="originMetric">
+            <option value="max">출생 최댓값 (원본 범위)</option>
+            <option value="avg">출생 평균 (기댓값)</option>
+            <option value="min">출생 최솟값</option>
+            <option value="growth">장기 자연 성장 낙관적 상계 (조건부)</option>
+            <option value="verified">최종 능력치 (실행 경로 검증만)</option>
+          </select>
+        </label>
+        <label for="originSearch">획득처 ID·명칭 검색
+          <input id="originSearch" type="search" placeholder="농부 · 반 슈퍼변이체 · CODEX…">
+        </label>
+      </div>
+    </div>
+    <p class="maxima-disclaimer">
+      <strong>출생값·조건부 성장 상계와 확정 최종값을 구분합니다.</strong>
+      출생값은 원본 프로필의 실제 생성 범위입니다. 성장 상계는 장기 XP·체육관을 매우 유리하게 가정한 범위의 상단이며,
+      여러 능력치를 한 대원이 동시에 달성한다는 증거가 아닙니다.
+      병종 변경 출생은 이전 개인의 전체 경로가 재생되지 않았으므로 숫자를 비워 둡니다.
+      훈장·변신·연구·RNG·재료의 시간순 증명 전에는 최종 능력치와 총합을 확정 게시하지 않습니다.
+    </p>
+    <p id="originSummary" class="muted"></p>
+    <p id="originStatus" class="muted" aria-live="polite">원본 출생·성장 감사 자료를 검증하는 중…</p>
+    <div class="table-shell maxima-scroll origin-scroll" tabindex="0" aria-label="획득처별 능력치 11종 횡스크롤 표">
+      <table id="originTable" aria-label="획득처별 초기 상태 및 증명 상태"><thead></thead><tbody></tbody></table>
+    </div>
+    <div id="originDetails" class="maxima-details" hidden aria-live="polite"></div>
+    <p class="muted">변신 선행 이력·원본 연구 상호배제 검사는 이 페이지의 아래 섹션과 연결됩니다.
+      <a href="#researchMaxima">병종별 기존 조건부 후보</a>는 독립적으로 보존합니다.</p>
+  </section>
+
   <section id="researchMaxima" class="card maxima-panel" aria-label="29개 병종 연구 상호배제 반영 최대 능력치">
     <div class="maxima-header">
       <div>
         <p class="eyebrow">X-PIRATEZ 2.1 · RESEARCH-EXCLUSIVE STAT CEILINGS</p>
-        <h2>병종 29종 · 연구 상호배제 반영 조건부 최대 후보 비교</h2>
+        <h2>병종 29종 · 과거 조건부 최대 후보 (획득처별 확정값 아님)</h2>
         <p>연구 <code>disables</code> · 선행 연구 · 변신 배타성에 따라 병종별 하나의 최적 후보를 선택합니다.
         <strong>마나 제외 11개 능력치</strong>를 비교하며, 다른 연구 분기의 보너스를 중복 합산하지 않습니다.</p>
       </div>
@@ -215,6 +259,6 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=20261102-body-source-audit"></script>
+<script type="module" src="app.js?v=20261102-origin-progress"></script>
 </body>
 </html>
