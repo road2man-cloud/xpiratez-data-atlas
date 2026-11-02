@@ -7,6 +7,8 @@ import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
   from "./origin-same-body-bridge.js";
 import {buildOriginCapTimeline,originBirthCapSnapshot,compactOriginCapTimeline,
   checkPublishedMaximumCertificate} from "./origin-stat-cap-chronology.js";
+import {auditOriginResearchChronology,compactOriginResearchAudit}
+  from "./origin-research-chronology.js";
 import {auditOriginPublication,verifyOriginPublicationAggregate,
   ORIGIN_EVIDENCE_LEVELS} from "./origin-evidence-gates.js";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -30,7 +32,11 @@ function originOverviewHtml(report,aggregate){
     ["병종 변경 입력 분기",aggregate.bodyBranches,
       "출생 근원을 보존한 구조 사슬 "+report.summary.sourceRootedAncestry.sourceAnchoredCandidates+"건"],
     ["단계별 조건부 계산",report.summary.chronologicalStatCapAudit.provisionalStageSnapshots,
-      "연구·훈련을 실제 수행한 횟수 아님"]
+      "연구·훈련을 실제 수행한 횟수 아님"],
+    ["연구 필수조건 가상 검사",report.summary.researchOrderNecessityAudit.researchScheduleAlternativesAudited,
+      "후보별 반복 포함 · 이벤트 스크립트 분기 재검사 "+
+      report.summary.researchOrderNecessityAudit.actualEventScriptVariantsAudited+
+      "회 · 연구 실측 0건"]
   ];
   return cards.map(([title,value,description],i)=>
     '<article class="origin-proof-metric" data-proof-metric="'+i+'">'+
@@ -88,6 +94,23 @@ function validateRootedAncestry(row,sourceMap,transforms,data){
     oneTrainingScenarioCandidates:0,provisionalStageSnapshots:0,
     exactObservedFinalStats:0,chronologicallyExecutedStatPlans:0,
     globalMaximaCertified:0};
+  const researchTotals={birthProfiles:0,rootedConversionCandidates:0,
+    singleTrainingScenarios:0,researchScheduleAlternativesAudited:0,
+    actualEventScriptVariantsAudited:0,
+    conditionalMandatoryGrantGates:0,directDisableContradictedScenarios:0,
+    researchedInActualCampaign:0,fullyExecutedResearchPaths:0};
+  function accountResearch(a,kind){
+    if(a.researchOrderExecuted||a.finalStats!==null)
+      throw new Error("필수 연구의 가상 즉시 지급을 실행 검증으로 승격");
+    if(kind==="body")researchTotals.rootedConversionCandidates++;
+    else researchTotals.singleTrainingScenarios++;
+    researchTotals.researchScheduleAlternativesAudited+=a.variants.length;
+    researchTotals.actualEventScriptVariantsAudited+=a.variants.filter(v=>
+      v.eventScriptId!==null).length;
+    researchTotals.conditionalMandatoryGrantGates+=
+      a.variants.reduce((s,v)=>s+v.requiredResearch.length,0);
+    if(a.allAlternativesContradicted)researchTotals.directDisableContradictedScenarios++;
+  }
   for(const candidate of a.candidates){
     const origin=sourceMap.get(candidate.rootProfileId);
     const steps=candidate.steps;
@@ -134,18 +157,32 @@ function validateRootedAncestry(row,sourceMap,transforms,data){
     const training=auditSingleSameBodyTraining(data,origin,candidate);
     if(JSON.stringify(training)!==JSON.stringify(candidate.optionalSameBodyTrainingAudit))
       throw new Error("출생처 기점 일반 훈련 삽입 감사 조작/누락: "+sig);
-    const baselineCaps=compactOriginCapTimeline(
-      buildOriginCapTimeline(data,origin,{typeChanges:steps,previewGrowth:false}));
+    const baselineTimeline=buildOriginCapTimeline(data,origin,
+      {typeChanges:steps,previewGrowth:false});
+    const baselineCaps=compactOriginCapTimeline(baselineTimeline);
     if(JSON.stringify(baselineCaps)!==
       JSON.stringify(candidate.conditionalBodyStatCapTimeline))
       throw new Error("출생 원본/병종 변경별 11종 성장캡·능력치 추적 변조: "+sig);
     const selected=training.strongestOneTargetStructuralCandidate;
-    const insertedCaps=selected?compactOriginCapTimeline(
-      buildOriginCapTimeline(data,origin,{typeChanges:steps,
-        sameBodyInsert:selected,previewGrowth:false})):null;
+    const insertedTimeline=selected?buildOriginCapTimeline(data,origin,
+      {typeChanges:steps,sameBodyInsert:selected,previewGrowth:false}):null;
+    const insertedCaps=insertedTimeline?compactOriginCapTimeline(insertedTimeline):null;
     if(JSON.stringify(insertedCaps)!==
       JSON.stringify(candidate.conditionalOneTrainingStatCapTimeline))
       throw new Error("단일 추가 훈련의 원시 성장캡/영구 보너스/현재 능력치 변조: "+sig);
+    const baselineResearch=auditOriginResearchChronology(data,origin,
+      {timeline:baselineTimeline});
+    if(JSON.stringify(compactOriginResearchAudit(baselineResearch))!==
+      JSON.stringify(candidate.conditionalBodyResearchAudit))
+      throw new Error("출생처별 원본 연구 완료 시점/직접 disables 근거 누락 또는 변조: "+sig);
+    accountResearch(baselineResearch,"body");
+    const insertedResearch=insertedTimeline?
+      auditOriginResearchChronology(data,origin,{timeline:insertedTimeline}):null;
+    if(JSON.stringify(insertedResearch?
+        compactOriginResearchAudit(insertedResearch):null)!==
+      JSON.stringify(candidate.conditionalOneTrainingResearchAudit))
+      throw new Error("필수 선행 훈련의 원본 연구 배제 순서/이벤트 대체 경로 훼손: "+sig);
+    if(insertedResearch)accountResearch(insertedResearch,"training");
     capTotals.rootedConversionCandidates++;
     capTotals.provisionalStageSnapshots+=
       baselineCaps.stageCount+(insertedCaps?.stageCount||0);
@@ -177,7 +214,7 @@ function validateRootedAncestry(row,sourceMap,transforms,data){
     (a.candidateCount===0&&!a.noRecordedPathMeaning))
     throw new Error("획득처별 계보 후보 집계 불일치: "+row.id);
   return {count:a.candidateCount,roots:allRoots,resets,deathContinuity,
-    sameBody,maxDepth:largest,trainingTotals,capTotals};
+    sameBody,maxDepth:largest,trainingTotals,capTotals,researchTotals};
 }
 
 
@@ -221,6 +258,14 @@ export function validateOriginProgression(report,data,oldMaxima){
     oneTrainingScenarioCandidates:0,provisionalStageSnapshots:0,
     exactObservedFinalStats:0,chronologicallyExecutedStatPlans:0,
     globalMaximaCertified:0};
+  const cumulativeResearch={birthProfiles:0,rootedConversionCandidates:0,
+    singleTrainingScenarios:0,researchScheduleAlternativesAudited:0,
+    actualEventScriptVariantsAudited:0,
+    conditionalMandatoryGrantGates:0,directDisableContradictedScenarios:0,
+    researchedInActualCampaign:0,fullyExecutedResearchPaths:0};
+  function accountResearch(t){
+    for(const key of Object.keys(cumulativeResearch))cumulativeResearch[key]+=t[key]||0;
+  }
   function accountCap(t){for(const key of Object.keys(cumulativeCaps))cumulativeCaps[key]+=t[key]||0;}
   function accountTraining(t){
     for(const id of Object.keys(cumulativeTraining))
@@ -324,6 +369,18 @@ export function validateOriginProgression(report,data,oldMaxima){
         throw new Error("획득처별 실제 출생 능력/하드캡을 서로 섞거나 변조함: "+row.id);
       if(firstCaps.rawGrowthCaps===firstCaps.effectiveCapReference)
         throw new Error("원시 성장캡과 영구 보너스 포함 참조 상한은 별도 기록이어야 함");
+      const birthResearch=auditOriginResearchChronology(data,p);
+      if(JSON.stringify(compactOriginResearchAudit(birthResearch))!==
+        JSON.stringify(row.birthResearchNecessityAudit))
+        throw new Error("획득처별 최초 연구/독립 이벤트 스크립트의 시간순 필수조건 훼손: "+row.id);
+      accountResearch({birthProfiles:1,
+        researchScheduleAlternativesAudited:birthResearch.variants.length,
+        actualEventScriptVariantsAudited:birthResearch.variants.filter(v=>
+          v.eventScriptId!==null).length,
+        conditionalMandatoryGrantGates:birthResearch.variants.reduce(
+          (s,v)=>s+v.requiredResearch.length,0),
+        directDisableContradictedScenarios:Number(
+          birthResearch.allAlternativesContradicted)});
       accountCap({birthProfiles:1,provisionalStageSnapshots:1});
       accountTraining({...training,initialProfilesAudited:1,
         sourceRootedPathsAudited:0,structuralInsertionWitnesses:training.insertionSequenceWitnesses,
@@ -370,6 +427,7 @@ export function validateOriginProgression(report,data,oldMaxima){
       const lineage=validateRootedAncestry(row,original,transformations,data);
       accountTraining(lineage.trainingTotals);
       accountCap(lineage.capTotals);
+      accountResearch(lineage.researchTotals);
       cumulativeLineage.count+=lineage.count;
       for(const id of lineage.roots)cumulativeLineage.roots.add(id);
       cumulativeLineage.resets+=lineage.resets;
@@ -393,6 +451,9 @@ export function validateOriginProgression(report,data,oldMaxima){
   if(JSON.stringify(s.chronologicalStatCapAudit)!==
       JSON.stringify(cumulativeCaps))
     throw new Error("전체 획득처 현재 능력/하드캡 시간순 감사 범위 또는 증명 훼손");
+  if(JSON.stringify(s.researchOrderNecessityAudit)!==
+      JSON.stringify(cumulativeResearch))
+    throw new Error("출생·시술별 연구 가상 지급/원본 disables·이벤트 스크립트 감사 범위 훼손");
   if(checkPublishedMaximumCertificate({status:"EXECUTABLE_MAXIMUM_CERTIFIED",
     ruleset:"v.o2",sourceHashes:report.sourceHashes},data).kind!=="unverified")
     throw new Error("전역 최적성/실제 재현 증거 없는 최종 하드캡 최대치 인증 금지");
@@ -437,6 +498,112 @@ function statTable(row,stats) {
     '<tr><th>최종 실현 능력치</th><td colspan="12">미검증 · 숫자 표시 금지</td></tr></tbody></table></div>'+
     '<p class="muted">* 11종 단순합은 선택된 출생 데이터 또는 조건부 상계 항목을 산술 합산한 참고값입니다. '+
     '각 능력치의 최댓값이 같은 병사에게 동시에 나타나거나, 이 수치가 최종 육성 결과라는 증명은 아닙니다.</p>';
+}
+function originResearchTimelineHtml(audit){
+  if(audit?.scope!=="DIRECT_DISABLE_NECESSITY_WITH_OPTIMISTIC_JIT_GRANTS_ONLY"||
+    audit.researchOrderExecuted!==false||audit.actualSaveVerified!==false||
+    audit.globalMaximumProven!==false||audit.finalStats!==null||
+    audit.finalSum!==null||audit.certifiedMaximum!==null)
+    throw new Error("조건부 가상 연구 순서를 실제 연구 완료/최종 능력치로 표시 금지");
+  const pass="NO_DIRECT_DISABLE_CONTRADICTION_DETECTED";
+  const variants=audit.variants.map((v,i)=>{
+    const name=v.eventScriptId||"직접 모집·제조·변신(이벤트 분기 없음)";
+    const label=v.status===pass?
+      "직접 disables 충돌 미발견 · 실제 연구 획득 미증명":
+      v.status==="DIRECT_DISABLING_CONTRADICTION"?
+        "이 고정 시술 순서에서 연구 폐쇄 충돌 확인":
+        "연구 원본/재활성화 추가 검증 필요";
+    const stages=v.stages.map(step=>{
+      const disabled=step.freshlyDisabled.map(x=>
+        linkableId(x.by)+" → 폐쇄 "+linkableId(x.disabled)).join(" · ");
+      const faults=step.blocked.map(x=>'<li>'+esc(x.reason)+
+        " (원인 연구 "+(x.disabledBy?linkableId(x.disabledBy):"미확인")+
+        ")</li>").join("");
+      return '<li class="origin-research-stage" data-research-stage="'+step.stageIndex+'">'+
+        '<strong>단계 '+cell(step.stageIndex)+' · '+esc(step.actionKind)+
+        ' · '+linkableId(step.actionId)+'</strong>'+
+        '<p>시술 시점에 유효해야 하는 연구: '+idItems(step.requiredResearch)+'</p>'+
+        (step.eventScriptRequiredResearch.length?
+          '<p>이 이벤트 스크립트의 양성 연구 가드: '+
+            idItems(step.eventScriptRequiredResearch)+'</p>':"")+
+        (step.eventScriptForbiddenResearch.length?
+          '<p>이 이벤트 스크립트의 음성 연구 가드: '+
+            idItems(step.eventScriptForbiddenResearch)+'</p>':"")+
+        '<p><strong>가상으로 처음 확보한 연구:</strong> '+
+          idItems(step.optimisticallyActivated)+
+        ' · <strong>그 연구에 의한 즉시 폐쇄:</strong> '+
+          (disabled||"없음")+'</p>'+
+        (faults?'<ul class="origin-research-conflict">'+faults+'</ul>':"")+
+        '</li>';
+    }).join("");
+    const event=v.eventScriptId?
+      '<p><strong>이벤트 출생 스크립트:</strong> '+linkableId(v.eventScriptId)+
+      ' · 방식 '+esc(v.eventMode||"원본 확인 필요")+
+      ' · 실행 확률 '+(v.eventExecutionOdds==null?"미기록":cell(v.eventExecutionOdds)+"%")+
+      ' · 최초 '+(v.firstEligibleMonth==null?"미기록":cell(v.firstEligibleMonth)+"개월")+
+      ' · 마지막 '+(v.lastEligibleMonth==null?"제한 없음":cell(v.lastEligibleMonth)+"개월")+
+      ' · 이 스크립트에만 필요한 연구 '+idItems(v.eventResearchPositive)+
+      ' · 금지 연구 '+idItems(v.eventResearchNegative)+
+      '</p>':"";
+    const errors=v.directDisableContradictions.length?
+      '<p class="origin-research-direct-block"><strong>직접 폐쇄 충돌 '+
+      cell(v.directDisableContradictions.length)+'건:</strong> '+
+      v.directDisableContradictions.map(x=>esc(x.reason)).join(" · ")+'</p>':"";
+    return '<details class="origin-research-variant"'+(i===0?' open':'')+
+      '><summary>'+esc(name)+' · '+esc(label)+'</summary>'+event+
+      '<p class="muted">이 분기의 필수 연구 '+cell(v.requiredResearch.length)+
+      '개 · 직접 연구 폐쇄 충돌 '+cell(v.totalDirectDisableContradictions)+
+      '건 · 비용 0 또는 자동/지급 출처 확인이 필요한 연구 '+
+      cell(v.zeroCostOrNonLabResearch.length)+'개 · 연구 표본 '+
+      cell(v.researchRequiredItems.length)+'종 · 기지 기능 '+
+      cell(v.researchRequiredBaseFunctions.length)+'종</p>'+
+      errors+'<ol class="origin-research-stage-list">'+stages+'</ol>'+
+      '</details>';
+  }).join("");
+  const gates=audit.researchAccessGates.map(g=>{
+    if(!g.ruleIndexed)
+      return '<li><strong>'+linkableId(g.id)+
+        '</strong> · 원본 연구 규칙이 없으므로 이 경로를 검증할 수 없음</li>';
+    const methods=[
+      g.labDirectAvailableWithoutProof?
+        '비용이 있는 연구실 후보(직접 실행 미확인)':
+        '연구실 직접 접근 증명 없음',
+      g.nonLabGrantMayBeNecessary?'자동·이벤트·무료 보상 등 별도 획득 출처 확인 필요':null,
+      g.freeSources.length?"getOneFree 원천 "+idItems(g.freeSources):null,
+      g.protectedFreeSources.length?
+        "보호 무료 연구 원천 "+g.protectedFreeSources.map(x=>
+          linkableId(x.source)+" (가드 "+linkableId(x.guard)+")").join(" · "):null,
+      g.unlockSources.length?"직접 unlocks 원천 "+idItems(g.unlockSources):null,
+      g.lookupSources.length?"lookup 원천 "+idItems(g.lookupSources):null,
+      g.eventSourceIds.length?"이벤트 직접 지급 후보 "+idItems(g.eventSourceIds):null
+    ].filter(Boolean).join(" · ");
+    return '<li><strong>'+linkableId(g.id)+'</strong>'+
+      ' · 연구 비용 '+(g.cost==null?"미기록":cell(g.cost))+
+      ' · 직접 dependencies '+idItems(g.dependencies)+
+      ' · 필수 requires '+idItems(g.requires)+
+      ' · 표본 '+(g.needItem?linkableId(g.neededItem):"없음")+
+      ' · 기지 기능 '+idItems(g.baseFunctions)+
+      '<p class="muted">'+methods+' · 모든 공급처와 연구 순서 미증명</p></li>';
+  }).join("");
+  return '<section class="origin-research-order" aria-label="원본 연구 배제와 선행 확보 순서의 조건부 감사">'+
+    '<h4>연구 선행·직접 disables 시점별 감사 (실행 증명 아님)</h4>'+
+    '<p><strong>출생처:</strong> '+linkableId(audit.rootProfileId)+
+    ' · <strong>연구 감사 단계:</strong> '+cell(audit.stageCount)+
+    ' · <strong>서로 독립된 이벤트 스크립트 또는 일반 시나리오:</strong> '+
+      cell(audit.variants.length)+'</p>'+
+    '<p class="origin-research-notice"><strong>원본 연구 플래그를 필요한 순간에 무상으로 즉시 얻는다는 가정</strong>을 사용합니다. '+
+    '이것은 실제 연구실 이용, requires/dependencies, unlocks, 비용 0 자동 처리, '+
+    'getOneFree의 단 한 번 추첨, 연구 표본·기지 시설·이벤트 발생을 실행한 결과가 아닙니다. '+
+    '직접 disables 충돌이 없더라도 <strong>실제 가능한 경로·최종 능력치가 아닙니다.</strong> '+
+    '이전 시술로 이미 받은 보너스와 출생 연구 플래그를 다시 지급하지 않습니다.</p>'+
+    variants+
+    '<details class="origin-research-access"><summary>필수 연구 '+cell(audit.researchAccessGates.length)+
+    '종의 원본 공급·선행 조건 보기</summary><ol>'+gates+'</ol></details>'+
+    '<p class="muted"><strong>현재 실행 확인:</strong> 연구 완료 0건 · 훈련 실행 확인 0건 · '+
+      '세이브 실측 0건 · 전역 최적성 증명 0건. '+
+      '여기서 연구 획득이 어려운 경로를 미검증으로 두며, 구조 탐색에서 발견하지 못한 대체 연구 지급을 '+
+      '임의로 불가능하다고 단정하지 않습니다.</p>'+
+    '</section>';
 }
 function stageCapChronologyHtml(timeline){
   if(timeline?.status!=="STRUCTURAL_STAT_CAP_PROJECTION_ONLY"||
@@ -597,13 +764,17 @@ function sourceAncestryDetails(row,sourceNames){
     ).join(' · ');
     return '<li><strong>'+esc(sourceName)+'</strong> '+
       '<code>'+esc(c.rootProfileId)+'</code><p>'+sequence+'</p>'+
-      '<p class="muted">최종 남는 변신 이력: '+idItems(c.terminalHistory)+
+      '<p class="muted">필수 연구 직접 disables 검사: '+
+      (c.conditionalBodyResearchAudit?.allAlternativesContradicted?
+        '<strong>이 고정 경로의 연구 폐쇄 충돌 검출</strong>':
+        '충돌 미발견(연구 확보 미증명)')+' · 최종 남는 변신 이력: '+
+      idItems(c.terminalHistory)+
       (c.vitalContinuityUnverified?
         ' · 사망 후 후속 변신이 실제 가능하려면 생존 상태의 별도 재검증이 필요함':'')+
       ' · <strong>연구·시설·재료·훈장·능력치 미검증</strong></p>'+
       trainingStructuralSynopsis(c.optionalSameBodyTrainingAudit)+
       '<button class="maxima-show" type="button" data-stage-path-index="'+i+
-      '">이 출생처의 단계별 현재 능력치·하드캡 비교 보기</button>'+
+      '">이 출생처의 단계별 현재 능력치·하드캡·연구 선후관계 비교 보기</button>'+
       '<div data-stage-panel-index="'+i+'"></div>'+
       '<button class="maxima-show" type="button" data-training-path-index="'+i+
       '">해당 출생처·변신 사슬의 일반 훈련 후보 전부 보기</button>'+
@@ -638,8 +809,15 @@ function showDetails(row,stats,host,sourceNames,data,report){
     '<p>출생 ID '+linkableId(row.sourceId)+' · 출생 계급 '+cell(row.rank)+
     ' · 보너스를 중복 부여하지 않은 원본 출생 상태입니다.</p>'+
     statTable(row,stats)+
-    '<button class="maxima-show" type="button" id="originBirthCapTimelineButton">출생 → 선택 훈련별 실제 성장 하드캡·실효 능력치 변화(조건부) 보기</button>'+
+    '<button class="maxima-show" type="button" id="originBirthCapTimelineButton">출생 → 선택 훈련의 현재 능력치·성장 하드캡·연구 선후관계(조건부) 보기</button>'+
     '<div id="originBirthCapTimelinePanel"></div>'+
+    '<p><strong>출생 연구 필수조건의 직접 disables 충돌 검사:</strong> '+
+      (row.birthResearchNecessityAudit.allAlternativesContradicted?
+        "모든 이벤트 대안의 이 고정 순서에서 충돌 감지":
+        "직접 충돌 미발견 · 실제 연구 확보 미검증")+
+      ' · 독립 이벤트 스크립트/일반 시나리오 '+
+      cell(row.birthResearchNecessityAudit.sourceEventScriptAlternativeCount)+
+      '건</p>'+
     '<p><strong>출생 시 변신 이력:</strong> '+idItems(row.initialHistory)+'</p>'+
     '<p><strong>출생 시 영구 보너스 항목:</strong> '+idItems(row.initialBonuses)+'</p>'+
     '<p><strong>출생 시 이미 적용된 능력치 보너스:</strong> '+
@@ -744,16 +922,24 @@ function showDetails(row,stats,host,sourceNames,data,report){
       if(panel.innerHTML){panel.innerHTML="";return;}
       const profile=data.profiles.find(p=>p.id===row.id);
       const baseline=buildOriginCapTimeline(data,profile);
+      const baselineResearch=auditOriginResearchChronology(data,profile,
+        {timeline:baseline});
       if(JSON.stringify(originBirthCapSnapshot(data,profile))!==
-        JSON.stringify(row.birthStatCapSnapshot))
-        throw new Error("사이트 원본 출생 능력치와 시간순 하드캡 계산 불일치");
+          JSON.stringify(row.birthStatCapSnapshot)||
+        JSON.stringify(compactOriginResearchAudit(baselineResearch))!==
+          JSON.stringify(row.birthResearchNecessityAudit))
+        throw new Error("사이트 원본 출생 능력치/연구 충돌 감사와 원본 단계 불일치");
       const best=row.birthSameBodyTrainingAudit.strongestOneTargetStructuralCandidate;
       const selected=best?buildOriginCapTimeline(data,profile,
         {sameBodyInsert:best}):null;
-      panel.innerHTML='<p>먼저 출생 당시 원시 성장 하드캡과 보너스를 표시한 뒤, 선택한 일반 훈련의 '+
-        '조건부 능력치 변화를 별도로 계산했습니다. 최적 육성 확정이 아닙니다.</p>'+
-        stageCapChronologyHtml(baseline)+
-        (selected?stageCapChronologyHtml(selected):'');
+      const selectedResearch=selected?
+        auditOriginResearchChronology(data,profile,{timeline:selected}):null;
+      panel.innerHTML='<p>출생 당시 원시 성장 하드캡과 보너스를 먼저 표시한 뒤, '+
+        '선택한 일반 훈련의 조건부 변화·필요 연구·직접 폐쇄 순서를 별도로 계산합니다. '+
+        '필수 연구를 가상으로 즉시 지급한다는 조건을 사용하므로 실제 연구 완료나 최적 육성 증명은 아닙니다.</p>'+
+        stageCapChronologyHtml(baseline)+originResearchTimelineHtml(baselineResearch)+
+        (selected?stageCapChronologyHtml(selected)+
+          originResearchTimelineHtml(selectedResearch):'');
       return;
     }
     const stagePath=event.target.closest("button[data-stage-path-index]");
@@ -770,15 +956,26 @@ function showDetails(row,stats,host,sourceNames,data,report){
         .strongestOneTargetStructuralCandidate;
       const selected=best?buildOriginCapTimeline(data,profile,
         {typeChanges:candidate.steps,sameBodyInsert:best}):null;
+      const originalResearch=auditOriginResearchChronology(data,profile,
+        {timeline:original});
+      const selectedResearch=selected?
+        auditOriginResearchChronology(data,profile,{timeline:selected}):null;
       if(JSON.stringify(compactOriginCapTimeline(original))!==
           JSON.stringify(candidate.conditionalBodyStatCapTimeline)||
         JSON.stringify(selected?compactOriginCapTimeline(selected):null)!==
-          JSON.stringify(candidate.conditionalOneTrainingStatCapTimeline))
-        throw new Error("선택한 최초 획득처/변신 경로의 단계별 하드캡·현재 능력치 불일치");
-      panel.innerHTML='<p>최초 출생부터 병종 변경만 수행한다고 가정한 시간순 수치와, '+
-        '구조 후보 한 가지 일반 훈련 사슬을 추가한 수치를 별도로 비교합니다.</p>'+
-        stageCapChronologyHtml(original)+
-        (selected?stageCapChronologyHtml(selected):'');
+          JSON.stringify(candidate.conditionalOneTrainingStatCapTimeline)||
+        JSON.stringify(compactOriginResearchAudit(originalResearch))!==
+          JSON.stringify(candidate.conditionalBodyResearchAudit)||
+        JSON.stringify(selectedResearch?
+          compactOriginResearchAudit(selectedResearch):null)!==
+          JSON.stringify(candidate.conditionalOneTrainingResearchAudit))
+        throw new Error("선택한 최초 획득처/변신 경로의 단계별 능력치·캡·연구 필수조건 불일치");
+      panel.innerHTML='<p>최초 출생부터 병종 변경만 수행한다고 가정한 수치와, '+
+        '한 가지 일반 훈련 사슬을 추가한 조건부 수치·연구 폐쇄 시점을 비교합니다. '+
+        '연구를 실제로 확보했다는 경로가 아니며 최종 육성 가능성을 증명하지 않습니다.</p>'+
+        stageCapChronologyHtml(original)+originResearchTimelineHtml(originalResearch)+
+        (selected?stageCapChronologyHtml(selected)+
+          originResearchTimelineHtml(selectedResearch):'');
       return;
     }
     const birth=event.target.closest("#originTrainingBirthButton");
@@ -827,6 +1024,14 @@ export async function initOriginProgression(data){
       .map(r=>[r.id,r.sourceName]));
     const proofById=new Map(report.rows.map(r=>
       [r.id,auditOriginPublication(r,report,data)]));
+    const requiresCostZeroResearch=new Set(report.rows.filter(r=>{
+      const candidates=r.kind==="SOURCE_SPAWN"?
+        [r.birthResearchNecessityAudit]:
+        r.candidateSourceAncestry.candidates.flatMap(c=>
+          [c.conditionalBodyResearchAudit,c.conditionalOneTrainingResearchAudit]);
+      return candidates.some(x=>x?.variants?.some(v=>
+        v.zeroCostOrNonLabResearch?.length>0));
+    }).map(r=>r.id));
     section.dataset.validation="validated";
     section.querySelector("#originProofDashboard").innerHTML=
       originOverviewHtml(report,publication);
@@ -843,7 +1048,13 @@ export async function initOriginProgression(data){
       report.summary.sameBodyTrainingInsertions.structuralInsertionWitnesses+
       "건(미실행) · 현재능력·하드캡 시간순 구조 계산 "+
       report.summary.chronologicalStatCapAudit.provisionalStageSnapshots+
-      "단계(미실행) · 실행 검증 0개 · 최종 능력치 확정 0개";
+      "단계(미실행) · 원본 연구 직접 disables 시점 필요조건 "+
+      report.summary.researchOrderNecessityAudit.researchScheduleAlternativesAudited+
+      "회(시나리오별 검사 · 이벤트 스크립트 분기 "+
+      report.summary.researchOrderNecessityAudit.actualEventScriptVariantsAudited+
+      "회 · 조건부 필수 연구 확보 조건 "+
+      report.summary.researchOrderNecessityAudit.conditionalMandatoryGrantGates+
+      "회 · 각 항목은 중복 검사 포함 · 실제 연구 경로 미실행) · 최종 능력치 확정 0개";
     const classNames=new Map(data.soldiers.map(x=>[x.id,x.koName]));
     type.innerHTML='<option value="">전체 병종 (29종)</option>'+
       report.classes.map(x=>'<option value="'+esc(x.soldierType)+'">'+
@@ -860,6 +1071,7 @@ export async function initOriginProgression(data){
         (!focus.value||
           (focus.value==="history"&&proofById.get(r.id).directHistoryConflictCount>0)||
           (focus.value==="event"&&proofById.get(r.id).eventAlternativeCount>0)||
+          (focus.value==="research"&&requiresCostZeroResearch.has(r.id))||
           (focus.value==="ancestry"&&r.kind!=="SOURCE_SPAWN"&&
             r.candidateSourceAncestry?.candidateCount>0)||
           (focus.value==="unlinked"&&r.kind!=="SOURCE_SPAWN"&&
@@ -893,6 +1105,8 @@ export async function initOriginProgression(data){
             '종(미실행)':'')+
           (row.candidateSourceAncestry?' · 출생처 추적 후보 '+
             row.candidateSourceAncestry.candidateCount+'건(미실행)':'')+
+          (requiresCostZeroResearch.has(row.id)?
+            ' · 비용 0·자동 연구 획득 미증명':'')+
           '<small class="id">'+esc(label)+' · 증명 관문 미완결 '+
             proof.unresolvedRequirementCount+'건</small></td>'+
           '<td class="'+(total==null?"origin-not-published":"origin-conditional-number")+

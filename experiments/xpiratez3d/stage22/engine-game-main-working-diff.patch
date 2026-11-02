@@ -1,0 +1,161 @@
+diff --git a/Game/Main.cpp b/Game/Main.cpp
+index 20c3cda..04d16bf 100644
+--- a/Game/Main.cpp
++++ b/Game/Main.cpp
+@@ -1,6 +1,7 @@
+ #include "StdAfx.h"
+ #include "..\Main\GInit.h"
+ #include "WinFrame.h"
++#include "XPZVisualFeed.h"
+ #include "..\Main\iMain.h"
+ #include "..\Input\Bind.h"
+ #include "..\ADOImport\BasicDB.h"
+@@ -18,6 +19,7 @@
+ #include "..\FileIO\BasicChunk1.h"  // [HARNESS] g_bSaveLoadDiag / SaveLoadDiag
+ #include "..\MiscDll\LogStream.h"   // [HARNESS] g_bHarnessLog (console-log tee)
+ #include "..\Main\A5Script.h"       // [HARNESS] ProcessCommand (console/lua entry for the command channel)
++#include <errno.h>                  // [HARNESS] reject overflowed sequence numbers
+ #include <dbghelp.h>                 // [HARNESS] post-load crash backtrace (SymFromAddr / StackWalk64)
+ #pragma comment(lib, "dbghelp.lib")
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+@@ -93,30 +95,117 @@ static LONG WINAPI HarnessCrashFilter( EXCEPTION_POINTERS *pEP )
+ // The driver (gen/_loadtest.py in s2_scratch) writes _harness_cmd.txt and reads the logs. Sweep the
+ // whole harness by grepping "[HARNESS]".
+ // ============================================================================================
++// A different session token for every engine process prevents stale inbox files,
++// logs and ACKs from being accepted after an engine restart.
++static string HarnessSession()
++{
++	char buffer[96] = { 0 };
++	DWORD n = GetEnvironmentVariableA( "XPZ3D_HARNESS_SESSION", buffer, sizeof(buffer) );
++	if ( n >= sizeof(buffer) )
++		return "INVALID_SESSION_ENV";
++	return string( buffer );
++}
++
+ static bool HarnessPoll()   // returns false to request main-loop exit
+ {
++	// The producer writes a complete temporary file, then atomically renames it
++	// to _harness_cmd.txt. Send the next command only after the previous result.
+ 	FILE *pF = fopen( "_harness_cmd.txt", "rb" );
+-	if ( !pF )
+-		return true;
++	if ( !pF ) return true;
+ 	char szBuf[2048];
+ 	size_t n = fread( szBuf, 1, sizeof(szBuf) - 1, pF );
++	bool bComplete = feof( pF ) != 0;
+ 	fclose( pF );
+ 	remove( "_harness_cmd.txt" );
++	if ( !bComplete )
++	{
++		SaveLoadDiag( "[harness] FAIL reason=oversized-command\n" );
++		return true;
++	}
+ 	szBuf[n] = 0;
+ 	while ( n && ( szBuf[n-1] == '\n' || szBuf[n-1] == '\r' || szBuf[n-1] == ' ' || szBuf[n-1] == '\t' ) )
+ 		szBuf[--n] = 0;
+-	if ( n == 0 )
+-		return true;
++	if ( !n ) return true;
++
+ 	string sCmd( szBuf );
+-	SaveLoadDiag( "[harness] cmd: %s\n", sCmd.c_str() );
++	string session = HarnessSession();
++	const bool strict = !session.empty();
++	static unsigned long lastSequence = 0;
++	unsigned long seq = 0;
++
++	// Strict Stage 22 envelope:
++	//   seq <number> session <unique-run-token> console <command>
++	// Without XPZ3D_HARNESS_SESSION, legacy commands remain supported.
++	if ( sCmd.compare( 0, 4, "seq " ) == 0 )
++	{
++		const char *begin = sCmd.c_str() + 4;
++		char *end = NULL;
++		errno = 0;
++		seq = strtoul( begin, &end, 10 );
++		if ( errno == ERANGE || !seq || end == begin || *end != ' ' )
++		{
++			SaveLoadDiag( "[harness] FAIL reason=invalid-sequence\n" );
++			return true;
++		}
++		sCmd = string( end + 1 );
++		if ( strict )
++		{
++			if ( sCmd.compare( 0, 8, "session " ) != 0 )
++			{
++				SaveLoadDiag( "[harness] FAIL reason=missing-session pid=%lu\n", (unsigned long)GetCurrentProcessId() );
++				return true;
++			}
++			size_t separator = sCmd.find( ' ', 8 );
++			if ( separator == string::npos || sCmd.substr( 8, separator - 8 ) != session )
++			{
++				SaveLoadDiag( "[harness] FAIL reason=stale-session pid=%lu\n", (unsigned long)GetCurrentProcessId() );
++				return true;
++			}
++			sCmd = sCmd.substr( separator + 1 );
++		}
++		if ( seq <= lastSequence )
++		{
++			SaveLoadDiag( "[harness] DUPLICATE session=%s seq=%lu pid=%lu ignored\n",
++				session.c_str(), seq, (unsigned long)GetCurrentProcessId() );
++			return true;
++		}
++	}
++	else if ( strict )
++	{
++		SaveLoadDiag( "[harness] FAIL reason=missing-sequence pid=%lu\n", (unsigned long)GetCurrentProcessId() );
++		return true;
++	}
++
++	if ( sCmd.empty() || sCmd.find( '\n' ) != string::npos || sCmd.find( '\r' ) != string::npos )
++	{
++		SaveLoadDiag( "[harness] FAIL session=%s seq=%lu reason=invalid-command\n", session.c_str(), seq );
++		return true;
++	}
++	// Mark as consumed before dispatch, including unknown commands, to avoid
++	// a repeated side effect after an ACK/transport timeout.
++	if ( seq )
++		lastSequence = seq;
++	SaveLoadDiag( "[harness] ACK session=%s seq=%lu pid=%lu command=%s\n",
++		session.c_str(), seq, (unsigned long)GetCurrentProcessId(), sCmd.c_str() );
+ 	if ( sCmd == "quit" )
++	{
++		SaveLoadDiag( "[harness] DISPATCH session=%s seq=%lu quit\n", session.c_str(), seq );
+ 		return false;
++	}
+ 	else if ( sCmd.compare( 0, 8, "console " ) == 0 )
++	{
+ 		ProcessCommand( NStr::ToUnicode( sCmd.substr( 8 ) ) );
++		SaveLoadDiag( "[harness] DISPATCH session=%s seq=%lu console-returned\n", session.c_str(), seq );
++	}
+ 	else if ( sCmd.compare( 0, 5, "load " ) == 0 )
++	{
+ 		NMainLoop::Command( new NMainLoop::CICLoad( sCmd.substr( 5 ) ) );
++		SaveLoadDiag( "[harness] DISPATCH session=%s seq=%lu load-queued\n", session.c_str(), seq );
++	}
+ 	else
+-		SaveLoadDiag( "[harness] unknown cmd\n" );
++	{
++		SaveLoadDiag( "[harness] FAIL session=%s seq=%lu reason=unknown-command\n", session.c_str(), seq );
++	}
+ 	return true;
+ }
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+@@ -314,6 +403,8 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
+ 		NMainLoop::Command( new CICInterMission( szCfg ) );
+ 	if ( g_bHarnessLog )
+ 		SetUnhandledExceptionFilter( HarnessCrashFilter );   // [HARNESS] symbolic backtrace on post-load AV
++	if ( g_bHarnessLog )
++		SaveLoadDiag( "[harness] READY session=%s pid=%lu\n", HarnessSession().c_str(), (unsigned long)GetCurrentProcessId() );
+ 	SWinToInputMessageConverter sWinInputConv;
+ 	for (;;)
+ 	{
+@@ -335,6 +426,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
+ 		// timing, the window-message stamps) then drifts as SpeedStep/turbo move the TSC ratio.
+ 		// Self-throttling: only recalibrates once the 50ms reference window has elapsed.
+ 		NHPTimer::UpdateHPTimerFrequency();
++		XPZVisual::PollWin32(); // optional read-only bridge; no world objects or campaign writes
+ 		if ( g_bHarnessLog && !HarnessPoll() )   // [HARNESS] frame-polled command channel
+ 			break;
+ 		if ( !bActive )

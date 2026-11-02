@@ -3,22 +3,27 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>XPiratez 병종 DB</title>
+<title>XPiratez 병종 DB · 획득형과 2.1 능력치 검증</title>
 <link rel="stylesheet" href="styles.css?v=soldier-trait-origin-20261026">
+<link rel="stylesheet" href="db-views.css?v=20261102-unified-soldier-db">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 </head>
 <body>
 <header class="hero">
   <div class="wrap">
     <a class="back" href="../">← Data Atlas</a> <a class="back" href="../trainings/">· 병사훈련·상호배타 조합</a>
-    <p class="eyebrow">원본 게임 데이터 · 실제 획득형 병종 계보</p>
+    <p class="eyebrow">통합 병종 DB · 선택한 데이터 버전을 그대로 보존</p>
     <h1>병종 DB</h1>
-    <p class="lede">실제 게임에서는 같은 <strong>농부</strong>라도 농부 혁명가·반 슈퍼변이체 소녀·돌격 클론 등 <strong>파생 획득형</strong>에 따라 얻는 방법과 시작 특성이 다릅니다. 기본 병종과 획득형 이름을 별도로 보여주고 같은 바디끼리 비교합니다.</p>
-    <p class="modern-switch"><a href="./modern/">X-Piratez 2.1 / OXCE 8.7.1 · 현재 게임 규칙 기준 자동 상호배제 검증</a> — 기존 목록은 v.o1.1.1 데이터를 유지합니다.</p>
+    <p class="lede">병종의 기본 규칙·획득형·강화 조합과 최신 능력치 검증을 <strong>하나의 병종 DB</strong>에서 탐색합니다. 같은 병종도 출생처·초기 특성·성장 이력이 다르면 별개의 대원입니다. 데이터 버전은 구분하며 서로 혼합하지 않습니다.</p>
+    <nav class="soldier-db-views" aria-label="병종 DB 통합 보기">
+      <a class="soldier-db-view active" aria-current="page" href="./"><strong>1.1.1 · 병종·획득형</strong><small>기존 데이터 · 생성 능력치, 특성, 이론 강화 조합</small></a>
+      <a class="soldier-db-view" href="./modern/#originMaxima"><strong>2.1 · 획득처별 최대 능력치 검증</strong><small>112개 획득 관련 분기 · 확정 최종 최대치 0건</small></a>
+    </nav>
   </div>
 </header>
 
 <main class="wrap">
+  <p class="dataset-version-note"><strong>현재 표: X-Piratez v.o1.1.1.</strong> 2.1 능력치·연구 분석은 위 <b>병종 DB 보기</b>에서 선택할 수 있습니다. 2.1에서 실제 연구·성장·훈장·변신 순서와 최적성이 확인되지 않은 수치는 확정값으로 취급하지 않습니다.</p>
   <section id="summary" class="summary"></section>
 
   <section class="toolbar card">
@@ -28,12 +33,18 @@
     </div>
     <div class="field"><label for="family">기본 병종 필터</label><select id="family"><option value="">전체 병종</option></select></div>
     <div class="field">
-      <label for="dataset">표</label>
+      <label for="dataset">병종 DB 보기 · 분석 옵션</label>
       <select id="dataset">
-        <option value="profiles">실제 획득형</option>
-        <option value="final">최종 강화 조합</option>
-        <option value="soldiers">기본 바디 규칙</option>
-        <option value="transformations">변신·훈련 루트</option>
+        <optgroup label="X-Piratez 1.1.1 · 기존 병종 데이터">
+          <option value="profiles">실제 획득형</option>
+          <option value="final">최종 강화 이론 조합</option>
+          <option value="soldiers">29개 기본 바디 규칙</option>
+          <option value="transformations">변신·훈련 루트</option>
+        </optgroup>
+        <optgroup label="X-Piratez 2.1 · 최신 원본 (별도 검증)">
+          <option value="originMaxima">획득처별 최대 능력치 · 증명 상태</option>
+          <option value="legacyMaximaArchive">29개 병종의 정적 연구 후보 (미검증)</option>
+        </optgroup>
       </select>
     </div>
     <div class="field"><label for="statView">표시 수치</label><select id="statView"><option value="key">핵심 5개</option><option value="all">전체 12개</option></select></div>
@@ -110,7 +121,7 @@
   <div id="detailBody"></div>
 </dialog>
 
-<script type="module" src="app.js?v=soldier-trait-origin-20261026"></script>
+<script type="module" src="app.js?v=20261102-unified-soldier-db"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 </body>
 </html>

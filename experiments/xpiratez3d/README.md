@@ -51,3 +51,8 @@ Detailed execution gates and compatibility ledger: [2026-11-02 direction and ver
 ## Real Windows engine build and link proof (Stage 11, 2026-11-02)
 
 The actual Win32/x86 `Silent-Storm-Reconstruction` C++ `Game.exe` now builds with MSVC 19.44 / VS 2022 and CMake 3.31.10. A **separate** source copy with this repository's pre-existing `stage06/ss/XPZVisualFeed.cpp` linked into the real `Game` target also builds successfully (6,612,480-byte executable; SHA-256 `4CC906591EB76001DAB5B9CBEF27D8C276080E7BE61182E7103A9FB23CE5B41C`; clean incremental rebuild exit 0). Win32 parser smoke tests pass 2/2. This is **actual engine code linkage**, not an actual rendered game session, spawned X-Piratez unit, or authoritative campaign bridge. The Steam game asset files were not found in the connected machine's installed libraries. [Stage 11 reproducible patch, build script, negative tests and evidence](stage11/README.md).
+
+## Current native GOG milestone — Stage 22 (2026-11-02)
+
+[Stage 22 native spawn + hint-chain completion](stage22/README.md) verifies actual interactive GOG-runtime engine execution, session-scoped command ACK/dispatch, correct dismissal of two successive tutorial hints, sustained world segment updates, and two real additions at `CWorld::AddUnitInGame` (world 6→7→8; player 1→2→3), with duplicate/stale-session and invalid-person negative controls. The Win32 Release engine SHA-256, repeatable bounded smoke script, engine-source patch and verbatim trace evidence are recorded there. **This is not yet a playable X-Piratez 3D tactical mode**: movement, shooting, X-Piratez unit import and OXCE campaign return remain unimplemented or unverified. The earlier Stage 11 proof remains historical and should not be mistaken for the latest milestone.
+

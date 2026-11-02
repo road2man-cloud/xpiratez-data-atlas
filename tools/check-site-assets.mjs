@@ -12,6 +12,19 @@ const home=fs.readFileSync(path.join(root,"index.html"),"utf8");
 const expected=["starting","captains","soldiers","trainings","crafts","craft-weapons","facilities","armors","items","research","manufacture","events","forces","weapons","reference"];
 const nav=[...home.matchAll(/<a\s+href="\.\/([a-z-]+)\/(?:\?[^"]*)?"/g)].map(m=>m[1]);
 assert.deepEqual([...new Set(nav)].sort(),[...expected].sort(),"Homepage navigation omits or duplicates a DB");
+assert.equal([...home.matchAll(/class="card" href="\.\/soldiers\//g)].length,1,
+  "Atlas must have exactly one Soldier DB entrance, not a separate maxima card");
+assert(!home.includes('href="./soldiers/modern/'),"Atlas must not advertise a detached Soldier maxima entrance");
+const soldierCatalog=fs.readFileSync(path.join(root,"soldiers/index.html"),"utf8");
+const soldierModern=fs.readFileSync(path.join(root,"soldiers/modern/index.html"),"utf8");
+assert(soldierCatalog.includes('value="originMaxima"')&&soldierCatalog.includes('value="legacyMaximaArchive"'),
+  "2.1 source-first maxima and unverified 29-class archive must be Soldier DB options");
+assert(soldierCatalog.includes("v.o1.1.1")&&soldierModern.includes("X-Piratez 2.1"),
+  "The shared Soldier DB must distinguish ruleset versions");
+assert(soldierModern.includes('href="../?dataset=profiles"')&&soldierModern.includes('id="originMaxima"'),
+  "The 2.1 Soldier DB must offer a route back to the original catalog");
+assert(soldierModern.includes('option value="verified" selected'),
+  "The Soldier DB maxima view must default to certified-only numbers");
 
 const errors=[];
 let linkCount=0,scriptCount=0,jsCount=0;

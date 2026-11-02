@@ -1,0 +1,20 @@
+BOOT harness (no auto-load)
+[harness] READY session=s2266bff2b170ad49f593 pid=6604
+[harness] ACK session=s2266bff2b170ad49f593 seq=1 pid=6604 command=console mainmenu
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=1 console-returned
+[harness] DUPLICATE session=s2266bff2b170ad49f593 seq=1 pid=6604 ignored
+[harness] FAIL reason=stale-session pid=6604
+[harness] ACK session=s2266bff2b170ad49f593 seq=2 pid=6604 command=console xpz3d_tutorial_smoke
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=2 console-returned
+[harness] ACK session=s2266bff2b170ad49f593 seq=3 pid=6604 command=console xpz3d_dismiss_hint
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=3 console-returned
+[harness] ACK session=s2266bff2b170ad49f593 seq=4 pid=6604 command=console xpz3d_dismiss_hint
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=4 console-returned
+[harness] ACK session=s2266bff2b170ad49f593 seq=5 pid=6604 command=console summonunit 730
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=5 console-returned
+[harness] ACK session=s2266bff2b170ad49f593 seq=6 pid=6604 command=console summonunit 730
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=6 console-returned
+[harness] ACK session=s2266bff2b170ad49f593 seq=7 pid=6604 command=console summonunit 999999
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=7 console-returned
+[harness] ACK session=s2266bff2b170ad49f593 seq=8 pid=6604 command=quit
+[harness] DISPATCH session=s2266bff2b170ad49f593 seq=8 quit

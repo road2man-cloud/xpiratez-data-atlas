@@ -1,0 +1,25 @@
+event=world_segment count=1 players=1 pending_players=0 pending_events=0 units=0 realtime=1 sequence=0 tick=1101498359
+event=can_render active=1 scene3d=1 tick=1101498359
+event=world_update calls=1 scene_time=0 current_time=10050 hidden_delta=10050 tick=1101498359
+event=world_segment count=9 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1101501203
+event=world_update calls=65 scene_time=0 current_time=10050 hidden_delta=10050 tick=1101501203
+event=mission_step calls=1 paused=0 current_time=1101502343 last_frame_time=0 tick=1101502343
+event=can_render active=1 scene3d=1 tick=1101502343
+event=world_update calls=347 scene_time=844 current_time=10900 hidden_delta=10050 tick=1101503203
+event=world_segment count=28 players=2 pending_players=0 pending_events=1 units=6 realtime=1 sequence=0 tick=1101503218
+event=can_render active=1 scene3d=1 tick=1101504546
+event=mission_step calls=445 paused=0 current_time=1101504609 last_frame_time=1101503890 tick=1101504609
+event=world_update calls=681 scene_time=1906 current_time=11950 hidden_delta=10050 tick=1101505203
+event=world_segment count=50 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1101505250
+event=can_render active=1 scene3d=1 tick=1101506546
+event=mission_step calls=1231 paused=0 current_time=1101506609 last_frame_time=1101506593 tick=1101506609
+event=world_update calls=1521 scene_time=3906 current_time=13950 hidden_delta=10050 tick=1101507203
+event=world_segment count=90 players=2 pending_players=0 pending_events=0 units=6 realtime=1 sequence=0 tick=1101507250
+event=can_render active=1 scene3d=1 tick=1101508546
+event=mission_step calls=2016 paused=0 current_time=1101508609 last_frame_time=1101508593 tick=1101508609
+event=world_update calls=2258 scene_time=5906 current_time=15950 hidden_delta=10050 tick=1101509203
+event=world_segment count=130 players=2 pending_players=0 pending_events=0 units=8 realtime=1 sequence=0 tick=1101509250
+event=can_render active=1 scene3d=1 tick=1101510546
+event=mission_step calls=2708 paused=0 current_time=1101510609 last_frame_time=1101510593 tick=1101510609
+event=world_update calls=2999 scene_time=7906 current_time=17950 hidden_delta=10050 tick=1101511203
+event=world_segment count=170 players=2 pending_players=0 pending_events=0 units=8 realtime=1 sequence=0 tick=1101511250
