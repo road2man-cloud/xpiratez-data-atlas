@@ -3,8 +3,8 @@ import {modernSoldierProof} from "./save-adapter.js";
 import {loadRuntime} from "../../db-runtime.js";
 import {initModernSaveControls,renderModernSaveResults} from "./save-controls.js";
 import {initFutureComparison} from "./compare-ui.js";
-import {initResearchMaxima} from "./maxima-compare.js";
-import {initOriginProgression} from "./origin-progress-ui.js";
+import {initResearchMaxima} from "./maxima-compare.js?v=20261102-proof-renewal";
+import {initOriginProgression} from "./origin-progress-ui.js?v=20261102-proof-renewal";
 import {initResearchExclusionAudit} from "./research-exclusion-audit.js";
 import {createStatEnvelope,advanceStatEnvelope} from "./stat-envelope.js";
 import {eventScriptVerdict} from "./event-chronology.js";
@@ -310,9 +310,25 @@ async function load(){
   renderRareMapLootProof($("#rareMapLootProof"),DATA);
   const futureComparison=initFutureComparison(DATA);
   initBaselineGrowthComparison(DATA);
-  // Independent read-only maxima module; errors must not block the save/planner UI.
-  void initResearchMaxima(DATA);
-  void initOriginProgression(DATA);
+  // Proof-first, fail-closed: the archived 29-body arithmetic report is
+  // NEVER loaded when the canonical 112-origin proof ledger is invalid.
+  // Other game-reference and local-save tools remain available independently.
+  void initOriginProgression(DATA).then(originProof=>{
+    if(originProof?.kind==="validated"){
+      void initResearchMaxima(DATA,originProof);
+      return;
+    }
+    const status=$("#maximaStatus");
+    if(status)status.textContent="과거 병종별 보너스 후보 자료 표시 중단: "+
+      "획득처별 2.1 증명 원장 정합성 실패. 이전 수치로 대체하지 않습니다.";
+    const archive=$("#legacyMaximaArchive");
+    if(archive)archive.dataset.proofGate="rejected";
+  }).catch(error=>{
+    const status=$("#maximaStatus");
+    if(status)status.textContent="증명 원장 예외: "+error.message+
+      " · 병종별 후보 수치 공개 중단";
+    console.error("Origin-first maxima gating",error);
+  });
   initResearchExclusionAudit(DATA);
   initModernSaveControls(DATA,(save,proof)=>{
     SAVE=save;

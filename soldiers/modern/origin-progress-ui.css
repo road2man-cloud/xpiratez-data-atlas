@@ -1,4 +1,4 @@
-/* Acquisition-origin comparison on the existing soldier atlas page. */
+/* Acquisition-origin comparison on the EXISTING 2.1 soldier atlas page. */
 .origin-panel #originSummary,.origin-panel #originStatus{font-size:.81rem;margin:9px 0;line-height:1.5}
 .origin-panel .origin-scroll{max-height:660px;margin:13px 0;scrollbar-color:#54769e #101a2c}
 .origin-panel #originTable{min-width:1550px;width:100%;font-size:.79rem}
@@ -17,6 +17,61 @@
 .origin-panel #originDetails p{overflow-wrap:anywhere}
 .origin-panel #originDetails code{white-space:normal;overflow-wrap:anywhere}
 .origin-panel .maxima-show{display:inline-block}
+.origin-quick-nav{display:flex;flex-wrap:wrap;gap:8px;margin:19px 0 12px}
+.origin-quick-nav a{display:inline-block;border:1px solid #456b95;border-radius:9px;background:#182b46;color:#d2e7ff;text-decoration:none;padding:8px 12px;font-size:.83rem;font-weight:700;transition:background .15s ease}
+.origin-quick-nav a:hover,.origin-quick-nav a:focus-visible{background:#284568;outline:2px solid #8bbcf2;outline-offset:2px}
+.origin-hero-links{font-size:.82rem;margin-bottom:0}
+.origin-proof-dashboard{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:20px 0 14px}
+.origin-proof-dashboard .origin-proof-metric{border:1px solid #364b6e;border-radius:13px;padding:14px;min-width:0;background:#17253c}
+.origin-proof-metric small{display:block;color:#aebfdb;letter-spacing:.02em;margin-bottom:4px;font-size:.73rem}
+.origin-proof-metric strong{display:block;font-size:clamp(1.5rem,2.5vw,2.1rem);line-height:1.2;font-variant-numeric:tabular-nums;color:#f2f6ff}
+.origin-proof-metric p{font-size:.76rem;color:#b4c4dc;margin:6px 0 0;line-height:1.4}
+.origin-proof-dashboard .origin-proof-banner{grid-column:1/-1;border-left:3px solid #a2b4cc;background:#131f32;border-radius:0 10px 10px 0;padding:11px 15px;font-size:.86rem;color:#dce6f6;line-height:1.65}
+.origin-proof-dashboard .origin-proof-banner strong{color:#f9ddb0}
+.origin-proof-explainer{border:1px solid #405774;border-radius:11px;padding:10px 15px;background:#152339;margin:0 0 16px}
+.origin-proof-explainer summary{font-weight:800;cursor:pointer;color:#d3e4ff}
+.origin-proof-explainer p{font-size:.83rem;line-height:1.65;color:#b9cae4;margin:9px 0}
+.origin-panel .origin-evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:14px 0}
+.origin-panel .origin-evidence-grid section{border:1px solid #3a5070;background:#12223a;border-radius:11px;padding:11px 14px;min-width:0}
+.origin-panel .origin-evidence-grid h4{margin:2px 0 10px;font-size:.97rem;color:#d5e4f9}
+.origin-panel .origin-evidence-item{border-top:1px solid #2b3f5d;padding:8px 0}
+.origin-panel .origin-evidence-item:first-of-type{border-top:0}
+.origin-panel .origin-evidence-item strong{font-size:.82rem;color:#d9e7f8}
+.origin-panel .origin-evidence-item p{margin:3px 0 0;font-size:.77rem;color:#a5b7d2;line-height:1.5}
+.origin-panel .origin-evidence-warning{border:1px solid #9f7950;border-radius:10px;padding:10px 13px;background:#34292058;color:#f4d8ac}
+.origin-panel .origin-evidence-warning p{margin:0 0 6px}
+.origin-panel .origin-evidence-warning p:last-child{margin-bottom:0}
+.origin-panel .origin-provenance-details{margin:13px 0;border-top:1px solid #37506a;padding:11px 0}
+.origin-panel .origin-provenance-details summary{cursor:pointer;font-size:.82rem;font-weight:750;color:#bfdbff}
+.origin-panel .origin-provenance-details code{color:#d8e7fa}
+.origin-panel .origin-stage-cap-projection{margin:14px 0;border:1px solid #395273;border-radius:12px;padding:11px 13px;background:#122039}
+.origin-panel .origin-stage-cap-projection>details{padding:9px 0;border-top:1px solid #344963}
+.origin-panel .origin-stage-cap-projection>details>summary{cursor:pointer;font-weight:750;color:#bddbff;font-size:.87rem}
+.origin-panel .origin-stage-cap-projection h4{margin:6px 0 8px}
+.origin-panel .origin-lineage-candidates>summary{font-weight:750;cursor:pointer}
+.origin-panel .origin-lineage-candidates>ol{padding-left:22px}
+.origin-panel .origin-lineage-candidates>ol>li{margin:10px 0;padding:9px 4px;border-bottom:1px solid #31445f}
+.origin-panel .origin-training-target-list>ol{padding-left:22px}
+.origin-panel .origin-training-target-list>ol>li{margin:9px 0;border-bottom:1px solid #344968}
+.origin-panel .origin-training-gates{margin:8px 0;font-size:.78rem}
+.origin-panel .origin-training-gates>li{margin:6px 0}
+.origin-panel .origin-failure{border:1px solid #d18b80;background:#342322;padding:13px 15px;color:#ffe7e3;border-radius:12px;margin:16px 0}
+.legacy-maxima-archive{margin:18px 0;border:1px solid #55637a;border-radius:15px;background:#121d30}
+.legacy-maxima-archive>summary{padding:18px 21px;cursor:pointer;color:#e4ebf5;font-weight:800;line-height:1.55}
+.legacy-maxima-archive[open]>summary{border-bottom:1px solid #455875}
+.legacy-maxima-archive #researchMaxima{margin:0;box-shadow:none;border:0;border-radius:0 0 14px 14px}
+.legacy-maxima-archive .maxima-score{color:#f0ce99}
+.legacy-maxima-archive .maxima-uncertain{color:#d5bc99}
+.origin-panel .origin-proof-type{font-weight:700;color:#b2d5fb}
+.origin-panel #originTable td[data-cert-status="UNVERIFIED"]{background:#2b26301a}
+.origin-panel #originTable .origin-not-published{color:#aebcd2;font-weight:650}
+@media(max-width:900px){.origin-proof-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){
   .origin-panel #originTable th:first-child,.origin-panel #originTable td:first-child{min-width:225px}
+  .origin-panel .origin-evidence-grid{grid-template-columns:1fr}
+  .origin-proof-dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .origin-proof-metric strong{font-size:1.45rem}
+  .legacy-maxima-archive>summary{padding:14px 12px}
+  .origin-panel .origin-stage-cap-projection{padding:8px}
 }
+@media(max-width:385px){.origin-proof-dashboard{grid-template-columns:1fr}}
