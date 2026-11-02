@@ -1,4 +1,4 @@
-import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import {chromium} from 'playwright-core';
+import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import {createHash} from 'node:crypto';import {chromium} from 'playwright-core';
 const root=path.resolve('public');const external=process.argv.find(x=>x.startsWith('--base='))?.slice(7);let server;
 if(!external){server=http.createServer((req,res)=>{try{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(fs.existsSync(file)&&fs.statSync(file).isDirectory())file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file))throw Error('404');res.writeHead(200,{'Content-Type':({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.gz':'application/octet-stream'})[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res)}catch{res.writeHead(404).end('not found')}});await new Promise(ok=>server.listen(0,'127.0.0.1',ok));}
 const base=external||'http://127.0.0.1:'+server.address().port+'/';
@@ -36,6 +36,9 @@ try{
  assert(detail.includes('전역 최적성: 미증명'));
  assert(await page.locator('#originDetails [data-exclusion="oneway"]').count()>0);
  assert(await page.locator('#originDetails [data-exclusion="bidirectional"]').count()>0);
+ assert(await page.locator('#originDetails [data-closure="new-in-step"]').count()>0);
+ assert((await page.locator('#originDetails').textContent()).includes('이 연구 단계에서 새로 폐쇄 확인'),
+   'Directional disable links must distinguish observed closure time from final disabled state');
  await page.locator('#originDetails .branch-choice').evaluateAll(nodes=>nodes.forEach(x=>x.open=true));
  await page.locator('#originDetails [data-research-node="STR_CAPTAIN_PUSSY"]').first().click();
  await page.locator('#researchDialog[open]').waitFor();
@@ -99,6 +102,27 @@ try{
      null,{timeout:60000});
    assert.equal(await brokenGap.locator('#originTable tbody tr').count(),0);
    await brokenGap.close();
+   const wrongBranch=await browser.newPage();
+   await wrongBranch.route('**/soldier-origin-candidates.json*',async route=>{
+     const response=await route.fetch();const body=await response.json();
+     const record=body.records.find(r=>r.profileId==='direct:STR_SOLDIER_PEASANT');
+     const candidate=record.candidates.find(c=>c.id===record.bestCandidateId);
+     candidate.branchChoices[0].excludes[0].closedInStep=false;
+     candidate.branchChoices[0].excludes[0].closureTiming='closed-after';
+     candidate.resultHash=createHash('sha256').update(JSON.stringify({
+       steps:candidate.steps,raw:candidate.raw,stats:candidate.stats,
+       total:candidate.total,branches:candidate.branchChoices
+     })).digest('hex');
+     await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'});
+   });
+   await wrongBranch.goto(url('soldiers/modern/'));
+   await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',
+     null,{timeout:60000});
+   await wrongBranch.locator('[data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
+   await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',
+     null,{timeout:60000});
+   assert((await wrongBranch.locator('#catalogStatus').innerText()).includes('연구 분기 폐쇄 시점 재생 불일치'));
+   await wrongBranch.close();
    const wrong=await browser.newPage();
    await wrong.route('**/soldier-source-catalog.json*',async route=>{const response=await route.fetch();const body=await response.json();body.sourceVersion='v.o1.1.1';await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'})});
    await wrong.goto(url('soldiers/modern/'));

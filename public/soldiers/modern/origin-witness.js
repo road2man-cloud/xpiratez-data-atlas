@@ -99,8 +99,9 @@ export function replayOriginWitness(steps,data){
     if(!result.ok)return {ok:false,reason:result.reason,failedAt:index,trace,world};
     const added=[...result.world.researched].filter(id=>!before.researched.has(id));
     const closed=[...result.world.disabled].filter(id=>!before.disabled.has(id));
+    const reopened=[...before.disabled].filter(id=>!result.world.disabled.has(id));
     trace.push({index,type:step.type,id:step.id||step.research||step.profile||step.transform||null,
-      added,closed,notes:result.notes,conditional:result.assumed});
+      added,closed,reopened,notes:result.notes,conditional:result.assumed});
     conditional ||= result.assumed;world=result.world;
   }
   if(world.pendingFree)return {ok:false,reason:'완료 시점 무료 지급 미처리',trace,world};

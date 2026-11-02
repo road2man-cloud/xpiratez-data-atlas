@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import {createFoundationResearchPlanner} from '../public/soldiers/modern/foundation-research-planner.js';
 import {replayOriginWitness,WITNESS_STATS,originEventScript} from '../public/soldiers/modern/origin-witness.js';
 import {bonusStats} from '../public/soldiers/modern/eligibility.js';
+import {researchBranchEvidence} from '../public/soldiers/modern/origin-branch-evidence.js';
+import {classifyResearchSupplyGap} from '../public/soldiers/modern/research-supply-gap.js';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const data=read('public/data/soldiers-modern-index.json');
 const ledger=read('public/data/soldier-acquisition-progression-20261102.json');
@@ -24,17 +26,7 @@ const unresolvedOnly=process.argv.includes('--unresolved-only');
 const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
 if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
   throw Error('Unknown source profile: '+focusProfile);
-function branchEvidence(replay){
-  const choices=[],seen=new Set();
-  for(const entry of replay.trace)for(const id of entry.added){
-    if(seen.has(id))continue;seen.add(id);
-    const r=data.researchRules[id];if(!r?.disables?.length)continue;
-    choices.push({id,at:entry.index,excludes:r.disables.map(target=>({id:target,
-      direction:target===id?'self':data.researchRules[target]?.disables?.includes(id)?'bidirectional':'oneway',
-      actuallyClosed:replay.world.disabled.has(target)}))});
-  }
-  return choices;
-}
+const branchEvidence=replay=>researchBranchEvidence(replay,data.researchRules);
 function candidate(node,p,description){
   const replay=replayOriginWitness(node.steps,data);
   if(!replay.ok||!replay.stats||!replay.exact)return null;
@@ -112,11 +104,11 @@ function researchBottlenecks(record){
     if(seen.has(id))continue;seen.add(id);
     const methods=planner.methods.get(id)||[];
     if(!data.researchRules[id]&&!methods.length){
-      found.push({id,kind:'NOT_INDEXED',reason:'현재 색인에 직접 연구 공급 경로가 없음. 일회성 이벤트·임무 지급 등 별도 출처 검증 필요'});
+      found.push({id,...classifyResearchSupplyGap(id,null,{itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources})});
       continue;
     }
     if(!methods.length){
-      found.push({id,kind:'NO_SUPPLY_METHOD',reason:'연구실·직접 해금·무료 지급·이벤트 공급 경로 미확보'});
+      found.push({id,...classifyResearchSupplyGap(id,data.researchRules[id],{itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources})});
       continue;
     }
     const missing=[...new Set(methods.flatMap(m=>m.deps).filter(d=>!planner.distance.has(d)))];
@@ -167,6 +159,7 @@ function attachMetadata(report){
     for(const c of r.candidates){
       const replay=replayOriginWitness(c.steps,data);
       if(!replay.ok)throw Error('기존 후보 재생 중단: '+r.profileId+' '+replay.reason);
+      c.branchChoices=branchEvidence(replay);
       c.modelAssumptions=[...new Set(replay.trace.flatMap(t=>t.notes||[]).filter(n=>/미검증|미증명|가상|재실행/.test(n)))];
       c.limitations=[...new Set([...c.limitations,'연구·제조·회복 소요시간과 월별 유지비의 달력 재생 미포함','반복 lookup 보호 해금·동시 연구 완료는 상세 조건부 가정'])];
       c.resultHash=digest({steps:c.steps,raw:c.raw,stats:c.stats,total:c.total,branches:c.branchChoices});
