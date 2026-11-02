@@ -151,7 +151,16 @@ try{
   assert(await page.locator("#originTable tbody tr").count()>1);
   await page.locator("#originType").selectOption("");
   assert.equal(await page.locator("#originTable tbody tr").count(),112);
-  console.log("PASS 112 acquisition routes: 72 independent birth profiles, 40 body-change branches, reset history, 11 stats, no invented final maximum");
+  await page.locator("#originSearch").fill("root:STR_THEBAN_ASSAULT_CLONE");
+  assert.equal(await page.locator("#originTable tbody tr").count(),6);
+  const clonedSourceFollowups=await page.locator("#originTable").innerText();
+  assert(clonedSourceFollowups.includes("STR_SHADE_EMBODIMENT"));
+  assert(clonedSourceFollowups.includes("STR_SPECTRE_SUMMONING"));
+  assert(clonedSourceFollowups.includes("STR_CHORT_SUMMONING"));
+  assert((await page.locator("#originStatus").innerText()).includes("최초 획득처 1개"));
+  await page.locator("#originSearch").fill("");
+  assert.equal(await page.locator("#originTable tbody tr").count(),112);
+  console.log("PASS 112 acquisition routes: 72 independent birth profiles, 40 body-change branches, reset history, 11 stats, 401 source-anchored type-change candidates, no invented final maximum");
   await page.waitForFunction(()=>document.querySelectorAll("#maximaTable tbody tr").length===29,
     {timeout:30000});
   assert.equal(await page.locator("#maximaTable thead th").count(),14);
