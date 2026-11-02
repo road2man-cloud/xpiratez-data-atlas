@@ -43,8 +43,8 @@ The earlier independent Linux prototype and OXCE build reports are **previously 
 ## Existing-project hygiene
 Continue `road2man-cloud/xpiratez-data-atlas`, particularly `experiments/xpiratez3d/` and `docs/xpiratez-3d/`. Do not introduce a new canonical rules database. Keep the older site's mixed v.o1.1.1 dataset separate from pinned X-Piratez 2.1 / OXCE 8.7.1 data. Do not assume MIT licensing of the site applies to Nival source, OXCE or mod media.
 
-## Next immediate engineering task
-Inventory the currently accessible Silent Storm source and verify license/build prerequisites. Then add the smallest engine boot smoke test with explicit pass/fail evidence. Until it boots, any bridge or 3D-scene claim must be labeled prototype or mock.
+## Next immediate engineering task (updated after Stage 11)
+The actual Win32 engine and isolated compiled read-only feed adapter now build successfully (see Stage 11 addendum). **The next unmet gate is an actual engine boot using the user's legitimately installed Steam game files**, followed by spawning real X-Piratez-derived actors in the engine. Until that boots and creates world objects, never call the integration a playable 3D battle.
 
 ## 2026-11-02: engine source and Windows host check (observed)
 
@@ -56,4 +56,20 @@ Inventory the currently accessible Silent Storm source and verify license/build 
 
 **Gate status:** Source identified = PASS (metadata and instructions). Required modern Win32 build environment = NOT VERIFIED / known missing from PATH. Required proprietary game assets = NOT LOCATED in the probed locations. Actual Game.exe build = NOT RUN. Engine launch = NOT RUN. X-Piratez soldier spawn = NOT RUN. Do not promote a gate based on an upstream screenshot or a prior standalone Linux prototype.
 
-**Next blocking actions:** (1) locate or legitimately install Silent Storm game assets; (2) provision VS2022+ x86 C++ tools and CMake 3.21+; (3) check out the reconstruction at a recorded commit; (4) execute `cmake -S . -B build -A Win32` then `cmake --build build --config Release`; (5) run a separate-named executable in the game directory, save a reproducible boot log and scene screenshot. Do not replace original Steam binaries or publish proprietary asset files.
+**Next blocking actions at that initial probe:** (1) locate or legitimately install Silent Storm game assets; (2) provision VS2022+ x86 C++ tools and CMake 3.21+; (3) check out the reconstruction at a recorded commit; (4) execute `cmake -S . -B build -A Win32` then `cmake --build build --config Release`; (5) run a separate-named executable in the game directory, save a reproducible boot log and scene screenshot. Do not replace original Steam binaries or publish proprietary asset files.
+
+## 2026-11-02 later verification: real engine and compiled visual-receiver build
+
+**Updated evidence supersedes only the earlier 'build not run' probe status.** A clean `met-nikita/Silent-Storm-Reconstruction` checkout pinned at `f5b5b620d4b251d7548b36134ae16d3abe4457e5` compiled and linked with VS 2022 Build Tools/MSVC x86 and CMake 3.31.10. An **isolated local source clone** with the canonical Stage06 `XPZVisualFeed` patch likewise compiled/linked into a genuine 32-bit `Game.exe` at 6,612,480 bytes, SHA-256 `4CC906591EB76001DAB5B9CBEF27D8C276080E7BE61182E7103A9FB23CE5B41C`. `dumpbin` confirmed x86 Windows GUI and external `Parse`, `PollWin32`, `CurrentScene` object symbols. Synthetic MSVC x86 read-only parser tests: 4/4 passed; a fresh-clone script's CMake configure-only branch was also tested successfully. For the build incident (`MSB4166` parallel worker exit, corrupt zero-byte object, `LNK1136`), repair and reproducible non-overwriting scripts, see [Stage 11](../../experiments/xpiratez3d/stage11/README.md).
+
+**Not completed:** launching actual game content, verifying live frame polling with Steam files, rendering a 3D X-Piratez unit, combat/terrain, or OXCE campaign roundtrip. The inspected Windows host did not have Silent Storm installed despite the user owning its Steam license. The next gate requires installed lawful runtime assets and a real launch smoke test; no ownership or runtime claims should be inferred from a successful compile.
+
+## 2026-11-02: real Win32 Game target and opt-in feed integrated (verified)
+
+Subsequent work **supersedes the older pre-installation host probe above**, which is retained as historical evidence. VS 2022 Build Tools 17.14 / MSVC 19.44 x86 and Windows SDK 10.0.26100 were installed in the isolated developer directory. CMake 3.31.10 successfully configured the upstream Reconstruction source commit `f5b5b620d4b251d7548b36134ae16d3abe4457e5` for Win32; its real `Game` target built and linked a valid x86 Windows GUI `Game.exe` (6,585,344 bytes). The unmodified upstream source checkout remains clean.
+
+A **separate developer clone** adds the existing repository-owned `stage06/ss/XPZVisualFeed.h/.cpp` parser into the real Silent Storm `Game` target by a small pinned patch. The modified binary was compiled and linked, then passed a fresh incremental `cmake --build --config Release --target Game --parallel 1` with **exit code 0** and SHA-256 `4CC906591EB76001DAB5B9CBEF27D8C276080E7BE61182E7103A9FB23CE5B41C` (6,612,480 bytes). The compiled `XPZVisualFeed.obj` exists at 138,976 bytes. Independent MSVC x86 CTest smoke checks **passed 2/2**, including rejecting duplicate unit IDs. Earlier overlapping remote build jobs produced a single zero-length object and a temporary `LNK1136`; isolated artifact deletion and serial rebuild resolved it without gameplay changes.
+
+The feed is **strictly read-only diagnostic scaffolding** and does not spawn, move or damage any Silent Storm actor. It does not make OXCE authoritative for final 3D combat, and does not reinstate the abandoned outcome-parity gate. No game runtime, 3D scene or user-owned Steam files have been demonstrated on the connected Windows host: all registered Steam libraries were searched and no installed Silent Storm manifest was present. Next test requires legally installed game resources, an isolated writable runtime staging directory, and a screenshot or trace from a real engine boot.
+
+Reproduction: [Stage 11 native integration record and smoke tests](../../experiments/xpiratez3d/stage11/README.md). **Current gate:** source/build = PASS; C++ parser link = PASS; real engine boot = NOT RUN; native world-unit spawn = NOT RUN; OXCE mission round-trip = NOT RUN.

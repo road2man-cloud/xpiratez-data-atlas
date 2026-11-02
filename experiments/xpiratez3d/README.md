@@ -43,3 +43,11 @@ The **primary deliverable** is a playable optional X-Piratez 3D tactical mode ba
 - Do not assume publicly available Nival source, OXCE code or X-Piratez assets may be combined or redistributed; audit each license and asset permission separately before importing.
 
 Detailed execution gates and compatibility ledger: [2026-11-02 direction and vertical slice](../../docs/xpiratez-3d/3D_BATTLESCAPE_DIRECTION_2026-11-02.md).
+
+## Current actual-engine milestone (2026-11-02, Stage 11)
+
+[Stage 11: Windows Win32 engine + optional XPZ visual receiver build](./stage11/README.md) verifies that the actual Silent Storm Reconstruction engine compiles and links, and that **an isolated engine source copy** with the existing `XPZVisualFeed` builds into an x86 `Game.exe` (6,612,480 bytes; SHA-256 `4CC906591EB76001DAB5B9CBEF27D8C276080E7BE61182E7103A9FB23CE5B41C`). The 4/4 Microsoft x86 parser smoke tests pass on synthetic feed data. A pinned-source, patch-only and no-overwrite Windows reproduction script is checked in. **No game runtime boot, world-object spawning, 3D combat or campaign result integration has been demonstrated.** Steam game assets were not installed on the inspected machine. The proprietary engine itself and Steam assets are not included in this repository.
+
+## Real Windows engine build and link proof (Stage 11, 2026-11-02)
+
+The actual Win32/x86 `Silent-Storm-Reconstruction` C++ `Game.exe` now builds with MSVC 19.44 / VS 2022 and CMake 3.31.10. A **separate** source copy with this repository's pre-existing `stage06/ss/XPZVisualFeed.cpp` linked into the real `Game` target also builds successfully (6,612,480-byte executable; SHA-256 `4CC906591EB76001DAB5B9CBEF27D8C276080E7BE61182E7103A9FB23CE5B41C`; clean incremental rebuild exit 0). Win32 parser smoke tests pass 2/2. This is **actual engine code linkage**, not an actual rendered game session, spawned X-Piratez unit, or authoritative campaign bridge. The Steam game asset files were not found in the connected machine's installed libraries. [Stage 11 reproducible patch, build script, negative tests and evidence](stage11/README.md).

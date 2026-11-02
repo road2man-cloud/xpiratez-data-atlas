@@ -1,0 +1,30 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -197,6 +197,7 @@ s2_module(Game win32 WHOLE Main
+                           fmod_shim lifestudio_shim bink_shim
+                           dxguid dinput8 odbc32 odbccp32 d3d9 user32 Gdi32)
+ target_link_options(Game PRIVATE /LARGEADDRESSAWARE)
++target_sources(Game PRIVATE "${root}/Game/XPZVisualFeed.cpp")
+ add_dependencies(Game ls_implibs)   # the lib/def import libs must exist before Game links
+ # tools
+ s2_module(DataImport     console LINK DBFormat FileIO Misc odbc32 odbccp32 DEFINES _CONSOLE)
+diff --git a/Game/Main.cpp b/Game/Main.cpp
+--- a/Game/Main.cpp
++++ b/Game/Main.cpp
+@@ -1,6 +1,7 @@
+ #include "StdAfx.h"
+ #include "..\Main\GInit.h"
+ #include "WinFrame.h"
++#include "XPZVisualFeed.h"
+ #include "..\Main\iMain.h"
+ #include "..\Input\Bind.h"
+ #include "..\ADOImport\BasicDB.h"
+@@ -335,6 +336,7 @@ int APIENTRY WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
+ 		// timing, the window-message stamps) then drifts as SpeedStep/turbo move the TSC ratio.
+ 		// Self-throttling: only recalibrates once the 50ms reference window has elapsed.
+ 		NHPTimer::UpdateHPTimerFrequency();
++		XPZVisual::PollWin32(); // optional read-only bridge; no world objects or campaign writes
+ 		if ( g_bHarnessLog && !HarnessPoll() )   // [HARNESS] frame-polled command channel
+ 			break;
+ 		if ( !bActive )
