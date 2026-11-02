@@ -48,8 +48,10 @@ jobs:
             npx playwright-core install chromium
           fi
           node tools/check-site-browser.mjs --local
-          # Latest 2.1 soldier eligibility / safe local save-upload experience.
+          # Latest 2.1 soldier and training eligibility, including local-only
+          # saves, source version checks and absence of old 1.1.1 entrypoints.
           node tools/check-soldier-modern-browser.mjs
+          node tools/check-training-2.1-browser.mjs
 
       - name: Publish public tree to gh-pages
         run: |
