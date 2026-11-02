@@ -22,6 +22,13 @@ assert.equal(STATS.length,11);
 assert(!STATS.includes("mana"));
 assert.equal(published.rows.filter(r=>r.kind==="SOURCE_SPAWN").length,72);
 assert.equal(published.rows.filter(r=>r.kind==="TYPE_CHANGE_WITH_UNRESOLVED_PARENT").length,40);
+assert.equal(published.summary.birthProfilesWithAlreadyCompletedCandidate,17);
+assert.equal(published.summary.candidateTransformationsAlreadyCompleted,26);
+assert.equal(published.summary.birthProfilesWithDirectForbiddenCandidate,15);
+assert.equal(published.summary.directlyForbiddenCandidateTrainings,40);
+assert.equal(published.summary.birthProfilesWithResearchHistoryConflict,0);
+assert(published.rows.every(r=>r.proof.status!=="불가능 판정"),
+  "birth-history diagnostics cannot certify absolute impossibility");
 assert(published.rows.every(r=>r.proof.status==="미검증"&&
   !r.proof.chronologicalReplay&&!r.proof.finalStatsVerified&&!r.proof.saveVerified&&
   r.finalStats===null&&r.finalSum===null&&
@@ -63,7 +70,30 @@ assert.equal(peasant.birth.max.health,40);
 assert.equal(assault.birth.max.melee,80);
 assert.equal(peasant.birth.max.melee,36);
 assert(assault.initialHistory.some(x=>x.id==="STR_THEBAN_ASSAULT_CLONE"));
+assert(assault.legacyCandidateBirthHistoryAudit.directHistoryConflicts.some(x=>
+  x.target==="STR_BATTLE_FORM_AUGMENTATION"&&
+  x.priorHistory.includes("STR_THEBAN_ASSAULT_CLONE")),
+  "Theban clone must not inherit ordinary Peasant's incompatible training opportunity");
+assert.equal(peasant.legacyCandidateBirthHistoryAudit.directHistoryConflicts.length,0);
+assert(half.legacyCandidateBirthHistoryAudit.alreadyCompleted.includes("STR_UBERIZATION"));
+assert(half.legacyCandidateBirthHistoryAudit.alreadyCompleted.includes("STR_MILITIA_TRAINING"));
 assert(assault.initialBonuses.some(x=>x.id==="STR_THEBAN_ASSAULT_CLONE"));
+assert.deepEqual(assault.prerequisites.items,{"STR_THEBAN_ASSAULT_CLONE_LICENSE":1});
+assert(assault.prerequisites.research.includes("STR_THEBAN_ASSAULT_CLONE_LICENSE"),
+  "same license ID appears as research gate AND physical item; do not merge them");
+assert.equal(assault.prerequisites.cost,10000);
+const licenseSupply=assault.prerequisites.itemSources.STR_THEBAN_ASSAULT_CLONE_LICENSE;
+assert(licenseSupply.eventGrants.some(x=>x.event==="STR_START_COUNTRY_EGYPT_EVENT"&&
+  x.grants.some(g=>g.mode==="everyMulti"&&g.count===12)));
+assert(licenseSupply.eventGrants.some(x=>x.event==="STR_REVOLUTIONARY_SPEECH_THEBES"&&
+  x.grants.some(g=>g.count===1)));
+assert.equal(published.summary.manufacturingProfilesWithMaterials,48);
+assert.equal(published.summary.eventOriginsWithTriggerEvidence,9);
+const nigeria=byId.get("event:STR_START_COUNTRY_NIGERIA_EVENT");
+assert.equal(nigeria.prerequisites.event.firstMonth,0);
+assert.equal(nigeria.prerequisites.event.lastMonth,0);
+assert(nigeria.prerequisites.event.positiveTriggers.some(x=>
+  x.kind==="xcomBaseInCountryTriggers"&&x.id==="STR_NIGERIA"));
 assert(!peasant.initialHistory.some(x=>x.id==="STR_THEBAN_ASSAULT_CLONE"));
 const jungle=byId.get("manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT");
 assert.equal(jungle.birth.max.psiSkill,0,
@@ -73,6 +103,11 @@ assert.equal(jungle.bornPermanentBonus.psiSkill,3,
 const hound=byId.get("event:STR_CODEX_BONUS_G5");
 assert(hound.initialHistory.some(x=>x.id==="STR_HERO_RED_TRAINING"));
 assert(hound.initialBonuses.some(x=>x.id==="STR_BLESSING_OF_WAR"));
+assert.equal(hound.prerequisites.event.minExecutionOdds,23);
+assert(hound.prerequisites.event.positiveTriggers.some(x=>
+  x.kind==="researchTriggers"&&x.id==="STR_GODS_E5"));
+assert(hound.prerequisites.event.negativeTriggers.some(x=>
+  x.kind==="researchTriggers"&&x.id==="STR_CAPTAIN_SAINT"));
 assert.equal(hound.finalStats,null);
 for(const [id,expected] of [
   ["STR_CHORT_SUMMONING",true],
@@ -100,6 +135,12 @@ mustReject("cannot migrate peasant birth to other profile",r=>{
 mustReject("cannot give assault clone an ordinary peasant birth",r=>{
   r.rows.find(x=>x.id===assault.id).birth=r.rows.find(x=>x.id===peasant.id).birth;
 });
+mustReject("cannot waive physical clone license",r=>{
+  r.rows.find(x=>x.id===assault.id).prerequisites.items={};
+});
+mustReject("cannot erase event branch exclusivity",r=>{
+  r.rows.find(x=>x.id===hound.id).prerequisites.event.negativeTriggers=[];
+});
 mustReject("cannot inherit event transformation into recruitment",r=>{
   r.rows.find(x=>x.id===peasant.id).initialHistory=hound.initialHistory;
 });
@@ -108,7 +149,43 @@ mustReject("cannot silently retain reset history",r=>{
     [{id:"STR_RED_KNIGHT",count:1}];
 });
 mustReject("cannot claim final class aggregate",r=>{r.classes[0].verifiedMaximum=5000;});
+mustReject("cannot silently erase clone's inherited forbidden history",r=>{
+  r.rows.find(x=>x.id===assault.id)
+    .legacyCandidateBirthHistoryAudit.directHistoryConflicts=[];
+});
+mustReject("cannot count already-owned transformation as a new opportunity",r=>{
+  r.rows.find(x=>x.id===half.id)
+    .legacyCandidateBirthHistoryAudit.alreadyCompleted=[];
+});
+mustReject("cannot falsify direct-history audit aggregate",r=>{
+  r.summary.birthProfilesWithDirectForbiddenCandidate=0;
+});
 mustReject("cannot claim acquisition branch has inherited legacy theoretical maximum",r=>{
   r.rows[0].provisionalBodyBonusCandidate.attributableToThisPerson=true;
 });
-console.log("PASS origin progression 29 classes, 72 birth profiles, 40 transform sources, 11 stats, birth+history+trait provenance, history resets, 8 false-certification/mixing regressions");
+// Cross-check the independent source-first ledger already in the same atlas.
+const ledger=buildAcquisitionLedger(data);
+assert.deepEqual(validateAcquisitionLedger(ledger,data),ledger.summary);
+assert.equal(ledger.summary.explicitProfiles,72);
+assert.equal(ledger.summary.incomingEdges,40);
+assert.equal(ledger.summary.executed,0);
+const ledgerById=new Map(ledger.entries.map(x=>[x.id,x]));
+for(const p of data.profiles){
+  const a=byId.get(p.id),b=ledgerById.get(p.id);
+  assert(a&&b,"disagreement in independent acquisition provenance: "+p.id);
+  assert.deepEqual(a.birth,b.birth.effective,"birth stat intervals differ: "+p.id);
+  assert.equal(a.soldierType,b.soldierType);
+  assert.equal(b.finalStats,null);
+  for(const x of a.initialHistory)assert.equal(b.birth.history[x.id],x.count);
+  for(const x of a.initialBonuses)assert.equal(b.birth.traits[x.id],x.count);
+}
+for(const edge of ledger.entries.filter(x=>x.transformationId)){
+  const a=byId.get("transform:"+edge.transformationId+":from:"+edge.parentType);
+  assert(a&&a.sourceId===edge.transformationId&&
+    a.parentSoldierType===edge.parentType&&
+    a.soldierType===edge.soldierType&&
+    a.prerequisites.reset===edge.resetHistory,
+    "transformation parent edge disagreement: "+edge.id);
+}
+console.log("PASS source-first independent ledger reconciled: 72 births / 40 transform edges, no certified stat leakage");
+console.log("PASS origin progression 29 classes, 72 birth profiles, 40 transform sources, 11 stats, birth+history+trait provenance, history resets, 11 false-certification/mixing regressions; 17 pre-owned candidate profiles and 15 origin-history direct contraindications (not absolute impossibility)");
