@@ -5,6 +5,8 @@ import {directResearchTransformLocks,permanentResearchTransformLocks}
   from "./research-training-locks.js";
 import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
   from "./origin-same-body-bridge.js";
+import {buildOriginCapTimeline,originBirthCapSnapshot,compactOriginCapTimeline,
+  checkPublishedMaximumCertificate} from "./origin-stat-cap-chronology.js";
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const STAT_LABELS={tu:"행동력",stamina:"기력",health:"체력",bravery:"용기",
   reactions:"반응",firing:"사격",throwing:"투척",strength:"힘",
@@ -31,6 +33,10 @@ function validateRootedAncestry(row,sourceMap,transforms,data){
   const trainingTotals={initialProfilesAudited:0,sourceRootedPathsAudited:0,
     structuralInsertionWitnesses:0,distinctTargetWitnesses:0,
     targetsWithPositiveSurvivingBonus:0,chronologicallyVerifiedTrainingRoutes:0};
+  const capTotals={birthProfiles:0,rootedConversionCandidates:0,
+    oneTrainingScenarioCandidates:0,provisionalStageSnapshots:0,
+    exactObservedFinalStats:0,chronologicallyExecutedStatPlans:0,
+    globalMaximaCertified:0};
   for(const candidate of a.candidates){
     const origin=sourceMap.get(candidate.rootProfileId);
     const steps=candidate.steps;
@@ -77,6 +83,22 @@ function validateRootedAncestry(row,sourceMap,transforms,data){
     const training=auditSingleSameBodyTraining(data,origin,candidate);
     if(JSON.stringify(training)!==JSON.stringify(candidate.optionalSameBodyTrainingAudit))
       throw new Error("출생처 기점 일반 훈련 삽입 감사 조작/누락: "+sig);
+    const baselineCaps=compactOriginCapTimeline(
+      buildOriginCapTimeline(data,origin,{typeChanges:steps,previewGrowth:false}));
+    if(JSON.stringify(baselineCaps)!==
+      JSON.stringify(candidate.conditionalBodyStatCapTimeline))
+      throw new Error("출생 원본/병종 변경별 11종 성장캡·능력치 추적 변조: "+sig);
+    const selected=training.strongestOneTargetStructuralCandidate;
+    const insertedCaps=selected?compactOriginCapTimeline(
+      buildOriginCapTimeline(data,origin,{typeChanges:steps,
+        sameBodyInsert:selected,previewGrowth:false})):null;
+    if(JSON.stringify(insertedCaps)!==
+      JSON.stringify(candidate.conditionalOneTrainingStatCapTimeline))
+      throw new Error("단일 추가 훈련의 원시 성장캡/영구 보너스/현재 능력치 변조: "+sig);
+    capTotals.rootedConversionCandidates++;
+    capTotals.provisionalStageSnapshots+=
+      baselineCaps.stageCount+(insertedCaps?.stageCount||0);
+    if(selected)capTotals.oneTrainingScenarioCandidates++;
     trainingTotals.sourceRootedPathsAudited++;
     trainingTotals.structuralInsertionWitnesses+=training.insertionSequenceWitnesses;
     trainingTotals.distinctTargetWitnesses+=training.distinctTrainingsWithHistoryWitness;
@@ -104,7 +126,7 @@ function validateRootedAncestry(row,sourceMap,transforms,data){
     (a.candidateCount===0&&!a.noRecordedPathMeaning))
     throw new Error("획득처별 계보 후보 집계 불일치: "+row.id);
   return {count:a.candidateCount,roots:allRoots,resets,deathContinuity,
-    sameBody,maxDepth:largest,trainingTotals};
+    sameBody,maxDepth:largest,trainingTotals,capTotals};
 }
 
 
@@ -144,6 +166,11 @@ export function validateOriginProgression(report,data,oldMaxima){
   const cumulativeTraining={initialProfilesAudited:0,sourceRootedPathsAudited:0,
     structuralInsertionWitnesses:0,distinctTargetWitnesses:0,
     targetsWithPositiveSurvivingBonus:0,chronologicallyVerifiedTrainingRoutes:0};
+  const cumulativeCaps={birthProfiles:0,rootedConversionCandidates:0,
+    oneTrainingScenarioCandidates:0,provisionalStageSnapshots:0,
+    exactObservedFinalStats:0,chronologicallyExecutedStatPlans:0,
+    globalMaximaCertified:0};
+  function accountCap(t){for(const key of Object.keys(cumulativeCaps))cumulativeCaps[key]+=t[key]||0;}
   function accountTraining(t){
     for(const id of Object.keys(cumulativeTraining))
       cumulativeTraining[id]+=t[id]||0;
@@ -241,6 +268,12 @@ export function validateOriginProgression(report,data,oldMaxima){
       const training=birthOnlyTrainingAudit(data,p);
       if(JSON.stringify(row.birthSameBodyTrainingAudit)!==JSON.stringify(training))
         throw new Error("최초 출생 직후 일반 훈련/선행 순서 왜곡: "+row.id);
+      const firstCaps=originBirthCapSnapshot(data,p);
+      if(JSON.stringify(row.birthStatCapSnapshot)!==JSON.stringify(firstCaps))
+        throw new Error("획득처별 실제 출생 능력/하드캡을 서로 섞거나 변조함: "+row.id);
+      if(firstCaps.rawGrowthCaps===firstCaps.effectiveCapReference)
+        throw new Error("원시 성장캡과 영구 보너스 포함 참조 상한은 별도 기록이어야 함");
+      accountCap({birthProfiles:1,provisionalStageSnapshots:1});
       accountTraining({...training,initialProfilesAudited:1,
         sourceRootedPathsAudited:0,structuralInsertionWitnesses:training.insertionSequenceWitnesses,
         distinctTargetWitnesses:training.distinctTrainingsWithHistoryWitness,
@@ -285,6 +318,7 @@ export function validateOriginProgression(report,data,oldMaxima){
         throw new Error("변신 출생 경로 / reset 초기화 불일치: "+row.id);
       const lineage=validateRootedAncestry(row,original,transformations,data);
       accountTraining(lineage.trainingTotals);
+      accountCap(lineage.capTotals);
       cumulativeLineage.count+=lineage.count;
       for(const id of lineage.roots)cumulativeLineage.roots.add(id);
       cumulativeLineage.resets+=lineage.resets;
@@ -305,6 +339,12 @@ export function validateOriginProgression(report,data,oldMaxima){
   if(JSON.stringify(s.sameBodyTrainingInsertions)!==
       JSON.stringify(cumulativeTraining))
     throw new Error("동일병종 일반 훈련 삽입 기회 집계/증명 상태 오류");
+  if(JSON.stringify(s.chronologicalStatCapAudit)!==
+      JSON.stringify(cumulativeCaps))
+    throw new Error("전체 획득처 현재 능력/하드캡 시간순 감사 범위 또는 증명 훼손");
+  if(checkPublishedMaximumCertificate({status:"EXECUTABLE_MAXIMUM_CERTIFIED",
+    ruleset:"v.o2",sourceHashes:report.sourceHashes},data).kind!=="unverified")
+    throw new Error("전역 최적성/실제 재현 증거 없는 최종 하드캡 최대치 인증 금지");
   const birth=report.rows.filter(r=>r.kind==="SOURCE_SPAWN");
   const diag={
     birthProfilesWithAlreadyCompletedCandidate:birth.filter(r=>
@@ -344,6 +384,76 @@ function statTable(row,stats) {
       '<tr><th>'+esc(name)+'</th>'+stats.map(k=>'<td>'+cell(values[k])+'</td>').join("")+
       '<td>'+cell(sumStats(values,stats))+'</td></tr>').join("")+
     '<tr><th>최종 실현 능력치</th><td colspan="12">미검증 · 숫자 표시 금지</td></tr></tbody></table></div>';
+}
+function stageCapChronologyHtml(timeline){
+  if(timeline?.status!=="STRUCTURAL_STAT_CAP_PROJECTION_ONLY"||
+    timeline.proofComplete||timeline.finalStats!==null||
+    timeline.certifiedMaximum!==null)
+    throw new Error("확정 능력치 근거가 아닌 구조 계산을 최종 최대치로 표시할 수 없음");
+  const stats=Object.keys(STAT_LABELS);
+  const rows=[
+    ["원시 현재 능력치 하한",s=>s.currentRawInterval?.min],
+    ["원시 현재 능력치 상한 (조건부)",s=>s.currentRawInterval?.max],
+    ["영구 SoldierBonus (중복 제거)",s=>s.uniquePermanentBonus],
+    ["실효 현재 능력치 하한 (장비·훈장 제외)",s=>s.effectiveCurrentInterval?.min],
+    ["실효 현재 능력치 상한 (조건부, 장비·훈장 제외)",s=>s.effectiveCurrentInterval?.max],
+    ["원시 전투 성장 하드캡 (statCaps)",s=>s.rawGrowthCaps],
+    ["기지 체력훈련 캡 (trainingStatCaps)",s=>s.physicalTrainingCaps],
+    ["생성 능력치 최대 (maxStats, 성장 캡과 별도)",s=>s.maxCreationStats],
+    ["실효 상한 참조 (statCaps+SoldierBonus)",s=>s.effectiveCapReference]
+  ];
+  const table=s=>'<div class="table-shell origin-detail-scroll"><table><thead><tr>'+
+    '<th>실제 상태가 아닌 단계별 계산</th>'+
+    stats.map(k=>'<th>'+esc(STAT_LABELS[k])+'</th>').join('')+
+    '</tr></thead><tbody>'+rows.map(([title,read])=>
+      '<tr><th>'+esc(title)+'</th>'+
+      stats.map(k=>'<td>'+cell(read(s)?.[k])+'</td>').join('')+
+      '</tr>').join('')+'</tbody></table></div>';
+  const records=timeline.stages.map((s,i)=>{
+    const cap=s.deltaFromPreviousStage?.rawGrowthCap||{};
+    const bon=s.deltaFromPreviousStage?.permanentBonus||{};
+    const changed=(record)=>Object.entries(record).filter(([,v])=>Number(v)!==0)
+      .map(([k,v])=>esc(STAT_LABELS[k])+': '+(Number(v)>0?'+':'')+cell(v)).join(' · ')||'변경 없음';
+    const growth=s.conditionalNaturalGrowthUpper;
+    return '<details'+(i===0?' open':'')+'><summary>단계 '+cell(i)+': '+
+      esc(s.action.kind==="sourceBirth"?"최초 획득":
+        s.action.kind==="sameBodyTraining"?"병종 유지 훈련":"병종 변경")+
+      ' · '+esc(s.action.id||s.action.sourceId)+
+      ' · '+esc(s.body)+'</summary>'+
+      '<p><strong>원시 성장 하드캡 변화:</strong> '+changed(cap)+
+      ' · <strong>영구 보너스 변화:</strong> '+changed(bon)+
+      ' · <strong>현재 병종 계급(시술 규칙 기반 조건부):</strong> '+cell(s.rank)+
+      '</p>'+
+      (s.action.trainingMaxBoundedAtRawStatCaps?
+        '<p>이 시술의 상한 제약: 원시 statCaps (실효 참조 상한 아님)</p>':'')+
+      (s.action.trainingBoundedAtCreationMax?
+        '<p>이 시술의 상한 제약: maxStats (생성 능력치 상단)</p>':'')+
+      (s.action.percentStatChange?
+        '<p>현재·초기 능력치 차이 및 변신 전 현재 능력치 기준 백분율 변화를 따로 계산</p>':'')+
+      '<p><strong>이 시점까지 필요했던 연구 ID(완료 증명 아님):</strong> '+
+        idItems(s.requiredResearch)+'</p>'+
+      table(s)+
+      (growth?'<p class="muted">이 시점 이후의 별도 성장 상한 가정: 체력훈련 원시 상단 '+
+        stats.map(k=>esc(STAT_LABELS[k])+': '+cell(growth.physicalRawUpper[k])).join(' · ')+
+        ' / 체력훈련 후 반복 전투 원시 상단 '+
+        stats.map(k=>esc(STAT_LABELS[k])+': '+cell(growth.physicalThenCombatRawUpper[k])).join(' · ')+
+        ' (해당 성장을 실제 수행한 경로가 아님)</p>':'')+
+      '</details>';
+  }).join('');
+  return '<section class="origin-stage-cap-projection"><h4>11종 현재 능력치·성장 하드캡의 단계별 변화</h4>'+
+    '<p><strong>최초 획득처:</strong> '+linkableId(timeline.rootProfileId)+
+    ' · <strong>단계:</strong> '+cell(timeline.stageCount)+
+    ' · <strong>병종 변경:</strong> '+cell(timeline.typeChangeCount)+
+    ' · <strong>선택한 일반 훈련:</strong> '+
+      (timeline.chosenTargetTraining?linkableId(timeline.chosenTargetTraining):'없음')+'</p>'+
+    '<p class="muted"><strong>조건부 엔진 범위 계산 — 실행 검증 0건, 최종 능력치 미산출.</strong> '+
+    '원시 성장 하드캡은 현재 병종의 실제 statCaps이고 영구 보너스가 붙어도 자동 증가하지 않습니다. '+
+    '훈련은 원시 현재 능력치(변환 평면/비율 등) 및 중복 없는 SoldierBonus를 변화시킬 수 있으나, '+
+    '해당 훈련의 연구·재료·계급·훈장·건강·이벤트·기간·성장 및 RNG가 이 경로에서 '+
+    '실행 가능하다는 증거는 없습니다. 표시용 실효 상한 참조는 전투 성장 하드캡이 아닙니다. '+
+    '각 능력치의 최솟값·최댓값은 동일 개인에게 동시에 나타나는 조합이라는 증명이 아닙니다.</p>'+
+    records+
+    '</section>';
 }
 function trainingStructuralSynopsis(audit){
   if(!audit)return '<p class="muted">일반 훈련 탐색 자료 없음 · 미검증</p>';
@@ -439,6 +549,9 @@ function sourceAncestryDetails(row,sourceNames){
         ' · 사망 후 후속 변신이 실제 가능하려면 생존 상태의 별도 재검증이 필요함':'')+
       ' · <strong>연구·시설·재료·훈장·능력치 미검증</strong></p>'+
       trainingStructuralSynopsis(c.optionalSameBodyTrainingAudit)+
+      '<button class="maxima-show" type="button" data-stage-path-index="'+i+
+      '">이 출생처의 단계별 현재 능력치·하드캡 비교 보기</button>'+
+      '<div data-stage-panel-index="'+i+'"></div>'+
       '<button class="maxima-show" type="button" data-training-path-index="'+i+
       '">해당 출생처·변신 사슬의 일반 훈련 후보 전부 보기</button>'+
       '<div data-training-panel-index="'+i+'"></div></li>';
@@ -468,6 +581,8 @@ function showDetails(row,stats,host,sourceNames,data){
     '<p>출생 ID '+linkableId(row.sourceId)+' · 출생 계급 '+cell(row.rank)+
     ' · 보너스를 중복 부여하지 않은 원본 출생 상태입니다.</p>'+
     statTable(row,stats)+
+    '<button class="maxima-show" type="button" id="originBirthCapTimelineButton">출생 → 선택 훈련별 실제 성장 하드캡·실효 능력치 변화(조건부) 보기</button>'+
+    '<div id="originBirthCapTimelinePanel"></div>'+
     '<p><strong>출생 시 변신 이력:</strong> '+idItems(row.initialHistory)+'</p>'+
     '<p><strong>출생 시 영구 보너스 항목:</strong> '+idItems(row.initialBonuses)+'</p>'+
     '<p><strong>출생 시 이미 적용된 능력치 보너스:</strong> '+
@@ -566,6 +681,49 @@ function showDetails(row,stats,host,sourceNames,data){
   // Compute complete individual target inventories only on a user click;
   // data, proof state and the 112-row display remain a single shared source.
   host.onclick=event=>{
+    const birthCaps=event.target.closest("#originBirthCapTimelineButton");
+    if(birthCaps&&source){
+      const panel=host.querySelector("#originBirthCapTimelinePanel");
+      if(panel.innerHTML){panel.innerHTML="";return;}
+      const profile=data.profiles.find(p=>p.id===row.id);
+      const baseline=buildOriginCapTimeline(data,profile);
+      if(JSON.stringify(originBirthCapSnapshot(data,profile))!==
+        JSON.stringify(row.birthStatCapSnapshot))
+        throw new Error("사이트 원본 출생 능력치와 시간순 하드캡 계산 불일치");
+      const best=row.birthSameBodyTrainingAudit.strongestOneTargetStructuralCandidate;
+      const selected=best?buildOriginCapTimeline(data,profile,
+        {sameBodyInsert:best}):null;
+      panel.innerHTML='<p>먼저 출생 당시 원시 성장 하드캡과 보너스를 표시한 뒤, 선택한 일반 훈련의 '+
+        '조건부 능력치 변화를 별도로 계산했습니다. 최적 육성 확정이 아닙니다.</p>'+
+        stageCapChronologyHtml(baseline)+
+        (selected?stageCapChronologyHtml(selected):'');
+      return;
+    }
+    const stagePath=event.target.closest("button[data-stage-path-index]");
+    if(stagePath&&!source){
+      const index=Number(stagePath.dataset.stagePathIndex);
+      const candidate=row.candidateSourceAncestry?.candidates[index];
+      const panel=host.querySelector('[data-stage-panel-index="'+index+'"]');
+      if(!candidate||!panel)return;
+      if(panel.innerHTML){panel.innerHTML="";return;}
+      const profile=data.profiles.find(p=>p.id===candidate.rootProfileId);
+      const original=buildOriginCapTimeline(data,profile,
+        {typeChanges:candidate.steps});
+      const best=candidate.optionalSameBodyTrainingAudit
+        .strongestOneTargetStructuralCandidate;
+      const selected=best?buildOriginCapTimeline(data,profile,
+        {typeChanges:candidate.steps,sameBodyInsert:best}):null;
+      if(JSON.stringify(compactOriginCapTimeline(original))!==
+          JSON.stringify(candidate.conditionalBodyStatCapTimeline)||
+        JSON.stringify(selected?compactOriginCapTimeline(selected):null)!==
+          JSON.stringify(candidate.conditionalOneTrainingStatCapTimeline))
+        throw new Error("선택한 최초 획득처/변신 경로의 단계별 하드캡·현재 능력치 불일치");
+      panel.innerHTML='<p>최초 출생부터 병종 변경만 수행한다고 가정한 시간순 수치와, '+
+        '구조 후보 한 가지 일반 훈련 사슬을 추가한 수치를 별도로 비교합니다.</p>'+
+        stageCapChronologyHtml(original)+
+        (selected?stageCapChronologyHtml(selected):'');
+      return;
+    }
     const birth=event.target.closest("#originTrainingBirthButton");
     if(birth&&source){
       const panel=host.querySelector("#originTrainingBirthPanel");
@@ -616,7 +774,9 @@ export async function initOriginProgression(data){
       "개(최대 "+report.summary.sourceRootedAncestry.longestBodyChangeChain+
       "단계, 미실행) · 동일병종 훈련 삽입 순서 후보 "+
       report.summary.sameBodyTrainingInsertions.structuralInsertionWitnesses+
-      "건(미실행) · 실행 검증 0개 · 최종 능력치 확정 0개";
+      "건(미실행) · 현재능력·하드캡 시간순 구조 계산 "+
+      report.summary.chronologicalStatCapAudit.provisionalStageSnapshots+
+      "단계(미실행) · 실행 검증 0개 · 최종 능력치 확정 0개";
     const classNames=new Map(data.soldiers.map(x=>[x.id,x.koName]));
     type.innerHTML='<option value="">전체 병종 (29종)</option>'+
       report.classes.map(x=>'<option value="'+esc(x.soldierType)+'">'+
@@ -660,7 +820,9 @@ export async function initOriginProgression(data){
       status.textContent=rows.length+"/"+verified.rows+
         "개 획득 분기 표시"+(rootMode?" · 최초 획득처 "+matchedRoots.size+
         "개에서 연결된 구조 후보(실행 미검증)":"")+
-        " · 숫자는 선택한 출생값/조건부 성장 상계이며 확정 최종값이 아닙니다.";
+        (metric.value==="verified"?
+          " · 최종 능력치 확정 0건: 실제 연구·훈련·성장·훈장·변신 순서 및 전역 최적성 완결 검증까지 미완료. 수치를 게시하지 않습니다.":
+          " · 표시 숫자는 출생 원본 범위 또는 낙관적 성장 상계로서 확정 최종값이 아닙니다.");
       detail.hidden=true;detail.innerHTML="";
     }
     [type,metric].forEach(el=>el.addEventListener("change",render));

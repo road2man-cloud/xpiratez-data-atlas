@@ -9,6 +9,8 @@ import {growStatEnvelope} from "../public/soldiers/modern/growth-envelope.js";
 import {enumerateSourceBodyChangeLineages} from "./soldier-origin-lineage-census.mjs";
 import {auditSingleSameBodyTraining,birthOnlyTrainingAudit}
   from "../public/soldiers/modern/origin-same-body-bridge.js";
+import {buildOriginCapTimeline,originBirthCapSnapshot,compactOriginCapTimeline}
+  from "../public/soldiers/modern/origin-stat-cap-chronology.js";
 import {directResearchTransformLocks,permanentResearchTransformLocks}
   from "../public/soldiers/modern/research-training-locks.js";
 
@@ -171,6 +173,13 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     trainingTotals.targetsWithPositiveSurvivingBonus+=
       a.targetsWithPositiveSurvivingBonus;
   }
+  const capAudit={birthProfiles:0,rootedConversionCandidates:0,
+    oneTrainingScenarioCandidates:0,provisionalStageSnapshots:0,
+    exactObservedFinalStats:0,chronologicallyExecutedStatPlans:0,
+    globalMaximaCertified:0};
+  // Serialize compact stage summaries only; on-demand the view reconstructs
+  // all intermediate current stats/cap changes from the same rule source.
+  const capProjection=compactOriginCapTimeline;
   const direct=[],transformed=[];
   for(const profile of data.profiles){
     const s=soldiers.get(profile.soldierType);
@@ -184,6 +193,9 @@ export function buildSoldierOriginProgression(data,oldMaxima){
     const trigger=eventSourceGates(profile);
     const initialTraining=birthOnlyTrainingAudit(data,profile);
     recordTrainingAudit(initialTraining,"birth");
+    const birthCap=originBirthCapSnapshot(data,profile);
+    capAudit.birthProfiles++;
+    capAudit.provisionalStageSnapshots++;
     direct.push({
       id:profile.id,soldierType:s.id,soldierName:s.koName,
       acquisitionType:profile.sourceType,sourceId:profile.sourceId,
@@ -200,6 +212,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       initialBonuses:entries(profile.traitCounts),
       bornPermanentBonus:n.bornPermanentBonus,
       birthSameBodyTrainingAudit:initialTraining,
+      birthStatCapSnapshot:birthCap,
       legacyCandidateBirthHistoryAudit:inheritedCandidateGateAudit(
         data,profile,maxima.get(s.id)),
       rawStatCaps:pick(s.statCaps),
@@ -230,7 +243,22 @@ export function buildSoldierOriginProgression(data,oldMaxima){
           if(!origin)throw new Error("연결된 출생처 원본 누락: "+candidate.rootProfileId);
           const trainingAudit=auditSingleSameBodyTraining(data,origin,candidate);
           recordTrainingAudit(trainingAudit,"chain");
-          return {...candidate,optionalSameBodyTrainingAudit:trainingAudit};
+          const bodyTimeline=buildOriginCapTimeline(data,origin,
+            {typeChanges:candidate.steps,previewGrowth:false});
+          const oneTraining=trainingAudit.strongestOneTargetStructuralCandidate;
+          const optionalTimeline=oneTraining?buildOriginCapTimeline(data,origin,
+            {typeChanges:candidate.steps,sameBodyInsert:oneTraining,
+              previewGrowth:false}):null;
+          capAudit.rootedConversionCandidates++;
+          capAudit.provisionalStageSnapshots+=bodyTimeline.stageCount;
+          if(optionalTimeline){
+            capAudit.oneTrainingScenarioCandidates++;
+            capAudit.provisionalStageSnapshots+=optionalTimeline.stageCount;
+          }
+          return {...candidate,optionalSameBodyTrainingAudit:trainingAudit,
+            conditionalBodyStatCapTimeline:capProjection(bodyTimeline),
+            conditionalOneTrainingStatCapTimeline:optionalTimeline?
+              capProjection(optionalTimeline):null};
         })
       };
       transformed.push({
@@ -326,6 +354,7 @@ export function buildSoldierOriginProgression(data,oldMaxima){
         r.prerequisites.event).length,
       sourceRootedAncestry:ancestry.summary,
       sameBodyTrainingInsertions:trainingTotals,
+      chronologicalStatCapAudit:capAudit,
       chronologicalPathsVerified:0,
       finalStatRoutesVerified:0,saveVerified:0,...historyDiagnostics},
     statusDefinitions:{
@@ -340,6 +369,9 @@ export function buildSoldierOriginProgression(data,oldMaxima){
       "여러 이벤트 script가 한 출생 유형을 지급할 경우 각각을 독립적인 대체 경로로 보존하고 공통 가드만 요약함.",
       "출생 후/병종 변경 전후 하나의 선택된 동일병종 훈련과 그 필수 선행 훈련만 삽입해 이력·병종 정합성을 재검사; 서로 다른 선택 훈련 여러 개를 최적 결합한 검증은 아님.",
       "동일병종 훈련의 중복 없는 SoldierBonus 중 최종 단계에 남는 값만 조건부 참고로 산정하며, 변신의 원시 능력치·기초 능력치 변동과 확률을 최종 수치로 계산하지 않음.",
+      "모든 출생 72건과 병종 변환 구조 후보 401건의 시간순 원시 능력치 범위, 병종 statCaps, physical trainingStatCaps, 중복 제거 SoldierBonus, statCaps+bonus 참조를 단계별로 산출; 능력치 범위는 조건부이고 실제 생존·훈련·성장·연구 실행이 증명되지 않음.",
+      "statCaps+bonus 값은 표시용 실효 상한 참조로서 실제 전투 성장이나 upperBoundAtStatCaps의 원시 성장 하드캡을 임의 증가시키지 않음.",
+      "모든 출생처 전체 훈련 조합의 최적성을 입증하기 전에는 캠페인 모델의 한 경로가 통과해도 확정 최댓값이 될 수 없음.",
       "제조 요구 연구와 실물 requiredItems는 별도 원본 필드이며, 공급 후보는 반드시 실제 보유 및 이벤트 발동으로 검증해야 함.",
       "제조에서 생성되는 새 병사는 기존 대원의 훈장·이력을 자동 상속하지 않음.",
       "출생 effectiveStats는 원본 출생 보너스를 1회 적용한 범위; 일반적인 성장 상계는 엔진 룰 기반의 매우 낙관적인 상계일 뿐 달성 인증이 아님.",

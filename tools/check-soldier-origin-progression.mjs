@@ -50,7 +50,8 @@ for(const edge of lineage.branches){
   assert.deepEqual({
     ...row.candidateSourceAncestry,
     candidates:row.candidateSourceAncestry.candidates.map(
-      ({optionalSameBodyTrainingAudit,...rest})=>rest)
+      ({optionalSameBodyTrainingAudit,conditionalBodyStatCapTimeline,
+        conditionalOneTrainingStatCapTimeline,...rest})=>rest)
   },edge,"bounded source chain must remain separate for each incoming edge: "+edge.id);
 }
 assert.deepEqual(published.summary.sameBodyTrainingInsertions,{
@@ -298,6 +299,34 @@ mustReject("cannot falsify direct-history audit aggregate",r=>{
 });
 mustReject("cannot claim acquisition branch has inherited legacy theoretical maximum",r=>{
   r.rows[0].provisionalBodyBonusCandidate.attributableToThisPerson=true;
+});
+mustReject("cannot give an ordinary recruit a raised raw training cap",r=>{
+  r.rows.find(x=>x.id===peasant.id).birthStatCapSnapshot.rawGrowthCaps.health=70;
+});
+mustReject("cannot conflate base raw cap and effective SoldierBonus reference",r=>{
+  r.rows.find(x=>x.id===assault.id)
+    .birthStatCapSnapshot.effectiveCapReference.health=55;
+});
+mustReject("cannot attach special clone's birth stats to ordinary Peasant",r=>{
+  r.rows.find(x=>x.id===peasant.id).birthStatCapSnapshot=
+    structuredClone(r.rows.find(x=>x.id===assault.id).birthStatCapSnapshot);
+});
+mustReject("cannot publish unobserved transform current stats as final",r=>{
+  r.rows.find(x=>x.id==="transform:STR_ANG_102:from:STR_SOLDIER")
+    .candidateSourceAncestry.candidates[0]
+    .conditionalBodyStatCapTimeline.finalStats={health:200};
+});
+mustReject("cannot remove stage-specific OXCE percent change",r=>{
+  r.rows.find(x=>x.id==="transform:STR_ANG_102:from:STR_SOLDIER")
+    .candidateSourceAncestry.candidates[0]
+    .conditionalOneTrainingStatCapTimeline.terminalCapSnapshot
+    .currentRawInterval.max.stamina=9999;
+});
+mustReject("cannot certify hardcaps without global proof",r=>{
+  r.summary.chronologicalStatCapAudit.globalMaximaCertified=1;
+});
+mustReject("cannot fake executed research and stat growth",r=>{
+  r.summary.chronologicalStatCapAudit.chronologicallyExecutedStatPlans=401;
 });
 const lineageRowId="transform:STR_SHADE_EMBODIMENT:from:STR_SOLDIER_SPECTRE";
 const lineageRow=published.rows.find(r=>r.id===lineageRowId);

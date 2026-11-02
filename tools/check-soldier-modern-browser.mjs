@@ -57,6 +57,12 @@ try{
   assert((await page.locator("#originSummary").innerText()).includes("충돌 15개"));
   assert((await page.locator("#originSummary").innerText()).includes("구조 사슬 401개"));
   assert((await page.locator("#originSummary").innerText()).includes("훈련 삽입 순서 후보 22686건(미실행)"));
+  assert((await page.locator("#originSummary").innerText()).includes("현재능력·하드캡 시간순 구조 계산 3559단계(미실행)"));
+  assert.equal(await page.locator("#originMetric").inputValue(),"verified",
+    "confirmed full-route maxima must be the default display");
+  assert.equal((await page.locator("#originTable tbody tr").first().locator("td").nth(3).innerText()).trim(),"—");
+  assert((await page.locator("#originStatus").innerText()).includes("실제 연구·훈련·성장·훈장·변신 순서"));
+  await page.locator("#originMetric").selectOption("max");
   await page.locator("#originSearch").fill("manufacture:STR_HALF_UBER_GIRL_RECRUITMENT");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
   const halfBirth=await page.locator("#originTable tbody tr").first().innerText();
@@ -83,6 +89,17 @@ try{
   assert(peasantTraining.includes("DOJO"));
   assert(peasantTraining.includes("STR_ELERIUM_115"));
   assert(peasantTraining.includes("연구·재료·훈장·계급·능력치·시간순 미검증"));
+  await page.locator("#originBirthCapTimelineButton").click();
+  assert.equal(await page.locator("#originBirthCapTimelinePanel .origin-stage-cap-projection").count(),2);
+  const peasantCapPreview=page.locator("#originBirthCapTimelinePanel .origin-stage-cap-projection").nth(1);
+  await peasantCapPreview.locator("details").nth(1).locator("summary").click();
+  assert.equal((await peasantCapPreview.locator("details").nth(1).locator("tbody tr").nth(5).locator("td").nth(2).innerText()).trim(),"55",
+    "Battle Form cannot raise the raw health growth cap");
+  assert.equal((await peasantCapPreview.locator("details").nth(1).locator("tbody tr").nth(8).locator("td").nth(2).innerText()).trim(),"70",
+    "The unique +15 SoldierBonus only raises the effective-cap reference");
+  const peasantCapEvidence=await peasantCapPreview.innerText();
+  assert(peasantCapEvidence.includes("최종 능력치 미산출"));
+  assert(peasantCapEvidence.includes("실제 statCaps"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("manufacture:STR_THEBAN_ASSAULT_CLONE");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -108,6 +125,10 @@ try{
   assert(cloneTraining.includes("STR_GLAMOUR"));
   assert(!cloneTraining.includes("STR_MILITARY_DRILL_TRAINING"));
   assert(!cloneTraining.includes("STR_BATTLE_FORM_AUGMENTATION"));
+  await page.locator("#originBirthCapTimelineButton").click();
+  const cloneCaps=page.locator("#originBirthCapTimelinePanel .origin-stage-cap-projection").first();
+  assert.equal((await cloneCaps.locator("tbody tr").nth(5).locator("td").nth(2).innerText()).trim(),"55");
+  assert.equal((await cloneCaps.locator("tbody tr").nth(8).locator("td").nth(2).innerText()).trim(),"65");
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("event:STR_CODEX_BONUS_G5");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
@@ -159,6 +180,13 @@ try{
   assert(chortTraining.includes("요구 계급 3"));
   assert(chortTraining.includes("시술 자금 3,000,000"));
   assert(chortTraining.includes("연구·재료·훈장·계급·능력치·시간순 미검증"));
+  await directPeasantPath.locator("button[data-stage-path-index]").click();
+  const chortCaps=directPeasantPath.locator("[data-stage-panel-index]");
+  assert.equal(await chortCaps.locator(".origin-stage-cap-projection").count(),2);
+  assert.equal(await chortCaps.locator(".origin-stage-cap-projection").nth(1).locator("details").count(),5);
+  assert((await chortCaps.innerText()).includes("최종 능력치 미산출"));
+  assert((await chortCaps.textContent()).includes("STR_BRIDES_TO_THE_QUEEN"));
+  assert((await chortCaps.textContent()).includes("원시 전투 성장 하드캡"));
   await page.locator("#originDetailClose").click();
   await page.locator("#originSearch").fill("transform:STR_SHADE_EMBODIMENT:from:STR_SOLDIER_SPECTRE");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
