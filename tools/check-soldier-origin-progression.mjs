@@ -204,7 +204,7 @@ const licenseSupply=assault.prerequisites.itemSources.STR_THEBAN_ASSAULT_CLONE_L
 assert(licenseSupply.eventGrants.some(x=>x.event==="STR_START_COUNTRY_EGYPT_EVENT"&&
   x.grants.some(g=>g.mode==="everyMulti"&&g.count===12)));
 assert(licenseSupply.eventGrants.some(x=>x.event==="STR_REVOLUTIONARY_SPEECH_THEBES"&&
-  x.grants.some(g=>g.count===1)));
+  x.grants.some(g=>g.mode==="every"&&g.count===3)));
 assert.equal(published.summary.manufacturingProfilesWithMaterials,48);
 assert.equal(published.summary.eventOriginsWithTriggerEvidence,9);
 const nigeria=byId.get("event:STR_START_COUNTRY_NIGERIA_EVENT");

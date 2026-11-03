@@ -5,6 +5,7 @@ import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js';
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
+import {renderAcquisitionPaths} from './acquisition-paths.js';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
@@ -81,7 +82,10 @@ function render(){
   if(blocked||!REPORT)return;
   const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
   const rows=REPORT.records.filter(r=>(!family||r.soldierType===family)&&(!q||
-    [r.profileId,r.name,r.soldierName,...r.candidates.flatMap(c=>c.transforms.map(name))].join(' ').toLocaleLowerCase('ko').includes(q)));
+    [r.profileId,r.name,r.soldierName,
+      ...Object.keys(DATA.profiles.find(p=>p.id===r.profileId)?.acquisitionRequiredItems||{}),
+      ...r.candidates.flatMap(c=>c.transforms.map(name))]
+      .join(' ').toLocaleLowerCase('ko').includes(q)));
   const rowScore=r=>metric==='birth'?displayTotal(r.displayBirth):metric==='certified'?-1:score(best(r,metric==='growth'?'growth':'provisional'),metric==='growth'?'growth':'provisional');
   rows.sort((a,b)=>rowScore(b)-rowScore(a)||a.name.localeCompare(b.name,'ko'));
   $('#rowCount').textContent=rows.length+' / 72개 출생처';
@@ -124,6 +128,8 @@ function assumptionHtml(c){return c.assumptions.map(s=>{
 async function openOrigin(id,candidateId=null){
   if(blocked)return;const generation=++replayGeneration;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
+  const profile=DATA.profiles.find(p=>p.id===id);
+  const birthPaths=renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node});
   const metric=$('#catalogMetric').value;
   selected=id;const c=record.candidates.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const host=$('#originDetails');host.hidden=false;
@@ -135,7 +141,8 @@ async function openOrigin(id,candidateId=null){
     host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div>'+
       '<p><strong>출생처 등록 완료 · 완결 연구 경로 미확보</strong></p><p>'+node(record.unresolved?.id||record.profileId)+'</p>'+
       '<p>'+esc(record.unresolved?.reason||'조사 중')+'</p><h3>추가 확인이 필요한 상위 연구·이벤트 근거</h3><ul>'+gaps+'</ul>'+
-      '<p>이것은 현재 탐색기가 발견하지 못한 공급·시간순 경로입니다. 제한 탐색의 실패는 영구 불가능 판정이 아닙니다. 실제 획득을 증명하기 전에는 잠정 수치를 만들어 넣지 않습니다.</p>';
+      '<p>이것은 현재 탐색기가 발견하지 못한 공급·시간순 경로입니다. 제한 탐색의 실패는 영구 불가능 판정이 아닙니다. 실제 획득을 증명하기 전에는 잠정 수치를 만들어 넣지 않습니다.</p>'+
+      birthPaths;
     return;
   }
   let replay=verified.get(c.id);
@@ -157,7 +164,8 @@ async function openOrigin(id,candidateId=null){
   const shown=useGrowth?c.growth:c.display;
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
-    '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+statGrid(c,metric)+
+    '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
+    birthPaths+statGrid(c,metric)+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+

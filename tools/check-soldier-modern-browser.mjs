@@ -79,6 +79,34 @@ try{
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ const acquisition=page.locator('#originDetails .origin-acquisition');
+ assert.equal(await acquisition.count(),1);
+ assert((await acquisition.innerText()).includes('최초 생성 방식: 제조를 통한 병사 생성'));
+ assert((await acquisition.innerText()).includes('돌격 클론 면허'));
+ assert((await acquisition.innerText()).includes('연구 비용 3'));
+ await acquisition.locator('[data-required-item="STR_THEBAN_ASSAULT_CLONE_LICENSE"] > summary').click();
+ assert((await acquisition.innerText()).includes('구매: 125,000 / 1개'));
+ await acquisition.locator('[data-event="STR_START_COUNTRY_EGYPT_EVENT"] > summary').click();
+ await acquisition.locator('[data-event="STR_REVOLUTIONARY_SPEECH_THEBES"] > summary').click();
+ const acquired=await acquisition.innerText();
+ assert(acquired.includes('12개 고정'));
+ assert(acquired.includes('3개 고정'));
+ assert(acquired.includes('같은 이벤트의 연구 직접 지급'));
+ for(const script of ['STR_PROPAGANDA_1','STR_PROPAGANDA_2','STR_PROPAGANDA_3','STR_PROPAGANDA_4'])
+   assert.equal(await acquisition.locator('[data-script="'+script+'"]').count(),1);
+ assert.equal(await acquisition.locator('[data-open-origin="manufacture:STR_ROGUE_CLONE_RECRUITMENT"]').count(),1);
+ assert.equal(await acquisition.locator('[data-open-origin="manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT"]').count(),1);
+ await page.setViewportSize({width:390,height:844});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+   'Expanded license sources and alternative origins must fit a mobile viewport');
+ await page.setViewportSize({width:1440,height:950});
+ await acquisition.locator('.origin-related > summary').click();
+ await acquisition.locator('[data-open-origin="manufacture:STR_ROGUE_CLONE_RECRUITMENT"]').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.querySelector('[data-acquisition-profile="manufacture:STR_ROGUE_CLONE_RECRUITMENT"]')!==null,{timeout:60000});
+ assert((await page.locator('#originDetails').innerText()).includes('외톨이 클론'));
+ console.log('PASS assault-clone acquisition: store license 125000, Egypt 12, Theban speech 3+research, four OR scripts, sibling births, mobile details');
  const poltergeist=expectedReport.records.find(r=>r.profileId==='manufacture:STR_POLTERGEIST_EMBODIMENT');
  const poltergeistBest=poltergeist.candidates.find(c=>c.id===poltergeist.bestCandidateId);
  assert(poltergeistBest&&poltergeistBest.total>=453);

@@ -614,7 +614,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -644,7 +644,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -1057,7 +1057,39 @@
           "STR_ZOMBIE_ESSENCE": 5
         },
         "itemSources": {
-          "STR_POLTERGEIST": null,
+          "STR_POLTERGEIST": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_CODEX_BONUS_G7C",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CODEX_BONUS_G7"
+                ]
+              },
+              {
+                "event": "STR_PLAGUE_POLTERGEIST",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_PLAGUE_POLTERGEIST"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          },
           "STR_ZOMBIE_STERILE_TERRORIST": {
             "buyCost": 0,
             "buyRequires": [],
@@ -1250,7 +1282,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -1301,7 +1333,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1397,7 +1429,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1482,7 +1514,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1814,7 +1846,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1893,7 +1925,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -1921,7 +1953,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -1933,7 +1965,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1970,7 +2002,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -2029,7 +2061,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -2099,7 +2131,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 8
                   }
                 ],
                 "scriptIds": [
@@ -3804,7 +3836,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -3855,7 +3887,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -3951,7 +3983,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4036,7 +4068,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4368,7 +4400,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4447,7 +4479,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -4475,7 +4507,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -4487,7 +4519,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4524,7 +4556,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -4583,7 +4615,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -5947,7 +5979,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -6370,7 +6402,14 @@
           "STR_SURVIVOR": 1
         },
         "itemSources": {
-          "STR_SURVIVOR": null
+          "STR_SURVIVOR": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -6842,7 +6881,87 @@
           "STR_ZONE_STALKER": 1
         },
         "itemSources": {
-          "STR_ZONE_STALKER": null
+          "STR_ZONE_STALKER": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 21
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_2",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_3",
+                  "STR_CBT_CHAMP_CHAMP"
+                ]
+              },
+              {
+                "event": "STR_RED_REIGN_AND_RULE",
+                "grants": [
+                  {
+                    "mode": "everyMulti",
+                    "count": 3
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_RED_EVENTS_1",
+                  "STR_CAPTAIN_RED_EVENTS_2",
+                  "STR_CAPTAIN_RED_EVENTS_3"
+                ]
+              },
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_KNOCK_KNOCK_ZONE_STALKER",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_KNOCK_KNOCK_DUMBLAZY_1",
+                  "STR_KNOCK_KNOCK_DUMBLAZY_2"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -8196,7 +8315,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -9615,7 +9734,89 @@
           "STR_JUNGLEFIGHTER_GIRL": 1
         },
         "itemSources": {
-          "STR_JUNGLEFIGHTER_GIRL": null
+          "STR_JUNGLEFIGHTER_GIRL": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 21
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_2",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_3",
+                  "STR_CBT_CHAMP_CHAMP"
+                ]
+              },
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_REVOLUTIONARY_SPEECH_HEROIC",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_PROPAGANDA_1",
+                  "STR_PROPAGANDA_2",
+                  "STR_PROPAGANDA_3",
+                  "STR_PROPAGANDA_4"
+                ]
+              },
+              {
+                "event": "STR_REVOLUTIONARY_REINFORCEMENTS_2",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_REVOLUTIONARY_REINFORCEMENTS_A",
+                  "STR_REVOLUTIONARY_REINFORCEMENTS_B",
+                  "STR_REVOLUTIONARY_REINFORCEMENTS_C"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -10069,7 +10270,73 @@
           "STR_SNIPER_GIRL": 1
         },
         "itemSources": {
-          "STR_SNIPER_GIRL": null
+          "STR_SNIPER_GIRL": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 21
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_2",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_3",
+                  "STR_CBT_CHAMP_CHAMP"
+                ]
+              },
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_KNOCK_KNOCK_SNIPER_GIRL",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_KNOCK_KNOCK_DUMBLAZY_1",
+                  "STR_KNOCK_KNOCK_DUMBLAZY_2"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -10560,7 +10827,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -10590,7 +10857,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -10604,7 +10871,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -10831,7 +11098,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -10882,7 +11149,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -10978,7 +11245,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11063,7 +11330,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11395,7 +11662,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11474,7 +11741,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -11502,7 +11769,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -11514,7 +11781,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11551,7 +11818,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -11610,7 +11877,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -13836,7 +14103,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -14430,7 +14697,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -17533,7 +17800,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -18485,7 +18752,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -18677,7 +18944,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -18707,7 +18974,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -22074,7 +22341,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -22125,7 +22392,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22221,7 +22488,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22306,7 +22573,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22638,7 +22905,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22717,7 +22984,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -22745,7 +23012,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -22757,7 +23024,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22794,7 +23061,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -22853,7 +23120,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -24571,7 +24838,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 9
                   }
                 ],
                 "scriptIds": [
@@ -24583,7 +24850,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -24676,7 +24943,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -25312,7 +25579,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -25363,7 +25630,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25459,7 +25726,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25544,7 +25811,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25876,7 +26143,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25955,7 +26222,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -25983,7 +26250,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -25995,7 +26262,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -26032,7 +26299,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -26091,7 +26358,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -28853,7 +29120,58 @@
           "STR_DAMSEL_OF_WAR": 1
         },
         "itemSources": {
-          "STR_DAMSEL_OF_WAR": null
+          "STR_DAMSEL_OF_WAR": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_KNOCK_KNOCK_DAMSEL_OF_WAR",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_KNOCK_KNOCK_DUMBLAZY_1",
+                  "STR_KNOCK_KNOCK_DUMBLAZY_2"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -29547,7 +29865,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -29598,7 +29916,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -29694,7 +30012,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -29779,7 +30097,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -30111,7 +30429,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -30190,7 +30508,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -30218,7 +30536,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -30230,7 +30548,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -30267,7 +30585,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -30326,7 +30644,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -31628,7 +31946,14 @@
           "STR_OGRE_SPY": 1
         },
         "itemSources": {
-          "STR_OGRE_SPY": null
+          "STR_OGRE_SPY": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -32637,7 +32962,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -32688,7 +33013,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -32784,7 +33109,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -32869,7 +33194,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -33201,7 +33526,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -33280,7 +33605,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -33308,7 +33633,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -33320,7 +33645,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -33357,7 +33682,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -33416,7 +33741,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -35455,7 +35780,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -35508,7 +35833,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -36211,7 +36536,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -36264,7 +36589,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -36529,7 +36854,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36641,7 +36966,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -36695,7 +37020,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36744,7 +37069,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36805,7 +37130,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36829,7 +37154,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -36878,7 +37203,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36890,7 +37215,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -36902,7 +37227,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -38167,7 +38492,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -38220,7 +38545,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -40262,7 +40587,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -40313,7 +40638,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40409,7 +40734,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40494,7 +40819,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40826,7 +41151,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40905,7 +41230,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -40933,7 +41258,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -40945,7 +41270,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40982,7 +41307,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -41041,7 +41366,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -41551,7 +41876,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 8
                   }
                 ],
                 "scriptIds": [
@@ -92999,7 +93324,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 8
                   }
                 ],
                 "scriptIds": [
@@ -93030,7 +93355,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93246,7 +93571,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -93297,7 +93622,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93393,7 +93718,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93478,7 +93803,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93810,7 +94135,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93889,7 +94214,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -93917,7 +94242,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -93929,7 +94254,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93966,7 +94291,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -94025,7 +94350,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -95136,7 +95461,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -95166,7 +95491,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -99455,7 +99780,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -99485,7 +99810,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -101276,7 +101601,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -101306,7 +101631,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -102616,7 +102941,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -102646,7 +102971,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -104895,7 +105220,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -104925,7 +105250,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -114624,7 +114949,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -114654,7 +114979,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -123825,7 +124150,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -123855,7 +124180,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -128494,7 +128819,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -128524,7 +128849,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -130773,7 +131098,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -130803,7 +131128,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -131641,7 +131966,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -131671,7 +131996,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -132037,7 +132362,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -132067,7 +132392,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -264878,7 +265203,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -264990,7 +265315,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -265044,7 +265369,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265093,7 +265418,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265154,7 +265479,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265178,7 +265503,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -265227,7 +265552,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265239,7 +265564,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -265251,7 +265576,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265282,7 +265607,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269615,7 +269940,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269727,7 +270052,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -269781,7 +270106,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269830,7 +270155,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269891,7 +270216,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269915,7 +270240,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -269964,7 +270289,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269976,7 +270301,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -269988,7 +270313,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -270019,7 +270344,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272322,7 +272647,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272434,7 +272759,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -272488,7 +272813,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272537,7 +272862,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272598,7 +272923,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272622,7 +272947,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -272671,7 +272996,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272683,7 +273008,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -272695,7 +273020,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272726,7 +273051,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274075,7 +274400,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274187,7 +274512,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -274241,7 +274566,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274290,7 +274615,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274351,7 +274676,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274375,7 +274700,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -274424,7 +274749,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274436,7 +274761,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -274448,7 +274773,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274479,7 +274804,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -275830,7 +276155,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -275942,7 +276267,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -275996,7 +276321,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276045,7 +276370,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276106,7 +276431,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276130,7 +276455,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -276179,7 +276504,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276191,7 +276516,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -276203,7 +276528,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276234,7 +276559,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [

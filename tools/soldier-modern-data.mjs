@@ -420,7 +420,9 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       criteria:x.criteria??{},killCriteria:x.killCriteria??{},
       missionTypeFilter:x.missionTypeFilter??[]
     }]));
+  const birthSupplyItems=new Set(profiles.flatMap(p=>Object.keys(p.acquisitionRequiredItems||{})));
   const neededItems=new Set([
+    ...birthSupplyItems,
     ...transformationIndex.flatMap(x=>Object.keys(x.requiredItems||{})),
     ...armorCatalog.map(x=>x.storeItem).filter(id=>id&&id!=="STR_NONE"),
     // Explicit near/far progression witnesses that lead to future gear.
@@ -471,14 +473,25 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
     const eventGrants=[];
     for(const event of events){
       const grants=[];
-      if((event.everyItemList||[]).includes(id))grants.push({mode:"every",count:1});
+      // OXCE awards every entry, including duplicates. Theban revolutionary
+      // speech deliberately lists the same assault-clone license THREE times.
+      const fixedCount=(Array.isArray(event.everyItemList)?event.everyItemList:[])
+        .filter(item=>item===id).length;
+      if(fixedCount)grants.push({mode:"every",count:fixedCount});
       if(Number(event.everyMultiItemList?.[id])>0)grants.push({mode:"everyMulti",count:event.everyMultiItemList[id]});
       if((event.randomItemList||[]).includes(id))grants.push({mode:"randomOneOf",choices:event.randomItemList.length});
       if(Number(event.weightedItemList?.[id])>0)grants.push({mode:"weighted",weight:event.weightedItemList[id]});
       for(const group of (Array.isArray(event.randomMultiItemList)?event.randomMultiItemList:[]))
         if(Number(group?.[id])>0)grants.push({mode:"randomMulti",count:group[id],choices:event.randomMultiItemList.length});
       if(grants.length)eventGrants.push({event:event.name,grants,
-        scriptIds:[...new Set((eventScriptMatches.get(event.name)||[]).map(s=>s.script))]});
+        scriptIds:[...new Set((eventScriptMatches.get(event.name)||[]).map(s=>s.script))],
+        // Only acquisition materials need full script gates in the browser.
+        // Preserve each script as an alternative; never combine OR into AND.
+        ...(birthSupplyItems.has(id)?{
+          scriptRoutes:eventScriptMatches.get(event.name)||[],
+          directResearchAwards:Array.isArray(event.researchList)?
+            [...new Set(event.researchList.filter(x=>typeof x==="string"))]:[]
+        }:{})});
     }
     itemSupply[id]={exists:!!it,buyCost:it?.costBuy??0,
       buyRequires:it?.requires??[],buyRequirements:it?.buyRequirements??[],
