@@ -660,4 +660,38 @@ try {
           ]){
             await page.goto(new URL("research/#research="+sample.id,base).href,{waitUntil:"domcontentloaded",timeout:45000});
 
-[Showing lines 1-661 of 697 (50.0KB limit). Use offset=662 to continue.]
+            await page.waitForFunction(id=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.textContent.includes(id),sample.id,{timeout:25000});
+            const compact=await page.locator("#detail .editorial-panel").innerText();
+            for(const word of sample.expected){
+              if(!compact.includes(word))errors.push(sample.id+" v5 causal/ROI insight missing: "+word);
+            }
+          }
+          detail+=" + Cunning downstream/event gates + wine OR-path + cash bag ROI";
+        }
+        if(slug==="manufacture"){
+          await page.goto(new URL("manufacture/#recipe=STR_WARRIOR_SUMMONING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
+          await page.waitForFunction(()=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.innerText.includes("STR_WARRIOR_SUMMONING"),{timeout:20000});
+          const recipeText=await page.locator("#detail").innerText();
+          if(!recipeText.includes("영웅의 축복")||!recipeText.includes("32"))errors.push("Champion Summoning deep-link missing 32 Blessings input");
+          detail+=" + champion recipe deep link";
+        }
+      }
+      display=(await page.locator("body").innerText()).slice(-320).replace(/\s+/g," ");
+      if(htmlError.test(display))errors.push("failure text in body tail");
+    }catch(e){
+      if(slug==="trainings")console.log("TRAINING MOBILE DIAGNOSTIC: "+e.message.slice(0,1800));
+      errors.push((slug==="trainings"?"stage="+trainingStage+": ":"")+e.message.split("\n")[0]);
+      display=(await page.locator("body").innerText().catch(()=>"<no DOM>")).slice(0,260).replace(/\s+/g," ");
+    }
+    const ok=!!count&&!errors.length&&!httpErrors.length;
+    results.push(ok);
+    console.log((ok?"PASS":"FAIL")+" "+slug+" rows="+count+" search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+" http="+JSON.stringify(httpErrors.slice(0,6))+(ok?"":" DOM="+display));
+    await page.close();
+  }
+}finally{
+  await browser.close();
+  if(server)await new Promise(resolve=>server.close(resolve));
+}
+const pass=results.filter(Boolean).length;
+console.log("SITE SMOKE "+pass+"/"+results.length+" passed | base="+base);
+if(pass!==results.length)process.exitCode=1;
