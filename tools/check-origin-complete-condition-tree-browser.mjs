@@ -45,6 +45,15 @@ try{
   }
   assert((await tree.locator('[data-condition-kind="or"]').count())>0);
   assert((await tree.locator('[data-condition-kind="and"]').count())>0);
+  const early=page.locator('#originDetails .origin-start-choice-evidence');
+  await early.locator('summary').first().click();
+  assert.equal(await early.locator('[data-start-choice]').count(),22);
+  assert((await early.innerText()).includes('성격 연구'));
+  assert((await early.innerText()).includes('STR_CAPTAIN_DUMBASS'));
+  await early.locator('[data-trace-research-root="STR_CAPTAIN_LAZYASS"]').click();
+  assert((await early.locator('.origin-complete-tree').count())>=1,
+    'Choice research must be navigable from game start');
+  await early.locator('[data-trace-research-root="STR_CAPTAIN_LAZYASS"]').click();
   assert((await tree.evaluate(el=>el.outerHTML.length))<500000,'Mobile route disclosure too heavy');
   const expand=page.locator('#originDetails button[data-trace-id]').first();
   if(await expand.count()){
@@ -66,6 +75,15 @@ try{
   }
   await page.locator('#originDetails button[data-expand-origin-tree]').click();
   assert.equal(await page.locator('#originDetails .origin-tree-result .origin-complete-tree').count(),0);
+  await page.locator('#search').fill('manufacture:STR_FREAK_RECRUITMENT');
+  await page.locator('#originTable .origin-open').click();
+  const alternate=page.locator('#originDetails [data-start-choice-profile="manufacture:STR_FREAK_RECRUITMENT"]');
+  await alternate.waitFor();
+  await alternate.locator('summary').first().click();
+  assert((await alternate.locator('[data-start-choice-path]').count())>0,
+    'Origins with source-defined captain guards must expose each specific acquisition script');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'Expanded source-specific start choices must not overflow a mobile viewport');
   assert.deepEqual(errors,[],'Uncaught browser JS errors');
   console.log('PASS mobile browser: 2.1 clone detail, four propaganda alternatives, prerequisite continuation, and candidate rank/research panel');
 }finally{

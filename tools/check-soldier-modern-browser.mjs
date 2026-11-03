@@ -54,7 +54,7 @@ try{
  assert((await page.locator('#originDetails').textContent()).includes('이 연구 단계에서 새로 폐쇄 확인'),
    'Directional disable links must distinguish observed closure time from final disabled state');
  await page.locator('#originDetails .branch-choice').evaluateAll(nodes=>nodes.forEach(x=>x.open=true));
- await page.locator('#originDetails [data-research-node="STR_CAPTAIN_PUSSY"]').first().click();
+ await page.locator('#originDetails .branch-choice [data-research-node="STR_CAPTAIN_PUSSY"]').first().click();
  await page.locator('#researchDialog[open]').waitFor();
  const relations=await page.locator('#researchDetail').innerText();
  for(const text of ['좌측 · 이 연구의 조건','우측 · 이 연구의 영향','무조건 필요','조건 충족','직접 해금','필수로 요구됨','조건으로 사용됨','직접 해금함'])assert(relations.includes(text),text);

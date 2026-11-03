@@ -21,7 +21,28 @@ const enDoc=yaml.load(fs.readFileSync(enPath,'utf8').replace(/^\uFEFF/,''),{json
 const en=enDoc['en-US']||enDoc;
 for(const row of [...data.soldiers,...data.transformations,...data.bonuses])if(row.koName)ko[row.id]=row.koName;
 for(const row of data.profiles)if(row.sourceKoName)ko[row.sourceId]=row.sourceKoName;
-const ids=new Set([...Object.keys(data.researchRules),...itemIds,...data.transformations.map(x=>x.id),...data.soldiers.map(x=>x.id)]);
+// Include v.o2 event, mission, map, and facility provenance names in the
+// SAME source-hashed label catalog. The legacy event DB is v.o1.1.1; it
+// cannot name or supply present-version soldier origins.
+const eventIds=[
+  ...data.profiles.flatMap(p=>[p.sourceId,...(p.acquisitionEventScripts||[]).map(s=>s.script)]),
+  ...Object.values(data.eventResearchSources||{}).flatMap(rows=>rows.flatMap(e=>
+    [e.event,...(e.scripts||[]).map(s=>s.script)])),
+  ...Object.values(data.missionResearchSources||{}).flatMap(rows=>rows.flatMap(m=>
+    [m.deployment,m.startingCondition,...(m.scripts||[]).map(s=>s.script)])),
+  ...Object.values(data.itemSupply||{}).flatMap(s=>[
+    ...(s.eventGrants||[]).flatMap(e=>[e.event,...(e.scriptRoutes||[]).map(r=>r.script)]),
+    ...(s.mapLoot?.sources||[]).flatMap(e=>[
+      e.terrain,e.mapScript,e.block,...(e.missionPaths||[]).flatMap(m=>
+        [m.deployment,m.mission,m.script])])
+  ]),
+  ...Object.keys(data.baseFacilityFunctions||{})
+];
+const ids=new Set([
+  ...Object.keys(data.researchRules),...itemIds,
+  ...data.transformations.map(x=>x.id),...data.soldiers.map(x=>x.id),
+  ...eventIds.filter(x=>typeof x==='string'&&x.length)
+]);
 const names=Object.fromEntries([...ids].sort().map(id=>[id,String(ko[id]??en[id]??id).replaceAll('{NEWLINE}',' ').replaceAll('{SMALLLINE}',' ')]));
 const out={schemaVersion:1,sourceVersion:'v.o2',sourceHashes:data.meta.source.rules,koParsed,
   translationNote:koParsed?'current source locale':'indexed v.o2 names and current source English; invalid live Korean locale was not used',
