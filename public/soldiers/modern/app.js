@@ -6,6 +6,7 @@ import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
@@ -129,7 +130,8 @@ async function openOrigin(id,candidateId=null){
   if(blocked)return;const generation=++replayGeneration;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
-  const birthPaths=renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node});
+  const birthPaths=renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+
+    '<section class="origin-tree-action"><button type="button" data-expand-origin-tree="'+esc(profile.id)+'">게임 시작부터 전체 출생 조건 트리 보기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>';
   const metric=$('#catalogMetric').value;
   selected=id;const c=record.candidates.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const host=$('#originDetails');host.hidden=false;
@@ -202,7 +204,35 @@ async function init(){try{
   for(const [id,direction] of [['#scrollStatsLeft',-1],['#scrollStatsRight',1]])
     $(id).addEventListener('click',()=>$('#originTableScroll').scrollBy({left:direction*260,behavior:'smooth'}));
   document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
-    if(origin)void openOrigin(origin.dataset.openOrigin);if(research)showResearch(research.dataset.researchNode);if(candidate)void openOrigin(selected,candidate.dataset.candidate);
+    if(origin)void openOrigin(origin.dataset.openOrigin);
+    const continueButton=e.target.closest('[data-trace-id]');
+    if(continueButton){
+      const parent=continueButton.closest('.origin-tree-leaf');
+      const output=parent?.querySelector('.origin-tree-continuation');
+      if(output){output.remove();continueButton.textContent='다음 선행 조건 펼치기';}
+      else if(parent){
+        const extra=document.createElement('div');extra.className='origin-tree-continuation';
+        extra.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(continueButton.dataset.traceKind,
+          continueButton.dataset.traceId,DATA),{esc,name});
+        parent.append(extra);continueButton.textContent='추가 조건 접기';
+      }
+    }
+    const treeButton=e.target.closest('[data-expand-origin-tree]');
+    if(treeButton){
+      const id=treeButton.dataset.expandOriginTree;
+      const box=$('#originDetails').querySelector('.origin-tree-result');
+      if(box){
+        if(box.innerHTML){box.innerHTML='';treeButton.textContent='게임 시작부터 전체 출생 조건 트리 보기';}
+        else{
+          const profile=DATA.profiles.find(p=>p.id===id);
+          if(profile){
+            box.innerHTML=renderAcquisitionTree(buildAcquisitionTree(profile,DATA),{esc,name});
+            treeButton.textContent='전체 출생 조건 트리 접기';
+          }
+        }
+      }
+    }
+    if(research)showResearch(research.dataset.researchNode);if(candidate)void openOrigin(selected,candidate.dataset.candidate);
     if(e.target.id==='originDetailClose'){$('#originDetails').hidden=true;replayGeneration++;}
   });
   $('#closeResearchDialog').onclick=()=>$('#researchDialog').close();$('#researchDialog').addEventListener('click',e=>{if(e.target===$('#researchDialog'))$('#researchDialog').close()});
