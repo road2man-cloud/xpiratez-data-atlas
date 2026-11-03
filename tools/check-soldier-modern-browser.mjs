@@ -19,7 +19,7 @@ try{
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),72);
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
- assert.equal(await page.locator('#catalogMetric').inputValue(),'provisional');
+ assert.equal(await page.locator('#catalogMetric').inputValue(),'growth');
  const expectedReport=decodeOriginReport(await (await page.request.get(url('data/soldier-origin-candidates.json'))).json());
  const expectedSummary=expectedReport.summary;
  assert.equal(expectedSummary.profiles,72);
@@ -38,8 +38,11 @@ try{
  console.log('PASS published origin registry: 72 births, '+expectedSummary.withCompleteResearch+' complete conditional paths, '+expectedSummary.witnesses+' candidates, 12 displayed stats; no save/custom trainer');
  await page.locator('#search').fill('direct:STR_SOLDIER_PEASANT');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
+ const grown=(await score12()).total;
+ assert(grown>0);
+ await page.locator('#catalogMetric').selectOption('provisional');
  const provisional=(await score12()).total;
- assert(provisional>0);
+ assert(provisional>0&&grown>=provisional,'Endgame growth ceiling must not be a birth/ungrown score');
  await page.locator('[data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const detail=await page.locator('#originDetails').innerText();
@@ -67,7 +70,12 @@ try{
  assert(birth<provisional,'Provisional training must not be conflated with source birth');
  await page.locator('#catalogMetric').selectOption('provisional');
  assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
- console.log('PASS one real foundation-to-terminal conditional record replayed, branch direction details, six canonical relationship labels and no certification promotion');
+ await page.locator('#catalogMetric').selectOption('growth');
+ assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),grown);
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('성장 완료 가정'),null,{timeout:60000});
+ assert((await page.locator('#originDetails').innerText()).includes('동시 달성'));
+ console.log('PASS one real chronological record replayed; growth-cap ceiling default is distinct from ungrown stats and does not claim actual attainment');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
@@ -88,13 +96,17 @@ try{
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);
  await page.locator('#search').fill(catgirl.profileId);
+ const catgirlGrowth=await score12();
+ await page.locator('#catalogMetric').selectOption('provisional');
  const catgirlShown=await score12();
+ assert(catgirlGrowth.total>=catgirlShown.total,'Endgame max must not be lower than ungrown witness');
  assert(catgirlShown.total>=660,'New proven growth paths must not lower the original 660-point 12-stat route');
  assert.equal(catgirlShown.mana,40,'A 12-stat growth candidate must preserve and display real Mana');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('전역 최적성: 미증명'));
- console.log('PASS Nekomimi warrior displays '+catgirlShown.total+' across 12 stats (including Mana 40); original 620-point witness retained');
+ console.log('PASS Nekomimi warrior retains '+catgirlShown.total+' ungrown 12-stat score (Mana 40), with separate '+catgirlGrowth.total+' growth ceiling');
+ await page.locator('#catalogMetric').selectOption('growth');
  const pending=expectedReport.records.find(r=>!r.candidates.length);
  if(pending){
    await page.locator('#search').fill(pending.profileId);
@@ -117,6 +129,19 @@ try{
  await page.setViewportSize({width:390,height:844});
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>window.innerWidth+1);
  assert.equal(overflow,false,'No mobile page horizontal overflow');
+ const mobile=await page.evaluate(()=>({
+   table:document.querySelector('#originTable').getBoundingClientRect().width,
+   panel:document.querySelector('#originTableScroll').clientWidth,
+   name:document.querySelector('#originTable tbody td:first-child').getBoundingClientRect().width,
+   stickyName:getComputedStyle(document.querySelector('#originTable tbody td:first-child')).position,
+   stickySum:getComputedStyle(document.querySelector('#originTable tbody td:nth-child(3)')).position,
+   hiddenStatus:getComputedStyle(document.querySelector('#originTable tbody td:nth-child(2)')).display
+ }));
+ assert(mobile.table>mobile.panel&&mobile.name<=135&&mobile.stickyName==='sticky'&&mobile.stickySum==='sticky'&&mobile.hiddenStatus==='none',JSON.stringify(mobile));
+ await page.locator('#scrollStatsRight').click();
+ await page.waitForFunction(()=>document.querySelector('#originTableScroll').scrollLeft>50);
+ assert.equal(await page.locator('#originTable').evaluate(e=>getComputedStyle(e).display),'table');
+ console.log('PASS 390px mobile: genuine swipeable 12-stat table, compact pinned name and total, working next-columns control');
  await page.goto(url('captains/'));
  assert.equal(await page.locator('input[type=file],#choiceSaveFile').count(),0);
  assert(!requests.some(r=>r.method!=='GET'));

@@ -85,8 +85,8 @@ try {
         if(await page.locator("#legacyMaximaArchive").count()||
           await page.locator(".soldier-db-views").count())
           errors.push("Duplicate or 1.1.1 Soldier navigation remains");
-        if(await page.locator("#catalogMetric").inputValue()!=="provisional")
-          errors.push("Registered conditional provisional candidates must be the default");
+        if(await page.locator("#catalogMetric").inputValue()!=="growth")
+          errors.push("Endgame growth ceilings must be the comparison default");
         if(await page.locator('input[type="file"]').count())errors.push("Local save interface was not removed");
         await page.locator("#search").fill("direct:STR_SOLDIER_PEASANT");
         const narrowed=await page.locator("#originTable tbody tr").count();
@@ -98,8 +98,8 @@ try {
         if(Number(detail)<150)errors.push("2.1 acquisition proof detail incomplete");
         await page.locator('#catalogMetric').selectOption('certified');
         if((await page.locator('#originTable .score').innerText()).trim()!=='—')errors.push('Provisional silently upgraded to certified');
-        await page.locator('#catalogMetric').selectOption('provisional');
-        if(!(await page.locator('#catalogStatus').innerText()).includes('조건부'))errors.push('Provisional assumptions hidden');
+        await page.locator('#catalogMetric').selectOption('growth');
+        if(!(await page.locator('#catalogStatus').innerText()).includes('조건부'))errors.push('Growth-ceiling assumptions hidden');
         const networkPaths=await page.evaluate(()=>performance.getEntriesByType("resource")
           .map(r=>new URL(r.name).pathname));
         if(networkPaths.some(x=>x.endsWith("/soldiers-runtime.json.gz")))
@@ -659,38 +659,5 @@ try {
             {id:"STR_CASH_BAG",expected:["$200,000","$202,200","91개","92개"]}
           ]){
             await page.goto(new URL("research/#research="+sample.id,base).href,{waitUntil:"domcontentloaded",timeout:45000});
-            await page.waitForFunction(id=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.textContent.includes(id),sample.id,{timeout:25000});
-            const compact=await page.locator("#detail .editorial-panel").innerText();
-            for(const word of sample.expected){
-              if(!compact.includes(word))errors.push(sample.id+" v5 causal/ROI insight missing: "+word);
-            }
-          }
-          detail+=" + Cunning downstream/event gates + wine OR-path + cash bag ROI";
-        }
-        if(slug==="manufacture"){
-          await page.goto(new URL("manufacture/#recipe=STR_WARRIOR_SUMMONING",base).href,{waitUntil:"domcontentloaded",timeout:45000});
-          await page.waitForFunction(()=>(document.querySelector("#detail .game-dossier-foot")||document.querySelector("#detail > .id"))?.innerText.includes("STR_WARRIOR_SUMMONING"),{timeout:20000});
-          const recipeText=await page.locator("#detail").innerText();
-          if(!recipeText.includes("영웅의 축복")||!recipeText.includes("32"))errors.push("Champion Summoning deep-link missing 32 Blessings input");
-          detail+=" + champion recipe deep link";
-        }
-      }
-      display=(await page.locator("body").innerText()).slice(-320).replace(/\s+/g," ");
-      if(htmlError.test(display))errors.push("failure text in body tail");
-    }catch(e){
-      if(slug==="trainings")console.log("TRAINING MOBILE DIAGNOSTIC: "+e.message.slice(0,1800));
-      errors.push((slug==="trainings"?"stage="+trainingStage+": ":"")+e.message.split("\n")[0]);
-      display=(await page.locator("body").innerText().catch(()=>"<no DOM>")).slice(0,260).replace(/\s+/g," ");
-    }
-    const ok=!!count&&!errors.length&&!httpErrors.length;
-    results.push(ok);
-    console.log((ok?"PASS":"FAIL")+" "+slug+" rows="+count+" search="+search+" detail="+detail+" errors="+JSON.stringify(errors)+" http="+JSON.stringify(httpErrors.slice(0,6))+(ok?"":" DOM="+display));
-    await page.close();
-  }
-}finally{
-  await browser.close();
-  if(server)await new Promise(resolve=>server.close(resolve));
-}
-const pass=results.filter(Boolean).length;
-console.log("SITE SMOKE "+pass+"/"+results.length+" passed | base="+base);
-if(pass!==results.length)process.exitCode=1;
+
+[Showing lines 1-661 of 697 (50.0KB limit). Use offset=662 to continue.]
