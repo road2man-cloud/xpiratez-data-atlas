@@ -1,0 +1,680 @@
+{
+  "schemaVersion": 1,
+  "kind": "WARRIOR_SUMMONING_12_STAT_CONDITIONAL_GROWTH_COMPARISON",
+  "ruleset": "X-Piratez v.o2 / OXCE 8.7.1",
+  "sourceHashes": [
+    {
+      "file": "HitFX-basic.rul",
+      "sha256": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf"
+    },
+    {
+      "file": "Piratez_Armors.rul",
+      "sha256": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc"
+    },
+    {
+      "file": "Piratez_BaseNames.rul",
+      "sha256": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff"
+    },
+    {
+      "file": "Piratez_Bonuses.rul",
+      "sha256": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23"
+    },
+    {
+      "file": "Piratez_Events.rul",
+      "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+    },
+    {
+      "file": "Piratez_Factions.rul",
+      "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+    },
+    {
+      "file": "Piratez_Globals.rul",
+      "sha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104"
+    },
+    {
+      "file": "Piratez_Mapscripts.rul",
+      "sha256": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b"
+    },
+    {
+      "file": "Piratez_Planet.rul",
+      "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a"
+    },
+    {
+      "file": "Piratez_Resources.rul",
+      "sha256": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c"
+    },
+    {
+      "file": "Piratez_Transformations.rul",
+      "sha256": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba"
+    },
+    {
+      "file": "Piratez_Wardrobe.rul",
+      "sha256": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503"
+    },
+    {
+      "file": "Piratez.rul",
+      "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6"
+    },
+    {
+      "file": "Recolr.rul",
+      "sha256": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0"
+    },
+    {
+      "file": "Shotguns_Rebalance.rul",
+      "sha256": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b"
+    },
+    {
+      "file": "Yankes_Scripts.rul",
+      "sha256": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+    }
+  ],
+  "registrySourceHash": "4e3e8f3daaeb82446e8e6a03aa8621f18e5e816ca68a550fb5522f484049d432",
+  "statOrder": [
+    "tu",
+    "stamina",
+    "health",
+    "bravery",
+    "reactions",
+    "firing",
+    "throwing",
+    "melee",
+    "strength",
+    "psiStrength",
+    "psiSkill",
+    "mana"
+  ],
+  "scope": "REPLAYED_MIN_BIRTH_RESEARCH_WITNESSES_PLUS_FUTURE_GROWTH_ENVELOPE",
+  "profiles": [
+    {
+      "id": "manufacture:STR_ZONE_STALKER_RECRUITMENT",
+      "sourceName": "고용: 존 추적자",
+      "soldierType": "STR_SOLDIER_SLAVE",
+      "traitNames": [
+        "STR_HEROIC",
+        "STR_INDESTRUCTIBLE_TRAIT",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_LONE_WOLF"
+      ],
+      "alreadyCompletedTransformations": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_LONE_WOLF"
+      ],
+      "maxStarting": {
+        "tu": 60,
+        "stamina": 70,
+        "health": 95,
+        "bravery": 100,
+        "reactions": 55,
+        "firing": 75,
+        "throwing": 55,
+        "melee": 60,
+        "strength": 45,
+        "psiStrength": 75,
+        "psiSkill": 0,
+        "mana": 131
+      },
+      "originBirthMinimum": {
+        "tu": 45,
+        "stamina": 40,
+        "health": 95,
+        "bravery": 100,
+        "reactions": 35,
+        "firing": 75,
+        "throwing": 30,
+        "melee": 25,
+        "strength": 45,
+        "psiStrength": 15,
+        "psiSkill": 0,
+        "mana": 61
+      },
+      "rawCaps": {
+        "tu": 80,
+        "stamina": 120,
+        "health": 60,
+        "bravery": 100,
+        "reactions": 80,
+        "firing": 115,
+        "throwing": 90,
+        "melee": 100,
+        "strength": 60,
+        "psiStrength": 44,
+        "psiSkill": 65,
+        "mana": 140
+      },
+      "effectiveCaps": {
+        "tu": 80,
+        "stamina": 120,
+        "health": 90,
+        "bravery": 100,
+        "reactions": 80,
+        "firing": 115,
+        "throwing": 90,
+        "melee": 100,
+        "strength": 60,
+        "psiStrength": 44,
+        "psiSkill": 65,
+        "mana": 171
+      },
+      "candidateCount": 3,
+      "bestWitnessCandidate": {
+        "witnessId": "5d18a2e263fedac95836",
+        "trainingSequence": [
+          "STR_CAPTAINS_11"
+        ],
+        "researchSteps": 133,
+        "postTrainingBeforeGrowth": {
+          "tu": 55,
+          "stamina": 50,
+          "health": 95,
+          "bravery": 110,
+          "reactions": 40,
+          "firing": 80,
+          "throwing": 35,
+          "melee": 30,
+          "strength": 45,
+          "psiStrength": 15,
+          "psiSkill": 0,
+          "mana": 81
+        },
+        "conditionalPostTrainingGrowthUpper": {
+          "tu": 91,
+          "stamina": 131,
+          "health": 95,
+          "bravery": 119,
+          "reactions": 90,
+          "firing": 125,
+          "throwing": 100,
+          "melee": 110,
+          "strength": 61,
+          "psiStrength": 49,
+          "psiSkill": 70,
+          "mana": 196
+        },
+        "conditional12Sum": 1237,
+        "changeFromPostTraining": 601,
+        "evidence": {
+          "researchSequenceComplete": true,
+          "researchWitnessExact": true,
+          "statGrowthExecuted": false,
+          "rngBirthMaxExplored": false,
+          "medalsAdded": false,
+          "finalMaximumCertified": false
+        },
+        "requiredAssumptions": [
+          "해당 출생처의 최저 생성값 벡터",
+          "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+          "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+          "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+          "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+        ]
+      },
+      "candidates": [
+        {
+          "witnessId": "5d18a2e263fedac95836",
+          "trainingSequence": [
+            "STR_CAPTAINS_11"
+          ],
+          "researchSteps": 133,
+          "postTrainingBeforeGrowth": {
+            "tu": 55,
+            "stamina": 50,
+            "health": 95,
+            "bravery": 110,
+            "reactions": 40,
+            "firing": 80,
+            "throwing": 35,
+            "melee": 30,
+            "strength": 45,
+            "psiStrength": 15,
+            "psiSkill": 0,
+            "mana": 81
+          },
+          "conditionalPostTrainingGrowthUpper": {
+            "tu": 91,
+            "stamina": 131,
+            "health": 95,
+            "bravery": 119,
+            "reactions": 90,
+            "firing": 125,
+            "throwing": 100,
+            "melee": 110,
+            "strength": 61,
+            "psiStrength": 49,
+            "psiSkill": 70,
+            "mana": 196
+          },
+          "conditional12Sum": 1237,
+          "changeFromPostTraining": 601,
+          "evidence": {
+            "researchSequenceComplete": true,
+            "researchWitnessExact": true,
+            "statGrowthExecuted": false,
+            "rngBirthMaxExplored": false,
+            "medalsAdded": false,
+            "finalMaximumCertified": false
+          },
+          "requiredAssumptions": [
+            "해당 출생처의 최저 생성값 벡터",
+            "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+            "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+            "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+            "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+          ]
+        },
+        {
+          "witnessId": "c88deec25bdc3a47d7b3",
+          "trainingSequence": [
+            "STR_BREAD_AND_FISHES_TRAINING"
+          ],
+          "researchSteps": 34,
+          "postTrainingBeforeGrowth": {
+            "tu": 45,
+            "stamina": 71,
+            "health": 103,
+            "bravery": 100,
+            "reactions": 35,
+            "firing": 75,
+            "throwing": 35,
+            "melee": 25,
+            "strength": 49,
+            "psiStrength": 15,
+            "psiSkill": 0,
+            "mana": 67
+          },
+          "conditionalPostTrainingGrowthUpper": {
+            "tu": 81,
+            "stamina": 127,
+            "health": 103,
+            "bravery": 109,
+            "reactions": 85,
+            "firing": 120,
+            "throwing": 95,
+            "melee": 105,
+            "strength": 65,
+            "psiStrength": 49,
+            "psiSkill": 70,
+            "mana": 182
+          },
+          "conditional12Sum": 1191,
+          "changeFromPostTraining": 571,
+          "evidence": {
+            "researchSequenceComplete": true,
+            "researchWitnessExact": true,
+            "statGrowthExecuted": false,
+            "rngBirthMaxExplored": false,
+            "medalsAdded": false,
+            "finalMaximumCertified": false
+          },
+          "requiredAssumptions": [
+            "해당 출생처의 최저 생성값 벡터",
+            "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+            "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+            "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+            "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+          ]
+        },
+        {
+          "witnessId": "a3389d333245b2fbfb89",
+          "trainingSequence": [
+            "STR_SUN_WARRIORS_TRAINING"
+          ],
+          "researchSteps": 34,
+          "postTrainingBeforeGrowth": {
+            "tu": 50,
+            "stamina": 63,
+            "health": 95,
+            "bravery": 100,
+            "reactions": 32,
+            "firing": 75,
+            "throwing": 30,
+            "melee": 30,
+            "strength": 58,
+            "psiStrength": 19,
+            "psiSkill": 0,
+            "mana": 71
+          },
+          "conditionalPostTrainingGrowthUpper": {
+            "tu": 81,
+            "stamina": 124,
+            "health": 95,
+            "bravery": 109,
+            "reactions": 82,
+            "firing": 120,
+            "throwing": 95,
+            "melee": 105,
+            "strength": 64,
+            "psiStrength": 50,
+            "psiSkill": 67,
+            "mana": 176
+          },
+          "conditional12Sum": 1168,
+          "changeFromPostTraining": 545,
+          "evidence": {
+            "researchSequenceComplete": true,
+            "researchWitnessExact": true,
+            "statGrowthExecuted": false,
+            "rngBirthMaxExplored": false,
+            "medalsAdded": false,
+            "finalMaximumCertified": false
+          },
+          "requiredAssumptions": [
+            "해당 출생처의 최저 생성값 벡터",
+            "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+            "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+            "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+            "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+          ]
+        }
+      ],
+      "finalStats": null,
+      "finalSum": null,
+      "certifiedMaximum": false,
+      "warning": "기존 완결 연구 경로 후보에서 출생 최솟값으로 시작한 조건부 성장상계. 출생 상위 RNG, 다중 훈련 최적화, 훈장 및 병종 전환 전역 최적값 아님."
+    },
+    {
+      "id": "manufacture:STR_OGRE_SPY_RECRUITMENT",
+      "sourceName": "고용: 오우거 스파이",
+      "soldierType": "STR_SOLDIER_OGRE",
+      "traitNames": [
+        "STR_FORMER_SPY_TRAIT"
+      ],
+      "alreadyCompletedTransformations": [],
+      "maxStarting": {
+        "tu": 60,
+        "stamina": 100,
+        "health": 135,
+        "bravery": 70,
+        "reactions": 55,
+        "firing": 65,
+        "throwing": 65,
+        "melee": 80,
+        "strength": 110,
+        "psiStrength": 88,
+        "psiSkill": 0,
+        "mana": 80
+      },
+      "originBirthMinimum": {
+        "tu": 40,
+        "stamina": 40,
+        "health": 100,
+        "bravery": 50,
+        "reactions": 30,
+        "firing": 30,
+        "throwing": 30,
+        "melee": 50,
+        "strength": 80,
+        "psiStrength": 78,
+        "psiSkill": 0,
+        "mana": 55
+      },
+      "rawCaps": {
+        "tu": 85,
+        "stamina": 160,
+        "health": 160,
+        "bravery": 100,
+        "reactions": 60,
+        "firing": 120,
+        "throwing": 90,
+        "melee": 100,
+        "strength": 120,
+        "psiStrength": 85,
+        "psiSkill": 25,
+        "mana": 115
+      },
+      "effectiveCaps": {
+        "tu": 85,
+        "stamina": 160,
+        "health": 160,
+        "bravery": 100,
+        "reactions": 65,
+        "firing": 120,
+        "throwing": 90,
+        "melee": 100,
+        "strength": 120,
+        "psiStrength": 88,
+        "psiSkill": 25,
+        "mana": 120
+      },
+      "candidateCount": 3,
+      "bestWitnessCandidate": {
+        "witnessId": "6106a04c85e0dc4e3199",
+        "trainingSequence": [
+          "STR_CAPTAINS_11"
+        ],
+        "researchSteps": 134,
+        "postTrainingBeforeGrowth": {
+          "tu": 50,
+          "stamina": 50,
+          "health": 100,
+          "bravery": 60,
+          "reactions": 35,
+          "firing": 35,
+          "throwing": 35,
+          "melee": 55,
+          "strength": 80,
+          "psiStrength": 78,
+          "psiSkill": 0,
+          "mana": 75
+        },
+        "conditionalPostTrainingGrowthUpper": {
+          "tu": 96,
+          "stamina": 171,
+          "health": 161,
+          "bravery": 119,
+          "reactions": 75,
+          "firing": 130,
+          "throwing": 100,
+          "melee": 110,
+          "strength": 121,
+          "psiStrength": 93,
+          "psiSkill": 30,
+          "mana": 145
+        },
+        "conditional12Sum": 1351,
+        "changeFromPostTraining": 698,
+        "evidence": {
+          "researchSequenceComplete": true,
+          "researchWitnessExact": true,
+          "statGrowthExecuted": false,
+          "rngBirthMaxExplored": false,
+          "medalsAdded": false,
+          "finalMaximumCertified": false
+        },
+        "requiredAssumptions": [
+          "해당 출생처의 최저 생성값 벡터",
+          "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+          "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+          "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+          "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+        ]
+      },
+      "candidates": [
+        {
+          "witnessId": "6106a04c85e0dc4e3199",
+          "trainingSequence": [
+            "STR_CAPTAINS_11"
+          ],
+          "researchSteps": 134,
+          "postTrainingBeforeGrowth": {
+            "tu": 50,
+            "stamina": 50,
+            "health": 100,
+            "bravery": 60,
+            "reactions": 35,
+            "firing": 35,
+            "throwing": 35,
+            "melee": 55,
+            "strength": 80,
+            "psiStrength": 78,
+            "psiSkill": 0,
+            "mana": 75
+          },
+          "conditionalPostTrainingGrowthUpper": {
+            "tu": 96,
+            "stamina": 171,
+            "health": 161,
+            "bravery": 119,
+            "reactions": 75,
+            "firing": 130,
+            "throwing": 100,
+            "melee": 110,
+            "strength": 121,
+            "psiStrength": 93,
+            "psiSkill": 30,
+            "mana": 145
+          },
+          "conditional12Sum": 1351,
+          "changeFromPostTraining": 698,
+          "evidence": {
+            "researchSequenceComplete": true,
+            "researchWitnessExact": true,
+            "statGrowthExecuted": false,
+            "rngBirthMaxExplored": false,
+            "medalsAdded": false,
+            "finalMaximumCertified": false
+          },
+          "requiredAssumptions": [
+            "해당 출생처의 최저 생성값 벡터",
+            "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+            "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+            "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+            "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+          ]
+        },
+        {
+          "witnessId": "9ffd21a46020d70fbf4c",
+          "trainingSequence": [
+            "STR_BREAD_AND_FISHES_TRAINING"
+          ],
+          "researchSteps": 35,
+          "postTrainingBeforeGrowth": {
+            "tu": 40,
+            "stamina": 71,
+            "health": 123,
+            "bravery": 50,
+            "reactions": 30,
+            "firing": 30,
+            "throwing": 35,
+            "melee": 50,
+            "strength": 94,
+            "psiStrength": 78,
+            "psiSkill": 0,
+            "mana": 61
+          },
+          "conditionalPostTrainingGrowthUpper": {
+            "tu": 86,
+            "stamina": 167,
+            "health": 169,
+            "bravery": 109,
+            "reactions": 70,
+            "firing": 125,
+            "throwing": 95,
+            "melee": 105,
+            "strength": 125,
+            "psiStrength": 93,
+            "psiSkill": 30,
+            "mana": 131
+          },
+          "conditional12Sum": 1305,
+          "changeFromPostTraining": 643,
+          "evidence": {
+            "researchSequenceComplete": true,
+            "researchWitnessExact": true,
+            "statGrowthExecuted": false,
+            "rngBirthMaxExplored": false,
+            "medalsAdded": false,
+            "finalMaximumCertified": false
+          },
+          "requiredAssumptions": [
+            "해당 출생처의 최저 생성값 벡터",
+            "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+            "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+            "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+            "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+          ]
+        },
+        {
+          "witnessId": "8b75430a86104dce4f98",
+          "trainingSequence": [
+            "STR_SUN_WARRIORS_TRAINING"
+          ],
+          "researchSteps": 35,
+          "postTrainingBeforeGrowth": {
+            "tu": 45,
+            "stamina": 63,
+            "health": 110,
+            "bravery": 60,
+            "reactions": 27,
+            "firing": 30,
+            "throwing": 30,
+            "melee": 55,
+            "strength": 93,
+            "psiStrength": 82,
+            "psiSkill": 0,
+            "mana": 65
+          },
+          "conditionalPostTrainingGrowthUpper": {
+            "tu": 86,
+            "stamina": 164,
+            "health": 161,
+            "bravery": 109,
+            "reactions": 67,
+            "firing": 125,
+            "throwing": 95,
+            "melee": 105,
+            "strength": 124,
+            "psiStrength": 94,
+            "psiSkill": 27,
+            "mana": 125
+          },
+          "conditional12Sum": 1282,
+          "changeFromPostTraining": 622,
+          "evidence": {
+            "researchSequenceComplete": true,
+            "researchWitnessExact": true,
+            "statGrowthExecuted": false,
+            "rngBirthMaxExplored": false,
+            "medalsAdded": false,
+            "finalMaximumCertified": false
+          },
+          "requiredAssumptions": [
+            "해당 출생처의 최저 생성값 벡터",
+            "후속 체력훈련과 전투 경험치가 모든 능력치 상한에 유리하게 작동",
+            "Psi/활력 경험치 성장 및 임무 획득 조건 충족 가정",
+            "후속 훈련은 기록된 순서 이후로 추가하지 않음",
+            "성장상한 동시 달성·원본 엔진 플레이 실측 및 전역 최대치 미증명"
+          ]
+        }
+      ],
+      "finalStats": null,
+      "finalSum": null,
+      "certifiedMaximum": false,
+      "warning": "기존 완결 연구 경로 후보에서 출생 최솟값으로 시작한 조건부 성장상계. 출생 상위 RNG, 다중 훈련 최적화, 훈장 및 병종 전환 전역 최적값 아님."
+    }
+  ],
+  "ogreMinusZone": {
+    "tu": 5,
+    "stamina": 40,
+    "health": 66,
+    "bravery": 0,
+    "reactions": -15,
+    "firing": 5,
+    "throwing": 0,
+    "melee": 0,
+    "strength": 60,
+    "psiStrength": 44,
+    "psiSkill": -40,
+    "mana": -51
+  },
+  "conditional12SumDifference": 114,
+  "certifiedFinalStats": null,
+  "certifiedMaxima": 0,
+  "limitations": [
+    "Only pre-existing research-chronology-complete origin witnesses are used; no new research flags are fabricated",
+    "Growth is an upper envelope and is NOT a replayed sequence of actual battles, experience or training days",
+    "The minimum birth band is the only exact branch replayed; the maximum birth RNG band is not optimized",
+    "Only existing one-training candidate routes are compared; multi-training permutations, medals and death/body conversion are outside this bounded analysis",
+    "The selected best witness can differ from the globally best possible training route; do not advertise a certified maximum",
+    "12th stat mana is recomputed from the same final soldier bonus and OXCE growth envelope, not stitched from another cap table"
+  ]
+}
