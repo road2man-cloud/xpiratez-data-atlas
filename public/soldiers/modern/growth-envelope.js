@@ -43,7 +43,11 @@ export function growStatEnvelope(before,state,data,phase){
     let potential=currentHigh;
     let mode="성장 없음";
     if(combat){
-      if(primary.has(k)){
+      // Mission experience is only rolled while the current raw stat is
+      // BELOW this body's cap. A zero cap or already capped soldier must
+      // not be credited with phantom cap+5/cap+1 growth.
+      const mayImprove=n(before.low[k])<cap;
+      if(primary.has(k)&&mayImprove){
         // PostMissionProcedures checks current < cap BEFORE awarding
         // improveStat(exp), which can roll +6, hence cap+5.
         // Bravery increments by 10, hence cap+9 for arbitrary phase.
@@ -51,7 +55,7 @@ export function growStatEnvelope(before,state,data,phase){
         potential=Math.max(potential,cap+offset);
         mode=k==="bravery"?"전투 용기 10단위 증가":"전투 주능력치 경험치 증가";
       }
-      if(secondary.has(k)){
+      if(secondary.has(k)&&mayImprove){
         // Secondary: if gap>0, gain 0..floor(gap/divisor)+2.
         // At gap=1 => +2 => at most cap+1. The installed armor
         // returnFromMissionUnit script can add +1 at cap (for tags <=100%),

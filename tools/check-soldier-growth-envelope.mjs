@@ -39,6 +39,15 @@ assert.equal(futureAfterTraining.low.firing,60);
 assert.deepEqual(futureAfterTraining.growthPhases,["@PHYS_TRAINING","@BATTLE_GROWTH"]);
 const priorOvercap={...before,high:{...before.high,firing:131}};
 assert.equal(growStatEnvelope(priorOvercap,state,data,"@BATTLE_GROWTH").high.firing,131);
+const alreadyCapped={...before,
+  low:{...before.low,firing:120},high:{...before.high,firing:120}};
+assert.equal(growStatEnvelope(alreadyCapped,state,data,"@BATTLE_GROWTH").high.firing,120,
+  "A soldier already at cap cannot roll a phantom primary XP overshoot");
+const zeroPsiCap={...data,soldiers:data.soldiers.map(s=>s.id===state.soldierType?
+  {...s,statCaps:{...s.statCaps,psiSkill:0}}:s)};
+const cappedPsi={...before,low:{...before.low,psiSkill:0},high:{...before.high,psiSkill:0}};
+assert.equal(growStatEnvelope(cappedPsi,state,zeroPsiCap,"@BATTLE_GROWTH").high.psiSkill,0,
+  "Zero-cap psi skill cannot gain +5 without a positive-cap eligibility path");
 assert.equal(growStatEnvelope(before,state,data,"@UNKNOWN").kind,"unverified");
 const required={id:"GROWTH_GATE",allowedSoldierTypes:[state.soldierType],
   allowsLiveSoldiers:true,allowsWoundedSoldiers:false,allowsDeadSoldiers:false,
