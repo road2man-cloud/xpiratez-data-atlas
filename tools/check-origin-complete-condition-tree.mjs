@@ -14,7 +14,10 @@ for(const p of data.profiles){
   if(p.sourceType==='event')assert(t.root.children.some(x=>x.id==='BIRTH_EVENT:'+p.sourceId));
   const html=renderAcquisitionTree(t);
   assert(html.includes('data-complete-profile="'+p.id+'"'));
-  assert(html.includes('게임 시작 → 출생 전체 조건 트리'));
+  assert(html.includes('이 병사를 얻기 위해 필요한 것'));
+  assert(html.includes('원본 조건·연구 ID·세부 분기 보기'));
+  assert(!html.includes('<summary><strong>모두 필요 (AND)</strong>'),
+    'Do not expose raw graph operators as the primary user interface');
 }
 const id='manufacture:STR_THEBAN_ASSAULT_CLONE';
 const clone=buildAcquisitionTree(data.profiles.find(x=>x.id===id),data);

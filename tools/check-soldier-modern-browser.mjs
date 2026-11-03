@@ -83,7 +83,12 @@ try{
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
- const acquisition=page.locator('#originDetails .origin-acquisition');
+ const provenance=page.locator('#originDetails .origin-source-expansion');
+ assert.equal(await provenance.count(),1);
+ assert.equal(await provenance.evaluate(el=>el.open),false,
+   'Raw source-ID listing must be collapsed by default for general users');
+ await provenance.locator(':scope > summary').click();
+ const acquisition=provenance.locator('.origin-acquisition');
  assert.equal(await acquisition.count(),1);
  assert((await acquisition.innerText()).includes('최초 생성 방식: 제조를 통한 병사 생성'));
  assert((await acquisition.innerText()).includes('돌격 클론 면허'));

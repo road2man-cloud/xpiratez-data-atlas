@@ -17,6 +17,7 @@ p{color:#b9c7df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(
 .quicknav a{color:#dbeafe;text-decoration:none;border:1px solid #3c537d;background:#111a2e;border-radius:999px;padding:7px 11px;font-size:.86rem;font-weight:700}
 .quicknav a:hover{border-color:#60a5fa;background:#172743}
 </style>
+<link rel="stylesheet" href="atlas-reader-guide.css?v=20261104-readability-2">
 </head>
 <body><main>
 <p class="eyebrow">Ruleset-backed reference</p>
@@ -27,20 +28,21 @@ p{color:#b9c7df}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(
 <p>아이템·연구·이벤트·선장·시설·전투 시스템을 실제 XPiratez 룰셋과 OXCE 엔진 동작을 기준으로 정리하는 데이터 아틀라스.</p>
 <section aria-label="데이터 버전 안내" style="border:1px solid #45658f;background:#13233b;border-radius:14px;padding:16px 20px;margin-top:20px"><strong>데이터 버전 안내</strong><p style="margin:8px 0">병종 DB(훈련 경로 포함)·엔진 참조표는 <strong>X-Piratez 2.1 / OXCE 8.7.1</strong> 기준입니다. 다른 분야의 기존 무기·아이템·연구 DB에는 아직 <strong>X-Piratez v.o1.1.1 / OXCE 8.6</strong> 자료가 남아 있으므로 최신 게임 결과와 혼용하지 않습니다.</p><p style="margin:0">서로 다른 버전의 데이터는 직접 호환된다고 가정하지 마세요. 최신 엔진의 피해·경험치 규칙을 기존 무기 수치에 적용해도 최신 게임의 실효 결과를 보증하지 않습니다.</p></section>
 <div class="grid">
-<a class="card" href="./starting/"><span class="tag">START DB</span><br><strong>스타팅 보너스 DB</strong><p>Month 0 첫 기지 위치로 결정되는 지역·국가 보너스 39개 원본 이벤트를 비교. 중앙아시아 Medusa·중국 2차 이벤트 같은 중첩 보너스도 합산해서 표시.</p></a>
-<a class="card" href="./captains/"><span class="tag">CHOICE DB</span><br><strong>영구 선택·분기 DB</strong><p>선장·Codex·사회·병종·세력·스토리의 상호배타 선택을 비교하고, 선행·보상·후속 해금·영구 손실·복구 가능성까지 추적.</p></a>
-<a class="card" href="./soldiers/"><span class="tag">X-PIRATEZ 2.1 · SOLDIERS</span><br><strong>병종 DB</strong><p>72개 출생처를 독립 색인하고, 기초 연구부터 재생을 통과한 경로에 한해 조건부 잠정 최고값을 비교합니다. 아직 미완료인 출생처는 연구 병목을 표시하며, 분기 배제·자원·확률 가정을 상세에 기록합니다.</p></a>
+<a class="card" href="./starting/"><span class="tag">게임 시작</span><br><strong>스타팅 보너스 DB</strong><p>Month 0 첫 기지 위치로 결정되는 지역·국가 보너스 39개 원본 이벤트를 비교. 중앙아시아 Medusa·중국 2차 이벤트 같은 중첩 보너스도 합산해서 표시.</p></a>
+<a class="card" href="./captains/"><span class="tag">선택과 배제</span><br><strong>영구 선택·분기 DB</strong><p>선장·Codex·사회·병종·세력·스토리의 상호배타 선택을 비교하고, 선행·보상·후속 해금·영구 손실·복구 가능성까지 추적.</p></a>
+<a class="card" href="./soldiers/"><span class="tag">병사·출생·육성</span><br><strong>병종 DB</strong><p>72개 출생처를 독립 색인하고, 기초 연구부터 재생을 통과한 경로에 한해 조건부 잠정 최고값을 비교합니다. 아직 미완료인 출생처는 연구 병목을 표시하며, 분기 배제·자원·확률 가정을 상세에 기록합니다.</p></a>
 
-<a class="card" href="./crafts/"><span class="tag">LIVE DB</span><br><strong>탈것·기체 DB</strong><p>96종의 탑승인원·속도·연료·무장과 구매/제조, 이벤트 재료, 명목 누적 연구량, 분기 전용 조건 비교.</p></a>
-<a class="card" href="./craft-weapons/"><span class="tag">CRAFT WEAPON DB</span><br><strong>기체무장 DB</strong><p>155종 기체무장·지원장비의 위력·사거리·명중·탄약·재장전·호환 기체와 launcher/clip 아이템 재사용 여부를 비교.</p></a>
-<a class="card" href="./facilities/"><span class="tag">FACILITY DB</span><br><strong>기지시설 DB</strong><p>건설비·기간·유지비·수용량·면적 효율을 비교하고, 제공 baseFunc가 실제 어떤 연구·제조·시설을 여는지 역추적.</p></a>
-<a class="card" href="./armors/"><span class="tag">LIVE DB</span><br><strong>방어구 비교 DB</strong><p>957개 Armor 룰을 방어력·저항·능력치·회피·회복으로 비교하고 구매/제조/연구·재료·시간까지 역추적.</p></a>
-<a class="card" href="./items/"><span class="tag">ITEM DB</span><br><strong>아이템 DB</strong><p>4,007개 아이템의 스펙·무게·창고 점유·가격·공격 방식·탄약·제조·획득/사용 역참조를 검색·정렬·비교.</p></a>
-<a class="card" href="./research/"><span class="tag">RESEARCH DB</span><br><strong>연구 DB</strong><p>4,612개 연구의 연구량·선행/후속·표본 소모·해금·아이템·제조 연결을 독립적으로 검색·정렬·추적.</p></a>
-<a class="card" href="./manufacture/"><span class="tag">MANUFACTURE DB</span><br><strong>제조 DB</strong><p>2,158개 제조식의 시간·비용·재료·산출물·해금 연구·baseFunc를 추적하고, 판매가 기회비용 기준 순가치와 GPT 플레이 인사이트까지 비교.</p></a>
-<a class="card" href="./events/"><span class="tag">EVENT DB</span><br><strong>이벤트 DB</strong><p>792개 이벤트와 643개 eventScript를 합쳐 월·연구·시설·아이템·지역 조건, executionOdds, 보상/손실, false 게이트와 놓침 위험을 GPT 플레이 인사이트로 해설.</p></a>
-<a class="card" href="./forces/"><span class="tag">ENEMY FORCE DB</span><br><strong>적부대 / 작전 DB</strong><p>339개 적 작전을 missionScript→UFO wave→trajectory→race→deployment→unit까지 연결. 이동속도·조건부 종족확률·적 수량·무장·스탯과 이벤트 생성 원인을 GPT 인사이트로 추적.</p></a>
-<a class="card" href="./weapons/"><span class="tag">WEAPON DB</span><br><strong>무기 비교 DB</strong><p>사격·근접·투척을 분리하고 무기×탄종×공격모드로 비교. Gal·어설트 클론 등 기준 캐릭터를 바꾸면 위력·정확도·TU·투척거리가 즉시 재계산됩니다.</p></a>
-<a class="card" href="./reference/"><span class="tag">OXCE REFERENCE</span><br><strong>엔진 참조표</strong><p>X-Piratez 2.1 병종 29종의 스탠딩·무릎 복셀 높이, 방어구 540종의 점유·자세 예외와 2×2 장비 46종의 충돌단면 전수표. experienceTrainingMode 0–32, damageType 0–19, RandomType 0–9 및 경험치 설정 306개도 GPT용 JSON과 함께 참조합니다.</p></a>
+<a class="card" href="./crafts/"><span class="tag">기체·운용</span><br><strong>탈것·기체 DB</strong><p>96종의 탑승인원·속도·연료·무장과 구매/제조, 이벤트 재료, 명목 누적 연구량, 분기 전용 조건 비교.</p></a>
+<a class="card" href="./craft-weapons/"><span class="tag">기체 전투</span><br><strong>기체무장 DB</strong><p>155종 기체무장·지원장비의 위력·사거리·명중·탄약·재장전·호환 기체와 launcher/clip 아이템 재사용 여부를 비교.</p></a>
+<a class="card" href="./facilities/"><span class="tag">기지 관리</span><br><strong>기지시설 DB</strong><p>건설비·기간·유지비·수용량·면적 효율을 비교하고, 제공 baseFunc가 실제 어떤 연구·제조·시설을 여는지 역추적.</p></a>
+<a class="card" href="./armors/"><span class="tag">방어구·저항</span><br><strong>방어구 비교 DB</strong><p>957개 Armor 룰을 방어력·저항·능력치·회피·회복으로 비교하고 구매/제조/연구·재료·시간까지 역추적.</p></a>
+<a class="card" href="./items/"><span class="tag">아이템 획득·활용</span><br><strong>아이템 DB</strong><p>4,007개 아이템의 스펙·무게·창고 점유·가격·공격 방식·탄약·제조·획득/사용 역참조를 검색·정렬·비교.</p></a>
+<a class="card" href="./research/"><span class="tag">선행 연구·해금</span><br><strong>연구 DB</strong><p>4,612개 연구의 연구량·선행/후속·표본 소모·해금·아이템·제조 연결을 독립적으로 검색·정렬·추적.</p></a>
+<a class="card" href="./manufacture/"><span class="tag">재료·제조</span><br><strong>제조 DB</strong><p>2,158개 제조식의 시간·비용·재료·산출물·해금 연구·baseFunc를 추적하고, 판매가 기회비용 기준 순가치와 GPT 플레이 인사이트까지 비교.</p></a>
+<a class="card" href="./events/"><span class="tag">발생 조건·보상</span><br><strong>이벤트 DB</strong><p>792개 이벤트와 643개 eventScript를 합쳐 월·연구·시설·아이템·지역 조건, executionOdds, 보상/손실, false 게이트와 놓침 위험을 GPT 플레이 인사이트로 해설.</p></a>
+<a class="card" href="./forces/"><span class="tag">임무·적 구성</span><br><strong>적부대 / 작전 DB</strong><p>339개 적 작전을 missionScript→UFO wave→trajectory→race→deployment→unit까지 연결. 이동속도·조건부 종족확률·적 수량·무장·스탯과 이벤트 생성 원인을 GPT 인사이트로 추적.</p></a>
+<a class="card" href="./weapons/"><span class="tag">공격 성능</span><br><strong>무기 비교 DB</strong><p>사격·근접·투척을 분리하고 무기×탄종×공격모드로 비교. Gal·어설트 클론 등 기준 캐릭터를 바꾸면 위력·정확도·TU·투척거리가 즉시 재계산됩니다.</p></a>
+<a class="card" href="./reference/"><span class="tag">엔진 규칙 근거</span><br><strong>엔진 참조표</strong><p>X-Piratez 2.1 병종 29종의 스탠딩·무릎 복셀 높이, 방어구 540종의 점유·자세 예외와 2×2 장비 46종의 충돌단면 전수표. experienceTrainingMode 0–32, damageType 0–19, RandomType 0–9 및 경험치 설정 306개도 GPT용 JSON과 함께 참조합니다.</p></a>
 </div>
-</main></body></html>
+</main><script defer src="atlas-reader-guide.js?v=20261104-readability-2"></script>
+</body></html>

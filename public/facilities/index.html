@@ -6,19 +6,20 @@
 <title>XPiratez 기지시설 DB</title>
 <link rel="stylesheet" href="styles.css?v=facility-efficiency-manufacture-20261008">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
+<link rel="stylesheet" href="../atlas-reader-guide.css?v=20261104-readability-2">
 </head>
 <body>
 <header class="hero"><div class="wrap">
   <a class="back" href="../">← Data Atlas</a> <a class="back" href="../manufacture/">· 제조 DB</a>
   <p class="eyebrow">XPiratez v.o1.1.1 · Ruleset-backed</p>
   <h1>기지시설 DB</h1>
-  <p class="lede">건설비·기간·유지비와 숙소/창고/연구/작업장/훈련/격납/포로 수용을 비교하고, 시설이 제공하는 <code>baseFunc</code>가 실제 어떤 연구·제조·시설을 열어 주는지 역추적합니다.</p>
+  <p class="lede">건설비·기간·유지비와 숙소/창고/연구/작업장/훈련/격납/포로 수용을 비교하고, 시설을 지으면 어떤 연구·제조·수용 기능이 가능해지는지 확인합니다.</p>
 </div></header>
 <main class="wrap">
   <section id="summary" class="summary"></section>
 
   <section class="toolbar card">
-    <div class="field grow"><label for="search">검색</label><input id="search" type="search" placeholder="시설명, 내부 ID, 연구, baseFunc, 건설 재료…"></div>
+    <div class="field grow"><label for="search">검색</label><input id="search" type="search" placeholder="시설 이름, 건설 재료, 열리는 연구…"></div>
     <div class="field"><label for="role">역할</label><select id="role">
       <option value="">전체 역할</option><option value="income">월수익</option><option value="housing">숙소</option><option value="storage">저장</option>
       <option value="research">연구</option><option value="workshop">작업장</option><option value="training">훈련</option><option value="hangar">격납</option>
@@ -28,13 +29,16 @@
     <div class="field"><label for="status">상태</label><select id="status">
       <option value="">전체</option><option value="available">룰상 가용</option><option value="state">손상/잔해/상태 전용</option><option value="starting">시작기지 배치</option>
     </select></div>
-    <div class="field"><label for="func">기지 기능</label><select id="func"><option value="">전체 baseFunc</option></select></div>
+    <div class="field"><label for="func">기지 기능</label><select id="func"><option value="">모든 기지 기능</option></select></div>
   </section>
 
-  <section class="explain card">
-    <strong>월 비용 해석</strong><span><code>monthlyCost</code>가 음수이면 비용이 아니라 월수입입니다. 목록에서는 “수입 +”로 바꿔 표시합니다.</span>
+  <section class="explain card atlas-how-to">
+    <strong>무엇을 지으면 어떤 일이 가능해지나요?</strong><span>건설비·유지비를 먼저 비교하고, 시설 완공 후 열리는 연구·제조·수용 기능을 확인하세요.</span>
+    <details class="atlas-technical-guidance"><summary>원본 조건·계산 방식 상세 보기</summary>
+      <div class="atlas-tech-text"><strong>월 비용 해석</strong><span><code>monthlyCost</code>가 음수이면 비용이 아니라 월수입입니다. 목록에서는 “수입 +”로 바꿔 표시합니다.</span>
     <strong>연구량</strong><span>시설의 <code>requires</code>에서 시작해 research <code>dependencies + requires</code>를 중복 제거한 명목 합계입니다. 이벤트·무료 해금은 실제 경로를 더 짧게 만들 수 있습니다.</span>
-    <strong>baseFunc</strong><span>시설 설명문이 아니라 엔진 조건 자체를 역참조합니다. 예: 어떤 시설이 <code>LAB</code>을 제공하면, 실제로 <code>requiresBaseFunc: [LAB]</code>을 가진 연구·제조·시설이 상세창에 표시됩니다.</span>
+    <strong>baseFunc</strong><span>시설 설명문이 아니라 엔진 조건 자체를 역참조합니다. 예: 어떤 시설이 <code>LAB</code>을 제공하면, 실제로 <code>requiresBaseFunc: [LAB]</code>을 가진 연구·제조·시설이 상세창에 표시됩니다.</span></div>
+    </details>
   </section>
 
   <section class="table-card card">
@@ -44,7 +48,8 @@
   </section>
 </main>
 <dialog id="detailDialog"><button id="closeDialog" class="close" aria-label="닫기">×</button><div id="detailBody"></div></dialog>
-<script src="app.js?v=atlas-perf-20261011"></script>
+<script src="app.js?v=20261104-friendly-1"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
+<script defer src="../atlas-reader-guide.js?v=20261104-readability-2"></script>
 </body>
 </html>

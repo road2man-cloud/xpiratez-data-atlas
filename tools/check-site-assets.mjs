@@ -23,6 +23,16 @@ assert(!modernApp.includes('initModernSaveControls'));
 assert(!modernApp.includes('../../items/#item=')&&!modernApp.includes('function dbLink('));
 const errors=[];let linkCount=0,jsCount=0;
 const pages=['index.html',...expected.map(x=>x+'/index.html'),'soldiers/modern/index.html','trainings/index.html'];
+const readerPages=['index.html',...expected.filter(x=>x!=='soldiers').map(x=>x+'/index.html'),'soldiers/modern/index.html'];
+for(const file of readerPages){
+  const html=read(file);
+  const prefix=file==='index.html'?'':file==='soldiers/modern/index.html'?'../../':'../';
+  assert(html.includes(prefix+'atlas-reader-guide.css'),file+' missing shared readable typography');
+  assert(html.includes(prefix+'atlas-reader-guide.js'),file+' missing purpose-based categories');
+}
+assert(read('atlas-reader-guide.js').includes('출생 방법 → 준비물 → 연구·이벤트 조건'));
+assert(read('soldiers/modern/acquisition-condition-tree.js').includes('guide-technical-evidence'));
+execFileSync(process.execPath,['--check',path.join(root,'atlas-reader-guide.js')],{stdio:'pipe'});
 const selectors={starting:'cards',captains:'matrixTable',soldiers:'originTable',crafts:'craftTable','craft-weapons':'weaponTable',facilities:'facilityTable',armors:'armorTable',items:'tbody',research:'tbody',manufacture:'manufactureTable',events:'eventTable',forces:'forceTable',weapons:'weaponTable',reference:'modes'};
 for(const rel of pages){
   const html=read(rel),file=path.join(root,rel),slug=rel.split('/')[0];

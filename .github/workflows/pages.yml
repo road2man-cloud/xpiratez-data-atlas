@@ -51,6 +51,8 @@ jobs:
           # One 2.1 birth-origin catalog gate: provisional chronology evidence,
           # retired training redirects, directional research branches and no save inputs.
           node tools/check-soldier-modern-browser.mjs
+          # Readable, nontechnical default layer in all 14 DBs and birth guides.
+          node tools/check-atlas-reader-guide-browser.mjs
 
       - name: Publish public tree to gh-pages
         run: |

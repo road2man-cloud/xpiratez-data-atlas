@@ -60,7 +60,7 @@ function cmp(a,b,key){
   return nameCollator.compare(String(av),String(bv));
 }
 const cols=[
-  ["koName","제조식"],["roleKo","역할"],["time","기술자-시간"],["cost","제조비"],["requiredItemCount","재료종"],["outputItemCount","확정산출"],["researchCost","명목 연구량"],["baseFuncCount","baseFunc"],["opportunityNet","순가치"],["opportunityNetPerEngineerHour","순가치/시간"],["randomOptionCount","랜덤"]
+  ["koName","제조식"],["roleKo","역할"],["time","기술자-시간"],["cost","제조비"],["requiredItemCount","재료종"],["outputItemCount","확정산출"],["researchCost","명목 연구량"],["baseFuncCount","기지 기능"],["opportunityNet","순가치"],["opportunityNetPerEngineerHour","순가치/시간"],["randomOptionCount","랜덤"]
 ];
 const gameCols=[
   ["koName","주제"],["researchCount","요구되는 연구"],["requiredItemCount","요구되는 재료"],["outputItemCount","생산된 물품"],["cost","유닛 당 비용"],["time","작업 시간"]
@@ -146,7 +146,7 @@ function researchMarkup(d){
   </section>`;
 }
 function baseFuncMarkup(d){
-  return`<section class="section"><h3>필요 baseFunc / 제공 시설</h3>${d.baseFuncDetails?.length?d.baseFuncDetails.map(x=>`<div class="basefunc"><b>${esc(x.koName)} · ${esc(x.id)}</b><div>${x.providers?.length?x.providers.slice(0,12).map(facilityLink).join(""):'<span class="empty">시설 DB에서 제공자 미확인</span>'}</div>${x.providers?.length>12?`<span class="muted">외 ${x.providers.length-12}개</span>`:""}</div>`).join(""):'<div class="empty">별도 baseFunc 요구 없음</div>'}</section>`;
+  return`<section class="section"><h3>필요한 기지 기능과 제공 시설</h3>${d.baseFuncDetails?.length?d.baseFuncDetails.map(x=>`<div class="basefunc"><b>${esc(x.koName)} · ${esc(x.id)}</b><div>${x.providers?.length?x.providers.slice(0,12).map(facilityLink).join(""):'<span class="empty">시설 DB에서 제공자 미확인</span>'}</div>${x.providers?.length>12?`<span class="muted">외 ${x.providers.length-12}개</span>`:""}</div>`).join(""):'<div class="empty">별도 기지 기능 요구 없음</div>'}</section>`;
 }
 function specialOutputMarkup(d){
   const parts=[];
