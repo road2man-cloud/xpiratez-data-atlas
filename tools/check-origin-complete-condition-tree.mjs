@@ -5,10 +5,10 @@ import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree}
 const data=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json','utf8'));
 assert.equal(data.profiles.length,72);
 for(const p of data.profiles){
-  const t=buildAcquisitionTree(p,data,{maxDepth:4,maxNodes:150});
+  const t=buildAcquisitionTree(p,data);
   assert.equal(t.profileId,p.id);
   assert(t.root.children.some(x=>x.id==='CAMPAIGN_START'));
-  assert(t.root.children.some(x=>x.id.startsWith('MATERIAL:'))||
+  assert(t.root.children.some(x=>x.id.startsWith('REQUIRED_ITEM:'))||
     !Object.keys(p.acquisitionRequiredItems||{}).length);
   if(p.sourceType==='event')assert(t.root.children.some(x=>x.id==='BIRTH_EVENT:'+p.sourceId));
   const html=renderAcquisitionTree(t);
@@ -29,5 +29,73 @@ assert(!raw.includes('STR_CLEO_CHALLENGE'),'Unrelated Cleopatra challenge must n
 const continuation=buildAcquisitionSubtree('research','STR_PROPAGANDA',data);
 assert(continuation.root.children.some(x=>x.id==='STR_PROPAGANDA'));
 assert(renderAcquisitionTree(clone).includes('data-trace-id='));
+const walk=(root,predicate)=>{
+  const stack=[root],found=[];
+  while(stack.length){const n=stack.pop();if(predicate(n))found.push(n);stack.push(...(n.children||[]));}
+  return found;
+};
+const descendants=(node)=>walk(node,()=>true);
+const rank=buildAcquisitionSubtree('research','STR_CAPTAINS_RANK_06',data);
+const rankResearch=walk(rank.root,x=>x.kind==='research'&&x.id==='STR_CAPTAINS_RANK_06')[0];
+const rankMethods=walk(rankResearch,x=>x.kind==='or'&&x.id==='RESEARCH_METHOD:STR_CAPTAINS_RANK_06')[0];
+const rankEvent=rankMethods.children.find(x=>x.id==='EVENT:STR_CAPTAINS_RANK_06');
+const rankLab=rankMethods.children.find(x=>x.id==='LAB:STR_CAPTAINS_RANK_06');
+assert(rankEvent&&rankLab,'Captain rank needs separately described event and non-proven lab routes');
+assert(descendants(rankLab).some(x=>x.kind==='unbacked-sample'&&x.id==='STR_CAPTAINS_RANK_06'));
+assert(!descendants(rankEvent).some(x=>x.kind==='unbacked-sample'&&x.id==='STR_CAPTAINS_RANK_06'),
+  'An event research grant must not inherit the lab-only needItem condition');
+assert(descendants(rankEvent).some(x=>x.kind==='minScore'&&x.note.includes('8000')));
+assert(descendants(rankEvent).some(x=>x.kind==='month'&&x.note.includes('6개월')));
+assert(descendants(rankEvent).some(x=>x.id==='STR_CAPTAINS_RANK_05'));
+const propaganda=buildAcquisitionSubtree('research','STR_PROPAGANDA',data);
+const deps=walk(propaganda.root,x=>x.id==='ACCESS:STR_PROPAGANDA')[0];
+assert(deps&&deps.kind==='or'&&deps.children.some(x=>x.id==='STR_PEASANT_PARTY')&&
+  deps.children.some(x=>x.id==='STR_COMMUNICATIONS'),'Research dependencies are alternative access conditions');
+const facility=buildAcquisitionSubtree('facility-type','STR_WAR_BARRACKS',data);
+assert(walk(facility.root,x=>x.kind==='facility-built'&&x.id==='STR_WAR_BARRACKS').length,
+  'A campaign facility must be constructed, not granted by research alone');
+const skull=buildAcquisitionSubtree('item','STR_SKULL',data);
+const skullNodes=descendants(skull.root);
+assert(skullNodes.some(x=>x.kind==='month'&&x.note.includes('7개월')));
+assert(skullNodes.some(x=>x.id==='HotPursuits'));
+assert(skullNodes.some(x=>x.id==='STR_COMMUNICATIONS'));
+assert(skullNodes.some(x=>x.kind==='mission-generation'));
+assert(skullNodes.some(x=>x.kind==='map-recovery'));
+assert(!skullNodes.some(x=>x.kind==='mission-victory'),
+  'A recoverable map item does not require pretending the mission success-only research reward is its item drop');
+const byId=data.profiles.find(p=>p.id==='manufacture:STR_SOLDIER_SLAVE_RECRUITMENT');
+assert(renderAcquisitionTree(buildAcquisitionTree(byId,data)).length<650000,
+  'Complex birth route must remain bounded for mobile users');
+const glamourSupply=data.itemSupply.STR_GLAMOUR;
+assert(glamourSupply.eventGrants.length>40&&glamourSupply.manufacture.length>100);
+const eventPage=buildAcquisitionSubtree('item-method-event','STR_GLAMOUR',data,2);
+assert(walk(eventPage.root,x=>x.id==='EVENT:'+glamourSupply.eventGrants[2].event).length,
+  'A second source page must expose the third independent event option');
+const lastEventPage=buildAcquisitionSubtree('item-method-event','STR_GLAMOUR',data,60);
+assert(walk(lastEventPage.root,x=>x.id==='EVENT:'+glamourSupply.eventGrants[60].event).length,
+  'Last event source must remain reachable, not silently dropped by the preview');
+const lastManufacture=buildAcquisitionSubtree('item-method-manufacture','STR_GLAMOUR',data,
+  glamourSupply.manufacture.length-1);
+assert(walk(lastManufacture.root,x=>x.id==='MAKE:'+glamourSupply.manufacture.at(-1).id).length,
+  'All v.o2 manufacture alternatives must be paginatable');
+const glamourBlocks=glamourSupply.mapLoot.sources;
+assert(glamourBlocks.length>=10);
+const mapPage=buildAcquisitionSubtree('item-method-map','STR_GLAMOUR',data,8);
+assert(walk(mapPage.root,x=>x.id?.startsWith('MAP_BLOCK:')).length>=1);
+const appleBlocks=data.itemSupply.STR_APPLE.mapLoot.sources;
+const multiIndex=appleBlocks.findIndex(s=>s.missionPaths.length>2);
+assert(multiIndex>=0,'Expected three mission scripts for the Apple map-block evidence');
+const missionPage=buildAcquisitionSubtree('item-method-map-scripts',
+  'STR_APPLE@'+multiIndex,data,2);
+assert(walk(missionPage.root,x=>x.id===appleBlocks[multiIndex].missionPaths[2].script).length,
+  'A later mission script for the same map block must be independently inspectable');
+assert(renderAcquisitionTree(buildAcquisitionSubtree('item','STR_GLAMOUR',data)).includes('data-trace-offset="2"'),
+  'An overflowing source must offer a working next-page control');
+console.log('PASS 61 event/123 manufacture/multiple map and mission alternatives are exposed through bounded linked pages');
+
+console.log('PASS rank 6: conditional event requiring rank 5, minScore 8000 and month 6; lab-only item not imposed on event');
+console.log('PASS mission loot: map-block recovery linked to real mission script/month/research, no invented guaranteed reward');
+console.log('PASS research dependencies OR, real facility construction gate, and bounded complex birth preview');
+
 console.log('PASS 72 game-start condition roots, conditional AND/OR, item/event/research linkage and lazy continuation');
 console.log('PASS assault clone: Egyptian start / four propaganda script alternatives / 125000 item purchase; no invented Cleopatra challenge reward');
