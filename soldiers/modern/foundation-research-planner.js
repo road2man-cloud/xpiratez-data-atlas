@@ -42,13 +42,24 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     const cost=m=>m.cost+m.deps.reduce((s,d)=>s+(distance.get(d)??1e8),0);
     return cost(a)-cost(b)||JSON.stringify(a).localeCompare(JSON.stringify(b),'en');
   });
-  function newNode(){return {world:foundationWorld(),steps:[],diagnostics:[]};}
-  const clone=n=>({world:structuredClone(n.world),steps:[...n.steps],diagnostics:[...n.diagnostics]});
+  function newNode(){return {world:foundationWorld(),steps:[],trace:[],diagnostics:[]};}
+  // applyOriginWitnessStep is copy-on-write, so branches can share an immutable
+  // parent world. Cloning the full research set before EVERY attempted action
+  // would duplicate the engine's own state copy.
+  const clone=n=>({world:n.world,steps:[...n.steps],trace:[...n.trace],diagnostics:[...n.diagnostics]});
   function append(n,step){
     if(n.steps.length>=maxSteps)throw Error('탐색 단계 제한');
-    const result=applyOriginWitnessStep(n.world,step,data);
+    const before=n.world;
+    const result=applyOriginWitnessStep(before,step,data);
     if(!result.ok)throw Error(result.reason);
-    n.world=result.world;n.steps.push(step);return n;
+    const world=result.world;
+    n.trace.push({index:n.steps.length,type:step.type,
+      id:step.id||step.research||step.profile||step.transform||null,
+      added:[...world.researched].filter(id=>!before.researched.has(id)),
+      closed:[...world.disabled].filter(id=>!before.disabled.has(id)),
+      reopened:[...before.disabled].filter(id=>!world.disabled.has(id)),
+      notes:result.notes,conditional:result.assumed});
+    n.world=world;n.steps.push(step);return n;
   }
   function supply(n,{items={},functions=[],funds=0},reason){
     const required={};for(const [id,qty] of Object.entries(items)){
