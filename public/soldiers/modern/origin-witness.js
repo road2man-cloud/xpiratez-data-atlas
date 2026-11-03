@@ -6,6 +6,16 @@ import {eventScriptVerdict} from './event-chronology.js';
 export const WITNESS_STATS=STAT_KEYS.filter(k=>k!=='mana');
 const arr=x=>Array.isArray(x)?x:[];
 const own=(x,id)=>Number(x?.[id]||0);
+const knownFunctionCache=new WeakMap();
+function knownBaseFunctions(data){
+  let known=knownFunctionCache.get(data);
+  if(known)return known;
+  known=new Set([...Object.values(data.researchRules).flatMap(r=>arr(r.requiresBaseFunc)),
+    ...data.transformations.flatMap(t=>arr(t.requiresBaseFunc)),
+    ...data.profiles.flatMap(p=>arr(p.requiresBaseFunc))]);
+  knownFunctionCache.set(data,known);
+  return known;
+}
 export function foundationWorld(){return {
   researched:new Set(),disabled:new Set(),items:{},baseFunctions:new Set(),facilities:new Set(),
   globalFacilities:null,otherItems:{},activeResearch:new Set(),generatedEvents:{},funds:0,month:0,
@@ -66,8 +76,7 @@ export function applyOriginWitnessStep(input,step,data){
           throw Error('원본에 없는 물품/잘못된 수량: '+id);
         world.items[id]=own(world.items,id)+n;
       }
-      const known=new Set([...Object.values(data.researchRules).flatMap(r=>arr(r.requiresBaseFunc)),
-        ...data.transformations.flatMap(t=>arr(t.requiresBaseFunc)),...data.profiles.flatMap(p=>arr(p.requiresBaseFunc))]);
+      const known=knownBaseFunctions(data);
       for(const id of step.functions||[]){if(!known.has(id))throw Error('알 수 없는 기지 기능: '+id);world.baseFunctions.add(id);}
       if(step.funds!=null){if(!Number.isSafeInteger(step.funds)||step.funds<0||step.funds>1000000000)throw Error('자금 가정 범위 오류');world.funds+=step.funds;}
       return {ok:true,world,assumed:true,notes:['외부 획득 미검증: '+step.reason]};

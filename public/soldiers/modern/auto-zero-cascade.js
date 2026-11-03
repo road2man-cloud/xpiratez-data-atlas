@@ -11,6 +11,26 @@ const limitNumber=(x,def,max)=>Number.isFinite(Number(x))?
 // For ruleset IDs (ASCII), JS ordinal comparison matches std::string order;
 // localeCompare is locale-dependent and can change queue order.
 const ordinal=(a,b)=>a<b?-1:a>b?1:0;
+// Pre-index immutable rules once: the same ruleset is replayed thousands of
+// times, so rebuilding zero-topic lists and scanning every discovered research
+// to locate a direct unlock is prohibitively expensive.
+const rulesIndexCache=new WeakMap();
+function rulesIndex(rules){
+  let cached=rulesIndexCache.get(rules);
+  if(cached)return cached;
+  const zero=[],unlockSources=new Map();
+  for(const [id,r] of Object.entries(rules)){
+    if(Number(r.cost)===0)zero.push([id,r]);
+    for(const target of arr(r.unlocks)){
+      const sources=unlockSources.get(target)||[];
+      sources.push(id);unlockSources.set(target,sources);
+    }
+  }
+  zero.sort(([a],[b])=>ordinal(a,b));
+  cached={zero,unlockSources};
+  rulesIndexCache.set(rules,cached);
+  return cached;
+}
 function hasPendingProtectedUnlock(id,rules,state){
   return arr(rules[id]?.unlocks).some(target=>
     arr(rules[target]?.requires).length>0 &&
@@ -27,7 +47,7 @@ function stateCopy(start){
     items:start?.items||null,baseFunctions:set(start?.baseFunctions),
     activeResearch:set(start?.activeResearch)};
 }
-function canRunZero(id,rule,rules,state,from,{inventoryKnown,functionsKnown,activeResearchKnown}){
+function canRunZero(id,rule,rules,state,from,{inventoryKnown,functionsKnown,activeResearchKnown},unlockSources){
   const reasons=[];
   if(state.disabled.has(id))return {ok:false,reasons:["폐쇄 상태"]};
   // OXCE exposes a previously discovered topic again when it still has
@@ -37,7 +57,7 @@ function canRunZero(id,rule,rules,state,from,{inventoryKnown,functionsKnown,acti
       !hasPendingProtectedUnlock(id,rules,state)&&!hasPendingFree(rule,state,true))
     return {ok:false,reasons:["이미 완료되고 남은 보상 없음"]};
   if(state.activeResearch.has(id))return {ok:false,reasons:["현재 기지에서 진행 중인 연구"]};
-  const unlocked=[...state.researched].some(src=>arr(rules[src]?.unlocks).includes(id));
+  const unlocked=arr(unlockSources.get(id)).some(src=>state.researched.has(src));
   if(!unlocked){
     const missing=arr(rule.dependencies).filter(x=>!state.researched.has(x));
     if(missing.length)reasons.push("선행 연구 "+missing.join(", "));
@@ -79,8 +99,7 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
   const maxSteps=limitNumber(opts.maxSteps,45,180);
   const queue=[sourceId],steps=[],held=new Map(),notices=[];
   const seen=new Set();
-  const allZero=Object.entries(rules).filter(([,r])=>Number(r.cost)===0)
-    .sort(([a],[b])=>ordinal(a,b));
+  const {zero:allZero,unlockSources}=rulesIndex(rules);
   let i=0;
   while(i<queue.length&&i<maxSteps){
     const id=queue[i++],rule=rules[id];
@@ -117,7 +136,7 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
       if(seen.has(next)||queue.includes(next)||st.disabled.has(next))continue;
       const gate=canRunZero(next,project,rules,st,id,{
         inventoryKnown:verifiedInventory,functionsKnown:verifiedFunctions,
-        activeResearchKnown:verifiedActive});
+        activeResearchKnown:verifiedActive},unlockSources);
       if(gate.ok){queue.push(next);held.set(next,id);}
     }
   }

@@ -23,10 +23,12 @@ for(const p of data.profiles)labels[p.sourceId]=p.sourceKoName;
 const amount=x=>WITNESS_STATS.reduce((s,k)=>s+Number(x?.[k]||0),0);
 const unresolvedOnly=process.argv.includes('--unresolved-only');
 const birthOnly=process.argv.includes('--birth-only');
+const deepSearch=process.argv.includes('--deep-search');
 const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
 if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
   throw Error('Unknown source profile: '+focusProfile);
 if(birthOnly&&!focusProfile)throw Error('--birth-only requires --profile');
+if(deepSearch&&!focusProfile)throw Error('--deep-search requires --profile to preserve unrelated origins');
 // These are ordered SEARCH GOALS, never pre-completed flags. All prerequisites,
 // samples, free-award timing and event guards still pass the existing verifier.
 const researchFirst=[...new Set(process.argv.filter(x=>x.startsWith('--research-first='))
@@ -138,13 +140,25 @@ function researchBottlenecks(record){
   if(!found.length)found.push({id:original,kind:'SEARCH_LIMIT',reason:record.unresolved?.reason||'제한 탐색 미완료'});
   return found;
 }
-function validateReport(report){
+function validateReport(report,{focused=null,previous=null}={}){
   assert.equal(report.sourceHash,sourceHash);assert.equal(report.records.length,72);
   assert.equal(new Set(report.records.map(r=>r.profileId)).size,72);
   let complete=0;
   for(const record of report.records){
     assert(data.profiles.some(p=>p.id===record.profileId));
     assert.equal(record.certifiedMaximum,false);
+    if(focused&&record.profileId!==focused){
+      const preserved=previous?.records.find(r=>r.profileId===record.profileId);
+      assert.strictEqual(record,preserved,'A focused search changed another birth record');
+      for(const c of record.candidates){
+        assert.equal(c.certifiedMaximum,false);
+        assert(c.startsWithNoResearch&&c.researchSequenceComplete);
+        assert.equal(c.resultHash,digest({steps:c.steps,raw:c.raw,stats:c.stats,
+          total:c.total,branches:c.branchChoices}),'Unchanged candidate evidence fingerprint mismatch');
+        complete++;
+      }
+      continue;
+    }
     for(const c of record.candidates){
       const replay=replayOriginWitness(c.steps,data);assert(replay.ok,record.profileId+': '+replay.reason);
       assert(replay.exact);assert.deepEqual(replay.stats,c.stats);assert.equal(replay.total,c.total);
@@ -165,8 +179,9 @@ function validateReport(report){
   assert(complete>0,'At least one fully replayed foundation-to-terminal research record is required');
   return complete;
 }
-function attachMetadata(report){
+function attachMetadata(report,{focused=null}={}){
   for(const r of report.records){
+    if(focused&&r.profileId!==focused)continue;
     const proof=ledger.rows.find(x=>x.id===r.profileId);
     r.sourceProof={id:proof.id,kind:proof.kind,prerequisites:{event:proof.prerequisites?.event||null}};
     r.researchBottlenecks=researchBottlenecks(r);
@@ -205,27 +220,45 @@ if(process.argv.includes('--refresh-metadata')){
     const acquisition=obtain(p);const attempts=[];
     if(acquisition.result){
       if(!candidates.some(c=>c.id===acquisition.result.id))candidates.push(acquisition.result);
-      let node=acquisition.node;
-      for(let depth=0;depth<(birthOnly?0:unresolvedOnly?1:2);depth++){
-        const state=node.world.soldiers[0].state;
-        const shortlist=data.transformations.filter(t=>t.allowedSoldierTypes.includes(state.soldierType)&&
-          !t.requires.includes('STR_UNAVAILABLE')&&!t.createsClone&&!t.producedItem&&!state.history.has(t.id)&&
-          t.minRank<=state.rank&&!Object.keys(t.requiredCommendations||{}).length&&
-          !t.forbiddenPreviousTransformations.some(id=>state.history.has(id))&&
-          amount(t.fixedEffectiveDelta)>0)
-          .sort((a,b)=>{
-            const rank=t=>amount(t.fixedEffectiveDelta)/(1+Math.log2(1+t.requires.reduce((s,id)=>s+(planner.distance.get(id)||10000),0)));
-            return rank(b)-rank(a);
-          }).slice(0,4);
-        let better=null;
-        for(const t of shortlist){
-          const trial=train(t,node);if(!trial){attempts.push({training:t.id,result:'UNRESOLVED_OR_NOT_NOW'});continue;}
-          const c=candidate(trial,p,'출생 → '+trial.steps.filter(x=>x.type==='transform').map(x=>labels[x.transform]||x.transform).join(' → '));
-          if(!c)continue;
-          if(!candidates.some(x=>x.id===c.id))candidates.push(c);
-          if(!better||c.total>better.result.total)better={node:trial,result:c};
+      // Deep search is opt-in and profile-scoped: never rewrite the other 71
+      // origins or claim global optimality from a bounded search.
+      const deep=deepSearch;
+      const maxLayers=birthOnly?0:unresolvedOnly?1:deep?4:2;
+      const width=deep?12:4,beamWidth=deep?8:1;
+      let frontier=[{node:acquisition.node,result:acquisition.result}];
+      const seenHistory=new Set();
+      for(let depth=0;depth<maxLayers&&frontier.length;depth++){
+        const next=[];
+        for(const entry of frontier){
+          const state=entry.node.world.soldiers[0].state;
+          // Do not require positive immediate gain in deep search: a neutral
+          // transformation may unlock a strictly better later branch.
+          const shortlist=data.transformations.filter(t=>t.allowedSoldierTypes.includes(state.soldierType)&&
+            !t.requires.includes('STR_UNAVAILABLE')&&!t.createsClone&&!t.producedItem&&!state.history.has(t.id)&&
+            t.minRank<=state.rank&&!Object.keys(t.requiredCommendations||{}).length&&
+            !t.forbiddenPreviousTransformations.some(id=>state.history.has(id))&&
+            (deep||amount(t.fixedEffectiveDelta)>0))
+            .sort((a,b)=>{
+              const rank=t=>amount(t.fixedEffectiveDelta)/(1+Math.log2(1+t.requires.reduce((s,id)=>s+(planner.distance.get(id)||10000),0)));
+              return rank(b)-rank(a)||a.id.localeCompare(b.id,'en');
+            }).slice(0,width);
+          for(const t of shortlist){
+            const trial=train(t,entry.node);
+            if(!trial){attempts.push({training:t.id,result:'UNRESOLVED_OR_NOT_NOW'});continue;}
+            const c=candidate(trial,p,'출생 → '+trial.steps.filter(x=>x.type==='transform').map(x=>labels[x.transform]||x.transform).join(' → '));
+            if(!c)continue;
+            if(!candidates.some(x=>x.id===c.id))candidates.push(c);
+            const key=c.finalSoldierType+'|'+c.transforms.join('>');
+            if(!seenHistory.has(key)){seenHistory.add(key);next.push({node:trial,result:c});}
+          }
         }
-        if(!better)break;node=better.node;
+        // Retain distinct futures, not just the single best current score.
+        // This is still a beam search, NOT proof that omitted branches lose.
+        next.sort((a,b)=>b.result.total-a.result.total||
+          b.result.bonusTotal-a.result.bonusTotal||
+          a.result.steps.length-b.result.steps.length||
+          a.result.id.localeCompare(b.result.id,'en'));
+        frontier=next.slice(0,beamWidth);
       }
     }
     candidates.sort((a,b)=>b.total-a.total||a.steps.length-b.steps.length||a.id.localeCompare(b.id));
@@ -237,6 +270,10 @@ if(process.argv.includes('--refresh-metadata')){
       status:best?'PROVISIONAL_CONDITIONAL':'RESEARCH_PATH_UNRESOLVED',certifiedMaximum:false,
       bestCandidateId:best?.id||null,bestBonusCandidateId:bestBonus?.id||null,
       candidates:keep,unresolved:acquisition.unresolved||null,attempts,
+      searchScope:deepSearch?{mode:'bounded-beam',maxLayers:birthOnly?0:unresolvedOnly?1:4,
+        candidatesPerLayer:12,beamWidth:8,globalOptimumProven:false}:
+        previous?.searchScope||{mode:'limited-greedy',maxLayers:2,candidatesPerLayer:4,
+          beamWidth:1,globalOptimumProven:false},
       birthReference:Object.fromEntries(WITNESS_STATS.map(k=>[k,p.effectiveStats.min[k]])),
       updatePolicy:'동일 출생처·동일 수치 가정에서 재생을 통과한 더 높은 후보만 교체. 조건이 다른 후보는 별도 보존.',
       improvement:previous?.bestCandidateId&&best&&previous.candidates[0]?.total<best.total?
@@ -244,14 +281,17 @@ if(process.argv.includes('--refresh-metadata')){
     console.log((index+1)+'/72 '+p.id+' '+(best?best.total+' ('+best.researchCount+' research)':'UNRESOLVED'));
   }
   const report={schemaVersion:1,kind:'origin-provisional-witnesses',sourceVersion:'v.o2',sourceHash,
-    sourceHashes:data.meta.source.rules,scope:{birthBand:'min',growth:false,extraMedals:false,trainingDepth:2,trainingCandidatesPerLayer:4},
+    sourceHashes:data.meta.source.rules,scope:{birthBand:'min',growth:false,extraMedals:false,defaultTrainingDepth:2,
+      defaultTrainingCandidatesPerLayer:4,globalOptimumProven:false},
     researchVocabularyVersion:1,stats:WITNESS_STATS,
     summary:{profiles:72,withCompleteResearch:records.filter(r=>r.candidates.length).length,
       unresolved:records.filter(r=>!r.candidates.length).length,
       witnesses:records.reduce((s,r)=>s+r.candidates.length,0),certifiedMaxima:0},
     notes:['모든 후보는 빈 연구 상태부터 재생함','잠정값은 자원·출생 RNG 등 가정을 가진 완결 경로의 최고 발견값이며 성장 하드캡이 아님','미완료 프로필에도 출생 원본과 병목을 등록하고 거짓 최종값을 채우지 않음'],records};
-  attachMetadata(report);
-  validateReport(report);
+  attachMetadata(report,{focused:focusProfile});
+  // Focused writes only replay the changed record. The full independent
+  // --check command replays ALL records before every publication.
+  validateReport(report,{focused:focusProfile,previous:prior});
   fs.writeFileSync(output,JSON.stringify(report)+'\n');
   console.log(JSON.stringify(report.summary));
 }
