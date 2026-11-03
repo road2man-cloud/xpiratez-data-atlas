@@ -30,6 +30,23 @@ for(const record of report.records){
   }
   assert(bestGrowth>=bestUngrown,'The best growth projection cannot be smaller than the best ungrown path');
 }
+// Real 2.1 exception cases must not use a low-stat positive bonus to
+// inflate an unrelated above-cap high-stat endpoint.
+for(const [id,rawCap,expected] of [
+  ['manufacture:STR_SYNTH_RECRUITMENT',601,623],
+  ['manufacture:STR_SOLDIER_TYPE_SYNTH_REPAIR',601,623],
+  ['manufacture:STR_THEBAN_ASSAULT_CLONE',501,501],
+  ['event:STR_MRSHAN_FIGHTER_EVENT',501,501]
+]){
+  const record=report.records.find(r=>r.profileId===id);
+  assert(record?.candidates?.length,'Known special origin missing: '+id);
+  const growth=record.candidates.map(c=>projectCandidateGrowthLimit(record,c,data));
+  assert(growth.every(g=>g.kind==='conditional-upper-envelope'));
+  assert(growth.every(g=>g.raw.stamina<=rawCap),
+    'A raw stamina cap-overshoot or soft-limit cannot be compounded: '+id);
+  const maximum=Math.max(...growth.map(g=>g.stats.stamina));
+  assert.equal(maximum,expected,'Stamina changed unexpectedly: '+id);
+}
 assert.equal(nonready,0,'Previously validated growth routes unexpectedly lost usable caps');
 assert.equal(counted,report.summary.witnesses);
 assert(increased>0);

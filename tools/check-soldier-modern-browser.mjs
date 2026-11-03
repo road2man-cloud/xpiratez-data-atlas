@@ -75,6 +75,8 @@ try{
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('성장 완료 가정'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('동시 달성'));
+ assert((await page.locator('#originDetails [data-growth-stamina-basis]').innerText()).includes('원시 성장캡'),
+   'Growth values must expose the raw rule cap, raw projection, and bonus');
  console.log('PASS one real chronological record replayed; growth-cap ceiling default is distinct from ungrown stats and does not claim actual attainment');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);

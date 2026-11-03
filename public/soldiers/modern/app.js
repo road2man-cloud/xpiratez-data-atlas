@@ -162,10 +162,18 @@ async function openOrigin(id,candidateId=null){
   const bonus=[...record.candidates].sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
   const useGrowth=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope';
   const shown=useGrowth?c.growth:c.display;
+  const finalBody=DATA.soldiers.find(x=>x.id===c.finalSoldierType);
+  const staminaBasis=useGrowth?
+    '<p class="scope-note" data-growth-stamina-basis="true">기력 상한 근거: '+
+    esc(name(c.finalSoldierType))+'의 원시 성장캡 '+fmt(finalBody?.statCaps?.stamina)+
+    ' · 성장·변신 후 원시 상계 '+fmt(shown.raw.stamina)+
+    ' + 동일 병사의 영구 특성 '+fmt(shown.bonus.stamina)+
+    ' = 조건부 실효 상계 '+fmt(shown.stats.stamina)+
+    '. 전투 종료 보조 성장의 마지막 증가분은 원시 성장캡을 최대 +1 초과할 수 있습니다. 실제 달성·동시 달성은 미검증입니다.</p>':'';
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
-    birthPaths+statGrid(c,metric)+
+    staminaBasis+birthPaths+statGrid(c,metric)+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+

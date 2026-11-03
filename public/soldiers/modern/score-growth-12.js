@@ -2,7 +2,7 @@
 // A ceiling is NOT an achieved final stat vector nor a globally optimal path.
 // The original signed chronological acquisition/transform witness remains authoritative.
 import {STAT_KEYS,initialState,bonusStats} from './eligibility.js';
-import {createStatEnvelope,advanceStatEnvelope} from './stat-envelope.js';
+import {createStatEnvelope,advanceStatEnvelope} from './stat-envelope.js?v=20261103-stamina-bound-fix-1';
 import {growStatEnvelope} from './growth-envelope.js';
 import {DISPLAY_STATS,displayTotal} from './score-12.js';
 

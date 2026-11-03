@@ -125,5 +125,22 @@ for(let run=0;run<420;run++){
           JSON.stringify({c,i,f,p,rule}));
       }
 }
+// Regression: lower/upper clamps apply to the SAME current stat, never
+// to opposite endpoints from unrelated possible soldiers.
+const synthState=initialState(data,"manufacture:STR_SYNTH_RECRUITMENT");
+const synthBefore=createStatEnvelope(data,synthState.sourceId);
+const synthGrown={...synthBefore,high:{...synthBefore.high,stamina:601}};
+const proud=data.transformations.find(x=>x.id==="STR_PROUD_WARRIOR");
+const synthAfter=advanceStatEnvelope(proud,synthGrown,data,synthState);
+assert.equal(synthAfter.high.stamina,601,
+  "soft cap must not add +5 to raw stamina 601 when cap is 600");
+const thebanState=initialState(data,"manufacture:STR_THEBAN_ASSAULT_CLONE");
+const chort=data.transformations.find(x=>x.id==="STR_CHORT_SUMMONING");
+const beforeChort=createStatEnvelope(data,thebanState.sourceId);
+const thebanGrown={...beforeChort,high:{...beforeChort.high,stamina:146}};
+const chortAfter=advanceStatEnvelope(chort,thebanGrown,data,thebanState);
+assert.deepEqual([chortAfter.low.stamina,chortAfter.high.stamina],[250,250],
+  "minimum Chort 250 must be applied to each stat, not cross-summed to 204..296");
+console.log("PASS conservative bound correlations: Synth 601 stays 601 under soft +5; Chort stamina 100..146 becomes exact 250");
 console.log("PASS conservative stat intervals: exact X-Piratez revolutionary 45..70 firing / 39..54 health, "+
   "420 exhaustive OXCE arithmetic/cap combinations, no falsely narrow ranges, no future RNG certainty");
