@@ -30,7 +30,7 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 ### 등록 상태와 숫자의 범위
 
 - **출생 프로필 72개 전부 독립 등록** (병종 29종, 다른 병종으로 변경되는 40개 입구는 출생처와 구분). 2.1 연구에 `needItem`이 있지만 해당 ID가 2.1 원본 아이템에 없으면, 무조건 획득 가능한 표본으로 취급하지 않고 이벤트·임무 완료 플래그의 별도 공급 증거를 기다립니다.
-- **65개 출생처에서 잠정 경로 162개를 재생**하고 개인별 최고 발견값을 게시. 나머지 **7개는 미해결 병목**을 표시하며 값을 지어내지 않습니다. 숫자는 새 탐색 결과에 따라 달라질 수 있습니다.
+- **66개 출생처에서 잠정 경로 163개를 재생**하고 개인별 최고 발견값을 게시. 나머지 **6개는 미해결 병목**을 표시하며 값을 지어내지 않습니다. 숫자는 새 탐색 결과에 따라 달라질 수 있습니다.
 - 한 출생처만 반복 탐색하려면 `node tools/build-soldier-origin-candidates.mjs --profile=direct:STR_SOLDIER_X`처럼 원본 출생 프로필 ID를 지정합니다. 기존 71개 출생처와 재생을 통과한 이전 후보는 보존하며, 현재 합계만 낮다는 이유로 미래 분기 선택이 다른 후보를 버리지 않습니다. 등록된 후보 전체 검증은 `node tools/build-soldier-origin-candidates.mjs --check`로 수행합니다.
 - 각 후보는 완료 연구가 없는 상태에서 출발합니다. 요구 연구를 연구실·직접 해금·무료 지급 시점·자동 비용 0 큐·이벤트 직접 지급 순서에 맞춰 재생하고, 출생과 훈련을 같은 병사의 이력으로 처리합니다. 화면에는 연구 전체 목록보다 **분기 선택과 일방향/양방향 배제 근거**를 보여 줍니다. 배제의 방향과 실제로 새로 폐쇄된 단계·이미 폐쇄됐던 상태·후속 재활성화·마지막 폐쇄 상태를 구분하며, 자동 연구가 같은 단계에 여러 개 처리될 때는 단일 연구의 독점적인 인과관계로 단정하지 않습니다. 상세 페이지의 연구 이름을 누르면 연구 관계와 무료 지급·배제 방향을 확인할 수 있습니다.
 - 잠정 점수는 **출생 최솟값 + 실행 순서로 재생된 확정형 능력치 변화/영구 SoldierBonus**만 사용합니다. 전투 XP, 체육관 성장, 새 훈장, 승진, 출생 RNG의 최고 결과와 무작위 시술의 유리한 결과는 자동 가산하지 않습니다. 어떤 후보도 다른 병사·다른 연구 경로의 보너스를 섞지 않습니다.
@@ -44,6 +44,14 @@ X-Piratez [아이템 DB](./public/items/) · [연구 DB](./public/research/) · 
 재현 명령: `node tools/build-soldier-origin-candidates.mjs --profile=manufacture:STR_POLTERGEIST_EMBODIMENT --research-first=STR_PSI_INITIATION --research-first=STR_ACADEMY_MED_KNOWHOW`. `--research-first`는 연구를 완료 처리하는 옵션이 아닙니다. 모든 공급 경로를 기존 재생기로 검사하며, 다른 출생처를 바꾸지 않도록 반드시 `--profile`과 함께 사용합니다.
 
 신규 5개 후보 중 첫 최고 경로는 **연구 433개 처리 · 339개 재생 단계 · 돌연변이 무술 훈련 → 자랑스러운 전사 · 마나 제외 합계 453**입니다. 출생 최소값에서 시작했고 전투·체육관 성장과 훈장 추가는 없습니다. 20개월 이벤트와 무료 연구 당첨, 실물·자금·시설 공급, 달력 소요시간은 조건부이며 **최종 최대치 인증은 아닙니다**. `tools/check-origin-priority-chronology.mjs`에서 이 경로를 보존하고, 이벤트 지연·보호 조건 누락·무료 보상 재사용을 각각 거부하는 반례를 확인합니다.
+
+### 연구 순서 병목 해소 사례: 고양이 전사 모집
+
+`manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT`은 기존 연구 경로 탐색에서 `STR_SCHOOLING_2_B`의 깊은 선행 관계 때문에 실패했습니다. 보호된 무료 연구와 인접한 선행 조건을 먼저 탐색해 `STR_ACADEMY_MED_KNOWHOW → STR_MUTANT_PHYSIOLOGY → STR_SCHOOLING_2_B` 순서를 확보하면 X-Piratez 2.1 원본 룰을 수정하지 않고 연구·제조·출생까지 연결됩니다.
+
+재현 명령: `node tools/build-soldier-origin-candidates.mjs --profile=manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT --birth-only --research-first=STR_ACADEMY_MED_KNOWHOW --research-first=STR_MUTANT_PHYSIOLOGY --research-first=STR_SCHOOLING_2_B`. `--birth-only`는 긴 경로의 *후속 훈련 최적화만 보류*하고, 이미 재생 성공한 출생 후보를 먼저 등록합니다. 연구를 임의로 완료 처리하지 않으며 `--profile` 없이는 사용할 수 없습니다.
+
+등록한 첫 후보는 **완료 연구 0개 시작 → 연구·출생 515단계 → 처리된 연구 627개 → 고양이 전사 출생 → 마나 제외 11개 합계 620**입니다. 연구 이벤트는 24개월까지 진행한 조건부 시나리오입니다. 출생 RNG·표본·기지 기능·자금·이벤트 발생 결과·달력 소요시간 및 실제 게임 재현은 미검증이며, **최종 최대치 인증은 아닙니다**. `tools/check-origin-catgirl-chronology.mjs`에서 20개월 이벤트 기한·기지 기능·연구 선행·제조 재료를 누락한 반례를 거부합니다.
 
 ### 연구 관계 표기
 

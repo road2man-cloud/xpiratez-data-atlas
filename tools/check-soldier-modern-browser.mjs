@@ -74,6 +74,15 @@ try{
  assert(poltergeistDetail.includes('STR_ENJOYING_THE_DREAM'));
  assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
  console.log('PASS previously unresolved Poltergeist birth now has a replayed conditional route, not an invented cap');
+ const catgirl=expectedReport.records.find(r=>r.profileId==='manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT');
+ const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
+ assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);
+ await page.locator('#search').fill(catgirl.profileId);
+ assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),catgirlBest.total);
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ assert((await page.locator('#originDetails').innerText()).includes('전역 최적성: 미증명'));
+ console.log('PASS Nekomimi warrior birth now has a conditional 620-point witness; no premature certified maxima');
  const pending=expectedReport.records.find(r=>!r.candidates.length);
  if(pending){
    await page.locator('#search').fill(pending.profileId);

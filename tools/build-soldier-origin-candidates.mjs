@@ -21,11 +21,12 @@ const sourceHash=digest({rules:data.meta.source.rules,profiles:data.profiles,sol
 const labels=Object.fromEntries([...data.soldiers,...data.transformations,...data.bonuses].map(x=>[x.id,x.koName||x.id]));
 for(const p of data.profiles)labels[p.sourceId]=p.sourceKoName;
 const amount=x=>WITNESS_STATS.reduce((s,k)=>s+Number(x?.[k]||0),0);
-const planner=createFoundationResearchPlanner(data,{maxAttempts:260,maxDepth:38,maxSteps:430});
 const unresolvedOnly=process.argv.includes('--unresolved-only');
+const birthOnly=process.argv.includes('--birth-only');
 const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
 if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
   throw Error('Unknown source profile: '+focusProfile);
+if(birthOnly&&!focusProfile)throw Error('--birth-only requires --profile');
 // These are ordered SEARCH GOALS, never pre-completed flags. All prerequisites,
 // samples, free-award timing and event guards still pass the existing verifier.
 const researchFirst=[...new Set(process.argv.filter(x=>x.startsWith('--research-first='))
@@ -34,6 +35,13 @@ if(researchFirst.length&&!focusProfile)throw Error('--research-first requires --
 if(researchFirst.length>24)throw Error('At most 24 ordered research goals are supported');
 for(const id of researchFirst)if(!id||id==='STR_UNAVAILABLE'||!data.researchRules[id])
   throw Error('Unknown or unavailable ordered research goal: '+id);
+// Deeper campaigns need more room for legitimate event gates, free research,
+// and conditional auto queues. Only a focused, explicitly ordered run receives
+// this bounded increase: other 71 origin records stay byte-for-byte intact.
+const deepFocused=Boolean(focusProfile&&researchFirst.length);
+const planner=createFoundationResearchPlanner(data,deepFocused?
+  {maxAttempts:1200,maxDepth:48,maxSteps:560}:
+  {maxAttempts:260,maxDepth:38,maxSteps:430});
 const branchEvidence=replay=>researchBranchEvidence(replay,data.researchRules);
 function candidate(node,p,description){
   const replay=replayOriginWitness(node.steps,data);
@@ -198,7 +206,7 @@ if(process.argv.includes('--refresh-metadata')){
     if(acquisition.result){
       if(!candidates.some(c=>c.id===acquisition.result.id))candidates.push(acquisition.result);
       let node=acquisition.node;
-      for(let depth=0;depth<(unresolvedOnly?1:2);depth++){
+      for(let depth=0;depth<(birthOnly?0:unresolvedOnly?1:2);depth++){
         const state=node.world.soldiers[0].state;
         const shortlist=data.transformations.filter(t=>t.allowedSoldierTypes.includes(state.soldierType)&&
           !t.requires.includes('STR_UNAVAILABLE')&&!t.createsClone&&!t.producedItem&&!state.history.has(t.id)&&
