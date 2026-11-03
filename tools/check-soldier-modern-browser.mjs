@@ -24,11 +24,20 @@ try{
  assert.equal(expectedSummary.profiles,72);
  assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
  assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses)));
- assert.equal(await page.locator('#originTable thead th').count(),14);
- console.log('PASS published origin registry: 72 births, '+expectedSummary.withCompleteResearch+' complete conditional paths, '+expectedSummary.witnesses+' candidates, 11 stats; no save/custom trainer');
+ assert.deepEqual(await page.locator('#originTable thead th').allTextContents(),
+   ['출생처 / 최초 병종','상태','12종 합계','TU','기력','체력','용기','반응','사격','투척','근접','근력','Psi 강도','Psi 기술','Mana']);
+ const score12=async()=>{
+   const cells=await page.locator('#originTable tbody tr[data-origin-id] td').allTextContents();
+   assert.equal(cells.length,15);
+   const read=text=>Number(text.trim().replaceAll(',',''));
+   const total=read(cells[2]),stats=cells.slice(3).map(read);
+   assert(stats.every(Number.isInteger));assert.equal(total,stats.reduce((sum,n)=>sum+n,0));
+   return {total,mana:stats[11]};
+ };
+ console.log('PASS published origin registry: 72 births, '+expectedSummary.withCompleteResearch+' complete conditional paths, '+expectedSummary.witnesses+' candidates, 12 displayed stats; no save/custom trainer');
  await page.locator('#search').fill('direct:STR_SOLDIER_PEASANT');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
- const provisional=Number((await page.locator('#originTable .score').innerText()).replaceAll(',',''));
+ const provisional=(await score12()).total;
  assert(provisional>0);
  await page.locator('[data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
@@ -65,7 +74,7 @@ try{
  const poltergeistBest=poltergeist.candidates.find(c=>c.id===poltergeist.bestCandidateId);
  assert(poltergeistBest&&poltergeistBest.total>=453);
  await page.locator('#search').fill(poltergeist.profileId);
- assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),poltergeistBest.total);
+ assert((await score12()).total>poltergeistBest.total,'Mana must actually be included, not a blank 12th column');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
@@ -78,11 +87,11 @@ try{
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);
  await page.locator('#search').fill(catgirl.profileId);
- assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),catgirlBest.total);
+ assert.deepEqual(await score12(),{total:660,mana:40});
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('전역 최적성: 미증명'));
- console.log('PASS Nekomimi warrior birth now has a conditional 620-point witness; no premature certified maxima');
+ console.log('PASS Nekomimi warrior displays 660 points across 12 stats (including Mana 40); original 620-point witness retained');
  const pending=expectedReport.records.find(r=>!r.candidates.length);
  if(pending){
    await page.locator('#search').fill(pending.profileId);

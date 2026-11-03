@@ -340,7 +340,7 @@ export function eligibleTransformation(rule,state,data,options={}){
     blockers:uniq(blocked),conditions:uniq(conditions),research:tech};
 }
 
-function statChangeEngineEstimate(rule,state,data){
+export function statChangeEngineEstimate(rule,state,data){
   // OXCE Soldier::calculateStatChanges / UnitStats::percent/softLimit parity
   // for deterministic inputs. For random outputs preserve an uncertainty flag.
   const next=Object.fromEntries(STAT_KEYS.map(k=>[k,num(state.currentStats[k])]));
