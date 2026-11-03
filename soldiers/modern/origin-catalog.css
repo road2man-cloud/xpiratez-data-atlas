@@ -19,6 +19,12 @@
 .origin-acquisition .origin-script>summary{font-size:.8rem;overflow-wrap:anywhere}
 .origin-source-gates{padding-left:19px;margin:6px 0}.origin-source-gates li{margin:5px 0;font-size:.77rem;color:#bbd0e8}
 .origin-acquisition .research-node{font-size:.73rem}
+.origin-transform-gates{margin:16px 0;padding:12px 14px;border:1px solid #344f70;border-radius:10px;background:#152941}
+.origin-transform-gates>summary{font-weight:780;color:#cde5ff;cursor:pointer}
+.origin-transform-gate{padding:12px;border:1px solid #345172;border-radius:9px;margin:11px 0;background:#102139}
+.origin-transform-gate p{font-size:.8rem;color:#c0d5eb}
+.origin-transform-gate button[data-trace-research-root]{display:block;margin:5px 0;font-size:.78rem;text-align:left}
+.origin-transform-research-root{margin:8px 0 13px;max-height:550px;overflow:auto}
 .origin-tree-action{border:1px solid #3e6083;border-radius:11px;padding:13px;margin:14px 0;background:#11233b}
 .origin-tree-result{margin-top:10px}
 .origin-complete-tree{max-height:720px;overflow:auto;overscroll-behavior:contain}

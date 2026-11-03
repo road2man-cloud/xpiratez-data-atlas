@@ -6,7 +6,7 @@ import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js';
-import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-conditions-2';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
@@ -119,6 +119,34 @@ function choiceHtml(c){
       '<p class="muted">배제 전 이미 시행한 훈련의 보존 여부는 이 경로의 동일 병사 이력으로 재생했습니다.</p></details>';
   }).join('');
 }
+function transformationGateHtml(c,profile){
+  const rules=new Map(DATA.transformations.map(x=>[x.id,x]));
+  const selected=c.steps.filter(s=>s.type==='transform');
+  if(!selected.length)return '';
+  const chips=ids=>ids.length?ids.map(node).join(' '):'없음';
+  const objectGate=obj=>Object.entries(obj||{}).length?
+    Object.entries(obj).map(([id,n])=>'<span>'+esc(name(id))+' <small>('+esc(id)+') ×'+fmt(n)+'</small></span>').join(' · '):'없음';
+  const details=selected.map((step,i)=>{
+    const t=rules.get(step.transform);if(!t)return '<li>원본 변신 규칙 누락 '+esc(step.transform)+'</li>';
+    const required=Array.isArray(t.requires)?t.requires:[];
+    const minRank=Math.max(0,Number(t.minRank)||0);
+    return '<li class="origin-transform-gate"><strong>'+(i+1)+'단계: '+esc(t.koName||t.id)+'</strong>'+
+      '<p>필요 연구: '+chips(required)+'</p>'+
+      (required.length?'<div>'+required.map(id=>'<button type="button" data-trace-research-root="'+esc(id)+'">게임 시작 → '+esc(name(id))+' 연구 경로 보기</button><div class="origin-transform-research-root"></div>').join('')+'</div>':'')+
+      '<p><strong>요구 대원 계급: '+fmt(minRank)+'</strong> · 이 값은 캡틴의 계급 연구 플래그와 다릅니다. 출생 계급 '+fmt(profile.rank??0)+
+      '부터 실제 승진 가능한지 별도 확인해야 합니다.</p>'+
+      '<p>필요 재료: '+objectGate(t.requiredItems)+
+      ' · 훈장: '+objectGate(t.requiredCommendations)+'</p>'+
+      '<p>기지 기능: '+chips(t.requiresBaseFunc||[])+
+      ' · 반드시 이전에 수행한 시술: '+chips(t.requiredPreviousTransformations||[])+
+      ' · 이전에 수행하면 차단되는 시술: '+chips(t.forbiddenPreviousTransformations||[])+'</p>'+
+      '<p class="fine">훈장 실제 획득, 전투 경험·승진, 사망/부상/생존 상태, 아이템 시점, 연구 배제, 성장값 충족 여부는 미증명입니다.</p></li>';
+  }).join('');
+  return '<details class="origin-transform-gates"><summary>선택한 후보의 후속 훈련·변신 계급과 요구조건 ('+selected.length+'개)</summary>'+
+    '<p class="fine">출생 방법과 별개인 후속 육성 경로입니다. 실제 게임에서 아직 통과한 단계로 단정하지 않습니다.</p>'+
+    '<ol>'+details+'</ol></details>';
+}
+
 function assumptionHtml(c){return c.assumptions.map(s=>{
   if(s.type==='externalInputs')return '<li>'+esc(s.reason)+'<br>'+Object.entries(s.items||{}).map(([id,n])=>esc(name(id))+' ×'+fmt(n)).join(' · ')+(s.functions?.length?' · 기지 기능 '+s.functions.map(esc).join(', '):'')+(s.funds?' · 자금 '+fmt(s.funds):'')+'</li>';
   if(s.type==='freeResearch')return '<li>'+node(s.source)+' 완료 시 '+node(s.research)+' 무료 지급 추첨 결과를 가정</li>';
@@ -130,8 +158,8 @@ async function openOrigin(id,candidateId=null){
   if(blocked)return;const generation=++replayGeneration;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
-  const birthPaths=renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+
-    '<section class="origin-tree-action"><button type="button" data-expand-origin-tree="'+esc(profile.id)+'">게임 시작부터 전체 출생 조건 트리 보기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>';
+  const birthPaths='<section class="origin-tree-action"><strong>출생 방법별 전체 조건 역추적</strong><p class="fine">임무 개방 시기·연구·아이템·대원/캡틴 계급·선택 배제를 게임 시작부터 확인합니다. 표시된 조건은 실제 획득 보장이 아닙니다.</p><button type="button" data-expand-origin-tree="'+esc(profile.id)+'">게임 시작부터 전체 출생 조건 트리 보기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
+    renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node});
   const metric=$('#catalogMetric').value;
   selected=id;const c=record.candidates.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const host=$('#originDetails');host.hidden=false;
@@ -142,9 +170,9 @@ async function openOrigin(id,candidateId=null){
       '<li>'+node(g.id)+(g.neededItem?' <small>표본 ID '+esc(g.neededItem)+'</small>':'')+' <strong>'+({RULE_NOT_INDEXED:'연구 ID·이벤트 출처 미색인',UNBACKED_SAMPLE_TOKEN:'실물 표본 없는 조건 플래그 · 지급 증거 필요',AUTO_QUEUE_SOURCE_UNVERIFIED:'비용 0 자동 연구 출처 미확인',EVENT_CHRONOLOGY_UNRESOLVED:'이벤트 지급 시간순 미검증',SOURCE_ROUTE_UNRESOLVED:'연구 공급 대체 경로 미해결',NOT_INDEXED:'이벤트·지급 출처 미색인',NO_SUPPLY_METHOD:'현재 공급 방법 미확보',UPSTREAM_UNRESOLVED:'상위 선행 경로 미해결',CHRONOLOGY_UNRESOLVED:'시간순 연구 재생 미완결',SEARCH_LIMIT:'제한 탐색 미완결'}[g.kind]||'추가 검증 필요')+'</strong> · '+esc(g.reason)+'</li>').join('');
     host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div>'+
       '<p><strong>출생처 등록 완료 · 완결 연구 경로 미확보</strong></p><p>'+node(record.unresolved?.id||record.profileId)+'</p>'+
-      '<p>'+esc(record.unresolved?.reason||'조사 중')+'</p><h3>추가 확인이 필요한 상위 연구·이벤트 근거</h3><ul>'+gaps+'</ul>'+
-      '<p>이것은 현재 탐색기가 발견하지 못한 공급·시간순 경로입니다. 제한 탐색의 실패는 영구 불가능 판정이 아닙니다. 실제 획득을 증명하기 전에는 잠정 수치를 만들어 넣지 않습니다.</p>'+
-      birthPaths;
+      '<p>'+esc(record.unresolved?.reason||'조사 중')+'</p>'+birthPaths+
+      '<h3>추가 확인이 필요한 상위 연구·이벤트 근거</h3><ul>'+gaps+'</ul>'+
+      '<p>이것은 현재 탐색기가 발견하지 못한 공급·시간순 경로입니다. 제한 탐색의 실패는 영구 불가능 판정이 아닙니다. 실제 획득을 증명하기 전에는 잠정 수치를 만들어 넣지 않습니다.</p>';
     return;
   }
   let replay=verified.get(c.id);
@@ -175,7 +203,7 @@ async function openOrigin(id,candidateId=null){
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
-    staminaBasis+birthPaths+statGrid(c,metric)+
+    staminaBasis+birthPaths+transformationGateHtml(c,profile)+statGrid(c,metric)+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+
@@ -213,8 +241,18 @@ async function init(){try{
       else if(parent){
         const extra=document.createElement('div');extra.className='origin-tree-continuation';
         extra.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(continueButton.dataset.traceKind,
-          continueButton.dataset.traceId,DATA),{esc,name});
+          continueButton.dataset.traceId,DATA,Number(continueButton.dataset.traceOffset||0)),{esc,name});
         parent.append(extra);continueButton.textContent='추가 조건 접기';
+      }
+    }
+    const transformResearch=e.target.closest('[data-trace-research-root]');
+    if(transformResearch){
+      const panel=transformResearch.nextElementSibling;
+      if(panel?.classList.contains('origin-transform-research-root')){
+        if(panel.innerHTML){panel.innerHTML='';transformResearch.setAttribute('aria-expanded','false');}
+        else{panel.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree('research',
+          transformResearch.dataset.traceResearchRoot,DATA),{esc,name});
+          transformResearch.setAttribute('aria-expanded','true');}
       }
     }
     const treeButton=e.target.closest('[data-expand-origin-tree]');
