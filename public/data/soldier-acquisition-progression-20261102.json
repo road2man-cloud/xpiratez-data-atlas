@@ -5435,10 +5435,10 @@
           "melee": 100
         },
         "physicalThenBattle": {
-          "tu": 116,
+          "tu": 115,
           "stamina": 131,
           "health": 61,
-          "bravery": 129,
+          "bravery": 120,
           "reactions": 120,
           "firing": 120,
           "throwing": 95,
@@ -5450,10 +5450,8 @@
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
-        "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -7225,7 +7223,7 @@
           "tu": 81,
           "stamina": 121,
           "health": 95,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 85,
           "firing": 120,
           "throwing": 95,
@@ -7239,7 +7237,6 @@
       "naturalGrowthCanIncrease": [
         "tu",
         "stamina",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -9115,7 +9112,7 @@
           "reactions": 80,
           "firing": 135,
           "throwing": 135,
-          "strength": 21,
+          "strength": 20,
           "psiStrength": 95,
           "psiSkill": 20,
           "melee": 95
@@ -9128,7 +9125,6 @@
         "bravery",
         "reactions",
         "firing",
-        "strength",
         "psiStrength",
         "psiSkill",
         "melee"
@@ -13740,7 +13736,7 @@
           "tu": 129,
           "stamina": 181,
           "health": 97,
-          "bravery": 119,
+          "bravery": 110,
           "reactions": 123,
           "firing": 143,
           "throwing": 95,
@@ -13755,7 +13751,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -15681,33 +15676,21 @@
           "melee": 110
         },
         "physicalThenBattle": {
-          "tu": 111,
-          "stamina": 251,
-          "health": 91,
-          "bravery": 119,
-          "reactions": 130,
-          "firing": 155,
-          "throwing": 95,
-          "strength": 91,
-          "psiStrength": 5,
-          "psiSkill": 5,
-          "melee": 115
+          "tu": 110,
+          "stamina": 250,
+          "health": 90,
+          "bravery": 110,
+          "reactions": 125,
+          "firing": 150,
+          "throwing": 90,
+          "strength": 90,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 110
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
-      "naturalGrowthCanIncrease": [
-        "tu",
-        "stamina",
-        "health",
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "strength",
-        "psiStrength",
-        "psiSkill",
-        "melee"
-      ],
+      "naturalGrowthCanIncrease": [],
       "provisionalBodyBonusCandidate": {
         "score": 15,
         "attributableToThisPerson": false
@@ -16159,33 +16142,21 @@
           "melee": 110
         },
         "physicalThenBattle": {
-          "tu": 111,
-          "stamina": 251,
-          "health": 91,
-          "bravery": 119,
-          "reactions": 130,
-          "firing": 155,
-          "throwing": 95,
-          "strength": 91,
-          "psiStrength": 5,
-          "psiSkill": 5,
-          "melee": 115
+          "tu": 110,
+          "stamina": 250,
+          "health": 90,
+          "bravery": 110,
+          "reactions": 125,
+          "firing": 150,
+          "throwing": 90,
+          "strength": 90,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 110
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
-      "naturalGrowthCanIncrease": [
-        "tu",
-        "stamina",
-        "health",
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "strength",
-        "psiStrength",
-        "psiSkill",
-        "melee"
-      ],
+      "naturalGrowthCanIncrease": [],
       "provisionalBodyBonusCandidate": {
         "score": 15,
         "attributableToThisPerson": false
@@ -21451,7 +21422,7 @@
           "tu": 81,
           "stamina": 101,
           "health": 41,
-          "bravery": 99,
+          "bravery": 90,
           "reactions": 115,
           "firing": 130,
           "throwing": 85,
@@ -21466,7 +21437,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -24501,13 +24471,13 @@
           "tu": 176,
           "stamina": 601,
           "health": 36,
-          "bravery": 9,
+          "bravery": 0,
           "reactions": 130,
           "firing": 140,
           "throwing": 105,
           "strength": 111,
-          "psiStrength": 5,
-          "psiSkill": 5,
+          "psiStrength": 0,
+          "psiSkill": 0,
           "melee": 130
         }
       },
@@ -24516,13 +24486,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
         "strength",
-        "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -25074,13 +25041,13 @@
           "tu": 176,
           "stamina": 601,
           "health": 36,
-          "bravery": 9,
+          "bravery": 0,
           "reactions": 130,
           "firing": 140,
           "throwing": 105,
           "strength": 111,
-          "psiStrength": 5,
-          "psiSkill": 5,
+          "psiStrength": 0,
+          "psiSkill": 0,
           "melee": 130
         }
       },
@@ -25089,13 +25056,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
         "strength",
-        "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -28828,7 +28792,7 @@
           "tu": 84,
           "stamina": 146,
           "health": 54,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 119,
           "firing": 143,
           "throwing": 100,
@@ -28843,7 +28807,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -29275,24 +29238,19 @@
           "tu": 91,
           "stamina": 163,
           "health": 59,
-          "bravery": 119,
-          "reactions": 93,
-          "firing": 138,
-          "throwing": 95,
+          "bravery": 110,
+          "reactions": 91,
+          "firing": 136,
+          "throwing": 93,
           "strength": 53,
           "psiStrength": 71,
           "psiSkill": 77,
-          "melee": 118
+          "melee": 116
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "psiSkill",
-        "melee"
+        "psiSkill"
       ],
       "provisionalBodyBonusCandidate": {
         "score": 411,
@@ -31212,7 +31170,7 @@
           "tu": 105,
           "stamina": 150,
           "health": 90,
-          "bravery": 159,
+          "bravery": 150,
           "reactions": 120,
           "firing": 135,
           "throwing": 120,
@@ -31224,7 +31182,6 @@
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
-        "bravery",
         "psiSkill"
       ],
       "provisionalBodyBonusCandidate": {
@@ -31607,13 +31564,13 @@
         },
         "physicalThenBattle": {
           "tu": 134,
-          "stamina": 301,
+          "stamina": 300,
           "health": 41,
-          "bravery": 119,
+          "bravery": 110,
           "reactions": 115,
           "firing": 130,
           "throwing": 95,
-          "strength": 51,
+          "strength": 50,
           "psiStrength": 45,
           "psiSkill": 80,
           "melee": 130
@@ -31622,13 +31579,10 @@
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
         "tu",
-        "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
-        "strength",
         "psiStrength",
         "psiSkill",
         "melee"
@@ -35907,33 +35861,21 @@
           "melee": 60
         },
         "physicalThenBattle": {
-          "tu": 66,
-          "stamina": 251,
-          "health": 151,
-          "bravery": 119,
-          "reactions": 45,
-          "firing": 140,
-          "throwing": 65,
-          "strength": 201,
-          "psiStrength": 5,
-          "psiSkill": 5,
-          "melee": 65
+          "tu": 65,
+          "stamina": 250,
+          "health": 150,
+          "bravery": 110,
+          "reactions": 40,
+          "firing": 135,
+          "throwing": 60,
+          "strength": 200,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 60
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
-      "naturalGrowthCanIncrease": [
-        "tu",
-        "stamina",
-        "health",
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "strength",
-        "psiStrength",
-        "psiSkill",
-        "melee"
-      ],
+      "naturalGrowthCanIncrease": [],
       "provisionalBodyBonusCandidate": {
         "score": 15,
         "attributableToThisPerson": false
@@ -42084,7 +42026,7 @@
           "tu": 140,
           "stamina": 162,
           "health": 57,
-          "bravery": 119,
+          "bravery": 110,
           "reactions": 154,
           "firing": 153,
           "throwing": 95,
@@ -42099,7 +42041,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -43561,13 +43502,13 @@
           "tu": 111,
           "stamina": 126,
           "health": 81,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 80,
-          "firing": 5,
+          "firing": 0,
           "throwing": 45,
           "strength": 76,
           "psiStrength": 45,
-          "psiSkill": 5,
+          "psiSkill": 0,
           "melee": 115
         }
       },
@@ -43576,13 +43517,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
-        "firing",
         "throwing",
         "strength",
         "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -44063,13 +44001,13 @@
           "tu": 111,
           "stamina": 141,
           "health": 96,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 80,
-          "firing": 5,
+          "firing": 0,
           "throwing": 45,
           "strength": 106,
           "psiStrength": 45,
-          "psiSkill": 5,
+          "psiSkill": 0,
           "melee": 135
         }
       },
@@ -44078,13 +44016,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
-        "firing",
         "throwing",
         "strength",
         "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -44467,11 +44402,11 @@
           "health": 36,
           "bravery": 109,
           "reactions": 95,
-          "firing": 5,
-          "throwing": 5,
+          "firing": 0,
+          "throwing": 0,
           "strength": 46,
           "psiStrength": 45,
-          "psiSkill": 5,
+          "psiSkill": 0,
           "melee": 95
         }
       },
@@ -44482,11 +44417,8 @@
         "health",
         "bravery",
         "reactions",
-        "firing",
-        "throwing",
         "strength",
         "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
