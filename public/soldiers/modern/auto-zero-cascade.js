@@ -18,7 +18,8 @@ const rulesIndexCache=new WeakMap();
 function rulesIndex(rules){
   let cached=rulesIndexCache.get(rules);
   if(cached)return cached;
-  const zero=[],unlockSources=new Map();
+  const zero=[],unlockSources=new Map(),zeroByDependency=new Map(),
+    zeroByUnlockSource=new Map(),zeroWithoutDependencies=[];
   for(const [id,r] of Object.entries(rules)){
     if(Number(r.cost)===0)zero.push([id,r]);
     for(const target of arr(r.unlocks)){
@@ -27,7 +28,24 @@ function rulesIndex(rules){
     }
   }
   zero.sort(([a],[b])=>ordinal(a,b));
-  cached={zero,unlockSources};
+  const zeroIndices=new Map(zero.map(([id],i)=>[id,i]));
+  for(const [id,rule] of zero){
+    const index=zeroIndices.get(id);
+    if(!arr(rule.dependencies).length)zeroWithoutDependencies.push(index);
+    for(const dependency of arr(rule.dependencies)){
+      const entries=zeroByDependency.get(dependency)||[];
+      entries.push(index);zeroByDependency.set(dependency,entries);
+    }
+  }
+  for(const [target,sources] of unlockSources){
+    if(!zeroIndices.has(target))continue;
+    for(const source of sources){
+      const entries=zeroByUnlockSource.get(source)||[];
+      entries.push(zeroIndices.get(target));zeroByUnlockSource.set(source,entries);
+    }
+  }
+  cached={zero,unlockSources,zeroByDependency,zeroByUnlockSource,
+    zeroWithoutDependencies};
   rulesIndexCache.set(rules,cached);
   return cached;
 }
@@ -97,9 +115,20 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
   const verifiedFunctions=opts.functionsKnown===true;
   const verifiedActive=opts.activeResearchKnown===true;
   const maxSteps=limitNumber(opts.maxSteps,45,180);
-  const queue=[sourceId],steps=[],held=new Map(),notices=[];
+  const queue=[sourceId],queued=new Set([sourceId]),steps=[],held=new Map(),notices=[];
   const seen=new Set();
-  const {zero:allZero,unlockSources}=rulesIndex(rules);
+  const {zero:allZero,unlockSources,zeroByDependency,zeroByUnlockSource,
+    zeroWithoutDependencies}=rulesIndex(rules);
+  // A zero-cost topic can become available only when at least one of its
+  // dependencies was discovered, when it has no dependencies, or when an
+  // already discovered topic directly unlocks it. This is a SUPERSET of
+  // eligible topics, not an inference of entitlement or a research grant.
+  const possible=new Set(zeroWithoutDependencies);
+  const includeSource=id=>{
+    for(const index of zeroByDependency.get(id)||[])possible.add(index);
+    for(const index of zeroByUnlockSource.get(id)||[])possible.add(index);
+  };
+  for(const id of st.researched)includeSource(id);
   let i=0;
   while(i<queue.length&&i<maxSteps){
     const id=queue[i++],rule=rules[id];
@@ -113,6 +142,7 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
     const hasProtected=hasPendingProtectedUnlock(id,rules,st);
     if(!alreadyDiscovered){
       st.researched.add(id);
+      includeSource(id);
       for(const disabled of arr(rule.disables)){
         st.researched.delete(disabled);st.disabled.add(disabled);
       }
@@ -132,12 +162,15 @@ export function inspectAutoZeroCascade(data,sourceId,initial={},opts={}){
     // Existing discoveries are rescanned ONLY if an undiscovered protected
     // unlock remained before this queue item was processed.
     if(alreadyDiscovered&&!hasProtected)continue;
-    for(const [next,project] of allZero){
-      if(seen.has(next)||queue.includes(next)||st.disabled.has(next))continue;
+    // Keep OXCE's ordinal std::map iteration even though candidates were
+    // reached through an indexed (unsorted) dependency/unlock graph.
+    for(const index of [...possible].sort((a,b)=>a-b)){
+      const [next,project]=allZero[index];
+      if(seen.has(next)||queued.has(next)||st.disabled.has(next))continue;
       const gate=canRunZero(next,project,rules,st,id,{
         inventoryKnown:verifiedInventory,functionsKnown:verifiedFunctions,
         activeResearchKnown:verifiedActive},unlockSources);
-      if(gate.ok){queue.push(next);held.set(next,id);}
+      if(gate.ok){queue.push(next);queued.add(next);held.set(next,id);}
     }
   }
   if(i<queue.length)notices.push("자동 연구 큐 탐색 제한 초과: "+queue.length+"개 후보");

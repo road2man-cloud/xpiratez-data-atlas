@@ -4,8 +4,10 @@ import assert from 'node:assert/strict';
 import {createFoundationResearchPlanner} from '../public/soldiers/modern/foundation-research-planner.js';
 import {replayOriginWitness,WITNESS_STATS,originEventScript} from '../public/soldiers/modern/origin-witness.js';
 import {bonusStats} from '../public/soldiers/modern/eligibility.js';
+import {projectCandidateStats} from '../public/soldiers/modern/score-12.js';
 import {researchBranchEvidence} from '../public/soldiers/modern/origin-branch-evidence.js';
 import {classifyResearchSupplyGap} from '../public/soldiers/modern/research-supply-gap.js';
+import {encodeOriginReport,decodeOriginReport} from './origin-report-codec.mjs';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const data=read('public/data/soldiers-modern-index.json');
 const ledger=read('public/data/soldier-acquisition-progression-20261102.json');
@@ -15,12 +17,29 @@ assert.deepEqual(catalog.sourceHashes,data.meta.source.rules);
 data.sourceItemIds=new Set(catalog.itemIds);
 assert.equal(data.meta.mod.version,'v.o2');assert.equal(data.profiles.length,72);
 const output='public/data/soldier-origin-candidates.json';
+const readReport=()=>decodeOriginReport(fs.readFileSync(output,'utf8'));
+const shardArg=process.argv.find(x=>x.startsWith('--check-shard='))?.slice(14)||null;
+const shardMatch=shardArg?.match(/^(\d+)\/(\d+)$/);
+if(shardArg&&(!shardMatch||!process.argv.includes('--check')))
+  throw Error('--check-shard requires --check and N/M');
+const checkShard=shardMatch?{n:Number(shardMatch[1]),total:Number(shardMatch[2])}:null;
+if(checkShard&&(!Number.isSafeInteger(checkShard.total)||checkShard.total<1||checkShard.total>72||
+  !Number.isSafeInteger(checkShard.n)||checkShard.n<0||checkShard.n>=checkShard.total))
+  throw Error('Invalid --check-shard N/M');
 const digest=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const originSources=ledger.rows.filter(r=>r.kind==='SOURCE_SPAWN').map(r=>({id:r.id,kind:r.kind,prerequisites:{event:r.prerequisites?.event||null}})).sort((a,b)=>a.id.localeCompare(b.id,'en'));
 const sourceHash=digest({rules:data.meta.source.rules,profiles:data.profiles,soldiers:data.soldiers,bonuses:data.bonuses,transforms:data.transformations,research:data.researchRules,itemIds:catalog.itemIds,originSources});
 const labels=Object.fromEntries([...data.soldiers,...data.transformations,...data.bonuses].map(x=>[x.id,x.koName||x.id]));
 for(const p of data.profiles)labels[p.sourceId]=p.sourceKoName;
 const amount=x=>WITNESS_STATS.reduce((s,k)=>s+Number(x?.[k]||0),0);
+// The website ranks all twelve game stats (including Mana). Candidate beam
+// ordering must use the same objective, not the obsolete 11-stat total.
+const score12Cache=new Map();
+const score12=(p,c)=>{
+  if(!score12Cache.has(c.id))score12Cache.set(c.id,
+    projectCandidateStats({profileId:p.id},c,data).total);
+  return score12Cache.get(c.id);
+};
 const unresolvedOnly=process.argv.includes('--unresolved-only');
 const birthOnly=process.argv.includes('--birth-only');
 const deepSearch=process.argv.includes('--deep-search');
@@ -40,13 +59,31 @@ for(const id of researchFirst)if(!id||id==='STR_UNAVAILABLE'||!data.researchRule
 // Deeper campaigns need more room for legitimate event gates, free research,
 // and conditional auto queues. Only a focused, explicitly ordered run receives
 // this bounded increase: other 71 origin records stay byte-for-byte intact.
-const deepFocused=Boolean(focusProfile&&researchFirst.length);
+const deepFocused=Boolean(focusProfile&&(researchFirst.length||deepSearch));
 const planner=createFoundationResearchPlanner(data,deepFocused?
-  {maxAttempts:1200,maxDepth:48,maxSteps:560}:
+  {maxAttempts:650,maxDepth:48,maxSteps:560}:
   {maxAttempts:260,maxDepth:38,maxSteps:430});
 const branchEvidence=replay=>researchBranchEvidence(replay,data.researchRules);
+// Scoped builds reuse the exactly verified stepwise witness to construct a
+// candidate and its metadata. A separate --check always replays from zero
+// with a fresh process and independently checks every published candidate.
+const witnessCache=new Map(),birthCache=new Map();
+const witnessFor=c=>{
+  if(!witnessCache.has(c.id))witnessCache.set(c.id,replayOriginWitness(c.steps,data,{birthCache}));
+  return witnessCache.get(c.id);
+};
 function candidate(node,p,description){
-  const replay=replayOriginWitness(node.steps,data);
+  // Each planner action already passed the SAME campaign verifier. Reuse its
+  // chronological trace while enumerating branches; validateReport later
+  // independently replays the entire candidate from zero before publishing.
+  let replay;
+  const current=node.world.soldiers.find(x=>x.id==='origin');
+  if(current?.state.exactStats===true&&node.trace?.length===node.steps.length){
+    const raw=Object.fromEntries(WITNESS_STATS.map(k=>[k,current.state.currentStats[k]]));
+    const bonus=bonusStats(current.state,data,{commendations:current.commendations});
+    const stats=Object.fromEntries(WITNESS_STATS.map(k=>[k,Math.max(k==='health'?1:0,raw[k]+(bonus[k]||0))]));
+    replay={ok:true,exact:true,world:node.world,trace:node.trace,raw,bonus,stats,total:amount(stats)};
+  }else replay=replayOriginWitness(node.steps,data);
   if(!replay.ok||!replay.stats||!replay.exact)return null;
   const member=replay.world.soldiers.find(x=>x.id==='origin');
   const transforms=node.steps.filter(s=>s.type==='transform').map(s=>s.transform);
@@ -63,7 +100,26 @@ function candidate(node,p,description){
     assumptions:node.steps.filter(s=>s.type==='externalInputs'||s.assumeOutcome||s.type==='recruit'||s.type==='advanceMonth'),
     guarantees:['기초 연구 상태부터 공급 경로 없이 추가한 연구 플래그 없음','모든 연구·무료 지급·자동 큐·시술은 기존 재생기로 검사','서로 다른 병사의 성장·훈장·보너스 합산 없음'],
     limitations:['자금·표본·시설 실물 확보 조건부','출생 RNG와 이벤트 실제 발생 미실측','전투·체육관 성장 및 훈장 획득 경로 미포함','다른 경로보다 크다는 전역 최적성 미증명']};
+  witnessCache.set(result.id,replay);
   return result;
+}
+function recoverAcquisition(p,previous){
+  if(researchFirst.length||!previous?.candidates?.length)return null;
+  // A proven birth prefix is stronger than repeatedly guessing its hundreds
+  // of upstream research gates. Retain the exact chronology, never inject
+  // a pre-completed research flag.
+  const seeds=[...previous.candidates].sort((a,b)=>a.steps.length-b.steps.length);
+  for(const old of seeds){
+    const at=old.steps.findIndex(s=>s.type==='recruit'&&s.profile===p.id);
+    if(at<0)continue;
+    const steps=old.steps.slice(0,at+1);
+    const replay=replayOriginWitness(steps,data,{birthCache});
+    if(!replay.ok||!replay.exact)continue;
+    const node={world:replay.world,trace:replay.trace,steps,diagnostics:[]};
+    const result=candidate(node,p,'출생까지의 연구 경로 완결');
+    if(result)return {node,result};
+  }
+  return null;
 }
 function obtain(p){
   const row=ledger.rows.find(r=>r.id===p.id),alternatives=p.sourceType==='event'?row.prerequisites.event?.alternatives||[]:[null];
@@ -140,13 +196,14 @@ function researchBottlenecks(record){
   if(!found.length)found.push({id:original,kind:'SEARCH_LIMIT',reason:record.unresolved?.reason||'제한 탐색 미완료'});
   return found;
 }
-function validateReport(report,{focused=null,previous=null}={}){
+function validateReport(report,{focused=null,previous=null,shard=null}={}){
   assert.equal(report.sourceHash,sourceHash);assert.equal(report.records.length,72);
   assert.equal(new Set(report.records.map(r=>r.profileId)).size,72);
   let complete=0;
-  for(const record of report.records){
+  for(const [index,record] of report.records.entries()){
     assert(data.profiles.some(p=>p.id===record.profileId));
     assert.equal(record.certifiedMaximum,false);
+    if(shard&&index%shard.total!==shard.n)continue;
     if(focused&&record.profileId!==focused){
       const preserved=previous?.records.find(r=>r.profileId===record.profileId);
       assert.strictEqual(record,preserved,'A focused search changed another birth record');
@@ -160,7 +217,7 @@ function validateReport(report,{focused=null,previous=null}={}){
       continue;
     }
     for(const c of record.candidates){
-      const replay=replayOriginWitness(c.steps,data);assert(replay.ok,record.profileId+': '+replay.reason);
+      const replay=witnessFor(c);assert(replay.ok,record.profileId+': '+replay.reason);
       assert(replay.exact);assert.deepEqual(replay.stats,c.stats);assert.equal(replay.total,c.total);
       assert.equal(c.certifiedMaximum,false);assert(c.startsWithNoResearch&&c.researchSequenceComplete);
       assert.deepEqual(branchEvidence(replay),c.branchChoices);
@@ -188,7 +245,7 @@ function attachMetadata(report,{focused=null}={}){
     r.bottleneckHash=r.researchBottlenecks.length?digest({profileId:r.profileId,
       unresolved:r.unresolved,gates:r.researchBottlenecks}):null;
     for(const c of r.candidates){
-      const replay=replayOriginWitness(c.steps,data);
+      const replay=witnessFor(c);
       if(!replay.ok)throw Error('기존 후보 재생 중단: '+r.profileId+' '+replay.reason);
       c.branchChoices=branchEvidence(replay);
       c.modelAssumptions=[...new Set(replay.trace.flatMap(t=>t.notes||[]).filter(n=>/미검증|미증명|가상|재실행/.test(n)))];
@@ -199,13 +256,15 @@ function attachMetadata(report,{focused=null}={}){
   return report;
 }
 if(process.argv.includes('--refresh-metadata')){
-  const report=attachMetadata(read(output));report.sourceHash=sourceHash;fs.writeFileSync(output,JSON.stringify(report)+'\n');
+  const report=attachMetadata(readReport());report.sourceHash=sourceHash;fs.writeFileSync(output,encodeOriginReport(report));
   console.log('Updated candidate evidence fingerprints and exact v.o2 birth guards');
 }else if(process.argv.includes('--check')){
-  const report=read(output);const checked=validateReport(report);
-  console.log('PASS origin provisional registry: 72 original profiles, '+checked+' complete conditional witnesses; no fake research flags or certified maxima');
+  const report=readReport();const checked=validateReport(report,{shard:checkShard});
+  console.log('PASS origin provisional registry: 72 original profiles, '+checked+' conditional witnesses'+
+    (checkShard?' in shard '+checkShard.n+'/'+checkShard.total:'')+
+    '; no fake research flags or certified maxima');
 }else{
-  const prior=fs.existsSync(output)?read(output):null;
+  const prior=fs.existsSync(output)?readReport():null;
   if(focusProfile&&(!prior||prior.sourceHash!==sourceHash||prior.records.length!==72))
     throw Error('Focused update requires an intact, matching 72-origin registry');
   const records=[];
@@ -216,8 +275,8 @@ if(process.argv.includes('--refresh-metadata')){
       records.push(previous);continue;
     }
     if(unresolvedOnly&&previous?.candidates?.length){records.push(previous);continue;}
-    const candidates=(previous?.candidates||[]).filter(c=>{const r=replayOriginWitness(c.steps,data);return r.ok&&r.exact&&JSON.stringify(r.stats)===JSON.stringify(c.stats)});
-    const acquisition=obtain(p);const attempts=[];
+    const candidates=(previous?.candidates||[]).filter(c=>{const r=witnessFor(c);return r.ok&&r.exact&&JSON.stringify(r.stats)===JSON.stringify(c.stats)});
+    const acquisition=recoverAcquisition(p,previous)||obtain(p);const attempts=[];
     if(acquisition.result){
       if(!candidates.some(c=>c.id===acquisition.result.id))candidates.push(acquisition.result);
       // Deep search is opt-in and profile-scoped: never rewrite the other 71
@@ -254,7 +313,7 @@ if(process.argv.includes('--refresh-metadata')){
         }
         // Retain distinct futures, not just the single best current score.
         // This is still a beam search, NOT proof that omitted branches lose.
-        next.sort((a,b)=>b.result.total-a.result.total||
+        next.sort((a,b)=>score12(p,b.result)-score12(p,a.result)||
           b.result.bonusTotal-a.result.bonusTotal||
           a.result.steps.length-b.result.steps.length||
           a.result.id.localeCompare(b.result.id,'en'));
@@ -292,6 +351,6 @@ if(process.argv.includes('--refresh-metadata')){
   // Focused writes only replay the changed record. The full independent
   // --check command replays ALL records before every publication.
   validateReport(report,{focused:focusProfile,previous:prior});
-  fs.writeFileSync(output,JSON.stringify(report)+'\n');
+  fs.writeFileSync(output,encodeOriginReport(report));
   console.log(JSON.stringify(report.summary));
 }

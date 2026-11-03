@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {decodeOriginReport} from './origin-report-codec.mjs';
 import {classifyResearchSupplyGap} from '../public/soldiers/modern/research-supply-gap.js';
 
 const data=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json','utf8'));
 const catalog=JSON.parse(fs.readFileSync('public/data/soldier-source-catalog.json','utf8'));
-const report=JSON.parse(fs.readFileSync('public/data/soldier-origin-candidates.json','utf8'));
+const report=decodeOriginReport(fs.readFileSync('public/data/soldier-origin-candidates.json','utf8'));
 assert.equal(data.meta.mod.version,'v.o2');
 assert.deepEqual(data.meta.source.rules,catalog.sourceHashes);
 const opts={itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources};

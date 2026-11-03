@@ -1,13 +1,14 @@
 // Regression for a previously unresolved v.o2 origin. Ordered goals are
 // searched from zero research; no grants are added outside the verifier.
 import fs from 'node:fs';
+import {decodeOriginReport} from './origin-report-codec.mjs';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {foundationWorld,applyOriginWitnessStep,replayOriginWitness,WITNESS_STATS}
   from '../public/soldiers/modern/origin-witness.js';
 
-const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const read=p=>decodeOriginReport(fs.readFileSync(p,'utf8'));
 const data=read('public/data/soldiers-modern-index.json');
 const catalog=read('public/data/soldier-source-catalog.json');
 const report=read('public/data/soldier-origin-candidates.json');

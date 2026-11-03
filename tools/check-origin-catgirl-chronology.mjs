@@ -3,11 +3,12 @@
 // because the goal planner found a favorable ordering.
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import {decodeOriginReport} from "./origin-report-codec.mjs";
 import {foundationWorld,applyOriginWitnessStep,replayOriginWitness,WITNESS_STATS}
   from "../public/soldiers/modern/origin-witness.js";
 import {researchBranchEvidence} from "../public/soldiers/modern/origin-branch-evidence.js";
 
-const load=p=>JSON.parse(fs.readFileSync(p,"utf8"));
+const load=p=>decodeOriginReport(fs.readFileSync(p,"utf8"));
 const data=load("public/data/soldiers-modern-index.json");
 const sources=load("public/data/soldier-source-catalog.json");
 const ledger=load("public/data/soldier-acquisition-progression-20261102.json");

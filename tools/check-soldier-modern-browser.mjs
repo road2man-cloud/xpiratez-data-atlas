@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import http from 'node:http';import {createHash} from 'node:crypto';import {chromium} from 'playwright-core';
+import {encodeOriginReport,decodeOriginReport} from './origin-report-codec.mjs';
 const root=path.resolve('public');const external=process.argv.find(x=>x.startsWith('--base='))?.slice(7);let server;
 if(!external){server=http.createServer((req,res)=>{try{const url=new URL(req.url,'http://localhost');let file=path.resolve(root,'.'+decodeURIComponent(url.pathname));if(fs.existsSync(file)&&fs.statSync(file).isDirectory())file=path.join(file,'index.html');if(!file.startsWith(root+path.sep)||!fs.existsSync(file))throw Error('404');res.writeHead(200,{'Content-Type':({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.gz':'application/octet-stream'})[path.extname(file)]||'application/octet-stream'});fs.createReadStream(file).pipe(res)}catch{res.writeHead(404).end('not found')}});await new Promise(ok=>server.listen(0,'127.0.0.1',ok));}
 const base=external||'http://127.0.0.1:'+server.address().port+'/';
@@ -19,7 +20,7 @@ try{
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
  assert.equal(await page.locator('#catalogMetric').inputValue(),'provisional');
- const expectedReport=await (await page.request.get(url('data/soldier-origin-candidates.json'))).json();
+ const expectedReport=decodeOriginReport(await (await page.request.get(url('data/soldier-origin-candidates.json'))).json());
  const expectedSummary=expectedReport.summary;
  assert.equal(expectedSummary.profiles,72);
  assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
@@ -87,11 +88,13 @@ try{
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);
  await page.locator('#search').fill(catgirl.profileId);
- assert.deepEqual(await score12(),{total:660,mana:40});
+ const catgirlShown=await score12();
+ assert(catgirlShown.total>=660,'New proven growth paths must not lower the original 660-point 12-stat route');
+ assert.equal(catgirlShown.mana,40,'A 12-stat growth candidate must preserve and display real Mana');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('전역 최적성: 미증명'));
- console.log('PASS Nekomimi warrior displays 660 points across 12 stats (including Mana 40); original 620-point witness retained');
+ console.log('PASS Nekomimi warrior displays '+catgirlShown.total+' across 12 stats (including Mana 40); original 620-point witness retained');
  const pending=expectedReport.records.find(r=>!r.candidates.length);
  if(pending){
    await page.locator('#search').fill(pending.profileId);
@@ -120,7 +123,7 @@ try{
  console.log('PASS retired training deep link routes to read-only soldier evidence; no local file-input UI on soldier/captain views');
  if(!external){
    const corrupt=await browser.newPage();
-   await corrupt.route('**/soldier-origin-candidates.json*',async route=>{const response=await route.fetch();const body=await response.json();body.records.find(r=>r.candidates.length).candidates[0].stats.health+=999;await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'})});
+   await corrupt.route('**/soldier-origin-candidates.json*',async route=>{const response=await route.fetch();const body=decodeOriginReport(await response.json());body.records.find(r=>r.candidates.length).candidates[0].stats.health+=999;await route.fulfill({response,body:encodeOriginReport(body),contentType:'application/json'})});
    await corrupt.goto(url('soldiers/modern/'));
    await corrupt.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',null,{timeout:60000});
    assert.equal(await corrupt.locator('#originTable tbody tr').count(),0);
@@ -128,9 +131,9 @@ try{
    await corrupt.close();
    const brokenGap=await browser.newPage();
    await brokenGap.route('**/soldier-origin-candidates.json*',async route=>{
-     const response=await route.fetch();const body=await response.json();
+     const response=await route.fetch();const body=decodeOriginReport(await response.json());
      body.records.find(r=>!r.candidates.length).researchBottlenecks[0].reason='fabricated';
-     await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'});
+     await route.fulfill({response,body:encodeOriginReport(body),contentType:'application/json'});
    });
    await brokenGap.goto(url('soldiers/modern/'));
    await brokenGap.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',
@@ -139,16 +142,22 @@ try{
    await brokenGap.close();
    const wrongBranch=await browser.newPage();
    await wrongBranch.route('**/soldier-origin-candidates.json*',async route=>{
-     const response=await route.fetch();const body=await response.json();
+     const response=await route.fetch();const body=decodeOriginReport(await response.json());
      const record=body.records.find(r=>r.profileId==='direct:STR_SOLDIER_PEASANT');
-     const candidate=record.candidates.find(c=>c.id===record.bestCandidateId);
-     candidate.branchChoices[0].excludes[0].closedInStep=false;
-     candidate.branchChoices[0].excludes[0].closureTiming='closed-after';
-     candidate.resultHash=createHash('sha256').update(JSON.stringify({
-       steps:candidate.steps,raw:candidate.raw,stats:candidate.stats,
-       total:candidate.total,branches:candidate.branchChoices
-     })).digest('hex');
-     await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'});
+     // UI chooses the best 12-stat route, which can differ from the stored
+     // legacy 11-stat bestCandidateId after deep-search improvements. Corrupt
+     // each branch-bearing route so the selected route is always challenged.
+     for(const candidate of record.candidates){
+       if(!candidate.branchChoices[0]?.excludes.length)continue;
+       const edge=candidate.branchChoices[0].excludes[0];
+       edge.closedInStep=!edge.closedInStep;
+       edge.closureTiming=edge.closedInStep?'new-in-step':'closed-after';
+       candidate.resultHash=createHash('sha256').update(JSON.stringify({
+         steps:candidate.steps,raw:candidate.raw,stats:candidate.stats,
+         total:candidate.total,branches:candidate.branchChoices
+       })).digest('hex');
+     }
+     await route.fulfill({response,body:encodeOriginReport(body),contentType:'application/json'});
    });
    await wrongBranch.goto(url('soldiers/modern/'));
    await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',

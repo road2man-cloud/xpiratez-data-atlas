@@ -33,7 +33,7 @@
     "check:soldiers:modern:browser": "node tools/check-soldier-modern-browser.mjs",
     "build:origin-candidates": "node tools/build-soldier-origin-candidates.mjs",
     "improve:origin-candidates": "node tools/build-soldier-origin-candidates.mjs --unresolved-only",
-    "check:origin-candidates": "node tools/build-soldier-origin-candidates.mjs --check && node tools/check-origin-branch-evidence.mjs && node tools/check-origin-research-supply.mjs && node tools/check-origin-priority-chronology.mjs && node tools/check-origin-catgirl-chronology.mjs && node tools/check-origin-deep-search.mjs",
+    "check:origin-candidates": "node tools/check-origin-shards.mjs && node tools/check-origin-branch-evidence.mjs && node tools/check-origin-research-supply.mjs && node tools/check-origin-priority-chronology.mjs && node tools/check-origin-catgirl-chronology.mjs && node tools/check-origin-deep-search.mjs && node tools/check-origin-birth-cache.mjs",
     "check:research-relations": "node tools/check-research-relations.mjs",
     "check:trainings": "node tools/check-trainings.mjs && node tools/audit-transformation-exclusions.mjs && node tools/check-training-readiness.mjs && node tools/check-training-save-personnel.mjs && node tools/check-training-access.mjs && node tools/check-training-routes.mjs && node tools/check-staged-captain.mjs && node tools/check-training-2.1.mjs",
     "check:trainings:browser": "node tools/check-training-2.1-browser.mjs",

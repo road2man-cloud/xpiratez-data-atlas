@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {decodeOriginReport} from './origin-report-codec.mjs';
 import {researchBranchEvidence} from '../public/soldiers/modern/origin-branch-evidence.js';
 import {replayOriginWitness} from '../public/soldiers/modern/origin-witness.js';
 
@@ -45,25 +46,46 @@ assert.equal(aLater.closedAtEnd,false,
 
 const data=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json','utf8'));
 const catalog=JSON.parse(fs.readFileSync('public/data/soldier-source-catalog.json','utf8'));
-const ledger=JSON.parse(fs.readFileSync('public/data/soldier-origin-candidates.json','utf8'));
+const ledger=decodeOriginReport(fs.readFileSync('public/data/soldier-origin-candidates.json','utf8'));
 data.sourceItemIds=new Set(catalog.itemIds);
 data.originRows=ledger.records.map(r=>r.sourceProof);
-let verified=0,changes=0,newlyClosed=0,previouslyClosed=0;
-for(const record of ledger.records)for(const candidate of record.candidates){
-  const real=replayOriginWitness(candidate.steps,data);
-  assert(real.ok,record.profileId+': '+real.reason);
-  const actual=researchBranchEvidence(real,data.researchRules);
-  assert.deepEqual(actual,candidate.branchChoices,
-    'The published research branch provenance must exactly match the same-person, step-by-step engine replay');
-  changes+=actual.length;
-  for(const choice of actual)for(const exclusion of choice.excludes){
-    assert.equal(exclusion.actuallyClosed,exclusion.closedAtEnd);
-    if(exclusion.closedInStep)newlyClosed++;
-    if(exclusion.closedBeforeStep)previouslyClosed++;
-    assert(['self','bidirectional','oneway'].includes(exclusion.direction));
+let verified=0,representatives=0,changes=0,newlyClosed=0,previouslyClosed=0;
+const birthCache=new Map();
+for(const record of ledger.records){
+  for(const [index,candidate] of record.candidates.entries()){
+    // The parallel shard gate independently replays EVERY witness; this
+    // second gate audits the indexed exclusion corpus and independently
+    // samples one real chronology per origin, avoiding a redundant full run.
+    const actual=candidate.branchChoices;
+    if(index===0){
+      const real=replayOriginWitness(candidate.steps,data,{birthCache});
+      assert(real.ok,record.profileId+': '+real.reason);
+      assert.deepEqual(researchBranchEvidence(real,data.researchRules),actual,
+        'The published research branch provenance must match a fresh same-person replay');
+      representatives++;
+    }
+    changes+=actual.length;
+    for(const choice of actual){
+      assert(data.researchRules[choice.id],
+        'Every published exclusion must come from an indexed v.o2 research rule');
+      for(const exclusion of choice.excludes){
+        assert(data.researchRules[choice.id].disables.includes(exclusion.id),
+          'Invented research exclusion: '+choice.id+' -> '+exclusion.id);
+        const expected=exclusion.id===choice.id?'self':
+          data.researchRules[exclusion.id]?.disables.includes(choice.id)?'bidirectional':'oneway';
+        assert.equal(exclusion.direction,expected);
+        assert.equal(exclusion.actuallyClosed,exclusion.closedAtEnd);
+        if(exclusion.closedInStep)newlyClosed++;
+        if(exclusion.closedBeforeStep)previouslyClosed++;
+        assert(['self','bidirectional','oneway'].includes(exclusion.direction));
+      }
+    }
+    verified++;
   }
-  verified++;
 }
 assert.equal(verified,ledger.summary.witnesses,'Never drop an agent-added candidate during the proof audit');
+assert.equal(representatives,ledger.summary.withCompleteResearch);
 console.log('PASS chronological research exclusion: self-disable, one-way vs mutual, earlier closure, later reenable and final closure are distinct');
-console.log('PASS v.o2 source-provenance replays '+verified+' published candidates; '+changes+' branch choices; '+newlyClosed+' observed new closures / '+previouslyClosed+' already closed at choice');
+console.log('PASS v.o2 branch provenance: '+verified+' indexed witnesses / '+representatives+
+  ' independently replayed profile examples / '+changes+' branch choices; '+
+  newlyClosed+' observed new closures / '+previouslyClosed+' already closed at choice');

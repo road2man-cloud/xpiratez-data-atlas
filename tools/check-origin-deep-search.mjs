@@ -3,10 +3,11 @@
 // a blend of different soldiers, transforms or research branches.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {decodeOriginReport} from './origin-report-codec.mjs';
 import {spawnSync} from 'node:child_process';
 import {projectCandidateStats} from '../public/soldiers/modern/score-12.js';
 
-const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+const read=p=>decodeOriginReport(fs.readFileSync(p,'utf8'));
 const data=read('public/data/soldiers-modern-index.json');
 const report=read('public/data/soldier-origin-candidates.json');
 const floors=new Map([
@@ -22,6 +23,18 @@ assert.equal(report.summary.certifiedMaxima,0);
 assert.equal(report.scope.globalOptimumProven,false);
 assert.equal(report.summary.witnesses,
   report.records.reduce((sum,row)=>sum+row.candidates.length,0));
+// Never mistake a handful of deeply explored origins for a complete roster.
+// The registry may later resolve more than 66 origins, but every resolved
+// origin must already have its own separately replayed deep-search record.
+const resolved=report.records.filter(row=>row.candidates.length>0);
+const deep=resolved.filter(row=>row.searchScope?.mode==='bounded-beam'&&
+  row.searchScope.maxLayers>=4&&row.searchScope.globalOptimumProven===false);
+assert(resolved.length>=66,'Lost a previously resolved origin');
+assert.equal(deep.length,resolved.length,
+  'A resolved origin was published without a bounded four-stage deep search');
+assert.equal(report.summary.withCompleteResearch,resolved.length);
+assert.equal(report.summary.unresolved,72-resolved.length);
+assert(report.summary.witnesses>=4124,'Previously replayed growth options disappeared');
 let checked=0;
 for(const [id,{paths,total12}] of floors){
   const row=report.records.find(row=>row.profileId===id);
@@ -41,6 +54,6 @@ const invalid=spawnSync(process.execPath,
   {encoding:'utf8',timeout:30000,maxBuffer:1000000});
 assert.equal(invalid.status,1,invalid.error?.message||'An unscoped deep scan must be rejected');
 assert.match(invalid.stderr,/--deep-search requires --profile/);
-console.log('PASS five expanded origins: '+checked+' scoped search records, 4-deep paths, verified 12-stat score floors');
+console.log('PASS all '+deep.length+' resolved origins have independent four-stage deep-search records; '+checked+' initial 12-stat score regression floors preserved');
 console.log('PASS 72 profiles / '+report.summary.witnesses+' conditional witnesses / 0 global maximum certificates');
 console.log('PASS deep search requires an explicit origin and cannot silently overwrite all other records');

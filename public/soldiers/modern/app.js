@@ -7,6 +7,23 @@ import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
+async function expandOriginArchive(envelope){
+  if(envelope?.format!=='xpz-origin-report-gzip-v2')return envelope;
+  if(envelope.compression!=='gzip'||envelope.encoding!=='base64'||
+    typeof envelope.payload!=='string'||typeof DecompressionStream!=='function')
+    throw Error('병종 경로 압축 원본을 읽을 수 없음');
+  const zipped=Uint8Array.from(atob(envelope.payload),s=>s.charCodeAt(0));
+  const bytes=await new Response(new Blob([zipped]).stream()
+    .pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))]
+    .map(n=>n.toString(16).padStart(2,'0')).join('');
+  if(bytes.byteLength!==envelope.byteLength||hash!==envelope.sha256)
+    throw Error('병종 경로 압축 원본 무결성 검증 실패');
+  const report=JSON.parse(new TextDecoder().decode(bytes));
+  if(report?.kind!=='origin-provisional-witnesses')
+    throw Error('병종 경로 압축 원본 종류 불일치');
+  return report;
+}
 let DATA,REPORT,CATALOG,selected=null,replayGeneration=0,blocked=false;
 const verified=new Map();
 const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
@@ -143,7 +160,7 @@ function showTraining(id){
 }
 async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
-  [DATA,REPORT,CATALOG]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json'),json('../../data/soldier-source-catalog.json')]);
+  [DATA,REPORT,CATALOG]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json')]);
   await validate();
   const complete=REPORT.records.filter(r=>r.candidates.length).length;
   $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 경로 완결',complete+'/72','자원·이벤트 가정은 조건부'],['등록 후보',REPORT.summary.witnesses,'실제 재생을 통과한 경로'],['최종 최대치 인증','0','잠정값과 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');

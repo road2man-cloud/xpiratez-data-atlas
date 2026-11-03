@@ -99,11 +99,25 @@ export function applyOriginWitnessStep(input,step,data){
       assumed:result.kind==='conditional'||step.type==='advanceMonth'};
   }catch(error){return {ok:false,world:input,reason:error.message};}
 }
-export function replayOriginWitness(steps,data){
+export function replayOriginWitness(steps,data,{birthCache=null}={}){
   let world=foundationWorld();const trace=[];let conditional=false;
   if(!Array.isArray(steps)||steps.length>600)return {ok:false,reason:'경로 단계 제한 초과',trace};
-  for(const [index,step] of steps.entries()){
-    const before=world;
+  // Opt-in, call-site-local memoization. A shared chronological birth prefix
+  // is independently replayed ONCE; each distinct subsequent transformation
+  // is still verified from that exact world. No rules or grants are invented.
+  // The cache must be scoped to one immutable ruleset in the caller.
+  const birthAt=birthCache instanceof Map?steps.findIndex(s=>s.type==='recruit'&&s.soldier==='origin'):-1;
+  const birthKey=birthAt>=0?JSON.stringify(steps.slice(0,birthAt+1)):null;
+  const cached=birthKey?birthCache.get(birthKey):null;
+  let start=0;
+  if(cached){
+    world=cached.world;
+    trace.push(...cached.trace);
+    conditional=cached.conditional;
+    start=birthAt+1;
+  }
+  for(let index=start;index<steps.length;index++){
+    const step=steps[index],before=world;
     const result=applyOriginWitnessStep(world,step,data);
     if(!result.ok)return {ok:false,reason:result.reason,failedAt:index,trace,world};
     const added=[...result.world.researched].filter(id=>!before.researched.has(id));
@@ -112,6 +126,8 @@ export function replayOriginWitness(steps,data){
     trace.push({index,type:step.type,id:step.id||step.research||step.profile||step.transform||null,
       added,closed,reopened,notes:result.notes,conditional:result.assumed});
     conditional ||= result.assumed;world=result.world;
+    if(birthKey&&!cached&&index===birthAt)
+      birthCache.set(birthKey,{world,trace:[...trace],conditional});
   }
   if(world.pendingFree)return {ok:false,reason:'완료 시점 무료 지급 미처리',trace,world};
   const member=world.soldiers.find(x=>x.id==='origin');
