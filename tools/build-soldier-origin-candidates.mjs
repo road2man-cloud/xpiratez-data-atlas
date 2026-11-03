@@ -255,7 +255,17 @@ function attachMetadata(report,{focused=null}={}){
   }
   return report;
 }
-if(process.argv.includes('--rebind-source-hash')){
+const unresolvedScope=()=>({mode:'acquisition-unresolved',maxLayers:0,
+  candidatesPerLayer:0,beamWidth:0,globalOptimumProven:false});
+if(process.argv.includes('--repair-unresolved-scope')){
+  const report=readReport();
+  assert.equal(report.sourceHash,sourceHash);
+  assert.equal(report.records.length,72);
+  for(const row of report.records)if(!row.candidates.length)
+    row.searchScope=unresolvedScope();
+  fs.writeFileSync(output,encodeOriginReport(report));
+  console.log('PASS unresolved acquisitions are not incorrectly marked as deep growth searches');
+}else if(process.argv.includes('--rebind-source-hash')){
   // A newer indexed source channel from the SAME hashed v.o2 rules may be
   // added without rewriting any previously verified same-person witness.
   const report=readReport();
@@ -354,10 +364,11 @@ if(process.argv.includes('--rebind-source-hash')){
       status:best?'PROVISIONAL_CONDITIONAL':'RESEARCH_PATH_UNRESOLVED',certifiedMaximum:false,
       bestCandidateId:best?.id||null,bestBonusCandidateId:bestBonus?.id||null,
       candidates:keep,unresolved:acquisition.unresolved||null,attempts,
-      searchScope:deepSearch?{mode:'bounded-beam',maxLayers:birthOnly?0:unresolvedOnly?1:4,
-        candidatesPerLayer:12,beamWidth:8,globalOptimumProven:false}:
-        previous?.searchScope||{mode:'limited-greedy',maxLayers:2,candidatesPerLayer:4,
-          beamWidth:1,globalOptimumProven:false},
+      searchScope:!keep.length?unresolvedScope():
+        deepSearch?{mode:'bounded-beam',maxLayers:birthOnly?0:unresolvedOnly?1:4,
+          candidatesPerLayer:12,beamWidth:8,globalOptimumProven:false}:
+          previous?.searchScope||{mode:'limited-greedy',maxLayers:2,candidatesPerLayer:4,
+            beamWidth:1,globalOptimumProven:false},
       birthReference:Object.fromEntries(WITNESS_STATS.map(k=>[k,p.effectiveStats.min[k]])),
       updatePolicy:'동일 출생처·동일 수치 가정에서 재생을 통과한 더 높은 후보만 교체. 조건이 다른 후보는 별도 보존.',
       improvement:previous?.bestCandidateId&&best&&previous.candidates[0]?.total<best.total?

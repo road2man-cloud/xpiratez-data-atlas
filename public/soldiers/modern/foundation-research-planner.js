@@ -23,10 +23,15 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
       add(target,{kind:'free',source:id,guard,deps:uniq([guard,id]),cost:8});
     if(r.lookup&&r.lookup!==id)add(r.lookup,{kind:'lookup',source:id,deps:[id],cost:1});
   }
-  for(const [id,sources] of Object.entries(data.eventResearchSources||{}))for(const source of sources)for(const script of arr(source.scripts)){
-    if(script.executionOdds===0||script.lastMonth===0&&script.firstMonth>0)continue;
-    add(id,{kind:'event',deps:arr(script.researchPositive),event:source.event,script,cost:18});
-  }
+  const eventAwardsByEvent=new Map();
+  for(const [id,sources] of Object.entries(data.eventResearchSources||{}))
+    for(const source of sources)for(const script of arr(source.scripts)){
+      if(script.executionOdds===0||script.lastMonth===0&&script.firstMonth>0)continue;
+      add(id,{kind:'event',deps:arr(script.researchPositive),event:source.event,script,cost:18});
+      const awards=eventAwardsByEvent.get(source.event)||[];
+      awards.push({research:id,script});
+      eventAwardsByEvent.set(source.event,awards);
+    }
   // OXCE mission-success unlockedResearch is not an item sample, and it
   // must not be silently paid on a mission's mere existence. Only actual
   // v.o2 mission-script sources for unresolved zero-cost sample tokens are
@@ -98,6 +103,47 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     append(n,{type:'freeResearch',source:token.source,research:best,assumeOutcome:!token.sequential&&token.choices.length>1});
     return n;
   }
+  // A one-time sequential event must actually OCCUR, not merely have its
+  // reward topic obtained from an unrelated free-research route. Replay the
+  // recorded predecessor's own event award and exact trigger conditions.
+  function ensureEarlierEvents(script,start,seen,depth,budget,goalSet,eventSeen=new Set()){
+    let n=start;
+    for(const event of arr(script.oneTimeEarlier)){
+      if(n.world.generatedEvents?.[event])continue;
+      n=ensureEventAward(event,n,seen,depth+1,budget,goalSet,eventSeen);
+      if(!n)return null;
+    }
+    return n;
+  }
+  function ensureEventAward(event,start,seen,depth,budget,goalSet,eventSeen=new Set()){
+    if(start.world.generatedEvents?.[event])return start;
+    if(eventSeen.has(event)||depth>maxDepth)return null;
+    const visiting=new Set(eventSeen);visiting.add(event);
+    for(const source of eventAwardsByEvent.get(event)||[]){
+      if(active(start.world,source.research))continue;
+      let n=clone(start);
+      try{
+        n=ensureEarlierEvents(source.script,n,seen,depth+1,budget,goalSet,visiting);
+        if(!n)continue;
+        let blocked=false;
+        for(const dep of arr(source.script.researchPositive)){
+          const next=solve(dep,n,seen,depth+1,budget,goalSet);
+          if(!next){blocked=true;break;}
+          n=next;
+        }
+        if(blocked)continue;
+        const first=Math.max(0,Number(source.script.firstMonth)||0);
+        if(n.world.month<first)append(n,{type:'advanceMonth',month:first,assumeContinuity:true});
+        supply(n,{items:Object.fromEntries(arr(source.script.itemPositive).map(id=>[id,1]))},
+          '일회성 선행 이벤트 조건: '+event);
+        append(n,{type:'eventResearch',event,script:source.script.script,
+          research:source.research,assumeOutcome:true});
+        finish(n,source.research,goalSet);
+        if(n.world.generatedEvents?.[event])return n;
+      }catch(error){budget.last=error.message;}
+    }
+    return null;
+  }
   function solve(id,start,seen,depth,budget,goalSet,preferred=null){
     if(active(start.world,id))return start;
     if(id==='STR_UNAVAILABLE'||!rules[id]||start.world.disabled.has(id)||seen.has(id)||depth>maxDepth)return null;
@@ -110,6 +156,10 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
       try{
         if(['lab','unlock','auto','auto-source'].includes(m.kind))sample(n,id);
         if(m.kind==='free'&&active(n.world,m.source))continue;
+        if(m.kind==='event'&&arr(m.script.oneTimeEarlier).length){
+          n=ensureEarlierEvents(m.script,n,visiting,depth,budget,goalSet);
+          if(!n)continue;
+        }
         const ordered=m.deps;
         let failed=false;
         for(const dep of ordered){

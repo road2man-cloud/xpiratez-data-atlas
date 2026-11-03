@@ -34,6 +34,11 @@ assert.equal(deep.length,resolved.length,
   'A resolved origin was published without a bounded four-stage deep search');
 assert.equal(report.summary.withCompleteResearch,resolved.length);
 assert.equal(report.summary.unresolved,72-resolved.length);
+for(const row of report.records.filter(r=>!r.candidates.length)){
+  assert.equal(row.searchScope?.mode,'acquisition-unresolved',
+    'An unacquired soldier cannot be counted as a deep growth search');
+  assert.equal(row.searchScope.maxLayers,0);
+}
 assert(report.summary.witnesses>=4124,'Previously replayed growth options disappeared');
 let checked=0;
 for(const [id,{paths,total12}] of floors){
