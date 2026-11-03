@@ -614,7 +614,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -644,7 +644,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -1057,7 +1057,39 @@
           "STR_ZOMBIE_ESSENCE": 5
         },
         "itemSources": {
-          "STR_POLTERGEIST": null,
+          "STR_POLTERGEIST": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_CODEX_BONUS_G7C",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CODEX_BONUS_G7"
+                ]
+              },
+              {
+                "event": "STR_PLAGUE_POLTERGEIST",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_PLAGUE_POLTERGEIST"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          },
           "STR_ZOMBIE_STERILE_TERRORIST": {
             "buyCost": 0,
             "buyRequires": [],
@@ -1250,7 +1282,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -1301,7 +1333,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1397,7 +1429,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1482,7 +1514,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1814,7 +1846,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1893,7 +1925,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -1921,7 +1953,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -1933,7 +1965,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -1970,7 +2002,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -2029,7 +2061,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -2099,7 +2131,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 8
                   }
                 ],
                 "scriptIds": [
@@ -3804,7 +3836,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -3855,7 +3887,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -3951,7 +3983,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4036,7 +4068,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4368,7 +4400,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4447,7 +4479,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -4475,7 +4507,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -4487,7 +4519,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -4524,7 +4556,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -4583,7 +4615,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -5435,10 +5467,10 @@
           "melee": 100
         },
         "physicalThenBattle": {
-          "tu": 116,
+          "tu": 115,
           "stamina": 131,
           "health": 61,
-          "bravery": 129,
+          "bravery": 120,
           "reactions": 120,
           "firing": 120,
           "throwing": 95,
@@ -5450,10 +5482,8 @@
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
-        "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -5949,7 +5979,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -6372,7 +6402,14 @@
           "STR_SURVIVOR": 1
         },
         "itemSources": {
-          "STR_SURVIVOR": null
+          "STR_SURVIVOR": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -6844,7 +6881,87 @@
           "STR_ZONE_STALKER": 1
         },
         "itemSources": {
-          "STR_ZONE_STALKER": null
+          "STR_ZONE_STALKER": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 21
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_2",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_3",
+                  "STR_CBT_CHAMP_CHAMP"
+                ]
+              },
+              {
+                "event": "STR_RED_REIGN_AND_RULE",
+                "grants": [
+                  {
+                    "mode": "everyMulti",
+                    "count": 3
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_RED_EVENTS_1",
+                  "STR_CAPTAIN_RED_EVENTS_2",
+                  "STR_CAPTAIN_RED_EVENTS_3"
+                ]
+              },
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_KNOCK_KNOCK_ZONE_STALKER",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_KNOCK_KNOCK_DUMBLAZY_1",
+                  "STR_KNOCK_KNOCK_DUMBLAZY_2"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -7225,7 +7342,7 @@
           "tu": 81,
           "stamina": 121,
           "health": 95,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 85,
           "firing": 120,
           "throwing": 95,
@@ -7239,7 +7356,6 @@
       "naturalGrowthCanIncrease": [
         "tu",
         "stamina",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -8199,7 +8315,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -9115,7 +9231,7 @@
           "reactions": 80,
           "firing": 135,
           "throwing": 135,
-          "strength": 21,
+          "strength": 20,
           "psiStrength": 95,
           "psiSkill": 20,
           "melee": 95
@@ -9128,7 +9244,6 @@
         "bravery",
         "reactions",
         "firing",
-        "strength",
         "psiStrength",
         "psiSkill",
         "melee"
@@ -9619,7 +9734,89 @@
           "STR_JUNGLEFIGHTER_GIRL": 1
         },
         "itemSources": {
-          "STR_JUNGLEFIGHTER_GIRL": null
+          "STR_JUNGLEFIGHTER_GIRL": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 21
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_2",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_3",
+                  "STR_CBT_CHAMP_CHAMP"
+                ]
+              },
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_REVOLUTIONARY_SPEECH_HEROIC",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_PROPAGANDA_1",
+                  "STR_PROPAGANDA_2",
+                  "STR_PROPAGANDA_3",
+                  "STR_PROPAGANDA_4"
+                ]
+              },
+              {
+                "event": "STR_REVOLUTIONARY_REINFORCEMENTS_2",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_REVOLUTIONARY_REINFORCEMENTS_A",
+                  "STR_REVOLUTIONARY_REINFORCEMENTS_B",
+                  "STR_REVOLUTIONARY_REINFORCEMENTS_C"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -10073,7 +10270,73 @@
           "STR_SNIPER_GIRL": 1
         },
         "itemSources": {
-          "STR_SNIPER_GIRL": null
+          "STR_SNIPER_GIRL": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 21
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_2",
+                  "STR_CAPTAIN_DUMBLAZY_EVENTS_3",
+                  "STR_CBT_CHAMP_CHAMP"
+                ]
+              },
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_KNOCK_KNOCK_SNIPER_GIRL",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_KNOCK_KNOCK_DUMBLAZY_1",
+                  "STR_KNOCK_KNOCK_DUMBLAZY_2"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -10564,7 +10827,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -10594,7 +10857,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -10608,7 +10871,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -10835,7 +11098,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -10886,7 +11149,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -10982,7 +11245,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11067,7 +11330,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11399,7 +11662,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11478,7 +11741,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -11506,7 +11769,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -11518,7 +11781,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -11555,7 +11818,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -11614,7 +11877,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -13740,7 +14003,7 @@
           "tu": 129,
           "stamina": 181,
           "health": 97,
-          "bravery": 119,
+          "bravery": 110,
           "reactions": 123,
           "firing": 143,
           "throwing": 95,
@@ -13755,7 +14018,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -13841,7 +14103,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -14435,7 +14697,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -15681,33 +15943,21 @@
           "melee": 110
         },
         "physicalThenBattle": {
-          "tu": 111,
-          "stamina": 251,
-          "health": 91,
-          "bravery": 119,
-          "reactions": 130,
-          "firing": 155,
-          "throwing": 95,
-          "strength": 91,
-          "psiStrength": 5,
-          "psiSkill": 5,
-          "melee": 115
+          "tu": 110,
+          "stamina": 250,
+          "health": 90,
+          "bravery": 110,
+          "reactions": 125,
+          "firing": 150,
+          "throwing": 90,
+          "strength": 90,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 110
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
-      "naturalGrowthCanIncrease": [
-        "tu",
-        "stamina",
-        "health",
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "strength",
-        "psiStrength",
-        "psiSkill",
-        "melee"
-      ],
+      "naturalGrowthCanIncrease": [],
       "provisionalBodyBonusCandidate": {
         "score": 15,
         "attributableToThisPerson": false
@@ -16159,33 +16409,21 @@
           "melee": 110
         },
         "physicalThenBattle": {
-          "tu": 111,
-          "stamina": 251,
-          "health": 91,
-          "bravery": 119,
-          "reactions": 130,
-          "firing": 155,
-          "throwing": 95,
-          "strength": 91,
-          "psiStrength": 5,
-          "psiSkill": 5,
-          "melee": 115
+          "tu": 110,
+          "stamina": 250,
+          "health": 90,
+          "bravery": 110,
+          "reactions": 125,
+          "firing": 150,
+          "throwing": 90,
+          "strength": 90,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 110
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
-      "naturalGrowthCanIncrease": [
-        "tu",
-        "stamina",
-        "health",
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "strength",
-        "psiStrength",
-        "psiSkill",
-        "melee"
-      ],
+      "naturalGrowthCanIncrease": [],
       "provisionalBodyBonusCandidate": {
         "score": 15,
         "attributableToThisPerson": false
@@ -17562,7 +17800,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -18514,7 +18752,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -18706,7 +18944,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -18736,7 +18974,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -21451,7 +21689,7 @@
           "tu": 81,
           "stamina": 101,
           "health": 41,
-          "bravery": 99,
+          "bravery": 90,
           "reactions": 115,
           "firing": 130,
           "throwing": 85,
@@ -21466,7 +21704,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -22104,7 +22341,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -22155,7 +22392,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22251,7 +22488,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22336,7 +22573,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22668,7 +22905,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22747,7 +22984,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -22775,7 +23012,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -22787,7 +23024,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -22824,7 +23061,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -22883,7 +23120,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -24501,13 +24738,13 @@
           "tu": 176,
           "stamina": 601,
           "health": 36,
-          "bravery": 9,
+          "bravery": 0,
           "reactions": 130,
           "firing": 140,
           "throwing": 105,
           "strength": 111,
-          "psiStrength": 5,
-          "psiSkill": 5,
+          "psiStrength": 0,
+          "psiSkill": 0,
           "melee": 130
         }
       },
@@ -24516,13 +24753,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
         "strength",
-        "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -24604,7 +24838,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 9
                   }
                 ],
                 "scriptIds": [
@@ -24616,7 +24850,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -24709,7 +24943,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -25074,13 +25308,13 @@
           "tu": 176,
           "stamina": 601,
           "health": 36,
-          "bravery": 9,
+          "bravery": 0,
           "reactions": 130,
           "firing": 140,
           "throwing": 105,
           "strength": 111,
-          "psiStrength": 5,
-          "psiSkill": 5,
+          "psiStrength": 0,
+          "psiSkill": 0,
           "melee": 130
         }
       },
@@ -25089,13 +25323,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
         "strength",
-        "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -25348,7 +25579,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -25399,7 +25630,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25495,7 +25726,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25580,7 +25811,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25912,7 +26143,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -25991,7 +26222,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -26019,7 +26250,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -26031,7 +26262,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -26068,7 +26299,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -26127,7 +26358,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -28828,7 +29059,7 @@
           "tu": 84,
           "stamina": 146,
           "health": 54,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 119,
           "firing": 143,
           "throwing": 100,
@@ -28843,7 +29074,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -28890,7 +29120,58 @@
           "STR_DAMSEL_OF_WAR": 1
         },
         "itemSources": {
-          "STR_DAMSEL_OF_WAR": null
+          "STR_DAMSEL_OF_WAR": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [
+              {
+                "event": "STR_SAINTS_REINFORCEMENTS",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 31
+                  }
+                ],
+                "scriptIds": [
+                  "STR_SAINT_EVENTS",
+                  "STR_SAINT_EVENTS2"
+                ]
+              },
+              {
+                "event": "STR_KNOCK_KNOCK_DAMSEL_OF_WAR",
+                "grants": [
+                  {
+                    "mode": "every",
+                    "count": 1
+                  }
+                ],
+                "scriptIds": [
+                  "STR_KNOCK_KNOCK_DUMBLAZY_1",
+                  "STR_KNOCK_KNOCK_DUMBLAZY_2"
+                ]
+              },
+              {
+                "event": "STR_TROUBLESEEKING_ALLY",
+                "grants": [
+                  {
+                    "mode": "randomOneOf",
+                    "choices": 24
+                  }
+                ],
+                "scriptIds": [
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+                  "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+                  "STR_TROUBLESEEKING_2",
+                  "STR_TROUBLESEEKING_3",
+                  "STR_TROUBLESEEKING_4"
+                ]
+              }
+            ],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -29275,24 +29556,19 @@
           "tu": 91,
           "stamina": 163,
           "health": 59,
-          "bravery": 119,
-          "reactions": 93,
-          "firing": 138,
-          "throwing": 95,
+          "bravery": 110,
+          "reactions": 91,
+          "firing": 136,
+          "throwing": 93,
           "strength": 53,
           "psiStrength": 71,
           "psiSkill": 77,
-          "melee": 118
+          "melee": 116
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "psiSkill",
-        "melee"
+        "psiSkill"
       ],
       "provisionalBodyBonusCandidate": {
         "score": 411,
@@ -29589,7 +29865,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -29640,7 +29916,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -29736,7 +30012,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -29821,7 +30097,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -30153,7 +30429,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -30232,7 +30508,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -30260,7 +30536,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -30272,7 +30548,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -30309,7 +30585,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -30368,7 +30644,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -31212,7 +31488,7 @@
           "tu": 105,
           "stamina": 150,
           "health": 90,
-          "bravery": 159,
+          "bravery": 150,
           "reactions": 120,
           "firing": 135,
           "throwing": 120,
@@ -31224,7 +31500,6 @@
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
-        "bravery",
         "psiSkill"
       ],
       "provisionalBodyBonusCandidate": {
@@ -31607,13 +31882,13 @@
         },
         "physicalThenBattle": {
           "tu": 134,
-          "stamina": 301,
+          "stamina": 300,
           "health": 41,
-          "bravery": 119,
+          "bravery": 110,
           "reactions": 115,
           "firing": 130,
           "throwing": 95,
-          "strength": 51,
+          "strength": 50,
           "psiStrength": 45,
           "psiSkill": 80,
           "melee": 130
@@ -31622,13 +31897,10 @@
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
       "naturalGrowthCanIncrease": [
         "tu",
-        "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
-        "strength",
         "psiStrength",
         "psiSkill",
         "melee"
@@ -31674,7 +31946,14 @@
           "STR_OGRE_SPY": 1
         },
         "itemSources": {
-          "STR_OGRE_SPY": null
+          "STR_OGRE_SPY": {
+            "buyCost": 0,
+            "buyRequires": [],
+            "manufacture": [],
+            "eventGrants": [],
+            "mapSourceCount": 0,
+            "mapSourcesPossiblyTruncated": false
+          }
         },
         "event": null,
         "monthlyLimit": null,
@@ -32683,7 +32962,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -32734,7 +33013,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -32830,7 +33109,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -32915,7 +33194,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -33247,7 +33526,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -33326,7 +33605,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -33354,7 +33633,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -33366,7 +33645,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -33403,7 +33682,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -33462,7 +33741,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -35501,7 +35780,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -35554,7 +35833,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -35907,33 +36186,21 @@
           "melee": 60
         },
         "physicalThenBattle": {
-          "tu": 66,
-          "stamina": 251,
-          "health": 151,
-          "bravery": 119,
-          "reactions": 45,
-          "firing": 140,
-          "throwing": 65,
-          "strength": 201,
-          "psiStrength": 5,
-          "psiSkill": 5,
-          "melee": 65
+          "tu": 65,
+          "stamina": 250,
+          "health": 150,
+          "bravery": 110,
+          "reactions": 40,
+          "firing": 135,
+          "throwing": 60,
+          "strength": 200,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 60
         }
       },
       "naturalGrowthAssumption": "획득 후 무제한 전투 XP 및 체육관 반복 기회 가정; 능력치별 상계가 한 병사에서 동시 달성된다는 증거는 없음",
-      "naturalGrowthCanIncrease": [
-        "tu",
-        "stamina",
-        "health",
-        "bravery",
-        "reactions",
-        "firing",
-        "throwing",
-        "strength",
-        "psiStrength",
-        "psiSkill",
-        "melee"
-      ],
+      "naturalGrowthCanIncrease": [],
       "provisionalBodyBonusCandidate": {
         "score": 15,
         "attributableToThisPerson": false
@@ -36269,7 +36536,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -36322,7 +36589,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -36587,7 +36854,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36699,7 +36966,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -36753,7 +37020,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36802,7 +37069,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36863,7 +37130,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36887,7 +37154,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -36936,7 +37203,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -36948,7 +37215,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -36960,7 +37227,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -38225,7 +38492,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -38278,7 +38545,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -40320,7 +40587,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -40371,7 +40638,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40467,7 +40734,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40552,7 +40819,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40884,7 +41151,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -40963,7 +41230,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -40991,7 +41258,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -41003,7 +41270,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -41040,7 +41307,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -41099,7 +41366,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -41609,7 +41876,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 8
                   }
                 ],
                 "scriptIds": [
@@ -42084,7 +42351,7 @@
           "tu": 140,
           "stamina": 162,
           "health": 57,
-          "bravery": 119,
+          "bravery": 110,
           "reactions": 154,
           "firing": 153,
           "throwing": 95,
@@ -42099,7 +42366,6 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
         "firing",
         "throwing",
@@ -43561,13 +43827,13 @@
           "tu": 111,
           "stamina": 126,
           "health": 81,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 80,
-          "firing": 5,
+          "firing": 0,
           "throwing": 45,
           "strength": 76,
           "psiStrength": 45,
-          "psiSkill": 5,
+          "psiSkill": 0,
           "melee": 115
         }
       },
@@ -43576,13 +43842,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
-        "firing",
         "throwing",
         "strength",
         "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -44063,13 +44326,13 @@
           "tu": 111,
           "stamina": 141,
           "health": 96,
-          "bravery": 109,
+          "bravery": 100,
           "reactions": 80,
-          "firing": 5,
+          "firing": 0,
           "throwing": 45,
           "strength": 106,
           "psiStrength": 45,
-          "psiSkill": 5,
+          "psiSkill": 0,
           "melee": 135
         }
       },
@@ -44078,13 +44341,10 @@
         "tu",
         "stamina",
         "health",
-        "bravery",
         "reactions",
-        "firing",
         "throwing",
         "strength",
         "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -44467,11 +44727,11 @@
           "health": 36,
           "bravery": 109,
           "reactions": 95,
-          "firing": 5,
-          "throwing": 5,
+          "firing": 0,
+          "throwing": 0,
           "strength": 46,
           "psiStrength": 45,
-          "psiSkill": 5,
+          "psiSkill": 0,
           "melee": 95
         }
       },
@@ -44482,11 +44742,8 @@
         "health",
         "bravery",
         "reactions",
-        "firing",
-        "throwing",
         "strength",
         "psiStrength",
-        "psiSkill",
         "melee"
       ],
       "provisionalBodyBonusCandidate": {
@@ -93067,7 +93324,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 8
                   }
                 ],
                 "scriptIds": [
@@ -93098,7 +93355,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93314,7 +93571,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 5
                   }
                 ],
                 "scriptIds": [
@@ -93365,7 +93622,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93461,7 +93718,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93546,7 +93803,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93878,7 +94135,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -93957,7 +94214,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -93985,7 +94242,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -93997,7 +94254,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -94034,7 +94291,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 20
                   }
                 ],
                 "scriptIds": [
@@ -94093,7 +94350,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -95204,7 +95461,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -95234,7 +95491,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -99523,7 +99780,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -99553,7 +99810,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -101344,7 +101601,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -101374,7 +101631,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -102684,7 +102941,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -102714,7 +102971,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -104963,7 +105220,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -104993,7 +105250,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -114692,7 +114949,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -114722,7 +114979,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -123893,7 +124150,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -123923,7 +124180,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -128562,7 +128819,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -128592,7 +128849,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -130841,7 +131098,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -130871,7 +131128,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -131709,7 +131966,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -131739,7 +131996,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -132105,7 +132362,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -132135,7 +132392,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 10
                   }
                 ],
                 "scriptIds": [
@@ -264946,7 +265203,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265058,7 +265315,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -265112,7 +265369,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265161,7 +265418,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265222,7 +265479,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265246,7 +265503,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -265295,7 +265552,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265307,7 +265564,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -265319,7 +265576,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -265350,7 +265607,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269683,7 +269940,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269795,7 +270052,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -269849,7 +270106,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269898,7 +270155,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269959,7 +270216,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -269983,7 +270240,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -270032,7 +270289,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -270044,7 +270301,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -270056,7 +270313,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -270087,7 +270344,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272390,7 +272647,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272502,7 +272759,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -272556,7 +272813,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272605,7 +272862,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272666,7 +272923,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272690,7 +272947,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -272739,7 +272996,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272751,7 +273008,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -272763,7 +273020,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -272794,7 +273051,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274143,7 +274400,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274255,7 +274512,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -274309,7 +274566,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274358,7 +274615,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274419,7 +274676,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274443,7 +274700,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -274492,7 +274749,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274504,7 +274761,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -274516,7 +274773,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -274547,7 +274804,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -275898,7 +276155,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276010,7 +276267,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 4
                   }
                 ],
                 "scriptIds": [
@@ -276064,7 +276321,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276113,7 +276370,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276174,7 +276431,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276198,7 +276455,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 2
                   }
                 ],
                 "scriptIds": [
@@ -276247,7 +276504,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276259,7 +276516,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 7
                   }
                 ],
                 "scriptIds": [
@@ -276271,7 +276528,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
@@ -276302,7 +276559,7 @@
                 "grants": [
                   {
                     "mode": "every",
-                    "count": 1
+                    "count": 3
                   }
                 ],
                 "scriptIds": [
