@@ -27,17 +27,17 @@ function pct(base,p){
 }
 const plus=(...xs)=>xs.reduce((a,b)=>add(a,b),{low:0,high:0});
 const braveryRound=v=>Math.trunc((v+(v<0?-5:5))/10)*10;
-function softLimit(current,change,cap){
-  // Engine UnitStats::softLimit is piecewise at delta=0 and current=cap.
-  // Extremal values over each integer rectangle are attained at the
-  // rectangle's endpoints or adjacent to these breakpoints.
-  const xs=[current.low,current.high,cap,cap+1].filter(x=>x>=current.low&&x<=current.high);
-  const ys=[change.low,change.high,0,1].filter(x=>x>=change.low&&x<=change.high);
-  const observed=[];
-  for(const c of xs)for(const delta of ys){
-    observed.push(delta<=0?delta:c<=cap?Math.min(delta,cap-c):0);
+function boundedValue(current,change,floor,cap,soft){
+  // OXCE applies the minimum and the hard/soft maximum to the SAME raw
+  // current value. Never combine a cap adjustment calculated for the low
+  // endpoint with the upper endpoint of a different soldier.
+  if(floor!=null)change=Math.max(change,floor-current);
+  if(cap!=null){
+    if(soft){
+      if(change>0)change=current<=cap?Math.min(change,cap-current):0;
+    }else change=Math.min(change,cap-current);
   }
-  return interval(Math.min(...observed),Math.max(...observed));
+  return current+change;
 }
 function sourceRange(soldier,profile,initial){
   const bands=profile
@@ -95,21 +95,19 @@ export function advanceStatEnvelope(rule,before,data,state){
     if(flat.low!==flat.high||overallRnd.low!==overallRnd.high||
       gainedRnd.low!==gainedRnd.high)random=true;
     if(k==="bravery")delta=interval(braveryRound(delta.low),braveryRound(delta.high));
-    if(rule.lowerBoundAtMinStats){
-      const floor=n(soldier?.minStats?.[k]);
-      delta={low:Math.max(delta.low,floor-cur.high),
-        high:Math.max(delta.high,floor-cur.low)};
-    }
-    if(rule.upperBoundAtMaxStats||rule.upperBoundAtStatCaps){
-      const cap=n(rule.upperBoundAtMaxStats?soldier?.maxStats?.[k]:soldier?.statCaps?.[k]);
-      const sameType=newType===state.soldierType;
-      const soft=Number(rule.upperBoundType)===1||
-        ((rule.upperBoundType==null||n(rule.upperBoundType)===0)&&sameType);
-      if(soft)delta=softLimit(cur,delta,cap);
-      else delta={low:Math.min(delta.low,cap-cur.high),
-        high:Math.min(delta.high,cap-cur.low)};
-    }
-    let result=interval(cur.low+delta.low,cur.high+delta.high);
+    const floor=rule.lowerBoundAtMinStats?n(soldier?.minStats?.[k]):null;
+    const cap=rule.upperBoundAtMaxStats||rule.upperBoundAtStatCaps?
+      n(rule.upperBoundAtMaxStats?soldier?.maxStats?.[k]:soldier?.statCaps?.[k]):null;
+    const sameType=newType===state.soldierType;
+    const soft=Number(rule.upperBoundType)===1||
+      ((rule.upperBoundType==null||n(rule.upperBoundType)===0)&&sameType);
+    // These transfer functions are monotone in current and change. The
+    // extrema of the conservative current/change rectangle therefore lie
+    // at corresponding corners, not at independently summed deltas.
+    let result=interval(
+      boundedValue(cur.low,delta.low,floor,cap,soft),
+      boundedValue(cur.high,delta.high,floor,cap,soft)
+    );
     if(rule.rerollStats?.[k]){
       if(!soldier)return {kind:"unverified",reason:"재굴림 대상 병종의 생성 능력치 규칙 누락"};
       result=interval(soldier.minStats?.[k],k==="psiSkill"
