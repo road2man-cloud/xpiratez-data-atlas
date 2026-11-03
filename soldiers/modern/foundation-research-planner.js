@@ -27,6 +27,20 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     if(script.executionOdds===0||script.lastMonth===0&&script.firstMonth>0)continue;
     add(id,{kind:'event',deps:arr(script.researchPositive),event:source.event,script,cost:18});
   }
+  // OXCE mission-success unlockedResearch is not an item sample, and it
+  // must not be silently paid on a mission's mere existence. Only actual
+  // v.o2 mission-script sources for unresolved zero-cost sample tokens are
+  // considered; the mission and victory are explicit conditional actions.
+  for(const [id,sources] of Object.entries(data.missionResearchSources||{})){
+    const rule=rules[id];
+    if(!rule||rule.cost!==0||rule.needItem!==true||knownSample(id,rule))continue;
+    for(const mission of sources)for(const script of arr(mission.scripts)){
+      if(script.executionOdds===0)continue;
+      add(id,{kind:'mission',deployment:mission.deployment,script,
+        deps:arr(script.researchPositive),cost:16+
+          (Number(script.executionOdds)<100?4:0)});
+    }
+  }
   // A relaxed cost is a routing heuristic only; the result is always replayed.
   const distance=new Map();
   for(let round=0;round<70;round++){
@@ -114,6 +128,12 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
           if(n.world.month<first)append(n,{type:'advanceMonth',month:first,assumeContinuity:true});
           supply(n,{items:Object.fromEntries(arr(s.itemPositive).map(x=>[x,1]))},'이벤트 발생 조건: '+m.event);
           append(n,{type:'eventResearch',event:m.event,script:s.script,research:id,assumeOutcome:true});
+          finish(n,preferred,goalSet);
+        }else if(m.kind==='mission'){
+          const s=m.script,first=Math.max(0,Number(s.firstMonth)||0);
+          if(n.world.month<first)append(n,{type:'advanceMonth',month:first,assumeContinuity:true});
+          append(n,{type:'missionResearch',deployment:m.deployment,
+            script:s.script,research:id,assumeOutcome:true});
           finish(n,preferred,goalSet);
         }else if(m.kind==='auto'&&!active(n.world,id)){
           // Queue runs on an ACTUAL next completion, never by granting id.

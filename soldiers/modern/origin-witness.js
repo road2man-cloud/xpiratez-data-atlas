@@ -18,7 +18,7 @@ function knownBaseFunctions(data){
 }
 export function foundationWorld(){return {
   researched:new Set(),disabled:new Set(),items:{},baseFunctions:new Set(),facilities:new Set(),
-  globalFacilities:null,otherItems:{},activeResearch:new Set(),generatedEvents:{},funds:0,month:0,
+  globalFacilities:null,otherItems:{},activeResearch:new Set(),generatedEvents:{},completedMissions:null,funds:0,month:0,
   autoZeroScenario:true,inventoryKnown:true,baseFunctionsKnown:true,soldiers:[]
 };}
 export function originEventScript(alt,event){
