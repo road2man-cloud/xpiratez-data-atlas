@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "sourceVersion": "v.o2",
+  "rejectedCandidateId": "b60c615669ba62e2d078",
+  "profileId": "event:STR_START_COUNTRY_BRAZIL_EVENT",
+  "rejectedProvisionalElevenStatTotal": 576,
+  "reason": "Single campaign cannot recruit from Brazil start and then receive Italy start-country event award",
+  "sourceEvents": [
+    {
+      "type": "recruit",
+      "event": "STR_START_COUNTRY_BRAZIL_EVENT",
+      "step": 0
+    },
+    {
+      "type": "eventResearch",
+      "event": "STR_START_COUNTRY_ITALY_EVENT",
+      "research": "STR_ITALY",
+      "step": 15
+    }
+  ],
+  "disposition": "QUARANTINED_INVALID_NOT_PUBLISHED",
+  "note": "Rejected because a country-start choice is one-time and mutually exclusive. Exclusion of this invalid candidate does not prove the best remaining candidate is a global optimum."
+}

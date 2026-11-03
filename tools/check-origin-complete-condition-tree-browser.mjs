@@ -84,6 +84,18 @@ try{
     'Origins with source-defined captain guards must expose each specific acquisition script');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
     'Expanded source-specific start choices must not overflow a mobile viewport');
+  await page.locator('#search').fill('manufacture:STR_RECRUIT_KILLBOT');
+  await page.locator('#originTable .origin-open').click();
+  const stalled=page.locator('#originDetails [data-unresolved-evidence="manufacture:STR_RECRUIT_KILLBOT"]');
+  await stalled.waitFor();
+  const stalledText=await stalled.textContent();
+  assert(stalledText.includes('STR_ENJOYING_THE_DREAM'));
+  assert(stalledText.includes('20개월')&&stalledText.includes('24개월'));
+  await stalled.locator('button[data-trace-research-root="STR_CLOAKING_DEVICE"]').first().click();
+  assert((await stalled.locator('.origin-complete-tree').count())>=1,
+    'An unresolved deadline failure must link to the research prerequisite graph');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'Unresolved origin chronological evidence must fit a mobile viewport');
   assert.deepEqual(errors,[],'Uncaught browser JS errors');
   console.log('PASS mobile browser: 2.1 clone detail, four propaganda alternatives, prerequisite continuation, and candidate rank/research panel');
 }finally{

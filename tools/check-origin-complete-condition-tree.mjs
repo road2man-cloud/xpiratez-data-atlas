@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree}
   from '../public/soldiers/modern/acquisition-condition-tree.js';
+import {researchStep} from '../public/soldiers/modern/event-chronology.js';
 const data=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json','utf8'));
 assert.equal(data.profiles.length,72);
 for(const p of data.profiles){
@@ -49,8 +50,21 @@ assert(descendants(rankEvent).some(x=>x.kind==='month'&&x.note.includes('6개월
 assert(descendants(rankEvent).some(x=>x.id==='STR_CAPTAINS_RANK_05'));
 const propaganda=buildAcquisitionSubtree('research','STR_PROPAGANDA',data);
 const deps=walk(propaganda.root,x=>x.id==='ACCESS:STR_PROPAGANDA')[0];
-assert(deps&&deps.kind==='or'&&deps.children.some(x=>x.id==='STR_PEASANT_PARTY')&&
-  deps.children.some(x=>x.id==='STR_COMMUNICATIONS'),'Research dependencies are alternative access conditions');
+const allDeps=deps?.children.find(x=>x.id==='ALL_DEPENDENCIES:STR_PROPAGANDA');
+assert(deps?.kind==='or'&&allDeps?.kind==='and'&&
+  allDeps.children.some(x=>x.id==='STR_PEASANT_PARTY')&&
+  allDeps.children.some(x=>x.id==='STR_COMMUNICATIONS'),
+  'All research dependencies are simultaneous prerequisites; only an unlocks route may bypass them');
+const zombieDeps=data.researchRules.STR_ZOMBIE_EMBODIMENT.dependencies;
+assert.equal(zombieDeps.length,3);
+const zombieTree=buildAcquisitionSubtree('research','STR_ZOMBIE_EMBODIMENT',data);
+const zombieGate=walk(zombieTree.root,x=>x.id==='ALL_DEPENDENCIES:STR_ZOMBIE_EMBODIMENT')[0];
+assert(zombieGate?.kind==='and');
+assert.deepEqual(zombieGate.children.map(x=>x.id),zombieDeps);
+const oneOnly=researchStep({researched:new Set([zombieDeps[0]]),disabled:new Set()},
+  'STR_ZOMBIE_EMBODIMENT',data.researchRules);
+assert.equal(oneOnly.kind,'blocked','One of three dependencies cannot open a laboratory project');
+assert(oneOnly.reason.some(x=>x.includes(zombieDeps[1])));
 const facility=buildAcquisitionSubtree('facility-type','STR_WAR_BARRACKS',data);
 assert(walk(facility.root,x=>x.kind==='facility-built'&&x.id==='STR_WAR_BARRACKS').length,
   'A campaign facility must be constructed, not granted by research alone');
@@ -95,7 +109,7 @@ console.log('PASS 61 event/123 manufacture/multiple map and mission alternatives
 
 console.log('PASS rank 6: conditional event requiring rank 5, minScore 8000 and month 6; lab-only item not imposed on event');
 console.log('PASS mission loot: map-block recovery linked to real mission script/month/research, no invented guaranteed reward');
-console.log('PASS research dependencies OR, real facility construction gate, and bounded complex birth preview');
+console.log('PASS research dependencies ALL (AND), direct unlocks alternative (OR), facility construction, bounded complex birth preview');
 
 console.log('PASS 72 game-start condition roots, conditional AND/OR, item/event/research linkage and lazy continuation');
 console.log('PASS assault clone: Egyptian start / four propaganda script alternatives / 125000 item purchase; no invented Cleopatra challenge reward');

@@ -20,6 +20,23 @@ export function eventScriptVerdict(script,state={},options={}){
   const fm=number(script.firstMonth)??0,lm=number(script.lastMonth);
   if(number(script.executionOdds)===0)blocked.push("이벤트 스크립트 실행 확률 0");
   if(month!==null&&lm!==null&&lm>=0&&month>lm)blocked.push("이벤트 종료: "+lm+"개월, 현재 "+month+"개월");
+  // A campaign selects ONE starting country and ONE starting location. The
+  // event source index can contain every alternative; combining two of the
+  // same category into one witness would invent a starting configuration.
+  // Country and location are independent categories, not a single lock.
+  const startEvent=String(script.eventId||script.event||'');
+  const startKind=startEvent.startsWith('STR_START_COUNTRY_')?'STR_START_COUNTRY_':
+    startEvent.startsWith('STR_START_LOCATION_')?'STR_START_LOCATION_':null;
+  if(startKind){
+    if(state.generatedEvents===undefined||state.generatedEvents===null)
+      unknown.push('게임 시작 선택 이력 미확인: '+startKind);
+    else{
+      const selected=Object.keys(state.generatedEvents).filter(id=>
+        id.startsWith(startKind)&&Number(state.generatedEvents[id])>0);
+      if(selected.length)blocked.push('게임 시작 '+(startKind.includes('COUNTRY')?'국가는':'지역은')+
+        ' 하나만 선택 가능: 기존 '+selected.join(', ')+', 신규 '+startEvent);
+    }
+  }
   if(month===null)unknown.push("현재 게임 경과 월수 미제공");
   else if(month<fm){
     if(mode==="current")blocked.push("이벤트 시작 전: "+fm+"개월");

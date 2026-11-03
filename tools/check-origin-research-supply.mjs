@@ -40,7 +40,8 @@ for(const row of unresolved)
   assert(row.researchBottlenecks?.length,'Missing chronology evidence: '+row.profileId);
 assert.equal(report.summary.unresolved,unresolved.length);
 assert.equal(report.summary.certifiedMaxima,0);
-assert(report.summary.witnesses>=4124,'Previously replayed candidates must be retained');
+assert(report.summary.witnesses>=4123,
+  'Previously replayed valid candidates must remain (one cross-country start was rejected)');
 console.log('PASS all '+questFlags.length+
   ' v.o2 zero-cost missing-item flags trace to exact mission-win rewards and mission spawn scripts; no phantom supplies');
 console.log('PASS '+unresolved.length+

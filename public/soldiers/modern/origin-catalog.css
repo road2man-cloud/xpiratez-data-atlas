@@ -33,6 +33,15 @@
 .origin-start-source-list li{border:1px solid #33516f;border-radius:8px;padding:9px;margin:6px 0;background:#112337}
 .origin-start-source-list summary{font-size:.77rem;overflow-wrap:anywhere}
 .origin-start-source-list p{margin:7px 0;font-size:.75rem}
+.origin-unresolved-chronology{border:1px solid #6a566e;border-radius:11px;padding:12px 14px;margin:15px 0;background:#261f32}
+.origin-unresolved-chronology>h3{margin:4px 0 8px;color:#e5dcf6}
+.origin-unresolved-chronology>details{margin:9px 0;padding:8px;border:1px solid #65516f;border-radius:8px}
+.origin-unresolved-chronology summary{cursor:pointer;font-weight:750;font-size:.85rem}
+.origin-unresolved-chronology li{margin:8px 0;overflow-wrap:anywhere}
+.origin-unresolved-chronology p{margin:4px 0;font-size:.78rem}
+.origin-expiration-list{list-style:none;padding-left:0;margin:8px 0}
+.origin-expiration-list>li{background:#1f253c;padding:9px;border-radius:8px}
+.origin-expiration-list button{font-size:.75rem;margin-top:4px}
 .origin-transform-gates{margin:16px 0;padding:12px 14px;border:1px solid #344f70;border-radius:10px;background:#152941}
 .origin-transform-gates>summary{font-weight:780;color:#cde5ff;cursor:pointer}
 .origin-transform-gate{padding:12px;border:1px solid #345172;border-radius:9px;margin:11px 0;background:#102139}

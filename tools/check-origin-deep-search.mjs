@@ -39,7 +39,8 @@ for(const row of report.records.filter(r=>!r.candidates.length)){
     'An unacquired soldier cannot be counted as a deep growth search');
   assert.equal(row.searchScope.maxLayers,0);
 }
-assert(report.summary.witnesses>=4124,'Previously replayed growth options disappeared');
+assert(report.summary.witnesses>=4123,
+  'Previously replayed valid growth options disappeared (one Brazil/Italy start-conflict was rejected)');
 let checked=0;
 for(const [id,{paths,total12}] of floors){
   const row=report.records.find(row=>row.profileId===id);

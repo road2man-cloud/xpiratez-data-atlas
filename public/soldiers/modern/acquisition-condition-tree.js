@@ -99,11 +99,15 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
         ...requirements,
         ...((arr(r.dependencies).length||arr(reverse.get(id)).some(x=>x.kind==='unlock'))?
           [group('or','ACCESS:'+id,[
-            ...(arr(r.dependencies).length?arr(r.dependencies).map(research):[
-              leaf('baseline-access',id,'원본 dependencies 미지정 · 초기 연구실 노출 가능성은 실제 해금 판정 필요')]),
+            ...(arr(r.dependencies).length?[
+              group('and','ALL_DEPENDENCIES:'+id,arr(r.dependencies).map(research),
+                '원본 dependencies 전부 완료 (AND) · 아래 각 연구를 개별 OR로 취급하지 않음')
+            ]:[leaf('baseline-access',id,
+              '원본 dependencies 미지정 · 초기 연구실 노출 가능성은 실제 해금 판정 필요')]),
             ...arr(reverse.get(id)).filter(x=>x.kind==='unlock').map(x=>
-              group('and','UNLOCK:'+x.source,[research(x.source)],'상위 연구의 직접 해금 · 연구 자체는 별도 수행'))
-          ],'연구실/자동 연구의 개방 대안')]:[]),
+              group('and','UNLOCK:'+x.source,[research(x.source)],
+                '연구 직접 unlocks 우회 개방 · dependencies 충족 대안이지만 연구 실행 및 별도 표본·시설 조건은 유지'))
+          ],'일반 dependencies 전부 완료(AND) 또는 별도 unlocks 우회(OR)')]:[]),
         leaf(Number(r.cost)>0?'lab':'auto',id,Number(r.cost)>0?
           '연구량 '+r.cost+' 수행 · 표본/시설/자금은 실제 확보 확인 필요':
           '연구량 0 · 자동 처리 시점/연구 큐를 실제 재생해야 함')

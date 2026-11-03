@@ -281,8 +281,8 @@ if(process.argv.includes('--repair-unresolved-scope')){
       total:c.total,branches:c.branchChoices}),"Existing witness evidence changed");
   report.sourceHash=sourceHash;
   // The source graph genuinely gained mission-win alternatives. Only the
-  // six unresolved bottleneck explanations may change without replaying
-  // the 4,124 independently signed, unchanged growth witnesses.
+  // Unresolved bottleneck explanations may change without replaying
+  // the previously signed, unchanged growth witnesses.
   for(const row of report.records)if(!row.candidates.length){
     row.researchBottlenecks=researchBottlenecks(row);
     row.bottleneckHash=digest({profileId:row.profileId,unresolved:row.unresolved,

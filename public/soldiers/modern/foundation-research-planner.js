@@ -4,7 +4,8 @@ import {foundationWorld,applyOriginWitnessStep,originEventScript} from './origin
 const arr=x=>Array.isArray(x)?x:[];
 const uniq=x=>[...new Set(x.filter(Boolean))];
 const active=(w,id)=>w.researched.has(id)&&!w.disabled.has(id);
-export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=38,maxSteps=420}={}){
+export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=38,maxSteps=420,
+  collectFailures=false}={}){
   const rules=data.researchRules,methods=new Map(Object.keys(rules).map(id=>[id,[]]));
   const add=(id,m)=>{if(methods.has(id)&&!m.deps.includes(id))methods.get(id).push(m)};
   const sampleCost=r=>(r.needItem?10:0)+arr(r.requiresBaseFunc).length*3;
@@ -140,7 +141,12 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
           research:source.research,assumeOutcome:true});
         finish(n,source.research,goalSet);
         if(n.world.generatedEvents?.[event])return n;
-      }catch(error){budget.last=error.message;}
+      }catch(error){
+        budget.last=error.message;
+        if(collectFailures&&budget.failures.length<240)budget.failures.push({
+          goal:source.research,method:'earlier-event',event,script:source.script.script,
+          month:n.world.month,reason:error.message});
+      }
     }
     return null;
   }
@@ -193,15 +199,21 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
           if(trigger){append(n,{type:'research',id:trigger[0]});finish(n,preferred,goalSet);}
         }
         if(active(n.world,id))return n;
-      }catch(error){budget.last=error.message;}
+      }catch(error){
+        budget.last=error.message;
+        if(collectFailures&&budget.failures.length<240)budget.failures.push({goal:id,
+          method:m.kind,event:m.event||m.deployment||null,source:m.source||null,
+          script:m.script?.script||null,month:n.world.month,reason:error.message});
+      }
     }
     return null;
   }
   function ensure(goals,start=newNode()){
-    const budget={attempts:0,last:null},targets=uniq(goals),goalSet=new Set(targets);let node=clone(start);
+    const budget={attempts:0,last:null,failures:[]},targets=uniq(goals),goalSet=new Set(targets);let node=clone(start);
     for(const id of targets){
       const next=solve(id,node,new Set(),0,budget,goalSet);
       if(!next)return {ok:false,node:start,unresolved:id,attempts:budget.attempts,
+        ...(collectFailures?{failures:budget.failures}:{}),
         reason:budget.last||'연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료'};
       node=next;
     }
