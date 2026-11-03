@@ -22,6 +22,7 @@ function cloneWorld(w){
     otherItems:w.otherItems==null?null:{...w.otherItems},
     globalFacilities:w.globalFacilities==null?null:new Set(w.globalFacilities),
     generatedEvents:w.generatedEvents==null?null:{...w.generatedEvents},
+    completedMissions:w.completedMissions instanceof Set?new Set(w.completedMissions):null,
     activeResearch:w.activeResearch==null?null:new Set(w.activeResearch),
     autoZeroEvidence:w.autoZeroEvidence===true,
     // Search-only hypothesis, never certified as actual research evidence.
@@ -191,6 +192,32 @@ function eventResearch(world,step,data){
     world.generatedEvents[step.event]=own(world.generatedEvents,step.event)+1;
   return {kind:"applied",assumed:true,notes:[...assumptions,...arr(research.notes)]};
 }
+function missionResearch(world,step,data){
+  // The v.o2 alienDeployment grants this research on MISSION SUCCESS only.
+  // Both mission appearance and victory must remain explicit assumptions.
+  const route=arr(data.missionResearchSources?.[step.research])
+    .find(x=>x.deployment===step.deployment&&x.reward==="mission-success");
+  if(!route)return fail("unknown","원본 임무 승리 연구 지급 규칙 없음: "+step.deployment+"/"+step.research);
+  const script=arr(route.scripts).find(x=>x.script===step.script);
+  if(!script)return fail("blocked","실제 생성 스크립트 없는 임무 연구 지급: "+step.deployment);
+  if(!step.assumeOutcome)return fail("conditional","임무 생성과 승리 결과 미증명");
+  if(world.disabled.has(step.research))
+    return fail("blocked","임무 보상 연구가 현재 폐쇄됨: "+step.research);
+  if(world.completedMissions?.has(step.deployment))
+    return fail("blocked","동일 임무 승리 보상 중복 사용: "+step.deployment);
+  const judgment=eventScriptVerdict({...script,mode:"fixed",
+    eventId:"MISSION:"+step.deployment},world,{mode:"current"});
+  if(judgment.kind==="blocked")return fail("blocked",judgment.blocked);
+  const granted=grantResearch(world,step.research,data,"event");
+  if(granted.kind!=="applied")return granted;
+  if(!world.completedMissions)world.completedMissions=new Set();
+  world.completedMissions.add(step.deployment);
+  return {kind:"applied",assumed:true,notes:[
+    "X-Piratez v.o2 mission-success unlockedResearch: "+step.deployment+" -> "+step.research,
+    "임무 생성·승리 및 전투 시작 조건 실측 미검증",
+    ...(route.startingCondition?["전투 시작 조건 충족 가정: "+route.startingCondition]:[]),
+    ...judgment.pending,...judgment.unknown,...arr(granted.notes)]};
+}
 function freeResearch(world,step,data){
   const source=data.researchRules?.[step.source];
   if(!source)return fail("unknown","무료 연구 지급 원본 규칙 없음: "+step.source);
@@ -335,6 +362,7 @@ export function verifyCampaignSequence(initial,steps,data){
     }else if(step.type==="research")result=grantResearch(trial,step.id,data,"research");
     else if(step.type==="freeResearch")result=freeResearch(trial,step,data);
     else if(step.type==="eventResearch")result=eventResearch(trial,step,data);
+    else if(step.type==="missionResearch")result=missionResearch(trial,step,data);
     else if(step.type==="manufacture")result=manufacture(trial,step,data);
     else if(step.type==="transform")result=transform(trial,step,data);
     else if(step.type==="equip")result=equip(trial,step,data);

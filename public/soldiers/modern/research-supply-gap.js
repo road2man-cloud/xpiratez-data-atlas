@@ -1,7 +1,7 @@
-// Describe research-supply gaps using ONLY the exact v.o2 item and event
-// provenance. An unmet needItem token is never created out of thin air.
+// Describe source gaps using exact v.o2 item, event and mission-success
+// provenance. A missing needItem never becomes a fictional supplied item.
 const arr=x=>Array.isArray(x)?x:[];
-export function classifyResearchSupplyGap(id,rule,{itemIds=[],itemSupply={},eventResearchSources={}}={}){
+export function classifyResearchSupplyGap(id,rule,{itemIds=[],itemSupply={},eventResearchSources={},missionResearchSources={}}={}){
   if(!id)return {kind:'UNRESOLVED_ID',reason:'분석 대상 연구 ID가 제공되지 않음'};
   if(!rule)return {kind:'RULE_NOT_INDEXED',
     reason:'2.1 원본 연구 규칙에 ID가 없음. 임무/이벤트 또는 오탈자 여부를 별도 검증해야 함'};
@@ -9,6 +9,12 @@ export function classifyResearchSupplyGap(id,rule,{itemIds=[],itemSupply={},even
   const items=itemIds instanceof Set?itemIds:new Set(itemIds);
   const hasItem=items.has(needed)||!!itemSupply?.[needed];
   const eventSources=arr(eventResearchSources[id]);
+  const missions=arr(missionResearchSources[id])
+    .filter(x=>x.reward==='mission-success'&&arr(x.scripts).length);
+  if(rule.needItem&&!hasItem&&missions.length)
+    return {kind:'MISSION_SUCCESS_REWARD_CONDITIONAL',neededItem:needed,
+      missions:missions.map(x=>({deployment:x.deployment,scripts:x.scripts.map(s=>s.script)})),
+      reason:'원본 v.o2 임무 승리 시 무료 연구 지급 경로는 확인됨. 실제 임무 출현·선행 연구·시간 창·승리 결과가 재생 검증되기 전까지 확정 획득으로 인정하지 않음'};
   if(rule.needItem&&!hasItem){
     return {kind:'UNBACKED_SAMPLE_TOKEN',neededItem:needed,events:eventSources.map(e=>e.event),
       reason:'2.1 needItem 표본 '+needed+'이(가) 실제 아이템 원본·색인 공급 목록에 없음. 임무 완료 플래그, 이벤트 직접 지급 또는 별도 모드 스크립트 근거가 확인되기 전까지 연구실 수급 불가로 유지'};

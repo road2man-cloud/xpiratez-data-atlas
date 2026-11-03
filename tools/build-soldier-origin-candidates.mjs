@@ -28,7 +28,7 @@ if(checkShard&&(!Number.isSafeInteger(checkShard.total)||checkShard.total<1||che
   throw Error('Invalid --check-shard N/M');
 const digest=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const originSources=ledger.rows.filter(r=>r.kind==='SOURCE_SPAWN').map(r=>({id:r.id,kind:r.kind,prerequisites:{event:r.prerequisites?.event||null}})).sort((a,b)=>a.id.localeCompare(b.id,'en'));
-const sourceHash=digest({rules:data.meta.source.rules,profiles:data.profiles,soldiers:data.soldiers,bonuses:data.bonuses,transforms:data.transformations,research:data.researchRules,itemIds:catalog.itemIds,originSources});
+const sourceHash=digest({rules:data.meta.source.rules,profiles:data.profiles,soldiers:data.soldiers,bonuses:data.bonuses,transforms:data.transformations,research:data.researchRules,missionResearch:data.missionResearchSources||{},itemIds:catalog.itemIds,originSources});
 const labels=Object.fromEntries([...data.soldiers,...data.transformations,...data.bonuses].map(x=>[x.id,x.koName||x.id]));
 for(const p of data.profiles)labels[p.sourceId]=p.sourceKoName;
 const amount=x=>WITNESS_STATS.reduce((s,k)=>s+Number(x?.[k]||0),0);
@@ -178,11 +178,11 @@ function researchBottlenecks(record){
     if(seen.has(id))continue;seen.add(id);
     const methods=planner.methods.get(id)||[];
     if(!data.researchRules[id]&&!methods.length){
-      found.push({id,...classifyResearchSupplyGap(id,null,{itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources})});
+      found.push({id,...classifyResearchSupplyGap(id,null,{itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources,missionResearchSources:data.missionResearchSources})});
       continue;
     }
     if(!methods.length){
-      found.push({id,...classifyResearchSupplyGap(id,data.researchRules[id],{itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources})});
+      found.push({id,...classifyResearchSupplyGap(id,data.researchRules[id],{itemIds:catalog.itemIds,itemSupply:data.itemSupply,eventResearchSources:data.eventResearchSources,missionResearchSources:data.missionResearchSources})});
       continue;
     }
     const missing=[...new Set(methods.flatMap(m=>m.deps).filter(d=>!planner.distance.has(d)))];
@@ -255,7 +255,32 @@ function attachMetadata(report,{focused=null}={}){
   }
   return report;
 }
-if(process.argv.includes('--refresh-metadata')){
+if(process.argv.includes('--rebind-source-hash')){
+  // A newer indexed source channel from the SAME hashed v.o2 rules may be
+  // added without rewriting any previously verified same-person witness.
+  const report=readReport();
+  assert.equal(report.records.length,72);
+  assert.deepEqual(report.sourceHashes,data.meta.source.rules);
+  const legacyHash=digest({rules:data.meta.source.rules,profiles:data.profiles,
+    soldiers:data.soldiers,bonuses:data.bonuses,transforms:data.transformations,
+    research:data.researchRules,itemIds:catalog.itemIds,originSources});
+  if(report.sourceHash!==legacyHash&&report.sourceHash!==sourceHash)
+    throw Error('An unrelated source changed: refuse to rebind witness registry');
+  for(const row of report.records)for(const c of row.candidates)
+    assert.equal(c.resultHash,digest({steps:c.steps,raw:c.raw,stats:c.stats,
+      total:c.total,branches:c.branchChoices}),"Existing witness evidence changed");
+  report.sourceHash=sourceHash;
+  // The source graph genuinely gained mission-win alternatives. Only the
+  // six unresolved bottleneck explanations may change without replaying
+  // the 4,124 independently signed, unchanged growth witnesses.
+  for(const row of report.records)if(!row.candidates.length){
+    row.researchBottlenecks=researchBottlenecks(row);
+    row.bottleneckHash=digest({profileId:row.profileId,unresolved:row.unresolved,
+      gates:row.researchBottlenecks});
+  }
+  fs.writeFileSync(output,encodeOriginReport(report));
+  console.log('Rebound unchanged witnesses and refreshed six unresolved source explanations');
+}else if(process.argv.includes('--refresh-metadata')){
   const report=attachMetadata(readReport());report.sourceHash=sourceHash;fs.writeFileSync(output,encodeOriginReport(report));
   console.log('Updated candidate evidence fingerprints and exact v.o2 birth guards');
 }else if(process.argv.includes('--check')){

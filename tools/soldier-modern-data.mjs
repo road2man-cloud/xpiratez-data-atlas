@@ -359,6 +359,44 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
       });
     }
   }
+  // Success-only battle deployment rewards are a different research channel
+  // from laboratory samples or geoscape random events. Record the actual v.o2
+  // deployment AND its spawning missionScript alternatives. A deployment's
+  // mere existence never establishes that the campaign can generate/win it.
+  const missionResearchSources={};
+  const scriptsByDeployment=new Map();
+  for(const script of (Array.isArray(effectiveMerged.missionScripts)?effectiveMerged.missionScripts:[])){
+    if(typeof script.type!=="string"||Number(script.executionOdds)===0)continue;
+    const weighted=new Set();
+    for(const table of Object.values(script.missionWeights||{}))
+      for(const [id,weight] of Object.entries(table||{}))
+        if(Number(weight)>0)weighted.add(id);
+    for(const deployment of weighted){
+      const options=scriptsByDeployment.get(deployment)||[];
+      options.push({script:script.type,firstMonth:Number(script.firstMonth)||0,
+        lastMonth:script.lastMonth===undefined?null:Number(script.lastMonth),
+        executionOdds:script.executionOdds===undefined?100:Number(script.executionOdds),
+        researchPositive:Object.keys(script.researchTriggers||{}).filter(id=>script.researchTriggers[id]===true),
+        researchNegative:Object.keys(script.researchTriggers||{}).filter(id=>script.researchTriggers[id]===false),
+        itemPositive:Object.keys(script.itemTriggers||{}).filter(id=>script.itemTriggers[id]===true),
+        itemNegative:Object.keys(script.itemTriggers||{}).filter(id=>script.itemTriggers[id]===false),
+        facilityPositive:Object.keys(script.facilityTriggers||{}).filter(id=>script.facilityTriggers[id]===true),
+        facilityNegative:Object.keys(script.facilityTriggers||{}).filter(id=>script.facilityTriggers[id]===false),
+        otherConditions:Object.fromEntries(["minFunds","maxFunds","minScore","maxScore",
+          "minDifficulty","maxDifficulty"].filter(k=>script[k]!==undefined)
+          .map(k=>[k,script[k]]))});
+      scriptsByDeployment.set(deployment,options);
+    }
+  }
+  for(const deployment of (Array.isArray(effectiveMerged.alienDeployments)?effectiveMerged.alienDeployments:[])){
+    const research=deployment?.unlockedResearch;
+    if(typeof deployment.type!=="string"||typeof research!=="string"||!researchRules[research])continue;
+    (missionResearchSources[research]??=[]).push({
+      deployment:deployment.type,reward:"mission-success",
+      startingCondition:deployment.startingCondition||null,
+      scripts:scriptsByDeployment.get(deployment.type)||[]
+    });
+  }
   // A worn armor contributes exactly one Armor::stats record, not a sum
   // of every item a soldier can eventually unlock. Record only armors with
   // explicit player-soldier type eligibility; all acquisition claims stay
@@ -449,7 +487,7 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
   }
   return{
     statKeys:SOLDIER_STAT_KEYS,statLabels:SOLDIER_STAT_LABELS,
-    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,researchRules,eventResearchSources,itemSupply,armorCatalog,commendationIndex,baseFacilityFunctions,woundThresholds,
+    soldiers,profiles,transformations:transformationIndex,bonuses:bonusIndex,profileCounts,resourceDetails,researchRules,eventResearchSources,missionResearchSources,itemSupply,armorCatalog,commendationIndex,baseFacilityFunctions,woundThresholds,
     growthRules:{
       manaPrimary:effectiveMerged.mana?.trainingPrimary??false,
       manaSecondary:effectiveMerged.mana?.trainingSecondary??false,
