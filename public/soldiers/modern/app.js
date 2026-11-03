@@ -10,7 +10,9 @@ let DATA,REPORT,CATALOG,selected=null,replayGeneration=0,blocked=false;
 const verified=new Map();
 const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
 const node=id=>'<button type="button" class="research-node" data-research-node="'+esc(id)+'">'+esc(name(id))+'</button>';
-const best=r=>r.candidates.find(c=>c.id===r.bestCandidateId)||null;
+const DISPLAY_STATS=['tu','stamina','health','bravery','reactions','firing','throwing','melee','strength','psiStrength','psiSkill','mana'];
+const total12=stats=>DISPLAY_STATS.reduce((sum,k)=>sum+Number(stats?.[k]??0),0);
+const best=r=>r.candidates.reduce((winner,c)=>!winner||total12(c.stats)>total12(winner.stats)?c:winner,null);
 function sourceFail(message){
   blocked=true;$('#originMaxima').dataset.validation='rejected';
   $('#catalogStatus').textContent='자료 검증 실패 · 잠정/확정 수치 표시 중단: '+message;
@@ -53,19 +55,19 @@ function render(){
   const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
   const rows=REPORT.records.filter(r=>(!family||r.soldierType===family)&&(!q||
     [r.profileId,r.name,r.soldierName,...r.candidates.flatMap(c=>c.transforms.map(name))].join(' ').toLocaleLowerCase('ko').includes(q)));
-  rows.sort((a,b)=>(best(b)?.total??-1)-(best(a)?.total??-1)||a.name.localeCompare(b.name,'ko'));
+  rows.sort((a,b)=>(best(b)?total12(best(b).stats):-1)-(best(a)?total12(best(a).stats):-1)||a.name.localeCompare(b.name,'ko'));
   $('#rowCount').textContent=rows.length+' / 72개 출생처';
-  $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>11종 합계</th>'+WITNESS_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
+  $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>12종 합계</th>'+DISPLAY_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const c=best(r),values=metric==='birth'?r.birthReference:metric==='certified'?null:c?.stats;
-    const total=values?WITNESS_STATS.reduce((s,k)=>s+values[k],0):null;
+    const total=values?total12(values):null;
     return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small><small class="id">'+esc(r.profileId)+'</small></td><td>'+
       (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?'조건부 잠정 최고':'연구 경로 보완 중')+
-      '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+WITNESS_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
-  }).join('')||'<tr><td colspan="14">해당 출생처 없음</td></tr>';
+      '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
+  }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
   $('#catalogStatus').textContent=metric==='provisional'?'조건부 잠정값: 출생 최솟값에서 시작한 완결 연구·획득·훈련 경로. 자원·이벤트/RNG 가정과 분기 배제는 상세에 표시합니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
 }
-function statGrid(c){return '<div class="stat-grid">'+WITNESS_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(c.stats[k])+'</strong><small>원시 '+fmt(c.raw[k])+' + 영구 특성 '+fmt(c.bonus[k])+'</small></div>').join('')+'</div>';}
+function statGrid(c){return '<div class="stat-grid">'+DISPLAY_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(c.stats[k])+'</strong><small>원시 '+fmt(c.raw[k])+' + 영구 특성 '+fmt(c.bonus[k])+'</small></div>').join('')+'</div>';}
 function choiceHtml(c){
   if(!c.branchChoices.length)return '<p>이 경로에는 직접 disables를 실행하는 연구 분기가 없습니다.</p>';
   return c.branchChoices.map(x=>{
@@ -114,13 +116,13 @@ async function openOrigin(id,candidateId=null){
   const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='freeResearch').at(-1);
   const bonus=record.candidates.find(x=>x.id===record.bestBonusCandidateId);
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
-    '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>11종 합계 '+fmt(c.total)+'</strong> · 영구 특성 합 '+fmt(c.bonusTotal)+'</p>'+
+    '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>12종 합계 '+fmt(total12(c.stats))+'</strong> · 영구 특성 합 '+fmt(c.bonusTotal)+'</p>'+
     '<p class="scope-note">'+esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.</p>'+statGrid(c)+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+
     '<details class="assumptions"><summary>필수 확인 · 남은 자원·출생·확률 가정 '+c.assumptions.length+'건</summary><ul>'+assumptionHtml(c)+'</ul><h4>모델의 미검증 조건</h4><ul>'+(c.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><details><summary>자동 연구·lookup 조건부 처리 기록</summary><ul>'+(c.modelAssumptions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details></details>'+
-    '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 합 최고 '+fmt(bonus?.bonusTotal)+' / 목표 B 최종 11종 합 최고 '+fmt(best(record)?.total)+'. 서로 다른 경로의 유리한 수치를 합치지 않습니다.</p>'+record.candidates.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 합계 '+fmt(x.total)+'</button></p>').join('')+'</details>'+
+    '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 합 최고 '+fmt(bonus?.bonusTotal)+' / 목표 B 잠정 12종 합 최고 '+fmt(best(record)?total12(best(record).stats):null)+'. 서로 다른 경로의 유리한 수치를 합치지 않습니다.</p>'+record.candidates.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 12종 합계 '+fmt(total12(x.stats))+'</button></p>').join('')+'</details>'+
     '<p class="fine">재생: 통과 · 실제 게임 실측: 없음 · 전역 최적성: 미증명 · 원본 v.o2. 더 높은 경로는 같은 출생처의 비교 후보로 등록한 뒤 갱신합니다.</p>';
 }
 function showResearch(id){
@@ -129,7 +131,7 @@ function showResearch(id){
 }
 function showTraining(id){
   const t=DATA.transformations.find(t=>t.id===id);if(!t)return;
-  $('#researchDetail').innerHTML='<p class="eyebrow">병종 DB · 훈련 원본 근거</p><h2>'+esc(t.koName)+'</h2><p>'+esc(id)+'</p><h3>무조건 필요</h3><p>'+t.requires.map(node).join(' ')+'</p><h3>필수 이전 훈련</h3><p>'+t.requiredPreviousTransformations.map(esc).join(' · ')+'</p><h3>금지 이전 훈련</h3><p>'+t.forbiddenPreviousTransformations.map(esc).join(' · ')+'</p><p>이 정보는 병종 경로의 근거입니다. 별도 훈련 조합기나 저장 파일 입력 화면은 없습니다.</p><h3>직접 변화 / 영구 특성</h3><div class="stat-grid">'+WITNESS_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(t.flatOverallStatChange?.[k])+' / '+fmt(t.traitStats?.[k])+'</strong></div>').join('')+'</div>';
+  $('#researchDetail').innerHTML='<p class="eyebrow">병종 DB · 훈련 원본 근거</p><h2>'+esc(t.koName)+'</h2><p>'+esc(id)+'</p><h3>무조건 필요</h3><p>'+t.requires.map(node).join(' ')+'</p><h3>필수 이전 훈련</h3><p>'+t.requiredPreviousTransformations.map(esc).join(' · ')+'</p><h3>금지 이전 훈련</h3><p>'+t.forbiddenPreviousTransformations.map(esc).join(' · ')+'</p><p>이 정보는 병종 경로의 근거입니다. 별도 훈련 조합기나 저장 파일 입력 화면은 없습니다.</p><h3>직접 변화 / 영구 특성</h3><div class="stat-grid">'+DISPLAY_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(t.flatOverallStatChange?.[k])+' / '+fmt(t.traitStats?.[k])+'</strong></div>').join('')+'</div>';
   $('#researchDialog').showModal();
 }
 async function init(){try{
