@@ -7,6 +7,7 @@ import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261104-flat-research-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-event-direct-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261104-techmap-3';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -30,25 +31,34 @@ async function expandOriginArchive(envelope){
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,selected=null,replayGeneration=0,blocked=false;
 const verified=new Map(),traceHistory=[];
+let activeTraceViewer=null,activeBirthViewer=null;
 function renderTraceStep(){
   const active=traceHistory.at(-1);
   if(!active||!DATA)return;
   const label=name(active.id);
   $('#acquisitionTraceTitle').textContent=label&&label!==active.id?label:
     (active.kind==='research'?'선택한 연구의 획득 조건':'선택한 획득 경로');
+  activeTraceViewer?.dispose();
+  activeTraceViewer=mountAcquisitionTechViewer($('#acquisitionTraceContent'),{
+    data:DATA,kind:active.kind,id:active.id,offset:active.offset,name,
+    onNavigate:steps=>{
+      $('#acquisitionTraceBack').disabled=steps.length<2&&traceHistory.length<2;
+    }
+  });
   $('#acquisitionTraceBack').disabled=traceHistory.length<2;
-  $('#acquisitionTraceContent').innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(
-    active.kind,active.id,DATA,active.offset),{esc,name});
   $('#acquisitionTraceDialog').scrollTop=0;
 }
 function openTraceStep(kind,id,offset=0){
   if(!DATA||!id)return;
   const dialog=$('#acquisitionTraceDialog');
+  // Open one trace dialog instead of stacking it above the research details.
+  if($('#researchDialog').open)$('#researchDialog').close();
   if(!dialog.open){traceHistory.length=0;dialog.showModal();}
   traceHistory.push({kind,id,offset:Number(offset)||0});
   renderTraceStep();
 }
 function previousTraceStep(){
+  if(activeTraceViewer?.back())return;
   if(traceHistory.length<2)return;
   traceHistory.pop();renderTraceStep();
 }
@@ -198,6 +208,17 @@ function unresolvedChronologyHtml(profileId){
     tests+'</ul></details><p class="fine">표본·자금·시설은 기존 계산기의 명시적 외부 확보 가정입니다. 이벤트 확률·실물·모든 연구의 공동 충족·최종 최대치 인증은 별도로 검증해야 합니다.</p></section>';
 }
 
+function showBirthTech(profile){
+  const box=$('#originDetails .origin-tree-result');
+  if(!box||!profile)return;
+  activeBirthViewer?.dispose();
+  const origin=REPORT?.records?.find(r=>r.profileId===profile.id);
+  activeBirthViewer=mountAcquisitionTechViewer(box,{
+    data:DATA,profile,name,rootLabel:origin?.name||name(profile.sourceId)
+  });
+  const button=$('#originDetails [data-expand-origin-tree]');
+  if(button){button.textContent='테크뷰어 접기';button.setAttribute('aria-expanded','true');}
+}
 function assumptionHtml(c){return c.assumptions.map(s=>{
   if(s.type==='externalInputs')return '<li>'+esc(s.reason)+'<br>'+Object.entries(s.items||{}).map(([id,n])=>esc(name(id))+' ×'+fmt(n)).join(' · ')+(s.functions?.length?' · 기지 기능 '+s.functions.map(esc).join(', '):'')+(s.funds?' · 자금 '+fmt(s.funds):'')+'</li>';
   if(s.type==='freeResearch')return '<li>'+node(s.source)+' 완료 시 '+node(s.research)+' 무료 지급 추첨 결과를 가정</li>';
@@ -207,9 +228,10 @@ function assumptionHtml(c){return c.assumptions.map(s=>{
 }).join('');}
 async function openOrigin(id,candidateId=null){
   if(blocked)return;const generation=++replayGeneration;
+  activeBirthViewer?.dispose();activeBirthViewer=null;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
-  const birthPaths='<section class="origin-tree-action"><strong>이 병사는 어떻게 얻나요?</strong><p class="fine">준비물과 구하는 방법, 필요한 연구와 이벤트를 구분해 보여드립니다. 게임에서 반드시 획득된다는 뜻은 아닙니다.</p><button type="button" data-expand-origin-tree="'+esc(profile.id)+'">출생 준비와 획득 방법 보기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
+  const birthPaths='<section class="origin-tree-action"><strong>이 병사는 어떻게 얻나요?</strong><p class="fine">준비물과 구하는 방법, 필요한 연구와 이벤트를 구분해 보여드립니다. 게임에서 반드시 획득된다는 뜻은 아닙니다.</p><button type="button" data-expand-origin-tree="'+esc(profile.id)+'" aria-expanded="true">테크뷰어 접기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
     '<details class="origin-source-expansion"><summary>원본 출생·공급 기록 전체 보기 (기술 자료)</summary>'+
     '<p class="fine">이곳에는 연구 ID, 공급 스크립트, 다른 출생처와의 상세 연결을 원본 단위로 보존합니다.</p>'+
     renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+'</details>';
@@ -227,6 +249,7 @@ async function openOrigin(id,candidateId=null){
       '<p>'+esc(record.unresolved?.reason||'조사 중')+'</p>'+birthPaths+initialChoiceHtml+unresolvedChronologyHtml(id)+
       '<h3>추가 확인이 필요한 상위 연구·이벤트 근거</h3><ul>'+gaps+'</ul>'+
       '<p>이것은 현재 탐색기가 발견하지 못한 공급·시간순 경로입니다. 제한 탐색의 실패는 영구 불가능 판정이 아닙니다. 실제 획득을 증명하기 전에는 잠정 수치를 만들어 넣지 않습니다.</p>';
+    showBirthTech(profile);
     return;
   }
   let replay=verified.get(c.id);
@@ -264,9 +287,12 @@ async function openOrigin(id,candidateId=null){
     '<details class="assumptions"><summary>필수 확인 · 남은 자원·출생·확률 가정 '+c.assumptions.length+'건</summary><ul>'+assumptionHtml(c)+'</ul><h4>모델의 미검증 조건</h4><ul>'+(c.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><details><summary>자동 연구·lookup 조건부 처리 기록</summary><ul>'+(c.modelAssumptions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details></details>'+
     '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 12종 합 최고 '+fmt(bonus?.display.bonusTotal)+' / 연구·시술 12종 합 최고 '+fmt(best(record,'provisional')?.display.total)+' / 성장 완료 조건부 상한 합 최고 '+fmt(best(record,'growth')?.growth?.total)+'. 서로 다른 병사·연구 경로의 유리한 수치를 합치지 않습니다.</p>'+record.candidates.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 성장상한 '+fmt(x.growth?.total)+' / 연구·시술 '+fmt(x.display.total)+'</button></p>').join('')+'</details>'+
     '<p class="fine">재생: 통과 · 실제 게임 실측: 없음 · 전역 최적성: 미증명 · 원본 v.o2. 더 높은 경로는 같은 출생처의 비교 후보로 등록한 뒤 갱신합니다.</p>';
+  showBirthTech(profile);
 }
 function showResearch(id){
-  const dialog=$('#researchDialog');$('#researchDetail').innerHTML='<p class="eyebrow">X-PIRATEZ 2.1 연구 원본</p><h2>'+esc(name(id))+'</h2><p class="id">'+esc(id)+'</p>'+renderResearchRelations(id,DATA.researchRules,CATALOG.names);
+  const dialog=$('#researchDialog');$('#researchDetail').innerHTML='<p class="eyebrow">X-PIRATEZ 2.1 연구 원본</p><h2>'+esc(name(id))+'</h2><p class="id">'+esc(id)+'</p>'+
+    '<button type="button" class="research-trace-launch" data-trace-research-root="'+esc(id)+'">게임 시작부터 이 연구의 획득 경로 보기</button>'+
+    renderResearchRelations(id,DATA.researchRules,CATALOG.names);
   if(!dialog.open)dialog.showModal();
 }
 function showTraining(id){
@@ -331,23 +357,26 @@ async function init(){try{
       const id=treeButton.dataset.expandOriginTree;
       const box=$('#originDetails').querySelector('.origin-tree-result');
       if(box){
-        if(box.innerHTML){box.innerHTML='';treeButton.textContent='출생 준비와 획득 방법 보기';}
-        else{
+        if(box.querySelector('.tech-viewer')){
+          activeBirthViewer?.dispose();activeBirthViewer=null;box.replaceChildren();
+          treeButton.textContent='좌우 획득 테크뷰어 열기';treeButton.setAttribute('aria-expanded','false');
+        }else{
           const profile=DATA.profiles.find(p=>p.id===id);
-          if(profile){
-            box.innerHTML=renderAcquisitionTree(buildAcquisitionTree(profile,DATA),{esc,name});
-            treeButton.textContent='획득 방법 접기';
-          }
+          if(profile)showBirthTech(profile);
         }
       }
     }
     if(research)showResearch(research.dataset.researchNode);if(candidate)void openOrigin(selected,candidate.dataset.candidate);
-    if(e.target.id==='originDetailClose'){$('#originDetails').hidden=true;replayGeneration++;}
+    if(e.target.id==='originDetailClose'){
+      activeBirthViewer?.dispose();activeBirthViewer=null;
+      $('#originDetails').hidden=true;replayGeneration++;
+    }
   });
   $('#acquisitionTraceBack').onclick=previousTraceStep;
   $('#acquisitionTraceClose').onclick=()=>$('#acquisitionTraceDialog').close();
   $('#acquisitionTraceDialog').addEventListener('close',()=>{
-    traceHistory.length=0;$('#acquisitionTraceContent').innerHTML='';
+    traceHistory.length=0;activeTraceViewer?.dispose();activeTraceViewer=null;
+    $('#acquisitionTraceContent').replaceChildren();
   });
   $('#closeResearchDialog').onclick=()=>$('#researchDialog').close();$('#researchDialog').addEventListener('click',e=>{if(e.target===$('#researchDialog'))$('#researchDialog').close()});
   $('#researchSearch').addEventListener('input',()=>{const q=$('#researchSearch').value.toLocaleLowerCase('ko');$('#researchMatches').innerHTML=q?Object.keys(DATA.researchRules).filter(id=>(id+' '+name(id)).toLocaleLowerCase('ko').includes(q)).slice(0,35).map(node).join(' '):''});

@@ -26,6 +26,7 @@
 <a href="#exceptions">예외·검증</a>
 <a href="#unit-voxels">병종·방어구 복셀 높이</a>
 <a href="#large-unit-voxels">2×2 장비 46종 전체</a>
+<a href="#manufacture-profit">제조 수익 · 인시/기지 칸</a>
 </nav>
 <section class="panel" id="reference-index">
 <h2>참조표 목차</h2>
@@ -38,6 +39,7 @@
 <a class="card" href="#exceptions"><strong>06. 실전 경험치 예외</strong><span>기절 · 정신지배 · 의료도구 · PSI</span></a>
 <a class="card" href="#unit-voxels"><strong>07. 병종별 스탠딩·무릎 복셀 높이</strong><span>29개 병종 · 540개 방어구 · 실효 총구 높이</span></a>
 <a class="card" href="#large-unit-voxels"><strong>08. 2×2 탑승·기계 장비 전체</strong><span>46종 전수 · 실제 32×32 충돌 복셀 · 병종별 사격 Z</span></a>
+<a class="card" href="#manufacture-profit"><strong>09. 대표 제조 수익 비교</strong><span>비실이 인시당 순수익 · 숙소·작업시설 합산 기지 칸당 순수익</span></a>
 </div>
 </section>
 <section class="panel" id="experienceTrainingMode">
@@ -216,6 +218,16 @@
 </table></div>
 <p class="fine">장비 이름을 누르면 원래 종족별 방어구 비교표로 이동합니다. 한 장비를 여러 종족이 사용할 수 있는 경우 서기 높이·총탄 출발 Z는 가능한 값 모두를 표시합니다. 원본: X-Piratez 2.1 <code>armors[].size / loftempsSet / allowsKneeling / units</code> · <code>soldiers[].standHeight</code> · <code>GEODATA/LOFTEMPS.DAT</code>.</p>
 </section>
+<section class="panel" id="manufacture-profit">
+<h2>09. 대표 제조 수익 · 비실이 인시 및 기지 면적 효율</h2>
+<p>제조 DB의 판매 기회비용 기준 순가치를 <strong>기술자 1명·1시간(인시)</strong>으로 나눈 수익입니다. 기지 칸당 수익에는 작업시설과 숙소의 면적을 모두 배분하고 월 유지비도 차감합니다.</p>
+<p class="info warning">제조 데이터는 v.o1.1.1 기준이며 이 페이지의 v.o2 복셀 데이터와 버전이 다릅니다. 원료 수급·인건비·건설비 회수는 별도로 고려하세요. 비실이 1명을 기술자 1명으로 계산합니다.</p>
+<div class="controls"><label for="profit-housing">비실이 숙소 <select id="profit-housing"><option value="STR_LIVING_QUARTERS">승무원 숙소 · 1칸/35명</option><option value="STR_LIVING_QUARTERS_LARGE">대형 숙소 · 4칸/175명</option><option value="STR_CAPSULE_QUARTERS">캡슐 숙소 · 1칸/50명</option><option value="STR_BURROW">토굴 · 1칸/15명</option></select></label></div>
+<p id="profit-status" class="status" role="status">제조 수익 데이터를 불러오는 중…</p>
+<div class="tablewrap"><table><thead><tr><th>제조 품목 · 설비</th><th>인시당 순수익</th><th>작업자</th><th>점유 기지 칸 (작업+숙소)</th><th>기지 1칸당 시간당 순수익</th></tr></thead><tbody id="profit-rows"><tr><td colspan="5">원본 제조 DB에서 계산합니다.</td></tr></tbody></table></div>
+<p class="fine">계산: (판매 기회가치 − 재료 기회가치 − 제조비) ÷ 기술자-시간. 점유 면적 = 해당 제조 시설 칸 + 작업자 수 × 숙소 면적 ÷ 숙소 정원. 칸당 시간당 순수익 = (인시당 순수익 × 작업자 수 − 제조시설 월 유지비 ÷ 720 − 배분 숙소 월 유지비 ÷ 720) ÷ 점유 면적. 월 720시간을 환산 기준으로 사용하며, 숙소는 다른 생산라인과 공동 이용하는 비례 점유 모형입니다.</p>
+<p class="fine">근거: <a href="../manufacture/">제조 DB</a> · <a href="../facilities/">시설 DB</a>. 추가 시설 기능이 필요한 제조는 그 설비 면적도 계산에 포함합니다.</p>
+</section>
 <section class="panel">
 <h2>근거와 데이터 출처</h2>
 <p>엔진 OXCE 기준: MeridianOXC/OpenXcom · <a href="https://github.com/MeridianOXC/OpenXcom/tree/f0134ef8065799c7723953d64b565f7832bfd782" target="_blank" rel="noopener">소스 커밋 f0134ef</a>. 게임 데이터: X-Piratez 2.1 (v.o2) / OXCE 8.7.1 설치본의 룰셋, 2026-10-24 확인.</p>
@@ -227,6 +239,7 @@
 <script src="./items.js?v=20261024-latest" defer></script>
 <script src="./app.js?v=20261024-latest" defer></script>
 <script src="./voxels.js?v=20261027-all-46-large-units" defer></script>
+<script src="./manufacture-profit.js?v=20261104-profit-1" defer></script>
 <script defer src="../atlas-reader-guide.js?v=20261104-detail-nav-3"></script>
 </body>
 </html>
