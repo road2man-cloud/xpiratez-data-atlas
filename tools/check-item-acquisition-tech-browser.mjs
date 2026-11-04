@@ -23,7 +23,8 @@ const server=http.createServer(async(req,res)=>{
   }catch{res.writeHead(404);res.end('missing');}
 });
 await new Promise(ok=>server.listen(0,'127.0.0.1',ok));
-const base='http://127.0.0.1:'+server.address().port;
+const base=(process.env.ATLAS_TECH_SITE_BASE||
+  ('http://127.0.0.1:'+server.address().port)).replace(/\/+$/,'');
 const binary=[process.env.EDGE_PATH,process.env.CHROME_PATH,
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -86,12 +87,15 @@ try{
     'Opening and closing acquisition map cannot close the item dossier');
 
   await page.goto(base+'/items/#item=STR_MED_CANNON_PARTS',{waitUntil:'domcontentloaded'});
-  const eventLaunch=page.locator('#detail [data-open-item-tech]');
+  // Same-path hash navigation does not reload the document. Wait for the
+  // new item's exact ID, not an old button from the previous drawer state.
+  const eventLaunch=page.locator('#detail [data-open-item-tech="STR_MED_CANNON_PARTS"]');
   await eventLaunch.waitFor();
   await eventLaunch.click();
   await dialog.locator('.tech-viewer').waitFor();
   const eventGraph=dialog.locator('.tech-viewer');
   await eventGraph.locator('.tech-node[data-tech-stage="1"]').first().click();
+  await eventGraph.locator('.tech-node[data-tech-stage="2"]').first().waitFor();
   const eventGates=await eventGraph.locator('.tech-node[data-tech-stage="2"]').allInnerTexts();
   assert(eventGates.some(t=>t.includes('이벤트 발생')));
   assert(eventGates.some(t=>t.includes('지급')));
@@ -99,8 +103,8 @@ try{
   await dialog.locator('#closeItemTech').click();
 
   await page.goto(base+'/items/#item=SPC_CUM_OR_ELSE',{waitUntil:'domcontentloaded'});
-  await page.locator('#detail [data-open-item-tech]').waitFor();
-  await page.locator('#detail [data-open-item-tech]').click();
+  await page.locator('#detail [data-open-item-tech="SPC_CUM_OR_ELSE"]').waitFor();
+  await page.locator('#detail [data-open-item-tech="SPC_CUM_OR_ELSE"]').click();
   const unsupported=dialog.locator('.tech-viewer');
   await unsupported.waitFor();
   assert((await unsupported.locator('.tech-node[data-tech-stage="1"]').innerText())

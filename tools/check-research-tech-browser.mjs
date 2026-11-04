@@ -24,7 +24,8 @@ const server=http.createServer(async(req,res)=>{
   }catch{res.writeHead(404);res.end('missing');}
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-const base='http://127.0.0.1:'+server.address().port;
+const base=(process.env.ATLAS_TECH_SITE_BASE||
+  ('http://127.0.0.1:'+server.address().port)).replace(/\/+$/,'');
 const binary=[process.env.EDGE_PATH,process.env.CHROME_PATH,
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -56,11 +57,13 @@ try{
   const at=(stage,index=0)=>tech.locator('.tech-node[data-tech-stage="'+stage+
     '"][data-tech-index="'+index+'"]');
   await at(1,0).click();
+  await tech.locator('.tech-node[data-tech-stage="2"]').first().waitFor();
   const gates=await tech.locator('.tech-node[data-tech-stage="2"]').allInnerTexts();
   assert(gates.some(t=>t.includes('CPU')),'Must retain source base function');
   assert(gates.some(t=>t.includes('선행 연구 또는 직접 해금')),
     'Must retain separate AND and unlock logic');
   await tech.locator('.tech-node[data-tech-stage="2"].tech-node--or').click();
+  await tech.locator('.tech-node[data-tech-stage="3"]').first().waitFor();
   const access=await tech.locator('.tech-node[data-tech-stage="3"]').allInnerTexts();
   assert(access.some(t=>t.includes('선행 연구 모두 완료')));
   await tech.locator('.tech-node[data-tech-stage="3"].tech-node--and').click();
@@ -91,13 +94,14 @@ try{
   assert(direct,'Expected original unlock alternative');
   await page.goto(base+'/research/#research='+encodeURIComponent(direct.target),
     {waitUntil:'domcontentloaded'});
-  const other=page.locator('#detail [data-open-research-tech]');
+  const other=page.locator('#detail [data-open-research-tech="'+direct.target+'"]');
   await other.waitFor();
   await other.click();
   await dialog.locator('.tech-viewer').waitFor();
   const graph=dialog.locator('.tech-viewer');
   await graph.locator('.tech-node[data-tech-stage="1"]').first().click();
   await graph.locator('.tech-node[data-tech-stage="2"].tech-node--or').click();
+  await graph.locator('.tech-node[data-tech-stage="3"]').first().waitFor();
   const choices=await graph.locator('.tech-node[data-tech-stage="3"]').allInnerTexts();
   assert(choices.some(t=>t.includes('선행 연구 모두 완료')));
   assert(choices.some(t=>t.includes('직접 해금:')),
