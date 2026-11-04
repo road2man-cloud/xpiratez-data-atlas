@@ -16,10 +16,10 @@ const splitId=s=>String(s||'').split(':').slice(1).join(':');
 const maxBranch=9;
 
 export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=null,
-  offset=0,name=x=>x,rootLabel=null,technical=true,onNavigate=()=>{}}={}){
-  if(!host||!data?.researchRules)throw Error('테크뷰어 출생·연구 데이터가 없습니다');
-  const tree=profile?buildAcquisitionTree(profile,data):buildAcquisitionSubtree(kind,id,data,offset);
-  const root=profile?tree.root:tree.root.children.find(n=>n.kind!=='start');
+  offset=0,name=x=>x,rootLabel=null,technical=true,adapter=null,onNavigate=()=>{}}={}){
+  if(!host||(!adapter&&!data?.researchRules))throw Error('테크뷰어 출생·연구 데이터가 없습니다');
+  const tree=adapter?null:profile?buildAcquisitionTree(profile,data):buildAcquisitionSubtree(kind,id,data,offset);
+  const root=adapter?.root||(profile?tree.root:tree.root.children.find(n=>n.kind!=='start'));
   if(!root)throw Error('테크뷰어의 시작 노드가 없습니다');
   const getName=(id,alternative='원본 조건')=>{
     const n=String(name(id)||'').trim();
@@ -93,6 +93,7 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     return nodes;
   }
   function childrenOf(node){
+    if(adapter)return adapter.expand(node);
     // Research dependencies must come directly from source rules. The legacy
     // recursive preview can contain "limit" leaves when its node budget is
     // exhausted, even though all five (or more) *direct* requirements are known.
@@ -152,6 +153,7 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     return null;
   };
   function describe(node,index=0){
+    if(adapter)return adapter.describe(node,index);
     const id=node.id||'',k=node.kind;
     const scripted=node.sourceScript;
     if(scripted)return {label:'이벤트 발생 경로 '+(index+1),
@@ -205,7 +207,7 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
   const nodeIcons={research:'⌕',item:'▣',facility:'▤',soldier:'♟',event:'⚑',
     time:'◷',random:'◇',funds:'₵',blocked:'⊘',and:'∧',or:'∨',reward:'★',
     start:'●',more:'…',warning:'!',history:'↺',condition:'◆'};
-  const traceId=profile?profile.id:kind+':'+id;
+  const traceId=adapter?'research:'+root.id:profile?profile.id:kind+':'+id;
   host.innerHTML='<section class="tech-viewer" data-tech-viewer="'+safe(traceId)+'">'+
     '<div class="tech-toolbar">'+
       '<div class="tech-toolbar-title"><strong>획득 테크뷰어</strong>'+
@@ -219,6 +221,7 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       '</div></div>'+
     '<nav class="tech-route" aria-label="현재 선택한 획득 경로"><span class="tech-route-caption">현재 추적</span>'+
       '<div class="tech-route-list" role="group" aria-label="경로별 단계 이동"></div></nav>'+
+    (adapter?.notice?'<p class="tech-adapter-notice">'+safe(adapter.notice)+'</p>':'')+
     '<div class="tech-legend"><span class="tech-legend-must">━ 필수 조건: 모두 충족</span>'+
       '<span class="tech-legend-alternative">┄ 대체 경로: 하나 선택</span>'+
       '<span class="tech-legend-uncertain">◇ 확률·기한: 확정 아님</span></div>'+
@@ -311,6 +314,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       safe(focused?.id||'원본 ID 없음')+'</code><span>유형: '+safe(focused?.kind||'')+
       ' · 관계: '+safe(role)+'</span></details>'+
       (focused?.kind==='limit'?'<em>탐색 한도 표시일 뿐 게임의 새로운 선행 조건은 아닙니다.</em>':'');
+    const proof=shell.querySelector('[data-tech-original]');
+    if(adapter?.renderEvidence&&proof?.open)
+      proof.querySelector('.tech-legacy').innerHTML=adapter.renderEvidence(focused,path);
     requestAnimationFrame(()=>{
       alignColumns();
       drawWires();
@@ -475,8 +481,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
   });
   const original=shell.querySelector('[data-tech-original]');
   if(original)original.addEventListener('toggle',()=>{
-    if(original.open&&!original.dataset.loaded){
-      original.querySelector('.tech-legacy').innerHTML=renderAcquisitionTree(tree,{name,esc:safe});
+    if(original.open&&(!original.dataset.loaded||adapter?.renderEvidence)){
+      original.querySelector('.tech-legacy').innerHTML=adapter?.renderEvidence?
+        adapter.renderEvidence(selection||path.at(-1),path):renderAcquisitionTree(tree,{name,esc:safe});
       original.dataset.loaded='true';
     }
   });

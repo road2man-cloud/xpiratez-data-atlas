@@ -20,6 +20,7 @@ const dataBase=!configuredDataBase||configuredDataBase==="../data"?canonicalData
 const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koName",research:"koName"},filter:{items:{kind:"",research:"",manufacture:""},research:{sample:"",items:"",outputs:"",effect:"",branch:"",routeStatus:""}},storyRoute:(new URLSearchParams(location.search)).get("story")||"",selected:{items:[],research:[]},cache:{items:new Map(),research:new Map()},listLayout:"game",insightCache:new Map(),editorialCache:new Map(),itemEditorialCache:new Map(),itemUsageCache:new Map(),detail:null};
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map(),researchMissionGateMap=new Map(),storyChoiceIndex=null,researchStoryOverlay=null;
 let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null,detailGeneration=0;
+let researchSourceMetadataSha=null,researchTechIndexPromise=null,activeResearchTechViewer=null;
 const modePromises={},searchHay=new WeakMap();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
@@ -51,6 +52,7 @@ async function ensureMode(mode){
       if(branchReport?.schemaVersion!==3||branchReport?.meta?.total!==research.index.length||
         branchReport?.meta?.cycleTopics!==new Set((branchReport.cycles||[]).flatMap(g=>g.memberIds)).size)
         throw new Error("복수 선행/순환 연구 감사 데이터 버전 불일치");
+      researchSourceMetadataSha=research.meta?.source?.metadataSha256||null;
       researchBranchReport=branchReport;
       if(missionGates?.meta?.schemaVersion!==1)throw new Error("연구-미션 조건 인덱스 버전 불일치");
       researchMissionGateMap=new Map((missionGates.index||[]).map(x=>[x.id,x]));
@@ -125,7 +127,18 @@ function bind(){
   };
   $("#pager").onclick=e=>{const b=e.target.closest("button[data-page]");if(b){state.page=Number(b.dataset.page);render()}};
   $("#closeDrawer").onclick=closeDrawer;$("#backdrop").onclick=closeDrawer;$("#compare").onclick=openCompare;$("#closeCompare").onclick=()=>$("#compareDialog").close();
-  document.onclick=e=>{const b=e.target.closest("[data-open]");if(b){e.preventDefault();openDetail(b.dataset.kind,b.dataset.open)}};
+  document.onclick=e=>{
+    const tech=e.target.closest('[data-open-research-tech]');
+    if(tech){e.preventDefault();void openResearchTech(tech.dataset.openResearchTech);return;}
+    const b=e.target.closest('[data-open]');
+    if(b){e.preventDefault();openDetail(b.dataset.kind,b.dataset.open)}
+  };
+  const closeTech=$('#closeResearchTech');
+  if(closeTech)closeTech.onclick=()=>$('#researchTechDialog').close();
+  $('#researchTechDialog')?.addEventListener('close',()=>{
+    activeResearchTechViewer?.dispose();activeResearchTechViewer=null;
+    $('#researchTechHost').replaceChildren();
+  });
   addEventListener("hashchange",route);
 }
 const sortOptions={
@@ -281,6 +294,45 @@ async function showRelatedSoldiers(mode,id,generation){
   $("#detail").insertAdjacentHTML("afterbegin",
     '<section class="section soldier-route-panel"><h3>이 항목과 연결되는 병종 획득형</h3><p class="muted">같은 기본 병종이어도 획득형마다 자동 특성이 다릅니다. 해당 병종 DB에서 생성 스펙과 고용 경로를 확인하세요.</p>'+
     related.map(p=>'<a class="chip" href="../soldiers/?q='+encodeURIComponent(p.sourceId)+'"><strong>'+esc(p.name)+'</strong><span class="sub">기본 병종: '+esc(p.base)+' · '+esc(p.traits.join(" · ")||"자동 특성 없음")+'</span></a>').join("")+'</section>');
+}
+async function loadResearchTechIndex(){
+  if(!researchTechIndexPromise)researchTechIndexPromise=(async()=>{
+    const url='../research/acquisition-index.json';
+    let result=null;
+    if(typeof DecompressionStream==='function')try{
+      const response=await fetch(url+'.gz');
+      if(response.ok)result=await new Response(response.body.pipeThrough(
+        new DecompressionStream('gzip'))).json();
+    }catch{/* Prefer the canonical plain JSON if this browser cannot decode gzip. */}
+    result||=await json(url);
+    if(result?.meta?.schemaVersion!==1||
+      result.meta.sourceVersion!==manifest.mod.version||
+      result.meta.researchCount!==researchIndex.length||
+      !researchSourceMetadataSha||
+      result.meta.sourceMetadataSha256!==researchSourceMetadataSha)
+      throw Error('기존 연구 DB와 획득 경로 인덱스의 원본 버전/해시가 일치하지 않습니다');
+    return result;
+  })().catch(error=>{researchTechIndexPromise=null;throw error});
+  return researchTechIndexPromise;
+}
+async function openResearchTech(id){
+  const dialog=$('#researchTechDialog');
+  if(!dialog||!researchMap.has(id))return;
+  const host=$('#researchTechHost');
+  activeResearchTechViewer?.dispose();activeResearchTechViewer=null;
+  $('#researchTechTitle').textContent=(researchMap.get(id)?.koName||id)+' · 획득 경로';
+  host.textContent='현재 연구 DB와 일치하는 원본 조건을 확인하는 중…';
+  if(!dialog.open)dialog.showModal();
+  try{
+    const [viewer,adapters,index]=await Promise.all([
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-1'),
+      import('../research/acquisition-tech-adapter.js?v=20261105-crossdb-1'),
+      loadResearchTechIndex()
+    ]);
+    if(!dialog.open)return;
+    const adapter=adapters.createLegacyResearchTechAdapter(index,id);
+    activeResearchTechViewer=viewer.mountAcquisitionTechViewer(host,{adapter,technical:true});
+  }catch(error){if(dialog.open)host.textContent='연구 경로를 표시하지 못했습니다: '+error.message;}
 }
 async function openDetail(mode,id){
   const generation=++detailGeneration;
@@ -570,7 +622,7 @@ function renderResearch(d){
   <h3>연구 완료 시 생성되는 아이템</h3><div>${gameEntities(spawned,"items")}</div>
   <h3>이 연구를 참조하는 제조법</h3><div>${relations(d.manufactureReferences)}</div><p class="game-explain">연구와 연결된 제조법입니다. 재료·시설 등 나머지 조건도 확인하세요.</p>
   </div></div><div class="game-dossier-foot">${esc(d.enName)} · ${esc(d.id)} · 완료 점수 ${fmt(d.points)}</div></div>`;
-  return `${gamePanel}${researchStoryDetail(d.id)}
+  return `<section class="research-acquisition-launch"><button type="button" data-open-research-tech="${esc(d.id)}">◀ 게임식 좌우 연구 획득 경로 열기</button><p>X-Piratez ${esc(manifest.mod.version)} 원본 연구 선행·직접 해금·무료 지급을 분리합니다. 2.1 병종 경로와 버전을 섞지 않습니다.</p></section>${gamePanel}${researchStoryDetail(d.id)}
   ${researchBranchConflictMarkup(d)}
   ${researchCycleMarkup(d)}
   ${researchEditorialMarkup(d)}
