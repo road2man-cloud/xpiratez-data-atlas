@@ -51,17 +51,24 @@ try{
   assert((await early.innerText()).includes('성격 연구'));
   assert((await early.innerText()).includes('STR_CAPTAIN_DUMBASS'));
   await early.locator('[data-trace-research-root="STR_CAPTAIN_LAZYASS"]').click();
-  assert((await early.locator('.origin-complete-tree').count())>=1,
-    'Choice research must be navigable from game start');
-  await early.locator('[data-trace-research-root="STR_CAPTAIN_LAZYASS"]').click();
+  const drill=page.locator('#acquisitionTraceDialog');
+  assert.equal(await drill.evaluate(el=>el.open),true,
+    'Choice research must open in the full-width non-nesting explorer');
+  assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+  await drill.locator('#acquisitionTraceClose').click();
+  assert.equal(await early.locator('.origin-complete-tree').count(),0,
+    'Opening a separate research step cannot mutate the original choice card');
   assert((await tree.evaluate(el=>el.outerHTML.length))<500000,'Mobile route disclosure too heavy');
   const expand=page.locator('#originDetails button[data-trace-id]').first();
   if(await expand.count()){
     await expand.evaluate(el=>{for(let p=el.parentElement;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
     await expand.click();
-    assert((await page.locator('#originDetails .origin-complete-tree').count())>=2,
-      'Continuation button should open source-rooted upstream tree');
-    await expand.click();
+    assert.equal(await drill.evaluate(el=>el.open),true,
+      'Continuation button must open the same independent explorer');
+    assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+    assert.equal(await drill.locator('.origin-readable-guide .origin-readable-guide').count(),0,
+      'A continuation must never introduce recursively nested readable guides');
+    await drill.locator('#acquisitionTraceClose').click();
   }
   const transform=page.locator('#originDetails .origin-transform-gates');
   if(await transform.count()){
@@ -70,7 +77,10 @@ try{
     const button=transform.locator('button[data-trace-research-root]').first();
     if(await button.count()){
       await button.click();
-      assert((await transform.locator('.origin-complete-tree').count())>=1);
+      assert.equal(await drill.evaluate(el=>el.open),true);
+      assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+      assert.equal(await transform.locator('.origin-complete-tree').count(),0);
+      await drill.locator('#acquisitionTraceClose').click();
     }
   }
   await page.locator('#originDetails button[data-expand-origin-tree]').click();
@@ -92,8 +102,12 @@ try{
   assert(stalledText.includes('STR_ENJOYING_THE_DREAM'));
   assert(stalledText.includes('20개월')&&stalledText.includes('24개월'));
   await stalled.locator('button[data-trace-research-root="STR_CLOAKING_DEVICE"]').first().click();
-  assert((await stalled.locator('.origin-complete-tree').count())>=1,
-    'An unresolved deadline failure must link to the research prerequisite graph');
+  assert.equal(await drill.evaluate(el=>el.open),true,
+    'An unresolved deadline failure must open the research prerequisite explorer');
+  assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+  assert.equal(await stalled.locator('.origin-complete-tree').count(),0,
+    'Deadline diagnostics must remain legible rather than contain nested trees');
+  await drill.locator('#acquisitionTraceClose').click();
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
     'Unresolved origin chronological evidence must fit a mobile viewport');
   assert.deepEqual(errors,[],'Uncaught browser JS errors');

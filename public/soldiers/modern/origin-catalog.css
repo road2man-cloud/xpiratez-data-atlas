@@ -53,7 +53,6 @@
 .origin-transform-gate{padding:12px;border:1px solid #345172;border-radius:9px;margin:11px 0;background:#102139}
 .origin-transform-gate p{font-size:.8rem;color:#c0d5eb}
 .origin-transform-gate button[data-trace-research-root]{display:block;margin:5px 0;font-size:.78rem;text-align:left}
-.origin-transform-research-root{margin:8px 0 13px;max-height:550px;overflow:auto}
 .origin-tree-action{border:1px solid #3e6083;border-radius:11px;padding:13px;margin:14px 0;background:#11233b}
 .origin-tree-result{margin-top:10px}
 .origin-complete-tree{max-height:720px;overflow:auto;overscroll-behavior:contain}
@@ -104,7 +103,6 @@
 .guide-purchase-dependencies li{font-size:.82rem;line-height:1.55;padding:2px 0;color:#e0ecf9;overflow-wrap:anywhere}
 .guide-purchase-trace{margin:9px 0;border:1px solid #3a5978;padding:8px;border-radius:8px;min-width:0}
 .guide-purchase-trace>button{display:block;text-align:left;width:100%;max-width:100%;font-size:.84rem;overflow-wrap:anywhere}
-.guide-purchase-trace>.origin-transform-research-root{margin-top:8px;overflow-wrap:anywhere}
 .guide-variant-count{font-size:.78rem!important;color:#b5d7fa!important}
 .guide-option-details{border:0!important;border-top:1px solid #345575!important;padding:8px 0 0!important;margin:10px 0 0!important}
 .guide-option-details>summary{font-size:.87rem;color:#bee0fe;font-weight:720;cursor:pointer}
@@ -121,6 +119,39 @@
 .guide-technical-evidence .origin-tree-root summary{font-size:.85rem}
 .guide-source-id{font-family:ui-monospace,Consolas,monospace;font-size:.73rem;color:#9fb5d0;overflow-wrap:anywhere}
 .guide-next-condition{font-size:.78rem;margin:5px 0;padding:6px 10px}
+/* A single, full-width drill-down replaces recursively nested research cards. */
+#acquisitionTraceDialog{width:min(1000px,calc(100% - 20px));max-height:92dvh;padding:18px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.trace-dialog-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;position:sticky;top:-18px;margin:-18px -18px 12px;padding:15px 18px;background:#172d45;border-bottom:1px solid #527493;z-index:5}
+.trace-dialog-title{min-width:0}
+.trace-dialog-title small{display:block;color:#b9d1e9;font-size:.72rem}
+.trace-dialog-title h2{font-size:1.2rem;line-height:1.45;margin:2px 0 0;overflow-wrap:anywhere}
+.trace-dialog-head>button{white-space:nowrap;font-size:.82rem;padding:8px 11px}
+.trace-dialog-head>button:disabled{opacity:.4;cursor:default}
+.trace-dialog-instructions{font-size:.79rem;color:#b7cde4;line-height:1.55;margin:9px 0 14px}
+#acquisitionTraceContent{min-width:0}
+#acquisitionTraceContent>.origin-readable-guide{padding:0;border:0;margin:0}
+#acquisitionTraceContent .guide-intro{padding:2px 0 12px}
+#acquisitionTraceContent .guide-cards{margin-top:12px}
+.guide-research-options{grid-template-columns:minmax(0,1fr)!important}
+.guide-research-method{padding:15px}
+.guide-research-method>.guide-research-note{font-size:.87rem;line-height:1.65;color:#c6d9eb;margin:10px 0}
+.guide-research-gate{background:#19344d;border:1px solid #51728f;border-radius:9px;padding:12px;margin:12px 0;min-width:0}
+.guide-research-gate h6{font-size:.91rem;letter-spacing:0;color:#e8f4ff;margin:0 0 9px;line-height:1.5}
+.guide-research-choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:10px}
+.guide-research-route{background:#0e243a;border:1px solid #456485;border-radius:8px;padding:11px;min-width:0;overflow-wrap:anywhere}
+.guide-research-route>strong{display:block;font-size:.85rem;color:#f1d5a3;line-height:1.5}
+.guide-research-route>p,.guide-research-gate>p{font-size:.82rem;color:#bcd0e5;line-height:1.6;margin:7px 0}
+.origin-readable-guide .guide-research-list{margin:7px 0 0!important;padding:0!important;border-left:none!important;list-style:none!important}
+.origin-readable-guide .guide-research-list>li{margin:6px 0;padding:6px!important;list-style:none;background:#193651!important;border:1px solid #385a7a;border-radius:7px;font-size:.82rem}
+.guide-research-next{max-width:100%;text-align:left;white-space:normal;overflow-wrap:anywhere;background:#284966;color:#eaf3ff;border:1px solid #668aa9;border-radius:7px;padding:7px 10px;font-size:.84rem}
+.guide-research-next:hover{background:#356487}
+.guide-research-warning{color:#f1cca1!important;font-size:.83rem!important;line-height:1.6}
+.guide-research-alternative{border:1px solid #42617f;border-radius:9px;background:#183149;padding:10px;min-width:0}
+.guide-research-alternative-title{font-size:.82rem;font-weight:800;margin-bottom:8px;color:#e4d3aa}
+.guide-research-alternative>.guide-option{padding:10px}
+#acquisitionTraceDialog .guide-technical-evidence .origin-tree-root ul{padding-left:8px!important;border-left:1px solid #35516e}
+@media(max-width:620px){#acquisitionTraceDialog{padding:12px}.trace-dialog-head{top:-12px;margin:-12px -12px 10px;padding:12px;gap:7px}.trace-dialog-title h2{font-size:1rem}.trace-dialog-title small{font-size:.66rem}.trace-dialog-head>button{font-size:.74rem;padding:7px}.guide-research-method{padding:10px}.guide-research-gate{padding:9px}}
+
 .guide-more-sources{grid-column:1/-1;min-width:0;border:1px dashed #6080a0;border-radius:10px;padding:10px;background:#18304a}
 .guide-more-button{display:block;width:100%;max-width:100%;text-align:left;white-space:normal;overflow-wrap:anywhere;padding:10px 12px;background:#264e72;border:1px solid #7095b8;border-radius:8px;color:#f3f8ff;font-weight:700;font-size:.86rem;cursor:pointer}
 .guide-more-button:hover,.guide-more-button:focus-visible{background:#356285}

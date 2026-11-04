@@ -109,10 +109,42 @@ try{
   await shop.locator('.guide-option-details > summary').click();
   assert((await shop.locator('.guide-conditions').innerText()).includes('클레오파트라의 도전을 완료했다'));
   await shop.locator('[data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"]').click();
-  assert((await shop.locator('.origin-transform-research-root .origin-readable-guide').count())>=1,
-    'The purchase prerequisite must open a research tree from the start of the campaign');
-  assert((await shop.locator('.origin-transform-research-root').textContent()).includes('STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE'),
-    'Four primal monster hunts must be traceable upstream of Cleopatra completion');
+  const drill=page.locator('#acquisitionTraceDialog');
+  assert.equal(await drill.evaluate(el=>el.open),true,
+    'Research drill-down must open as one full-width independent dialog');
+  assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1,
+    'The selected research must have exactly one flat guide, not nested guides');
+  assert.equal(await drill.locator('.guide-research-route .guide-research-list > li').count(),5,
+    'Cleopatra research must list five simultaneous AND prerequisites');
+  assert((await drill.locator('[data-research-lab="STR_CLEO_CHALLENGE_COMPLETED"]').innerText()).includes('모두 완료'));
+  assert.equal(await shop.locator('.origin-transform-research-root .origin-readable-guide').count(),0,
+    'Research must not be inserted in a narrow purchase card');
+  await drill.locator('[data-trace-research-root="STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE"]').click();
+  assert.equal(await drill.locator('.origin-readable-guide').count(),1,
+    'Deeper navigation must replace the current view instead of nesting a tree');
+  assert.equal(await drill.locator('#acquisitionTraceBack').isEnabled(),true);
+  assert((await drill.locator('#acquisitionTraceTitle').innerText()).length>3);
+  await drill.locator('#acquisitionTraceBack').click();
+  assert.equal(await drill.locator('[data-research-lab="STR_CLEO_CHALLENGE_COMPLETED"]').count(),1,
+    'Back must restore the original five-prerequisite step');
+  assert.equal(await drill.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
+    'Full-width trace dialog must fit 390px viewport');
+  await drill.locator('#acquisitionTraceClose').click();
+  assert.equal(await drill.evaluate(el=>el.open),false);
+  // The original report showed the research tree squeezed into one column
+  // of a three-column desktop acquisition layout. Verify the replacement
+  // has a dedicated wide reading area at desktop width as well.
+  await page.setViewportSize({width:1280,height:900});
+  await shop.locator('[data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"]').click();
+  const desktopModal=await drill.boundingBox();
+  assert(desktopModal?.width>=850,
+    'The selected research must use the full-width desktop explorer');
+  assert.equal(await drill.locator('.guide-research-route .guide-research-list > li').count(),5);
+  assert.equal(await drill.locator('.origin-readable-guide .origin-readable-guide').count(),0,
+    'Even the technical section must not embed another whole research page');
+  assert.equal(await drill.locator('.guide-technical-evidence').evaluate(el=>el.open),false);
+  await drill.locator('#acquisitionTraceClose').click();
+  await page.setViewportSize({width:390,height:844});
   const sourceProof=guide.locator(':scope > .guide-technical-evidence');
   assert.equal(await sourceProof.evaluate(el=>el.open),false,
     'Source IDs must not dominate the default experience');
