@@ -53,6 +53,9 @@ jobs:
           node tools/check-soldier-modern-browser.mjs
           # Readable, nontechnical default layer in all 14 DBs and birth guides.
           node tools/check-atlas-reader-guide-browser.mjs
+          # Horizontal acquisition tech viewer: mobile + desktop, AND/OR wires,
+          # shop and event source conditions, pan/zoom, lazy raw proof.
+          node tools/check-acquisition-tech-view-browser.mjs
 
       - name: Publish public tree to gh-pages
         run: |

@@ -35,7 +35,12 @@ try{
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.locator('#originMaxima[data-validation="validated"]').waitFor();
   await page.locator('#originDetails button[data-expand-origin-tree]').waitFor();
-  await page.locator('#originDetails button[data-expand-origin-tree]').click();
+  const tech=page.locator('#originDetails .tech-viewer');
+  await tech.waitFor();
+  assert.equal(await tech.locator('.tech-original').evaluate(el=>el.open),false);
+  assert((await tech.locator('.tech-wires path').count())>0,
+    'Game-style technology graph must connect the birth goal to its prerequisites');
+  await tech.locator('.tech-original > summary').click();
   const tree=page.locator('#originDetails .origin-complete-tree').first();
   await tree.waitFor();
   const txt=await tree.textContent();
@@ -54,7 +59,7 @@ try{
   const drill=page.locator('#acquisitionTraceDialog');
   assert.equal(await drill.evaluate(el=>el.open),true,
     'Choice research must open in the full-width non-nesting explorer');
-  assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+  assert.equal(await drill.locator('#acquisitionTraceContent .tech-viewer').count(),1);
   await drill.locator('#acquisitionTraceClose').click();
   assert.equal(await early.locator('.origin-complete-tree').count(),0,
     'Opening a separate research step cannot mutate the original choice card');
@@ -65,7 +70,7 @@ try{
     await expand.click();
     assert.equal(await drill.evaluate(el=>el.open),true,
       'Continuation button must open the same independent explorer');
-    assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+    assert.equal(await drill.locator('#acquisitionTraceContent .tech-viewer').count(),1);
     assert.equal(await drill.locator('.origin-readable-guide .origin-readable-guide').count(),0,
       'A continuation must never introduce recursively nested readable guides');
     await drill.locator('#acquisitionTraceClose').click();
@@ -78,7 +83,7 @@ try{
     if(await button.count()){
       await button.click();
       assert.equal(await drill.evaluate(el=>el.open),true);
-      assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+      assert.equal(await drill.locator('#acquisitionTraceContent .tech-viewer').count(),1);
       assert.equal(await transform.locator('.origin-complete-tree').count(),0);
       await drill.locator('#acquisitionTraceClose').click();
     }
@@ -104,7 +109,7 @@ try{
   await stalled.locator('button[data-trace-research-root="STR_CLOAKING_DEVICE"]').first().click();
   assert.equal(await drill.evaluate(el=>el.open),true,
     'An unresolved deadline failure must open the research prerequisite explorer');
-  assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1);
+  assert.equal(await drill.locator('#acquisitionTraceContent .tech-viewer').count(),1);
   assert.equal(await stalled.locator('.origin-complete-tree').count(),0,
     'Deadline diagnostics must remain legible rather than contain nested trees');
   await drill.locator('#acquisitionTraceClose').click();

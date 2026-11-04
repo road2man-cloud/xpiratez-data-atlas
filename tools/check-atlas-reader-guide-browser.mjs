@@ -69,7 +69,17 @@ try{
   await page.goto(base+'soldiers/modern/?profile=manufacture%3ASTR_THEBAN_ASSAULT_CLONE',
     {waitUntil:'domcontentloaded',timeout:30000});
   await page.locator('#originMaxima[data-validation="validated"]').waitFor({timeout:60000});
-  await page.locator('#originDetails button[data-expand-origin-tree]').click();
+  const visual=page.locator('#originDetails .tech-viewer').first();
+  await visual.waitFor();
+  assert.equal(await visual.locator('.tech-node[data-tech-stage="0"]').count(),1,
+    'New game-style view must show one final goal on the right');
+  assert((await visual.locator('.tech-node[data-tech-stage="1"]').count())>=2,
+    'Original AND prerequisites must appear as connected left-side nodes');
+  assert.equal(await visual.locator('.tech-original').evaluate(el=>el.open),false,
+    'The old nested card view should be collapsed by default');
+  assert.equal(await visual.locator('.origin-readable-guide').count(),0,
+    'No nested-card legacy guide should be rendered until specifically requested');
+  await visual.locator('.tech-original > summary').click();
   const guide=page.locator('#originDetails .origin-readable-guide').first();
   await guide.waitFor();
   assert((await guide.locator('.guide-card[data-guide-category="material"]').count())>=1);
@@ -138,38 +148,63 @@ try{
   await shop.locator('[data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"]').click();
   const drill=page.locator('#acquisitionTraceDialog');
   assert.equal(await drill.evaluate(el=>el.open),true,
-    'Research drill-down must open as one full-width independent dialog');
-  assert.equal(await drill.locator('#acquisitionTraceContent .origin-readable-guide').count(),1,
-    'The selected research must have exactly one flat guide, not nested guides');
-  assert.equal(await drill.locator('.guide-research-route .guide-research-list > li').count(),5,
-    'Cleopatra research must list five simultaneous AND prerequisites');
-  assert((await drill.locator('[data-research-lab="STR_CLEO_CHALLENGE_COMPLETED"]').innerText()).includes('모두 완료'));
-  assert.equal(await shop.locator('.origin-transform-research-root .origin-readable-guide').count(),0,
-    'Research must not be inserted in a narrow purchase card');
-  await drill.locator('[data-trace-research-root="STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE"]').click();
-  assert.equal(await drill.locator('.origin-readable-guide').count(),1,
-    'Deeper navigation must replace the current view instead of nesting a tree');
+    'Research prerequisite exploration opens in one wide dialog');
+  const graph=drill.locator('.tech-viewer');
+  assert.equal(await graph.count(),1,'The game-style horizontal graph is the default view');
+  assert.equal(await drill.locator('.origin-readable-guide').count(),0,
+    'Previous nested cards are not built until the user opens technical evidence');
+  assert.equal(await graph.locator('.tech-col-head').count(),2,
+    'The research goal and its next-stage prerequisites start in separate columns');
+  assert((await graph.locator('.tech-wires path').count())>=1,
+    'Actual AND/OR relationship lines must connect the nodes');
+  const clickStage=async(stage,kind)=>{
+    const target=graph.locator('.tech-node[data-tech-stage="'+stage+'"]'+
+      (kind?'[data-tech-kind="'+kind+'"]':'')).first();
+    await target.click();
+  };
+  await clickStage(1,'or');
+  await clickStage(2,'and');
+  await clickStage(3,'or');
+  await clickStage(4,'and');
+  assert.equal(await graph.locator('.tech-node[data-tech-stage="5"][data-tech-kind="research"]').count(),5,
+    'Cleopatra has five AND predecessors, all present in one horizontal column');
+  assert((await graph.locator('[data-tech-stage="5"]').allInnerTexts()).join(' ').includes('원시적 사냥'),
+    'The five predecessors must be readable game names');
+  const layout=await graph.evaluate(el=>{
+    const a=el.querySelector('.tech-node[data-tech-stage="5"]');
+    const b=el.querySelector('.tech-node[data-tech-stage="0"]');
+    return {left:a.getBoundingClientRect().left,right:b.getBoundingClientRect().left,
+      width:el.scrollWidth};
+  });
+  assert(layout.left<layout.right,'Prerequisites must progress left to right toward the target');
+  await clickStage(5,'research');
+  assert.equal(await graph.locator('.tech-column').count(),7,
+    'The selected research expands to the LEFT without nesting a card inside another');
   assert.equal(await drill.locator('#acquisitionTraceBack').isEnabled(),true);
-  assert((await drill.locator('#acquisitionTraceTitle').innerText()).length>3);
   await drill.locator('#acquisitionTraceBack').click();
-  assert.equal(await drill.locator('[data-research-lab="STR_CLEO_CHALLENGE_COMPLETED"]').count(),1,
-    'Back must restore the original five-prerequisite step');
-  assert.equal(await drill.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
-    'Full-width trace dialog must fit 390px viewport');
+  assert.equal(await graph.locator('.tech-node[data-tech-stage="5"][data-tech-kind="research"]').count(),5);
+  assert.equal(await graph.locator('.origin-readable-guide').count(),0);
+  const drillWidths=await drill.evaluate(el=>({client:el.clientWidth,scroll:el.scrollWidth,
+    viewportWidth:el.querySelector('.tech-viewport').clientWidth,
+    graphWidth:el.querySelector('.tech-viewport').scrollWidth,
+    contentWidth:el.querySelector('#acquisitionTraceContent').scrollWidth}));
+  assert.equal(drillWidths.scroll>drillWidths.client+5,false,
+    'The 390px mobile dialog must contain horizontal overflow inside the tech viewport: '+
+      JSON.stringify(drillWidths));
+  const technical=graph.locator('.tech-original');
+  await technical.locator('summary').click();
+  await technical.locator('[data-research-lab="STR_CLEO_CHALLENGE_COMPLETED"]').waitFor({state:'attached'});
+  assert.equal(await technical.locator('[data-research-lab="STR_CLEO_CHALLENGE_COMPLETED"]').count(),1,
+    'Unmodified source evidence remains available when explicitly requested');
+  assert.equal(await technical.locator('.guide-research-route .guide-research-list > li').count(),5);
   await drill.locator('#acquisitionTraceClose').click();
   assert.equal(await drill.evaluate(el=>el.open),false);
-  // The original report showed the research tree squeezed into one column
-  // of a three-column desktop acquisition layout. Verify the replacement
-  // has a dedicated wide reading area at desktop width as well.
   await page.setViewportSize({width:1280,height:900});
   await shop.locator('[data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"]').click();
   const desktopModal=await drill.boundingBox();
-  assert(desktopModal?.width>=850,
-    'The selected research must use the full-width desktop explorer');
-  assert.equal(await drill.locator('.guide-research-route .guide-research-list > li').count(),5);
-  assert.equal(await drill.locator('.origin-readable-guide .origin-readable-guide').count(),0,
-    'Even the technical section must not embed another whole research page');
-  assert.equal(await drill.locator('.guide-technical-evidence').evaluate(el=>el.open),false);
+  assert(desktopModal?.width>=1100,'The desktop tech view must use a wide canvas');
+  assert.equal(await drill.locator('.tech-column').count(),2);
+  assert.equal(await drill.locator('.tech-original').evaluate(el=>el.open),false);
   await drill.locator('#acquisitionTraceClose').click();
   await page.setViewportSize({width:390,height:844});
   const sourceProof=guide.locator(':scope > .guide-technical-evidence');
@@ -194,7 +229,9 @@ try{
   // That is not a legal first-source purchase in the ordinary lab route.
   await page.locator('#search').fill('manufacture:STR_WILD_GIRL_RECRUITMENT');
   await page.locator('#originTable .origin-open').first().click();
-  await page.locator('#originDetails button[data-expand-origin-tree]').click();
+  const wildVisual=page.locator('#originDetails .tech-viewer');
+  await wildVisual.waitFor();
+  await wildVisual.locator('.tech-original > summary').click();
   const medallionCycle=page.locator('#originDetails [data-bootstrap-cycle="STR_MEDALLION"]');
   await medallionCycle.waitFor();
   const cycleText=await medallionCycle.innerText();
@@ -213,7 +250,9 @@ try{
   await pagesView.goto(base+'soldiers/modern/?profile=manufacture%3ASTR_GLAMOUR_RECRUITMENT',
     {waitUntil:'domcontentloaded',timeout:30000});
   await pagesView.locator('#originMaxima[data-validation="validated"]').waitFor({timeout:60000});
-  await pagesView.locator('#originDetails button[data-expand-origin-tree]').click();
+  const glamourTech=pagesView.locator('#originDetails .tech-viewer');
+  await glamourTech.waitFor();
+  await glamourTech.locator('.tech-original > summary').click();
   const glamour=pagesView.locator('#originDetails .guide-card[data-guide-item="STR_GLAMOUR"]').first();
   await glamour.waitFor({timeout:15000});
   assert.equal(await glamour.locator('[data-indexed-source-count="255"]').count(),1,

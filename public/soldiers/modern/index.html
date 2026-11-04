@@ -5,6 +5,7 @@
 <title>X-Piratez 2.1 · 병종 DB</title>
 <meta name="description" content="획득처별 실제 연구 경로와 분기·배제 증거를 누적하는 X-Piratez 2.1 병종 DB">
 <link rel="stylesheet" href="origin-catalog.css?v=20261104-event-direct-1">
+<link rel="stylesheet" href="acquisition-tech-view.css?v=20261104-techmap-1">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261104-detail-nav-3">
 </head>
 <body>
@@ -55,10 +56,10 @@
     <div class="trace-dialog-title"><small>게임 시작부터 획득 경로 확인 · 원본 2.1</small><h2 id="acquisitionTraceTitle">선행 조건 확인</h2></div>
     <button id="acquisitionTraceClose" type="button" aria-label="연구 경로 창 닫기">닫기</button>
   </div>
-  <p class="trace-dialog-instructions">선행 연구를 누르면 이 창에서 다음 단계로 이동합니다. 창을 중첩하지 않으며 이전 단계로 돌아갈 수 있습니다.</p>
+  <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261104-event-direct-1"></script>
+<script type="module" src="app.js?v=20261104-techmap-1"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261104-detail-nav-3"></script>
 </body>
 </html>
