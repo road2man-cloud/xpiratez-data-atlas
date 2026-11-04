@@ -127,6 +127,20 @@ for(const [eventId,info] of Object.entries(items.events)){
   if(negativeVerified>=12)break;
 }
 assert(negativeVerified>=12,'Cover at least twelve genuine negative-trigger events');
+// Real positive event gates must recurse into the prerequisite's own item or
+// facility construction graph, while negative/absent gates stay exclusions.
+const glamGraph=createLegacyItemTechAdapter(items,research,'STR_GLAMOUR');
+const rock=glamGraph.expand({kind:'and',id:'EVENT_SCRIPT:STR_ASTROROCK_EVENT:0',
+  sourceKind:'event-script',event:'STR_ASTROROCK_EVENT',scriptIndex:0});
+const guitar=rock.children.find(x=>x.kind==='item'&&x.id==='STR_PIRATE_GUITAR');
+assert(guitar,'Positive itemTriggers must retain a recursively traceable physical item');
+assert(glamGraph.expand(guitar).children.length>0);
+const booksGraph=createLegacyItemTechAdapter(items,research,'STR_OLD_BOOKS');
+const bookScript=booksGraph.expand({kind:'and',id:'EVENT_SCRIPT:STR_BOOKWORM_BUY_BOOKS:4',
+  sourceKind:'event-script',event:'STR_BOOKWORM_BUY_BOOKS',scriptIndex:4});
+const library=bookScript.children.find(x=>x.kind==='facility-type'&&x.id==='STR_LIBRARY');
+assert(library,'Positive facilityTriggers must expand through actual facility construction');
+assert(booksGraph.expand(library).children.length>0);
 const missing=createLegacyItemTechAdapter(items,research,'SPC_CUM_OR_ELSE');
 const unknown=missing.expand(missing.root);
 assert.equal(unknown.children.length,1);

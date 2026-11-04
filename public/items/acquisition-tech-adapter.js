@@ -150,6 +150,11 @@ export function createLegacyItemTechAdapter(index,research,goalId){
         for(const [i,t] of list(entries).entries()){
           if(key==='researchTriggers'&&t.value===true&&research.topics[t.id])
             children.push(researchNode(t.id));
+          else if(key==='itemTriggers'&&t.value===true&&items[t.id])
+            children.push(make('item',t.id,{note:'이벤트 발생을 위한 실물 아이템 · 해당 아이템 공급 경로를 역추적'}));
+          else if(key==='facilityTriggers'&&t.value===true&&
+            index.facilities?.facilities?.[t.id])
+            children.push(make('facility-type',t.id,{note:'이벤트 발생 시 기지에 필요한 시설 · 건설·실제 보유 여부 별도 확인'}));
           else children.push(gate(t.value===false?'blocked':'condition',
             'EV_GATE:'+n.id+':'+key+':'+i,
             (triggerLabels[key]||key)+' · '+(t.koName||t.id)+
