@@ -66,6 +66,9 @@ const result={meta:{
 const output=path.resolve('public/research/acquisition-index.json');
 const serialized=JSON.stringify(result)+'\n';
 const zipped=zlib.gzipSync(Buffer.from(serialized),{level:9,mtime:0});
+// GZIP header byte 9 is the compressor OS (Windows=10, Unix=3).
+// Canonicalize it to 255 (unknown) for byte-identical CI across platforms.
+zipped[9]=255;
 if(process.argv.includes('--check')){
   assert.equal(fs.readFileSync(output,'utf8'),serialized,
     'Legacy research path index stale: npm run build:research:tech');

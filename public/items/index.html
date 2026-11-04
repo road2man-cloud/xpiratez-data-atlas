@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="./styles.css?v=20261011-branch-audit-v4">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
 <link rel="stylesheet" href="../atlas-reader-guide.css?v=20261104-detail-nav-3">
+<link rel="stylesheet" href="../soldiers/modern/acquisition-tech-view.css?v=20261105-crossdb-2">
+<link rel="stylesheet" href="../research/acquisition-dialog.css?v=20261105-crossdb-2">
 </head>
 <body data-mode="items" data-data-base="./data">
 <header class="hero">
@@ -65,7 +67,13 @@
   <div id="compareBody"></div>
 </dialog>
 
-<script type="module" src="./app.js?v=20261105-crossdb-1"></script>
+<dialog id="itemTechDialog" aria-labelledby="itemTechTitle">
+  <div class="research-tech-head"><div><small>구버전 아이템 DB · 실물 획득 선행조건</small><h2 id="itemTechTitle">아이템 획득 경로</h2></div>
+    <button type="button" id="closeItemTech">닫기</button></div>
+  <div id="itemTechHost" aria-live="polite"></div>
+</dialog>
+
+<script type="module" src="./app.js?v=20261105-itemtech-1"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 <script defer src="../atlas-reader-guide.js?v=20261104-detail-nav-3"></script>
 </body>

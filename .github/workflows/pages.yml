@@ -58,6 +58,8 @@ jobs:
           node tools/check-acquisition-tech-view-browser.mjs
           # The legacy Research DB reuses the same viewer with a version-isolated source index.
           node tools/check-research-tech-browser.mjs
+          # Legacy item acquisition: original price/store gates, manufacturing and event outcome uncertainty.
+          node tools/check-item-acquisition-tech-browser.mjs
 
       - name: Publish public tree to gh-pages
         run: |

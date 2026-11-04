@@ -77,6 +77,9 @@
 .tech-node--research{border-left-color:#8fbffd}
 .tech-node--item{border-left-color:#70cbbb}
 .tech-node--event{border-left-color:#f4bf85}
+.tech-node--manufacture{border-left-color:#8adbf3}
+.tech-node--funds{border-left-color:#d4ca88}
+.tech-node--condition{border-left-color:#a7b6d4}
 .tech-node--facility{border-left-color:#bfa6ff}
 .tech-node--and{border-left-color:#e5c17a}
 .tech-node--or{border-left-color:#a6baff}
@@ -97,10 +100,11 @@
   border-top:1px solid #38546f;padding:11px 16px;font-size:.8rem;background:#12283e;line-height:1.55}
 .tech-selected-summary{display:flex;flex:1 1 260px;flex-direction:column;gap:2px;min-width:0}
 .tech-selected-actions{display:flex;flex-wrap:wrap;gap:7px}
-.tech-selected-actions button{padding:7px 10px;border:1px solid #6483a3;border-radius:7px;
+.tech-selected-actions button,.tech-selected-actions .tech-source-link{padding:7px 10px;border:1px solid #6483a3;border-radius:7px;
   background:#24445f;color:#eff7ff;font-size:.75rem;cursor:pointer}
 .tech-selected-actions button:disabled{opacity:.45;cursor:default}
-.tech-selected-actions button:not(:disabled):hover{background:#315b7b}
+.tech-selected-actions button:not(:disabled):hover,.tech-selected-actions .tech-source-link:hover{background:#315b7b}
+.tech-selected-actions .tech-source-link{display:inline-flex;align-items:center;text-decoration:none}
 .tech-node-source{flex:1 1 100%;font-size:.72rem;color:#9fbad5}
 .tech-node-source summary{cursor:pointer;width:max-content;max-width:100%}
 .tech-node-source code{display:block;margin-top:5px;overflow-wrap:anywhere;color:#d8eaff}

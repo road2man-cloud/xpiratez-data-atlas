@@ -67,4 +67,10 @@ assert.match(freeGraph.describe(freeRoute).detail,/보장 아님/);
 assert.throws(()=>createLegacyResearchTechAdapter({meta:{schemaVersion:999},topics},'STR_SDD_CONTROL'));
 const proof=trace.renderEvidence(trace.root);
 assert(proof.includes('v.o1.1.1')&&proof.includes(candidate.target));
+const sampleTree=createLegacyResearchTechAdapter(data,'STR_FUNGUS_OUTBREAK');
+const sampleLab=sampleTree.expand(sampleTree.root).children.find(n=>n.id==='LAB:STR_FUNGUS_OUTBREAK');
+const specimen=sampleTree.expand(sampleLab).children.find(n=>n.kind==='item');
+assert(specimen);
+assert.equal(sampleTree.linkForNode(specimen).href,
+  '../items/#item=STR_FUNGUS_OUTBREAK');
 console.log('PASS legacy research tech: 4612 source-derived topics, mandatory base function, AND dependency, unlock OR, conditional grant RNG, unsafe-unlocker exclusion, version-isolated evidence');
