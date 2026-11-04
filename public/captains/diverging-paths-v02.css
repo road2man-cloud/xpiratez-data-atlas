@@ -1,0 +1,58 @@
+/* Diverging Paths v.o2 editorial: responsive, no nested grid of grids */
+#divergingPathsV02{margin:30px 0 36px;border:1px solid #35537e;border-radius:20px;background:linear-gradient(155deg,#132139,#10192b);padding:clamp(14px,2.3vw,26px);color:#e9f2ff;scroll-margin-top:85px}
+#divergingPathsV02 .dp-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+#divergingPathsV02 .dp-heading h2{font-size:clamp(1.35rem,3vw,1.9rem);margin:.1em 0 .3em}
+#divergingPathsV02 .dp-heading p:last-child{color:#b4c6e3;max-width:750px}
+#divergingPathsV02 .dp-jump{display:inline-block;background:#25456d;border:1px solid #547bb0;border-radius:10px;padding:10px 14px;color:#e0f2fe;font-weight:750}
+#divergingPathsV02 .dp-warning{margin:18px 0;border-left:3px solid #86b6fa;background:#162a47;padding:12px 14px;border-radius:7px;color:#dae7fb;font-size:.9rem}
+#divergingPathsV02 .dp-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+#divergingPathsV02 .dp-tab{flex:1 1 110px;font-weight:750;background:#14233c;border:1px solid #3b5474;min-height:44px}
+#divergingPathsV02 .dp-tab.is-active{background:#2867a8;color:white;border-color:#80baff;box-shadow:inset 0 -3px #c8e3ff}
+#divergingPathsV02 .dp-path-intro h3{font-size:1.45rem;margin:0 0 5px;line-height:1.3}
+#divergingPathsV02 .dp-path-intro h3 span{display:block;font-size:.93rem;color:#9ec1ef;font-weight:550;margin-top:4px}
+#divergingPathsV02 .dp-path-intro p{color:#c7d8f0;margin-bottom:9px}
+#divergingPathsV02 .dp-provenance,#divergingPathsV02 .dp-footnote{color:#9fb5d4;font-size:.78rem}
+#divergingPathsV02 .dp-procon{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+#divergingPathsV02 .dp-procon>div{padding:14px 15px;border:1px solid #314a6b;border-radius:12px;background:#0d1a2e}
+#divergingPathsV02 h4{margin:0 0 8px;color:#c4ddff;font-size:1rem}
+#divergingPathsV02 .dp-list{margin:5px 0 6px;padding-left:20px}
+#divergingPathsV02 .dp-list li{padding:2px 0;line-height:1.55}
+#divergingPathsV02 .dp-subheading{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #3a4d6f;padding-bottom:9px;margin:13px 0}
+#divergingPathsV02 .dp-subheading h4{margin:0}
+#divergingPathsV02 .dp-filter{display:flex;gap:6px}
+#divergingPathsV02 .dp-filter button{font-size:.82rem;padding:6px 10px}
+#divergingPathsV02 .dp-filter .selected{border-color:#60a5fa;background:#244c7b}
+#divergingPathsV02 .dp-event{margin:8px 0;border:1px solid #304863;border-radius:11px;background:#102038;overflow:hidden}
+#divergingPathsV02 .dp-event summary{display:flex;justify-content:space-between;gap:12px;align-items:center;cursor:pointer;padding:12px 14px;list-style:none}
+#divergingPathsV02 .dp-event summary::-webkit-details-marker{display:none}
+#divergingPathsV02 .dp-event summary:focus-visible{outline:3px solid #60a5fa;outline-offset:-3px}
+#divergingPathsV02 .dp-event[open] summary{border-bottom:1px solid #345074;background:#1a2f4c}
+#divergingPathsV02 .dp-event-title{font-weight:750;min-width:0}
+#divergingPathsV02 .dp-event-title small{display:block;color:#afc1db;font-weight:400;font-size:.78rem;margin-top:2px}
+#divergingPathsV02 .dp-event-odds{color:#bde3ff;font-weight:850;white-space:nowrap;text-align:right}
+#divergingPathsV02 .dp-event-odds small{display:block;color:#8eaad0;font-weight:500;font-size:.72rem}
+#divergingPathsV02 .dp-event-body{padding:12px 14px 16px;font-size:.88rem}
+#divergingPathsV02 .dp-event-meta{display:flex;gap:7px;flex-wrap:wrap}
+#divergingPathsV02 .dp-chip{border:1px solid #456185;background:#172943;color:#afd2ff;padding:2px 8px;border-radius:100px;font-size:.7rem}
+#divergingPathsV02 .dp-shared{border-color:#78623d;color:#ffe1a3}
+#divergingPathsV02 .dp-scroll{overflow-x:auto;max-width:100%}
+#divergingPathsV02 .dp-table{min-width:0;width:100%;border-collapse:collapse;font-size:.84rem;table-layout:auto}
+#divergingPathsV02 .dp-table th,#divergingPathsV02 .dp-table td{position:static!important;max-width:none!important;min-width:0!important;background:transparent!important;border:0;border-bottom:1px solid #344766;padding:10px 8px;text-align:left}
+#divergingPathsV02 .dp-table th{color:#afc9ef;font-size:.76rem;font-weight:700}
+#divergingPathsV02 .dp-table th:not(:first-child),#divergingPathsV02 .dp-table td:not(:first-child){text-align:right;white-space:nowrap}
+#divergingPathsV02 .dp-table td strong{color:#aee5cc}
+#divergingPathsV02 .dp-separator{border-top:1px solid #435a7e;margin:26px 0}
+#divergingPathsV02 .dp-secondary{padding-top:10px;margin-top:18px;scroll-margin-top:60px}
+#divergingPathsV02 .dp-secondary h3{font-size:1.24rem;margin:6px 0 14px}
+#divergingPathsV02 .dp-note{background:#182943;border-radius:10px;padding:12px;color:#c5d6ef;font-size:.9rem}
+#divergingPathsV02 .dp-seven-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+#divergingPathsV02 .dp-checklist{display:grid;gap:7px}
+#divergingPathsV02 .dp-checklist label{display:flex;gap:11px;align-items:flex-start;padding:9px 11px;background:#142541;border-radius:8px;border:1px solid #314768;cursor:pointer}
+#divergingPathsV02 .dp-checklist input{accent-color:#60a5fa;margin-top:5px;flex-shrink:0}
+#divergingPathsV02 .dp-checklist small{display:block;font:400 .69rem/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;color:#96b0d4;overflow-wrap:anywhere}
+#divergingPathsV02 .dp-highlight{border-left:3px solid #60a5fa;padding:11px;background:#1b3350;font-weight:750}
+#divergingPathsV02 .dp-facts{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+#divergingPathsV02 .dp-facts span{padding:8px 11px;background:#102440;border:1px solid #325172;border-radius:9px}
+#divergingPathsV02 .dp-facts b{white-space:nowrap}
+@media(max-width:770px){#divergingPathsV02 .dp-procon,#divergingPathsV02 .dp-seven-layout{grid-template-columns:1fr}#divergingPathsV02 .dp-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}#divergingPathsV02 .dp-tab{min-width:0;flex:auto}#divergingPathsV02 .dp-table{font-size:.79rem}#divergingPathsV02 .dp-table th,#divergingPathsV02 .dp-table td{padding:8px 6px}}
+@media(max-width:430px){#divergingPathsV02 .dp-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}#divergingPathsV02 .dp-event summary{gap:8px;padding:11px 9px}#divergingPathsV02 .dp-event-body{padding:10px}#divergingPathsV02 .dp-table th:nth-child(2),#divergingPathsV02 .dp-table td:nth-child(2){display:none}}

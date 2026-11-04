@@ -1,0 +1,708 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "X-Piratez v.o2",
+  "engineVersion": "OXCE 8.7.1",
+  "source": "Piratez.rul / Piratez_Events.rul / Piratez_Transformations.rul",
+  "notes": [
+    "월별 확률은 모든 상세 조건을 만족할 때 매월 실행되는 독립 이벤트 스크립트 확률이다.",
+    "eventWeights 이벤트는 스크립트 실행 확률과 가중치의 곱으로 결과 확률을 계산한다.",
+    "공통 후속 이벤트는 특정 영구 선택만의 독점 혜택이 아니다."
+  ],
+  "paths": [
+    {
+      "id": "peasant",
+      "research": "STR_PEASANT_REVOLUTION",
+      "name": "농민 혁명",
+      "subtitle": "병종 상자·클론 면허·대량 증원",
+      "opening": "연설 추첨을 시작으로 선전·혁명 본부·농부 축제·스케빈저 작전으로 월간 독립 추첨을 누적한다.",
+      "advantages": [
+        "돌격 클론 면허 3개 반복 추첨",
+        "농부 혁명가·소녀 안내인·유랑자 소녀 5개 묶음 증원",
+        "보급 상자와 베네수엘라 노동자 지원 추가 가능",
+        "위대한 대의 이후 최면 선동으로 자금 +300,000 및 글래머 30개"
+      ],
+      "tradeoffs": [
+        "점수와 난이도에 따라 125,000~1,500,000의 별도 자금 손실",
+        "위대한 대의 완료 시 기본 PROPAGANDA_1 차단",
+        "인민의 군대와 붉은 기사 선행 분기는 상호 배제",
+        "스케빈저·혁명 본부 등 후속 조건 충족 전에는 대량 공급 없음"
+      ],
+      "events": [
+        {
+          "name": "기본 혁명 연설",
+          "script": "STR_PROPAGANDA_1",
+          "odds": 23,
+          "conditions": "농민 혁명 완료 · 위대한 대의 미완료",
+          "outcomes": [
+            [
+              "혁명가 2개 + 소녀 안내인 1개 · 점수 +500",
+              25
+            ],
+            [
+              "혁명가 1개 · 점수 +200",
+              75
+            ],
+            [
+              "점수 +100",
+              175
+            ],
+            [
+              "점수 -100",
+              100
+            ],
+            [
+              "자금 +200,000",
+              50
+            ],
+            [
+              "돌격 클론 면허 3개 · 점수 -150 · 면허 연구",
+              25
+            ]
+          ]
+        },
+        {
+          "name": "선전물 연설",
+          "script": "STR_PROPAGANDA_2",
+          "odds": 23,
+          "conditions": "선전물 연구 완료",
+          "outcomes": [
+            [
+              "혁명가 2개 + 안내인 1개 · 점수 +500",
+              25
+            ],
+            [
+              "혁명가 1개 · 점수 +200",
+              75
+            ],
+            [
+              "점수 +100",
+              175
+            ],
+            [
+              "점수 -100",
+              50
+            ],
+            [
+              "자금 +200,000",
+              75
+            ],
+            [
+              "돌격 클론 면허 3개 · 점수 -150",
+              25
+            ]
+          ]
+        },
+        {
+          "name": "혁명 본부 연설",
+          "script": "STR_PROPAGANDA_3",
+          "odds": 23,
+          "conditions": "선전물 연구 + 혁명 본부 시설",
+          "outcomes": [
+            [
+              "혁명가 2개 + 안내인 1개 · 점수 +500",
+              25
+            ],
+            [
+              "혁명가 1개 · 점수 +200",
+              75
+            ],
+            [
+              "점수 +100",
+              175
+            ],
+            [
+              "점수 -100",
+              50
+            ],
+            [
+              "자금 +200,000",
+              75
+            ],
+            [
+              "돌격 클론 면허 3개 · 점수 -150",
+              75
+            ]
+          ]
+        },
+        {
+          "name": "설득 연설",
+          "script": "STR_PROPAGANDA_4",
+          "odds": 23,
+          "conditions": "선전물 + 설득 연구",
+          "outcomes": [
+            [
+              "혁명가 2개 + 안내인 1개 · 점수 +500",
+              25
+            ],
+            [
+              "혁명가 1개 · 점수 +200",
+              75
+            ],
+            [
+              "점수 +100",
+              125
+            ],
+            [
+              "자금 +200,000",
+              100
+            ],
+            [
+              "돌격 클론 면허 3개 · 점수 -150",
+              25
+            ]
+          ]
+        },
+        {
+          "name": "농부 축제 증원",
+          "script": "STR_REVOLUTIONARY_REINFORCEMENTS_A",
+          "odds": 25,
+          "conditions": "농부 축제 완료 · 붉은 기사 선행 연구 미완료",
+          "outcomes": [
+            [
+              "A: 농부 혁명가 5 + 대비주의자 상자 1",
+              100
+            ],
+            [
+              "B: 농부 혁명가 4 + 농부 소녀 안내인 1 + 대비주의자 상자 1",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "혁명 본부 증원",
+          "script": "STR_REVOLUTIONARY_REINFORCEMENTS_B",
+          "odds": 40,
+          "conditions": "혁명 본부 시설 보유 · 다른 경로에서도 시설 조건을 갖출 수 있는지 별도 확인",
+          "shared": true,
+          "outcomes": [
+            [
+              "A: 농부 혁명가 5 + 대비주의자 상자 1",
+              100
+            ],
+            [
+              "B: 농부 혁명가 4 + 안내인 1 + 대비주의자 상자 1",
+              100
+            ],
+            [
+              "C: 유랑자 소녀 5 + 대비주의자 상자 1",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "인민의 군대 증원",
+          "script": "STR_REVOLUTIONARY_REINFORCEMENTS_C",
+          "odds": 25,
+          "conditions": "인민의 군대 선행 연구 완료 · 위대한 대의 이후 분기",
+          "outcomes": [
+            [
+              "A: 농부 혁명가 5 + 대비주의자 상자 1",
+              75
+            ],
+            [
+              "B: 농부 혁명가 4 + 안내인 1 + 대비주의자 상자 1",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "스케빈저 접촉 상자",
+          "script": "STR_SCAVENGING_OPERATIONS_1",
+          "odds": 23,
+          "conditions": "스케빈저 접촉 완료",
+          "shared": true,
+          "outcomes": [
+            [
+              "지역 보급 상자 1개 (지역 29항목 별도 균등 추첨)",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "스케빈저 작전 상자",
+          "script": "STR_SCAVENGING_OPERATIONS_2",
+          "odds": 23,
+          "conditions": "스케빈저 작전 연구 완료",
+          "shared": true,
+          "outcomes": [
+            [
+              "지역 보급 상자 1개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "남부 지역 작전 상자",
+          "script": "STR_SCAVENGING_OPERATIONS_3",
+          "odds": 9,
+          "conditions": "스케빈저 작전 + 남부 지역 연구",
+          "shared": true,
+          "outcomes": [
+            [
+              "지역 보급 상자 1개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "아시아 지역 작전 상자",
+          "script": "STR_SCAVENGING_OPERATIONS_4",
+          "odds": 9,
+          "conditions": "스케빈저 작전 + 아시아 지역 연구",
+          "shared": true,
+          "outcomes": [
+            [
+              "지역 보급 상자 1개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "유럽 지역 작전 상자",
+          "script": "STR_SCAVENGING_OPERATIONS_5",
+          "odds": 9,
+          "conditions": "스케빈저 작전 + 유럽 지역 연구",
+          "shared": true,
+          "outcomes": [
+            [
+              "지역 보급 상자 1개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "아메리카 지역 작전 상자",
+          "script": "STR_SCAVENGING_OPERATIONS_6",
+          "odds": 9,
+          "conditions": "스케빈저 작전 + 아메리카 지역 연구",
+          "shared": true,
+          "outcomes": [
+            [
+              "지역 보급 상자 1개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "베네수엘라 인력 지원",
+          "script": "STR_RED_REV_EVENT",
+          "odds": 23,
+          "conditions": "농부 축제 완료 + 베네수엘라에 플레이어 기지 존재",
+          "outcomes": [
+            [
+              "남성 노동자 5개 + 여성 노동자 5개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "위대한 대의: 최면 선동",
+          "script": "STR_PROPAGANDA_5",
+          "odds": 50,
+          "conditions": "위대한 대의 연구 완료",
+          "outcomes": [
+            [
+              "자금 +300,000 · 글래머 30개 · 점수 +300",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "혁명 자금 손실 A",
+          "script": "STR_REVOLUTIONARY_MISSING_FUNDS_A",
+          "odds": 30,
+          "conditions": "경과 1개월 이상 · 난이도 ≥1 · 점수 2,500~4,999",
+          "outcomes": [
+            [
+              "자금 -125,000 · 점수 +50",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "혁명 자금 손실 B",
+          "script": "STR_REVOLUTIONARY_MISSING_FUNDS_B",
+          "odds": 35,
+          "conditions": "경과 1개월 이상 · 난이도 ≥1 · 점수 5,000~9,999",
+          "outcomes": [
+            [
+              "자금 -300,000 · 점수 +100",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "혁명 자금 손실 C",
+          "script": "STR_REVOLUTIONARY_MISSING_FUNDS_C",
+          "odds": 40,
+          "conditions": "경과 1개월 이상 · 난이도 ≥1 · 점수 10,000~14,999",
+          "outcomes": [
+            [
+              "자금 -650,000 · 점수 +150",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "고난이도 추가 손실",
+          "script": "STR_REVOLUTIONARY_MISSING_FUNDS_C_EXTRA",
+          "odds": 30,
+          "conditions": "경과 1개월 이상 · 난이도 ≥4 · 점수 ≥7,000 (다른 손실과 독립)",
+          "outcomes": [
+            [
+              "자금 -650,000 · 점수 +150",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "혁명 자금 손실 D",
+          "script": "STR_REVOLUTIONARY_MISSING_FUNDS_D",
+          "odds": 45,
+          "conditions": "경과 1개월 이상 · 난이도 ≥1 · 점수 ≥18,000",
+          "outcomes": [
+            [
+              "자금 -1,500,000 · 점수 +200",
+              100
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "male",
+      "research": "STR_WE_NEED_MALE_TOUCH",
+      "name": "남성 병사",
+      "subtitle": "황혼의 신봉자·일곱 영웅들",
+      "opening": "황혼의 신봉자를 17%로 매월 추첨하고, 11개월 경과 시 매우 까다로운 단발 보상을 노릴 수 있다.",
+      "advantages": [
+        "황혼의 신봉자 1개 월간 17%",
+        "일곱 영웅들 조건을 완성하면 인간 영웅 7개 + 정찰 사륜차 7개 + 후소 검 7개 + 대비주의자 상자 7개",
+        "선행 선택 연구 비용이 3으로 저렴"
+      ],
+      "tradeoffs": [
+        "동인지 3개를 얻는 이벤트마다 자금 -100,000",
+        "버그아이 모집 연구 완료 시 신봉자 이벤트 차단",
+        "일곱 영웅들은 11개월 경과 월 1회만 유효 · 조건 하나라도 미충족이면 상실",
+        "힘을 받아들임과 힘을 거부함은 상호 배제"
+      ],
+      "events": [
+        {
+          "name": "황혼의 신봉자",
+          "script": "STR_HYBRID_OF_TWILIGHT_EVENT",
+          "odds": 17,
+          "conditions": "경과 1개월 이상 · 남성 병사 완료 · 버그아이 모집 미완료",
+          "outcomes": [
+            [
+              "황혼의 신봉자 1개",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "입술이 가벼우면 배가 가라앉는다",
+          "script": "STR_LOOSE_LIPS",
+          "odds": 33,
+          "conditions": "남성 병사 완료",
+          "outcomes": [
+            [
+              "웃긴 동인지 3개 · 자금 -100,000",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "일곱 영웅들 (1회성)",
+          "script": "STR_THE_MAGNIFICIENT_SEVEN_EVENT",
+          "odds": 100,
+          "oneTime": true,
+          "conditions": "경과 11개월 정확히 · 난이도 ≥1 · 남성 병사·힘을 거부한다·민간인 함선 추적 중지·퍼플 블룸의 하사품 연구 완료 · 혼자 있고 싶은 선장 미완료 · 리자드맨 동상 현재 미보유",
+          "outcomes": [
+            [
+              "인간 영웅 7 · 정찰 사륜차 7 · 후소 검 7 · 대비주의자 상자 7 · 악평 +300 · 사이도니아의 진짜 기사들 연구",
+              100
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gal",
+      "research": "STR_GALS_ARE_SUPERIOR",
+      "name": "갈 우월",
+      "subtitle": "현금 이벤트·조건부 파티",
+      "opening": "월별 33% 판정에서 자금 +100,000과 점수 -250이 동등하게 추첨된다.",
+      "advantages": [
+        "월간 현금 지급 +100,000의 결과 확률 16.5%",
+        "조건을 갖추면 파티 이벤트에서 정부 요원 아이템 가능"
+      ],
+      "tradeoffs": [
+        "현금 보상이 아닌 점수 -250 결과도 동일 확률",
+        "기본 분기 전용 반복 병종 지급은 없음",
+        "파티 추가 보상은 선장 성향 등의 별도 조건이 있어 전용으로 계산 불가"
+      ],
+      "events": [
+        {
+          "name": "슈퍼변이체 계집이 최고다 / 교단의 상태",
+          "script": "STR_SUPERIOR_BEINGS",
+          "odds": 33,
+          "conditions": "갈 우월 연구 완료",
+          "outcomes": [
+            [
+              "자금 +100,000",
+              100
+            ],
+            [
+              "점수 -250",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "잊지 못할 파티 (공통 후속)",
+          "script": "STR_A_PARTY_TO_REMEMBER",
+          "odds": 23,
+          "shared": true,
+          "conditions": "파티 관련 연구 + 선장 Gold 성향",
+          "outcomes": [
+            [
+              "웃긴 동인지 3개",
+              100
+            ],
+            [
+              "자금 -1,000",
+              100
+            ],
+            [
+              "점수 +100",
+              100
+            ],
+            [
+              "정부 요원 아이템 1개 · 점수 +100",
+              100
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cat",
+      "research": "STR_CAT_PATH",
+      "name": "캣",
+      "subtitle": "오시론·네코미미 직접 합류·에이스",
+      "opening": "기본 연구 해금 이벤트가 있고 후속 네코미미 접촉으로 병사 1명과 무장 패키지를 직접 받는 별도 반복 경로가 열린다.",
+      "advantages": [
+        "캣걸/캣전사 1명 직접 합류 + 무장 패키지의 월간 13%",
+        "에이스 캣전사 + 네코미미 전투기 1회성 획득 후보",
+        "오시론·비밀 거래·테베 돌격 캣걸 연구 해금"
+      ],
+      "tradeoffs": [
+        "기본 이벤트는 연구 해금으로 한 번 획득하면 후속 효용이 작음",
+        "후속 캣걸 합류는 밀수업자·통신 연구를 요구하며 캣 전용으로 단정 불가",
+        "에이스 이벤트는 1회성 · 스크립트 확률을 중복 합산하면 안 됨"
+      ],
+      "events": [
+        {
+          "name": "고양이 애호가",
+          "script": "STR_NEKOMIMI_CAT_PATH_SLANDER_EVENT",
+          "odds": 50,
+          "conditions": "캣 경로 연구 완료",
+          "outcomes": [
+            [
+              "오시론 연구 · 점수 -100",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "우주에서 온 캣걸 — 접촉 전",
+          "script": "STR_CATGIRL_FROM_SPACE_EARLY",
+          "odds": 13,
+          "shared": true,
+          "conditions": "밀수업자 접촉 · 네코미미 연구 · 연대기 001 · 하이퍼웨이브 · 네코미미 접촉 미완료",
+          "outcomes": [
+            [
+              "캣걸 1명 + 네코미미 우주복 + 무장 패키지(10종 중 하나) · 점수 +200",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "우주에서 온 캣걸 — 접촉 후",
+          "script": "STR_CATGIRL_FROM_SPACE",
+          "odds": 13,
+          "shared": true,
+          "conditions": "위 조건 + 네코미미 접촉 연구 완료",
+          "outcomes": [
+            [
+              "캣걸 1명 + 네코미미 우주복 + 무장 패키지(10종 중 하나) · 점수 +200",
+              200
+            ],
+            [
+              "캣전사 1명 + 무장 패키지(8종 중 하나) · 점수 +200",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "에이스 캣전사 · 일반 접촉(1회)",
+          "script": "STR_MRSHAN_FIGHTER_EVENT",
+          "odds": 3,
+          "oneTime": true,
+          "shared": true,
+          "conditions": "12개월 이후 · 밀수업자·네코미미 접촉 등 · 특정 선장 성향 미완료",
+          "outcomes": [
+            [
+              "에이스 캣전사 + 전투기 보관품 1 + 핵배터리 12·6 + 기관단총·탄창 + 장비 패키지",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "에이스 캣전사 · 파이어폭스(1회)",
+          "script": "STR_MRSHAN_FIGHTER_EVENT_CATPATH",
+          "odds": 7,
+          "oneTime": true,
+          "shared": true,
+          "conditions": "15개월 이후 · 파이어폭스 수송선 연구",
+          "outcomes": [
+            [
+              "에이스 캣전사 + 전투기 보관품·무장",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "에이스 캣전사 · 파이어폭스 후기(1회)",
+          "script": "STR_MRSHAN_FIGHTER_EVENT_CATPATH_2",
+          "odds": 6,
+          "oneTime": true,
+          "shared": true,
+          "conditions": "24개월 이후 · 파이어폭스 수송선 연구",
+          "outcomes": [
+            [
+              "에이스 캣전사 + 전투기 보관품·무장",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "네코미미 비밀 거래",
+          "script": "STR_NEKOMIMI_CAT_PATH_SECRET_DEAL",
+          "odds": 100,
+          "oneTime": true,
+          "conditions": "15개월 이후 · 캣 경로 · 파이어폭스·문화 교류·황금 총·선장 계급 6 · 비밀 거래 미완료",
+          "outcomes": [
+            [
+              "네코미미 비밀 거래 연구",
+              100
+            ]
+          ]
+        },
+        {
+          "name": "클레오의 캣걸",
+          "script": "STR_CLEO_CATGIRLS",
+          "odds": 52,
+          "oneTime": true,
+          "shared": true,
+          "conditions": "클레오 도전 완료 · 역사 051 · 선장 계급 9 · 탄호이저 게이트 등 다수 고급 연구 · 테베 돌격 캣걸 연구 미완료",
+          "outcomes": [
+            [
+              "테베 돌격 캣걸 연구 · 점수 +100",
+              100
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hybrid",
+      "research": "STR_HYBRID_PATH",
+      "name": "혼종",
+      "subtitle": "직접 월간 보급 없음·레티큘란 연구",
+      "opening": "선택 연구 자체를 직접 요구하는 별도 월간 물품 보상은 원본 645개 이벤트 스크립트에서 발견되지 않았다.",
+      "advantages": [
+        "레티큘란 무료 연구 및 접촉 경로 해금",
+        "외계 기술·버그아이 모집의 후속 연구 가치",
+        "공통 선전·파티 등은 별도 조건을 달성하면 접근 가능"
+      ],
+      "tradeoffs": [
+        "남성 병사 17% 황혼의 신봉자 이벤트를 혼종 전용 보상으로 간주하면 안 됨",
+        "직접 월간 반복 지급 이벤트는 확인되지 않음"
+      ],
+      "events": []
+    }
+  ],
+  "magnificentSeven": {
+    "title": "일곱 영웅들 (매그니피센트 세븐)",
+    "script": "STR_THE_MAGNIFICIENT_SEVEN_EVENT",
+    "onlyMonth": 11,
+    "executionOdds": 100,
+    "requirements": [
+      [
+        "남성 병사 경로 완료",
+        "STR_WE_NEED_MALE_TOUCH",
+        true
+      ],
+      [
+        "힘을 거부한다 연구 완료",
+        "STR_REJECT_THE_POWER",
+        true
+      ],
+      [
+        "민간인 함선 추적 중지 연구 완료",
+        "STR_NO_CIVILIAN_TRAFFIC",
+        true
+      ],
+      [
+        "퍼플 블룸의 하사품 연구 완료",
+        "STR_OFFERING_TO_PURPLE_BLOOM",
+        true
+      ],
+      [
+        "혼자 있고 싶은 선장 연구 미완료",
+        "STR_CAPTAIN_PURE_UP",
+        false
+      ],
+      [
+        "리자드맨 동상 현재 기지 창고·항공기 미보유",
+        "STR_LIZARDMAN_STATUE",
+        false
+      ]
+    ],
+    "rewards": [
+      "인간 영웅 ×7",
+      "정찰 사륜차 ×7",
+      "후소 검 ×7",
+      "대비주의자 상자 ×7",
+      "악평 +300",
+      "사이도니아의 진짜 기사들 연구"
+    ],
+    "details": [
+      "경과 11개월에만 실행 판정; 실제 달력의 11월과 다름.",
+      "난이도 1 이상 필수.",
+      "리자드맨 동상은 과거 소지 이력이 아니라 판정 시점의 기지 창고·항공기 적재 여부를 검사한다.",
+      "퍼플 블룸 물품 자체는 이벤트에서 소모하지 않고, 완료된 연구 플래그만 검사한다.",
+      "힘을 받아들임·드릴 조사 완료는 힘을 거부한다 연구를 봉쇄하여 영구 실기 가능성이 있다."
+    ]
+  },
+  "purpleBloom": {
+    "name": "퍼플 블룸의 하사품",
+    "craft": "변이체의 축복 ×69 → 하사품 ×1 + 변이체 동맹 공로 ×300",
+    "craftTime": 200,
+    "craftCost": 0,
+    "researchCost": 3,
+    "requiresFacility": "CULT",
+    "costSell": 69000,
+    "monthlyMaintenance": -33000,
+    "notes": [
+      "연구에는 실물이 필요하지만 연구 시 소모되지 않는다.",
+      "일곱 영웅들 이벤트는 해당 연구 완료만 요구하며 하사품 물품을 소비하지 않는다.",
+      "하사품 연구 완료로 사쿠라·시발링가(1회, 시발링가 ×1)가 열린다.",
+      "시발링가 부활 시술은 시발링가 ×1 + 하사품 ×1을 재료로 요구한다.",
+      "더블 골드·자금 600만 이상이면 매월 33%로 자금 -100만 / 변이체의 축복 12개 사건도 열린다.",
+      "판매가 69,000 · 보유 시 매월 유지비 -33,000(비용 감소)."
+    ]
+  },
+  "versionNote": "원본 v.o2 검사 결과. 사이트의 다른 기존 분기 자료(v.o1.1.1)와 버전이 다를 수 있으므로 혼합 계산 금지."
+}
