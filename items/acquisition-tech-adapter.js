@@ -86,16 +86,56 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       return {node:n,relation:'and',children};
     }
     if(n.sourceKind==='event'){
-      const e=n.reward;
+      const e=n.reward,source=index.events?.[n.event];
       const children=[
-        gate('event','EVENT_TRIGGER:'+n.event,
-          '이벤트 자체의 연구·월·난이도·국가·시나리오 등장 조건은 별도 확인 · 이벤트 발생 확정 아님'),
+        source?.scripts?.length?make('or','EVENT_TRIGGER:'+n.event,{
+          sourceKind:'event-triggers',event:n.event}):
+          gate('warning','EVENT_TRIGGER:'+n.event,
+            '이 이벤트의 발생 스크립트를 확인하지 못함 · 발생 가능성 미검증'),
         gate('condition','EVENT_REWARD:'+n.event+':'+e.option,
           '이벤트 발생 조건에서 '+fmt(e.qty)+'개 지급 후보 · '+(modeLabel[e.kind]||e.kind))
       ];
       if(e.kind!=='fixed')children.push(gate('random','RANDOM_EVENT:'+n.event+':'+e.option,
         '이벤트 보상 목록 내부 비중 '+amount(e.relativeShare)+
         ' · 전체 캠페인 이벤트 발생/획득 확률이 아님'));
+      return {node:n,relation:'and',children};
+    }
+    if(n.sourceKind==='event-triggers'){
+      const scripts=list(index.events[n.event]?.scripts);
+      return {node:n,relation:scripts.length>1?'or':'chain',children:scripts.map((s,i)=>
+        make('and','EVENT_SCRIPT:'+n.event+':'+i,{sourceKind:'event-script',
+          event:n.event,scriptIndex:i}))};
+    }
+    if(n.sourceKind==='event-script'){
+      const s=index.events[n.event]?.scripts?.[n.scriptIndex];
+      if(!s)return {node:n,relation:'chain',children:[gate('warning','SCRIPT_UNKNOWN:'+n.id,'발생 스크립트 확인 불가')]};
+      const children=[];
+      for(const [key,value] of Object.entries(s.conditions||{}))
+        children.push(gate('condition','EV_COND:'+n.id+':'+key,
+          key+' = '+value+' · 원본 스크립트 조건; 실제 실행 시점/추첨과 구분'));
+      for(const [key,entries] of Object.entries(s.triggerMaps||{})){
+        for(const [i,t] of list(entries).entries()){
+          if(key==='researchTriggers'&&t.value===true&&research.topics[t.id])
+            children.push(researchNode(t.id));
+          else children.push(gate(t.value===false?'warning':'condition',
+            'EV_GATE:'+n.id+':'+key+':'+i,
+            (t.koName||t.id)+' ('+key+', '+t.id+') · '+
+            (t.value===false?'미충족/부재가 필요':'존재/충족 필요')+
+            ' · 현재 세이브 충족 여부 미검증'));
+        }
+      }
+      for(const [i,weight] of list(s.eventWeights).entries()){
+        const entry=list(weight.entries).find(x=>x.eventId===n.event);
+        if(entry)children.push(gate('random','EV_WEIGHT:'+n.id+':'+i,
+          '이벤트 후보 가중치 '+entry.weight+'/'+weight.totalWeight+
+          ' · 해당 선택표 내부 비중 '+amount(entry.relativeShare)+
+          ' · 실행 odds 및 다른 발생 조건과 별개'));
+      }
+      if(s.oneTimeRandomEvents?.entries?.length)children.push(gate('random','EV_ONCE:'+n.id,
+        '1회성 랜덤 이벤트 선택표 존재 · 재추첨 및 경쟁 규칙 별도 검증'));
+      if(list(s.oneTimeSequentialEvents).length)children.push(gate('condition','EV_SEQUENCE:'+n.id,
+        '1회성 순차 이벤트 목록 존재 · 앞선 이벤트 상태 별도 검증'));
+      if(!children.length)children.push(gate('warning','EV_UNRESOLVED:'+n.id,'스크립트에 명시된 제한 조건 없음 · 실제 발생 확정 아님'));
       return {node:n,relation:'and',children};
     }
     if(n.topicId&&research.topics[n.topicId]&&
@@ -129,6 +169,13 @@ export function createLegacyItemTechAdapter(index,research,goalId){
     if(n.sourceKind==='event')return {label:'이벤트 '+name(n.event)+' → '+name(n.owner),
       category:'event',badge:modeLabel[n.reward.kind]||'이벤트 지급',
       detail:'보상 '+fmt(n.reward.qty)+'개 · 이벤트 자체 출현과 보상 지급은 별도 판정'};
+    if(n.sourceKind==='event-triggers')return {label:'이벤트 발생 경로 '+list(index.events[n.event]?.scripts).length+'개',
+      category:'or',badge:'스크립트 선택',detail:'각 스크립트의 연구·시설·월·실행 odds 조건을 별도로 검사 · 발생 확정 아님'};
+    if(n.sourceKind==='event-script'){
+      const s=index.events[n.event]?.scripts?.[n.scriptIndex];
+      return {label:'발생 스크립트 '+(s?.id||n.scriptIndex),category:'event',
+        badge:'조건부 발생',detail:'원본 조건 및 이벤트 후보 선택 가중치 추적 · 현재 세이브 실행 가능성 미검증'};
+    }
     if(n.sourceKind==='unknown')return {label:'확인된 획득 경로 없음',
       category:'warning',badge:'미색인',detail:n.note};
     if(n.topicId&&research.topics[n.topicId]&&
@@ -151,6 +198,9 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       esc(n.recipe)+' / 산출 대상 '+esc(n.owner)+'</p><p><a href="../manufacture/#recipe='+
       encodeURIComponent(n.recipe)+'">제조 DB에서 전체 제조식 보기</a></p><pre>'+
       esc(JSON.stringify({recipe:recipes[n.recipe],itemOutcome:n.output},null,2))+'</pre></div>';
+    if(n?.sourceKind==='event-script'||n?.sourceKind==='event-triggers')return '<div class="tech-adapter-proof"><p><b>이벤트 발생 스크립트 근거</b> · '+esc(n.event)+'</p><pre>'+
+      esc(JSON.stringify(n.sourceKind==='event-script'?index.events[n.event]?.scripts?.[n.scriptIndex]:
+        index.events[n.event]?.scripts,null,2))+'</pre></div>';
     if(n?.sourceKind==='event')return '<div class="tech-adapter-proof"><p><b>이벤트 보상 근거</b> · '+
       esc(n.event)+' / 지급 대상 '+esc(n.owner)+'</p><p><a href="../events/#event='+
       encodeURIComponent(n.event)+'">이벤트 DB에서 발생 조건 별도 확인</a></p><pre>'+
