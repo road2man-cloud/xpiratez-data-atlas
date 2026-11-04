@@ -307,14 +307,14 @@ async function showRelatedSoldiers(mode,id,generation){
 }
 async function loadResearchTechIndex(){
   if(!researchTechIndexPromise)researchTechIndexPromise=(async()=>{
-    const url='../research/acquisition-index.json';
+    const url='../research/acquisition-index.json',version='?v=20261105-facility-tech-1';
     let result=null;
     if(typeof DecompressionStream==='function')try{
-      const response=await fetch(url+'.gz');
+      const response=await fetch(url+'.gz'+version);
       if(response.ok)result=await new Response(response.body.pipeThrough(
         new DecompressionStream('gzip'))).json();
     }catch{/* Prefer the canonical plain JSON if this browser cannot decode gzip. */}
-    result||=await json(url);
+    result||=await json(url+version);
     if(result?.meta?.schemaVersion!==1||
       result.meta.sourceVersion!==manifest.mod.version||
       result.meta.researchCount!==manifest.counts.research||
@@ -335,30 +335,31 @@ async function openResearchTech(id){
   host.textContent='현재 연구 DB와 일치하는 원본 조건을 확인하는 중…';
   if(!dialog.open)dialog.showModal();
   try{
-    const [viewer,adapters,index]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-2'),
-      import('../research/acquisition-tech-adapter.js?v=20261105-crossdb-2'),
-      loadResearchTechIndex()
+    const [viewer,adapters,items,index]=await Promise.all([
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-unified-tech-1'),
+      loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(!dialog.open)return;
-    const adapter=adapters.createLegacyResearchTechAdapter(index,id);
+    const adapter=adapters.createLegacyResearchAndItemTechAdapter(items,index,id);
     activeResearchTechViewer=viewer.mountAcquisitionTechViewer(host,{adapter,technical:true});
   }catch(error){if(dialog.open)host.textContent='연구 경로를 표시하지 못했습니다: '+error.message;}
 }
 async function loadItemTechIndex(){
   if(!itemTechIndexPromise)itemTechIndexPromise=(async()=>{
-    const url='./acquisition-index.json';
+    const url=pageMode==='research'?'../items/acquisition-index.json':'./acquisition-index.json';
+    const version='?v=20261105-unified-tech-1';
     let result=null;
     if(typeof DecompressionStream==='function')try{
-      const response=await fetch(url+'.gz');
+      const response=await fetch(url+'.gz'+version);
       if(response.ok)result=await new Response(response.body.pipeThrough(
         new DecompressionStream('gzip'))).json();
     }catch{/* Canonical JSON fallback when gzip is unavailable. */}
-    result||=await json(url);
+    result||=await json(url+version);
     if(result?.meta?.schemaVersion!==1||
       result.meta.sourceVersion!==manifest.mod.version||
       result.meta.requiredEngine!==manifest.mod.requiredExtendedVersion||
-      result.meta.count!==itemIndex.length||
+      result.meta.count!==manifest.counts.items||
       result.meta.sourceMetadataSha256!==manifest.source.metadataSha256)
       throw Error('아이템 획득 경로 인덱스가 현재 아이템 DB 원본과 일치하지 않습니다');
     return result;
@@ -375,8 +376,8 @@ async function openItemTech(id){
   if(!dialog.open)dialog.showModal();
   try{
     const [view,adapters,items,research]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-2'),
-      import('./acquisition-tech-adapter.js?v=20261105-itemtech-1'),
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-unified-tech-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;

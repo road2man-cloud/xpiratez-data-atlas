@@ -339,17 +339,29 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
     }
     if(kind==='soldier-body'){
       const births=arr(sourcesByBody.get(id));
-      const limit=8;
+      // Every registered source must be selectable. In particular, the peasant
+      // body has nine independent births; an eight-source cutoff hides the
+      // direct recruitment option and makes a reachable body seem unavailable.
+      // The tech viewer rebuilds the selected BIRTH_SOURCE with its *own*
+      // complete birth conditions, never sharing another birth's event guards.
       return group('soldier-body',id,[
-        group('or','BODY_SOURCE:'+id,births.length?[
-          ...births.slice(0,limit).map(p=>group('and','BIRTH_SOURCE:'+p.id,
+        group('or','BODY_SOURCE:'+id,births.length?births.map(p=>
+          group('and','BIRTH_SOURCE:'+p.id,
             [...arr(p.requires).map(research),
-              ...Object.keys(p.acquisitionRequiredItems||{}).map(item),
-              leaf('birth-source',p.id,'출생 이벤트/제조 실행 · 이력·능력치·재료는 출생처별 구분')],'해당 병종의 출생처 후보')),
-          ...(births.length>limit?[leaf('source-limit',id,
-            '출생처 '+births.length+'개 중 '+limit+'개만 펼침 · 전수 인증 불가')]:[])
-        ]:[leaf('unknown-body',id,'직접 출생처 미등록 · 변신 경로 조사 필요')],
-        '이 병종의 보유가 필요 · 출생처별 OR')
+              ...arr(p.requiresBaseFunc).map(baseFunction),
+              ...Object.entries(p.acquisitionRequiredItems||{}).map(([material,qty])=>
+                group('and','REQUIRED_ITEM:'+material,[item(material)],
+                  '이 출생 방법에서 실물 '+qty+'개 준비')),
+              ...(p.sourceType==='event'?[scripts('BIRTH_EVENT:'+p.sourceId,
+                p.acquisitionEventScripts,()=>[
+                  leaf('birth-award',p.sourceId,'이벤트가 발생해야 출생 · 확정 획득 아님')],
+                '이벤트 발생 스크립트별 OR')]:[]),
+              ...(Number(p.cost)>0?[leaf('funds',p.id,'출생 비용 '+p.cost)]:[]),
+              leaf('birth-source',p.id,
+                '원본 출생 방법 '+p.sourceType+' · 첫 출생과 이후 이력/조건을 혼동하지 않음')],
+            '이 출생 방법 하나의 필수 연구·시설·재료·발생 조건')):[
+          leaf('unknown-body',id,'직접 출생처 미등록 · 변신 경로 조사 필요')],
+        '이 병종의 보유가 필요 · 등록된 모든 독립 출생처 OR')
       ],'유닛 보유 조건, 단순 연구 완료만으로 충족되지 않음');
     }
     return leaf('unknown',id,'해당 연결 유형을 해석할 규칙 없음');

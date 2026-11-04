@@ -2,7 +2,7 @@
 // Edges point from prerequisite (left) to goal (right). The source model
 // keeps AND/OR distinctions; this module only controls presentation.
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree}
-  from './acquisition-condition-tree.js?v=20261104-techmap-1';
+  from './acquisition-condition-tree.js?v=20261105-body-tech-1';
 
 const list=x=>Array.isArray(x)?x:[];
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({
@@ -102,6 +102,17 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       return {node,relation:'and',children:list(data.researchRules?.[topic]?.dependencies)
         .map(id=>makeNode('research',id,'이 연구를 모두 완료해야 해금'))};
     }
+    if(node.id?.startsWith('BIRTH_SOURCE:')){
+      // A soldier-body's many sources are mutually alternative origins.
+      // Expand exactly the selected original birth profile, including its
+      // own event scripts, base functions, item quantities and hiring cost.
+      const sourceId=node.id.slice('BIRTH_SOURCE:'.length);
+      const source=list(data.profiles).find(p=>p.id===sourceId);
+      if(!source)return {node,relation:'chain',children:[makeNode('unavailable',sourceId,
+        '등록된 병종 출생처를 원본 프로파일에서 찾지 못함 · 실현 가능성 미검증')]};
+      const full=buildAcquisitionTree(source,data);
+      return {node,relation:'and',children:list(full.root.children).filter(x=>x.kind!=='start')};
+    }
     if(node.id?.startsWith('BUY:')){
       const itemId=splitId(node.id),s=data.itemSupply?.[itemId];
       if(s){
@@ -167,6 +178,15 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       category:'blocked',badge:'완료·보유 시 차단'};
     if(k==='start')return {label:'게임 시작',detail:node.note,
       category:'start',badge:'기준'};
+    if(id.startsWith('BIRTH_SOURCE:')){
+      const source=list(data.profiles).find(p=>p.id===id.slice('BIRTH_SOURCE:'.length));
+      const type=source?.sourceType==='event'?'이벤트 출생':
+        source?.sourceType==='manufacture'?'제조·모집':'직접 모집';
+      return {label:(source?getName(source.sourceId,'출생 방법'):'미확인 출생처')+' · '+type,
+        detail:'원본 출생처 '+(source?.sourceId||id)+
+          ' · 선택한 출생 방법의 연구·시설·재료·이벤트만 별도 추적',
+        category:'soldier',badge:type};
+    }
     if(k==='research')return {label:getName(id,'이름이 확인되지 않은 연구'),
       detail:node.note||'연구 완료 필요 · 선행 경로 열기',category:'research',badge:'연구'};
     if(k==='item')return {label:getName(id,'아이템 이름 확인 필요'),
@@ -417,8 +437,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     if(stage===0){path.splice(1);moreLimit.clear();render('goal');return;}
     // A nominal research/item cycle must not keep spawning duplicate
     // columns as though that constituted another legitimate acquisition.
-    if(supported.has(node.kind)&&path.slice(0,stage).some(ancestor=>
-      ancestor.kind===node.kind&&ancestor.id===node.id)){
+    if((supported.has(node.kind)||node.id?.startsWith('BIRTH_SOURCE:'))&&
+      path.slice(0,stage).some(ancestor=>
+        ancestor.kind===node.kind&&ancestor.id===node.id)){
       selection=makeNode('cycle',node.id,
         '같은 경로의 상위 단계에서 이미 선택한 조건입니다. 반복 진입으로 획득을 증명할 수 없습니다.');
       path.splice(stage);

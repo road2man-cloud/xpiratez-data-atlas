@@ -2,6 +2,7 @@
 // Research prerequisites are delegated to the already-versioned research
 // adapter, so no v.o2 preconditions are ever inserted by visualization.
 import {createLegacyResearchTechAdapter} from '../research/acquisition-tech-adapter.js';
+import {createLegacyFacilityTechAdapter} from '../facilities/legacy-acquisition-tech.js';
 
 const list=x=>Array.isArray(x)?x:[];
 const fmt=n=>Number(n).toLocaleString('ko-KR');
@@ -14,6 +15,19 @@ const amount=(share)=>typeof share==='number'&&Number.isFinite(share)?
 const modeLabel={fixed:'고정 산출',random:'랜덤 제조 후보',
   'random-list':'랜덤 단일 후보','random-bundle':'랜덤 묶음 후보'};
 
+// A research goal can use the exact same cross-domain graph as an item goal.
+// This lets a laboratory specimen recurse into its genuine item supply routes
+// without switching pages or joining modern 2.1 rules into legacy 1.1.1.
+export function createLegacyResearchAndItemTechAdapter(items,research,goalId){
+  if(!research?.topics?.[goalId])throw Error('연구 원본에 없는 목표 ID: '+goalId);
+  const fallback=Object.keys(items?.items||{})[0];
+  if(!fallback)throw Error('연결할 아이템 획득 인덱스가 없습니다');
+  const adapter=createLegacyItemTechAdapter(items,research,fallback);
+  return {...adapter,root:{kind:'research',id:goalId,children:[]},
+    notice:'X-Piratez '+research.meta.sourceVersion+
+      ' 연구 ↔ 실물 아이템 ↔ 제조 ↔ 시설 통합 선행 경로입니다. 2.1 병종 DB와 원본 규칙을 혼합하지 않습니다. 실제 상점 재고·이벤트·임무 발생과 현재 세이브 조건은 별도 검증합니다.'};
+}
+
 export function createLegacyItemTechAdapter(index,research,goalId){
   if(index?.meta?.schemaVersion!==1||!index?.items?.[goalId])
     throw Error('아이템 획득 인덱스의 버전 또는 ID가 잘못되었습니다: '+goalId);
@@ -22,6 +36,7 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       research.meta.sourceMetadataSha256!==index.meta.sourceMetadataSha256)
     throw Error('아이템·연구 원본 버전 또는 메타데이터 해시가 일치하지 않습니다');
   const items=index.items,recipes=index.recipes,cache=new Map();
+  const facilityAdapter=createLegacyFacilityTechAdapter(index.facilities,index.meta);
   const name=id=>items[id]?.name||research.topics[id]?.name||index.events?.[id]?.name||id;
   const researchAdapter=id=>{
     if(!cache.has(id))cache.set(id,createLegacyResearchTechAdapter(research,id));
@@ -35,6 +50,7 @@ export function createLegacyItemTechAdapter(index,research,goalId){
   const eventNode=(item,edge,i)=>make('and','EVENT:'+item+':'+i,{sourceKind:'event',
     owner:item,event:edge.id,quantity:edge.qty,reward:edge});
   function expand(n){
+    if(facilityAdapter.owns(n))return facilityAdapter.expand(n);
     if(n.kind==='research')return researchAdapter(n.id).expand(n);
     if(n.kind==='item'){
       const item=items[n.id];
@@ -59,7 +75,12 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       children:list(items[n.owner]?.grants).map((edge,i)=>eventNode(n.owner,edge,i))};
     if(n.sourceKind==='buy'){
       const item=items[n.owner];
-      const children=list(item.requiresBuy).map(researchNode);
+      const children=[...list(item.requiresBuy).map(researchNode),
+        ...list(item.requiresBuyBaseFunc).map(id=>make('facility-function',id))];
+      if(item.requiresBuyCountry)children.push(gate('condition','BUY_COUNTRY:'+n.owner,
+        '구매 국가 조건 '+item.requiresBuyCountry+' · 실제 국가/진영 공급 여부 미검증'));
+      if(item.transferTime!=null)children.push(gate('condition','DELIVERY:'+n.owner,
+        '구매 후 수송 시간 원본 '+fmt(item.transferTime)+' · 물품 확보 시점과 별도'));
       children.push(gate('funds','PRICE:'+n.owner,
         '표시된 구매가 '+fmt(item.costBuy)+' · 판매/보유 재고 및 구매 시점 미검증'));
       children.push(gate('warning','STOCK:'+n.owner,
@@ -110,18 +131,35 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       const s=index.events[n.event]?.scripts?.[n.scriptIndex];
       if(!s)return {node:n,relation:'chain',children:[gate('warning','SCRIPT_UNKNOWN:'+n.id,'발생 스크립트 확인 불가')]};
       const children=[];
+      const conditionLabels={firstMonth:'발생 시작 월',lastMonth:'발생 종료 월',
+        executionOdds:'스크립트 실행 판정',minScore:'필요 최소 평가점수',
+        maxScore:'허용 최대 평가점수',minFunds:'필요 최소 자금',
+        maxFunds:'허용 최대 자금',minDifficulty:'최소 난이도',
+        maxDifficulty:'최대 난이도'};
       for(const [key,value] of Object.entries(s.conditions||{}))
-        children.push(gate('condition','EV_COND:'+n.id+':'+key,
-          key+' = '+value+' · 원본 스크립트 조건; 실제 실행 시점/추첨과 구분'));
+        children.push(gate(key==='executionOdds'?'random':'condition',
+          'EV_COND:'+n.id+':'+key,
+          (conditionLabels[key]||'기타 원본 조건 '+key)+' · '+fmt(value)+
+          (key==='executionOdds'?'% · 이벤트 후보 및 보상 추첨과 별도':
+            key.endsWith('Month')?'개월 차 · 기한이 지나면 이 스크립트 불가':
+              ' · 현재 세이브 조건 충족 여부 미검증')));
+      const triggerLabels={researchTriggers:'연구 완료',facilityTriggers:'시설 보유',
+        itemTriggers:'실물 아이템 보유',xcomBaseInRegionTriggers:'지역 내 기지',
+        xcomBaseInCountryTriggers:'국가 내 기지'};
       for(const [key,entries] of Object.entries(s.triggerMaps||{})){
         for(const [i,t] of list(entries).entries()){
           if(key==='researchTriggers'&&t.value===true&&research.topics[t.id])
             children.push(researchNode(t.id));
-          else children.push(gate(t.value===false?'warning':'condition',
+          else if(key==='itemTriggers'&&t.value===true&&items[t.id])
+            children.push(make('item',t.id,{note:'이벤트 발생을 위한 실물 아이템 · 해당 아이템 공급 경로를 역추적'}));
+          else if(key==='facilityTriggers'&&t.value===true&&
+            index.facilities?.facilities?.[t.id])
+            children.push(make('facility-type',t.id,{note:'이벤트 발생 시 기지에 필요한 시설 · 건설·실제 보유 여부 별도 확인'}));
+          else children.push(gate(t.value===false?'blocked':'condition',
             'EV_GATE:'+n.id+':'+key+':'+i,
-            (t.koName||t.id)+' ('+key+', '+t.id+') · '+
-            (t.value===false?'미충족/부재가 필요':'존재/충족 필요')+
-            ' · 현재 세이브 충족 여부 미검증'));
+            (triggerLabels[key]||key)+' · '+(t.koName||t.id)+
+            ' · '+(t.value===false?'없어야 함 (존재·완료 시 차단)':'필요함')+
+            ' · 현재 세이브 충족 여부 미검증 · 원본 '+t.id));
         }
       }
       for(const [i,weight] of list(s.eventWeights).entries()){
@@ -145,6 +183,7 @@ export function createLegacyItemTechAdapter(index,research,goalId){
     return {node:n,relation:'chain',children:[]};
   }
   function describe(n){
+    if(facilityAdapter.owns(n))return facilityAdapter.describe(n);
     if(n.kind==='research')return researchAdapter(n.id).describe(n);
     if(n.kind==='item')return {label:name(n.id)+(n.qty?' ×'+fmt(n.qty):''),
       category:'item',badge:n.qty?'투입 재료':'획득 목표',
@@ -182,6 +221,8 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       /^(LAB|FREE|ACCESS|DEPENDENCIES|UNLOCK):/.test(n.id))
       return researchAdapter(n.topicId).describe(n);
     if(n.kind==='random')return {label:'랜덤 결과 확인',category:'random',badge:'확정 아님',detail:n.note};
+    if(n.kind==='blocked')return {label:'부재·미완료 조건',category:'blocked',
+      badge:'존재하면 차단',detail:n.note};
     if(n.kind==='facility-function')return {label:'기지 기능 '+n.id,category:'facility',badge:'필수 시설',detail:n.note};
     if(n.kind==='funds')return {label:'자금·작업량',category:'funds',badge:'비용 조건',detail:n.note};
     if(n.kind==='warning')return {label:'추가 확인 필요',category:'warning',badge:'미검증',detail:n.note};
@@ -190,6 +231,7 @@ export function createLegacyItemTechAdapter(index,research,goalId){
     return {label:n.id,category:'condition',badge:'조건',detail:n.note||''};
   }
   function renderEvidence(n){
+    if(facilityAdapter.owns(n))return facilityAdapter.renderEvidence(n);
     const id=n?.owner||n?.id||goalId,item=items[id];
     if(n?.kind==='research'||n?.topicId&&research.topics[n.topicId]&&
       /^(LAB|FREE|ACCESS|DEPENDENCIES|UNLOCK):/.test(n.id))
@@ -210,10 +252,11 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       '<p>원본 아이템 구매 가격 및 해금 연구, 제조·이벤트 산출 역참조. 전장 노획과 상점 실제 재고 및 이벤트 전체 발생 확률은 별도 확인.</p><pre>'+
       esc(JSON.stringify(item||items[goalId],null,2))+'</pre></div>';
   }
-  const linkForNode=n=>n?.kind==='research'&&research.topics[n.id]?
+  const linkForNode=n=>facilityAdapter.linkForNode(n)||
+    (n?.kind==='research'&&research.topics[n.id]?
     {href:'../research/#research='+encodeURIComponent(n.id),label:'연구 DB에서 전체 선행조건 확인'}:
     n?.kind==='item'&&n.id!==goalId&&items[n.id]?
-      {href:'../items/#item='+encodeURIComponent(n.id),label:'이 재료의 아이템 DB 상세 열기'}:null;
+      {href:'../items/#item='+encodeURIComponent(n.id),label:'이 재료의 아이템 DB 상세 열기'}:null);
   return {root:make('item',goalId),expand,describe,renderEvidence,linkForNode,
     notice:'X-Piratez '+index.meta.sourceVersion+' / OXCE '+
     index.meta.requiredEngine+' · 실물 아이템 획득 근거: 구매(재고 미확정), 제조 산출, 이벤트 지급. '+

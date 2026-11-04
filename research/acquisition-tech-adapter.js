@@ -1,6 +1,7 @@
 // Source-version-isolated acquisition graph adapter for the legacy Research DB.
 // The presentation engine is shared with Soldiers; the rules are NOT.
 // All positive/negative gates originate in public/items/data/research-chunks.
+import {createLegacyFacilityTechAdapter} from '../facilities/legacy-acquisition-tech.js';
 const list=x=>Array.isArray(x)?x:[];
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({
   '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -12,6 +13,7 @@ export function createLegacyResearchTechAdapter(index,goalId){
   if(index?.meta?.schemaVersion!==1||!index?.topics?.[goalId])
     throw Error('연구 원본 버전 또는 선택한 연구 ID가 없습니다: '+goalId);
   const rules=index.topics,unlock=new Map(),free=new Map(),blockedBy=new Map();
+  const facilityAdapter=createLegacyFacilityTechAdapter(index.facilities,index.meta);
   const add=(map,id,value)=>{const xs=map.get(id)||[];xs.push(value);map.set(id,xs)};
   for(const [source,t] of Object.entries(rules)){
     for(const target of list(t.unlocks))add(unlock,target,{source});
@@ -32,6 +34,7 @@ export function createLegacyResearchTechAdapter(index,goalId){
   const goodUnlock=id=>list(unlock.get(id)).filter(x=>!unsafe({...x,target:id}));
   const badUnlock=id=>list(unlock.get(id)).filter(x=>unsafe({...x,target:id}));
   function expand(n){
+    if(facilityAdapter.owns(n))return facilityAdapter.expand(n);
     const t=rules[n.id],id=n.topicId||n.id;
     if(n.kind==='research'){
       if(!t)return {node:n,relation:'chain',children:[
@@ -100,6 +103,7 @@ export function createLegacyResearchTechAdapter(index,goalId){
     return {node:n,relation:'chain',children:[]};
   }
   function describe(n){
+    if(facilityAdapter.owns(n))return facilityAdapter.describe(n);
     const t=rules[n.id],id=n.topicId||n.id,kind=n.kind;
     if(kind==='research'){
       return {label:label(n.id),category:'research',badge:'연구',
@@ -137,6 +141,7 @@ export function createLegacyResearchTechAdapter(index,goalId){
     return {label:label(n.id),category:'warning',badge:'검증 필요',detail:n.note};
   }
   function renderEvidence(selected){
+    if(facilityAdapter.owns(selected))return facilityAdapter.renderEvidence(selected);
     const id=selected?.topicId||selected?.id||goalId,t=rules[id];
     if(!t)return '<p>해당 원본 연구 ID를 찾을 수 없습니다: <code>'+esc(id)+'</code></p>';
     const source={
@@ -153,8 +158,9 @@ export function createLegacyResearchTechAdapter(index,goalId){
       '<p>이 표는 기존 연구 룰의 직접 필드입니다. 직접 지급 이벤트·임무와 실제 캠페인 시간순 실현성은 별도 검증 대상입니다.</p>'+
       '<pre>'+esc(JSON.stringify(source,null,2))+'</pre></div>';
   }
-  const linkForNode=n=>n?.kind==='item'&&n.id?
-    {href:'../items/#item='+encodeURIComponent(n.id),label:'아이템 DB에서 실물 공급 경로 확인'}:null;
+  const linkForNode=n=>facilityAdapter.linkForNode(n)||
+    (n?.kind==='item'&&n.id?
+      {href:'../items/#item='+encodeURIComponent(n.id),label:'아이템 DB에서 실물 공급 경로 확인'}:null);
   return {root:research(goalId),expand,describe,renderEvidence,linkForNode,
     notice:'이 연구 경로는 X-Piratez '+index.meta.sourceVersion+
       ' / OXCE '+index.meta.requiredEngine+' 원본입니다. 2.1 병종 DB와 조건을 합치지 않습니다. 이벤트·임무 직접 지급은 일부 미색인.'};

@@ -156,7 +156,10 @@ async function openDetail(id){
   '<h3 class="section-title">파괴·개조·상태 전이</h3><div class="section-card">'+transitionHtml(d)+'</div>'+
   '<h3 class="section-title">시설 ID 역참조</h3><div class="section-card">'+refsHtml(d)+'</div>'+
   '<details><summary>원본 effective facility 룰 보기</summary><p class="muted">맵 배치 전용 필드 '+esc((d.omittedLayoutFields||[]).join(", ")||"없음")+' 및 스프라이트/사운드 리소스는 공개 데이터에서 분리했습니다.</p><pre class="raw">'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>';
-  $("#detailDialog").showModal();
+  if(!$("#detailDialog").open)$("#detailDialog").showModal();
+  // Stable, reloadable link from a research/item facility-function path.
+  const deepLink='#facility='+encodeURIComponent(id);
+  if(location.hash!==deepLink)history.replaceState(null,'',deepLink);
 }
 $("#efficiencyView").addEventListener("change",()=>{
   const perTile=$("#efficiencyView").checked;
@@ -168,4 +171,10 @@ $("#efficiencyView").addEventListener("change",()=>{
 ["role","status","func"].forEach(id=>$("#"+id).addEventListener("change",render));
 $("#closeDialog").addEventListener("click",()=>$("#detailDialog").close());
 $("#detailDialog").addEventListener("click",e=>{if(e.target.id==="detailDialog")e.currentTarget.close()});
-load().catch(err=>{$("#summary").innerHTML='<article class="metric card"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
+function openHashFacility(){
+  if(!location.hash.startsWith('#facility='))return;
+  const id=decodeURIComponent(location.hash.slice('#facility='.length));
+  if((DATA?.index||[]).some(x=>x.id===id))openDetail(id).catch(console.error);
+}
+addEventListener('hashchange',openHashFacility);
+load().then(openHashFacility).catch(err=>{$("#summary").innerHTML='<article class="metric card"><strong>데이터 로드 실패</strong><span>'+esc(err.message)+'</span></article>';console.error(err)});
