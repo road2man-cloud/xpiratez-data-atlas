@@ -93,6 +93,33 @@ try{
   assert(methodsText.includes('125,000'),'The store option should show its actual cost upfront');
   assert(methodsText.includes('12개 고정'),'Egypt start reward quantity must be readable');
   assert(methodsText.includes('3개 고정'),'Theban speech reward quantity must be readable');
+  const propaganda=material.locator('[data-guide-method="EVENT:STR_REVOLUTIONARY_SPEECH_THEBES"]');
+  await propaganda.locator('.guide-option-details > summary').click();
+  const route=(id)=>propaganda.locator('[data-event-script="'+id+'"]');
+  assert.equal(await propaganda.locator('.guide-event-script').count(),4,
+    'All 4 mutually alternative propaganda event scripts must remain visible');
+  assert((await route('STR_PROPAGANDA_1').innerText()).includes('농부 혁명!')&&
+    (await route('STR_PROPAGANDA_1').innerText()).includes('위대한 대의'),
+    'First script must show both required research and forbidden rival');
+  assert((await route('STR_PROPAGANDA_2').innerText()).includes('선전물'),
+    'Second event must display its actual research, not an unfinished-tree placeholder');
+  assert.equal(await route('STR_PROPAGANDA_2').locator('[data-event-gate="research-required"]').count(),1);
+  assert.equal(await route('STR_PROPAGANDA_3').locator('[data-event-gate="facility-required"]').count(),1,
+    'Third event requires the revolutionary headquarters, not only propaganda research');
+  assert((await route('STR_PROPAGANDA_3').innerText()).includes('혁명 본부'));
+  assert.equal(await route('STR_PROPAGANDA_4').locator('[data-event-gate="research-required"]').count(),2,
+    'Fourth event requires BOTH propaganda and persuasion');
+  assert(!(await propaganda.innerText()).includes('아직 펼치지 않은 선행 조건'),
+    'No raw tree-depth placeholder may appear as a player prerequisite');
+  const promoButtons=await route('STR_PROPAGANDA_2').locator('[data-trace-research-root="STR_PROPAGANDA"]').count();
+  assert.equal(promoButtons,1,'Every source research must have a clickable full-width trace');
+  await route('STR_PROPAGANDA_2').locator('[data-trace-research-root="STR_PROPAGANDA"]').click();
+  const eventTrace=page.locator('#acquisitionTraceDialog');
+  assert.equal(await eventTrace.evaluate(el=>el.open),true);
+  assert((await eventTrace.locator('#acquisitionTraceTitle').innerText()).includes('선전물'));
+  await eventTrace.locator('#acquisitionTraceClose').click();
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'All source event conditions must fit a 390px mobile screen');
   const shop=material.locator('[data-guide-method="BUY:STR_THEBAN_ASSAULT_CLONE_LICENSE"]');
   assert.equal(await shop.count(),1,'Shop purchase must remain a separate method');
   const gateText=await shop.locator('.guide-purchase-gates').innerText();

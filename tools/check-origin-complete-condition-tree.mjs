@@ -67,6 +67,29 @@ assert(shopHtml.includes('guide-purchase-dependencies" open'),
   'The five first-order Cleopatra prerequisites should be expanded by default');
 assert(shopHtml.includes('일반 연구실 경로에서는 아래 연구를 모두 완료해야 합니다'));
 assert(shopHtml.includes('선행 5개'));
+// The source-backed first-order event gates must never be replaced by an
+// exploration-budget placeholder. These four paths are OR alternatives;
+// research and facilities INSIDE any one path are simultaneous requirements.
+const speech=licenseMethods.children.find(x=>x.id==='EVENT:STR_REVOLUTIONARY_SPEECH_THEBES');
+assert(speech?.children?.length===4);
+const routes=Object.fromEntries(speech.children.map(s=>[s.id,s.sourceScript]));
+assert.deepEqual(routes.STR_PROPAGANDA_1.researchPositive,['STR_PEASANT_REVOLUTION']);
+assert.deepEqual(routes.STR_PROPAGANDA_1.researchNegative,['STR_THE_GREAT_CAUSE']);
+assert.deepEqual(routes.STR_PROPAGANDA_2.researchPositive,['STR_PROPAGANDA']);
+assert.deepEqual(routes.STR_PROPAGANDA_3.researchPositive,['STR_PROPAGANDA']);
+assert.deepEqual(routes.STR_PROPAGANDA_3.facilityPositive,['STR_WAR_BARRACKS']);
+assert.deepEqual(routes.STR_PROPAGANDA_4.researchPositive,['STR_PROPAGANDA','STR_PERSUASION']);
+const names=JSON.parse(fs.readFileSync('public/data/soldier-source-catalog.json','utf8')).names;
+const sourceBackedHtml=renderAcquisitionTree(clone,{name:id=>names[id]||id});
+assert(!sourceBackedHtml.includes('아직 펼치지 않은 선행 조건'),
+  'Bounded traversal must not pretend that a placeholder is a game condition');
+for(const id of ['STR_PROPAGANDA_1','STR_PROPAGANDA_2','STR_PROPAGANDA_3','STR_PROPAGANDA_4'])
+  assert(sourceBackedHtml.includes('data-event-script="'+id+'"'));
+assert(sourceBackedHtml.includes('선전물 · 선행 경로 보기')&&
+  sourceBackedHtml.includes('data-trace-research-root="STR_PROPAGANDA"')&&
+  sourceBackedHtml.includes('data-trace-target-id="STR_WAR_BARRACKS"')&&
+  sourceBackedHtml.includes('설득 · 선행 경로 보기'),
+  'The player guide must show full direct research/facility gates without IDs');
 const cleo=buildAcquisitionSubtree('research','STR_CLEO_CHALLENGE_COMPLETED',data);
 const cleoPrerequisites=walk(cleo.root,x=>x.id==='ALL_DEPENDENCIES:STR_CLEO_CHALLENGE_COMPLETED')[0];
 assert(cleoPrerequisites?.kind==='and');

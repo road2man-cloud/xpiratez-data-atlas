@@ -110,6 +110,13 @@
 .guide-conditions>li{padding:3px 0;line-height:1.65;overflow-wrap:anywhere}
 .guide-conditions ul{margin:4px 0;padding-left:16px}
 .guide-option-details>ul>li{background:none}
+.origin-readable-guide .guide-event-script{list-style:none;padding:11px 12px!important;margin:8px 0;border:1px solid #456687;border-radius:9px;background:#172e48!important;min-width:0}
+.origin-readable-guide .guide-event-script>strong{display:block;font-size:.84rem;color:#e7f2ff;line-height:1.55}
+.origin-readable-guide .guide-script-gates{list-style:none;margin:9px 0 0!important;padding:0!important;border-left:0!important;min-width:0}
+.origin-readable-guide .guide-script-gates>li{list-style:none;padding:7px 9px!important;margin:5px 0!important;border:1px solid #34516e;border-radius:7px;background:#10253d!important;color:#d6e6f5;font-size:.82rem;line-height:1.55;overflow-wrap:anywhere}
+.guide-script-gates>li>strong{color:#e7cb9d}
+.guide-event-trace{white-space:normal;max-width:100%;font-size:.8rem;line-height:1.5;text-align:left;padding:5px 8px;overflow-wrap:anywhere;vertical-align:middle}
+@media(max-width:640px){.origin-readable-guide .guide-event-script{padding:8px!important}.guide-event-trace{display:inline-block;min-height:35px}}
 .guide-incomplete{margin:14px 6px 0;font-size:.87rem;color:#efd09c}
 .guide-technical-evidence{border:1px solid #3a526c!important;border-radius:10px;margin:17px 0 0!important;padding:12px!important;background:#0c1b2e}
 .guide-technical-evidence>summary{font-size:.89rem;color:#c2d6e9;font-weight:730}

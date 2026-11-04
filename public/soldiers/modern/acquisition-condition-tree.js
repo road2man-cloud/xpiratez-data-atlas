@@ -79,8 +79,14 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
       return out;
     };
     const scripts=(id,entries,extras=()=>[],note='서로 다른 스크립트 대안 OR')=>
-      group('or',id,arr(entries).length?arr(entries).map(s=>group('and',s.script,
-        [...scriptConditions(s),...extras(s)],'이 스크립트에 필요한 조건을 함께 충족')):[
+      group('or',id,arr(entries).length?arr(entries).map(s=>({
+        ...group('and',s.script,
+          [...scriptConditions(s),...extras(s)],'이 스크립트에 필요한 조건을 함께 충족'),
+        // The first-order script guards are authoritative even if a bounded
+        // research traversal contains a "limit" marker. Keep the original
+        // AND conditions available to the player without expanding the graph.
+        sourceScript:s
+      })):[
         leaf('unindexed-script',id,'지급 근거는 있으나 발생 스크립트가 색인되지 않음')],note);
     if(kind==='research'){
       const r=rules[id];
@@ -393,9 +399,12 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
         leaf('month',s.script,(s.firstMonth??0)+'개월부터 '+(s.lastMonth??'종료 제한 없음')+'까지'),
         leaf('rng',s.script,'스크립트 실행 '+(s.executionOdds??100)+'% · 지급 보증 아님')
       ];
-      return group('and',s.script,[...extras,
-        leaf('birth-award',profile.sourceId,'이 이벤트 발생 시 '+(profile.spawnedPersons??1)+'명 생성 · 확률/실측 미확인')],
-        '출생 이벤트의 개별 스크립트 조건');
+      return {
+        ...group('and',s.script,[...extras,
+          leaf('birth-award',profile.sourceId,'이 이벤트 발생 시 '+(profile.spawnedPersons??1)+'명 생성 · 확률/실측 미확인')],
+          '출생 이벤트의 개별 스크립트 조건'),
+        sourceScript:s
+      };
     }):[leaf('unknown-event',profile.sourceId,'직접 출생 이벤트 스크립트가 색인되지 않음')];
     initial.push(group('or','BIRTH_EVENT:'+profile.sourceId,scriptNodes,
       '출생 이벤트 원본 스크립트 대안 OR'));
@@ -439,7 +448,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     if(n.kind==='month')return '발생 시기: '+esc(n.note);
     if(n.kind==='rng'||n.kind==='weighted')return '확률·추첨: '+esc(n.note);
     if(n.kind==='funds')return '비용: '+esc(n.note);
-    if(n.kind==='limit')return '아직 펼치지 않은 선행 조건';
+    if(n.kind==='limit')return '추가 확인할 선행 조건: '+display(n.id,'원본 조건');
     if(n.kind==='unavailable'||n.kind.startsWith('unindexed')||
       n.kind==='unbacked-sample'||n.kind==='unknown-supply')return '추가 확인 필요: '+esc(n.note);
     if(n.kind==='mission-generation')return '임무 등장: '+display(n.id,'해당 임무');
@@ -531,13 +540,77 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     return explanation?'<p class="guide-quantity" data-quantity-method="'+esc(o.method)+
       '" data-needed="'+q+'"><strong>필요 수량 비교:</strong> '+esc(explanation)+'</p>':'';
   };
+  // First-order event guards come from the source script, NOT from a
+  // depth-limited preview tree. A traversal limit is never a game condition.
+  // Within each script these are AND gates; separate scripts are alternatives.
+  function originalEventConditions(s){
+    const rows=[];
+    const add=(kind,label,value,traceKind=null)=>{
+      const id=String(value??'');
+      const shown=traceKind?
+        '<button type="button" class="guide-event-trace" '+
+        (traceKind==='research'?'data-trace-research-root="'+esc(id)+'"':
+          'data-trace-target-kind="'+esc(traceKind)+'" data-trace-target-id="'+esc(id)+'"')+
+        '>'+display(id,'원본 조건')+' · 선행 경로 보기</button>':
+        display(id,'원본 조건');
+      rows.push('<li data-event-gate="'+esc(kind)+'"><strong>'+esc(label)+':</strong> '+shown+'</li>');
+    };
+    for(const id of arr(s.researchPositive))add('research-required','필수 연구',id,'research');
+    for(const id of arr(s.researchNegative))add('research-forbidden','완료하면 차단되는 연구',id,'research');
+    for(const id of arr(s.itemPositive))add('item-required','필수 보유 물품',id,'item');
+    for(const id of arr(s.itemNegative))add('item-forbidden','보유하면 차단되는 물품',id);
+    for(const id of arr(s.facilityPositive))add('facility-required','필요한 기지 시설',id,'facility-type');
+    for(const id of arr(s.facilityNegative))add('facility-forbidden','보유하면 차단되는 시설',id);
+    for(const id of arr(s.soldierTypePositive))add('soldier-required','필요한 대원 병종',id,'soldier-body');
+    for(const id of arr(s.soldierTypeNegative))add('soldier-forbidden','보유하면 차단되는 병종',id);
+    for(const id of arr(s.countryPositive))add('country-required','필요한 국가 기지·시작 조건',id);
+    for(const id of arr(s.countryNegative))add('country-forbidden','있으면 차단되는 국가 기지',id);
+    for(const id of arr(s.regionPositive))add('region-required','필요한 지역 기지 조건',id);
+    for(const id of arr(s.regionNegative))add('region-forbidden','있으면 차단되는 지역 기지',id);
+    for(const id of arr(s.pactPositive))add('pact-required','필요한 협정',id);
+    for(const id of arr(s.pactNegative))add('pact-forbidden','체결되어 있으면 차단되는 협정',id);
+    const otherLabels={minScore:'필요 최소 평가점수',maxScore:'허용 최대 평가점수',
+      minFunds:'필요 최소 보유 자금',maxFunds:'허용 최대 보유 자금'};
+    for(const [key,value] of Object.entries(s.otherConditions||{})){
+      const label=otherLabels[key]||'그 밖의 원본 발생 조건 ('+key+')';
+      rows.push('<li data-event-gate="other"><strong>'+esc(label)+':</strong> '+
+        esc(String(value))+'</li>');
+    }
+    if(s.firstMonth!=null||s.lastMonth!=null)
+      rows.push('<li data-event-gate="month"><strong>발생 가능 기간:</strong> '+
+        esc(String(s.firstMonth??0))+'개월부터 '+
+        (s.lastMonth==null?'종료 제한 미기록':esc(String(s.lastMonth))+'개월까지')+'</li>');
+    if(s.executionOdds!=null)
+      rows.push('<li data-event-gate="execution-odds"><strong>스크립트 실행 판정:</strong> '+
+        esc(String(s.executionOdds))+'% · 개별 보상 지급 확률이 아님</li>');
+    if(s.mode==='weighted'||arr(s.monthWeights).length)
+      rows.push('<li data-event-gate="weighted"><strong>월별 후보 가중치:</strong> 별도 선택 판정이 존재 · 확정 출현이 아님</li>');
+    if(s.mode==='oneTimeRandom')
+      rows.push('<li data-event-gate="one-time"><strong>일회성 추첨:</strong> 해당 이벤트가 선택되어야 함</li>');
+    for(const id of arr(s.oneTimeEarlier))
+      add('event-earlier','먼저 발생해야 하는 이벤트',id);
+    return rows;
+  }
+  function truncatedCondition(n){
+    if(n.kind!=='limit')return readable(n);
+    const kind=n.traceKind||'';
+    const title=kind==='research'?'추가 확인할 선행 연구':
+      kind==='item'?'추가 확인할 필요 물품':'추가 확인할 획득 조건';
+    return '<strong>'+title+':</strong> '+
+      (kind&&['research','item','facility-type','facility-function','soldier-body']
+        .includes(kind)?
+        '<button type="button" class="guide-event-trace" data-trace-kind="'+esc(kind)+
+          '" data-trace-id="'+esc(n.id)+'">'+display(n.id,'원본 조건')+
+          ' · 경로 확인</button>':display(n.id,'원본 조건'))+
+      ' <small>(상세 선행 경로는 별도로 확인 · 게임에 새 조건이 추가된 것은 아님)</small>';
+  }
   function collectConditions(n,seen=new Set(),depth=0){
     if(depth>3||seen.size>25)return [];
     if(n.kind==='or'&&depth>0)return ['아래에 여러 대체 경로가 있습니다. 원본 근거에서 각각 선택하세요.'];
     if(!n.children?.length){
       if(['start','origin-history','birth-award','item-reward','research-award',
         'parallel-research','lab','auto','birth-source'].includes(n.kind))return [];
-      return [readable(n)];
+      return [truncatedCondition(n)];
     }
     const lines=[];
     for(const child of arr(n.children)){
@@ -556,10 +629,16 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
         lines.push(...collectConditions(child,seen,depth+1));
       }else if(!['origin-history','start','lab','auto','research-award',
         'birth-award','item-reward','parallel-research'].includes(child.kind)){
-        lines.push(readable(child));
+        lines.push(truncatedCondition(child));
       }
     }
     return [...new Set(lines)].slice(0,8);
+  }
+  function scriptConditionList(script){
+    const rows=script.sourceScript?originalEventConditions(script.sourceScript):
+      collectConditions(script).map(t=>'<li>'+t+'</li>');
+    return rows.length?rows.join(''):
+      '<li>원본에서 별도 발생 조건은 확인되지 않았습니다. 실제 이벤트 발생은 보장되지 않습니다.</li>';
   }
   function visibleRoute(method,index,needed=requiredQuantity){
     const label=optionTitle(method);
@@ -624,12 +703,9 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       '각 출처의 시기·확률·전리품 회수 조건을 별도로 확인하세요. 연구를 직접 지급하는 이벤트 등은 연구실 표본 조건과 구분합니다.</p>'+
       '</div>':'';
     const conditions=scripts?.length?
-      scripts.map((s,i)=>{
-        const lines=collectConditions(s);
-        return '<li><strong>'+(i+1)+'번째 이벤트 조건</strong>'+
-          (lines.length?'<ul>'+lines.map(t=>'<li>'+t+'</li>').join('')+'</ul>':
-            '<p>별도 연구 조건은 기록되지 않았습니다. 발생 확률은 확인이 필요합니다.</p>')+'</li>';
-      }).join(''):
+      scripts.map((s,i)=>'<li class="guide-event-script" data-event-script="'+esc(s.id)+'">'+
+        '<strong>'+(i+1)+'번째 이벤트 경로 · 이 경로 안의 필수 조건은 모두 충족</strong>'+
+        '<ul class="guide-script-gates">'+scriptConditionList(s)+'</ul></li>').join(''):
       collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
     return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
       '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
@@ -755,8 +831,8 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
         '<div class="guide-options">'+scripts.map((script,i)=>
           '<article class="guide-option"><div class="guide-option-heading"><span>경로 '+(i+1)+'</span><strong>출생 이벤트 조건</strong></div>'+
           '<details class="guide-option-details"><summary>필요 조건과 발생 시기 보기</summary>'+
-          '<ul class="guide-conditions">'+collectConditions(script).map(s=>'<li>'+s+'</li>').join('')+
-          '</ul></details></article>').join('')+'</div>';
+          '<ul class="guide-conditions guide-script-gates" data-event-script="'+esc(script.id)+'">'+
+          scriptConditionList(script)+'</ul></details></article>').join('')+'</div>';
     }else if(isBase){
       kind='facility';title='기지에 필요한 기능 · '+display(node.id,'기지 기능');
       body='<p class="guide-lead">해당 기능을 제공하는 시설을 실제로 건설해야 합니다. 연구 완료만으로 시설이 생기지는 않습니다.</p>';
