@@ -132,10 +132,24 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
         ],'임무 승리 후 연구 지급 (연구실 표본 조건 적용 금지)'));
       const blocked=Object.entries(rules).filter(([,candidate])=>arr(candidate.disables).includes(id))
         .map(([source])=>source);
-      return group('research',id,[group('or','RESEARCH_METHOD:'+id,methods,
-        '연구 획득 방법별 OR · 연구실 전용 표본을 이벤트 지급에 강제하지 않음')],
-        (id.startsWith('STR_CAPTAINS_RANK_')?'캡틴 계급 연구 플래그 · 이벤트/점수/월 조건 확인. ':'')+
-        (blocked.length?'이 연구를 차단하는 완료 연구: '+blocked.join(', '):'현재 출처별 연구 접근 조건'));
+      return {
+        ...group('research',id,[group('or','RESEARCH_METHOD:'+id,methods,
+          '연구 획득 방법별 OR · 연구실 전용 표본을 이벤트 지급에 강제하지 않음')],
+          (id.startsWith('STR_CAPTAINS_RANK_')?'캡틴 계급 연구 플래그 · 이벤트/점수/월 조건 확인. ':'')+
+          (blocked.length?'이 연구를 차단하는 완료 연구: '+blocked.join(', '):'현재 출처별 연구 접근 조건')),
+        // This is an untruncated summary of the LAB method ONLY. Other
+        // methods can award the research directly without its lab conditions.
+        researchOverview:{
+          cost:Number(r.cost)||0,
+          labRequires:arr(r.requires),
+          dependencies:arr(r.dependencies),
+          baseFunctions:arr(r.requiresBaseFunc),
+          specimen:r.needItem?(r.neededItem||id):null,
+          destroySpecimen:Boolean(r.destroyItem),
+          unlockSources:arr(reverse.get(id)).filter(x=>x.kind==='unlock').map(x=>x.source),
+          blockedBy:blocked
+        }
+      };
     }
     // Paginate source methods rather than expanding every loot block, event
     // and manufacturer into millions of DOM bytes. Each page remains linked
@@ -591,8 +605,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     }).join('');
     const purchaseTrace=purchaseResearch.map(id=>
       '<div class="guide-purchase-trace"><button type="button" data-trace-research-root="'+esc(id)+'">'+
-      display(id,'해금 연구')+' · 게임 시작부터 선행 조건 보기</button>'+
-      '<div class="origin-transform-research-root"></div></div>').join('');
+      display(id,'해금 연구')+' · 게임 시작부터 선행 조건 보기</button></div>').join('');
     const circularGates=purchaseInfo.filter(g=>g.requiresOwnPurchaseItemSpecimen);
     const alternate=method.purchaseAlternativeSources||{};
     const supplierLabels=[
@@ -623,6 +636,62 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       '<p>'+esc(outcomes)+'</p>'+quantityAdvice(method,needed)+purchaseSummary+purchaseBootstrap+purchaseUpstream+variants+
       '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
       '<ul class="guide-conditions">'+conditions+'</ul>'+purchaseTrace+traceButton(method)+'</details></article>';
+  }
+  // Player-facing, non-recursive research summary. Research laboratory
+  // prerequisites are AND gates, while direct unlocks only bypass the
+  // dependencies (not specimen/facility or the research itself).
+  function researchSteps(node){
+    const info=node.researchOverview||{};
+    const methods=arr(node.children?.[0]?.children);
+    const optional=methods.filter(m=>!m.id?.startsWith('LAB:'));
+    const nextResearch=id=>'<li><button type="button" class="guide-research-next"'+
+      ' data-trace-research-root="'+esc(id)+'">'+display(id,'연구 조건')+
+      ' <span aria-hidden="true">›</span></button></li>';
+    const all=arr(info.dependencies);
+    const must=arr(info.labRequires);
+    const bypass=arr(info.unlockSources);
+    const resources=[
+      ...must.map(id=>'<li>추가 필수 연구: <button type="button" class="guide-research-next"'+
+        ' data-trace-research-root="'+esc(id)+'">'+display(id,'연구')+'</button></li>'),
+      ...arr(info.baseFunctions).map(id=>'<li>필수 기지 기능: '+display(id,'시설 기능')+'</li>'),
+      ...(info.specimen?['<li>연구용 실물 표본: <button type="button"'+
+        ' class="guide-research-next" data-trace-target-kind="item"'+
+        ' data-trace-target-id="'+esc(info.specimen)+'">'+
+        display(info.specimen,'연구 표본')+'</button> '+
+        (info.destroySpecimen?'(연구 시 소모)':'(연구 시 비소모)')+'</li>']:[])
+    ];
+    const routeName=Number(info.cost)>0?'연구실에서 진행':'연구량 0 · 자동 처리 조건 확인';
+    const primary='<article class="guide-option guide-research-method" data-research-lab="'+esc(node.id)+'">'+
+      '<div class="guide-option-heading"><span>연구 방법 1</span><strong>'+routeName+'</strong></div>'+
+      '<p class="guide-research-note">'+(Number(info.cost)>0?
+        '원본 연구량 '+Number(info.cost).toLocaleString('ko-KR')+
+        '. 연구실·표본·기지 기능을 실제로 확보해야 합니다.':
+        '연구량 0이라고 바로 완료되는 것은 아닙니다. 선행 연구가 충족되는 시점의 자동 처리·연구 큐를 확인해야 합니다.')+
+      '</p>'+
+      '<section class="guide-research-gate"><h6>연구 잠금 해제 · '+(bypass.length?'아래 방법 중 하나':'선행 연구 전부 완료')+'</h6>'+
+      '<div class="guide-research-choice"><div class="guide-research-route">'+
+      '<strong>기본 경로 · 선행 연구 '+all.length+'개 모두 완료</strong>'+
+      (all.length?'<ol class="guide-research-list">'+all.map(nextResearch).join('')+'</ol>':
+        '<p>원본상 직접 선행 연구는 없습니다. 실제 연구 노출은 별도 확인이 필요합니다.</p>')+
+      '</div>'+
+      (bypass.length?'<div class="guide-research-route">'+
+        '<strong>대체 해금 · 아래 연구 중 하나를 통한 직접 개방</strong>'+
+        '<ol class="guide-research-list">'+bypass.map(nextResearch).join('')+'</ol>'+
+        '<p>직접 해금은 기본 선행 연구의 대안입니다. 연구 자체, 별도 표본·시설 조건을 생략하지 않습니다.</p>'+
+        '</div>':'')+'</div></section>'+
+      '<section class="guide-research-gate"><h6>해금 이후에도 필요한 조건 · 모두 충족</h6>'+
+      (resources.length?'<ul class="guide-research-list">'+resources.join('')+'</ul>':
+        '<p>원본에 연구실 전용 추가 연구·표본·기지 기능 조건이 기록되지 않았습니다.</p>')+
+      '</section>'+
+      (arr(info.blockedBy).length?'<p class="guide-research-warning">선택에 따라 차단 가능: '+
+        arr(info.blockedBy).map(id=>display(id,'차단 연구')).join(' · ')+
+        '. 연구 완료 순서와 차단 시점을 별도로 검증하세요.</p>':'')+
+      '</article>';
+    return '<p class="guide-lead">이 연구를 얻는 경로는 서로 대체할 수 있지만, <strong>선택한 방법 안의 필수 조건은 모두</strong> 충족해야 합니다. 다음 연구를 선택하면 별도 연구 경로 창에서 확인합니다.</p>'+
+      '<div class="guide-options guide-research-options">'+primary+
+      optional.map((method,i)=>'<article class="guide-research-alternative">'+
+        '<div class="guide-research-alternative-title">다른 획득 방법 '+(i+1)+'</div>'+
+        visibleRoute(method,i+1)+'</article>').join('')+'</div>';
   }
   function overviewCard(node,index){
     if(node.kind==='start')return '';
@@ -675,10 +744,10 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
         visible.map((method,i)=>visibleRoute(method,i,requiredQuantity)).join('')+
         moreSupplyPages(routes).map(n=>moreSupply(n,requiredQuantity)).join('')+'</div>';
     }else if(isResearch){
-      kind='research';title='출생 전에 완료할 연구 · '+display(node.id,'연구');
-      const methods=arr(node.children?.[0]?.children);
-      body='<p class="guide-lead">이 출생 방식은 이 연구가 완료되어 있어야 합니다. 연구를 여는 방법은 별도로 확인하세요.</p>'+
-        '<div class="guide-options">'+methods.map(visibleRoute).join('')+'</div>';
+      kind='research';
+      title=(trace?'선택한 연구 획득 경로 · ':'출생 전에 완료할 연구 · ')+
+        display(node.id,'연구');
+      body=researchSteps(node);
     }else if(isBirthEvent){
       kind='event';title='병사가 등장하는 이벤트';
       const scripts=arr(node.children);

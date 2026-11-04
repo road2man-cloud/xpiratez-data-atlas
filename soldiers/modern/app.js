@@ -5,9 +5,9 @@ import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js';
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261104-buy-gates-1';
-import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-quantity-1';
-import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-initial-1';
+import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261104-flat-research-1';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-flat-research-1';
+import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
@@ -29,7 +29,29 @@ async function expandOriginArchive(envelope){
   return report;
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,selected=null,replayGeneration=0,blocked=false;
-const verified=new Map();
+const verified=new Map(),traceHistory=[];
+function renderTraceStep(){
+  const active=traceHistory.at(-1);
+  if(!active||!DATA)return;
+  const label=name(active.id);
+  $('#acquisitionTraceTitle').textContent=label&&label!==active.id?label:
+    (active.kind==='research'?'선택한 연구의 획득 조건':'선택한 획득 경로');
+  $('#acquisitionTraceBack').disabled=traceHistory.length<2;
+  $('#acquisitionTraceContent').innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(
+    active.kind,active.id,DATA,active.offset),{esc,name});
+  $('#acquisitionTraceDialog').scrollTop=0;
+}
+function openTraceStep(kind,id,offset=0){
+  if(!DATA||!id)return;
+  const dialog=$('#acquisitionTraceDialog');
+  if(!dialog.open){traceHistory.length=0;dialog.showModal();}
+  traceHistory.push({kind,id,offset:Number(offset)||0});
+  renderTraceStep();
+}
+function previousTraceStep(){
+  if(traceHistory.length<2)return;
+  traceHistory.pop();renderTraceStep();
+}
 const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
 const node=id=>'<button type="button" class="research-node" data-research-node="'+esc(id)+'">'+esc(name(id))+'</button>';
 const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='conditional-upper-envelope'?c.growth.total:-1):c.display.total);
@@ -133,7 +155,7 @@ function transformationGateHtml(c,profile){
     const minRank=Math.max(0,Number(t.minRank)||0);
     return '<li class="origin-transform-gate"><strong>'+(i+1)+'단계: '+esc(t.koName||t.id)+'</strong>'+
       '<p>필요 연구: '+chips(required)+'</p>'+
-      (required.length?'<div>'+required.map(id=>'<button type="button" data-trace-research-root="'+esc(id)+'">게임 시작 → '+esc(name(id))+' 연구 경로 보기</button><div class="origin-transform-research-root"></div>').join('')+'</div>':'')+
+      (required.length?'<div>'+required.map(id=>'<button type="button" data-trace-research-root="'+esc(id)+'">게임 시작 → '+esc(name(id))+' 연구 경로 보기</button>').join('')+'</div>':'')+
       '<p><strong>요구 대원 계급: '+fmt(minRank)+'</strong> · 이 값은 캡틴의 계급 연구 플래그와 다릅니다. 출생 계급 '+fmt(profile.rank??0)+
       '부터 실제 승진 가능한지 별도 확인해야 합니다.</p>'+
       '<p>필요 재료: '+objectGate(t.requiredItems)+
@@ -163,7 +185,7 @@ function unresolvedChronologyHtml(profileId){
     '<p class="fine">독립 탐색 목표: '+node(f.probe)+' · 이벤트 '+esc(f.event||'미상')+
     ' / 스크립트 '+esc(f.script||'미상')+'. 이 시도의 시간순 충돌이며 모든 대체 출생 방법의 영구 불가능 증명은 아닙니다.</p>'+
     '<button type="button" data-trace-research-root="'+esc(f.blockedResearch)+
-    '">해당 연구의 게임 시작 선행 조건 보기</button><div class="origin-transform-research-root"></div></li>').join('');
+    '">해당 연구의 게임 시작 선행 조건 보기</button></li>').join('');
   const tests=(entry.probes||[]).map(p=>'<li data-origin-probe="'+esc(p.goal)+'">'+node(p.goal)+
     ' · '+(p.success?'개별 연구 경로 재생 성공 ('+fmt(p.steps)+'단계, '+fmt(p.endedMonth)+'개월)':
       '제한 탐색 미완료 ('+esc(p.reason)+')')+'</li>').join('');
@@ -293,28 +315,17 @@ async function init(){try{
           }
         }
       }else{
-        const parent=continueButton.closest('.origin-tree-leaf');
-        const output=parent?.querySelector(':scope > .origin-tree-continuation');
-        if(output){output.remove();continueButton.textContent='다음 선행 조건 펼치기';}
-        else if(parent){
-          const extra=document.createElement('div');extra.className='origin-tree-continuation';
-          extra.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(
-            continueButton.dataset.traceKind,continueButton.dataset.traceId,DATA,
-            Number(continueButton.dataset.traceOffset||0)),{esc,name});
-          parent.append(extra);continueButton.textContent='추가 조건 접기';
-        }
+        // A technical continuation is the next step in the same full-width
+        // explorer, not another scrollable tree nested into the current card.
+        openTraceStep(continueButton.dataset.traceKind,continueButton.dataset.traceId,
+          continueButton.dataset.traceOffset||0);
       }
     }
     const transformResearch=e.target.closest('[data-trace-research-root]');
-    if(transformResearch){
-      const panel=transformResearch.nextElementSibling;
-      if(panel?.classList.contains('origin-transform-research-root')){
-        if(panel.innerHTML){panel.innerHTML='';transformResearch.setAttribute('aria-expanded','false');}
-        else{panel.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree('research',
-          transformResearch.dataset.traceResearchRoot,DATA),{esc,name});
-          transformResearch.setAttribute('aria-expanded','true');}
-      }
-    }
+    if(transformResearch)
+      openTraceStep('research',transformResearch.dataset.traceResearchRoot);
+    const target=e.target.closest('[data-trace-target-kind][data-trace-target-id]');
+    if(target)openTraceStep(target.dataset.traceTargetKind,target.dataset.traceTargetId);
     const treeButton=e.target.closest('[data-expand-origin-tree]');
     if(treeButton){
       const id=treeButton.dataset.expandOriginTree;
@@ -332,6 +343,11 @@ async function init(){try{
     }
     if(research)showResearch(research.dataset.researchNode);if(candidate)void openOrigin(selected,candidate.dataset.candidate);
     if(e.target.id==='originDetailClose'){$('#originDetails').hidden=true;replayGeneration++;}
+  });
+  $('#acquisitionTraceBack').onclick=previousTraceStep;
+  $('#acquisitionTraceClose').onclick=()=>$('#acquisitionTraceDialog').close();
+  $('#acquisitionTraceDialog').addEventListener('close',()=>{
+    traceHistory.length=0;$('#acquisitionTraceContent').innerHTML='';
   });
   $('#closeResearchDialog').onclick=()=>$('#researchDialog').close();$('#researchDialog').addEventListener('click',e=>{if(e.target===$('#researchDialog'))$('#researchDialog').close()});
   $('#researchSearch').addEventListener('input',()=>{const q=$('#researchSearch').value.toLocaleLowerCase('ko');$('#researchMatches').innerHTML=q?Object.keys(DATA.researchRules).filter(id=>(id+' '+name(id)).toLocaleLowerCase('ko').includes(q)).slice(0,35).map(node).join(' '):''});

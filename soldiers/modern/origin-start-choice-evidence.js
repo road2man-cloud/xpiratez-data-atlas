@@ -92,7 +92,7 @@ export function renderInitialChoiceEvidence(report,ui={}){
       '<div class="origin-start-choice-options">'+group.options.map(id=>
       '<div class="origin-start-choice-option" data-start-choice="'+esc(id)+'">'+idLabel(id)+
       '<button type="button" data-trace-research-root="'+esc(id)+
-      '">이 선택의 선행 연구</button><div class="origin-transform-research-root"></div></div>').join('')+
+      '">이 선택의 선행 연구</button></div>').join('')+
     '</div></details>').join('')+'<p class="fine">현재 표시된 잠정 성장 후보에서 확인한 선장 선택 연구: '+
     (report.selections.length?names(report.selections):'확인되지 않음')+
     '. 이는 전체 가능한 시작 선택의 최종 순위가 아닙니다.</p>'+
