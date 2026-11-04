@@ -16,7 +16,13 @@
 .origin-acquisition .origin-route p{margin:6px 0;font-size:.79rem}
 .origin-acquisition .origin-script-options{display:grid;gap:6px}
 .origin-acquisition details.origin-script{border:1px solid #36526f;border-radius:7px;padding:6px 9px;background:#0f2036;margin:0}
-.origin-acquisition .origin-script>summary{font-size:.8rem;overflow-wrap:anywhere}
+.origin-acquisition .origin-script>summary{font-size:.8rem;overflow-wrap:anywhere;display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:space-between;align-items:baseline}
+.origin-script-title{font-weight:800;color:#dcefff}
+.origin-script-meta{font-size:.75rem;color:#e4c99b;font-weight:550}
+.origin-script-evidence{margin:7px 0 2px;font-size:.72rem;color:#a8bad0;overflow-wrap:anywhere}
+.origin-script-evidence code{font-size:.7rem;color:#b9d1ed}
+.origin-condition-overview{margin:8px 0 4px}
+.origin-condition-overview>.fine{margin:5px 0;font-size:.75rem}
 .origin-source-gates{padding-left:19px;margin:6px 0}.origin-source-gates li{margin:5px 0;font-size:.77rem;color:#bbd0e8}
 .origin-acquisition .research-node{font-size:.73rem}
 .origin-start-choice-evidence{border:1px solid #3c5877;border-radius:11px;padding:13px 15px;background:#13253b;margin:15px 0}

@@ -79,13 +79,31 @@ export function renderAcquisitionPaths(profile,data,ui={}){
       ['minDifficulty','최소 난이도'],['maxDifficulty','최대 난이도'],
       ['counterMin','최소 이벤트 카운터'],['counterMax','최대 이벤트 카운터']
     ])if(o[k]!=null)parts.push(label+': '+fmt(o[k]));
-    return '<ul class="origin-source-gates">'+list(parts)+'</ul>';
+    return '<div class="origin-condition-overview">'+
+      '<p class="fine">이 발생 방법의 조건은 모두 함께 적용됩니다. 다른 방법의 조건은 합치지 않습니다.</p>'+
+      (parts.length?'<ul class="origin-source-gates">'+list(parts)+'</ul>':
+        '<p class="fine">원본에 추가 발생 조건이 기록되지 않았습니다. 이벤트 발생을 보장하지는 않습니다.</p>')+
+      '</div>';
   }
   function renderScriptAlternatives(scripts){
     if(!arr(scripts).length)return '<p class="fine">실제 발생 스크립트의 조건을 아직 색인하지 못했습니다. 획득 확정 아님.</p>';
-    return '<p class="fine">'+scripts.length+'개 발생 스크립트는 대체 경로(OR)이며, 각 스크립트 내부 조건만 함께 충족해야 합니다.</p>'+
-      '<div class="origin-script-options">'+scripts.map(s=>'<details class="origin-script" data-script="'+esc(s.script)+'">'+
-        '<summary>'+esc(s.script)+'</summary>'+scriptConditions(s)+'</details>').join('')+'</div>';
+    return '<p class="fine">'+scripts.length+'개 발생 방법 중 하나를 충족하면 해당 이벤트의 발생 후보가 됩니다. 각 방법 내부의 필요·금지 조건은 모두 적용되며, 조건 충족만으로 보상은 확정되지 않습니다.</p>'+
+      '<div class="origin-script-options">'+scripts.map((s,i)=>{
+        const time=s.firstMonth!=null||s.lastMonth!=null?
+          ' · '+fmt(s.firstMonth??0)+'~'+(s.lastMonth==null?'제한 없음':fmt(s.lastMonth))+'개월':'';
+        const count=arr(s.researchPositive).length+arr(s.itemPositive).length+
+          arr(s.facilityPositive).length+arr(s.countryPositive).length+
+          arr(s.regionPositive).length+arr(s.soldierTypePositive).length+
+          arr(s.pactPositive).length;
+        const blocked=['researchNegative','itemNegative','facilityNegative','countryNegative',
+          'regionNegative','soldierTypeNegative','pactNegative'].some(k=>arr(s[k]).length);
+        return '<details class="origin-script" data-script="'+esc(s.script)+'">'+
+          '<summary><span class="origin-script-title">방법 '+fmt(i+1)+time+'</span>'+
+          '<span class="origin-script-meta">필수 조건 '+fmt(count)+'종'+
+          (blocked?' · 차단 조건 있음':'')+(s.executionOdds!=null?' · 실행 판정 '+fmt(s.executionOdds)+'%':'')+
+          '</span></summary>'+scriptConditions(s)+
+          '<p class="origin-script-evidence">원본 발생 규칙: <code>'+esc(s.script)+'</code></p></details>';
+      }).join('')+'</div>';
   }
   function supplyHtml(item){
     const s=item.supply;
