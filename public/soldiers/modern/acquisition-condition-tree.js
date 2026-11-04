@@ -140,7 +140,7 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
     // Paginate source methods rather than expanding every loot block, event
     // and manufacturer into millions of DOM bytes. Each page remains linked
     // to exactly one original item and preserves all alternative method IDs.
-    const itemPageSize=2;
+    const itemPageSize=kind.startsWith('item-method-')?6:2;
     const pageLink=(category,itemId,total,offset,shown)=>offset+shown<total?
       leaf('limit',itemId,'추가 '+(total-offset-shown)+'개 중 다음 '+Math.min(itemPageSize,total-offset-shown)+
         '개 펼치기 · 현재 '+(offset+shown)+'/'+total+'개 원본 공급 경로 확인',
@@ -267,10 +267,23 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
       if(!s)return leaf('unindexed-item',id,'아이템 공급 기록 미색인 · 공급 불가능 확정 아님');
       const categories=['buy','event','manufacture','random','research','map'];
       const methods=categories.flatMap(category=>categoryMethods(category,id,s));
-      return group('item',id,[group('or','ITEM_METHOD:'+id,
-        methods.length?methods:[leaf('unknown-supply',id,'아직 연결된 공급처 없음 · 불가능 판정 아님')],
-        '아이템 획득 방법별 OR · 남은 대안은 각 버튼에서 계속 펼칠 수 있음')],
-        '실물 아이템 확보 · 연구와 별개의 재료 조건');
+      return {
+        ...group('item',id,[group('or','ITEM_METHOD:'+id,
+          methods.length?methods:[leaf('unknown-supply',id,'아직 연결된 공급처 없음 · 불가능 판정 아님')],
+          '아이템 획득 방법별 OR · 남은 대안은 각 버튼에서 계속 펼칠 수 있음')],
+          '실물 아이템 확보 · 연구와 별개의 재료 조건'),
+        // Source counts come from the full indexed catalog, not the 2-route
+        // preview or its continuation links. A map block is one source record.
+        supplyCounts:{
+          buy:Number(s.buyCost)>0?1:0,
+          event:arr(s.eventGrants).length,
+          manufacture:arr(s.manufacture).length,
+          random:arr(s.randomManufacture).length,
+          research:arr(s.researchGrants).length,
+          map:arr(s.mapLoot?.sources).length
+        },
+        mapSourcesMayBeIncomplete:s.mapLoot?.possiblyTruncated===true
+      };
     }
     if(kind==='facility-function'){
       const providers=arr(facilitiesByFunction.get(id));
@@ -435,6 +448,24 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     '<button type="button" class="guide-next-condition" data-trace-kind="'+esc(n.traceKind)+
     '" data-trace-id="'+esc(n.id)+'" data-trace-offset="'+esc(n.traceOffset||0)+
     '">이어서 조건 확인</button>':'';
+  const supplyPage=n=>n.kind==='limit'&&n.traceKind?.startsWith('item-method-');
+  // Map sources are grouped by terrain block; their pagination marker is
+  // nested one level deeper than the event/manufacture markers.
+  const moreSupplyPages=methods=>arr(methods).flatMap(n=>
+    supplyPage(n)?[n]:n.id?.startsWith('MAP_LOOT:')?
+      arr(n.children).filter(supplyPage):[]);
+  const supplyLabels={
+    buy:'상점',event:'이벤트',manufacture:'제조',random:'무작위 제조',
+    research:'연구 보상',map:'지도 전리품'
+  };
+  const moreSupply=n=>{
+    const category=n.traceKind.slice('item-method-'.length);
+    return '<div class="guide-more-sources" data-more-category="'+esc(category)+'">'+
+      '<button type="button" class="guide-more-button" data-trace-kind="'+esc(n.traceKind)+
+      '" data-trace-id="'+esc(n.id)+'" data-trace-offset="'+esc(n.traceOffset||0)+
+      '" aria-expanded="false">'+(supplyLabels[category]||'기타')+' · '+esc(n.note)+'</button>'+
+      '<div class="guide-more-target"></div></div>';
+  };
   function collectConditions(n,seen=new Set(),depth=0){
     if(depth>3||seen.size>25)return [];
     if(n.kind==='or'&&depth>0)return ['아래에 여러 대체 경로가 있습니다. 원본 근거에서 각각 선택하세요.'];
@@ -546,6 +577,8 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     if(node.kind==='start')return '';
     const itemMatch=node.id?.startsWith('REQUIRED_ITEM:');
     const itemTrace=node.kind==='item';
+    const itemKey=itemMatch?node.id.slice('REQUIRED_ITEM:'.length):itemTrace?node.id:null;
+    const itemPage=node.kind==='or'&&node.id?.startsWith('ITEM_PAGE:');
     const isResearch=node.kind==='research';
     const isBirthEvent=node.id?.startsWith('BIRTH_EVENT:');
     const isBase=node.kind==='facility-function';
@@ -556,19 +589,37 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     let title='',kind='other',body='';
     if(itemMatch||itemTrace){
       kind='material';
-      const id=itemMatch?node.id.slice('REQUIRED_ITEM:'.length):node.id;
+      const id=itemKey;
       title=(itemMatch?'출생 준비물 · ':'아이템 획득 방법 · ')+display(id,'필요 아이템');
       const child=itemMatch?arr(node.children)[0]:node;
       const choices=arr(child?.children).find(x=>x.id==='ITEM_METHOD:'+id);
-      const methods=arr(choices?.children);
+      const methods=arr(choices?.children),visible=methods.filter(n=>
+        !supplyPage(n)&&n.kind!=='unknown-supply');
+      const more=moreSupplyPages(methods);
+      const counts=child?.supplyCounts||{};
+      const total=Object.values(counts).reduce((sum,n)=>sum+(Number(n)||0),0);
+      const breakdown=Object.entries(supplyLabels).filter(([key])=>Number(counts[key])>0)
+        .map(([key,label])=>label+' '+counts[key]+'건').join(' · ');
       const quantity=itemMatch?node.note.match(/(\d+)개/):null;
       body=(itemMatch?
         '<p class="guide-lead">출생하려면 <strong>'+display(id,'이 아이템')+
           ' '+esc(quantity?.[1]||'1')+'개</strong>가 필요합니다. 아래 획득 방법 중 가능한 것을 고르세요.</p>':
         '<p class="guide-lead">이 아이템을 얻는 방법별로 상점 해금·연구·임무·이벤트 조건을 확인하세요. 원본에 가격이 있어도 즉시 구매를 보장하지 않습니다.</p>')+
-        '<p class="guide-source-count">현재 확인된 획득 방법 '+methods.length+'종 · 여러 방법 중 가능한 것만 준비하세요.</p>'+
-        '<div class="guide-options">'+(methods.length?methods.map(visibleRoute).join(''):
-          '<p>아직 확인된 공급 경로가 없습니다.</p>')+'</div>';
+        (total?'<p class="guide-source-count" data-indexed-source-count="'+total+
+          '">색인된 공급 기록 '+total+'건 ('+breakdown+') · 첫 화면 '+visible.length+
+          '개 선택지 표시. 방법별 조건과 발생 확률은 개별 확인하세요.'+
+          (child.mapSourcesMayBeIncomplete?' 지도 출처의 일부는 미색인일 수 있습니다.':'')+'</p>':
+          '<p class="guide-source-count">확인된 공급 기록 없음 · 추가 조사 필요. 획득 불가능 판정이 아닙니다.</p>')+
+        '<div class="guide-options">'+(visible.length?visible.map(visibleRoute).join(''):
+          '<p>확인된 공급 기록이 없습니다. 원본 근거에서 미연결 출처를 확인하세요.</p>')+
+        more.map(moreSupply).join('')+'</div>';
+    }else if(itemPage){
+      kind='method-page';title='이어서 확인하는 공급 경로';
+      const routes=arr(node.children);
+      const visible=routes.filter(n=>!supplyPage(n));
+      body='<p class="guide-lead">앞에서 펼친 것과 독립적인 추가 공급처입니다. 이 페이지의 조건을 다른 경로에 합치지 않습니다.</p>'+
+        '<div class="guide-options">'+visible.map(visibleRoute).join('')+
+        moreSupplyPages(routes).map(moreSupply).join('')+'</div>';
     }else if(isResearch){
       kind='research';title='출생 전에 완료할 연구 · '+display(node.id,'연구');
       const methods=arr(node.children?.[0]?.children);
@@ -597,7 +648,8 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       body='<p class="guide-lead">'+esc(node.note||'해당 조건의 선행 단계를 확인하세요.')+'</p>'+
         '<div class="guide-options">'+arr(node.children).map(visibleRoute).join('')+'</div>';
     }
-    return '<section class="guide-card" data-guide-category="'+kind+'">'+
+    return '<section class="guide-card" data-guide-category="'+kind+'"'+
+      (itemKey?' data-guide-item="'+esc(itemKey)+'"':'')+'>'+
       '<div class="guide-card-heading"><span class="guide-number">'+(index+1)+'</span><h5>'+title+'</h5></div>'+
       body+'</section>';
   }

@@ -71,6 +71,59 @@ const cleo=buildAcquisitionSubtree('research','STR_CLEO_CHALLENGE_COMPLETED',dat
 const cleoPrerequisites=walk(cleo.root,x=>x.id==='ALL_DEPENDENCIES:STR_CLEO_CHALLENGE_COMPLETED')[0];
 assert(cleoPrerequisites?.kind==='and');
 assert.equal(cleoPrerequisites.children.length,5,'All five Cleopatra conditions must be satisfied');
+// Verify that the source count describes the entire indexed supply catalog,
+ // never the first two preview records or "load more" placeholders. All
+ // user-visible extra pages must be directly reachable without opening IDs.
+const usedMaterialIds=[...new Set(data.profiles.flatMap(p=>
+  Object.keys(p.acquisitionRequiredItems||{})))];
+let pagedMaterials=0;
+for(const materialId of usedMaterialIds){
+  const s=data.itemSupply[materialId];
+  assert(s,'Missing item source catalog: '+materialId);
+  const tree=buildAcquisitionSubtree('item',materialId,data);
+  const item=tree.root.children.find(n=>n.kind==='item'&&n.id===materialId);
+  assert(item,'Missing standalone material page '+materialId);
+  const counts={
+    buy:Number(s.buyCost)>0?1:0,
+    event:(s.eventGrants||[]).length,
+    manufacture:(s.manufacture||[]).length,
+    random:(s.randomManufacture||[]).length,
+    research:(s.researchGrants||[]).length,
+    map:(s.mapLoot?.sources||[]).length
+  };
+  assert.deepEqual(item.supplyCounts,counts,'All source counts must be retained');
+  const total=Object.values(counts).reduce((a,b)=>a+b,0);
+  const html=renderAcquisitionTree(tree);
+  if(total)assert(html.includes('data-indexed-source-count="'+total+'"'),
+    'A limited preview must not masquerade as the full acquisition catalog: '+materialId);
+  for(const category of ['event','manufacture','random','research','map']){
+    if(counts[category]<=2)continue;
+    pagedMaterials++;
+    assert(html.includes('data-more-category="'+category+'"'),
+      'Player guide must link to further '+category+' sources for '+materialId);
+    assert(html.includes('data-trace-kind="item-method-'+category+'"'),
+      'More sources must have their own reachable category: '+materialId);
+  }
+}
+assert.equal(usedMaterialIds.length,68);
+assert(pagedMaterials>48,'Expected many paginated birth supply categories');
+const glamourFirst=renderAcquisitionTree(buildAcquisitionSubtree('item','STR_GLAMOUR',data));
+assert(glamourFirst.includes('data-indexed-source-count="255"'),
+  'Glamour must not be misreported as merely the first-page options');
+const glamourNext=renderAcquisitionTree(buildAcquisitionSubtree(
+  'item-method-event','STR_GLAMOUR',data,2));
+for(const row of data.itemSupply.STR_GLAMOUR.eventGrants.slice(2,8))
+  assert(glamourNext.includes('data-guide-method="EVENT:'+row.event+'"'),
+    'Continuation must include each independent event source');
+assert(glamourNext.includes('data-more-category="event"')&&
+  glamourNext.includes('data-trace-offset="8"'),
+  'Next event source page must remain reachable from its readable card');
+const glamourMap=renderAcquisitionTree(buildAcquisitionSubtree(
+  'item-method-map','STR_GLAMOUR',data,2));
+assert(glamourMap.includes('data-more-category="map"'),
+  'Map source continuations must be visible outside the raw evidence tree');
+console.log('PASS '+usedMaterialIds.length+' birth materials: full source counts, '+pagedMaterials+
+  ' readable category continuations, event page 3-8 and later map pages reachable');
 const pricedItems=Object.entries(data.itemSupply).filter(([,s])=>Number(s.buyCost)>0);
 let researchGated=0,baseGated=0,noResearch=0;
 const bootstrapCycles=[];

@@ -141,6 +141,42 @@ try{
     'Cyclic first-purchase notice must not overflow the mobile viewport');
   assert.deepEqual(errors,[],'Origin detail reader errors');
   await page.close();
+  // Many items have hundreds of source records. Full counts must be shown
+  // without pretending that only the first two events exist. Pagination must
+  // work from the readable guide, without opening machine IDs.
+  const pagesView=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const pageErrors=[];pagesView.on('pageerror',e=>pageErrors.push(e.message));
+  await pagesView.goto(base+'soldiers/modern/?profile=manufacture%3ASTR_GLAMOUR_RECRUITMENT',
+    {waitUntil:'domcontentloaded',timeout:30000});
+  await pagesView.locator('#originMaxima[data-validation="validated"]').waitFor({timeout:60000});
+  await pagesView.locator('#originDetails button[data-expand-origin-tree]').click();
+  const glamour=pagesView.locator('#originDetails .guide-card[data-guide-item="STR_GLAMOUR"]').first();
+  await glamour.waitFor({timeout:15000});
+  assert.equal(await glamour.locator('[data-indexed-source-count="255"]').count(),1,
+    'Glamour must show every indexed source record, not only a seven-option preview');
+  assert.equal(await glamour.locator('.guide-option[data-guide-method^="EVENT:"]').count(),2,
+    'The initial page deliberately contains two real event options');
+  const moreEvents=glamour.locator('.guide-more-sources[data-more-category="event"]').first();
+  const trigger=moreEvents.locator(':scope > .guide-more-button');
+  await trigger.click();
+  assert.equal(await trigger.getAttribute('aria-expanded'),'true');
+  const eventContinuation=moreEvents.locator(':scope > .guide-more-target');
+  assert.equal(await eventContinuation.locator('.guide-option[data-guide-method^="EVENT:"]').count(),6,
+    'The next page must expose six more distinct event choices');
+  assert.equal(await eventContinuation.locator('[data-more-category="event"] [data-trace-offset="8"]').count(),1,
+    'Event pages must offer the next 9-14 sources without raw technical navigation');
+  await trigger.click();
+  assert.equal(await trigger.getAttribute('aria-expanded'),'false');
+  assert.equal(await eventContinuation.locator('.origin-readable-guide').count(),0,
+    'The expanded source page must be collapsible to avoid massive DOMs');
+  const moreMaps=glamour.locator('.guide-more-sources[data-more-category="map"]').first();
+  await moreMaps.locator(':scope > button').click();
+  assert((await moreMaps.locator('.guide-more-target .guide-card[data-guide-category="method-page"]').count())>=1,
+    'Map block sources must also have a human-readable next page');
+  assert.equal(await pagesView.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'Lazy-loaded supply options must not overflow a 390px phone');
+  assert.deepEqual(pageErrors,[],'Paged 2.1 acquisition guide errors');
+  await pagesView.close();
   // A real event detail must supply accessible, actionable section navigation.
   // This checks runtime content, not a synthetic injected test fixture.
   const eventPage=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});

@@ -6,7 +6,7 @@ import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261104-buy-gates-1';
-import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-buy-bootstrap-1';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-supply-pages-1';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-initial-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -273,14 +273,34 @@ async function init(){try{
     if(origin)void openOrigin(origin.dataset.openOrigin);
     const continueButton=e.target.closest('[data-trace-id]');
     if(continueButton){
-      const parent=continueButton.closest('.origin-tree-leaf');
-      const output=parent?.querySelector('.origin-tree-continuation');
-      if(output){output.remove();continueButton.textContent='다음 선행 조건 펼치기';}
-      else if(parent){
-        const extra=document.createElement('div');extra.className='origin-tree-continuation';
-        extra.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(continueButton.dataset.traceKind,
-          continueButton.dataset.traceId,DATA,Number(continueButton.dataset.traceOffset||0)),{esc,name});
-        parent.append(extra);continueButton.textContent='추가 조건 접기';
+      const guideMore=continueButton.closest('.guide-more-sources');
+      if(guideMore){
+        const panel=guideMore.querySelector(':scope > .guide-more-target');
+        if(panel){
+          if(panel.innerHTML){
+            panel.innerHTML='';
+            continueButton.textContent=continueButton.dataset.originalText;
+            continueButton.setAttribute('aria-expanded','false');
+          }else{
+            continueButton.dataset.originalText=continueButton.textContent;
+            panel.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(
+              continueButton.dataset.traceKind,continueButton.dataset.traceId,DATA,
+              Number(continueButton.dataset.traceOffset||0)),{esc,name});
+            continueButton.textContent='추가 공급 경로 접기';
+            continueButton.setAttribute('aria-expanded','true');
+          }
+        }
+      }else{
+        const parent=continueButton.closest('.origin-tree-leaf');
+        const output=parent?.querySelector(':scope > .origin-tree-continuation');
+        if(output){output.remove();continueButton.textContent='다음 선행 조건 펼치기';}
+        else if(parent){
+          const extra=document.createElement('div');extra.className='origin-tree-continuation';
+          extra.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(
+            continueButton.dataset.traceKind,continueButton.dataset.traceId,DATA,
+            Number(continueButton.dataset.traceOffset||0)),{esc,name});
+          parent.append(extra);continueButton.textContent='추가 조건 접기';
+        }
       }
     }
     const transformResearch=e.target.closest('[data-trace-research-root]');
