@@ -81,10 +81,12 @@ export function createLegacyItemTechAdapter(index,research,goalId){
         '구매 국가 조건 '+item.requiresBuyCountry+' · 실제 국가/진영 공급 여부 미검증'));
       if(item.transferTime!=null)children.push(gate('condition','DELIVERY:'+n.owner,
         '구매 후 수송 시간 원본 '+fmt(item.transferTime)+' · 물품 확보 시점과 별도'));
+      if(item.monthlyBuyLimit!=null)children.push(gate('condition','BUY_MONTHLY:'+n.owner,
+        '원본 월별 구매 상한 '+fmt(item.monthlyBuyLimit)+'개 · 이번 달 잔여 구매량은 현재 세이브에서 확인 필요'));
       children.push(gate('funds','PRICE:'+n.owner,
-        '표시된 구매가 '+fmt(item.costBuy)+' · 판매/보유 재고 및 구매 시점 미검증'));
+        '원본 구매가 '+fmt(item.costBuy)+' · 실제 자금 및 판매/보유 재고 미검증'));
       children.push(gate('warning','STOCK:'+n.owner,
-        '상점 가격 필드 존재만으로 실제 상점 상품이 출현한다고 확정할 수 없음'));
+        '판정: 가격만 존재 · 독립적인 상점 상품/재고/상점 해금 근거 미확인. 구매 확정 금지'));
       return {node:n,relation:'and',children};
     }
     if(n.sourceKind==='make'){
@@ -131,17 +133,20 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       const s=index.events[n.event]?.scripts?.[n.scriptIndex];
       if(!s)return {node:n,relation:'chain',children:[gate('warning','SCRIPT_UNKNOWN:'+n.id,'발생 스크립트 확인 불가')]};
       const children=[];
-      const conditionLabels={firstMonth:'발생 시작 월',lastMonth:'발생 종료 월',
+      const conditionLabels={firstMonth:'발생 시작 월 (하한)',lastMonth:'발생 종료 월 (상한)',
         executionOdds:'스크립트 실행 판정',minScore:'필요 최소 평가점수',
         maxScore:'허용 최대 평가점수',minFunds:'필요 최소 자금',
         maxFunds:'허용 최대 자금',minDifficulty:'최소 난이도',
-        maxDifficulty:'최대 난이도'};
+        maxDifficulty:'최대 난이도',minLoyalty:'최소 충성',maxLoyalty:'최대 충성',
+        minReputation:'최소 평판',maxReputation:'최대 평판',
+        minTacticalScore:'최소 전투 점수',maxTacticalScore:'최대 전투 점수'};
       for(const [key,value] of Object.entries(s.conditions||{}))
         children.push(gate(key==='executionOdds'?'random':'condition',
           'EV_COND:'+n.id+':'+key,
           (conditionLabels[key]||'기타 원본 조건 '+key)+' · '+fmt(value)+
-          (key==='executionOdds'?'% · 이벤트 후보 및 보상 추첨과 별도':
-            key.endsWith('Month')?'개월 차 · 기한이 지나면 이 스크립트 불가':
+          (key==='executionOdds'?'% · 이벤트 전체 발생률이나 보상 당첨률이 아님':
+            key==='firstMonth'?'개월 차 이후 가능 · 마지막 월과는 별도':
+            key==='lastMonth'?'개월 차까지 가능 · 이후에는 이 스크립트 차단':
               ' · 현재 세이브 조건 충족 여부 미검증')));
       const triggerLabels={researchTriggers:'연구 완료',facilityTriggers:'시설 보유',
         itemTriggers:'실물 아이템 보유',xcomBaseInRegionTriggers:'지역 내 기지',
@@ -165,14 +170,23 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       for(const [i,weight] of list(s.eventWeights).entries()){
         const entry=list(weight.entries).find(x=>x.eventId===n.event);
         if(entry)children.push(gate('random','EV_WEIGHT:'+n.id+':'+i,
-          '이벤트 후보 가중치 '+entry.weight+'/'+weight.totalWeight+
-          ' · 해당 선택표 내부 비중 '+amount(entry.relativeShare)+
-          ' · 실행 odds 및 다른 발생 조건과 별개'));
+          '이벤트 후보 가중치 '+fmt(entry.weight)+'/'+fmt(weight.totalWeight)+
+          ' · 해당 선택표 내부 상대 비중 '+amount(entry.relativeShare)+
+          ' · 경쟁 후보 '+list(weight.entries).length+'종 · 실행 odds 및 전체 발생률과 별개'));
       }
-      if(s.oneTimeRandomEvents?.entries?.length)children.push(gate('random','EV_ONCE:'+n.id,
-        '1회성 랜덤 이벤트 선택표 존재 · 재추첨 및 경쟁 규칙 별도 검증'));
-      if(list(s.oneTimeSequentialEvents).length)children.push(gate('condition','EV_SEQUENCE:'+n.id,
-        '1회성 순차 이벤트 목록 존재 · 앞선 이벤트 상태 별도 검증'));
+      const once=s.oneTimeRandomEvents;
+      const onceEntry=list(once?.entries).find(x=>x.eventId===n.event);
+      if(onceEntry)children.push(gate('random','EV_ONCE:'+n.id,
+        '1회성 이벤트 후보 '+fmt(onceEntry.weight)+'/'+fmt(once.totalWeight)+
+        ' · 선택표 내부 상대 비중 '+amount(onceEntry.relativeShare)+
+        ' · 경쟁 후보 '+Math.max(0,list(once.entries).length-1)+'종 · 실제 발생/재실행 여부 미검증'));
+      else if(list(once?.entries).length)children.push(gate('warning','EV_ONCE_UNKNOWN:'+n.id,
+        '1회성 이벤트 선택표가 있지만 이 목표의 후보를 확인하지 못함'));
+      const sequence=list(s.oneTimeSequentialEvents);
+      const position=sequence.indexOf(n.event);
+      if(position>=0)children.push(gate('condition','EV_SEQUENCE:'+n.id,
+        '1회성 순차 이벤트 '+fmt(position+1)+'/'+fmt(sequence.length)+'번째 · 앞선 '+fmt(position)+
+        '개 이벤트의 발생 이력 필요 여부 별도 확인'));
       if(!children.length)children.push(gate('warning','EV_UNRESOLVED:'+n.id,'스크립트에 명시된 제한 조건 없음 · 실제 발생 확정 아님'));
       return {node:n,relation:'and',children};
     }
@@ -192,10 +206,13 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       category:'or',badge:'제조 방법 선택',detail:'원본 제조식별 재료·시설·연구·확률을 왼쪽으로 펼쳐 비교'};
     if(n.sourceKind==='event-options')return {label:'이벤트 보상 경로 '+fmt(items[n.owner].grants.length)+'건',
       category:'or',badge:'이벤트 선택',detail:'이벤트 발생 시 지급 경로 · 미발생/랜덤 보상은 별도 조건'};
-    if(n.sourceKind==='buy')return {label:'상점 구매 · '+name(n.owner),
-      category:'funds',badge:'구매 후보',
-      detail:'가격 '+fmt(items[n.owner].costBuy)+' · requiresBuy 연구 '+
-        list(items[n.owner].requiresBuy).length+'개 · 상점 재고 미확정'};
+    if(n.sourceKind==='buy')return {label:'상점 구매 후보 · '+name(n.owner),
+      category:'funds',badge:'가격만 확인',
+      detail:'원본 구매가 '+fmt(items[n.owner].costBuy)+' · 구매 연구 '+
+        list(items[n.owner].requiresBuy).length+'개 · 구매용 기지 기능 '+
+        list(items[n.owner].requiresBuyBaseFunc).length+'개'+
+        (items[n.owner].monthlyBuyLimit!=null?' · 월 제한 '+fmt(items[n.owner].monthlyBuyLimit)+'개':'')+
+        ' · 독립적인 상점 재고 미검증'};
     if(n.sourceKind==='make'){
       const r=recipes[n.recipe],edge=n.output;
       return {label:(r?.name||n.recipe)+' · '+name(n.owner),
@@ -236,6 +253,15 @@ export function createLegacyItemTechAdapter(index,research,goalId){
     if(n?.kind==='research'||n?.topicId&&research.topics[n.topicId]&&
       /^(LAB|FREE|ACCESS|DEPENDENCIES|UNLOCK):/.test(n.id))
       return researchAdapter(n.topicId||n.id).renderEvidence(n);
+    if(n?.sourceKind==='buy')return '<div class="tech-adapter-proof"><p><b>원본 구매 후보 근거</b> · '+
+      esc(n.owner)+'</p><p>구매 가격과 조건만 원본에서 확인했습니다. 실제 판매 목록·재고·판매 상점은 아직 검증되지 않았습니다.</p><pre>'+
+      esc(JSON.stringify({costBuy:items[n.owner]?.costBuy,requiresBuy:items[n.owner]?.requiresBuy,
+        requiresBuyBaseFunc:items[n.owner]?.requiresBuyBaseFunc,
+        requiresBuyCountry:items[n.owner]?.requiresBuyCountry,
+        monthlyBuyLimit:items[n.owner]?.monthlyBuyLimit,
+        transferTime:items[n.owner]?.transferTime,
+        purchaseEvidence:items[n.owner]?.purchaseEvidence,
+        sourceFiles:items[n.owner]?.sourceFiles},null,2))+'</pre></div>';
     if(n?.sourceKind==='make')return '<div class="tech-adapter-proof"><p><b>원본 제조식</b> · '+
       esc(n.recipe)+' / 산출 대상 '+esc(n.owner)+'</p><p><a href="../manufacture/#recipe='+
       encodeURIComponent(n.recipe)+'">제조 DB에서 전체 제조식 보기</a></p><pre>'+
@@ -259,6 +285,6 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       {href:'../items/#item='+encodeURIComponent(n.id),label:'이 재료의 아이템 DB 상세 열기'}:null);
   return {root:make('item',goalId),expand,describe,renderEvidence,linkForNode,
     notice:'X-Piratez '+index.meta.sourceVersion+' / OXCE '+
-    index.meta.requiredEngine+' · 실물 아이템 획득 근거: 구매(재고 미확정), 제조 산출, 이벤트 지급. '+
+    index.meta.requiredEngine+' · 실물 아이템 획득 근거: 구매(가격만 확인/재고 미검증), 제조 산출, 이벤트 지급. '+
     '확률은 해당 랜덤표 내부 비중이며 이벤트 출현률이 아닙니다. 2.1 병종 DB와 조건을 합치지 않습니다.'};
 }
