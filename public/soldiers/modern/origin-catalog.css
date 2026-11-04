@@ -89,6 +89,8 @@
 .guide-option-heading>span{color:#a4c9ee;font-weight:700;font-size:.78rem}
 .guide-option-heading>strong{font-size:.99rem;color:#eff6ff;line-height:1.5;overflow-wrap:anywhere}
 .guide-option>p{font-size:.85rem;color:#bdd1e5;margin:6px 0 0;line-height:1.6}
+.guide-option>.guide-quantity{margin:9px 0 0;padding:9px 10px;border:1px solid #597a96;border-radius:7px;background:#1d384e;color:#dcebf7;font-size:.83rem;line-height:1.6;overflow-wrap:anywhere}
+.guide-option>.guide-quantity strong{color:#f3ddad}
 .guide-option>.guide-purchase-gates{color:#f2dbaf;font-size:.9rem;line-height:1.65;margin:9px 0 0;padding:9px 10px;border-left:3px solid #d5b36e;background:#1b3048;overflow-wrap:anywhere}
 .guide-purchase-gates p{margin:6px 0 0;font-size:.8rem;line-height:1.55}
 .guide-purchase-gates .guide-purchase-disclaimer{color:#b7c9db;font-size:.77rem}

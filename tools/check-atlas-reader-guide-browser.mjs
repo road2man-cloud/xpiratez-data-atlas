@@ -80,6 +80,11 @@ try{
     'The old verbose acquisition ledger must not be visible by default');
   assert.equal(await material.locator('.guide-option').count(),3,
     'Assault clone should show shop, Egyptian start and propaganda event as three readable choices');
+  assert((await material.locator('[data-quantity-method="buy"]').innerText()).includes('125,000'),
+    'Clone quantity calculator must retain the exact store price');
+  assert((await material.locator('[data-guide-method="EVENT:STR_START_COUNTRY_EGYPT_EVENT"] .guide-quantity').innerText())
+    .includes('고정 지급 12개 / 필요 1개'),
+    'Egypt start must independently cover one license without assuming an event repeats');
   assert((await material.locator('.guide-option-heading').allTextContents()).some(t=>t.includes('구매')));
   assert((await material.locator('.guide-option-heading').allTextContents()).some(t=>t.includes('보상')));
   assert.equal(await material.locator('[data-bootstrap-cycle]').count(),0,
@@ -156,6 +161,14 @@ try{
     'Glamour must show every indexed source record, not only a seven-option preview');
   assert.equal(await glamour.locator('.guide-option[data-guide-method^="EVENT:"]').count(),2,
     'The initial page deliberately contains two real event options');
+  const glamourQuantities=await glamour.locator('.guide-option[data-guide-method^="EVENT:"] .guide-quantity').allInnerTexts();
+  assert(glamourQuantities[0].includes('고정 지급 10개 / 필요 250개')&&
+    glamourQuantities[0].includes('240개 부족')&&
+    glamourQuantities[1].includes('고정 지급 20개 / 필요 250개')&&
+    glamourQuantities[1].includes('230개 부족'),
+    'USA and Japan start rewards must be independent and cannot be combined');
+  assert.equal(await glamour.locator('.guide-more-sources[data-more-category="event"] button[data-required-quantity="250"]').count(),1,
+    'Required 250 Glamour must be carried to the continuation button');
   const moreEvents=glamour.locator('.guide-more-sources[data-more-category="event"]').first();
   const trigger=moreEvents.locator(':scope > .guide-more-button');
   await trigger.click();
@@ -163,6 +176,11 @@ try{
   const eventContinuation=moreEvents.locator(':scope > .guide-more-target');
   assert.equal(await eventContinuation.locator('.guide-option[data-guide-method^="EVENT:"]').count(),6,
     'The next page must expose six more distinct event choices');
+  assert((await eventContinuation.locator('.guide-option[data-guide-method^="EVENT:"]').first()
+    .locator('.guide-quantity').innerText()).includes('필요 250개'),
+    'Additional event sources must compare their yield against the same birth requirement');
+  assert.equal(await eventContinuation.locator('[data-more-category="event"] [data-required-quantity="250"]').count(),1,
+    'A third event page must inherit the quantity context');
   assert.equal(await eventContinuation.locator('[data-more-category="event"] [data-trace-offset="8"]').count(),1,
     'Event pages must offer the next 9-14 sources without raw technical navigation');
   await trigger.click();

@@ -122,8 +122,48 @@ const glamourMap=renderAcquisitionTree(buildAcquisitionSubtree(
   'item-method-map','STR_GLAMOUR',data,2));
 assert(glamourMap.includes('data-more-category="map"'),
   'Map source continuations must be visible outside the raw evidence tree');
+const amountGuide=(profileId)=>renderAcquisitionTree(buildAcquisitionTree(
+  data.profiles.find(x=>x.id===profileId),data));
+const glamourNeed=amountGuide('manufacture:STR_GLAMOUR_RECRUITMENT');
+assert(glamourNeed.includes('data-required-quantity="250"'),
+  'Requested birth material quantity must propagate to the next source page');
+assert(glamourNeed.includes('고정 지급 10개 / 필요 250개')&&
+  glamourNeed.includes('고정 지급분 기준 240개 부족')&&
+  glamourNeed.includes('고정 지급 20개 / 필요 250개')&&
+  glamourNeed.includes('고정 지급분 기준 230개 부족'),
+  'Mutually exclusive starting-country rewards must be independently compared');
+assert(glamourNeed.includes('1회 제조 산출 24개 / 필요 250개')&&
+  glamourNeed.includes('수량상 최소 11회 제조')&&
+  glamourNeed.includes('반복 가능 여부'),
+  'Manufacturing batch arithmetic must remain conditional on repeat feasibility');
+const pageQuantity=renderAcquisitionTree(buildAcquisitionSubtree(
+  'item-method-event','STR_GLAMOUR',data,2),{requiredQuantity:250});
+assert(pageQuantity.includes('data-required-quantity="250"')&&
+  pageQuantity.includes('고정 지급 50개 / 필요 250개')&&
+  pageQuantity.includes('고정 지급분 기준 200개 부족'),
+  'Follow-up event pages must retain the originating birth requirement');
+assert(!renderAcquisitionTree(buildAcquisitionSubtree(
+  'item-method-event','STR_GLAMOUR',data,2)).includes('data-quantity-method='),
+  'Standalone source inspection must not invent a birth material quantity');
+const hybridNeed=amountGuide('manufacture:STR_HYBRID_HIVER_RECRUITMENT');
+assert(hybridNeed.includes('필요 50개 기준 최소 구매 50개')&&
+  hybridNeed.includes('표시 가격 합계 162,500')&&
+  hybridNeed.includes('실제 재고·구매 제한'),
+  'Store total is simple arithmetic, not evidence of enough stock');
+assert(hybridNeed.includes('무작위 생산에서 이 결과가 선택되면')&&
+  hybridNeed.includes('당첨과 재시도는 보장하지 않음'),
+  'Random supply must never be treated as a guaranteed inventory amount');
+const standaloneLicense=renderAcquisitionTree(buildAcquisitionSubtree(
+  'item','STR_THEBAN_ASSAULT_CLONE_LICENSE',data));
+assert(!standaloneLicense.includes('data-quantity-method='),
+  'Standalone material inspection must not silently import a birth requirement');
+const cloneAmount=amountGuide('manufacture:STR_THEBAN_ASSAULT_CLONE');
+assert(cloneAmount.includes('표시 가격 합계 125,000')&&
+  cloneAmount.includes('고정 지급 12개 / 필요 1개')&&
+  cloneAmount.includes('고정 지급 3개 / 필요 1개'),
+  'Shop, Egypt and propaganda must keep separate fixed yields');
 console.log('PASS '+usedMaterialIds.length+' birth materials: full source counts, '+pagedMaterials+
-  ' readable category continuations, event page 3-8 and later map pages reachable');
+  ' readable continuations, quantities, shortfalls, no invented RNG or repeatability');
 const pricedItems=Object.entries(data.itemSupply).filter(([,s])=>Number(s.buyCost)>0);
 let researchGated=0,baseGated=0,noResearch=0;
 const bootstrapCycles=[];

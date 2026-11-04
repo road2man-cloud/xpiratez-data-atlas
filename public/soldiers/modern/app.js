@@ -6,7 +6,7 @@ import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261104-buy-gates-1';
-import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-supply-pages-1';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-quantity-1';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-initial-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -285,7 +285,9 @@ async function init(){try{
             continueButton.dataset.originalText=continueButton.textContent;
             panel.innerHTML=renderAcquisitionTree(buildAcquisitionSubtree(
               continueButton.dataset.traceKind,continueButton.dataset.traceId,DATA,
-              Number(continueButton.dataset.traceOffset||0)),{esc,name});
+              Number(continueButton.dataset.traceOffset||0)),{
+                esc,name,requiredQuantity:Number(continueButton.dataset.requiredQuantity||0)
+              });
             continueButton.textContent='추가 공급 경로 접기';
             continueButton.setAttribute('aria-expanded','true');
           }

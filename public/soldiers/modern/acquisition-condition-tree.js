@@ -192,7 +192,8 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
             mapLoot:Number(s.mapLoot?.sourceCount)||0
           },
           purchaseBaseFunctions:arr(s.buyRequiresBaseFunc),
-          purchaseCountry:s.buyRequiresCountry||null
+          purchaseCountry:s.buyRequiresCountry||null,
+          supplyOutcome:{method:'buy',fixedQuantity:1,unitCost:Number(s.buyCost)}
         }];
       }
       if(category==='map'){
@@ -221,27 +222,42 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
       const all=collections[category]||[];
       const selected=all.slice(offset,offset+itemPageSize);
       const nodes=selected.map(row=>{
-        if(category==='manufacture')return group('and','MAKE:'+row.id,
-          [...arr(row.requires).map(research),
-            ...arr(row.requiresBaseFunc).map(baseFunction),
-            ...Object.entries(row.requiredItems||{}).map(([ingredient,quantity])=>
-              group('and','MATERIAL:'+ingredient,[item(ingredient)],'제조에 '+quantity+'개 필요')),
-            leaf('funds',row.id,'제조비 '+row.cost)],
-          '제조 '+row.id+' · 산출 '+row.quantity+'개');
-        if(category==='random')return group('and','RANDOM:'+row.id,
-          [...arr(row.requires).map(research),...arr(row.requiresBaseFunc).map(baseFunction),
-            ...Object.keys(row.requiredItems||{}).map(item),
-            leaf('rng',row.id,'무작위 생산 선택 가중치 '+row.weight+'/'+row.weightTotal)],
-          '무작위 물품 제조 · 획득 확정 아님');
-        if(category==='research')return group('and','RESEARCH_ITEM:'+row.research,
-          [research(row.research)],'연구 완료 시 '+row.count+'개 보상');
-        return scripts('EVENT:'+row.event,row.scriptRoutes,()=>[
-          leaf('item-reward',row.event,'지급 내용: '+arr(row.grants).map(g=>
-            g.mode==='every'||g.mode==='everyMulti'?g.count+'개 고정':'무작위/가중 지급').join(' + ')),
-          ...(arr(row.directResearchAwards).length?[
-            leaf('parallel-research',row.event,'같은 이벤트에서 연구 '+arr(row.directResearchAwards).join(', ')+
-              '도 지급 · 연구실 표본 별도 요구 아님')]:[])
-        ],'이벤트 지급 · 발생 스크립트는 OR');
+        if(category==='manufacture')return {
+          ...group('and','MAKE:'+row.id,
+            [...arr(row.requires).map(research),
+              ...arr(row.requiresBaseFunc).map(baseFunction),
+              ...Object.entries(row.requiredItems||{}).map(([ingredient,quantity])=>
+                group('and','MATERIAL:'+ingredient,[item(ingredient)],'제조에 '+quantity+'개 필요')),
+              leaf('funds',row.id,'제조비 '+row.cost)],
+            '제조 '+row.id+' · 산출 '+row.quantity+'개'),
+          supplyOutcome:{method:'manufacture',fixedQuantity:Number(row.quantity),unitCost:Number(row.cost)}
+        };
+        if(category==='random')return {
+          ...group('and','RANDOM:'+row.id,
+            [...arr(row.requires).map(research),...arr(row.requiresBaseFunc).map(baseFunction),
+              ...Object.keys(row.requiredItems||{}).map(item),
+              leaf('rng',row.id,'무작위 생산 선택 가중치 '+row.weight+'/'+row.weightTotal)],
+            '무작위 물품 제조 · 획득 확정 아님'),
+          supplyOutcome:{method:'random',conditionalQuantity:Number(row.count)}
+        };
+        if(category==='research')return {
+          ...group('and','RESEARCH_ITEM:'+row.research,
+            [research(row.research)],'연구 완료 시 '+row.count+'개 보상'),
+          supplyOutcome:{method:'research',fixedQuantity:Number(row.count)}
+        };
+        const fixed=arr(row.grants).filter(g=>g.mode==='every'||g.mode==='everyMulti')
+          .reduce((n,g)=>n+Math.max(0,Number(g.count)||0),0);
+        const hasRandom=arr(row.grants).some(g=>g.mode!=='every'&&g.mode!=='everyMulti');
+        return {
+          ...scripts('EVENT:'+row.event,row.scriptRoutes,()=>[
+            leaf('item-reward',row.event,'지급 내용: '+arr(row.grants).map(g=>
+              g.mode==='every'||g.mode==='everyMulti'?g.count+'개 고정':'무작위/가중 지급').join(' + ')),
+            ...(arr(row.directResearchAwards).length?[
+              leaf('parallel-research',row.event,'같은 이벤트에서 연구 '+arr(row.directResearchAwards).join(', ')+
+                '도 지급 · 연구실 표본 별도 요구 아님')]:[])
+          ],'이벤트 지급 · 발생 스크립트는 OR'),
+          supplyOutcome:{method:'event',fixedQuantity:fixed,hasRandom}
+        };
       });
       const next=pageLink(category,itemId,all.length,offset,selected.length);
       if(next)nodes.push(next);
@@ -389,7 +405,7 @@ export function buildAcquisitionSubtree(kind,id,data,offset=0){
   return buildAcquisitionTree(p,data,{maxDepth:4,maxNodes:45});
 }
 export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').replace(/[&<>"]/g,c=>
-  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}={}){
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),requiredQuantity=0}={}){
   const arr=x=>Array.isArray(x)?x:[];
   const display=(id,fallback='조건')=>{
     const value=String(name(id)||'').trim();
@@ -458,13 +474,48 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     buy:'상점',event:'이벤트',manufacture:'제조',random:'무작위 제조',
     research:'연구 보상',map:'지도 전리품'
   };
-  const moreSupply=n=>{
+  const moreSupply=(n,needed=requiredQuantity)=>{
     const category=n.traceKind.slice('item-method-'.length);
+    const quantity=Number.isSafeInteger(Number(needed))&&Number(needed)>0?Number(needed):0;
     return '<div class="guide-more-sources" data-more-category="'+esc(category)+'">'+
       '<button type="button" class="guide-more-button" data-trace-kind="'+esc(n.traceKind)+
       '" data-trace-id="'+esc(n.id)+'" data-trace-offset="'+esc(n.traceOffset||0)+
-      '" aria-expanded="false">'+(supplyLabels[category]||'기타')+' · '+esc(n.note)+'</button>'+
+      '" data-required-quantity="'+quantity+'" aria-expanded="false">'+
+      (supplyLabels[category]||'기타')+' · '+esc(n.note)+'</button>'+
       '<div class="guide-more-target"></div></div>';
+  };
+  // Amounts are conditional on obtaining the source, never evidence that an
+  // event recurs or that the store/production materials are actually available.
+  const quantityAdvice=(method,needed)=>{
+    const q=Number(needed),o=method.supplyOutcome;
+    if(!o||!Number.isSafeInteger(q)||q<=0)return '';
+    const amount=n=>Number(n).toLocaleString('ko-KR');
+    const fixed=Number(o.fixedQuantity)||0;
+    const remaining=Math.max(0,q-fixed);
+    let explanation='';
+    if(o.method==='buy'){
+      const expense=q*Number(o.unitCost);
+      explanation='필요 '+amount(q)+'개 기준 최소 구매 '+amount(q)+'개'+
+        (Number.isSafeInteger(expense)?' · 표시 가격 합계 '+amount(expense):'')+
+        '. 실제 재고·구매 제한·자금 및 해금 조건은 별도 확인';
+    }else if(o.method==='manufacture'&&fixed>0){
+      const batches=Math.ceil(q/fixed);
+      explanation='1회 제조 산출 '+amount(fixed)+'개 / 필요 '+amount(q)+
+        '개 · 수량상 최소 '+amount(batches)+'회 제조'+
+        '. 반복 가능 여부, 매회 재료·비용·시설 조건은 별도 확인';
+    }else if(o.method==='event'||o.method==='research'){
+      const kind=o.method==='event'?'이벤트 발생 시':'연구 보상 발생 시';
+      explanation=kind+' 고정 지급 '+amount(fixed)+'개 / 필요 '+amount(q)+'개 · '+
+        (fixed>=q?'이 지급분으로 필요 수량 충족':
+          '고정 지급분 기준 '+amount(remaining)+'개 부족 · 추가 공급 필요')+
+        (o.hasRandom?' (별도 무작위 지급분은 계산에서 제외)':'')+
+        '. 발생·재지급은 보장하지 않음';
+    }else if(o.method==='random'){
+      explanation='무작위 생산에서 이 결과가 선택되면 '+amount(o.conditionalQuantity||0)+
+        '개 / 필요 '+amount(q)+'개 · 당첨과 재시도는 보장하지 않음';
+    }
+    return explanation?'<p class="guide-quantity" data-quantity-method="'+esc(o.method)+
+      '" data-needed="'+q+'"><strong>필요 수량 비교:</strong> '+esc(explanation)+'</p>':'';
   };
   function collectConditions(n,seen=new Set(),depth=0){
     if(depth>3||seen.size>25)return [];
@@ -496,7 +547,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     }
     return [...new Set(lines)].slice(0,8);
   }
-  function visibleRoute(method,index){
+  function visibleRoute(method,index,needed=requiredQuantity){
     const label=optionTitle(method);
     const scripts=method.kind==='or'&&method.id?.startsWith('EVENT:')?arr(method.children):null;
     const firstLeaves=(scripts||[method]).flatMap(s=>arr(s.children));
@@ -569,7 +620,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
     return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
       '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
-      '<p>'+esc(outcomes)+'</p>'+purchaseSummary+purchaseBootstrap+purchaseUpstream+variants+
+      '<p>'+esc(outcomes)+'</p>'+quantityAdvice(method,needed)+purchaseSummary+purchaseBootstrap+purchaseUpstream+variants+
       '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
       '<ul class="guide-conditions">'+conditions+'</ul>'+purchaseTrace+traceButton(method)+'</details></article>';
   }
@@ -601,6 +652,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       const breakdown=Object.entries(supplyLabels).filter(([key])=>Number(counts[key])>0)
         .map(([key,label])=>label+' '+counts[key]+'건').join(' · ');
       const quantity=itemMatch?node.note.match(/(\d+)개/):null;
+      const needed=itemMatch?Number(quantity?.[1]||0):requiredQuantity;
       body=(itemMatch?
         '<p class="guide-lead">출생하려면 <strong>'+display(id,'이 아이템')+
           ' '+esc(quantity?.[1]||'1')+'개</strong>가 필요합니다. 아래 획득 방법 중 가능한 것을 고르세요.</p>':
@@ -610,16 +662,18 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
           '개 선택지 표시. 방법별 조건과 발생 확률은 개별 확인하세요.'+
           (child.mapSourcesMayBeIncomplete?' 지도 출처의 일부는 미색인일 수 있습니다.':'')+'</p>':
           '<p class="guide-source-count">확인된 공급 기록 없음 · 추가 조사 필요. 획득 불가능 판정이 아닙니다.</p>')+
-        '<div class="guide-options">'+(visible.length?visible.map(visibleRoute).join(''):
+        '<div class="guide-options">'+(visible.length?
+          visible.map((method,i)=>visibleRoute(method,i,needed)).join(''):
           '<p>확인된 공급 기록이 없습니다. 원본 근거에서 미연결 출처를 확인하세요.</p>')+
-        more.map(moreSupply).join('')+'</div>';
+        more.map(n=>moreSupply(n,needed)).join('')+'</div>';
     }else if(itemPage){
       kind='method-page';title='이어서 확인하는 공급 경로';
       const routes=arr(node.children);
       const visible=routes.filter(n=>!supplyPage(n));
       body='<p class="guide-lead">앞에서 펼친 것과 독립적인 추가 공급처입니다. 이 페이지의 조건을 다른 경로에 합치지 않습니다.</p>'+
-        '<div class="guide-options">'+visible.map(visibleRoute).join('')+
-        moreSupplyPages(routes).map(moreSupply).join('')+'</div>';
+        '<div class="guide-options">'+
+        visible.map((method,i)=>visibleRoute(method,i,requiredQuantity)).join('')+
+        moreSupplyPages(routes).map(n=>moreSupply(n,requiredQuantity)).join('')+'</div>';
     }else if(isResearch){
       kind='research';title='출생 전에 완료할 연구 · '+display(node.id,'연구');
       const methods=arr(node.children?.[0]?.children);
