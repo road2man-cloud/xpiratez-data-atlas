@@ -335,19 +335,20 @@ async function openResearchTech(id){
   host.textContent='현재 연구 DB와 일치하는 원본 조건을 확인하는 중…';
   if(!dialog.open)dialog.showModal();
   try{
-    const [viewer,adapters,index]=await Promise.all([
+    const [viewer,adapters,items,index]=await Promise.all([
       import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
-      import('../research/acquisition-tech-adapter.js?v=20261105-facility-tech-1'),
-      loadResearchTechIndex()
+      import('./acquisition-tech-adapter.js?v=20261105-unified-tech-1'),
+      loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(!dialog.open)return;
-    const adapter=adapters.createLegacyResearchTechAdapter(index,id);
+    const adapter=adapters.createLegacyResearchAndItemTechAdapter(items,index,id);
     activeResearchTechViewer=viewer.mountAcquisitionTechViewer(host,{adapter,technical:true});
   }catch(error){if(dialog.open)host.textContent='연구 경로를 표시하지 못했습니다: '+error.message;}
 }
 async function loadItemTechIndex(){
   if(!itemTechIndexPromise)itemTechIndexPromise=(async()=>{
-    const url='./acquisition-index.json',version='?v=20261105-facility-tech-1';
+    const url=pageMode==='research'?'../items/acquisition-index.json':'./acquisition-index.json';
+    const version='?v=20261105-unified-tech-1';
     let result=null;
     if(typeof DecompressionStream==='function')try{
       const response=await fetch(url+'.gz'+version);
@@ -358,7 +359,7 @@ async function loadItemTechIndex(){
     if(result?.meta?.schemaVersion!==1||
       result.meta.sourceVersion!==manifest.mod.version||
       result.meta.requiredEngine!==manifest.mod.requiredExtendedVersion||
-      result.meta.count!==itemIndex.length||
+      result.meta.count!==manifest.counts.items||
       result.meta.sourceMetadataSha256!==manifest.source.metadataSha256)
       throw Error('아이템 획득 경로 인덱스가 현재 아이템 DB 원본과 일치하지 않습니다');
     return result;
@@ -376,7 +377,7 @@ async function openItemTech(id){
   try{
     const [view,adapters,items,research]=await Promise.all([
       import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
-      import('./acquisition-tech-adapter.js?v=20261105-facility-tech-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-unified-tech-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;

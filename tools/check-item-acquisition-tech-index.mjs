@@ -64,6 +64,10 @@ if(trigger){
   assert.equal(script.sourceKind,'event-script');
   assert(ev.expand(script).children.length>0);
   assert(ev.renderEvidence(script).includes('이벤트 발생 스크립트 근거'));
+  const occurrence=ev.expand(script);
+  for(const condition of occurrence.children.filter(n=>n.id.startsWith('EV_COND:')))
+    assert(!/\b(firstMonth|lastMonth|executionOdds)\s*=/.test(condition.note),
+      'Occurrence gates must show player-friendly labels, not raw condition keys');
 }
 assert(eventRequirements.children.every(n=>n.kind!=='random'));
 assert(ev.renderEvidence(event).includes('../events/#event='));

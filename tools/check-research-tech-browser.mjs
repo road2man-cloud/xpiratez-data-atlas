@@ -119,6 +119,23 @@ try{
     'Original unlock is an alternative to nominal dependencies');
   assert((await graph.locator('.tech-wire--alternative').count())>0);
   await dialog.locator('#closeResearchTech').click();
+  // A laboratory's physical specimen must recurse into actual item acquisition
+  // choices in this same dialog, not stop at a link to a different database.
+  await page.goto(base+'/research/#research=STR_AT_RIFLE',{waitUntil:'domcontentloaded'});
+  await page.locator('#detail [data-open-research-tech="STR_AT_RIFLE"]').waitFor();
+  await page.locator('#detail [data-open-research-tech="STR_AT_RIFLE"]').click();
+  const integrated=dialog.locator('.tech-viewer');
+  await integrated.waitFor();
+  await integrated.locator('.tech-node[data-tech-stage="1"]').first().click();
+  const specimen=integrated.locator('.tech-node[data-tech-stage="2"][data-tech-kind="item"]');
+  assert.equal(await specimen.count(),1,'Rifle research needs its real physical rifle specimen');
+  await specimen.click();
+  const ways=await integrated.locator('.tech-node[data-tech-stage="3"]').allInnerTexts();
+  assert(ways.some(x=>x.includes('제조')),
+    'Research -> specimen -> manufacturing must stay in the one horizontal trace');
+  assert((await integrated.locator('.tech-route-step').count())>=3);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  await dialog.locator('#closeResearchTech').click();
   await page.setViewportSize({width:1280,height:900});
   const dimension=await page.evaluate(()=>({
     document:document.documentElement.scrollWidth,view:innerWidth

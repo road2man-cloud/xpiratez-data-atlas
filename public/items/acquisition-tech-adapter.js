@@ -15,6 +15,19 @@ const amount=(share)=>typeof share==='number'&&Number.isFinite(share)?
 const modeLabel={fixed:'고정 산출',random:'랜덤 제조 후보',
   'random-list':'랜덤 단일 후보','random-bundle':'랜덤 묶음 후보'};
 
+// A research goal can use the exact same cross-domain graph as an item goal.
+// This lets a laboratory specimen recurse into its genuine item supply routes
+// without switching pages or joining modern 2.1 rules into legacy 1.1.1.
+export function createLegacyResearchAndItemTechAdapter(items,research,goalId){
+  if(!research?.topics?.[goalId])throw Error('연구 원본에 없는 목표 ID: '+goalId);
+  const fallback=Object.keys(items?.items||{})[0];
+  if(!fallback)throw Error('연결할 아이템 획득 인덱스가 없습니다');
+  const adapter=createLegacyItemTechAdapter(items,research,fallback);
+  return {...adapter,root:{kind:'research',id:goalId,children:[]},
+    notice:'X-Piratez '+research.meta.sourceVersion+
+      ' 연구 ↔ 실물 아이템 ↔ 제조 ↔ 시설 통합 선행 경로입니다. 2.1 병종 DB와 원본 규칙을 혼합하지 않습니다. 실제 상점 재고·이벤트·임무 발생과 현재 세이브 조건은 별도 검증합니다.'};
+}
+
 export function createLegacyItemTechAdapter(index,research,goalId){
   if(index?.meta?.schemaVersion!==1||!index?.items?.[goalId])
     throw Error('아이템 획득 인덱스의 버전 또는 ID가 잘못되었습니다: '+goalId);
@@ -113,18 +126,30 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       const s=index.events[n.event]?.scripts?.[n.scriptIndex];
       if(!s)return {node:n,relation:'chain',children:[gate('warning','SCRIPT_UNKNOWN:'+n.id,'발생 스크립트 확인 불가')]};
       const children=[];
+      const conditionLabels={firstMonth:'발생 시작 월',lastMonth:'발생 종료 월',
+        executionOdds:'스크립트 실행 판정',minScore:'필요 최소 평가점수',
+        maxScore:'허용 최대 평가점수',minFunds:'필요 최소 자금',
+        maxFunds:'허용 최대 자금',minDifficulty:'최소 난이도',
+        maxDifficulty:'최대 난이도'};
       for(const [key,value] of Object.entries(s.conditions||{}))
-        children.push(gate('condition','EV_COND:'+n.id+':'+key,
-          key+' = '+value+' · 원본 스크립트 조건; 실제 실행 시점/추첨과 구분'));
+        children.push(gate(key==='executionOdds'?'random':'condition',
+          'EV_COND:'+n.id+':'+key,
+          (conditionLabels[key]||'기타 원본 조건 '+key)+' · '+fmt(value)+
+          (key==='executionOdds'?'% · 이벤트 후보 및 보상 추첨과 별도':
+            key.endsWith('Month')?'개월 차 · 기한이 지나면 이 스크립트 불가':
+              ' · 현재 세이브 조건 충족 여부 미검증')));
+      const triggerLabels={researchTriggers:'연구 완료',facilityTriggers:'시설 보유',
+        itemTriggers:'실물 아이템 보유',xcomBaseInRegionTriggers:'지역 내 기지',
+        xcomBaseInCountryTriggers:'국가 내 기지'};
       for(const [key,entries] of Object.entries(s.triggerMaps||{})){
         for(const [i,t] of list(entries).entries()){
           if(key==='researchTriggers'&&t.value===true&&research.topics[t.id])
             children.push(researchNode(t.id));
           else children.push(gate(t.value===false?'warning':'condition',
             'EV_GATE:'+n.id+':'+key+':'+i,
-            (t.koName||t.id)+' ('+key+', '+t.id+') · '+
-            (t.value===false?'미충족/부재가 필요':'존재/충족 필요')+
-            ' · 현재 세이브 충족 여부 미검증'));
+            (triggerLabels[key]||key)+' · '+(t.koName||t.id)+
+            ' · '+(t.value===false?'없어야 함 (존재·완료 시 차단)':'필요함')+
+            ' · 현재 세이브 충족 여부 미검증 · 원본 '+t.id));
         }
       }
       for(const [i,weight] of list(s.eventWeights).entries()){
