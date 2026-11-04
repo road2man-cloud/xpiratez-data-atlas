@@ -42,7 +42,14 @@ assert.equal(route.requiredResearch[0].rule.destroyItem,false);
 assert(route.requiredResearch[0].events.some(e=>e.event==='STR_REVOLUTIONARY_SPEECH_THEBES'));
 const supply=route.requiredItems[0].supply;
 assert.equal(supply.buyCost,125000);
-assert.equal(supply.buyRequires.length,0);
+assert.deepEqual(supply.buyRequires,['STR_CLEO_CHALLENGE_COMPLETED'],
+  'Store research must come from item.requiresBuy, not item.requires');
+assert.deepEqual(supply.generalRequires,[],'Unrelated general item gates stay separate');
+assert.deepEqual(data.researchRules.STR_CLEO_CHALLENGE_COMPLETED.dependencies,[
+  'STR_CLEO_CHALLENGE','STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE',
+  'STR_MONSTER_HUNT_PRIMAL_BULLFROG_DONE','STR_MONSTER_HUNT_PRIMAL_SHAMBLER_DONE',
+  'STR_MONSTER_HUNT_PRIMAL_COCKROACH_DONE'
+],'All five completion prerequisites must be retained as AND gates');
 const egypt=supply.eventGrants.find(e=>e.event==='STR_START_COUNTRY_EGYPT_EVENT');
 assert(egypt);
 assert.equal(egypt.grants.find(g=>g.mode==='everyMulti')?.count,12);
@@ -70,6 +77,10 @@ assert(route.matchingHistory.some(p=>p.id==='manufacture:STR_ROGUE_CLONE_RECRUIT
 assert(route.matchingHistory.some(p=>p.id==='manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT'));
 const html=renderAcquisitionPaths(profile,data,ui);
 assert(html.includes('구매: 125000 / 1개'));
+assert(html.includes('상점 판매 해금 연구:'));
+assert(html.includes('data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"'));
+for(const prerequisite of data.researchRules.STR_CLEO_CHALLENGE_COMPLETED.dependencies)
+  assert(html.includes(prerequisite),'Missing clickable upstream research '+prerequisite);
 assert(html.includes('3개 고정'));
 assert(html.includes('12개 고정'));
 for(const id of ['STR_PROPAGANDA_1','STR_PROPAGANDA_2','STR_PROPAGANDA_3','STR_PROPAGANDA_4']){
@@ -86,5 +97,5 @@ for(const id of zeroCostItems)if(data.itemSupply[id].eventGrants?.length){
 }
 console.log('PASS 72 individual birth sources / '+allBirthItems.length+
   ' birth materials have source-indexed acquisition options without joining separate birth histories');
-console.log('PASS assault-clone license: store 125000 OR Egyptian start 12 OR Theban speech 3+research, four alternative propaganda scripts');
+console.log('PASS assault-clone license: store 125000 locked by Cleopatra challenge completed (5 AND prerequisites), OR Egyptian start 12 OR Theban speech 3+research');
 console.log('PASS different assault-clone-history variants remain separate original birth profiles');

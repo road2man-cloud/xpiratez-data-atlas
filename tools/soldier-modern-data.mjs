@@ -494,7 +494,11 @@ export function buildSoldierData({effectiveMerged,sourceHistory,tr}){
         }:{})});
     }
     itemSupply[id]={exists:!!it,buyCost:it?.costBuy??0,
-      buyRequires:it?.requires??[],buyRequirements:it?.buyRequirements??[],
+      // Only requiresBuy controls store visibility; item.requires is a distinct
+      // general gate and must never silently replace the purchase prerequisite.
+      buyRequires:it?.requiresBuy??[],buyRequirements:it?.buyRequirements??[],
+      buyRequiresBaseFunc:it?.requiresBuyBaseFunc??[],buyRequiresCountry:it?.requiresBuyCountry??null,
+      generalRequires:it?.requires??[],
       manufacture:recipes,randomManufacture,researchGrants,eventGrants,
       mapLoot:mapLootByItem[id]||{sources:[],sourceCount:0,possiblyTruncated:false}};
   }

@@ -86,18 +86,30 @@ try{
   assert(methodsText.includes('125,000'),'The store option should show its actual cost upfront');
   assert(methodsText.includes('12개 고정'),'Egypt start reward quantity must be readable');
   assert(methodsText.includes('3개 고정'),'Theban speech reward quantity must be readable');
-  assert.equal(await guide.locator('.guide-technical-evidence').evaluate(el=>el.open),false,
+  const shop=material.locator('[data-guide-method="BUY:STR_THEBAN_ASSAULT_CLONE_LICENSE"]');
+  assert.equal(await shop.count(),1,'Shop purchase must remain a separate method');
+  const gateText=await shop.locator('.guide-purchase-gates').innerText();
+  assert(gateText.includes('클레오파트라의 도전을 완료했다'),
+    'A player must see the real store-unlocking research before expanding raw rules: '+gateText);
+  await shop.locator('.guide-option-details > summary').click();
+  assert((await shop.locator('.guide-conditions').innerText()).includes('클레오파트라의 도전을 완료했다'));
+  await shop.locator('[data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"]').click();
+  assert((await shop.locator('.origin-transform-research-root .origin-readable-guide').count())>=1,
+    'The purchase prerequisite must open a research tree from the start of the campaign');
+  assert((await shop.locator('.origin-transform-research-root').textContent()).includes('STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE'),
+    'Four primal monster hunts must be traceable upstream of Cleopatra completion');
+  const sourceProof=guide.locator(':scope > .guide-technical-evidence');
+  assert.equal(await sourceProof.evaluate(el=>el.open),false,
     'Source IDs must not dominate the default experience');
-  assert.equal(await guide.locator('.guide-source-id').first().isVisible(),false,
+  assert.equal(await sourceProof.locator('.guide-source-id').first().isVisible(),false,
     'Raw identifier text must be hidden until a user asks for the source');
-  const visible=await guide.locator('.guide-cards').innerText();
+  const visible=await guide.locator(':scope > .guide-cards').innerText();
   assert(!visible.includes('STR_THEBAN_ASSAULT_CLONE_LICENSE'),'Raw item IDs must stay out of readable cards');
-  await material.locator('.guide-option-details summary').first().click();
-  assert((await material.locator('.guide-conditions').first().innerText()).length>5);
+  assert((await shop.locator(':scope > .guide-option-details > .guide-conditions').innerText()).length>5);
   assert.equal(await guide.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
     'The readable birth guide must not overflow mobile');
-  await guide.locator('.guide-technical-evidence > summary').click();
-  assert.equal(await guide.locator('.guide-source-id').first().isVisible(),true);
+  await sourceProof.locator(':scope > summary').click();
+  assert.equal(await sourceProof.locator('.guide-source-id').first().isVisible(),true);
   const originNav=page.locator('#originDetails .atlas-detail-index');
   await originNav.waitFor({timeout:12000});
   assert((await originNav.locator('a.atlas-detail-link').count())>=3,

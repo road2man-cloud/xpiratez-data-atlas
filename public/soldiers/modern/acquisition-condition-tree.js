@@ -166,8 +166,11 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
         if(!(Number(s.buyCost)>0))return [];
         return [group('and','BUY:'+itemId,
           [...uniq([...arr(s.buyRequires),...arr(s.buyRequirements)]).map(research),
+            ...arr(s.buyRequiresBaseFunc).map(baseFunction),
+            ...(s.buyRequiresCountry?[leaf('country',s.buyRequiresCountry,
+              '상점 판매 허용 국가 · 해당 국가 조건 확인 필요')]:[]),
             leaf('funds',itemId,'구매비 '+s.buyCost+' · 실제 상점 재고는 확인 필요')],
-          '물품 구매 · 조건/자금')];
+          '상점 판매 해금 연구·기지 기능·국가 조건을 모두 충족한 후 구매 · 타 획득 방법에는 적용하지 않음')];
       }
       if(category==='map'){
         const loot=s.mapLoot||{},all=arr(loot.sources),subset=all.slice(offset,offset+itemPageSize);
@@ -438,6 +441,16 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       '원본 규칙에 있는 획득 방법입니다. 실제 등장과 획득은 확인이 필요합니다.';
     const variants=scripts?.length?
       '<p class="guide-variant-count">발생 조건 '+scripts.length+'가지 중 가능한 경로를 확인하세요.</p>':'';
+    const purchaseResearch=method.id?.startsWith('BUY:')?
+      arr(method.children).filter(n=>n.kind==='research'):[];
+    const purchaseSummary=method.id?.startsWith('BUY:')?
+      '<p class="guide-purchase-gates"><strong>상점 판매 해금 연구: '+
+      (purchaseResearch.length?purchaseResearch.map(n=>display(n.id,'이름이 확인되지 않은 연구')).join(' · '):
+        '원본에 별도 연구 조건 없음')+'</strong></p>':'';
+    const purchaseTrace=purchaseResearch.map(n=>
+      '<div class="guide-purchase-trace"><button type="button" data-trace-research-root="'+esc(n.id)+'">'+
+      display(n.id,'해금 연구')+' · 게임 시작부터 선행 조건 보기</button>'+
+      '<div class="origin-transform-research-root"></div></div>').join('');
     const conditions=scripts?.length?
       scripts.map((s,i)=>{
         const lines=collectConditions(s);
@@ -448,9 +461,9 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
     return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
       '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
-      '<p>'+esc(outcomes)+'</p>'+variants+
+      '<p>'+esc(outcomes)+'</p>'+purchaseSummary+variants+
       '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
-      '<ul class="guide-conditions">'+conditions+'</ul>'+traceButton(method)+'</details></article>';
+      '<ul class="guide-conditions">'+conditions+'</ul>'+purchaseTrace+traceButton(method)+'</details></article>';
   }
   function overviewCard(node,index){
     if(node.kind==='start')return '';

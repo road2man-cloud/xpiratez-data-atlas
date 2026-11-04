@@ -585,7 +585,10 @@
           },
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -1100,9 +1103,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -3654,9 +3655,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -10916,9 +10915,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -12886,7 +12883,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -13528,7 +13528,10 @@
           },
           "STR_KALTES_KLARES": {
             "buyCost": 900,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_KALTES_KLARES",
+              "STR_CONTACT_DEALERS"
+            ],
             "manufacture": [],
             "eventGrants": [
               {
@@ -14677,7 +14680,9 @@
         "itemSources": {
           "STR_THEBAN_ASSAULT_CLONE_LICENSE": {
             "buyCost": 125000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CLEO_CHALLENGE_COMPLETED"
+            ],
             "manufacture": [],
             "eventGrants": [
               {
@@ -16002,9 +16007,7 @@
         "itemSources": {
           "STR_SKULL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_SKULL"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_STAFF_OF_EXPLOSION_DISASSEMBLY",
               "STR_STAFF_OF_BURNING_SOULS_DISASSEMBLY",
@@ -16058,9 +16061,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -17792,7 +17793,10 @@
           },
           "STR_VODKA": {
             "buyCost": 700,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_VODKA",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [],
             "eventGrants": [
               {
@@ -18915,7 +18919,10 @@
           },
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -20312,7 +20319,9 @@
         "itemSources": {
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -22159,9 +22168,7 @@
         "itemSources": {
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -24804,7 +24811,9 @@
         "itemSources": {
           "STR_MEDICAL_SUPPLIES": {
             "buyCost": 5000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_MUTANT_ALLIANCE"
+            ],
             "manufacture": [
               "STR_NINJA_CLONING_POD_DA",
               "STR_MUSHROOM_MEDICINE",
@@ -24867,7 +24876,9 @@
           },
           "STR_ALIEN_ALLOYS": {
             "buyCost": 7500,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_SHIP_JUNKYARD"
+            ],
             "manufacture": [
               "STR_ALIEN_ALLOYS_XXX",
               "STR_NINJA_CLONING_POD_DA",
@@ -25397,9 +25408,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -29683,9 +29692,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -32780,9 +32787,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -35472,9 +35477,7 @@
         "itemSources": {
           "STR_WRECKED_XENFORCER": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_XENFORCER_CHASSIS"
-            ],
+            "buyRequires": [],
             "manufacture": [],
             "eventGrants": [],
             "mapSourceCount": 2,
@@ -35482,7 +35485,9 @@
           },
           "STR_ALENIUM": {
             "buyCost": 1570800,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_BOUNTY_HUNTING_PRIZE_ALENIUM"
+            ],
             "manufacture": [],
             "eventGrants": [],
             "mapSourceCount": 4,
@@ -40405,9 +40410,7 @@
         "itemSources": {
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -41811,7 +41814,9 @@
           },
           "STR_GOLD_BAR": {
             "buyCost": 44000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_SMUGGLERS"
+            ],
             "manufacture": [
               "STR_CHTONIC_ARTIFACT_113_EXH",
               "STR_LIZARDMAN_STATUE_EX",
@@ -47368,7 +47373,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -93389,9 +93396,7 @@
           },
           "STR_GLAMOUR": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_HAREM_COLLAR_EX",
               "STR_ANG_104",
@@ -95432,7 +95437,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -95504,7 +95512,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -95655,7 +95666,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -99751,7 +99764,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -99823,7 +99839,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -99974,7 +99993,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -101572,7 +101593,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -101644,7 +101668,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -101795,7 +101822,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -102912,7 +102941,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -102984,7 +103016,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -103135,7 +103170,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -105191,7 +105228,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -105263,7 +105303,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -105414,7 +105457,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -114920,7 +114965,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -114992,7 +115040,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -115143,7 +115194,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -124121,7 +124174,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -124193,7 +124249,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -124344,7 +124403,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -128790,7 +128851,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -128862,7 +128926,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -129013,7 +129080,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -131069,7 +131138,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -131141,7 +131213,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -131292,7 +131367,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -131937,7 +132014,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -132009,7 +132089,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -132160,7 +132243,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -132333,7 +132418,10 @@
         "itemSources": {
           "STR_RAIDER_CORPSE": {
             "buyCost": 6000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_RAIDER_CORPSE",
+              "STR_JACKSTOWN_SCOUTING"
+            ],
             "manufacture": [
               "STR_UBER_BELTER_ROBBERY",
               "STR_NINJA_GAL_ROBBERY",
@@ -132405,7 +132493,10 @@
           },
           "STR_MEDALLION": {
             "buyCost": 20000,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_DEALERS",
+              "STR_MEDALLION"
+            ],
             "manufacture": [
               "STR_CHURCH_MATRON_ROBBERY",
               "STR_APOC_DISCIPLE_ROBBERY",
@@ -132556,7 +132647,9 @@
           },
           "STR_SECTOWEED": {
             "buyCost": 3250,
-            "buyRequires": [],
+            "buyRequires": [
+              "STR_CONTACT_RETICULANS"
+            ],
             "manufacture": [
               "STR_GDXCAR_EX"
             ],
@@ -177575,9 +177668,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -181956,9 +182047,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -183642,9 +183731,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -184811,9 +184898,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -186998,9 +187083,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -197188,9 +197271,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -206811,9 +206892,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -211580,9 +211659,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -213771,9 +213848,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -214426,9 +214501,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -253670,9 +253743,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -256533,9 +256604,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -257702,9 +257771,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -260155,9 +260222,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -263218,9 +263283,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],
@@ -263873,9 +263936,7 @@
           },
           "STR_ZORTRIUM_CRYSTAL": {
             "buyCost": 0,
-            "buyRequires": [
-              "STR_UNAVAILABLE"
-            ],
+            "buyRequires": [],
             "manufacture": [
               "STR_WIZ_112_DEP"
             ],

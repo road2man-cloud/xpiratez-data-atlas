@@ -29,7 +29,8 @@ for(const source of ['STR_START_COUNTRY_EGYPT_EVENT','STR_REVOLUTIONARY_SPEECH_T
 assert(raw.includes('STR_PEASANT_REVOLUTION'),'First propaganda route must show its research');
 assert(raw.includes('STR_THE_GREAT_CAUSE'),'Negative propaganda research gate missing');
 assert(raw.includes('12')&&raw.includes('3'),'Different reward quantities must remain discoverable');
-assert(!raw.includes('STR_CLEO_CHALLENGE'),'Unrelated Cleopatra challenge must not be linked as a license source');
+assert(raw.includes('STR_CLEO_CHALLENGE_COMPLETED'),
+  'The raw purchase gate must include the actual Cleopatra-completed research');
 const continuation=buildAcquisitionSubtree('research','STR_PROPAGANDA',data);
 assert(continuation.root.children.some(x=>x.id==='STR_PROPAGANDA'));
 assert(renderAcquisitionTree(clone).includes('data-trace-id='));
@@ -39,6 +40,22 @@ const walk=(root,predicate)=>{
   return found;
 };
 const descendants=(node)=>walk(node,()=>true);
+const buy=walk(clone.root,x=>x.id==='BUY:STR_THEBAN_ASSAULT_CLONE_LICENSE')[0];
+assert(buy?.kind==='and');
+assert(buy.children.some(x=>x.kind==='research'&&x.id==='STR_CLEO_CHALLENGE_COMPLETED'),
+  'The store option must require the completed Cleopatra challenge research');
+const licenseMethods=walk(clone.root,x=>x.id==='ITEM_METHOD:STR_THEBAN_ASSAULT_CLONE_LICENSE')[0];
+assert(!licenseMethods.children.some(x=>x.id==='EVENT:STR_CLEO_CHALLENGE_COMPLETED'),
+  'The challenge completion is a store unlock, not a direct license reward');
+const shopHtml=renderAcquisitionTree(clone,{name:id=>({
+  STR_CLEO_CHALLENGE_COMPLETED:'클레오파트라의 도전을 완료했다'
+}[id]||id)});
+assert(shopHtml.includes('상점 판매 해금 연구: 클레오파트라의 도전을 완료했다'));
+assert(shopHtml.includes('data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"'));
+const cleo=buildAcquisitionSubtree('research','STR_CLEO_CHALLENGE_COMPLETED',data);
+const cleoPrerequisites=walk(cleo.root,x=>x.id==='ALL_DEPENDENCIES:STR_CLEO_CHALLENGE_COMPLETED')[0];
+assert(cleoPrerequisites?.kind==='and');
+assert.equal(cleoPrerequisites.children.length,5,'All five Cleopatra conditions must be satisfied');
 const rank=buildAcquisitionSubtree('research','STR_CAPTAINS_RANK_06',data);
 const rankResearch=walk(rank.root,x=>x.kind==='research'&&x.id==='STR_CAPTAINS_RANK_06')[0];
 const rankMethods=walk(rankResearch,x=>x.kind==='or'&&x.id==='RESEARCH_METHOD:STR_CAPTAINS_RANK_06')[0];
@@ -115,4 +132,4 @@ console.log('PASS mission loot: map-block recovery linked to real mission script
 console.log('PASS research dependencies ALL (AND), direct unlocks alternative (OR), facility construction, bounded complex birth preview');
 
 console.log('PASS 72 game-start condition roots, conditional AND/OR, item/event/research linkage and lazy continuation');
-console.log('PASS assault clone: Egyptian start / four propaganda script alternatives / 125000 item purchase; no invented Cleopatra challenge reward');
+console.log('PASS assault clone: Egypt start / four propaganda scripts / 125000 purchase after Cleopatra completion; no invented challenge item reward');
