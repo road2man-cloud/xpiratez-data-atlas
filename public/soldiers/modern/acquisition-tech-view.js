@@ -217,6 +217,8 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
         '<button type="button" data-tech-action="zoom-in" aria-label="확대">＋</button>'+
         '<button type="button" data-tech-action="reset">처음으로</button>'+
       '</div></div>'+
+    '<nav class="tech-route" aria-label="현재 선택한 획득 경로"><span class="tech-route-caption">현재 추적</span>'+
+      '<div class="tech-route-list" role="group" aria-label="경로별 단계 이동"></div></nav>'+
     '<div class="tech-legend"><span class="tech-legend-must">━ 필수 조건: 모두 충족</span>'+
       '<span class="tech-legend-alternative">┄ 대체 경로: 하나 선택</span>'+
       '<span class="tech-legend-uncertain">◇ 확률·기한: 확정 아님</span></div>'+
@@ -233,8 +235,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
   const columnsEl=shell.querySelector('.tech-columns');
   const wires=shell.querySelector('.tech-wires');
   const selectedEl=shell.querySelector('.tech-selected');
+  const routeEl=shell.querySelector('.tech-route-list');
   const path=[root];
-  let zoom=1,selection=null,drag=null,disposed=false;
+  let zoom=1,selection=null,drag=null,disposed=false,focusStage=0;
   const expansionCache=new WeakMap();
   const moreLimit=new Map();
   function expandNode(node){
@@ -284,6 +287,14 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
         '</div></section>';
     }).join('');
     columnsEl.innerHTML=html;
+    routeEl.innerHTML=path.map((node,stage)=>({node,stage})).reverse().map(({node,stage})=>{
+      const meta=describe(node);
+      return '<button type="button" class="tech-route-step'+
+        (stage===path.length-1?' is-current':'')+'" data-tech-jump="'+stage+'"'+
+        ' aria-label="'+safe(meta.label)+' 단계로 이동" title="'+safe(meta.label)+'">'+
+        '<span class="tech-route-step-number">'+(stage===0?'목표':stage)+'</span>'+safe(meta.label)+
+        '</button>';
+    }).join('');
     canvas.style.setProperty('--tech-size',zoom);
     const focused=selection||path.at(-1);
     const meta=describe(focused);
@@ -301,20 +312,54 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       ' · 관계: '+safe(role)+'</span></details>'+
       (focused?.kind==='limit'?'<em>탐색 한도 표시일 뿐 게임의 새로운 선행 조건은 아닙니다.</em>':'');
     requestAnimationFrame(()=>{
+      alignColumns();
       drawWires();
-      const first=columnsEl.querySelector('.tech-column');
-      if(preserve==='new'&&first){
-        // Keep the chosen prerequisite in view without jumping to the far edge
-        // of a crowded graph. The currently explored stage is always leftmost.
-        const target=columnsEl.querySelector('.tech-node[data-tech-stage="'+(path.length-1)+'"][aria-pressed="true"]');
-        if(target){
-          const vr=viewport.getBoundingClientRect(),tr=target.getBoundingClientRect();
-          const margin=Math.min(90,viewport.clientWidth*.12);
-          if(tr.left<vr.left+margin)viewport.scrollLeft+=tr.left-vr.left-margin;
-          else if(tr.right>vr.right-margin)viewport.scrollLeft+=tr.right-vr.right+margin;
-        }
-      }else if(preserve==='goal')viewport.scrollLeft=viewport.scrollWidth;
+      if(preserve==='goal'){
+        viewport.scrollLeft=viewport.scrollWidth;
+        viewport.scrollTop=0;
+      }else if(preserve==='new'||preserve==='focus'){
+        focusNode(preserve==='focus'?focusStage:path.length-1,preserve==='focus');
+      }
     });
+  }
+  // Align the active path on one horizontal reading line. A large AND group
+  // can have many siblings: flex centering each column independently would
+  // otherwise make the chosen route zig-zag across the whole viewport.
+  function alignColumns(){
+    if(disposed||!columnsEl.isConnected)return;
+    const sections=[...columnsEl.querySelectorAll('.tech-column')];
+    for(const section of sections){
+      const list=section.querySelector('.tech-node-list');
+      list.style.paddingTop='0px';list.style.paddingBottom='0px';
+    }
+    const levels=sections.map(section=>{
+      const list=section.querySelector('.tech-node-list');
+      const anchor=section.querySelector('.tech-node[aria-pressed="true"]')||
+        section.querySelector('.tech-node');
+      if(!anchor)return null;
+      const r=section.getBoundingClientRect(),n=anchor.getBoundingClientRect();
+      const center=n.top+n.height/2;
+      return {list,above:center-r.top,below:r.bottom-center};
+    }).filter(Boolean);
+    if(!levels.length)return;
+    const above=Math.max(...levels.map(x=>x.above));
+    const below=Math.max(...levels.map(x=>x.below));
+    for(const level of levels){
+      level.list.style.paddingTop=Math.max(0,above-level.above)+'px';
+      level.list.style.paddingBottom=Math.max(0,below-level.below)+'px';
+    }
+  }
+  function focusNode(stage,center=false){
+    const target=columnsEl.querySelector('.tech-node[data-tech-stage="'+stage+'"]'+
+      '[aria-pressed="true"]')||columnsEl.querySelector('.tech-node[data-tech-stage="'+stage+'"]');
+    if(!target)return;
+    const vr=viewport.getBoundingClientRect(),tr=target.getBoundingClientRect();
+    const mx=Math.min(36,viewport.clientWidth*.08),my=Math.min(32,viewport.clientHeight*.08);
+    if(center)viewport.scrollLeft+=tr.left+tr.width/2-vr.left-vr.width/2;
+    else if(tr.left<vr.left+mx)viewport.scrollLeft+=tr.left-vr.left-mx;
+    else if(tr.right>vr.right-mx)viewport.scrollLeft+=tr.right-vr.right+mx;
+    if(tr.top<vr.top+my)viewport.scrollTop+=tr.top-vr.top-my;
+    else if(tr.bottom>vr.bottom-my)viewport.scrollTop+=tr.bottom-vr.bottom+my;
   }
   function drawWires(){
     if(disposed||!canvas.isConnected)return;
@@ -380,6 +425,12 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     render('new');
   }
   shell.addEventListener('click',event=>{
+    const jump=event.target.closest('[data-tech-jump]');
+    if(jump){
+      focusStage=Number(jump.dataset.techJump);
+      selection=path[focusStage]||root;
+      render('focus');return;
+    }
     const card=event.target.closest('[data-tech-stage][data-tech-index]');
     if(card){chooseNode(Number(card.dataset.techStage),Number(card.dataset.techIndex));return;}
     const show=event.target.closest('[data-tech-more]');
@@ -429,7 +480,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       original.dataset.loaded='true';
     }
   });
-  const observer=typeof ResizeObserver==='function'?new ResizeObserver(()=>requestAnimationFrame(drawWires)):null;
+  const observer=typeof ResizeObserver==='function'?new ResizeObserver(()=>requestAnimationFrame(()=>{
+    alignColumns();drawWires();
+  })):null;
   observer?.observe(viewport);
   render('goal');
   return {element:shell, getPath:()=>path.map(x=>({kind:x.kind,id:x.id})),

@@ -66,6 +66,8 @@ try{
   assert((await choices.nth(1).innerText()).includes('시작 국가 보상')||
     (await choices.nth(1).innerText()).includes('이벤트'));
   await select(4,0); // store
+  assert.equal(await graph.locator('.tech-route-step').count(),5,
+    'The route strip must show every chosen stage through the present goal');
   const selected=graph.locator('.tech-selected');
   assert((await selected.innerText()).includes('상위 목표로 돌아가기'));
   assert((await selected.innerText()).includes('원본 상세 조건표 열기'));
@@ -94,6 +96,32 @@ try{
   assert(direct.some(t=>t.includes('23%')),'Script execution odds must not disappear');
   assert(!direct.some(t=>t.includes('아직 펼치지 않은 선행 조건')),
     'Traversal limits are not original game prerequisites');
+  const anchors=await graph.evaluate(el=>new Promise(resolve=>requestAnimationFrame(()=>
+    requestAnimationFrame(()=>resolve([...el.querySelectorAll('.tech-column')].map(col=>{
+      const active=col.querySelector('.tech-node[aria-pressed="true"]')||
+        col.querySelector('.tech-node');
+      const r=active.getBoundingClientRect();
+      return {stage:col.dataset.techColumn,mid:r.top+r.height/2};
+    }))))));
+  const heights=anchors.map(x=>x.mid);
+  assert(Math.max(...heights)-Math.min(...heights)<3,
+    'Chosen nodes in dense branches must align on one horizontal trace: '+JSON.stringify(anchors));
+  assert.equal(await graph.locator('.tech-route-step').count(),6);
+  await graph.locator('[data-tech-jump="2"]').click();
+  assert.equal(await graph.locator('.tech-column').count(),7,
+    'Breadcrumb navigation must not discard already traced prerequisites');
+  const focus=await graph.evaluate(el=>new Promise(resolve=>requestAnimationFrame(()=>
+    requestAnimationFrame(()=>{
+      const vp=el.querySelector('.tech-viewport').getBoundingClientRect();
+      const node=el.querySelector('.tech-node[data-tech-stage="2"][aria-pressed="true"]')
+        .getBoundingClientRect();
+      resolve({left:node.left,right:node.right,viewportLeft:vp.left,viewportRight:vp.right});
+    }))));
+  assert(focus.right>focus.viewportLeft&&focus.left<focus.viewportRight,
+    'Breadcrumb must focus its chosen stage inside the viewport');
+  await graph.locator('[data-tech-jump="5"]').click();
+  assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'Deep branches and breadcrumb chips must never enlarge the mobile document');
   if(process.env.ATLAS_TECH_SCREENSHOT==='1'){
     await graph.screenshot({path:path.join(os.tmpdir(),'xpiratez-tech-mobile.png')});
   }
