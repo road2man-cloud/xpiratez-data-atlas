@@ -91,6 +91,14 @@ try{
   const gateText=await shop.locator('.guide-purchase-gates').innerText();
   assert(gateText.includes('클레오파트라의 도전을 완료했다'),
     'A player must see the real store-unlocking research before expanding raw rules: '+gateText);
+  const preview=shop.locator('.guide-purchase-dependencies');
+  assert.equal(await preview.count(),1,'All direct purchase research prerequisites should be inspectable');
+  assert.equal(await preview.evaluate(el=>el.open),true,
+    'Five Cleopatra laboratory prerequisites should be expanded automatically');
+  assert.equal(await preview.locator('li').count(),5,
+    'The default Cleopatra research route has five simultaneous direct prerequisites');
+  assert((await preview.innerText()).includes('원시'),
+    'The first-order prerequisite names should be visible without technical ID lookups');
   await shop.locator('.guide-option-details > summary').click();
   assert((await shop.locator('.guide-conditions').innerText()).includes('클레오파트라의 도전을 완료했다'));
   await shop.locator('[data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"]').click();

@@ -90,6 +90,13 @@
 .guide-option-heading>strong{font-size:.99rem;color:#eff6ff;line-height:1.5;overflow-wrap:anywhere}
 .guide-option>p{font-size:.85rem;color:#bdd1e5;margin:6px 0 0;line-height:1.6}
 .guide-option>.guide-purchase-gates{color:#f2dbaf;font-size:.9rem;line-height:1.65;margin:9px 0 0;padding:9px 10px;border-left:3px solid #d5b36e;background:#1b3048;overflow-wrap:anywhere}
+.guide-purchase-gates p{margin:6px 0 0;font-size:.8rem;line-height:1.55}
+.guide-purchase-gates .guide-purchase-disclaimer{color:#b7c9db;font-size:.77rem}
+.guide-purchase-dependencies{margin:9px 0;padding:9px 10px!important;border:1px solid #4b6982!important;border-radius:8px;background:#172d44}
+.guide-purchase-dependencies>summary{font-weight:700;font-size:.83rem;line-height:1.5;color:#e7f2fc;overflow-wrap:anywhere;cursor:pointer}
+.guide-purchase-dependencies>p{font-size:.78rem;line-height:1.6;margin:8px 0;color:#c8d8e8}
+.guide-purchase-dependencies ul{margin:7px 0;padding-left:19px;list-style:disc}
+.guide-purchase-dependencies li{font-size:.82rem;line-height:1.55;padding:2px 0;color:#e0ecf9;overflow-wrap:anywhere}
 .guide-purchase-trace{margin:9px 0;border:1px solid #3a5978;padding:8px;border-radius:8px;min-width:0}
 .guide-purchase-trace>button{display:block;text-align:left;width:100%;max-width:100%;font-size:.84rem;overflow-wrap:anywhere}
 .guide-purchase-trace>.origin-transform-research-root{margin-top:8px;overflow-wrap:anywhere}

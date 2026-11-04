@@ -52,10 +52,58 @@ const shopHtml=renderAcquisitionTree(clone,{name:id=>({
 }[id]||id)});
 assert(shopHtml.includes('상점 판매 해금 연구: 클레오파트라의 도전을 완료했다'));
 assert(shopHtml.includes('data-trace-research-root="STR_CLEO_CHALLENGE_COMPLETED"'));
+assert(shopHtml.includes('guide-purchase-dependencies" open'),
+  'The five first-order Cleopatra prerequisites should be expanded by default');
+assert(shopHtml.includes('일반 연구실 경로에서는 아래 연구를 모두 완료해야 합니다'));
+assert(shopHtml.includes('선행 5개'));
 const cleo=buildAcquisitionSubtree('research','STR_CLEO_CHALLENGE_COMPLETED',data);
 const cleoPrerequisites=walk(cleo.root,x=>x.id==='ALL_DEPENDENCIES:STR_CLEO_CHALLENGE_COMPLETED')[0];
 assert(cleoPrerequisites?.kind==='and');
 assert.equal(cleoPrerequisites.children.length,5,'All five Cleopatra conditions must be satisfied');
+const pricedItems=Object.entries(data.itemSupply).filter(([,s])=>Number(s.buyCost)>0);
+let researchGated=0,baseGated=0,noResearch=0;
+for(const [itemId,s] of pricedItems){
+  const supplyTree=buildAcquisitionSubtree('item',itemId,data);
+  const store=walk(supplyTree.root,n=>n.id==='BUY:'+itemId)[0];
+  assert(store?.kind==='and','Missing original store route for '+itemId);
+  const gates=[...new Set([...(s.buyRequires||[]),...(s.buyRequirements||[])])];
+  assert.deepEqual(store.purchaseGateDetails.map(g=>g.id),gates,
+    'Store-only requiresBuy conditions must all be present: '+itemId);
+  assert.deepEqual(store.purchaseBaseFunctions,s.buyRequiresBaseFunc||[],
+    'Base functions must not disappear from the purchase path: '+itemId);
+  assert.equal(store.purchaseCountry,s.buyRequiresCountry||null);
+  assert.deepEqual(store.purchaseGateDetails.map(g=>g.normalDependencies),
+    gates.map(id=>data.researchRules[id]?.dependencies||[]),
+    'The research-lab first-order dependencies must be retained: '+itemId);
+  const markup=renderAcquisitionTree(supplyTree);
+  assert(markup.includes('data-guide-method="BUY:'+itemId+'"'),
+    'Purchase route must be accessible in the player guide: '+itemId);
+  assert(markup.includes('실제 상점 재고와 자금은 별도 확인'),
+    'A price must never imply immediate store availability: '+itemId);
+  if(gates.length){
+    researchGated++;
+    for(const id of gates)
+      assert(markup.includes('data-trace-research-root="'+id+'"'),
+        'Missing game-start research continuation: '+itemId+' -> '+id);
+  }else{
+    noResearch++;
+    assert(markup.includes('원본에 별도 연구 조건 없음'),
+      'No research must be reported accurately: '+itemId);
+  }
+  if((s.buyRequiresBaseFunc||[]).length){
+    baseGated++;
+    assert(markup.includes('구매에 필요한 기지 기능:'),
+      'A non-research store restriction must be visible before expanding raw data');
+  }
+}
+assert.equal(pricedItems.length,133,'Pinned 2.1 store material audit changed');
+assert.equal(researchGated,125);
+assert.equal(noResearch,8);
+assert.equal(baseGated,1);
+const bypassItem=buildAcquisitionSubtree('item','STR_OPERATOR_ARMOR',data);
+assert(renderAcquisitionTree(bypassItem).includes('직접 해금 대안 있음'),
+  'Default laboratory prerequisites must not be presented as the only research access');
+console.log('PASS 133 indexed purchasable materials: 125 gated by research, 8 without research gates, one base-function gate; direct dependency previews and bypass labels intact');
 const rank=buildAcquisitionSubtree('research','STR_CAPTAINS_RANK_06',data);
 const rankResearch=walk(rank.root,x=>x.kind==='research'&&x.id==='STR_CAPTAINS_RANK_06')[0];
 const rankMethods=walk(rankResearch,x=>x.kind==='or'&&x.id==='RESEARCH_METHOD:STR_CAPTAINS_RANK_06')[0];
