@@ -98,9 +98,35 @@ for(const id of usedRecipeIds){
     outcomeScope:'production outcome tied to the source recipe; no game-time success probability'
   };
 }
-const events=Object.fromEntries([...eventIds].sort().map(id=>[id,{
-  name:entityNames[id]?.[0]||id,english:entityNames[id]?.[1]||null
-}]));
+// Event script gates are indexed separately from their reward outcome.
+// A script is a possible occurrence route, not a guarantee it will fire.
+const eventDetail=new Map(),eventFiles={};
+for(const bucket of '0123456789abcdef'){
+  const file=path.join(globalRoot,'event-chunks',bucket+'.json.gz');
+  const bytes=fs.readFileSync(file);
+  eventFiles[bucket]=hash(bytes);
+  for(const [id,detail] of Object.entries(JSON.parse(zlib.gunzipSync(bytes)).details||{})){
+    assert(!eventDetail.has(id),'Duplicate event ID '+id);
+    eventDetail.set(id,detail);
+  }
+}
+const events=Object.fromEntries([...eventIds].sort().map(id=>{
+  const detail=eventDetail.get(id);
+  const scripts=(detail?.scripts||[]).filter(s=>(s.eventRefs||[]).includes(id)||
+    (s.eventWeights||[]).some(w=>(w.entries||[]).some(e=>e.eventId===id))||
+    (s.oneTimeRandomEvents?.entries||[]).some(e=>e.eventId===id)||
+    (s.oneTimeSequentialEvents||[]).some(e=>e.eventId===id));
+  return [id,{
+    name:detail?.koName||entityNames[id]?.[0]||id,
+    english:detail?.enName||entityNames[id]?.[1]||null,
+    occurrenceCoverage:detail?'indexed event scripts; source-specific scheduling remains unproven':'no event detail found',
+    scripts:scripts.map(s=>({id:s.id,conditions:s.conditions||{},
+      triggerMaps:s.triggerMaps||{},eventWeights:s.eventWeights||[],
+      oneTimeRandomEvents:s.oneTimeRandomEvents||null,
+      oneTimeSequentialEvents:s.oneTimeSequentialEvents||[],sourceFiles:s.sourceFiles||[]})),
+    sourceFiles:detail?.sourceFiles||[]
+  }];
+}));
 const result={meta:{
   schemaVersion:1,sourceVersion:itemIndex.meta.mod.version,
   requiredEngine:itemIndex.meta.mod.requiredExtendedVersion,
@@ -108,6 +134,7 @@ const result={meta:{
   count:Object.keys(items).length,recipes:Object.keys(recipes).length,
   totalProducers,totalEvents,randomProducers,
   itemDetailSha256:itemFiles,itemUsageSha256:usageFiles,manufactureSha256:mfgFiles,
+  eventDetailSha256:eventFiles,
   limitations:'Other tactical loot and missions are not fully indexed; shop stock and event occurrence not proven'
 },items,recipes,events};
 const serialized=JSON.stringify(result)+'\n';

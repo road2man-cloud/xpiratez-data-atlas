@@ -55,11 +55,44 @@ const ev=createLegacyItemTechAdapter(items,research,'STR_MED_CANNON_PARTS');
 const event=ev.expand(ev.root).children.find(n=>n.sourceKind==='event');
 assert(event&&event.reward.kind==='fixed');
 const eventRequirements=ev.expand(event);
-assert(eventRequirements.children.some(n=>n.kind==='event'));
+assert(eventRequirements.children.some(n=>n.sourceKind==='event-triggers'||n.kind==='warning'));
+const trigger=eventRequirements.children.find(n=>n.sourceKind==='event-triggers');
+if(trigger){
+  const alternatives=ev.expand(trigger);
+  assert(alternatives.children.length>0,'Event occurrence scripts must be traceable');
+  const script=alternatives.children[0];
+  assert.equal(script.sourceKind,'event-script');
+  assert(ev.expand(script).children.length>0);
+  assert(ev.renderEvidence(script).includes('이벤트 발생 스크립트 근거'));
+}
 assert(eventRequirements.children.every(n=>n.kind!=='random'));
 assert(ev.renderEvidence(event).includes('../events/#event='));
 assert(items.events[event.event]?.name,
   'A known event source must have a human-readable localized label where indexed');
+// Audit indexed occurrence conditions against the original decompressed event script.
+const zlib=await import('node:zlib');
+const originalEvents=new Map();
+for(const bucket of '0123456789abcdef'){
+  const chunk=JSON.parse(zlib.gunzipSync(fs.readFileSync(`public/data/event-chunks/${bucket}.json.gz`)));
+  for(const [id,detail] of Object.entries(chunk.details||{}))originalEvents.set(id,detail);
+}
+let verifiedScripts=0;
+for(const [eventId,eventInfo] of Object.entries(items.events)){
+  const source=originalEvents.get(eventId);
+  for(const script of eventInfo.scripts||[]){
+    const matching=source?.scripts.find(s=>s.id===script.id&&
+      ((s.eventRefs||[]).includes(eventId)||
+        (s.eventWeights||[]).some(w=>(w.entries||[]).some(e=>e.eventId===eventId))||
+        (s.oneTimeRandomEvents?.entries||[]).some(e=>e.eventId===eventId)||
+        (s.oneTimeSequentialEvents||[]).some(e=>e.eventId===eventId)));
+    assert(matching,'Indexed event occurrence has no matching original '+eventId+' '+script.id);
+    assert.deepEqual(script.conditions,matching.conditions||{});
+    assert.deepEqual(script.triggerMaps,matching.triggerMaps||{});
+    assert.deepEqual(script.eventWeights,matching.eventWeights||[]);
+    verifiedScripts++;
+  }
+}
+assert(verifiedScripts>0,'Event occurrence source verification must execute');
 const missing=createLegacyItemTechAdapter(items,research,'SPC_CUM_OR_ELSE');
 const unknown=missing.expand(missing.root);
 assert.equal(unknown.children.length,1);
