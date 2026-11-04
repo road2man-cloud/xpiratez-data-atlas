@@ -13,6 +13,17 @@ for(const p of data.profiles){
     !Object.keys(p.acquisitionRequiredItems||{}).length);
   if(p.sourceType==='event')assert(t.root.children.some(x=>x.id==='BIRTH_EVENT:'+p.sourceId));
   const html=renderAcquisitionTree(t);
+  const materials=Object.keys(p.acquisitionRequiredItems||{});
+  assert.equal((html.match(/data-guide-category="material"/g)||[]).length,materials.length,
+    'Every birth item must have its own readable first-level card: '+p.id);
+  for(const materialId of materials){
+    assert(t.root.children.some(n=>n.id==='REQUIRED_ITEM:'+materialId&&
+      n.children?.[0]?.kind==='item'),'A previous expensive item must not hide '+materialId);
+    if(Number(data.itemSupply[materialId]?.buyCost)>0)
+      assert(html.includes('data-guide-method="BUY:'+materialId+'"'),
+        'Purchase choices must remain visible even if an earlier item hits its recursion limit: '+materialId);
+  }
+  assert(html.length<650000,'Bounded first-level birth preview must fit mobile: '+p.id);
   assert(html.includes('data-complete-profile="'+p.id+'"'));
   assert(html.includes('이 병사를 얻기 위해 필요한 것'));
   assert(html.includes('원본 조건·연구 ID·세부 분기 보기'));
@@ -62,6 +73,7 @@ assert(cleoPrerequisites?.kind==='and');
 assert.equal(cleoPrerequisites.children.length,5,'All five Cleopatra conditions must be satisfied');
 const pricedItems=Object.entries(data.itemSupply).filter(([,s])=>Number(s.buyCost)>0);
 let researchGated=0,baseGated=0,noResearch=0;
+const bootstrapCycles=[];
 for(const [itemId,s] of pricedItems){
   const supplyTree=buildAcquisitionSubtree('item',itemId,data);
   const store=walk(supplyTree.root,n=>n.id==='BUY:'+itemId)[0];
@@ -75,7 +87,16 @@ for(const [itemId,s] of pricedItems){
   assert.deepEqual(store.purchaseGateDetails.map(g=>g.normalDependencies),
     gates.map(id=>data.researchRules[id]?.dependencies||[]),
     'The research-lab first-order dependencies must be retained: '+itemId);
+  for(const gate of store.purchaseGateDetails)
+    assert.equal(gate.requiresOwnPurchaseItemSpecimen,Boolean(
+      data.researchRules[gate.id]?.needItem&&
+      (data.researchRules[gate.id]?.neededItem||gate.id)===itemId),
+    'A purchase-funded lab project must not silently self-finance its required specimen: '+itemId);
+  const circular=store.purchaseGateDetails.some(g=>g.requiresOwnPurchaseItemSpecimen);
+  if(circular)bootstrapCycles.push(itemId);
   const markup=renderAcquisitionTree(supplyTree);
+  assert.equal(markup.includes('data-bootstrap-cycle="'+itemId+'"'),circular,
+    'Only actual same-item laboratory prerequisites should receive a first-sample warning: '+itemId);
   assert(markup.includes('data-guide-method="BUY:'+itemId+'"'),
     'Purchase route must be accessible in the player guide: '+itemId);
   assert(markup.includes('실제 상점 재고와 자금은 별도 확인'),
@@ -100,10 +121,13 @@ assert.equal(pricedItems.length,133,'Pinned 2.1 store material audit changed');
 assert.equal(researchGated,125);
 assert.equal(noResearch,8);
 assert.equal(baseGated,1);
+for(const id of ['STR_MEDALLION','STR_KALTES_KLARES','STR_VODKA'])
+  assert(bootstrapCycles.includes(id),'Missing source-verified first-purchase cycle: '+id);
+assert(bootstrapCycles.length>=3);
 const bypassItem=buildAcquisitionSubtree('item','STR_OPERATOR_ARMOR',data);
 assert(renderAcquisitionTree(bypassItem).includes('직접 해금 대안 있음'),
   'Default laboratory prerequisites must not be presented as the only research access');
-console.log('PASS 133 indexed purchasable materials: 125 gated by research, 8 without research gates, one base-function gate; direct dependency previews and bypass labels intact');
+console.log('PASS 133 indexed purchasable materials: 125 research-gated, 8 without research gates, 1 base-function gate, '+bootstrapCycles.length+' same-item lab specimen cycles; separate source categories retained');
 const rank=buildAcquisitionSubtree('research','STR_CAPTAINS_RANK_06',data);
 const rankResearch=walk(rank.root,x=>x.kind==='research'&&x.id==='STR_CAPTAINS_RANK_06')[0];
 const rankMethods=walk(rankResearch,x=>x.kind==='or'&&x.id==='RESEARCH_METHOD:STR_CAPTAINS_RANK_06')[0];

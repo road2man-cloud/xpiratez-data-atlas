@@ -82,6 +82,8 @@ try{
     'Assault clone should show shop, Egyptian start and propaganda event as three readable choices');
   assert((await material.locator('.guide-option-heading').allTextContents()).some(t=>t.includes('구매')));
   assert((await material.locator('.guide-option-heading').allTextContents()).some(t=>t.includes('보상')));
+  assert.equal(await material.locator('[data-bootstrap-cycle]').count(),0,
+    'Cleopatra research must not receive an invented same-item specimen-cycle warning');
   const methodsText=await material.innerText();
   assert(methodsText.includes('125,000'),'The store option should show its actual cost upfront');
   assert(methodsText.includes('12개 고정'),'Egypt start reward quantity must be readable');
@@ -124,6 +126,19 @@ try{
     'Soldier origin must expose navigable sections without raw source IDs');
   assert.equal(await originNav.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
     'Origin section navigation must fit a narrow phone');
+  // A priced item can require its own specimen to unlock store purchases.
+  // That is not a legal first-source purchase in the ordinary lab route.
+  await page.locator('#search').fill('manufacture:STR_WILD_GIRL_RECRUITMENT');
+  await page.locator('#originTable .origin-open').first().click();
+  await page.locator('#originDetails button[data-expand-origin-tree]').click();
+  const medallionCycle=page.locator('#originDetails [data-bootstrap-cycle="STR_MEDALLION"]');
+  await medallionCycle.waitFor();
+  const cycleText=await medallionCycle.innerText();
+  assert(cycleText.includes('첫 구매 전 다른 공급 경로 확인 필요'));
+  assert(cycleText.includes('이벤트')&&cycleText.includes('제조'),
+    'Purchasable specimen cycle needs separately sourced supply alternatives');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'Cyclic first-purchase notice must not overflow the mobile viewport');
   assert.deepEqual(errors,[],'Origin detail reader errors');
   await page.close();
   // A real event detail must supply accessible, actionable section navigation.
