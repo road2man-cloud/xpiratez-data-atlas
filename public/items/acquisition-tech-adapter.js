@@ -145,7 +145,7 @@ export function createLegacyItemTechAdapter(index,research,goalId){
         for(const [i,t] of list(entries).entries()){
           if(key==='researchTriggers'&&t.value===true&&research.topics[t.id])
             children.push(researchNode(t.id));
-          else children.push(gate(t.value===false?'warning':'condition',
+          else children.push(gate(t.value===false?'blocked':'condition',
             'EV_GATE:'+n.id+':'+key+':'+i,
             (triggerLabels[key]||key)+' · '+(t.koName||t.id)+
             ' · '+(t.value===false?'없어야 함 (존재·완료 시 차단)':'필요함')+
@@ -211,6 +211,8 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       /^(LAB|FREE|ACCESS|DEPENDENCIES|UNLOCK):/.test(n.id))
       return researchAdapter(n.topicId).describe(n);
     if(n.kind==='random')return {label:'랜덤 결과 확인',category:'random',badge:'확정 아님',detail:n.note};
+    if(n.kind==='blocked')return {label:'부재·미완료 조건',category:'blocked',
+      badge:'존재하면 차단',detail:n.note};
     if(n.kind==='facility-function')return {label:'기지 기능 '+n.id,category:'facility',badge:'필수 시설',detail:n.note};
     if(n.kind==='funds')return {label:'자금·작업량',category:'funds',badge:'비용 조건',detail:n.note};
     if(n.kind==='warning')return {label:'추가 확인 필요',category:'warning',badge:'미검증',detail:n.note};

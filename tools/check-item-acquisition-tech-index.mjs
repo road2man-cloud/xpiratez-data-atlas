@@ -97,6 +97,25 @@ for(const [eventId,eventInfo] of Object.entries(items.events)){
   }
 }
 assert(verifiedScripts>0,'Event occurrence source verification must execute');
+// A source-script negative trigger is an explicit route exclusion, NOT an
+// unknown-data warning and not a positive prerequisite.
+let negativeVerified=0;
+for(const [eventId,info] of Object.entries(items.events)){
+  for(const [i,script] of (info.scripts||[]).entries()){
+    if(!Object.values(script.triggerMaps||{}).some(entries=>entries.some(x=>x.value===false)))continue;
+    const item=Object.values(items.items).find(x=>x.grants.some(g=>g.id===eventId));
+    if(!item)continue;
+    const graph=createLegacyItemTechAdapter(items,research,item.id);
+    const condition=graph.expand({kind:'and',id:'EVENT_SCRIPT:'+eventId+':'+i,
+      sourceKind:'event-script',event:eventId,scriptIndex:i});
+    const exclusions=condition.children.filter(x=>x.id.startsWith('EV_GATE:')&&x.kind==='blocked');
+    assert(exclusions.length>0,'Negative source gates must be visually blocked '+eventId);
+    assert(exclusions.every(x=>graph.describe(x).category==='blocked'));
+    negativeVerified++;break;
+  }
+  if(negativeVerified>=12)break;
+}
+assert(negativeVerified>=12,'Cover at least twelve genuine negative-trigger events');
 const missing=createLegacyItemTechAdapter(items,research,'SPC_CUM_OR_ELSE');
 const unknown=missing.expand(missing.root);
 assert.equal(unknown.children.length,1);
