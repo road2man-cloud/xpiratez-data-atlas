@@ -76,7 +76,9 @@ const zipped=zlib.gzipSync(Buffer.from(serialized),{level:9,mtime:0});
 // Canonicalize it to 255 (unknown) for byte-identical CI across platforms.
 zipped[9]=255;
 if(process.argv.includes('--check')){
-  assert.equal(fs.readFileSync(output,'utf8'),serialized,
+  // Windows text checkouts can use CRLF although the canonical generated
+  // index and matching gzip payload are serialized with LF.
+  assert.equal(fs.readFileSync(output,'utf8').replace(/\r\n/g,'\n'),serialized,
     'Legacy research path index stale: npm run build:research:tech');
   assert.deepEqual(fs.readFileSync(output+'.gz'),zipped,
     'Legacy compressed research path index stale: npm run build:research:tech');

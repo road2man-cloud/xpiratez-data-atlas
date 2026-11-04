@@ -82,6 +82,12 @@ for(const row of itemIndex.index){
     requiresBuyCountry:typeof raw.requiresBuyCountry==='string'?raw.requiresBuyCountry:null,
     transferTime:Number.isFinite(Number(raw.transferTime))&&raw.transferTime!=null?
       Number(raw.transferTime):null,
+    monthlyBuyLimit:Number.isInteger(Number(raw.monthlyBuyLimit))&&Number(raw.monthlyBuyLimit)>0?
+      Number(raw.monthlyBuyLimit):null,
+    purchaseEvidence:Number.isFinite(buy)&&buy>0?{
+      status:'price-only',stockVerified:false,storeIds:[],
+      evidence:'original item costBuy only; no independent shop inventory verified'
+    }:null,
     purchaseSource:raw.costBuy!=null?'effective item rule':'inherited/default/indexed price',
     producers,grants,
     sourceFiles:ids(d.sourceFiles),
@@ -126,6 +132,7 @@ const events=Object.fromEntries([...eventIds].sort().map(id=>{
     english:detail?.enName||entityNames[id]?.[1]||null,
     occurrenceCoverage:detail?'indexed event scripts; source-specific scheduling remains unproven':'no event detail found',
     scripts:scripts.map(s=>({id:s.id,conditions:s.conditions||{},
+      eventRefs:s.eventRefs||[],paths:s.paths||[],
       triggerMaps:s.triggerMaps||{},eventWeights:s.eventWeights||[],
       oneTimeRandomEvents:s.oneTimeRandomEvents||null,
       oneTimeSequentialEvents:s.oneTimeSequentialEvents||[],sourceFiles:s.sourceFiles||[]})),
@@ -145,7 +152,11 @@ const result={meta:{
   totalProducers,totalEvents,randomProducers,
   itemDetailSha256:itemFiles,itemUsageSha256:usageFiles,manufactureSha256:mfgFiles,
   eventDetailSha256:eventFiles,
-  limitations:'Other tactical loot and missions are not fully indexed; shop stock and event occurrence not proven'
+  positivePriceItems:Object.values(items).filter(x=>x.costBuy!=null).length,
+  monthlyLimitedBuyItems:Object.values(items).filter(x=>x.costBuy!=null&&x.monthlyBuyLimit!=null).length,
+  baseFunctionBuyItems:Object.values(items).filter(x=>x.costBuy!=null&&x.requiresBuyBaseFunc.length).length,
+  verifiedStoreListings:0,
+  limitations:'Original costBuy is indexed, but independent shop inventory, tactical loot, missions and full event occurrence remain unverified'
 },items,recipes,events,facilities};
 const serialized=JSON.stringify(result)+'\n';
 const out=path.resolve('public/items/acquisition-index.json');
@@ -153,7 +164,8 @@ const zipped=zlib.gzipSync(Buffer.from(serialized),{level:9,mtime:0});
 // Normalize OS marker in the GZIP header (Windows=10, Linux=3) for CI.
 zipped[9]=255;
 if(process.argv.includes('--check')){
-  assert.equal(fs.readFileSync(out,'utf8'),serialized,'Stale item acquisition JSON');
+  assert.equal(fs.readFileSync(out,'utf8').replace(/\r\n/g,'\n'),serialized,
+    'Stale item acquisition JSON');
   assert.deepEqual(fs.readFileSync(out+'.gz'),zipped,'Stale item acquisition gzip');
   console.log('PASS legacy item acquisition sources: '+result.meta.count+' items / '+
     result.meta.recipes+' recipes / '+totalProducers+' production edges / '+totalEvents+' event edges');

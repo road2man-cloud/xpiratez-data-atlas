@@ -86,6 +86,26 @@ try{
   assert.equal(await page.locator('#drawer').getAttribute('aria-hidden'),'false',
     'Opening and closing acquisition map cannot close the item dossier');
 
+  // Source-only purchase gates: preserve monthly quota and buy-only base
+  // function without promoting a cost field into a verified shop listing.
+  await page.goto(base+'/items/#item=STR_LOOTBOX_MEDICAL',{waitUntil:'domcontentloaded'});
+  const medicalLaunch=page.locator('#detail [data-open-item-tech="STR_LOOTBOX_MEDICAL"]');
+  await medicalLaunch.waitFor();
+  await medicalLaunch.click();
+  const medicalTech=dialog.locator('.tech-viewer');
+  await medicalTech.waitFor();
+  await medicalTech.locator('.tech-node[data-tech-stage="1"]')
+    .filter({hasText:'상점 구매 후보'}).click();
+  const medicalNodes=await medicalTech.locator('.tech-node[data-tech-stage="2"]').allInnerTexts();
+  assert(medicalNodes.some(x=>x.includes('STR_MED_TRADE')),
+    'Buy-only required base function must be displayed');
+  assert(medicalNodes.some(x=>x.includes('월별 구매 상한 1개')),
+    'Monthly limit from original item rule must be displayed');
+  assert(medicalNodes.some(x=>x.includes('가격만 존재')),
+    'Unverified inventory cannot become guaranteed store availability');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  await dialog.locator('#closeItemTech').click();
+
   await page.goto(base+'/items/#item=STR_MED_CANNON_PARTS',{waitUntil:'domcontentloaded'});
   // Same-path hash navigation does not reload the document. Wait for the
   // new item's exact ID, not an old button from the previous drawer state.
@@ -151,7 +171,7 @@ try{
   await page.setViewportSize({width:1280,height:900});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   assert.deepEqual(errors,[],'Unexpected page JavaScript errors');
-  console.log('PASS item acquisition viewer: mobile 390px + desktop 1280px, purchase vs stock, recursive manufacturing inputs, conditional RNG, source proof, fixed event reward, unknown sources, no overflow');
+  console.log('PASS item acquisition viewer: mobile 390px + desktop 1280px, price-only purchase, monthly cap and buy-base-function, facility construction, event gates, manufacturing RNG, evidence and no overflow');
 }finally{
   if(browser)await browser.close();
   await new Promise(ok=>server.close(ok));

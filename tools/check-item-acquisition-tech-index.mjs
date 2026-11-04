@@ -20,6 +20,13 @@ assert.equal(gates.relation,'and');
 assert(gates.children.some(n=>n.kind==='research'&&n.id==='STR_BUCKSHOT_HV'),
   'requiresBuy MUST be a research prerequisite, never a guaranteed store listing');
 assert(gates.children.some(n=>n.id==='STOCK:STR_BUCKSHOT_HV'));
+assert.equal(items.meta.positivePriceItems,552);
+assert.equal(items.meta.monthlyLimitedBuyItems,3);
+assert.equal(items.meta.baseFunctionBuyItems,1);
+assert.equal(items.meta.verifiedStoreListings,0);
+assert.equal(items.items.STR_BUCKSHOT_HV.purchaseEvidence.status,'price-only');
+assert.equal(items.items.STR_BUCKSHOT_HV.purchaseEvidence.stockVerified,false);
+assert.equal(g.describe(buy).badge,'가격만 확인');
 const medical=items.items.STR_LOOTBOX_MEDICAL;
 assert(medical?.requiresBuyBaseFunc.includes('STR_MED_TRADE'),
   'Actual requiresBuyBaseFunc must remain separate from general manufacture requirements');
@@ -31,6 +38,14 @@ assert(medicalGates.some(n=>n.kind==='facility-function'&&n.id==='STR_MED_TRADE'
   'Purchase-only base function gate must be a real provider trace');
 assert(medicalGates.some(n=>n.id==='STOCK:STR_LOOTBOX_MEDICAL'),
   'Original purchase prerequisites are insufficient to guarantee a shop listing');
+assert(medicalGates.some(n=>n.id==='BUY_MONTHLY:STR_LOOTBOX_MEDICAL'&&
+  medicalGraph.describe(n).detail.includes('1개')),
+  'Monthly limit must be preserved separately from the one-time buying research');
+assert(medicalGraph.renderEvidence(medicalBuy).includes('monthlyBuyLimit'));
+const hassanGraph=createLegacyItemTechAdapter(items,research,'STR_LOOTBOX_HASSAN');
+const hassanBuy=hassanGraph.expand(hassanGraph.root).children.find(n=>n.sourceKind==='buy');
+assert(hassanGraph.expand(hassanBuy).children.some(n=>n.id==='BUY_MONTHLY:STR_LOOTBOX_HASSAN'&&
+  hassanGraph.describe(n).detail.includes('5개')));
 const mfg=methods.children.find(n=>n.sourceKind==='make');
 assert(mfg);
 const recipe=g.expand(mfg);
@@ -104,6 +119,10 @@ for(const [eventId,eventInfo] of Object.entries(items.events)){
     assert.deepEqual(script.conditions,matching.conditions||{});
     assert.deepEqual(script.triggerMaps,matching.triggerMaps||{});
     assert.deepEqual(script.eventWeights,matching.eventWeights||[]);
+    assert.deepEqual(script.eventRefs,matching.eventRefs||[]);
+    assert.deepEqual(script.paths,matching.paths||[]);
+    assert.deepEqual(script.oneTimeRandomEvents,matching.oneTimeRandomEvents||null);
+    assert.deepEqual(script.oneTimeSequentialEvents,matching.oneTimeSequentialEvents||[]);
     verifiedScripts++;
   }
 }
@@ -141,6 +160,17 @@ const bookScript=booksGraph.expand({kind:'and',id:'EVENT_SCRIPT:STR_BOOKWORM_BUY
 const library=bookScript.children.find(x=>x.kind==='facility-type'&&x.id==='STR_LIBRARY');
 assert(library,'Positive facilityTriggers must expand through actual facility construction');
 assert(booksGraph.expand(library).children.length>0);
+// One-time selection weight is not event occurrence odds or reward probability.
+const onceInfo=Object.entries(items.events).flatMap(([id,e])=>
+  (e.scripts||[]).map((script,index)=>({id,script,index})))
+  .find(x=>(x.script.oneTimeRandomEvents?.entries||[]).some(y=>y.eventId===x.id));
+assert(onceInfo,'Source contains one-time event selection evidence');
+const onceItem=Object.values(items.items).find(x=>x.grants.some(g=>g.id===onceInfo.id));
+const onceGraph=createLegacyItemTechAdapter(items,research,onceItem.id);
+const onceNode=onceGraph.expand({kind:'and',id:'EVENT_SCRIPT:'+onceInfo.id+':'+onceInfo.index,
+  sourceKind:'event-script',event:onceInfo.id,scriptIndex:onceInfo.index});
+assert(onceNode.children.some(x=>x.id.startsWith('EV_ONCE:')&&
+  onceGraph.describe(x).detail.includes('선택표 내부 상대 비중')));
 const missing=createLegacyItemTechAdapter(items,research,'SPC_CUM_OR_ELSE');
 const unknown=missing.expand(missing.root);
 assert.equal(unknown.children.length,1);
@@ -153,4 +183,26 @@ for(const item of Object.values(items.items)){
   for(const edge of item.producers)
     assert(items.recipes[edge.id],'Every indexed producer recipe must have its actual prerequisites');
 }
-console.log('PASS legacy item paths: 4007 items, 2105 recipes, buy vs stock, AND prerequisites, recursive ingredients, manufacturing RNG, event uncertainty, no-source warning, version isolation');
+let verifiedPurchases=0;
+for(const bucket of '0123456789abcdef'){
+  const original=JSON.parse(fs.readFileSync(`public/items/data/chunks/${bucket}.json`,'utf8'));
+  for(const [id,detail] of Object.entries(original.details||{})){
+    const item=items.items[id],raw=detail.raw||{};
+    assert.deepEqual(item.requiresBuy,raw.requiresBuy||[]);
+    assert.deepEqual(item.requiresBuyBaseFunc,raw.requiresBuyBaseFunc||[]);
+    assert.equal(item.requiresBuyCountry,raw.requiresBuyCountry||null);
+    assert.equal(item.monthlyBuyLimit,raw.monthlyBuyLimit||null);
+    assert.equal(item.transferTime,raw.transferTime??null);
+    assert.equal(item.costBuy,Number(raw.costBuy)>0?Number(raw.costBuy):null);
+    if(item.costBuy!=null){
+      verifiedPurchases++;
+      assert.equal(item.purchaseEvidence.status,'price-only');
+      assert.equal(item.purchaseEvidence.stockVerified,false);
+      assert.deepEqual(item.purchaseEvidence.storeIds,[]);
+    }else assert.equal(item.purchaseEvidence,null);
+  }
+}
+assert.equal(verifiedPurchases,552);
+console.log('PASS legacy item paths: 4007 items / 2105 recipes / '+verifiedPurchases+
+  ' price-only purchase rules / 3 monthly caps / 1 purchase facility / '+verifiedScripts+
+  ' event occurrence scripts / conditional RNG / original source audit / version isolation');

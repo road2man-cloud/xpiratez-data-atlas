@@ -337,7 +337,7 @@ async function openResearchTech(id){
   try{
     const [viewer,adapters,items,index]=await Promise.all([
       import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
-      import('./acquisition-tech-adapter.js?v=20261105-unified-tech-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-stage4-shop-events-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(!dialog.open)return;
@@ -348,7 +348,7 @@ async function openResearchTech(id){
 async function loadItemTechIndex(){
   if(!itemTechIndexPromise)itemTechIndexPromise=(async()=>{
     const url=pageMode==='research'?'../items/acquisition-index.json':'./acquisition-index.json';
-    const version='?v=20261105-unified-tech-1';
+    const version='?v=20261105-stage4-shop-events-1';
     let result=null;
     if(typeof DecompressionStream==='function')try{
       const response=await fetch(url+'.gz'+version);
@@ -377,7 +377,7 @@ async function openItemTech(id){
   try{
     const [view,adapters,items,research]=await Promise.all([
       import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
-      import('./acquisition-tech-adapter.js?v=20261105-unified-tech-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-stage4-shop-events-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;
