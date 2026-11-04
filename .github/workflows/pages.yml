@@ -56,6 +56,8 @@ jobs:
           # Horizontal acquisition tech viewer: mobile + desktop, AND/OR wires,
           # shop and event source conditions, pan/zoom, lazy raw proof.
           node tools/check-acquisition-tech-view-browser.mjs
+          # The legacy Research DB reuses the same viewer with a version-isolated source index.
+          node tools/check-research-tech-browser.mjs
 
       - name: Publish public tree to gh-pages
         run: |
