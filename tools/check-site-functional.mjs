@@ -166,7 +166,16 @@ await scenario("weapons unified standard rankings: Tommygun, filters, kung-fu an
   await page.locator("#section").selectOption("melee");
   await page.locator("#scoredOnly").uncheck();
   await page.locator("#search").fill("STR_KUNG_FU");
-  await page.waitForFunction(()=>document.querySelector("#weaponTable tbody tr[data-id]")?.innerText.includes("STR_KUNG_FU"));
+  await page.waitForFunction(()=>{
+    const row=document.querySelector("#weaponTable tbody tr[data-id]");
+    return row?.dataset.id?.includes("STR_KUNG_FU")||
+      row?.querySelector("span.id")?.textContent.includes("STR_KUNG_FU");
+  });
+  assert.equal(await page.locator('#weaponTable tbody tr .id').first().isVisible(),false,
+    'Internal item identifiers should be collapsed in the default reader view');
+  await page.locator('.atlas-reader-id-toggle input').check();
+  assert.equal(await page.locator('#weaponTable tbody tr .id').first().isVisible(),true,
+    'Reader option must restore original identifiers without changing search results');
   await rows.first().click();
   await page.locator("#detailDialog[open]").waitFor();
   const kung=await page.locator("#detailBody").innerText();

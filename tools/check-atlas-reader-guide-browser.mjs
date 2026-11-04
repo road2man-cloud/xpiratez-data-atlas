@@ -26,7 +26,9 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const base='http://127.0.0.1:'+server.address().port+'/';
 const binary=[process.env.EDGE_PATH,
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
-  'C:/Program Files/Google/Chrome/Application/chrome.exe',chromium.executablePath()]
+  'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  '/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium',
+  chromium.executablePath()]
   .find(x=>x&&fs.existsSync(x));
 assert(binary,'Browser not available');
 let browser;
