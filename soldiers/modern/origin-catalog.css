@@ -119,6 +119,12 @@
 .guide-technical-evidence .origin-tree-root summary{font-size:.85rem}
 .guide-source-id{font-family:ui-monospace,Consolas,monospace;font-size:.73rem;color:#9fb5d0;overflow-wrap:anywhere}
 .guide-next-condition{font-size:.78rem;margin:5px 0;padding:6px 10px}
+.guide-more-sources{grid-column:1/-1;min-width:0;border:1px dashed #6080a0;border-radius:10px;padding:10px;background:#18304a}
+.guide-more-button{display:block;width:100%;max-width:100%;text-align:left;white-space:normal;overflow-wrap:anywhere;padding:10px 12px;background:#264e72;border:1px solid #7095b8;border-radius:8px;color:#f3f8ff;font-weight:700;font-size:.86rem;cursor:pointer}
+.guide-more-button:hover,.guide-more-button:focus-visible{background:#356285}
+.guide-more-target{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.guide-more-target>.origin-readable-guide{border:1px solid #527394;border-radius:10px;padding:11px;margin-top:11px;background:#10263d}
+.guide-more-target .guide-options{min-width:0}
 .origin-tree-continuation{margin:10px 0 0;max-width:100%}
 .origin-tree-continuation>.origin-readable-guide{border:1px solid #42617e;border-radius:12px;padding:10px;background:#0f2238}
 @media(max-width:680px){
