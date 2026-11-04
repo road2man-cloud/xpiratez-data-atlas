@@ -98,8 +98,43 @@ try{
     'The readable birth guide must not overflow mobile');
   await guide.locator('.guide-technical-evidence > summary').click();
   assert.equal(await guide.locator('.guide-source-id').first().isVisible(),true);
+  const originNav=page.locator('#originDetails .atlas-detail-index');
+  await originNav.waitFor({timeout:12000});
+  assert((await originNav.locator('a.atlas-detail-link').count())>=3,
+    'Soldier origin must expose navigable sections without raw source IDs');
+  assert.equal(await originNav.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
+    'Origin section navigation must fit a narrow phone');
   assert.deepEqual(errors,[],'Origin detail reader errors');
   await page.close();
+  // A real event detail must supply accessible, actionable section navigation.
+  // This checks runtime content, not a synthetic injected test fixture.
+  const eventPage=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  const eventErrors=[];eventPage.on('pageerror',e=>eventErrors.push(e.message));
+  await eventPage.goto(base+'events/',{waitUntil:'domcontentloaded',timeout:30000});
+  await eventPage.locator('#eventTable tbody tr[data-id]').first().waitFor({timeout:30000});
+  await eventPage.locator('#eventTable tbody tr[data-id]').first().click();
+  await eventPage.locator('#detail .atlas-detail-index').waitFor({timeout:30000});
+  const nav=eventPage.locator('#detail .atlas-detail-index');
+  assert((await nav.locator('a.atlas-detail-link').count())>=3,
+    'Real event detail must have multiple navigable information sections');
+  assert.equal(await nav.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
+    'Detail navigation must not overflow the 390px mobile viewport');
+  const firstJump=nav.locator('a.atlas-detail-link').first();
+  const firstTarget=(await firstJump.getAttribute('href')).slice(1);
+  await firstJump.click();
+  assert.equal(await eventPage.locator('#'+firstTarget).getAttribute('tabindex'),'-1',
+    'Detail navigation must focus the selected section');
+  assert.equal(await eventPage.locator('#detail details:not([open]) pre').first().isVisible(),false,
+    'Original technical event details remain collapsed by default');
+  assert.deepEqual(eventErrors,[],'Event detail navigation errors');
+  const shotDir=process.env.TEMP||process.env.TMP||'.';
+  await nav.screenshot({path:path.join(shotDir,'xpiratez-reader-mobile-390.png')});
+  await eventPage.setViewportSize({width:1280,height:900});
+  assert.equal(await nav.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,
+    'Detail navigation must not overflow desktop layout');
+  await nav.screenshot({path:path.join(shotDir,'xpiratez-reader-desktop-1280.png')});
+  await eventPage.close();
+  console.log('PASS real event details: mobile section links, navigation, technical evidence collapsed');
   console.log('PASS readable site-wide guide in all 14 DBs, four homepage categories, 390px mobile');
   console.log('PASS assault clone: 3 plain-language acquisition methods, source IDs collapsed, detailed evidence preserved');
 }finally{

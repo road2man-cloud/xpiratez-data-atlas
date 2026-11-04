@@ -64,3 +64,15 @@ body.atlas-show-source-ids :is(.table-shell,.table-scroll,.tablewrap) td :is(spa
  .atlas-nav-directory{grid-template-columns:minmax(0,1fr)}
  .atlas-home-group{margin:22px 0}
 }
+/* In-detail navigation is derived from visible headings, never from raw rule IDs. */
+.atlas-detail-index{box-sizing:border-box;max-width:100%;margin:10px 0 20px;padding:12px;border:1px solid #45617a;border-radius:10px;background:#182b40;color:#ecf3fc}
+.atlas-detail-index>strong{display:block;margin:0 0 9px;font-size:14px}
+.atlas-detail-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;min-width:0}
+.atlas-detail-topic{box-sizing:border-box;min-width:0;padding:9px;border:1px solid #385573;border-radius:8px;background:#142438}
+.atlas-detail-topic-name{display:block;font-size:13px;color:#d1e9ff;margin:0 0 7px}
+.atlas-detail-topic-links{display:flex;align-items:flex-start;flex-wrap:wrap;gap:6px}
+.atlas-detail-link{display:inline-flex;align-items:center;max-width:100%;box-sizing:border-box;padding:7px 9px;border:1px solid #4c7194;border-radius:7px;color:#d8edff;font-size:13px;line-height:1.4;text-decoration:none;overflow-wrap:anywhere}
+.atlas-detail-link:hover,.atlas-detail-link:focus-visible{background:#28496a}
+.atlas-detail-link.is-subsection{border-style:dashed;font-weight:400}
+#detail :is(h2,h3,h4)[id^="atlas-detail-section-"]{scroll-margin-top:16px}
+@media(max-width:640px){.atlas-detail-index{padding:10px}.atlas-detail-links{display:grid;grid-template-columns:minmax(0,1fr)}.atlas-detail-link{width:100%}}
