@@ -172,7 +172,13 @@
           !h.closest('.atlas-detail-index')&&
           !h.closest('details:not([open])')&&h.textContent.trim());
         const signature=headings.map(h=>h.tagName+':'+h.textContent.trim()).join('|');
-        if(signature===lastSignature && detail.querySelector('.atlas-detail-index'))return;
+        const existing=detail.querySelector('.atlas-detail-index');
+        if(signature===lastSignature && existing){
+          const links=[...existing.querySelectorAll('a.atlas-detail-link')];
+          // Two records may reuse exactly the same heading labels. If the
+          // drawer was replaced, rebuild links to the NEW heading elements.
+          if(links.every(a=>detail.querySelector('#'+CSS.escape(a.hash.slice(1)))))return;
+        }
         lastSignature=signature;
         detail.querySelector('.atlas-detail-index')?.remove();
         if(headings.length<3)return;

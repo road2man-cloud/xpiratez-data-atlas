@@ -63,6 +63,15 @@ try{
  assert((await nav.locator('.atlas-decision-step').count())>=3,'real horizontal decision stages');
  assert.equal(await nav.evaluate(el=>el.scrollWidth>el.clientWidth+2),false,'outer detail index should not overflow');
  assert.equal(await nav.locator('.atlas-detail-source').count(),1,'source evidence remains opt-in');
+ // Changing to a second record with identical headings must NOT leave
+ // anchors pointing at removed elements from the previous drawer content.
+ await page.evaluate(()=>{
+  document.getElementById('detail').innerHTML='<h2>획득 경로</h2><p>두 번째 항목</p><h3>필요 연구·시설</h3><h3>보상과 효과</h3><h3>원본 근거와 검증</h3>';
+ });
+ await page.waitForFunction(()=>{
+  const d=document.getElementById('detail'),n=d?.querySelector('.atlas-detail-index');
+  return n&&[...n.querySelectorAll('a.atlas-detail-link')].every(a=>d.querySelector(a.hash));
+ },null,{timeout:7000});
  await page.close();
  console.log('PASS detail stepper, source detail and mobile containment');
  }
