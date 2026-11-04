@@ -27,11 +27,11 @@ function lookups(data){
 export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
   if(!profile||!data?.researchRules)throw Error('출생 원본 또는 연구 원본 누락');
   const rules=data.researchRules,{reverse,facilitiesByFunction,sourcesByBody}=lookups(data);
-  let count=0,truncated=false;
+  let count=0,truncated=false,activeNodeBudget=maxNodes;
   const bounded=(kind,id,trail,depth,create)=>{
     const key=kind+':'+id;
     if(trail.includes(key))return leaf('cycle',id,'같은 경로 내 재방문 · 중복/순환은 새 획득으로 인정하지 않음');
-    if(depth>=maxDepth||count>=maxNodes){
+    if(depth>=maxDepth||count>=activeNodeBudget){
       truncated=true;
       return leaf('limit',id,'다음 선행 조건에서 계속 추적 가능 · 검증 완료가 아님',{traceKind:kind});
     }
@@ -178,8 +178,19 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
           // lab dependencies, not unconditional gates on event research gifts.
           purchaseGateDetails:gates.map(id=>({
             id,normalDependencies:arr(rules[id]?.dependencies),
-            directUnlockSources:arr(reverse.get(id)).filter(v=>v.kind==='unlock').map(v=>v.source)
+            directUnlockSources:arr(reverse.get(id)).filter(v=>v.kind==='unlock').map(v=>v.source),
+            // An ordinary lab project requiring the very material that this
+            // purchase route would provide cannot bootstrap its FIRST sample.
+            // Event/mission/free research gifts remain separate alternatives.
+            requiresOwnPurchaseItemSpecimen:Boolean(rules[id]?.needItem&&
+              (rules[id]?.neededItem||id)===itemId)
           })),
+          purchaseAlternativeSources:{
+            events:arr(s.eventGrants).length,
+            manufacture:arr(s.manufacture).length,
+            randomManufacture:arr(s.randomManufacture).length,
+            mapLoot:Number(s.mapLoot?.sourceCount)||0
+          },
           purchaseBaseFunctions:arr(s.buyRequiresBaseFunc),
           purchaseCountry:s.buyRequiresCountry||null
         }];
@@ -294,12 +305,25 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
     }
     return leaf('unknown',id,'해당 연결 유형을 해석할 규칙 없음');
   });
+  // An expensive first material must never consume the entire root budget
+  // and hide the next material's purchase / event choices. Bound each
+  // independent first-order prerequisite, with deeper paths lazy-linked.
+  const rootPreview=(kind,id,quota)=>{
+    if(profile.traceTarget)return go(kind,id);
+    const previous=count,previousBudget=activeNodeBudget;
+    count=0;activeNodeBudget=Math.min(maxNodes,quota);
+    try{
+      const result=go(kind,id);
+      count=previous+count;
+      return result;
+    }finally{activeNodeBudget=previousBudget;}
+  };
   const initial=[
     leaf('start','CAMPAIGN_START','게임 시작: 완료 연구 0개. 국가·난이도·캡틴 초기 선택은 해당 조건 노드에서 검증'),
     ...Object.entries(profile.acquisitionRequiredItems||{}).map(([id,n])=>
-      group('and','REQUIRED_ITEM:'+id,[go('item',id)],'출생 제조에 '+n+'개 실물 필요')),
-    ...arr(profile.requires).map(id=>go('research',id)),
-    ...arr(profile.requiresBaseFunc).map(id=>go('facility-function',id)),
+      group('and','REQUIRED_ITEM:'+id,[rootPreview('item',id,8)],'출생 제조에 '+n+'개 실물 필요')),
+    ...arr(profile.requires).map(id=>rootPreview('research',id,10)),
+    ...arr(profile.requiresBaseFunc).map(id=>rootPreview('facility-function',id,8)),
     ...(profile.traceTarget?[go(profile.traceTarget.kind,profile.traceTarget.id)]:[])
   ];
   if(profile.sourceType==='event'){
@@ -308,11 +332,11 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
     const scriptNodes=scripts.length?scripts.map(s=>{
       // Provide visible first-order conditions even at shallow root depth.
       const extras=[
-        ...arr(s.researchPositive).map(id=>go('research',id)),
+        ...arr(s.researchPositive).map(id=>rootPreview('research',id,5)),
         ...arr(s.researchNegative).map(id=>leaf('forbidden-research',id,'완료 시 출생 이벤트 차단')),
-        ...arr(s.itemPositive).map(id=>go('item',id)),
+        ...arr(s.itemPositive).map(id=>rootPreview('item',id,10)),
         ...arr(s.itemNegative).map(id=>leaf('forbidden-item',id,'보유 시 출생 이벤트 차단')),
-        ...arr(s.facilityPositive).map(id=>go('facility-type',id)),
+        ...arr(s.facilityPositive).map(id=>rootPreview('facility-type',id,8)),
         ...arr(s.facilityNegative).map(id=>leaf('forbidden-facility',id,'시설 존재 시 차단')),
         ...arr(s.countryPositive).map(id=>leaf('country',id,'시작/기지 국가 조건')),
         ...arr(s.countryNegative).map(id=>leaf('forbidden-country',id,'해당 국가 기지가 없어야 함')),
@@ -487,6 +511,23 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       '<div class="guide-purchase-trace"><button type="button" data-trace-research-root="'+esc(id)+'">'+
       display(id,'해금 연구')+' · 게임 시작부터 선행 조건 보기</button>'+
       '<div class="origin-transform-research-root"></div></div>').join('');
+    const circularGates=purchaseInfo.filter(g=>g.requiresOwnPurchaseItemSpecimen);
+    const alternate=method.purchaseAlternativeSources||{};
+    const supplierLabels=[
+      ['events','이벤트'],['manufacture','제조'],['randomManufacture','무작위 제조'],
+      ['mapLoot','지도 전리품']
+    ].filter(([key])=>Number(alternate[key])>0)
+      .map(([key,label])=>label+' '+alternate[key]+'종');
+    const purchaseBootstrap=isPurchase&&circularGates.length?
+      '<div class="guide-purchase-bootstrap" data-bootstrap-cycle="'+esc(method.id.slice(4))+'">'+
+      '<strong>첫 구매 전 다른 공급 경로 확인 필요</strong>'+
+      '<p>'+circularGates.map(g=>display(g.id,'해금 연구')).join(' · ')+
+      '의 일반 연구실 경로는 구매하려는 '+display(method.id.slice(4),'아이템')+
+      '을 실물 표본으로 요구합니다. 이 구매를 첫 표본 확보 방법으로 계산하면 조건이 순환합니다.</p>'+
+      '<p>'+(supplierLabels.length?'다른 공급 기록: '+supplierLabels.join(' · ')+'. ':
+        '별도 실물 공급 근거 미확인. ')+
+      '각 출처의 시기·확률·전리품 회수 조건을 별도로 확인하세요. 연구를 직접 지급하는 이벤트 등은 연구실 표본 조건과 구분합니다.</p>'+
+      '</div>':'';
     const conditions=scripts?.length?
       scripts.map((s,i)=>{
         const lines=collectConditions(s);
@@ -497,7 +538,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
     return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
       '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
-      '<p>'+esc(outcomes)+'</p>'+purchaseSummary+purchaseUpstream+variants+
+      '<p>'+esc(outcomes)+'</p>'+purchaseSummary+purchaseBootstrap+purchaseUpstream+variants+
       '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
       '<ul class="guide-conditions">'+conditions+'</ul>'+purchaseTrace+traceButton(method)+'</details></article>';
   }

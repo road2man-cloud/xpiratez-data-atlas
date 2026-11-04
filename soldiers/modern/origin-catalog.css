@@ -92,6 +92,9 @@
 .guide-option>.guide-purchase-gates{color:#f2dbaf;font-size:.9rem;line-height:1.65;margin:9px 0 0;padding:9px 10px;border-left:3px solid #d5b36e;background:#1b3048;overflow-wrap:anywhere}
 .guide-purchase-gates p{margin:6px 0 0;font-size:.8rem;line-height:1.55}
 .guide-purchase-gates .guide-purchase-disclaimer{color:#b7c9db;font-size:.77rem}
+.guide-purchase-bootstrap{border-left:3px solid #c69f64;background:#293446;padding:10px 12px;margin:9px 0;border-radius:4px;overflow-wrap:anywhere}
+.guide-purchase-bootstrap>strong{color:#f2dbaf;font-size:.87rem}
+.guide-purchase-bootstrap>p{color:#d4e0ed;line-height:1.55;font-size:.78rem;margin:5px 0 0}
 .guide-purchase-dependencies{margin:9px 0;padding:9px 10px!important;border:1px solid #4b6982!important;border-radius:8px;background:#172d44}
 .guide-purchase-dependencies>summary{font-weight:700;font-size:.83rem;line-height:1.5;color:#e7f2fc;overflow-wrap:anywhere;cursor:pointer}
 .guide-purchase-dependencies>p{font-size:.78rem;line-height:1.6;margin:8px 0;color:#c8d8e8}
