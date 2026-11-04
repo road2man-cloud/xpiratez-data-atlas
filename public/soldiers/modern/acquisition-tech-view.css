@@ -49,8 +49,12 @@
   line-height:1.4;color:#f4f8ff;word-break:keep-all}
 .tech-node small{font-size:calc(.73rem * var(--tech-size));font-weight:400;
   line-height:1.48;color:#b7cbe0;overflow-wrap:anywhere}
-.tech-node-pill{font-size:.66rem;line-height:1.1;font-weight:800;letter-spacing:.015em;
-  color:#a9c9e9}
+.tech-node-pill{display:inline-flex;align-items:center;gap:7px;font-size:.66rem;line-height:1.1;
+  font-weight:800;letter-spacing:.015em;color:#a9c9e9}
+.tech-node-icon{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;
+  border-radius:6px;border:1px solid currentColor;font-size:.8rem;line-height:1;font-weight:900;
+  background:#0a1c2c88}
+.tech-node.is-path .tech-node-icon{background:#335978}
 .tech-node-action{margin-top:1px;font-weight:750;color:#e4c98f;font-size:.69rem}
 .tech-node--research{border-left-color:#8fbffd}
 .tech-node--item{border-left-color:#70cbbb}
@@ -71,8 +75,18 @@
 .tech-wire--required{stroke:#e2bb72;stroke-width:2.3}
 .tech-wire--alternative{stroke:#a6baff;stroke-dasharray:8 6;stroke-width:2.4}
 .tech-wire.is-selected{stroke-width:3.5;opacity:1;filter:drop-shadow(0 0 3px #b4d1e3)}
-.tech-selected{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;
+.tech-selected{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;
   border-top:1px solid #38546f;padding:11px 16px;font-size:.8rem;background:#12283e;line-height:1.55}
+.tech-selected-summary{display:flex;flex:1 1 260px;flex-direction:column;gap:2px;min-width:0}
+.tech-selected-actions{display:flex;flex-wrap:wrap;gap:7px}
+.tech-selected-actions button{padding:7px 10px;border:1px solid #6483a3;border-radius:7px;
+  background:#24445f;color:#eff7ff;font-size:.75rem;cursor:pointer}
+.tech-selected-actions button:disabled{opacity:.45;cursor:default}
+.tech-selected-actions button:not(:disabled):hover{background:#315b7b}
+.tech-node-source{flex:1 1 100%;font-size:.72rem;color:#9fbad5}
+.tech-node-source summary{cursor:pointer;width:max-content;max-width:100%}
+.tech-node-source code{display:block;margin-top:5px;overflow-wrap:anywhere;color:#d8eaff}
+.tech-node-source span{display:block;margin-top:3px}
 .tech-selected-label{font-size:.7rem;letter-spacing:.05em;color:#9bb6d2}
 .tech-selected strong{color:#e9f4ff;font-weight:770}
 .tech-selected span:last-of-type{color:#bdd2e6}

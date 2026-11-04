@@ -202,6 +202,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     return {label:generic||getName(id,'원본 획득 조건'),detail,
       category,badge:k==='or'?'하나 선택':k==='and'?'모두 필요':'조건'};
   }
+  const nodeIcons={research:'⌕',item:'▣',facility:'▤',soldier:'♟',event:'⚑',
+    time:'◷',random:'◇',funds:'₵',blocked:'⊘',and:'∧',or:'∨',reward:'★',
+    start:'●',more:'…',warning:'!',history:'↺',condition:'◆'};
   const traceId=profile?profile.id:kind+':'+id;
   host.innerHTML='<section class="tech-viewer" data-tech-viewer="'+safe(traceId)+'">'+
     '<div class="tech-toolbar">'+
@@ -270,7 +273,8 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
             (active?' is-path':'')+'" data-tech-stage="'+col.stage+
             '" data-tech-index="'+i+'" data-tech-kind="'+safe(node.kind)+'"'+
             ' aria-pressed="'+(active?'true':'false')+'">'+
-            '<span class="tech-node-pill">'+safe(badge)+'</span>'+
+            '<span class="tech-node-pill"><span class="tech-node-icon" aria-hidden="true">'+
+              safe(nodeIcons[category]||'◆')+'</span>'+safe(badge)+'</span>'+
             '<strong>'+safe(label)+'</strong>'+
             '<small>'+safe(detail)+'</small>'+
             (expandable?'<span class="tech-node-action">◀ 선행 경로 펼치기</span>':'')+
@@ -283,15 +287,32 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     canvas.style.setProperty('--tech-size',zoom);
     const focused=selection||path.at(-1);
     const meta=describe(focused);
-    selectedEl.innerHTML='<span class="tech-selected-label">선택한 노드</span><strong>'+
-      safe(meta.label)+'</strong><span>'+safe(meta.detail)+'</span>'+
+    const focusedStage=path.indexOf(focused);
+    const relation=focusedStage>0?expandNode(path[focusedStage-1]).relation:'goal';
+    const role=relation==='or'?'여러 대체 방법 중 하나':relation==='and'?
+      '이 단계의 조건 모두 필요':relation==='goal'?'현재 최종 목표':'연결된 선행 단계';
+    selectedEl.innerHTML='<div class="tech-selected-summary"><span class="tech-selected-label">선택한 노드 · '+
+      safe(role)+'</span><strong>'+safe(meta.label)+'</strong><span>'+safe(meta.detail)+'</span></div>'+
+      '<div class="tech-selected-actions"><button type="button" data-tech-action="back"'+
+      (path.length<2?' disabled':'')+'>상위 목표로 돌아가기</button>'+
+      (technical?'<button type="button" data-tech-action="source">원본 상세 조건표 열기</button>':'')+
+      '</div><details class="tech-node-source"><summary>원본 ID · 추적 정보</summary><code>'+
+      safe(focused?.id||'원본 ID 없음')+'</code><span>유형: '+safe(focused?.kind||'')+
+      ' · 관계: '+safe(role)+'</span></details>'+
       (focused?.kind==='limit'?'<em>탐색 한도 표시일 뿐 게임의 새로운 선행 조건은 아닙니다.</em>':'');
     requestAnimationFrame(()=>{
       drawWires();
       const first=columnsEl.querySelector('.tech-column');
       if(preserve==='new'&&first){
-        viewport.scrollLeft=Math.max(0,first.offsetLeft-12);
-        viewport.scrollTop=0;
+        // Keep the chosen prerequisite in view without jumping to the far edge
+        // of a crowded graph. The currently explored stage is always leftmost.
+        const target=columnsEl.querySelector('.tech-node[data-tech-stage="'+(path.length-1)+'"][aria-pressed="true"]');
+        if(target){
+          const vr=viewport.getBoundingClientRect(),tr=target.getBoundingClientRect();
+          const margin=Math.min(90,viewport.clientWidth*.12);
+          if(tr.left<vr.left+margin)viewport.scrollLeft+=tr.left-vr.left-margin;
+          else if(tr.right>vr.right-margin)viewport.scrollLeft+=tr.right-vr.right+margin;
+        }
       }else if(preserve==='goal')viewport.scrollLeft=viewport.scrollWidth;
     });
   }
@@ -369,6 +390,13 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     if(btn.dataset.techAction==='left')viewport.scrollBy({left:-360,behavior:'smooth'});
     if(btn.dataset.techAction==='right')viewport.scrollBy({left:360,behavior:'smooth'});
     if(btn.dataset.techAction==='reset'){path.splice(1);selection=null;moreLimit.clear();render('goal');}
+    if(btn.dataset.techAction==='back'&&path.length>1){
+      path.pop();selection=path.at(-1);render('keep');
+    }
+    if(btn.dataset.techAction==='source'){
+      const original=shell.querySelector('[data-tech-original]');
+      if(original){original.open=true;original.scrollIntoView({behavior:'smooth',block:'nearest'});}
+    }
     if(btn.dataset.techAction==='zoom-in'||btn.dataset.techAction==='zoom-out'){
       zoom=Math.max(.75,Math.min(1.35,Math.round((zoom+
         (btn.dataset.techAction==='zoom-in'?.1:-.1))*100)/100));

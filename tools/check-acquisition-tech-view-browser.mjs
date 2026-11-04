@@ -66,6 +66,15 @@ try{
   assert((await choices.nth(1).innerText()).includes('시작 국가 보상')||
     (await choices.nth(1).innerText()).includes('이벤트'));
   await select(4,0); // store
+  const selected=graph.locator('.tech-selected');
+  assert((await selected.innerText()).includes('상위 목표로 돌아가기'));
+  assert((await selected.innerText()).includes('원본 상세 조건표 열기'));
+  assert((await selected.innerText()).includes('선택한 노드'));
+  assert((await graph.locator('.tech-node-icon').count())>0,
+    'Node types must include immediately recognizable icons');
+  await selected.locator('.tech-node-source summary').click();
+  assert((await selected.locator('.tech-node-source code').innerText()).includes('BUY:'),
+    'Selected node must expose the actual source identifier');
   const store=graph.locator('.tech-node[data-tech-stage="5"]');
   assert((await store.allInnerTexts()).some(t=>t.includes('클레오파트라의 도전을 완료했다')),
     'Store must show its requiresBuy research as a real upstream node');
@@ -99,6 +108,15 @@ try{
   assert(afterZoom>beforeZoom,'Zoom-in must visibly enlarge nodes');
   await graph.locator('[data-tech-action="reset"]').click();
   assert.equal(await graph.locator('.tech-column').count(),2,'Reset restores the initial graph');
+  await select(1,1);
+  assert.equal(await graph.locator('.tech-column').count(),3);
+  await graph.locator('[data-tech-action="back"]').click();
+  assert.equal(await graph.locator('.tech-column').count(),2,
+    'Selected node panel must navigate back to the parent goal');
+  await graph.locator('[data-tech-action="source"]').click();
+  assert.equal(await graph.locator('.tech-original').evaluate(el=>el.open),true,
+    'Selected node can open source evidence directly');
+  graph.locator('.tech-original').evaluate(el=>el.open=false);
   const proof=graph.locator('.tech-original');
   await proof.locator('summary').click();
   await proof.locator('.origin-readable-guide').waitFor();
