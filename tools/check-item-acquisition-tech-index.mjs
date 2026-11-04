@@ -20,6 +20,17 @@ assert.equal(gates.relation,'and');
 assert(gates.children.some(n=>n.kind==='research'&&n.id==='STR_BUCKSHOT_HV'),
   'requiresBuy MUST be a research prerequisite, never a guaranteed store listing');
 assert(gates.children.some(n=>n.id==='STOCK:STR_BUCKSHOT_HV'));
+const medical=items.items.STR_LOOTBOX_MEDICAL;
+assert(medical?.requiresBuyBaseFunc.includes('STR_MED_TRADE'),
+  'Actual requiresBuyBaseFunc must remain separate from general manufacture requirements');
+const medicalGraph=createLegacyItemTechAdapter(items,research,'STR_LOOTBOX_MEDICAL');
+const medicalBuy=medicalGraph.expand(medicalGraph.root).children.find(n=>n.sourceKind==='buy');
+assert(medicalBuy);
+const medicalGates=medicalGraph.expand(medicalBuy).children;
+assert(medicalGates.some(n=>n.kind==='facility-function'&&n.id==='STR_MED_TRADE'),
+  'Purchase-only base function gate must be a real provider trace');
+assert(medicalGates.some(n=>n.id==='STOCK:STR_LOOTBOX_MEDICAL'),
+  'Original purchase prerequisites are insufficient to guarantee a shop listing');
 const mfg=methods.children.find(n=>n.sourceKind==='make');
 assert(mfg);
 const recipe=g.expand(mfg);

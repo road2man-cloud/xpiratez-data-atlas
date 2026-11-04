@@ -75,7 +75,12 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       children:list(items[n.owner]?.grants).map((edge,i)=>eventNode(n.owner,edge,i))};
     if(n.sourceKind==='buy'){
       const item=items[n.owner];
-      const children=list(item.requiresBuy).map(researchNode);
+      const children=[...list(item.requiresBuy).map(researchNode),
+        ...list(item.requiresBuyBaseFunc).map(id=>make('facility-function',id))];
+      if(item.requiresBuyCountry)children.push(gate('condition','BUY_COUNTRY:'+n.owner,
+        '구매 국가 조건 '+item.requiresBuyCountry+' · 실제 국가/진영 공급 여부 미검증'));
+      if(item.transferTime!=null)children.push(gate('condition','DELIVERY:'+n.owner,
+        '구매 후 수송 시간 원본 '+fmt(item.transferTime)+' · 물품 확보 시점과 별도'));
       children.push(gate('funds','PRICE:'+n.owner,
         '표시된 구매가 '+fmt(item.costBuy)+' · 판매/보유 재고 및 구매 시점 미검증'));
       children.push(gate('warning','STOCK:'+n.owner,

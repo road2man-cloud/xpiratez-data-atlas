@@ -78,6 +78,10 @@ for(const row of itemIndex.index){
     id:row.id,name:d.koName,english:d.enName,
     costBuy:Number.isFinite(buy)&&buy>0?buy:null,
     requiresBuy:ids(raw.requiresBuy),
+    requiresBuyBaseFunc:ids(raw.requiresBuyBaseFunc),
+    requiresBuyCountry:typeof raw.requiresBuyCountry==='string'?raw.requiresBuyCountry:null,
+    transferTime:Number.isFinite(Number(raw.transferTime))&&raw.transferTime!=null?
+      Number(raw.transferTime):null,
     purchaseSource:raw.costBuy!=null?'effective item rule':'inherited/default/indexed price',
     producers,grants,
     sourceFiles:ids(d.sourceFiles),
