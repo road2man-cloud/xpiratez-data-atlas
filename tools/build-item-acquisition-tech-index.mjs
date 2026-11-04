@@ -6,6 +6,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
+import {buildLegacyFacilityTechSource} from './legacy-facility-tech-source.mjs';
 
 const itemsRoot=path.resolve('public/items/data');
 const globalRoot=path.resolve('public/data');
@@ -127,6 +128,11 @@ const events=Object.fromEntries([...eventIds].sort().map(id=>{
     sourceFiles:detail?.sourceFiles||[]
   }];
 }));
+const facilities=buildLegacyFacilityTechSource({
+  sourceVersion:itemIndex.meta.mod.version,
+  sourceMetadataSha256:itemIndex.meta.source.metadataSha256,
+  requiredEngine:itemIndex.meta.mod.requiredExtendedVersion
+});
 const result={meta:{
   schemaVersion:1,sourceVersion:itemIndex.meta.mod.version,
   requiredEngine:itemIndex.meta.mod.requiredExtendedVersion,
@@ -136,7 +142,7 @@ const result={meta:{
   itemDetailSha256:itemFiles,itemUsageSha256:usageFiles,manufactureSha256:mfgFiles,
   eventDetailSha256:eventFiles,
   limitations:'Other tactical loot and missions are not fully indexed; shop stock and event occurrence not proven'
-},items,recipes,events};
+},items,recipes,events,facilities};
 const serialized=JSON.stringify(result)+'\n';
 const out=path.resolve('public/items/acquisition-index.json');
 const zipped=zlib.gzipSync(Buffer.from(serialized),{level:9,mtime:0});

@@ -203,6 +203,62 @@ try{
   assert((await traceDialog.locator('.tech-node').count())>0,
     'Research trace must render acquisition nodes');
   await traceDialog.locator('#acquisitionTraceClose').click();
+  // A soldier required by another route must expose all of its independent
+  // birth sources, not just the first eight or a merged prerequisite list.
+  await mobile.evaluate(async()=>{
+    const data=await (await fetch('/data/soldiers-modern-index.json')).json();
+    const catalog=await (await fetch('/data/soldier-source-catalog.json')).json();
+    const {mountAcquisitionTechViewer}=await import('/soldiers/modern/acquisition-tech-view.js');
+    for(const [fixture,body] of [['bodySourceFixture','STR_SOLDIER_PEASANT'],
+      ['eventBodyFixture','STR_SOLDIER_GNOME']]){
+      const host=document.createElement('div');host.id=fixture;
+      document.querySelector('#originDetails').append(host);
+      mountAcquisitionTechViewer(host,{data,kind:'soldier-body',id:body,
+        name:id=>catalog.names[id]||id});
+    }
+  });
+  const body=mobile.locator('#bodySourceFixture .tech-viewer');
+  await body.locator('.tech-node[data-tech-stage="1"]').click();
+  assert.equal(await body.locator('.tech-node[data-tech-stage="2"]').count(),9,
+    'All nine peasant birth sources must be reachable, including direct recruitment');
+  const routes=await body.locator('.tech-node[data-tech-stage="2"]').allInnerTexts();
+  assert.equal(routes.filter(x=>x.includes('직접 모집')).length,1);
+  assert.equal(routes.filter(x=>x.includes('제조·모집')).length,8);
+  await body.locator('.tech-node[data-tech-stage="2"][data-tech-index="8"]').click();
+  const directGates=await body.locator('.tech-node[data-tech-stage="3"]').allInnerTexts();
+  const directResearch=body.locator('.tech-node[data-tech-stage="3"][data-tech-kind="research"]');
+  assert.equal(await directResearch.count(),1,
+    'Direct peasant recruitment must retain its own research requirement');
+  await directResearch.click();
+  assert.equal(await body.locator('.tech-selected .tech-node-source code').textContent(),
+    'STR_RECRUIT_PEASANTS');
+  assert(directGates.some(x=>/5,?000/.test(x)),
+    'Direct recruitment must retain its own cost');
+  assert(!directGates.some(x=>x.includes('돌격 클론 면허')),
+    'Independent origin sources must not inherit requirements from another birth');
+  await body.locator('.tech-node[data-tech-stage="2"][data-tech-index="7"]').click();
+  const cloneGates=await body.locator('.tech-node[data-tech-stage="3"]').allInnerTexts();
+  const cloneItem=body.locator('.tech-node[data-tech-stage="3"][data-tech-kind="and"]').filter({hasText:'돌격 클론 면허'});
+  const cloneResearch=body.locator('.tech-node[data-tech-stage="3"][data-tech-kind="research"]');
+  assert(cloneGates.some(x=>x.includes('돌격 클론 면허'))||
+    await cloneResearch.count()>0&&await cloneItem.count()>0,
+    'Theban clone source must retain its distinct license requirement');
+  assert(cloneGates.some(x=>/10,?000/.test(x)),
+    'Theban clone recruitment cost must not be replaced by direct recruitment cost');
+  const eventBody=mobile.locator('#eventBodyFixture .tech-viewer');
+  await eventBody.locator('.tech-node[data-tech-stage="1"]').click();
+  const eventSource=eventBody.locator('.tech-node[data-tech-stage="2"]').filter({hasText:'이벤트 출생'}).first();
+  assert.equal(await eventSource.count(),1,'Gnome starting event birth must be selectable');
+  await eventSource.click();
+  const birthEvent=eventBody.locator('.tech-node[data-tech-stage="3"]').filter({hasText:'출생 이벤트'}).first();
+  assert.equal(await birthEvent.count(),1,'Event source must retain birth-event script alternatives');
+  await birthEvent.click();
+  assert((await eventBody.locator('.tech-node[data-tech-stage="4"]').count())>0);
+  await eventBody.locator('.tech-node[data-tech-stage="4"]').first().click();
+  assert((await eventBody.locator('.tech-node[data-tech-stage="5"]').count())>0,
+    'Source-specific event birth conditions must open in the same horizontal tech viewer');
+  assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+    'Deep body-source traces must not expand the mobile document');
   if(process.env.ATLAS_TECH_SCREENSHOT==='1'){
     await graph.screenshot({path:path.join(os.tmpdir(),'xpiratez-tech-desktop.png')});
     console.log('Tech-viewer preview saved in '+os.tmpdir());

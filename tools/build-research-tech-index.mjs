@@ -5,6 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
 import zlib from 'node:zlib';
+import {buildLegacyFacilityTechSource} from './legacy-facility-tech-source.mjs';
 
 const root=path.resolve('public/items/data');
 const index=JSON.parse(fs.readFileSync(path.join(root,'research-index.json'),'utf8'));
@@ -55,6 +56,11 @@ for(const entry of index.index){
   topics[d.id]=fields;
 }
 assert.equal(Object.keys(topics).length,index.index.length);
+const facilities=buildLegacyFacilityTechSource({
+  sourceVersion:index.meta.mod.version,
+  sourceMetadataSha256:index.meta.source.metadataSha256,
+  requiredEngine:index.meta.mod.requiredExtendedVersion
+});
 const result={meta:{
   schemaVersion:1,sourceVersion:index.meta.mod.version,
   requiredEngine:index.meta.mod.requiredExtendedVersion,
@@ -62,7 +68,7 @@ const result={meta:{
   researchCount:index.index.length,
   chunkSha256:files,
   scope:'Legacy research rules only. Does not certify mission/event grants or route availability.'
-},topics};
+},topics,facilities};
 const output=path.resolve('public/research/acquisition-index.json');
 const serialized=JSON.stringify(result)+'\n';
 const zipped=zlib.gzipSync(Buffer.from(serialized),{level:9,mtime:0});

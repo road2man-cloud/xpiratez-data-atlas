@@ -62,6 +62,17 @@ try{
   assert(gates.some(t=>t.includes('CPU')),'Must retain source base function');
   assert(gates.some(t=>t.includes('선행 연구 또는 직접 해금')),
     'Must retain separate AND and unlock logic');
+  await tech.locator('.tech-node[data-tech-stage="2"][data-tech-kind="facility-function"]').click();
+  assert((await tech.locator('.tech-node[data-tech-stage="3"]').innerText())
+    .includes('기지 기능 제공 시설 선택'));
+  await at(3,0).click();
+  const providers=tech.locator('.tech-node[data-tech-stage="4"][data-tech-kind="facility-type"]');
+  assert(await providers.count()>0,'Research base function must expand into real source facilities');
+  await providers.first().click();
+  assert((await tech.locator('.tech-source-link').getAttribute('href'))
+    .includes('../facilities/#facility='));
+  const routes=tech.locator('.tech-node[data-tech-stage="5"]');
+  assert(await routes.count()>0,'Selected facility must show starting vs construction routes');
   await tech.locator('.tech-node[data-tech-stage="2"].tech-node--or').click();
   await tech.locator('.tech-node[data-tech-stage="3"]').first().waitFor();
   const access=await tech.locator('.tech-node[data-tech-stage="3"]').allInnerTexts();

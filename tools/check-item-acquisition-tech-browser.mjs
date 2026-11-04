@@ -102,6 +102,44 @@ try{
   assert(!eventGates.some(t=>t.includes('랜덤표 내부 비중')));
   await dialog.locator('#closeItemTech').click();
 
+  // A 25mm cannon requires an actual workshop/base function. Trace it inside
+  // the same map through its provider building, research, scrap and price.
+  await page.goto(base+'/items/#item=STR_SMALL_CANNON',{waitUntil:'domcontentloaded'});
+  await page.locator('#detail [data-open-item-tech="STR_SMALL_CANNON"]').waitFor();
+  await page.locator('#detail [data-open-item-tech="STR_SMALL_CANNON"]').click();
+  const cannon=dialog.locator('.tech-viewer');
+  await cannon.locator('.tech-node[data-tech-stage="1"]').nth(1).click();
+  const shop=cannon.locator('.tech-node[data-tech-stage="2"][data-tech-kind="facility-function"]');
+  assert.equal(await shop.count(),1,'Manufacture must preserve original SHOP base-function prerequisite');
+  await shop.click();
+  await cannon.locator('.tech-node[data-tech-stage="3"]').click();
+  const war=cannon.locator('.tech-node[data-tech-stage="4"][data-tech-kind="facility-type"]')
+    .filter({hasText:'혁명 본부'});
+  assert.equal(await war.count(),1,'SHOP must link to source-backed Revolution HQ provider');
+  await war.click();
+  assert((await cannon.locator('.tech-source-link').getAttribute('href'))
+    .includes('../facilities/#facility=STR_WAR_BARRACKS'));
+  const buildingDetail=await browser.newPage({viewport:{width:390,height:844}});
+  try{
+    await buildingDetail.goto(base+'/facilities/#facility=STR_WAR_BARRACKS',
+      {waitUntil:'domcontentloaded'});
+    await buildingDetail.locator('#detailDialog[open]').waitFor({timeout:60000});
+    assert((await buildingDetail.locator('#detailBody').innerText()).includes('혁명 본부'),
+      'Deep-linking from the tech viewer must open the actual facility dossier');
+  }finally{await buildingDetail.close();}
+  const construct=cannon.locator('.tech-node[data-tech-stage="5"]').filter({hasText:'시설 건설'});
+  assert.equal(await construct.count(),1);
+  await construct.click();
+  const constructGates=await cannon.locator('.tech-node[data-tech-stage="6"]').allInnerTexts();
+  assert(constructGates.some(x=>x.includes('고철')&&x.includes('3,000')),
+    'Real 3,000 scrap construction input must remain a traceable item');
+  assert(constructGates.some(x=>x.includes('700,000')),
+    'Original facility cost must not be replaced by the cannon manufacturing price');
+  assert(constructGates.some(x=>x.includes('36')&&x.includes('일')),
+    'Building time must be distinct from manufacturing workload');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  await dialog.locator('#closeItemTech').click();
+
   await page.goto(base+'/items/#item=SPC_CUM_OR_ELSE',{waitUntil:'domcontentloaded'});
   await page.locator('#detail [data-open-item-tech="SPC_CUM_OR_ELSE"]').waitFor();
   await page.locator('#detail [data-open-item-tech="SPC_CUM_OR_ELSE"]').click();

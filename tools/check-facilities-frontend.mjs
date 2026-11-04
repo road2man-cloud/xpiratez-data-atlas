@@ -13,8 +13,12 @@ function element(selector){
   return elements.get(selector);
 }
 let headers=[];
+const location={hash:''},listeners=new Map();
 const context=vm.createContext({
-  console,Map,document:{
+  console,Map,location,
+  history:{replaceState(_state,_title,hash){location.hash=hash}},
+  addEventListener(event,fn){listeners.set(event,fn)},
+  document:{
     querySelector:element,createElement:()=>({}),
     querySelectorAll(selector){
       if(selector==='th[data-sort]'){
@@ -61,6 +65,13 @@ for(const [name,key,value] of [['궁극의 금고','storagePerTile','333.3'],['�
   assert(element('#detailBody').innerHTML.includes(value+'/칸'));
   element('#closeDialog').listeners.click();assert.equal(element('#detailDialog').open,false);
 }
+location.hash='#facility=STR_WAR_BARRACKS';
+assert(listeners.has('hashchange'),'Facility deep link must install a route handler');
+listeners.get('hashchange')();
+await new Promise(resolve=>setImmediate(resolve));
+assert(element('#detailDialog').open&&element('#detailBody').innerHTML.includes('STR_WAR_BARRACKS'),
+  'A tech-viewer facility link must open its precise original dossier');
+element('#closeDialog').listeners.click();
 element('#search').value='';element('#role').value='research';element('#role').listeners.change();
 const count=data.filter(x=>x.roles.includes('research')).length;
 assert.equal(run('filtered().length'),count);click('labsPerTile');toggle(false);

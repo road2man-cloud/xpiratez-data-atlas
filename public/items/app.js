@@ -307,14 +307,14 @@ async function showRelatedSoldiers(mode,id,generation){
 }
 async function loadResearchTechIndex(){
   if(!researchTechIndexPromise)researchTechIndexPromise=(async()=>{
-    const url='../research/acquisition-index.json';
+    const url='../research/acquisition-index.json',version='?v=20261105-facility-tech-1';
     let result=null;
     if(typeof DecompressionStream==='function')try{
-      const response=await fetch(url+'.gz');
+      const response=await fetch(url+'.gz'+version);
       if(response.ok)result=await new Response(response.body.pipeThrough(
         new DecompressionStream('gzip'))).json();
     }catch{/* Prefer the canonical plain JSON if this browser cannot decode gzip. */}
-    result||=await json(url);
+    result||=await json(url+version);
     if(result?.meta?.schemaVersion!==1||
       result.meta.sourceVersion!==manifest.mod.version||
       result.meta.researchCount!==manifest.counts.research||
@@ -336,8 +336,8 @@ async function openResearchTech(id){
   if(!dialog.open)dialog.showModal();
   try{
     const [viewer,adapters,index]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-2'),
-      import('../research/acquisition-tech-adapter.js?v=20261105-crossdb-2'),
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
+      import('../research/acquisition-tech-adapter.js?v=20261105-facility-tech-1'),
       loadResearchTechIndex()
     ]);
     if(!dialog.open)return;
@@ -347,14 +347,14 @@ async function openResearchTech(id){
 }
 async function loadItemTechIndex(){
   if(!itemTechIndexPromise)itemTechIndexPromise=(async()=>{
-    const url='./acquisition-index.json';
+    const url='./acquisition-index.json',version='?v=20261105-facility-tech-1';
     let result=null;
     if(typeof DecompressionStream==='function')try{
-      const response=await fetch(url+'.gz');
+      const response=await fetch(url+'.gz'+version);
       if(response.ok)result=await new Response(response.body.pipeThrough(
         new DecompressionStream('gzip'))).json();
     }catch{/* Canonical JSON fallback when gzip is unavailable. */}
-    result||=await json(url);
+    result||=await json(url+version);
     if(result?.meta?.schemaVersion!==1||
       result.meta.sourceVersion!==manifest.mod.version||
       result.meta.requiredEngine!==manifest.mod.requiredExtendedVersion||
@@ -375,8 +375,8 @@ async function openItemTech(id){
   if(!dialog.open)dialog.showModal();
   try{
     const [view,adapters,items,research]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-2'),
-      import('./acquisition-tech-adapter.js?v=20261105-itemtech-1'),
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-facility-tech-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;
