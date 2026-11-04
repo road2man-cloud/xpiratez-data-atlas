@@ -164,13 +164,25 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
     const categoryMethods=(category,itemId,s,offset=0)=>{
       if(category==='buy'){
         if(!(Number(s.buyCost)>0))return [];
-        return [group('and','BUY:'+itemId,
-          [...uniq([...arr(s.buyRequires),...arr(s.buyRequirements)]).map(research),
-            ...arr(s.buyRequiresBaseFunc).map(baseFunction),
-            ...(s.buyRequiresCountry?[leaf('country',s.buyRequiresCountry,
-              '상점 판매 허용 국가 · 해당 국가 조건 확인 필요')]:[]),
-            leaf('funds',itemId,'구매비 '+s.buyCost+' · 실제 상점 재고는 확인 필요')],
-          '상점 판매 해금 연구·기지 기능·국가 조건을 모두 충족한 후 구매 · 타 획득 방법에는 적용하지 않음')];
+        const gates=uniq([...arr(s.buyRequires),...arr(s.buyRequirements)]);
+        return [{
+          ...group('and','BUY:'+itemId,
+            [...gates.map(research),
+              ...arr(s.buyRequiresBaseFunc).map(baseFunction),
+              ...(s.buyRequiresCountry?[leaf('country',s.buyRequiresCountry,
+                '상점 판매 허용 국가 · 해당 국가 조건 확인 필요')]:[]),
+              leaf('funds',itemId,'구매비 '+s.buyCost+' · 실제 상점 재고는 확인 필요')],
+            '상점 판매 해금 연구·기지 기능·국가 조건을 모두 충족한 후 구매 · 타 획득 방법에는 적용하지 않음'),
+          // Always retain first-order purchase evidence even when the bounded
+          // exploration truncates the deeper research tree. These are normal
+          // lab dependencies, not unconditional gates on event research gifts.
+          purchaseGateDetails:gates.map(id=>({
+            id,normalDependencies:arr(rules[id]?.dependencies),
+            directUnlockSources:arr(reverse.get(id)).filter(v=>v.kind==='unlock').map(v=>v.source)
+          })),
+          purchaseBaseFunctions:arr(s.buyRequiresBaseFunc),
+          purchaseCountry:s.buyRequiresCountry||null
+        }];
       }
       if(category==='map'){
         const loot=s.mapLoot||{},all=arr(loot.sources),subset=all.slice(offset,offset+itemPageSize);
@@ -441,15 +453,39 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       '원본 규칙에 있는 획득 방법입니다. 실제 등장과 획득은 확인이 필요합니다.';
     const variants=scripts?.length?
       '<p class="guide-variant-count">발생 조건 '+scripts.length+'가지 중 가능한 경로를 확인하세요.</p>':'';
-    const purchaseResearch=method.id?.startsWith('BUY:')?
-      arr(method.children).filter(n=>n.kind==='research'):[];
-    const purchaseSummary=method.id?.startsWith('BUY:')?
-      '<p class="guide-purchase-gates"><strong>상점 판매 해금 연구: '+
-      (purchaseResearch.length?purchaseResearch.map(n=>display(n.id,'이름이 확인되지 않은 연구')).join(' · '):
-        '원본에 별도 연구 조건 없음')+'</strong></p>':'';
-    const purchaseTrace=purchaseResearch.map(n=>
-      '<div class="guide-purchase-trace"><button type="button" data-trace-research-root="'+esc(n.id)+'">'+
-      display(n.id,'해금 연구')+' · 게임 시작부터 선행 조건 보기</button>'+
+    const isPurchase=method.id?.startsWith('BUY:');
+    const purchaseInfo=arr(method.purchaseGateDetails);
+    // The bounded research tree may contain "limit" placeholders. Shop
+    // prerequisites must still render from the untruncated source gate list.
+    const purchaseResearch=isPurchase?
+      (purchaseInfo.length?purchaseInfo.map(g=>g.id):
+        arr(method.children).filter(n=>n.kind==='research').map(n=>n.id)):[];
+    const purchaseSummary=isPurchase?
+      '<div class="guide-purchase-gates"><strong>상점 판매 해금 연구: '+
+      (purchaseResearch.length?purchaseResearch.map(id=>display(id,'이름이 확인되지 않은 연구')).join(' · '):
+        '원본에 별도 연구 조건 없음')+'</strong>'+
+      (arr(method.purchaseBaseFunctions).length?
+        '<p>구매에 필요한 기지 기능: '+arr(method.purchaseBaseFunctions).map(id=>display(id,'기지 기능')).join(' · ')+'</p>':'')+
+      (method.purchaseCountry?
+        '<p>상점 판매 국가 조건: '+display(method.purchaseCountry,'해당 국가')+'</p>':'')+
+      '<p class="guide-purchase-disclaimer">조건을 갖추면 구매 후보가 됩니다. 실제 상점 재고와 자금은 별도 확인이 필요합니다.</p></div>':'';
+    const purchaseUpstream=purchaseInfo.map(g=>{
+      const deps=arr(g.normalDependencies),bypasses=arr(g.directUnlockSources);
+      if(!deps.length&&!bypasses.length)return '';
+      return '<details class="guide-purchase-dependencies"'+(deps.length<=5?' open':'')+'>'+
+        '<summary>'+display(g.id,'해금 연구')+'의 기본 연구 경로 · 선행 '+deps.length+'개'+
+        (bypasses.length?' · 직접 해금 대안 있음':'')+'</summary>'+
+        (deps.length?
+          '<p>일반 연구실 경로에서는 아래 연구를 모두 완료해야 합니다. 이벤트 지급이나 직접 해금은 별도 경로일 수 있습니다.</p>'+
+          '<ul>'+deps.map(id=>'<li>'+display(id,'선행 연구')+'</li>').join('')+'</ul>':
+          '<p>원본에 일반 선행 연구는 기록되지 않았습니다.</p>')+
+        (bypasses.length?'<p>별도 직접 해금 연구: '+bypasses.map(id=>display(id,'우회 해금 연구')).join(' · ')+
+          '. 이 경로는 위의 일반 선행 연구와 대체 가능하나 상점 해금 연구 자체를 생략하는 것은 아닙니다.</p>':'')+
+        '</details>';
+    }).join('');
+    const purchaseTrace=purchaseResearch.map(id=>
+      '<div class="guide-purchase-trace"><button type="button" data-trace-research-root="'+esc(id)+'">'+
+      display(id,'해금 연구')+' · 게임 시작부터 선행 조건 보기</button>'+
       '<div class="origin-transform-research-root"></div></div>').join('');
     const conditions=scripts?.length?
       scripts.map((s,i)=>{
@@ -461,13 +497,14 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
     return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
       '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
-      '<p>'+esc(outcomes)+'</p>'+purchaseSummary+variants+
+      '<p>'+esc(outcomes)+'</p>'+purchaseSummary+purchaseUpstream+variants+
       '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
       '<ul class="guide-conditions">'+conditions+'</ul>'+purchaseTrace+traceButton(method)+'</details></article>';
   }
   function overviewCard(node,index){
     if(node.kind==='start')return '';
     const itemMatch=node.id?.startsWith('REQUIRED_ITEM:');
+    const itemTrace=node.kind==='item';
     const isResearch=node.kind==='research';
     const isBirthEvent=node.id?.startsWith('BIRTH_EVENT:');
     const isBase=node.kind==='facility-function';
@@ -476,16 +513,18 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     const trace=tree.profileId.startsWith('TRACE:');
     if(isHistory&&!trace)return '';
     let title='',kind='other',body='';
-    if(itemMatch){
+    if(itemMatch||itemTrace){
       kind='material';
-      const id=node.id.slice('REQUIRED_ITEM:'.length);
-      title='출생 준비물 · '+display(id,'필요 아이템');
-      const child=arr(node.children)[0];
-      const choices=child?.children?.find(x=>x.id==='ITEM_METHOD:'+id);
+      const id=itemMatch?node.id.slice('REQUIRED_ITEM:'.length):node.id;
+      title=(itemMatch?'출생 준비물 · ':'아이템 획득 방법 · ')+display(id,'필요 아이템');
+      const child=itemMatch?arr(node.children)[0]:node;
+      const choices=arr(child?.children).find(x=>x.id==='ITEM_METHOD:'+id);
       const methods=arr(choices?.children);
-      const quantity=node.note.match(/(\d+)개/);
-      body='<p class="guide-lead">출생하려면 <strong>'+display(id,'이 아이템')+
-        ' '+esc(quantity?.[1]||'1')+'개</strong>가 필요합니다. 아래 획득 방법 중 가능한 것을 고르세요.</p>'+
+      const quantity=itemMatch?node.note.match(/(\d+)개/):null;
+      body=(itemMatch?
+        '<p class="guide-lead">출생하려면 <strong>'+display(id,'이 아이템')+
+          ' '+esc(quantity?.[1]||'1')+'개</strong>가 필요합니다. 아래 획득 방법 중 가능한 것을 고르세요.</p>':
+        '<p class="guide-lead">이 아이템을 얻는 방법별로 상점 해금·연구·임무·이벤트 조건을 확인하세요. 원본에 가격이 있어도 즉시 구매를 보장하지 않습니다.</p>')+
         '<p class="guide-source-count">현재 확인된 획득 방법 '+methods.length+'종 · 여러 방법 중 가능한 것만 준비하세요.</p>'+
         '<div class="guide-options">'+(methods.length?methods.map(visibleRoute).join(''):
           '<p>아직 확인된 공급 경로가 없습니다.</p>')+'</div>';
