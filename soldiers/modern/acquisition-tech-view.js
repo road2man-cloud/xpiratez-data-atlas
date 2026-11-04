@@ -204,10 +204,10 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     return {label:generic||getName(id,'원본 획득 조건'),detail,
       category,badge:k==='or'?'하나 선택':k==='and'?'모두 필요':'조건'};
   }
-  const nodeIcons={research:'⌕',item:'▣',facility:'▤',soldier:'♟',event:'⚑',
+  const nodeIcons={research:'⌕',item:'▣',facility:'▤',manufacture:'⚙',soldier:'♟',event:'⚑',
     time:'◷',random:'◇',funds:'₵',blocked:'⊘',and:'∧',or:'∨',reward:'★',
     start:'●',more:'…',warning:'!',history:'↺',condition:'◆'};
-  const traceId=adapter?'research:'+root.id:profile?profile.id:kind+':'+id;
+  const traceId=adapter?'acquisition:'+root.kind+':'+root.id:profile?profile.id:kind+':'+id;
   host.innerHTML='<section class="tech-viewer" data-tech-viewer="'+safe(traceId)+'">'+
     '<div class="tech-toolbar">'+
       '<div class="tech-toolbar-title"><strong>획득 테크뷰어</strong>'+
@@ -301,6 +301,7 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     canvas.style.setProperty('--tech-size',zoom);
     const focused=selection||path.at(-1);
     const meta=describe(focused);
+    const link=adapter?.linkForNode?.(focused);
     const focusedStage=path.indexOf(focused);
     const relation=focusedStage>0?expandNode(path[focusedStage-1]).relation:'goal';
     const role=relation==='or'?'여러 대체 방법 중 하나':relation==='and'?
@@ -310,6 +311,7 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
       '<div class="tech-selected-actions"><button type="button" data-tech-action="back"'+
       (path.length<2?' disabled':'')+'>상위 목표로 돌아가기</button>'+
       (technical?'<button type="button" data-tech-action="source">원본 상세 조건표 열기</button>':'')+
+      (link?.href&&link?.label?'<a class="tech-source-link" href="'+safe(link.href)+'">'+safe(link.label)+'</a>':'')+
       '</div><details class="tech-node-source"><summary>원본 ID · 추적 정보</summary><code>'+
       safe(focused?.id||'원본 ID 없음')+'</code><span>유형: '+safe(focused?.kind||'')+
       ' · 관계: '+safe(role)+'</span></details>'+

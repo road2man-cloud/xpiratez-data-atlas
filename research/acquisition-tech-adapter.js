@@ -153,7 +153,9 @@ export function createLegacyResearchTechAdapter(index,goalId){
       '<p>이 표는 기존 연구 룰의 직접 필드입니다. 직접 지급 이벤트·임무와 실제 캠페인 시간순 실현성은 별도 검증 대상입니다.</p>'+
       '<pre>'+esc(JSON.stringify(source,null,2))+'</pre></div>';
   }
-  return {root:research(goalId),expand,describe,renderEvidence,
+  const linkForNode=n=>n?.kind==='item'&&n.id?
+    {href:'../items/#item='+encodeURIComponent(n.id),label:'아이템 DB에서 실물 공급 경로 확인'}:null;
+  return {root:research(goalId),expand,describe,renderEvidence,linkForNode,
     notice:'이 연구 경로는 X-Piratez '+index.meta.sourceVersion+
       ' / OXCE '+index.meta.requiredEngine+' 원본입니다. 2.1 병종 DB와 조건을 합치지 않습니다. 이벤트·임무 직접 지급은 일부 미색인.'};
 }

@@ -21,6 +21,7 @@ const state={mode:pageMode,query:"",page:1,pageSize:100,dir:1,sort:{items:"koNam
 let itemIndex=[],researchIndex=[],schema={},manifest={},entityNames={},itemMap=new Map(),researchMap=new Map(),researchBranchReport=null,branchConflictMap=new Map(),researchCycleMap=new Map(),researchMissionGateMap=new Map(),storyChoiceIndex=null,researchStoryOverlay=null;
 let itemIds=new Set(),researchIds=new Set(),namesPromise=null,searchTimer=null,detailGeneration=0;
 let researchSourceMetadataSha=null,researchTechIndexPromise=null,activeResearchTechViewer=null;
+let itemTechIndexPromise=null,activeItemTechViewer=null,itemTechRequest=0;
 const modePromises={},searchHay=new WeakMap();
 
 async function json(url){const r=await fetch(url);if(!r.ok)throw new Error(url+" · HTTP "+r.status);return r.json()}
@@ -128,11 +129,20 @@ function bind(){
   $("#pager").onclick=e=>{const b=e.target.closest("button[data-page]");if(b){state.page=Number(b.dataset.page);render()}};
   $("#closeDrawer").onclick=closeDrawer;$("#backdrop").onclick=closeDrawer;$("#compare").onclick=openCompare;$("#closeCompare").onclick=()=>$("#compareDialog").close();
   document.onclick=e=>{
+    const itemTech=e.target.closest('[data-open-item-tech]');
+    if(itemTech){e.preventDefault();void openItemTech(itemTech.dataset.openItemTech);return;}
     const tech=e.target.closest('[data-open-research-tech]');
     if(tech){e.preventDefault();void openResearchTech(tech.dataset.openResearchTech);return;}
     const b=e.target.closest('[data-open]');
     if(b){e.preventDefault();openDetail(b.dataset.kind,b.dataset.open)}
   };
+  const closeItemTech=$('#closeItemTech');
+  if(closeItemTech)closeItemTech.onclick=()=>$('#itemTechDialog').close();
+  $('#itemTechDialog')?.addEventListener('close',()=>{
+    itemTechRequest++;
+    activeItemTechViewer?.dispose();activeItemTechViewer=null;
+    $('#itemTechHost').replaceChildren();
+  });
   const closeTech=$('#closeResearchTech');
   if(closeTech)closeTech.onclick=()=>$('#researchTechDialog').close();
   $('#researchTechDialog')?.addEventListener('close',()=>{
@@ -307,9 +317,10 @@ async function loadResearchTechIndex(){
     result||=await json(url);
     if(result?.meta?.schemaVersion!==1||
       result.meta.sourceVersion!==manifest.mod.version||
-      result.meta.researchCount!==researchIndex.length||
-      !researchSourceMetadataSha||
-      result.meta.sourceMetadataSha256!==researchSourceMetadataSha)
+      result.meta.researchCount!==manifest.counts.research||
+      result.meta.sourceMetadataSha256!==manifest.source.metadataSha256||
+      (researchSourceMetadataSha&&result.meta.sourceMetadataSha256!==researchSourceMetadataSha)||
+      (researchIndex.length>0&&result.meta.researchCount!==researchIndex.length))
       throw Error('기존 연구 DB와 획득 경로 인덱스의 원본 버전/해시가 일치하지 않습니다');
     return result;
   })().catch(error=>{researchTechIndexPromise=null;throw error});
@@ -325,14 +336,54 @@ async function openResearchTech(id){
   if(!dialog.open)dialog.showModal();
   try{
     const [viewer,adapters,index]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-1'),
-      import('../research/acquisition-tech-adapter.js?v=20261105-crossdb-1'),
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-2'),
+      import('../research/acquisition-tech-adapter.js?v=20261105-crossdb-2'),
       loadResearchTechIndex()
     ]);
     if(!dialog.open)return;
     const adapter=adapters.createLegacyResearchTechAdapter(index,id);
     activeResearchTechViewer=viewer.mountAcquisitionTechViewer(host,{adapter,technical:true});
   }catch(error){if(dialog.open)host.textContent='연구 경로를 표시하지 못했습니다: '+error.message;}
+}
+async function loadItemTechIndex(){
+  if(!itemTechIndexPromise)itemTechIndexPromise=(async()=>{
+    const url='./acquisition-index.json';
+    let result=null;
+    if(typeof DecompressionStream==='function')try{
+      const response=await fetch(url+'.gz');
+      if(response.ok)result=await new Response(response.body.pipeThrough(
+        new DecompressionStream('gzip'))).json();
+    }catch{/* Canonical JSON fallback when gzip is unavailable. */}
+    result||=await json(url);
+    if(result?.meta?.schemaVersion!==1||
+      result.meta.sourceVersion!==manifest.mod.version||
+      result.meta.requiredEngine!==manifest.mod.requiredExtendedVersion||
+      result.meta.count!==itemIndex.length||
+      result.meta.sourceMetadataSha256!==manifest.source.metadataSha256)
+      throw Error('아이템 획득 경로 인덱스가 현재 아이템 DB 원본과 일치하지 않습니다');
+    return result;
+  })().catch(error=>{itemTechIndexPromise=null;throw error});
+  return itemTechIndexPromise;
+}
+async function openItemTech(id){
+  const dialog=$('#itemTechDialog');
+  if(!dialog||!itemMap.has(id))return;
+  const stamp=++itemTechRequest,host=$('#itemTechHost');
+  activeItemTechViewer?.dispose();activeItemTechViewer=null;
+  $('#itemTechTitle').textContent=(itemMap.get(id)?.koName||id)+' · 실물 획득 경로';
+  host.textContent='아이템·제조·이벤트 원본 획득 근거를 확인하는 중…';
+  if(!dialog.open)dialog.showModal();
+  try{
+    const [view,adapters,items,research]=await Promise.all([
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-crossdb-2'),
+      import('./acquisition-tech-adapter.js?v=20261105-itemtech-1'),
+      loadItemTechIndex(),loadResearchTechIndex()
+    ]);
+    if(stamp!==itemTechRequest||!dialog.open)return;
+    const adapter=adapters.createLegacyItemTechAdapter(items,research,id);
+    activeItemTechViewer=view.mountAcquisitionTechViewer(host,{adapter,technical:true});
+  }catch(error){if(stamp===itemTechRequest&&dialog.open)
+    host.textContent='아이템 획득 경로를 표시하지 못했습니다: '+error.message;}
 }
 async function openDetail(mode,id){
   const generation=++detailGeneration;
@@ -392,6 +443,7 @@ function renderItem(d){
   const c=d.effectiveCore||{},codes=d.effectiveCoreSourceCodes||"",legend=schema.coreSourceLegend||{},s=d.effectiveCoreSources||Object.fromEntries((schema.effectiveCoreFields||[]).map((k,i)=>[k,legend[codes[i]]||""])),r=d.raw||{},refs=allItemReferences(d);
   const power=r.power!=null?c.power:r.meleePower!=null?c.meleePower:"—",powerSrc=r.power!=null?s.power:s.meleePower;
   return`<h2>${esc(d.koName)}</h2><div class="id">${esc(d.enName)} · ${esc(d.id)}</div><div class="summary">${esc(d.summaryKo)}</div>
+  <section class="research-acquisition-launch item-acquisition-launch"><button type="button" data-open-item-tech="${esc(d.id)}">◀ 게임식 좌우 아이템 획득 경로 열기</button><p>상점 재고·제조 재료·필수 연구·이벤트 발생을 분리합니다. 확률은 해당 랜덤표의 상대 비중이며 확정 획득이 아닙니다.</p></section>
   ${kpis([["종류",kinds[d.kind]||d.kind,s.battleType],["위력",power,powerSrc],["피해형",d.damageTypeKo],["무게",c.weight,s.weight],["창고 점유",c.size,s.size],["구매가",r.costBuy??"—",r.costBuy!=null?s.costBuy:""],["판매가",r.costSell??"—",r.costSell!=null?s.costSell:""],["월 급여/수익",c.monthlySalary,s.monthlySalary],["월 유지비",c.monthlyMaintenance,s.monthlyMaintenance],["아이템 내구",c.armor,s.armor],["한손 보정",c.oneHandedPenalty==null?"—":c.oneHandedPenalty+"%",s.oneHandedPenalty],["무릎쏴",c.kneelBonus==null?"—":c.kneelBonus+"%",s.kneelBonus]])}
   ${itemEditorialMarkup(d)}
   ${itemUsageMarkup(d)}
