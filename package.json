@@ -34,7 +34,7 @@
     "build:origin-candidates": "node tools/build-soldier-origin-candidates.mjs",
     "improve:origin-candidates": "node tools/build-soldier-origin-candidates.mjs --unresolved-only",
     "check:origin-tree:browser": "node tools/check-origin-complete-condition-tree-browser.mjs",
-    "check:reader:browser": "node tools/check-atlas-reader-guide-browser.mjs",
+    "check:reader:browser": "node tools/check-atlas-reader-guide-browser.mjs && node tools/check-site-progressive-reader.mjs",
     "check:tech-view:browser": "node tools/check-acquisition-tech-view-browser.mjs",
     "build:research:tech": "node tools/build-research-tech-index.mjs",
     "check:research:tech": "node tools/build-research-tech-index.mjs --check && node tools/check-research-tech-index.mjs",

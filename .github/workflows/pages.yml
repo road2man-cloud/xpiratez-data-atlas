@@ -53,6 +53,8 @@ jobs:
           node tools/check-soldier-modern-browser.mjs
           # Readable, nontechnical default layer in all 14 DBs and birth guides.
           node tools/check-atlas-reader-guide-browser.mjs
+          # Unified left-to-right steps, drawer navigation and wide-table controls.
+          node tools/check-site-progressive-reader.mjs
           # Horizontal acquisition tech viewer: mobile + desktop, AND/OR wires,
           # shop and event source conditions, pan/zoom, lazy raw proof.
           node tools/check-acquisition-tech-view-browser.mjs
