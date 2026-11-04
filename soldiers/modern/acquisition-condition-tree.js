@@ -338,25 +338,203 @@ export function buildAcquisitionSubtree(kind,id,data,offset=0){
 }
 export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').replace(/[&<>"]/g,c=>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}={}){
-  const label=n=>n.kind==='and'?'모두 필요 (AND)':n.kind==='or'?'대체 경로 (OR)':
-    n.kind==='research'&&n.id.startsWith('STR_CAPTAINS_RANK_')?'캡틴 계급 '+n.id.slice(-2):
-    name(n.id);
-  function view(n,depth=0){
-    const title='<strong>'+esc(label(n))+'</strong>'+
-      (n.kind==='and'||n.kind==='or'?'':' <small>'+esc(n.id)+'</small>');
-    if(!n.children.length)return '<li class="origin-tree-leaf" data-condition-kind="'+esc(n.kind)+'">'+
-      title+' <small>'+esc(n.note)+'</small>'+
-      (n.kind==='limit'?'<button type="button" data-trace-kind="'+esc(n.traceKind)+
-        '" data-trace-id="'+esc(n.id)+'" data-trace-offset="'+esc(n.traceOffset||0)+
-        '">다음 선행 조건 펼치기</button>':'')+'</li>';
+  const arr=x=>Array.isArray(x)?x:[];
+  const display=(id,fallback='조건')=>{
+    const value=String(name(id)||'').trim();
+    // Missing translations must not expose internal STR_* identifiers as a
+    // heading. The exact original remains available in "기술 근거".
+    return value&&value!==id&&!/^(STR_|MAP_|BIRTH:|EVENT:|MAKE:|BUY:|TRACE:)/.test(value)?
+      esc(value):esc(fallback);
+  };
+  const readable=(n)=>{
+    if(n.kind==='research')return '연구: '+display(n.id,'이름이 확인되지 않은 연구');
+    if(n.kind==='item')return '아이템: '+display(n.id,'원본 아이템');
+    if(n.kind==='facility-function')return '기지 기능: '+display(n.id,'기지 기능');
+    if(n.kind==='facility-type')return '시설: '+display(n.id,'건설 시설');
+    if(n.kind==='soldier-body')return '필요 병종: '+display(n.id,'병종');
+    if(n.kind.startsWith('forbidden-'))return '이 조건이 있으면 해당 방법 사용 불가: '+
+      display(n.id,'제한 조건');
+    if(n.kind==='month')return '발생 시기: '+esc(n.note);
+    if(n.kind==='rng'||n.kind==='weighted')return '확률·추첨: '+esc(n.note);
+    if(n.kind==='funds')return '비용: '+esc(n.note);
+    if(n.kind==='limit')return '아직 펼치지 않은 선행 조건';
+    if(n.kind==='unavailable'||n.kind.startsWith('unindexed')||
+      n.kind==='unbacked-sample'||n.kind==='unknown-supply')return '추가 확인 필요: '+esc(n.note);
+    if(n.kind==='mission-generation')return '임무 등장: '+display(n.id,'해당 임무');
+    if(n.kind==='map-recovery')return '전장에서 아이템 회수 필요';
+    if(n.kind==='facility-built')return '시설을 실제로 건설·완공해야 합니다.';
+    if(n.kind==='origin-history')return '출생 당시 보유한 이력';
+    if(n.kind==='start')return '게임 시작';
+    return display(n.id,'요구 조건')+(n.note?' · '+esc(n.note):'');
+  };
+  const optionTitle=(n)=>{
+    const id=n.id||'';
+    if(id.startsWith('BUY:'))return '상점에서 구매';
+    if(id.startsWith('MAKE:'))return '기지에서 제조';
+    if(id.startsWith('RANDOM:'))return '무작위 제조';
+    if(id.startsWith('EVENT:')){
+      const event=id.slice(6);
+      const action=event.startsWith('STR_START_COUNTRY_')?'시작 국가 보상':
+        event.startsWith('STR_START_LOCATION_')?'시작 지역 보상':'이벤트 보상';
+      return action+' · '+display(event,'이벤트');
+    }
+    if(id.startsWith('MAP_LOOT:')||id.startsWith('MAP_BLOCK:'))return '임무에서 전리품 회수';
+    if(id.startsWith('RESEARCH_ITEM:'))return '연구 완료 보상';
+    if(id.startsWith('LAB:'))return '연구실에서 진행';
+    if(id.startsWith('FREE:')||id.startsWith('FREE-PROTECTED:'))return '무료 연구 보상';
+    if(id.startsWith('LOOKUP:'))return '연결 연구로 획득';
+    if(id.startsWith('MISSION:'))return '임무 승리 보상';
+    if(id.startsWith('ACCESS:'))return '연구 개방 방법';
+    if(id.startsWith('ALL_DEPENDENCIES:'))return '선행 연구를 모두 완료';
+    if(id.startsWith('BIRTH_EVENT:'))return '출생 이벤트';
+    if(n.kind==='limit')return '그 밖의 획득 방법 더 확인';
+    if(n.kind==='or')return '획득 방법 중 하나 선택';
+    if(n.kind==='and')return '이 방법에서 함께 필요한 준비';
+    return readable(n);
+  };
+  const traceButton=n=>n.kind==='limit'&&n.traceKind?
+    '<button type="button" class="guide-next-condition" data-trace-kind="'+esc(n.traceKind)+
+    '" data-trace-id="'+esc(n.id)+'" data-trace-offset="'+esc(n.traceOffset||0)+
+    '">이어서 조건 확인</button>':'';
+  function collectConditions(n,seen=new Set(),depth=0){
+    if(depth>3||seen.size>25)return [];
+    if(n.kind==='or'&&depth>0)return ['아래에 여러 대체 경로가 있습니다. 원본 근거에서 각각 선택하세요.'];
+    if(!n.children?.length){
+      if(['start','origin-history','birth-award','item-reward','research-award',
+        'parallel-research','lab','auto','birth-source'].includes(n.kind))return [];
+      return [readable(n)];
+    }
+    const lines=[];
+    for(const child of arr(n.children)){
+      if(lines.length>=9)break;
+      const token=child.kind+':'+child.id;
+      if(seen.has(token))continue;
+      seen.add(token);
+      if(child.kind==='research'||child.kind==='item'||child.kind==='facility-function'||
+        child.kind==='facility-type'||child.kind==='soldier-body'){
+        lines.push(readable(child));
+      }else if(child.kind==='and'){
+        lines.push(...collectConditions(child,seen,depth+1));
+      }else if(child.kind==='or'){
+        lines.push('다른 확보 방법도 있습니다. 자세한 분기는 원본 근거에서 확인하세요.');
+      }else if(child.children?.length){
+        lines.push(...collectConditions(child,seen,depth+1));
+      }else if(!['origin-history','start','lab','auto','research-award',
+        'birth-award','item-reward','parallel-research'].includes(child.kind)){
+        lines.push(readable(child));
+      }
+    }
+    return [...new Set(lines)].slice(0,8);
+  }
+  function visibleRoute(method,index){
+    const label=optionTitle(method);
+    const scripts=method.kind==='or'&&method.id?.startsWith('EVENT:')?arr(method.children):null;
+    const firstLeaves=(scripts||[method]).flatMap(s=>arr(s.children));
+    const payout=firstLeaves.find(x=>x.kind==='item-reward');
+    const cost=firstLeaves.find(x=>x.kind==='funds');
+    const lab=firstLeaves.find(x=>x.kind==='lab');
+    const price=cost?.note?.replace(/\b\d{4,}\b/g,x=>Number(x).toLocaleString('ko-KR'));
+    const outcomes=payout?.note||price||lab?.note||
+      '원본 규칙에 있는 획득 방법입니다. 실제 등장과 획득은 확인이 필요합니다.';
+    const variants=scripts?.length?
+      '<p class="guide-variant-count">발생 조건 '+scripts.length+'가지 중 가능한 경로를 확인하세요.</p>':'';
+    const conditions=scripts?.length?
+      scripts.map((s,i)=>{
+        const lines=collectConditions(s);
+        return '<li><strong>'+(i+1)+'번째 이벤트 조건</strong>'+
+          (lines.length?'<ul>'+lines.map(t=>'<li>'+t+'</li>').join('')+'</ul>':
+            '<p>별도 연구 조건은 기록되지 않았습니다. 발생 확률은 확인이 필요합니다.</p>')+'</li>';
+      }).join(''):
+      collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
+    return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
+      '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
+      '<p>'+esc(outcomes)+'</p>'+variants+
+      '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
+      '<ul class="guide-conditions">'+conditions+'</ul>'+traceButton(method)+'</details></article>';
+  }
+  function overviewCard(node,index){
+    if(node.kind==='start')return '';
+    const itemMatch=node.id?.startsWith('REQUIRED_ITEM:');
+    const isResearch=node.kind==='research';
+    const isBirthEvent=node.id?.startsWith('BIRTH_EVENT:');
+    const isBase=node.kind==='facility-function';
+    const isFunds=node.kind==='funds';
+    const isHistory=node.kind==='origin-history';
+    const trace=tree.profileId.startsWith('TRACE:');
+    if(isHistory&&!trace)return '';
+    let title='',kind='other',body='';
+    if(itemMatch){
+      kind='material';
+      const id=node.id.slice('REQUIRED_ITEM:'.length);
+      title='출생 준비물 · '+display(id,'필요 아이템');
+      const child=arr(node.children)[0];
+      const choices=child?.children?.find(x=>x.id==='ITEM_METHOD:'+id);
+      const methods=arr(choices?.children);
+      const quantity=node.note.match(/(\d+)개/);
+      body='<p class="guide-lead">출생하려면 <strong>'+display(id,'이 아이템')+
+        ' '+esc(quantity?.[1]||'1')+'개</strong>가 필요합니다. 아래 획득 방법 중 가능한 것을 고르세요.</p>'+
+        '<p class="guide-source-count">현재 확인된 획득 방법 '+methods.length+'종 · 여러 방법 중 가능한 것만 준비하세요.</p>'+
+        '<div class="guide-options">'+(methods.length?methods.map(visibleRoute).join(''):
+          '<p>아직 확인된 공급 경로가 없습니다.</p>')+'</div>';
+    }else if(isResearch){
+      kind='research';title='출생 전에 완료할 연구 · '+display(node.id,'연구');
+      const methods=arr(node.children?.[0]?.children);
+      body='<p class="guide-lead">이 출생 방식은 이 연구가 완료되어 있어야 합니다. 연구를 여는 방법은 별도로 확인하세요.</p>'+
+        '<div class="guide-options">'+methods.map(visibleRoute).join('')+'</div>';
+    }else if(isBirthEvent){
+      kind='event';title='병사가 등장하는 이벤트';
+      const scripts=arr(node.children);
+      body='<p class="guide-lead">이 출생 방식에 해당하는 이벤트 조건입니다. 여러 종류가 있으면 각각 독립적으로 확인하세요.</p>'+
+        '<div class="guide-options">'+scripts.map((script,i)=>
+          '<article class="guide-option"><div class="guide-option-heading"><span>경로 '+(i+1)+'</span><strong>출생 이벤트 조건</strong></div>'+
+          '<details class="guide-option-details"><summary>필요 조건과 발생 시기 보기</summary>'+
+          '<ul class="guide-conditions">'+collectConditions(script).map(s=>'<li>'+s+'</li>').join('')+
+          '</ul></details></article>').join('')+'</div>';
+    }else if(isBase){
+      kind='facility';title='기지에 필요한 기능 · '+display(node.id,'기지 기능');
+      body='<p class="guide-lead">해당 기능을 제공하는 시설을 실제로 건설해야 합니다. 연구 완료만으로 시설이 생기지는 않습니다.</p>';
+    }else if(isFunds){
+      kind='funds';title='고용·제조에 필요한 비용';
+      body='<p class="guide-lead">'+esc(node.note)+'</p>';
+    }else if(isHistory){
+      kind='history';title='추가 조사 대상';
+      body='<p class="guide-lead">현재 선택한 원본 조건을 더 자세히 확인하는 화면입니다.</p>';
+    }else{
+      kind='condition';title=optionTitle(node);
+      body='<p class="guide-lead">'+esc(node.note||'해당 조건의 선행 단계를 확인하세요.')+'</p>'+
+        '<div class="guide-options">'+arr(node.children).map(visibleRoute).join('')+'</div>';
+    }
+    return '<section class="guide-card" data-guide-category="'+kind+'">'+
+      '<div class="guide-card-heading"><span class="guide-number">'+(index+1)+'</span><h5>'+title+'</h5></div>'+
+      body+'</section>';
+  }
+  // Exact machine-provenance is still accessible, but technical identifiers,
+  // AND/OR expression nodes and recursive debug structure are not the first
+  // thing a person encounters.
+  const technicalTitle=n=>n.kind==='and'?'함께 필요한 조건 (AND)':
+    n.kind==='or'?'여러 경로 중 하나 (OR)':
+    n.kind==='limit'?'추가 탐색 필요':readable(n);
+  function technical(n,depth=0){
+    const title='<strong>'+technicalTitle(n)+'</strong>'+
+      (n.kind==='and'||n.kind==='or'?'':' <code class="guide-source-id">'+esc(n.id)+'</code>');
+    if(!n.children?.length)return '<li class="origin-tree-leaf" data-condition-kind="'+esc(n.kind)+'">'+
+      title+' <small>'+esc(n.note)+'</small>'+traceButton(n)+'</li>';
     return '<li data-condition-kind="'+esc(n.kind)+'"><details class="origin-tree-branch"'+
-      (depth<4?' open':'')+'><summary>'+title+' <small>'+n.children.length+'개</small></summary>'+
-      '<p class="fine">'+esc(n.note)+'</p><ul>'+n.children.map(x=>view(x,depth+1)).join('')+
+      (depth<1?' open':'')+'><summary>'+title+' <small>'+n.children.length+'개</small></summary>'+
+      '<p class="fine">'+esc(n.note)+'</p><ul>'+n.children.map(x=>technical(x,depth+1)).join('')+
       '</ul></details></li>';
   }
-  return '<section class="origin-complete-tree" data-complete-profile="'+esc(tree.profileId)+
-    '"><h4>'+(tree.profileId.startsWith('TRACE:')?'선택한 조건의 추가 선행·공급 경로':
-      '게임 시작 → 출생 전체 조건 트리')+'</h4><p class="fine">출생 방법의 연구·아이템·시설·임무·월·캡틴 계급·평가 점수·지역 조건을 원본에서 역추적합니다. AND/OR는 선택 구조일 뿐 실제 캠페인 실행·전역 가능성 증명이 아닙니다.</p>'+
-    (tree.truncated?'<p class="origin-tree-warning">일부 경로는 크기 제한으로 접혔습니다. 버튼으로 더 추적할 수 있으나 불가능 판정이 아닙니다.</p>':'')+
-    '<ul class="origin-tree-root">'+view(tree.root)+'</ul></section>';
+  const source=tree.profileId.startsWith('TRACE:');
+  const cards=tree.root.children.filter(n=>n.kind!=='start'&&n.kind!=='origin-history');
+  return '<section class="origin-complete-tree origin-readable-guide" data-complete-profile="'+
+    esc(tree.profileId)+'">'+
+    '<div class="guide-intro"><h4>'+(source?'추가 선행 조건과 획득 방법':
+      '이 병사를 얻기 위해 필요한 것')+'</h4>'+
+    '<p><strong>무엇을 준비하고 어떤 방법으로 얻는지</strong> 먼저 보세요. 한 카드의 준비물은 다른 카드의 필수 연구·시설 조건을 대신하지 않습니다.</p>'+
+    '<p class="guide-state">게임 시작부터 확인하는 경로 · 획득 확률 및 실전 실행 가능성은 아직 검증되지 않은 부분이 있습니다.</p></div>'+
+    '<div class="guide-cards">'+cards.map(overviewCard).join('')+'</div>'+
+    (tree.truncated?'<p class="guide-incomplete">일부 연구·공급 경로는 아직 펼쳐지지 않았습니다. 아래 원본 근거에서 계속 확인할 수 있습니다.</p>':'')+
+    '<details class="guide-technical-evidence"><summary>원본 조건·연구 ID·세부 분기 보기 (검증용)</summary>'+
+    '<p>같은 출생 방법의 정확한 연구·이벤트·아이템 ID와 논리 구조입니다. 여기서만 AND(모두 필요)와 OR(여러 경로 중 하나)를 표시합니다.</p>'+
+    '<ul class="origin-tree-root">'+technical(tree.root)+'</ul></details></section>';
 }

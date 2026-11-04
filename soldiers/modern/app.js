@@ -6,7 +6,7 @@ import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js';
-import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-conditions-3';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-readable-2';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-initial-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -187,8 +187,10 @@ async function openOrigin(id,candidateId=null){
   if(blocked)return;const generation=++replayGeneration;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
-  const birthPaths='<section class="origin-tree-action"><strong>출생 방법별 전체 조건 역추적</strong><p class="fine">임무 개방 시기·연구·아이템·대원/캡틴 계급·선택 배제를 게임 시작부터 확인합니다. 표시된 조건은 실제 획득 보장이 아닙니다.</p><button type="button" data-expand-origin-tree="'+esc(profile.id)+'">게임 시작부터 전체 출생 조건 트리 보기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
-    renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node});
+  const birthPaths='<section class="origin-tree-action"><strong>이 병사는 어떻게 얻나요?</strong><p class="fine">준비물과 구하는 방법, 필요한 연구와 이벤트를 구분해 보여드립니다. 게임에서 반드시 획득된다는 뜻은 아닙니다.</p><button type="button" data-expand-origin-tree="'+esc(profile.id)+'">출생 준비와 획득 방법 보기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
+    '<details class="origin-source-expansion"><summary>원본 출생·공급 기록 전체 보기 (기술 자료)</summary>'+
+    '<p class="fine">이곳에는 연구 ID, 공급 스크립트, 다른 출생처와의 상세 연결을 원본 단위로 보존합니다.</p>'+
+    renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+'</details>';
   const metric=$('#catalogMetric').value;
   selected=id;const c=record.candidates.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
@@ -296,12 +298,12 @@ async function init(){try{
       const id=treeButton.dataset.expandOriginTree;
       const box=$('#originDetails').querySelector('.origin-tree-result');
       if(box){
-        if(box.innerHTML){box.innerHTML='';treeButton.textContent='게임 시작부터 전체 출생 조건 트리 보기';}
+        if(box.innerHTML){box.innerHTML='';treeButton.textContent='출생 준비와 획득 방법 보기';}
         else{
           const profile=DATA.profiles.find(p=>p.id===id);
           if(profile){
             box.innerHTML=renderAcquisitionTree(buildAcquisitionTree(profile,DATA),{esc,name});
-            treeButton.textContent='전체 출생 조건 트리 접기';
+            treeButton.textContent='획득 방법 접기';
           }
         }
       }

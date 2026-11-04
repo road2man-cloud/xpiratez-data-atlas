@@ -1,0 +1,66 @@
+/* Shared presentation vocabulary for 14 public databases.
+   Does not alter any rule, score, source, or comparison calculation. */
+:root{--atlas-guide-border:#395573;--atlas-guide-bg:#13263d;--atlas-guide-text:#e5eefb;--atlas-guide-muted:#b5c8df}
+body{font-size:16px}
+:where(main, header, aside, dialog) :where(p,li,summary,label){line-height:1.65}
+:where(.fine,.muted,.scope-note,.relation-note,.origin-route small){font-size:max(.85rem,13.5px)}
+:where(.id){font-size:max(.78rem,12.5px)}
+:where(button,a,summary,input,select):focus-visible{outline:2px solid #a2d2ff;outline-offset:3px}
+.atlas-reader-guide,.atlas-home-group,.atlas-home-directory{font-family:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif}
+.atlas-reader-guide{box-sizing:border-box;width:100%;margin:0 0 20px;padding:18px 20px;background:var(--atlas-guide-bg);border:1px solid var(--atlas-guide-border);border-radius:14px;color:var(--atlas-guide-text);font-size:15px;min-width:0}
+.atlas-reader-guide *,.atlas-home-group *{box-sizing:border-box}
+.atlas-reader-eyebrow{font-size:12px;color:#afc9e5;font-weight:750;letter-spacing:.07em}
+.atlas-reader-head h2{font-size:clamp(1.2rem,2.6vw,1.52rem);line-height:1.35;letter-spacing:-.025em;margin:6px 0 4px;color:#f0f6ff}
+.atlas-reader-head p{font-size:14px;line-height:1.6;color:#bfd0e5;margin:0 0 15px;max-width:75ch}
+.atlas-reader-actions{display:flex;align-items:stretch;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.atlas-reader-actions .atlas-reader-link,.atlas-reader-action{flex:1 1 185px;display:flex;align-items:center;min-width:0;border:1px solid #385775;background:#192f48;border-radius:9px;padding:10px 12px;font-size:14px;line-height:1.45;color:#e6f1ff;text-decoration:none;font-weight:650}
+.atlas-reader-actions .atlas-reader-link:hover{border-color:#8fc8ff;background:#233f5c}
+.atlas-reader-action{color:#c8d9eb;font-weight:500}
+.atlas-reader-id-toggle{display:inline-flex;align-items:center;gap:9px;padding:5px 0;color:#d9e9fb;font-size:14px;font-weight:650;cursor:pointer}
+.atlas-reader-id-toggle input{width:17px;height:17px;accent-color:#83bbf2;flex:none;margin:0}
+.atlas-reader-id-note{display:inline-block;color:#aabed4;font-size:12px;margin:0 0 4px 10px;line-height:1.5}
+body:not(.atlas-show-source-ids) :is(.table-shell,.table-scroll,.tablewrap) td :is(span.id,small.id){display:none!important}
+body.atlas-show-source-ids :is(.table-shell,.table-scroll,.tablewrap) td :is(span.id,small.id){display:block!important}
+.atlas-reader-glossary,.atlas-reader-directory{border-top:1px solid #324d6b;padding:9px 0 0;margin-top:9px}
+.atlas-reader-glossary summary,.atlas-reader-directory summary{font-size:14px;font-weight:700;color:#c8e4ff;cursor:pointer}
+.atlas-reader-glossary dl{display:grid;grid-template-columns:minmax(130px,auto) 1fr;gap:9px 13px;line-height:1.55;font-size:14px;padding:11px 2px 0;margin:0}
+.atlas-reader-glossary dt{font-weight:750;color:#f1f7ff}
+.atlas-reader-glossary dd{margin:0;color:#b8cce3}
+.atlas-nav-directory{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:12px 0}
+.atlas-nav-group{background:#142a42;border:1px solid #345473;border-radius:9px;padding:12px;min-width:0}
+.atlas-nav-group strong{font-size:15px;color:#edf5ff}
+.atlas-nav-group p{font-size:13px;color:#b7cbe3;margin:3px 0 9px}
+.atlas-nav-links{display:flex;flex-wrap:wrap;gap:6px}
+.atlas-nav-links a{display:inline-flex;font-size:13px;line-height:1.4;color:#d5eaff;text-decoration:none;padding:6px 9px;border:1px solid #406183;border-radius:7px}
+.atlas-nav-links a:hover,.atlas-nav-links a.is-current{background:#24415e;border-color:#79b5ef}
+.atlas-home-title{font-size:clamp(1.6rem,3vw,2rem);margin:35px 0 4px}
+.atlas-home-intro{font-size:1rem;max-width:75ch}
+.atlas-home-group{margin:28px 0 32px}
+.atlas-home-group h2{font-size:1.4rem;margin:0 0 3px}
+.atlas-home-group>p{margin:0 0 14px}
+.atlas-home-group .grid{margin:0}
+.atlas-home-directory{margin:14px 0;padding:11px 15px;background:#122138;border-radius:10px;border:1px solid #344d6d}
+.atlas-home-directory summary{cursor:pointer;font-size:.95rem;font-weight:700;color:#d3e7ff}
+.atlas-home-directory .quicknav{margin-top:11px}
+
+/* A plain-language first layer, with engine notation opt-in. */
+.atlas-how-to{row-gap:8px}
+.atlas-how-to>strong{font-size:1.05rem;line-height:1.5;color:#f0f6ff}
+.atlas-how-to>span{font-size:.92rem;line-height:1.65;color:#d0e0f1}
+.atlas-technical-guidance{grid-column:1/-1;border-top:1px solid #405a76;margin-top:9px;padding:11px 0 3px}
+.atlas-technical-guidance>summary{font-weight:720;font-size:.89rem;cursor:pointer;color:#b8d9fc}
+.atlas-tech-text{display:grid;grid-template-columns:minmax(135px,auto) minmax(0,1fr);gap:8px 16px;margin-top:12px;color:#c3d6eb;font-size:.87rem}
+.atlas-tech-text>strong{font-weight:750;color:#e1eeff}
+.atlas-tech-text>span{line-height:1.7}
+.atlas-tech-text code{font-size:.85em;overflow-wrap:anywhere}
+@media(max-width:650px){.atlas-tech-text{grid-template-columns:minmax(0,1fr);gap:5px}.atlas-tech-text>span{margin-bottom:12px}}
+
+@media(max-width:640px){
+ .atlas-reader-guide{padding:14px 12px;margin-bottom:13px}
+ .atlas-reader-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+ .atlas-reader-actions .atlas-reader-link,.atlas-reader-action{min-width:0;flex-basis:auto}
+ .atlas-reader-glossary dl{grid-template-columns:minmax(0,1fr);gap:2px}
+ .atlas-reader-glossary dd{margin-bottom:10px}
+ .atlas-nav-directory{grid-template-columns:minmax(0,1fr)}
+ .atlas-home-group{margin:22px 0}
+}

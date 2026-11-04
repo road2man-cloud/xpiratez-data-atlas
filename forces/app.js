@@ -66,13 +66,19 @@ function editorialMarkup(e){
   return '<section class="section editorial"><div class="insight-head"><h3>GPT 적부대 인사이트</h3><span class="evidence">GPT 편집 · 룰셋 기반 자동 합성</span></div>'+row("정체",e.overview)+row("생성 원인",e.spawn)+row("이동",e.movement)+row("교전 편성",e.encounter)+row("위협",e.threat)+row("대응",e.action)+row("주의",e.caution)+'</section>';
 }
 function conditionMarkup(c){
-  const labels={firstMonth:"첫 월",lastMonth:"마지막 월",executionOdds:"executionOdds",startDelay:"startDelay",randomDelay:"randomDelay",minDifficulty:"최소 난이도",maxDifficulty:"최대 난이도",minScore:"최소 점수",maxScore:"최대 점수",targetBaseOdds:"기지 표적 Odds",maxRuns:"최대 실행"};
+  const labels={firstMonth:"첫 월",lastMonth:"마지막 월",executionOdds:"임무 실행 판정",startDelay:"최초 등장 대기",randomDelay:"추가 등장 대기",minDifficulty:"최소 난이도",maxDifficulty:"최대 난이도",minScore:"최소 점수",maxScore:"최대 점수",targetBaseOdds:"기지 공격 판정",maxRuns:"최대 실행"};
   const es=Object.entries(c||{});return es.length?'<div class="condition-cloud">'+es.map(x=>'<span class="condition"><b>'+esc(labels[x[0]]||x[0])+'</b> '+esc(fmt(x[1]))+((x[0]==="executionOdds"||x[0]==="targetBaseOdds")?"%":"")+'</span>').join("")+'</div>':'<div class="empty">스칼라 조건 없음</div>';
 }
 function triggersMarkup(t){
-  const labels={researchTriggers:"연구",itemTriggers:"아이템",facilityTriggers:"시설",xcomBaseInRegionTriggers:"기지 지역",xcomBaseInCountryTriggers:"기지 국가"};
-  const es=Object.entries(t||{});if(!es.length)return'<div class="empty">직접 trigger map 없음</div>';
-  return es.map(kv=>'<div class="trigger-group"><b>'+esc(labels[kv[0]]||kv[0])+'</b><div>'+kv[1].map(x=>'<span class="trigger-chip '+(x.value===true?"required":x.value===false?"forbidden":"")+'"><b>'+esc(x.koName||x.id)+'</b><span>'+esc(String(x.value))+'</span><small>'+esc(x.id)+'</small></span>').join("")+'</div></div>').join("");
+  const labels={researchTriggers:"필요한 연구",itemTriggers:"필요한 아이템",facilityTriggers:"필요한 시설",
+    xcomBaseInRegionTriggers:"기지 지역",xcomBaseInCountryTriggers:"기지 국가"};
+  const es=Object.entries(t||{});
+  if(!es.length)return '<div class="empty">추가 연구·아이템·지역 조건 없음</div>';
+  return es.map(([key,rows])=>'<div class="trigger-group"><b>'+esc(labels[key]||"추가 조건")+
+    '</b><div>'+rows.map(x=>'<span class="trigger-chip '+(x.value===true?"required":x.value===false?"forbidden":"")+
+    '" title="원본 식별자: '+esc(x.id)+'"><b>'+esc(x.koName||x.id)+'</b><span>'+
+    (x.value===true?'필수':x.value===false?'있으면 차단':'조건 확인 필요')+
+    '</span></span>').join("")+'</div></div>').join("");
 }
 function upstreamMarkup(s){
   const pos=s.upstreamEvents?.positive||[],neg=s.upstreamEvents?.negative||[];
@@ -81,8 +87,19 @@ function upstreamMarkup(s){
   return pos.map(x=>one(x,"","이벤트 → 부대 활성화 경로")).join("")+neg.map(x=>one(x,"block","이벤트 → 부대 차단 경로")).join("");
 }
 function scriptsMarkup(d){
-  if(!d.scripts?.length)return'<section class="section"><h3>생성 원인 / missionScripts</h3><div class="unknown-note">이 alienMission을 직접 선택하는 missionScript가 정적 룰에서 확인되지 않습니다. 다른 미션/기지 방어/동적 호출 경로일 수 있습니다.</div></section>';
-  return '<section class="section"><div class="insight-head"><h3>생성 원인 / missionScripts</h3><span class="evidence direct">원본 직접값 + 상대 가중치 파생</span></div>'+d.scripts.map(s=>'<article class="script-force"><div class="script-head"><div><b>'+esc(s.id)+'</b><span class="sub">missionWeights bucket '+esc(s.bucket)+'</span></div><span class="mission-weight">weight '+fmt(s.weight)+'/'+fmt(s.totalWeight)+' · 상대 '+pct(s.relativeShare)+'</span></div>'+conditionMarkup(s.conditions)+triggersMarkup(s.triggers)+upstreamMarkup(s)+(s.raceWeightsOverride?.length?'<details><summary>missionScript raceWeights override</summary>'+raceWeightTables(s.raceWeightsOverride)+'</details>':'')+'</article>').join("")+'<p class="muted">missionWeights share는 같은 bucket 안 후보들 사이의 상대 비율입니다. executionOdds·지역/표적 선택·다른 실행 조건까지 합친 최종 절대 발생확률은 아닙니다.</p></section>';
+  if(!d.scripts?.length)return '<section class="section"><h3>이 임무가 등장하는 이유</h3>'+
+    '<div class="unknown-note">현재 색인에서 임무 등장 조건을 찾지 못했습니다. 다른 임무·기지 방어·동적 호출 가능성이 남아 있습니다.</div></section>';
+  return '<section class="section"><div class="insight-head"><h3>이 임무가 등장하는 이유</h3>'+
+    '<span class="evidence direct">원본 규칙 · 상대 출현 비중</span></div>'+
+    d.scripts.map((s,i)=>'<article class="script-force"><div class="script-head"><div>'+
+    '<b>등장 가능 경로 '+(i+1)+'</b><span class="sub">후보 그룹 '+esc(s.bucket)+'</span>'+
+    '<details class="atlas-technical-guidance"><summary>원본 스크립트 ID 확인</summary><code>'+
+    esc(s.id)+'</code></details></div><span class="mission-weight">출현 가중치 '+
+    fmt(s.weight)+'/'+fmt(s.totalWeight)+' · 후보 내 비중 '+pct(s.relativeShare)+'</span></div>'+
+    conditionMarkup(s.conditions)+triggersMarkup(s.triggers)+upstreamMarkup(s)+
+    (s.raceWeightsOverride?.length?'<details><summary>별도 적 종족 추첨 규칙</summary>'+
+      raceWeightTables(s.raceWeightsOverride)+'</details>':'')+'</article>').join("")+
+    '<p class="muted">이 비중은 같은 임무 후보 그룹 안에서의 상대값입니다. 발생 시기·지역·추가 판정까지 모두 포함한 최종 출현 확률은 아닙니다.</p></section>';
 }
 function raceWeightTables(groups){
   if(!groups?.length)return'<div class="empty">raceWeights 없음</div>';

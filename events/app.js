@@ -120,7 +120,7 @@ function triggerMapMarkup(maps){
   return entries.map(([kind,xs])=>`<div class="trigger-group"><b>${esc(db.triggerKinds?.[kind]||kind)}</b><div>${xs.map(x=>triggerChip({...x,label:db.triggerKinds?.[kind]||kind})).join("")}</div></div>`).join("");
 }
 function conditionsMarkup(c){
-  const labels={firstMonth:"첫 월",lastMonth:"마지막 월",minDifficulty:"최소 난이도",maxDifficulty:"최대 난이도",executionOdds:"executionOdds",minFunds:"최소 자금",maxFunds:"최대 자금",minScore:"최소 점수",maxScore:"최대 점수"};
+  const labels={firstMonth:"첫 월",lastMonth:"마지막 월",minDifficulty:"최소 난이도",maxDifficulty:"최대 난이도",executionOdds:"이벤트 실행 판정",minFunds:"최소 자금",maxFunds:"최대 자금",minScore:"최소 점수",maxScore:"최대 점수"};
   const es=Object.entries(c||{});return es.length?es.map(([k,v])=>`<span class="condition"><b>${esc(labels[k]||k)}</b> ${esc(fmt(v))}${k==="executionOdds"?"%":""}</span>`).join(""):'<span class="empty">스칼라 조건 없음</span>';
 }
 function selectionMarkup(s,eventId){

@@ -7,12 +7,13 @@
   <title>XPiratez 스타팅 보너스 DB</title>
   <link rel="stylesheet" href="styles.css?v=20261008-load-guard">
 <link rel="stylesheet" href="../play-guide.css?v=20261010">
+<link rel="stylesheet" href="../atlas-reader-guide.css?v=20261104-readability-2">
 </head>
 <body>
 <header class="hero">
   <div class="wrap hero-inner">
     <div>
-      <p class="eyebrow">XPiratez v.o1.1.1 · Month 0 rules</p>
+      <p class="eyebrow">XPiratez v.o1.1.1 · 시작 기지 위치의 보너스</p>
       <h1>스타팅 보너스 DB</h1>
       <p class="lede">첫 기지 위치로 결정되는 <strong>지역 보너스 + 국가 보너스</strong>를 원본 이벤트 룰 그대로 비교합니다. 같은 위치에서 조건이 맞으면 두 계열이 각각 발동합니다.</p>
     </div>
@@ -23,7 +24,8 @@
 <main class="wrap">
   <section class="notice">
     <strong>중요 규칙</strong>
-    <p>여기 수록된 이벤트는 모두 <code>firstMonth: 0</code> + <code>lastMonth: 0</code>입니다. 새 게임 시작 시점의 첫 기지 위치를 기준으로만 판정되므로, 이후 제2기지를 다른 국가/지역에 지어도 이 보너스는 다시 지급되지 않습니다.</p>
+    <p><strong>새 게임을 시작할 때 첫 기지의 국가·지역으로만 결정됩니다.</strong> 나중에 두 번째 기지를 다른 곳에 건설해도 시작 보너스를 다시 받을 수 없습니다.</p>
+    <details class="atlas-technical-guidance"><summary>원본 판정 근거 보기</summary><p>두 시작 이벤트의 월 범위는 모두 <code>firstMonth: 0</code>부터 <code>lastMonth: 0</code>까지입니다. 최초 기지 위치를 기준으로 판정하는 값입니다.</p></details>
   </section>
 
   <section class="stats" id="stats"></section>
@@ -82,5 +84,6 @@
 </main>
 <script src="app.js?v=atlas-perf-20261011"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
+<script defer src="../atlas-reader-guide.js?v=20261104-readability-2"></script>
 </body>
 </html>

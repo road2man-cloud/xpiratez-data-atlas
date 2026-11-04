@@ -52,7 +52,7 @@ function renderSummary(){
     ["룰상 가용",fmt(c.available)+"종","STR_UNAVAILABLE 제외"],
     ["월수익 시설",fmt(c.income)+"종","monthlyCost < 0"],
     ["시작기지",fmt(c.startingTypes)+"종","기본 startingBase 배치"],
-    ["기지 기능",fmt(c.baseFunctions)+"개","provide/require baseFunc"]
+    ["기지 기능",fmt(c.baseFunctions)+"개","시설이 제공하거나 요구하는 기능"]
   ].map(x=>'<article class="metric card"><strong>'+x[0]+' '+x[1]+'</strong><span>'+x[2]+'</span></article>').join("");
 }
 function searchBlob(x){
@@ -86,7 +86,7 @@ function render(){
   $("#facilityTable thead").innerHTML="<tr>"+[
     th("시설","name"),"<th>역할</th>",th("면적","area"),th("건설비","buildCost"),th("건설일","buildTime"),th("월비용/수익","monthlyCost"),
     th("숙소","personnel"),...[ ["저장","storage"],["연구","labs"],["작업장","workshops"],["훈련","trainingRooms"] ].map(([label,key])=>th(label+(perTile?"/칸":""),capacityKey(key))),th("포로","aliens"),th("기체","crafts"),
-    th("레이더","radarRange"),th("방어","defense"),th("명목 연구량","researchCost"),"<th>제공 baseFunc</th>"
+    th("레이더","radarRange"),th("방어","defense"),th("명목 연구량","researchCost"),"<th>제공하는 기지 기능</th>"
   ].join("")+"</tr>";
   $("#facilityTable tbody").innerHTML=rows.map(x=>{
     const state=x.stateOnly?'<span class="warn-tag">상태 전용</span>':x.startingCount?'<span class="ok-tag">시작 ×'+fmt(x.startingCount)+'</span>':"";
@@ -100,7 +100,7 @@ function researchHtml(d){
   const roots=(p.roots||[]).map(id=>SUPPORT?.researchCatalog?.[id]||{id,koName:id});
   if(!nodes.length)return '<div class="section-card"><strong>연구 선행</strong><span class="muted">추적 가능한 research 선행 없음</span></div>';
   const rows=nodes.map(n=>'<tr><td><b>'+esc(n.koName)+'</b><span class="id">'+esc(n.id)+'</span></td><td>'+fmt(n.cost)+'</td><td>'+((n.dependencies||[]).map(esc).join("<br>")||"—")+'</td><td>'+((n.requires||[]).map(esc).join("<br>")||"—")+'</td><td>'+funcHtml(n.requiresBaseFunc)+'</td><td>'+(n.needItem?(n.destroyItem?"필요·소모":"필요"):"—")+'</td><td>'+((n.disables||[]).map(entityName).join("<br>")||"—")+'</td></tr>').join("");
-  return '<div class="section-card"><strong>전체 선행 연구망 · 명목 '+fmt(p.totalCost)+'</strong><div class="flow"><span class="muted">시설 requires</span>'+roots.map(x=>'<span class="badge">'+entityName(x)+'</span>').join("")+'</div><div class="mini-grid"><div class="mini"><b>연구 노드</b>'+fmt(nodes.length)+'</div><div class="mini"><b>표본 연구</b>'+fmt((p.sampleGates||[]).length)+'</div><div class="mini"><b>분기 효과 연구</b>'+fmt((p.branchGates||[]).length)+'</div><div class="mini"><b>연구 중 요구 baseFunc</b>'+fmt((p.baseFuncs||[]).length)+'</div></div><div class="research-table"><table><thead><tr><th>연구</th><th>량</th><th>dependencies</th><th>requires</th><th>기지 기능</th><th>표본</th><th>닫히는 분기</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+  return '<div class="section-card"><strong>전체 선행 연구망 · 명목 '+fmt(p.totalCost)+'</strong><div class="flow"><span class="muted">시설 선행 연구</span>'+roots.map(x=>'<span class="badge">'+entityName(x)+'</span>').join("")+'</div><div class="mini-grid"><div class="mini"><b>연구 노드</b>'+fmt(nodes.length)+'</div><div class="mini"><b>표본 연구</b>'+fmt((p.sampleGates||[]).length)+'</div><div class="mini"><b>분기 효과 연구</b>'+fmt((p.branchGates||[]).length)+'</div><div class="mini"><b>연구에서 요구하는 기지 기능</b>'+fmt((p.baseFuncs||[]).length)+'</div></div><div class="research-table"><table><thead><tr><th>연구</th><th>량</th><th>dependencies</th><th>requires</th><th>기지 기능</th><th>표본</th><th>닫히는 분기</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
 }
 function requiredFuncHtml(d){
   if(!(d.requiresBaseFunc||[]).length)return '<div class="section-card"><strong>건설 전 요구 기지 기능</strong><span class="muted">없음</span></div>';
