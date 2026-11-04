@@ -109,11 +109,17 @@ export function renderAcquisitionPaths(profile,data,ui={}){
     const s=item.supply;
     const options=[];
     if(s&&Number(s.buyCost)>0){
-      const gates=[...arr(s.buyRequires),...arr(s.buyRequirements)];
+      const gates=[...new Set([...arr(s.buyRequires),...arr(s.buyRequirements)])];
       options.push('<div class="origin-route" data-route-kind="buy"><strong>구매: '+fmt(s.buyCost)+' / 1개</strong>'+
-        '<p class="fine">원본 물품 구매 가격입니다. 판매처 이름을 임의로 지정하지 않습니다.'+
-        (gates.length?' 구매 조건 '+gates.map(ref).join(' · '):' 별도 구매 연구 조건 없음')+
-        '</p></div>');
+        '<p>상점 판매 해금 연구: '+(gates.length?gates.map(ref).join(' · '):'원본에 별도 해금 연구 없음')+'</p>'+
+        gates.map(id=>'<p>직접 선행 연구 (모두 완료): '+
+          (arr(data.researchRules?.[id]?.dependencies).length?
+            tokens(data.researchRules[id].dependencies):'원본에 선행 연구 목록 없음')+'</p>'+
+          '<button type="button" data-trace-research-root="'+esc(id)+'">'+text(id)+
+          ' · 게임 시작부터 연구 경로 확인</button><div class="origin-transform-research-root"></div>').join('')+
+        (arr(s.buyRequiresBaseFunc).length?'<p>필수 기지 기능: '+tokens(s.buyRequiresBaseFunc)+'</p>':'')+
+        (s.buyRequiresCountry?'<p>상점 구매 국가 조건: '+text(s.buyRequiresCountry)+'</p>':'')+
+        '<p class="fine">원본의 구매 전용 해금 조건입니다. 면허 이벤트 직접 지급 경로에는 적용하지 않습니다. 실제 상점 입고와 자금은 별도 확인이 필요합니다.</p></div>');
     }
     for(const ev of arr(s?.eventGrants)){
       const quantity=arr(ev.grants).map(g=>

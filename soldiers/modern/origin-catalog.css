@@ -89,6 +89,10 @@
 .guide-option-heading>span{color:#a4c9ee;font-weight:700;font-size:.78rem}
 .guide-option-heading>strong{font-size:.99rem;color:#eff6ff;line-height:1.5;overflow-wrap:anywhere}
 .guide-option>p{font-size:.85rem;color:#bdd1e5;margin:6px 0 0;line-height:1.6}
+.guide-option>.guide-purchase-gates{color:#f2dbaf;font-size:.9rem;line-height:1.65;margin:9px 0 0;padding:9px 10px;border-left:3px solid #d5b36e;background:#1b3048;overflow-wrap:anywhere}
+.guide-purchase-trace{margin:9px 0;border:1px solid #3a5978;padding:8px;border-radius:8px;min-width:0}
+.guide-purchase-trace>button{display:block;text-align:left;width:100%;max-width:100%;font-size:.84rem;overflow-wrap:anywhere}
+.guide-purchase-trace>.origin-transform-research-root{margin-top:8px;overflow-wrap:anywhere}
 .guide-variant-count{font-size:.78rem!important;color:#b5d7fa!important}
 .guide-option-details{border:0!important;border-top:1px solid #345575!important;padding:8px 0 0!important;margin:10px 0 0!important}
 .guide-option-details>summary{font-size:.87rem;color:#bee0fe;font-weight:720;cursor:pointer}

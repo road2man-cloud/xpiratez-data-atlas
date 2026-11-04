@@ -139,10 +139,86 @@
     box.append(dir);
     main.prepend(box);
   }
+  // Navigate the actual sections of dynamically rendered detail drawers.
+  // This does not rewrite, omit or reorder any game rules.
+  function detailIndex(){
+    // These containers belong to different DBs; catalog contents may arrive
+    // asynchronously, after search and list selection. Do not mutate records.
+    const panels=[...document.querySelectorAll('#detail, #detailBody, #dialogBody, #originDetails')];
+    panels.forEach((detail,panelNo)=>{
+      let lastSignature='';
+      const update=()=>{
+        const headings=[...detail.querySelectorAll('h2,h3,h4')].filter(h=>
+          !h.closest('.atlas-detail-index')&&
+          !h.closest('details:not([open])')&&h.textContent.trim());
+        const signature=headings.map(h=>h.tagName+':'+h.textContent.trim()).join('|');
+        if(signature===lastSignature &&
+          (headings.length<3||detail.querySelector('.atlas-detail-index')))return;
+        lastSignature=signature;
+        detail.querySelector('.atlas-detail-index')?.remove();
+        if(headings.length<3)return;
+        const nav=make('nav','atlas-detail-index');
+        nav.setAttribute('aria-label','상세 정보 목차');
+        nav.append(make('strong','','상세 정보 바로가기'));
+        const topics=[
+          ['선택·충돌',/배제|상호|선택|분기|차단|충돌|봉쇄|금지|불가|영구/],
+          ['시기·확률',/기간|기한|확률|가중치|무작위|추첨|시점|개월|경과|timer|발생 시기/],
+          ['획득 방법',/획득|공급|구매|제조|출생|고용|전리품|포획|소환|수급|보급|배치|해금 방법/],
+          ['필수 조건',/조건|선행|연구|필요|필수|요구|시설|재료|준비물|해금/],
+          ['효과·성능',/성능|효과|능력|보상|방어|공격|피해|비용|스탯|자원|획득량/],
+          ['원본·근거',/근거|출처|원본|검증|세부 규칙|코드|원자료|source|Raw/],
+        ];
+        const bucket=new Map();
+        const links=make('div','atlas-detail-links');
+        headings.slice(0,30).forEach((h,i)=>{
+          const id=h.id||('atlas-detail-section-'+panelNo+'-'+i);
+          if(!h.id)h.id=id;
+          const text=h.textContent.trim();
+          const topic=topics.find(([,matcher])=>matcher.test(text))?.[0]||'기타 정보';
+          if(!bucket.has(topic))bucket.set(topic,[]);
+          const readable=text.replace(/\b(eventScripts|missionScript|executionOdds|baseFunc)\b/g,
+            (_,code)=>({
+              eventScripts:'발생 조건',missionScript:'임무 출현 조건',
+              executionOdds:'실행 확률',baseFunc:'기지 기능'
+            })[code]);
+          const a=appendLink(make('div'),readable.length>54?readable.slice(0,52)+'…':readable,
+            '#'+id,'atlas-detail-link'+(h.tagName==='H4'?' is-subsection':''));
+          a.title=text;
+          bucket.get(topic).push(a);
+        });
+        for(const topic of [...topics.map(([name])=>name),'기타 정보']){
+          const entries=bucket.get(topic);
+          if(!entries?.length)continue;
+          const section=make('section','atlas-detail-topic');
+          section.append(make('strong','atlas-detail-topic-name',topic));
+          const content=make('div','atlas-detail-topic-links');
+          content.append(...entries);
+          section.append(content);
+          links.append(section);
+        }
+        nav.append(links);
+        nav.addEventListener('click',e=>{
+          const a=e.target.closest('a.atlas-detail-link');
+          if(!a)return;
+          const target=document.getElementById(a.hash.slice(1));
+          if(!target||!detail.contains(target))return;
+          e.preventDefault();
+          target.scrollIntoView({block:'start',behavior:'auto'});
+          target.setAttribute('tabindex','-1');
+          target.focus({preventScroll:true});
+        });
+        detail.prepend(nav);
+      };
+      const observer=new MutationObserver(update);
+      observer.observe(detail,{childList:true,subtree:true,characterData:true,
+        attributes:true,attributeFilter:['open']});
+      update();
+    });
+  }
   const url=new URL(location.href);
   const path=url.pathname.replace(root.pathname,'').replace(/^\/|\/$/g,'');
   const current=path.startsWith('soldiers/')?'soldiers':path.split('/')[0];
-  const init=()=>{if(!current||current==='index.html')home();else guide(current);};
+  const init=()=>{if(!current||current==='index.html')home();else {guide(current);detailIndex();}};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
