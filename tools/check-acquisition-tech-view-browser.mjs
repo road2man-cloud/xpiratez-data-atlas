@@ -8,6 +8,13 @@ import os from 'node:os';
 import {chromium} from 'playwright-core';
 
 const root=path.resolve('public');
+const pageHtml=await fsp.readFile(path.join(root,'soldiers/modern/index.html'),'utf8');
+const appSource=await fsp.readFile(path.join(root,'soldiers/modern/app.js'),'utf8');
+const keys=[pageHtml.match(/src="app\.js\?v=([^"]+)"/)?.[1],
+  pageHtml.match(/href="acquisition-tech-view\.css\?v=([^"]+)"/)?.[1],
+  appSource.match(/acquisition-tech-view\.js\?v=([^']+)'/)?.[1]];
+assert(keys.every(Boolean)&&new Set(keys).size===1,
+  'Entry script, tech viewer JS and CSS must share a fresh cache key: '+JSON.stringify(keys));
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8',
   '.json':'application/json; charset=utf-8','.css':'text/css; charset=utf-8',
   '.gz':'application/gzip'};
@@ -34,10 +41,13 @@ const binary=[process.env.EDGE_PATH,process.env.CHROME_PATH,
 assert(binary,'Chromium/Edge browser executable missing');
 let browser;
 try{
-  browser=await chromium.launch({headless:true,executablePath:binary,args:['--no-sandbox']});
+  browser=await chromium.launch({headless:true,executablePath:binary,
+    args:['--no-sandbox','--disable-dev-shm-usage']});
   const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   mobile.setDefaultTimeout(25000);
-  const errors=[];mobile.on('pageerror',e=>errors.push(e.message));
+  const errors=[];
+  mobile.on('pageerror',e=>errors.push(e.message));
+  mobile.on('crash',()=>errors.push('Browser page crashed'));
   await mobile.goto(base+'/soldiers/modern/?profile=manufacture%3ASTR_THEBAN_ASSAULT_CLONE',
     {waitUntil:'domcontentloaded'});
   await mobile.locator('#originMaxima[data-validation="validated"]').waitFor({timeout:70000});
@@ -148,12 +158,11 @@ try{
   await graph.locator('[data-tech-action="source"]').click();
   assert.equal(await graph.locator('.tech-original').evaluate(el=>el.open),true,
     'Selected node can open source evidence directly');
-  graph.locator('.tech-original').evaluate(el=>el.open=false);
   const proof=graph.locator('.tech-original');
-  await proof.locator('summary').click();
   await proof.locator('.origin-readable-guide').waitFor();
   assert((await proof.locator('.guide-card[data-guide-category="material"]').count())>0,
     'Complete legacy AND/OR evidence remains accessible on request');
+  await proof.locator(':scope > summary').click();
   assert.equal(await mobile.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   await mobile.setViewportSize({width:1280,height:900});
   const desktopSize=await graph.evaluate(el=>({actual:el.getBoundingClientRect().width,
@@ -178,8 +187,23 @@ try{
   assert.equal(geometry.scrollWidth,geometry.client,
     'The reset two-column graph must not retain scroll width from a much larger old graph');
   assert.equal(await graph.locator('.tech-legend').count(),1);
+  await mobile.locator('#researchReference > summary').click();
+  await mobile.locator('#researchSearch').fill('STR_');
+  const hit=mobile.locator('#researchMatches [data-research-node]').first();
+  await hit.waitFor();
+  await hit.click();
+  const researchDialog=mobile.locator('#researchDialog');
+  assert.equal(await researchDialog.evaluate(el=>el.open),true);
+  await researchDialog.locator('[data-trace-research-root]').click();
+  const traceDialog=mobile.locator('#acquisitionTraceDialog');
+  assert.equal(await traceDialog.evaluate(el=>el.open),true,
+    'Research details must launch the common horizontal tech viewer');
+  assert.equal(await researchDialog.evaluate(el=>el.open),false,
+    'Opening research trace must close the old modal instead of stacking dialogs');
+  assert((await traceDialog.locator('.tech-node').count())>0,
+    'Research trace must render acquisition nodes');
+  await traceDialog.locator('#acquisitionTraceClose').click();
   if(process.env.ATLAS_TECH_SCREENSHOT==='1'){
-    await proof.locator(':scope > summary').click(); // preview actual default, not raw proof
     await graph.screenshot({path:path.join(os.tmpdir(),'xpiratez-tech-desktop.png')});
     console.log('Tech-viewer preview saved in '+os.tmpdir());
   }

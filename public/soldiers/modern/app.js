@@ -51,6 +51,8 @@ function renderTraceStep(){
 function openTraceStep(kind,id,offset=0){
   if(!DATA||!id)return;
   const dialog=$('#acquisitionTraceDialog');
+  // Open one trace dialog instead of stacking it above the research details.
+  if($('#researchDialog').open)$('#researchDialog').close();
   if(!dialog.open){traceHistory.length=0;dialog.showModal();}
   traceHistory.push({kind,id,offset:Number(offset)||0});
   renderTraceStep();
@@ -288,7 +290,9 @@ async function openOrigin(id,candidateId=null){
   showBirthTech(profile);
 }
 function showResearch(id){
-  const dialog=$('#researchDialog');$('#researchDetail').innerHTML='<p class="eyebrow">X-PIRATEZ 2.1 연구 원본</p><h2>'+esc(name(id))+'</h2><p class="id">'+esc(id)+'</p>'+renderResearchRelations(id,DATA.researchRules,CATALOG.names);
+  const dialog=$('#researchDialog');$('#researchDetail').innerHTML='<p class="eyebrow">X-PIRATEZ 2.1 연구 원본</p><h2>'+esc(name(id))+'</h2><p class="id">'+esc(id)+'</p>'+
+    '<button type="button" class="research-trace-launch" data-trace-research-root="'+esc(id)+'">게임 시작부터 이 연구의 획득 경로 보기</button>'+
+    renderResearchRelations(id,DATA.researchRules,CATALOG.names);
   if(!dialog.open)dialog.showModal();
 }
 function showTraining(id){
