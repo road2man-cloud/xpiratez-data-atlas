@@ -102,6 +102,16 @@
     head.append(make('h2','',config.focus));
     head.append(make('p','',config.purpose));
     box.append(head);
+    // The site deliberately retains 1.1.1 reference databases alongside
+    // verified v.o2 views. Warn before mixing rules from different versions.
+    const headline=document.querySelector('header')?.textContent||'';
+    const legacy=/v\.o1\.1\.1/i.test(headline);
+    const modern=/v\.o2|X-?Piratez\s*2\.1/i.test(headline);
+    let versionLabel='';
+    if(id==='captains')versionLabel='자료 주의: 선장 비교는 1.1.1, 신규 다섯 갈림길 보상은 2.1 원본 기준입니다.';
+    else if(legacy)versionLabel='자료 기준: X-Piratez 1.1.1 · 현재 2.1과 연구·수치가 다를 수 있습니다.';
+    else if(modern)versionLabel='자료 기준: X-Piratez 2.1 · 원본 조건과 검증 수준을 구분하세요.';
+    if(versionLabel)box.append(make('p','atlas-reader-version',versionLabel));
     const actions=make('div','atlas-reader-actions');
     const search=document.getElementById('search');
     if(search){
@@ -129,7 +139,10 @@
       ['반드시 충족','열거된 연구·재료·시설을 모두 갖추어야 다음 단계로 진행할 수 있습니다.'],
       ['획득 방법 중 선택','구매·이벤트·제조 등 중 한 경로로 얻을 수 있다는 뜻입니다. 다른 방법을 모두 수행할 필요는 없습니다.'],
       ['조건부·미검증','게임 규칙에 존재하는 경로이지만 실제 이벤트 발생·자금 확보·동시 달성은 아직 확인하지 않았습니다.'],
-      ['원본 ID','게임 내부의 정확한 식별자입니다. 검색·검증에 필요하지만 처음 읽을 때는 이름과 용도를 먼저 보세요.']
+      ['원본 ID','게임 내부의 정확한 식별자입니다. 검색·검증에 필요하지만 처음 읽을 때는 이름과 용도를 먼저 보세요.'],
+      ['월간 무작위 보상','게임 조건을 충족한 달에만 추첨합니다. 실행 확률과 결과 선택 가중치는 별도로 계산해야 합니다.'],
+      ['영구 선택·배제','하나의 연구 선택 때문에 다른 선택지가 영구 봉쇄될 수 있습니다. 선택 전 두 경로의 획득품을 비교하세요.'],
+      ['룰셋 버전','일부 DB는 v.o1.1.1, 병종 DB 등은 v.o2 기준입니다. 서로 다른 버전의 선행관계와 수치를 합쳐 확정하지 마세요.']
     ];
     for(const [k,v] of pairs){defs.append(make('dt','',k),make('dd','',v));}
     term.append(defs);box.append(term);
@@ -141,10 +154,17 @@
   }
   // Navigate the actual sections of dynamically rendered detail drawers.
   // This does not rewrite, omit or reorder any game rules.
+  // Present native detail headings as left-to-right steps without moving
+  // source content or affecting existing DB filters and research conditions.
   function detailIndex(){
-    // These containers belong to different DBs; catalog contents may arrive
-    // asynchronously, after search and list selection. Do not mutate records.
     const panels=[...document.querySelectorAll('#detail, #detailBody, #dialogBody, #originDetails')];
+    const stages=[
+      {name:'항목 이해',help:'핵심 정보와 범위를 먼저 확인',match:/개요|요약|분석|설명|상세|비교|프로필|특징|총평|정보|스탯|기초|기본|종합|종류/},
+      {name:'획득 경로',help:'구매·제조·보상 중 가능한 방법',match:/획득|출생|공급|구매|제조|전리품|포획|소환|수급|보급|고용|입수|배치|등장|출현|해금 방법|생산/},
+      {name:'선행 조건',help:'준비할 연구·물품·시설·시기',match:/조건|선행|연구|필요|필수|요구|시설|재료|준비물|접근|해금|월|기한|발생 시기|시점|기간|배제|상호|차단|분기|충돌|금지|불가/},
+      {name:'결과·활용',help:'실제 성능·보상·경제 효과',match:/성능|효과|능력|보상|방어|공격|피해|비용|스탯|자원|획득량|용도|사용처|활용|성장|비교|탄약|수익|처분|확률/}
+    ];
+    const proof=/원본|근거|검증|세부 규칙|원자료|코드|source|Raw|룰셋|기술 자료|debug|식별자|내부 데이터|규칙 파일/i;
     panels.forEach((detail,panelNo)=>{
       let lastSignature='';
       const update=()=>{
@@ -152,62 +172,112 @@
           !h.closest('.atlas-detail-index')&&
           !h.closest('details:not([open])')&&h.textContent.trim());
         const signature=headings.map(h=>h.tagName+':'+h.textContent.trim()).join('|');
-        if(signature===lastSignature &&
-          (headings.length<3||detail.querySelector('.atlas-detail-index')))return;
+        const existing=detail.querySelector('.atlas-detail-index');
+        if(signature===lastSignature && existing){
+          const links=[...existing.querySelectorAll('a.atlas-detail-link')];
+          // Two records may reuse exactly the same heading labels. If the
+          // drawer was replaced, rebuild links to the NEW heading elements.
+          if(links.every(a=>detail.querySelector('#'+CSS.escape(a.hash.slice(1)))))return;
+        }
         lastSignature=signature;
         detail.querySelector('.atlas-detail-index')?.remove();
         if(headings.length<3)return;
-        const nav=make('nav','atlas-detail-index');
-        nav.setAttribute('aria-label','상세 정보 목차');
-        nav.append(make('strong','','상세 정보 바로가기'));
-        const topics=[
-          ['선택·충돌',/배제|상호|선택|분기|차단|충돌|봉쇄|금지|불가|영구/],
-          ['시기·확률',/기간|기한|확률|가중치|무작위|추첨|시점|개월|경과|timer|발생 시기/],
-          ['획득 방법',/획득|공급|구매|제조|출생|고용|전리품|포획|소환|수급|보급|배치|해금 방법/],
-          ['필수 조건',/조건|선행|연구|필요|필수|요구|시설|재료|준비물|해금/],
-          ['효과·성능',/성능|효과|능력|보상|방어|공격|피해|비용|스탯|자원|획득량/],
-          ['원본·근거',/근거|출처|원본|검증|세부 규칙|코드|원자료|source|Raw/],
-        ];
-        const bucket=new Map();
-        const links=make('div','atlas-detail-links');
-        headings.slice(0,30).forEach((h,i)=>{
-          const id=h.id||('atlas-detail-section-'+panelNo+'-'+i);
-          if(!h.id)h.id=id;
-          const text=h.textContent.trim();
-          const topic=topics.find(([,matcher])=>matcher.test(text))?.[0]||'기타 정보';
-          if(!bucket.has(topic))bucket.set(topic,[]);
-          const readable=text.replace(/\b(eventScripts|missionScript|executionOdds|baseFunc)\b/g,
-            (_,code)=>({
-              eventScripts:'발생 조건',missionScript:'임무 출현 조건',
-              executionOdds:'실행 확률',baseFunc:'기지 기능'
-            })[code]);
-          const a=appendLink(make('div'),readable.length>54?readable.slice(0,52)+'…':readable,
-            '#'+id,'atlas-detail-link'+(h.tagName==='H4'?' is-subsection':''));
-          a.title=text;
-          bucket.get(topic).push(a);
+        const groups=stages.map(()=>[]);
+        const raw=[];
+        headings.slice(0,72).forEach((h,i)=>{
+          if(!h.id)h.id='atlas-detail-section-'+panelNo+'-'+i;
+          const label=h.textContent.trim();
+          const readable=label.replace(/\b(eventScripts|missionScript|executionOdds|baseFunc)\b/g,
+            (_,name)=>({eventScripts:'발생 조건',missionScript:'임무 출현 조건',
+              executionOdds:'실행 확률',baseFunc:'기지 기능'})[name]);
+          const item={label:readable.length>58?readable.slice(0,56)+'…':readable,id:h.id,full:label};
+          if(proof.test(label)){raw.push(item);return;}
+          // Conditions take priority over broad terms such as "research effects".
+          const order=[2,1,3,0];
+          const stage=order.find(n=>stages[n].match.test(label))??0;
+          groups[stage].push(item);
         });
-        for(const topic of [...topics.map(([name])=>name),'기타 정보']){
-          const entries=bucket.get(topic);
-          if(!entries?.length)continue;
-          const section=make('section','atlas-detail-topic');
-          section.append(make('strong','atlas-detail-topic-name',topic));
-          const content=make('div','atlas-detail-topic-links');
-          content.append(...entries);
-          section.append(content);
-          links.append(section);
+        const present=stages.map((s,i)=>({...s,index:i,entries:groups[i]}))
+          .filter(s=>s.entries.length);
+        if(present.length===0)return;
+        const nav=make('nav','atlas-detail-index');
+        nav.setAttribute('aria-label','상세 내용 좌우 진행 안내');
+        const top=make('div','atlas-detail-index-header');
+        const intro=make('div');
+        intro.append(make('strong','','이 항목을 읽는 순서'));
+        intro.append(make('p','','왼쪽부터 필요한 단계로 이동하세요. 원본 세부사항은 아래에서 펼쳐 볼 수 있습니다.'));
+        const controls=make('div','atlas-detail-controls');
+        const prev=make('button','atlas-detail-prev','← 이전 단계');
+        const next=make('button','atlas-detail-next','다음 단계 →');
+        prev.type=next.type='button';
+        controls.append(prev,next);
+        top.append(intro,controls);
+        nav.append(top);
+        const viewport=make('div','atlas-decision-viewport');
+        viewport.tabIndex=0;
+        viewport.setAttribute('aria-label','좌우로 스크롤하는 상세 정보 단계');
+        const track=make('ol','atlas-decision-track');
+        const addLinks=(host,items)=>{
+          items.forEach(item=>{
+            const a=appendLink(host,item.label,'#'+item.id,'atlas-detail-link');
+            a.title=item.full;
+          });
+        };
+        present.forEach((stage,i)=>{
+          const col=make('li','atlas-decision-step');
+          col.dataset.stage=String(stage.index);
+          const header=make('div','atlas-decision-step-header');
+          header.append(make('span','atlas-decision-number',String(i+1)),
+            make('strong','',stage.name));
+          col.append(header);
+          col.append(make('p','atlas-decision-help',stage.help));
+          const list=make('div','atlas-decision-links');
+          addLinks(list,stage.entries.slice(0,4));
+          if(stage.entries.length>4){
+            const remaining=make('details','atlas-decision-more');
+            remaining.append(make('summary','','추가 내용 '+(stage.entries.length-4)+'개 보기'));
+            const extra=make('div','atlas-decision-extra');
+            addLinks(extra,stage.entries.slice(4));
+            remaining.append(extra);
+            list.append(remaining);
+          }
+          col.append(list);track.append(col);
+        });
+        viewport.append(track);nav.append(viewport);
+        if(raw.length){
+          const advanced=make('details','atlas-detail-source');
+          advanced.append(make('summary','','원본 규칙·검증 자료로 이동'));
+          const links=make('div','atlas-detail-source-links');
+          addLinks(links,raw);
+          advanced.append(links);nav.append(advanced);
         }
-        nav.append(links);
+        const jump=dir=>{
+          const step=track.querySelector('.atlas-decision-step');
+          const size=step?.getBoundingClientRect().width||240;
+          viewport.scrollBy({left:dir*(size+12),behavior:'smooth'});
+        };
+        prev.addEventListener('click',()=>jump(-1));
+        next.addEventListener('click',()=>jump(1));
+        const syncControls=()=>{
+          const max=Math.max(0,viewport.scrollWidth-viewport.clientWidth);
+          prev.disabled=viewport.scrollLeft<=3;
+          next.disabled=viewport.scrollLeft>=max-3;
+          controls.hidden=max<=3;
+        };
+        viewport.addEventListener('scroll',syncControls,{passive:true});
+        if(typeof ResizeObserver!=='undefined')new ResizeObserver(syncControls).observe(viewport);
         nav.addEventListener('click',e=>{
           const a=e.target.closest('a.atlas-detail-link');
           if(!a)return;
-          const target=document.getElementById(a.hash.slice(1));
-          if(!target||!detail.contains(target))return;
+          const target=detail.querySelector('#'+CSS.escape(a.hash.slice(1)));
+          if(!target)return;
           e.preventDefault();
           target.scrollIntoView({block:'start',behavior:'auto'});
           target.setAttribute('tabindex','-1');
           target.focus({preventScroll:true});
         });
         detail.prepend(nav);
+        syncControls();
       };
       const observer=new MutationObserver(update);
       observer.observe(detail,{childList:true,subtree:true,characterData:true,
@@ -215,10 +285,55 @@
       update();
     });
   }
+
+  // The soldier DB already has table controls. Other wide tables receive
+  // equivalent previous/next buttons without changing sorting or data.
+  function tableNavigation(){
+    const shells=[...document.querySelectorAll('main .table-shell, main .table-scroll, main .tablewrap, main .table-container')];
+    shells.forEach(shell=>{
+      if(!shell.querySelector('table')||shell.closest('#originMaxima')||
+        shell.classList.contains('atlas-table-navigation-ready'))return;
+      shell.classList.add('atlas-table-navigation-ready');
+      const bar=make('div','atlas-table-navigation');
+      const hint=make('span','atlas-table-hint','넓은 비교표 · 좌우로 밀어 더 보기');
+      const buttons=make('div','atlas-table-buttons');
+      const left=make('button','','← 이전 열');
+      const right=make('button','','다음 열 →');
+      left.type=right.type='button';
+      left.setAttribute('aria-label','표에서 이전 열 보기');
+      right.setAttribute('aria-label','표에서 다음 열 보기');
+      buttons.append(left,right);
+      bar.append(hint,buttons);
+      shell.before(bar);
+      const move=dir=>shell.scrollBy({left:dir*Math.max(shell.clientWidth*.72,130),behavior:'smooth'});
+      left.addEventListener('click',()=>move(-1));
+      right.addEventListener('click',()=>move(1));
+      let pending=false;
+      const update=()=>{
+        pending=false;
+        const max=Math.max(0,shell.scrollWidth-shell.clientWidth);
+        bar.hidden=max<18;
+        left.disabled=shell.scrollLeft<=3;
+        right.disabled=shell.scrollLeft>=max-3;
+      };
+      const schedule=()=>{
+        if(!pending){pending=true;requestAnimationFrame(update);}
+      };
+      shell.addEventListener('scroll',schedule,{passive:true});
+      if(typeof ResizeObserver!=='undefined'){
+        const resizer=new ResizeObserver(schedule);
+        resizer.observe(shell);
+        resizer.observe(shell.querySelector('table'));
+      }
+      const mutation=new MutationObserver(schedule);
+      mutation.observe(shell,{childList:true,subtree:true});
+      update();
+    });
+  }
   const url=new URL(location.href);
   const path=url.pathname.replace(root.pathname,'').replace(/^\/|\/$/g,'');
   const current=path.startsWith('soldiers/')?'soldiers':path.split('/')[0];
-  const init=()=>{if(!current||current==='index.html')home();else {guide(current);detailIndex();}};
+  const init=()=>{if(!current||current==='index.html')home();else {guide(current);detailIndex();tableNavigation();}};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
 })();
