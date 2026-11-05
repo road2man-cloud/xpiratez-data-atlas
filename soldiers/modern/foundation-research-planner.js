@@ -5,7 +5,11 @@ const arr=x=>Array.isArray(x)?x:[];
 const uniq=x=>[...new Set(x.filter(Boolean))];
 const active=(w,id)=>w.researched.has(id)&&!w.disabled.has(id);
 export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=38,maxSteps=420,
-  collectFailures=false}={}){
+  collectFailures=false,difficulty=null,methodLimit=24}={}){
+  if(difficulty!=null&&(!Number.isInteger(difficulty)||difficulty<0||difficulty>4))
+    throw Error('Fixed campaign difficulty must be an integer from 0 through 4');
+  if(!Number.isInteger(methodLimit)||methodLimit<1||methodLimit>200)
+    throw Error('Method limit must be a bounded positive integer');
   const rules=data.researchRules,methods=new Map(Object.keys(rules).map(id=>[id,[]]));
   const add=(id,m)=>{if(methods.has(id)&&!m.deps.includes(id))methods.get(id).push(m)};
   const sampleCost=r=>(r.needItem?10:0)+arr(r.requiresBaseFunc).length*3;
@@ -62,7 +66,11 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     const cost=m=>m.cost+m.deps.reduce((s,d)=>s+(distance.get(d)??1e8),0);
     return cost(a)-cost(b)||JSON.stringify(a).localeCompare(JSON.stringify(b),'en');
   });
-  function newNode(){return {world:foundationWorld(),steps:[],trace:[],diagnostics:[]};}
+  function newNode(){
+    const node={world:foundationWorld(),steps:[],trace:[],diagnostics:[]};
+    if(difficulty!=null)append(node,{type:'campaignContext',difficulty,assumption:true});
+    return node;
+  }
   // applyOriginWitnessStep is copy-on-write, so branches can share an immutable
   // parent world. Cloning the full research set before EVERY attempted action
   // would duplicate the engine's own state copy.
@@ -98,9 +106,11 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     const token=n.world.pendingFree;
     const choices=token.choices.filter(id=>rules[id]&&!active(n.world,id)&&!n.world.disabled.has(id));
     if(!choices.length)throw Error('해석 가능한 무료 지급 후보 없음');
-    const best=token.sequential?choices[0]:choices.includes(preferred)?preferred:
-      choices.find(id=>goalSet.has(id)&&!arr(rules[id]?.disables).some(x=>goalSet.has(x)))||
-      choices.find(id=>!arr(rules[id]?.disables).length)||choices[0];
+    const safe=choices.filter(id=>!arr(rules[id]?.disables).some(x=>goalSet.has(x)));
+    const pool=safe.length?safe:choices;
+    const best=token.sequential?choices[0]:pool.includes(preferred)?preferred:
+      pool.find(id=>goalSet.has(id))||
+      pool.find(id=>!arr(rules[id]?.disables).length)||pool[0];
     append(n,{type:'freeResearch',source:token.source,research:best,assumeOutcome:!token.sequential&&token.choices.length>1});
     return n;
   }
@@ -150,18 +160,59 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     }
     return null;
   }
+  const repeatableSource=(id,world)=>{
+    const r=rules[id],lookup=r?.lookup&&r.lookup!==id?rules[r.lookup]:null;
+    const safeLookup=!r?.lookup||r.lookup===id||lookup&&active(world,r.lookup)&&
+      !arr(lookup.reenables).length&&!arr(lookup.unlocks).length&&
+      !arr(lookup.getOneFree).length&&!Object.keys(lookup.getOneFreeProtected||{}).length;
+    return r?.cost>0&&!arr(r.requires).length&&!arr(r.reenables).length&&safeLookup&&
+      !arr(r.unlocks).some(x=>arr(rules[x]?.requires).length&&!active(world,x)&&!world.disabled.has(x));
+  };
+  function repeatForAward(id,preferred,start,budget,goalSet){
+    if(!repeatableSource(id,start.world)||!preferred||active(start.world,preferred)||
+      start.world.disabled.has(preferred)||++budget.attempts>maxAttempts)return null;
+    const r=rules[id],choices=[...arr(r.getOneFree)];
+    for(const [guard,targets] of Object.entries(r.getOneFreeProtected||{}))
+      if(active(start.world,guard))choices.push(...arr(targets));
+    if(!choices.includes(preferred))return null;
+    const n=clone(start);
+    try{
+      sample(n,id);
+      append(n,{type:'repeatResearch',id,assumeAvailability:true});
+      finish(n,preferred,goalSet);
+      return active(n.world,preferred)?n:null;
+    }catch(error){budget.last=error.message;return null;}
+  }
   function solve(id,start,seen,depth,budget,goalSet,preferred=null){
-    if(active(start.world,id))return start;
-    if(id==='STR_UNAVAILABLE'||!rules[id]||start.world.disabled.has(id)||seen.has(id)||depth>maxDepth)return null;
+    if(active(start.world,id))return !preferred||active(start.world,preferred)?start:
+      repeatForAward(id,preferred,start,budget,new Set([...goalSet,...seen]));
+    if(id==='STR_UNAVAILABLE'||!rules[id]||start.world.disabled.has(id)||seen.has(id)||depth>maxDepth){
+      if(collectFailures&&budget.deadEnds.length<120)budget.deadEnds.push({goal:id,parent:[...seen].at(-1)||null,
+        reason:!rules[id]?'missing-rule':start.world.disabled.has(id)?'disabled':seen.has(id)?'cycle':depth>maxDepth?'depth-limit':'unavailable'});
+      return null;
+    }
     if(++budget.attempts>maxAttempts)return null;
     const visiting=new Set(seen);visiting.add(id);
-    const options=(methods.get(id)||[]).filter(m=>m.deps.every(d=>distance.has(d))).slice(0,9);
+    // Re-rank for the actual branch. Already consumed free-research sources
+    // must not occupy the bounded shortlist and hide every unspent source.
+    const options=(methods.get(id)||[]).filter(m=>
+      m.deps.every(d=>distance.has(d)||active(start.world,d))&&
+      !(m.kind==='free'&&active(start.world,m.source)&&!repeatableSource(m.source,start.world))&&
+      !m.deps.some(d=>start.world.disabled.has(d)))
+      .sort((a,b)=>{
+        const cost=m=>m.cost+m.deps.reduce((s,d)=>s+(active(start.world,d)?0:distance.get(d)??1e8),0);
+        return cost(a)-cost(b)||JSON.stringify(a).localeCompare(JSON.stringify(b),'en');
+      }).slice(0,methodLimit);
+    const preserve=new Set([...goalSet,...visiting]);
+    if(!options.length&&collectFailures&&budget.deadEnds.length<120)
+      budget.deadEnds.push({goal:id,parent:[...seen].at(-1)||null,chain:[...seen].slice(-8),reason:'no-usable-method',knownMethods:methods.get(id)?.length||0,
+        blockedDependencies:uniq((methods.get(id)||[]).flatMap(m=>m.deps.filter(d=>start.world.disabled.has(d))))});
     for(const m of options){
       if(budget.attempts>maxAttempts)break;
       let n=clone(start);
       try{
         if(['lab','unlock','auto','auto-source'].includes(m.kind))sample(n,id);
-        if(m.kind==='free'&&active(n.world,m.source))continue;
+        if(m.kind==='free'&&active(n.world,m.source)&&!repeatableSource(m.source,n.world))continue;
         if(m.kind==='event'&&arr(m.script.oneTimeEarlier).length){
           n=ensureEarlierEvents(m.script,n,visiting,depth,budget,goalSet);
           if(!n)continue;
@@ -173,9 +224,17 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
           if(!result){failed=true;break;}n=result;
         }
         if(failed)continue;
-        if(active(n.world,id))return n;
+        // Acquiring the source by an unrelated free award is not evidence
+        // that its own getOneFree ran. A caller requesting a specific payout
+        // must observe that payout, not merely the source completion flag.
+        if(active(n.world,id)){
+          if(!preferred||active(n.world,preferred))return n;
+          const repeat=repeatForAward(id,preferred,n,budget,preserve);
+          if(repeat)return repeat;
+          continue;
+        }
         if(m.kind==='lab'||m.kind==='unlock'){
-          sample(n,id);append(n,{type:'research',id});finish(n,preferred,goalSet);
+          sample(n,id);append(n,{type:'research',id});finish(n,preferred,preserve);
         }else if(m.kind==='event'){
           const s=m.script;
           const first=Math.max(0,Number(s.firstMonth)||0,
@@ -184,21 +243,21 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
           if(n.world.month<first)append(n,{type:'advanceMonth',month:first,assumeContinuity:true});
           supply(n,{items:Object.fromEntries(arr(s.itemPositive).map(x=>[x,1]))},'이벤트 발생 조건: '+m.event);
           append(n,{type:'eventResearch',event:m.event,script:s.script,research:id,assumeOutcome:true});
-          finish(n,preferred,goalSet);
+          finish(n,preferred,preserve);
         }else if(m.kind==='mission'){
           const s=m.script,first=Math.max(0,Number(s.firstMonth)||0);
           if(n.world.month<first)append(n,{type:'advanceMonth',month:first,assumeContinuity:true});
           append(n,{type:'missionResearch',deployment:m.deployment,
             script:s.script,research:id,assumeOutcome:true});
-          finish(n,preferred,goalSet);
+          finish(n,preferred,preserve);
         }else if(m.kind==='auto'&&!active(n.world,id)){
           // Queue runs on an ACTUAL next completion, never by granting id.
           const trigger=Object.entries(rules).find(([x,r])=>x!==id&&!visiting.has(x)&&!n.world.researched.has(x)&&
             !n.world.disabled.has(x)&&r.cost>0&&!r.needItem&&!arr(r.requires).length&&
             !arr(r.requiresBaseFunc).length&&arr(r.dependencies).every(d=>active(n.world,d)));
-          if(trigger){append(n,{type:'research',id:trigger[0]});finish(n,preferred,goalSet);}
+          if(trigger){append(n,{type:'research',id:trigger[0]});finish(n,preferred,preserve);}
         }
-        if(active(n.world,id))return n;
+        if(active(n.world,id)&&(!preferred||active(n.world,preferred)))return n;
       }catch(error){
         budget.last=error.message;
         if(collectFailures&&budget.failures.length<240)budget.failures.push({goal:id,
@@ -209,11 +268,11 @@ export function createFoundationResearchPlanner(data,{maxAttempts=650,maxDepth=3
     return null;
   }
   function ensure(goals,start=newNode()){
-    const budget={attempts:0,last:null,failures:[]},targets=uniq(goals),goalSet=new Set(targets);let node=clone(start);
+    const budget={attempts:0,last:null,failures:[],deadEnds:[]},targets=uniq(goals),goalSet=new Set(targets);let node=clone(start);
     for(const id of targets){
       const next=solve(id,node,new Set(),0,budget,goalSet);
       if(!next)return {ok:false,node:start,unresolved:id,attempts:budget.attempts,
-        ...(collectFailures?{failures:budget.failures}:{}),
+        ...(collectFailures?{failures:budget.failures,deadEnds:budget.deadEnds}:{}),
         reason:budget.last||'연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료'};
       node=next;
     }

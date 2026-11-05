@@ -191,7 +191,7 @@ export function buildAcquisitionTree(profile,data,{maxDepth=3,maxNodes=32}={}){
               ...arr(s.buyRequiresBaseFunc).map(baseFunction),
               ...(s.buyRequiresCountry?[leaf('country',s.buyRequiresCountry,
                 '상점 판매 허용 국가 · 해당 국가 조건 확인 필요')]:[]),
-              leaf('funds',itemId,'구매비 '+s.buyCost+' · 실제 상점 재고는 확인 필요')],
+              leaf('funds',itemId,'기본 구매가 '+Number(s.buyCost).toLocaleString('ko-KR'))],
             '상점 판매 해금 연구·기지 기능·국가 조건을 모두 충족한 후 구매 · 타 획득 방법에는 적용하지 않음'),
           // Always retain first-order purchase evidence even when the bounded
           // exploration truncates the deeper research tree. These are normal
@@ -530,27 +530,24 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     let explanation='';
     if(o.method==='buy'){
       const expense=q*Number(o.unitCost);
-      explanation='필요 '+amount(q)+'개 기준 최소 구매 '+amount(q)+'개'+
-        (Number.isSafeInteger(expense)?' · 표시 가격 합계 '+amount(expense):'')+
-        '. 실제 재고·구매 제한·자금 및 해금 조건은 별도 확인';
+      explanation='필요 '+amount(q)+'개 · 최소 구매 '+amount(q)+'개'+
+        (Number.isSafeInteger(expense)?' · 기본가 합계 '+amount(expense):'');
     }else if(o.method==='manufacture'&&fixed>0){
       const batches=Math.ceil(q/fixed);
       explanation='1회 제조 산출 '+amount(fixed)+'개 / 필요 '+amount(q)+
-        '개 · 수량상 최소 '+amount(batches)+'회 제조'+
-        '. 반복 가능 여부, 매회 재료·비용·시설 조건은 별도 확인';
+        '개 · 수량상 최소 '+amount(batches)+'회 제조';
     }else if(o.method==='event'||o.method==='research'){
       const kind=o.method==='event'?'이벤트 발생 시':'연구 보상 발생 시';
       explanation=kind+' 고정 지급 '+amount(fixed)+'개 / 필요 '+amount(q)+'개 · '+
         (fixed>=q?'이 지급분으로 필요 수량 충족':
           '고정 지급분 기준 '+amount(remaining)+'개 부족 · 추가 공급 필요')+
-        (o.hasRandom?' (별도 무작위 지급분은 계산에서 제외)':'')+
-        '. 발생·재지급은 보장하지 않음';
+        (o.hasRandom?' · 무작위 지급 별도':'');
     }else if(o.method==='random'){
-      explanation='무작위 생산에서 이 결과가 선택되면 '+amount(o.conditionalQuantity||0)+
-        '개 / 필요 '+amount(q)+'개 · 당첨과 재시도는 보장하지 않음';
+      explanation='무작위 산출 선택 시 '+amount(o.conditionalQuantity||0)+
+        '개 / 필요 '+amount(q)+'개';
     }
     return explanation?'<p class="guide-quantity" data-quantity-method="'+esc(o.method)+
-      '" data-needed="'+q+'"><strong>필요 수량 비교:</strong> '+esc(explanation)+'</p>':'';
+      '" data-needed="'+q+'"><strong>수량:</strong> '+esc(explanation)+'</p>':'';
   };
   // First-order event guards come from the source script, NOT from a
   // depth-limited preview tree. A traversal limit is never a game condition.
@@ -650,7 +647,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     const rows=script.sourceScript?originalEventConditions(script.sourceScript):
       collectConditions(script).map(t=>'<li>'+t+'</li>');
     return rows.length?rows.join(''):
-      '<li>원본에서 별도 발생 조건은 확인되지 않았습니다. 실제 이벤트 발생은 보장되지 않습니다.</li>';
+      '<li>별도 발생 조건 없음</li>';
   }
   function visibleRoute(method,index,needed=requiredQuantity){
     const label=optionTitle(method);
@@ -660,8 +657,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     const cost=firstLeaves.find(x=>x.kind==='funds');
     const lab=firstLeaves.find(x=>x.kind==='lab');
     const price=cost?.note?.replace(/\b\d{4,}\b/g,x=>Number(x).toLocaleString('ko-KR'));
-    const outcomes=payout?.note||price||lab?.note||
-      '원본 규칙에 있는 획득 방법입니다. 실제 등장과 획득은 확인이 필요합니다.';
+    const outcomes=payout?.note||price||lab?.note||'';
     const variants=scripts?.length?
       '<p class="guide-variant-count">발생 조건 '+scripts.length+'가지 중 가능한 경로를 확인하세요.</p>':'';
     const isPurchase=method.id?.startsWith('BUY:');
@@ -679,7 +675,7 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
         '<p>구매에 필요한 기지 기능: '+arr(method.purchaseBaseFunctions).map(id=>display(id,'기지 기능')).join(' · ')+'</p>':'')+
       (method.purchaseCountry?
         '<p>상점 판매 국가 조건: '+display(method.purchaseCountry,'해당 국가')+'</p>':'')+
-      '<p class="guide-purchase-disclaimer">조건을 갖추면 구매 후보가 됩니다. 실제 상점 재고와 자금은 별도 확인이 필요합니다.</p></div>':'';
+      '</div>':'';
     const purchaseUpstream=purchaseInfo.map(g=>{
       const deps=arr(g.normalDependencies),bypasses=arr(g.directUnlockSources);
       if(!deps.length&&!bypasses.length)return '';
@@ -705,15 +701,12 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
     ].filter(([key])=>Number(alternate[key])>0)
       .map(([key,label])=>label+' '+alternate[key]+'종');
     const purchaseBootstrap=isPurchase&&circularGates.length?
-      '<div class="guide-purchase-bootstrap" data-bootstrap-cycle="'+esc(method.id.slice(4))+'">'+
-      '<strong>첫 구매 전 다른 공급 경로 확인 필요</strong>'+
-      '<p>'+circularGates.map(g=>display(g.id,'해금 연구')).join(' · ')+
-      '의 일반 연구실 경로는 구매하려는 '+display(method.id.slice(4),'아이템')+
-      '을 실물 표본으로 요구합니다. 이 구매를 첫 표본 확보 방법으로 계산하면 조건이 순환합니다.</p>'+
-      '<p>'+(supplierLabels.length?'다른 공급 기록: '+supplierLabels.join(' · ')+'. ':
-        '별도 실물 공급 근거 미확인. ')+
-      '각 출처의 시기·확률·전리품 회수 조건을 별도로 확인하세요. 연구를 직접 지급하는 이벤트 등은 연구실 표본 조건과 구분합니다.</p>'+
-      '</div>':'';
+      '<details class="guide-purchase-bootstrap" data-bootstrap-cycle="'+esc(method.id.slice(4))+'">'+
+      '<summary>연구 표본 선행 · '+circularGates.length+'개</summary>'+
+      '<p>실물 표본 요구: '+display(method.id.slice(4),'아이템')+' · 연구: '+
+      circularGates.map(g=>display(g.id,'해금 연구')).join(' · ')+'</p>'+
+      '<p>다른 공급 기록: '+(supplierLabels.length?supplierLabels.join(' · '):'색인 0건')+'</p>'+
+      '</details>':'';
     const conditions=scripts?.length?
       scripts.map((s,i)=>'<li class="guide-event-script" data-event-script="'+esc(s.id)+'">'+
         '<strong>'+(i+1)+'번째 이벤트 경로 · 이 경로 안의 필수 조건은 모두 충족</strong>'+
@@ -721,7 +714,9 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       collectConditions(method).map(t=>'<li>'+t+'</li>').join('');
     return '<article class="guide-option" data-guide-method="'+esc(method.id)+'">'+
       '<div class="guide-option-heading"><span>방법 '+(index+1)+'</span><strong>'+label+'</strong></div>'+
-      '<p>'+esc(outcomes)+'</p>'+quantityAdvice(method,needed)+purchaseSummary+purchaseBootstrap+purchaseUpstream+variants+
+      (outcomes&&!(isPurchase&&Number.isSafeInteger(Number(needed))&&Number(needed)>0)?
+        '<p>'+esc(outcomes)+'</p>':'')+
+      quantityAdvice(method,needed)+purchaseSummary+purchaseBootstrap+purchaseUpstream+variants+
       '<details class="guide-option-details"><summary>이 방법의 준비 조건 보기</summary>'+
       '<ul class="guide-conditions">'+conditions+'</ul>'+purchaseTrace+traceButton(method)+'</details></article>';
   }
@@ -813,12 +808,11 @@ export function renderAcquisitionTree(tree,{name=x=>x,esc=x=>String(x??'').repla
       body=(itemMatch?
         '<p class="guide-lead">출생하려면 <strong>'+display(id,'이 아이템')+
           ' '+esc(quantity?.[1]||'1')+'개</strong>가 필요합니다. 아래 획득 방법 중 가능한 것을 고르세요.</p>':
-        '<p class="guide-lead">이 아이템을 얻는 방법별로 상점 해금·연구·임무·이벤트 조건을 확인하세요. 원본에 가격이 있어도 즉시 구매를 보장하지 않습니다.</p>')+
+        '')+
         (total?'<p class="guide-source-count" data-indexed-source-count="'+total+
           '">색인된 공급 기록 '+total+'건 ('+breakdown+') · 첫 화면 '+visible.length+
-          '개 선택지 표시. 방법별 조건과 발생 확률은 개별 확인하세요.'+
-          (child.mapSourcesMayBeIncomplete?' 지도 출처의 일부는 미색인일 수 있습니다.':'')+'</p>':
-          '<p class="guide-source-count">확인된 공급 기록 없음 · 추가 조사 필요. 획득 불가능 판정이 아닙니다.</p>')+
+          '개 표시'+(child.mapSourcesMayBeIncomplete?' · 지도 출처 일부 미색인':'')+'</p>':
+          '<p class="guide-source-count">색인된 공급 기록 0건</p>')+
         '<div class="guide-options">'+(visible.length?
           visible.map((method,i)=>visibleRoute(method,i,needed)).join(''):
           '<p>확인된 공급 기록이 없습니다. 원본 근거에서 미연결 출처를 확인하세요.</p>')+

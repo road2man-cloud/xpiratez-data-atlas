@@ -1,13 +1,14 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
-import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js';
+import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
+import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-campaign-context.js?v=20261105-campaign-context-1';
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261104-flat-research-1';
-import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261104-event-direct-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261105-tech-readability-1';
+import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
+import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261105-compact-supply-1';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -65,7 +66,8 @@ function previousTraceStep(){
 const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
 const node=id=>'<button type="button" class="research-node" data-research-node="'+esc(id)+'">'+esc(name(id))+'</button>';
 const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='conditional-upper-envelope'?c.growth.total:-1):c.display.total);
-const best=(r,metric='growth')=>r.candidates.reduce((winner,c)=>score(c,metric)>score(winner,metric)?c:winner,null);
+const comparable=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
+const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>score(c,metric)>score(winner,metric)?c:winner,null);
 function sourceFail(message){
   blocked=true;$('#originMaxima').dataset.validation='rejected';
   $('#catalogStatus').textContent='자료 검증 실패 · 잠정/확정 수치 표시 중단: '+message;
@@ -81,7 +83,7 @@ async function validate(){
   if(digest!==REPORT.sourceHash)throw Error('현재 능력치·연구·출생·표본 색인 해시 불일치');
   for(const record of REPORT.records){
     if(!DATA.profiles.some(p=>p.id===record.profileId)||record.certifiedMaximum!==false)throw Error('출생처 병합 또는 근거 없는 최종 인증');
-    for(const c of record.candidates){
+    for(const c of [...record.candidates,...(record.rejectedCandidates||[])]){
       if(c.profileId!==record.profileId||c.certifiedMaximum||!c.researchSequenceComplete||!c.startsWithNoResearch)throw Error('불완전 경로를 완료로 표시함');
       if(c.total!==WITNESS_STATS.reduce((s,k)=>s+c.stats[k],0))throw Error('잠정 11종 합계 불일치');
       if(c.resultHash!==await sha({steps:c.steps,raw:c.raw,stats:c.stats,total:c.total,branches:c.branchChoices}))throw Error('등록 결과 지문 불일치');
@@ -104,12 +106,26 @@ async function validate(){
   for(const record of REPORT.records){
     record.displayBirth=projectBirthStats(record,DATA.profiles.find(p=>p.id===record.profileId));
     for(const c of record.candidates){
+      const context=auditOriginCampaignContext(c.steps,DATA);
+      if(!c.campaignContext||JSON.stringify(context)!==JSON.stringify(c.campaignContext))
+        throw Error('캠페인 난이도 공동 조건의 감사 근거 불일치: '+c.id);
+      if(context.kind!=='compatible')throw Error('비교 후보에 난이도 충돌 기록이 섞임: '+c.id);
+      c.campaignContext=context;
       c.display=projectCandidateStats(record,c,DATA);
       c.growth=projectCandidateGrowthLimit(record,c,DATA);
       if(c.growth.kind==='conditional-upper-envelope'&&c.growth.total<c.display.total)
         throw Error('성장 상한이 시술 후 수치보다 낮음: '+c.id);
     }
+    for(const c of record.rejectedCandidates||[]){
+      const context=auditOriginCampaignContext(c.steps,DATA);
+      if(context.kind==='compatible'||JSON.stringify(context)!==JSON.stringify(c.campaignContext))
+        throw Error('제외 후보의 난이도 반례 근거 불일치: '+c.id);
+    }
   }
+  if(REPORT.campaignContextAuditVersion!==1||
+    REPORT.summary.withCompatibleResearch!==REPORT.records.filter(r=>comparable(r).length).length||
+    REPORT.summary.compatibleWitnesses!==REPORT.records.reduce((sum,r)=>sum+comparable(r).length,0))
+    throw Error('난이도 공동조건 감사 요약 불일치');
   $('#originMaxima').dataset.validation='validated';
 }
 function render(){
@@ -219,8 +235,33 @@ function showBirthTech(profile){
   const button=$('#originDetails [data-expand-origin-tree]');
   if(button){button.textContent='테크뷰어 접기';button.setAttribute('aria-expanded','true');}
 }
+function campaignContextHtml(record,c){
+  const context=c.campaignContext,excluded=record.rejectedCandidates||[];
+  const fixed=c.steps.find(x=>x.type==='campaignContext');
+  const groups=new Map();
+  for(const old of excluded)for(const conflict of old.campaignContext.conflicts||[]){
+    const key=[conflict.lowerSource?.source,conflict.upperSource?.source,conflict.minimum,conflict.maximum].join('|');
+    const row=groups.get(key)||{conflict,count:0,ids:[]};row.count++;row.ids.push(old.id);groups.set(key,row);
+  }
+  const proof=[...groups.values()].map(({conflict:x,count,ids})=>
+    '<li><strong>'+esc(name(x.upperSource?.source||'미확인 이벤트'))+'</strong>는 난이도 '+fmt(x.maximum)+
+    ' 이하, <strong>'+esc(name(x.lowerSource?.source||'미확인 이벤트'))+'</strong>는 '+fmt(x.minimum)+
+    ' 이상을 요구합니다. 같은 캠페인에서 함께 충족 불가 · '+count+'개 후보 제외.'+
+    '<details><summary>원본 출처·보존 후보 ID</summary><p>'+esc(x.upperSource?.source)+' / '+esc(x.lowerSource?.source)+
+    '</p><p class="id">'+ids.map(esc).join(' · ')+'</p></details></li>').join('');
+  return '<section class="origin-campaign-audit" data-campaign-compatible="true">'+
+    '<h3>같은 캠페인에서 성립하는 연구 순서인가요?</h3>'+
+    '<p><strong>난이도 조건 일치</strong> · '+(fixed?'이 후보는 게임 시작 난이도 '+fmt(fixed.difficulty)+'로 고정':
+      '원본 난이도 조건상 허용되는 값: '+context.allowedDifficulties.map(fmt).join(', '))+'</p>'+
+    '<p class="fine">검증 범위: 연구 순서·난이도 · 기타 자원·이벤트·성장 최대치는 조건부</p>'+
+    (excluded.length?'<details class="origin-rejected-candidates"><summary>비교에서 제외한 과거 후보 '+excluded.length+'개 · 원본 기록 보존</summary>'+
+      '<p>수치 계산이 맞아도 서로 다른 난이도의 이벤트를 섞은 후보는 달성 경로가 아닙니다. 순위와 최고값 비교에 사용하지 않습니다.</p><ul>'+proof+'</ul></details>':'')+
+    '</section>';
+}
 function assumptionHtml(c){return c.assumptions.map(s=>{
   if(s.type==='externalInputs')return '<li>'+esc(s.reason)+'<br>'+Object.entries(s.items||{}).map(([id,n])=>esc(name(id))+' ×'+fmt(n)).join(' · ')+(s.functions?.length?' · 기지 기능 '+s.functions.map(esc).join(', '):'')+(s.funds?' · 자금 '+fmt(s.funds):'')+'</li>';
+  if(s.type==='campaignContext')return '<li>게임 시작 난이도 '+fmt(s.difficulty)+' 고정 · 도중 변경 없음</li>';
+  if(s.type==='repeatResearch')return '<li>'+node(s.id)+'을 별도 연구실 프로젝트로 다시 수행 · 남은 보상·보호 조건·표본 재검사 · 연구 기간과 실제 실행은 미검증</li>';
   if(s.type==='freeResearch')return '<li>'+node(s.source)+' 완료 시 '+node(s.research)+' 무료 지급 추첨 결과를 가정</li>';
   if(s.type==='eventResearch')return '<li>이벤트 '+esc(s.event)+' / '+esc(s.script)+'에서 '+node(s.research)+' 지급을 가정</li>';
   if(s.type==='recruit')return '<li>출생 최솟값 벡터 · 실제 생성 난수 미실측'+(s.script?' · 출생 이벤트 '+esc(s.script):'')+'</li>';
@@ -231,12 +272,12 @@ async function openOrigin(id,candidateId=null){
   activeBirthViewer?.dispose();activeBirthViewer=null;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
-  const birthPaths='<section class="origin-tree-action"><strong>이 병사는 어떻게 얻나요?</strong><p class="fine">준비물과 구하는 방법, 필요한 연구와 이벤트를 구분해 보여드립니다. 게임에서 반드시 획득된다는 뜻은 아닙니다.</p><button type="button" data-expand-origin-tree="'+esc(profile.id)+'" aria-expanded="true">테크뷰어 접기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
+  const birthPaths='<section class="origin-tree-action"><strong>이 병사는 어떻게 얻나요?</strong><button type="button" data-expand-origin-tree="'+esc(profile.id)+'" aria-expanded="true">테크뷰어 접기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
     '<details class="origin-source-expansion"><summary>원본 출생·공급 기록 전체 보기 (기술 자료)</summary>'+
     '<p class="fine">이곳에는 연구 ID, 공급 스크립트, 다른 출생처와의 상세 연결을 원본 단위로 보존합니다.</p>'+
     renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+'</details>';
   const metric=$('#catalogMetric').value;
-  selected=id;const c=record.candidates.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
+  selected=id;const c=comparable(record).find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
   const host=$('#originDetails');host.hidden=false;
   host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div><p class="muted">등록 경로의 원본·현재 수치를 재대조하는 중…</p>';
@@ -253,7 +294,7 @@ async function openOrigin(id,candidateId=null){
     return;
   }
   let replay=verified.get(c.id);
-  if(!replay){replay=replayOriginWitness(c.steps,DATA);verified.set(c.id,replay);}
+  if(!replay){replay=replayOriginWitness(c.steps,DATA,{requireCompatibleContext:true});verified.set(c.id,replay);}
   if(generation!==replayGeneration)return;
   if(!replay.ok||!replay.exact||replay.total!==c.total||JSON.stringify(replay.stats)!==JSON.stringify(c.stats)){
     sourceFail('선택 경로 재생 불일치: '+(replay.reason||c.id));return;
@@ -265,8 +306,8 @@ async function openOrigin(id,candidateId=null){
   if(JSON.stringify(researchBranchEvidence(replay,DATA.researchRules))!==JSON.stringify(c.branchChoices)){
     sourceFail('연구 분기 폐쇄 시점 재생 불일치: '+c.id);return;
   }
-  const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='freeResearch').at(-1);
-  const bonus=[...record.candidates].sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
+  const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='repeatResearch'||s.type==='freeResearch').at(-1);
+  const bonus=comparable(record).sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
   const useGrowth=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope';
   const shown=useGrowth?c.growth:c.display;
   const finalBody=DATA.soldiers.find(x=>x.id===c.finalSoldierType);
@@ -280,12 +321,12 @@ async function openOrigin(id,candidateId=null){
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
-    staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
+    campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+
     '<details class="assumptions"><summary>필수 확인 · 남은 자원·출생·확률 가정 '+c.assumptions.length+'건</summary><ul>'+assumptionHtml(c)+'</ul><h4>모델의 미검증 조건</h4><ul>'+(c.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><details><summary>자동 연구·lookup 조건부 처리 기록</summary><ul>'+(c.modelAssumptions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details></details>'+
-    '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 12종 합 최고 '+fmt(bonus?.display.bonusTotal)+' / 연구·시술 12종 합 최고 '+fmt(best(record,'provisional')?.display.total)+' / 성장 완료 조건부 상한 합 최고 '+fmt(best(record,'growth')?.growth?.total)+'. 서로 다른 병사·연구 경로의 유리한 수치를 합치지 않습니다.</p>'+record.candidates.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 성장상한 '+fmt(x.growth?.total)+' / 연구·시술 '+fmt(x.display.total)+'</button></p>').join('')+'</details>'+
+    '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 12종 합 최고 '+fmt(bonus?.display.bonusTotal)+' / 연구·시술 12종 합 최고 '+fmt(best(record,'provisional')?.display.total)+' / 성장 완료 조건부 상한 합 최고 '+fmt(best(record,'growth')?.growth?.total)+'. 서로 다른 병사·연구 경로의 유리한 수치를 합치지 않습니다. 난이도 충돌 후보는 비교에서 제외합니다.</p>'+comparable(record).map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 성장상한 '+fmt(x.growth?.total)+' / 연구·시술 '+fmt(x.display.total)+'</button></p>').join('')+'</details>'+
     '<p class="fine">재생: 통과 · 실제 게임 실측: 없음 · 전역 최적성: 미증명 · 원본 v.o2. 더 높은 경로는 같은 출생처의 비교 후보로 등록한 뒤 갱신합니다.</p>';
   showBirthTech(profile);
 }
@@ -310,8 +351,8 @@ async function init(){try{
     DIAGNOSTICS.unresolvedCount!==REPORT.summary.unresolved||
     DIAGNOSTICS.rows.some(x=>!REPORT.records.some(r=>r.profileId===x.profileId&&!r.candidates.length)))
     throw Error('미해결 출생 경로 진단 원본이 현재 병종 DB와 일치하지 않음');
-  const complete=REPORT.records.filter(r=>r.candidates.length).length;
-  $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 경로 완결',complete+'/72','자원·이벤트 가정은 조건부'],['등록 후보',REPORT.summary.witnesses,'실제 재생을 통과한 경로'],['최종 최대치 인증','0','잠정값과 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
+  const complete=REPORT.records.filter(r=>comparable(r).length).length;
+  $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['비교 가능한 후보',REPORT.summary.compatibleWitnesses,'난이도 충돌 '+REPORT.summary.excludedDifficultyWitnesses+'건 제외'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
   $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('');
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
   $('#search').addEventListener('input',render);$('#family').addEventListener('change',render);$('#catalogMetric').addEventListener('change',render);

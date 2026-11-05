@@ -1,9 +1,13 @@
 // Acquisition-aware orchestration of the EXISTING campaign verifier.
 // Research/auto queues/free awards/transforms are never simulated separately.
-import {verifyCampaignSequence} from './campaign-proof.js';
+import {verifyCampaignSequence} from './campaign-proof.js?v=20261105-campaign-context-1';
 import {initialState,bonusStats,STAT_KEYS} from './eligibility.js';
 import {eventScriptVerdict} from './event-chronology.js';
+import {auditOriginCampaignContext} from './origin-campaign-context.js?v=20261105-campaign-context-1';
 export const WITNESS_STATS=STAT_KEYS.filter(k=>k!=='mana');
+// A resource bound, not a game rule. Long source-backed late-game paths
+// need more than the former 600 steps; every step is still replayed.
+export const MAX_ORIGIN_WITNESS_STEPS=1200;
 const arr=x=>Array.isArray(x)?x:[];
 const own=(x,id)=>Number(x?.[id]||0);
 const knownFunctionCache=new WeakMap();
@@ -69,6 +73,16 @@ export function applyOriginWitnessStep(input,step,data){
   const world=structuredClone(input);
   try{
     if(world.pendingFree&&step.type!=='freeResearch')throw Error('무료 지급 추첨을 처리하기 전 다른 단계 삽입 금지');
+    if(step.type==='campaignContext'){
+      if(step.assumption!==true||!Number.isInteger(step.difficulty)||step.difficulty<0||step.difficulty>4)
+        throw Error('게임 시작 난이도 가정은 0~4 정수여야 함');
+      if(world.difficulty!=null||world.month!==0||world.researched.size||world.disabled.size||
+        world.soldiers.length||world.funds||world.baseFunctions.size||world.facilities.size||
+        Object.keys(world.items).length||Object.keys(world.generatedEvents||{}).length)
+        throw Error('진행 중 난이도 변경 또는 시작 상태 재설정 금지');
+      world.difficulty=step.difficulty;
+      return {ok:true,world,assumed:true,notes:['게임 시작 난이도 '+step.difficulty+'로 고정한 조건부 시나리오']};
+    }
     if(step.type==='externalInputs'){
       if(step.assumption!==true||!step.reason)throw Error('미확보 자원 가정을 명시해야 함');
       for(const [id,n] of Object.entries(step.items||{})){
@@ -88,7 +102,7 @@ export function applyOriginWitnessStep(input,step,data){
     // OXCE consumes a destroyItem sample when its laboratory project starts.
     // The legacy completion verifier validates the sample but does not deduct
     // it; this wrapper accounts for the one consumption, not for free grants.
-    if(step.type==='research'){
+    if(step.type==='research'||step.type==='repeatResearch'){
       const r=data.researchRules[step.id];
       if(r.needItem&&r.destroyItem){const id=r.neededItem||step.id;
         if(own(result.world.items,id)<1)throw Error('연구 표본 소모 부족: '+id);
@@ -99,9 +113,12 @@ export function applyOriginWitnessStep(input,step,data){
       assumed:result.kind==='conditional'||step.type==='advanceMonth'};
   }catch(error){return {ok:false,world:input,reason:error.message};}
 }
-export function replayOriginWitness(steps,data,{birthCache=null}={}){
+export function replayOriginWitness(steps,data,{birthCache=null,requireCompatibleContext=false}={}){
   let world=foundationWorld();const trace=[];let conditional=false;
-  if(!Array.isArray(steps)||steps.length>600)return {ok:false,reason:'경로 단계 제한 초과',trace};
+  if(!Array.isArray(steps)||steps.length>MAX_ORIGIN_WITNESS_STEPS)return {ok:false,reason:'경로 단계 제한 초과',trace};
+  const campaignContext=auditOriginCampaignContext(steps,data);
+  if(requireCompatibleContext&&campaignContext.kind!=='compatible')
+    return {ok:false,reason:campaignContext.kind==='inconsistent'?'동일 캠페인의 난이도 조건 충돌':'캠페인 조건 원본 미확인',trace,campaignContext};
   // Opt-in, call-site-local memoization. A shared chronological birth prefix
   // is independently replayed ONCE; each distinct subsequent transformation
   // is still verified from that exact world. No rules or grants are invented.
@@ -134,7 +151,8 @@ export function replayOriginWitness(steps,data,{birthCache=null}={}){
   const raw=member?Object.fromEntries(WITNESS_STATS.map(k=>[k,member.state.currentStats[k]])):null;
   const bonus=member?bonusStats(member.state,data,{commendations:member.commendations}):null;
   const stats=member?Object.fromEntries(WITNESS_STATS.map(k=>[k,Math.max(k==='health'?1:0,raw[k]+(bonus[k]||0))])):null;
-  return {ok:true,conditional,world,trace,raw,bonus,stats,
+  return {ok:true,conditional,world,trace,raw,bonus,stats,campaignContext,
+    campaignCompatible:campaignContext.kind==='compatible',
     total:stats?WITNESS_STATS.reduce((s,k)=>s+stats[k],0):null,
     exact:member?.state.exactStats===true,certifiedMaximum:false};
 }
