@@ -373,16 +373,21 @@ async function openItemTech(id){
   activeItemTechViewer?.dispose();activeItemTechViewer=null;
   $('#itemTechTitle').textContent=(itemMap.get(id)?.koName||id)+' · 실물 획득 경로';
   host.textContent='아이템·제조·이벤트 원본 획득 근거를 확인하는 중…';
+  const readinessHost=$('#purchaseReadinessHost');
+  if(readinessHost)readinessHost.replaceChildren();
   if(!dialog.open)dialog.showModal();
   try{
-    const [view,adapters,items,research]=await Promise.all([
+    const [view,adapters,checker,items,research]=await Promise.all([
       import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
       import('./acquisition-tech-adapter.js?v=20261105-stage4-buy-requires-1'),
+      import('./purchase-readiness-panel.js?v=20261105-readiness-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;
     const adapter=adapters.createLegacyItemTechAdapter(items,research,id);
     activeItemTechViewer=view.mountAcquisitionTechViewer(host,{adapter,technical:true});
+    checker.mountPurchaseReadinessPanel(readinessHost,{
+      item:items.items[id],research,index:items});
   }catch(error){if(stamp===itemTechRequest&&dialog.open)
     host.textContent='아이템 획득 경로를 표시하지 못했습니다: '+error.message;}
 }

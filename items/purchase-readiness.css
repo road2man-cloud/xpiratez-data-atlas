@@ -1,0 +1,38 @@
+/* Optional, read-only campaign purchase snapshot. The horizontal tech
+   viewer remains the primary UI; the checker is collapsed by default. */
+#purchaseReadinessHost{min-width:0;max-width:100%}
+.purchase-readiness-panel{margin:9px 7px 0;border:1px solid #496d89;
+  background:#0c2034;border-radius:9px;color:#dae7f2}
+.purchase-readiness-panel>summary{cursor:pointer;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;padding:10px 12px;line-height:1.4}
+.purchase-readiness-panel>summary strong{font-size:.88rem;color:#f1f7fd}
+.purchase-readiness-panel>summary span{font-size:.77rem;color:#afc9dc}
+.purchase-check-body{padding:11px 13px 14px;border-top:1px solid #38566c}
+.purchase-check-body>p{font-size:.82rem;color:#c4d7e8;line-height:1.5;margin:5px 0 12px}
+.purchase-check-body fieldset{border:1px solid #35546d;border-radius:8px;
+  padding:7px 10px;margin:8px 0;min-width:0}
+.purchase-check-body legend{font-size:.85rem;font-weight:700;color:#d6eafa;padding:0 6px}
+.purchase-check-field{display:flex;align-items:center;gap:12px;
+  justify-content:space-between;padding:8px 2px;border-bottom:1px solid #304962}
+.purchase-check-field:last-child{border-bottom:none}
+.purchase-check-field>span{display:flex;flex-direction:column;min-width:0}
+.purchase-check-field b{font-size:.81rem;font-weight:650}
+.purchase-check-field small{font-size:.71rem;color:#aec8d9;margin-top:3px;line-height:1.35}
+.purchase-check-field select,.purchase-check-field input{font:inherit;font-size:.8rem;
+  padding:8px;border:1px solid #6a90a9;border-radius:6px;
+  background:#102a42;color:#ecf6ff;max-width:235px;width:42%;min-width:0}
+.purchase-check-result{margin-top:12px;border-top:1px solid #496d89;padding-top:12px}
+.purchase-check-result h3{font-size:.91rem;margin:0 0 7px}
+.purchase-check-result p{font-size:.79rem;line-height:1.5;margin:5px 0}
+.purchase-check-result ul{padding-left:20px;margin:10px 0}
+.purchase-check-result li{margin:5px 0;font-size:.77rem;line-height:1.45}
+.purchase-check-result li small{color:#b6cadd}
+.purchase-check-count{font-weight:650}
+.purchase-check-reset{cursor:pointer;border:1px solid #698eae;background:#24435d;
+  color:#e8f4fe;border-radius:7px;padding:8px 12px;font-size:.78rem}
+.purchase-check-caveat{margin-top:12px!important;font-size:.72rem!important;color:#a7bed1!important}
+@media(max-width:700px){
+  .purchase-readiness-panel>summary{align-items:flex-start;flex-direction:column}
+  .purchase-check-field{align-items:stretch;flex-direction:column;gap:7px}
+  .purchase-check-field select,.purchase-check-field input{max-width:100%;width:100%}
+}
