@@ -77,6 +77,14 @@ for(const row of itemIndex.index){
   items[row.id]={
     id:row.id,name:d.koName,english:d.enName,
     costBuy:Number.isFinite(buy)&&buy>0?buy:null,
+    // PurchaseState uses RuleItem::getSize() to limit storage space for
+    // requested quantity. Preserve the effective (inherited/default) size,
+    // including valid zero and negative values, rather than raw alone.
+    storageSize:Number.isFinite(Number(d.effectiveCore?.size??raw.size))?
+      Number(d.effectiveCore?.size??raw.size):null,
+    liveAlien:raw.liveAlien===true,
+    prisonType:Number.isInteger(Number(raw.prisonType))&&Number(raw.prisonType)>=0?
+      Number(raw.prisonType):0,
     // OXCE purchase listing filters general item.requires AND requiresBuy.
     // Do not mistake either field for proof of a completed campaign research.
     requires:ids(raw.requires),requiresBuy:ids(raw.requiresBuy),
@@ -165,6 +173,8 @@ const result={meta:{
     sourceUrl:'https://github.com/MeridianOXC/OpenXcom/blob/f0134ef8065799c7723953d64b565f7832bfd782/src/Basescape/PurchaseState.cpp#L192-L285',
     observedCandidateFilters:['nonzero-costBuy','requires','requiresBuy','requiresBuyBaseFunc','requiresBuyCountry'],
     observedPriceCalculation:'getBuyCostAdjusted(base,savedGame); costBuy is base price, not guaranteed checkout price',
+    observedQuantityLimits:'Requested quantity is limited by available funds, monthly purchase log, warehouse capacity (RuleItem::getSize) and liveAlien prisonType containment capacity',
+    observedCountryCondition:'A matching country with getPact() true prevents listing; absence of that Pact passes the observed filter',
     limitations:'Reviewed official MeridianOXC OpenXcom oxce-plus PurchaseState.cpp, not an exact historical OXCE 8.6 build. The engine builds the base Purchase/Hire menu from item rules. Runtime visibility and this save state remain unverified.'
   },
   limitations:'Original costBuy and all observed engine candidate gates are indexed, but exact OXCE 8.6 shop visibility, live stock, tactical loot, missions and campaign state remain unverified'

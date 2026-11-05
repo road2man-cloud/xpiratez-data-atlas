@@ -238,7 +238,7 @@ for(const item of Object.values(items.items)){
   for(const edge of item.producers)
     assert(items.recipes[edge.id],'Every indexed producer recipe must have its actual prerequisites');
 }
-let verifiedPurchases=0;
+let verifiedPurchases=0,positiveStores=0,liveBuyItems=0;
 for(const bucket of '0123456789abcdef'){
   const original=JSON.parse(fs.readFileSync(`public/items/data/chunks/${bucket}.json`,'utf8'));
   for(const [id,detail] of Object.entries(original.details||{})){
@@ -250,8 +250,16 @@ for(const bucket of '0123456789abcdef'){
     assert.equal(item.monthlyBuyLimit,raw.monthlyBuyLimit||null);
     assert.equal(item.transferTime,raw.transferTime??null);
     assert.equal(item.costBuy,Number(raw.costBuy)>0?Number(raw.costBuy):null);
+    const originalSize=detail.effectiveCore?.size??raw.size;
+    assert.equal(item.storageSize,Number.isFinite(Number(originalSize))?
+      Number(originalSize):null,'Original effective storage size '+id);
+    assert.equal(item.liveAlien,raw.liveAlien===true,'Original live-alien item '+id);
+    assert.equal(item.prisonType,Number.isInteger(Number(raw.prisonType))&&Number(raw.prisonType)>=0?
+      Number(raw.prisonType):0,'Original prison containment type '+id);
     if(item.costBuy!=null){
       verifiedPurchases++;
+      if(item.storageSize>0)positiveStores++;
+      if(item.liveAlien)liveBuyItems++;
       assert.equal(item.purchaseEvidence.status,'price-only');
       assert.equal(item.purchaseEvidence.stockVerified,false);
       assert.deepEqual(item.purchaseEvidence.storeIds,[]);
@@ -259,7 +267,10 @@ for(const bucket of '0123456789abcdef'){
   }
 }
 assert.equal(verifiedPurchases,552);
+assert.equal(positiveStores,521);
+assert.equal(liveBuyItems,28);
 console.log('PASS legacy item paths: 4007 items / 2105 recipes / '+verifiedPurchases+
   ' price-only purchase rules / 5 general item unlocks / 2 dual research gates / '+cyclicPurchases.length+
-  ' first-supply specimen cycles / 3 monthly caps / 1 purchase facility / '+verifiedScripts+
+  ' first-supply specimen cycles / '+positiveStores+' storage-valued shop items / '+liveBuyItems+
+  ' live containment items / 3 monthly caps / 1 purchase facility / '+verifiedScripts+
   ' event occurrence scripts / conditional RNG / original source audit / version isolation');

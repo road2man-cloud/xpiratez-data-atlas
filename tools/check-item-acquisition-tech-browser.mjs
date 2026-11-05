@@ -121,8 +121,16 @@ try{
     .selectOption('yes');
   await medicalCheck.locator('input[data-purchase-number="purchasedThisMonthByItem"]').fill('1');
   await medicalCheck.locator('input[data-purchase-number="purchasedThisMonthByItem"]').press('Tab');
-  assert((await medicalCheck.locator('.purchase-check-result').innerText()).includes('남은 구매 가능 수량 0개'),
+  assert((await medicalCheck.locator('.purchase-check-result').innerText()).includes('남은 0개'),
     'A monthly cap must block the current manually entered state');
+  // An order of two medical boxes must be blocked even when the monthly
+  // purchase log is zero: the maximum per month is only one.
+  await medicalCheck.locator('input[data-purchase-number="purchasedThisMonthByItem"]').fill('0');
+  await medicalCheck.locator('input[data-purchase-number="purchasedThisMonthByItem"]').press('Tab');
+  await medicalCheck.locator('input[data-purchase-number="requestedQuantity"]').fill('2');
+  await medicalCheck.locator('input[data-purchase-number="requestedQuantity"]').press('Tab');
+  assert((await medicalCheck.locator('.purchase-check-result').innerText()).includes('이번 요청 2개'),
+    'The checker must evaluate monthly limit using requested quantity');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   await dialog.locator('#closeItemTech').click();
 
@@ -156,12 +164,23 @@ try{
   await electronCheck.locator('input[data-purchase-number="funds"]').press('Tab');
   await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').fill('5000');
   await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').press('Tab');
+  assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('현재 구매 가능 여부 미확인'),
+    'Warehouse space may not be inferred from a visible listing or enough funds');
+  await electronCheck.locator('input[data-purchase-number="freeStoreSpace"]').fill('10');
+  await electronCheck.locator('input[data-purchase-number="freeStoreSpace"]').press('Tab');
   assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('입력상 조건 충족 · 구매 완료 미검증'),
     'Only an explicit player-observed listing and full input may yield conditional status');
   await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').fill('200000');
   await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').press('Tab');
   assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('현재 입력에서 막힌 구매 조건'),
     'Affordability must use the observed adjusted checkout price, not the base costBuy');
+  await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').fill('5000');
+  await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').press('Tab');
+  await electronCheck.locator('input[data-purchase-number="requestedQuantity"]').fill('30');
+  await electronCheck.locator('input[data-purchase-number="requestedQuantity"]').press('Tab');
+  const bulkReport=await electronCheck.locator('.purchase-check-result').innerText();
+  assert(bulkReport.includes('150,000')&&bulkReport.includes('현재 입력에서 막힌 구매 조건'),
+    'Funds must be compared to quantity times observed price, not unit price');
   await electronCheck.locator('.purchase-check-reset').click();
   assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('현재 구매 가능 여부 미확인'));
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
@@ -179,6 +198,23 @@ try{
   const minigunWarning=await minigunTech.locator('.tech-node[data-tech-stage="2"].tech-node--warning').allInnerTexts();
   assert(minigunWarning.some(x=>x.includes('첫 획득 경로 순환 주의')),
     'An item whose requiresBuy lab needs the same specimen cannot be treated as a first-supply purchase');
+  await dialog.locator('#closeItemTech').click();
+
+  // Live captive goods also require prison space of the matching type.
+  await page.goto(base+'/items/#item=STR_WHITERABBIT',{waitUntil:'domcontentloaded'});
+  await page.locator('#detail [data-open-item-tech="STR_WHITERABBIT"]').waitFor();
+  await page.locator('#detail [data-open-item-tech="STR_WHITERABBIT"]').click();
+  const rabbit=dialog.locator('#purchaseReadinessHost details');
+  await rabbit.waitFor();
+  if(!await rabbit.evaluate(el=>el.open))await rabbit.locator('summary').click();
+  assert.equal(await rabbit.locator('input[data-purchase-number="freeContainmentByType"][data-purchase-id="2"]').count(),1);
+  await rabbit.locator('input[data-purchase-number="requestedQuantity"]').fill('2');
+  await rabbit.locator('input[data-purchase-number="requestedQuantity"]').press('Tab');
+  await rabbit.locator('input[data-purchase-number="freeContainmentByType"]').fill('1');
+  await rabbit.locator('input[data-purchase-number="freeContainmentByType"]').press('Tab');
+  assert((await rabbit.locator('.purchase-check-result').innerText()).includes('포로 수용 공간')&&
+    (await rabbit.locator('.purchase-check-result').innerText()).includes('미충족(입력)'),
+    'Two live creatures cannot fit into one available prison slot');
   await dialog.locator('#closeItemTech').click();
 
   await page.goto(base+'/items/#item=STR_MED_CANNON_PARTS',{waitUntil:'domcontentloaded'});
@@ -263,7 +299,7 @@ try{
     assert.equal(await desktop.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   }finally{await desktop.close();}
   assert.deepEqual(errors,[],'Unexpected page JavaScript errors');
-  console.log('PASS item acquisition viewer: 390px + 1280px, complete AND research and 94 cycles, interactive unknown/blocked/conditional purchase readiness, monthly cap, base function, adjusted price, event/facility paths, no overflow');
+  console.log('PASS item acquisition viewer: 390px + 1280px, AND research, 94 specimen cycles, quantity-aware month/total/warehouse, live containment, safe unknowns, price evidence, event/facility routes, no overflow');
 }finally{
   if(browser)await browser.close();
   await new Promise(ok=>server.close(ok));

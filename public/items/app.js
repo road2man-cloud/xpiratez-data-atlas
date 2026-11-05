@@ -348,7 +348,7 @@ async function openResearchTech(id){
 async function loadItemTechIndex(){
   if(!itemTechIndexPromise)itemTechIndexPromise=(async()=>{
     const url=pageMode==='research'?'../items/acquisition-index.json':'./acquisition-index.json';
-    const version='?v=20261105-stage4-buy-requires-1';
+    const version='?v=20261105-purchase-quantity-2';
     let result=null;
     if(typeof DecompressionStream==='function')try{
       const response=await fetch(url+'.gz'+version);
@@ -380,7 +380,7 @@ async function openItemTech(id){
     const [view,adapters,checker,items,research]=await Promise.all([
       import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
       import('./acquisition-tech-adapter.js?v=20261105-stage4-buy-requires-1'),
-      import('./purchase-readiness-panel.js?v=20261105-readiness-1'),
+      import('./purchase-readiness-panel.js?v=20261105-readiness-2'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;
