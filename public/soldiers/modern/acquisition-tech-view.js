@@ -242,13 +242,14 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     '<nav class="tech-route" aria-label="현재 선택한 획득 경로"><span class="tech-route-caption">현재 추적</span>'+
       '<div class="tech-route-list" role="group" aria-label="경로별 단계 이동"></div></nav>'+
     (adapter?.notice?'<p class="tech-adapter-notice">'+safe(adapter.notice)+'</p>':'')+
-    '<div class="tech-legend"><span class="tech-legend-must">━ 필수 조건: 모두 충족</span>'+
-      '<span class="tech-legend-alternative">┄ 대체 경로: 하나 선택</span>'+
-      '<span class="tech-legend-uncertain">◇ 확률·기한: 확정 아님</span></div>'+
+    '<div class="tech-legend"><span class="tech-legend-must">━ 모두 필요</span>'+
+      '<span class="tech-legend-alternative">┄ 하나 선택</span>'+
+      '<span class="tech-legend-uncertain">◇ 확률·기한은 미확정</span>'+
+      '<span class="tech-legend-hint">노드를 선택하면 전체 설명을 볼 수 있습니다</span></div>'+
+    '<div class="tech-selected" aria-live="polite"></div>'+
     '<div class="tech-viewport" tabindex="0" aria-label="가로로 탐색하는 획득 경로">'+
       '<div class="tech-canvas"><svg class="tech-wires" aria-hidden="true"></svg>'+
         '<div class="tech-columns"></div></div></div>'+
-    '<div class="tech-selected" aria-live="polite"></div>'+
     (technical?'<details class="tech-original" data-tech-original>'+
       '<summary>원본 상세 조건표·연구 ID 확인 (검증용)</summary>'+
       '<div class="tech-legacy"></div></details>':'')+'</section>';
@@ -285,8 +286,8 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     const graph=enumerate();
     onNavigate(path.map(n=>({kind:n.kind,id:n.id})));
     const html=graph.map(col=>{
-      const title=col.stage===0?'최종 목표':col.relation==='or'?'여러 방법 중 하나 선택':
-        col.relation==='and'?'이 단계의 조건 모두 충족':'연결된 선행 조건';
+      const title=col.stage===0?'최종 목표':col.relation==='or'?'이 중 하나 선택':
+        col.relation==='and'?'여기 있는 조건 모두 필요':'선행 조건 확인';
       return '<section class="tech-column" data-tech-column="'+col.stage+'">'+
         '<header class="tech-col-head"><span class="tech-stage-number">'+
           (col.stage===0?'목표': '선행 '+col.stage+'단계')+'</span><strong>'+title+'</strong>'+
@@ -303,7 +304,8 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
               safe(nodeIcons[category]||'◆')+'</span>'+safe(badge)+'</span>'+
             '<strong>'+safe(label)+'</strong>'+
             '<small>'+safe(detail)+'</small>'+
-            (expandable?'<span class="tech-node-action">◀ 선행 경로 펼치기</span>':'')+
+            '<span class="tech-node-action">'+
+              (expandable?'◀ 왼쪽 선행 경로 보기':'선택해 전체 설명 보기')+'</span>'+
             '</button>';
         }).join('')+(col.more?'<button type="button" class="tech-show-more" data-tech-more="'+col.stage+
           '">이 단계의 다른 조건 '+(col.total-col.nodes.length)+'개 더 보기</button>':'')+
@@ -326,8 +328,9 @@ export function mountAcquisitionTechViewer(host,{data,profile=null,kind=null,id=
     const relation=focusedStage>0?expandNode(path[focusedStage-1]).relation:'goal';
     const role=relation==='or'?'여러 대체 방법 중 하나':relation==='and'?
       '이 단계의 조건 모두 필요':relation==='goal'?'현재 최종 목표':'연결된 선행 단계';
-    selectedEl.innerHTML='<div class="tech-selected-summary"><span class="tech-selected-label">선택한 노드 · '+
-      safe(role)+'</span><strong>'+safe(meta.label)+'</strong><span>'+safe(meta.detail)+'</span></div>'+
+    selectedEl.innerHTML='<div class="tech-selected-summary"><span class="tech-selected-label">지금 확인하는 조건 · '+
+      safe(role)+'</span><strong>'+safe(meta.label)+'</strong><span class="tech-selected-detail">'+
+      safe(meta.detail)+'</span></div>'+
       '<div class="tech-selected-actions"><button type="button" data-tech-action="back"'+
       (path.length<2?' disabled':'')+'>상위 목표로 돌아가기</button>'+
       (technical?'<button type="button" data-tech-action="source">원본 상세 조건표 열기</button>':'')+

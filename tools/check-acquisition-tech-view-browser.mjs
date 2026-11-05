@@ -85,7 +85,15 @@ try{
   const selected=graph.locator('.tech-selected');
   assert((await selected.innerText()).includes('상위 목표로 돌아가기'));
   assert((await selected.innerText()).includes('원본 상세 조건표 열기'));
-  assert((await selected.innerText()).includes('선택한 노드'));
+  assert((await selected.innerText()).includes('지금 확인하는 조건'));
+  assert(await graph.evaluate(el=>{
+    const selected=el.querySelector('.tech-selected');
+    const viewport=el.querySelector('.tech-viewport');
+    return Boolean(selected.compareDocumentPosition(viewport)&Node.DOCUMENT_POSITION_FOLLOWING);
+  }),'Full selected-node explanation must be readable above the horizontal canvas');
+  assert.equal(await choices.first().locator('small').evaluate(el=>
+    getComputedStyle(el).webkitLineClamp),'2',
+    'Dense cards show a compact description while the full text remains in selected detail');
   assert((await graph.locator('.tech-node-icon').count())>0,
     'Node types must include immediately recognizable icons');
   await selected.locator('.tech-node-source summary').click();

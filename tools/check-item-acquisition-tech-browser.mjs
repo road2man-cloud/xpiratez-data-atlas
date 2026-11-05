@@ -50,7 +50,23 @@ try{
   await purchaseCheck.waitFor();
   assert.equal(await purchaseCheck.evaluate(el=>el.open),false,
     'Player-specific checker must be optional, not a nested-card replacement for the map');
+  assert((await purchaseCheck.locator('.purchase-check-summary-state').innerText()).includes('확인 필요'),
+    'Collapsed panel must reveal the current uncertainty without opening a long form');
   await purchaseCheck.locator('summary').click();
+  assert.equal(await purchaseCheck.locator('.purchase-check-step').count(),3,
+    'Player reads research -> purchase quantity -> funds/storage in three steps');
+  assert((await purchaseCheck.locator('.purchase-check-priorities li').count())<=3,
+    'First screen must prioritize at most three blockers or unknowns');
+  assert.equal(await purchaseCheck.locator('.purchase-check-proof').isVisible(),false,
+    'Long source evidence must start collapsed');
+  await purchaseCheck.locator('.purchase-proof-toggle').click();
+  assert.equal(await purchaseCheck.locator('.purchase-check-proof').isVisible(),true,
+    'Every original condition must still be available to inspect');
+  await purchaseCheck.locator('.purchase-proof-toggle').click();
+  assert.equal(await purchaseCheck.locator('.purchase-check-proof').isVisible(),false);
+  assert(await purchaseCheck.locator('select').first().evaluate(el=>
+    Number.parseFloat(getComputedStyle(el).fontSize)>=16),
+    'Mobile select font must not trigger iOS auto-zoom while entering evidence');
   assert((await purchaseCheck.locator('.purchase-check-result').innerText()).includes('현재 구매 가능 여부 미확인'),
     'Missing save state must not be treated as completed or blocked');
   assert.equal(await tech.locator('.tech-column').count(),2);
