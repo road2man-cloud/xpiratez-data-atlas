@@ -101,9 +101,44 @@ try{
     'Buy-only required base function must be displayed');
   assert(medicalNodes.some(x=>x.includes('월별 구매 상한 1개')),
     'Monthly limit from original item rule must be displayed');
-  assert(medicalNodes.some(x=>x.includes('가격만 존재')),
-    'Unverified inventory cannot become guaranteed store availability');
+  assert(medicalNodes.some(x=>x.includes('상점 출현')&&x.includes('미검증')),
+    'Engine-derived candidates must never become guaranteed runtime store listings');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  await dialog.locator('#closeItemTech').click();
+
+  // OXCE item purchases require BOTH ordinary item.requires and the
+  // purchase-only requiresBuy research, not one alternative or either alone.
+  await page.goto(base+'/items/#item=STR_RETICULAN_ELECTROGUN',{waitUntil:'domcontentloaded'});
+  const electronLaunch=page.locator('#detail [data-open-item-tech="STR_RETICULAN_ELECTROGUN"]');
+  await electronLaunch.waitFor();
+  await electronLaunch.click();
+  const electronTech=dialog.locator('.tech-viewer');
+  await electronTech.waitFor();
+  await electronTech.locator('.tech-node[data-tech-stage="1"]').filter({hasText:'상점 구매 후보'}).click();
+  const electronStudies=electronTech.locator('.tech-node[data-tech-stage="2"].tech-node--research');
+  assert.equal(await electronStudies.count(),2,
+    'A buy-priced weapon must require both normal unlock and purchase-only research');
+  const bothStudyLabels=await electronStudies.allInnerTexts();
+  assert(bothStudyLabels.some(x=>x.includes('일반 아이템 해금(requires)')));
+  assert(bothStudyLabels.some(x=>x.includes('구매 전용 해금(requiresBuy)')));
+  const cycleNode=electronTech.locator('.tech-node[data-tech-stage="2"].tech-node--warning');
+  assert((await cycleNode.allInnerTexts()).some(x=>x.includes('첫 획득 경로 순환 주의')),
+    'A self-specimen lab prerequisite is not a free initial purchase');
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  await dialog.locator('#closeItemTech').click();
+
+  // The same specimen-first problem also applies to many requiresBuy
+  // research gates, not only normal item.requires gates.
+  await page.goto(base+'/items/#item=STR_MINIGUN',{waitUntil:'domcontentloaded'});
+  const minigunLaunch=page.locator('#detail [data-open-item-tech="STR_MINIGUN"]');
+  await minigunLaunch.waitFor();
+  await minigunLaunch.click();
+  const minigunTech=dialog.locator('.tech-viewer');
+  await minigunTech.waitFor();
+  await minigunTech.locator('.tech-node[data-tech-stage="1"]').filter({hasText:'상점 구매 후보'}).click();
+  const minigunWarning=await minigunTech.locator('.tech-node[data-tech-stage="2"].tech-node--warning').allInnerTexts();
+  assert(minigunWarning.some(x=>x.includes('첫 획득 경로 순환 주의')),
+    'An item whose requiresBuy lab needs the same specimen cannot be treated as a first-supply purchase');
   await dialog.locator('#closeItemTech').click();
 
   await page.goto(base+'/items/#item=STR_MED_CANNON_PARTS',{waitUntil:'domcontentloaded'});
@@ -171,7 +206,7 @@ try{
   await page.setViewportSize({width:1280,height:900});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   assert.deepEqual(errors,[],'Unexpected page JavaScript errors');
-  console.log('PASS item acquisition viewer: mobile 390px + desktop 1280px, price-only purchase, monthly cap and buy-base-function, facility construction, event gates, manufacturing RNG, evidence and no overflow');
+  console.log('PASS item acquisition viewer: 390px + 1280px, original requires AND requiresBuy, 94 specimen-first cycles, monthly cap, buy base function, conditional events, facility construction, source evidence and no overflow');
 }finally{
   if(browser)await browser.close();
   await new Promise(ok=>server.close(ok));

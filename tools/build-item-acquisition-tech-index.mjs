@@ -77,7 +77,9 @@ for(const row of itemIndex.index){
   items[row.id]={
     id:row.id,name:d.koName,english:d.enName,
     costBuy:Number.isFinite(buy)&&buy>0?buy:null,
-    requiresBuy:ids(raw.requiresBuy),
+    // OXCE purchase listing filters general item.requires AND requiresBuy.
+    // Do not mistake either field for proof of a completed campaign research.
+    requires:ids(raw.requires),requiresBuy:ids(raw.requiresBuy),
     requiresBuyBaseFunc:ids(raw.requiresBuyBaseFunc),
     requiresBuyCountry:typeof raw.requiresBuyCountry==='string'?raw.requiresBuyCountry:null,
     transferTime:Number.isFinite(Number(raw.transferTime))&&raw.transferTime!=null?
@@ -155,8 +157,17 @@ const result={meta:{
   positivePriceItems:Object.values(items).filter(x=>x.costBuy!=null).length,
   monthlyLimitedBuyItems:Object.values(items).filter(x=>x.costBuy!=null&&x.monthlyBuyLimit!=null).length,
   baseFunctionBuyItems:Object.values(items).filter(x=>x.costBuy!=null&&x.requiresBuyBaseFunc.length).length,
+  generalResearchBuyItems:Object.values(items).filter(x=>x.costBuy!=null&&x.requires.length).length,
+  dualResearchBuyItems:Object.values(items).filter(x=>x.costBuy!=null&&x.requires.length&&x.requiresBuy.length).length,
   verifiedStoreListings:0,
-  limitations:'Original costBuy is indexed, but independent shop inventory, tactical loot, missions and full event occurrence remain unverified'
+  purchaseEngineAudit:{
+    exactOXCE86Verified:false,
+    sourceUrl:'https://github.com/MeridianOXC/OpenXcom/blob/f0134ef8065799c7723953d64b565f7832bfd782/src/Basescape/PurchaseState.cpp#L192-L285',
+    observedCandidateFilters:['nonzero-costBuy','requires','requiresBuy','requiresBuyBaseFunc','requiresBuyCountry'],
+    observedPriceCalculation:'getBuyCostAdjusted(base,savedGame); costBuy is base price, not guaranteed checkout price',
+    limitations:'Reviewed official MeridianOXC OpenXcom oxce-plus PurchaseState.cpp, not an exact historical OXCE 8.6 build. The engine builds the base Purchase/Hire menu from item rules. Runtime visibility and this save state remain unverified.'
+  },
+  limitations:'Original costBuy and all observed engine candidate gates are indexed, but exact OXCE 8.6 shop visibility, live stock, tactical loot, missions and campaign state remain unverified'
 },items,recipes,events,facilities};
 const serialized=JSON.stringify(result)+'\n';
 const out=path.resolve('public/items/acquisition-index.json');

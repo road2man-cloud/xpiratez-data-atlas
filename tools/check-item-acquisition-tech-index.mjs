@@ -23,10 +23,65 @@ assert(gates.children.some(n=>n.id==='STOCK:STR_BUCKSHOT_HV'));
 assert.equal(items.meta.positivePriceItems,552);
 assert.equal(items.meta.monthlyLimitedBuyItems,3);
 assert.equal(items.meta.baseFunctionBuyItems,1);
+assert.equal(items.meta.generalResearchBuyItems,5,
+  'Five original buy-priced items require normal item research in addition to store gates');
+assert.equal(items.meta.dualResearchBuyItems,2,
+  'Two items require BOTH general and buy-specific research');
+assert.equal(items.meta.purchaseEngineAudit.exactOXCE86Verified,false,
+  'A public Extended fork cannot be passed off as exact OXCE 8.6');
+assert(items.meta.purchaseEngineAudit.sourceUrl.includes('/PurchaseState.cpp#'));
 assert.equal(items.meta.verifiedStoreListings,0);
 assert.equal(items.items.STR_BUCKSHOT_HV.purchaseEvidence.status,'price-only');
 assert.equal(items.items.STR_BUCKSHOT_HV.purchaseEvidence.stockVerified,false);
-assert.equal(g.describe(buy).badge,'가격만 확인');
+assert.equal(g.describe(buy).badge,'조건부 구매 후보');
+// The observed Extended buy-menu filter uses requires AND requiresBuy.
+// Also guard first-acquisition specimen cycles; they are not impossibility proofs.
+const electron=createLegacyItemTechAdapter(items,research,'STR_RETICULAN_ELECTROGUN');
+const electronBuy=electron.expand(electron.root).children.find(n=>n.sourceKind==='buy');
+const electronGates=electron.expand(electronBuy).children;
+assert(electronGates.some(n=>n.kind==='research'&&n.id==='STR_RETICULAN_ELECTROGUN'&&
+  n.purchaseGate==='requires'));
+assert(electronGates.some(n=>n.kind==='research'&&n.id==='STR_CONTACT_RETICULANS'&&
+  n.purchaseGate==='requiresBuy'));
+const generalElectron=electronGates.find(n=>n.kind==='research'&&
+  n.id==='STR_RETICULAN_ELECTROGUN');
+assert(electron.describe(generalElectron).detail.includes('일반 아이템 해금(requires)'));
+assert(electron.expand(generalElectron).children.some(n=>n.id==='LAB:STR_RETICULAN_ELECTROGUN'),
+  'The general item-unlock research must open its full original lab route');
+assert(electronGates.some(n=>n.id==='BUY_SPECIMEN_CYCLE:STR_RETICULAN_ELECTROGUN'&&
+  electron.describe(n).detail.includes('불가능 확정 아님')));
+assert(electron.renderEvidence(electronBuy).includes('PurchaseState.cpp'));
+const clip=createLegacyItemTechAdapter(items,research,'STR_RETICULAN_ELECTROGUN_CLIP');
+const clipBuy=clip.expand(clip.root).children.find(n=>n.sourceKind==='buy');
+const clipGates=clip.expand(clipBuy).children;
+assert(clipGates.some(n=>n.kind==='research'&&n.id==='STR_RETICULAN_ELECTROGUN'));
+assert(!clipGates.some(n=>n.id.startsWith('BUY_SPECIMEN_CYCLE:')),
+  'A required research whose specimen is another item is NOT a self-item cycle');
+const ramjet=createLegacyItemTechAdapter(items,research,'STR_RAMJET_HARPOON');
+const ramjetBuy=ramjet.expand(ramjet.root).children.find(n=>n.sourceKind==='buy');
+const ramjetGates=ramjet.expand(ramjetBuy).children;
+assert(ramjetGates.some(n=>n.kind==='research'&&n.purchaseGate==='requires'));
+assert(ramjetGates.some(n=>n.id==='BUY_SPECIMEN_CYCLE:STR_RAMJET_HARPOON'));
+// Across both source research fields, more than the five general-unlock
+// items may self-gate through an item specimen (includes buy-only research).
+const cyclicPurchases=Object.values(items.items).filter(item=>item.costBuy!=null&&
+  [...new Set([...item.requires,...item.requiresBuy])].some(id=>{
+    const topic=research.topics[id];
+    return topic?.needItem&&(topic.neededItem||id)===item.id;
+  }));
+assert.equal(cyclicPurchases.length,94,
+  'Original purchase research/specimen self-cycle audit must remain stable');
+for(const item of cyclicPurchases){
+  const graph=createLegacyItemTechAdapter(items,research,item.id);
+  const branch=graph.expand({kind:'and',id:'BUY:'+item.id,
+    sourceKind:'buy',owner:item.id});
+  const caution=branch.children.find(n=>n.id==='BUY_SPECIMEN_CYCLE:'+item.id);
+  assert(caution&&graph.describe(caution).detail.includes('불가능 확정 아님'),
+    'A real self-specimen research path must warn but never claim impossibility: '+item.id);
+}
+for(const id of ['STR_MINIGUN','STR_SAW','STR_GRENADE_FRAG'])
+  assert(cyclicPurchases.some(item=>item.id===id),
+    'Buy-only research must be included in specimen cycle audit: '+id);
 const medical=items.items.STR_LOOTBOX_MEDICAL;
 assert(medical?.requiresBuyBaseFunc.includes('STR_MED_TRADE'),
   'Actual requiresBuyBaseFunc must remain separate from general manufacture requirements');
@@ -188,6 +243,7 @@ for(const bucket of '0123456789abcdef'){
   const original=JSON.parse(fs.readFileSync(`public/items/data/chunks/${bucket}.json`,'utf8'));
   for(const [id,detail] of Object.entries(original.details||{})){
     const item=items.items[id],raw=detail.raw||{};
+    assert.deepEqual(item.requires,raw.requires||[]);
     assert.deepEqual(item.requiresBuy,raw.requiresBuy||[]);
     assert.deepEqual(item.requiresBuyBaseFunc,raw.requiresBuyBaseFunc||[]);
     assert.equal(item.requiresBuyCountry,raw.requiresBuyCountry||null);
@@ -204,5 +260,6 @@ for(const bucket of '0123456789abcdef'){
 }
 assert.equal(verifiedPurchases,552);
 console.log('PASS legacy item paths: 4007 items / 2105 recipes / '+verifiedPurchases+
-  ' price-only purchase rules / 3 monthly caps / 1 purchase facility / '+verifiedScripts+
+  ' price-only purchase rules / 5 general item unlocks / 2 dual research gates / '+cyclicPurchases.length+
+  ' first-supply specimen cycles / 3 monthly caps / 1 purchase facility / '+verifiedScripts+
   ' event occurrence scripts / conditional RNG / original source audit / version isolation');
