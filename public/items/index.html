@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 <link rel="stylesheet" href="../soldiers/modern/acquisition-tech-view.css?v=20261105-crossdb-2">
 <link rel="stylesheet" href="../research/acquisition-dialog.css?v=20261105-crossdb-2">
+<link rel="stylesheet" href="./purchase-readiness.css?v=20261105-readiness-1">
 </head>
 <body data-mode="items" data-data-base="./data">
 <header class="hero">
@@ -70,10 +71,11 @@
 <dialog id="itemTechDialog" aria-labelledby="itemTechTitle">
   <div class="research-tech-head"><div><small>구버전 아이템 DB · 실물 획득 선행조건</small><h2 id="itemTechTitle">아이템 획득 경로</h2></div>
     <button type="button" id="closeItemTech">닫기</button></div>
+  <div id="purchaseReadinessHost"></div>
   <div id="itemTechHost" aria-live="polite"></div>
 </dialog>
 
-<script type="module" src="./app.js?v=20261105-stage4-buy-requires-1"></script>
+<script type="module" src="./app.js?v=20261105-readiness-1"></script>
 <script defer src="../play-guide.js?v=20261010"></script>
 <script defer src="../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 </body>

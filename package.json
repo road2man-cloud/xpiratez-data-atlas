@@ -40,7 +40,7 @@
     "check:research:tech": "node tools/build-research-tech-index.mjs --check && node tools/check-research-tech-index.mjs",
     "check:research:tech:browser": "node tools/check-research-tech-browser.mjs",
     "build:items:tech": "node tools/build-item-acquisition-tech-index.mjs",
-    "check:items:tech": "node tools/build-item-acquisition-tech-index.mjs --check && node tools/check-item-acquisition-tech-index.mjs",
+    "check:items:tech": "node tools/build-item-acquisition-tech-index.mjs --check && node tools/check-item-acquisition-tech-index.mjs && node tools/check-purchase-readiness.mjs",
     "check:facilities:tech": "node tools/check-legacy-facility-tech-paths.mjs",
     "check:items:tech:browser": "node tools/check-item-acquisition-tech-browser.mjs",
     "check:origin-candidates": "node tools/check-origin-acquisition-paths.mjs && node tools/check-origin-complete-condition-tree.mjs && node tools/check-origin-start-choice-evidence.mjs && node tools/build-soldier-unresolved-diagnostics.mjs --check && node tools/check-soldier-start-event-exclusivity.mjs && node tools/check-origin-shards.mjs && node tools/check-origin-mission-rewards.mjs && node tools/check-origin-event-prelude.mjs && node tools/check-origin-branch-evidence.mjs && node tools/check-origin-research-supply.mjs && node tools/check-origin-priority-chronology.mjs && node tools/check-origin-catgirl-chronology.mjs && node tools/check-origin-deep-search.mjs && node tools/check-origin-birth-cache.mjs",

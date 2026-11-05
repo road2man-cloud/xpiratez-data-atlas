@@ -46,6 +46,13 @@ try{
   const dialog=page.locator('#itemTechDialog');
   const tech=dialog.locator('.tech-viewer');
   await tech.waitFor({timeout:60000});
+  const purchaseCheck=dialog.locator('#purchaseReadinessHost details.purchase-readiness-panel');
+  await purchaseCheck.waitFor();
+  assert.equal(await purchaseCheck.evaluate(el=>el.open),false,
+    'Player-specific checker must be optional, not a nested-card replacement for the map');
+  await purchaseCheck.locator('summary').click();
+  assert((await purchaseCheck.locator('.purchase-check-result').innerText()).includes('현재 구매 가능 여부 미확인'),
+    'Missing save state must not be treated as completed or blocked');
   assert.equal(await tech.locator('.tech-column').count(),2);
   assert((await tech.locator('.tech-adapter-notice').innerText()).includes('v.o1.1.1'));
   assert((await tech.locator('.tech-adapter-notice').innerText()).includes('재고'));
@@ -103,6 +110,19 @@ try{
     'Monthly limit from original item rule must be displayed');
   assert(medicalNodes.some(x=>x.includes('상점 출현')&&x.includes('미검증')),
     'Engine-derived candidates must never become guaranteed runtime store listings');
+  const medicalCheck=dialog.locator('#purchaseReadinessHost details');
+  await medicalCheck.waitFor();
+  if(!await medicalCheck.evaluate(el=>el.open))await medicalCheck.locator('summary').click();
+  await medicalCheck.locator('select[data-purchase-state="baseFunctions"][data-purchase-id="STR_MED_TRADE"]')
+    .selectOption('no');
+  assert((await medicalCheck.locator('.purchase-check-result').innerText()).includes('현재 입력에서 막힌 구매 조건'),
+    'A missing base function must block the conditional purchase in the scenario');
+  await medicalCheck.locator('select[data-purchase-state="baseFunctions"][data-purchase-id="STR_MED_TRADE"]')
+    .selectOption('yes');
+  await medicalCheck.locator('input[data-purchase-number="purchasedThisMonthByItem"]').fill('1');
+  await medicalCheck.locator('input[data-purchase-number="purchasedThisMonthByItem"]').press('Tab');
+  assert((await medicalCheck.locator('.purchase-check-result').innerText()).includes('남은 구매 가능 수량 0개'),
+    'A monthly cap must block the current manually entered state');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   await dialog.locator('#closeItemTech').click();
 
@@ -124,6 +144,26 @@ try{
   const cycleNode=electronTech.locator('.tech-node[data-tech-stage="2"].tech-node--warning');
   assert((await cycleNode.allInnerTexts()).some(x=>x.includes('첫 획득 경로 순환 주의')),
     'A self-specimen lab prerequisite is not a free initial purchase');
+  const electronCheck=dialog.locator('#purchaseReadinessHost details');
+  await electronCheck.waitFor();
+  if(!await electronCheck.evaluate(el=>el.open))await electronCheck.locator('summary').click();
+  assert.equal(await electronCheck.locator('select[data-purchase-state="research"]').count(),2,
+    'The checker must expose BOTH general research and purchase-specific research');
+  await electronCheck.locator('select[data-purchase-state="research"]').first().selectOption('yes');
+  await electronCheck.locator('select[data-purchase-state="research"]').nth(1).selectOption('yes');
+  await electronCheck.locator('select[data-purchase-state="storeVisibleByItem"]').selectOption('yes');
+  await electronCheck.locator('input[data-purchase-number="funds"]').fill('100000');
+  await electronCheck.locator('input[data-purchase-number="funds"]').press('Tab');
+  await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').fill('5000');
+  await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').press('Tab');
+  assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('입력상 조건 충족 · 구매 완료 미검증'),
+    'Only an explicit player-observed listing and full input may yield conditional status');
+  await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').fill('200000');
+  await electronCheck.locator('input[data-purchase-number="checkoutPriceByItem"]').press('Tab');
+  assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('현재 입력에서 막힌 구매 조건'),
+    'Affordability must use the observed adjusted checkout price, not the base costBuy');
+  await electronCheck.locator('.purchase-check-reset').click();
+  assert((await electronCheck.locator('.purchase-check-result').innerText()).includes('현재 구매 가능 여부 미확인'));
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
   await dialog.locator('#closeItemTech').click();
 
@@ -205,8 +245,25 @@ try{
   await dialog.locator('#closeItemTech').click();
   await page.setViewportSize({width:1280,height:900});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  const desktop=await browser.newPage({viewport:{width:1280,height:900}});
+  try{
+    await desktop.goto(base+'/items/#item=STR_LOOTBOX_MEDICAL',{waitUntil:'domcontentloaded'});
+    const open=desktop.locator('#detail [data-open-item-tech="STR_LOOTBOX_MEDICAL"]');
+    await open.waitFor({timeout:80000});await open.click();
+    const wide=desktop.locator('#purchaseReadinessHost details');
+    await wide.waitFor({timeout:60000});
+    await wide.locator('summary').click();
+    const measure=await wide.evaluate(el=>{
+      const r=el.getBoundingClientRect();return {left:r.left,right:r.right,viewport:innerWidth};
+    });
+    assert(measure.left>=0&&measure.right<=measure.viewport+1,
+      'The purchase checker must be fully contained on 1280px desktop');
+    assert((await wide.locator('.purchase-check-result').innerText()).includes('현재 구매 가능 여부 미확인'),
+      'A new page cannot inherit guessed research/funds from a previous session');
+    assert.equal(await desktop.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+  }finally{await desktop.close();}
   assert.deepEqual(errors,[],'Unexpected page JavaScript errors');
-  console.log('PASS item acquisition viewer: 390px + 1280px, original requires AND requiresBuy, 94 specimen-first cycles, monthly cap, buy base function, conditional events, facility construction, source evidence and no overflow');
+  console.log('PASS item acquisition viewer: 390px + 1280px, complete AND research and 94 cycles, interactive unknown/blocked/conditional purchase readiness, monthly cap, base function, adjusted price, event/facility paths, no overflow');
 }finally{
   if(browser)await browser.close();
   await new Promise(ok=>server.close(ok));
