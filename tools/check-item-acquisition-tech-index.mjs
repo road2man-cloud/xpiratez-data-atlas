@@ -20,6 +20,9 @@ assert.equal(gates.relation,'and');
 assert(gates.children.some(n=>n.kind==='research'&&n.id==='STR_BUCKSHOT_HV'),
   'requiresBuy MUST be a research prerequisite, never a guaranteed store listing');
 assert(gates.children.some(n=>n.id==='STOCK:STR_BUCKSHOT_HV'));
+assert.equal(g.describe(gates.children.find(n=>n.id==='STOCK:STR_BUCKSHOT_HV')).label,
+  '상점 출현·재고 미검증',
+  'Purchase verification is not an event reward quantity');
 assert.equal(items.meta.positivePriceItems,552);
 assert.equal(items.meta.monthlyLimitedBuyItems,3);
 assert.equal(items.meta.baseFunctionBuyItems,1);
@@ -50,6 +53,9 @@ assert(electron.expand(generalElectron).children.some(n=>n.id==='LAB:STR_RETICUL
   'The general item-unlock research must open its full original lab route');
 assert(electronGates.some(n=>n.id==='BUY_SPECIMEN_CYCLE:STR_RETICULAN_ELECTROGUN'&&
   electron.describe(n).detail.includes('불가능 확정 아님')));
+assert.equal(electron.describe(electronGates.find(n=>
+  n.id==='BUY_SPECIMEN_CYCLE:STR_RETICULAN_ELECTROGUN')).label,
+  '연구 표본을 먼저 확보해야 할 수 있음');
 assert(electron.renderEvidence(electronBuy).includes('PurchaseState.cpp'));
 const clip=createLegacyItemTechAdapter(items,research,'STR_RETICULAN_ELECTROGUN_CLIP');
 const clipBuy=clip.expand(clip.root).children.find(n=>n.sourceKind==='buy');
@@ -96,6 +102,8 @@ assert(medicalGates.some(n=>n.id==='STOCK:STR_LOOTBOX_MEDICAL'),
 assert(medicalGates.some(n=>n.id==='BUY_MONTHLY:STR_LOOTBOX_MEDICAL'&&
   medicalGraph.describe(n).detail.includes('1개')),
   'Monthly limit must be preserved separately from the one-time buying research');
+assert.equal(medicalGraph.describe(medicalGates.find(n=>
+  n.id==='BUY_MONTHLY:STR_LOOTBOX_MEDICAL')).label,'이번 달 구매 한도');
 assert(medicalGraph.renderEvidence(medicalBuy).includes('monthlyBuyLimit'));
 const hassanGraph=createLegacyItemTechAdapter(items,research,'STR_LOOTBOX_HASSAN');
 const hassanBuy=hassanGraph.expand(hassanGraph.root).children.find(n=>n.sourceKind==='buy');
@@ -110,6 +118,7 @@ assert(recipe.children.some(n=>n.kind==='research'&&n.id==='STR_WASTELANDER_BACK
 const roll=recipe.children.find(n=>n.kind==='random');
 assert(roll&&g.describe(roll).detail.includes('0.388%'),
   'Manufacture random outcome is a CONDITIONAL relative share, not a global chance');
+assert.equal(g.describe(roll).label,'제조 산출물 추첨');
 const researchChild=g.expand(recipe.children.find(n=>n.kind==='research'));
 assert(researchChild.children.some(n=>n.id==='LAB:STR_WASTELANDER_BACKPACK'),
   'Research gates must use original legacy research adapter');
