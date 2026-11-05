@@ -24,7 +24,23 @@ try{
  const expectedSummary=expectedReport.summary;
  assert.equal(expectedSummary.profiles,72);
  assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
- assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses)));
+ assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses-61)));
+ const chort=page.locator('#chortTarget[data-target-type="STR_SOLDIER_CHORT"]');
+ assert.equal(await chort.count(),1,'Chort is a separate terminal body, not a new birth profile');
+ const factValues=await chort.locator('.terminal-facts strong').allTextContents();
+ assert.deepEqual(factValues,['16','42','17','25']);
+ assert((await chort.locator('.terminal-gate').innerText()).includes('Psi 강도 40 이상'));
+ await chort.locator('.terminal-source-types > summary').click();
+ assert.equal(await chort.locator('.terminal-type-list span').count(),16);
+ assert((await chort.locator('.terminal-type-list').innerText()).includes('농부'));
+ await chort.locator('.terminal-source-origins > summary').click();
+ assert.equal(await chort.locator('.terminal-source-list [data-open-origin]').count(),42);
+ assert((await chort.locator('.terminal-source-list').innerText()).includes('20~70'));
+ await chort.locator('.terminal-verified-paths > summary').click();
+ assert.equal(await chort.locator('[data-open-shared-candidate]').count(),3);
+ assert((await chort.locator('.terminal-paths').innerText()).includes('2,131'));
+ assert((await page.locator('#catalogSummary').innerText()).includes('코르트 변신 61건은 별도 병종'));
+ assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),72);
  assert.deepEqual(await page.locator('#originTable thead th').allTextContents(),
    ['출생처 / 최초 병종','상태','12종 합계','TU','기력','체력','용기','반응','사격','투척','근접','근력','Psi 강도','Psi 기술','Mana']);
  const score12=async()=>{
@@ -35,7 +51,7 @@ try{
    assert(stats.every(Number.isInteger));assert.equal(total,stats.reduce((sum,n)=>sum+n,0));
    return {total,mana:stats[11]};
  };
- console.log('PASS published origin registry: 72 births, '+expectedSummary.withCompleteResearch+' complete conditional paths, '+expectedSummary.witnesses+' candidates, 12 displayed stats; no save/custom trainer');
+ console.log('PASS 72 independent origins: 4306 ranked candidates, 61 Chort terminal paths separately retained, 16 permitted bodies, 42 source origins and 12 stats; no save/custom trainer');
  await page.locator('#search').fill('direct:STR_SOLDIER_PEASANT');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  const grown=(await score12()).total;
@@ -43,7 +59,7 @@ try{
  await page.locator('#catalogMetric').selectOption('provisional');
  const provisional=(await score12()).total;
  assert(provisional>0&&grown>=provisional,'Endgame growth ceiling must not be a birth/ungrown score');
- await page.locator('[data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
+ await page.locator('#originTable [data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const detail=await page.locator('#originDetails').innerText();
  assert(detail.includes('사전 완료 연구 0개')&&detail.includes('잠정')&&detail.includes('가정'));
@@ -81,8 +97,15 @@ try{
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
+ assert((await page.locator('#originTable tbody tr[data-origin-id="manufacture:STR_THEBAN_ASSAULT_CLONE"]').innerText()).includes('코르트 변환 상한 2,131 · 기본 비교 제외'));
+ assert.notEqual((await page.locator('#originTable tbody tr[data-origin-id="manufacture:STR_THEBAN_ASSAULT_CLONE"] .score').innerText()).trim(),'2,131',
+   'Shared Chort cap must not overwrite assault clone own final-type ranking');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ assert.equal(await page.locator('#originDetails [data-excluded-terminal="STR_SOLDIER_CHORT"]').count(),1);
+ assert((await page.locator('#originDetails [data-excluded-terminal="STR_SOLDIER_CHORT"]').innerText()).includes('2,131'));
+ assert(!(await page.locator('#originDetails .detail-head + p').innerText()).includes('출생 → 코르트'),
+   'Default assault clone goal must remain its own target, never Chort');
  const provenance=page.locator('#originDetails .origin-source-expansion');
  assert.equal(await provenance.count(),1);
  assert.equal(await provenance.evaluate(el=>el.open),false,
@@ -114,6 +137,19 @@ try{
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.querySelector('[data-acquisition-profile="manufacture:STR_ROGUE_CLONE_RECRUITMENT"]')!==null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('외톨이 클론'));
  console.log('PASS assault-clone acquisition: store license 125000, Egypt 12, Theban speech 3+research, four OR scripts, sibling births, mobile details');
+ await page.locator('#chortTarget [data-open-shared-candidate]').first().click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 별도 병종 경로'),null,{timeout:60000});
+ const chortDetails=await page.locator('#originDetails').innerText();
+ assert(chortDetails.includes('코르트')&&chortDetails.includes('출생처 기본 비교에서 제외된 변신 증거'));
+ assert.equal(await page.locator('#originDetails .shared-terminal-origin-note').count(),1);
+ assert((await page.locator('#originDetails .detail-head + p').innerText()).includes('코르트'),
+   'Chort path remains fully viewable from its own separate Soldier unit');
+ await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 변신은 별도 병종으로 비교합니다'),null,{timeout:60000});
+ assert(!(await page.locator('#originDetails .detail-head + p').innerText()).includes('→ 코르트'),
+   'A normal origin click must never inherit the special Chort terminal selection');
+ console.log('PASS separate Chort body: original 2131-point route openable only from terminal unit, while source birth default is distinct and annotated');
  const poltergeist=expectedReport.records.find(r=>r.profileId==='manufacture:STR_POLTERGEIST_EMBODIMENT');
  const poltergeistBest=poltergeist.candidates.find(c=>c.id===poltergeist.bestCandidateId);
  assert(poltergeistBest&&poltergeistBest.total>=453);
@@ -231,7 +267,7 @@ try{
    await wrongBranch.goto(url('soldiers/modern/'));
    await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',
      null,{timeout:60000});
-   await wrongBranch.locator('[data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
+   await wrongBranch.locator('#originTable [data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
    await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',
      null,{timeout:60000});
    assert((await wrongBranch.locator('#catalogStatus').innerText()).includes('연구 분기 폐쇄 시점 재생 불일치'));
