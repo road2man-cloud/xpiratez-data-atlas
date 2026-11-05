@@ -135,7 +135,11 @@ for(const slug of ["items","research","armors","weapons","soldiers","trainings",
   await scenario(slug+" no DecompressionStream fallback",async page=>{
     await page.goto(base+slug+"/",{waitUntil:"domcontentloaded"});
     const selector={items:"#tbody tr",research:"#tbody tr",armors:"#armorTable tbody tr",weapons:"#weaponTable tbody tr",soldiers:"#originTable tbody tr",trainings:"#trainingTable tbody tr",crafts:"#craftTable tbody tr",manufacture:"#manufactureTable tbody tr"}[slug];
-    assert((await visibleRows(page,slug==='trainings'?'#originTable tbody tr':selector))>0,"page must load on old browsers; retired training links open Soldier DB");
+    const rows=page.locator(slug==='trainings'?'#originTable tbody tr':selector);
+    // This original 210 MB (uncompressed) Soldier chronology archive is
+    // decoded using bundled JS on legacy browsers; a slower CPU needs time.
+    await rows.first().waitFor({state:'attached',timeout:slug==='soldiers'||slug==='trainings'?120000:18000});
+    assert((await rows.count())>0,'page must load on old browsers; retired training links open Soldier DB');
   },{noGzip:true});
 }
 for(const slug of ["items","research","armors","weapons","soldiers","trainings","crafts","manufacture"]){
@@ -389,8 +393,19 @@ for(const slug of ["armors","weapons"]){
     for(const [width,height] of [[390,844],[844,390]]){
       await page.setViewportSize({width,height});
       assert.equal(await page.locator(".toolbar").evaluate(el=>getComputedStyle(el).position),"static");
-      const scroll=await page.locator(".table-shell").evaluate(el=>{el.scrollLeft=600;return el.scrollLeft;});
-      assert(scroll>0,"horizontal table scrolling must remain available");
+      const scroll=await page.locator('.table-shell').evaluate(el=>{
+        const before={client:el.clientWidth,scroll:el.scrollWidth,left:el.scrollLeft,
+          overflowX:getComputedStyle(el).overflowX,table:el.querySelector('table')?.getBoundingClientRect().width};
+        // A smooth-scroll CSS rule defers scrollLeft updates until animation.
+        // Test actual scrollability without relying on the animation frame.
+        const previous=el.style.scrollBehavior;
+        el.style.scrollBehavior='auto';
+        el.scrollLeft=600;
+        const after=el.scrollLeft;
+        el.style.scrollBehavior=previous;
+        return {...before,after};
+      });
+      assert(scroll.after>0,'horizontal table scrolling must remain available: '+JSON.stringify({slug,width,height,...scroll}));
       await page.locator(loadedSelector[slug]).first().click();
       await page.locator("#detailDialog[open]").waitFor();
       await page.locator("#closeDialog").click();

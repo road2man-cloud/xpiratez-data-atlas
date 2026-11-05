@@ -1,5 +1,6 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
+import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
 import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-campaign-context.js?v=20261105-campaign-context-1';
@@ -8,7 +9,7 @@ import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261105-compact-supply-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261105-legacy-gzip-1';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -16,11 +17,10 @@ const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new T
 async function expandOriginArchive(envelope){
   if(envelope?.format!=='xpz-origin-report-gzip-v2')return envelope;
   if(envelope.compression!=='gzip'||envelope.encoding!=='base64'||
-    typeof envelope.payload!=='string'||typeof DecompressionStream!=='function')
+    typeof envelope.payload!=='string')
     throw Error('병종 경로 압축 원본을 읽을 수 없음');
   const zipped=Uint8Array.from(atob(envelope.payload),s=>s.charCodeAt(0));
-  const bytes=await new Response(new Blob([zipped]).stream()
-    .pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
+  const bytes=await inflateArchivedGzip(zipped);
   const hash=[...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))]
     .map(n=>n.toString(16).padStart(2,'0')).join('');
   if(bytes.byteLength!==envelope.byteLength||hash!==envelope.sha256)

@@ -62,6 +62,10 @@ jobs:
           node tools/check-research-tech-browser.mjs
           # Legacy item acquisition: original price/store gates, manufacturing and event outcome uncertainty.
           node tools/check-item-acquisition-tech-browser.mjs
+          # Deep mobile origin paths and full 42-case functional browser audit,
+          # including original archive loading without DecompressionStream.
+          node tools/check-origin-complete-condition-tree-browser.mjs
+          node tools/check-site-functional.mjs
 
       - name: Publish public tree to gh-pages
         run: |
