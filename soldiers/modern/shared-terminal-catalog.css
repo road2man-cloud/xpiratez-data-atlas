@@ -1,0 +1,52 @@
+/* Dedicated, non-birth terminal Soldier type. 16 original allowed bodies and 42
+   indexed origins; the source-birth table never ranks final Chort scores. */
+.shared-terminal-catalog{margin:14px 0;padding:16px 19px;min-width:0}
+.terminal-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.terminal-head>div{min-width:0;flex:1 1 320px}
+.terminal-head .eyebrow{margin:0 0 5px;color:#9fc7ec;font-size:.76rem;letter-spacing:.04em}
+.terminal-head h2{margin:0;color:#eef7ff;font-size:1.24rem}
+.terminal-head h2 small{font-size:.71rem;color:#94aecb;font-weight:500;overflow-wrap:anywhere}
+.terminal-head p{margin:5px 0 0;color:#c5d8eb;line-height:1.55;font-size:.87rem}
+.terminal-type-label{font-size:.78rem;color:#e0cfa6;border:1px solid #907d58;
+  border-radius:7px;padding:6px 10px;white-space:nowrap}
+.terminal-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;border-top:1px solid #365575;margin-top:13px;padding-top:12px}
+.terminal-facts>div{display:flex;flex-direction:column;gap:3px}
+.terminal-facts strong{font-size:1.35rem;font-weight:850;color:#f3f8ff;font-variant-numeric:tabular-nums}
+.terminal-facts small{font-size:.77rem;color:#b9cde1}
+.terminal-gate{font-size:.84rem;color:#d5e7f6;padding:10px 0;border-top:1px solid #344d65;
+  margin:13px 0 4px;line-height:1.65;overflow-wrap:anywhere}
+.terminal-links{margin:6px 0 12px}
+.terminal-links button,.terminal-paths button,.terminal-source-list button{
+  cursor:pointer;border:1px solid #7196bc;color:#eff7ff;background:#284a69;
+  border-radius:7px;font-weight:650;font-size:.8rem;padding:7px 9px}
+.terminal-links button:hover,.terminal-paths button:hover,
+.terminal-source-list button:hover{background:#35658a}
+.shared-terminal-catalog>details{border-top:1px solid #395977;padding:10px 0;margin:0}
+.shared-terminal-catalog>details>summary{cursor:pointer;color:#dceaf8;font-size:.88rem;font-weight:750}
+.terminal-type-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:7px;margin:12px 0 2px}
+.terminal-type-list span{border:1px solid #344d66;border-radius:7px;padding:7px 9px;background:#142941;
+  font-size:.82rem}
+.terminal-type-list small{margin-left:5px;font-size:.73rem;color:#a2c2e0}
+.terminal-source-list,.terminal-paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr));
+  gap:7px;margin:10px 0}
+.terminal-source-list>div,.terminal-paths>div{padding:9px 11px;border:1px solid #395772;
+  border-radius:9px;background:#142b44;font-size:.81rem;min-width:0;line-height:1.5}
+.terminal-source-list>div{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.terminal-source-list small{color:#bdd0e3;font-size:.75rem}
+.terminal-paths button{display:block;margin-top:8px}
+.shared-terminal-origin-note{padding:10px 13px;margin:12px 0;background:#1c3345;
+  border-left:3px solid #dfc080;border-radius:6px;overflow-wrap:anywhere}
+.shared-terminal-origin-note strong{font-size:.87rem;color:#f3dbaa}
+.shared-terminal-origin-note p{font-size:.84rem;margin:5px 0;line-height:1.55}
+.shared-terminal-origin-note a{font-size:.81rem;color:#baddf8}
+.origin-terminal-tag{color:#e0cfa6!important;font-weight:700}
+#originTable thead th:first-child{min-width:130px}
+.table-head h2 small{font-size:.67em;color:#b8cde1;font-weight:500}
+@media(max-width:640px){
+ .shared-terminal-catalog{padding:12px 13px;margin:10px 0}
+ .terminal-facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 8px}
+ .terminal-head h2{font-size:1.13rem}
+ .terminal-type-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .terminal-gate{font-size:.8rem}
+}

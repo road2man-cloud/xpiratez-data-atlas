@@ -7,9 +7,10 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
+import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261105-legacy-gzip-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261106-chort-separated-2';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -66,8 +67,74 @@ function previousTraceStep(){
 const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
 const node=id=>'<button type="button" class="research-node" data-research-node="'+esc(id)+'">'+esc(name(id))+'</button>';
 const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='conditional-upper-envelope'?c.growth.total:-1):c.display.total);
-const comparable=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
+const allCompatible=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
+const comparable=r=>originRankingCandidates(r,candidateMatchesCampaign);
+const chortCandidates=r=>sharedTerminalCandidates(r,candidateMatchesCampaign);
 const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>score(c,metric)>score(winner,metric)?c:winner,null);
+function renderSharedTerminalCatalog(){
+  const host=$('#chortTarget'),audit=sharedTerminalSourceAudit(DATA);
+  if(audit.transformId!==SHARED_TERMINALS[0].transformId||
+    audit.bodyId!==SHARED_TERMINALS[0].bodyId)
+    throw Error('코르트 공통 변신 원본 규칙 불일치');
+  const t=audit.rule,examples=REPORT.records.map(record=>{
+    const paths=chortCandidates(record);
+    const bestPath=paths.reduce((win,c)=>score(c)>score(win)?c:win,null);
+    return bestPath?{record,path:bestPath,count:paths.length}:null;
+  }).filter(Boolean).sort((a,b)=>score(b.path)-score(a.path));
+  const typeCount=id=>audit.origins.filter(p=>p.soldierType===id).length;
+  const sourceStatus=p=>p.initialPsiStatus==='meets'?'출생 시 충족':
+    p.initialPsiStatus==='depends'?'개체별 확인':'훈련 후 확인';
+  host.innerHTML='<div class="terminal-head"><div><p class="eyebrow">독립 병종 · 공통 변신 목표</p>'+
+    '<h2>코르트 <small>STR_SOLDIER_CHORT</small></h2>'+
+    '<p>여러 출생 병종이 코르트로 변경될 수 있습니다. 코르트 성장 상한은 출생처 순위에 합산하지 않습니다.</p></div>'+
+    '<span class="terminal-type-label">변신 전용</span></div>'+
+    '<div class="terminal-facts">'+
+      '<div><strong>'+audit.types.length+'</strong><small>허용 출발 병종</small></div>'+
+      '<div><strong>'+audit.origins.length+'</strong><small>등록 출생처</small></div>'+
+      '<div><strong>'+audit.fixedPsi+'</strong><small>출생 시 Psi 충족</small></div>'+
+      '<div><strong>'+audit.variablePsi+'</strong><small>Psi 개체별 확인</small></div>'+
+    '</div>'+
+    '<p class="terminal-gate"><strong>코르트 구속</strong> · 계급 '+fmt(t.minRank)+' 이상 · Psi 강도 '+
+      fmt(audit.threshold)+' 이상 · '+Object.entries(t.requiredItems||{}).map(([id,q])=>
+        esc(name(id))+' '+fmt(q)+'개').join(' · ')+
+      ' · 비용 '+fmt(t.cost)+' · 기지 기능 '+(t.requiresBaseFunc||[]).map(esc).join(', ')+'</p>'+
+    '<div class="terminal-links">'+(t.requires||[]).map(id=>
+      '<button data-trace-research-root="'+esc(id)+'">코르트 구속 선행 연구 보기</button>').join('')+'</div>'+
+    '<details class="terminal-source-types"><summary>허용 출발 병종 '+audit.types.length+'종</summary>'+
+      '<div class="terminal-type-list">'+audit.types.map(x=>
+        '<span>'+esc(x.name)+' <small>'+typeCount(x.id)+'개 출생처</small></span>').join('')+'</div>'+
+    '</details>'+
+    '<details class="terminal-source-origins"><summary>등록 출생처 '+audit.origins.length+
+      '개 · 초기 Psi 조건</summary><div class="terminal-source-list">'+audit.origins.map(p=>
+      '<div><button type="button" data-open-origin="'+esc(p.id)+'">'+esc(p.name)+'</button>'+
+      '<small> Psi '+fmt(p.psiMin)+(p.psiMin!==p.psiMax?'~'+fmt(p.psiMax):'')+
+      ' · '+sourceStatus(p)+'</small></div>').join('')+'</div></details>'+
+    '<details class="terminal-verified-paths"><summary>연구·변신 경로 재생 후보 · 출생처 '+
+      examples.length+'개</summary><div class="terminal-paths">'+examples.map(({record,path,count})=>
+      '<div><strong>'+esc(record.name)+'</strong> · 조건부 성장 상한 '+
+        fmt(path.growth?.total)+' · 기록 '+count+'개'+
+        '<button type="button" data-open-shared-candidate="'+esc(path.id)+
+        '" data-shared-origin="'+esc(record.profileId)+'">코르트 변환 경로 자세히</button></div>').join('')+
+    '</div></details>';
+}
+function sharedTerminalOriginNote(record,profile){
+  const audit=sharedTerminalSourceAudit(DATA);
+  const allowed=audit.types.some(x=>x.id===profile.soldierType);
+  if(!allowed)return '';
+  const alternatives=chortCandidates(record),bestPath=alternatives.reduce((winner,c)=>
+    score(c)>score(winner)?c:winner,null);
+  const low=profile.effectiveStats?.min?.psiStrength;
+  const high=profile.effectiveStats?.max?.psiStrength;
+  return '<div class="shared-terminal-origin-note" data-excluded-terminal="STR_SOLDIER_CHORT">'+
+    '<strong>코르트 변신은 별도 병종으로 비교합니다.</strong>'+
+    '<p>현재 출생 병종 '+esc(record.soldierName)+
+    '은 코르트 구속이 허용한 병종입니다. 초기 Psi 강도 '+fmt(low)+
+    (high!==low?'~'+fmt(high):'')+' · 요구 '+fmt(audit.threshold)+'.'+
+    (bestPath?' 이 출생처의 코르트 변환 재생 후보는 조건부 성장 상한 '+
+      fmt(bestPath.growth?.total)+'이지만 위 순위에는 포함하지 않습니다.':
+      ' 코르트 도달 경로의 개별 재생은 아직 별도로 인증되지 않았습니다.')+
+    '</p><a href="#chortTarget">코르트 병종·출발형 보기</a></div>';
+}
 function sourceFail(message){
   blocked=true;$('#originMaxima').dataset.validation='rejected';
   $('#catalogStatus').textContent='자료 검증 실패 · 잠정/확정 수치 표시 중단: '+message;
@@ -123,8 +190,8 @@ async function validate(){
     }
   }
   if(REPORT.campaignContextAuditVersion!==1||
-    REPORT.summary.withCompatibleResearch!==REPORT.records.filter(r=>comparable(r).length).length||
-    REPORT.summary.compatibleWitnesses!==REPORT.records.reduce((sum,r)=>sum+comparable(r).length,0))
+    REPORT.summary.withCompatibleResearch!==REPORT.records.filter(r=>allCompatible(r).length).length||
+    REPORT.summary.compatibleWitnesses!==REPORT.records.reduce((sum,r)=>sum+allCompatible(r).length,0))
     throw Error('난이도 공동조건 감사 요약 불일치');
   $('#originMaxima').dataset.validation='validated';
 }
@@ -134,7 +201,7 @@ function render(){
   const rows=REPORT.records.filter(r=>(!family||r.soldierType===family)&&(!q||
     [r.profileId,r.name,r.soldierName,
       ...Object.keys(DATA.profiles.find(p=>p.id===r.profileId)?.acquisitionRequiredItems||{}),
-      ...r.candidates.flatMap(c=>c.transforms.map(name))]
+      ...comparable(r).flatMap(c=>c.transforms.map(name))]
       .join(' ').toLocaleLowerCase('ko').includes(q)));
   const rowScore=r=>metric==='birth'?displayTotal(r.displayBirth):metric==='certified'?-1:score(best(r,metric==='growth'?'growth':'provisional'),metric==='growth'?'growth':'provisional');
   rows.sort((a,b)=>rowScore(b)-rowScore(a)||a.name.localeCompare(b.name,'ko'));
@@ -142,14 +209,17 @@ function render(){
   $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>12종 합계</th>'+DISPLAY_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const c=best(r,metric==='growth'?'growth':'provisional');
+    const terminal=chortCandidates(r).reduce((winner,x)=>score(x)>score(winner)?x:winner,null);
     const values=metric==='birth'?r.displayBirth:metric==='certified'?null:
       metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display.stats;
     const total=values?displayTotal(values):null;
-    return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small><small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
+    return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small>'+
+      (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
+      '<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
       (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'연구 경로 보완 중')+
       '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
-  $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 출생 가능 최댓값부터 연구 경로의 병종·훈련 변화를 순서대로 적용하고, 변신 전후 체력훈련·전투 성장의 조건부 상한을 투사합니다. 12종 상한 합계는 동시 달성·실전 검증이나 전역 최고값의 증명이 아닙니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
+  $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 출생처별 조건부 성장 상한 · 코르트 최종 변신은 별도 병종으로 분리했습니다. 동시 달성·전역 최고값은 미증명입니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
 }
 function statGrid(c,metric='growth'){
   const view=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope'?c.growth:c.display;
@@ -267,7 +337,7 @@ function assumptionHtml(c){return c.assumptions.map(s=>{
   if(s.type==='recruit')return '<li>출생 최솟값 벡터 · 실제 생성 난수 미실측'+(s.script?' · 출생 이벤트 '+esc(s.script):'')+'</li>';
   return '<li>게임 경과 '+fmt(s.month)+'개월 · 유지비·외부 사건 미검증</li>';
 }).join('');}
-async function openOrigin(id,candidateId=null){
+async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   if(blocked)return;const generation=++replayGeneration;
   activeBirthViewer?.dispose();activeBirthViewer=null;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
@@ -277,7 +347,8 @@ async function openOrigin(id,candidateId=null){
     '<p class="fine">이곳에는 연구 ID, 공급 스크립트, 다른 출생처와의 상세 연결을 원본 단위로 보존합니다.</p>'+
     renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+'</details>';
   const metric=$('#catalogMetric').value;
-  selected=id;const c=comparable(record).find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
+  selected=id;const eligible=sharedTerminal?chortCandidates(record):comparable(record);
+  const c=eligible.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
   const host=$('#originDetails');host.hidden=false;
   host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div><p class="muted">등록 경로의 원본·현재 수치를 재대조하는 중…</p>';
@@ -307,7 +378,10 @@ async function openOrigin(id,candidateId=null){
     sourceFail('연구 분기 폐쇄 시점 재생 불일치: '+c.id);return;
   }
   const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='repeatResearch'||s.type==='freeResearch').at(-1);
-  const bonus=comparable(record).sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
+  const alternateSet=sharedTerminal?chortCandidates(record):comparable(record);
+  const bestAlternate=metric=>alternateSet.reduce((winner,x)=>
+    score(x,metric)>score(winner,metric)?x:winner,null);
+  const bonus=[...alternateSet].sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
   const useGrowth=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope';
   const shown=useGrowth?c.growth:c.display;
   const finalBody=DATA.soldiers.find(x=>x.id===c.finalSoldierType);
@@ -321,12 +395,13 @@ async function openOrigin(id,candidateId=null){
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
+    (sharedTerminal?'<p class="shared-terminal-origin-note"><strong>코르트 별도 병종 경로</strong> · 출생처 기본 비교에서 제외된 변신 증거입니다. <a href="#chortTarget">코르트 목록 보기</a></p>':sharedTerminalOriginNote(record,profile))+
     campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+
     '<details class="assumptions"><summary>필수 확인 · 남은 자원·출생·확률 가정 '+c.assumptions.length+'건</summary><ul>'+assumptionHtml(c)+'</ul><h4>모델의 미검증 조건</h4><ul>'+(c.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><details><summary>자동 연구·lookup 조건부 처리 기록</summary><ul>'+(c.modelAssumptions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details></details>'+
-    '<details><summary>다른 완결 후보 · 목표 A/B 비교</summary><p>목표 A 영구 특성 12종 합 최고 '+fmt(bonus?.display.bonusTotal)+' / 연구·시술 12종 합 최고 '+fmt(best(record,'provisional')?.display.total)+' / 성장 완료 조건부 상한 합 최고 '+fmt(best(record,'growth')?.growth?.total)+'. 서로 다른 병사·연구 경로의 유리한 수치를 합치지 않습니다. 난이도 충돌 후보는 비교에서 제외합니다.</p>'+comparable(record).map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 성장상한 '+fmt(x.growth?.total)+' / 연구·시술 '+fmt(x.display.total)+'</button></p>').join('')+'</details>'+
+    '<details><summary>'+(sharedTerminal?'코르트 변신 후보끼리 비교':'다른 완결 후보 · 목표 A/B 비교')+'</summary><p>목표 A 영구 특성 12종 합 최고 '+fmt(bonus?.display.bonusTotal)+' / 연구·시술 12종 합 최고 '+fmt(bestAlternate('provisional')?.display.total)+' / 성장 완료 조건부 상한 합 최고 '+fmt(bestAlternate('growth')?.growth?.total)+'. 서로 다른 병사·연구 경로의 유리한 수치를 합치지 않습니다. 난이도 충돌 후보는 비교에서 제외합니다.</p>'+alternateSet.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 성장상한 '+fmt(x.growth?.total)+' / 연구·시술 '+fmt(x.display.total)+'</button></p>').join('')+'</details>'+
     '<p class="fine">재생: 통과 · 실제 게임 실측: 없음 · 전역 최적성: 미증명 · 원본 v.o2. 더 높은 경로는 같은 출생처의 비교 후보로 등록한 뒤 갱신합니다.</p>';
   showBirthTech(profile);
 }
@@ -351,15 +426,25 @@ async function init(){try{
     DIAGNOSTICS.unresolvedCount!==REPORT.summary.unresolved||
     DIAGNOSTICS.rows.some(x=>!REPORT.records.some(r=>r.profileId===x.profileId&&!r.candidates.length)))
     throw Error('미해결 출생 경로 진단 원본이 현재 병종 DB와 일치하지 않음');
-  const complete=REPORT.records.filter(r=>comparable(r).length).length;
-  $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['비교 가능한 후보',REPORT.summary.compatibleWitnesses,'난이도 충돌 '+REPORT.summary.excludedDifficultyWitnesses+'건 제외'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
+  const complete=REPORT.records.filter(r=>allCompatible(r).length).length;
+  const ranked=REPORT.records.reduce((n,r)=>n+comparable(r).length,0);
+  const separated=REPORT.records.reduce((n,r)=>n+chortCandidates(r).length,0);
+  if(ranked+separated!==REPORT.summary.compatibleWitnesses)
+    throw Error('분리한 코르트 후보와 원본 연구 경로 합계 불일치');
+  $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['출생처 비교 후보',ranked,'코르트 변신 '+separated+'건은 별도 병종'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
+  renderSharedTerminalCatalog();
   $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('');
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
   $('#search').addEventListener('input',render);$('#family').addEventListener('change',render);$('#catalogMetric').addEventListener('change',render);
   for(const [id,direction] of [['#scrollStatsLeft',-1],['#scrollStatsRight',1]])
     $(id).addEventListener('click',()=>$('#originTableScroll').scrollBy({left:direction*260,behavior:'smooth'}));
   document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
-    if(origin)void openOrigin(origin.dataset.openOrigin);
+    const shared=e.target.closest('[data-open-shared-candidate]');
+    if(origin)void openOrigin(origin.dataset.openOrigin).then(()=>{
+      if(origin.closest('#chortTarget'))$('#originDetails').scrollIntoView({block:'start'});
+    });
+    if(shared){void openOrigin(shared.dataset.sharedOrigin,shared.dataset.openSharedCandidate,
+      {sharedTerminal:true}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));}
     const continueButton=e.target.closest('[data-trace-id]');
     if(continueButton){
       const guideMore=continueButton.closest('.guide-more-sources');
@@ -407,7 +492,10 @@ async function init(){try{
         }
       }
     }
-    if(research)showResearch(research.dataset.researchNode);if(candidate)void openOrigin(selected,candidate.dataset.candidate);
+    if(research)showResearch(research.dataset.researchNode);
+    if(candidate)void openOrigin(selected,candidate.dataset.candidate,{
+      sharedTerminal:!!candidate.closest('#originDetails')?.querySelector('.shared-terminal-origin-note:not([data-excluded-terminal])')
+    });
     if(e.target.id==='originDetailClose'){
       activeBirthViewer?.dispose();activeBirthViewer=null;
       $('#originDetails').hidden=true;replayGeneration++;
