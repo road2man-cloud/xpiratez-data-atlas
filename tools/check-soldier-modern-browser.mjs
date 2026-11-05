@@ -144,6 +144,19 @@ try{
  assert.equal(await page.locator('#originDetails .shared-terminal-origin-note').count(),1);
  assert((await page.locator('#originDetails .detail-head + p').innerText()).includes('코르트'),
    'Chort path remains fully viewable from its own separate Soldier unit');
+ const chortAlternatives=page.locator('#originDetails [data-candidate]');
+ assert(await chortAlternatives.count()>0);
+ const chortIds=new Set(expectedReport.records.flatMap(r=>r.candidates.filter(c=>
+   c.finalSoldierType==='STR_SOLDIER_CHORT').map(c=>c.id)));
+ const displayedIds=await chortAlternatives.evaluateAll(nodes=>nodes.map(x=>x.dataset.candidate));
+ assert(displayedIds.every(id=>chortIds.has(id)),
+   'The separate Chort view must compare ONLY source-validated Chort terminal alternatives: '+
+     JSON.stringify(displayedIds.filter(id=>!chortIds.has(id)).slice(0,5)));
+ await chortAlternatives.last().evaluate(el=>{el.closest('details').open=true});
+ await chortAlternatives.last().click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 별도 병종 경로'),null,{timeout:60000});
+ assert((await page.locator('#originDetails .detail-head + p').innerText()).includes('→ 코르트'),
+   'Switching Chort candidates must remain within the separate terminal record');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 변신은 별도 병종으로 비교합니다'),null,{timeout:60000});
