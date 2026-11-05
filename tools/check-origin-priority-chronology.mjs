@@ -28,8 +28,12 @@ assert.equal(candidate.certifiedMaximum,false);
 assert(candidate.limitations.some(x=>x.includes('미실측')));
 
 // Audit the original known path even when a later agent finds a better one.
-const original=record.candidates.find(c=>c.id==='304ec34d86e0d69ff116');
-assert(original,'Keep the first verified 453-point path for reproducibility');
+const original=(record.rejectedCandidates||[]).find(c=>c.id==='304ec34d86e0d69ff116');
+assert(original,'Preserve the first numerical 453-point record as a difficulty counterexample');
+assert.equal(original.campaignContext.kind,'inconsistent');
+assert.equal(candidate.campaignContext.kind,'compatible');
+assert.equal(replayOriginWitness(original.steps,data,{requireCompatibleContext:true}).ok,false,
+  'A numerically replayable archived record must not be admitted as a same-campaign route');
 assert.equal(original.total,453);
 assert.deepEqual(original.transforms,['STR_MMA_TRAINING','STR_PROUD_WARRIOR']);
 assert.equal(original.researchCount,433);
@@ -116,6 +120,6 @@ for(const [args,message] of [
   assert(attempt.stderr.includes(message),attempt.stderr);
 }
 assert.equal(fileDigest(),originalDigest,'Rejected CLI goals must not alter any candidate');
-console.log('PASS Poltergeist origin: zero research -> 433 processed research -> birth -> 2 trainings -> conditional 453');
+console.log('PASS Poltergeist: repaired compatible route >=453; historical 433-research/453-point record retained but excluded for conflicting difficulty');
 console.log('PASS causal counterexamples: expired month-20 event, missing protected guard, reused free-reward token rejected');
 console.log('PASS previous search failure was not impossibility; origin acquisition and five candidate histories retained');

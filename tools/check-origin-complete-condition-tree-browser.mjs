@@ -99,22 +99,28 @@ try{
     'Origins with source-defined captain guards must expose each specific acquisition script');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
     'Expanded source-specific start choices must not overflow a mobile viewport');
-  await page.locator('#search').fill('manufacture:STR_RECRUIT_KILLBOT');
+  // All 72 origins now have conditional routes. Older unresolved deadline
+  // cards must not appear, but the excluded, incompatible difficulty paths
+  // remain available as expandable counterexample evidence.
+  await page.locator('#search').fill('manufacture:STR_POLTERGEIST_EMBODIMENT');
   await page.locator('#originTable .origin-open').click();
-  const stalled=page.locator('#originDetails [data-unresolved-evidence="manufacture:STR_RECRUIT_KILLBOT"]');
-  await stalled.waitFor();
-  const stalledText=await stalled.textContent();
-  assert(stalledText.includes('STR_ENJOYING_THE_DREAM'));
-  assert(stalledText.includes('20개월')&&stalledText.includes('24개월'));
-  await stalled.locator('button[data-trace-research-root="STR_CLOAKING_DEVICE"]').first().click();
-  assert.equal(await drill.evaluate(el=>el.open),true,
-    'An unresolved deadline failure must open the research prerequisite explorer');
-  assert.equal(await drill.locator('#acquisitionTraceContent .tech-viewer').count(),1);
-  assert.equal(await stalled.locator('.origin-complete-tree').count(),0,
-    'Deadline diagnostics must remain legible rather than contain nested trees');
-  await drill.locator('#acquisitionTraceClose').click();
+  const context=page.locator('#originDetails .origin-campaign-audit[data-campaign-compatible="true"]');
+  await context.waitFor();
+  assert((await context.innerText()).includes('난이도 조건 일치'));
+  const rejected=context.locator('.origin-rejected-candidates');
+  await rejected.waitFor();
+  assert.equal(await rejected.evaluate(el=>el.open),false,
+    'Archived invalid routes should be accessible but collapsed by default');
+  await rejected.locator(':scope > summary').click();
+  const conflictProof=rejected.locator('details').first();
+  await conflictProof.locator(':scope > summary').click();
+  const archive=await rejected.innerText();
+  assert(archive.includes('STR_ENJOYING_THE_DREAM')&&archive.includes('STR_BLESSINGS'),
+    'The incompatible difficulty-0 and difficulty-1 events must remain inspectable');
+  assert.equal(await page.locator('#originDetails [data-unresolved-evidence]').count(),0,
+    'A repaired route must not display stale unresolved deadline cards');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
-    'Unresolved origin chronological evidence must fit a mobile viewport');
+    'Archived contradiction evidence must fit mobile without nested tech trees');
   assert.deepEqual(errors,[],'Uncaught browser JS errors');
   console.log('PASS mobile browser: 2.1 clone detail, four propaganda alternatives, prerequisite continuation, and candidate rank/research panel');
 }finally{

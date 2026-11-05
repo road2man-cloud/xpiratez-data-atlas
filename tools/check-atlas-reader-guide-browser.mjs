@@ -234,10 +234,12 @@ try{
   await wildVisual.locator('.tech-original > summary').click();
   const medallionCycle=page.locator('#originDetails [data-bootstrap-cycle="STR_MEDALLION"]');
   await medallionCycle.waitFor();
+  assert((await medallionCycle.locator('summary').innerText()).includes('연구 표본 선행'));
+  await medallionCycle.locator('summary').click();
   const cycleText=await medallionCycle.innerText();
-  assert(cycleText.includes('첫 구매 전 다른 공급 경로 확인 필요'));
+  assert(cycleText.includes('실물 표본 요구'));
   assert(cycleText.includes('이벤트')&&cycleText.includes('제조'),
-    'Purchasable specimen cycle needs separately sourced supply alternatives');
+    'Purchasable specimen cycle keeps source alternatives in a collapsed detail');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
     'Cyclic first-purchase notice must not overflow the mobile viewport');
   assert.deepEqual(errors,[],'Origin detail reader errors');

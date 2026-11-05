@@ -86,8 +86,8 @@ export function renderAcquisitionPaths(profile,data,ui={}){
       '</div>';
   }
   function renderScriptAlternatives(scripts){
-    if(!arr(scripts).length)return '<p class="fine">실제 발생 스크립트의 조건을 아직 색인하지 못했습니다. 획득 확정 아님.</p>';
-    return '<p class="fine">'+scripts.length+'개 발생 방법 중 하나를 충족하면 해당 이벤트의 발생 후보가 됩니다. 각 방법 내부의 필요·금지 조건은 모두 적용되며, 조건 충족만으로 보상은 확정되지 않습니다.</p>'+
+    if(!arr(scripts).length)return '<p class="fine">발생 조건 미색인</p>';
+    return '<p class="fine">발생 방법 '+scripts.length+'개</p>'+
       '<div class="origin-script-options">'+scripts.map((s,i)=>{
         const time=s.firstMonth!=null||s.lastMonth!=null?
           ' · '+fmt(s.firstMonth??0)+'~'+(s.lastMonth==null?'제한 없음':fmt(s.lastMonth))+'개월':'';
@@ -119,7 +119,7 @@ export function renderAcquisitionPaths(profile,data,ui={}){
           ' · 게임 시작부터 연구 경로 확인</button>').join('')+
         (arr(s.buyRequiresBaseFunc).length?'<p>필수 기지 기능: '+tokens(s.buyRequiresBaseFunc)+'</p>':'')+
         (s.buyRequiresCountry?'<p>상점 구매 국가 조건: '+text(s.buyRequiresCountry)+'</p>':'')+
-        '<p class="fine">원본의 구매 전용 해금 조건입니다. 면허 이벤트 직접 지급 경로에는 적용하지 않습니다. 실제 상점 입고와 자금은 별도 확인이 필요합니다.</p></div>');
+        '</div>');
     }
     for(const ev of arr(s?.eventGrants)){
       const quantity=arr(ev.grants).map(g=>
@@ -130,7 +130,7 @@ export function renderAcquisitionPaths(profile,data,ui={}){
       const grants=arr(ev.directResearchAwards);
       options.push('<details class="origin-route source-event" data-route-kind="event" data-event="'+esc(ev.event)+'"><summary>'+
         '<strong>이벤트: '+text(ev.event)+'</strong> — '+esc(quantity)+'</summary>'+
-        '<p>물품 지급: '+ref(item.id)+'. 이벤트 발생 및 선택은 조건부입니다.</p>'+
+        '<p>지급 물품: '+ref(item.id)+'</p>'+
         (grants.length?'<p>같은 이벤트의 연구 직접 지급: '+tokens(grants)+
           ' (물품 연구와 중복 수행하지 않음)</p>':'')+
         renderScriptAlternatives(ev.scriptRoutes||[])+'</details>');
@@ -149,7 +149,7 @@ export function renderAcquisitionPaths(profile,data,ui={}){
     if(s?.mapLoot?.sourceCount)options.push('<div class="origin-route" data-route-kind="map">'+
       '지도 배치 근거 '+fmt(s.mapLoot.sourceCount)+'건'+
       (s.mapLoot.possiblyTruncated?' (색인 생략 가능성 있음)':'')+
-      '; 임무 생성·지도 선택·회수는 별도 검증 필요</div>');
+      '</div>');
     const supplied=options.length?options.join(''):'<p class="fine">색인된 획득 경로 없음. 게임에서 불가능하다는 증명은 아닙니다.</p>';
     return '<details class="origin-material" data-required-item="'+esc(item.id)+'">'+
       '<summary>'+ref(item.id)+' ×'+fmt(item.quantity)+' · 확인된 물품 공급 경로 '+options.length+'종</summary>'+

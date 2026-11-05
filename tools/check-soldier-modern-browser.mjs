@@ -124,9 +124,12 @@ try{
  assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
  await page.locator('#originDetails .assumptions').evaluate(el=>el.open=true);
  const poltergeistDetail=await page.locator('#originDetails').innerText();
- assert(poltergeistDetail.includes('STR_ENJOYING_THE_DREAM'));
+ assert(poltergeistDetail.includes('STR_BLESSINGS'),
+   'The selected compatible route must show its actual difficulty-1 event source');
+ assert(!poltergeistDetail.includes('STR_ENJOYING_THE_DREAM'),
+   'The mutually exclusive difficulty-0 event belongs only to archived counterexamples');
  assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
- console.log('PASS previously unresolved Poltergeist birth now has a replayed conditional route, not an invented cap');
+ console.log('PASS Poltergeist selected route excludes impossible mixed-difficulty event and retains conditional free-research evidence');
  const catgirl=expectedReport.records.find(r=>r.profileId==='manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT');
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);
@@ -189,17 +192,23 @@ try{
    assert.equal(await corrupt.locator('#originTable tbody tr').count(),0);
    assert((await corrupt.locator('#catalogStatus').innerText()).includes('표시 중단'));
    await corrupt.close();
-   const brokenGap=await browser.newPage();
-   await brokenGap.route('**/soldier-origin-candidates.json*',async route=>{
+   // Every origin now has a source-checked conditional route; there is no
+   // unresolved row left in which to inject a fabricated research bottleneck.
+   // Falsify the campaign context instead, so a forged impossible difficulty
+   // can never enter a valid origin comparison.
+   const brokenContext=await browser.newPage();
+   await brokenContext.route('**/soldier-origin-candidates.json*',async route=>{
      const response=await route.fetch();const body=decodeOriginReport(await response.json());
-     body.records.find(r=>!r.candidates.length).researchBottlenecks[0].reason='fabricated';
+     const record=body.records.find(r=>r.profileId==='manufacture:STR_POLTERGEIST_EMBODIMENT');
+     const candidate=record.candidates.find(c=>c.campaignContext.kind==='compatible');
+     candidate.campaignContext.allowedDifficulties=[0];
      await route.fulfill({response,body:encodeOriginReport(body),contentType:'application/json'});
    });
-   await brokenGap.goto(url('soldiers/modern/'));
-   await brokenGap.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',
+   await brokenContext.goto(url('soldiers/modern/'));
+   await brokenContext.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',
      null,{timeout:60000});
-   assert.equal(await brokenGap.locator('#originTable tbody tr').count(),0);
-   await brokenGap.close();
+   assert.equal(await brokenContext.locator('#originTable tbody tr').count(),0);
+   await brokenContext.close();
    const wrongBranch=await browser.newPage();
    await wrongBranch.route('**/soldier-origin-candidates.json*',async route=>{
      const response=await route.fetch();const body=decodeOriginReport(await response.json());

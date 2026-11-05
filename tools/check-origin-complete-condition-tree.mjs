@@ -157,8 +157,8 @@ assert(glamourNeed.includes('고정 지급 10개 / 필요 250개')&&
   'Mutually exclusive starting-country rewards must be independently compared');
 assert(glamourNeed.includes('1회 제조 산출 24개 / 필요 250개')&&
   glamourNeed.includes('수량상 최소 11회 제조')&&
-  glamourNeed.includes('반복 가능 여부'),
-  'Manufacturing batch arithmetic must remain conditional on repeat feasibility');
+  !glamourNeed.includes('반복 가능 여부'),
+  'Show manufacturing arithmetic without redundant generic warning paragraphs');
 const pageQuantity=renderAcquisitionTree(buildAcquisitionSubtree(
   'item-method-event','STR_GLAMOUR',data,2),{requiredQuantity:250});
 assert(pageQuantity.includes('data-required-quantity="250"')&&
@@ -169,19 +169,19 @@ assert(!renderAcquisitionTree(buildAcquisitionSubtree(
   'item-method-event','STR_GLAMOUR',data,2)).includes('data-quantity-method='),
   'Standalone source inspection must not invent a birth material quantity');
 const hybridNeed=amountGuide('manufacture:STR_HYBRID_HIVER_RECRUITMENT');
-assert(hybridNeed.includes('필요 50개 기준 최소 구매 50개')&&
-  hybridNeed.includes('표시 가격 합계 162,500')&&
-  hybridNeed.includes('실제 재고·구매 제한'),
-  'Store total is simple arithmetic, not evidence of enough stock');
-assert(hybridNeed.includes('무작위 생산에서 이 결과가 선택되면')&&
-  hybridNeed.includes('당첨과 재시도는 보장하지 않음'),
-  'Random supply must never be treated as a guaranteed inventory amount');
+assert(hybridNeed.includes('필요 50개 · 최소 구매 50개')&&
+  hybridNeed.includes('기본가 합계 162,500')&&
+  !hybridNeed.includes('실제 재고·구매 제한'),
+  'Keep shop arithmetic and source gates, without repeated caveat prose');
+assert(hybridNeed.includes('무작위 산출 선택 시')&&
+  !hybridNeed.includes('당첨과 재시도는 보장하지 않음'),
+  'Random outcome must remain identified as conditional without explanatory boilerplate');
 const standaloneLicense=renderAcquisitionTree(buildAcquisitionSubtree(
   'item','STR_THEBAN_ASSAULT_CLONE_LICENSE',data));
 assert(!standaloneLicense.includes('data-quantity-method='),
   'Standalone material inspection must not silently import a birth requirement');
 const cloneAmount=amountGuide('manufacture:STR_THEBAN_ASSAULT_CLONE');
-assert(cloneAmount.includes('표시 가격 합계 125,000')&&
+assert(cloneAmount.includes('기본가 합계 125,000')&&
   cloneAmount.includes('고정 지급 12개 / 필요 1개')&&
   cloneAmount.includes('고정 지급 3개 / 필요 1개'),
   'Shop, Egypt and propaganda must keep separate fixed yields');
@@ -215,8 +215,9 @@ for(const [itemId,s] of pricedItems){
     'Only actual same-item laboratory prerequisites should receive a first-sample warning: '+itemId);
   assert(markup.includes('data-guide-method="BUY:'+itemId+'"'),
     'Purchase route must be accessible in the player guide: '+itemId);
-  assert(markup.includes('실제 상점 재고와 자금은 별도 확인'),
-    'A price must never imply immediate store availability: '+itemId);
+  assert(!markup.includes('실제 상점 재고와 자금은 별도 확인')&&
+    !markup.includes('guide-purchase-disclaimer'),
+    'Store uncertainty remains in evidence, not a repeated visible warning: '+itemId);
   if(gates.length){
     researchGated++;
     for(const id of gates)

@@ -11,7 +11,11 @@ const report=decodeOriginReport(fs.readFileSync('public/data/soldier-origin-cand
 assert.equal(report.records.length,72);
 assert.equal(new Set(report.records.map(r=>r.profileId)).size,72);
 assert.equal(report.summary.certifiedMaxima,0);
-const shardCount=Math.min(6,Math.max(1,os.availableParallelism()),report.records.length);
+// Keep the expensive 4,494 chronological replays distributed across
+// balanced, deterministic work shards. Cap concurrent Node processes to
+// prevent Windows/CI memory contention from making a few shards time out.
+const shardCount=Math.min(12,report.records.length);
+const concurrency=Math.min(shardCount,Math.max(1,os.availableParallelism()),6);
 async function verifyShard(index){
   return new Promise((resolve,reject)=>{
     const child=spawn(process.execPath,
@@ -32,10 +36,19 @@ async function verifyShard(index){
     });
   });
 }
-const counts=await Promise.all(Array.from({length:shardCount},(_,index)=>verifyShard(index)));
+const counts=Array(shardCount).fill(null);
+let next=0;
+await Promise.all(Array.from({length:concurrency},async()=>{
+  while(next<shardCount){
+    const index=next++;
+    counts[index]=await verifyShard(index);
+  }
+}));
+assert(counts.every(Number.isSafeInteger),'A witness replay shard did not finish');
 const checked=counts.reduce((n,c)=>n+c,0);
-assert.equal(checked,report.summary.witnesses,
-  'Sharded replay did not cover every published candidate');
+assert.equal(checked,report.summary.totalWitnessEvidence||report.summary.witnesses,
+  'Sharded replay did not cover all comparison candidates and historical counterexamples');
 console.log('PASS origin provisional registry: '+report.records.length+' separate birth profiles, '+
-  checked+' independently replayed conditional witnesses in '+shardCount+
-  ' shards, 0 certified maxima; all counts match published records');
+  report.summary.witnesses+' comparison candidates and '+(report.summary.archivedWitnesses||0)+
+  ' archived counterexamples ('+checked+' numerical replays) in '+shardCount+
+  ' balanced shards with '+concurrency+' parallel workers, 0 certified maxima; all counts match published records');

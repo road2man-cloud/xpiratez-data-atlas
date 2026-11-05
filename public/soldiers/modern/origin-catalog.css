@@ -39,6 +39,14 @@
 .origin-start-source-list li{border:1px solid #33516f;border-radius:8px;padding:9px;margin:6px 0;background:#112337}
 .origin-start-source-list summary{font-size:.77rem;overflow-wrap:anywhere}
 .origin-start-source-list p{margin:7px 0;font-size:.75rem}
+.origin-campaign-audit{margin:16px 0;padding:12px 15px;border-left:4px solid #85b8cf;background:#142d42;border-radius:6px;min-width:0;overflow-wrap:anywhere}
+.origin-campaign-audit h3{margin:0 0 8px;font-size:.97rem;color:#e7f5ff}
+.origin-campaign-audit p{font-size:.85rem;line-height:1.65;margin:6px 0}
+.origin-campaign-audit .fine{font-size:.78rem;color:#bed1e1}
+.origin-campaign-audit .origin-rejected-candidates{margin-top:10px;border-top:1px solid #786261}
+.origin-rejected-candidates>summary{color:#eed0a7;font-size:.85rem}
+.origin-rejected-candidates li{margin:9px 0;font-size:.82rem;line-height:1.6}
+.origin-rejected-candidates .id{overflow-wrap:anywhere;font-size:.71rem}
 .origin-unresolved-chronology{border:1px solid #6a566e;border-radius:11px;padding:12px 14px;margin:15px 0;background:#261f32}
 .origin-unresolved-chronology>h3{margin:4px 0 8px;color:#e5dcf6}
 .origin-unresolved-chronology>details{margin:9px 0;padding:8px;border:1px solid #65516f;border-radius:8px}
@@ -95,9 +103,8 @@
 .guide-option>.guide-quantity strong{color:#f3ddad}
 .guide-option>.guide-purchase-gates{color:#f2dbaf;font-size:.9rem;line-height:1.65;margin:9px 0 0;padding:9px 10px;border-left:3px solid #d5b36e;background:#1b3048;overflow-wrap:anywhere}
 .guide-purchase-gates p{margin:6px 0 0;font-size:.8rem;line-height:1.55}
-.guide-purchase-gates .guide-purchase-disclaimer{color:#b7c9db;font-size:.77rem}
-.guide-purchase-bootstrap{border-left:3px solid #c69f64;background:#293446;padding:10px 12px;margin:9px 0;border-radius:4px;overflow-wrap:anywhere}
-.guide-purchase-bootstrap>strong{color:#f2dbaf;font-size:.87rem}
+.guide-purchase-bootstrap{border-left:3px solid #c69f64;background:#293446;padding:8px 12px;margin:9px 0;border-radius:4px;overflow-wrap:anywhere}
+.guide-purchase-bootstrap>summary{cursor:pointer;color:#f2dbaf;font-size:.87rem;font-weight:700}
 .guide-purchase-bootstrap>p{color:#d4e0ed;line-height:1.55;font-size:.78rem;margin:5px 0 0}
 .guide-purchase-dependencies{margin:9px 0;padding:9px 10px!important;border:1px solid #4b6982!important;border-radius:8px;background:#172d44}
 .guide-purchase-dependencies>summary{font-weight:700;font-size:.83rem;line-height:1.5;color:#e7f2fc;overflow-wrap:anywhere;cursor:pointer}

@@ -1,4 +1,4 @@
-// Preserve concrete failed-attempt evidence for six unresolved v.o2 origins.
+// Preserve concrete failed-attempt evidence for any unresolved v.o2 origins.
 // Source rules and all currently published candidates are read-only. No invented grant.
 // A failed bounded search is NOT proof of a permanent campaign impossibility.
 import assert from 'node:assert/strict';

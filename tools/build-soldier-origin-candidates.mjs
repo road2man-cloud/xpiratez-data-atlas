@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
 import {createFoundationResearchPlanner} from '../public/soldiers/modern/foundation-research-planner.js';
 import {replayOriginWitness,WITNESS_STATS,originEventScript} from '../public/soldiers/modern/origin-witness.js';
+import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {bonusStats} from '../public/soldiers/modern/eligibility.js';
 import {projectCandidateStats} from '../public/soldiers/modern/score-12.js';
 import {researchBranchEvidence} from '../public/soldiers/modern/origin-branch-evidence.js';
@@ -44,6 +45,10 @@ const unresolvedOnly=process.argv.includes('--unresolved-only');
 const birthOnly=process.argv.includes('--birth-only');
 const deepSearch=process.argv.includes('--deep-search');
 const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
+const difficultyArg=process.argv.find(x=>x.startsWith('--difficulty='))?.slice('--difficulty='.length);
+const difficulty=difficultyArg==null?null:Number(difficultyArg);
+if(difficultyArg!=null&&(!focusProfile||!Number.isInteger(difficulty)||difficulty<0||difficulty>4))
+  throw Error('--difficulty requires --profile and an integer 0..4');
 if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
   throw Error('Unknown source profile: '+focusProfile);
 if(birthOnly&&!focusProfile)throw Error('--birth-only requires --profile');
@@ -59,10 +64,10 @@ for(const id of researchFirst)if(!id||id==='STR_UNAVAILABLE'||!data.researchRule
 // Deeper campaigns need more room for legitimate event gates, free research,
 // and conditional auto queues. Only a focused, explicitly ordered run receives
 // this bounded increase: other 71 origin records stay byte-for-byte intact.
-const deepFocused=Boolean(focusProfile&&(researchFirst.length||deepSearch));
+const deepFocused=Boolean(focusProfile&&(researchFirst.length||deepSearch||difficulty!=null));
 const planner=createFoundationResearchPlanner(data,deepFocused?
-  {maxAttempts:650,maxDepth:48,maxSteps:560}:
-  {maxAttempts:260,maxDepth:38,maxSteps:430});
+  {maxAttempts:1600,maxDepth:64,maxSteps:1150,difficulty,methodLimit:32}:
+  {maxAttempts:260,maxDepth:38,maxSteps:430,difficulty});
 const branchEvidence=replay=>researchBranchEvidence(replay,data.researchRules);
 // Scoped builds reuse the exactly verified stepwise witness to construct a
 // candidate and its metadata. A separate --check always replays from zero
@@ -73,6 +78,8 @@ const witnessFor=c=>{
   return witnessCache.get(c.id);
 };
 function candidate(node,p,description){
+  const campaignContext=auditOriginCampaignContext(node.steps,data);
+  if(campaignContext.kind!=='compatible')return null;
   // Each planner action already passed the SAME campaign verifier. Reuse its
   // chronological trace while enumerating branches; validateReport later
   // independently replays the entire candidate from zero before publishing.
@@ -89,7 +96,7 @@ function candidate(node,p,description){
   const transforms=node.steps.filter(s=>s.type==='transform').map(s=>s.transform);
   const result={id:digest({profile:p.id,steps:node.steps}).slice(0,20),profileId:p.id,
     status:'PROVISIONAL_CONDITIONAL',description,scope:'출생 최솟값 + 성장/훈장 추가 없음 + 실제 규칙을 재생한 훈련 후보',
-    researchSequenceComplete:true,startsWithNoResearch:true,certifiedMaximum:false,
+    researchSequenceComplete:true,startsWithNoResearch:true,certifiedMaximum:false,campaignContext,
     raw:replay.raw,bonus:Object.fromEntries(WITNESS_STATS.map(k=>[k,replay.bonus[k]||0])),
     stats:replay.stats,total:replay.total,bonusTotal:amount(replay.bonus),
     finalSoldierType:member.state.soldierType,transforms,steps:node.steps,
@@ -97,14 +104,15 @@ function candidate(node,p,description){
     branchChoices:branchEvidence(replay),
     trainingExclusions:transforms.map(id=>({id,excludes:data.transformations.filter(t=>t.forbiddenPreviousTransformations.includes(id)).map(t=>({id:t.id,
       direction:data.transformations.find(t=>t.id===id).forbiddenPreviousTransformations.includes(t.id)?'bidirectional':'oneway'}))})),
-    assumptions:node.steps.filter(s=>s.type==='externalInputs'||s.assumeOutcome||s.type==='recruit'||s.type==='advanceMonth'),
+    assumptions:node.steps.filter(s=>s.type==='externalInputs'||s.assumeOutcome||s.type==='recruit'||
+      s.type==='advanceMonth'||s.type==='campaignContext'||s.type==='repeatResearch'),
     guarantees:['기초 연구 상태부터 공급 경로 없이 추가한 연구 플래그 없음','모든 연구·무료 지급·자동 큐·시술은 기존 재생기로 검사','서로 다른 병사의 성장·훈장·보너스 합산 없음'],
     limitations:['자금·표본·시설 실물 확보 조건부','출생 RNG와 이벤트 실제 발생 미실측','전투·체육관 성장 및 훈장 획득 경로 미포함','다른 경로보다 크다는 전역 최적성 미증명']};
   witnessCache.set(result.id,replay);
   return result;
 }
 function recoverAcquisition(p,previous){
-  if(researchFirst.length||!previous?.candidates?.length)return null;
+  if(researchFirst.length||difficulty!=null||!previous?.candidates?.length)return null;
   // A proven birth prefix is stronger than repeatedly guessing its hundreds
   // of upstream research gates. Retain the exact chronology, never inject
   // a pre-completed research flag.
@@ -196,14 +204,32 @@ function researchBottlenecks(record){
   if(!found.length)found.push({id:original,kind:'SEARCH_LIMIT',reason:record.unresolved?.reason||'제한 탐색 미완료'});
   return found;
 }
+// Balance independent replay processes by recorded witness step count,
+// rather than profile index. Several late-game births carry 500-900-step
+// histories, so index-modulo shards are severely skewed and time out.
+// This mapping is deterministic and covers each profile exactly once.
+function shardForRecord(records,count){
+  const loads=Array(count).fill(0),assigned=Array(records.length).fill(-1);
+  const work=records.map((record,index)=>({index,weight:[
+    ...record.candidates,...(record.rejectedCandidates||[])].reduce((n,c)=>n+c.steps.length,0)}));
+  work.sort((a,b)=>b.weight-a.weight||a.index-b.index);
+  for(const {index,weight} of work){
+    let slot=0;
+    for(let s=1;s<count;s++)if(loads[s]<loads[slot])slot=s;
+    assigned[index]=slot;loads[slot]+=weight;
+  }
+  assert(assigned.every(n=>n>=0&&n<count));
+  return assigned;
+}
 function validateReport(report,{focused=null,previous=null,shard=null}={}){
   assert.equal(report.sourceHash,sourceHash);assert.equal(report.records.length,72);
   assert.equal(new Set(report.records.map(r=>r.profileId)).size,72);
+  const shardSlots=shard?shardForRecord(report.records,shard.total):null;
   let complete=0;
   for(const [index,record] of report.records.entries()){
     assert(data.profiles.some(p=>p.id===record.profileId));
     assert.equal(record.certifiedMaximum,false);
-    if(shard&&index%shard.total!==shard.n)continue;
+    if(shard&&shardSlots[index]!==shard.n)continue;
     if(focused&&record.profileId!==focused){
       const preserved=previous?.records.find(r=>r.profileId===record.profileId);
       assert.strictEqual(record,preserved,'A focused search changed another birth record');
@@ -216,7 +242,11 @@ function validateReport(report,{focused=null,previous=null,shard=null}={}){
       }
       continue;
     }
-    for(const c of record.candidates){
+    for(const c of [...record.candidates,...(record.rejectedCandidates||[])]){
+      const context=auditOriginCampaignContext(c.steps,data);
+      assert.deepEqual(c.campaignContext,context,'Campaign-context source audit changed');
+      if(record.candidates.includes(c))assert.equal(context.kind,'compatible','Inconsistent record leaked into comparison');
+      else assert.notEqual(context.kind,'compatible','Compatible record was wrongly quarantined');
       const replay=witnessFor(c);assert(replay.ok,record.profileId+': '+replay.reason);
       assert(replay.exact);assert.deepEqual(replay.stats,c.stats);assert.equal(replay.total,c.total);
       assert.equal(c.certifiedMaximum,false);assert(c.startsWithNoResearch&&c.researchSequenceComplete);
@@ -248,6 +278,7 @@ function attachMetadata(report,{focused=null}={}){
       const replay=witnessFor(c);
       if(!replay.ok)throw Error('기존 후보 재생 중단: '+r.profileId+' '+replay.reason);
       c.branchChoices=branchEvidence(replay);
+      c.campaignContext=auditOriginCampaignContext(c.steps,data);
       c.modelAssumptions=[...new Set(replay.trace.flatMap(t=>t.notes||[]).filter(n=>/미검증|미증명|가상|재실행/.test(n)))];
       c.limitations=[...new Set([...c.limitations,'연구·제조·회복 소요시간과 월별 유지비의 달력 재생 미포함','반복 lookup 보호 해금·동시 연구 완료는 상세 조건부 가정'])];
       c.resultHash=digest({steps:c.steps,raw:c.raw,stats:c.stats,total:c.total,branches:c.branchChoices});
@@ -257,7 +288,42 @@ function attachMetadata(report,{focused=null}={}){
 }
 const unresolvedScope=()=>({mode:'acquisition-unresolved',maxLayers:0,
   candidatesPerLayer:0,beamWidth:0,globalOptimumProven:false});
-if(process.argv.includes('--repair-unresolved-scope')){
+function auditCampaignReport(report){
+  assert.equal(report.sourceHash,sourceHash);
+  let compatible=0,inconsistent=0,unknown=0,complete=0;
+  for(const row of report.records){
+    const evidence=[...new Map([...row.candidates,...(row.rejectedCandidates||[])].map(c=>[c.id,c])).values()];
+    for(const c of evidence){
+      assert.equal(c.resultHash,digest({steps:c.steps,raw:c.raw,stats:c.stats,total:c.total,branches:c.branchChoices}),
+        'Historical numerical evidence changed during context audit');
+      c.campaignContext=auditOriginCampaignContext(c.steps,data);
+      if(c.campaignContext.kind==='compatible')compatible++;
+      else if(c.campaignContext.kind==='inconsistent')inconsistent++;
+      else unknown++;
+    }
+    const valid=evidence.filter(c=>c.campaignContext.kind==='compatible');
+    row.candidates=valid;
+    row.rejectedCandidates=evidence.filter(c=>c.campaignContext.kind!=='compatible');
+    if(valid.length)complete++;
+    row.campaignCoverage={compatible:valid.length,excluded:row.rejectedCandidates.length};
+    row.bestCandidateId=[...valid].sort((a,b)=>b.total-a.total||a.steps.length-b.steps.length||a.id.localeCompare(b.id))[0]?.id||null;
+    row.bestBonusCandidateId=[...valid].sort((a,b)=>b.bonusTotal-a.bonusTotal||b.total-a.total)[0]?.id||null;
+  }
+  report.summary={...report.summary,withCompleteResearch:complete,unresolved:72-complete,
+    witnesses:compatible,archivedWitnesses:inconsistent+unknown,totalWitnessEvidence:compatible+inconsistent+unknown,
+    withCompatibleResearch:complete,compatibleWitnesses:compatible,
+    excludedDifficultyWitnesses:inconsistent,unknownContextWitnesses:unknown};
+  report.campaignContextAuditVersion=1;
+  report.notes=[...new Set([...report.notes,
+    '난이도 조건이 서로 충돌하는 과거 수치 기록은 보존하지만 최고값·달성 경로 비교에서 제외',
+    '같은 캠페인 난이도 일치는 필요조건이며 자금·시설·표본·게임 시간·무작위 실현의 충분조건이 아님'])];
+  return report;
+}
+if(process.argv.includes('--audit-campaign-context')){
+  const report=auditCampaignReport(readReport());
+  fs.writeFileSync(output,encodeOriginReport(report));
+  console.log('Campaign-context audit '+JSON.stringify(report.summary));
+}else if(process.argv.includes('--repair-unresolved-scope')){
   const report=readReport();
   assert.equal(report.sourceHash,sourceHash);
   assert.equal(report.records.length,72);
@@ -291,7 +357,7 @@ if(process.argv.includes('--repair-unresolved-scope')){
   fs.writeFileSync(output,encodeOriginReport(report));
   console.log('Rebound unchanged witnesses and refreshed six unresolved source explanations');
 }else if(process.argv.includes('--refresh-metadata')){
-  const report=attachMetadata(readReport());report.sourceHash=sourceHash;fs.writeFileSync(output,encodeOriginReport(report));
+  const report=auditCampaignReport(attachMetadata(readReport()));report.sourceHash=sourceHash;fs.writeFileSync(output,encodeOriginReport(report));
   console.log('Updated candidate evidence fingerprints and exact v.o2 birth guards');
 }else if(process.argv.includes('--check')){
   const report=readReport();const checked=validateReport(report,{shard:checkShard});
@@ -356,14 +422,15 @@ if(process.argv.includes('--repair-unresolved-scope')){
       }
     }
     candidates.sort((a,b)=>b.total-a.total||a.steps.length-b.steps.length||a.id.localeCompare(b.id));
-    const best=candidates[0]||null,bestBonus=[...candidates].sort((a,b)=>b.bonusTotal-a.bonusTotal||b.total-a.total)[0]||null;
+    const comparable=candidates.filter(c=>auditOriginCampaignContext(c.steps,data).kind==='compatible');
+    const best=comparable[0]||null,bestBonus=[...comparable].sort((a,b)=>b.bonusTotal-a.bonusTotal||b.total-a.total)[0]||null;
     // Never prune by present total alone: a lower-scoring branch may preserve
     // prerequisites or transformation options needed for a better future path.
     const keep=[...new Map(candidates.map(c=>[c.id,c])).values()];
     records.push({profileId:p.id,soldierType:p.soldierType,name:p.sourceKoName,soldierName:p.soldierKoName,
       status:best?'PROVISIONAL_CONDITIONAL':'RESEARCH_PATH_UNRESOLVED',certifiedMaximum:false,
       bestCandidateId:best?.id||null,bestBonusCandidateId:bestBonus?.id||null,
-      candidates:keep,unresolved:acquisition.unresolved||null,attempts,
+      candidates:keep,rejectedCandidates:previous?.rejectedCandidates||[],unresolved:acquisition.unresolved||null,attempts,
       searchScope:!keep.length?unresolvedScope():
         deepSearch?{mode:'bounded-beam',maxLayers:birthOnly?0:unresolvedOnly?1:4,
           candidatesPerLayer:12,beamWidth:8,globalOptimumProven:false}:
@@ -384,6 +451,7 @@ if(process.argv.includes('--repair-unresolved-scope')){
       witnesses:records.reduce((s,r)=>s+r.candidates.length,0),certifiedMaxima:0},
     notes:['모든 후보는 빈 연구 상태부터 재생함','잠정값은 자원·출생 RNG 등 가정을 가진 완결 경로의 최고 발견값이며 성장 하드캡이 아님','미완료 프로필에도 출생 원본과 병목을 등록하고 거짓 최종값을 채우지 않음'],records};
   attachMetadata(report,{focused:focusProfile});
+  auditCampaignReport(report);
   // Focused writes only replay the changed record. The full independent
   // --check command replays ALL records before every publication.
   validateReport(report,{focused:focusProfile,previous:prior});
