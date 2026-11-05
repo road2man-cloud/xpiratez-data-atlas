@@ -75,18 +75,47 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       children:list(items[n.owner]?.grants).map((edge,i)=>eventNode(n.owner,edge,i))};
     if(n.sourceKind==='buy'){
       const item=items[n.owner];
-      const children=[...list(item.requiresBuy).map(researchNode),
-        ...list(item.requiresBuyBaseFunc).map(id=>make('facility-function',id))];
+      // OXCE PurchaseState's itemFilter checks both normal item unlocks
+      // (requires) and purchase-specific unlocks (requiresBuy) together.
+      // Merge shared research IDs without hiding either original source field.
+      const buyResearch=new Map();
+      for(const [field,ids] of [['requires',list(item.requires)],['requiresBuy',list(item.requiresBuy)]]){
+        for(const id of ids){
+          if(!buyResearch.has(id))buyResearch.set(id,[]);
+          buyResearch.get(id).push(field);
+        }
+      }
+      const children=[
+        ...[...buyResearch].map(([id,fields])=>make('research',id,{
+          topicId:id,purchaseGate:fields.join('+')})),
+        ...list(item.requiresBuyBaseFunc).map(id=>make('facility-function',id))
+      ];
       if(item.requiresBuyCountry)children.push(gate('condition','BUY_COUNTRY:'+n.owner,
         '구매 국가 조건 '+item.requiresBuyCountry+' · 실제 국가/진영 공급 여부 미검증'));
       if(item.transferTime!=null)children.push(gate('condition','DELIVERY:'+n.owner,
         '구매 후 수송 시간 원본 '+fmt(item.transferTime)+' · 물품 확보 시점과 별도'));
       if(item.monthlyBuyLimit!=null)children.push(gate('condition','BUY_MONTHLY:'+n.owner,
         '원본 월별 구매 상한 '+fmt(item.monthlyBuyLimit)+'개 · 이번 달 잔여 구매량은 현재 세이브에서 확인 필요'));
+      // Any required research (requires OR requiresBuy) can require the
+      // purchased item as its own lab specimen. This is a first-supply
+      // cycle for the laboratory route, NOT proof of impossibility: free
+      // research, event, manufacture, and tactical recovery may break it.
+      const selfSpecimens=[...buyResearch.keys()].filter(id=>{
+        const topic=research.topics[id];
+        return topic?.needItem&&(topic.neededItem||id)===n.owner;
+      });
+      if(selfSpecimens.length){
+        const otherSources=list(item.producers).length+list(item.grants).length;
+        children.push(gate('warning','BUY_SPECIMEN_CYCLE:'+n.owner,
+          '첫 획득 경로 순환 주의: 구매 선행 연구 '+selfSpecimens.map(name).join(', ')+
+          '의 연구실 경로에 이 아이템 실물 표본이 필요함 · 구매만으로 최초 표본을 마련할 수 있다는 증거가 없음 · '+
+          (otherSources?'색인된 제조/이벤트 대체 후보 '+fmt(otherSources)+'건(실제 달성 미확정)':'색인된 제조/이벤트 대체 후보 없음')+
+          ' · 노획·임무·무료 연구 등 미확인 대체 경로가 있을 수 있으므로 불가능 확정 아님'));
+      }
       children.push(gate('funds','PRICE:'+n.owner,
-        '원본 구매가 '+fmt(item.costBuy)+' · 실제 자금 및 판매/보유 재고 미검증'));
+        '원본 기본 구매가 '+fmt(item.costBuy)+' · 엔진 결제 가격 조정(getBuyCostAdjusted) 가능 · 실제 자금 및 재고 미검증'));
       children.push(gate('warning','STOCK:'+n.owner,
-        '판정: 가격만 존재 · 독립적인 상점 상품/재고/상점 해금 근거 미확인. 구매 확정 금지'));
+        '판정: 구매 후보(가격 + 일반 해금 + 구매 전용 해금) · 공개 엔진 소스의 구매 필터와 대조했지만 정확한 OXCE 8.6 실행/현재 세이브의 상점 출현 및 재고 미검증 · 구매 확정 금지'));
       return {node:n,relation:'and',children};
     }
     if(n.sourceKind==='make'){
@@ -198,7 +227,15 @@ export function createLegacyItemTechAdapter(index,research,goalId){
   }
   function describe(n){
     if(facilityAdapter.owns(n))return facilityAdapter.describe(n);
-    if(n.kind==='research')return researchAdapter(n.id).describe(n);
+    if(n.kind==='research'){
+      const result=researchAdapter(n.id).describe(n);
+      if(!n.purchaseGate)return result;
+      const origin=n.purchaseGate==='requires'?'일반 아이템 해금(requires)':
+        n.purchaseGate==='requiresBuy'?'구매 전용 해금(requiresBuy)':
+          '일반 해금 + 구매 전용 해금(requires, requiresBuy)';
+      return {...result,badge:'구매 필수 연구',
+        detail:origin+' · 상점 상품 표시 전 완료 필수. '+result.detail};
+    }
     if(n.kind==='item')return {label:name(n.id)+(n.qty?' ×'+fmt(n.qty):''),
       category:'item',badge:n.qty?'투입 재료':'획득 목표',
       detail:n.note||'상점·제조·이벤트의 조건부 실물 획득 경로를 왼쪽으로 추적'};
@@ -207,8 +244,9 @@ export function createLegacyItemTechAdapter(index,research,goalId){
     if(n.sourceKind==='event-options')return {label:'이벤트 보상 경로 '+fmt(items[n.owner].grants.length)+'건',
       category:'or',badge:'이벤트 선택',detail:'이벤트 발생 시 지급 경로 · 미발생/랜덤 보상은 별도 조건'};
     if(n.sourceKind==='buy')return {label:'상점 구매 후보 · '+name(n.owner),
-      category:'funds',badge:'가격만 확인',
-      detail:'원본 구매가 '+fmt(items[n.owner].costBuy)+' · 구매 연구 '+
+      category:'funds',badge:'조건부 구매 후보',
+      detail:'원본 기본 구매가 '+fmt(items[n.owner].costBuy)+' · 일반 해금 연구 '+
+        list(items[n.owner].requires).length+'개 · 구매 전용 연구 '+
         list(items[n.owner].requiresBuy).length+'개 · 구매용 기지 기능 '+
         list(items[n.owner].requiresBuyBaseFunc).length+'개'+
         (items[n.owner].monthlyBuyLimit!=null?' · 월 제한 '+fmt(items[n.owner].monthlyBuyLimit)+'개':'')+
@@ -254,13 +292,17 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       /^(LAB|FREE|ACCESS|DEPENDENCIES|UNLOCK):/.test(n.id))
       return researchAdapter(n.topicId||n.id).renderEvidence(n);
     if(n?.sourceKind==='buy')return '<div class="tech-adapter-proof"><p><b>원본 구매 후보 근거</b> · '+
-      esc(n.owner)+'</p><p>구매 가격과 조건만 원본에서 확인했습니다. 실제 판매 목록·재고·판매 상점은 아직 검증되지 않았습니다.</p><pre>'+
-      esc(JSON.stringify({costBuy:items[n.owner]?.costBuy,requiresBuy:items[n.owner]?.requiresBuy,
+      esc(n.owner)+'</p><p>원본 일반 해금(requires)과 구매 해금(requiresBuy)을 모두 확인했습니다. 공식 OXCE 구매 메뉴는 아이템 규칙을 필터링하며 실제 결제가는 조정될 수 있습니다. 현재 세이브와 정확한 OXCE 8.6의 실제 구매 목록은 미검증입니다.</p>'+
+      '<p><a href="'+esc(index.meta.purchaseEngineAudit?.sourceUrl||'#')+
+      '" target="_blank" rel="noopener noreferrer">공식 MeridianOXC 구매 메뉴 소스 참조 (정확한 8.6 빌드 동일성 미확인)</a></p><pre>'+
+      esc(JSON.stringify({costBuy:items[n.owner]?.costBuy,requires:items[n.owner]?.requires,
+        requiresBuy:items[n.owner]?.requiresBuy,
         requiresBuyBaseFunc:items[n.owner]?.requiresBuyBaseFunc,
         requiresBuyCountry:items[n.owner]?.requiresBuyCountry,
         monthlyBuyLimit:items[n.owner]?.monthlyBuyLimit,
         transferTime:items[n.owner]?.transferTime,
         purchaseEvidence:items[n.owner]?.purchaseEvidence,
+        purchaseEngineAudit:index.meta.purchaseEngineAudit,
         sourceFiles:items[n.owner]?.sourceFiles},null,2))+'</pre></div>';
     if(n?.sourceKind==='make')return '<div class="tech-adapter-proof"><p><b>원본 제조식</b> · '+
       esc(n.recipe)+' / 산출 대상 '+esc(n.owner)+'</p><p><a href="../manufacture/#recipe='+
@@ -285,6 +327,6 @@ export function createLegacyItemTechAdapter(index,research,goalId){
       {href:'../items/#item='+encodeURIComponent(n.id),label:'이 재료의 아이템 DB 상세 열기'}:null);
   return {root:make('item',goalId),expand,describe,renderEvidence,linkForNode,
     notice:'X-Piratez '+index.meta.sourceVersion+' / OXCE '+
-    index.meta.requiredEngine+' · 실물 아이템 획득 근거: 구매(가격만 확인/재고 미검증), 제조 산출, 이벤트 지급. '+
+    index.meta.requiredEngine+' · 실물 획득 근거: 상점 구매 후보(일반 requires + 구매 전용 requiresBuy · 상점 재고/현재 세이브 구매 실행 미검증), 제조 산출, 이벤트 지급. '+
     '확률은 해당 랜덤표 내부 비중이며 이벤트 출현률이 아닙니다. 2.1 병종 DB와 조건을 합치지 않습니다.'};
 }
