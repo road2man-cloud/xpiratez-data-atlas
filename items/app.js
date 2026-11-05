@@ -336,8 +336,8 @@ async function openResearchTech(id){
   if(!dialog.open)dialog.showModal();
   try{
     const [viewer,adapters,items,index]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
-      import('./acquisition-tech-adapter.js?v=20261105-stage4-buy-requires-1'),
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-tech-readability-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-readable-gates-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(!dialog.open)return;
@@ -378,9 +378,9 @@ async function openItemTech(id){
   if(!dialog.open)dialog.showModal();
   try{
     const [view,adapters,checker,items,research]=await Promise.all([
-      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-facility-tech-1'),
-      import('./acquisition-tech-adapter.js?v=20261105-stage4-buy-requires-1'),
-      import('./purchase-readiness-panel.js?v=20261105-readiness-2'),
+      import('../soldiers/modern/acquisition-tech-view.js?v=20261105-tech-readability-1'),
+      import('./acquisition-tech-adapter.js?v=20261105-readable-gates-1'),
+      import('./purchase-readiness-panel.js?v=20261105-readability-1'),
       loadItemTechIndex(),loadResearchTechIndex()
     ]);
     if(stamp!==itemTechRequest||!dialog.open)return;

@@ -23,8 +23,9 @@
 .tech-route-step.is-current{background:#375678;color:#fff;border-color:#b3d7f2}
 .tech-route-step-number{flex:none;display:inline-grid;place-items:center;min-width:18px;height:18px;
   border:1px solid currentColor;border-radius:5px;font-size:.65rem;font-weight:800}
-.tech-legend{display:flex;gap:9px 17px;align-items:center;flex-wrap:wrap;padding:7px 15px;
-  background:#0c1d30;border-bottom:1px solid #2a4662;font-size:.72rem;color:#b7cde2}
+.tech-legend{display:flex;gap:9px 17px;align-items:center;flex-wrap:wrap;padding:8px 15px;
+  background:#0c1d30;border-bottom:1px solid #2a4662;font-size:.76rem;color:#c4d9e9}
+.tech-legend-hint{color:#d6e6f3;font-weight:700}
 .tech-adapter-notice{margin:0;padding:8px 14px;background:#1a3045;color:#d5dbbd;
   font-size:.76rem;line-height:1.5;border-bottom:1px solid #42566b}
 .tech-adapter-proof pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:50vh;overflow:auto;
@@ -44,7 +45,7 @@
   background-size:48px 48px}
 .tech-columns{position:relative;display:flex;align-items:center;gap:104px;
   width:max-content;max-width:none;margin-left:auto;min-height:350px;z-index:1}
-.tech-column{width:calc(224px * var(--tech-size));flex:0 0 calc(224px * var(--tech-size));
+.tech-column{width:calc(236px * var(--tech-size));flex:0 0 calc(236px * var(--tech-size));
   min-width:0;display:flex;flex-direction:column;justify-content:flex-start;
   align-self:center;gap:10px}
 .tech-col-head{min-height:64px;display:flex;flex-direction:column;gap:3px;
@@ -55,7 +56,7 @@
 .tech-col-head small{color:#92a9be;font-size:.7rem}
 .tech-node-list{display:flex;flex:none;flex-direction:column;gap:10px;justify-content:flex-start}
 .tech-node{display:flex;flex-direction:column;align-items:flex-start;gap:7px;
-  width:100%;min-height:108px;padding:11px 12px;position:relative;
+  width:100%;min-height:102px;padding:12px 13px;position:relative;
   text-align:left;white-space:normal;overflow-wrap:anywhere;line-height:1.48;
   background:#142b42;border:1px solid #476888;border-left:4px solid #8aabc9;
   border-radius:10px;color:#e4f1ff;box-shadow:0 4px 14px #020b164d;
@@ -63,17 +64,20 @@
 .tech-node:hover,.tech-node:focus-visible{background:#24445f;border-color:#97c5ea;z-index:2}
 .tech-node.is-path{background:#213f5e;border-color:#bedcf5;
   box-shadow:0 0 0 1px #709bc2,0 4px 16px #061525aa}
-.tech-node strong{font-size:calc(.88rem * var(--tech-size));font-weight:780;
+.tech-node strong{font-size:calc(.93rem * var(--tech-size));font-weight:780;
   line-height:1.4;color:#f4f8ff;word-break:keep-all}
-.tech-node small{font-size:calc(.73rem * var(--tech-size));font-weight:400;
-  line-height:1.48;color:#b7cbe0;overflow-wrap:anywhere}
+.tech-node small{font-size:calc(.79rem * var(--tech-size));font-weight:400;
+  line-height:1.52;color:#cadbeb;overflow-wrap:anywhere;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;max-width:100%;text-overflow:ellipsis}
 .tech-node-pill{display:inline-flex;align-items:center;gap:7px;font-size:.66rem;line-height:1.1;
   font-weight:800;letter-spacing:.015em;color:#a9c9e9}
 .tech-node-icon{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;
   border-radius:6px;border:1px solid currentColor;font-size:.8rem;line-height:1;font-weight:900;
   background:#0a1c2c88}
 .tech-node.is-path .tech-node-icon{background:#335978}
-.tech-node-action{margin-top:1px;font-weight:750;color:#e4c98f;font-size:.69rem}
+.tech-node-action{margin-top:auto;padding-top:3px;font-weight:750;
+  color:#f1d497;font-size:calc(.74rem * var(--tech-size))}
 .tech-node--research{border-left-color:#8fbffd}
 .tech-node--item{border-left-color:#70cbbb}
 .tech-node--event{border-left-color:#f4bf85}
@@ -96,9 +100,13 @@
 .tech-wire--required{stroke:#e2bb72;stroke-width:2.3}
 .tech-wire--alternative{stroke:#a6baff;stroke-dasharray:8 6;stroke-width:2.4}
 .tech-wire.is-selected{stroke-width:3.5;opacity:1;filter:drop-shadow(0 0 3px #b4d1e3)}
-.tech-selected{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;
-  border-top:1px solid #38546f;padding:11px 16px;font-size:.8rem;background:#12283e;line-height:1.55}
-.tech-selected-summary{display:flex;flex:1 1 260px;flex-direction:column;gap:2px;min-width:0}
+.tech-selected{display:flex;flex-wrap:wrap;align-items:center;gap:9px 16px;
+  border-bottom:1px solid #50718d;padding:12px 16px;font-size:.83rem;
+  background:#18374f;line-height:1.6}
+.tech-selected-summary{display:flex;flex:1 1 280px;flex-direction:column;gap:4px;min-width:0}
+.tech-selected-detail{display:block;line-height:1.6;color:#e0edfa!important;
+  overflow-wrap:anywhere;font-size:.83rem}
+.tech-selected-summary>strong{font-size:.97rem;color:#f7fbff}
 .tech-selected-actions{display:flex;flex-wrap:wrap;gap:7px}
 .tech-selected-actions button,.tech-selected-actions .tech-source-link{padding:7px 10px;border:1px solid #6483a3;border-radius:7px;
   background:#24445f;color:#eff7ff;font-size:.75rem;cursor:pointer}
@@ -109,7 +117,7 @@
 .tech-node-source summary{cursor:pointer;width:max-content;max-width:100%}
 .tech-node-source code{display:block;margin-top:5px;overflow-wrap:anywhere;color:#d8eaff}
 .tech-node-source span{display:block;margin-top:3px}
-.tech-selected-label{font-size:.7rem;letter-spacing:.05em;color:#9bb6d2}
+.tech-selected-label{font-size:.75rem;letter-spacing:.025em;font-weight:750;color:#c0d9ec}
 .tech-selected strong{color:#e9f4ff;font-weight:770}
 .tech-selected span:last-of-type{color:#bdd2e6}
 .tech-selected em{color:#e2c392;font-style:normal}
@@ -134,14 +142,16 @@
   .tech-route{gap:7px;padding:6px 9px}
   .tech-route-caption{font-size:.65rem}
   .tech-route-step{max-width:154px;padding:5px 7px;font-size:.69rem}
-  .tech-legend{font-size:.67rem;padding:7px 10px;gap:5px 10px}
+  .tech-legend{font-size:.74rem;padding:8px 11px;gap:7px 12px}
   .tech-viewport{height:clamp(420px,62dvh,660px)}
   .tech-canvas{padding:14px 16px 28px}
   .tech-columns{gap:64px;min-height:320px}
-  .tech-column{width:calc(190px * var(--tech-size));flex-basis:calc(190px * var(--tech-size))}
+  .tech-column{width:calc(216px * var(--tech-size));flex-basis:calc(216px * var(--tech-size))}
   .tech-col-head{min-height:60px}
-  .tech-node{padding:9px 10px;min-height:96px}
-  .tech-selected{padding:9px 11px;font-size:.74rem}
+  .tech-node{padding:10px 11px;min-height:98px}
+  .tech-selected{padding:10px 12px;font-size:.8rem}
+  .tech-selected-detail{font-size:.79rem}
+  .tech-selected-summary>strong{font-size:.9rem}
   #acquisitionTraceDialog{width:calc(100vw - 8px);padding:9px;max-height:97dvh}
   #acquisitionTraceDialog .tech-viewport{height:clamp(410px,62dvh,660px)}
 }

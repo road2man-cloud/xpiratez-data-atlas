@@ -275,14 +275,42 @@ export function createLegacyItemTechAdapter(index,research,goalId){
     if(n.topicId&&research.topics[n.topicId]&&
       /^(LAB|FREE|ACCESS|DEPENDENCIES|UNLOCK):/.test(n.id))
       return researchAdapter(n.topicId).describe(n);
-    if(n.kind==='random')return {label:'랜덤 결과 확인',category:'random',badge:'확정 아님',detail:n.note};
-    if(n.kind==='blocked')return {label:'부재·미완료 조건',category:'blocked',
+    if(n.kind==='random'){
+      const label=n.id.startsWith('RANDOM_MAKE:')?'제조 산출물 추첨':
+        n.id.startsWith('RANDOM_EVENT:')?'이벤트 보상 추첨':
+        n.id.startsWith('EV_WEIGHT:')?'이벤트 후보 경쟁 가중치':
+        n.id.startsWith('EV_ONCE:')?'1회성 이벤트 후보 추첨':
+        n.id.includes('executionOdds')?'스크립트 실행 확률':'랜덤 결과 확인';
+      return {label,category:'random',badge:'당첨 확정 아님',detail:n.note};
+    }
+    if(n.kind==='blocked')return {label:'없어야 발생하는 조건',category:'blocked',
       badge:'존재하면 차단',detail:n.note};
     if(n.kind==='facility-function')return {label:'기지 기능 '+n.id,category:'facility',badge:'필수 시설',detail:n.note};
-    if(n.kind==='funds')return {label:'자금·작업량',category:'funds',badge:'비용 조건',detail:n.note};
-    if(n.kind==='warning')return {label:'추가 확인 필요',category:'warning',badge:'미검증',detail:n.note};
+    if(n.kind==='funds'){
+      const label=n.id.startsWith('PRICE:')?'기본 구매가와 실제 결제액':
+        n.id.startsWith('MANUFACTURE_COST:')?'제조 비용과 작업량':'자금·작업량';
+      return {label,category:'funds',badge:'비용 조건',detail:n.note};
+    }
+    if(n.kind==='warning'){
+      const label=n.id.startsWith('BUY_SPECIMEN_CYCLE:')?'연구 표본을 먼저 확보해야 할 수 있음':
+        n.id.startsWith('STOCK:')?'상점 출현·재고 미검증':
+        n.id.startsWith('EV_ONCE_UNKNOWN:')?'이벤트 추첨 후보 미확인':'추가 확인 필요';
+      return {label,category:'warning',badge:'미검증',detail:n.note};
+    }
     if(n.kind==='event')return {label:'이벤트 발생 조건',category:'event',badge:'이벤트',detail:n.note};
-    if(n.kind==='condition')return {label:'보상 수량',category:'condition',badge:'지급 조건',detail:n.note};
+    if(n.kind==='condition'){
+      const key=String(n.id||'');
+      const label=key.startsWith('BUY_MONTHLY:')?'이번 달 구매 한도':
+        key.startsWith('BUY_COUNTRY:')?'구매 가능 국가 조건':
+        key.startsWith('DELIVERY:')?'구매 후 배송 시간':
+        key.startsWith('EVENT_REWARD:')?'이벤트 지급 수량':
+        key.startsWith('EV_SEQUENCE:')?'이벤트 발생 순서':
+        key.startsWith('EV_COND:')&&(key.endsWith(':firstMonth')||key.endsWith(':lastMonth'))?
+          '이벤트 발생 가능 시기':
+        key.startsWith('EV_COND:')?'이벤트 실행 수치 조건':
+        key.startsWith('EV_GATE:')?'이벤트 발생 조건':'선행 조건';
+      return {label,category:'condition',badge:'조건 확인',detail:n.note};
+    }
     return {label:n.id,category:'condition',badge:'조건',detail:n.note||''};
   }
   function renderEvidence(n){
