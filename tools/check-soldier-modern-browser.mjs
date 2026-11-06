@@ -207,7 +207,7 @@ try{
  assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
  console.log('PASS Poltergeist selected route excludes impossible mixed-difficulty event and retains conditional free-research evidence');
  await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
- assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치 구성 다름 1'));
+ assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치·병종 다름 1'));
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const mixedVector=page.locator('#originDetails .origin-route-efficiency');

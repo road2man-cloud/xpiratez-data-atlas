@@ -7,11 +7,11 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-3';
+import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-4';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261106-vector-audit-3';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261106-vector-audit-4';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -241,7 +241,7 @@ function render(){
       routeTieEvidence(comparable(r),c,x=>score(x,metric),metric):null;
     const tieNote=ties?.equalTotal.length>1?
       '<small class="origin-route-tie" data-route-tie="true">상한 합계 동점 '+ties.equalTotal.length+
-      '경로 · 12종 동일 '+ties.sameVector.length+' / 능력치 구성 다름 '+ties.differentVector.length+'</small>':'';
+      '경로 · 최종 병종·12종 동일 '+ties.sameVector.length+' / 능력치·병종 다름 '+ties.differentVector.length+'</small>':'';
     const values=metric==='birth'?r.displayBirth:metric==='certified'?null:
       metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display.stats;
     const total=values?displayTotal(values):null;
@@ -406,7 +406,7 @@ function routeEfficiencyHtml(candidates,selected,metric='growth'){
     'data-exact-peers="'+ties.sameVector.length+'" data-different-vector="'+
     ties.differentVector.length+'" data-equal-vector-count="'+ties.sameVector.length+
     '" data-equal-total-different-vector="'+ties.differentVector.length+'"><summary>경로 효율 · 시술 '+
-    transformationCount(selected)+'단계 · 동일 12종 상한 대안 '+equals.length+'개</summary>'+
+    transformationCount(selected)+'단계 · 같은 최종 병종·12종 상한 대안 '+equals.length+'개</summary>'+
     '<p>선택 경로: 시술·변신 '+transformationCount(selected)+'단계 · 원본 규칙에 기록된 '+
     '훈련 배제 대상 '+excludedTrainingCount(selected)+'종'+
     (metric==='growth'?' · 연구·시술 잠정 합계 '+fmt(selected.display?.total):'')+

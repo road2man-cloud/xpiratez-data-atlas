@@ -45,6 +45,10 @@ assert(!sameProjectedOutcome(cultural,differentBody));
 assert.equal(compareEqualScoreOriginRoutes(cultural,differentBody),0);
 assert.equal(preferredOriginCandidate(cultural,differentBody,score),cultural,
   'Identical numbers on a different final soldier body are not equivalent');
+assert.equal(preferredOriginCandidate(differentBody,cultural,score),differentBody,
+  'Different final soldier bodies remain unordered in both directions');
+assert(!sameRouteStatVector({...short,finalSoldierType:null},short),
+  'An unknown final body cannot certify an equivalent route');
 const tied=routeTieEvidence([cultural,short,differentVector,differentBody,stronger],short,score);
 assert.equal(tied.equalTotal.length,4);
 assert.equal(tied.sameVector.length,2);
