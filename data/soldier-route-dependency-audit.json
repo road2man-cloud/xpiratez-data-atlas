@@ -1,0 +1,1088 @@
+{
+  "kind": "soldier-route-dependency-pruning-v1",
+  "sourceVersion": "v.o2",
+  "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
+  "priorAuditHash": "bc9da77c6846d273957e462db507990d03b5b0a3ac6c7998d44e39b0c10c03e6",
+  "scope": "published one-training omissions; directly linked research, input assumptions and bounded research ancestry only; full chronological replay; no global cost or maximum certification",
+  "stats": {
+    "claims": 28,
+    "replayAttempts": 96,
+    "attemptedGroups": 40,
+    "acceptedGroups": 30,
+    "withResearchRemoved": 25,
+    "withInputAssumptionsRemoved": 28,
+    "withAdditionalStepsRemoved": 28
+  },
+  "findings": [
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "512b15ba6c0fe2c843ca",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "removedIndices": [
+        420,
+        421,
+        422
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 420,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 421,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "9a1a02fad3c9924c437f10c49420317d6472ed49817615496d5725ed6c2bff3f",
+      "reducedStepsHash": "aef293ff6a6ef351f6f9ad100568622c4d85c29a1ecbf763752ed454d2ca927f",
+      "remainingResearchSteps": 327,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 1408,
+      "replayUngrownTotal": 466,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "c3096e9b42dfa115515c",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "removedIndices": [
+        420,
+        421,
+        422
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 420,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 421,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "3bad5034f6fe63e31fe3e5c0fbb0eb4f8e8d767f1aa59ca456b9c243b23e7e79",
+      "reducedStepsHash": "2c2dd4214113ba7aee5035b962fb7372b7bfc4e52c6691bbb1c552c22924050a",
+      "remainingResearchSteps": 327,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 1408,
+      "replayUngrownTotal": 466,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "d110df23f1d7633ba3a7",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "removedIndices": [
+        420,
+        421,
+        422
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 420,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 421,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "8d28a18cc88247cf7489383eb65fcb65ba09f4d4ae540534a5189d5c5621be21",
+      "reducedStepsHash": "ad87ef186091993b717b5278a294af2952a81e4c7126d44b218dad529e4518bc",
+      "remainingResearchSteps": 330,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 1408,
+      "replayUngrownTotal": 455,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "d941c2b6b7595e6addd5",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "removedIndices": [
+        420,
+        421,
+        422
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 420,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 421,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "cc6a87305ad80b4e1bf407a54ac0a1f517959d1e119dc8123643b3b7a82d1c43",
+      "reducedStepsHash": "d8b454d299273f565e5fb63c307deae955039167b21a67afac044046cd6b87fa",
+      "remainingResearchSteps": 330,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 1408,
+      "replayUngrownTotal": 455,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+      "target": "chort",
+      "sourceCandidate": "b6f71815d00481953550",
+      "removed": "STR_PERSON_OF_CULTURE_TRAINING",
+      "removedStepIndex": 145,
+      "removedIndices": [
+        143,
+        144,
+        145
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 143,
+          "type": "research",
+          "id": "STR_PERSON_OF_CULTURE_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 144,
+          "type": "externalInputs",
+          "items": {
+            "STR_PORN": 25
+          },
+          "funds": 0,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_PERSON_OF_CULTURE_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "3ff53894ed0e4e126a05e22659075d94dc3c3a76d6eb27ebbb23174e58651f24",
+      "reducedStepsHash": "7ab7127f983c67c4c977174202f627748ff0ccc90e2d5ef2107de3c503f386ff",
+      "remainingResearchSteps": 124,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2131,
+      "replayUngrownTotal": 1239,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+      "target": "chort",
+      "sourceCandidate": "9d5de692de30a5bed0b8",
+      "removed": "STR_SIMPLETON_TRAINING",
+      "removedStepIndex": 169,
+      "removedIndices": [
+        167,
+        168,
+        169
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 167,
+          "type": "research",
+          "id": "STR_SIMPLETON_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 168,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10,
+            "STR_HANDLE": 1
+          },
+          "funds": 500,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_SIMPLETON_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "b36c7ba116b603952688fb45e0c9c65aeb4b7f505a1b851bedebddfee394c7eb",
+      "reducedStepsHash": "2d5712b0590c426f8b78bb3abc407635243e8e6b6b515458d71611564cfba8ec",
+      "remainingResearchSteps": 136,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2131,
+      "replayUngrownTotal": 1239,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_DOLL",
+      "target": "origin",
+      "sourceCandidate": "99250bd1d94a957d8720",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 318,
+      "removedIndices": [
+        316,
+        317,
+        318
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 316,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 317,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "34a0ff5f5ee68aa32cb5d4db0273cc496fcbe70c6052a5f23f31ee1f2bcf7e3c",
+      "reducedStepsHash": "c33e388470c74a291acdac96689e059826f5517c8fb3fd32c388a33a3bafb4ae",
+      "remainingResearchSteps": 242,
+      "remainingTransforms": 1,
+      "conditionalCeiling": 1311,
+      "replayUngrownTotal": 978,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "direct:STR_SOLDIER_DOLL",
+      "target": "origin",
+      "sourceCandidate": "7bcff634a01c9b6e28d7",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 310,
+      "removedIndices": [
+        308,
+        309,
+        310
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 308,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 309,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "f17ad04315df9abf8ea4fea4dd468a2d2993b0cb2a3dda183358b3c88c4a482d",
+      "reducedStepsHash": "bec447d03f94ab7b7712b80fa0789624ea8849f0ef249a9f617f612d04228005",
+      "remainingResearchSteps": 243,
+      "remainingTransforms": 1,
+      "conditionalCeiling": 1311,
+      "replayUngrownTotal": 978,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "c1843d71ef04802e786b",
+      "removed": "STR_ART_OF_TROUNCING",
+      "removedStepIndex": 744,
+      "removedIndices": [
+        742,
+        743,
+        744
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 742,
+          "type": "research",
+          "id": "STR_ART_OF_TROUNCING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 743,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 20000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_ART_OF_TROUNCING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "4ad1531e6cbe4981269e491f0fa1808bf9168b8eb5a6d5132e3c77d643383f66",
+      "reducedStepsHash": "aafc31e04922aa076a2cf1158d85c022889f12b59ebcd2fca100c628ac4619f5",
+      "remainingResearchSteps": 601,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2130,
+      "replayUngrownTotal": 1336,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "e562d29354f4182b97a5",
+      "removed": "STR_ART_OF_TROUNCING",
+      "removedStepIndex": 744,
+      "removedIndices": [
+        742,
+        743,
+        744
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 742,
+          "type": "research",
+          "id": "STR_ART_OF_TROUNCING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 743,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 20000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_ART_OF_TROUNCING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "bedef70148fdedc3c233de342b6036f59d614232116f1e9409fd35d76dc23166",
+      "reducedStepsHash": "71b4cfeacdf42c7f8566784ab9c0c3e39d155f31897d67403e017f9ef91ba22c",
+      "remainingResearchSteps": 601,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2130,
+      "replayUngrownTotal": 1336,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "d4b0d8fdf91220aba2ca",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 792,
+      "removedIndices": [
+        790,
+        791,
+        792
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 790,
+          "type": "research",
+          "id": "STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 791,
+          "type": "externalInputs",
+          "items": {
+            "STR_GOVT_CORPSE": 10
+          },
+          "funds": 50000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_DREAMLINK_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "2e5dc1d24483baa6af344654786a37b339e797651eb869e2fe8ab2fc4a7e74aa",
+      "reducedStepsHash": "3a22e0948e6905b7cc4bdd85a9f33bfb8b606e04fffa03362f1b487a4fa15247",
+      "remainingResearchSteps": 633,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2130,
+      "replayUngrownTotal": 1336,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "55a02a04d90232c2cba8",
+      "removed": "STR_PROUD_WARRIOR",
+      "removedStepIndex": 736,
+      "removedIndices": [
+        733,
+        734,
+        735,
+        736
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 733,
+          "type": "research",
+          "id": "STR_WARRIOR_CULTURE"
+        },
+        {
+          "stepIndex": 734,
+          "type": "freeResearch",
+          "id": "STR_PROUD_WARRIOR"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 735,
+          "type": "externalInputs",
+          "items": {
+            "STR_GLAMOUR": 24
+          },
+          "funds": 5000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_PROUD_WARRIOR"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "42fa437901cfef01a63c3f8bbd91392d1928d8fabb6d58708f3f9d9e4aab71a5",
+      "reducedStepsHash": "a4d2119929c063e9de159793b69698cf71840b9787932f8693785419fe373697",
+      "remainingResearchSteps": 590,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2130,
+      "replayUngrownTotal": 1336,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "0c25f76c5c59952bb5d5",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 157,
+      "removedIndices": [
+        155,
+        156,
+        157
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 155,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 156,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "2ffa35b6431f28f0c870cb8b70e47ea97aa5e6eb111da39c5a07d9aec7c1024c",
+      "reducedStepsHash": "1018ea202e0d9842520f752f952dfaf9df7288fac7775fec6ffdea9de5a9b520",
+      "remainingResearchSteps": 133,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1250,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "0c25f76c5c59952bb5d5",
+      "removed": "STR_PERSONAL_ATTENTION",
+      "removedStepIndex": 175,
+      "removedIndices": [
+        173,
+        174,
+        175
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 173,
+          "type": "research",
+          "id": "STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 174,
+          "type": "externalInputs",
+          "items": {
+            "STR_GLAMOUR": 5
+          },
+          "funds": 5000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "2ffa35b6431f28f0c870cb8b70e47ea97aa5e6eb111da39c5a07d9aec7c1024c",
+      "reducedStepsHash": "e6798c3e5b6a84c3fd7aa02c1e8ec78d3086f8043abafc6f905ffc694231aa86",
+      "remainingResearchSteps": 133,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "91b57d0ee9b2f9768115",
+      "removed": "STR_PERSONAL_ATTENTION",
+      "removedStepIndex": 142,
+      "removedIndices": [
+        140,
+        141,
+        142
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 140,
+          "type": "research",
+          "id": "STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 141,
+          "type": "externalInputs",
+          "items": {
+            "STR_GLAMOUR": 5
+          },
+          "funds": 5000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "acca56910bbb555ea4c5d628b974e6032ce0b16cae971d905b5adb717650a8de",
+      "reducedStepsHash": "7c1b06d7ef955fad31c7dda23df5089c236687dea2c91694b2e3777177c12c42",
+      "remainingResearchSteps": 133,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "91b57d0ee9b2f9768115",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 175,
+      "removedIndices": [
+        173,
+        174,
+        175
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 173,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 174,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "acca56910bbb555ea4c5d628b974e6032ce0b16cae971d905b5adb717650a8de",
+      "reducedStepsHash": "1f76e569675ab6a0e5999ec7d0b85c3610a0c5bd4da325541b0fe945c23a5bd7",
+      "remainingResearchSteps": 133,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1250,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a13f0364697329a636c1",
+      "removed": "STR_PERSONAL_ATTENTION",
+      "removedStepIndex": 156,
+      "removedIndices": [
+        154,
+        155,
+        156
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 154,
+          "type": "research",
+          "id": "STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 155,
+          "type": "externalInputs",
+          "items": {
+            "STR_GLAMOUR": 5
+          },
+          "funds": 5000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "9758380cc50309063097200de8a66d3f796c929e1c7d32606b478faa34bd432f",
+      "reducedStepsHash": "267b9d9d70ff2d3977e0473107e3d2da550aeede6592998f5e81fe39e68d1454",
+      "remainingResearchSteps": 133,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a13f0364697329a636c1",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 175,
+      "removedIndices": [
+        173,
+        174,
+        175
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 173,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 174,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "9758380cc50309063097200de8a66d3f796c929e1c7d32606b478faa34bd432f",
+      "reducedStepsHash": "ea82d1f78fe1ac5c8ff3b6b61615cebd1f8772a50aefa8e78b954594e5ce3480",
+      "remainingResearchSteps": 133,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1250,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "be340cfce7686a0ad2b7",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 157,
+      "removedIndices": [
+        155,
+        156,
+        157
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 155,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 156,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "b5d91808c188ce9c57ea706768376c910e083ed0daad9e6aea6356debc76fc13",
+      "reducedStepsHash": "18556f77a7950df9829b6d1b88e9582b27f09abf0a17da4fe428071c0c7f9284",
+      "remainingResearchSteps": 126,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1248,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "be340cfce7686a0ad2b7",
+      "removed": "STR_BASIC_FIREARMS_TRAINING",
+      "removedStepIndex": 169,
+      "removedIndices": [
+        167,
+        168,
+        169
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 167,
+          "type": "research",
+          "id": "STR_BASIC_FIREARMS_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 168,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 5000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_BASIC_FIREARMS_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "b5d91808c188ce9c57ea706768376c910e083ed0daad9e6aea6356debc76fc13",
+      "reducedStepsHash": "827dbddd1f53b02376b2c233a94d6c156703d69cf17d3f98e38413f58c8c258d",
+      "remainingResearchSteps": 126,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "37e5e109f6dec5e4017f",
+      "removed": "STR_HONORED_WARRIOR_TRAINING",
+      "removedStepIndex": 116,
+      "removedIndices": [
+        115,
+        116
+      ],
+      "removedResearch": [],
+      "removedInputs": [
+        {
+          "stepIndex": 115,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 10000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "8fd37c0bcf1b206981e1b1d21b54e9b78861e7996e41583fb6b9741a0c8cc036",
+      "reducedStepsHash": "68754719b472315885fb7d8d2ec834d9d263a5865c89a2658f0b714d03eed0ad",
+      "remainingResearchSteps": 121,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "37e5e109f6dec5e4017f",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 160,
+      "removedIndices": [
+        158,
+        159,
+        160
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 158,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 159,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "8fd37c0bcf1b206981e1b1d21b54e9b78861e7996e41583fb6b9741a0c8cc036",
+      "reducedStepsHash": "7638f17320a2f2127fa83420f9f0a7d3f0a69396bf07b7aebec4c437b291928a",
+      "remainingResearchSteps": 120,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a36b501310b49e840615",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 157,
+      "removedIndices": [
+        155,
+        156,
+        157
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 155,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 156,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "57322f638763c67f2f4fcf2d870c899d22354cd4f3575f3cdacde7bf7f9d8398",
+      "reducedStepsHash": "2f1c1c5407a99a548cebed15b382cf42b45d0e7ea28b858b8c12d5293be12691",
+      "remainingResearchSteps": 120,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a36b501310b49e840615",
+      "removed": "STR_HONORED_WARRIOR_TRAINING",
+      "removedStepIndex": 160,
+      "removedIndices": [
+        158,
+        159,
+        160
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 158,
+          "type": "research",
+          "id": "STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 159,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 10000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "57322f638763c67f2f4fcf2d870c899d22354cd4f3575f3cdacde7bf7f9d8398",
+      "reducedStepsHash": "c90f693b4ae6623a0eb70f6d951ecc161a0444a36270a23061f4f769ddda0962",
+      "remainingResearchSteps": 120,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "cb8943ee31dd350a2d3c",
+      "removed": "STR_HONORED_WARRIOR_TRAINING",
+      "removedStepIndex": 98,
+      "removedIndices": [
+        97,
+        98
+      ],
+      "removedResearch": [],
+      "removedInputs": [
+        {
+          "stepIndex": 97,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 10000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "e93cdaf9790f13c6672baed6df0893351e7b9e8b02bd06fbb714e68b6f02ca15",
+      "reducedStepsHash": "2c523595bf45c79db1171f0e5c4469b252a8911b0b9bae2da5d5f5182682dce0",
+      "remainingResearchSteps": 121,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1273,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "cb8943ee31dd350a2d3c",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 160,
+      "removedIndices": [
+        158,
+        159,
+        160
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 158,
+          "type": "research",
+          "id": "STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 159,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [
+            "DEN"
+          ],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "e93cdaf9790f13c6672baed6df0893351e7b9e8b02bd06fbb714e68b6f02ca15",
+      "reducedStepsHash": "b4ef37d153c1d52ea14fcc9c4d56a26aeef578a01b6252fbc400b85bc14cde73",
+      "remainingResearchSteps": 120,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "34b2c32eb8dca932b919",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 184,
+      "removedIndices": [
+        183,
+        184
+      ],
+      "removedResearch": [],
+      "removedInputs": [
+        {
+          "stepIndex": 183,
+          "type": "externalInputs",
+          "items": {},
+          "funds": 25000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_GLADIATOR_TRAINING"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "5b4eedebaebe44e4cc910aa8ba00e368bbd4e198d519cbc86d7d8b975aa72329",
+      "reducedStepsHash": "28742741237b7b6c73562335ce3c67f6396d049757c20e04c6f687127d3787ad",
+      "remainingResearchSteps": 146,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "34b2c32eb8dca932b919",
+      "removed": "STR_PROUD_WARRIOR",
+      "removedStepIndex": 197,
+      "removedIndices": [
+        194,
+        195,
+        196,
+        197
+      ],
+      "removedResearch": [
+        {
+          "stepIndex": 194,
+          "type": "research",
+          "id": "STR_WARRIOR_CULTURE"
+        },
+        {
+          "stepIndex": 195,
+          "type": "freeResearch",
+          "id": "STR_PROUD_WARRIOR"
+        }
+      ],
+      "removedInputs": [
+        {
+          "stepIndex": 196,
+          "type": "externalInputs",
+          "items": {
+            "STR_GLAMOUR": 24
+          },
+          "funds": 5000,
+          "functions": [],
+          "reason": "훈련 실물·자금: STR_PROUD_WARRIOR"
+        }
+      ],
+      "removedOther": [],
+      "originalStepsHash": "5b4eedebaebe44e4cc910aa8ba00e368bbd4e198d519cbc86d7d8b975aa72329",
+      "reducedStepsHash": "d7264f3daf34d53a3efed0c9301d190ee3e1a2864e5d09698fc64b21e9903b83",
+      "remainingResearchSteps": 144,
+      "remainingTransforms": 3,
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1257,
+      "certifiedMaximum": false
+    }
+  ]
+}
