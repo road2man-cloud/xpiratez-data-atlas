@@ -7,11 +7,11 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {preferredOriginCandidate} from './origin-route-tiebreak.js';
+import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-2';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261106-chort-separated-2';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261106-vector-audit-2';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -32,7 +32,7 @@ async function expandOriginArchive(envelope){
     throw Error('병종 경로 압축 원본 종류 불일치');
   return report;
 }
-let DATA,REPORT,CATALOG,DIAGNOSTICS,selected=null,replayGeneration=0,blocked=false;
+let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,selected=null,replayGeneration=0,blocked=false;
 const verified=new Map(),traceHistory=[];
 let activeTraceViewer=null,activeBirthViewer=null;
 function renderTraceStep(){
@@ -71,7 +71,8 @@ const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='con
 const allCompatible=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
 const comparable=r=>originRankingCandidates(r,candidateMatchesCampaign);
 const chortCandidates=r=>sharedTerminalCandidates(r,candidateMatchesCampaign);
-const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>preferredOriginCandidate(winner,c,x=>score(x,metric)),null);
+const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>
+  preferredOriginCandidate(winner,c,x=>score(x,metric),metric),null);
 function renderSharedTerminalCatalog(){
   const host=$('#chortTarget'),audit=sharedTerminalSourceAudit(DATA);
   if(audit.transformId!==SHARED_TERMINALS[0].transformId||
@@ -95,6 +96,7 @@ function renderSharedTerminalCatalog(){
       '<div><strong>'+audit.fixedPsi+'</strong><small>출생 시 Psi 충족</small></div>'+
       '<div><strong>'+audit.variablePsi+'</strong><small>Psi 개체별 확인</small></div>'+
     '</div>'+
+    (PRUNING?.findings?.some(x=>x.target==='chort')?'<p class="terminal-pruning-note" data-pruning-global="chort">등록 후보의 연구 순서를 보존한 채 사전 훈련을 생략해도 <strong>같은 조건부 12종 상한</strong>이 계산되는 경로를 원본 규칙으로 재생했습니다. 각 출생처 상세의 훈련 생략 검증에서 확인하세요.</p>':'')+
     '<p class="terminal-gate"><strong>코르트 구속</strong> · 계급 '+fmt(t.minRank)+' 이상 · Psi 강도 '+
       fmt(audit.threshold)+' 이상 · '+Object.entries(t.requiredItems||{}).map(([id,q])=>
         esc(name(id))+' '+fmt(q)+'개').join(' · ')+
@@ -190,6 +192,28 @@ async function validate(){
         throw Error('제외 후보의 난이도 반례 근거 불일치: '+c.id);
     }
   }
+  if(PRUNING?.kind!=='soldier-route-pruning-proof-v1'||PRUNING.sourceHash!==REPORT.sourceHash||
+    PRUNING.sourceVersion!==REPORT.sourceVersion||
+    PRUNING.stats.valid!==PRUNING.findings.length)
+    throw Error('훈련 생략 감사 파일이 현재 원본 연구 기록과 불일치');
+  for(const claim of PRUNING.findings){
+    const record=REPORT.records.find(r=>r.profileId===claim.id);
+    const source=record?.candidates.find(c=>c.id===claim.sourceCandidate);
+    const at=claim.removedStepIndex;
+    if(!source||!Number.isInteger(at)||source.steps[at]?.type!=='transform'||
+      source.steps[at].transform!==claim.removed||
+      (claim.target==='chort')!==(source.finalSoldierType==='STR_SOLDIER_CHORT'))
+      throw Error('훈련 생략 감사의 출발 후보가 원본과 다름');
+    const steps=source.steps.filter((_,i)=>i!==at);
+    const transforms=steps.filter(s=>s.type==='transform').map(s=>s.transform);
+    const reduced={...source,steps,transforms};
+    reduced.growth=projectCandidateGrowthLimit(record,reduced,DATA);
+    if(JSON.stringify(transforms)!==JSON.stringify(claim.proposedTransforms)||
+      JSON.stringify(source.transforms)!==JSON.stringify(claim.priorTransforms)||
+      reduced.growth.finalSoldierType!==source.finalSoldierType||
+      reduced.growth.total!==claim.originalGrowth||!sameRouteStatVector(reduced,source))
+      throw Error('훈련 생략 후 12종 성장 상한 또는 최종 병종이 바뀜');
+  }
   if(REPORT.campaignContextAuditVersion!==1||
     REPORT.summary.withCompatibleResearch!==REPORT.records.filter(r=>allCompatible(r).length).length||
     REPORT.summary.compatibleWitnesses!==REPORT.records.reduce((sum,r)=>sum+allCompatible(r).length,0))
@@ -211,12 +235,17 @@ function render(){
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const c=best(r,metric==='growth'?'growth':'provisional');
     const terminal=chortCandidates(r).reduce((winner,x)=>preferredOriginCandidate(winner,x,score),null);
+    const ties=(metric==='growth'||metric==='provisional')&&c?
+      routeTieEvidence(comparable(r),c,x=>score(x,metric),metric):null;
+    const tieNote=ties?.equalTotal.length>1?
+      '<small class="origin-route-tie" data-route-tie="true">상한 합계 동점 '+ties.equalTotal.length+
+      '경로 · 12종 동일 '+ties.sameVector.length+' / 능력치 구성 다름 '+ties.differentVector.length+'</small>':'';
     const values=metric==='birth'?r.displayBirth:metric==='certified'?null:
       metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display.stats;
     const total=values?displayTotal(values):null;
     return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small>'+
       (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
-      '<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
+      tieNote+'<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
       (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'연구 경로 보완 중')+
       '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
@@ -338,6 +367,62 @@ function assumptionHtml(c){return c.assumptions.map(s=>{
   if(s.type==='recruit')return '<li>출생 최솟값 벡터 · 실제 생성 난수 미실측'+(s.script?' · 출생 이벤트 '+esc(s.script):'')+'</li>';
   return '<li>게임 경과 '+fmt(s.month)+'개월 · 유지비·외부 사건 미검증</li>';
 }).join('');}
+function routeEfficiencyHtml(candidates,selected,metric='growth'){
+  if(metric!=='growth'&&metric!=='provisional')return '';
+  const mode=metric;
+  const ties=routeTieEvidence(candidates,selected,x=>score(x,mode),mode);
+  const equals=ties.sameVector.filter(x=>x.id!==selected.id)
+    .sort((a,b)=>excludedTrainingCount(a)-excludedTrainingCount(b)||
+      transformationCount(a)-transformationCount(b));
+  const alternatives=equals.length?
+    '<ol>'+equals.map(x=>'<li><button type="button" data-candidate="'+esc(x.id)+'">'+
+      esc(x.description)+' · 시술 '+transformationCount(x)+'단계 · 기록된 훈련 배제 '+
+      excludedTrainingCount(x)+'종</button></li>').join('')+'</ol>':
+    '<p>현재 등록된 후보에서는 12종 상한이 완전히 같은 다른 경로가 없습니다.</p>';
+  const different=ties.differentVector.length?
+    '<p>상한 합계가 같지만 <strong>능력치 배분이 다른 경로 '+
+      ties.differentVector.length+'개</strong>는 동등한 육성 결과로 합치지 않았습니다. '+
+      '상세 후보 비교에서 각각 확인할 수 있습니다.</p>':'';
+  return '<details class="origin-route-efficiency" data-route-efficiency="true" '+
+    'data-exact-peers="'+ties.sameVector.length+'" data-different-vector="'+
+    ties.differentVector.length+'"><summary>경로 효율 · 시술 '+
+    transformationCount(selected)+'단계 · 동일 12종 상한 대안 '+equals.length+'개</summary>'+
+    '<p>선택 경로: 시술·변신 '+transformationCount(selected)+'단계 · 원본 규칙에 기록된 '+
+    '훈련 배제 대상 '+excludedTrainingCount(selected)+'종. 등록된 연구 시간순 후보 중 '+
+    '같은 12종 능력치가 계산되는 경로에서 배제 손실과 시술 단계를 비교했습니다.</p>'+
+    alternatives+different+
+    '<p class="fine">연구·훈련 시간과 실물 비용, 난수 결과는 비교 우열이 확인되지 않았습니다. '+
+    '같은 조건부 상한은 실제 달성이나 전역 최적성 증명이 아닙니다. '+
+    '후보 경로 자체를 삭제하거나 원본 연구 증거를 변경하지 않습니다.</p></details>';
+}
+function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
+  const target=sharedTerminal?'chort':'origin';
+  const claims=(PRUNING?.findings||[]).filter(x=>x.id===record.profileId&&x.target===target);
+  if(!claims.length)return '';
+  const withSource=claims.map(x=>({claim:x,source:record.candidates.find(c=>c.id===x.sourceCandidate)}))
+    .filter(x=>x.source);
+  const sameVector=withSource.filter(x=>sameRouteStatVector(x.source,selected));
+  const shorter=sameVector.filter(x=>x.claim.proposedTransforms.length<transformationCount(selected));
+  const rows=withSource.sort((a,b)=>
+    a.claim.proposedTransforms.length-b.claim.proposedTransforms.length||
+    a.claim.sourceCandidate.localeCompare(b.claim.sourceCandidate));
+  const entries=rows.map(({claim:x,source})=>
+    '<li><strong>생략: '+esc(name(x.removed))+'</strong> · 시술 '+
+      x.priorTransforms.length+' → '+x.proposedTransforms.length+'단계 · 조건부 상한 합계 '+
+      fmt(x.originalGrowth)+' · '+(sameRouteStatVector(source,selected)?
+        '현재 선택 경로와 12종 성장상한 동일':'다른 원본 경로 기준의 12종 상한 동일')+
+      '<p>재생된 훈련 순서: '+x.proposedTransforms.map(id=>esc(name(id))).join(' → ')+'</p>'+
+      '<button type="button" data-candidate="'+esc(x.sourceCandidate)+
+      '">생략 전 원본 후보·전체 연구 증거 확인</button></li>').join('');
+  return '<details class="origin-route-pruning" data-pruning-proofs="'+claims.length+
+    '" data-pruning-shorter="'+shorter.length+'"><summary>원본 규칙 재생 · 실효 상한을 바꾸지 않는 훈련 생략 '+
+    claims.length+'건</summary>'+
+    (shorter.length?'<p class="scope-note"><strong>현재 선택한 경로보다 짧고 12종 성장상한이 같은 시술 경로 '+
+      shorter.length+'건</strong>을 발견했습니다. 아래 순서를 참고하세요.</p>':'')+
+    '<p class="fine">기존 원본 경로에서 시술 단계 하나만 생략하고 <strong>연구·자원 입력과 사건 순서는 그대로 유지</strong>한 뒤, '+
+    '캠페인 재생 및 성장 상한 12종 일치를 검사했습니다. 비용·시간 최적화와 실제 게임 실행, 전역 최고값은 증명하지 않습니다.</p>'+
+    '<ol>'+entries+'</ol></details>';
+}
 async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   if(blocked)return;const generation=++replayGeneration;
   activeBirthViewer?.dispose();activeBirthViewer=null;
@@ -381,7 +466,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='repeatResearch'||s.type==='freeResearch').at(-1);
   const alternateSet=sharedTerminal?chortCandidates(record):comparable(record);
   const bestAlternate=metric=>alternateSet.reduce((winner,x)=>
-    preferredOriginCandidate(winner,x,c=>score(c,metric)),null);
+    preferredOriginCandidate(winner,x,c=>score(c,metric),metric),null);
   const bonus=[...alternateSet].sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
   const useGrowth=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope';
   const shown=useGrowth?c.growth:c.display;
@@ -398,6 +483,8 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
     (sharedTerminal?'<p class="shared-terminal-origin-note"><strong>코르트 별도 병종 경로</strong> · 출생처 기본 비교에서 제외된 변신 증거입니다. <a href="#chortTarget">코르트 목록 보기</a></p>':sharedTerminalOriginNote(record,profile))+
     campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
+    routeEfficiencyHtml(alternateSet,c,metric)+
+    (metric==='growth'?routePruningEvidenceHtml(record,c,sharedTerminal):'')+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
     '<h3>이 경로의 분기 선택과 배제</h3>'+choiceHtml(c)+
     '<details><summary>훈련으로 배제되는 다른 선택</summary>'+c.trainingExclusions.map(t=>'<h4>'+esc(name(t.id))+'</h4>'+t.excludes.map(e=>'<p>'+esc(name(t.id))+(e.direction==='bidirectional'?' ↔ ':' → ')+esc(name(e.id))+' · '+(e.direction==='bidirectional'?'양방향':'일방향')+' 이력 배제</p>').join('')).join('')+'</details>'+
@@ -419,7 +506,7 @@ function showTraining(id){
 }
 async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
-  [DATA,REPORT,CATALOG,DIAGNOSTICS]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json')]);
+  [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json')]);
   await validate();
   if(DIAGNOSTICS.sourceVersion!=='v.o2'||
     JSON.stringify(DIAGNOSTICS.sourceHashes)!==JSON.stringify(DATA.meta.source.rules)||

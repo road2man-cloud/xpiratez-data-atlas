@@ -1,0 +1,566 @@
+{
+  "kind": "soldier-route-pruning-proof-v1",
+  "sourceVersion": "v.o2",
+  "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
+  "scope": "registered top-score candidates; delete one transform only; original research steps retained",
+  "stats": {
+    "attempted": 813,
+    "possible": 36,
+    "replayed": 36,
+    "valid": 28
+  },
+  "findings": [
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "512b15ba6c0fe2c843ca",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "priorTransforms": [
+        "STR_DREAMLINK_TRAINING",
+        "STR_MMA_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "proposedTransforms": [
+        "STR_MMA_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "originalGrowth": 1408,
+      "newWitnessUngrownTotal": 466
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "c3096e9b42dfa115515c",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "priorTransforms": [
+        "STR_DREAMLINK_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_MMA_TRAINING",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "proposedTransforms": [
+        "STR_CAPTAINS_11",
+        "STR_MMA_TRAINING",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "originalGrowth": 1408,
+      "newWitnessUngrownTotal": 466
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "d110df23f1d7633ba3a7",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "priorTransforms": [
+        "STR_DREAMLINK_TRAINING",
+        "STR_MMA_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_MMA_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 1408,
+      "newWitnessUngrownTotal": 455
+    },
+    {
+      "id": "manufacture:STR_POLTERGEIST_EMBODIMENT",
+      "target": "origin",
+      "sourceCandidate": "d941c2b6b7595e6addd5",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 422,
+      "priorTransforms": [
+        "STR_DREAMLINK_TRAINING",
+        "STR_CAPTAINS_11",
+        "STR_MMA_TRAINING",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_CAPTAINS_11",
+        "STR_MMA_TRAINING",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 1408,
+      "newWitnessUngrownTotal": 455
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+      "target": "chort",
+      "sourceCandidate": "b6f71815d00481953550",
+      "removed": "STR_PERSON_OF_CULTURE_TRAINING",
+      "removedStepIndex": 145,
+      "priorTransforms": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 2131,
+      "newWitnessUngrownTotal": 1239
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+      "target": "chort",
+      "sourceCandidate": "9d5de692de30a5bed0b8",
+      "removed": "STR_SIMPLETON_TRAINING",
+      "removedStepIndex": 169,
+      "priorTransforms": [
+        "STR_SIMPLETON_TRAINING",
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 2131,
+      "newWitnessUngrownTotal": 1239
+    },
+    {
+      "id": "direct:STR_SOLDIER_DOLL",
+      "target": "origin",
+      "sourceCandidate": "99250bd1d94a957d8720",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 318,
+      "priorTransforms": [
+        "STR_PERSONAL_ATTENTION",
+        "STR_DREAMLINK_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "originalGrowth": 1311,
+      "newWitnessUngrownTotal": 978
+    },
+    {
+      "id": "direct:STR_SOLDIER_DOLL",
+      "target": "origin",
+      "sourceCandidate": "7bcff634a01c9b6e28d7",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 310,
+      "priorTransforms": [
+        "STR_DREAMLINK_TRAINING",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "proposedTransforms": [
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "originalGrowth": 1311,
+      "newWitnessUngrownTotal": 978
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "c1843d71ef04802e786b",
+      "removed": "STR_ART_OF_TROUNCING",
+      "removedStepIndex": 744,
+      "priorTransforms": [
+        "STR_ART_OF_TROUNCING",
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 2130,
+      "newWitnessUngrownTotal": 1336
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "e562d29354f4182b97a5",
+      "removed": "STR_ART_OF_TROUNCING",
+      "removedStepIndex": 744,
+      "priorTransforms": [
+        "STR_ART_OF_TROUNCING",
+        "STR_CHORT_SUMMONING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "proposedTransforms": [
+        "STR_CHORT_SUMMONING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_PERSONAL_ATTENTION"
+      ],
+      "originalGrowth": 2130,
+      "newWitnessUngrownTotal": 1336
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "d4b0d8fdf91220aba2ca",
+      "removed": "STR_DREAMLINK_TRAINING",
+      "removedStepIndex": 792,
+      "priorTransforms": [
+        "STR_DREAMLINK_TRAINING",
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 2130,
+      "newWitnessUngrownTotal": 1336
+    },
+    {
+      "id": "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT",
+      "target": "chort",
+      "sourceCandidate": "55a02a04d90232c2cba8",
+      "removed": "STR_PROUD_WARRIOR",
+      "removedStepIndex": 736,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "proposedTransforms": [
+        "STR_CHORT_SUMMONING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "originalGrowth": 2130,
+      "newWitnessUngrownTotal": 1336
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "0c25f76c5c59952bb5d5",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 157,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_PERSONAL_ATTENTION",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1250
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "0c25f76c5c59952bb5d5",
+      "removed": "STR_PERSONAL_ATTENTION",
+      "removedStepIndex": 175,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_PERSONAL_ATTENTION",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "91b57d0ee9b2f9768115",
+      "removed": "STR_PERSONAL_ATTENTION",
+      "removedStepIndex": 142,
+      "priorTransforms": [
+        "STR_PERSONAL_ATTENTION",
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "91b57d0ee9b2f9768115",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 175,
+      "priorTransforms": [
+        "STR_PERSONAL_ATTENTION",
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PERSONAL_ATTENTION",
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1250
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a13f0364697329a636c1",
+      "removed": "STR_PERSONAL_ATTENTION",
+      "removedStepIndex": 156,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_PERSONAL_ATTENTION",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a13f0364697329a636c1",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 175,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_PERSONAL_ATTENTION",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_PERSONAL_ATTENTION",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1250
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "be340cfce7686a0ad2b7",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 157,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1248
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "be340cfce7686a0ad2b7",
+      "removed": "STR_BASIC_FIREARMS_TRAINING",
+      "removedStepIndex": 169,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "37e5e109f6dec5e4017f",
+      "removed": "STR_HONORED_WARRIOR_TRAINING",
+      "removedStepIndex": 116,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "37e5e109f6dec5e4017f",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 160,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1238
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a36b501310b49e840615",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 157,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1238
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a36b501310b49e840615",
+      "removed": "STR_HONORED_WARRIOR_TRAINING",
+      "removedStepIndex": 160,
+      "priorTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "cb8943ee31dd350a2d3c",
+      "removed": "STR_HONORED_WARRIOR_TRAINING",
+      "removedStepIndex": 98,
+      "priorTransforms": [
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1273
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "cb8943ee31dd350a2d3c",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 160,
+      "priorTransforms": [
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_HONORED_WARRIOR_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1238
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "34b2c32eb8dca932b919",
+      "removed": "STR_GLADIATOR_TRAINING",
+      "removedStepIndex": 184,
+      "priorTransforms": [
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1238
+    },
+    {
+      "id": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "34b2c32eb8dca932b919",
+      "removed": "STR_PROUD_WARRIOR",
+      "removedStepIndex": 197,
+      "priorTransforms": [
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "proposedTransforms": [
+        "STR_NEKO_BODYBUILDER_TRAINING",
+        "STR_GLADIATOR_TRAINING",
+        "STR_CHORT_SUMMONING"
+      ],
+      "originalGrowth": 2133,
+      "newWitnessUngrownTotal": 1257
+    }
+  ]
+}
