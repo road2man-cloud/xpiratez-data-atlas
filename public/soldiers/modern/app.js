@@ -7,6 +7,7 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
+import {preferredOriginCandidate} from './origin-route-tiebreak.js';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
@@ -70,7 +71,7 @@ const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='con
 const allCompatible=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
 const comparable=r=>originRankingCandidates(r,candidateMatchesCampaign);
 const chortCandidates=r=>sharedTerminalCandidates(r,candidateMatchesCampaign);
-const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>score(c,metric)>score(winner,metric)?c:winner,null);
+const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>preferredOriginCandidate(winner,c,x=>score(x,metric)),null);
 function renderSharedTerminalCatalog(){
   const host=$('#chortTarget'),audit=sharedTerminalSourceAudit(DATA);
   if(audit.transformId!==SHARED_TERMINALS[0].transformId||
@@ -78,7 +79,7 @@ function renderSharedTerminalCatalog(){
     throw Error('코르트 공통 변신 원본 규칙 불일치');
   const t=audit.rule,examples=REPORT.records.map(record=>{
     const paths=chortCandidates(record);
-    const bestPath=paths.reduce((win,c)=>score(c)>score(win)?c:win,null);
+    const bestPath=paths.reduce((win,c)=>preferredOriginCandidate(win,c,score),null);
     return bestPath?{record,path:bestPath,count:paths.length}:null;
   }).filter(Boolean).sort((a,b)=>score(b.path)-score(a.path));
   const typeCount=id=>audit.origins.filter(p=>p.soldierType===id).length;
@@ -122,7 +123,7 @@ function sharedTerminalOriginNote(record,profile){
   const allowed=audit.types.some(x=>x.id===profile.soldierType);
   if(!allowed)return '';
   const alternatives=chortCandidates(record),bestPath=alternatives.reduce((winner,c)=>
-    score(c)>score(winner)?c:winner,null);
+    preferredOriginCandidate(winner,c,score),null);
   const low=profile.effectiveStats?.min?.psiStrength;
   const high=profile.effectiveStats?.max?.psiStrength;
   return '<div class="shared-terminal-origin-note" data-excluded-terminal="STR_SOLDIER_CHORT">'+
@@ -209,7 +210,7 @@ function render(){
   $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>12종 합계</th>'+DISPLAY_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const c=best(r,metric==='growth'?'growth':'provisional');
-    const terminal=chortCandidates(r).reduce((winner,x)=>score(x)>score(winner)?x:winner,null);
+    const terminal=chortCandidates(r).reduce((winner,x)=>preferredOriginCandidate(winner,x,score),null);
     const values=metric==='birth'?r.displayBirth:metric==='certified'?null:
       metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display.stats;
     const total=values?displayTotal(values):null;
@@ -380,7 +381,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='repeatResearch'||s.type==='freeResearch').at(-1);
   const alternateSet=sharedTerminal?chortCandidates(record):comparable(record);
   const bestAlternate=metric=>alternateSet.reduce((winner,x)=>
-    score(x,metric)>score(winner,metric)?x:winner,null);
+    preferredOriginCandidate(winner,x,c=>score(c,metric)),null);
   const bonus=[...alternateSet].sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
   const useGrowth=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope';
   const shown=useGrowth?c.growth:c.display;
