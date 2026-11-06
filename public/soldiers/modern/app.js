@@ -11,7 +11,7 @@ import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transforma
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261106-vector-audit-4';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261107-vector-route-dependency-2';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -32,7 +32,7 @@ async function expandOriginArchive(envelope){
     throw Error('병종 경로 압축 원본 종류 불일치');
   return report;
 }
-let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,selected=null,replayGeneration=0,blocked=false;
+let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,selected=null,replayGeneration=0,blocked=false;
 const verified=new Map(),traceHistory=[];
 let activeTraceViewer=null,activeBirthViewer=null;
 function renderTraceStep(){
@@ -216,6 +216,52 @@ async function validate(){
       reduced.growth.total!==claim.originalGrowth||!sameRouteStatVector(reduced,source))
       throw Error('훈련 생략 후 12종 성장 상한 또는 최종 병종이 바뀜');
   }
+  if(DEPENDENCIES?.kind!=='soldier-route-dependency-pruning-v1'||
+    DEPENDENCIES.sourceHash!==REPORT.sourceHash||
+    DEPENDENCIES.sourceVersion!==REPORT.sourceVersion||
+    DEPENDENCIES.priorAuditHash!==await sha(PRUNING)||
+    DEPENDENCIES.stats.claims!==PRUNING.findings.length||
+    DEPENDENCIES.findings.length!==PRUNING.findings.length)
+    throw Error('연구·재료 단축 검증이 최신 훈련 생략 자료와 불일치');
+  const stepResearchId=s=>s?.type==='research'||s?.type==='repeatResearch'?s.id:
+    ['eventResearch','missionResearch','freeResearch'].includes(s?.type)?s.research:null;
+  for(const proof of DEPENDENCIES.findings){
+    const original=PRUNING.findings.find(x=>x.id===proof.id&&x.target===proof.target&&
+      x.sourceCandidate===proof.sourceCandidate&&x.removedStepIndex===proof.removedStepIndex);
+    const record=REPORT.records.find(r=>r.profileId===proof.id);
+    const source=record?.candidates.find(c=>c.id===proof.sourceCandidate);
+    const indices=proof.removedIndices;
+    if(!original||!source||original.removed!==proof.removed||
+      !Array.isArray(indices)||!indices.includes(proof.removedStepIndex)||
+      JSON.stringify(indices)!==JSON.stringify([...new Set(indices)].sort((a,b)=>a-b))||
+      indices.some(i=>!Number.isInteger(i)||i<0||i>=source.steps.length))
+      throw Error('연구·재료 단축 경로의 원본 단계 무결성 오류');
+    const dropped=indices.filter(i=>i!==proof.removedStepIndex);
+    const removedResearch=dropped.filter(i=>stepResearchId(source.steps[i]));
+    const removedInputs=dropped.filter(i=>source.steps[i].type==='externalInputs');
+    if(JSON.stringify(removedResearch)!==JSON.stringify(proof.removedResearch.map(x=>x.stepIndex))||
+      JSON.stringify(removedInputs)!==JSON.stringify(proof.removedInputs.map(x=>x.stepIndex))||
+      proof.removedResearch.some(x=>x.id!==stepResearchId(source.steps[x.stepIndex]))||
+      proof.removedInputs.some(x=>JSON.stringify(x.items)!==
+        JSON.stringify(source.steps[x.stepIndex].items||{})))
+      throw Error('연구·재료 생략 항목과 원본의 종류·수량이 불일치');
+    const steps=source.steps.filter((_,i)=>!indices.includes(i));
+    const transforms=steps.filter(s=>s.type==='transform').map(s=>s.transform);
+    const proposed={...source,steps,transforms};
+    proposed.growth=projectCandidateGrowthLimit(record,proposed,DATA);
+    if(await sha(source.steps)!==proof.originalStepsHash||
+      await sha(steps)!==proof.reducedStepsHash||
+      !sameRouteStatVector(proposed,source)||
+      proposed.growth.finalSoldierType!==source.finalSoldierType||
+      proposed.growth.total!==proof.conditionalCeiling||
+      proof.remainingTransforms!==transforms.length)
+      throw Error('연구·재료 생략 이후 출생처 최종 성장상한·해시 불일치');
+  }
+  if(DEPENDENCIES.stats.withResearchRemoved!==
+    DEPENDENCIES.findings.filter(x=>x.removedResearch.length).length||
+    DEPENDENCIES.stats.withInputAssumptionsRemoved!==
+    DEPENDENCIES.findings.filter(x=>x.removedInputs.length).length)
+    throw Error('연구·재료 단축 집계 오류');
   if(REPORT.campaignContextAuditVersion!==1||
     REPORT.summary.withCompatibleResearch!==REPORT.records.filter(r=>allCompatible(r).length).length||
     REPORT.summary.compatibleWitnesses!==REPORT.records.reduce((sum,r)=>sum+allCompatible(r).length,0))
@@ -416,6 +462,28 @@ function routeEfficiencyHtml(candidates,selected,metric='growth'){
     '연구·재료·시간·출생 난수의 비용 우열 및 전역 최적성은 미인증입니다. '+
     '원본 연구·시술 증거는 삭제하거나 생략하지 않습니다.</p></details>';
 }
+function routeDependencyEvidenceHtml(claim){
+  const proof=DEPENDENCIES?.findings?.find(x=>x.id===claim.id&&x.target===claim.target&&
+    x.sourceCandidate===claim.sourceCandidate&&x.removedStepIndex===claim.removedStepIndex);
+  if(!proof)return '';
+  const research=proof.removedResearch.map(s=>esc(name(s.id))+
+    (s.type==='freeResearch'?' (무료 지급 가정)':''));
+  const itemNotes=proof.removedInputs.flatMap(s=>[
+    ...Object.entries(s.items||{}).map(([id,n])=>esc(name(id))+' ×'+fmt(n)),
+    ...(s.funds?['자금 '+fmt(s.funds)]:[]),
+    ...(s.functions||[]).map(id=>'기지 기능 '+esc(name(id)))
+  ]);
+  return '<div class="route-dependency-proof" data-dependency-proof="true" '+
+    'data-research-removed="'+proof.removedResearch.length+
+    '" data-input-removed="'+proof.removedInputs.length+'">'+
+    '<p><strong>연구·자원 연동 재생 검증</strong> · 연구/지급 단계 '+proof.removedResearch.length+
+    '건, 외부 투입 가정 '+proof.removedInputs.length+'건 추가 생략.</p>'+
+    (research.length?'<p>삭제 후에도 경로가 통과한 연구·지급: '+research.join(' · ')+'</p>':
+      '<p>연구 단계의 추가 생략은 전체 재생을 통과하지 못해 원본 연구 순서를 유지했습니다. 다른 경로에서의 제거 가능성은 미검증입니다.</p>')+
+    (itemNotes.length?'<p>이 경로에서 생략 가능한 <strong>외부 확보 가정</strong>: '+
+      itemNotes.join(' · ')+'</p>':'')+
+    '<p class="fine">훈련과 위 단계들을 함께 삭제하고 남은 연구·사건·재료·기지 조건을 원본 규칙으로 처음부터 재생했습니다. 나열한 수량은 기존 입력 가정이며 실제 순절감 비용이 아닙니다. 12종 조건부 상한 동일 · 전역 최적성 미증명.</p></div>';
+}
 function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
   const target=sharedTerminal?'chort':'origin';
   const claims=(PRUNING?.findings||[]).filter(x=>x.id===record.profileId&&x.target===target);
@@ -432,7 +500,7 @@ function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
       x.priorTransforms.length+' → '+x.proposedTransforms.length+'단계 · 조건부 상한 합계 '+
       fmt(x.originalGrowth)+' · '+(sameRouteStatVector(source,selected)?
         '현재 선택 경로와 12종 성장상한 동일':'다른 원본 경로 기준의 12종 상한 동일')+
-      '<p>재생된 훈련 순서: '+x.proposedTransforms.map(id=>esc(name(id))).join(' → ')+'</p>'+
+      '<p>재생된 훈련 순서: '+x.proposedTransforms.map(id=>esc(name(id))).join(' → ')+'</p>'+routeDependencyEvidenceHtml(x)+
       '<button type="button" data-candidate="'+esc(x.sourceCandidate)+
       '">생략 전 원본 후보·전체 연구 증거 확인</button></li>').join('');
   return '<details class="origin-route-pruning" data-pruning-proofs="'+claims.length+
@@ -527,7 +595,7 @@ function showTraining(id){
 }
 async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
-  [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json')]);
+  [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json'),json('../../data/soldier-route-dependency-audit.json')]);
   await validate();
   if(DIAGNOSTICS.sourceVersion!=='v.o2'||
     JSON.stringify(DIAGNOSTICS.sourceHashes)!==JSON.stringify(DATA.meta.source.rules)||
@@ -541,6 +609,10 @@ async function init(){try{
   if(ranked+separated!==REPORT.summary.compatibleWitnesses)
     throw Error('분리한 코르트 후보와 원본 연구 경로 합계 불일치');
   $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['출생처 비교 후보',ranked,'코르트 변신 '+separated+'건은 별도 병종'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
+  $('#routePruningScope').textContent='훈련 1단계 생략 28건을 시간순 재생한 뒤, 동일한 12종 조건부 상한 아래 연구·지급 단계 추가 생략 '+
+    DEPENDENCIES.stats.withResearchRemoved+'건, 외부 자원 가정 생략 '+
+    DEPENDENCIES.stats.withInputAssumptionsRemoved+
+    '건을 확인했습니다. 비용·전역 최적성은 인증하지 않았습니다. 각 출생처 상세에서 경로별 근거를 확인하세요.';
   renderSharedTerminalCatalog();
   $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('');
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
