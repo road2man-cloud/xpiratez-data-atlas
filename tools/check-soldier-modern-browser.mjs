@@ -252,6 +252,11 @@ try{
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
    'Expanded double-pruning proof must not overflow mobile viewport');
  await page.setViewportSize({width:1440,height:950});
+ await shortestProof.locator('button[data-candidate]').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료')&&
+   document.querySelector('#originDetails')?.querySelector('.shared-terminal-origin-note:not([data-excluded-terminal])')!==null,null,{timeout:60000});
+ assert.equal(await page.locator('#originDetails [data-excluded-terminal]').count(),0,
+   'Following a shortcut back to its original witness must remain in the separate Chort terminal');
  console.log('PASS iterative second-training omission: 4 replayed double cuts for one origin, no third cut, 390px detail');
  await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
  assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치·병종 다름 1'));
