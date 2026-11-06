@@ -20,6 +20,11 @@ try{
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
  assert.equal(await page.locator('#catalogMetric').inputValue(),'growth');
+ const dependencyAudit=await (await page.request.get(url('data/soldier-route-dependency-audit.json'))).json();
+ assert.equal(dependencyAudit.kind,'soldier-route-dependency-pruning-v1');
+ assert.deepEqual([dependencyAudit.stats.claims,dependencyAudit.stats.withResearchRemoved,
+   dependencyAudit.stats.withInputAssumptionsRemoved],[28,25,28]);
+ assert((await page.locator('#routePruningScope').innerText()).includes('연구·지급 단계 추가 생략 25건'));
  const expectedReport=decodeOriginReport(await (await page.request.get(url('data/soldier-origin-candidates.json'))).json());
  const expectedSummary=expectedReport.summary;
  assert.equal(expectedSummary.profiles,72);
@@ -153,6 +158,9 @@ try{
  assert(Number(await chortPruning.getAttribute('data-pruning-proofs'))>=1,
    'The independent Chort catalog must expose chronologically replayed training-omission evidence');
  await chortPruning.locator('summary').click();
+ assert.equal(await chortPruning.locator('[data-dependency-proof]').count(),
+   Number(await chortPruning.getAttribute('data-pruning-proofs')),
+   'Each Chort training omission must include its own research and material audit');
  assert((await chortPruning.innerText()).includes('캠페인 재생 및 성장 상한 12종 일치'));
  assert.equal(await page.locator('#originDetails .shared-terminal-origin-note').count(),1);
  assert((await page.locator('#originDetails .detail-head + p').innerText()).includes('코르트'),
@@ -188,6 +196,12 @@ try{
  const poltergeistDetail=await page.locator('#originDetails').innerText();
  assert(Number(await page.locator('#originDetails .origin-route-pruning').getAttribute('data-pruning-proofs'))>=1,
    'A normal non-Chort birth must retain its own independently replayed training-omission evidence');
+ await page.locator('#originDetails .origin-route-pruning > summary').click();
+ const poltergeistDependency=page.locator('#originDetails [data-dependency-proof]').first();
+ assert.equal(await poltergeistDependency.getAttribute('data-research-removed'),'1');
+ assert.equal(await poltergeistDependency.getAttribute('data-input-removed'),'1');
+ assert((await poltergeistDependency.innerText()).includes('외부 확보 가정'));
+ assert((await poltergeistDependency.innerText()).includes('50,000'));
  assert(poltergeistDetail.includes('STR_BLESSINGS'),
    'The selected compatible route must show its actual difficulty-1 event source');
  assert(!poltergeistDetail.includes('STR_ENJOYING_THE_DREAM'),
@@ -309,6 +323,16 @@ try{
      null,{timeout:60000});
    assert((await wrongBranch.locator('#catalogStatus').innerText()).includes('연구 분기 폐쇄 시점 재생 불일치'));
    await wrongBranch.close();
+   const corruptedDependency=await browser.newPage();
+   await corruptedDependency.route('**/soldier-route-dependency-audit.json*',async route=>{
+     const response=await route.fetch();const body=await response.json();
+     body.findings[0].removedInputs[0].items.STR_GOVT_CORPSE+=1;
+     await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'});
+   });
+   await corruptedDependency.goto(url('soldiers/modern/'));
+   await corruptedDependency.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',null,{timeout:60000});
+   assert.equal(await corruptedDependency.locator('#originTable tbody tr').count(),0);
+   await corruptedDependency.close();
    const wrong=await browser.newPage();
    await wrong.route('**/soldier-source-catalog.json*',async route=>{const response=await route.fetch();const body=await response.json();body.sourceVersion='v.o1.1.1';await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'})});
    await wrong.goto(url('soldiers/modern/'));
