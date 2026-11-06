@@ -88,6 +88,8 @@ assert(clone.replayedChortCandidates>0&&clone.bestConditionalGrowth===2131);
 const json=JSON.stringify(result,null,2)+'\n';
 if(process.argv.includes('--stdout'))process.stdout.write(json);
 else if(process.argv.includes('--check')){
-  assert.equal(fs.readFileSync(file,'utf8'),json,'Published Chort eligibility snapshot stale');
+  // Git text checkout can be CRLF on Windows even when the canonical blob uses LF.
+  assert.equal(fs.readFileSync(file,'utf8').replace(/\r\n/g,'\n'),json,
+    'Published Chort eligibility snapshot stale');
   console.log('PASS Chort readiness audit: '+JSON.stringify(result.summary));
 }else throw Error('Use --stdout to create the source snapshot or --check to verify it');
