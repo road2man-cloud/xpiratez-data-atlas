@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>코르트 변신 출발 병종 42개 검증표 · X-Piratez Data Atlas</title>
+<meta name="description" content="X-Piratez 2.1 코르트 구속의 42개 출생처별 초기 Psi, 계급, 획득비용, 연구 조건과 검증된 재생 후보를 분리합니다.">
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI","Noto Sans KR",sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;color:#e9f1ff;background:#0b1020;line-height:1.55}
+a{color:#9ac6ff}a:hover{color:#d2e7ff}
+main,.top{width:min(1160px,calc(100% - 30px));margin:auto}
+.top{padding:36px 0 26px}
+.back{color:#a7c8fa;text-decoration:none;font-weight:700}
+.eyebrow{color:#87aefa;text-transform:uppercase;letter-spacing:.12em;font-size:.75rem;font-weight:800;margin:24px 0 5px}
+h1{font-size:clamp(1.9rem,5vw,3.5rem);line-height:1.15;letter-spacing:-.04em;margin:0 0 10px}
+h2{font-size:1.28rem;letter-spacing:-.015em;margin:0 0 9px}
+h3{font-size:1.08rem;margin:0 0 9px}
+p{margin:8px 0;color:#b7c6db}
+main{padding-bottom:64px;display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.section{background:#121c30;border:1px solid #2d405e;border-radius:17px;padding:22px;min-width:0}
+.note{font-size:.92rem;color:#b8cbe5}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.metric{border:1px solid #334967;border-radius:13px;background:#172640;padding:14px;min-width:0}
+.metric small{display:block;color:#b7cbe3}.metric strong{display:block;font-size:clamp(1.3rem,3vw,2rem);font-variant-numeric:tabular-nums}
+.comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.compare-item{background:#17243c;border:1px solid #3a4c69;padding:17px;border-radius:13px;min-width:0}
+.compare-item p{margin:6px 0}.compare-item strong{color:#f0f6ff}
+.kicker{font-size:.81rem;font-weight:750;color:#9fbdf0}
+.gate{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.gate span{border:1px solid #476284;background:#1a2c49;border-radius:8px;padding:6px 10px;font-size:.88rem}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0;align-items:end}
+.controls label{font-size:.87rem;font-weight:700;display:grid;gap:5px;flex:1;min-width:170px}
+input,select{color:#f0f7ff;background:#0e1829;border:1px solid #456080;border-radius:9px;padding:11px 12px;font:inherit;width:100%}
+input:focus,select:focus{outline:2px solid #67b0f9}
+.count{font-weight:700;color:#b9d8ff}
+.table-wrap{width:100%;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:850px}
+th,td{padding:12px 10px;border-bottom:1px solid #31415c;vertical-align:top;text-align:left}
+th{background:#1a2c47;color:#d8e8ff;position:sticky;top:0;white-space:nowrap}
+td small{display:block;color:#9eafca}
+td a{font-weight:650;text-decoration:none}
+.status{font-weight:750;white-space:nowrap}
+.status.meets{color:#9fe6bd}.status.depends{color:#efd08b}
+.proof{font-variant-numeric:tabular-nums}
+.disclaimer{border-left:3px solid #5476a0;padding-left:14px}
+.error{color:#ffbcb5}
+@media(max-width:690px){.metrics{grid-template-columns:repeat(2,1fr)}.comparison{grid-template-columns:1fr}.section{padding:16px}.top{padding-top:20px}.top h1{font-size:2rem}}
+</style>
+</head>
+<body>
+<header class="top">
+<a class="back" href="./">← 병종 DB로 돌아가기</a>
+<p class="eyebrow">X-Piratez 2.1 · 공통 최종 변신 후보</p>
+<h1>코르트 변신 출발 병종 검증표</h1>
+<p>누가 코르트가 될 <strong>자격 후보</strong>인지, 누가 실제 연구·변신 순서까지 <strong>조건부 재생</strong>되었는지를 구별합니다. 초기 Psi 충족만으로 변신 성공이나 최종 능력치를 보장하지 않습니다.</p>
+</header>
+<main>
+<section class="metrics" id="summary" aria-label="출발 병종 검증 요약"><p>원본 2.1 데이터를 확인하는 중…</p></section>
+<section class="section">
+<h2>농부와 테베 돌격 클론</h2>
+<div id="comparison" class="comparison" aria-label="두 출발 병종 비교"></div>
+<p class="note">등록된 획득 비용은 각 출생처의 원본 <code>cost</code> 값이며 면허 구매·재료·연구·시설·시간 비용을 합산한 총비용이 아닙니다. <strong>농부 → 코르트</strong>의 성장 상한 2,131은 이론적 비교로 남아 있으며 완전한 시간순 경로가 인증되지 않았습니다.</p>
+</section>
+<section class="section">
+<h2>코르트 구속의 공통 요구조건</h2>
+<div id="transformGate" class="gate" aria-label="변신 규칙 조건"></div>
+<p class="note">Psi와 계급은 <strong>변신 시점</strong>에 충족해야 합니다. 초기 Psi가 40 이상인 경우에도 연구·기지 기능·재료·이전 훈련 이력이 맞아야 합니다. 코르트는 이전 훈련 및 영구 보너스 이력을 초기화하지만 기존 병사의 능력치가 전부 초기화되는 것은 아닙니다.</p>
+</section>
+<section class="section">
+<h2>전체 42개 출생처</h2>
+<div class="controls">
+<label>출생처 또는 병종 검색<input id="filter" type="search" placeholder="농부 · 클론 · 영애 · STR_…"></label>
+<label>초기 Psi 분류<select id="psiFilter"><option value="all">전체</option><option value="meets">출생 시 40 이상</option><option value="depends">개체별 확인</option></select></label>
+<label>재생 근거<select id="proofFilter"><option value="all">전체</option><option value="found">코르트 조건부 경로 있음</option><option value="unfound">코르트 완결 경로 미발견</option></select></label>
+</div>
+<p id="rowCount" class="count" aria-live="polite"></p>
+<div class="table-wrap" role="region" tabindex="0" aria-label="출생처 Psi와 획득 조건 42개 표">
+<table><thead><tr><th>출생처</th><th>출생 병종</th><th>초기 Psi</th><th>자격 분류</th><th>시작 계급</th><th>획득비</th><th>획득 전제</th><th>코르트 재생 증거</th></tr></thead><tbody id="sources"></tbody></table>
+</div>
+<p class="note disclaimer">재생 후보는 게임 내 변신 성공 기록이 아닙니다. 연구·재료 공급·확률·병사의 Psi 성장·시간·전투 중 실제 달성은 별도 검증 대상입니다. 동일한 조건부 12종 상한 합계는 동시 달성이나 전역 최대치 인증을 의미하지 않습니다.</p>
+</section>
+</main>
+<script type="module" src="./chort-readiness.js?v=20261106-source-audit-1"></script>
+</body>
+</html>
