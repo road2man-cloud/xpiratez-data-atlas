@@ -191,6 +191,25 @@ try{
    'The mutually exclusive difficulty-0 event belongs only to archived counterexamples');
  assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
  console.log('PASS Poltergeist selected route excludes impossible mixed-difficulty event and retains conditional free-research evidence');
+ await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails .detail-head h2')?.textContent.includes('묵시록'),null,{timeout:60000});
+ const tradeoff=page.locator('#originDetails [data-same-total-different-vector]');
+ assert.equal(await tradeoff.count(),1,'Different 12-stat vectors at equal sum must be shown separately');
+ assert(Number(await tradeoff.getAttribute('data-same-total-different-vector'))>=1);
+ assert((await tradeoff.textContent()).includes('능력치')&&await tradeoff.locator('button[data-candidate]').count()>0,
+   'Stat allocation tradeoff must link to its original candidate witness');
+ await page.locator('#originDetails [data-route-efficiency] > summary').click();
+ await tradeoff.locator(':scope > summary').click();
+ await page.setViewportSize({width:390,height:844});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+   'Detailed stat-tradeoff alternatives must not create mobile horizontal overflow');
+ await page.setViewportSize({width:1440,height:950});
+ await page.locator('#search').fill('direct:STR_SOLDIER_DOLL');
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails .detail-head h2')?.textContent.includes('영혼 인형'),null,{timeout:60000});
+ assert((await page.locator('#originDetails [data-route-efficiency] summary').innerText()).includes('시술 1단계'),
+   'Doll must keep its shorter one-training equal-ceiling source route');
  const catgirl=expectedReport.records.find(r=>r.profileId==='manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT');
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);

@@ -7,7 +7,7 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {preferredOriginCandidate,sameProjectedOutcome,excludedTrainingCount,transformationCount} from './origin-route-tiebreak.js';
+import {preferredOriginCandidate,sameProjectedOutcome,excludedTrainingCount,transformationCount} from './origin-route-tiebreak.js?v=20261106-route-vector-1';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
@@ -337,6 +337,17 @@ function routeEfficiencyHtml(candidate,candidates,metric){
   const tied=candidates.filter(x=>score(x,metric)===score(candidate,metric)&&statVector(x,metric));
   const equal=tied.filter(x=>sameProjectedOutcome(candidate,x,metric));
   const different=tied.length-equal.length;
+  const divergent=tied.filter(x=>!sameProjectedOutcome(candidate,x,metric));
+  const deltaLabel=x=>{
+    const stats=statVector(x,metric);
+    const changes=DISPLAY_STATS.filter(k=>stats[k]!==vector[k]).map(k=>{
+      const delta=stats[k]-vector[k];
+      return esc(DATA.statLabels[k]||k)+' '+(delta>0?'+':'')+fmt(delta);
+    });
+    if(x.finalSoldierType!==candidate.finalSoldierType)
+      changes.unshift('최종 병종 '+esc(name(x.finalSoldierType)));
+    return changes.join(' · ');
+  };
   const preferred=equal.reduce((win,x)=>prefer(win,x,metric),null);
   const others=equal.filter(x=>x.id!==candidate.id).slice(0,5);
   return '<details class="route-efficiency" data-route-efficiency="true" data-equal-vector-count="'+equal.length+
@@ -346,8 +357,12 @@ function routeEfficiencyHtml(candidate,candidates,metric){
       excludedTrainingCount(candidate)+'종'+(metric==='growth'?' · 연구·시술 잠정 합계 '+fmt(candidate.display?.total):'')+'. '+(preferred?.id===candidate.id?
         '등록된 동일 능력치 후보 중 우선 선택 경로입니다.':
         '동일 능력치의 다른 효율 우선 경로가 있습니다.')+'</p>'+
-    (different?'<p>상한 <strong>합계</strong>만 같고 능력치별 배분 또는 최종 병종이 다른 후보 '+different+
-      '건은 동일 성능으로 간주하지 않습니다.</p>':'')+
+    (different?'<details class="route-score-tradeoffs" data-same-total-different-vector="'+different+'">'+
+      '<summary>합계는 같지만 능력치 배분·병종이 다른 대안 '+different+'건</summary>'+divergent.slice(0,4).map(x=>
+        '<p><button type="button" data-candidate="'+esc(x.id)+'">'+esc(x.description)+
+        ' · '+deltaLabel(x)+'</button></p>').join('')+
+      (divergent.length>4?'<p class="fine">나머지는 아래 전체 후보에서 확인할 수 있습니다.</p>':'')+
+      '<p class="fine">12종 합계가 같더라도 능력치별 교환관계가 있으므로 우열을 자동으로 정하지 않습니다.</p></details>':'')+
     (others.length?'<div class="route-equivalent-alternatives"><strong>같은 12종 능력치의 다른 경로</strong>'+
       others.map(x=>'<p><button type="button" data-candidate="'+esc(x.id)+'">'+
         esc(x.description)+' · 시술 '+transformationCount(x)+'회 · 배제 '+excludedTrainingCount(x)+'종'+
