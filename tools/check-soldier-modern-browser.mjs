@@ -104,6 +104,14 @@ try{
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert.equal(await page.locator('#originDetails [data-excluded-terminal="STR_SOLDIER_CHORT"]').count(),1);
  assert((await page.locator('#originDetails [data-excluded-terminal="STR_SOLDIER_CHORT"]').innerText()).includes('2,131'));
+ const cloneEfficiency=page.locator('#originDetails .origin-route-efficiency');
+ assert.equal(await cloneEfficiency.count(),1);
+ assert.equal(await cloneEfficiency.getAttribute('data-exact-peers'),'2');
+ assert.equal(await cloneEfficiency.getAttribute('data-different-vector'),'0');
+ await cloneEfficiency.locator('summary').click();
+ assert((await cloneEfficiency.innerText()).includes('시술 2단계'));
+ assert.equal(await cloneEfficiency.locator('button[data-candidate]').count(),1,
+   'Same-stat alternatives must be selectable without altering their original witnesses');
  assert(!(await page.locator('#originDetails .detail-head + p').innerText()).includes('출생 → 코르트'),
    'Default assault clone goal must remain its own target, never Chort');
  const provenance=page.locator('#originDetails .origin-source-expansion');
@@ -141,6 +149,11 @@ try{
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 별도 병종 경로'),null,{timeout:60000});
  const chortDetails=await page.locator('#originDetails').innerText();
  assert(chortDetails.includes('코르트')&&chortDetails.includes('출생처 기본 비교에서 제외된 변신 증거'));
+ const chortPruning=page.locator('#originDetails .origin-route-pruning');
+ assert(Number(await chortPruning.getAttribute('data-pruning-proofs'))>=1,
+   'The independent Chort catalog must expose chronologically replayed training-omission evidence');
+ await chortPruning.locator('summary').click();
+ assert((await chortPruning.innerText()).includes('캠페인 재생 및 성장 상한 12종 일치'));
  assert.equal(await page.locator('#originDetails .shared-terminal-origin-note').count(),1);
  assert((await page.locator('#originDetails .detail-head + p').innerText()).includes('코르트'),
    'Chort path remains fully viewable from its own separate Soldier unit');
@@ -185,6 +198,8 @@ try{
    'Fewer training steps cannot be claimed to minimize unknown growth effort');
  await page.locator('#originDetails .assumptions').evaluate(el=>el.open=true);
  const poltergeistDetail=await page.locator('#originDetails').innerText();
+ assert(Number(await page.locator('#originDetails .origin-route-pruning').getAttribute('data-pruning-proofs'))>=1,
+   'A normal non-Chort birth must retain its own independently replayed training-omission evidence');
  assert(poltergeistDetail.includes('STR_BLESSINGS'),
    'The selected compatible route must show its actual difficulty-1 event source');
  assert(!poltergeistDetail.includes('STR_ENJOYING_THE_DREAM'),
@@ -192,24 +207,31 @@ try{
  assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
  console.log('PASS Poltergeist selected route excludes impossible mixed-difficulty event and retains conditional free-research evidence');
  await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
+ assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치 구성 다름 1'));
  await page.locator('#originTable .origin-open').click();
- await page.waitForFunction(()=>document.querySelector('#originDetails .detail-head h2')?.textContent.includes('묵시록'),null,{timeout:60000});
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ const mixedVector=page.locator('#originDetails .origin-route-efficiency');
+ assert.equal(await mixedVector.getAttribute('data-different-vector'),'1');
+ await mixedVector.locator(':scope > summary').click();
+ assert((await mixedVector.textContent()).includes('동등한 육성 결과로 합치지 않았습니다'));
  const tradeoff=page.locator('#originDetails [data-same-total-different-vector]');
  assert.equal(await tradeoff.count(),1,'Different 12-stat vectors at equal sum must be shown separately');
  assert(Number(await tradeoff.getAttribute('data-same-total-different-vector'))>=1);
  assert((await tradeoff.textContent()).includes('능력치')&&await tradeoff.locator('button[data-candidate]').count()>0,
    'Stat allocation tradeoff must link to its original candidate witness');
- await page.locator('#originDetails [data-route-efficiency] > summary').click();
  await tradeoff.locator(':scope > summary').click();
+ assert((await tradeoff.innerText()).includes('동등한 육성 결과로 합치지 않았습니다'),
+   'Expanded stat-tradeoff disclaimer must be visible');
  await page.setViewportSize({width:390,height:844});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
    'Detailed stat-tradeoff alternatives must not create mobile horizontal overflow');
  await page.setViewportSize({width:1440,height:950});
+ console.log('PASS same-score different body/stat tradeoffs stay distinct and navigable on mobile');
  await page.locator('#search').fill('direct:STR_SOLDIER_DOLL');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails .detail-head h2')?.textContent.includes('영혼 인형'),null,{timeout:60000});
- assert((await page.locator('#originDetails [data-route-efficiency] summary').innerText()).includes('시술 1단계'),
-   'Doll must keep its shorter one-training equal-ceiling source route');
+ assert((await page.locator('#originDetails [data-route-efficiency] summary').first().innerText()).includes('시술 1단계'),
+   'Doll must retain its shorter one-training equal-ceiling source route');
  const catgirl=expectedReport.records.find(r=>r.profileId==='manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT');
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);

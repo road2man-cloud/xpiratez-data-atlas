@@ -24,7 +24,7 @@ for(const record of report.records){
   count+=candidates.length;
   const baseline=candidates.reduce((win,c)=>!win||score(c)>score(win)?c:win,null);
   const preferred=candidates.reduce((win,c)=>
-    preferredOriginCandidate(win,c,score,x=>x.growth?.stats),null);
+    preferredOriginCandidate(win,c,score,'growth'),null);
   assert.equal(score(preferred),score(baseline),'An efficiency tie-break cannot reduce the ceiling: '+record.profileId);
   if(!preferred)continue;
   const sameTotal=candidates.filter(c=>score(c)===score(preferred));
