@@ -1,0 +1,206 @@
+{
+  "kind": "soldier-route-iterative-pruning-v1",
+  "sourceVersion": "v.o2",
+  "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
+  "priorAuditHash": "bf76f684ce3840b4d85227699fa7ba37bee98b63e553fc4a89d0315b9b0cfb2a",
+  "scope": "one additional independent transform omitted after each published one-transform-and-dependencies witness; same final body, exact ungrown 12 stats and conditional growth 12-vector; chronological replay; no exhaustive global minimum",
+  "stats": {
+    "priorClaims": 28,
+    "transformPairsConsidered": 80,
+    "sameGrowthPairs": 32,
+    "fullReplays": 80,
+    "secondTransformValidated": 4,
+    "withNewResearchRemoved": 2,
+    "withNewInputRemoved": 4,
+    "thirdTransformPairsConsidered": 8,
+    "thirdTransformValidated": 0
+  },
+  "findings": [
+    {
+      "profileId": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "37e5e109f6dec5e4017f",
+      "firstTransform": "STR_GLADIATOR_TRAINING",
+      "firstTransformIndex": 160,
+      "secondTransform": "STR_HONORED_WARRIOR_TRAINING",
+      "secondTransformIndex": 116,
+      "removedIndices": [
+        115,
+        116,
+        158,
+        159,
+        160
+      ],
+      "newRemovedIndices": [
+        115,
+        116
+      ],
+      "newResearch": [],
+      "newInputs": [
+        {
+          "index": 115,
+          "type": "externalInputs",
+          "researchId": null,
+          "items": {},
+          "functions": [],
+          "funds": 10000,
+          "reason": "훈련 실물·자금: STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "originalStepsHash": "8fd37c0bcf1b206981e1b1d21b54e9b78861e7996e41583fb6b9741a0c8cc036",
+      "reducedStepsHash": "322c0a132bedd0778ce02b37c335b7c468c348fff20340c0b9722ef96697b546",
+      "remainingTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "profileId": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "a36b501310b49e840615",
+      "firstTransform": "STR_GLADIATOR_TRAINING",
+      "firstTransformIndex": 157,
+      "secondTransform": "STR_HONORED_WARRIOR_TRAINING",
+      "secondTransformIndex": 160,
+      "removedIndices": [
+        155,
+        156,
+        157,
+        158,
+        159,
+        160
+      ],
+      "newRemovedIndices": [
+        158,
+        159,
+        160
+      ],
+      "newResearch": [
+        {
+          "index": 158,
+          "type": "research",
+          "researchId": "STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "newInputs": [
+        {
+          "index": 159,
+          "type": "externalInputs",
+          "researchId": null,
+          "items": {},
+          "functions": [],
+          "funds": 10000,
+          "reason": "훈련 실물·자금: STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "originalStepsHash": "57322f638763c67f2f4fcf2d870c899d22354cd4f3575f3cdacde7bf7f9d8398",
+      "reducedStepsHash": "e1c4ad8c7c4d963f5db3da970713dbdb8a225a6356f21efda672e6d19735dfca",
+      "remainingTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "profileId": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "cb8943ee31dd350a2d3c",
+      "firstTransform": "STR_GLADIATOR_TRAINING",
+      "firstTransformIndex": 160,
+      "secondTransform": "STR_HONORED_WARRIOR_TRAINING",
+      "secondTransformIndex": 98,
+      "removedIndices": [
+        97,
+        98,
+        158,
+        159,
+        160
+      ],
+      "newRemovedIndices": [
+        97,
+        98
+      ],
+      "newResearch": [],
+      "newInputs": [
+        {
+          "index": 97,
+          "type": "externalInputs",
+          "researchId": null,
+          "items": {},
+          "functions": [],
+          "funds": 10000,
+          "reason": "훈련 실물·자금: STR_HONORED_WARRIOR_TRAINING"
+        }
+      ],
+      "originalStepsHash": "e93cdaf9790f13c6672baed6df0893351e7b9e8b02bd06fbb714e68b6f02ca15",
+      "reducedStepsHash": "d75e6c0fc57a1edd4a64dc647b8b3c9c40e233ea26323b8f42474ab67f590c99",
+      "remainingTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    },
+    {
+      "profileId": "event:STR_MRSHAN_FIGHTER_EVENT",
+      "target": "chort",
+      "sourceCandidate": "34b2c32eb8dca932b919",
+      "firstTransform": "STR_GLADIATOR_TRAINING",
+      "firstTransformIndex": 184,
+      "secondTransform": "STR_NEKO_BODYBUILDER_TRAINING",
+      "secondTransformIndex": 182,
+      "removedIndices": [
+        180,
+        181,
+        182,
+        183,
+        184
+      ],
+      "newRemovedIndices": [
+        180,
+        181,
+        182
+      ],
+      "newResearch": [
+        {
+          "index": 180,
+          "type": "research",
+          "researchId": "STR_NEKO_BODYBUILDER_TRAINING"
+        }
+      ],
+      "newInputs": [
+        {
+          "index": 181,
+          "type": "externalInputs",
+          "researchId": null,
+          "items": {
+            "STR_MUTANT_MEAT": 20,
+            "STR_CABBAGE": 20,
+            "STR_MEDICAL_SUPPLIES": 5
+          },
+          "functions": [
+            "DEN"
+          ],
+          "funds": 20000,
+          "reason": "훈련 실물·자금: STR_NEKO_BODYBUILDER_TRAINING"
+        }
+      ],
+      "originalStepsHash": "5b4eedebaebe44e4cc910aa8ba00e368bbd4e198d519cbc86d7d8b975aa72329",
+      "reducedStepsHash": "c5a6f7b30e80de6afa2cdbe7585e459c29015628c06e31e811d7fcfebe7867da",
+      "remainingTransforms": [
+        "STR_PROUD_WARRIOR",
+        "STR_CHORT_SUMMONING"
+      ],
+      "conditionalCeiling": 2133,
+      "replayUngrownTotal": 1238,
+      "certifiedMaximum": false
+    }
+  ],
+  "third": []
+}

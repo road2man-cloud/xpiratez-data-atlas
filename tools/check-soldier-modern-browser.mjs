@@ -22,6 +22,10 @@ try{
  assert.equal(await page.locator('#catalogMetric').inputValue(),'growth');
  const dependencyAudit=await (await page.request.get(url('data/soldier-route-dependency-audit.json'))).json();
  assert.equal(dependencyAudit.kind,'soldier-route-dependency-pruning-v1');
+ const iterativeAudit=await (await page.request.get(url('data/soldier-route-iterative-audit.json'))).json();
+ assert.equal(iterativeAudit.kind,'soldier-route-iterative-pruning-v1');
+ assert.deepEqual([iterativeAudit.stats.priorClaims,iterativeAudit.stats.secondTransformValidated,
+   iterativeAudit.stats.thirdTransformValidated],[28,4,0]);
  assert.deepEqual([dependencyAudit.stats.claims,dependencyAudit.stats.withResearchRemoved,
    dependencyAudit.stats.withInputAssumptionsRemoved],[28,25,28]);
  assert((await page.locator('#routePruningScope').innerText()).includes('연구·지급 단계 추가 생략 25건'));
@@ -157,7 +161,7 @@ try{
  const chortPruning=page.locator('#originDetails .origin-route-pruning');
  assert(Number(await chortPruning.getAttribute('data-pruning-proofs'))>=1,
    'The independent Chort catalog must expose chronologically replayed training-omission evidence');
- await chortPruning.locator('summary').click();
+ await chortPruning.locator(':scope > summary').click();
  assert.equal(await chortPruning.locator('[data-dependency-proof]').count(),
    Number(await chortPruning.getAttribute('data-pruning-proofs')),
    'Each Chort training omission must include its own research and material audit');
@@ -220,6 +224,26 @@ try{
    'The mutually exclusive difficulty-0 event belongs only to archived counterexamples');
  assert(poltergeistDetail.includes('무료 지급 추첨 결과를 가정'));
  console.log('PASS Poltergeist selected route excludes impossible mixed-difficulty event and retains conditional free-research evidence');
+ await page.locator('#search').fill('event:STR_MRSHAN_FIGHTER_EVENT');
+ assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ assert.equal(await page.locator('#originDetails [data-iterative-proof]').count(),0,
+   'Chort-only dual omissions must never leak into the normal birth ranking');
+ await page.locator('#chortTarget [data-open-shared-candidate][data-shared-origin="event:STR_MRSHAN_FIGHTER_EVENT"]').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 별도 병종 경로'),null,{timeout:60000});
+ const iterativeProofs=page.locator('#originDetails [data-iterative-proof]');
+ assert.equal(await iterativeProofs.count(),4,
+   'Only the four separately replayed two-training omissions may be published');
+ await page.locator('#originDetails .origin-route-pruning > summary').click();
+ await iterativeProofs.first().locator('summary').click();
+ assert((await iterativeProofs.first().innerText()).includes('2개 훈련을 함께 생략'));
+ assert((await iterativeProofs.first().innerText()).includes('원래 시술 4 → 2단계'));
+ await page.setViewportSize({width:390,height:844});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+   'Expanded double-pruning proof must not overflow mobile viewport');
+ await page.setViewportSize({width:1440,height:950});
+ console.log('PASS iterative second-training omission: 4 replayed double cuts for one origin, no third cut, 390px detail');
  await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
  assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치·병종 다름 1'));
  await page.locator('#originTable .origin-open').click();
@@ -362,6 +386,16 @@ try{
    await corruptedDependency.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',null,{timeout:60000});
    assert.equal(await corruptedDependency.locator('#originTable tbody tr').count(),0);
    await corruptedDependency.close();
+   const corruptedIterative=await browser.newPage();
+   await corruptedIterative.route('**/soldier-route-iterative-audit.json*',async route=>{
+     const response=await route.fetch();const body=await response.json();
+     body.findings[0].secondTransformIndex+=1;
+     await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'});
+   });
+   await corruptedIterative.goto(url('soldiers/modern/'));
+   await corruptedIterative.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',null,{timeout:60000});
+   assert.equal(await corruptedIterative.locator('#originTable tbody tr').count(),0);
+   await corruptedIterative.close();
    const wrong=await browser.newPage();
    await wrong.route('**/soldier-source-catalog.json*',async route=>{const response=await route.fetch();const body=await response.json();body.sourceVersion='v.o1.1.1';await route.fulfill({response,body:JSON.stringify(body),contentType:'application/json'})});
    await wrong.goto(url('soldiers/modern/'));
