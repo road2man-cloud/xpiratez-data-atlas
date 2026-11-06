@@ -7,7 +7,7 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {preferredOriginCandidate} from './origin-route-tiebreak.js';
+import {preferredOriginCandidate} from './origin-route-tiebreak.js?v=20261106-vector-guard-1';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
@@ -71,7 +71,7 @@ const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='con
 const allCompatible=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
 const comparable=r=>originRankingCandidates(r,candidateMatchesCampaign);
 const chortCandidates=r=>sharedTerminalCandidates(r,candidateMatchesCampaign);
-const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>preferredOriginCandidate(winner,c,x=>score(x,metric)),null);
+const best=(r,metric='growth')=>comparable(r).reduce((winner,c)=>preferredOriginCandidate(winner,c,x=>score(x,metric),metric),null);
 function renderSharedTerminalCatalog(){
   const host=$('#chortTarget'),audit=sharedTerminalSourceAudit(DATA);
   if(audit.transformId!==SHARED_TERMINALS[0].transformId||
@@ -381,7 +381,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   const finalResearch=c.steps.filter(s=>s.type==='research'||s.type==='repeatResearch'||s.type==='freeResearch').at(-1);
   const alternateSet=sharedTerminal?chortCandidates(record):comparable(record);
   const bestAlternate=metric=>alternateSet.reduce((winner,x)=>
-    preferredOriginCandidate(winner,x,c=>score(c,metric)),null);
+    preferredOriginCandidate(winner,x,c=>score(c,metric),metric),null);
   const bonus=[...alternateSet].sort((a,b)=>b.display.bonusTotal-a.display.bonusTotal||b.display.total-a.display.total)[0];
   const useGrowth=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope';
   const shown=useGrowth?c.growth:c.display;
