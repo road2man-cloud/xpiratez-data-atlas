@@ -39,6 +39,7 @@ try{
  const factValues=await chort.locator('.terminal-facts strong').allTextContents();
  assert.deepEqual(factValues,['16','42','17','25']);
  assert((await chort.locator('.terminal-gate').innerText()).includes('Psi 강도 40 이상'));
+ assert((await chort.locator('[data-pruning-global="chort"]').innerText()).includes('2개 훈련을 함께 생략한 추가 검증 4건'));
  await chort.locator('.terminal-source-types > summary').click();
  assert.equal(await chort.locator('.terminal-type-list span').count(),16);
  assert((await chort.locator('.terminal-type-list').innerText()).includes('농부'));
@@ -230,8 +231,16 @@ try{
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert.equal(await page.locator('#originDetails [data-iterative-proof]').count(),0,
    'Chort-only dual omissions must never leak into the normal birth ranking');
+ assert.equal(await page.locator('#originDetails [data-replayed-shortlist]').count(),0,
+   'Separate Chort training improvements cannot be promoted to an ordinary birth');
  await page.locator('#chortTarget [data-open-shared-candidate][data-shared-origin="event:STR_MRSHAN_FIGHTER_EVENT"]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 별도 병종 경로'),null,{timeout:60000});
+ const shortestProof=page.locator('#originDetails [data-replayed-shortlist]');
+ assert.equal(await shortestProof.count(),1,'A replay-validated shorter Chort route must be visible without expanding raw technical proofs');
+ assert.equal(await shortestProof.getAttribute('data-shortest-transform-count'),'2');
+ assert((await shortestProof.innerText()).includes('원본 시술 4단계 → 2단계'));
+ assert((await shortestProof.innerText()).includes('전역 최적성'));
+ assert.equal(await shortestProof.locator('button[data-candidate]').count(),1);
  const iterativeProofs=page.locator('#originDetails [data-iterative-proof]');
  assert.equal(await iterativeProofs.count(),4,
    'Only the four separately replayed two-training omissions may be published');
@@ -243,6 +252,11 @@ try{
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
    'Expanded double-pruning proof must not overflow mobile viewport');
  await page.setViewportSize({width:1440,height:950});
+ await shortestProof.locator('button[data-candidate]').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료')&&
+   document.querySelector('#originDetails')?.querySelector('.shared-terminal-origin-note:not([data-excluded-terminal])')!==null,null,{timeout:60000});
+ assert.equal(await page.locator('#originDetails [data-excluded-terminal]').count(),0,
+   'Following a shortcut back to its original witness must remain in the separate Chort terminal');
  console.log('PASS iterative second-training omission: 4 replayed double cuts for one origin, no third cut, 390px detail');
  await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
  assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치·병종 다름 1'));

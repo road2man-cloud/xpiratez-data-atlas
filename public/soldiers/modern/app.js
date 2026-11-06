@@ -8,10 +8,11 @@ import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
 import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-4';
+import {verifiedShortRoutes} from './route-verified-shortlist.js?v=20261107-verified-shortlist-1';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261107-iterative-pruning-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261107-verified-shortlist-1';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -98,7 +99,7 @@ function renderSharedTerminalCatalog(){
       '<div><strong>'+audit.fixedPsi+'</strong><small>출생 시 Psi 충족</small></div>'+
       '<div><strong>'+audit.variablePsi+'</strong><small>Psi 개체별 확인</small></div>'+
     '</div>'+
-    (PRUNING?.findings?.some(x=>x.target==='chort')?'<p class="terminal-pruning-note" data-pruning-global="chort">등록 후보의 연구 순서를 보존한 채 사전 훈련을 생략해도 <strong>같은 조건부 12종 상한</strong>이 계산되는 경로를 원본 규칙으로 재생했습니다. 각 출생처 상세의 훈련 생략 검증에서 확인하세요.</p>':'')+
+    (PRUNING?.findings?.some(x=>x.target==='chort')?'<p class="terminal-pruning-note" data-pruning-global="chort">사전 훈련과 연결된 연구·자원 가정을 생략한 경로를 원본 규칙으로 재생했습니다. <strong>2개 훈련을 함께 생략한 추가 검증 '+ITERATIVE.stats.secondTransformValidated+'건</strong>도 출생처 일반 순위에 합산하지 않고, 별도 코르트 경로 상세에서 확인할 수 있습니다.</p>':'')+
     '<p class="terminal-gate"><strong>코르트 구속</strong> · 계급 '+fmt(t.minRank)+' 이상 · Psi 강도 '+
       fmt(audit.threshold)+' 이상 · '+Object.entries(t.requiredItems||{}).map(([id,q])=>
         esc(name(id))+' '+fmt(q)+'개').join(' · ')+
@@ -513,6 +514,28 @@ function routeEfficiencyHtml(candidates,selected,metric='growth'){
     '연구·재료·시간·출생 난수의 비용 우열 및 전역 최적성은 미인증입니다. '+
     '원본 연구·시술 증거는 삭제하거나 생략하지 않습니다.</p></details>';
 }
+function verifiedShortRoutesHtml(record,selected,sharedTerminal,metric){
+  if(metric!=='growth')return '';
+  const routes=verifiedShortRoutes(record,selected,sharedTerminal?'chort':'origin',DEPENDENCIES,ITERATIVE);
+  const shorter=routes.filter(x=>x.remainingTransforms.length<transformationCount(selected));
+  if(!shorter.length)return '';
+  const shortest=shorter[0];
+  return '<section class="verified-short-route" data-replayed-shortlist="'+shorter.length+
+    '" data-shortest-transform-count="'+shortest.remainingTransforms.length+'">'+
+    '<h3>원본 규칙 재생 통과 · 더 짧은 훈련 순서</h3>'+
+    '<p><strong>원본 시술 '+shortest.originalTransforms+'단계 → '+shortest.remainingTransforms.length+
+    '단계</strong> · 현재 선택 경로와 같은 최종 병종 및 12종 조건부 성장 상한.</p>'+
+    '<p>실행할 훈련 순서: <strong>'+(
+      shortest.remainingTransforms.length?shortest.remainingTransforms.map(id=>esc(name(id))).join(' → '):
+      '추가 훈련 없음')+'</strong></p>'+
+    '<p>생략한 훈련: '+shortest.removedTransforms.map(id=>esc(name(id))).join(' · ')+
+    ' · 연결된 연구·지급 단계 '+shortest.removedResearchSteps+
+    '건, 외부 자원 입력 가정 '+shortest.removedExternalInputs+'건 제거 후 재생 통과.</p>'+
+    '<button type="button" data-candidate="'+esc(shortest.sourceCandidate)+
+    '">생략 전 원본 후보와 연구 순서 확인</button>'+
+    (shorter.length>1?'<small>같은 병종·12종 상한의 추가 단축 증거 '+(shorter.length-1)+'건은 아래 원본 규칙 재생 검증에서 확인하세요.</small>':'')+
+    '<p class="fine">훈련 단계 수가 더 짧은 등록 후보의 조건부 반례입니다. 상호배제·실물 비용·훈련 시간과 실제 성장 달성의 전역 최적성은 인증하지 않습니다. 원본 후보는 변경하지 않았습니다.</p></section>';
+}
 function routeIterativeEvidenceHtml(claim){
   const found=(ITERATIVE?.findings||[]).filter(x=>x.profileId===claim.id&&
     x.target===claim.target&&x.sourceCandidate===claim.sourceCandidate&&
@@ -646,7 +669,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
     (sharedTerminal?'<p class="shared-terminal-origin-note"><strong>코르트 별도 병종 경로</strong> · 출생처 기본 비교에서 제외된 변신 증거입니다. <a href="#chortTarget">코르트 목록 보기</a></p>':sharedTerminalOriginNote(record,profile))+
-    campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
+    campaignContextHtml(record,c)+verifiedShortRoutesHtml(record,c,sharedTerminal,metric)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
     routeEfficiencyHtml(alternateSet,c,metric)+
     (metric==='growth'?routePruningEvidenceHtml(record,c,sharedTerminal):'')+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
