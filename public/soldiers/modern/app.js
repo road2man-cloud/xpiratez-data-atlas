@@ -7,11 +7,11 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
-import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-body-3';
+import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-4';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261107-route-dependency-body-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261107-vector-route-dependency-2';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -68,6 +68,8 @@ function previousTraceStep(){
 const name=id=>CATALOG?.names[id]||DATA?.transformations.find(t=>t.id===id)?.koName||id;
 const node=id=>'<button type="button" class="research-node" data-research-node="'+esc(id)+'">'+esc(name(id))+'</button>';
 const score=(c,metric='growth')=>!c?-1:(metric==='growth'?(c.growth?.kind==='conditional-upper-envelope'?c.growth.total:-1):c.display.total);
+const statVector=(c,metric='growth')=>metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display?.stats;
+const prefer=(win,c,metric='growth')=>preferredOriginCandidate(win,c,x=>score(x,metric),metric);
 const allCompatible=r=>r.candidates.filter(c=>candidateMatchesCampaign(c));
 const comparable=r=>originRankingCandidates(r,candidateMatchesCampaign);
 const chortCandidates=r=>sharedTerminalCandidates(r,candidateMatchesCampaign);
@@ -80,7 +82,7 @@ function renderSharedTerminalCatalog(){
     throw Error('코르트 공통 변신 원본 규칙 불일치');
   const t=audit.rule,examples=REPORT.records.map(record=>{
     const paths=chortCandidates(record);
-    const bestPath=paths.reduce((win,c)=>preferredOriginCandidate(win,c,score),null);
+    const bestPath=paths.reduce((win,c)=>prefer(win,c),null);
     return bestPath?{record,path:bestPath,count:paths.length}:null;
   }).filter(Boolean).sort((a,b)=>score(b.path)-score(a.path));
   const typeCount=id=>audit.origins.filter(p=>p.soldierType===id).length;
@@ -125,7 +127,7 @@ function sharedTerminalOriginNote(record,profile){
   const allowed=audit.types.some(x=>x.id===profile.soldierType);
   if(!allowed)return '';
   const alternatives=chortCandidates(record),bestPath=alternatives.reduce((winner,c)=>
-    preferredOriginCandidate(winner,c,score),null);
+    prefer(winner,c),null);
   const low=profile.effectiveStats?.min?.psiStrength;
   const high=profile.effectiveStats?.max?.psiStrength;
   return '<div class="shared-terminal-origin-note" data-excluded-terminal="STR_SOLDIER_CHORT">'+
@@ -415,31 +417,50 @@ function assumptionHtml(c){return c.assumptions.map(s=>{
 }).join('');}
 function routeEfficiencyHtml(candidates,selected,metric='growth'){
   if(metric!=='growth'&&metric!=='provisional')return '';
-  const mode=metric;
-  const ties=routeTieEvidence(candidates,selected,x=>score(x,mode),mode);
+  const ties=routeTieEvidence(candidates,selected,x=>score(x,metric),metric);
   const equals=ties.sameVector.filter(x=>x.id!==selected.id)
     .sort((a,b)=>excludedTrainingCount(a)-excludedTrainingCount(b)||
       transformationCount(a)-transformationCount(b));
   const alternatives=equals.length?
-    '<ol>'+equals.map(x=>'<li><button type="button" data-candidate="'+esc(x.id)+'">'+
+    '<ol>'+equals.slice(0,8).map(x=>'<li><button type="button" data-candidate="'+esc(x.id)+'">'+
       esc(x.description)+' · 시술 '+transformationCount(x)+'단계 · 기록된 훈련 배제 '+
-      excludedTrainingCount(x)+'종</button></li>').join('')+'</ol>':
-    '<p>현재 등록된 후보에서는 최종 병종과 12종 상한이 완전히 같은 다른 경로가 없습니다.</p>';
+      excludedTrainingCount(x)+'종'+(metric==='growth'?' · 연구·시술 잠정 합계 '+fmt(x.display?.total):'')+
+      '</button></li>').join('')+'</ol>'+
+      (equals.length>8?'<p class="fine">나머지는 아래 전체 후보 비교에서 확인할 수 있습니다.</p>':''):
+    '<p>현재 등록된 후보에서는 최종 병종과 12종 상한이 모두 같은 다른 경로가 없습니다.</p>';
+  const vector=statVector(selected,metric);
+  const deltaLabel=x=>{
+    const stats=statVector(x,metric);
+    const delta=DISPLAY_STATS.filter(k=>stats[k]!==vector[k]).map(k=>{
+      const diff=stats[k]-vector[k];
+      return esc(DATA.statLabels[k]||k)+' '+(diff>0?'+':'')+fmt(diff);
+    });
+    if(x.finalSoldierType!==selected.finalSoldierType)
+      delta.unshift('최종 병종 '+esc(name(x.finalSoldierType)));
+    return delta.join(' · ');
+  };
   const different=ties.differentVector.length?
-    '<p>상한 합계가 같지만 <strong>능력치 배분 또는 최종 병종이 다른 경로 '+
-      ties.differentVector.length+'개</strong>는 동등한 육성 결과로 합치지 않았습니다. '+
-      '상세 후보 비교에서 각각 확인할 수 있습니다.</p>':'';
-  return '<details class="origin-route-efficiency" data-route-efficiency="true" '+
+    '<details class="route-score-tradeoffs" data-same-total-different-vector="'+
+      ties.differentVector.length+'"><summary>합계는 같지만 능력치 배분·병종이 다른 대안 '+
+      ties.differentVector.length+'건</summary>'+
+      ties.differentVector.slice(0,6).map(x=>
+        '<p><button type="button" data-candidate="'+esc(x.id)+'">'+
+        esc(x.description)+' · '+deltaLabel(x)+'</button></p>').join('')+
+      (ties.differentVector.length>6?'<p class="fine">나머지는 아래 전체 후보에서 확인할 수 있습니다.</p>':'')+
+      '<p class="fine">12종 합계가 같아도 배분·최종 병종이 다르면 동등한 육성 결과로 합치지 않았습니다. 우열은 자동으로 확정하지 않습니다.</p></details>':'';
+  return '<details class="origin-route-efficiency route-efficiency" data-route-efficiency="true" '+
     'data-exact-peers="'+ties.sameVector.length+'" data-different-vector="'+
-    ties.differentVector.length+'"><summary>경로 효율 · 시술 '+
+    ties.differentVector.length+'" data-equal-vector-count="'+ties.sameVector.length+
+    '" data-equal-total-different-vector="'+ties.differentVector.length+'"><summary>경로 효율 · 시술 '+
     transformationCount(selected)+'단계 · 같은 최종 병종·12종 상한 대안 '+equals.length+'개</summary>'+
     '<p>선택 경로: 시술·변신 '+transformationCount(selected)+'단계 · 원본 규칙에 기록된 '+
-    '훈련 배제 대상 '+excludedTrainingCount(selected)+'종. 등록된 연구 시간순 후보 중 '+
-    '같은 12종 능력치가 계산되는 경로에서 배제 손실과 시술 단계를 비교했습니다.</p>'+
+    '훈련 배제 대상 '+excludedTrainingCount(selected)+'종'+
+    (metric==='growth'?' · 연구·시술 잠정 합계 '+fmt(selected.display?.total):'')+
+    '. 등록된 동일 최종 병종·12종 상한의 연구 재생 후보에 한정하여 배제 선택지 손실, 다음으로 시술 단계 수를 비교합니다.</p>'+
     alternatives+different+
-    '<p class="fine">연구·훈련 시간과 실물 비용, 난수 결과는 비교 우열이 확인되지 않았습니다. '+
-    '같은 조건부 상한은 실제 달성이나 전역 최적성 증명이 아닙니다. '+
-    '후보 경로 자체를 삭제하거나 원본 연구 증거를 변경하지 않습니다.</p></details>';
+    '<p class="fine">같은 조건부 상한이어도 연구·시술 직후의 능력치와 성장에 필요한 시간은 다를 수 있습니다. '+
+    '연구·재료·시간·출생 난수의 비용 우열 및 전역 최적성은 미인증입니다. '+
+    '원본 연구·시술 증거는 삭제하거나 생략하지 않습니다.</p></details>';
 }
 function routeDependencyEvidenceHtml(claim){
   const proof=DEPENDENCIES?.findings?.find(x=>x.id===claim.id&&x.target===claim.target&&

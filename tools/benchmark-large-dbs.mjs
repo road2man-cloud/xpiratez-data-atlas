@@ -29,7 +29,19 @@ const server=http.createServer((req,res)=>{
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const base='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox']});
-const selectors={crafts:'#craftTable tbody tr[data-id]',soldiers:'#soldierTable tbody tr[data-row]',trainings:'#trainingTable tbody tr[data-id]',manufacture:'#manufactureTable tbody tr[data-id]'};
+// The former soldiers/trainings entrances now redirect to a different modern
+// catalog. Never compare DOM readiness across non-equivalent pages.
+const retired={
+  soldiers:{target:'./modern/',reason:'legacy soldier list redirects to the modern 72-origin database'},
+  trainings:{target:'../soldiers/',reason:'legacy training list redirects to modern soldier evidence'}
+};
+for(const [slug,{target}] of Object.entries(retired)){
+  const entry=fs.readFileSync(path.resolve(current,slug,'index.html'),'utf8');
+  assert(entry.includes('location.replace(')&&entry.includes(target),
+    'Retired catalog must explicitly redirect: '+slug);
+}
+console.log('BENCHMARK RETIRED '+JSON.stringify(retired));
+const selectors={crafts:'#craftTable tbody tr[data-id]',manufacture:'#manufactureTable tbody tr[data-id]'};
 const reports=[];
 const modes=[{name:'desktop',width:1440,height:900,cpu:1,latency:40,mbps:10},{name:'mobile',width:390,height:844,cpu:4,latency:150,mbps:1.6}];
 const median=values=>[...values].sort((a,b)=>a-b)[Math.floor(values.length/2)];
@@ -94,5 +106,5 @@ try{
     reports.push(summary);
     console.log('BENCHMARK '+JSON.stringify(summary));
   }
-  fs.writeFileSync('large-db-benchmark.json',JSON.stringify({conditions:modes,baseline,results:reports},null,2));
+  fs.writeFileSync('large-db-benchmark.json',JSON.stringify({conditions:modes,baseline,retired,results:reports},null,2));
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}

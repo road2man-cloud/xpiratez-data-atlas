@@ -192,6 +192,18 @@ try{
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
+ const routeEfficiency=page.locator('#originDetails [data-route-efficiency="true"]');
+ assert.equal(await routeEfficiency.count(),1,'Origin detail must expose same-vector route efficiency');
+ assert(Number(await routeEfficiency.getAttribute('data-equal-vector-count'))>=2,
+   'Known Poltergeist route has a fully equivalent shorter-step alternative');
+ assert((await routeEfficiency.locator('summary').innerText()).includes('시술 3단계'),
+   'Poltergeist default must prefer the 3-stage route over the older 4-stage tie');
+ assert((await routeEfficiency.textContent()).includes('연구·재료·시간'),
+   'An efficient recorded route cannot claim unknown resources are optimized');
+ assert((await routeEfficiency.textContent()).includes('연구·시술 잠정 합계'),
+   'Equivalent endgame ceilings can differ in immediate power and must expose it');
+ assert((await routeEfficiency.textContent()).includes('성장에 필요한 시간'),
+   'Fewer training steps cannot be claimed to minimize unknown growth effort');
  await page.locator('#originDetails .assumptions').evaluate(el=>el.open=true);
  const poltergeistDetail=await page.locator('#originDetails').innerText();
  assert(Number(await page.locator('#originDetails .origin-route-pruning').getAttribute('data-pruning-proofs'))>=1,
@@ -214,9 +226,26 @@ try{
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const mixedVector=page.locator('#originDetails .origin-route-efficiency');
  assert.equal(await mixedVector.getAttribute('data-different-vector'),'1');
- await mixedVector.locator('summary').click();
- assert((await mixedVector.innerText()).includes('동등한 육성 결과로 합치지 않았습니다'));
- console.log('PASS same-score different 12-stat outcomes are not presented as equivalent routes');
+ await mixedVector.locator(':scope > summary').click();
+ assert((await mixedVector.textContent()).includes('동등한 육성 결과로 합치지 않았습니다'));
+ const tradeoff=page.locator('#originDetails [data-same-total-different-vector]');
+ assert.equal(await tradeoff.count(),1,'Different 12-stat vectors at equal sum must be shown separately');
+ assert(Number(await tradeoff.getAttribute('data-same-total-different-vector'))>=1);
+ assert((await tradeoff.textContent()).includes('능력치')&&await tradeoff.locator('button[data-candidate]').count()>0,
+   'Stat allocation tradeoff must link to its original candidate witness');
+ await tradeoff.locator(':scope > summary').click();
+ assert((await tradeoff.innerText()).includes('동등한 육성 결과로 합치지 않았습니다'),
+   'Expanded stat-tradeoff disclaimer must be visible');
+ await page.setViewportSize({width:390,height:844});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,
+   'Detailed stat-tradeoff alternatives must not create mobile horizontal overflow');
+ await page.setViewportSize({width:1440,height:950});
+ console.log('PASS same-score different body/stat tradeoffs stay distinct and navigable on mobile');
+ await page.locator('#search').fill('direct:STR_SOLDIER_DOLL');
+ await page.locator('#originTable .origin-open').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails .detail-head h2')?.textContent.includes('영혼 인형'),null,{timeout:60000});
+ assert((await page.locator('#originDetails [data-route-efficiency] summary').first().innerText()).includes('시술 1단계'),
+   'Doll must retain its shorter one-training equal-ceiling source route');
  const catgirl=expectedReport.records.find(r=>r.profileId==='manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT');
  const catgirlBest=catgirl?.candidates.find(c=>c.id===catgirl.bestCandidateId);
  assert(catgirlBest&&catgirlBest.total>=620&&catgirlBest.researchCount>=627);
