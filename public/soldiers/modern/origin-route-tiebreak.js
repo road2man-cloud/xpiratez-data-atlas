@@ -4,6 +4,11 @@
 import {DISPLAY_STATS} from './score-12.js';
 
 export function excludedTrainingCount(candidate){
+  // When original v.o2 rules are loaded, count only future options for the
+  // SAME final body and include prerequisite cascades after any history reset.
+  // The archived unfiltered exclusions remain as a legacy fallback for tests.
+  if(candidate?.futureOptions?.kind==='structural-only'&&
+      Number.isInteger(candidate.futureOptions.total))return candidate.futureOptions.total;
   const excluded=new Set();
   for(const rule of candidate?.trainingExclusions||[])
     for(const entry of rule.excludes||[])

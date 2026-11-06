@@ -7,6 +7,7 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
+import {educationBranchReport,auditCandidateFutureChoices} from './education-endgame.js?v=20261107-endgame-choice-1';
 import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-4';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
@@ -185,6 +186,9 @@ async function validate(){
       c.campaignContext=context;
       c.display=projectCandidateStats(record,c,DATA);
       c.growth=projectCandidateGrowthLimit(record,c,DATA);
+      c.futureOptions=auditCandidateFutureChoices(DATA,c);
+      if(c.futureOptions.kind!=='structural-only')
+        throw Error('최종 병종 후속 선택지 감사 불가: '+c.id);
       if(c.growth.kind==='conditional-upper-envelope'&&c.growth.total<c.display.total)
         throw Error('성장 상한이 시술 후 수치보다 낮음: '+c.id);
     }
@@ -339,20 +343,103 @@ function render(){
     const tieNote=ties?.equalTotal.length>1?
       '<small class="origin-route-tie" data-route-tie="true">상한 합계 동점 '+ties.equalTotal.length+
       '경로 · 최종 병종·12종 동일 '+ties.sameVector.length+' / 능력치·병종 다름 '+ties.differentVector.length+'</small>':'';
+    const sourceProfile=DATA.profiles.find(p=>p.id===r.profileId);
+    const educationChoices=educationBranchReport(DATA,sourceProfile,comparable(r));
+    const applicableEducation=educationChoices.filter(x=>x.available);
+    const educationWitnesses=applicableEducation.filter(x=>x.candidateCount>0).length;
+    const educationCoverage=applicableEducation.length?
+      '<small class="origin-education-coverage" data-education-witnessed="'+educationWitnesses+"/"+
+      applicableEducation.length+'">교육별 경로 검증 '+educationWitnesses+'/'+applicableEducation.length+
+      ' · 누락 경로는 불가능 판정 아님</small>':'';
     const values=metric==='birth'?r.displayBirth:metric==='certified'?null:
       metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display.stats;
     const total=values?displayTotal(values):null;
     return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small>'+
       (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
-      tieNote+'<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
+      tieNote+educationCoverage+'<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
       (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'연구 경로 보완 중')+
       '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
-  $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 출생처별 조건부 성장 상한 · 코르트 최종 변신은 별도 병종으로 분리했습니다. 동시 달성·전역 최고값은 미증명입니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
+  $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 등록된 연구 재생 후보의 조건부 성장 상한 · 코르트는 별도 병종입니다. 군사·문화·얼간이 교육 등 미등록 육성 경로가 있으므로 후보 최고값을 전역 최적으로 해석할 수 없습니다. 출생처 상세에서 상한 시점 교육 효과와 누락 경로를 확인하세요.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
 }
 function statGrid(c,metric='growth'){
   const view=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope'?c.growth:c.display;
   return '<div class="stat-grid">'+DISPLAY_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(view.stats[k])+'</strong><small>원시 '+fmt(view.raw[k])+' + 영구 특성 '+fmt(view.bonus[k])+'</small></div>').join('')+'</div>';
+}
+const signed=n=>(n>0?'+':'')+fmt(n);
+function educationChoicesHtml(record,profile,selectedCandidate){
+  const choices=educationBranchReport(DATA,profile,comparable(record));
+  const details=choices.map(choice=>{
+    if(!choice.available)return '<article class="education-option is-inapplicable" data-education-option="'+
+      esc(choice.id)+'"><h4>'+esc(choice.name)+'</h4>'+
+      '<p class="fine">이 출생 병종에서는 교육 대상이 아닙니다.</p></article>';
+    const cap=choice.capReference;
+    const effects=DISPLAY_STATS.filter(key=>cap.combined[key]!==0).map(key=>
+      '<span class="education-effect"><b>'+esc(DATA.statLabels[key]||key)+' '+signed(cap.combined[key])+'</b>'+
+      '<small>직접 '+signed(cap.cappedDirect[key])+' / 영구 '+signed(cap.permanent[key])+'</small></span>').join('');
+    const required=choice.requiredStats.map(([key,value])=>
+      esc(DATA.statLabels[key]||key)+' '+fmt(value)+' 이상').join(' · ');
+    const locks=arr=>arr.map(row=>'<li>'+esc(name(row.id))+
+      ' <small>('+row.causes.map(x=>esc(name(x))).join(' / ')+')</small></li>').join('');
+    const selected=selectedCandidate?.futureOptions?.completed.includes(choice.id);
+    const best=choice.bestCandidate;
+    const witness=best?'<button type="button" data-candidate="'+esc(best.id)+'">등록 후보 최고 상한 '+
+      fmt(best.growth.total)+' · 해당 경로 보기</button>':
+      '<strong class="education-gap">실제 연구·변신 재생 후보 0건 — 불가능 판정 아님</strong>';
+    return '<article class="education-option'+(selected?' is-selected':'')+
+      '" data-education-option="'+esc(choice.id)+'" data-witness-count="'+choice.candidateCount+'">'+
+      '<h4>'+esc(choice.name)+(selected?' <small>선택 경로 보유</small>':'')+'</h4>'+
+      '<p class="fine">원시 성장캡 시점의 가상 추가 효과 · <strong>직접 / 영구 분리</strong></p>'+
+      '<div class="education-effects">'+effects+'</div>'+
+      (cap.psiSkillActivationUnverified?'<p class="fine">Psi 기술 보너스는 해당 능력 활성화가 별도로 필요합니다.</p>':'')+
+      '<p class="fine">선행 훈련 '+(choice.prerequisites.map(x=>esc(x.name)).join(' → ')||'없음')+
+      ' · 조건 '+(required||'별도 최소 능력치 없음')+
+      (choice.baseFunctions.length?' · 기지 기능 '+choice.baseFunctions.map(esc).join(', '):'')+'</p>'+
+      '<p class="fine">선행 연구 '+choice.researchIds.map(id=>esc(name(id))).join(' · ')+
+        ' · 비용 '+fmt(choice.cost)+
+        (choice.requiredItems.length?' · 재료 '+choice.requiredItems.map(([id,n])=>
+          esc(name(id))+' ×'+fmt(n)).join(' / '):'')+
+        (choice.minRank>0?' · 계급 '+fmt(choice.minRank)+' 이상':'')+'</p>'+
+      (cap.requirementMayFail.length?'<p class="education-warning">성장캡 원시값만으로는 교육의 '+
+        cap.requirementMayFail.map(key=>esc(DATA.statLabels[key]||key)).join(', ')+
+        ' 최소조건을 충족하지 못할 수 있습니다. 출생값·기존 보너스를 확인하세요.</p>':'')+
+      '<p class="education-witness">'+witness+' <small>등록 후보 '+choice.candidateCount+'건</small></p>'+
+      '<details><summary>이 교육으로 제한되는 후속 선택 · 직접 '+choice.directBlocks.length+
+        ' / 필수 선행의 별도 차단 '+choice.prerequisiteBlocks.length+
+        ' / 연쇄 '+choice.chainBlocks.length+'</summary>'+
+        (choice.directBlocks.length?'<p><b>교육 자체의 직접 차단</b></p><ul>'+locks(choice.directBlocks)+'</ul>':'')+
+        (choice.prerequisiteBlocks.length?'<p><b>필수 선행 훈련에서 추가 차단</b></p><ul>'+
+          locks(choice.prerequisiteBlocks)+'</ul>':'')+
+        (choice.chainBlocks.length?'<p><b>차단된 훈련을 선행조건으로 요구하는 후속</b></p><ul>'+
+          locks(choice.chainBlocks)+'</ul>':'')+
+        '<p class="fine">최초 병종에 허용된 규칙만 집계합니다. 연구·아이템·시설·계급·최소 능력치 통과 여부는 별개입니다.</p>'+
+      '</details></article>';
+  }).join('');
+  return '<section class="education-endgame" data-education-endgame="true">'+
+    '<h3>최종 육성 선택지 · 교육 3개 경로</h3>'+
+    '<p class="scope-note">최초 병종 '+esc(name(profile.soldierType))+'의 원시 statCaps에 정확히 도달한 시점에 '+
+      '교육을 시행한다고 가정한 <strong>직접 증가(상한 제한 후) + 영구 특성</strong> 비교입니다. '+
+      '실제 출생 개체, 교육 순서, 능력치 초과 성장, 연구·재료 조건까지 검증한 완성 경로가 아니며 '+
+      '원본 후보가 없는 교육을 불가능하다고 간주하지 않습니다.</p>'+
+    '<div class="education-options">'+details+'</div>'+
+    '<p class="fine">세 교육을 필수 선행으로 지정해 새로 열리는 변신은 없습니다. '+
+      '다만 능력치 조건 충족에 따른 간접 해금과 기존 변신 이력을 초기화하는 예외는 별도입니다. '+
+      '기본 순위는 검증된 후보의 12종 조건부 상한으로만 계산합니다.</p></section>';
+}
+function routeFutureOptionsHtml(candidate){
+  const audit=candidate.futureOptions;
+  if(audit?.kind!=='structural-only')return '';
+  const render=rows=>rows.map(row=>'<li>'+esc(name(row.id))+
+    '<small> · '+row.causes.map(id=>esc(name(id))).join(' / ')+
+    '</small></li>').join('');
+  return '<details class="candidate-future-options" data-future-options="'+audit.total+'">'+
+    '<summary>선택된 육성 경로의 후속 훈련 손실 · 직접 '+audit.direct.length+
+    '건 / 선행조건 연쇄 '+audit.indirect.length+'건 (최종 병종 기준)</summary>'+
+    (audit.direct.length?'<p><b>이력에 직접 막힌 훈련·변신</b></p><ul>'+render(audit.direct)+'</ul>':'')+
+    (audit.indirect.length?'<p><b>필수 선행 훈련이 막혀 함께 막힌 후속</b></p><ul>'+
+      render(audit.indirect)+'</ul>':'')+
+    (!audit.total?'<p>현재 최종 병종에서 이력으로 새로 막히는 후속 규칙이 없습니다.</p>':'')+
+    '<p class="fine">'+esc(audit.caveat)+'. 초기화 변신은 초기화 뒤 다시 평가합니다.</p></details>';
 }
 function choiceHtml(c){
   if(!c.branchChoices.length)return '<p>이 경로에는 직접 disables를 실행하는 연구 분기가 없습니다.</p>';
@@ -647,6 +734,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
     '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
     (sharedTerminal?'<p class="shared-terminal-origin-note"><strong>코르트 별도 병종 경로</strong> · 출생처 기본 비교에서 제외된 변신 증거입니다. <a href="#chortTarget">코르트 목록 보기</a></p>':sharedTerminalOriginNote(record,profile))+
     campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
+    (sharedTerminal?'':educationChoicesHtml(record,profile,c))+routeFutureOptionsHtml(c)+
     routeEfficiencyHtml(alternateSet,c,metric)+
     (metric==='growth'?routePruningEvidenceHtml(record,c,sharedTerminal):'')+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
