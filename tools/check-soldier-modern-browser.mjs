@@ -171,6 +171,18 @@ try{
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
+ const routeEfficiency=page.locator('#originDetails [data-route-efficiency="true"]');
+ assert.equal(await routeEfficiency.count(),1,'Origin detail must expose same-vector route efficiency');
+ assert(Number(await routeEfficiency.getAttribute('data-equal-vector-count'))>=2,
+   'Known Poltergeist route has a fully equivalent shorter-step alternative');
+ assert((await routeEfficiency.locator('summary').innerText()).includes('시술 3단계'),
+   'Poltergeist default must prefer the 3-stage route over the older 4-stage tie');
+ assert((await routeEfficiency.textContent()).includes('연구·재료·시간'),
+   'An efficient recorded route cannot claim unknown resources are optimized');
+ assert((await routeEfficiency.textContent()).includes('연구·시술 잠정 합계'),
+   'Equivalent endgame ceilings can differ in immediate power and must expose it');
+ assert((await routeEfficiency.textContent()).includes('성장에 필요한 시간'),
+   'Fewer training steps cannot be claimed to minimize unknown growth effort');
  await page.locator('#originDetails .assumptions').evaluate(el=>el.open=true);
  const poltergeistDetail=await page.locator('#originDetails').innerText();
  assert(poltergeistDetail.includes('STR_BLESSINGS'),
