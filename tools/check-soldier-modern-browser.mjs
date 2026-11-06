@@ -122,6 +122,13 @@ try{
  assert((await page.locator('#originDetails [data-growth-stamina-basis]').innerText()).includes('원시 성장캡'),
    'Growth values must expose the raw rule cap, raw projection, and bonus');
  console.log('PASS one real chronological record replayed; growth-cap ceiling default is distinct from ungrown stats and does not claim actual attainment');
+ await page.locator('#search').fill('manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT');
+ await page.locator('#originTable tbody [data-open-origin]').click();
+ await page.waitForSelector('#originDetails [data-education-endgame]',{timeout:60000});
+ const inheritedMilitary=page.locator('#originDetails [data-education-option="STR_MILITARY_DRILL_TRAINING"]');
+ assert((await inheritedMilitary.locator('[data-inherited-education-block]').innerText()).includes('나이트쉐이드 강화'),
+   'Jungle guide with inherited Nightshade history must not advertise military education as reachable');
+ console.log('PASS inherited transformation history is reflected in birth-specific education feasibility');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);

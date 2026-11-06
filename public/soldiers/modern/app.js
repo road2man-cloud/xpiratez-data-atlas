@@ -382,6 +382,12 @@ function educationChoicesHtml(record,profile,selectedCandidate){
     const locks=arr=>arr.map(row=>'<li>'+esc(name(row.id))+
       ' <small>('+row.causes.map(x=>esc(name(x))).join(' / ')+')</small></li>').join('');
     const selected=selectedCandidate?.futureOptions?.completed.includes(choice.id);
+    const inheritedWarning=choice.alreadyCompleted?
+      '영입 시 이미 교육 이력이 있어 재교육할 수 없습니다.':
+      choice.historyConflicts.length?
+        '영입 시 훈련 이력 충돌: '+choice.historyConflicts.map(x=>
+          esc(name(x.id))+' ← '+x.causes.map(c=>esc(name(c))).join(' / ')).join('; ')+
+          ' · 해당 이력을 초기화하지 않으면 이 교육을 추가할 수 없습니다.':'';
     const best=choice.bestCandidate;
     const witness=best?'<button type="button" data-candidate="'+esc(best.id)+'">등록 후보 최고 상한 '+
       fmt(best.growth.total)+' · 해당 경로 보기</button>':
@@ -389,6 +395,7 @@ function educationChoicesHtml(record,profile,selectedCandidate){
     return '<article class="education-option'+(selected?' is-selected':'')+
       '" data-education-option="'+esc(choice.id)+'" data-witness-count="'+choice.candidateCount+'">'+
       '<h4>'+esc(choice.name)+(selected?' <small>선택 경로 보유</small>':'')+'</h4>'+
+      (inheritedWarning?'<p class="education-warning" data-inherited-education-block="true">'+inheritedWarning+'</p>':'')+
       '<p class="fine">원시 성장캡 시점의 가상 추가 효과 · <strong>직접 / 영구 분리</strong></p>'+
       '<div class="education-effects">'+effects+'</div>'+
       (cap.psiSkillActivationUnverified?'<p class="fine">Psi 기술 보너스는 해당 능력 활성화가 별도로 필요합니다.</p>':'')+

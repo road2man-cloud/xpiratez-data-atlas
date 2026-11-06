@@ -68,6 +68,20 @@ assert.equal(future.kind,'structural-only');
 assert(future.direct.some(x=>x.id==='STR_NEPOTISM'));
 assert(future.indirect.some(x=>x.id==='STR_BRIDES_TO_THE_QUEEN'));
 assert.equal(excludedTrainingCount({futureOptions:future}),future.total);
+const inherited=data.profiles.find(p=>p.id==='manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT');
+assert(inherited?.previousTransformations?.STR_NIGHTSHADE_AUGMENTATION>0);
+const inheritedFuture=auditCandidateFutureChoices(data,{profileId:inherited.id,
+  finalSoldierType:inherited.soldierType,transforms:[]});
+assert(inheritedFuture.completed.includes('STR_NIGHTSHADE_AUGMENTATION'));
+assert(inheritedFuture.direct.some(row=>row.id==='STR_MILITARY_DRILL_TRAINING'));
+const inheritedEducation=Object.fromEntries(educationBranchReport(data,inherited)
+  .map(choice=>[choice.id,choice]));
+assert(inheritedEducation[military].historyConflicts.some(row=>
+  row.causes.includes('STR_NIGHTSHADE_AUGMENTATION')),
+  'Source born with Nightshade cannot enroll in military drill without reset');
+const resetFuture=auditCandidateFutureChoices(data,{profileId:inherited.id,
+  finalSoldierType:'STR_SOLDIER_CHORT',transforms:['STR_CHORT_SUMMONING']});
+assert(!resetFuture.completed.includes('STR_NIGHTSHADE_AUGMENTATION'));
 const source={finalSoldierType:'STR_SOLDIER_PEASANT',transforms:[],
   growth:{kind:'conditional-upper-envelope',total:500,stats:Object.fromEntries([
     'tu','stamina','health','bravery','reactions','firing','throwing','melee',
@@ -85,4 +99,4 @@ const cultureRule=data.transformations.find(x=>x.id===culture);
 assert.equal(educationCapReference(cultureRule,peasantRule).cappedDirect.psiStrength,2);
 assert.equal(educationCapReference(milRule,peasantRule).cappedDirect.psiStrength,0);
 
-console.log('PASS: 83 source rules, three mutually exclusive education choices, cap-vs-trait, body-specific direct/indirect blocking, reset and same-outcome tie break');
+console.log('PASS: 83 source rules, three mutually exclusive education choices, cap-vs-trait, inherited birth histories, body-specific direct/indirect blocking, reset and same-outcome tie break');

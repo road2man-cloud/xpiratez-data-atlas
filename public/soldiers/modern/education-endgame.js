@@ -64,8 +64,11 @@ function structuralLoss(data,body,history){
   return {direct,indirect,total:direct.length+indirect.length};
 }
 
-export function trainingHistory(data,transforms=[]){
-  const byId=mapRules(data),history=new Set();
+export function trainingHistory(data,transforms=[],startingHistory={}){
+  // Acquired soldiers can arrive with completed transformations already in
+  // their profile; the signed candidate contains only subsequent actions.
+  const byId=mapRules(data),history=new Set(Object.entries(startingHistory)
+    .filter(([,count])=>number(count)>0).map(([id])=>id));
   for(const id of transforms){
     const rule=byId.get(id);
     if(!rule)throw Error('Unknown transformation history: '+id);
@@ -79,7 +82,9 @@ export function trainingHistory(data,transforms=[]){
 export function auditCandidateFutureChoices(data,candidate){
   const body=(data.soldiers||[]).find(row=>row.id===candidate?.finalSoldierType);
   if(!body)return {kind:'unverified',reason:'Missing final body'};
-  const history=trainingHistory(data,candidate.transforms||[]);
+  const profile=(data.profiles||[]).find(row=>row.id===candidate.profileId);
+  if(candidate.profileId&&!profile)return {kind:'unverified',reason:'Missing acquisition history'};
+  const history=trainingHistory(data,candidate.transforms||[],profile?.previousTransformations);
   const losses=structuralLoss(data,body,history);
   return {kind:'structural-only',body:body.id,
     completed:[...history],...losses,
@@ -115,7 +120,7 @@ export function educationCapReference(rule,body){
     [key,cappedDirect[key]+permanent[key]]));
   return {reference:'raw-at-statCaps',raw,cappedDirect,permanent,combined,
     // Positive Psi Skill bonuses do not by themselves prove Psi activation.
-    psiSkillActivationUnverified:raw.psiSkill===0&&permanent.psiSkill>0,
+    psiSkillActivationUnverified:permanent.psiSkill>0,
     requirementMayFail:DISPLAY_STATS.filter(key=>
       raw[key]<number(rule.requiredMinStats?.[key])),
     caveat:'원시 능력치가 해당 병종 statCaps와 정확히 같고 그 시점에 교육 자격을 갖춘 가상 비교. '+
@@ -127,19 +132,35 @@ export function educationBranchReport(data,profile,candidates=[]){
   const body=(data.soldiers||[]).find(row=>row.id===profile?.soldierType);
   if(!body)throw Error('Source soldier type not found');
   const byId=mapRules(data);
+  const initialHistory=trainingHistory(data,[],profile.previousTransformations);
+  const alreadyBlocked=structuralLoss(data,body,initialHistory);
+  const baselineBlocked=new Set([...alreadyBlocked.direct,...alreadyBlocked.indirect].map(row=>row.id));
   return EDUCATION_IDS.map(id=>{
     const rule=byId.get(id);
     if(!rule)throw Error('Missing education rule: '+id);
     const available=compatible(rule,body);
     if(!available)return {id,name:rule.koName,available:false,body:body.id};
     const prerequisites=prerequisiteOrder(rule,byId);
-    const mandatoryHistory=new Set(prerequisites.map(t=>t.id));
-    mandatoryHistory.add(id);
-    const direct=structuralLoss(data,body,new Set([id]));
+    const plannedHistory=new Set(initialHistory),historyConflicts=[];
+    for(const step of [...prerequisites,rule]){
+      if(plannedHistory.has(step.id))continue;
+      if(!compatible(step,body)){
+        historyConflicts.push({id:step.id,causes:['병종 불일치']});
+        break;
+      }
+      const causes=(step.forbiddenPreviousTransformations||[])
+        .filter(previous=>plannedHistory.has(previous));
+      if(causes.length){historyConflicts.push({id:step.id,causes});break;}
+      plannedHistory.add(step.id);
+    }
+    const mandatoryHistory=new Set([...initialHistory,...prerequisites.map(t=>t.id),id]);
+    const direct=structuralLoss(data,body,new Set([...initialHistory,id]));
     const full=structuralLoss(data,body,mandatoryHistory);
-    const standaloneBlocks=new Set(direct.direct.map(x=>x.id));
+    const directBlocks=direct.direct.filter(x=>!baselineBlocked.has(x.id));
+    const standaloneBlocks=new Set([...baselineBlocked,...direct.direct.map(x=>x.id)]);
     const prerequisiteBlocks=full.direct.filter(x=>!standaloneBlocks.has(x.id));
-    const chainBlocks=full.indirect;
+    const directPlusPrerequisites=new Set([...standaloneBlocks,...prerequisiteBlocks.map(x=>x.id)]);
+    const chainBlocks=full.indirect.filter(x=>!directPlusPrerequisites.has(x.id));
     const included=candidates.filter(c=>c.finalSoldierType===body.id&&
       (c.transforms||[]).includes(id));
     const sorted=[...included].filter(c=>c.growth?.kind==='conditional-upper-envelope')
@@ -153,9 +174,12 @@ export function educationBranchReport(data,profile,candidates=[]){
       requiredStats:Object.entries(rule.requiredMinStats||{})
         .filter(([,value])=>number(value)>0),
       prerequisites:prerequisites.map(t=>({id:t.id,name:t.koName})),
-      directBlocks:direct.direct,
+      inheritedHistory:[...initialHistory],
+      alreadyCompleted:initialHistory.has(id),
+      historyConflicts,
+      directBlocks,
       prerequisiteBlocks,chainBlocks,
-      totalStructuralLocks:full.total,
+      totalStructuralLocks:directBlocks.length+prerequisiteBlocks.length+chainBlocks.length,
       capReference:educationCapReference(rule,body),
       candidateCount:included.length,
       bestCandidate:sorted[0]||null,
