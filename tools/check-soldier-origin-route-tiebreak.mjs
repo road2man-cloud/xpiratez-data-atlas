@@ -10,7 +10,7 @@ import {compareEqualScoreOriginRoutes,preferredOriginCandidate,routeTieEvidence,
 function candidate(id, transforms, excluded=[], total=1254, allocation={}){
   const stats=Object.fromEntries(DISPLAY_STATS.map(k=>[k,0]));
   stats.firing=total;Object.assign(stats,allocation);
-  return {id,growth:{kind:'conditional-upper-envelope',total,stats},
+  return {id,finalSoldierType:'STR_SOLDIER_TEST',growth:{kind:'conditional-upper-envelope',total,stats},
     display:{total,stats},steps:transforms.map(transform=>({type:'transform',transform})),
     trainingExclusions:excluded.map(x=>({id:'gate',excludes:[{id:x}]}))};
 }
@@ -33,10 +33,20 @@ const differentVector=candidate('different',['Z'],[],1254,{firing:1244,melee:10}
 assert(!sameRouteStatVector(cultural,differentVector));
 assert.equal(preferredOriginCandidate(cultural,differentVector,score),cultural,
   'Same total with changed combat stats is not a proven equivalent result');
-const tied=routeTieEvidence([cultural,short,differentVector,stronger],short,score);
-assert.equal(tied.equalTotal.length,3);
+const differentBody={...short,id:'identical-stats-other-body',finalSoldierType:'STR_SOLDIER_OTHER',
+  steps:[],trainingExclusions:[]};
+assert(!sameRouteStatVector(cultural,differentBody),
+  'Identical 12 stats from different soldier bodies are not the same outcome');
+assert.equal(preferredOriginCandidate(cultural,differentBody,score),cultural,
+  'A different final body must not displace an earlier route just because it has fewer steps');
+assert.equal(preferredOriginCandidate(differentBody,cultural,score),differentBody,
+  'Unranked final-body choices must preserve original candidate order');
+assert(!sameRouteStatVector({...short,finalSoldierType:null},short),
+  'Unknown final body is not eligible for a certified tie-break');
+const tied=routeTieEvidence([cultural,short,differentVector,differentBody,stronger],short,score);
+assert.equal(tied.equalTotal.length,4);
 assert.equal(tied.sameVector.length,2);
-assert.equal(tied.differentVector.length,1);
+assert.equal(tied.differentVector.length,2);
 assert.equal(compareEqualScoreOriginRoutes(candidate('one',['A']),candidate('two',['B'])),0,
   'Research, cost and time cannot be guessed as tie-breakers');
 assert.equal(preferredOriginCandidate(short,{id:'unknown',steps:[]},()=>0,'provisional'),short,
