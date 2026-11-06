@@ -171,6 +171,15 @@ try{
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
+ const routeEfficiency=page.locator('#originDetails [data-route-efficiency="true"]');
+ assert.equal(await routeEfficiency.count(),1,'Origin detail must expose equal-vector efficiency');
+ assert(Number(await routeEfficiency.getAttribute('data-equal-vector-count'))>=2,
+   'Known Poltergeist route must offer another identical 12-stat alternative');
+ assert((await routeEfficiency.locator('summary').innerText()).includes('시술 3단계'),
+   'Poltergeist default must select the shorter 3-stage route');
+ assert((await routeEfficiency.textContent()).includes('연구·재료·시간'),
+   'Unverified resource and time costs cannot be certified');
+
  await page.locator('#originDetails .assumptions').evaluate(el=>el.open=true);
  const poltergeistDetail=await page.locator('#originDetails').innerText();
  assert(poltergeistDetail.includes('STR_BLESSINGS'),
