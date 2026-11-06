@@ -18,6 +18,9 @@ export function routeStats(candidate, metric = 'growth') {
   return stats && DISPLAY_STATS.every(k => Number.isInteger(stats[k])) ? stats : null;
 }
 export function sameRouteStatVector(a, b, metric = 'growth') {
+  // A numeric vector cannot stand in for a different final soldier body.
+  // The body also determines armor, perks and future eligibility.
+  if (!a?.finalSoldierType || a.finalSoldierType !== b?.finalSoldierType) return false;
   const left = routeStats(a, metric), right = routeStats(b, metric);
   return !!(left && right && DISPLAY_STATS.every(k => left[k] === right[k]));
 }
