@@ -6,7 +6,7 @@
 <meta name="description" content="획득처별 실제 연구 경로와 분기·배제 증거를 누적하는 X-Piratez 2.1 병종 DB">
 <link rel="stylesheet" href="origin-catalog.css?v=20261106-chort-separated-1">
 <link rel="stylesheet" href="shared-terminal-catalog.css?v=20261106-chort-separated-1">
-<link rel="stylesheet" href="acquisition-tech-view.css?v=20261106-chort-separated-2">
+<link rel="stylesheet" href="acquisition-tech-view.css?v=20261106-vector-audit-2">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 </head>
 <body>
@@ -20,6 +20,7 @@
 <main class="wrap">
 <section id="catalogSummary" class="metrics" aria-live="polite"><p>원본과 경로 증거를 확인하는 중…</p></section>
 <section id="chortTarget" class="card shared-terminal-catalog" aria-label="별도 공통 변신 병종 코르트" data-target-type="STR_SOLDIER_CHORT"></section>
+<p class="scope-note"><a href="./chort-readiness.html" data-chort-readiness-link="true">코르트 출발 병종 42개 검증표 · 초기 Psi, 계급, 획득비 및 시간순 경로 근거 자세히 보기</a></p>
 <section class="toolbar card" aria-label="병종 DB 검색">
 <label class="wide">출생처·병종 검색<input id="search" type="search" placeholder="농부 · 돌격 클론 · 영애 · STR_…"></label>
 <label>병종<select id="family"><option value="">전체 병종</option></select></label>
@@ -44,6 +45,8 @@
 <p><strong>코르트 최종 변신 경로는 별도 코르트 병종에만 표시하고, 원래 출생처의 최고 후보·능력치 순위에는 사용하지 않습니다.</strong> 출생처 원본 재생 후보는 삭제하지 않습니다.</p>
 <p>등록한 연구·획득·훈련 경로 안에서 성장 상한이 큰 후보를 비교합니다. 재료·표본·시설·자금·이벤트, 전투/체력 성장 가능성과 난수 가정을 상세에 기록하며, 연구 공급 경로가 완결되지 않은 출생처에는 최종 수치를 임의로 넣지 않습니다. 각 능력치의 상한 합산이 한 병사에게 동시에 실현 가능하다는 증거는 아닙니다.</p>
 <p>더 높은 후보를 찾더라도 원본 버전·출생 이력·연구 순서·배제를 다시 검사한 뒤 갱신합니다. 기존 후보는 비교용으로 남깁니다. 목표 A인 영구 보너스 합계, 연구·시술 직후 합계, 성장 완료 가정의 조건부 상한 합계를 각각 구별합니다.</p>
+<p>조건부 상한 <strong>합계가 같아도 12개 능력치의 분포가 다르면 동일 성능으로 단정하지 않습니다.</strong> 12종이 모두 같은 등록 경로끼리는 훈련 상호배제 손실이 적은 경로, 시술·변신 횟수가 적은 경로 순서로 우선 표시합니다. 연구·자원·시간의 비교 우열이 증명되지 않으면 추측하지 않습니다.</p>
+<p>시술 생략 감사에서는 원본 연구·자원·이벤트 순서를 변경하지 않고 훈련 하나만 제거한 뒤, 병사 상태를 처음부터 재생하고 12종 성장 상한이 유지되는지 확인합니다. 이는 해당 원본 경로의 조건부 반례일 뿐 연구비·소요 기간의 전역 최소 경로를 인증하지 않습니다.</p>
 <p><strong>확정 최종 최대치</strong>는 실행 가능성과 더 높은 경로가 없다는 전역 최적성이 모두 증명된 경우에만 사용합니다. 현재 인증은 0건입니다.</p>
 </details>
 <details class="methodology card" id="researchReference"><summary>연구 관계 · 조건과 영향</summary>
@@ -62,7 +65,7 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261106-chort-separated-2"></script>
+<script type="module" src="app.js?v=20261106-vector-audit-2"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 </body>
 </html>
