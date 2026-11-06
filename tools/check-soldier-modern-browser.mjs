@@ -71,6 +71,25 @@ try{
  await page.locator('#originTable [data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const detail=await page.locator('#originDetails').innerText();
+ const education=page.locator('#originDetails [data-education-endgame="true"]');
+ assert.equal(await education.count(),1,'Every normal birth origin must expose stat-cap education choices');
+ const cultureOption=education.locator('[data-education-option="STR_PERSON_OF_CULTURE_TRAINING"]');
+ const militaryOption=education.locator('[data-education-option="STR_MILITARY_DRILL_TRAINING"]');
+ const simpleOption=education.locator('[data-education-option="STR_SIMPLETON_TRAINING"]');
+ assert.equal(await education.locator('[data-education-option]').count(),3);
+ assert((await cultureOption.locator('.education-effects').innerText()).includes('Psi 강도 +3'));
+ assert((await militaryOption.locator('.education-effects').innerText()).includes('Psi 강도 -10'));
+ assert((await simpleOption.locator('.education-effects').innerText()).includes('Psi 기술 -7'));
+ assert((await militaryOption.innerText()).includes('불가능 판정 아님'),
+   'Missing military witnesses must not be mistaken for an impossible transformation');
+ await cultureOption.locator('details > summary').click();
+ assert((await cultureOption.innerText()).includes('여왕의 신부들'),
+   'Cultural education must show its indirect Nepotism/Queens-bride sacrifice');
+ await militaryOption.locator('details > summary').click();
+ assert((await militaryOption.innerText()).includes('돌격 클론'));
+ assert.equal(await page.locator('#originDetails [data-future-options]').count(),1);
+ assert((await page.locator('#originTable [data-education-witnessed]').innerText()).includes('경로 검증'),
+   'Every origin row with eligible education must disclose current witness coverage');
  assert(detail.includes('사전 완료 연구 0개')&&detail.includes('잠정')&&detail.includes('가정'));
  assert(detail.includes('전역 최적성: 미증명'));
  assert(await page.locator('#originDetails [data-exclusion="oneway"]').count()>0);
@@ -103,6 +122,13 @@ try{
  assert((await page.locator('#originDetails [data-growth-stamina-basis]').innerText()).includes('원시 성장캡'),
    'Growth values must expose the raw rule cap, raw projection, and bonus');
  console.log('PASS one real chronological record replayed; growth-cap ceiling default is distinct from ungrown stats and does not claim actual attainment');
+ await page.locator('#search').fill('manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT');
+ await page.locator('#originTable tbody [data-open-origin]').click();
+ await page.waitForSelector('#originDetails [data-education-endgame]',{timeout:60000});
+ const inheritedMilitary=page.locator('#originDetails [data-education-option="STR_MILITARY_DRILL_TRAINING"]');
+ assert((await inheritedMilitary.locator('[data-inherited-education-block]').innerText()).includes('나이트쉐이드 강화'),
+   'Jungle guide with inherited Nightshade history must not advertise military education as reachable');
+ console.log('PASS inherited transformation history is reflected in birth-specific education feasibility');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
@@ -157,6 +183,8 @@ try{
  await page.locator('#chortTarget [data-open-shared-candidate]').first().click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 별도 병종 경로'),null,{timeout:60000});
  const chortDetails=await page.locator('#originDetails').innerText();
+ assert.equal(await page.locator('#originDetails [data-education-endgame]').count(),0,
+   'Independent Chort view must not link incompatible pre-Chort education candidates');
  assert(chortDetails.includes('코르트')&&chortDetails.includes('출생처 기본 비교에서 제외된 변신 증거'));
  const chortPruning=page.locator('#originDetails .origin-route-pruning');
  assert(Number(await chortPruning.getAttribute('data-pruning-proofs'))>=1,
