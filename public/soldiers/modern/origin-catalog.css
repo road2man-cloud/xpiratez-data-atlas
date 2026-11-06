@@ -202,3 +202,8 @@
   #originTable .mobile-proof{display:block;font-size:.65rem;color:#dfc89b;margin-top:5px}
   #originTable tbody tr:hover td:nth-child(3){background:#25425d}
 }
+.verified-short-route{margin:15px 0;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:#142438;overflow-wrap:anywhere}
+.verified-short-route h3{margin:0 0 8px;font-size:1.08rem;color:#e9f3ff}
+.verified-short-route p{margin:8px 0;font-size:.87rem;line-height:1.6}
+.verified-short-route>button{margin:7px 0 5px;padding:8px 12px;white-space:normal;text-align:left}
+.verified-short-route>small{display:block;margin-top:6px;color:var(--muted)}
