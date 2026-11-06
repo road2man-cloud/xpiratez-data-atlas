@@ -1,0 +1,437 @@
+{
+  "kind": "xpz-observed-shared-final-bodies-v1",
+  "sourceVersion": "v.o2",
+  "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
+  "registeredBirthOrigins": 72,
+  "compatibleCandidates": 4306,
+  "chortCandidatesExcluded": 61,
+  "observedIndependentFinalBodies": 25,
+  "observedBodiesWithMultipleBirthTypes": 0,
+  "possibleExtraSharedTargets": [],
+  "interpretation": "Only observed, source-backed, compatible routes. A zero does not prove unsearched transformations impossible. No body is automatically excluded from birth rankings.",
+  "bodies": [
+    {
+      "id": "STR_SOLDIER_PEASANT",
+      "name": "농부",
+      "sourceOriginCount": 9,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 9,
+      "witnessCount": 578,
+      "highestConditionalGrowthSum": 1438,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_PEASANT"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_PEASANT",
+        "manufacture:STR_HALF_UBER_GIRL_RECRUITMENT",
+        "manufacture:STR_JUNGLEFIGHTER_GIRL_RECRUITMENT",
+        "manufacture:STR_REVOLUTIONARY_GIRL_RECRUITMENT",
+        "manufacture:STR_ROGUE_CLONE_RECRUITMENT",
+        "manufacture:STR_SNIPER_GIRL_RECRUITMENT",
+        "manufacture:STR_THEBAN_ASSAULT_CLONE",
+        "manufacture:STR_WASTELAND_GIRL_RECRUITMENT",
+        "manufacture:STR_WILD_GIRL_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_SLAVE",
+      "name": "노예병",
+      "sourceOriginCount": 8,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 8,
+      "witnessCount": 650,
+      "highestConditionalGrowthSum": 1293,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_SLAVE"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_SLAVE",
+        "event:STR_START_COUNTRY_NIGERIA_EVENT",
+        "manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT",
+        "manufacture:STR_MILITIAMAN_RECRUITMENT",
+        "manufacture:STR_SOLDIER_SLAVE_RECRUITMENT",
+        "manufacture:STR_SURVIVOR_RECRUITMENT",
+        "manufacture:STR_VOLUNTEER_SOLDIER_RECRUITMENT",
+        "manufacture:STR_ZONE_STALKER_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_HYBRID",
+      "name": "버그아이",
+      "sourceOriginCount": 5,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 5,
+      "witnessCount": 345,
+      "highestConditionalGrowthSum": 1145,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_HYBRID"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_HYBRID",
+        "event:STR_START_COUNTRY_BRAZIL_EVENT",
+        "manufacture:STR_HYBRID_HIVER_RECRUITMENT",
+        "manufacture:STR_HYBRID_LONER_RECRUITMENT",
+        "manufacture:STR_HYBRID_OF_TWILIGHT_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI",
+      "name": "캣걸",
+      "sourceOriginCount": 5,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 5,
+      "witnessCount": 255,
+      "highestConditionalGrowthSum": 1216,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_NEKOMIMI"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_NEKOMIMI",
+        "event:STR_CATGIRL_FROM_LAPUTA_EVENT",
+        "event:STR_MRSHAN_ADVENTURER_EVENT",
+        "manufacture:STR_CATGIRL_RECRUITMENT",
+        "manufacture:STR_CATGIRL_TOURIST_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_DAMSEL",
+      "name": "영애",
+      "sourceOriginCount": 4,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 4,
+      "witnessCount": 261,
+      "highestConditionalGrowthSum": 1390,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_DAMSEL"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_DAMSEL_OF_WAR_RECRUITMENT",
+        "manufacture:STR_DAMSEL_RECRUITMENT",
+        "manufacture:STR_ORTHODOX_MAGE_DAMSEL_RECRUITMENT",
+        "manufacture:STR_SPY_DAMSEL_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_W",
+      "name": "캣전사",
+      "sourceOriginCount": 4,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 4,
+      "witnessCount": 223,
+      "highestConditionalGrowthSum": 1354,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_NEKOMIMI_W"
+      ],
+      "observedBirthOrigins": [
+        "event:STR_MRSHAN_FIGHTER_EVENT",
+        "event:STR_MRSHAN_WARRIOR_EVENT",
+        "manufacture:STR_CATGIRL_WARRIOR_RECRUITMENT",
+        "manufacture:STR_THEBAN_ASSAULT_CATGIRL_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_S",
+      "name": "싸움꾼",
+      "sourceOriginCount": 4,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 4,
+      "witnessCount": 153,
+      "highestConditionalGrowthSum": 1250,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_S"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_S",
+        "manufacture:STR_RAIDER_SCOUT_RECRUITMENT",
+        "manufacture:STR_YOUNG_UBER_RECRUITMENT",
+        "manufacture:STR_YOUNG_UBER_RECRUITMENT_SPY"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_X",
+      "name": "괴짜",
+      "sourceOriginCount": 4,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 4,
+      "witnessCount": 252,
+      "highestConditionalGrowthSum": 1454,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_X"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_X",
+        "manufacture:STR_FREAK_RECRUITMENT",
+        "manufacture:STR_POLTERGEIST_EMBODIMENT",
+        "manufacture:STR_ZOMBIE_EMBODIMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_M",
+      "name": "전사",
+      "sourceOriginCount": 4,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 3,
+      "witnessCount": 182,
+      "highestConditionalGrowthSum": 1290,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_M"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_M",
+        "manufacture:STR_AGGRESSOR_GAL_RECRUITMENT",
+        "manufacture:STR_RAIDER_FLAME_GUARD_RECRUITMENT",
+        "manufacture:STR_TURANIAN_UBER_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_GNOME",
+      "name": "노움",
+      "sourceOriginCount": 3,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 3,
+      "witnessCount": 222,
+      "highestConditionalGrowthSum": 1345,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_GNOME"
+      ],
+      "observedBirthOrigins": [
+        "event:STR_START_COUNTRY_GERMANY_EVENT",
+        "manufacture:STR_GNOME_RECRUITMENT",
+        "manufacture:STR_WILD_GNOME_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER",
+      "name": "미치광이",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 188,
+      "highestConditionalGrowthSum": 1308,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_SISTER_VICTIM_RECRUITMENT",
+        "manufacture:STR_STASIS_POD_GREEN_GAL_EXTRACTION"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_BLOODOGE",
+      "name": "해적 블러드하운드",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 34,
+      "highestConditionalGrowthSum": 1104,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_BLOODOGE"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_BLOODOGE",
+        "event:STR_CODEX_BONUS_G5"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_KILLBOT",
+      "name": "데스트로이드",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 4,
+      "highestConditionalGrowthSum": 1140,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_KILLBOT"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_RECRUIT_KILLBOT",
+        "manufacture:STR_SDD_SUMMONING"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_LAMIA",
+      "name": "라미아",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 130,
+      "highestConditionalGrowthSum": 1318,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_LAMIA"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_LAMIA",
+        "event:STR_START_LOCATION_EVENT_MEDUSA"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_O",
+      "name": "무법자 캣걸",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 132,
+      "highestConditionalGrowthSum": 1215,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_NEKOMIMI_O"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_NEKOMIMI_O",
+        "manufacture:STR_CATGIRL_VICTIM_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_OGRE",
+      "name": "오우거",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 194,
+      "highestConditionalGrowthSum": 1361,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_OGRE"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_OGRE",
+        "manufacture:STR_OGRE_SPY_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_SYNTH",
+      "name": "신스",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 88,
+      "highestConditionalGrowthSum": 1517,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_SYNTH"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_SOLDIER_TYPE_SYNTH_REPAIR",
+        "manufacture:STR_SYNTH_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_V",
+      "name": "숙련병",
+      "sourceOriginCount": 2,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 2,
+      "witnessCount": 129,
+      "highestConditionalGrowthSum": 1246,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_V"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_V",
+        "manufacture:STR_GLAMOUR_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_DOGE",
+      "name": "해적견",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 17,
+      "highestConditionalGrowthSum": 978,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_DOGE"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_DOGE"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_DOLL",
+      "name": "영혼 인형",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 16,
+      "highestConditionalGrowthSum": 1311,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_DOLL"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_DOLL"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_HERO",
+      "name": "영웅",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 62,
+      "highestConditionalGrowthSum": 1525,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_HERO"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_HERO_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_LOKNAR",
+      "name": "로크'나르",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 49,
+      "highestConditionalGrowthSum": 1220,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_LOKNAR"
+      ],
+      "observedBirthOrigins": [
+        "direct:STR_SOLDIER_LOKNAR"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_PUREBLOOD",
+      "name": "순수혈통 병사",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 52,
+      "highestConditionalGrowthSum": 1199,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_PUREBLOOD"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_RECRUIT_PUREBLOOD"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_R",
+      "name": "회개자",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 88,
+      "highestConditionalGrowthSum": 1415,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_M"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_TURANIAN_UBER_RECRUITMENT"
+      ]
+    },
+    {
+      "id": "STR_SOLDIER_XENFORCER",
+      "name": "젠포서",
+      "sourceOriginCount": 1,
+      "distinctBirthBodyTypes": 1,
+      "chosenAsBestOriginCount": 1,
+      "witnessCount": 2,
+      "highestConditionalGrowthSum": 1085,
+      "sourceSoldierTypes": [
+        "STR_SOLDIER_XENFORCER"
+      ],
+      "observedBirthOrigins": [
+        "manufacture:STR_XENFORCER_REPAIR"
+      ]
+    }
+  ]
+}
