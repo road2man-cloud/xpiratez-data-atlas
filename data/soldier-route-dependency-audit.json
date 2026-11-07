@@ -2,7 +2,7 @@
   "kind": "soldier-route-dependency-pruning-v1",
   "sourceVersion": "v.o2",
   "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
-  "priorAuditHash": "bc9da77c6846d273957e462db507990d03b5b0a3ac6c7998d44e39b0c10c03e6",
+  "priorAuditHash": "ee20ff5ffba9edcae1b1a000378310d0937590c28d9c8e8a6178abb5210cf74a",
   "scope": "published one-training omissions; directly linked research, input assumptions and bounded research ancestry only; full chronological replay; no global cost or maximum certification",
   "stats": {
     "claims": 28,

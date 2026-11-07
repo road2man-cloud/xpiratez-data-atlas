@@ -2,7 +2,7 @@
   "kind": "soldier-route-iterative-pruning-v1",
   "sourceVersion": "v.o2",
   "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
-  "priorAuditHash": "bf76f684ce3840b4d85227699fa7ba37bee98b63e553fc4a89d0315b9b0cfb2a",
+  "priorAuditHash": "e75e2502ca3e076c535aa74b8ad427f1a66432273363b4ad54ddbb944548a2b0",
   "scope": "one additional independent transform omitted after each published one-transform-and-dependencies witness; same final body, exact ungrown 12 stats and conditional growth 12-vector; chronological replay; no exhaustive global minimum",
   "stats": {
     "priorClaims": 28,

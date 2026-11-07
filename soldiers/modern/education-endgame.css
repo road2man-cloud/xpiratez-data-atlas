@@ -1,0 +1,28 @@
+/* Source-backed education tradeoff panel, after-stat-cap reference only. */
+.education-endgame{margin:22px 0;padding:15px;border:1px solid #49647e;border-radius:13px;background:#0d1e31}
+.education-endgame h3{margin:0 0 8px;color:#e0eaff}
+.education-endgame>.scope-note{margin:4px 0 15px}
+.education-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.education-option{border:1px solid #34516f;background:#132840;border-radius:11px;padding:12px;min-width:0;overflow-wrap:anywhere}
+.education-option.is-selected{border-color:#b7b48a;background:#1b3041}
+.education-option.is-inapplicable{opacity:.72}
+.education-option h4{margin:0 0 7px;font-size:.91rem;color:#dcecff}
+.education-option h4 small{font-weight:500;color:#f1d99a}
+.education-option .fine{font-size:.72rem;line-height:1.5}
+.education-effects{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.education-effect{display:grid;gap:2px;border:1px solid #2e4c6b;border-radius:7px;background:#101e33;padding:5px 8px;min-width:96px}
+.education-effect b{font-size:.79rem;white-space:nowrap;color:#d7e8ff}
+.education-effect small{font-size:.66rem;color:#a9bad1;white-space:nowrap}
+.education-warning{font-size:.74rem;color:#e9c18c;border-left:2px solid #ba9662;padding:4px 8px}
+.education-witness{font-size:.78rem;margin:12px 0}
+.education-witness button{font-size:.73rem;margin:0 5px 6px 0}
+.education-witness small{font-size:.72rem;color:#b8cae3}
+.education-gap{color:#efc596;font-size:.75rem}
+.education-option details{padding:8px 0!important;margin:6px 0!important}
+.education-option details summary{font-size:.76rem;color:#c4dfff}
+.education-option details p{font-size:.77rem;margin:8px 0 3px}
+.education-option details ul,.candidate-future-options ul{margin:6px 0 9px;padding-left:21px}
+.education-option details li,.candidate-future-options li{font-size:.76rem;line-height:1.7}
+.education-option details li small,.candidate-future-options li small{font-size:.7rem;color:#9baecc}
+.candidate-future-options{margin:16px 0}
+@media(max-width:1120px){.education-options{grid-template-columns:1fr}}

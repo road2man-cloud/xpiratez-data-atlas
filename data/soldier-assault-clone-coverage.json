@@ -1,0 +1,70 @@
+{
+  "kind": "xpz-assault-clone-search-coverage-v1",
+  "sourceVersion": "v.o2",
+  "origin": "manufacture:STR_THEBAN_ASSAULT_CLONE",
+  "indexedResearchRules": 4654,
+  "indexedBonusRules": 999,
+  "registeredOriginCandidates": 116,
+  "exactConditionalChronologyReplays": 116,
+  "verifiedRealCampaignCompletions": 0,
+  "certifiedGlobalMaximumRoutes": 0,
+  "candidateTransformDepths": {
+    "0": 1,
+    "1": 9,
+    "2": 41,
+    "3": 44,
+    "4": 18,
+    "5": 1,
+    "6": 1,
+    "7": 1
+  },
+  "ordinaryPathsAtDepthFourOrMore": 7,
+  "firstStepStructurallyConditional": 15,
+  "twoStepStructurallyConditional": 187,
+  "twoStepStandaloneCandidatesWitnessed": 40,
+  "unrepresentedTwoStepStructuralPairs": 147,
+  "missingExamples": [
+    "STR_PERSONAL_ATTENTION>STR_DREAMLINK_TRAINING",
+    "STR_PERSONAL_ATTENTION>STR_CHAPLAIN_TRAINING",
+    "STR_PERSONAL_ATTENTION>STR_ASSIGN_STASIS_POD",
+    "STR_PERSONAL_ATTENTION>STR_SIVALINGA_RESURRECTION",
+    "STR_PERSONAL_ATTENTION>STR_SPECTRE_SUMMONING",
+    "STR_PERSONAL_ATTENTION>STR_OFFICER_TRAINING",
+    "STR_PERSONAL_ATTENTION>STR_CHORT_SUMMONING",
+    "STR_PERSONAL_ATTENTION>STR_NEPOTISM",
+    "STR_GLADIATOR_TRAINING>STR_DREAMLINK_TRAINING",
+    "STR_GLADIATOR_TRAINING>STR_CHAPLAIN_TRAINING",
+    "STR_GLADIATOR_TRAINING>STR_ASSIGN_STASIS_POD",
+    "STR_GLADIATOR_TRAINING>STR_SIVALINGA_RESURRECTION"
+  ],
+  "assumptionTypes": {
+    "externalInputs": 3876,
+    "recruit": 116,
+    "freeResearch": 1148,
+    "eventResearch": 426,
+    "advanceMonth": 195,
+    "campaignContext": 1,
+    "repeatResearch": 174,
+    "missionResearch": 1
+  },
+  "searchScope": {
+    "mode": "bounded-beam",
+    "maxLayers": 7,
+    "candidatesPerLayer": 1,
+    "beamWidth": 8,
+    "continuation": {
+      "seedDepth": 6,
+      "seedLimit": 1,
+      "seedId": "5d07d0ed61e41c7d9d4f",
+      "originOnly": true,
+      "researchReadyOnly": false,
+      "targetTransforms": [
+        "STR_DREAMLINK_TRAINING"
+      ],
+      "seedDifficulty": 1,
+      "notAllBranchesExplored": true
+    },
+    "globalOptimumProven": false
+  },
+  "warning": "Structural possibilities omit future research, resources, rank, health, medals and RNG. Valid replayed paths are still conditional; not an exhaustive path count or an OXCE save-game completion certificate."
+}

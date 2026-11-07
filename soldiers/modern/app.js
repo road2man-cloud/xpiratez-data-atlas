@@ -7,11 +7,12 @@ import {auditOriginCampaignContext,candidateMatchesCampaign} from './origin-camp
 import {researchBranchEvidence} from './origin-branch-evidence.js';
 import {DISPLAY_STATS,displayTotal,projectBirthStats,projectCandidateStats} from './score-12.js';
 import {projectCandidateGrowthLimit} from './score-growth-12.js';
+import {educationBranchReport,auditCandidateFutureChoices} from './education-endgame.js?v=20261107-endgame-choice-1';
 import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transformationCount,excludedTrainingCount} from './origin-route-tiebreak.js?v=20261106-vector-audit-4';
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261107-iterative-pruning-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261108-deep-route-7-1';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -185,6 +186,9 @@ async function validate(){
       c.campaignContext=context;
       c.display=projectCandidateStats(record,c,DATA);
       c.growth=projectCandidateGrowthLimit(record,c,DATA);
+      c.futureOptions=auditCandidateFutureChoices(DATA,c);
+      if(c.futureOptions.kind!=='structural-only')
+        throw Error('최종 병종 후속 선택지 감사 불가: '+c.id);
       if(c.growth.kind==='conditional-upper-envelope'&&c.growth.total<c.display.total)
         throw Error('성장 상한이 시술 후 수치보다 낮음: '+c.id);
     }
@@ -322,7 +326,8 @@ async function validate(){
 function render(){
   if(blocked||!REPORT)return;
   const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
-  const rows=REPORT.records.filter(r=>(!family||r.soldierType===family)&&(!q||
+  const rows=REPORT.records.filter(r=>(!family||(family.startsWith('origin:')?
+    r.profileId===family.slice(7):r.soldierType===family))&&(!q||
     [r.profileId,r.name,r.soldierName,
       ...Object.keys(DATA.profiles.find(p=>p.id===r.profileId)?.acquisitionRequiredItems||{}),
       ...comparable(r).flatMap(c=>c.transforms.map(name))]
@@ -333,26 +338,126 @@ function render(){
   $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>12종 합계</th>'+DISPLAY_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const c=best(r,metric==='growth'?'growth':'provisional');
+    const longest=comparable(r).reduce((winner,x)=>
+      !winner||x.transforms.length>winner.transforms.length?x:winner,null);
+    // The highest scoring path is not necessarily the longest witnessed route.
+    // Show both without claiming the longer path is optimal or campaign-certified.
+    const depth=longest?.transforms.length||0;
+    const depthNote=depth>4?
+      '<small data-replayed-max-depth="'+depth+'">조건부 경로 최장 '+depth+
+      '개 시술 · 완주 미인증</small><button type="button" data-open-longest="'+
+      esc(r.profileId)+'" data-longest-candidate="'+esc(longest.id)+'">최장 '+
+      depth+'단계 경로 확인</button>':'';
     const terminal=chortCandidates(r).reduce((winner,x)=>preferredOriginCandidate(winner,x,score),null);
     const ties=(metric==='growth'||metric==='provisional')&&c?
       routeTieEvidence(comparable(r),c,x=>score(x,metric),metric):null;
     const tieNote=ties?.equalTotal.length>1?
       '<small class="origin-route-tie" data-route-tie="true">상한 합계 동점 '+ties.equalTotal.length+
       '경로 · 최종 병종·12종 동일 '+ties.sameVector.length+' / 능력치·병종 다름 '+ties.differentVector.length+'</small>':'';
+    const sourceProfile=DATA.profiles.find(p=>p.id===r.profileId);
+    const educationChoices=educationBranchReport(DATA,sourceProfile,comparable(r));
+    const applicableEducation=educationChoices.filter(x=>x.available);
+    const educationWitnesses=applicableEducation.filter(x=>x.candidateCount>0).length;
+    const educationCoverage=applicableEducation.length?
+      '<small class="origin-education-coverage" data-education-witnessed="'+educationWitnesses+"/"+
+      applicableEducation.length+'">교육별 경로 검증 '+educationWitnesses+'/'+applicableEducation.length+
+      ' · 누락 경로는 불가능 판정 아님</small>':'';
     const values=metric==='birth'?r.displayBirth:metric==='certified'?null:
       metric==='growth'?(c?.growth?.kind==='conditional-upper-envelope'?c.growth.stats:null):c?.display.stats;
     const total=values?displayTotal(values):null;
     return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small>'+
       (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
-      tieNote+'<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
+      tieNote+educationCoverage+'<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
       (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'연구 경로 보완 중')+
-      '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
+      '<small>'+(c?c.researchCount+'개 연구 재생 · 선정 '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
-  $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 출생처별 조건부 성장 상한 · 코르트 최종 변신은 별도 병종으로 분리했습니다. 동시 달성·전역 최고값은 미증명입니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
+  $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 등록된 연구 재생 후보의 조건부 성장 상한 · 코르트는 별도 병종입니다. 군사·문화·얼간이 교육 등 미등록 육성 경로가 있으므로 후보 최고값을 전역 최적으로 해석할 수 없습니다. 출생처 상세에서 상한 시점 교육 효과와 누락 경로를 확인하세요.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
 }
 function statGrid(c,metric='growth'){
   const view=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope'?c.growth:c.display;
   return '<div class="stat-grid">'+DISPLAY_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(view.stats[k])+'</strong><small>원시 '+fmt(view.raw[k])+' + 영구 특성 '+fmt(view.bonus[k])+'</small></div>').join('')+'</div>';
+}
+const signed=n=>(n>0?'+':'')+fmt(n);
+function educationChoicesHtml(record,profile,selectedCandidate){
+  const choices=educationBranchReport(DATA,profile,comparable(record));
+  const details=choices.map(choice=>{
+    if(!choice.available)return '<article class="education-option is-inapplicable" data-education-option="'+
+      esc(choice.id)+'"><h4>'+esc(choice.name)+'</h4>'+
+      '<p class="fine">이 출생 병종에서는 교육 대상이 아닙니다.</p></article>';
+    const cap=choice.capReference;
+    const effects=DISPLAY_STATS.filter(key=>cap.combined[key]!==0).map(key=>
+      '<span class="education-effect"><b>'+esc(DATA.statLabels[key]||key)+' '+signed(cap.combined[key])+'</b>'+
+      '<small>직접 '+signed(cap.cappedDirect[key])+' / 영구 '+signed(cap.permanent[key])+'</small></span>').join('');
+    const required=choice.requiredStats.map(([key,value])=>
+      esc(DATA.statLabels[key]||key)+' '+fmt(value)+' 이상').join(' · ');
+    const locks=arr=>arr.map(row=>'<li>'+esc(name(row.id))+
+      ' <small>('+row.causes.map(x=>esc(name(x))).join(' / ')+')</small></li>').join('');
+    const selected=selectedCandidate?.futureOptions?.completed.includes(choice.id);
+    const inheritedWarning=choice.alreadyCompleted?
+      '영입 시 이미 교육 이력이 있어 재교육할 수 없습니다.':
+      choice.historyConflicts.length?
+        '영입 시 훈련 이력 충돌: '+choice.historyConflicts.map(x=>
+          esc(name(x.id))+' ← '+x.causes.map(c=>esc(name(c))).join(' / ')).join('; ')+
+          ' · 해당 이력을 초기화하지 않으면 이 교육을 추가할 수 없습니다.':'';
+    const best=choice.bestCandidate;
+    const witness=best?'<button type="button" data-candidate="'+esc(best.id)+'">등록 후보 최고 상한 '+
+      fmt(best.growth.total)+' · 해당 경로 보기</button>':
+      '<strong class="education-gap">실제 연구·변신 재생 후보 0건 — 불가능 판정 아님</strong>';
+    return '<article class="education-option'+(selected?' is-selected':'')+
+      '" data-education-option="'+esc(choice.id)+'" data-witness-count="'+choice.candidateCount+'">'+
+      '<h4>'+esc(choice.name)+(selected?' <small>선택 경로 보유</small>':'')+'</h4>'+
+      (inheritedWarning?'<p class="education-warning" data-inherited-education-block="true">'+inheritedWarning+'</p>':'')+
+      '<p class="fine">원시 성장캡 시점의 가상 추가 효과 · <strong>직접 / 영구 분리</strong></p>'+
+      '<div class="education-effects">'+effects+'</div>'+
+      (cap.psiSkillActivationUnverified?'<p class="fine">Psi 기술 보너스는 해당 능력 활성화가 별도로 필요합니다.</p>':'')+
+      '<p class="fine">선행 훈련 '+(choice.prerequisites.map(x=>esc(x.name)).join(' → ')||'없음')+
+      ' · 조건 '+(required||'별도 최소 능력치 없음')+
+      (choice.baseFunctions.length?' · 기지 기능 '+choice.baseFunctions.map(esc).join(', '):'')+'</p>'+
+      '<p class="fine">선행 연구 '+choice.researchIds.map(id=>esc(name(id))).join(' · ')+
+        ' · 비용 '+fmt(choice.cost)+
+        (choice.requiredItems.length?' · 재료 '+choice.requiredItems.map(([id,n])=>
+          esc(name(id))+' ×'+fmt(n)).join(' / '):'')+
+        (choice.minRank>0?' · 계급 '+fmt(choice.minRank)+' 이상':'')+'</p>'+
+      (cap.requirementMayFail.length?'<p class="education-warning">성장캡 원시값만으로는 교육의 '+
+        cap.requirementMayFail.map(key=>esc(DATA.statLabels[key]||key)).join(', ')+
+        ' 최소조건을 충족하지 못할 수 있습니다. 출생값·기존 보너스를 확인하세요.</p>':'')+
+      '<p class="education-witness">'+witness+' <small>등록 후보 '+choice.candidateCount+'건</small></p>'+
+      '<details><summary>이 교육으로 제한되는 후속 선택 · 직접 '+choice.directBlocks.length+
+        ' / 필수 선행의 별도 차단 '+choice.prerequisiteBlocks.length+
+        ' / 연쇄 '+choice.chainBlocks.length+'</summary>'+
+        (choice.directBlocks.length?'<p><b>교육 자체의 직접 차단</b></p><ul>'+locks(choice.directBlocks)+'</ul>':'')+
+        (choice.prerequisiteBlocks.length?'<p><b>필수 선행 훈련에서 추가 차단</b></p><ul>'+
+          locks(choice.prerequisiteBlocks)+'</ul>':'')+
+        (choice.chainBlocks.length?'<p><b>차단된 훈련을 선행조건으로 요구하는 후속</b></p><ul>'+
+          locks(choice.chainBlocks)+'</ul>':'')+
+        '<p class="fine">최초 병종에 허용된 규칙만 집계합니다. 연구·아이템·시설·계급·최소 능력치 통과 여부는 별개입니다.</p>'+
+      '</details></article>';
+  }).join('');
+  return '<section class="education-endgame" data-education-endgame="true">'+
+    '<h3>최종 육성 선택지 · 교육 3개 경로</h3>'+
+    '<p class="scope-note">최초 병종 '+esc(name(profile.soldierType))+'의 원시 statCaps에 정확히 도달한 시점에 '+
+      '교육을 시행한다고 가정한 <strong>직접 증가(상한 제한 후) + 영구 특성</strong> 비교입니다. '+
+      '실제 출생 개체, 교육 순서, 능력치 초과 성장, 연구·재료 조건까지 검증한 완성 경로가 아니며 '+
+      '원본 후보가 없는 교육을 불가능하다고 간주하지 않습니다.</p>'+
+    '<div class="education-options">'+details+'</div>'+
+    '<p class="fine">세 교육을 필수 선행으로 지정해 새로 열리는 변신은 없습니다. '+
+      '다만 능력치 조건 충족에 따른 간접 해금과 기존 변신 이력을 초기화하는 예외는 별도입니다. '+
+      '기본 순위는 검증된 후보의 12종 조건부 상한으로만 계산합니다.</p></section>';
+}
+function routeFutureOptionsHtml(candidate){
+  const audit=candidate.futureOptions;
+  if(audit?.kind!=='structural-only')return '';
+  const render=rows=>rows.map(row=>'<li>'+esc(name(row.id))+
+    '<small> · '+row.causes.map(id=>esc(name(id))).join(' / ')+
+    '</small></li>').join('');
+  return '<details class="candidate-future-options" data-future-options="'+audit.total+'">'+
+    '<summary>선택된 육성 경로의 후속 훈련 손실 · 직접 '+audit.direct.length+
+    '건 / 선행조건 연쇄 '+audit.indirect.length+'건 (최종 병종 기준)</summary>'+
+    (audit.direct.length?'<p><b>이력에 직접 막힌 훈련·변신</b></p><ul>'+render(audit.direct)+'</ul>':'')+
+    (audit.indirect.length?'<p><b>필수 선행 훈련이 막혀 함께 막힌 후속</b></p><ul>'+
+      render(audit.indirect)+'</ul>':'')+
+    (!audit.total?'<p>현재 최종 병종에서 이력으로 새로 막히는 후속 규칙이 없습니다.</p>':'')+
+    '<p class="fine">'+esc(audit.caveat)+'. 초기화 변신은 초기화 뒤 다시 평가합니다.</p></details>';
 }
 function choiceHtml(c){
   if(!c.branchChoices.length)return '<p>이 경로에는 직접 disables를 실행하는 연구 분기가 없습니다.</p>';
@@ -600,6 +705,12 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   selected=id;const eligible=sharedTerminal?chortCandidates(record):comparable(record);
   const c=eligible.find(c=>c.id===(candidateId||best(record,metric==='growth'?'growth':'provisional')?.id));
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
+  const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
+  const coverageNote='<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
+    record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
+    (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
+    '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
+    (id==='manufacture:STR_THEBAN_ASSAULT_CLONE'?' <a href="../../data/soldier-assault-clone-coverage.json">돌격클론 검증 범위 원본 JSON</a>':'')+'</p>';
   const host=$('#originDetails');host.hidden=false;
   host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div><p class="muted">등록 경로의 원본·현재 수치를 재대조하는 중…</p>';
   await new Promise(ok=>setTimeout(ok,0));
@@ -644,9 +755,10 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
     '. 전투 종료 보조 성장의 마지막 증가분은 원시 성장캡을 최대 +1 초과할 수 있습니다. 실제 달성·동시 달성은 미검증입니다.</p>':'';
   host.innerHTML='<div class="detail-head"><div><p class="eyebrow">조건부 잠정 최고 · 연구 경로 재생 완료</p><h2>'+esc(record.name)+'</h2></div><button id="originDetailClose">닫기</button></div>'+
     '<p>'+esc(record.soldierName)+'에서 출생 → '+esc(name(c.finalSoldierType))+' · <strong>'+(useGrowth?'성장 완료 가정 · 12종 상한 합계 ':'12종 연구·시술 합계 ')+fmt(shown.total)+'</strong> · 영구 특성 12종 합 '+fmt(c.display.bonusTotal)+'</p>'+
-    '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+
+    '<p class="scope-note">'+(useGrowth?esc(c.growth.caveat):esc(c.scope)+'입니다. 성장이 완료된 병사의 전역 최대치가 아닙니다.')+'</p>'+coverageNote+
     (sharedTerminal?'<p class="shared-terminal-origin-note"><strong>코르트 별도 병종 경로</strong> · 출생처 기본 비교에서 제외된 변신 증거입니다. <a href="#chortTarget">코르트 목록 보기</a></p>':sharedTerminalOriginNote(record,profile))+
     campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+statGrid(c,metric)+
+    (sharedTerminal?'':educationChoicesHtml(record,profile,c))+routeFutureOptionsHtml(c)+
     routeEfficiencyHtml(alternateSet,c,metric)+
     (metric==='growth'?routePruningEvidenceHtml(record,c,sharedTerminal):'')+
     '<h3>경로 요약</h3><p>'+esc(c.description)+'</p><p>사전 완료 연구 0개 → '+c.researchCount+'개 연구 처리 → 마지막 연구 '+(finalResearch?node(finalResearch.id||finalResearch.research):'출생 이벤트')+'. 전체 연구 순서는 화면을 채우지 않고 재생 증거에 보존합니다.</p>'+
@@ -683,19 +795,27 @@ async function init(){try{
   const separated=REPORT.records.reduce((n,r)=>n+chortCandidates(r).length,0);
   if(ranked+separated!==REPORT.summary.compatibleWitnesses)
     throw Error('분리한 코르트 후보와 원본 연구 경로 합계 불일치');
+  const rankedCount=$('#originRankedCount');
+  if(rankedCount)rankedCount.textContent=fmt(ranked);
   $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['출생처 비교 후보',ranked,'코르트 변신 '+separated+'건은 별도 병종'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
   $('#routePruningScope').textContent='훈련 1단계 생략 28건을 시간순 재생한 뒤, 동일한 12종 조건부 상한 아래 연구·지급 단계 추가 생략 '+
     DEPENDENCIES.stats.withResearchRemoved+'건, 외부 자원 가정 생략 '+
     DEPENDENCIES.stats.withInputAssumptionsRemoved+
     '건과 2개 훈련 동시 생략 '+ITERATIVE.stats.secondTransformValidated+'건을 확인했습니다. 비용·전역 최적성은 인증하지 않았습니다. 각 출생처 상세에서 경로별 근거를 확인하세요.';
   renderSharedTerminalCatalog();
-  $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('');
+  const assaultId='manufacture:STR_THEBAN_ASSAULT_CLONE';
+  if(!REPORT.records.some(r=>r.profileId===assaultId))throw Error('돌격 클론 독립 출생처 누락');
+  $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('')+
+    '<option value="origin:'+assaultId+'">돌격 클론 (농부 기반 · 별도 출생처)</option>';
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
   $('#search').addEventListener('input',render);$('#family').addEventListener('change',render);$('#catalogMetric').addEventListener('change',render);
   for(const [id,direction] of [['#scrollStatsLeft',-1],['#scrollStatsRight',1]])
     $(id).addEventListener('click',()=>$('#originTableScroll').scrollBy({left:direction*260,behavior:'smooth'}));
   document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
     const shared=e.target.closest('[data-open-shared-candidate]');
+    const longest=e.target.closest('[data-open-longest]');
+    if(longest)void openOrigin(longest.dataset.openLongest,longest.dataset.longestCandidate)
+      .then(()=>$('#originDetails').scrollIntoView({block:'start'}));
     if(origin)void openOrigin(origin.dataset.openOrigin).then(()=>{
       if(origin.closest('#chortTarget'))$('#originDetails').scrollIntoView({block:'start'});
     });

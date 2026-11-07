@@ -5,8 +5,9 @@
 <title>X-Piratez 2.1 · 병종 DB</title>
 <meta name="description" content="획득처별 실제 연구 경로와 분기·배제 증거를 누적하는 X-Piratez 2.1 병종 DB">
 <link rel="stylesheet" href="origin-catalog.css?v=20261106-chort-separated-1">
+<link rel="stylesheet" href="education-endgame.css?v=20261107-endgame-choice-1">
 <link rel="stylesheet" href="shared-terminal-catalog.css?v=20261106-chort-separated-1">
-<link rel="stylesheet" href="acquisition-tech-view.css?v=20261107-iterative-pruning-1">
+<link rel="stylesheet" href="acquisition-tech-view.css?v=20261108-deep-route-7-1">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 </head>
 <body>
@@ -21,7 +22,7 @@
 <section id="catalogSummary" class="metrics" aria-live="polite"><p>원본과 경로 증거를 확인하는 중…</p></section>
 <section id="chortTarget" class="card shared-terminal-catalog" aria-label="별도 공통 변신 병종 코르트" data-target-type="STR_SOLDIER_CHORT"></section>
 <p class="scope-note" id="routePruningScope">훈련·연구·자원 단축 검증을 확인하는 중…</p>
-<p class="scope-note"><a href="./chort-readiness.html" data-chort-readiness-link="true">코르트 출발 병종 42개 검증표 · 초기 Psi, 계급, 획득비 및 시간순 경로 근거 자세히 보기</a></p>
+<p class="scope-note"><a href="?q=manufacture%3ASTR_THEBAN_ASSAULT_CLONE#originMaxima" data-assault-clone-link="true">돌격 클론 · 농부와 다른 독립 출생처 상세 보기</a> · <a href="./chort-readiness.html" data-chort-readiness-link="true">코르트 출발 병종 42개 검증표 · 초기 Psi, 계급, 획득비 및 시간순 경로 근거 자세히 보기</a></p>
 <section class="toolbar card" aria-label="병종 DB 검색">
 <label class="wide">출생처·병종 검색<input id="search" type="search" placeholder="농부 · 돌격 클론 · 영애 · STR_…"></label>
 <label>병종<select id="family"><option value="">전체 병종</option></select></label>
@@ -44,6 +45,7 @@
 <details class="methodology card" id="originProofMeaning"><summary>잠정값의 계산 범위와 갱신 원칙</summary>
 <p>각 출생처는 독립된 병사입니다. 기본 비교는 <strong>출생 가능 최댓값에서 시작해 같은 병사의 병종 변경·훈련을 순서대로 반영</strong>하며, 각 시술 전후에 전투와 체력훈련을 충분히 반복했을 때의 조건부 상한을 계산합니다. 출생 RNG·전투 경험치 획득·시설·훈련 자격·동시 능력치 달성은 보장되지 않습니다. 이전 연구·시술 잠정값(출생 최솟값 출발, 전투 성장 제외)은 별도로 선택할 수 있습니다.</p>
 <p><strong>코르트 최종 변신 경로는 별도 코르트 병종에만 표시하고, 원래 출생처의 최고 후보·능력치 순위에는 사용하지 않습니다.</strong> 출생처 원본 재생 후보는 삭제하지 않습니다.</p>
+<p>세 교육(문화 교육·군사 훈련·얼간이 교육)은 출생 병종의 성장캡 도달 시점에 교육을 적용한 가상 효과와 실제 원본 재생 후보를 분리해 표시합니다. 문화 교육은 생성 최대치(maxStats)를, 군사 훈련과 얼간이 교육은 성장 상한(statCaps)을 직접 증가의 상한으로 적용합니다. <strong>이 가상 비교를 실제 연구·육성 경로로 검증했다고 주장하지 않습니다.</strong> 선택 후 이력으로 직접 막히는 후속 훈련 및 선행조건 연쇄 차단은 최종 병종에서 가능한 규칙만 계산합니다. 연구·시설·아이템·개체별 선행 능력치가 없으면 그 훈련을 자동으로 획득 가능하다고 보지 않습니다.</p>
 <p>등록한 연구·획득·훈련 경로 안에서 성장 상한이 큰 후보를 비교합니다. <strong>최종 병종과 12종 능력치별 상한까지 동일할 때만</strong> 기록된 훈련 선택지 배제와 시술 단계 수가 적은 경로를 우선합니다. 합계만 같고 능력치 배분이 다른 후보는 동등한 성능으로 취급하지 않습니다. 또한 동일 상한이라도 연구·시술 직후 능력치와 성장에 필요한 노력은 다를 수 있으므로, 두 수치를 상세에서 구분해 표시합니다. 연구·재료·시간의 비교 난이도는 원본에서 확정되지 않았으면 순위를 만들지 않습니다.</p>
 <p>재료·표본·시설·자금·이벤트, 전투/체력 성장 가능성과 난수 가정을 상세에 기록하며, 연구 공급 경로가 완결되지 않은 출생처에는 최종 수치를 임의로 넣지 않습니다. 각 능력치의 상한 합산이 한 병사에게 동시에 실현 가능하다는 증거는 아닙니다.</p>
 <p>더 높은 후보를 찾더라도 원본 버전·출생 이력·연구 순서·배제를 다시 검사한 뒤 갱신합니다. 기존 후보는 비교용으로 남깁니다. 목표 A인 영구 보너스 합계, 연구·시술 직후 합계, 성장 완료 가정의 조건부 상한 합계를 각각 구별합니다.</p>
@@ -53,7 +55,7 @@
 </details>
 <details class="methodology card" id="otherSharedTerminals" data-other-final-body-census="true">
 <summary>다른 공통 최종 변신 검토 · 추가 분리 검토 후보 0종 (등록 후보 기준)</summary>
-<p><strong>코르트 외 최종 병종 25종</strong>을 72개 출생처의 원본 시간순 경로로 조사했습니다. 코르트 61건을 별도로 보존한 뒤 일반 비교의 난이도 호환 후보 4,306건을 집계한 결과, <strong>서로 다른 출발 병종 유형 2종 이상에서 동일한 최종 병종으로 도달한 사례는 0종</strong>입니다.</p>
+<p><strong>코르트 외 최종 병종 25종</strong>을 72개 출생처의 원본 시간순 경로로 조사했습니다. 코르트 61건을 별도로 보존한 뒤 일반 비교의 난이도 호환 후보 <strong id="originRankedCount">집계 중</strong>건을 집계한 결과, <strong>서로 다른 출발 병종 유형 2종 이상에서 동일한 최종 병종으로 도달한 사례는 0종</strong>입니다.</p>
 <p>따라서 현재 등록된 증거만으로는 코르트 외 병종을 공통 최종 변신으로 추가 분리하지 않습니다. 이는 <strong>미발견 경로가 없다는 증명은 아닙니다.</strong> 새로운 원본 근거가 나오면 동일한 규칙으로 다시 검사합니다.</p>
 <details><summary>출발 병종·최종 병종별 수치와 원본 ID 보기</summary>
 <p>출생처별 최종 병종, 출발 병종 유형 수, 재생 후보 수, 대표 조건부 상한을 <a href="../../data/soldier-observed-final-body-census.json">원본 근거 집계 JSON</a>으로 확인할 수 있습니다. 실제 실행·전역 최적성 인증은 아닙니다.</p>
@@ -75,7 +77,7 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261107-iterative-pruning-1"></script>
+<script type="module" src="app.js?v=20261108-deep-route-7-1"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 </body>
 </html>
