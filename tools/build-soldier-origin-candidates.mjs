@@ -45,6 +45,26 @@ const unresolvedOnly=process.argv.includes('--unresolved-only');
 const birthOnly=process.argv.includes('--birth-only');
 const deepSearch=process.argv.includes('--deep-search');
 const focusProfile=process.argv.find(x=>x.startsWith('--profile='))?.slice('--profile='.length)||null;
+const transformDepthText=process.argv.find(x=>x.startsWith('--max-transforms='))?.slice('--max-transforms='.length);
+const maxTransforms=transformDepthText==null?4:Number(transformDepthText);
+const resumeFrontier=process.argv.includes('--resume-frontier');
+const seedDepthText=process.argv.find(x=>x.startsWith('--seed-depth='))?.slice('--seed-depth='.length);
+const seedDepth=seedDepthText==null?Math.max(0,maxTransforms-2):Number(seedDepthText);
+const seedLimitText=process.argv.find(x=>x.startsWith('--seed-limit='))?.slice('--seed-limit='.length);
+const seedLimit=seedLimitText==null?8:Number(seedLimitText);
+const seedId=process.argv.find(x=>x.startsWith('--seed-id='))?.slice('--seed-id='.length)||null;
+const searchOriginalBody=process.argv.includes('--origin-frontier-only');
+const researchReadyOnly=process.argv.includes('--existing-research-only');
+const branchLimitText=process.argv.find(x=>x.startsWith('--branch-limit='))?.slice('--branch-limit='.length);
+const branchLimit=branchLimitText==null?12:Number(branchLimitText);
+if(!Number.isSafeInteger(maxTransforms)||maxTransforms<4||maxTransforms>24||
+  (transformDepthText!=null&&(!focusProfile||!deepSearch)))
+  throw Error('--max-transforms=4..24 requires --deep-search and --profile; it never certifies full coverage');
+if((resumeFrontier||searchOriginalBody||researchReadyOnly||seedDepthText!=null||seedLimitText!=null||branchLimitText!=null||seedId)&&
+  (!focusProfile||!deepSearch)||!Number.isSafeInteger(seedDepth)||seedDepth<0||seedDepth>=maxTransforms||
+  !Number.isSafeInteger(seedLimit)||seedLimit<1||seedLimit>64||
+  !Number.isSafeInteger(branchLimit)||branchLimit<1||branchLimit>83)
+  throw Error('Scoped frontier options require --deep-search --profile and safe integer limits');
 const difficultyArg=process.argv.find(x=>x.startsWith('--difficulty='))?.slice('--difficulty='.length);
 const difficulty=difficultyArg==null?null:Number(difficultyArg);
 if(difficultyArg!=null&&(!focusProfile||!Number.isInteger(difficulty)||difficulty<0||difficulty>4))
@@ -377,17 +397,32 @@ if(process.argv.includes('--audit-campaign-context')){
     }
     if(unresolvedOnly&&previous?.candidates?.length){records.push(previous);continue;}
     const candidates=(previous?.candidates||[]).filter(c=>{const r=witnessFor(c);return r.ok&&r.exact&&JSON.stringify(r.stats)===JSON.stringify(c.stats)});
-    const acquisition=recoverAcquisition(p,previous)||obtain(p);const attempts=[];
-    if(acquisition.result){
-      if(!candidates.some(c=>c.id===acquisition.result.id))candidates.push(acquisition.result);
+    const acquisition=resumeFrontier?{result:null,node:null}:
+      recoverAcquisition(p,previous)||obtain(p);const attempts=[];
+    if(acquisition.result||resumeFrontier){
+      if(acquisition.result&&!candidates.some(c=>c.id===acquisition.result.id))
+        candidates.push(acquisition.result);
       // Deep search is opt-in and profile-scoped: never rewrite the other 71
       // origins or claim global optimality from a bounded search.
       const deep=deepSearch;
-      const maxLayers=birthOnly?0:unresolvedOnly?1:deep?4:2;
-      const width=deep?12:4,beamWidth=deep?8:1;
-      let frontier=[{node:acquisition.node,result:acquisition.result}];
+      const maxLayers=birthOnly?0:unresolvedOnly?1:deep?maxTransforms:2;
+      const width=deep?branchLimit:4,beamWidth=deep?8:1;
+      const fromWitness=c=>{
+        const replay=witnessFor(c);
+        if(!replay.ok||!replay.exact)throw Error('Cannot resume invalid source witness: '+c.id);
+        return {node:{world:replay.world,trace:replay.trace,steps:c.steps,diagnostics:[]},result:c};
+      };
+      const startDepth=resumeFrontier?seedDepth:0;
+      let frontier=resumeFrontier?
+        candidates.filter(c=>c.transforms.length===startDepth&&
+          (!seedId||c.id===seedId)&&
+          (!searchOriginalBody||c.finalSoldierType!=='STR_SOLDIER_CHORT'))
+          .sort((a,b)=>score12(p,b)-score12(p,a)||a.id.localeCompare(b.id))
+          .slice(0,seedLimit).map(fromWitness):
+        [{node:acquisition.node,result:acquisition.result}];
+      if(resumeFrontier&&!frontier.length)throw Error('No matching seed candidates at transform depth '+startDepth);
       const seenHistory=new Set();
-      for(let depth=0;depth<maxLayers&&frontier.length;depth++){
+      for(let depth=startDepth;depth<maxLayers&&frontier.length;depth++){
         const next=[];
         for(const entry of frontier){
           const state=entry.node.world.soldiers[0].state;
@@ -397,6 +432,8 @@ if(process.argv.includes('--audit-campaign-context')){
             !t.requires.includes('STR_UNAVAILABLE')&&!t.createsClone&&!t.producedItem&&!state.history.has(t.id)&&
             t.minRank<=state.rank&&!Object.keys(t.requiredCommendations||{}).length&&
             !t.forbiddenPreviousTransformations.some(id=>state.history.has(id))&&
+            (!researchReadyOnly||t.requires.every(id=>entry.node.world.researched.has(id)&&
+              !entry.node.world.disabled.has(id)))&&
             (deep||amount(t.fixedEffectiveDelta)>0))
             .sort((a,b)=>{
               const rank=t=>amount(t.fixedEffectiveDelta)/(1+Math.log2(1+t.requires.reduce((s,id)=>s+(planner.distance.get(id)||10000),0)));
@@ -418,7 +455,13 @@ if(process.argv.includes('--audit-campaign-context')){
           b.result.bonusTotal-a.result.bonusTotal||
           a.result.steps.length-b.result.steps.length||
           a.result.id.localeCompare(b.result.id,'en'));
-        frontier=next.slice(0,beamWidth);
+        // Shared terminal Chort must not eliminate all ordinary origin paths.
+        // Separating search lanes does not prove either lane is exhaustive.
+        const normal=next.filter(x=>x.result.finalSoldierType!=='STR_SOLDIER_CHORT');
+        const chort=next.filter(x=>x.result.finalSoldierType==='STR_SOLDIER_CHORT');
+        frontier=(resumeFrontier||transformDepthText!=null)?
+          [...normal.slice(0,beamWidth),...(searchOriginalBody?[]:chort.slice(0,beamWidth))]:
+          next.slice(0,beamWidth);
       }
     }
     candidates.sort((a,b)=>b.total-a.total||a.steps.length-b.steps.length||a.id.localeCompare(b.id));
@@ -432,8 +475,12 @@ if(process.argv.includes('--audit-campaign-context')){
       bestCandidateId:best?.id||null,bestBonusCandidateId:bestBonus?.id||null,
       candidates:keep,rejectedCandidates:previous?.rejectedCandidates||[],unresolved:acquisition.unresolved||null,attempts,
       searchScope:!keep.length?unresolvedScope():
-        deepSearch?{mode:'bounded-beam',maxLayers:birthOnly?0:unresolvedOnly?1:4,
-          candidatesPerLayer:12,beamWidth:8,globalOptimumProven:false}:
+        deepSearch?{mode:'bounded-beam',maxLayers:birthOnly?0:unresolvedOnly?1:maxTransforms,
+          candidatesPerLayer:branchLimit,beamWidth:8,
+          ...(resumeFrontier?{continuation:{seedDepth,seedLimit,seedId,
+            originOnly:searchOriginalBody,researchReadyOnly,
+            notAllBranchesExplored:true}}:{}),
+          globalOptimumProven:false}:
           previous?.searchScope||{mode:'limited-greedy',maxLayers:2,candidatesPerLayer:4,
             beamWidth:1,globalOptimumProven:false},
       birthReference:Object.fromEntries(WITNESS_STATS.map(k=>[k,p.effectiveStats.min[k]])),

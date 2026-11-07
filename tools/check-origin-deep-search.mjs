@@ -31,7 +31,7 @@ const deep=resolved.filter(row=>row.searchScope?.mode==='bounded-beam'&&
   row.searchScope.maxLayers>=4&&row.searchScope.globalOptimumProven===false);
 assert(resolved.length>=66,'Lost a previously resolved origin');
 assert.equal(deep.length,resolved.length,
-  'A resolved origin was published without a bounded four-stage deep search');
+  'A resolved origin was published without a recorded bounded search of at least four transformations');
 assert.equal(report.summary.withCompleteResearch,resolved.length);
 assert.equal(report.summary.unresolved,72-resolved.length);
 for(const row of report.records.filter(r=>!r.candidates.length)){
@@ -60,6 +60,6 @@ const invalid=spawnSync(process.execPath,
   {encoding:'utf8',timeout:30000,maxBuffer:1000000});
 assert.equal(invalid.status,1,invalid.error?.message||'An unscoped deep scan must be rejected');
 assert.match(invalid.stderr,/--deep-search requires --profile/);
-console.log('PASS all '+deep.length+' resolved origins have independent four-stage deep-search records; '+checked+' initial 12-stat score regression floors preserved');
+console.log('PASS all '+deep.length+' resolved origins retain at least four-stage bounded-search metadata (not exhaustive); '+checked+' initial 12-stat score regression floors preserved');
 console.log('PASS 72 profiles / '+report.summary.witnesses+' conditional witnesses / 0 global maximum certificates');
 console.log('PASS deep search requires an explicit origin and cannot silently overwrite all other records');

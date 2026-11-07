@@ -60,7 +60,7 @@ try{
    assert(stats.every(Number.isInteger));assert.equal(total,stats.reduce((sum,n)=>sum+n,0));
    return {total,mana:stats[11]};
  };
- console.log('PASS 72 independent origins: 4306 ranked candidates, 61 Chort terminal paths separately retained, 16 permitted bodies, 42 source origins and 12 stats; no save/custom trainer');
+ console.log('PASS 72 independent origins: '+(expectedSummary.witnesses-61)+' ranked candidates, 61 Chort terminal paths separately retained, 16 permitted bodies, 42 source origins and 12 stats; no save/custom trainer');
  await page.locator('#search').fill('direct:STR_SOLDIER_PEASANT');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  const grown=(await score12()).total;
@@ -145,6 +145,10 @@ try{
    'Shared Chort cap must not overwrite assault clone own final-type ranking');
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ const coverage=await page.locator('#originDetails [data-origin-search-coverage]').innerText();
+ const cloneRecord=expectedReport.records.find(x=>x.profileId==='manufacture:STR_THEBAN_ASSAULT_CLONE');
+ assert(coverage.includes('경로 '+cloneRecord.candidates.length+'개'));
+ assert(coverage.includes('전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다'));
  assert.equal(await page.locator('#originDetails [data-excluded-terminal="STR_SOLDIER_CHORT"]').count(),1);
  assert((await page.locator('#originDetails [data-excluded-terminal="STR_SOLDIER_CHORT"]').innerText()).includes('2,131'));
  const cloneEfficiency=page.locator('#originDetails .origin-route-efficiency');
@@ -441,4 +445,7 @@ try{
  }
  assert.deepEqual(errors,[],errors.join('\n'));
  console.log('PASS source-first read-only Soldier DB browser gate | '+base);
-}finally{await browser?.close();if(server)await new Promise(ok=>server.close(ok));}
+}finally{
+ await browser?.close();
+ if(server){server.closeAllConnections?.();await new Promise(ok=>server.close(ok));}
+}

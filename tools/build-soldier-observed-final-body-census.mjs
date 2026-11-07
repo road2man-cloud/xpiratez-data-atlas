@@ -40,7 +40,7 @@ for(const record of report.records){
   }
 }
 assert.equal(report.records.length,72);
-assert.equal(ordinaryCount,4306);
+assert(ordinaryCount>=4306,'Previously replayed ordinary paths disappeared');
 assert.equal(specialCount,61);
 const bodies=[...observed.values()].map(row=>({
   id:row.id,name:bodyById.get(row.id).koName||row.id,

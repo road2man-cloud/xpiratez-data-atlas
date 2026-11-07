@@ -83,8 +83,8 @@ for(const record of report.records){
   assert.equal(candidates.length,record.candidates.filter(compatible)
     .filter(c=>c.finalSoldierType!=='STR_SOLDIER_CHORT').length);
 }
-assert.equal(ordinaryCount,4306);
+assert(ordinaryCount>=4306,'Previously verified ordinary origin paths disappeared');
 assert.equal(topTieOrigins,52);
 assert.equal(changedVectorOrigins,9);
 assert.equal(exactPeerOrigins,50);
-console.log('PASS 72 origins / 4306 candidates: 52 tied-score origins, 50 exact-body-vector peers, 9 stat-allocation tradeoffs; unverified time/cost left unordered');
+console.log('PASS 72 origins / '+ordinaryCount+' candidates: '+topTieOrigins+' tied-score origins, '+exactPeerOrigins+' exact-body-vector peers, '+changedVectorOrigins+' stat-allocation tradeoffs; unverified time/cost left unordered');

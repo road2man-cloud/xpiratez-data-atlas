@@ -40,8 +40,8 @@ for(const record of report.records){
   ranked+=ordinary.length;terminal+=specials.length;
 }
 assert.equal(ranked+terminal,report.summary.compatibleWitnesses);
-assert.equal(report.summary.compatibleWitnesses,4367);
-assert.equal(ranked,4306);
+assert(report.summary.compatibleWitnesses>=4367,'Previously verified paths disappeared');
+assert(ranked>=4306,'Previously verified ordinary origin paths disappeared');
 assert.equal(terminal,61);
 assert.equal(withTerminal,3);
 
@@ -63,4 +63,4 @@ assert(specials.some(c=>c.id==='b6f71815d00481953550'),
 // earlier training history. A later body-changing route is not a Chort result.
 assert.equal(isSharedTerminalCandidate({
   finalSoldierType:'STR_SOLDIER_NEKOMIMI',transforms:['STR_CHORT_SUMMONING']}),false);
-console.log('PASS shared terminal separation: 16 permitted source bodies, 42 origins (17 fixed / 25 variable Psi), 61 Chort paths retained separately, 4306 independent paths across all 72 births');
+console.log('PASS shared terminal separation: 16 permitted source bodies, 42 origins (17 fixed / 25 variable Psi), 61 Chort paths retained separately, '+ranked+' independent paths across all 72 births');
