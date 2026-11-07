@@ -699,7 +699,8 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   const coverageNote='<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
-    '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.</p>';
+    '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
+    (id==='manufacture:STR_THEBAN_ASSAULT_CLONE'?' <a href="../../data/soldier-assault-clone-coverage.json">돌격클론 검증 범위 원본 JSON</a>':'')+'</p>';
   const host=$('#originDetails');host.hidden=false;
   host.innerHTML='<div class="detail-head"><h2>'+esc(record.name)+'</h2><button id="originDetailClose">닫기</button></div><p class="muted">등록 경로의 원본·현재 수치를 재대조하는 중…</p>';
   await new Promise(ok=>setTimeout(ok,0));

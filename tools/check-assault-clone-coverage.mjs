@@ -88,7 +88,7 @@ const summary={
   missingExamples:twoStageGaps.slice(0,12),
   assumptionTypes:assumptions,
   searchScope:record.searchScope,
-  warning:'Structural possibilities omit future research, resources and RNG. Valid replayed paths are still conditional; not an exhaustive path count or an OXCE save-game completion certificate.'
+  warning:'Structural possibilities omit future research, resources, rank, health, medals and RNG. Valid replayed paths are still conditional; not an exhaustive path count or an OXCE save-game completion certificate.'
 };
 if(process.argv.includes('--check-published')){
   assert.deepEqual(read('public/data/soldier-assault-clone-coverage.json'),summary,

@@ -60,8 +60,8 @@ const branchLimit=branchLimitText==null?12:Number(branchLimitText);
 if(!Number.isSafeInteger(maxTransforms)||maxTransforms<4||maxTransforms>24||
   (transformDepthText!=null&&(!focusProfile||!deepSearch)))
   throw Error('--max-transforms=4..24 requires --deep-search and --profile; it never certifies full coverage');
-if((resumeFrontier||searchOriginalBody||researchReadyOnly||seedDepthText!=null||seedLimitText!=null||branchLimitText!=null||seedId)&&
-  (!focusProfile||!deepSearch)||!Number.isSafeInteger(seedDepth)||seedDepth<0||seedDepth>=maxTransforms||
+if(((resumeFrontier||searchOriginalBody||researchReadyOnly||seedDepthText!=null||seedLimitText!=null||branchLimitText!=null||seedId)&&
+  (!focusProfile||!deepSearch))||!Number.isSafeInteger(seedDepth)||seedDepth<0||seedDepth>=maxTransforms||
   !Number.isSafeInteger(seedLimit)||seedLimit<1||seedLimit>64||
   !Number.isSafeInteger(branchLimit)||branchLimit<1||branchLimit>83)
   throw Error('Scoped frontier options require --deep-search --profile and safe integer limits');
@@ -445,7 +445,18 @@ if(process.argv.includes('--audit-campaign-context')){
             const c=candidate(trial,p,'출생 → '+trial.steps.filter(x=>x.type==='transform').map(x=>labels[x.transform]||x.transform).join(' → '));
             if(!c)continue;
             if(!candidates.some(x=>x.id===c.id))candidates.push(c);
-            const key=c.finalSoldierType+'|'+c.transforms.join('>');
+            // Two routes with the same transformation history may have
+            // different research, disabled topics or month windows. Preserve
+            // that future-relevant distinction during extended search.
+            const key=c.finalSoldierType+'|'+c.transforms.join('>')+
+              (resumeFrontier||transformDepthText!=null?'|'+digest({
+                researched:[...trial.world.researched].sort(),
+                disabled:[...trial.world.disabled].sort(),
+                rank:trial.world.soldiers[0].state.rank,
+                month:trial.world.month,
+                functions:[...trial.world.baseFunctions].sort(),
+                inventory:trial.world.items
+              }).slice(0,16):'');
             if(!seenHistory.has(key)){seenHistory.add(key);next.push({node:trial,result:c});}
           }
         }

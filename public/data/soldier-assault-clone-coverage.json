@@ -56,5 +56,5 @@
     },
     "globalOptimumProven": false
   },
-  "warning": "Structural possibilities omit future research, resources and RNG. Valid replayed paths are still conditional; not an exhaustive path count or an OXCE save-game completion certificate."
+  "warning": "Structural possibilities omit future research, resources, rank, health, medals and RNG. Valid replayed paths are still conditional; not an exhaustive path count or an OXCE save-game completion certificate."
 }
