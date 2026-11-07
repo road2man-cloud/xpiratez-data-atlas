@@ -57,16 +57,28 @@ const searchOriginalBody=process.argv.includes('--origin-frontier-only');
 const researchReadyOnly=process.argv.includes('--existing-research-only');
 const branchLimitText=process.argv.find(x=>x.startsWith('--branch-limit='))?.slice('--branch-limit='.length);
 const branchLimit=branchLimitText==null?12:Number(branchLimitText);
+const targetTransforms=process.argv.filter(x=>x.startsWith('--target-transform='))
+  .map(x=>x.slice('--target-transform='.length));
+const seedDifficultyText=process.argv.find(x=>x.startsWith('--seed-difficulty='))?.slice('--seed-difficulty='.length);
+const seedDifficulty=seedDifficultyText==null?null:Number(seedDifficultyText);
 if(!Number.isSafeInteger(maxTransforms)||maxTransforms<4||maxTransforms>24||
   (transformDepthText!=null&&(!focusProfile||!deepSearch)))
   throw Error('--max-transforms=4..24 requires --deep-search and --profile; it never certifies full coverage');
-if(((resumeFrontier||searchOriginalBody||researchReadyOnly||seedDepthText!=null||seedLimitText!=null||branchLimitText!=null||seedId)&&
+if(((resumeFrontier||searchOriginalBody||researchReadyOnly||seedDepthText!=null||seedLimitText!=null||branchLimitText!=null||seedId||targetTransforms.length||seedDifficultyText!=null)&&
   (!focusProfile||!deepSearch))||!Number.isSafeInteger(seedDepth)||seedDepth<0||seedDepth>=maxTransforms||
   !Number.isSafeInteger(seedLimit)||seedLimit<1||seedLimit>64||
   !Number.isSafeInteger(branchLimit)||branchLimit<1||branchLimit>83)
   throw Error('Scoped frontier options require --deep-search --profile and safe integer limits');
+if(seedDifficultyText!=null&&(!resumeFrontier||!Number.isInteger(seedDifficulty)||
+  seedDifficulty<0||seedDifficulty>4))
+  throw Error('--seed-difficulty requires --resume-frontier and integer difficulty 0..4');
+if(targetTransforms.length&&(!resumeFrontier||targetTransforms.length>maxTransforms-seedDepth||
+  targetTransforms.some(id=>!data.transformations.some(t=>t.id===id))))
+  throw Error('Ordered --target-transform goals require a resumable valid sequence within remaining layers');
 const difficultyArg=process.argv.find(x=>x.startsWith('--difficulty='))?.slice('--difficulty='.length);
-const difficulty=difficultyArg==null?null:Number(difficultyArg);
+const difficulty=difficultyArg==null?seedDifficulty:Number(difficultyArg);
+if(difficultyArg!=null&&seedDifficulty!=null&&difficulty!==seedDifficulty)
+  throw Error('--difficulty and --seed-difficulty must agree');
 if(difficultyArg!=null&&(!focusProfile||!Number.isInteger(difficulty)||difficulty<0||difficulty>4))
   throw Error('--difficulty requires --profile and an integer 0..4');
 if(focusProfile&&!data.profiles.some(p=>p.id===focusProfile))
@@ -408,9 +420,18 @@ if(process.argv.includes('--audit-campaign-context')){
       const maxLayers=birthOnly?0:unresolvedOnly?1:deep?maxTransforms:2;
       const width=deep?branchLimit:4,beamWidth=deep?8:1;
       const fromWitness=c=>{
-        const replay=witnessFor(c);
-        if(!replay.ok||!replay.exact)throw Error('Cannot resume invalid source witness: '+c.id);
-        return {node:{world:replay.world,trace:replay.trace,steps:c.steps,diagnostics:[]},result:c};
+        const oldContext=c.steps[0]?.type==='campaignContext'?c.steps[0]:null;
+        if(oldContext&&seedDifficulty!=null&&oldContext.difficulty!==seedDifficulty)
+          throw Error('Cannot change an already chosen campaign difficulty');
+        const steps=seedDifficulty!=null&&!oldContext?
+          [{type:'campaignContext',difficulty:seedDifficulty,assumption:true},...c.steps]:c.steps;
+        // An assumed difficulty is chosen BEFORE the first research action.
+        // The full source witness must replay under that same fixed context.
+        const replay=steps===c.steps?witnessFor(c):
+          replayOriginWitness(steps,data,{birthCache,requireCompatibleContext:true});
+        if(!replay.ok||!replay.exact||replay.campaignContext?.kind!=='compatible')
+          throw Error('Cannot resume source witness with this difficulty: '+c.id+' '+replay.reason);
+        return {node:{world:replay.world,trace:replay.trace,steps,diagnostics:[]},result:c};
       };
       const startDepth=resumeFrontier?seedDepth:0;
       let frontier=resumeFrontier?
@@ -428,7 +449,9 @@ if(process.argv.includes('--audit-campaign-context')){
           const state=entry.node.world.soldiers[0].state;
           // Do not require positive immediate gain in deep search: a neutral
           // transformation may unlock a strictly better later branch.
-          const shortlist=data.transformations.filter(t=>t.allowedSoldierTypes.includes(state.soldierType)&&
+          const requestedTarget=targetTransforms[depth-startDepth];
+          const shortlist=data.transformations.filter(t=>(!requestedTarget||t.id===requestedTarget)&&
+            t.allowedSoldierTypes.includes(state.soldierType)&&
             !t.requires.includes('STR_UNAVAILABLE')&&!t.createsClone&&!t.producedItem&&!state.history.has(t.id)&&
             t.minRank<=state.rank&&!Object.keys(t.requiredCommendations||{}).length&&
             !t.forbiddenPreviousTransformations.some(id=>state.history.has(id))&&
@@ -490,7 +513,7 @@ if(process.argv.includes('--audit-campaign-context')){
           candidatesPerLayer:branchLimit,beamWidth:8,
           ...(resumeFrontier?{continuation:{seedDepth,seedLimit,seedId,
             originOnly:searchOriginalBody,researchReadyOnly,
-            notAllBranchesExplored:true}}:{}),
+            targetTransforms,seedDifficulty,notAllBranchesExplored:true}}:{}),
           globalOptimumProven:false}:
           previous?.searchScope||{mode:'limited-greedy',maxLayers:2,candidatesPerLayer:4,
             beamWidth:1,globalOptimumProven:false},

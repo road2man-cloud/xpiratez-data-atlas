@@ -338,6 +338,16 @@ function render(){
   $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>12종 합계</th>'+DISPLAY_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const c=best(r,metric==='growth'?'growth':'provisional');
+    const longest=comparable(r).reduce((winner,x)=>
+      !winner||x.transforms.length>winner.transforms.length?x:winner,null);
+    // The highest scoring path is not necessarily the longest witnessed route.
+    // Show both without claiming the longer path is optimal or campaign-certified.
+    const depth=longest?.transforms.length||0;
+    const depthNote=depth>4?
+      '<small data-replayed-max-depth="'+depth+'">조건부 경로 최장 '+depth+
+      '개 시술 · 완주 미인증</small><button type="button" data-open-longest="'+
+      esc(r.profileId)+'" data-longest-candidate="'+esc(longest.id)+'">최장 '+
+      depth+'단계 경로 확인</button>':'';
     const terminal=chortCandidates(r).reduce((winner,x)=>preferredOriginCandidate(winner,x,score),null);
     const ties=(metric==='growth'||metric==='provisional')&&c?
       routeTieEvidence(comparable(r),c,x=>score(x,metric),metric):null;
@@ -359,7 +369,7 @@ function render(){
       (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
       tieNote+educationCoverage+'<small class="id">'+esc(r.profileId)+'</small><small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':'미인증')+(c?' · 조건부':' · 미해결')+'</small></td><td>'+
       (metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'연구 경로 보완 중')+
-      '<small>'+(c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small></td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
+      '<small>'+(c?c.researchCount+'개 연구 재생 · 선정 '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+fmt(total)+'</td>'+DISPLAY_STATS.map(k=>'<td>'+fmt(values?.[k])+'</td>').join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
   $('#catalogStatus').textContent=metric==='growth'?'기본 비교: 등록된 연구 재생 후보의 조건부 성장 상한 · 코르트는 별도 병종입니다. 군사·문화·얼간이 교육 등 미등록 육성 경로가 있으므로 후보 최고값을 전역 최적으로 해석할 수 없습니다. 출생처 상세에서 상한 시점 교육 효과와 누락 경로를 확인하세요.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
 }
@@ -785,6 +795,8 @@ async function init(){try{
   const separated=REPORT.records.reduce((n,r)=>n+chortCandidates(r).length,0);
   if(ranked+separated!==REPORT.summary.compatibleWitnesses)
     throw Error('분리한 코르트 후보와 원본 연구 경로 합계 불일치');
+  const rankedCount=$('#originRankedCount');
+  if(rankedCount)rankedCount.textContent=fmt(ranked);
   $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['출생처 비교 후보',ranked,'코르트 변신 '+separated+'건은 별도 병종'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
   $('#routePruningScope').textContent='훈련 1단계 생략 28건을 시간순 재생한 뒤, 동일한 12종 조건부 상한 아래 연구·지급 단계 추가 생략 '+
     DEPENDENCIES.stats.withResearchRemoved+'건, 외부 자원 가정 생략 '+
@@ -801,6 +813,9 @@ async function init(){try{
     $(id).addEventListener('click',()=>$('#originTableScroll').scrollBy({left:direction*260,behavior:'smooth'}));
   document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
     const shared=e.target.closest('[data-open-shared-candidate]');
+    const longest=e.target.closest('[data-open-longest]');
+    if(longest)void openOrigin(longest.dataset.openLongest,longest.dataset.longestCandidate)
+      .then(()=>$('#originDetails').scrollIntoView({block:'start'}));
     if(origin)void openOrigin(origin.dataset.openOrigin).then(()=>{
       if(origin.closest('#chortTarget'))$('#originDetails').scrollIntoView({block:'start'});
     });

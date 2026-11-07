@@ -41,6 +41,13 @@ for(const row of report.records.filter(r=>!r.candidates.length)){
 }
 assert(report.summary.witnesses>=4123,
   'Previously replayed valid growth options disappeared (one Brazil/Italy start-conflict was rejected)');
+const longerOrdinary=resolved.filter(row=>row.candidates.some(c=>
+  c.finalSoldierType!=='STR_SOLDIER_CHORT'&&c.transforms.length>=5));
+assert(longerOrdinary.length>=7,
+  'Five-or-more-step chronological origin paths disappeared from source registry');
+assert(longerOrdinary.some(row=>row.profileId==='manufacture:STR_THEBAN_ASSAULT_CLONE'&&
+  row.candidates.some(c=>c.transforms.length>=7&&c.finalSoldierType!=='STR_SOLDIER_CHORT')),
+  'Assault-clone seven-stage route was lost or replaced with Chort');
 let checked=0;
 for(const [id,{paths,total12}] of floors){
   const row=report.records.find(row=>row.profileId===id);
@@ -61,5 +68,5 @@ const invalid=spawnSync(process.execPath,
 assert.equal(invalid.status,1,invalid.error?.message||'An unscoped deep scan must be rejected');
 assert.match(invalid.stderr,/--deep-search requires --profile/);
 console.log('PASS all '+deep.length+' resolved origins retain at least four-stage bounded-search metadata (not exhaustive); '+checked+' initial 12-stat score regression floors preserved');
-console.log('PASS 72 profiles / '+report.summary.witnesses+' conditional witnesses / 0 global maximum certificates');
+console.log('PASS 72 profiles / '+report.summary.witnesses+' conditional witnesses / '+longerOrdinary.length+' origins with 5+ ordinary transformations / 0 global maximum certificates');
 console.log('PASS deep search requires an explicit origin and cannot silently overwrite all other records');

@@ -143,6 +143,16 @@ try{
  assert((await page.locator('#originTable tbody tr[data-origin-id="manufacture:STR_THEBAN_ASSAULT_CLONE"]').innerText()).includes('코르트 변환 상한 2,131 · 기본 비교 제외'));
  assert.notEqual((await page.locator('#originTable tbody tr[data-origin-id="manufacture:STR_THEBAN_ASSAULT_CLONE"] .score').innerText()).trim(),'2,131',
    'Shared Chort cap must not overwrite assault clone own final-type ranking');
+ const longestPath=expectedReport.records.find(r=>r.profileId==='manufacture:STR_THEBAN_ASSAULT_CLONE')
+   .candidates.filter(c=>c.finalSoldierType!=='STR_SOLDIER_CHORT')
+   .sort((a,b)=>b.transforms.length-a.transforms.length)[0];
+ assert(longestPath.transforms.length>=7,'Assault Clone must expose a replayed path beyond four transformations');
+ assert.equal(await page.locator('#originTable [data-replayed-max-depth]').getAttribute('data-replayed-max-depth'),
+   String(longestPath.transforms.length));
+ await page.locator('#originTable [data-open-longest]').click();
+ await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
+ assert((await page.locator('#originDetails').innerText()).includes('꿈연결 훈련'));
+ assert((await page.locator('#originDetails [data-origin-search-coverage]').innerText()).includes('최장 '+longestPath.transforms.length+'단계'));
  await page.locator('#originTable .origin-open').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const coverage=await page.locator('#originDetails [data-origin-search-coverage]').innerText();

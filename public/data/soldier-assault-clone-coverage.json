@@ -4,8 +4,8 @@
   "origin": "manufacture:STR_THEBAN_ASSAULT_CLONE",
   "indexedResearchRules": 4654,
   "indexedBonusRules": 999,
-  "registeredOriginCandidates": 113,
-  "exactConditionalChronologyReplays": 113,
+  "registeredOriginCandidates": 116,
+  "exactConditionalChronologyReplays": 116,
   "verifiedRealCampaignCompletions": 0,
   "certifiedGlobalMaximumRoutes": 0,
   "candidateTransformDepths": {
@@ -13,9 +13,12 @@
     "1": 9,
     "2": 41,
     "3": 44,
-    "4": 18
+    "4": 18,
+    "5": 1,
+    "6": 1,
+    "7": 1
   },
-  "ordinaryPathsAtDepthFourOrMore": 4,
+  "ordinaryPathsAtDepthFourOrMore": 7,
   "firstStepStructurallyConditional": 15,
   "twoStepStructurallyConditional": 187,
   "twoStepStandaloneCandidatesWitnessed": 40,
@@ -35,23 +38,30 @@
     "STR_GLADIATOR_TRAINING>STR_SIVALINGA_RESURRECTION"
   ],
   "assumptionTypes": {
-    "externalInputs": 3499,
-    "recruit": 113,
-    "freeResearch": 914,
-    "eventResearch": 394,
-    "advanceMonth": 188
+    "externalInputs": 3876,
+    "recruit": 116,
+    "freeResearch": 1148,
+    "eventResearch": 426,
+    "advanceMonth": 195,
+    "campaignContext": 1,
+    "repeatResearch": 174,
+    "missionResearch": 1
   },
   "searchScope": {
     "mode": "bounded-beam",
-    "maxLayers": 6,
-    "candidatesPerLayer": 83,
+    "maxLayers": 7,
+    "candidatesPerLayer": 1,
     "beamWidth": 8,
     "continuation": {
-      "seedDepth": 4,
-      "seedLimit": 64,
-      "seedId": null,
+      "seedDepth": 6,
+      "seedLimit": 1,
+      "seedId": "5d07d0ed61e41c7d9d4f",
       "originOnly": true,
-      "researchReadyOnly": true,
+      "researchReadyOnly": false,
+      "targetTransforms": [
+        "STR_DREAMLINK_TRAINING"
+      ],
+      "seedDifficulty": 1,
       "notAllBranchesExplored": true
     },
     "globalOptimumProven": false

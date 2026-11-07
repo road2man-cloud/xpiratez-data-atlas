@@ -65,7 +65,9 @@ const witnessedPairs=new Set(record.candidates.filter(c=>c.transforms.length===2
 const twoStageGaps=[...pairs].filter(x=>!witnessedPairs.has(x));
 assert.equal(initial.length,15);
 assert.equal(pairs.size,187);
-assert(record.candidates.length>=113,'Regression: previously replayed clone paths disappeared');
+assert(record.candidates.length>=116,'Regression: verified five-to-seven-step clone paths disappeared');
+assert(record.candidates.some(c=>c.transforms.length>=7&&c.finalSoldierType!=='STR_SOLDIER_CHORT'),
+  'At least one independent, campaign-consistent seven-step non-Chort clone witness must replay');
 assert(deepOrdinary>=4,'Regression: newly recovered ordinary four-stage paths disappeared');
 assert(twoStageGaps.length>0&&record.searchScope.globalOptimumProven===false,
   'Never silently mark incomplete structural or research search globally complete');

@@ -3,7 +3,7 @@
   "sourceVersion": "v.o2",
   "sourceHash": "79093a2dc9711c262afdd31ba78eb9797ff2be07e87d7a7f66223d8de2a07168",
   "registeredBirthOrigins": 72,
-  "compatibleCandidates": 4318,
+  "compatibleCandidates": 4325,
   "chortCandidatesExcluded": 61,
   "observedIndependentFinalBodies": 25,
   "observedBodiesWithMultipleBirthTypes": 0,
@@ -16,7 +16,7 @@
       "sourceOriginCount": 9,
       "distinctBirthBodyTypes": 1,
       "chosenAsBestOriginCount": 9,
-      "witnessCount": 590,
+      "witnessCount": 593,
       "highestConditionalGrowthSum": 1438,
       "sourceSoldierTypes": [
         "STR_SOLDIER_PEASANT"
@@ -39,7 +39,7 @@
       "sourceOriginCount": 8,
       "distinctBirthBodyTypes": 1,
       "chosenAsBestOriginCount": 8,
-      "witnessCount": 650,
+      "witnessCount": 652,
       "highestConditionalGrowthSum": 1293,
       "sourceSoldierTypes": [
         "STR_SOLDIER_SLAVE"
@@ -286,7 +286,7 @@
       "sourceOriginCount": 2,
       "distinctBirthBodyTypes": 1,
       "chosenAsBestOriginCount": 2,
-      "witnessCount": 194,
+      "witnessCount": 196,
       "highestConditionalGrowthSum": 1361,
       "sourceSoldierTypes": [
         "STR_SOLDIER_OGRE"
