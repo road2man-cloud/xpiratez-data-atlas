@@ -129,6 +129,14 @@ try{
  assert((await inheritedMilitary.locator('[data-inherited-education-block]').innerText()).includes('나이트쉐이드 강화'),
    'Jungle guide with inherited Nightshade history must not advertise military education as reachable');
  console.log('PASS inherited transformation history is reflected in birth-specific education feasibility');
+ assert.equal(await page.locator('[data-assault-clone-link]').count(),1);
+ await page.locator('#search').fill('');
+ await page.locator('#family').selectOption('origin:manufacture:STR_THEBAN_ASSAULT_CLONE');
+ assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1,
+   'Assault Clone must have its own selectable acquisition entry');
+ assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').first().getAttribute('data-origin-id'),
+   'manufacture:STR_THEBAN_ASSAULT_CLONE');
+ await page.locator('#family').selectOption('');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
  assert.notEqual(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);

@@ -326,7 +326,8 @@ async function validate(){
 function render(){
   if(blocked||!REPORT)return;
   const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
-  const rows=REPORT.records.filter(r=>(!family||r.soldierType===family)&&(!q||
+  const rows=REPORT.records.filter(r=>(!family||(family.startsWith('origin:')?
+    r.profileId===family.slice(7):r.soldierType===family))&&(!q||
     [r.profileId,r.name,r.soldierName,
       ...Object.keys(DATA.profiles.find(p=>p.id===r.profileId)?.acquisitionRequiredItems||{}),
       ...comparable(r).flatMap(c=>c.transforms.map(name))]
@@ -784,7 +785,10 @@ async function init(){try{
     DEPENDENCIES.stats.withInputAssumptionsRemoved+
     '건과 2개 훈련 동시 생략 '+ITERATIVE.stats.secondTransformValidated+'건을 확인했습니다. 비용·전역 최적성은 인증하지 않았습니다. 각 출생처 상세에서 경로별 근거를 확인하세요.';
   renderSharedTerminalCatalog();
-  $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('');
+  const assaultId='manufacture:STR_THEBAN_ASSAULT_CLONE';
+  if(!REPORT.records.some(r=>r.profileId===assaultId))throw Error('돌격 클론 독립 출생처 누락');
+  $('#family').innerHTML='<option value="">전체 병종</option>'+DATA.soldiers.map(s=>'<option value="'+s.id+'">'+esc(s.koName)+'</option>').join('')+
+    '<option value="origin:'+assaultId+'">돌격 클론 (농부 기반 · 별도 출생처)</option>';
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
   $('#search').addEventListener('input',render);$('#family').addEventListener('change',render);$('#catalogMetric').addEventListener('change',render);
   for(const [id,direction] of [['#scrollStatsLeft',-1],['#scrollStatsRight',1]])
