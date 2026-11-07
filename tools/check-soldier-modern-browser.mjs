@@ -144,6 +144,12 @@ try{
   assert((await peasantAddedResearch.textContent()).includes("STR_BATTLE_FORM_AUGMENTATION"));
   assert((await peasantAddedResearch.innerText()).includes("단계 1"));
   await page.locator("#originDetailClose").click();
+  await page.locator("#originSearch").fill("");
+  await page.locator("#originType").selectOption("origin:manufacture:STR_THEBAN_ASSAULT_CLONE");
+  assert.equal(await page.locator("#originTable tbody tr").count(),1,
+    "Assault Clone must be independently selectable despite sharing the peasant body");
+  assert((await page.locator("#originTable tbody").innerText()).includes("STR_THEBAN_ASSAULT_CLONE"));
+  await page.locator("#originType").selectOption("");
   await page.locator("#originSearch").fill("manufacture:STR_THEBAN_ASSAULT_CLONE");
   assert.equal(await page.locator("#originTable tbody tr").count(),1);
   assert.equal((await page.locator("#originTable tbody tr").first().locator("td").nth(9).innerText()).trim(),"80");

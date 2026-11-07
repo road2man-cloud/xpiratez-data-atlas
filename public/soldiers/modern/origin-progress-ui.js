@@ -1056,9 +1056,17 @@ export async function initOriginProgression(data){
       report.summary.researchOrderNecessityAudit.conditionalMandatoryGrantGates+
       "회 · 각 항목은 중복 검사 포함 · 실제 연구 경로 미실행) · 최종 능력치 확정 0개";
     const classNames=new Map(data.soldiers.map(x=>[x.id,x.koName]));
+    // Special acquisition profiles share a body ID with an ordinary class,
+    // but must remain independently selectable without inventing a 30th class.
+    const assaultId="manufacture:STR_THEBAN_ASSAULT_CLONE";
+    const assault=report.rows.find(r=>r.id===assaultId&&r.kind==="SOURCE_SPAWN");
+    if(!assault)throw new Error("독립 돌격 클론 획득 프로필 누락");
     type.innerHTML='<option value="">전체 병종 (29종)</option>'+
       report.classes.map(x=>'<option value="'+esc(x.soldierType)+'">'+
-        esc(classNames.get(x.soldierType)||x.soldierType)+'</option>').join("");
+        esc(classNames.get(x.soldierType)||x.soldierType)+'</option>').join("")+
+      '<option value="origin:'+esc(assaultId)+'">돌격 클론 (농부 기반 · 독립 획득형)</option>';
+    const requestedOrigin=new URLSearchParams(location.search).get("origin");
+    if(requestedOrigin===assaultId)type.value="origin:"+assaultId;
     function render(){
       const rawTerm=query.value.trim().toLocaleLowerCase("ko");
       const rootMode=rawTerm.startsWith("root:");
@@ -1066,7 +1074,8 @@ export async function initOriginProgression(data){
       const matchedRoots=rootMode?new Set([...sourceNames].filter(([id,name])=>
         (id+" "+name).toLocaleLowerCase("ko").includes(term)).map(([id])=>id)):null;
       const rows=report.rows.filter(r=>
-        (!type.value||r.soldierType===type.value)&&
+        (!type.value||(type.value.startsWith("origin:")?
+          r.id===type.value.slice(7):r.soldierType===type.value))&&
         (!sourceFilter.value||r.acquisitionType===sourceFilter.value)&&
         (!focus.value||
           (focus.value==="history"&&proofById.get(r.id).directHistoryConflictCount>0)||
