@@ -13,7 +13,7 @@ const bad = retiredPaths.filter(p => fs.existsSync(path.join(root, p)));
 const rulesPath = path.join(root, 'public', 'ruleset');
 if (fs.existsSync(rulesPath)) {
   for (const entry of fs.readdirSync(rulesPath, { withFileTypes: true })) {
-    if (entry.isFile() && /\\.rul$/i.test(entry.name)) {
+    if (entry.isFile() && /\.rul$/i.test(entry.name)) {
       bad.push('public/ruleset/' + entry.name);
     }
   }
