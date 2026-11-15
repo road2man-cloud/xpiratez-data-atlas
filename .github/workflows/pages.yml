@@ -35,6 +35,7 @@ jobs:
       - name: Verify atlas data and frontend
         run: |
           # One canonical gate for all DB, choices, start bonuses, assets and JS.
+          npm run check:no-legacy-rules
           npm run check
           test ! -e public/data/items-index.json
           test ! -e public/data/research-index.json
