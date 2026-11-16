@@ -1,0 +1,55 @@
+{
+  "schema": "xpz3d-f11/rev96-user101-perineum-latest-v1",
+  "generatedAt": "2026-11-17",
+  "revision": "r7",
+  "status": "implemented-structurally-verified-artistic-review-pending",
+  "source": {
+    "file": "r21AO-F11-user-trim-rev96-base.glb",
+    "sha256": "f53a8d5af9000593aaa681c11038bb641950cae62810511784e05a0fc5d07cd7",
+    "userSnapshotSha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+    "originalUserDeletedFaces": 101,
+    "controls": 106,
+    "positions": 754
+  },
+  "candidates": [
+    {
+      "file": "r21AO-F11-user101-perineum-lowpoly-r7.glb",
+      "sha256": "147a5eafb3ba1a9394b020eaadd9356f902e139779e0aa5793566e7c095b0170",
+      "totalTriangles": 3522,
+      "originalCoreTriangleReduction": 140,
+      "addedPerinealTriangles": 116,
+      "recommendedForFurtherGeometryWork": true
+    },
+    {
+      "file": "r21AO-F11-user101-perineum-soft-r7.glb",
+      "sha256": "bdbd4e373cc97192296cda0e52a317a8c1c118f711b45b77c32b7d6252d5856f",
+      "totalTriangles": 3554,
+      "originalCoreTriangleReduction": 108,
+      "addedPerinealTriangles": 116,
+      "recommendedForFurtherGeometryWork": false
+    }
+  ],
+  "geometry": {
+    "analMesh": "8-sided circumferential outer and inner ring, blind inner depression center",
+    "garmentTriangles": 370,
+    "rigBones": 63,
+    "originalFace101Reappearance": false,
+    "manualRestMorphCoordinatesUnchanged": true,
+    "poseScreenshots": 16,
+    "angles": [
+      0,
+      25,
+      40,
+      55
+    ],
+    "browserErrors": 0,
+    "limitations": [
+      "Posterior rim is position-matched but not one shared indexed manifold with native primitive 0",
+      "Rear perineum still appears as a narrow strip and must be blended into the buttock skin",
+      "Skin-region atlas transitions should be cleaned to remove apparent gray underlay",
+      "Not game-deployed; not user-approved"
+    ]
+  },
+  "localWorkDir": "D:\\daphne_auto\\F11-r21AO-rev96-user-trim-20261117",
+  "localViewer": "http://127.0.0.1:8873/f11/r21al/review-rev96-user101-r7.html"
+}
