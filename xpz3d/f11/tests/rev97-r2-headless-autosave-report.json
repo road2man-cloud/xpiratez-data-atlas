@@ -1,0 +1,40 @@
+{
+  "schema": "XPZ3D.F11.rev97.autosave.qa",
+  "status": "passed-single-test-face-not-user-101",
+  "facts": {
+    "initial": {
+      "deleted": 0,
+      "controls": 106,
+      "source": "r21AO-F11-skin-separated-rev92-base.glb",
+      "latest": 0
+    },
+    "deleted": {
+      "current": 1,
+      "latest": 1,
+      "peak": 1
+    },
+    "reloaded": {
+      "current": 1,
+      "latest": 1,
+      "peak": 1
+    },
+    "afterClear": {
+      "current": 0,
+      "latest": 0,
+      "peak": 1
+    },
+    "peakRestored": {
+      "current": 1,
+      "latest": 1,
+      "peak": 1
+    },
+    "export": {
+      "file": "XPZ3D-F11-rev97-protected-1faces-2026-11-16T19-25-43-254Z.json",
+      "schema": "XPZ3D.F11.ManualSculpt.v1",
+      "controlCount": 106,
+      "deletionCount": 1,
+      "positions": 754
+    }
+  },
+  "errors": []
+}
