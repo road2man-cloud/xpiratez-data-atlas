@@ -1,0 +1,38 @@
+name: OXCE custom executable release gate
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/oxce-release-gate.mjs'
+      - 'tools/oxce-release-gate.test.mjs'
+      - 'docs/oxce-releases/**'
+      - '.github/workflows/oxce-release-gate.yml'
+  pull_request:
+    paths:
+      - 'tools/oxce-release-gate.mjs'
+      - 'tools/oxce-release-gate.test.mjs'
+      - 'docs/oxce-releases/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Release gate regression tests
+        run: node --test tools/oxce-release-gate.test.mjs
+      - name: Verify all declared custom OXCE release candidates
+        shell: bash
+        run: |
+          shopt -s nullglob
+          manifests=(docs/oxce-releases/release-*.json)
+          if (("${#manifests[@]}" == 0)); then
+            echo 'No OXCE release candidate manifest. Candidate release is NOT approved.'
+          fi
+          for m in "${manifests[@]}"; do
+            node tools/oxce-release-gate.mjs "$m"
+          done
