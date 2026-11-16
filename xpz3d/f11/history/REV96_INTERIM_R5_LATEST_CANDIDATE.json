@@ -1,0 +1,43 @@
+{
+  "schema": "xpz3d-f11/rev96-interim-r5",
+  "revision": "interim-r5",
+  "state": "experimental-artifact-produced-not-user-trim",
+  "baseline": "interim-recovered-r21AO-F11-manual-sculpt-rev96-interim-base.glb",
+  "baselineTriangles": 3647,
+  "manualControls": 106,
+  "manualPositions": 754,
+  "manuallyDeletedFacesApplied": 0,
+  "candidates": [
+    {
+      "name": "minimal-r3",
+      "file": "interim-skin-rev96-minimal-r3.glb",
+      "triangles": 3655,
+      "added": 8,
+      "sha256": "b7e6a9fa1201cfdbd96d0f7c42077ff42cc869fe71512d1b9f317110808590d5"
+    },
+    {
+      "name": "smooth-r3",
+      "file": "interim-skin-rev96-smooth-r3.glb",
+      "triangles": 3675,
+      "added": 28,
+      "sha256": "752af9c95f8eb2bf7c6e68bd224bcf2a91fcef7eff641ac6bcf8131c3a0c41bf"
+    }
+  ],
+  "review": "http://127.0.0.1:8873/f11/r21al/review-rev96-interim-r5.html",
+  "newSeamDiagnostic": {
+    "viewer": "viewer-rev96-interim-r5.js",
+    "image": "rev96-r5-interim-55-seam-overlay.jpg",
+    "mode": "red faces drawn ignoring occlusion for inspection only",
+    "finding": "added faces are small patches at two lower lateral border regions, do not resolve broad preexisting flaring"
+  },
+  "reviewImagesR3": 16,
+  "rigBones": 63,
+  "garmentTriangles": 370,
+  "user101FaceSnapshotFound": false,
+  "finalApproval": false,
+  "remaining": [
+    "real 101-face JSON must be recovered",
+    "selectively excise historical flaring if appropriate with user cut policy",
+    "do not confuse red overlay visual with final shaded model"
+  ]
+}
