@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
+<title>XPZ3D F11 rev97 · 손실 방지 자동저장 폴리곤 편집기</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1017;--panel:#16212c;--panel2:#1b2a35;--line:#415261;--text:#eaf2f6;--muted:#b6c7d1;--accent:#90e7bc;font:14px system-ui,'Malgun Gothic',sans-serif}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,select,input{font:inherit}button,select{border:1px solid #658095;background:#243847;color:var(--text);border-radius:8px;padding:7px 10px;cursor:pointer}button:hover{background:#345368}button:disabled{opacity:.5}input[type=range]{accent-color:var(--accent)}input[type=checkbox]{accent-color:var(--accent)}
+header{padding:16px 22px;background:#111d27;border-bottom:1px solid var(--line)}h1{font-size:23px;line-height:1.25;margin:5px 0}h2{font-size:16px;margin:0 0 5px}p{line-height:1.5;color:var(--muted);margin:5px 0}a{color:var(--accent)}small{font-size:12px;color:var(--muted)}.eyebrow{font-size:11px;letter-spacing:.12em;color:var(--accent)}
+.toolbar{display:flex;gap:8px 13px;align-items:center;flex-wrap:wrap;padding:10px 16px;border-bottom:1px solid var(--line);background:#12202b}.toolbar label{display:flex;align-items:center;gap:6px}.toolbar input[type=range]{width:100px}.toolbar output{color:var(--accent);font-size:12px}.toolbar .sep{width:1px;background:var(--line);height:26px}
+.workspace{display:grid;grid-template-columns:minmax(395px,470px) minmax(0,1fr);gap:12px;max-width:2200px;margin:0 auto;padding:12px}
+.sidebar{border:1px solid var(--line);background:var(--panel);border-radius:12px;max-height:calc(100vh - 164px);min-height:620px;overflow-y:auto;scrollbar-gutter:stable;padding:12px}
+.sidebar-title{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;margin-bottom:10px}.sidebar-title small{display:block}
+.edit-group{border:1px solid #3b5262;border-radius:9px;background:#172734;margin:9px 0;overflow:hidden}
+.edit-group>summary{display:flex;align-items:center;gap:8px;justify-content:space-between;cursor:pointer;padding:12px 11px;background:#213443;font-weight:700}.edit-group>summary::marker{color:var(--accent)}.edit-group>summary span{color:#b5cad4;font-weight:400;font-size:12px}
+.group-wrap{padding:6px 9px 10px}.group-actions{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:2px 0 9px}.group-actions small{font-size:11px}
+.field{display:grid;grid-template-columns:minmax(120px,1fr) minmax(115px,1.2fr) 72px;gap:8px;align-items:center;border-bottom:1px solid #304351;padding:7px 2px}.field:last-child{border:0}.field label{font-size:12px;line-height:1.3}.field small{font-size:11px;display:block}.field input[type=range]{width:100%}.field input[type=number]{width:72px;border:1px solid #526e80;border-radius:5px;padding:5px;background:#0e1c26;color:var(--accent);font-variant-numeric:tabular-nums}
+.preview{position:sticky;top:8px;align-self:start;min-width:0}
+.preview-head{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 13px;margin-bottom:9px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;min-width:0}.panel>header{padding:9px 11px;background:#1b2c39}.panel h2{font-size:14px;margin:0}.panel .meta{font-size:12px;color:var(--muted);padding:9px}.panel small{font-size:11px}canvas{display:block;width:100%;height:clamp(350px,61vh,700px);background:#0d141b;touch-action:none;cursor:grab}
+.locator{position:absolute;z-index:2;background:#54252fee;border:1px solid #edaaa2;border-radius:8px;padding:5px;color:white;font-size:12px;cursor:pointer}
+.status{font-size:12px;line-height:1.45;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin-top:9px;background:#162531;overflow-wrap:anywhere}.status strong{color:var(--accent)}.action-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0}.action-bar button{font-size:12px}.action-bar input[type=file]{font-size:12px;width:205px}.mini{font-size:11px;color:var(--muted)}
+#polyPanel{border:1px solid #8b7237;border-radius:10px;background:#222c2f;padding:13px;margin:8px 0 14px}
+#polyPanel h2{font-size:16px;color:#f4d28a}
+#polySelected{padding:10px 9px;border-radius:6px;line-height:1.5;border:1px solid #a48647;background:#181f27;color:#ffd389;font-size:12px;overflow-wrap:anywhere}
+#polyStatus{font-size:12px;color:#c7d6de;padding:8px 2px}
+#polyDeletedList{display:flex;flex-wrap:wrap;gap:6px;max-height:94px;overflow:auto}
+#polyDeletedList button{font:11px system-ui;padding:4px 7px;border-color:#6c6858;background:#27343f}
+body.poly-picking #viewAfter{cursor:crosshair}
+body.wide-edit .grid{grid-template-columns:minmax(0,1fr)}
+body.wide-edit .grid .panel:first-child{display:none}
+body.wide-edit #viewAfter{height:clamp(500px,74vh,900px)}
+body.wide-edit .workspace{grid-template-columns:minmax(345px,440px) minmax(0,1fr)}
+@media(max-width:750px){body.wide-edit .workspace{grid-template-columns:1fr}}
+@media(max-width:1180px){.workspace{grid-template-columns:minmax(330px,420px) minmax(0,1fr)}.grid{grid-template-columns:1fr}.preview{position:static}.sidebar{max-height:none}}
+@media(max-width:750px){.workspace{grid-template-columns:1fr}.sidebar{min-height:0}.grid{grid-template-columns:1fr}canvas{height:420px}}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">XPZ3D / F11 / R21-AO / MANUAL SCULPT</div>
+<h1>rev97 r2 · 수동 삭제면 자동저장 · 보호 기록 복구</h1>
+<p>첨부한 2026-11-16 14:49의 최신 수동 설정을 초기값으로 적용합니다. <strong>삼각형을 화면에서 골라 삭제</strong>할 수 있고, 106개 슬라이더·맨몸·독립 의복은 그대로 유지됩니다. 삭제할 때마다 브라우저에 기록되며, 가장 많이 삭제했던 상태도 별도로 보존됩니다. 단, 과거 101면 삭제 JSON은 아직 확인되지 않았으므로 이번 편집기에서 복구되었다고 표시하지 않습니다.</p>
+</header>
+<div class="toolbar">
+<label>모델 <select id="modelVariant"><option value="r21AO-F11-skin-separated-rev92-base.glb" selected>rev92 피부·의복 분리 기준 + rev94 실시간 변형</option><option value="r21AO-F11-side-continuity-rev89-soft07.glb">rev89-soft07 (이전)</option><option value="r21AO-F11-inferior-continuity-rev90-collar08.glb">rev90-collar08 · 하단 24면 피복 후보</option><option value="r21AO-F11-inferior-continuity-rev90-collar06.glb">rev90-collar06 · 하단 24면 피복 후보</option><option value="r21AO-F11-side-continuity-rev89-soft05.glb">rev89-soft05</option><option value="r21AO-F11-side-continuity-rev89-soft03.glb">rev89-soft03</option><option value="r21AO-F11-side-surface-rev88-b.glb">rev88-b</option></select></label>
+<label>관찰 <select id="focus"><option value="full">전신</option><option value="pelvis">골반</option><option value="detail" selected>상세</option></select></label>
+<label>시점 <select id="preset"><option value="front">정면</option><option value="three">사선</option><option value="bottom" selected>아래 정면</option><option value="inferior">아래쪽</option><option value="posterior">뒤쪽</option><option value="side">측면</option></select></label>
+<label>다리 벌림 <input id="legSpread" type="range" min="0" max="55" step="1" value="40"><output id="spreadLabel">40°</output></label>
+<label>회전 <input id="rotation" type="range" min="-180" max="180" step="1" value="0"><output id="rotationLabel">0°</output></label>
+<label>확대 <input id="zoom" type="range" min="1" max="12" step=".1" value="3.2"><output id="zoomLabel">2.4×</output></label>
+<label>표시 <select id="anatomyMode"><option value="external">원본 재질</option><option value="anatomy" selected>해부학 표면</option><option value="ghost">반투명</option><option value="cutaway">절단 관찰</option></select></label>
+<label><input id="garmentVisible" type="checkbox"> 의복 보기</label><label><input id="polyPickMode" type="checkbox" checked> 폴리곤 선택 모드</label><label><input id="wire" type="checkbox" checked>와이어</label><label><input id="tint" type="checkbox">강조</label>
+<button id="polyLarge" type="button">편집 화면 크게</button><button id="reset" type="button">카메라 초기화</button>
+</div>
+<div class="workspace">
+<aside class="sidebar" aria-label="수동 조형 슬라이더">
+<div class="sidebar-title"><div><h2>부위별 조형</h2><small>수동 입력값 자동 적용 · 106개 슬라이더 · 피부 96 / 의복 10</small></div><label><input id="manualEnabled" type="checkbox" checked>편집 켜기</label></div>
+<div class="action-bar"><button id="manualUndo" type="button">실행 취소</button><button id="manualRedo" type="button">다시 실행</button><button id="manualReset" type="button">원본 변형값 0</button><button id="manualRestoreUser" type="button">사용자 입력값 복원</button><label><input id="manualMirror" type="checkbox">좌우 값 동기화</label></div>
+<section id="polyPanel" aria-label="폴리곤 직접 선택·삭제">
+<h2>⑦ 폴리곤 직접 삭제</h2>
+<p>오른쪽 화면의 삼각형을 클릭하면 노란색으로 선택됩니다. 화면 드래그는 회전, 휠은 확대입니다. 옷감 아래 피부를 고르려면 의복 표시를 끄세요.</p>
+<div id="polySelected" role="status">선택한 삼각형이 없습니다</div>
+<div class="action-bar">
+<button type="button" id="polyDelete" disabled>선택면 삭제</button>
+<button type="button" id="polyFocus" disabled>선택면 확대</button>
+<button type="button" id="polyUndo" disabled>삭제 취소</button>
+<button type="button" id="polyRedo" disabled>삭제 다시</button>
+</div>
+<div class="action-bar"><label><input id="polyDeleteImmediately" type="checkbox"> 클릭 즉시 삭제</label><button type="button" id="polyClear" disabled>삭제한 면 모두 복원</button></div>
+<div id="polyStatus" role="status">폴리곤 로딩 중</div>
+<div class="status" style="border-color:#58866d;background:#17312b">
+ <strong>rev97 자동저장 / 복구 보호</strong>
+ <div id="rev97BackupStatus" role="status" style="padding:6px 0">현재 원본과 저장된 삭제면을 확인하는 중…</div>
+ <div id="rev97BackupCount" aria-live="polite" style="padding:3px 0;color:#addfce">삭제면 기록 준비</div>
+ <div class="action-bar">
+  <button id="rev97Export" type="button">전체 삭제면+106개 설정 JSON 백업</button>
+  <button id="rev97RecoverPeak" type="button">과거 최대 삭제 기록 복구</button>
+ </div>
+ <small>최신 편집 상태와 최대 삭제 상태를 각각 보존합니다. 저장은 이 브라우저의 동일 웹사이트 주소에서 복원되며, GitHub나 다른 컴퓨터에 자동 업로드되지는 않습니다. 백업 JSON은 직접 다운로드해 별도로 보관하세요.</small>
+</div>
+<div id="polyDeletedList" aria-label="삭제한 면 목록 · 클릭하여 개별 복원"></div>
+<p class="mini">삼각형 ID는 원본의 프리미티브·면 번호입니다. 삭제 시 실제 GLB의 삼각형 인덱스에서 제거됩니다. 생기는 구멍은 자동으로 막지 않습니다. 개별 복원하거나 전체 복원할 수 있습니다.</p>
+</section>
+<div id="manualGroups"></div>
+<div class="action-bar"><button id="manualCopy" type="button">좌표 JSON 복사</button><button id="manualDownload" type="button">설정 JSON 다운로드</button><button id="manualGLB" type="button">변형 GLB 다운로드</button><label>JSON 불러오기 <input id="manualImport" type="file" accept=".json,application/json"></label></div>
+<div id="manualStatus" class="status" role="status">초기 형상 로딩 대기</div>
+<p class="mini">기준 GLB와 업로드한 수동 입력값은 보존됩니다. 의복은 항상 별도 프리미티브로 유지됩니다. 의복 보기 토글로 숨길 수 있으며, 의복 전용 슬라이더 값은 맨몸 피부 정점을 바꾸지 않습니다. 0°·25°·55°를 확인하고 JSON 및 GLB 내보내기를 사용하세요. 새로운 삼각형 생성 기능은 아닙니다.</p>
+</aside>
+<div class="preview">
+<div class="preview-head"><strong>동일 자세 · 같은 카메라 실시간 비교</strong><span id="status">GLB 로드 중…</span></div>
+<section class="grid">
+<article class="panel"><header><h2>원본 GLB</h2><small>피부·의복 모두 수동 조형 전의 원본</small></header><canvas id="viewBefore"></canvas><div class="meta" id="metaBefore">로드 대기</div></article>
+<article class="panel"><header><h2>폴리곤 직접 선택·삭제 화면</h2><small>선택한 삼각형 노란색 표시 · 저장 전에는 언제든 복구</small></header><canvas id="viewAfter"></canvas><button class="locator" type="button" id="anatomyLocator">연결부 확대</button><div class="meta" id="metaAfter">로드 대기</div></article>
+</section>
+<div id="poseDiagnostic" class="status" role="status">실제 63본 포즈 계산 대기 · 기본 55°</div>
+<div class="status"><strong>조작 팁</strong> 캔버스 드래그로 회전, 스크롤로 확대. 저장한 JSON에는 슬라이더 값과 실제 변경된 정점의 0°·55° 좌표가 기록됩니다. GLB 내보내기는 브라우저에서 새 파일을 생성하며 원본을 덮어쓰지 않습니다.</div>
+</div>
+</div>
+<script src="./pose_skinning.js?v=20261115-r21an" defer></script>
+<script src="./manual-sculpt-rev97.js?v=20261117-safety" defer></script>
+<script src="./polygon-editor-rev95.js?v=20261116-r95c" defer></script>
+<script src="./viewer-pelvis-manual-rev95.js?v=20261116-r95c" defer></script>
+<script src="./snapshot-safety-rev97-r2.js?v=20261117-f11-autosave-r2" defer></script>
+</body></html>
