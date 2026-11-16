@@ -1,0 +1,124 @@
+{
+  "status": "experimental-real-bridge-candidate-not-visual-approved",
+  "source": "D:\\daphne_auto\\F11-r21AO-rev96-user-trim-20261117\\r21AO-F11-user-trim-rev96-base.glb",
+  "out": "D:\\daphne_auto\\F11-r21AO-rev96-user-trim-20261117\\r21AO-F11-user-trim-rev96-bridge-minimal-r4.glb",
+  "sha256": "717c15d61fea69c7cfee7877355f001cbe3896dcd590d0469e7763715c159717",
+  "poseChecks": [
+    0,
+    25,
+    40,
+    55
+  ],
+  "inputIsFinalUserTrim": true,
+  "interimSculptOnly": false,
+  "userDeletedFacesRetained": 101,
+  "candidate": "minimal",
+  "bones": 63,
+  "garmentTriangles": 370,
+  "trianglesBefore": 3546,
+  "trianglesAfter": 3552,
+  "addedFaces": 6,
+  "reports": [
+    {
+      "sidePrimitive": 17,
+      "candidatePairs": 4,
+      "selectedPairs": 3,
+      "rejected": {
+        "shared": 60,
+        "topology": 0,
+        "pose": 496,
+        "normal": 1,
+        "area": 0,
+        "badEdge": 1044
+      },
+      "appendedVertices": 4,
+      "seamFaces": 6
+    },
+    {
+      "sidePrimitive": 18,
+      "candidatePairs": 0,
+      "selectedPairs": 0,
+      "rejected": {
+        "shared": 64,
+        "topology": 0,
+        "pose": 472,
+        "normal": 1,
+        "area": 2,
+        "badEdge": 783
+      },
+      "appendedVertices": 0,
+      "seamFaces": 0
+    }
+  ],
+  "additions": [
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        564,
+        595
+      ],
+      "centralEdge": [
+        596,
+        366
+      ],
+      "newFaces": 2,
+      "gapRest": [
+        0.003957733441324896,
+        0.0014167463276431546
+      ],
+      "gapOpen55": [
+        0.00378756436933887,
+        0.0012720716856762567
+      ],
+      "normalAgreementRest": 0.5390365115047682,
+      "normalAgreement55": 0.7692890297391206
+    },
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        563,
+        564
+      ],
+      "centralEdge": [
+        595,
+        596
+      ],
+      "newFaces": 2,
+      "gapRest": [
+        0.0018085339323975485,
+        0.003957733441324896
+      ],
+      "gapOpen55": [
+        0.001769724578320309,
+        0.00378756436933887
+      ],
+      "normalAgreementRest": 0.594293517653057,
+      "normalAgreement55": 0.7484023846468404
+    },
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        595,
+        596
+      ],
+      "centralEdge": [
+        366,
+        597
+      ],
+      "newFaces": 2,
+      "gapRest": [
+        0.0014167463276431546,
+        0.0027742861399863835
+      ],
+      "gapOpen55": [
+        0.0012720716856762567,
+        0.004345537287768738
+      ],
+      "normalAgreementRest": 0.5316087585140233,
+      "normalAgreement55": 0.7591233526805167
+    }
+  ]
+}

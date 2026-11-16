@@ -1,0 +1,69 @@
+{
+  "schema": "xpz3d-f11/rev96-user101/latest-candidate-v1",
+  "date": "2026-11-17",
+  "status": "source-restored-trim-base-verified-seams-experimental",
+  "source": {
+    "manualSnapshot": "rev95-user-trim-101faces-20261116T152807Z.json",
+    "sha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+    "createdAt": "2026-11-16T15:28:07.150Z",
+    "deletedFaces": 101,
+    "deletedByPrimitive": {
+      "13": 100,
+      "18": 1
+    },
+    "controls": 106,
+    "positionEntries": 754,
+    "originalGLB": "r21AO-F11-skin-separated-rev92-base.glb",
+    "originalGLBSha256": "c6d1665cab6b9ad185090843b53e4973e5115c343e96c02de7a5599557ca3783"
+  },
+  "outputs": [
+    {
+      "kind": "base",
+      "file": "r21AO-F11-user-trim-rev96-base.glb",
+      "sha256": "f53a8d5af9000593aaa681c11038bb641950cae62810511784e05a0fc5d07cd7",
+      "triangles": 3546,
+      "additionalFaces": 0,
+      "status": "verified-user-trim"
+    },
+    {
+      "kind": "minimal",
+      "file": "r21AO-F11-user-trim-rev96-bridge-minimal-r4.glb",
+      "sha256": "717c15d61fea69c7cfee7877355f001cbe3896dcd590d0469e7763715c159717",
+      "triangles": 3552,
+      "additionalFaces": 6,
+      "status": "experimental"
+    },
+    {
+      "kind": "smooth",
+      "file": "r21AO-F11-user-trim-rev96-bridge-smooth-r4.glb",
+      "sha256": "b3a6ecc011822b3c7763627d031f9887856b5dee934605320218dcdc9a20fe70",
+      "triangles": 3566,
+      "additionalFaces": 20,
+      "status": "experimental"
+    }
+  ],
+  "checks": {
+    "deleted101RemainAbsent": true,
+    "sculptRestAndOpen55Matched754": true,
+    "bones": 63,
+    "garmentTriangles": 370,
+    "renderCaptures": 24,
+    "renderAngles": [
+      0,
+      25,
+      40,
+      55
+    ],
+    "javascriptErrors": 0
+  },
+  "review": {
+    "localUrl": "http://127.0.0.1:8873/f11/r21al/review-rev96-user101-r4.html",
+    "status": "silhouette-not-yet-approved",
+    "observations": [
+      "Deleted faces restored? No; original 101 index triples absent",
+      "Seam visual changes subtle at tested views",
+      "Older lateral flares remain visible",
+      "No game native deployment"
+    ]
+  }
+}

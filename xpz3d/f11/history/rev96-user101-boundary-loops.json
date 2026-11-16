@@ -1,0 +1,271 @@
+{
+  "source": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r21al\\r21AO-F11-skin-separated-rev92-base.glb",
+  "sourceSha256": "c6d1665cab6b9ad185090843b53e4973e5115c343e96c02de7a5599557ca3783",
+  "userInput": "rev95-user-trim-101faces-20261116T152807Z.json",
+  "userInputSha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "deletedByPrimitive": {
+    "13": 100,
+    "18": 1
+  },
+  "loops": [
+    {
+      "primitive": 0,
+      "layer": "skin",
+      "originalBoundaryEdges": 135,
+      "remainingBoundaryEdges": 135,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 1,
+      "layer": "skin",
+      "originalBoundaryEdges": 184,
+      "remainingBoundaryEdges": 184,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 2,
+      "layer": "skin",
+      "originalBoundaryEdges": 142,
+      "remainingBoundaryEdges": 142,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 3,
+      "layer": "skin",
+      "originalBoundaryEdges": 108,
+      "remainingBoundaryEdges": 108,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 4,
+      "layer": "skin",
+      "originalBoundaryEdges": 48,
+      "remainingBoundaryEdges": 48,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 5,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 6,
+      "layer": "skin",
+      "originalBoundaryEdges": 10,
+      "remainingBoundaryEdges": 10,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 7,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 8,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 9,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 10,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 11,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 12,
+      "layer": "skin",
+      "originalBoundaryEdges": 0,
+      "remainingBoundaryEdges": 0,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 13,
+      "layer": "anatomy-skin",
+      "originalBoundaryEdges": 71,
+      "remainingBoundaryEdges": 71,
+      "newCutEdges": 24,
+      "components": [
+        {
+          "vertices": [
+            330,
+            503,
+            539,
+            342,
+            568,
+            565,
+            535,
+            340,
+            505,
+            506,
+            510,
+            332,
+            515,
+            549,
+            346,
+            584,
+            553,
+            347,
+            552,
+            554,
+            348
+          ],
+          "edgeCount": 20,
+          "closed": false,
+          "length": 21,
+          "centroid": [
+            0.0009559816812258743,
+            -0.09035680291606679,
+            0.8773396081652571
+          ],
+          "side": "right"
+        },
+        {
+          "vertices": [
+            567,
+            595,
+            563
+          ],
+          "edgeCount": 2,
+          "closed": false,
+          "length": 3,
+          "centroid": [
+            -0.023009049984442097,
+            -0.07846757152808409,
+            0.8855310719619309
+          ],
+          "side": "left"
+        },
+        {
+          "vertices": [
+            587,
+            588,
+            617
+          ],
+          "edgeCount": 2,
+          "closed": false,
+          "length": 3,
+          "centroid": [
+            0.023011468111456716,
+            -0.07680461999349579,
+            0.8839959476419841
+          ],
+          "side": "right"
+        }
+      ]
+    },
+    {
+      "primitive": 14,
+      "layer": "garment",
+      "originalBoundaryEdges": 20,
+      "remainingBoundaryEdges": 20,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 15,
+      "layer": "garment",
+      "originalBoundaryEdges": 31,
+      "remainingBoundaryEdges": 31,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 16,
+      "layer": "garment",
+      "originalBoundaryEdges": 77,
+      "remainingBoundaryEdges": 77,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 17,
+      "layer": "skin",
+      "originalBoundaryEdges": 39,
+      "remainingBoundaryEdges": 39,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 18,
+      "layer": "skin",
+      "originalBoundaryEdges": 34,
+      "remainingBoundaryEdges": 33,
+      "newCutEdges": 1,
+      "components": [
+        {
+          "vertices": [
+            459,
+            451
+          ],
+          "edgeCount": 1,
+          "closed": false,
+          "length": 2,
+          "centroid": [
+            0.02664835978485644,
+            -0.13231254305713755,
+            0.9468603432178497
+          ],
+          "side": "right"
+        }
+      ]
+    },
+    {
+      "primitive": 19,
+      "layer": "garment",
+      "originalBoundaryEdges": 47,
+      "remainingBoundaryEdges": 47,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 20,
+      "layer": "garment",
+      "originalBoundaryEdges": 35,
+      "remainingBoundaryEdges": 35,
+      "newCutEdges": 0,
+      "components": []
+    },
+    {
+      "primitive": 21,
+      "layer": "skin",
+      "originalBoundaryEdges": 32,
+      "remainingBoundaryEdges": 32,
+      "newCutEdges": 0,
+      "components": []
+    }
+  ]
+}

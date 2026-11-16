@@ -1,0 +1,31 @@
+{
+  "original": 3647,
+  "deleted": 101,
+  "deletedByPrimitive": {
+    "13": 100,
+    "18": 1
+  },
+  "userInputSha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "trimmed": 3546,
+  "minimal": 3546,
+  "smooth": 3546,
+  "minimalBridges": [],
+  "smoothBridges": [],
+  "blocked": {
+    "minimal": {
+      "closed": 0,
+      "foreign": 0,
+      "distance": 0,
+      "normal": 0,
+      "topology": 0
+    },
+    "smooth": {
+      "closed": 0,
+      "foreign": 0,
+      "distance": 0,
+      "normal": 0,
+      "topology": 0
+    }
+  },
+  "policy": "no closed component cap; no central anatomy; no garment; no deleted original face"
+}

@@ -1,0 +1,163 @@
+{
+  "source": "2026-11-16 15:28 user JSON, 101 deleted faces",
+  "page": "http://127.0.0.1:8873/f11/r21al/review-rev96-user101-r4.html",
+  "captures": [
+    {
+      "variant": "base",
+      "angle": 0,
+      "mode": "wire",
+      "file": "rev96-user101-base-0-wire.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 0,
+      "mode": "solid",
+      "file": "rev96-user101-base-0-solid.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 25,
+      "mode": "wire",
+      "file": "rev96-user101-base-25-wire.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 25,
+      "mode": "solid",
+      "file": "rev96-user101-base-25-solid.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 40,
+      "mode": "wire",
+      "file": "rev96-user101-base-40-wire.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 40,
+      "mode": "solid",
+      "file": "rev96-user101-base-40-solid.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 55,
+      "mode": "wire",
+      "file": "rev96-user101-base-55-wire.jpg"
+    },
+    {
+      "variant": "base",
+      "angle": 55,
+      "mode": "solid",
+      "file": "rev96-user101-base-55-solid.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 0,
+      "mode": "wire",
+      "file": "rev96-user101-minimal-0-wire.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 0,
+      "mode": "solid",
+      "file": "rev96-user101-minimal-0-solid.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 25,
+      "mode": "wire",
+      "file": "rev96-user101-minimal-25-wire.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 25,
+      "mode": "solid",
+      "file": "rev96-user101-minimal-25-solid.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 40,
+      "mode": "wire",
+      "file": "rev96-user101-minimal-40-wire.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 40,
+      "mode": "solid",
+      "file": "rev96-user101-minimal-40-solid.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 55,
+      "mode": "wire",
+      "file": "rev96-user101-minimal-55-wire.jpg"
+    },
+    {
+      "variant": "minimal",
+      "angle": 55,
+      "mode": "solid",
+      "file": "rev96-user101-minimal-55-solid.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 0,
+      "mode": "wire",
+      "file": "rev96-user101-smooth-0-wire.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 0,
+      "mode": "solid",
+      "file": "rev96-user101-smooth-0-solid.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 25,
+      "mode": "wire",
+      "file": "rev96-user101-smooth-25-wire.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 25,
+      "mode": "solid",
+      "file": "rev96-user101-smooth-25-solid.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 40,
+      "mode": "wire",
+      "file": "rev96-user101-smooth-40-wire.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 40,
+      "mode": "solid",
+      "file": "rev96-user101-smooth-40-solid.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 55,
+      "mode": "wire",
+      "file": "rev96-user101-smooth-55-wire.jpg"
+    },
+    {
+      "variant": "smooth",
+      "angle": 55,
+      "mode": "solid",
+      "file": "rev96-user101-smooth-55-solid.jpg"
+    }
+  ],
+  "errors": [],
+  "meta": [
+    {
+      "triangles": 3546,
+      "bones": 63,
+      "parts": 22
+    },
+    {
+      "triangles": 3566,
+      "bones": 63,
+      "parts": 22
+    }
+  ]
+}

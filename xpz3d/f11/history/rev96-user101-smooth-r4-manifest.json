@@ -1,0 +1,170 @@
+{
+  "status": "experimental-real-bridge-candidate-not-visual-approved",
+  "source": "D:\\daphne_auto\\F11-r21AO-rev96-user-trim-20261117\\r21AO-F11-user-trim-rev96-base.glb",
+  "out": "D:\\daphne_auto\\F11-r21AO-rev96-user-trim-20261117\\r21AO-F11-user-trim-rev96-bridge-smooth-r4.glb",
+  "sha256": "b3a6ecc011822b3c7763627d031f9887856b5dee934605320218dcdc9a20fe70",
+  "poseChecks": [
+    0,
+    25,
+    40,
+    55
+  ],
+  "inputIsFinalUserTrim": true,
+  "interimSculptOnly": false,
+  "userDeletedFacesRetained": 101,
+  "candidate": "smooth",
+  "bones": 63,
+  "garmentTriangles": 370,
+  "trianglesBefore": 3546,
+  "trianglesAfter": 3566,
+  "addedFaces": 20,
+  "reports": [
+    {
+      "sidePrimitive": 17,
+      "candidatePairs": 9,
+      "selectedPairs": 4,
+      "rejected": {
+        "shared": 60,
+        "topology": 0,
+        "pose": 500,
+        "normal": 2,
+        "area": 0,
+        "badEdge": 1044
+      },
+      "appendedVertices": 12,
+      "seamFaces": 16
+    },
+    {
+      "sidePrimitive": 18,
+      "candidatePairs": 7,
+      "selectedPairs": 1,
+      "rejected": {
+        "shared": 64,
+        "topology": 0,
+        "pose": 472,
+        "normal": 4,
+        "area": 2,
+        "badEdge": 783
+      },
+      "appendedVertices": 4,
+      "seamFaces": 4
+    }
+  ],
+  "additions": [
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        564,
+        595
+      ],
+      "centralEdge": [
+        596,
+        366
+      ],
+      "newFaces": 4,
+      "gapRest": [
+        0.003957733441324896,
+        0.0014167463276431546
+      ],
+      "gapOpen55": [
+        0.00378756436933887,
+        0.0012720716856762567
+      ],
+      "normalAgreementRest": 0.5390365115047682,
+      "normalAgreement55": 0.7692890297391206
+    },
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        563,
+        564
+      ],
+      "centralEdge": [
+        595,
+        596
+      ],
+      "newFaces": 4,
+      "gapRest": [
+        0.0018085339323975485,
+        0.003957733441324896
+      ],
+      "gapOpen55": [
+        0.001769724578320309,
+        0.00378756436933887
+      ],
+      "normalAgreementRest": 0.594293517653057,
+      "normalAgreement55": 0.7484023846468404
+    },
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        595,
+        596
+      ],
+      "centralEdge": [
+        366,
+        597
+      ],
+      "newFaces": 4,
+      "gapRest": [
+        0.0014167463276431546,
+        0.0027742861399863835
+      ],
+      "gapOpen55": [
+        0.0012720716856762567,
+        0.004345537287768738
+      ],
+      "normalAgreementRest": 0.5316087585140233,
+      "normalAgreement55": 0.7591233526805167
+    },
+    {
+      "sidePrimitive": 17,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        366,
+        597
+      ],
+      "centralEdge": [
+        628,
+        660
+      ],
+      "newFaces": 4,
+      "gapRest": [
+        0.006340280023129218,
+        0.0036520022213889745
+      ],
+      "gapOpen55": [
+        0.006376444634799176,
+        0.0036408377946316223
+      ],
+      "normalAgreementRest": 0.12857111044141584,
+      "normalAgreement55": 0.38492827850209826
+    },
+    {
+      "sidePrimitive": 18,
+      "centralPrimitive": 13,
+      "sideEdge": [
+        617,
+        590
+      ],
+      "centralEdge": [
+        374,
+        653
+      ],
+      "newFaces": 4,
+      "gapRest": [
+        0.002064149070708976,
+        0.004373071837732628
+      ],
+      "gapOpen55": [
+        0.0018858544171879387,
+        0.005044628937511563
+      ],
+      "normalAgreementRest": 0.899654261074884,
+      "normalAgreement55": 0.9550683855945814
+    }
+  ]
+}
