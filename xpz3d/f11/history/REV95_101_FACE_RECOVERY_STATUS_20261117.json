@@ -1,0 +1,56 @@
+{
+  "schema": "XPZ3D.F11.rev95-manual-deletion-recovery/v1",
+  "date": "2026-11-17",
+  "status": "blocked:exact-101-face-user-snapshot-not-located",
+  "originalBaseline": "r21AO-F11-skin-separated-rev92-base.glb",
+  "originalBaselineSha256": "c6d1665cab6b9ad185090843b53e4973e5115c343e96c02de7a5599557ca3783",
+  "baselineTriangles": 3647,
+  "expectedDeletedFaces": 101,
+  "expectedTrimmedTriangles": 3546,
+  "foundExactMask": false,
+  "localSearch": {
+    "glbMetadataFiles": 330,
+    "glbsWith101RemovedFaces": 0,
+    "textAndAttachmentFiles": 1086,
+    "filesWith101DeletedFaces": 0,
+    "strictRescueScanFiles": 1345,
+    "strictRescueCandidates": 0,
+    "browserDownloadProfiles": [
+      "Edge Default",
+      "Chrome Default",
+      "Brave Default"
+    ],
+    "matchingDownloadRecords": 0,
+    "liveBrowserRev95EditorTabs": 0,
+    "recycleBinNamedMatches": 0,
+    "githubDefaultBranchMatchingDeletedFaces": 0
+  },
+  "knownNonUserFixture": {
+    "path": "F11-r21AO-pelvic-continuity-20261115/rev95-face-delete-browser-export.glb",
+    "sha256": "0aecd0d9542a8fd0e59eb75ccfec1f80535d84d08ba0fca589ca7237d92d0c3f",
+    "deletedFaces": 1,
+    "face": {
+      "primitive": 13,
+      "triangle": 458,
+      "vertices": [
+        409,
+        704,
+        422
+      ]
+    }
+  },
+  "recovererScript": "recover_rev95_101_mask.cjs",
+  "stopConditions": [
+    "Do not use the 1-face QA fixture as the 101-face user mask",
+    "Do not promote any 33 or 48 geometrically guessed deletions as user selection",
+    "Do not regenerate user-deleted faces to restore 3647 total",
+    "Do not claim rev96 final GLBs without authentic source"
+  ],
+  "nextWhenOriginalFound": [
+    "Extract and cross-check exactly 101 unique face IDs with original vertex triples",
+    "Verify the user controls count 106 and 754 position entries if present",
+    "Reconstruct 3546-triangle source preserving 63 bones and 370 garment faces",
+    "Perform only approved short-strip repairs, preserving every user deletion and intended opening",
+    "Commit deletion list SHA, generating source and independent GLBs to GitHub F11 history"
+  ]
+}
