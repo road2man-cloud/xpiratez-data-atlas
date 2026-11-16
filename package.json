@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "build:items:v2": "node tools/build-v2-items.mjs",
+    "build:tech:v2": "node tools/build-v2-tech.mjs",
+    "check:tech:v2": "node tools/check-v2-tech.mjs && node --test tools/test-v2-tech.mjs",
+    "check:tech:v2:browser": "node tools/check-tech-v2-browser.mjs",
     "check:items:v2": "node tools/check-items-v2.mjs && node --test tools/test-v2-items.mjs",
     "check:items:v2:browser": "node tools/check-items-v2-browser.mjs",
     "build:data": "node tools/build-data.mjs && node tools/build-research-tech-index.mjs && node tools/build-item-acquisition-tech-index.mjs && node tools/build-soldier-origin-progression.mjs && node tools/build-soldier-route-links.mjs && node tools/build-choice-gates.mjs && node tools/build-captain-benefits.mjs && npm run build:db-runtime && npm run build:public-gzip",
@@ -23,7 +26,7 @@
     "check:play-guide": "node tools/check-play-guide.mjs",
     "check": "npm run check:all",
     "check:core": "node tools/check-data.mjs",
-    "check:all": "npm run check:no-legacy-rules && npm run check:core && npm run check:site && npm run check:public-gzip && npm run check:starting && npm run check:item-research && npm run check:item-usage && npm run check:editorials && npm run check:research-decisions && npm run check:manufacture && npm run check:events && npm run check:enemy-forces && npm run check:craft-weapons && npm run check:soldiers && npm run check:soldiers:modern && npm run check:trainings && npm run check:play-guide && npm run check:progression && npm run check:choices && npm run check:facilities && npm run check:facilities-frontend && npm run check:armors && npm run check:weapons && npm run check:standard && npm run check:db-runtime && npm run check:reference && npm run check:research-relations && npm run check:research:tech && npm run check:items:tech && npm run check:facilities:tech && npm run check:origin-candidates && npm run check:items:v2",
+    "check:all": "npm run check:no-legacy-rules && npm run check:core && npm run check:site && npm run check:public-gzip && npm run check:starting && npm run check:item-research && npm run check:item-usage && npm run check:editorials && npm run check:research-decisions && npm run check:manufacture && npm run check:events && npm run check:enemy-forces && npm run check:craft-weapons && npm run check:soldiers && npm run check:soldiers:modern && npm run check:trainings && npm run check:play-guide && npm run check:progression && npm run check:choices && npm run check:facilities && npm run check:facilities-frontend && npm run check:armors && npm run check:weapons && npm run check:standard && npm run check:db-runtime && npm run check:reference && npm run check:research-relations && npm run check:research:tech && npm run check:items:tech && npm run check:facilities:tech && npm run check:origin-candidates && npm run check:items:v2 && npm run check:tech:v2",
     "check:site": "node tools/check-site-assets.mjs && node tools/check-origin-gzip-compat.mjs",
     "check:reference": "node tools/check-reference.mjs",
     "check:reference:browser": "node tools/check-reference-browser.mjs",

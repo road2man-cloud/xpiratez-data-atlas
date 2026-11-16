@@ -173,6 +173,11 @@
       }
       renderRows();
       syncCompareButton();
+      const requested = new URL(location.href).searchParams.get('id');
+      if (requested) {
+        const match = s.items.find(item => item.id === requested);
+        if (match) renderDetail(match);
+      }
     })
     .catch(error => {
       controls.status.textContent = '2.1 아이템 데이터를 열지 못했습니다: ' + error.message;
