@@ -1,8 +1,106 @@
 {
-    "bytes":  6119788,
-    "sourceModifiedUtc":  "2026-10-11T13:38:31.3137012Z",
-    "sha256":  "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
-    "publishedAtUtc":  "2026-11-09T20:52:26.2794847Z",
-    "mode":  "read-only snapshot",
-    "file":  "Piratez.rul"
+  "schema": "xpiratez-local-source-reference/v2",
+  "sourceVersion": "v.o2",
+  "sourceLabel": "X-Piratez 2.1",
+  "requiredExtendedVersion": "8.7",
+  "observedAtLocalDate": "2026-11-17",
+  "mode": "metadata-only; source files not hosted",
+  "hostedRuleset": false,
+  "notes": [
+    "These SHA-256 hashes were computed against local installed files.",
+    "Effective rules depend on all applicable Ruleset/*.rul files and active mod settings.",
+    "Use matching Language/ko.yml; do not use legacy 1.1 data as authoritative 2.1 gameplay evidence."
+  ],
+  "files": [
+    {
+      "path": "Ruleset/HitFX-basic.rul",
+      "bytes": 7879,
+      "sha256": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf"
+    },
+    {
+      "path": "Ruleset/Piratez.rul",
+      "bytes": 6119788,
+      "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6"
+    },
+    {
+      "path": "Ruleset/Piratez_Armors.rul",
+      "bytes": 3899027,
+      "sha256": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc"
+    },
+    {
+      "path": "Ruleset/Piratez_BaseNames.rul",
+      "bytes": 7418,
+      "sha256": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff"
+    },
+    {
+      "path": "Ruleset/Piratez_Bonuses.rul",
+      "bytes": 105195,
+      "sha256": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23"
+    },
+    {
+      "path": "Ruleset/Piratez_Events.rul",
+      "bytes": 443803,
+      "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+    },
+    {
+      "path": "Ruleset/Piratez_Factions.rul",
+      "bytes": 3085581,
+      "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+    },
+    {
+      "path": "Ruleset/Piratez_Globals.rul",
+      "bytes": 338353,
+      "sha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104"
+    },
+    {
+      "path": "Ruleset/Piratez_Mapscripts.rul",
+      "bytes": 128489,
+      "sha256": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b"
+    },
+    {
+      "path": "Ruleset/Piratez_Planet.rul",
+      "bytes": 1082696,
+      "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a"
+    },
+    {
+      "path": "Ruleset/Piratez_Resources.rul",
+      "bytes": 649953,
+      "sha256": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c"
+    },
+    {
+      "path": "Ruleset/Piratez_Transformations.rul",
+      "bytes": 78753,
+      "sha256": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba"
+    },
+    {
+      "path": "Ruleset/Piratez_Wardrobe.rul",
+      "bytes": 375497,
+      "sha256": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503"
+    },
+    {
+      "path": "Ruleset/Recolr.rul",
+      "bytes": 1613,
+      "sha256": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0"
+    },
+    {
+      "path": "Ruleset/Shotguns_Rebalance.rul",
+      "bytes": 8924,
+      "sha256": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b"
+    },
+    {
+      "path": "Ruleset/Yankes_Scripts.rul",
+      "bytes": 213924,
+      "sha256": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+    },
+    {
+      "path": "Language/ko.yml",
+      "bytes": 2995571,
+      "sha256": "04c29e79c307305e5f38b44e99969d3de953e1188ab3a6443f51eef6e48104bc"
+    },
+    {
+      "path": "metadata.yml",
+      "bytes": 323,
+      "sha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e"
+    }
+  ]
 }
