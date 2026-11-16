@@ -1,0 +1,27 @@
+name: OXCE source lineage preservation audit
+on:
+  push:
+    branches:
+      - main
+      - integration/oxce-r131-r134-source-audit-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/**'
+      - 'tools/check-oxce-source-census.test.mjs'
+      - '.github/workflows/oxce-source-census.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/**'
+      - 'tools/check-oxce-source-census.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-anchors:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify preserved custom OXCE source anchors
+        run: node --test tools/check-oxce-source-census.test.mjs
