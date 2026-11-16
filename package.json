@@ -72,7 +72,7 @@
     "check:choices": "node tools/check-choice-coverage.mjs && node tools/check-choice-exclusions.mjs && node tools/check-choice-engine-coverage.mjs && node tools/check-choice-simulator.mjs && node tools/check-research-branch-conflicts.mjs && node tools/check-research-story-routes.mjs && node tools/check-captain-benefits.mjs && node tools/check-save-import.mjs && node tools/check-diverging-paths-v02.mjs",
     "build:db-runtime": "node tools/build-db-runtime.mjs",
     "check:db-runtime": "node tools/check-db-runtime.mjs",
-    "check:no-legacy-rules": "node tools/check-no-legacy-rules.mjs"
+    "check:no-legacy-rules": "node tools/check-no-legacy-rules.mjs && node tools/check-v2-source-manifest.mjs && node --test tools/test-v2-source-manifest.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0"
