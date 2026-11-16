@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>X-Piratez 2.1 연구 DB</title>
+<link rel="stylesheet" href="../items-v2/styles.css"><link rel="stylesheet" href="../tech-v2.css">
+<script defer src="../tech-v2.js"></script>
+</head>
+<body data-tech-kind="research">
+<header class="site-header">
+<nav aria-label="DB 바로가기"><a href="../">아틀라스 홈</a><a href="../items-v2/">2.1 아이템 DB</a><a href="../research-v2/">2.1 연구</a><a href="../manufacture-v2/">2.1 제조</a></nav>
+<p class="eyebrow">X-PIRATEZ v.o2 · SOURCE-DECLARED DATA ONLY</p>
+<h1>연구 DB <span>2.1 원본</span></h1>
+<p class="intro">로컬 X-Piratez v.o2 규칙 16개와 동일 설치본의 한국어 번역에서 추출한 연구 정의입니다. 원본 선행·재료·해금 관계를 확인하고 다른 2.1 DB로 직접 이동할 수 있습니다.</p>
+<p class="warning"><strong>범위 안내:</strong> 이 화면은 2.1 <code>research</code> 모드 정의만 제공합니다. OXCE 기본값, 별도 모드의 최종 적용 순서, 이벤트·확률·세이브 상태는 포함하지 않습니다. 연결 ID가 존재한다는 것만으로 실제 획득 가능성이 보장되지 않습니다. 기존 1.1 DB 값을 결합하지 않습니다.</p>
+</header>
+<main>
+<section class="filter-section" aria-label="검색 및 정렬">
+<label class="search-field">한국어·영문·ID 검색 <input id="search" type="search" placeholder="아이템 이름 또는 STR_..."></label>
+<label>정렬 <select id="sort"><option value="name">한국어 이름</option><option value="id">내부 ID</option><option value="cost">연구량 cost</option><option value="time">점수 points</option></select></label>
+<label class="check-label"><input type="checkbox" id="has-ko"> 번역된 항목만</label>
+<button id="reverse" type="button" class="secondary">오름차순</button>
+</section>
+<div class="toolbar"><span id="status" role="status" aria-live="polite">데이터를 불러오는 중…</span></div>
+<section id="detail" hidden aria-label="선택한 데이터 상세">
+<div class="section-title"><h2 id="detail-name">상세</h2><button id="close" class="secondary" type="button">닫기</button></div>
+<p id="detail-meta" class="note"></p>
+<div id="detail-links" class="tech-links"></div>
+<table class="fields-table"><tbody id="detail-fields"></tbody></table>
+</section>
+<div class="table-scroll"><table class="items-table"><thead><tr><th>항목</th><th>연구량 cost</th><th>점수 points</th><th>선행 연구</th><th>출처</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="more"><button id="more" hidden type="button">100개 더 보기</button></div>
+</main>
+<footer>원본 파일은 공개 저장소에 재배포하지 않았으며 각 항목에 선언된 필드만 보존합니다. <a href="../ruleset/manifest.json">2.1 SHA-256 출처 목록</a></footer>
+</body>
+</html>
