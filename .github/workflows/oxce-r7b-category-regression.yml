@@ -1,0 +1,30 @@
+name: OXCE R131-based R7B category regression
+on:
+  push:
+    branches:
+      - integration/oxce-r131-r7b-category-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r7-r131baseline/**'
+      - 'experiments/oxce-custom-release-audit/R135-r7b-r131baseline/**'
+      - 'tools/check-oxce-r135-r7-r131-source.test.mjs'
+      - 'tools/check-oxce-r135-r7b-source.test.mjs'
+      - '.github/workflows/oxce-r7b-category-regression.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r7-r131baseline/**'
+      - 'experiments/oxce-custom-release-audit/R135-r7b-r131baseline/**'
+      - 'tools/check-oxce-r135-r7-r131-source.test.mjs'
+      - 'tools/check-oxce-r135-r7b-source.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preserve-source-lineage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check category grouping, row-index safety, R131 lineage
+        run: node --test tools/check-oxce-r135-r7-r131-source.test.mjs tools/check-oxce-r135-r7b-source.test.mjs
