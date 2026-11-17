@@ -1,4 +1,5 @@
 import { compareProcurementAcquisitions } from './procurement-whatif-core.mjs';
+import { exploreProcurementRounds } from './procurement-rounds-core.mjs';
 import { buildProcurementChecklist } from './queue-core.mjs';
 
 const $ = id => document.getElementById(id);
@@ -157,6 +158,23 @@ export function initProcurementWhatIfUI(planner) {
     const checklist=buildProcurementChecklist(planner,currentScenario.baseline);
     inputs=new Map(checklist.entries.slice(0,300).map(x=>[x.id,x.quantity]));
     renderInputs();run();
+  });
+  $('queue-whatif-rounds').addEventListener('click',()=>{
+    if(!currentScenario)return;
+    try{
+      const exploration=exploreProcurementRounds(planner,currentScenario.settings,
+        currentScenario.context,Object.fromEntries(inputs),{maxRounds:4,maxItemKinds:300});
+      inputs=new Map(Object.entries(exploration.additions).filter(([,count])=>count>0));
+      renderInputs();
+      comparison=exploration.final;
+      renderComparison(comparison);
+      const trace=exploration.rounds.map(r=>r.round+'단계: 부족 '+fmt(r.unresolvedKinds)+
+        '종 · '+fmt(r.unresolvedUnits)+'개 / 가상 추가 '+fmt(r.extraAdded)+'개').join(' | ');
+      showMessage(trace+' · 종료: '+exploration.stopReason+
+        '. 실제 재고를 변경하지 않았으며 최소 조달량을 보장하지 않습니다.');
+    }catch(error){
+      showMessage('단계별 조달 탐색 실패: '+error.message);
+    }
   });
   $('queue-whatif-clear').addEventListener('click',()=>{
     inputs.clear();comparison=null;

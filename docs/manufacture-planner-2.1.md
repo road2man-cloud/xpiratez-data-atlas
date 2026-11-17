@@ -283,3 +283,27 @@ calculation outputs and the chosen virtual quantities. Save data remains
 in the browser, is not uploaded, and the original source `.sav` is not
 modified. This is **not** an automatic game purchase, work scheduler or
 completion-time prediction.
+
+## Iterative virtual procurement shortfall discovery
+
+The procurement what-if pane now offers **후속 부족 재료 최대 4단계 탐색**.
+Starting from the user's current virtual acquisitions, each iteration
+reruns the same saved-order hypothetical production queue, observes any
+still-unresolved external requirements, and appends their quantities to
+the *virtual acquisition proposal*. The button shows each round's
+unresolved item-kind count, unit count, and newly proposed quantities.
+
+The algorithm is deliberately bounded (1-8 rounds in the core API,
+4 rounds in the UI, and 300 newly tracked item kinds per run). It stops
+if external shortages disappear, no eligible additional quantity can be
+proposed, or the round limit is reached. Every invocation recomputes
+against unchanged saved starting inventory; neither a save file nor
+in-game supplies are modified. The resulting comparison can be exported
+as the ordinary hypothetical what-if JSON.
+
+This is **not an optimization or a shopping automation**: acquired items
+are assumed available only for the scenario, and repeat rounds can
+overestimate quantities because production order and integer recipe
+batching can change between passes. Facility, research, extra-mod and
+event gates remain separate uncertainties. The current implementation
+does not claim the quantities are minimal or obtainable.

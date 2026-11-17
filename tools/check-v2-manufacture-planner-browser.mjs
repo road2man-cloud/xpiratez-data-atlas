@@ -152,6 +152,10 @@ try {
   const downloadWhatif=page.waitForEvent('download');
   await page.locator('#queue-whatif-json').click();
   assert.equal((await downloadWhatif).suggestedFilename(),'xpiratez-v2-procurement-whatif.json');
+  await page.locator('#queue-whatif-rounds').click();
+  assert(await page.locator('#queue-whatif-report').isVisible());
+  assert((await page.locator('#queue-whatif-status').innerText()).includes('단계'));
+  assert((await page.locator('#stock-list').innerText())===originalStockText);
   await page.locator('#queue-whatif-clear').click();
   assert(await page.locator('#queue-whatif-report').isHidden());
   assert(await page.locator('#queue-whatif-json').isDisabled());
