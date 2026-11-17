@@ -148,6 +148,9 @@ try {
   assert((await page.locator('#queue-whatif-summary').innerText()).includes('외부 부족 재료'));
   assert((await page.locator('#queue-whatif-jobs').innerText()).includes('확보 후 부족'));
   assert(await page.locator('#queue-readiness-jobs').isVisible());
+  assert(await page.locator('#queue-readiness-actions').isVisible());
+  assert((await page.locator('#queue-readiness-actions').innerText()).includes('첫 주문') ||
+    (await page.locator('#queue-readiness-actions').innerText()).includes('명시적으로 식별된'));
   assert.equal(await page.locator('#queue-readiness-jobs tbody tr').count(),2);
   assert((await page.locator('#queue-readiness-summary').innerText()).includes('가상 재료 부족 주문'));
   assert((await page.locator('#queue-readiness-supplies').innerText()).includes('가상 추가'));

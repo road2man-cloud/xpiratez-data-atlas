@@ -334,3 +334,20 @@ max hypothetically used = min(total used, hypothetically added)
 A zero material shortage in a hypothetical calculation never means
 those items have actually been obtained. The evidence matrix is
 included in the what-if JSON download; no save file is changed.
+
+## Shared first-action checklist
+
+The evidence matrix now contains a consolidated **first-action checklist**.
+It groups repeating shortages of the same v.o2 item, missing facility
+functions, undiscovered research IDs, and unresolved rule flags across
+hypothetical production jobs. Each entry identifies the first queue
+position it affects, all affected orders, and any summed externally
+unresolved material amount. When facility or save research evidence
+has not been loaded, the list recommends inspecting the missing evidence
+rather than misclassifying it as a missing facility or locked research.
+
+Checklist sorting is by the earliest affected order, then item category
+and the number of affected orders. It is not a cost-optimal build order
+or guarantee that a game action is available. The entire checklist is
+embedded in the JSON comparison export as part of the evidence matrix,
+while the original game save remains untouched.

@@ -1,4 +1,5 @@
 import { buildProcurementReadiness } from './procurement-readiness-core.mjs';
+import { buildManufacturingActionBoard } from './procurement-actions-core.mjs';
 
 const $ = id => document.getElementById(id);
 const fmt = n => Number.isFinite(n) ? n.toLocaleString('ko-KR') : '미확인';
@@ -92,5 +93,25 @@ export function renderProcurementEvidence(planner, comparison, settings, context
       make(supplies,'p','180종 표시, JSON에는 전체 재고 장부 포함','note');
   }
   make(supplies,'p',evidence.caveat,'note');
+  const board=buildManufacturingActionBoard(evidence,comparison);
+  const actions=$('queue-readiness-actions');
+  actions.replaceChildren();
+  if(!board.entries.length){
+    make(actions,'p','현재 명시적으로 식별된 우선 조치가 없습니다. 실제 게임의 제조 가능 여부는 별도 확인이 필요합니다.','note');
+  }else{
+    const body=table(actions,['영향 첫 주문','확인/조달 항목','관련 주문','가상 부족 수량']);
+    for(const item of board.entries.slice(0,200)){
+      const row=make(body,'tr');
+      make(row,'td',item.firstAffectedOrder+'번째');
+      const action=make(row,'td');
+      make(action,'strong',item.label);
+      make(action,'code',item.type+':'+item.id,'item-id');
+      make(row,'td',item.affectedOrders.map(x=>x.position+'번째').join(', '));
+      make(row,'td',item.type==='material'?fmt(item.totalQuantity)+'개':'—');
+    }
+    if(board.entries.length>200)make(actions,'p','200개만 표시합니다. JSON에는 전체 목록이 포함됩니다.','note');
+  }
+  make(actions,'p',board.caveat,'note');
+  evidence.actionBoard=board;
   return evidence;
 }
