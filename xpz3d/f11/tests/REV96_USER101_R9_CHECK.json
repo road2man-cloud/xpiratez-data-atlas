@@ -1,0 +1,21 @@
+{
+  "schema": "xpz3d/f11/r9-structural-check/v1",
+  "date": "2026-11-17",
+  "output": "r21AO-F11-user101-posterior-tucked-closure-r9.glb",
+  "sha256": "d221a17073541c02284246a438314e55352b823a9ca3fe007b8c370ad7f58f54",
+  "inputSnapshotSha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "original101UserFacesAbsent": true,
+  "sourcePrimitivesUnchanged": 22,
+  "triangles": 3604,
+  "bones": 63,
+  "garmentTriangles": 370,
+  "perineumOpenEdges": 0,
+  "localSkinMicroholesCovered": 4,
+  "poseScreenshots": 16,
+  "statuses": {
+    "originalOpenCutStillPresent": true,
+    "nativeBodyWelding": false,
+    "visualReview": "experimental",
+    "additionalDecimation": false
+  }
+}

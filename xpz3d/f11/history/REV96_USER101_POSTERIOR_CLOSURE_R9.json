@@ -1,0 +1,131 @@
+{
+  "schema": "xpz3d.F11.r9/posterior-closure",
+  "source": "r21AO-F11-user101-perineum-lowpoly-r7.glb",
+  "inputSha256": "147a5eafb3ba1a9394b020eaadd9356f902e139779e0aa5793566e7c095b0170",
+  "manualSnapshotSHA": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "output": "r21AO-F11-user101-posterior-tucked-closure-r9.glb",
+  "sha256": "d221a17073541c02284246a438314e55352b823a9ca3fe007b8c370ad7f58f54",
+  "trianglesBefore": 3522,
+  "trianglesAfter": 3604,
+  "originalPerineumTriangles": 116,
+  "roundedPerineumTriangles": 192,
+  "perineumBorderEdgesBefore": 26,
+  "perineumBorderEdgesAfter": 0,
+  "closedPerineum": true,
+  "closedSmallSideHoles": 4,
+  "sideHoleFaces": 6,
+  "pins": [
+    {
+      "sourceMergedLoopVertices": 4,
+      "faces": 2,
+      "center": [
+        -0.0236,
+        -0.0815,
+        0.8862
+      ],
+      "bounds": [
+        [
+          -0.0272,
+          -0.0216
+        ],
+        [
+          -0.0969,
+          -0.0692
+        ],
+        [
+          0.8827,
+          0.8917
+        ]
+      ]
+    },
+    {
+      "sourceMergedLoopVertices": 4,
+      "faces": 2,
+      "center": [
+        0.024,
+        -0.0743,
+        0.8854
+      ],
+      "bounds": [
+        [
+          0.0216,
+          0.0272
+        ],
+        [
+          -0.0946,
+          -0.0665
+        ],
+        [
+          0.8806,
+          0.891
+        ]
+      ]
+    },
+    {
+      "sourceMergedLoopVertices": 3,
+      "faces": 1,
+      "center": [
+        -0.025,
+        -0.0969,
+        0.9165
+      ],
+      "bounds": [
+        [
+          -0.0275,
+          -0.0242
+        ],
+        [
+          -0.1026,
+          -0.0893
+        ],
+        [
+          0.9093,
+          0.921
+        ]
+      ]
+    },
+    {
+      "sourceMergedLoopVertices": 3,
+      "faces": 1,
+      "center": [
+        0.025,
+        -0.0935,
+        0.9139
+      ],
+      "bounds": [
+        [
+          0.0242,
+          0.0275
+        ],
+        [
+          -0.1006,
+          -0.0881
+        ],
+        [
+          0.9087,
+          0.9202
+        ]
+      ]
+    }
+  ],
+  "rearBodyAnchorIds": [
+    174,
+    29,
+    296
+  ],
+  "posteriorRoundOverMax": 0.0018,
+  "restFaceQuality": {
+    "zero": 0,
+    "maximumEdge": 0.04746696159645655
+  },
+  "open55FaceQuality": {
+    "zero": 0,
+    "maximumEdge": 0.07314498116271156
+  },
+  "garment": 370,
+  "rigBones": 63,
+  "manualDeletedFacesStillAbsent": 101,
+  "noAdditionalDecimation": true,
+  "limitation": "Posterior rim has a modest 32% body blend rather than a wide sail; body indices are not truly welded. Original large pelvis aperture remains unclosed.",
+  "status": "built-experimental-not-user-approved"
+}

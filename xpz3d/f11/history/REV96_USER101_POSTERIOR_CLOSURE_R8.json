@@ -1,0 +1,131 @@
+{
+  "schema": "xpz3d.F11.r8/posterior-closure",
+  "source": "r21AO-F11-user101-perineum-lowpoly-r7.glb",
+  "inputSha256": "147a5eafb3ba1a9394b020eaadd9356f902e139779e0aa5793566e7c095b0170",
+  "manualSnapshotSHA": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "output": "r21AO-F11-user101-posterior-rounded-closure-r8.glb",
+  "sha256": "45fab33142a02145a74340d422f2b04d2238f2ca9177498e7503e5465a87893e",
+  "trianglesBefore": 3522,
+  "trianglesAfter": 3604,
+  "originalPerineumTriangles": 116,
+  "roundedPerineumTriangles": 192,
+  "perineumBorderEdgesBefore": 26,
+  "perineumBorderEdgesAfter": 0,
+  "closedPerineum": true,
+  "closedSmallSideHoles": 4,
+  "sideHoleFaces": 6,
+  "pins": [
+    {
+      "sourceMergedLoopVertices": 4,
+      "faces": 2,
+      "center": [
+        -0.0236,
+        -0.0815,
+        0.8862
+      ],
+      "bounds": [
+        [
+          -0.0272,
+          -0.0216
+        ],
+        [
+          -0.0969,
+          -0.0692
+        ],
+        [
+          0.8827,
+          0.8917
+        ]
+      ]
+    },
+    {
+      "sourceMergedLoopVertices": 4,
+      "faces": 2,
+      "center": [
+        0.024,
+        -0.0743,
+        0.8854
+      ],
+      "bounds": [
+        [
+          0.0216,
+          0.0272
+        ],
+        [
+          -0.0946,
+          -0.0665
+        ],
+        [
+          0.8806,
+          0.891
+        ]
+      ]
+    },
+    {
+      "sourceMergedLoopVertices": 3,
+      "faces": 1,
+      "center": [
+        -0.025,
+        -0.0969,
+        0.9165
+      ],
+      "bounds": [
+        [
+          -0.0275,
+          -0.0242
+        ],
+        [
+          -0.1026,
+          -0.0893
+        ],
+        [
+          0.9093,
+          0.921
+        ]
+      ]
+    },
+    {
+      "sourceMergedLoopVertices": 3,
+      "faces": 1,
+      "center": [
+        0.025,
+        -0.0935,
+        0.9139
+      ],
+      "bounds": [
+        [
+          0.0242,
+          0.0275
+        ],
+        [
+          -0.1006,
+          -0.0881
+        ],
+        [
+          0.9087,
+          0.9202
+        ]
+      ]
+    }
+  ],
+  "rearBodyAnchorIds": [
+    174,
+    29,
+    296
+  ],
+  "posteriorRoundOverMax": 0.0072,
+  "restFaceQuality": {
+    "zero": 0,
+    "maximumEdge": 0.10226073689812969
+  },
+  "open55FaceQuality": {
+    "zero": 0,
+    "maximumEdge": 0.11215135819762553
+  },
+  "garment": 370,
+  "rigBones": 63,
+  "manualDeletedFacesStillAbsent": 101,
+  "noAdditionalDecimation": true,
+  "limitation": "Rear rim matches native body edge geometrically; native body edge indices not re-split. Remaining large ancestral pelvic cut aperture is left untouched pending silhouette approval.",
+  "status": "built-experimental-not-user-approved"
+}
