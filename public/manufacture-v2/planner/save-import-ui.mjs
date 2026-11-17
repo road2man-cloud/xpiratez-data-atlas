@@ -25,7 +25,10 @@ export function initV2SaveImportUI({ itemIds, researchIds, onApply, onDisconnect
     $('save-metadata').textContent = '파일: ' + fileName +
       ' · 버전: Extended 8.7.1 / piratez v.o2 · ' +
       selected + ' · 적용 가능한 재고 ' + count(Object.keys(stock).length) + '종' +
-      ' · 세이브 discovered 연구 ' + count(preview.discovered.length) + '개';
+      ' · 세이브 discovered 연구 ' + count(preview.discovered.length) + '개' +
+      (baseSelect.value==='all' ? ' · 기지별 시설과 주문은 통합하지 않음' :
+        ' · 시설 '+count(preview.bases[Number(baseSelect.value)].facilities.length)+'개'+
+        ' · 등록된 제조 주문 '+count(preview.bases[Number(baseSelect.value)].productions.length)+'개');
   };
   const resetPreview = () => {
     preview = null;
@@ -91,7 +94,12 @@ export function initV2SaveImportUI({ itemIds, researchIds, onApply, onDisconnect
           : preview.bases[Number(baseSelect.value)].name,
         knownKinds: Object.keys(inventory).length,
         confirmedResearchCount: preview.discovered.length,
-        additionalModCount: preview.additionalMods.length
+        additionalModCount: preview.additionalMods.length,
+        operations: baseSelect.value==='all' ? null : preview.bases[Number(baseSelect.value)],
+        baseOperationsSummary: preview.bases.map(base=>({
+          name:base.name, facilities:base.facilities?.length||0,
+          orders:base.productions?.length||0
+        }))
       });
       active.hidden = false;
       $('save-active-text').textContent =

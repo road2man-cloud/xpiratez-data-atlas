@@ -80,10 +80,24 @@ try {
     'bases:',
     '  - lon: 0.1',
     '    name: Test Primary',
+    '    facilities:',
+    '      - type: STR_RED_FORGE',
+    '        x: 0',
+    '        y: 0',
+    '      - type: STR_STILL',
+    '        buildTime: 8',
     '    items:',
     '      STR_CHEMICALS: 40',
+    '    productions:',
+    '      - item: STR_GROG_BARREL',
+    '        assigned: 7',
+    '        spent: 140',
+    '        amount: 12',
+    '        infinite: false',
     '  - lon: 0.2',
     '    name: Test Secondary',
+    '    facilities: []',
+    '    productions: []',
     '    items:',
     '      STR_CHEMICALS: 2',
     'discovered:',
@@ -101,13 +115,20 @@ try {
   assert((await page.locator('#summary').innerText()).includes('기존 재고 사용량'));
   assert((await page.locator('#summary').innerText()).includes('36개'));
   assert((await page.locator('#research').innerText()).includes('discovered에서 확인'));
+  assert(await page.locator('#base-operations').isVisible());
+  assert((await page.locator('#base-facility-summary').innerText()).includes('STR_3RL_HE_XXX') ||
+    (await page.locator('#base-facility-summary').innerText()).includes('필요 시설 기능'));
+  assert((await page.locator('#base-production-orders').innerText()).includes('STR_GROG_BARREL'));
+  assert((await page.locator('#base-production-orders').innerText()).includes('140'));
   await page.locator('#save-base').selectOption('1');
   await page.locator('#save-apply').click();
   assert((await page.locator('#tree').innerText()).includes('보유 재고 2개'));
+  assert((await page.locator('#base-production-orders').innerText()).includes('제조 주문이 없습니다'));
   await page.locator('#save-base').selectOption('all');
   await page.locator('#save-apply').click();
   assert((await page.locator('#summary').innerText()).includes('36개'));
   assert((await page.locator('#save-active-text').innerText()).includes('모든 기지'));
+  assert((await page.locator('#base-operation-message').innerText()).includes('시설 기능이나 생산 주문을 단일 공장처럼 합치지 않습니다'));
   const oldSave = sample.replace('piratez ver: v.o2','piratez ver: v.o1.1.1');
   await page.locator('#save-file').setInputFiles({
     name:'old.sav',mimeType:'text/plain',buffer:Buffer.from(oldSave,'utf8')

@@ -1,5 +1,6 @@
 import { createManufacturingPlanner } from './planner-core.mjs';
 import { initV2SaveImportUI } from './save-import-ui.mjs';
+import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -13,7 +14,9 @@ const nf = n => typeof n === 'number' && Number.isFinite(n)
   ? n.toLocaleString('ko-KR') : '미확인';
 const slug = id => encodeURIComponent(id);
 const state = { planner: null, recipes: [], currentId: null, choices: {},
-  inventory: {}, itemEntries: [], plan: null, saveDiscovered: null };
+  inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
+  baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
+  manufactureIndex: null };
 const statuses = {
   manufactured: '하위 제조식 확장',
   'choice-required': '복수 경로 · 선택 필요',
@@ -331,6 +334,79 @@ function renderComparison(itemId) {
     $('comparison-section').hidden=false;
   }
 }
+function renderOperations(plan) {
+  const panel=$('base-operations');
+  panel.hidden=!state.baseOperationsSummary;
+  const summary=$('base-facility-summary'), orders=$('base-production-orders');
+  summary.replaceChildren();orders.replaceChildren();
+  if(!state.baseOperationsSummary)return;
+  if(!state.baseOperations){
+    $('base-operation-message').textContent='전체 기지 재고 합산 모드입니다. 서로 다른 기지의 시설 기능이나 생산 주문을 단일 공장처럼 합치지 않습니다.';
+    const ul=make(summary,'ul');
+    for(const entry of state.baseOperationsSummary)
+      make(ul,'li',entry.name+' · 설치 시설 '+nf(entry.facilities)+'개 · 저장된 생산 주문 '+nf(entry.orders)+'개');
+    return;
+  }
+  const base=state.baseOperations;
+  const activeRecipes=new Set();
+  const collect=node=>{
+    if(!node||node.kind!=='recipe')return;
+    activeRecipes.add(node.id);
+    for(const item of node.inputs||[])for(const child of item.children||[])collect(child);
+  };
+  collect(plan.tree);
+  $('base-operation-message').textContent='선택 기지의 시설 '+nf(base.facilities.length)+
+    '개 · 등록된 제조 주문 '+nf(base.productions.length)+
+    '개. 아래 평가는 저장 시설 type과 2.1 규칙의 명시된 제공 기능만 대조합니다.';
+  const facilityList=make(summary,'div',null,'facility-readiness');
+  const table=make(facilityList,'table');
+  const head=make(table,'thead'),header=make(head,'tr');
+  for(const column of ['계획 제조식','필요 시설 기능','확인된 기능','미확인/부족 기능'])
+    make(header,'th',column);
+  const body=make(table,'tbody');
+  for(const id of activeRecipes){
+    const recipe=state.planner.recipeMap.get(id);
+    if(!recipe)continue;
+    const info=facilityReadiness(base,state.facilitiesIndex,recipe);
+    const row=make(body,'tr');
+    const name=make(row,'td');
+    anchor(name,'../?id='+slug(id),state.planner.name(id));
+    make(row,'td',info.required.join(', ')||'명시 요구 없음');
+    make(row,'td',info.required.filter(x=>info.provided.includes(x)).join(', ')||'—');
+    make(row,'td',info.missing.join(', ')||'없음 (다른 요구 조건은 미확인)',
+      info.missing.length?'warn-note':'note');
+  }
+  if(!activeRecipes.size)make(summary,'p','선택 제조식 없음','note');
+  const allProvided=new Set(), unrecognised=new Set();
+  for(const instance of base.facilities){
+    const match=state.facilitiesIndex.facilities.find(x=>x.id===instance.type);
+    if(!match){unrecognised.add(instance.type);continue;}
+    if(instance.buildTime===undefined||instance.buildTime===0)
+      for(const name of match.fields.provideBaseFunc||[])allProvided.add(name);
+  }
+  make(summary,'p','저장된 완공/진행 정보로 확인된 제공 기능: '+
+    ([...allProvided].sort().join(', ')||'명시값 없음'),'note');
+  if(unrecognised.size)make(summary,'p','2.1 시설 목록에서 찾지 못한 유형: '+[...unrecognised].join(', '),'warn-note');
+  const manufacture=state.manufactureIndex;
+  const list=productionOrders(base,manufacture);
+  if(!list.length){make(orders,'p','현재 기지에 저장된 제조 주문이 없습니다.','note');return;}
+  const jobs=make(orders,'table');
+  const h=make(make(jobs,'thead'),'tr');
+  for(const column of ['저장된 제조 주문','배정값','주문량','spent 원본값','무한 주문','원본 규칙 일치'])
+    make(h,'th',column);
+  const tbody=make(jobs,'tbody');
+  for(const entry of list){
+    const row=make(tbody,'tr'),name=make(row,'td');
+    if(entry.catalogued)anchor(name,'../?id='+slug(entry.id),entry.name);
+    else make(name,'span',entry.name);
+    make(name,'code',entry.id,'item-id');
+    for(const value of [entry.assigned,entry.amount,entry.spent,
+      entry.infinite===null?'미확인':entry.infinite?'예':'아니오',
+      entry.catalogued?'확인':'2.1 DB에 없음'])
+      make(row,'td',typeof value==='number'?nf(value):value??'미확인');
+  }
+  make(orders,'p','assigned, spent, amount는 세이브에 저장된 원본 수치입니다. 이 값만으로 남은 제조 시간, 인력 가용량 또는 완료율을 계산하지 않습니다.','note');
+}
 function renderPlan() {
   if(!state.planner||!state.currentId) return;
   try{
@@ -368,6 +444,7 @@ function renderPlan() {
     renderExternal(plan);
     renderConsolidated(plan);
     renderResearch(plan);
+    renderOperations(plan);
     renderWarnings(plan);
     $('status').textContent='제조 경로 계산 완료 · 대상 '+plan.rootRecipeId;
   }catch(e){
@@ -423,22 +500,36 @@ try{
   const responses=await Promise.all([
     fetch('../../data/manufacture-v2-index.json',{cache:'no-store'}),
     fetch('../../data/research-v2-index.json',{cache:'no-store'}),
-    fetch('../../data/items-v2-index.json',{cache:'no-store'})
+    fetch('../../data/items-v2-index.json',{cache:'no-store'}),
+    fetch('../../data/facilities-v2-index.json',{cache:'no-store'})
   ]);
   if(responses.some(x=>!x.ok))throw new Error('2.1 데이터 파일 HTTP 오류');
-  const [manufacture,research,items]=await Promise.all(responses.map(x=>x.json()));
+  const [manufacture,research,items,facilities]=await Promise.all(responses.map(x=>x.json()));
+  if(facilities.meta?.schema!=='xpiratez-v2-mod-facilities/v1'||
+    facilities.meta?.sourceVersion!=='v.o2' ||
+    JSON.stringify(facilities.meta.sourceFiles)!==JSON.stringify(manufacture.meta.sourceFiles))
+      throw new Error('시설 데이터의 2.1 규칙 출처가 제조 DB와 일치하지 않습니다.');
+  state.facilitiesIndex=facilities;
+  state.manufactureIndex=manufacture;
   state.planner=createManufacturingPlanner({manufacture,research,items});
   state.recipes=manufacture.entries;
   state.itemEntries=items.items;
   initV2SaveImportUI({
     itemIds:new Set(items.items.map(item=>item.id)),
     researchIds:new Set(research.entries.map(topic=>topic.id)),
-    onApply:({inventory,discoveredResearchIds})=>{
+    onApply:({inventory,discoveredResearchIds,operations,baseOperationsSummary})=>{
       state.inventory={...inventory};
       state.saveDiscovered=discoveredResearchIds;
+      state.baseOperations=operations;
+      state.baseOperationsSummary=baseOperationsSummary;
       renderInventory();renderPlan();
     },
-    onDisconnect:()=>{state.saveDiscovered=null;renderPlan();}
+    onDisconnect:()=>{
+      state.saveDiscovered=null;
+      state.baseOperations=null;
+      state.baseOperationsSummary=null;
+      renderPlan();
+    }
   });
   $('save-file').disabled=false;
   renderInventory();
