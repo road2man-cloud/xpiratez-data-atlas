@@ -1,0 +1,277 @@
+{
+  "revision": "r31c",
+  "seamCorrection": {
+    "matchedEdges": 20,
+    "uniqueInteriorAnchors": 20,
+    "blendVertices": 201,
+    "maxSeamOffset": 0.011000000000000001,
+    "targetedSeam": [
+      {
+        "author": [
+          908,
+          909
+        ],
+        "skin": [
+          2,
+          0
+        ],
+        "opposite": 758,
+        "distance": 0.007658
+      },
+      {
+        "author": [
+          909,
+          910
+        ],
+        "skin": [
+          4,
+          2
+        ],
+        "opposite": 3,
+        "distance": 0.032579
+      },
+      {
+        "author": [
+          910,
+          911
+        ],
+        "skin": [
+          6,
+          4
+        ],
+        "opposite": 5,
+        "distance": 0.03485
+      },
+      {
+        "author": [
+          911,
+          912
+        ],
+        "skin": [
+          8,
+          6
+        ],
+        "opposite": 7,
+        "distance": 0.003758
+      },
+      {
+        "author": [
+          912,
+          913
+        ],
+        "skin": [
+          10,
+          8
+        ],
+        "opposite": 988,
+        "distance": -0.003949
+      },
+      {
+        "author": [
+          913,
+          914
+        ],
+        "skin": [
+          12,
+          10
+        ],
+        "opposite": 11,
+        "distance": -0.00003
+      },
+      {
+        "author": [
+          914,
+          915
+        ],
+        "skin": [
+          14,
+          12
+        ],
+        "opposite": 13,
+        "distance": 0.003158
+      },
+      {
+        "author": [
+          915,
+          916
+        ],
+        "skin": [
+          16,
+          14
+        ],
+        "opposite": 15,
+        "distance": 0.004107
+      },
+      {
+        "author": [
+          916,
+          917
+        ],
+        "skin": [
+          18,
+          16
+        ],
+        "opposite": 17,
+        "distance": -0.002762
+      },
+      {
+        "author": [
+          917,
+          918
+        ],
+        "skin": [
+          20,
+          18
+        ],
+        "opposite": 19,
+        "distance": -0.001064
+      },
+      {
+        "author": [
+          918,
+          919
+        ],
+        "skin": [
+          22,
+          20
+        ],
+        "opposite": 21,
+        "distance": -0.004915
+      },
+      {
+        "author": [
+          919,
+          920
+        ],
+        "skin": [
+          24,
+          22
+        ],
+        "opposite": 23,
+        "distance": -0.001949
+      },
+      {
+        "author": [
+          920,
+          921
+        ],
+        "skin": [
+          26,
+          24
+        ],
+        "opposite": 25,
+        "distance": 0.001958
+      },
+      {
+        "author": [
+          921,
+          922
+        ],
+        "skin": [
+          28,
+          26
+        ],
+        "opposite": 27,
+        "distance": 0.015327
+      },
+      {
+        "author": [
+          922,
+          923
+        ],
+        "skin": [
+          30,
+          28
+        ],
+        "opposite": 29,
+        "distance": 0.020872
+      },
+      {
+        "author": [
+          923,
+          924
+        ],
+        "skin": [
+          32,
+          30
+        ],
+        "opposite": 31,
+        "distance": 0.034256
+      },
+      {
+        "author": [
+          924,
+          925
+        ],
+        "skin": [
+          34,
+          32
+        ],
+        "opposite": 33,
+        "distance": 0.037273
+      },
+      {
+        "author": [
+          925,
+          926
+        ],
+        "skin": [
+          36,
+          34
+        ],
+        "opposite": 35,
+        "distance": -0.011475
+      },
+      {
+        "author": [
+          340,
+          908
+        ],
+        "skin": [
+          0,
+          258
+        ],
+        "opposite": 1030,
+        "distance": -0.013141
+      },
+      {
+        "author": [
+          926,
+          348
+        ],
+        "skin": [
+          488,
+          36
+        ],
+        "opposite": 1136,
+        "distance": -0.010925
+      }
+    ]
+  },
+  "convexSign": "downward-negative-Z",
+  "file": "r21AO-F11-user101-integrated-oval-r31c-convex-g1-seam-fairing.glb",
+  "sha256": "d4652a02f69dfeb66ddf51caa105163b13e08445d66387316012603655820d80",
+  "parent": "r21AO-F11-user101-integrated-oval-r31b-thick-posterior-tissue.glb",
+  "parentSha256": "ce6164587bb8390d80547f7809cca06bf08c7158da6090e0e14a1f5d7c3fc956",
+  "sourceSkinTriangles": 2292,
+  "resultSkinTriangles": 2292,
+  "sourceSkinVertices": 1211,
+  "resultSkinVertices": 1211,
+  "allTriangles": 6010,
+  "movedSkinVertices": 559,
+  "maximumDisplacement": 0.01086873240594438,
+  "meanDisplacement": 0.001290334782258422,
+  "edgeFlips": 0,
+  "flipHistory": [],
+  "boundaryEdges": 114,
+  "rigBones": 63,
+  "garmentTriangles": 370,
+  "manual101Protected": true,
+  "authored908Protected": true,
+  "authored529FacesProtected": true,
+  "morphPreserved": true,
+  "restDegenerate": 0,
+  "poseDegenerate": 0,
+  "wholeBodyWatertight": false,
+  "visualAccepted": false
+}

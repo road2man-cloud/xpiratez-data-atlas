@@ -1,0 +1,99 @@
+{
+  "schema": "xpz3d/f11/rev96/r31-selection-v1",
+  "date": "2026-11-18",
+  "correctedUserTarget": {
+    "longitudinalCurvature": "downward convex, NOT concave",
+    "junction": "true topological welding plus smooth G1-like transition",
+    "preserve": [
+      "authored geometry 529 faces",
+      "908 original authored indices/preserved source geometry",
+      "101 manual face deletions",
+      "754 manual positions",
+      "106 controls",
+      "63 bones",
+      "370 garment triangles",
+      "separate posterior anal depression"
+    ]
+  },
+  "chosenBaseline": "r31f-physically-welded-convex",
+  "experimentalContinuation": "r31g-welded-convex-fairing",
+  "variants": [
+    {
+      "id": "r31a",
+      "source": "r30d",
+      "change": "56 interior lateral skin edges retopologized; 112 triangles added",
+      "output": "r21AO-F11-user101-integrated-oval-r31a-curved-lateral-skin-retopo.glb"
+    },
+    {
+      "id": "r31b",
+      "source": "r31a",
+      "change": "761 skin positions moved to enlarge posterior convex volume",
+      "output": "r21AO-F11-user101-integrated-oval-r31b-thick-posterior-tissue.glb"
+    },
+    {
+      "id": "r31c",
+      "source": "r31b",
+      "change": "Corrected negative-Z/downward convex arc; 20 matched center-to-perineum seams influenced 201 neighboring vertices",
+      "output": "r21AO-F11-user101-integrated-oval-r31c-convex-g1-seam-fairing.glb"
+    },
+    {
+      "id": "r31d",
+      "source": "r31c",
+      "change": "20 exact shared-seam faces rebuilt into 60 tangent-collar triangles",
+      "output": "r21AO-F11-user101-integrated-oval-r31d-convex-seam-collar.glb"
+    },
+    {
+      "id": "r31e",
+      "source": "r31d",
+      "change": "Nine-pass broad smoothing; visible under/rear creases worsened",
+      "decision": "rejected",
+      "output": "r21AO-F11-user101-integrated-oval-r31e-smooth-convex-surface.glb"
+    },
+    {
+      "id": "r31f",
+      "source": "r31d",
+      "change": "Physically merged authored core and posterior skin into one material-5 primitive: 31 formerly separate boundary edges and 33 vertices welded; all 529 original authored faces exactly retained",
+      "decision": "selected structural baseline",
+      "output": "r21AO-F11-user101-integrated-oval-r31f-physically-welded-convex.glb",
+      "sha256": "e0564deae45481fff185931c36137f6f6c07b1622cb8bd3ab143972ed0fe8cdc",
+      "topologicallyWeldedEdges": 31,
+      "sharedVertices": 33
+    },
+    {
+      "id": "r31g",
+      "source": "r31f",
+      "change": "Constrained convex smoothing of 407 nonauthored vertices, preserving all 33 welded authored seam vertices",
+      "decision": "visual candidate only, not promoted",
+      "output": "r21AO-F11-user101-integrated-oval-r31g-welded-convex-fairing.glb",
+      "sha256": "802277fb0d07e5733a9a140b7877dde150ab61e5cfffee42bf00d89d8710bb7f"
+    }
+  ],
+  "explicitUnresolved": [
+    "The 55-degree underside/rear renders still show faceted or folded areas and are NOT approved as perfectly smooth",
+    "Lateral wing-like body panels from other primitives remain",
+    "Other full-body open boundaries persist; do not call mesh watertight",
+    "Game runtime and animated deform acceptance not demonstrated"
+  ],
+  "modelTopology": {
+    "material5CombinedFaces": 2861,
+    "authoredSourceFaces": 529,
+    "perineumSourceFaces": 2332,
+    "sharedSeamEdges": 31,
+    "sharedSeamVertices": 33,
+    "nonManifoldEdges": 0,
+    "remainingCombinedSurfaceOpenEdges": 123,
+    "totalTriangles": 6050,
+    "bones": 63,
+    "garmentTriangles": 370
+  },
+  "renderCaptures": {
+    "r31a": 16,
+    "r31b": 16,
+    "r31c": 16,
+    "r31d": 16,
+    "r31e": 16,
+    "r31f": 16,
+    "r31g": 16
+  },
+  "note": "Actual GLBs and generator code exist. Structural continuity was improved; organic shape perfection is not asserted."
+}

@@ -1,0 +1,345 @@
+{
+  "revision": "r31f",
+  "file": "r21AO-F11-user101-integrated-oval-r31f-physically-welded-convex.glb",
+  "sha256": "e0564deae45481fff185931c36137f6f6c07b1622cb8bd3ab143972ed0fe8cdc",
+  "parent": "r21AO-F11-user101-integrated-oval-r31d-convex-seam-collar.glb",
+  "parentSha256": "b20fac96e2f6195f8bc114a777f3f00888094d73b7a0d306a60a3a019f786594",
+  "authoredSourceVertices": 2268,
+  "authoredSourceFaces": 529,
+  "generatedSourceVertices": 1231,
+  "generatedSourceFaces": 2332,
+  "resultUnifiedVertices": 3466,
+  "resultUnifiedFaces": 2861,
+  "sharedVertices": 33,
+  "topologicallyWeldedEdges": 31,
+  "oldComponentBoundaryEdges": 185,
+  "remainingComponentBoundaryEdges": 123,
+  "nonmanifoldEdges": 0,
+  "authoredPositionArraysUntouched": true,
+  "authoredIndicesPreserved": true,
+  "manualDeletedFaces101Preserved": true,
+  "rigBones": 63,
+  "garmentFaces": 370,
+  "restQuality": {
+    "degenerate": 0,
+    "min": 4.4775657003191465e-8
+  },
+  "poseQuality": {
+    "degenerate": 0,
+    "min": 1.0976022443748594e-7
+  },
+  "wholeBodyWatertight": false,
+  "visualAcceptance": "pending",
+  "edgeMapping": [
+    {
+      "auth": [
+        908,
+        909
+      ],
+      "skin": [
+        2,
+        0
+      ]
+    },
+    {
+      "auth": [
+        909,
+        910
+      ],
+      "skin": [
+        4,
+        2
+      ]
+    },
+    {
+      "auth": [
+        910,
+        911
+      ],
+      "skin": [
+        6,
+        4
+      ]
+    },
+    {
+      "auth": [
+        911,
+        912
+      ],
+      "skin": [
+        8,
+        6
+      ]
+    },
+    {
+      "auth": [
+        912,
+        913
+      ],
+      "skin": [
+        10,
+        8
+      ]
+    },
+    {
+      "auth": [
+        913,
+        914
+      ],
+      "skin": [
+        12,
+        10
+      ]
+    },
+    {
+      "auth": [
+        914,
+        915
+      ],
+      "skin": [
+        14,
+        12
+      ]
+    },
+    {
+      "auth": [
+        915,
+        916
+      ],
+      "skin": [
+        16,
+        14
+      ]
+    },
+    {
+      "auth": [
+        916,
+        917
+      ],
+      "skin": [
+        18,
+        16
+      ]
+    },
+    {
+      "auth": [
+        917,
+        918
+      ],
+      "skin": [
+        20,
+        18
+      ]
+    },
+    {
+      "auth": [
+        918,
+        919
+      ],
+      "skin": [
+        22,
+        20
+      ]
+    },
+    {
+      "auth": [
+        919,
+        920
+      ],
+      "skin": [
+        24,
+        22
+      ]
+    },
+    {
+      "auth": [
+        920,
+        921
+      ],
+      "skin": [
+        26,
+        24
+      ]
+    },
+    {
+      "auth": [
+        921,
+        922
+      ],
+      "skin": [
+        28,
+        26
+      ]
+    },
+    {
+      "auth": [
+        922,
+        923
+      ],
+      "skin": [
+        30,
+        28
+      ]
+    },
+    {
+      "auth": [
+        923,
+        924
+      ],
+      "skin": [
+        32,
+        30
+      ]
+    },
+    {
+      "auth": [
+        924,
+        925
+      ],
+      "skin": [
+        34,
+        32
+      ]
+    },
+    {
+      "auth": [
+        925,
+        926
+      ],
+      "skin": [
+        36,
+        34
+      ]
+    },
+    {
+      "auth": [
+        340,
+        908
+      ],
+      "skin": [
+        0,
+        258
+      ]
+    },
+    {
+      "auth": [
+        22,
+        819
+      ],
+      "skin": [
+        378,
+        226
+      ]
+    },
+    {
+      "auth": [
+        819,
+        818
+      ],
+      "skin": [
+        380,
+        378
+      ]
+    },
+    {
+      "auth": [
+        818,
+        445
+      ],
+      "skin": [
+        382,
+        380
+      ]
+    },
+    {
+      "auth": [
+        445,
+        782
+      ],
+      "skin": [
+        384,
+        382
+      ]
+    },
+    {
+      "auth": [
+        451,
+        450
+      ],
+      "skin": [
+        428,
+        426
+      ]
+    },
+    {
+      "auth": [
+        450,
+        796
+      ],
+      "skin": [
+        430,
+        428
+      ]
+    },
+    {
+      "auth": [
+        796,
+        449
+      ],
+      "skin": [
+        432,
+        430
+      ]
+    },
+    {
+      "auth": [
+        449,
+        793
+      ],
+      "skin": [
+        434,
+        432
+      ]
+    },
+    {
+      "auth": [
+        793,
+        448
+      ],
+      "skin": [
+        436,
+        434
+      ]
+    },
+    {
+      "auth": [
+        448,
+        815
+      ],
+      "skin": [
+        438,
+        436
+      ]
+    },
+    {
+      "auth": [
+        815,
+        22
+      ],
+      "skin": [
+        226,
+        438
+      ]
+    },
+    {
+      "auth": [
+        926,
+        348
+      ],
+      "skin": [
+        488,
+        36
+      ]
+    }
+  ]
+}

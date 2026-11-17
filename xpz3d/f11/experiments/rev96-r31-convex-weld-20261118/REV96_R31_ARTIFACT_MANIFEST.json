@@ -1,0 +1,422 @@
+{
+    "schema":  "xpz3d/f11/rev96/r31-artifacts-v1",
+    "correctedCurvature":  "convex",
+    "baseline":  "r31f",
+    "experimental":  "r31g",
+    "files":  [
+                  {
+                      "name":  "rev95-user-trim-101faces-20261116T152807Z.json",
+                      "sha256":  "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+                      "bytes":  335847
+                  },
+                  {
+                      "name":  "REV96_USER101_R31_SELECTION.json",
+                      "sha256":  "4c65e54890c963e44277c62565f93c71a40c615ddbe9d46e7c582dbf0b6589a3",
+                      "bytes":  3797
+                  },
+                  {
+                      "name":  "review-rev96-user101-r31.html",
+                      "sha256":  "e143e40b6f8a10e71bf8d21f9bddfcedc6ced173f316b181d356e3f0578d7be8",
+                      "bytes":  5606
+                  },
+                  {
+                      "name":  "stage_rev96_r31_git_artifacts.ps1",
+                      "sha256":  "dc8103a4d7542d6d8cbe32c2de85cb4e373ab3a900c0725dfc0d219025bb57f2",
+                      "bytes":  4120
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31a-curved-lateral-skin-retopo.glb",
+                      "sha256":  "f54d3c367293fcc26737c6af3a56f38ca5b97ff64264e900f9bf67fdd5514dab",
+                      "bytes":  4510740
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31b-thick-posterior-tissue.glb",
+                      "sha256":  "ce6164587bb8390d80547f7809cca06bf08c7158da6090e0e14a1f5d7c3fc956",
+                      "bytes":  4637768
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31c-convex-g1-seam-fairing.glb",
+                      "sha256":  "d4652a02f69dfeb66ddf51caa105163b13e08445d66387316012603655820d80",
+                      "bytes":  4764780
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31d-convex-seam-collar.glb",
+                      "sha256":  "b20fac96e2f6195f8bc114a777f3f00888094d73b7a0d306a60a3a019f786594",
+                      "bytes":  4893928
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31e-smooth-convex-surface.glb",
+                      "sha256":  "24928852d97ad215a6121d381991df436827e458fc1fc881911d93c0be00ab41",
+                      "bytes":  5023048
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31f-physically-welded-convex.glb",
+                      "sha256":  "e0564deae45481fff185931c36137f6f6c07b1622cb8bd3ab143972ed0fe8cdc",
+                      "bytes":  5232236
+                  },
+                  {
+                      "name":  "r21AO-F11-user101-integrated-oval-r31g-welded-convex-fairing.glb",
+                      "sha256":  "802277fb0d07e5733a9a140b7877dde150ab61e5cfffee42bf00d89d8710bb7f",
+                      "bytes":  5570180
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31a_curved_lateral_skin_retopo.cjs",
+                      "sha256":  "ec76a446cc0cfefab62ff0fdba74990724c2e8dc33711aae53bb9a7f33b8caa0",
+                      "bytes":  11512
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31b_thick_posterior_tissue.cjs",
+                      "sha256":  "0e106dce997848b06528534018f92138836541f58e4f5318a1da6149a929c8c6",
+                      "bytes":  13415
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31c_convex_g1_seam_fairing.cjs",
+                      "sha256":  "4cb8e4ff3d1b93dee36afd63579564e48942124b74c53bf92d03df92ee143db7",
+                      "bytes":  15697
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31d_convex_seam_collar.cjs",
+                      "sha256":  "23b0ea58cdcd975ad8410443c24f5119d6e328273fd70c1cb1dac8c7308f6ea5",
+                      "bytes":  13527
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31e_smooth_convex_surface.cjs",
+                      "sha256":  "98a902538a1cb25ee134b612dd2fd4e2ef5ca847079064d8ea0a68b0bed321da",
+                      "bytes":  13373
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31f_physical_seam_weld.cjs",
+                      "sha256":  "fa4bfd9299b5896bef85e9880ee6897c5810b146f9ff8fc15eb287b9ff2ad248",
+                      "bytes":  13177
+                  },
+                  {
+                      "name":  "build_rev96_user101_r31g_welded_convex_fairing.cjs",
+                      "sha256":  "2aa8a5a5e204b9cef7d62ea09738b43e07fd2419bc10d70b5031c8c8549b8fdc",
+                      "bytes":  14230
+                  },
+                  {
+                      "name":  "render_rev96_r31a_curved_lateral.cjs",
+                      "sha256":  "cdc5ca43c633325f6a6abc2b60376490935b2fbf6c915217db2ed70afa4e142a",
+                      "bytes":  3725
+                  },
+                  {
+                      "name":  "render_rev96_r31b_thick_posterior.cjs",
+                      "sha256":  "56964a2d2fdda12b4e5d9a8b46488dee1183cc4149295e43974d0bae4e4276cb",
+                      "bytes":  3724
+                  },
+                  {
+                      "name":  "render_rev96_r31c_convex_g1.cjs",
+                      "sha256":  "87585ce6ee4f199ce02dc9b525470468a7fe0e1505edc57c9d8039761f9d3693",
+                      "bytes":  3714
+                  },
+                  {
+                      "name":  "render_rev96_r31d_convex_collar.cjs",
+                      "sha256":  "7b89749771c36fd6ae682578deeac6d145c2261a555143642c948e2c343f6dd5",
+                      "bytes":  3709
+                  },
+                  {
+                      "name":  "render_rev96_r31e_smooth_convex.cjs",
+                      "sha256":  "b5f98c60d5bf11cef39a7611f1192cd48cd68144e976612302ea51dd51ef7ad6",
+                      "bytes":  3706
+                  },
+                  {
+                      "name":  "render_rev96_r31f_welded_convex.cjs",
+                      "sha256":  "8dde6b5760f89f75e8cf0a8205a557b30bebf108d4d35ef5690556128b2e4d83",
+                      "bytes":  3730
+                  },
+                  {
+                      "name":  "render_rev96_r31g_welded_convex.cjs",
+                      "sha256":  "fe343ce612e16b04a580f45a0f565c51c44479b83784c39d91bc08b135edb283",
+                      "bytes":  3718
+                  },
+                  {
+                      "name":  "REV96_USER101_R31A_BUILD.json",
+                      "sha256":  "985b167c7949ba31f8aad90e2d1e92763935e13b300502cbe3baf41b1fac7459",
+                      "bytes":  16536
+                  },
+                  {
+                      "name":  "REV96_USER101_R31B_BUILD.json",
+                      "sha256":  "53c4e70c9451714e925a9b60d1053765af465849291e0c64017e97ac000116fc",
+                      "bytes":  958
+                  },
+                  {
+                      "name":  "REV96_USER101_R31C_BUILD.json",
+                      "sha256":  "a3dfcfa2bf3db01867908a60b88a8c7b91c1d3f51670a4130d98474057838296",
+                      "bytes":  4894
+                  },
+                  {
+                      "name":  "REV96_USER101_R31D_BUILD.json",
+                      "sha256":  "ac3410700516bc98a6b9de12342153577cb026f5df3118773d6ee0697eb90725",
+                      "bytes":  6508
+                  },
+                  {
+                      "name":  "REV96_USER101_R31E_BUILD.json",
+                      "sha256":  "52a356209883c3626014dab818c1808a4c1689ddd4df511a688676f69cf6ea9a",
+                      "bytes":  1007
+                  },
+                  {
+                      "name":  "REV96_USER101_R31F_BUILD.json",
+                      "sha256":  "e2b3b6cf09719eca672eab25afc18098f32eb48beda0ccd839719a0206c51137",
+                      "bytes":  4532
+                  },
+                  {
+                      "name":  "REV96_USER101_R31G_BUILD.json",
+                      "sha256":  "725815aff5de0215b78a79e2f32e88f02c806ae4e9b57120bdfc8067882a855b",
+                      "bytes":  1058
+                  },
+                  {
+                      "name":  "rev96-r31a-curved-lateral-canonical-render-report.json",
+                      "sha256":  "27835aaa0a910b5be56ecd676712cc7c01c2d156c3f6ab9c1a0b74ab3aab3b27",
+                      "bytes":  1413
+                  },
+                  {
+                      "name":  "rev96-r31b-thick-posterior-canonical-render-report.json",
+                      "sha256":  "24ac6071cf5f868f16a1c4a32ab745cf79f228abd8269659ebe8e813e156f8ac",
+                      "bytes":  1421
+                  },
+                  {
+                      "name":  "rev96-r31c-convex-g1-canonical-render-report.json",
+                      "sha256":  "60956c8933e1092edfd6d7a42393a26070ff14477626bbfc590723b8d66b1e98",
+                      "bytes":  1325
+                  },
+                  {
+                      "name":  "rev96-r31d-convex-collar-canonical-render-report.json",
+                      "sha256":  "2475dd4e72d9ad35b282bfb7fe5ade38af072bd078235225d8ab7140cba3b4d2",
+                      "bytes":  1381
+                  },
+                  {
+                      "name":  "rev96-r31e-smooth-convex-canonical-render-report.json",
+                      "sha256":  "b523dd292c96c4801bb5c4c9307f76a83c57e224f22765dc0e5eae66d4433d1a",
+                      "bytes":  1387
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-render-report.json",
+                      "sha256":  "d09dfa95596daa10a582b3e4cf42eb1ccccbd10f3937495d85b99b2513571e5b",
+                      "bytes":  1393
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-render-report.json",
+                      "sha256":  "d93a8963dfb2e74badb134401648a0dc85371a21eae92908d49c42d4f2898a99",
+                      "bytes":  1387
+                  },
+                  {
+                      "name":  "rev96-r31a-curved-lateral-canonical-55-under-solid.png",
+                      "sha256":  "71e07d5bed79867bb7eefb9b9841f7993d9c6a038657e4c496cac3544c337b49",
+                      "bytes":  254875
+                  },
+                  {
+                      "name":  "rev96-r31a-curved-lateral-canonical-55-behind-solid.png",
+                      "sha256":  "d4726a84e60deefce4f9b6b1a3787b0d5d2bc9369d1c2e3a10c116063c12a0c5",
+                      "bytes":  281877
+                  },
+                  {
+                      "name":  "rev96-r31b-thick-posterior-canonical-55-under-solid.png",
+                      "sha256":  "47aaf1bf2da9af6b7e21a3ed218cd1428ab087697241c7112c5433056ba76524",
+                      "bytes":  256079
+                  },
+                  {
+                      "name":  "rev96-r31b-thick-posterior-canonical-55-behind-solid.png",
+                      "sha256":  "3537599938551cc32185a085c47ac5ed703003d9611159f1af6d6e81996acc44",
+                      "bytes":  284174
+                  },
+                  {
+                      "name":  "rev96-r31c-convex-g1-canonical-55-under-solid.png",
+                      "sha256":  "30cacb65d5a8a1198df1b03f8fe7f5df95d7f78808605e1acb775599af908a7b",
+                      "bytes":  257236
+                  },
+                  {
+                      "name":  "rev96-r31c-convex-g1-canonical-55-behind-solid.png",
+                      "sha256":  "87566e5969c078aa780d397f4afbc3bf6b64880db6a6d6d5540cdecbac7a0d9c",
+                      "bytes":  284413
+                  },
+                  {
+                      "name":  "rev96-r31d-convex-collar-canonical-55-under-solid.png",
+                      "sha256":  "08bb4827d11615a32fb457c7b87f023ccaeeaf8fd682e05d4e2d9bed7b01af1e",
+                      "bytes":  257292
+                  },
+                  {
+                      "name":  "rev96-r31d-convex-collar-canonical-55-behind-solid.png",
+                      "sha256":  "ccc0c401932a47c1b87deff6a8c640f7a7983fd554fc853225c8f3568ad48c32",
+                      "bytes":  284527
+                  },
+                  {
+                      "name":  "rev96-r31e-smooth-convex-canonical-55-under-solid.png",
+                      "sha256":  "2a88dcd5720078ef8aeab7e1f4d8341c387e4cdfad2beabc98738ae23124d5e0",
+                      "bytes":  256349
+                  },
+                  {
+                      "name":  "rev96-r31e-smooth-convex-canonical-55-behind-solid.png",
+                      "sha256":  "8af9a517fefa22e29b6541c803fb8c1183b1d1086ca435aa7b7747df461f1d01",
+                      "bytes":  283270
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-0-under-solid.png",
+                      "sha256":  "69c1c6b25509b4f339844cd4bac1f912bba8b53527955e525e3dcd171aa1af17",
+                      "bytes":  173079
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-0-under-wire.png",
+                      "sha256":  "221f1d59f9d50c58ec43d97cafaa14a1e925d7192dd42a8a3a0b13590056b5c1",
+                      "bytes":  231312
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-0-behind-solid.png",
+                      "sha256":  "c06cd8182967d61a0ee92ae4a7d19e2a512a92b085516b223f898804efb3aee3",
+                      "bytes":  205423
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-0-behind-wire.png",
+                      "sha256":  "c050b81a25a8925896ca323058f2cdf9f207a8b8e059f24f403806b5a15a371e",
+                      "bytes":  297234
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-25-under-solid.png",
+                      "sha256":  "71e4097b0d4f8f11781429e12ac8a9a69026055a123bf05da3776c7a243ef92d",
+                      "bytes":  262516
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-25-under-wire.png",
+                      "sha256":  "9079fe3186203d82324b86e0d4e420ba734af8a8776a538223db7e0a45fe2ecb",
+                      "bytes":  412684
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-25-behind-solid.png",
+                      "sha256":  "fb9d71caf90a245cfea1aec11ac9361739fdfd5e4cf2b970c3d11677879b1997",
+                      "bytes":  268571
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-25-behind-wire.png",
+                      "sha256":  "e5a8a3f3bf12fd260ceb58232420d9afe56cbf9d12de278f9b95c8c05a66e3a4",
+                      "bytes":  431176
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-40-under-solid.png",
+                      "sha256":  "cb02ce38f38b951e91108d32646ed568d32ef77bb7aa8e51bf160bb337943b2b",
+                      "bytes":  275459
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-40-under-wire.png",
+                      "sha256":  "dd057c7ef719667393fb330ff96c09e4db5317b01d16825c08d808ed7ebfb5a7",
+                      "bytes":  453843
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-40-behind-solid.png",
+                      "sha256":  "91b84ed156b4401c18ebf3a042f8425871b72da207b9da5adaa8e68e1b921be5",
+                      "bytes":  280995
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-40-behind-wire.png",
+                      "sha256":  "62bc262e5ba17d3ac971e5303aa934db518c89401dd53d97eb8415afa3658121",
+                      "bytes":  473025
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-55-under-solid.png",
+                      "sha256":  "4beed584a458b7a187d14ce308227253f4cffb3278fae16fdadf62bc9bdeed92",
+                      "bytes":  258349
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-55-under-wire.png",
+                      "sha256":  "8bd0fbd7100de4f9ba9ada8fd35025828f8de64a4bd58764358e56c3b2dd1a59",
+                      "bytes":  434923
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-55-behind-solid.png",
+                      "sha256":  "82eaee1825a86617a59395276519da570ca4aaa94185325733492a6c1d35b77d",
+                      "bytes":  284600
+                  },
+                  {
+                      "name":  "rev96-r31f-welded-convex-canonical-55-behind-wire.png",
+                      "sha256":  "41f3e1d606e8e19f95f9a8abb4c86ea6d3dcbc3a7c9a5aadbdf97c9178181bb9",
+                      "bytes":  491366
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-0-under-solid.png",
+                      "sha256":  "57daa1b0858703a9752f229e080da798da935ff88a0d7a137a4a862e58ca0504",
+                      "bytes":  171807
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-0-under-wire.png",
+                      "sha256":  "74d57ad36af6fa4d1d96e51a37a936a53ffb0f8be60aea8b8e3de328896531b4",
+                      "bytes":  228747
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-0-behind-solid.png",
+                      "sha256":  "f2478f42f99490cae32be0f3533c458997b3d97e0877f77c800b08df37af59d5",
+                      "bytes":  205350
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-0-behind-wire.png",
+                      "sha256":  "9b0b4feac81e92b279a792fe9a11eb273b1c5ac0845f3932f1890234e122cba6",
+                      "bytes":  297284
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-25-under-solid.png",
+                      "sha256":  "7768e82195e51daa44cafc20207a4758268218d72d27513d603eabc6e8f0e0f2",
+                      "bytes":  261979
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-25-under-wire.png",
+                      "sha256":  "d958535f2ee772d956287e426b18b82cef12f605e1dad4ad8807bc9dc44b3c4f",
+                      "bytes":  412228
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-25-behind-solid.png",
+                      "sha256":  "94a449074f3908f9441243fec2261193eca251ea5db48a51da5e9cd7d50eea93",
+                      "bytes":  267870
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-25-behind-wire.png",
+                      "sha256":  "ad06bd5625be05d8ecf669de50d4bb6994ff18544456ca61046eb1d6f5d4f265",
+                      "bytes":  430604
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-40-under-solid.png",
+                      "sha256":  "f5e4b1ce27cba2f0ead5c7d3bd8095616a0b46e155286b0859cdd9f7ab94c3af",
+                      "bytes":  274899
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-40-under-wire.png",
+                      "sha256":  "7810a7be215cbe2f33287d580ed79b2080f7e6415e1bda8a9744968a4216e135",
+                      "bytes":  454028
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-40-behind-solid.png",
+                      "sha256":  "c6bc41f1789d1fc44839617550e2672012969d652f08bc8b100a7a921c586454",
+                      "bytes":  280917
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-40-behind-wire.png",
+                      "sha256":  "c59377367e82821dc469d025087f50379bad4e34230265cd3eeb2f35cb6d9afb",
+                      "bytes":  472267
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-55-under-solid.png",
+                      "sha256":  "84196abacd66ea41df6649c10f8d3501f141e08dc2fd0bcb663a5a7915ca3e9c",
+                      "bytes":  258554
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-55-under-wire.png",
+                      "sha256":  "46b79cd131dbcad567231120a8e464dc1c81d426009740195d17c84a68b86d15",
+                      "bytes":  437691
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-55-behind-solid.png",
+                      "sha256":  "9877b2f1a9b72ea01a8bdc8d18bb4dae0065febd8e587cdc1ec434722f39afee",
+                      "bytes":  284636
+                  },
+                  {
+                      "name":  "rev96-r31g-welded-convex-canonical-55-behind-wire.png",
+                      "sha256":  "58120a41611ca27f101bbf8b7cfcc56af84bf1cab2ec93bca1ecbdbc9d50ef39",
+                      "bytes":  490818
+                  }
+              ],
+    "protected":  [
+                      "101 manual deleted faces",
+                      "754 manual sculpt positions",
+                      "106 controls",
+                      "529 original authored faces",
+                      "63 bones",
+                      "370 garment faces"
+                  ],
+    "status":  "actual CJS GLB and image capture files, not final visual acceptance"
+}

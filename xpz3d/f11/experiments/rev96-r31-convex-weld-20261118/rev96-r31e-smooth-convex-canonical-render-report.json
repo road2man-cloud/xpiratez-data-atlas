@@ -1,0 +1,38 @@
+{
+  "file": "r21AO-F11-user101-integrated-oval-r31e-smooth-convex-surface.glb",
+  "loadedRequests": [
+    "r21AO-F11-user101-integrated-oval-r31e-smooth-convex-surface.glb"
+  ],
+  "createdUTC": "2026-11-17T20:36:51.309Z",
+  "captures": [
+    "rev96-r31e-smooth-convex-canonical-0-under-solid.png",
+    "rev96-r31e-smooth-convex-canonical-0-under-wire.png",
+    "rev96-r31e-smooth-convex-canonical-0-behind-solid.png",
+    "rev96-r31e-smooth-convex-canonical-0-behind-wire.png",
+    "rev96-r31e-smooth-convex-canonical-25-under-solid.png",
+    "rev96-r31e-smooth-convex-canonical-25-under-wire.png",
+    "rev96-r31e-smooth-convex-canonical-25-behind-solid.png",
+    "rev96-r31e-smooth-convex-canonical-25-behind-wire.png",
+    "rev96-r31e-smooth-convex-canonical-40-under-solid.png",
+    "rev96-r31e-smooth-convex-canonical-40-under-wire.png",
+    "rev96-r31e-smooth-convex-canonical-40-behind-solid.png",
+    "rev96-r31e-smooth-convex-canonical-40-behind-wire.png",
+    "rev96-r31e-smooth-convex-canonical-55-under-solid.png",
+    "rev96-r31e-smooth-convex-canonical-55-under-wire.png",
+    "rev96-r31e-smooth-convex-canonical-55-behind-solid.png",
+    "rev96-r31e-smooth-convex-canonical-55-behind-wire.png"
+  ],
+  "errors": [],
+  "meta": [
+    {
+      "tris": 4680,
+      "bones": 63,
+      "parts": 24
+    },
+    {
+      "tris": 6050,
+      "bones": 63,
+      "parts": 24
+    }
+  ]
+}
