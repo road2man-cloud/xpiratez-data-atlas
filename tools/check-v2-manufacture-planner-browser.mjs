@@ -140,6 +140,24 @@ try {
     const download=await event;
     assert.equal(download.suggestedFilename(),'xpiratez-v2-procurement-list.csv');
   }
+  assert(await page.locator('#queue-whatif').isVisible());
+  assert((await page.locator('#queue-whatif-status').innerText()).includes('확보할 수량'));
+  const originalStockText=await page.locator('#stock-list').innerText();
+  await page.locator('#queue-whatif-fill').click();
+  assert(await page.locator('#queue-whatif-report').isVisible());
+  assert((await page.locator('#queue-whatif-summary').innerText()).includes('외부 부족 재료'));
+  assert((await page.locator('#queue-whatif-jobs').innerText()).includes('확보 후 부족'));
+  assert(await page.locator('#queue-whatif-json').isEnabled());
+  assert.equal(await page.locator('#stock-list').innerText(),originalStockText);
+  const downloadWhatif=page.waitForEvent('download');
+  await page.locator('#queue-whatif-json').click();
+  assert.equal((await downloadWhatif).suggestedFilename(),'xpiratez-v2-procurement-whatif.json');
+  await page.locator('#queue-whatif-expand').click();
+  assert((await page.locator('#queue-whatif-status').innerText()).includes('추가 부족 탐색'));
+  assert(await page.locator('#queue-whatif-report').isVisible());
+  await page.locator('#queue-whatif-clear').click();
+  assert(await page.locator('#queue-whatif-report').isHidden());
+  assert(await page.locator('#queue-whatif-json').isDisabled());
   await page.locator('#queue-compare').click();
   assert(await page.locator('#queue-order-comparison').isVisible());
   assert((await page.locator('#queue-order-compare-summary').innerText()).includes('신규 먼저'));
