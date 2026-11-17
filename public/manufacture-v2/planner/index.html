@@ -20,7 +20,7 @@
 <p class="eyebrow">X-PIRATEZ 2.1 · 제조식 원본 선언 기준</p>
 <h1>제조·조달 <span>경로 계산기</span></h1>
 <p class="intro">만들 제조식을 고르고 필요한 재료를 단계별로 펼쳐 보세요. 명시된 산출량이 있는 제조식만 자동으로 이어 붙이며, 동일 재료의 여러 생산 경로는 직접 선택할 수 있습니다.</p>
-<p class="warning" role="note"><strong>실행 가능성 판정기가 아닙니다.</strong> 현재 세이브의 연구 완료·자원·시설·구매 가능성은 확인하지 않습니다. 제조비 및 시간은 규칙에 직접 선언된 숫자만 합산합니다. 재료를 사는 가격은 별도 참고값이며, 미확인 단가나 엔진 기본값은 채우지 않습니다.</p>
+<p class="warning" role="note"><strong>실행 가능성 판정기가 아닙니다.</strong> 사용자가 세이브를 선택하면 기지 저장 물자와 <code>discovered</code> 연구 목록만 브라우저에서 확인합니다. 시설·이벤트·실제 구매 가능성과 연구 조건의 논리식은 확인하지 않습니다. 제조비 및 시간은 규칙에 직접 선언된 숫자만 합산하며 미확인 단가나 엔진 기본값은 채우지 않습니다.</p>
 </header>
 <main>
 <section class="filter-section planner-controls" aria-label="제조 경로 입력">
@@ -46,7 +46,7 @@
 제조식 ID=아이템 ID일 때 1개/회 산출 가정</label>
 <p class="note">위 가정은 규칙에 산출 수량이 없을 때만 사용합니다. 기본값은 꺼짐입니다.</p>
 <fieldset class="stock-editor">
-<legend>내 보유 재고 (세이브와 자동 연결되지 않음)</legend>
+<legend>내 보유 재고 (직접 입력 또는 불러온 세이브)</legend>
 <label>아이템 검색<input id="stock-search" type="search" placeholder="화학물질 또는 STR_CHEMICALS"></label>
 <select id="stock-select" size="5" aria-label="재고로 추가할 2.1 아이템"></select>
 <label>보유 수량<input id="stock-qty" type="number" min="0" max="10000000" step="1" value="10"></label>
@@ -63,6 +63,24 @@
 <button id="recalculate" type="button">조달 경로 다시 계산</button>
 <button id="download-plan" type="button" class="secondary" disabled>결과 JSON 저장</button>
 </div>
+</div>
+</section>
+<section class="save-import-panel planner-card" aria-label="OXCE 2.1 세이브 재고 가져오기">
+<h2>세이브 재고·연구 상태 가져오기</h2>
+<p class="note">게임의 <code>user/piratez/*.sav</code> 파일을 직접 선택하세요. 브라우저 안에서만 읽으며 서버에 업로드하거나 원본을 수정하지 않습니다. 정확히 <strong>Extended 8.7.1 / piratez v.o2</strong>로 확인된 세이브만 처리합니다.</p>
+<label class="save-file-label">로컬 세이브 파일 선택 <input id="save-file" type="file" accept=".sav,text/plain" disabled></label>
+<p id="save-message" class="note" role="status" aria-live="polite">세이브는 선택하기 전까지 읽지 않습니다.</p>
+<div id="save-preview" hidden>
+<p id="save-metadata" class="note"></p>
+<label>재고를 계산에 반영할 기지
+<select id="save-base"></select>
+</label>
+<p class="note">전체 기지 합산은 기지 간 이동 비용·수송 가능 여부를 무시합니다. 기본값은 첫 번째 기지입니다.</p>
+<div id="save-warnings" class="save-warnings"></div>
+<button id="save-apply" type="button">선택 기지 재고 적용 (현재 수동 입력 대체)</button>
+</div>
+<div id="save-active" hidden><p id="save-active-text" class="note"></p>
+<button id="save-disconnect" class="secondary" type="button">세이브 연구 연결 해제 (입력 재고는 유지)</button>
 </div>
 </section>
 <p id="status" role="status" aria-live="polite">2.1 데이터 로딩 중…</p>
@@ -84,7 +102,7 @@
 <div class="planner-sections">
 <section class="planner-card">
 <h3>단계별 제조·재료 트리</h3>
-<p class="note">각 제조 단계 비용은 <em>명시된 제조비 × 제조 횟수</em>입니다. 산출 수량에 의해 생긴 잉여 재고는 다른 분기에 재사용하지 않습니다.</p>
+<p class="note">각 제조 단계 비용은 <em>명시된 제조비 × 제조 횟수</em>입니다. 기초 재고와 앞선 제조에서 남은 산출물은 후속 분기에 재사용하며, 계산 순서에 따라 경로가 달라질 수 있습니다.</p>
 <div id="tree" class="planner-tree"></div>
 </section>
 <section class="planner-card"><h3>통합 재료·재고 수급표</h3>
@@ -98,7 +116,7 @@
 </section>
 <section class="planner-card">
 <h3>관련 연구 조건</h3>
-<p class="note">규칙에 직접 명시된 연구 ID와 선행 ID를 추적합니다. 조건의 AND/OR, 이벤트·시설·세이브별 잠금은 해석하지 않습니다.</p>
+<p class="note">규칙에 직접 명시된 연구 ID와 선행 ID를 추적합니다. 유효한 세이브를 선택했다면 <code>discovered</code> 목록에 있는지 표시합니다. 조건의 AND/OR, 이벤트·시설별 잠금은 해석하지 않습니다.</p>
 <div id="research"></div>
 </section>
 <section class="planner-card">
@@ -108,6 +126,6 @@
 </div>
 </section>
 </main>
-<footer>출처: <a href="../../ruleset/manifest.json">2.1 설치본 SHA-256 명세</a>. 구형 1.1 DB·외부 모드·실제 저장 게임의 상태를 참조하지 않습니다.</footer>
+<footer>출처: <a href="../../ruleset/manifest.json">2.1 설치본 SHA-256 명세</a>. 구형 1.1 DB·별도 모드의 규칙은 사용하지 않습니다. 사용자가 선택한 2.1 세이브의 기지 저장량 및 discovered ID만 참고하며 세이브를 서버로 전송하지 않습니다.</footer>
 </body>
 </html>

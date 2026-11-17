@@ -67,6 +67,57 @@ try {
   assert(await page.locator('#comparison-section').isVisible());
   assert((await page.locator('#comparison-data').innerText()).includes('전체 제조비'));
   assert((await page.locator('#comparison-data tbody tr').count()) >= 2);
+  // The selected save is a synthetic v.o2 fixture. No real save is
+  // embedded in the repository, sent over HTTP, or used as a default.
+  assert(await page.locator('#save-file').isEnabled());
+  const sample = [
+    'name: Save Preview Test',
+    'version: Extended 8.7.1',
+    'engine: Extended',
+    'mods:',
+    "  - 'piratez ver: v.o2'",
+    '---',
+    'bases:',
+    '  - lon: 0.1',
+    '    name: Test Primary',
+    '    items:',
+    '      STR_CHEMICALS: 40',
+    '  - lon: 0.2',
+    '    name: Test Secondary',
+    '    items:',
+    '      STR_CHEMICALS: 2',
+    'discovered:',
+    '  - STR_3RL'
+  ].join('\n') + '\n';
+  await page.locator('#save-file').setInputFiles({
+    name:'sample-v2.sav',mimeType:'text/plain',buffer:Buffer.from(sample,'utf8')
+  });
+  await page.waitForFunction(()=>document.querySelector('#save-preview')?.hidden === false);
+  assert((await page.locator('#save-metadata').innerText()).includes('Test Primary'));
+  assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  await page.locator('#save-apply').click();
+  await page.waitForFunction(()=>document.querySelector('#save-active')?.hidden === false);
+  assert((await page.locator('#stock-list').innerText()).includes('STR_CHEMICALS'));
+  assert((await page.locator('#summary').innerText()).includes('기존 재고 사용량'));
+  assert((await page.locator('#summary').innerText()).includes('36개'));
+  assert((await page.locator('#research').innerText()).includes('discovered에서 확인'));
+  await page.locator('#save-base').selectOption('1');
+  await page.locator('#save-apply').click();
+  assert((await page.locator('#tree').innerText()).includes('보유 재고 2개'));
+  await page.locator('#save-base').selectOption('all');
+  await page.locator('#save-apply').click();
+  assert((await page.locator('#summary').innerText()).includes('36개'));
+  assert((await page.locator('#save-active-text').innerText()).includes('모든 기지'));
+  const oldSave = sample.replace('piratez ver: v.o2','piratez ver: v.o1.1.1');
+  await page.locator('#save-file').setInputFiles({
+    name:'old.sav',mimeType:'text/plain',buffer:Buffer.from(oldSave,'utf8')
+  });
+  await page.waitForFunction(()=>document.querySelector('#save-message')?.textContent?.includes('가져오기 중단'));
+  assert(await page.locator('#save-preview').isHidden());
+  assert((await page.locator('#stock-list').innerText()).includes('STR_CHEMICALS'));
+  await page.locator('#save-disconnect').click();
+  assert((await page.locator('#research').innerText()).includes('미확인 ID'));
+  assert(!(await page.locator('#research').innerText()).includes('discovered에서 확인'));
   assert.deepEqual(errors,[]);
   console.log('PASS 2.1 manufacturing planner UI: nested production, stock deduction, consolidated materials, alternative comparison and JSON export');
 }finally{if(browser)await browser.close();await new Promise(done=>server.close(done));}
