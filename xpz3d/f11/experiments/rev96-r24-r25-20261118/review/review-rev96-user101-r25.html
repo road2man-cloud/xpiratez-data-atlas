@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,">
+<title>XPZ3D F11 rev96 r25 · 피부 표시 수정 | 하단 회음부 및 항문 저폴리곤 조형</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,"Malgun Gothic",sans-serif;--bg:#0c1117;--panel:#17212b;--line:#35434f;--text:#e7f0f6;--muted:#b3c2ce;--green:#8ddcb6}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}
+header,main,footer{max-width:1450px;margin:0 auto;padding:18px 24px}
+header{padding-top:32px}h1{font-size:clamp(25px,3vw,38px);line-height:1.18;margin:8px 0}h2{font-size:19px;margin:0}
+p{color:var(--muted);line-height:1.6}a{color:var(--green)}.eyebrow{font-size:12px;letter-spacing:.13em;color:var(--green);font-weight:bold}
+.alert{border:1px solid #536675;background:#192633;padding:13px 17px;border-radius:12px;margin:16px 0}
+.controls{display:flex;gap:12px 22px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);background:var(--panel);padding:14px;border-radius:14px;margin:14px 0}
+.controls label{display:flex;align-items:center;gap:8px;font-size:14px}
+input[type=range]{accent-color:#7cddaf;width:145px}select,button{padding:7px 12px;border-radius:9px;border:1px solid #637b86;background:#1c2c39;color:var(--text);cursor:pointer}
+button:hover{background:#284256}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.panel{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}
+.panel>header{padding:14px 16px;border-bottom:1px solid var(--line)}
+.panel h2{margin:0}.panel small{color:var(--muted)}
+canvas{display:block;width:100%;height:570px;background:#0d141b;touch-action:none;cursor:grab}
+.panel .meta{display:flex;flex-wrap:wrap;gap:12px;padding:12px 16px;color:var(--muted);font-size:12px}
+.locator{position:absolute;z-index:2;transform:translate(10px,-45%);border:1px solid #f29a98;border-radius:9px;background:#54252fe8;color:white;padding:5px 9px;font-size:12px;font-weight:700;cursor:pointer}.locator:before{content:'';position:absolute;width:12px;height:12px;border:2px solid #ff9e9e;border-radius:50%;left:-18px;top:50%;transform:translateY(-50%)}.pill{border:1px solid #4b6476;border-radius:99px;padding:2px 8px;color:#b9f1cd;font-size:12px}
+#status{color:#d4ebd9;margin:10px 0;font-size:13px}
+.info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.info article{background:var(--panel);border:1px solid var(--line);padding:16px;border-radius:12px}
+.info strong{display:block;font-size:19px;margin-bottom:4px}.info span{color:var(--muted);font-size:12px}
+footer{color:var(--muted);font-size:12px;padding-bottom:45px}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.info{grid-template-columns:1fr}canvas{height:440px}}
+</style>
+</head>
+<body>
+<header>
+<div class="eyebrow">XPZ3D · F11 · WEBGL2 LIVE MESH INSPECTION</div>
+<h1>F11 rev96 r25 · 피부 표시 수정 · 하단 회음부 자연 봉합과 항문 조형</h1>
+<p>r23-LBS Weld를 불변 기준으로, 대·소음순과 질전정에서 회음부를 거쳐 항문 쪽으로 이어지는 중앙 피부의 함몰을 단계적으로 조형했습니다. 항문 함몰 중심을 후방(+Y)으로 18~20mm 옮겼습니다. 질구와 항문은 독립된 구조로 유지하며 시각적으로는 실험 후보입니다.</p>
+<div class="alert"><strong>보호 조건:</strong> 2026-11-16 15:28 원본 101면 비복원 · 106 설정 · 정점 754개 · 63 Bones · 의복 370면. 항문은 색칠이 아닌 실제 링/함몰면입니다. 시각 승인 전.</div>
+</header>
+<main>
+<div class="controls"><label>다리 각도 바로 선택 <button type="button" data-spread="0">0°</button><button type="button" data-spread="25">25°</button><button type="button" data-spread="40">40°</button><button type="button" data-spread="55">55°</button></label>
+<label>의복·해부학 관찰 모드 <select id="anatomyMode"><option value="external">원본 재질 + 실제 깊이 판정</option><option value="anatomy" selected>원본 의복 유지 + 점막 조형 확인</option><option value="ghost">조직 반투명 관찰</option><option value="cutaway">골반 컷어웨이</option></select></label>
+<label>다리 벌림 <input id="legSpread" type="range" min="0" max="55" value="55" step="1"><output id="spreadLabel">55° / side</output></label>
+<label>시점 <select id="preset"><option value="front">정면</option><option value="three">사선 3/4</option><option value="bottom" selected>아래 정면</option><option value="inferior">서혜부 하단</option><option value="posterior">후하방</option><option value="side">측면</option></select></label>
+<label>관찰 <select id="focus"><option value="full">전신</option><option value="pelvis">골반 접합부 확대</option><option value="detail" selected>중앙 조직 상세 확대</option></select></label>
+<label>회전 <input id="rotation" type="range" min="-180" max="180" step="1" value="0"><output id="rotationLabel">0°</output></label>
+<label>확대 <input id="zoom" type="range" min="1" max="5" step=".1" value="2.6"><output id="zoomLabel">2.6×</output></label>
+<label><input type="checkbox" id="leftGarment"> 왼쪽 착의</label><label><input type="checkbox" id="rightGarment"> 오른쪽 착의</label>
+<label>표면 분리 <select id="surfaceFilter"><option value="all" selected>전체 메시</option><option value="body">몸통·하체만</option><option value="patch">연결 피부 패치만</option><option value="garment">의복 표면만</option><option value="patch-core">중앙 해부학 패치만</option><option value="skin-underlay">신규 피부 연결면만</option></select></label><label><input type="checkbox" id="wire" checked> 와이어프레임</label>
+<label><input type="checkbox" id="tint"> 수정 정점 강조</label><label>프리미티브 분리 <select id="layerChoice"><option value="all" selected>전체 보기</option><option value="native">원본 몸통만</option><option value="anatomy">중앙 해부학 패치만</option><option value="lowercap">문제의 하단 연장면만</option><option value="side">좌우 피부 연결면만</option><option value="garment">의복만</option></select></label>
+<button id="reset">카메라 초기화</button>
+</div>
+<div class="controls" style="margin-top:8px"><label>비교 모델 선택
+<select id="modelVariant"><option value="../models/r21AO-F11-user101-native-retopo-r25-lateral-gentle-v1.glb" selected>r25 Gentle · 외측 피부 곡면 시험</option><option value="../models/r21AO-F11-user101-native-retopo-r25-lateral-sculpt-v1.glb">r25 Sculpt · 강화 곡면 시험</option><option value="../models/r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb">r24 Soft v3 기준 · 항문 +20mm</option></select></label><span style="font-size:12px;color:var(--muted)">본 페이지는 독립 비교 전용이며 원래 대시보드를 변경하지 않습니다.</span></div>
+<div class="alert"><strong>r24 회음부 연속 곡면:</strong> r23에서 폐쇄된 국소 위상을 보존하면서, 회음부의 중심 고랑을 후방으로 부드럽게 연장하고 항문 함몰 자체의 위치를 조정했습니다. 63본 및 의복 370면 유지, 사용자 수동 삭제 101면 복원 없음. 넓은 좌우 피부막은 아직 개선이 필요합니다.</div>
+<div id="poseDiagnostic" role="status" style="color:#a9dfc4;font-size:13px;padding:3px 0">실제 메시 변형 계산 대기</div>
+<div id="status" role="status">WebGL2에서 모델을 불러오는 중…</div>
+<div style="display:flex;align-items:center;gap:10px;margin:12px 0 4px"><strong>클릭한 메시의 원본 ID와 좌표</strong><button type="button" id="copyFace">정보 복사</button><span style="color:var(--muted);font-size:12px">화면의 삼각형을 클릭하세요 · GLB 좌표 단위 (편집기의 Y 57~90과 다름)</span></div>
+<pre id="faceInfo" style="white-space:pre-wrap;word-break:break-all;border:1px solid var(--line);border-radius:12px;background:#111b24;color:#ade9d0;padding:12px;font:12px/1.55 Consolas,monospace;min-height:60px">대기: 좌측 또는 우측 3D 화면의 문제 삼각형을 클릭해 주세요.</pre>
+<section class="grid">
+<article class="panel"><header><h2>기준 r23-LBS Weld <span class="pill">4,680면</span></h2><small>63 Bones · 의복 370 Tri 유지</small></header><canvas id="viewBefore" aria-label="r21-L 이전 3D 모델"></canvas><div class="meta"><span id="metaBefore">GLB 로딩 대기</span><span>기존 메시</span></div></article>
+<article class="panel"><header><h2>r24 후방 항문 위치 · 회음부 중앙 고랑 연장 <span class="pill">실제 메시</span></h2><small>63 Bones · 의복 370 Tri 유지</small></header><canvas id="viewAfter" aria-label="r21-AO 전신과 연결된 서혜부 하부 해부학 3D 모델"></canvas><button id="anatomyLocator" class="locator" title="같은 전신 메시의 해부학 연결부 확대" type="button">연결 해부학 · 확대</button><div class="meta"><span id="metaAfter">GLB 로딩 대기</span><span>WebGL2 시제품 · 게임 미적용</span></div></article>
+</section>
+<p class="alert"><strong>레이어 사용:</strong> 좌/우 착의를 각각 체크하면 별도 의복 프리미티브가 표시됩니다. 피부-only GLB를 선택하면 착의 체크와 무관하게 의복이 포함되지 않습니다. 의복 외피의 피부 관통 여부는 최종 승인 전 추가 확인해야 합니다.</p>
+<div class="info"><article><strong>106개 보존 설정</strong><span>사용자 설정 기준 · X 방향 대칭 해석</span></article><article><strong>370면 별도 의복</strong><span>맨몸 GLB에서는 실제 의복 프리미티브 제외</span></article><article><strong>63 Bones</strong><span>기존 스켈레톤 보존 · 정적 화면 검토</span></article></div>
+<p>마우스로 캔버스를 드래그해 회전할 수 있습니다. 카메라는 양쪽에 동기화됩니다. 맨몸과 의복 외피를 실제로 분리해서 확인할 수 있으며, '수정 정점 강조'는 골반의 수정 영역을 표면 색조로 표시합니다. 원본 rev89는 보존되어 있습니다. 다리 벌림 슬라이더는 좌우 허벅지 본을 각 방향으로 회전시키며 피부 경계와 해부학 표면 모두에 같은 LBS 계산을 적용합니다. 걷기·달리기 애니메이션과 S2 네이티브 실행은 아직 적용되지 않았습니다.</p>
+</main>
+<footer>rev96 USER101: 수동 JSON에서 직접 생성 · 원본 101면 절단 유지 · 0°/25°/40°/55° 자체 비교용 실험 후보 · 과거 파일 덮어쓰기 금지</footer>
+<script src="./pose_skinning.js?v=20261115-r21an" defer></script>
+<script src="./viewer-rev96-user101-r25.js?v=20261118-lateral-v1" defer></script>
+</body></html>

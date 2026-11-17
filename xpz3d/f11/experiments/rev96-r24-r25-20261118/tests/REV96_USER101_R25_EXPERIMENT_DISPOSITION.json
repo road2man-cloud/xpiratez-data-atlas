@@ -1,0 +1,112 @@
+{
+  "schema": "xpz3d/f11/rev96/r25-disposition/v1",
+  "writtenUTC": "2026-11-17T16:10:23.386Z",
+  "baseline": {
+    "model": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+    "sha256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a",
+    "revision": "r24 ellipse soft v3",
+    "posteriorShiftGLB": 0.01999999996041879
+  },
+  "userPreference": "Actual work, not repeated checks; user feedback-free self-directed iterations",
+  "observations": "r25 pushed 268 interior patch vertices but the wide bilateral membranes remain visually almost unchanged in 55-degree solid rear/under renders. Surface max shift limited to <0.001 GLB due pose normal inversion constraints. New shape has no new triangles. Original body walls and 112 skin patch boundary vertices were left unchanged.",
+  "r24AnatomyAlternatives": [
+    {
+      "model": "r21AO-F11-user101-native-perineal-r24-soft.glb",
+      "sha256": "38e9b6b00771b1d4e0098d2c331fd561b0872d290be4b538f539ab9248770eb0",
+      "source": "r23-lbsweld",
+      "note": "Local smooth anatomy experiment",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.011,
+      "skinScale": 0.5,
+      "changedCore": 109,
+      "changedSkin": 219,
+      "visualStatus": "experimental, not approved"
+    },
+    {
+      "model": "r21AO-F11-user101-native-perineal-r24-contour.glb",
+      "sha256": "c43874f42c4aaf7706c5956bfbc3d8c3802c34756d6e3fa96411c5f17028cbb5",
+      "source": "r23-lbsweld",
+      "note": "High-curvature experiment; core moved with auto backoff",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.014,
+      "coreScale": 0.7,
+      "skinScale": 0.5,
+      "changedCore": 109,
+      "changedSkin": 219,
+      "visualStatus": "experimental, not approved"
+    },
+    {
+      "model": "r21AO-F11-user101-native-perineal-r24-contour-v2.glb",
+      "sha256": "b2f90268f0af2c1d3155aa70553bf8fb5c57a3a7e777f2e94d4980228d8ce8ff",
+      "source": "r23-lbsweld",
+      "note": "Backoff reduces posterior shift",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.008329999999999999,
+      "coreScale": 0.48999999999999994,
+      "skinScale": 0.5,
+      "changedCore": 109,
+      "changedSkin": 219,
+      "visualStatus": "experimental, not approved"
+    },
+    {
+      "model": "r21AO-F11-user101-native-perineal-r24-posterior-v3.glb",
+      "sha256": "b1894265b30247e5b1aac1cd3a7ea112e35402e5acff945de0b6a90f63782850",
+      "source": "r23-lbsweld",
+      "note": "Backoff reduces posterior shift",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.009099999999999999,
+      "coreScale": 0.7,
+      "skinScale": 0.5,
+      "changedCore": 109,
+      "changedSkin": 219,
+      "visualStatus": "experimental, not approved"
+    },
+    {
+      "model": "r21AO-F11-user101-native-perineal-r24-midline-v4.glb",
+      "sha256": "6117a000aed48c35d5dea96cc24340174e0f4503edd361807a0571dcd5c73dcf",
+      "source": "r23-lbsweld",
+      "note": "More pronounced central skin groove",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.011,
+      "coreScale": 1,
+      "skinScale": 0.5,
+      "changedCore": 109,
+      "changedSkin": 219,
+      "visualStatus": "experimental, not approved"
+    }
+  ],
+  "r25Experiments": [
+    {
+      "model": "r21AO-F11-user101-native-retopo-r25-lateral-gentle-v1.glb",
+      "sha256": "569cac800e88ba5e59cfb74123ae83cc2f6c674c8384470aeab29c9a9bb8140f",
+      "source": "r23-lbsweld",
+      "note": "Lateral skin fairing subtle 0.75mm max",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.01999999996041879,
+      "skinScale": 0.11602906250000004,
+      "changedCore": 123,
+      "changedSkin": 268,
+      "visualStatus": "experimental, not approved"
+    },
+    {
+      "model": "r21AO-F11-user101-native-retopo-r25-lateral-sculpt-v1.glb",
+      "sha256": "639dabeef4d6383d6590bc325e98a8a1a7e849a0f82f003004c5372b81de5d3b",
+      "source": "r23-lbsweld",
+      "note": "Lateral skin fairing auto-backoff, 0.83mm max",
+      "triangles": 4680,
+      "actualAnalShiftGLB": 0.01999999996041879,
+      "skinScale": 0.07541889062500003,
+      "changedCore": 123,
+      "changedSkin": 268,
+      "visualStatus": "experimental, not approved"
+    }
+  ],
+  "recommendedCurrentVisual": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+  "integratedGLB": "not_replaced",
+  "nextAction": "Full retopology of 38/35-edge left/right skin cavities: replace broad radial fan with longitudinal constrained bands following core/body normals. Keep user-trim 101, authored 908, pose seam 249 pairs and clothing 370. Do not increase decimation.",
+  "visuals": {
+    "r25Gentle": "rev96-r25-gentle-canonical-55-under-solid.png",
+    "r25Side": "rev96-r25-gentle-canonical-55-behind-solid.png"
+  },
+  "classification": "EXPERIMENTAL_R25_NOT_VISUALLY_BETTER_THAN_R24_ELLIPSE_V3"
+}

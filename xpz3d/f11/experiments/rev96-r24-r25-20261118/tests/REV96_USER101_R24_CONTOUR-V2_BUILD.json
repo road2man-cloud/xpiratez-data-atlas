@@ -1,0 +1,74 @@
+{
+  "schema": "xpz3d/f11/rev96/r24/v1",
+  "file": "r21AO-F11-user101-native-perineal-r24-contour-v2.glb",
+  "sha256": "b2f90268f0af2c1d3155aa70553bf8fb5c57a3a7e777f2e94d4980228d8ce8ff",
+  "dateUTC": "2026-11-17T16:00:15.259Z",
+  "base": "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+  "baseSHA": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+  "parameters": {
+    "pitShift": 0.017,
+    "groove": 0.0064,
+    "labialLip": 0.0023,
+    "flankRecess": 0.014,
+    "flankTuck": 0.006
+  },
+  "posteriorAnalDeltaY": 0.008329999999999999,
+  "createdGeometry": {
+    "coreMoved": 109,
+    "pitMoved": 17,
+    "patchInteriorMoved": 219,
+    "coreSculptScale": 0.48999999999999994,
+    "patchFairingScale": 0.5,
+    "triangles": 4680
+  },
+  "protected": {
+    "originalArtist908Vertices": true,
+    "userTrim101": true,
+    "manualPositions754": true,
+    "rig63": true,
+    "independentGarment370": true,
+    "originalBodyPrimitiveUnchanged": true,
+    "materialSeamVerticesFrozen": 715
+  },
+  "beforeAfter": {
+    "analCenterOld": [
+      -0.00012720641097985208,
+      0.0008213311084546149,
+      0.9063022136688232
+    ],
+    "analCenterNew": [
+      -0.00012720641097985208,
+      0.009151331108454614,
+      0.9068412136688232
+    ]
+  },
+  "quality": {
+    "core": {
+      "minArea": 2.0977274360631744e-7,
+      "zero": 0,
+      "reversed": 0,
+      "maxStretch": 1.8329063059465578
+    },
+    "patch": {
+      "minArea": 1.3329493911463807e-7,
+      "zero": 0,
+      "reversed": 0,
+      "maxStretch": 6.6109654890914475
+    },
+    "corePose": {
+      "minArea": 1.935794903274861e-7,
+      "zero": 0,
+      "reversed": 0,
+      "maxStretch": 0
+    },
+    "patchPose": {
+      "minArea": 1.1949949140712875e-7,
+      "zero": 0,
+      "reversed": 0,
+      "maxStretch": 0
+    }
+  },
+  "openEdgesClaim": "Not re-validated; unchanged triangle indices and unchanged rest/morph shared boundary anchors",
+  "renderReview": "pending",
+  "finalVisualAcceptance": false
+}

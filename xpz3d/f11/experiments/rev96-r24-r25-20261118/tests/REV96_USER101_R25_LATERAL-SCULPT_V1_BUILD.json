@@ -1,0 +1,2404 @@
+{
+  "schema": "xpz3d/f11/r25-lateral-fairing/v1",
+  "createdUTC": "2026-11-17T16:07:54.121Z",
+  "input": "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+  "inputSHA256": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+  "file": "r21AO-F11-user101-native-retopo-r25-lateral-sculpt-v1.glb",
+  "sha256": "639dabeef4d6383d6590bc325e98a8a1a7e849a0f82f003004c5372b81de5d3b",
+  "variant": "lateral-sculpt",
+  "analPit": {
+    "oldY": 0.0008213311084546149,
+    "newY": 0.020821331068873405,
+    "posteriorShift": 0.01999999996041879
+  },
+  "cleft": {
+    "startY": -0.09,
+    "endY": 0.024,
+    "originalAuthoredVerticesChanged": 0,
+    "originalManualFacesReintroduced": 0
+  },
+  "areas": {
+    "coreRest": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 2.0977274360631744e-7,
+      "maxMove": 0.0200734828876976,
+      "changedVertices": 123
+    },
+    "coreMorph": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 1.935794903274861e-7,
+      "maxMove": 0.0200734828876976,
+      "changedVertices": 123
+    },
+    "skinRest": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 1.334351155107225e-7,
+      "maxMove": 0.0008285548736512661,
+      "changedVertices": 268
+    },
+    "skinMorph": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 1.2108392546265407e-7,
+      "maxMove": 0.0008285548736512661,
+      "changedVertices": 268
+    }
+  },
+  "skinInteriorMoved": 268,
+  "lateralScale": 0.07541889062500003,
+  "patchBoundaryVerticesPreserved": 112,
+  "bodyAndRigUnchanged": true,
+  "originalGarment370FacesPreserved": true,
+  "topologicalFullClosure": false,
+  "visualReview": "pending",
+  "log": [
+    {
+      "id": 910,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000015972000074707666
+    },
+    {
+      "id": 911,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00015615323874330968
+    },
+    {
+      "id": 912,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005952434971245183
+    },
+    {
+      "id": 913,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000596259729888438
+    },
+    {
+      "id": 914,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0009868951445524618
+    },
+    {
+      "id": 915,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0002060907072370567
+    },
+    {
+      "id": 916,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0017766760846222702
+    },
+    {
+      "id": 917,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.002727590793237988
+    },
+    {
+      "id": 918,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0023231781721768053
+    },
+    {
+      "id": 919,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0009458427368558749
+    },
+    {
+      "id": 920,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001390698839679511
+    },
+    {
+      "id": 921,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00013878665645775841
+    },
+    {
+      "id": 922,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007377340520310616
+    },
+    {
+      "id": 923,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0009574004827926924
+    },
+    {
+      "id": 924,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00040804462255601606
+    },
+    {
+      "id": 925,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000042444612801789844
+    },
+    {
+      "id": 926,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000031966166475470058
+    },
+    {
+      "id": 930,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000786626346877864
+    },
+    {
+      "id": 931,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004177046467529571
+    },
+    {
+      "id": 932,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000482212962280867
+    },
+    {
+      "id": 933,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0008428280957243834
+    },
+    {
+      "id": 934,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00038156119743118326
+    },
+    {
+      "id": 935,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0035418875934551024
+    },
+    {
+      "id": 936,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005301590793237988
+    },
+    {
+      "id": 937,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004433658137507775
+    },
+    {
+      "id": 938,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0018792939637524968
+    },
+    {
+      "id": 939,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0022565340449656416
+    },
+    {
+      "id": 940,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00023884773805466555
+    },
+    {
+      "id": 941,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007452717847164119
+    },
+    {
+      "id": 942,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006468512189549134
+    },
+    {
+      "id": 943,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00015993332256726393
+    },
+    {
+      "id": 944,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000075857839178778305
+    },
+    {
+      "id": 949,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00003899451430980411
+    },
+    {
+      "id": 950,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0002943071238262058
+    },
+    {
+      "id": 951,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004156292273636104
+    },
+    {
+      "id": 952,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007386683884969511
+    },
+    {
+      "id": 953,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0009122980754051782
+    },
+    {
+      "id": 954,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005016994885394772
+    },
+    {
+      "id": 955,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.007407590793237989
+    },
+    {
+      "id": 956,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.006035042326543565
+    },
+    {
+      "id": 957,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0023975812848518454
+    },
+    {
+      "id": 958,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.002311762569542522
+    },
+    {
+      "id": 959,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00006322004370701058
+    },
+    {
+      "id": 960,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000738468192213456
+    },
+    {
+      "id": 961,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00034352066583453295
+    },
+    {
+      "id": 962,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00004262818363749622
+    },
+    {
+      "id": 968,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000034810650773246815
+    },
+    {
+      "id": 969,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0002842459032656463
+    },
+    {
+      "id": 970,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004602367803597476
+    },
+    {
+      "id": 971,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007114848874935208
+    },
+    {
+      "id": 972,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0012234997317766719
+    },
+    {
+      "id": 973,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0053305640117568475
+    },
+    {
+      "id": 974,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0076415907932379885
+    },
+    {
+      "id": 975,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.006122025756624223
+    },
+    {
+      "id": 976,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.002297747285931167
+    },
+    {
+      "id": 977,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001708174942559042
+    },
+    {
+      "id": 978,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0003995195345555823
+    },
+    {
+      "id": 979,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006805682892433048
+    },
+    {
+      "id": 980,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00020768422178943057
+    },
+    {
+      "id": 981,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000016547224773651412
+    },
+    {
+      "id": 987,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00006737741214190137
+    },
+    {
+      "id": 988,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0003999924102575722
+    },
+    {
+      "id": 989,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00061949189462135
+    },
+    {
+      "id": 990,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006275067084311474
+    },
+    {
+      "id": 991,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001579102513262328
+    },
+    {
+      "id": 992,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0051552066481033365
+    },
+    {
+      "id": 993,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.007017590793237988
+    },
+    {
+      "id": 994,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005637168655885047
+    },
+    {
+      "id": 995,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.002176642942083265
+    },
+    {
+      "id": 996,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0012992105790933404
+    },
+    {
+      "id": 997,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005250485176478032
+    },
+    {
+      "id": 998,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006828315461272306
+    },
+    {
+      "id": 999,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0002046949296153776
+    },
+    {
+      "id": 1000,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000017231007533714966
+    },
+    {
+      "id": 1005,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000007382451762368388
+    },
+    {
+      "id": 1006,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00018220564504692262
+    },
+    {
+      "id": 1007,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006374759624248287
+    },
+    {
+      "id": 1008,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0008194212336344215
+    },
+    {
+      "id": 1009,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004399543351944685
+    },
+    {
+      "id": 1010,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0016981372088218777
+    },
+    {
+      "id": 1011,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0043052755126924734
+    },
+    {
+      "id": 1012,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005535590793237988
+    },
+    {
+      "id": 1013,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004519950090113172
+    },
+    {
+      "id": 1014,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0018764677885857266
+    },
+    {
+      "id": 1015,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0009720490918658804
+    },
+    {
+      "id": 1016,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005852053534527363
+    },
+    {
+      "id": 1017,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000787631814832173
+    },
+    {
+      "id": 1018,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000303470906674403
+    },
+    {
+      "id": 1019,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000038419624989384586
+    },
+    {
+      "id": 1020,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000010503457419904671
+    },
+    {
+      "id": 1024,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000038917438683658044
+    },
+    {
+      "id": 1025,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00039011659951151067
+    },
+    {
+      "id": 1026,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0008970139443406515
+    },
+    {
+      "id": 1027,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0009883484858887919
+    },
+    {
+      "id": 1028,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004491775254365268
+    },
+    {
+      "id": 1029,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0010820220910359001
+    },
+    {
+      "id": 1030,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00251726383762674
+    },
+    {
+      "id": 1031,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.003117590793237988
+    },
+    {
+      "id": 1032,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.002577001952304613
+    },
+    {
+      "id": 1033,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001040627332140186
+    },
+    {
+      "id": 1034,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0003676310779054857
+    },
+    {
+      "id": 1035,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007621170467218745
+    },
+    {
+      "id": 1036,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0009552309057873303
+    },
+    {
+      "id": 1037,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004654476750754321
+    },
+    {
+      "id": 1038,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00008800119005353447
+    },
+    {
+      "id": 1039,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000004872789582315361
+    },
+    {
+      "id": 990,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00022668115387610563
+    },
+    {
+      "id": 991,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0003278653299572716
+    },
+    {
+      "id": 992,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00041457984631292213
+    },
+    {
+      "id": 993,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00045
+    },
+    {
+      "id": 994,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00042426480489933044
+    },
+    {
+      "id": 995,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00034483043303430174
+    },
+    {
+      "id": 996,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00031933100049690624
+    },
+    {
+      "id": 1009,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0007441979118134913
+    },
+    {
+      "id": 1010,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0010052571338182747
+    },
+    {
+      "id": 1011,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0012164074931514408
+    },
+    {
+      "id": 1012,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0013
+    },
+    {
+      "id": 1013,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00123168406621993
+    },
+    {
+      "id": 1014,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0010215541008414728
+    },
+    {
+      "id": 1015,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0009342594959175372
+    },
+    {
+      "id": 1028,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0025276727828048317
+    },
+    {
+      "id": 1029,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0032378824262026783
+    },
+    {
+      "id": 1030,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.00378748596315362
+    },
+    {
+      "id": 1031,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.004
+    },
+    {
+      "id": 1032,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.003809242770341964
+    },
+    {
+      "id": 1033,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.003221237941039207
+    },
+    {
+      "id": 1034,
+      "region": "posterior-anal-opening-support",
+      "deltaY": 0.0029391916352842352
+    },
+    {
+      "id": 1060,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013269741553813219,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1061,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013932439498603344,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1062,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013659367803484201,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1063,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.009787059971131384,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1064,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.0066733649000525475,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1065,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.006856049410998821,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1066,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.006372533738613129,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1067,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.00944944191724062,
+      "deltaZ": 0.00031200000000000005
+    },
+    {
+      "id": 1068,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.014898577937856317,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1069,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.015080698067322373,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1070,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.015005653025582433,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1071,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013941480894573033,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1072,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013085787650197744,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1073,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013135991059243679,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1074,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.013003112748265266,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1075,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.01384869811590761,
+      "deltaZ": 0.00117
+    },
+    {
+      "id": 1076,
+      "region": "posterior-oval-anal-recess",
+      "deltaY": 0.02,
+      "deltaZ": 0.001716
+    },
+    {
+      "id": 47,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0027203656958544064,
+      "deltaX": 0.001414590161844291
+    },
+    {
+      "id": 48,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007867002444097796,
+      "deltaX": 0.004090841270930855
+    },
+    {
+      "id": 49,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007392471454887771,
+      "deltaX": 0.003844085156541641
+    },
+    {
+      "id": 50,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006762998206422126,
+      "deltaX": 0.0035167590673395054
+    },
+    {
+      "id": 51,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0060791082490948495,
+      "deltaX": 0.0031611362895293217
+    },
+    {
+      "id": 52,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0000710873095965992,
+      "deltaX": 0.000036965400990231595
+    },
+    {
+      "id": 53,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000015326771640038428,
+      "deltaX": 0.00000796992125281998
+    },
+    {
+      "id": 54,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000029555695290323967,
+      "deltaX": 0.000015368961550968462
+    },
+    {
+      "id": 55,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00011863197436434051,
+      "deltaX": 0.00006168862666945707
+    },
+    {
+      "id": 56,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00037307449129877476,
+      "deltaX": 0.00019399873547536287
+    },
+    {
+      "id": 57,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0004663395670632824,
+      "deltaX": 0.00024249657487290685
+    },
+    {
+      "id": 58,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0008011375200289783,
+      "deltaX": 0.00041659151041506856
+    },
+    {
+      "id": 59,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.001994258690200979,
+      "deltaX": 0.001037014518904509
+    },
+    {
+      "id": 60,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0019730905061839813,
+      "deltaX": 0.00102600706321567
+    },
+    {
+      "id": 61,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0022950506965269133,
+      "deltaX": 0.0011934263621939947
+    },
+    {
+      "id": 62,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0019125592957959779,
+      "deltaX": 0.0009945308338139083
+    },
+    {
+      "id": 63,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0015928940344884326,
+      "deltaX": 0.000828304897933985
+    },
+    {
+      "id": 64,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0018005138472366696,
+      "deltaX": 0.0009362672005630681
+    },
+    {
+      "id": 65,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0021932766390638475,
+      "deltaX": 0.0011405038523132009
+    },
+    {
+      "id": 66,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0008046591939416582,
+      "deltaX": 0.0004184227808496622
+    },
+    {
+      "id": 67,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0011416417118710936,
+      "deltaX": 0.0005936536901729687
+    },
+    {
+      "id": 68,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0010594800191387138,
+      "deltaX": 0.0005509296099521311
+    },
+    {
+      "id": 69,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0006405724056114211,
+      "deltaX": 0.000333097650917939
+    },
+    {
+      "id": 70,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0010897233243368648,
+      "deltaX": 0.0005666561286551695
+    },
+    {
+      "id": 71,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.001127031335969966,
+      "deltaX": 0.0005860562947043822
+    },
+    {
+      "id": 72,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0004005430571945543,
+      "deltaX": 0.00020828238974116822
+    },
+    {
+      "id": 73,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0007155957042669159,
+      "deltaX": 0.0003721097662187963
+    },
+    {
+      "id": 74,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0008183646067988725,
+      "deltaX": 0.0004255495955354137
+    },
+    {
+      "id": 75,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003265677070015399,
+      "deltaX": 0.0016981520764080076
+    },
+    {
+      "id": 76,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005062613702682692,
+      "deltaX": 0.0026325591253949995
+    },
+    {
+      "id": 77,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00602992871611639,
+      "deltaX": 0.0031355629323805228
+    },
+    {
+      "id": 78,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007056440345467161,
+      "deltaX": 0.003669348979642923
+    },
+    {
+      "id": 80,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003086020389634201,
+      "deltaX": 0.0016047306026097843
+    },
+    {
+      "id": 81,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004459717136776083,
+      "deltaX": 0.0023190529111235627
+    },
+    {
+      "id": 82,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005960114885667815,
+      "deltaX": 0.0030992597405472637
+    },
+    {
+      "id": 83,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006705667004448226,
+      "deltaX": 0.0034869468423130772
+    },
+    {
+      "id": 84,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007692044108643478,
+      "deltaX": 0.003999862936494607
+    },
+    {
+      "id": 85,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006172399391879138,
+      "deltaX": 0.0032096476837771525
+    },
+    {
+      "id": 86,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008464700266712085,
+      "deltaX": 0.004401644138690284
+    },
+    {
+      "id": 87,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0068741704414337045,
+      "deltaX": 0.0035745686295455257
+    },
+    {
+      "id": 88,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009451210296636437,
+      "deltaX": 0.004914629354250947
+    },
+    {
+      "id": 89,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009144037497484618,
+      "deltaX": 0.004754899498692001
+    },
+    {
+      "id": 90,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003102470792796507,
+      "deltaX": 0.0016132848122541834
+    },
+    {
+      "id": 91,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003905501731134448,
+      "deltaX": 0.0020308609001899133
+    },
+    {
+      "id": 92,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004087314781787391,
+      "deltaX": 0.0021254036865294428
+    },
+    {
+      "id": 93,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0042732831246881835,
+      "deltaX": 0.0022221072248378554
+    },
+    {
+      "id": 94,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0051608061800369935,
+      "deltaX": 0.0026836192136192364
+    },
+    {
+      "id": 95,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004969647162643189,
+      "deltaX": 0.002584216524574458
+    },
+    {
+      "id": 96,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005492292295358196,
+      "deltaX": 0.002855991993586262
+    },
+    {
+      "id": 97,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006014673817133305,
+      "deltaX": 0.0031276303849093186
+    },
+    {
+      "id": 98,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005812387905131357,
+      "deltaX": 0.003022441710668305
+    },
+    {
+      "id": 99,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005735863361738427,
+      "deltaX": 0.0029826489481039817
+    },
+    {
+      "id": 100,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00627265469330525,
+      "deltaX": 0.0032617804405187306
+    },
+    {
+      "id": 101,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005559922774084094,
+      "deltaX": 0.0028911598425237287
+    },
+    {
+      "id": 102,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006103056939834432,
+      "deltaX": 0.0031735896087139045
+    },
+    {
+      "id": 103,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005574962501447555,
+      "deltaX": 0.0028989805007527277
+    },
+    {
+      "id": 104,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005279259369872776,
+      "deltaX": 0.0027452148723338433
+    },
+    {
+      "id": 105,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004768659527437536,
+      "deltaX": 0.0024797029542675186
+    },
+    {
+      "id": 106,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004331579060623712,
+      "deltaX": 0.0022524211115243302
+    },
+    {
+      "id": 107,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0037805117573643096,
+      "deltaX": 0.001965866113829441
+    },
+    {
+      "id": 108,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003533423428645506,
+      "deltaX": 0.0018373801828956632
+    },
+    {
+      "id": 109,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0027999283839123803,
+      "deltaX": 0.0014559627596344375
+    },
+    {
+      "id": 110,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0022178647191578842,
+      "deltaX": 0.0011532896539620998
+    },
+    {
+      "id": 111,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0022803391354915756,
+      "deltaX": 0.0011857763504556193
+    },
+    {
+      "id": 112,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.002236820159832693,
+      "deltaX": 0.0011631464831130002
+    },
+    {
+      "id": 113,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006672773510359217,
+      "deltaX": 0.0034698422253867925
+    },
+    {
+      "id": 114,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007288386610272663,
+      "deltaX": 0.003789961037341785
+    },
+    {
+      "id": 115,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007581048684373268,
+      "deltaX": 0.003942145315874099
+    },
+    {
+      "id": 116,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008180146654647221,
+      "deltaX": 0.004253676260416554
+    },
+    {
+      "id": 118,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0046883148185269665,
+      "deltaX": 0.0024379237056340224
+    },
+    {
+      "id": 119,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007907123141964007,
+      "deltaX": 0.004111704033821283
+    },
+    {
+      "id": 120,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009490231710169869,
+      "deltaX": 0.004934920489288332
+    },
+    {
+      "id": 121,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0069094661123772095,
+      "deltaX": 0.0035929223784361484
+    },
+    {
+      "id": 122,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00817965730850277,
+      "deltaX": 0.004253421800421439
+    },
+    {
+      "id": 123,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004136722666225842,
+      "deltaX": 0.0021510957864374373
+    },
+    {
+      "id": 124,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0060895279478862295,
+      "deltaX": 0.0031665545329008396
+    },
+    {
+      "id": 125,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009185822868013586,
+      "deltaX": 0.004776627891367064
+    },
+    {
+      "id": 126,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009385811793105485,
+      "deltaX": 0.004880622132414852
+    },
+    {
+      "id": 127,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009228961880868887,
+      "deltaX": 0.00479906017805182
+    },
+    {
+      "id": 128,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007610569821297722,
+      "deltaX": 0.003957496307074815
+    },
+    {
+      "id": 129,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007878704171586854,
+      "deltaX": 0.004096926169225164
+    },
+    {
+      "id": 130,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007652056656654401,
+      "deltaX": 0.0039790694614602875
+    },
+    {
+      "id": 131,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007889357826270716,
+      "deltaX": 0.004102466069660771
+    },
+    {
+      "id": 132,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008439127792219286,
+      "deltaX": 0.004388346451954028
+    },
+    {
+      "id": 133,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008212834838956054,
+      "deltaX": 0.0042706741162571475
+    },
+    {
+      "id": 134,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008351752969780071,
+      "deltaX": 0.004342911544285638
+    },
+    {
+      "id": 135,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008118158123303925,
+      "deltaX": 0.004221442224118041
+    },
+    {
+      "id": 136,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007880166113524692,
+      "deltaX": 0.0040976863790328395
+    },
+    {
+      "id": 137,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008044308733829731,
+      "deltaX": 0.004183040541591459
+    },
+    {
+      "id": 138,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008350516809701003,
+      "deltaX": 0.00434226874104452
+    },
+    {
+      "id": 139,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008344909063326505,
+      "deltaX": 0.004339352712929782
+    },
+    {
+      "id": 140,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008312743766452767,
+      "deltaX": 0.004322626758555438
+    },
+    {
+      "id": 141,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00809959602657962,
+      "deltaX": 0.004211789933821402
+    },
+    {
+      "id": 142,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007903658818571233,
+      "deltaX": 0.004109902585657041
+    },
+    {
+      "id": 143,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007799881673997371,
+      "deltaX": 0.004055938470478633
+    },
+    {
+      "id": 144,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007858065999407348,
+      "deltaX": 0.00408619431969182
+    },
+    {
+      "id": 145,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00791620878642736,
+      "deltaX": 0.004116428568942227
+    },
+    {
+      "id": 146,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007855590931176762,
+      "deltaX": 0.004084907284211915
+    },
+    {
+      "id": 147,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007471165149107553,
+      "deltaX": 0.0038850058775359276
+    },
+    {
+      "id": 148,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006974680270151151,
+      "deltaX": 0.003626833740478599
+    },
+    {
+      "id": 149,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006731007961666906,
+      "deltaX": 0.003500124140066791
+    },
+    {
+      "id": 150,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006516051063257567,
+      "deltaX": 0.0033883465528939355
+    },
+    {
+      "id": 151,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009334701139425116,
+      "deltaX": 0.00485404459250106
+    },
+    {
+      "id": 152,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008837193270624408,
+      "deltaX": 0.0045953405007246925
+    },
+    {
+      "id": 153,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008554312883077515,
+      "deltaX": 0.004448242699200308
+    },
+    {
+      "id": 154,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00884700949658889,
+      "deltaX": 0.004600444938226222
+    },
+    {
+      "id": 155,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0025561716718407435,
+      "deltaX": 0.0013292092693571863
+    },
+    {
+      "id": 156,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0069627433139169805,
+      "deltaX": 0.00362062652323683
+    },
+    {
+      "id": 157,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009747170386692051,
+      "deltaX": 0.0050685286010798665
+    },
+    {
+      "id": 158,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009485444047368903,
+      "deltaX": 0.004932430904631829
+    },
+    {
+      "id": 159,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009248108318648252,
+      "deltaX": 0.004809016325697092
+    },
+    {
+      "id": 160,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006530567527646907,
+      "deltaX": 0.0033958951143763915
+    },
+    {
+      "id": 161,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00879443928859967,
+      "deltaX": 0.004573108430071827
+    },
+    {
+      "id": 174,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00018432052915933592,
+      "deltaX": 0.00009584667516285466
+    },
+    {
+      "id": 176,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00003435001724573289,
+      "deltaX": 0.000017862008967781104
+    },
+    {
+      "id": 177,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0000033535703237255557,
+      "deltaX": 0.0000017438565683372887
+    },
+    {
+      "id": 178,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00004419541600669754,
+      "deltaX": 0.00002298161632348272
+    },
+    {
+      "id": 179,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00005966679410983342,
+      "deltaX": 0.000031026732937113376
+    },
+    {
+      "id": 180,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00006087679993539056,
+      "deltaX": 0.00003165593596640309
+    },
+    {
+      "id": 181,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0001701632318062798,
+      "deltaX": 0.00008848488053926547
+    },
+    {
+      "id": 182,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000002386623198117943,
+      "deltaX": 0.0000012410440630213301
+    },
+    {
+      "id": 183,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00007556304240052167,
+      "deltaX": 0.00003929278204827127
+    },
+    {
+      "id": 184,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0000049722308535847446,
+      "deltaX": 0.0000025855600438640666
+    },
+    {
+      "id": 185,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000007176962713178529,
+      "deltaX": 0.0000037320206108528347
+    },
+    {
+      "id": 186,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0004343358279864587,
+      "deltaX": 0.00022585463055295853
+    },
+    {
+      "id": 188,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0002009771528453374,
+      "deltaX": 0.00010450811947957543
+    },
+    {
+      "id": 189,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000048449179487423727,
+      "deltaX": 0.000025193573333460332
+    },
+    {
+      "id": 190,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00017537868725065682,
+      "deltaX": 0.00009119691737034154
+    },
+    {
+      "id": 191,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00007191041351223274,
+      "deltaX": 0.00003739341502636103
+    },
+    {
+      "id": 192,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00006539467410502136,
+      "deltaX": 0.000034005230534611106
+    },
+    {
+      "id": 193,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00014347521515072897,
+      "deltaX": 0.00007460711187837904
+    },
+    {
+      "id": 194,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000011513847183112182,
+      "deltaX": 0.000005987200535218333
+    },
+    {
+      "id": 195,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00011905852971138964,
+      "deltaX": 0.00006191043544992262
+    },
+    {
+      "id": 196,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00002184308498943782,
+      "deltaX": 0.000011358404194507666
+    },
+    {
+      "id": 197,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00002936971162139958,
+      "deltaX": 0.00001527225004312778
+    },
+    {
+      "id": 198,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00012938117717470568,
+      "deltaX": 0.00006727821213084693
+    },
+    {
+      "id": 199,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00008390685173736544,
+      "deltaX": 0.000043631562903430034
+    },
+    {
+      "id": 200,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0001122176414229871,
+      "deltaX": 0.00005835317353995328
+    },
+    {
+      "id": 201,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00012292512757503798,
+      "deltaX": 0.00006392106633901973
+    },
+    {
+      "id": 202,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00016077745676424703,
+      "deltaX": 0.00008360427751740845
+    },
+    {
+      "id": 203,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00004982210186621253,
+      "deltaX": 0.00002590749297043051
+    },
+    {
+      "id": 204,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000042614318821423684,
+      "deltaX": 0.000022159445787140315
+    },
+    {
+      "id": 205,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000035604408924111315,
+      "deltaX": 0.000018514292640537883
+    },
+    {
+      "id": 206,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000027955962720276494,
+      "deltaX": 0.000014537100614543774
+    },
+    {
+      "id": 207,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000041805239780830374,
+      "deltaX": 0.000021738724686031792
+    },
+    {
+      "id": 208,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00003544512712731029,
+      "deltaX": 0.00001843146610620135
+    },
+    {
+      "id": 209,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000040975931221876906,
+      "deltaX": 0.00002130748423537599
+    },
+    {
+      "id": 210,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00004822757350277344,
+      "deltaX": 0.00002507833822144219
+    },
+    {
+      "id": 221,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00041322336403031294,
+      "deltaX": -0.0002148761492957627
+    },
+    {
+      "id": 222,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00009916342170370528,
+      "deltaX": -0.00005156497928592675
+    },
+    {
+      "id": 223,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000002736374877557374,
+      "deltaX": -0.0000014229149363298344
+    },
+    {
+      "id": 230,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.000014358950274770228,
+      "deltaX": -0.000007466654142880519
+    },
+    {
+      "id": 274,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0030359827913171416,
+      "deltaX": -0.0015787110514849136
+    },
+    {
+      "id": 275,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006964685191493747,
+      "deltaX": -0.0036216362995767476
+    },
+    {
+      "id": 276,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007621756412236997,
+      "deltaX": -0.003963313334363238
+    },
+    {
+      "id": 277,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006175426295648913,
+      "deltaX": -0.0032112216737374345
+    },
+    {
+      "id": 278,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004546872478415309,
+      "deltaX": -0.0023643736887759602
+    },
+    {
+      "id": 279,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.002794728570573741,
+      "deltaX": -0.001453258856698345
+    },
+    {
+      "id": 281,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007002797890664763,
+      "deltaX": -0.0036414549031456764
+    },
+    {
+      "id": 282,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0059711466893089,
+      "deltaX": -0.0031049962784406274
+    },
+    {
+      "id": 283,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005009691031578247,
+      "deltaX": -0.0026050393364206886
+    },
+    {
+      "id": 284,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0004283045105055231,
+      "deltaX": -0.000222718345462872
+    },
+    {
+      "id": 285,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0003422252398431923,
+      "deltaX": -0.00017795712471845997
+    },
+    {
+      "id": 286,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00016185254502665739,
+      "deltaX": -0.00008416332341386183
+    },
+    {
+      "id": 287,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0005793654508524476,
+      "deltaX": -0.0003012700344432727
+    },
+    {
+      "id": 288,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0007441978347102833,
+      "deltaX": -0.0003869828740493472
+    },
+    {
+      "id": 289,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0003732717005619666,
+      "deltaX": -0.0001941012842922226
+    },
+    {
+      "id": 290,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0006586152916903431,
+      "deltaX": -0.00034247995167897843
+    },
+    {
+      "id": 291,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.001060869297432104,
+      "deltaX": -0.0005516520346646941
+    },
+    {
+      "id": 292,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0008746871114266722,
+      "deltaX": -0.0004548372979418695
+    },
+    {
+      "id": 293,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0016522585842715072,
+      "deltaX": -0.0008591744638211836
+    },
+    {
+      "id": 294,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0014681385772885936,
+      "deltaX": -0.0007634320601900686
+    },
+    {
+      "id": 295,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0013461094881864358,
+      "deltaX": -0.0006999769338569466
+    },
+    {
+      "id": 296,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0014071903625747341,
+      "deltaX": -0.0007317389885388617
+    },
+    {
+      "id": 297,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0017432385895276175,
+      "deltaX": -0.0009064840665543611
+    },
+    {
+      "id": 298,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0016158376015263534,
+      "deltaX": -0.0008402355527937038
+    },
+    {
+      "id": 299,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0011510440820814093,
+      "deltaX": -0.0005985429226823329
+    },
+    {
+      "id": 300,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0010277877852625816,
+      "deltaX": -0.0005344496483365424
+    },
+    {
+      "id": 301,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0010884578440694774,
+      "deltaX": -0.0005659980789161283
+    },
+    {
+      "id": 302,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00035284701761356517,
+      "deltaX": -0.0001834804491590539
+    },
+    {
+      "id": 303,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0018082386361827306,
+      "deltaX": -0.00094028409081502
+    },
+    {
+      "id": 304,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.002939208099422067,
+      "deltaX": -0.0015283882116994747
+    },
+    {
+      "id": 305,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006279197816965369,
+      "deltaX": -0.0032651828648219915
+    },
+    {
+      "id": 306,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007082436417272459,
+      "deltaX": -0.0036828669369816784
+    },
+    {
+      "id": 307,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008168772179947315,
+      "deltaX": -0.004247761533572604
+    },
+    {
+      "id": 308,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007170816537058234,
+      "deltaX": -0.003728824599270281
+    },
+    {
+      "id": 309,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0044730749442871455,
+      "deltaX": -0.0023259989710293157
+    },
+    {
+      "id": 310,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008875781509305075,
+      "deltaX": -0.004615406384838639
+    },
+    {
+      "id": 311,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006059981110867598,
+      "deltaX": -0.003151190177651151
+    },
+    {
+      "id": 312,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009449342674272741,
+      "deltaX": -0.004913658190621824
+    },
+    {
+      "id": 313,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008066389714008793,
+      "deltaX": -0.004194522651284573
+    },
+    {
+      "id": 314,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003997263643710717,
+      "deltaX": -0.0020785770947295726
+    },
+    {
+      "id": 316,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008031663144667786,
+      "deltaX": -0.004176464835227249
+    },
+    {
+      "id": 317,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007415880437781416,
+      "deltaX": -0.003856257827646336
+    },
+    {
+      "id": 318,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007128383375017427,
+      "deltaX": -0.003706759355009062
+    },
+    {
+      "id": 319,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0012561869674090201,
+      "deltaX": -0.0006532172230526905
+    },
+    {
+      "id": 320,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0011679891858501937,
+      "deltaX": -0.0006073543766421008
+    },
+    {
+      "id": 321,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.001144507459731876,
+      "deltaX": -0.0005951438790605754
+    },
+    {
+      "id": 322,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0015560374320854433,
+      "deltaX": -0.0008091394646844305
+    },
+    {
+      "id": 323,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0022599293407648724,
+      "deltaX": -0.0011751632571977335
+    },
+    {
+      "id": 324,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0031459232114643423,
+      "deltaX": -0.0016358800699614578
+    },
+    {
+      "id": 325,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0037260819568699557,
+      "deltaX": -0.0019375626175723768
+    },
+    {
+      "id": 326,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.003963006098888639,
+      "deltaX": -0.0020607631714220924
+    },
+    {
+      "id": 327,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004288265898274727,
+      "deltaX": -0.0022298982671028577
+    },
+    {
+      "id": 328,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004645262786304967,
+      "deltaX": -0.0024155366488785826
+    },
+    {
+      "id": 329,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005154188148107748,
+      "deltaX": -0.0026801778370160296
+    },
+    {
+      "id": 330,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004789716516645705,
+      "deltaX": -0.002490652588655766
+    },
+    {
+      "id": 331,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005036563944336509,
+      "deltaX": -0.0026190132510549844
+    },
+    {
+      "id": 332,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00495854570951897,
+      "deltaX": -0.002578443768949864
+    },
+    {
+      "id": 333,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004652812174599386,
+      "deltaX": -0.0024194623307916803
+    },
+    {
+      "id": 334,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004307808345134552,
+      "deltaX": -0.0022400603394699668
+    },
+    {
+      "id": 335,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.004977961489900162,
+      "deltaX": -0.0025885399747480834
+    },
+    {
+      "id": 336,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005398142708302215,
+      "deltaX": -0.0028070342083171516
+    },
+    {
+      "id": 337,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0039047025987615667,
+      "deltaX": -0.0020304453513560142
+    },
+    {
+      "id": 338,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005626593440671687,
+      "deltaX": -0.002925828589149277
+    },
+    {
+      "id": 339,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006121790418834628,
+      "deltaX": -0.0031833310177940065
+    },
+    {
+      "id": 340,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008639278005040031,
+      "deltaX": -0.004492424562620816
+    },
+    {
+      "id": 341,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00938201103242095,
+      "deltaX": -0.004878645736858894
+    },
+    {
+      "id": 342,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005320726926787098,
+      "deltaX": -0.002766778001929291
+    },
+    {
+      "id": 343,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008890904869216808,
+      "deltaX": -0.004623270531992739
+    },
+    {
+      "id": 344,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0028105261363437963,
+      "deltaX": -0.0014614735908987742
+    },
+    {
+      "id": 345,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006015682751539205,
+      "deltaX": -0.0031281550308003866
+    },
+    {
+      "id": 346,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008714387828643873,
+      "deltaX": -0.004531481670894813
+    },
+    {
+      "id": 347,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009327167159363508,
+      "deltaX": -0.004850126922869023
+    },
+    {
+      "id": 348,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009741402402579914,
+      "deltaX": -0.005065529249341554
+    },
+    {
+      "id": 349,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005924073133109382,
+      "deltaX": -0.0030805180292168785
+    },
+    {
+      "id": 350,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0017010677327603124,
+      "deltaX": -0.0008845552210353624
+    },
+    {
+      "id": 351,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008346886692654782,
+      "deltaX": -0.004340381080180487
+    },
+    {
+      "id": 352,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007959032401482144,
+      "deltaX": -0.004138696848770715
+    },
+    {
+      "id": 353,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008570526041813258,
+      "deltaX": -0.004456673541742894
+    },
+    {
+      "id": 354,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0056603077794661946,
+      "deltaX": -0.0029433600453224206
+    },
+    {
+      "id": 355,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005667560248917486,
+      "deltaX": -0.0029471313294370926
+    },
+    {
+      "id": 356,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005833910134926377,
+      "deltaX": -0.003033633270161716
+    },
+    {
+      "id": 357,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00629435722133715,
+      "deltaX": -0.0032730657550953182
+    },
+    {
+      "id": 358,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006619841563151593,
+      "deltaX": -0.003442317612838828
+    },
+    {
+      "id": 359,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00665277237649683,
+      "deltaX": -0.0034594416357783516
+    },
+    {
+      "id": 360,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006615386902000985,
+      "deltaX": -0.003440001189040512
+    },
+    {
+      "id": 361,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006597552164159453,
+      "deltaX": -0.0034307271253629155
+    },
+    {
+      "id": 362,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0066428268612939425,
+      "deltaX": -0.0034542699678728494
+    },
+    {
+      "id": 363,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006904410689809743,
+      "deltaX": -0.0035902935587010664
+    },
+    {
+      "id": 364,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007169978644394209,
+      "deltaX": -0.0037283888950849883
+    },
+    {
+      "id": 365,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007277146432642822,
+      "deltaX": -0.0037841161449742667
+    },
+    {
+      "id": 366,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007319308292167579,
+      "deltaX": -0.0038060403119271414
+    },
+    {
+      "id": 367,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007021318723062315,
+      "deltaX": -0.0036510857359924034
+    },
+    {
+      "id": 368,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006762604922002069,
+      "deltaX": -0.0035165545594410754
+    },
+    {
+      "id": 369,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006646480411336386,
+      "deltaX": -0.00345616981389492
+    },
+    {
+      "id": 370,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007289562954229842,
+      "deltaX": -0.0037905727361995174
+    },
+    {
+      "id": 371,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00784705682302654,
+      "deltaX": -0.004080469547973801
+    },
+    {
+      "id": 372,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.006864025986278876,
+      "deltaX": -0.0035692935128650146
+    },
+    {
+      "id": 373,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0075754453213376875,
+      "deltaX": -0.0039392315670955975
+    },
+    {
+      "id": 374,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007136878611480077,
+      "deltaX": -0.00371117687796964
+    },
+    {
+      "id": 375,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008404854853735697,
+      "deltaX": -0.004370524523942561
+    },
+    {
+      "id": 376,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.009117905065547723,
+      "deltaX": -0.004741310634084816
+    },
+    {
+      "id": 377,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.008393745863620914,
+      "deltaX": -0.004364747849082876
+    },
+    {
+      "id": 378,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.005433552591554003,
+      "deltaX": -0.0028254473476080817
+    },
+    {
+      "id": 379,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.007831949226150197,
+      "deltaX": -0.004072613597598101
+    },
+    {
+      "id": 384,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0001590205863647524,
+      "deltaX": 0.00008269070490967127
+    },
+    {
+      "id": 385,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00005371732693145515,
+      "deltaX": 0.00002793301000435668
+    },
+    {
+      "id": 386,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0001997538668622974,
+      "deltaX": 0.00010387201076839465
+    },
+    {
+      "id": 387,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00006093820539978463,
+      "deltaX": 0.000031687866807888
+    },
+    {
+      "id": 388,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00018268964766766162,
+      "deltaX": 0.00009499861678718406
+    },
+    {
+      "id": 393,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00015894186551986222,
+      "deltaX": -0.00008264977007032836
+    },
+    {
+      "id": 394,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0005310960276015394,
+      "deltaX": -0.0002761699343528005
+    },
+    {
+      "id": 395,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00021947981690931517,
+      "deltaX": -0.00011412950479284388
+    },
+    {
+      "id": 396,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00020016857125171984,
+      "deltaX": -0.00010408765705089432
+    },
+    {
+      "id": 397,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.0002800562412341948,
+      "deltaX": -0.00014562924544178128
+    },
+    {
+      "id": 401,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00008548827439138953,
+      "deltaX": 0.00004445390268352256
+    },
+    {
+      "id": 405,
+      "region": "local-skirt-interior-curvature",
+      "deltaZ": -0.00012825572199520087,
+      "deltaX": -0.00006669297543750446
+    }
+  ]
+}
