@@ -8,6 +8,54 @@ const LIMIT = 10000000;
 const shortageMap = list => new Map(list.map(row => [row.id, row.quantity]));
 const sumQty = rows => rows.reduce((sum,row) => sum+row.quantity,0);
 
+
+/**
+ * Iteratively refresh a hypothetical acquisition list after downstream
+ * recipes expose more ingredient demand. No purchase or save mutation.
+ * Bounded iterations: a lack of progress or remaining uncertainty is
+ * reported explicitly, never disguised as a complete procurement plan.
+ */
+export function expandProcurementAcquisitions(
+  planner, settings, context = {}, starting = {}, { maxRounds = 5 } = {}
+) {
+  if (!Number.isSafeInteger(maxRounds) || maxRounds < 1 || maxRounds > 8)
+    throw new Error('추가 탐색 단계는 1~8이어야 합니다.');
+  const additions = { ...starting };
+  const history = [];
+  let current = null;
+  let stopped = 'round-limit';
+  for (let round = 1; round <= maxRounds; round++) {
+    current = compareProcurementAcquisitions(planner, settings, context, additions);
+    const shortages = current.after.external;
+    if (!shortages.length) { stopped = 'no-unresolved-materials'; break; }
+    if (Object.keys(additions).length + shortages.length > 5000) {
+      stopped = 'item-limit'; break;
+    }
+    const added = [];
+    for (const row of shortages) {
+      const initial = settings.inventory?.[row.id] || 0;
+      const held = additions[row.id] || 0;
+      const remain = 10000000 - initial - held;
+      if (remain <= 0) continue;
+      const count = Math.min(remain, row.quantity);
+      if (!count) continue;
+      additions[row.id] = held + count;
+      added.push({id:row.id, name:planner.name(row.id), quantity:count});
+    }
+    if (!added.length) { stopped = 'quantity-limit'; break; }
+    history.push({round, beforeExternalKinds:current.after.external.length,
+      beforeExternalUnits:current.summary.afterExternalUnits, newlyAdded:added});
+  }
+  const result = compareProcurementAcquisitions(planner,settings,context,additions);
+  if (!result.after.external.length) stopped = 'no-unresolved-materials';
+  return {
+    schema:'xpiratez-v2-iterative-procurement/v1',
+    additions, history, result, stopped,
+    remainingExternal:result.after.external,
+    note:'최대 제한된 횟수 동안 가상 부족 재료를 반복 반영한 결과입니다. 외부 재료 부족이 0이어도 시설, 연구, 이벤트, 랜덤 산출물 등으로 실제 제조가 막힐 수 있습니다. 세이브 원본은 변경하지 않습니다.'
+  };
+}
+
 export function compareProcurementAcquisitions(
   planner, settings, context = {}, additions = {}, baselineReport = null
 ) {
