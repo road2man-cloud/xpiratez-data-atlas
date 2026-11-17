@@ -136,12 +136,14 @@
 <div class="control-buttons">
 <button id="queue-whatif-fill" type="button" class="secondary">현재 부족 수량으로 가정 채우기</button>
 <button id="queue-whatif-expand" type="button" class="secondary">새로 드러나는 부족분까지 반복 탐색</button>
+<button id="queue-whatif-trace-json" type="button" class="secondary" disabled>탐색 단계 이력 JSON 저장</button>
 <button id="queue-whatif-clear" type="button" class="secondary">가상 확보 수량 초기화</button>
 <button id="queue-whatif-run" type="button">확보 전후 비교 계산</button>
 <button id="queue-whatif-json" type="button" class="secondary" disabled>비교 결과 JSON 저장</button>
 </div>
 <div id="queue-whatif-inputs" class="queue-whatif-inputs"></div>
 <p id="queue-whatif-status" class="note" role="status" aria-live="polite"></p>
+<div id="queue-whatif-trace" class="table-wrap" hidden aria-label="반복 조달 탐색 단계별 이력"></div>
 <div id="queue-whatif-report" hidden>
 <div id="queue-whatif-summary" class="summary-stats"></div>
 <h4>재료별 부족량 변화</h4>

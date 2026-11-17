@@ -153,6 +153,12 @@ try {
   await page.locator('#queue-whatif-json').click();
   assert.equal((await downloadWhatif).suggestedFilename(),'xpiratez-v2-procurement-whatif.json');
   await page.locator('#queue-whatif-expand').click();
+  assert(await page.locator('#queue-whatif-trace').isVisible());
+  assert(await page.locator('#queue-whatif-trace-json').isEnabled());
+  const traceDownload=page.waitForEvent('download');
+  await page.locator('#queue-whatif-trace-json').click();
+  assert.equal((await traceDownload).suggestedFilename(),
+    'xpiratez-v2-procurement-round-history.json');
   assert((await page.locator('#queue-whatif-status').innerText()).includes('추가 부족 탐색'));
   assert(await page.locator('#queue-whatif-report').isVisible());
   await page.locator('#queue-whatif-clear').click();

@@ -291,3 +291,15 @@ not visible in an earlier scenario and explicitly reports if a bound
 stops expansion. A zero item shortage count still does not prove the
 factory, research, or event conditions are satisfied. The browser never
 writes to the original game save.
+
+## Iterative procurement trace panel
+
+The existing bounded repeat-shortage control now displays an independent
+**round-by-round procurement history** table. Each row identifies the
+iteration, unresolved item types and quantities before the pass, up to 20
+newly proposed item names, and total virtual additions for that pass.
+The interface separately reports termination reasons and still-unresolved
+item types. An additional JSON export preserves the complete expansion
+history and comparison without altering the player's original save.
+Rerunning the standard what-if comparison or clearing the hypothetical
+quantities clears stale history to prevent confusing different scenarios.
