@@ -1,0 +1,26 @@
+{
+  "schema": "xpz3d/f11/r13-fairing",
+  "date": "2026-11-17",
+  "input": "r21AO-F11-user101-core-extended-curved-r12.glb",
+  "output": "r21AO-F11-user101-core-rounded-fairing-r13.glb",
+  "sha256": "cb772e9fc8ecb4adca1c5dfd99af5c5fdcbcdc9125dcb4a9e8036ce57032ee1a",
+  "triangles": 3896,
+  "centralOriginalVerticesUnchanged": 908,
+  "curvedInternalVerticesMoved": 209,
+  "frontAndRearRimsUnchanged": true,
+  "manualDeletedFacesRemainAbsent": 101,
+  "garmentTriangles": 370,
+  "bones": 63,
+  "newTriangles": 0,
+  "qualityRest": {
+    "degenerate": 0,
+    "maxEdge": 0.040357621699527245
+  },
+  "qualityOpen55": {
+    "degenerate": 0,
+    "maxEdge": 0.040355736647372374
+  },
+  "remainingUnintendedBodyHolesStillUnclosed": true,
+  "notGameReady": true,
+  "poseReview": "pending"
+}

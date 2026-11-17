@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('fs'),path=require('path');const raw=fs.readFileSync(path.join(__dirname,'r21AO-F11-user101-posterior-seam-aligned-r11.glb')),jl=raw.readUInt32LE(12),doc=JSON.parse(raw.toString('utf8',20,20+jl)),bin=raw.subarray(28+jl,28+jl+raw.readUInt32LE(20+jl));
+const dims={SCALAR:1,VEC2:2,VEC3:3,VEC4:4},sizes={5121:1,5123:2,5125:4,5126:4},fn={5121:'readUInt8',5123:'readUInt16LE',5125:'readUInt32LE',5126:'readFloatLE'};
+function rd(id){const a=doc.accessors[id],v=doc.bufferViews[a.bufferView],d=dims[a.type],s=sizes[a.componentType],offset=(v.byteOffset||0)+(a.byteOffset||0),stride=v.byteStride||s*d,rows=[];for(let i=0;i<a.count;i++){const x=[];for(let j=0;j<d;j++)x.push(bin[fn[a.componentType]](offset+i*stride+j*s));rows.push(d===1?x[0]:x)}return rows}
+const mesh=doc.meshes[0].primitives;
+const ROI=[0,13,17,18,21,22,23].map(pi=>{const p=mesh[pi],I=rd(p.indices),P=rd(p.attributes.POSITION),D=rd(p.targets[0].POSITION),N=rd(p.attributes.NORMAL);const edges=new Map(),neigh=new Map();for(let i=0;i<I.length;i+=3)for(const [a,b]of [[I[i],I[i+1]],[I[i+1],I[i+2]],[I[i+2],I[i]]]){const k=a<b?a+':'+b:b+':'+a,e=edges.get(k)||{a,b,n:0};e.n++;edges.set(k,e);}const open=[...edges.values()].filter(x=>x.n===1);return{pi,P,D,N,I,edges,open,prim:p};});
+const fmt=id=>{const f=x=>x.map(y=>+y.toFixed(5));const out={};for(const s of ROI){if(!s.P[id])continue;out[s.pi]={p:f(s.P[id]),q:f(s.P[id].map((x,k)=>x+s.D[id][k])),normal:f(s.N[id]),border:s.open.some(e=>e.a===id||e.b===id)}}return out};
+const selected=[340,568,355,357,359,584,348,342,346,332,505,506,510,549,552,554,338,330,335,566,29,174,296];
+const p22=ROI.find(x=>x.pi===22);const grid=Array.from({length:8},(_,r)=>Array.from({length:7},(_,c)=>r*7+c));
+const p=ROI.find(x=>x.pi===13);
+const neighbors={};for(const id of selected){let ni=[];for(let i=0;i<p.I.length;i+=3){const t=p.I.slice(i,i+3);if(t.includes(id))ni.push(t)}neighbors[id]=ni.slice(0,40)}
+const report={source:'r11',primitives:ROI.map(x=>({pi:x.pi,faces:x.I.length/3,vertices:x.P.length,borderEdges:x.open.length,material:x.prim.material,extras:x.prim.extras})),selected: Object.fromEntries(selected.map(id=>[id,fmt(id)])),patchGrid:grid.map((row,i)=>({row:i,pts:row.map(j=>({id:j,p:p22.P[j].map(x=>+x.toFixed(5)),q:p22.P[j].map((x,k)=>+(x+p22.D[j][k]).toFixed(5))}))})),coreFacesOf:neighbors,roiCoordinates:p.P.map((point,id)=>({id,p:point})).filter(x=>x.p[2]>.845&&x.p[2]<.95&&Math.abs(x.p[0])<.06&&x.p[1]>-.13&&x.p[1]<-.045).map(x=>({id:x.id,p:x.p.map(v=>+v.toFixed(5))})).slice(0,180)};
+fs.writeFileSync(path.join(__dirname,'rev96-r12-source-anatomy-atlas.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
+console.log(JSON.stringify({primitives:report.primitives.map(({pi,faces,vertices,borderEdges,material})=>({pi,faces,vertices,borderEdges,material})),selected:report.selected,patchGrid:report.patchGrid,roiCount:report.roiCoordinates.length,coreFacesOf:report.coreFacesOf},null,2));

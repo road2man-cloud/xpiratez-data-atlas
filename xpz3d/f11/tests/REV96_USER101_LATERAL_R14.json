@@ -1,0 +1,57 @@
+{
+  "source": "r21AO-F11-user101-core-rounded-fairing-r13.glb",
+  "output": "r21AO-F11-user101-lateral-closure-r14.glb",
+  "sha256": "904f3521ded8eae9b1f73091dd14b99c183147ee3496ceabf58eb7a8c8d5a996",
+  "totalTriangles": 3936,
+  "addedSideFaces": 40,
+  "addedSideVertices": 24,
+  "centralOriginalAnatomyPreserved": 908,
+  "sideClosureIntoSamePrimitive13": true,
+  "sourceHumanDeletedFacesRemainAbsent": 101,
+  "seamSides": [
+    {
+      "side": "left",
+      "sourceTrack": [
+        221,
+        83,
+        216,
+        214,
+        306,
+        29
+      ],
+      "addedFaces": 20,
+      "endingOnNativeRim": true,
+      "sourceAnatomyBoundaryShared": true
+    },
+    {
+      "side": "right",
+      "sourceTrack": [
+        82,
+        222,
+        78,
+        75,
+        296,
+        29
+      ],
+      "addedFaces": 20,
+      "endingOnNativeRim": true,
+      "sourceAnatomyBoundaryShared": true
+    }
+  ],
+  "garmentFaces": 370,
+  "bones": 63,
+  "qRest": {
+    "degenerateFaces": 0,
+    "maxEdge": 0.04069215640166881,
+    "minArea": 0.000008462894234070974,
+    "medianArea": 0.00005608525324444115
+  },
+  "q55": {
+    "degenerateFaces": 0,
+    "maxEdge": 0.040732829514738673,
+    "minArea": 0.000008549385867900274,
+    "medianArea": 0.00005446887552207313
+  },
+  "bodyOtherBoundaryStillOpen": true,
+  "phase": "experimental-visual-review"
+}
