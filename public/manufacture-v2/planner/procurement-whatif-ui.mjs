@@ -35,6 +35,13 @@ export function initProcurementWhatIfUI(planner) {
   let baseReference=null;
   let inputs=new Map();
   let comparison=null;
+  let lastExploration=null;
+  const clearTrace=()=>{
+    lastExploration=null;
+    $('queue-whatif-trace').replaceChildren();
+    $('queue-whatif-trace').hidden=true;
+    $('queue-whatif-trace-json').disabled=true;
+  };
   const showMessage=message=>{$('queue-whatif-status').textContent=message;};
 
   const renderInputs=()=>{
@@ -139,6 +146,7 @@ export function initProcurementWhatIfUI(planner) {
   };
   const run=()=>{
     if(!currentScenario)return;
+    clearTrace();
     try{
       const additions=Object.fromEntries(inputs);
       comparison=compareProcurementAcquisitions(
@@ -168,13 +176,42 @@ export function initProcurementWhatIfUI(planner) {
       renderInputs();
       comparison=expanded.result;
       renderComparison(comparison);
+      lastExploration=expanded;
+      const area=$('queue-whatif-trace');area.replaceChildren();
+      const table=element(area,'table');
+      const head=element(element(table,'thead'),'tr');
+      for(const title of ['탐색 단계','단계 시작 부족','추가 가정 품목','가상 확보 수량'])
+        element(head,'th',title);
+      const body=element(table,'tbody');
+      for(const record of expanded.history){
+        const row=element(body,'tr');
+        element(row,'td',fmt(record.round));
+        element(row,'td',fmt(record.beforeExternalKinds)+'종 / '+fmt(record.beforeExternalUnits)+'개');
+        element(row,'td',record.newlyAdded.slice(0,20).map(x=>x.name+' '+fmt(x.quantity)).join(' · '));
+        element(row,'td',fmt(record.newlyAdded.reduce((sum,x)=>sum+x.quantity,0))+'개');
+      }
+      if(!expanded.history.length)element(area,'p','추가 가상 조달 없이 탐색을 종료했습니다.','note');
+      element(area,'p','종료 사유: '+expanded.stopped+' · 남은 외부 조달 '+
+        fmt(expanded.remainingExternal.length)+'종. 실제 확보 여부는 미확인입니다.','note');
+      area.hidden=false;
+      $('queue-whatif-trace-json').disabled=false;
       const status=expanded.stopped==='no-unresolved-materials'
         ? '현재 계산 범위의 외부 부족량을 해소하는 가상 수량을 찾았습니다.'
         : '탐색이 제한에서 중단됐습니다. 남은 부족 항목을 확인하세요.';
       showMessage(status+' 추가 부족 탐색 '+expanded.history.length+'회. 실제 확보·제조 가능성은 미확인입니다.');
     }catch(e){showMessage('반복 부족 탐색 실패: '+e.message);}
   });
+  $('queue-whatif-trace-json').addEventListener('click',()=>{
+    if(!lastExploration)return;
+    const url=URL.createObjectURL(new Blob([JSON.stringify(lastExploration,null,2)+'\n'],
+      {type:'application/json'}));
+    const a=document.createElement('a');a.href=url;
+    a.download='xpiratez-v2-procurement-round-history.json';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
   $('queue-whatif-clear').addEventListener('click',()=>{
+    clearTrace();
     inputs.clear();comparison=null;
     $('queue-whatif-report').hidden=true;
     $('queue-whatif-json').disabled=true;
@@ -198,6 +235,7 @@ export function initProcurementWhatIfUI(planner) {
         inputs.clear();
       }
       currentScenario=scenario||null;
+      clearTrace();
       comparison=null;
       $('queue-whatif-report').hidden=true;
       $('queue-whatif-json').disabled=true;
@@ -207,6 +245,7 @@ export function initProcurementWhatIfUI(planner) {
         : '선택된 기지와 제조 주문이 없습니다.');
     },
     reset(){
+      clearTrace();
       currentScenario=null;baseReference=null;inputs.clear();comparison=null;
       $('queue-whatif-inputs').replaceChildren();
       $('queue-whatif-report').hidden=true;
