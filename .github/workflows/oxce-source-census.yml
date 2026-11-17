@@ -7,11 +7,13 @@ on:
     paths:
       - 'experiments/oxce-custom-release-audit/**'
       - 'tools/check-oxce-source-census.test.mjs'
+      - 'tools/check-oxce-r135-r2.test.mjs'
       - '.github/workflows/oxce-source-census.yml'
   pull_request:
     paths:
       - 'experiments/oxce-custom-release-audit/**'
       - 'tools/check-oxce-source-census.test.mjs'
+      - 'tools/check-oxce-r135-r2.test.mjs'
   workflow_dispatch:
 permissions:
   contents: read
@@ -24,4 +26,4 @@ jobs:
         with:
           node-version: '22'
       - name: Verify preserved custom OXCE source anchors
-        run: node --test tools/check-oxce-source-census.test.mjs
+        run: node --test tools/check-oxce-source-census.test.mjs tools/check-oxce-r135-r2.test.mjs
