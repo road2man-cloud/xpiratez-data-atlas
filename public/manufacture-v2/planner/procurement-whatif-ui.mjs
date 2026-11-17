@@ -1,5 +1,6 @@
 import { compareProcurementAcquisitions, expandProcurementAcquisitions } from './procurement-whatif-core.mjs';
 import { buildProcurementChecklist } from './queue-core.mjs';
+import { renderProcurementEvidence } from './procurement-readiness-ui.mjs';
 
 const $ = id => document.getElementById(id);
 const fmt = n => Number.isFinite(n) ? n.toLocaleString('ko-KR') : '미확인';
@@ -86,6 +87,7 @@ export function initProcurementWhatIfUI(planner) {
         if(n)inputs.set(candidate.id,n);
         else inputs.delete(candidate.id);
         comparison=null;
+        clearTrace();
         $('queue-whatif-json').disabled=true;
         $('queue-whatif-report').hidden=true;
         showMessage('가상 확보 수량을 변경했습니다. 비교 계산을 누르면 재계산합니다.');
@@ -108,6 +110,8 @@ export function initProcurementWhatIfUI(planner) {
     ]) metric(parent,label,value);
   };
   const renderComparison=report=>{
+    report.evidence=renderProcurementEvidence(planner,report,
+      currentScenario?.settings||{},currentScenario?.context||{});
     updateSummary(report);
     const differences=$('queue-whatif-differences');differences.replaceChildren();
     if(report.differences.length){
