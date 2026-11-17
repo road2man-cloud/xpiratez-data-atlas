@@ -72,3 +72,11 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #research .research-save-status{display:inline-block;font-size:.78rem;margin-right:11px;padding:2px 6px;border:1px solid #385674;border-radius:5px}
 #research .research-save-status.is-discovered{color:#b8e0c9;background:#1b332f}
 #research .research-save-status.is-absent{color:#d5d2b0;background:#2d2c24}
+
+#base-operations{margin:18px 0}
+#base-operations h3{margin:0 0 9px}
+#base-operations table{min-width:650px;border-collapse:collapse;width:100%}
+#base-operations th,#base-operations td{border-bottom:1px solid #344760;padding:9px 11px;text-align:left;font-size:.84rem;vertical-align:top}
+#base-operations th{background:#162b42;color:#bbd0f0}
+#base-operations .facility-readiness,#base-production-orders{max-width:100%;overflow-x:auto}
+#base-operations .warn-note{color:#f3c8a3}

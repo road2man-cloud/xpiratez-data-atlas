@@ -2,6 +2,7 @@
 // Deliberately parses a strict, indentation-based subset of the OXCE save
 // instead of feeding arbitrary user-supplied YAML into a general YAML loader.
 // No network, persistent storage, or save-file writes.
+import { parseSavedBaseOperations } from './save-operations-core.mjs';
 const MAX_SAVE_BYTES = 24 * 1024 * 1024;
 const MAX_LINES = 300000;
 const MAX_BASES = 32;
@@ -134,7 +135,13 @@ export function parsePiratezV2Save(text, { itemIds, researchIds } = {}) {
   if (!seenDiscovered) throw new Error('세이브에서 discovered 연구 목록을 찾지 못했습니다.');
   if (bases.some(x => x.missingStores))
     throw new Error('일부 기지의 items 저장구역을 찾지 못해 재고를 정확히 가져올 수 없습니다.');
-  for (const base of bases) base.knownKinds = Object.keys(base.items).length;
+  const operations = parseSavedBaseOperations(text);
+  if (operations.length !== bases.length)
+    throw new Error('시설·생산 주문의 기지 구조가 일치하지 않습니다.');
+  for (const [index,base] of bases.entries()) {
+    base.knownKinds=Object.keys(base.items).length;
+    Object.assign(base,operations[index]);
+  }
   warnings.push('세이브 헤더에서 버전을 확인했지만 룰셋 SHA-256은 포함되어 있지 않습니다. 정확히 동일한 게임 규칙을 사용했다고 확정할 수는 없습니다.');
   if (ignoredItemEntries)
     warnings.push('현재 2.1 아이템 목록에서 확인되지 않는 기지 재고 ' +

@@ -144,3 +144,43 @@ node --test tools/test-v2-save-import.mjs
 # Optional local-only compatibility test:
 # XPIRATEZ_V2_SAVE=/path/to/current.sav node --test tools/test-v2-save-import.mjs
 ```
+
+## Facility capabilities and saved production orders
+
+The planner also reads `bases[*].facilities` and `bases[*].productions`
+from the **user-selected local save**. Facility declarations are taken from a
+separate `facilities-v2-index.json`, derived from the *same verified 16 v.o2
+rules files* used for the existing item, research and manufacturing indexes.
+
+For a selected **individual base**, the production panel compares each
+manufacturing recipe in the expanded plan with that base's saved facility
+instances and the rule's explicit `provideBaseFunc` and
+`requiresBaseFunc` arrays. Facilities with a positive `buildTime` remain
+marked as under construction rather than supplying functions; installed
+facilities with no saved build-time marker are treated as completed for this
+limited inspection. Unknown additional-mod facility types are reported but
+cannot provide inferred functions.
+
+The panel lists the base's saved manufacturing orders by item ID and the
+actual saved `assigned`, `amount`, `spent`, and `infinite` fields, as
+available. These are **raw save attributes**, not a completion percentage,
+elapsed wall-clock duration or an ETA. Neither personnel availability nor
+manufacturing throughput is inferred.
+
+When **all bases** are selected for inventory aggregation, their facilities
+and manufacturing capacities are **not** pooled into a fictional single
+base. The panel instead shows each base's separate facility and saved-order
+counts. A user's `.sav` is parsed locally and never committed or uploaded.
+
+### Rebuilding the facility catalogue
+
+```sh
+node tools/build-v2-facilities.mjs --source /path/to/user/mods/Piratez
+node tools/build-v2-facilities.mjs --source /path/to/user/mods/Piratez --check
+npm run check:manufacture:planner:v2
+```
+
+The facility snapshot contains 115 explicitly defined facilities in the
+verified v.o2 mod. It intentionally does not invent vanilla facility
+definitions, engine-supplied defaults, disabled-status logic, or rules from
+other user mods.
