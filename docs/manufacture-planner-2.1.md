@@ -256,3 +256,30 @@ The main queue's order comparison and consolidated material ledger remain
 available independently. Saved `spent`, `amount` and `assigned` values
 continue to be displayed only as raw game data, never interpreted as
 unfinished batches.
+
+## Virtual material acquisition impact analysis
+
+The hypothetical queue includes a **가상 재료 확보 후 제조 계획 비교**
+panel. It takes additional quantities for items on the queue procurement
+checklist, without changing the imported save inventory or performing a
+purchase. **현재 부족 수량으로 가정 채우기** copies up to 300 currently
+missing quantities into the editable acquisition plan; users may change
+individual quantities, run the comparison again, or clear all virtual
+additions.
+
+For each run, the calculator executes the *same job sequence* with the
+original holdings and again with the added hypothetical units. It presents
+the change in remaining external procurement by item, the first-order
+effects on each job, and any remaining facility, research and explicit-rule
+uncertainties. Newly freed deterministic outputs from earlier hypothetical
+jobs can be reflected in downstream requirements, subject to the same
+conservative evidence checks as the manufacturing queue.
+
+The acquisition price uses only explicitly declared `costBuy` fields
+from the matching v.o2 item index. It displays a partial known subtotal
+when some fields are unknown and never claims a confirmed total or
+availability. The standalone JSON export contains two hypothetical
+calculation outputs and the chosen virtual quantities. Save data remains
+in the browser, is not uploaded, and the original source `.sav` is not
+modified. This is **not** an automatic game purchase, work scheduler or
+completion-time prediction.

@@ -130,6 +130,25 @@
 <p class="note">어떤 주문에서 재료가 처음 부족해지는지, 어느 후속 주문에서도 필요한지 표시합니다. 구매 가능성이나 실제 게임의 보유 재고 변경을 뜻하지 않습니다.</p>
 <div id="queue-procurement-table" class="table-wrap"></div>
 </div>
+<section id="queue-whatif" class="queue-whatif" aria-label="가상 추가 재료 확보 영향 분석">
+<h4>가상 재료 확보 후 제조 계획 비교</h4>
+<p class="note">아래 수량은 <strong>새로 확보한다고 가정</strong>하는 수량입니다. 게임이나 기존 보유 재고를 변경하지 않으며, 실제 구매·생산 가능성은 확인하지 않습니다.</p>
+<div class="control-buttons">
+<button id="queue-whatif-fill" type="button" class="secondary">현재 부족 수량으로 가정 채우기</button>
+<button id="queue-whatif-clear" type="button" class="secondary">가상 확보 수량 초기화</button>
+<button id="queue-whatif-run" type="button">확보 전후 비교 계산</button>
+<button id="queue-whatif-json" type="button" class="secondary" disabled>비교 결과 JSON 저장</button>
+</div>
+<div id="queue-whatif-inputs" class="queue-whatif-inputs"></div>
+<p id="queue-whatif-status" class="note" role="status" aria-live="polite"></p>
+<div id="queue-whatif-report" hidden>
+<div id="queue-whatif-summary" class="summary-stats"></div>
+<h4>재료별 부족량 변화</h4>
+<div id="queue-whatif-differences" class="table-wrap"></div>
+<h4>주문별 재료 부족·기타 제약</h4>
+<div id="queue-whatif-jobs" class="table-wrap"></div>
+</div>
+</section>
 <h4>모든 선택 주문을 합친 재료 수급표</h4>
 <div id="queue-materials" class="table-wrap"></div>
 <div id="queue-order-comparison" hidden>

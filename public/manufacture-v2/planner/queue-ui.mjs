@@ -1,4 +1,5 @@
 import { simulateManufacturingQueue, compareManufacturingQueueOrders, buildProcurementChecklist } from './queue-core.mjs';
+import { initProcurementWhatIfUI } from './procurement-whatif-ui.mjs';
 
 const $=id=>document.getElementById(id);
 const add=(parent,tag,value,cls)=>{
@@ -18,6 +19,7 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
   let latest=null;
   let latestSpec=null;
   let latestProcurement=null;
+  const whatIf=initProcurementWhatIfUI(planner);
   const catalog=new Set(manufactureIndex.entries.map(row=>row.id));
   const maxSaved=31; // plus the user's new target = 32
   const updateControls=()=>{
@@ -106,6 +108,7 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
     }
     const checklist=buildProcurementChecklist(planner,result);
     latestProcurement=checklist;
+    if(latestSpec)whatIf.refresh({...latestSpec,baseline:result});
     $('queue-procurement-csv').disabled=checklist.entries.length===0;
     const purchase=$('queue-procurement-table');purchase.replaceChildren();
     if(!checklist.entries.length){
@@ -173,6 +176,7 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
       $('queue-download').disabled=false;
     }catch(error){
       latest=null;latestSpec=null;latestProcurement=null;
+      whatIf.reset();
       $('queue-procurement-csv').disabled=true;
       $('queue-order-comparison').hidden=true;
       $('queue-report').hidden=true;
@@ -187,6 +191,7 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
     if(!base){
       baseReference=null;order=[];selected.clear();
       latest=null;latestSpec=null;latestProcurement=null;
+      whatIf.reset();
       $('queue-procurement-csv').disabled=true;
       $('queue-order-comparison').hidden=true;$('queue-report').hidden=true;return;
     }
