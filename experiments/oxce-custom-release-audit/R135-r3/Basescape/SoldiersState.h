@@ -80,8 +80,8 @@ public:
 	void btnMemorialClick(Action *action);
 	/// Handler for clicking the Transformations Overview button/hotkey.
 	void btnTransformationsOverviewClick(Action *action);
-	/// Backspace in a specific transformation's soldier list returns to overview.
-	void btnBackspaceToTransformationOverviewClick(Action *action);
+	/// Backspace from an individual transformation soldier list returns to overview.
+	void btnTransformationsOverviewBackspace(Action *action);
 	/// Handler for changing the screen actions combo box.
 	void cbxScreenActionsChange(Action *action);
 	/// Handler for clicking the Inventory button.
