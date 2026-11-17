@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-const r8=path.resolve('R135-r8-search-five/src/Basescape');
-const r9c=path.resolve('R135-r9c-r8-cumulative/src/Battlescape');
+import { fileURLToPath } from 'node:url';
+const base=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const r8=path.join(base,'R135-r8-search-five/src/Basescape');
+const r9c=path.join(base,'R135-r9c-r8-cumulative/src/Battlescape');
 const read=(p)=>fs.readFileSync(p,'utf8');
 
 test('R8 visible onChange search on purchase/sale/manufacture/research',()=>{
@@ -52,11 +54,11 @@ test('R134 backtick action cycle ignores non-shooting and incompatible launcher 
 });
 
 test('R9C provenance uses R8 archive and R132/R134 donors',()=>{
- const s=read(path.resolve('R135-r9c-r8-cumulative/build_r9c.ps1'));
+ const s=read(path.join(base,'R135-r9c-r8-cumulative/build_r9c.ps1'));
  assert.match(s,/objects_r135_r8_r131baseline\.a/);
- const receipt=read(path.resolve('R135-r9c-r8-cumulative/R9C_FEATURE_LEDGER_KO.md'));
+ const receipt=read(path.join(base,'R135-r9c-r8-cumulative/R9C_FEATURE_LEDGER_KO.md'));
  assert.match(receipt,/objects_r132_integrated\.a/);
  assert.match(receipt,/objects_r134_integrated\.a/);
  assert.match(s,/413/);
- assert.match(read(path.resolve('R135-r9c-r8-cumulative/src/main.cpp')),/R135-R9C-R8-CUMULATIVE/);
+ assert.match(read(path.join(base,'R135-r9c-r8-cumulative/src/main.cpp')),/R135-R9C-R8-CUMULATIVE/);
 });

@@ -1,0 +1,28 @@
+name: OXCE R135-R9C cumulative source regression
+on:
+  push:
+    branches:
+      - integration/oxce-r135-r9c-r8-cumulative-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/**'
+      - 'tools/check-oxce-r135-r7*-source.test.mjs'
+      - '.github/workflows/oxce-r9c-cumulative-source.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/**'
+      - '.github/workflows/oxce-r9c-cumulative-source.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cumulative-source-census:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify R131-base R7/R7B/R7C row safety and cumulative features
+        run: node --test tools/check-oxce-r135-r7-r131-source.test.mjs tools/check-oxce-r135-r7b-source.test.mjs tools/check-oxce-r135-r7c-source.test.mjs
+      - name: Verify R8 search and R9C combat patch lineage
+        run: node --test experiments/oxce-custom-release-audit/tools/check-oxce-r135-r9c-cumulative.test.mjs
