@@ -1,0 +1,28 @@
+name: OXCE R131-based R7C purchase category regression
+on:
+  push:
+    branches:
+      - integration/oxce-r131-r7c-purchase-categories-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r7-r131baseline/**'
+      - 'experiments/oxce-custom-release-audit/R135-r7b-r131baseline/**'
+      - 'experiments/oxce-custom-release-audit/R135-r7c-r131baseline/**'
+      - 'tools/check-oxce-r135-r7*-source.test.mjs'
+      - '.github/workflows/oxce-r7c-category-regression.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r7c-r131baseline/**'
+      - 'tools/check-oxce-r135-r7c-source.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  category-and-quantity-index-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate manufacture, sale, purchase grouping and row-index safety
+        run: node --test tools/check-oxce-r135-r7-r131-source.test.mjs tools/check-oxce-r135-r7b-source.test.mjs tools/check-oxce-r135-r7c-source.test.mjs
