@@ -41,6 +41,32 @@ R9C에서 `main.cpp`만 새로 컴파일해 화면 버전을 `R135-R9C-R8-CUMULA
 - 화면 표시 완료 `WINDOW_READY=TRUE`, 진단 프로세스 `34364` 정리.
 - 그 외 R8 또는 XPZ3D 작업자가 띄운 다른 게임 프로세스는 종료하거나 수정하지 않음.
 
+## R134 전체 네이티브 오브젝트와의 대조
+
+R134 → R9C 아카이브 전체 비교에서도 413개 아카이브 항목 보존.
+실제 해시가 다른 구성요소는 정확히 9개:
+`InventoryState.cpp.obj`, `main.cpp.obj`, `NewManufactureListState.cpp.obj`,
+`NewResearchListState.cpp.obj`, `PurchaseState.cpp.obj`, `SellState.cpp.obj`,
+`SoldiersState.cpp.obj`, `SoldierTransformationState.cpp.obj`, `SoldierTransformState.cpp.obj`.
+
+R134의 `BattlescapeState`, `Map`, `UnitWalkBState`, `ExperienceOverviewState`를 포함해
+그 밖의 객체는 R9C에서도 동일하다. 변경된 9개는 이후 R135 UI·장비·훈련·검색 개선과 버전 제목에 해당한다.
+
+R118→R134 `BattlescapeState.cpp` 원본 소스 diff에서도
+사격 모드 순환의 필터 조건 및 Backquote 종료 처리 외에 기능 삭제는 발견되지 않았다.
+
+## 설치 런처의 추가 실기동 확인 (19:07 KST)
+
+기존 R7C 런처의 전역 `openxcom*` 차단을 수정해,
+**설치 폴더가 다른 XPZ3D 독립 게임 테스트 작업자 프로세스는 차단하지 않고**
+**동일한 게임 설치 폴더에 R8·R131 등 다른 게임 버전이 있는 경우에만 중복 실행을 거부**한다.
+
+로그인 사용자 세션 1에서 `XPZ_R135_R9C_START.cmd` 실행기로
+R9C 테스트 PID `11836` 생성. 2초 시점
+`Responding=True`, HWND `3540056`, 스레드 13개, R9C 제목 확인.
+`RESULT=WINDOW_READY`, 해당 테스트 PID만 정리, 스케줄러 종료 상태 0.
+기존 사용자 게임·세이브 및 XPZ3D 동시 작업 프로세스는 건드리지 않음.
+
 ## 남은 검증 및 안전성
 
 - 이 결과는 **네이티브 오브젝트 수준의 확인된 후속 패치 누적 통합 + 게임 창 실행 성공**을 의미한다.

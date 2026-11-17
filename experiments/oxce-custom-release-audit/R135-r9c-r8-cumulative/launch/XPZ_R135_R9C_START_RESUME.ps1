@@ -36,7 +36,15 @@ function Resume-IfSuspended([int]$targetPid) {
  }
 }
 $others=@(Get-CimInstance Win32_Process|Where-Object {$_.Name -ieq $name -and $_.SessionId -ne 0})
-if(@(Get-CimInstance Win32_Process | Where-Object {$_.Name -like "openxcom*" -and $_.Name -ine $name}).Count -gt 0){throw "Another OpenXcom game version is running; close it before launching R9C to protect game state."}
+# Other isolated OXCE/XPZ3D worker runtimes have independent data/user directories.
+# Block only other versions in this exact installed game directory.
+$conflicts=@(Get-CimInstance Win32_Process | Where-Object {
+ $_.Name -like "openxcom*" -and $_.Name -ine $name -and $_.ExecutablePath -and
+ [IO.Path]::GetDirectoryName($_.ExecutablePath).TrimEnd('\') -ieq $game.TrimEnd('\')
+})
+if($conflicts.Count -gt 0){
+ throw ("Another OpenXcom version is running in this game directory (PID: "+($conflicts.ProcessId -join ',')+"). Close that version first.")
+}
 if($others.Count -gt 1){throw 'More than one R135-R9C process exists. Please close duplicates manually.'}
 if($others.Count -eq 1){
  $targetPid=[int]$others[0].ProcessId

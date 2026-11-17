@@ -62,3 +62,14 @@ test('R9C provenance uses R8 archive and R132/R134 donors',()=>{
  assert.match(s,/413/);
  assert.match(read(path.join(base,'R135-r9c-r8-cumulative/src/main.cpp')),/R135-R9C-R8-CUMULATIVE/);
 });
+
+test('R9C launcher prevents same-install duplicates but permits independent XPZ3D worker runtimes',()=>{
+ const launcher=read(path.join(base,'R135-r9c-r8-cumulative/launch/XPZ_R135_R9C_START_RESUME.ps1'));
+ assert.match(launcher,/GetDirectoryName\(\$_.ExecutablePath\)/);
+ assert.match(launcher,/\$game\.TrimEnd/);
+ assert.match(launcher,/Other isolated OXCE\/XPZ3D worker runtimes/);
+ assert.match(launcher,/\$conflicts\.Count -gt 0/);
+ assert.match(launcher,/Resume-IfSuspended/);
+ const cmd=read(path.join(base,'R135-r9c-r8-cumulative/launch/XPZ_R135_R9C_START.cmd'));
+ assert.match(cmd,/XPZ_R135_R9C_START_RESUME\.ps1/);
+});
