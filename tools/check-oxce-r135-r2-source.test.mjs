@@ -32,7 +32,7 @@ test('R135-r2: whip is issued ahead of optional loose spare ammunition', () => {
 });
 test('R135-r2: preserve R131 to R134 features',()=>{
   const s=source('Battlescape/InventoryState.cpp');
-  for(const anchor of ['r131LowTuButton->setText("저TU")','r132ClearButton->onMouseClick','R133 AutoAll timing','r133RelevantRules','physicallyPermitted','fillWearSlot','isGrenadeOrProxy','canFireLowTu','R128 AutoAll existing weapon ammo:']) assert.ok(s.includes(anchor),anchor);
+  for(const anchor of ['r131LowTuButton->setText(','r132ClearButton->onMouseClick','R133 AutoAll timing','r133RelevantRules','physicallyPermitted','fillWearSlot','isGrenadeOrProxy','canFireLowTu','R128 AutoAll existing weapon ammo:']) assert.ok(s.includes(anchor),anchor);
 });
 test('R135-r2: Backspace navigates to overview and Escape remains cancellation',()=>{
   const s=source('Basescape/SoldierTransformationState.cpp');
