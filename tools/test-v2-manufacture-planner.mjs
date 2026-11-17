@@ -104,3 +104,82 @@ test('full v.o2 dataset can build real resource route without legacy DB',()=>{
   assert.equal(chosen.tree.inputs[0].recipeId,'STR_CHEMICALS_XXX');
   assert(chosen.totals.declaredCost>result.totals.declaredCost);
 });
+
+test('shared remaining yield prevents duplicate manufacturing across sibling branches',()=>{
+  const p=make([
+    recipe('ROOT',{cost:100,time:10,requiredItems:{B:1,C:1}}),
+    recipe('MAKE_B',{cost:20,time:3,producedItems:{B:1},requiredItems:{A:2}}),
+    recipe('MAKE_C',{cost:30,time:4,producedItems:{C:1},requiredItems:{A:3}}),
+    recipe('MAKE_A',{cost:7,time:1,producedItems:{A:5}})
+  ],[],[item('A'),item('B'),item('C')]);
+  const plan=p.plan('ROOT',{maxDepth:4});
+  assert.equal(plan.totals.declaredCost,157);
+  assert.equal(plan.totals.batches,4);
+  assert.equal(plan.external.length,0);
+  const a=plan.consolidated.find(x=>x.id==='A');
+  assert.equal(a.demand,5);
+  assert.equal(a.produced,5);
+  assert.equal(a.surplusUsed,5);
+  assert.equal(a.remainingProduced,0);
+  assert.equal(plan.extraOutputs.length,0);
+});
+test('explicit coproducts satisfy sibling demand before another producer is scheduled',()=>{
+  const p=make([
+    recipe('ROOT',{cost:25,time:1,requiredItems:{Y:3,X:1}}),
+    recipe('MAKE_X',{cost:12,time:4,producedItems:{X:1,Y:4}}),
+    recipe('MAKE_Y',{cost:50,time:5,producedItems:{Y:3}})
+  ],[],[item('X'),item('Y')]);
+  const out=p.plan('ROOT',{maxDepth:2});
+  assert.equal(out.totals.declaredCost,37);
+  assert.equal(out.totals.batches,2);
+  assert.equal(out.external.length,0);
+  assert.deepEqual(out.tree.inputs.map(x=>x.id),['X','Y']);
+  assert.equal(out.tree.inputs[1].status,'stock-covered');
+  assert.equal(out.tree.inputs[1].surplusUsed,3);
+  assert.equal(out.consolidated.find(x=>x.id==='Y').remainingProduced,1);
+  assert.deepEqual(out.extraOutputs.map(x=>[x.id,x.quantity]),[['Y',1]]);
+});
+test('initial inventory is deducted before manufacturing and untouched leftovers persist',()=>{
+  const p=make([
+    recipe('ROOT',{cost:100,time:10,requiredItems:{A:8,B:2}}),
+    recipe('A_MAKE',{cost:4,time:2,producedItems:{A:5},requiredItems:{C:2}})
+  ],[],[item('A'),item('B'),item('C')]);
+  const out=p.plan('ROOT',{inventory:{A:3,B:5},maxDepth:3});
+  assert.equal(out.totals.declaredCost,104);
+  assert.equal(out.inventory.consumed.A,3);
+  assert.equal(out.inventory.consumed.B,2);
+  assert.equal(out.inventory.remaining.B,3);
+  assert.equal(out.external.find(x=>x.id==='C').quantity,2);
+  const row=out.consolidated.find(x=>x.id==='A');
+  assert.equal(row.demand,8);
+  assert.equal(row.initialUsed,3);
+  assert.equal(row.surplusUsed,5);
+  assert.equal(row.remainingProduced,0);
+  assert.equal(out.tree.inputs.find(x=>x.id==='A').deficit,5);
+  const unchanged=p.plan('ROOT',{inventory:{A:3,B:5},maxDepth:3});
+  assert.equal(unchanged.inventory.consumed.A,3); // stock must not leak between plans
+});
+test('comparison alternatives use independent inventories with declared scenario costs',()=>{
+  const p=make([
+    recipe('ROOT',{cost:10,time:2,requiredItems:{A:6}}),
+    recipe('A1',{cost:7,time:3,producedItems:{A:2}}),
+    recipe('A2',{cost:9,time:1,producedItems:{A:4}})
+  ],[],[item('A')]);
+  const report=p.compareAlternatives('ROOT','A',{inventory:{A:2}});
+  assert.equal(report.totalCandidates,2);
+  const a1=report.scenarios.find(x=>x.recipeId==='A1');
+  const a2=report.scenarios.find(x=>x.recipeId==='A2');
+  assert.equal(a1.declaredManufactureCost,24);
+  assert.equal(a2.declaredManufactureCost,19);
+  assert.equal(a1.declaredManufactureTime,8);
+  assert.equal(a2.declaredManufactureTime,3);
+  assert.deepEqual(a1.remainingStock,{});
+  assert.deepEqual(a2.remainingStock,{});
+});
+test('inventory rejects unknown 1.1 IDs, fractional, negative, too-large and overflowing batch inputs',()=>{
+  const p=make([recipe('ROOT',{cost:5,time:3,requiredItems:{A:2}})],[],[item('A')]);
+  for(const value of [-1,0.1,10000001,Number.MAX_SAFE_INTEGER+1])
+    assert.throws(()=>p.plan('ROOT',{inventory:{A:value}}),/재고 수량/);
+  assert.throws(()=>p.plan('ROOT',{inventory:{STR_UNVERIFIED_1_1:1}}),/2.1 아이템/);
+  assert.throws(()=>p.plan('ROOT',{inventory:['A',3]}),/수량 객체/);
+});

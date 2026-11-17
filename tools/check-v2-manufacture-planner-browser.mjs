@@ -51,6 +51,22 @@ try {
   assert((await page.locator('#tree').innerText()).includes('3회 · 제조비 30,000'));
   assert((await page.locator('#summary').innerText()).includes('명시된 제조비 합'));
   assert(await page.locator('#download-plan').isEnabled());
+  // Actual v.o2 inventory entry is applied to the consolidated bill.
+  await page.locator('#stock-search').fill('STR_CHEMICALS');
+  await page.locator('#stock-select').selectOption('STR_CHEMICALS');
+  await page.locator('#stock-qty').fill('40');
+  await page.locator('#stock-add').click();
+  await page.waitForFunction(()=>document.querySelector('#summary')?.textContent?.includes('기존 재고 사용량'));
+  assert((await page.locator('#stock-list').innerText()).includes('화학물질'));
+  assert((await page.locator('#consolidated').innerText()).includes('STR_CHEMICALS'));
+  assert((await page.locator('#summary').innerText()).includes('36개'));
+  assert((await page.locator('#tree').innerText()).includes('보유 재고 36개'));
+  await page.locator('#stock-clear').click();
+  await page.waitForFunction(()=>document.querySelector('#stock-list')?.textContent?.includes('입력된 보유 재고 없음'));
+  await page.locator('button').filter({hasText:'대체 경로 비용 비교'}).first().click();
+  assert(await page.locator('#comparison-section').isVisible());
+  assert((await page.locator('#comparison-data').innerText()).includes('전체 제조비'));
+  assert((await page.locator('#comparison-data tbody tr').count()) >= 2);
   assert.deepEqual(errors,[]);
-  console.log('PASS 2.1 manufacturing planner UI: loaded real source, select producer, expand nested recipe, batch recalculation, JSON export enabled');
+  console.log('PASS 2.1 manufacturing planner UI: nested production, stock deduction, consolidated materials, alternative comparison and JSON export');
 }finally{if(browser)await browser.close();await new Promise(done=>server.close(done));}

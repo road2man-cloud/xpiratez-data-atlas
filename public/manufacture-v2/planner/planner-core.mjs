@@ -114,9 +114,21 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
       throw new Error('제조 단계는 0~6이어야 합니다.');
     const assumeImplicit = settings.assumeImplicit === true;
     const choices = record(settings.choices) ? settings.choices : {};
+    if (settings.inventory !== undefined && !record(settings.inventory))
+      throw new Error('보유 재고는 아이템 ID별 수량 객체여야 합니다.');
+    const initialInventory = record(settings.inventory) ? settings.inventory : {};
+    if (Object.keys(initialInventory).length > 400)
+      throw new Error('재고는 최대 400종까지 입력할 수 있습니다.');
+    const owned = new Map(), surplus = new Map(), ledger = new Map();
+    for (const [id, count] of Object.entries(initialInventory)) {
+      if (!itemMap.has(id)) throw new Error('2.1 아이템 ID가 아닙니다: ' + id);
+      if (!Number.isSafeInteger(count) || count < 0 || count > 10000000)
+        throw new Error('재고 수량은 0~10,000,000 사이의 정수여야 합니다: ' + id);
+      if (count) owned.set(id, count);
+    }
     const totals = { declaredCost: 0, declaredTime: 0, batches: 0 };
     const flags = new Set(), recipesUsed = new Set(), external = new Map();
-    const decisions = new Map(), extraOutputs = new Map();
+    const decisions = new Map();
     const notices = [];
     let expandedNodes = 0;
     const maxExpandedNodes = 500;
@@ -124,8 +136,31 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
     const addExternal = (id, quantity, reason) => {
       const prev = external.get(id) || { id, name: name(id), quantity: 0, reasons: new Set() };
       prev.quantity += quantity; prev.reasons.add(reason); external.set(id, prev);
+      demandRow(id).external += quantity;
     };
-    const uniqueOptions = new Map();
+    const demandRow = id => {
+      if (!ledger.has(id)) ledger.set(id, {
+        id, name: name(id), demand: 0, initialUsed: 0,
+        surplusUsed: 0, produced: 0, external: 0
+      });
+      return ledger.get(id);
+    };
+    const takeStock = (id, quantity) => {
+      const row = demandRow(id);
+      const availableInitial = owned.get(id) || 0;
+      const fromInitial = Math.min(quantity, availableInitial);
+      if (fromInitial) { owned.set(id, availableInitial - fromInitial); row.initialUsed += fromInitial; }
+      const remaining = quantity - fromInitial;
+      const availableSurplus = surplus.get(id) || 0;
+      const fromSurplus = Math.min(remaining, availableSurplus);
+      if (fromSurplus) { surplus.set(id, availableSurplus - fromSurplus); row.surplusUsed += fromSurplus; }
+      return { fromInitial, fromSurplus, missing: remaining - fromSurplus };
+    };
+    const addProduced = (id, quantity) => {
+      if (!Number.isSafeInteger(quantity) || quantity <= 0) return;
+      surplus.set(id, (surplus.get(id) || 0) + quantity);
+      demandRow(id).produced += quantity;
+    };
     const otherOptions = (itemId) => (producers.get(itemId) || [])
       .filter(p => p.randomOutput || p.assumedYield)
       .map(p => ({ ...p, name: name(p.recipeId) }));
@@ -153,7 +188,23 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
         }
         return node;
       }
-      for (const [id, perBatch] of Object.entries(f.requiredItems).sort(([a],[b]) => a.localeCompare(b, 'en'))) {
+      const required = Object.entries(f.requiredItems);
+      const siblingIds = new Set(required.map(([id]) => id));
+      // Favor recipes that make useful co-products for sibling requirements.
+      // This is a deterministic heuristic, not a global optimal production schedule.
+      const coProductScore = id => {
+        const options = available(id, assumeImplicit);
+        const selected = choices[id];
+        const producer = typeof selected === 'string'
+          ? options.find(p => p.recipeId === selected)
+          : options.length === 1 ? options[0] : null;
+        if (!producer) return 0;
+        const declared = recipeMap.get(producer.recipeId)?.fields?.producedItems;
+        return record(declared)
+          ? Object.keys(declared).filter(out => out !== id && siblingIds.has(out)).length : 0;
+      };
+      required.sort(([a],[b]) => coProductScore(b) - coProductScore(a) || a.localeCompare(b, 'en'));
+      for (const [id, perBatch] of required) {
         if (!positiveInt(perBatch) || !Number.isSafeInteger(perBatch * count)) {
           node.inputs.push({ kind: 'unresolved', id, name: name(id), quantity: null,
             reason: '재료 수량을 계산할 수 없습니다.' });
@@ -163,29 +214,36 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
         const valid = available(id, assumeImplicit);
         const all = producers.get(id) || [];
         const selected = Object.hasOwn(choices, id) ? choices[id] : undefined;
-        const itemNode = { kind: 'item', id, name: name(id), quantity, producerCount: valid.length,
+        const rowLedger = demandRow(id);
+        rowLedger.demand += quantity;
+        const usedStock = takeStock(id, quantity);
+        const deficit = usedStock.missing;
+        const itemNode = { kind: 'item', id, name: name(id), quantity,
+          inventoryUsed: usedStock.fromInitial, surplusUsed: usedStock.fromSurplus,
+          deficit, producerCount: valid.length,
           alternatives: all.length, status: '', children: [], yieldCount: null,
           recipeId: null, neededBatches: null, assumed: false, extra: 0 };
         node.inputs.push(itemNode);
+        if (deficit === 0) { itemNode.status = 'stock-covered'; continue; }
         const blocked = otherOptions(id);
         if (blocked.length && valid.length === 0) addFlag('unverified-outputs');
         if (depth >= maxDepth) {
           itemNode.status = 'depth-limit'; addFlag('depth-limit');
-          addExternal(id, quantity, 'depth-limit'); continue;
+          addExternal(id, deficit, 'depth-limit'); continue;
         }
         if (selected === 'external') {
-          itemNode.status = 'external-choice'; addExternal(id, quantity, 'user-external'); continue;
+          itemNode.status = 'external-choice'; addExternal(id, deficit, 'user-external'); continue;
         }
         if (!valid.length) {
           itemNode.status = all.length ? 'unsupported-output' : 'external';
-          addExternal(id, quantity, itemNode.status); continue;
+          addExternal(id, deficit, itemNode.status); continue;
         }
         let selectedProducer;
         if (typeof selected === 'string') {
           selectedProducer = valid.find(candidate => candidate.recipeId === selected);
           if (!selectedProducer) {
             itemNode.status = 'invalid-choice';
-            addFlag('invalid-choice'); addExternal(id, quantity, 'invalid-choice');
+            addFlag('invalid-choice'); addExternal(id, deficit, 'invalid-choice');
             continue;
           }
         } else if (valid.length === 1) {
@@ -193,7 +251,7 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
         } else {
           itemNode.status = 'choice-required';
           decisions.set(id, {
-            id, name: name(id), quantity,
+            id, name: name(id), quantity: deficit,
             candidates: valid.map(candidate => ({
               recipeId: candidate.recipeId,
               recipeName: name(candidate.recipeId),
@@ -201,7 +259,7 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
               assumed: candidate.assumedYield
             }))
           });
-          addFlag('ambiguous-producer'); addExternal(id, quantity, 'choice-required');
+          addFlag('ambiguous-producer'); addExternal(id, deficit, 'choice-required');
           continue;
         }
         itemNode.yieldCount = selectedProducer.yieldCount;
@@ -211,28 +269,50 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
           addFlag('assumed-yield');
           notices.push(id + ': 제조식 이름 일치로 1개/회 산출을 가정했습니다.');
         }
-        const needCount = Math.ceil(quantity / selectedProducer.yieldCount);
+        const needCount = Math.ceil(deficit / selectedProducer.yieldCount);
         if (!Number.isSafeInteger(needCount) || needCount > 1000000) {
           itemNode.status = 'unsafe-batches'; addFlag('unsafe-batches');
-          addExternal(id, quantity, 'unsafe-batches');continue;
+          addExternal(id, deficit, 'unsafe-batches');continue;
         }
         itemNode.neededBatches = needCount;
-        itemNode.extra = needCount * selectedProducer.yieldCount - quantity;
-        if (itemNode.extra) extraOutputs.set(id, (extraOutputs.get(id) || 0) + itemNode.extra);
+        itemNode.extra = needCount * selectedProducer.yieldCount - deficit;
         if (expandedNodes >= maxExpandedNodes) {
           itemNode.status = 'node-budget'; addFlag('node-budget');
-          addExternal(id, quantity, 'node-budget');
+          addExternal(id, deficit, 'node-budget');
           continue;
         }
         if (lineage.includes(selectedProducer.recipeId)) {
           itemNode.status = 'cycle'; addFlag('cycle');
-          addExternal(id, quantity, 'cycle');
+          addExternal(id, deficit, 'cycle');
           notices.push('제조식 순환: ' + [...lineage, selectedProducer.recipeId].join(' → '));
           continue;
         }
         itemNode.status = 'manufactured';
         itemNode.children.push(expand(recipeMap.get(selectedProducer.recipeId), needCount,
           depth + 1, [...lineage, selectedProducer.recipeId], id, selectedProducer.yieldCount));
+        // Production occurs after its ingredients have been accounted for.
+        // Co-products and rounding surplus enter one shared stock ledger so
+        // later branches can reuse them without creating another batch.
+        const outputFields = recipeMap.get(selectedProducer.recipeId).fields || {};
+        const outputs = selectedProducer.explicit && record(outputFields.producedItems)
+          ? outputFields.producedItems : { [id]: selectedProducer.yieldCount };
+        for (const [outputId, perBatchOutput] of Object.entries(outputs)) {
+          const producedCount = perBatchOutput * needCount;
+          if (!itemMap.has(outputId) || !positiveInt(perBatchOutput) ||
+              !Number.isSafeInteger(producedCount)) {
+            addFlag('untracked-or-invalid-output');
+            notices.push(selectedProducer.recipeId + ': 산출물을 재고로 계산하지 않음: ' + outputId);
+            continue;
+          }
+          addProduced(outputId, producedCount);
+        }
+        const satisfied = takeStock(id, deficit);
+        if (satisfied.missing) {
+          itemNode.status = 'unsatisfied-output'; addFlag('unsatisfied-output');
+          addExternal(id, satisfied.missing, 'unsatisfied-output');
+        }
+        itemNode.surplusUsed += satisfied.fromSurplus;
+        itemNode.inventoryUsed += satisfied.fromInitial;
       }
       return node;
     }
@@ -257,11 +337,77 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
       maxDepth, assumeImplicit,
       tree, totals, research,
       external: costs, selections: [...decisions.values()],
-      extraOutputs: [...extraOutputs].map(([id, quantity]) => ({ id, name: name(id), quantity })),
+      // Remaining manufactured stock includes explicit co-products and
+      // surplus across all branches, rather than summing isolated overruns.
+      extraOutputs: [...surplus].filter(([,quantity]) => quantity > 0)
+        .map(([id, quantity]) => ({ id, name: name(id), quantity }))
+        .sort((a,b) => a.name.localeCompare(b.name, 'ko')),
+      inventory: {
+        supplied: Object.fromEntries(Object.entries(initialInventory).filter(([,quantity]) => quantity > 0)),
+        remaining: Object.fromEntries([...owned].filter(([,quantity]) => quantity > 0)),
+        consumed: Object.fromEntries([...ledger].filter(([,r]) => r.initialUsed > 0)
+          .map(([id,r]) => [id,r.initialUsed]))
+      },
+      consolidated: [...ledger].map(([id,r]) => ({
+        ...r, remainingInventory: owned.get(id) || 0,
+        remainingProduced: surplus.get(id) || 0,
+        listedUnitBuy: nonnegative(itemMap.get(id)?.fields?.costBuy)
+          ? itemMap.get(id).fields.costBuy : null
+      })).sort((a,b) => a.name.localeCompare(b.name, 'ko')),
       priceReference: { knownBuySubtotal, pricedCount, totalCount: costs.length,
-        caveat: '기존 구매가 수치의 참고 합계일 뿐, 실제 구매 가능 여부나 총비용이 아닙니다.' },
+        declaredPlusFullyPricedReference: pricedCount === costs.length &&
+          !flags.has('unspecified-cost') ? knownBuySubtotal + totals.declaredCost : null,
+        caveat: '재고 차감 후 외부 조달에 남은 항목의 구매가 참고값입니다. 구매 가능 여부나 실제 총비용을 보증하지 않습니다.' },
       flags: [...flags].sort(), notices
     };
   }
-  return { plan, recipeMap, researchMap, itemMap, listProducers, name };
+  function compareAlternatives(rootRecipeId, itemId, settings = {}) {
+    if (!recipeMap.has(rootRecipeId)) throw new Error('알 수 없는 제조식: ' + rootRecipeId);
+    if (!itemMap.has(itemId)) throw new Error('알 수 없는 2.1 재료 ID: ' + itemId);
+    const assumeImplicit = settings.assumeImplicit === true;
+    const choices = record(settings.choices) ? settings.choices : {};
+    const all = listProducers(itemId, assumeImplicit);
+    const limit = settings.limit ?? 12;
+    if (!Number.isSafeInteger(limit) || limit < 1 || limit > 20)
+      throw new Error('경로 비교 최대 수는 1~20이어야 합니다.');
+    // Direct recipe cost/yield only chooses a manageable display subset.
+    // It is not a global optimum or a cost ranking.
+    all.sort((a,b) => {
+      const pa = a.costPerBatch === null ? Infinity : a.costPerBatch / a.yieldCount;
+      const pb = b.costPerBatch === null ? Infinity : b.costPerBatch / b.yieldCount;
+      return pa - pb || a.recipeId.localeCompare(b.recipeId, 'en');
+    });
+    const candidates = all.slice(0, limit);
+    const chosen = all.find(x => x.recipeId === choices[itemId]);
+    if (chosen && !candidates.some(x => x.recipeId === chosen.recipeId))
+      candidates[candidates.length - 1] = chosen;
+    const rows = candidates.map(candidate => {
+      // Each scenario owns fresh stock and surplus maps. One alternative
+      // cannot consume another alternative's generated output or initial stock.
+      const result = plan(rootRecipeId, {
+        ...settings, choices: { ...choices, [itemId]: candidate.recipeId }
+      });
+      return {
+        ...candidate,
+        declaredManufactureCost: result.totals.declaredCost,
+        declaredManufactureTime: result.totals.declaredTime,
+        manufacturedBatches: result.totals.batches,
+        externalKinds: result.external.length,
+        unpricedExternalKinds: result.priceReference.totalCount - result.priceReference.pricedCount,
+        knownExternalBuyReference: result.priceReference.knownBuySubtotal,
+        declaredPlusFullyPricedReference: result.priceReference.declaredPlusFullyPricedReference,
+        flags: result.flags,
+        remainingStock: result.inventory.remaining,
+        surplus: result.extraOutputs
+      };
+    });
+    return {
+      rootRecipeId, itemId, itemName: name(itemId),
+      totalCandidates: all.length, displayedCandidates: rows.length,
+      truncated: all.length > rows.length,
+      scenarios: rows,
+      caveat: '각 후보를 동일한 시작 재고와 선택 조건으로 독립 계산합니다. 모든 후보를 비교한 결과가 아니며, 실제 획득·연구·구매 가능성과 최저 비용을 보증하지 않습니다.'
+    };
+  }
+  return { plan, compareAlternatives, recipeMap, researchMap, itemMap, listProducers, name };
 }
