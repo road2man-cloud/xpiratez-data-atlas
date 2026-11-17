@@ -1,0 +1,396 @@
+{
+  "revision": "r32c",
+  "physicalJoinPreviouslyWelded": 31,
+  "originalAuthoredFacesPreserved": 529,
+  "supportVerticesAdded": 31,
+  "sharedSeamVertices": 33,
+  "file": "r21AO-F11-user101-integrated-oval-r32c-welded-tangent-support-ring.glb",
+  "sha256": "19428ac2dd0be896433f93634d9d15e1e47ff17cd283759b391e52e8eb60c3e9",
+  "source": "r21AO-F11-user101-integrated-oval-r32b-wide-tangent-seam.glb",
+  "sourceSHA256": "f8b2b58036bf8444abbde749079f2827712ec7de445387a24e7e3cceefde3213",
+  "sourceSkinFaces": 2861,
+  "seamCollarFacesReplaced": 31,
+  "seamDisplacements": [
+    {
+      "face": 531,
+      "vertex": 3466,
+      "offset": [
+        -0.0003681848721429376,
+        -0.00007942834875331186,
+        0.00016392032128501204
+      ],
+      "initialDistanceToAuthoredTangent": -0.0005551058480504024,
+      "blend": 1
+    },
+    {
+      "face": 537,
+      "vertex": 3467,
+      "offset": [
+        0.00014317293038549828,
+        -0.00008411848351852116,
+        0.0001534494952713846
+      ],
+      "initialDistanceToAuthoredTangent": -0.00030554037577146644,
+      "blend": 1
+    },
+    {
+      "face": 541,
+      "vertex": 3468,
+      "offset": [
+        0.00011021876059436926,
+        -0.00013240535649935916,
+        0.00016057051433745944
+      ],
+      "initialDistanceToAuthoredTangent": -0.0003182489633137101,
+      "blend": 1
+    },
+    {
+      "face": 545,
+      "vertex": 3469,
+      "offset": [
+        -0.00022542095105073352,
+        -0.00008734340166654208,
+        0.00006593907361918653
+      ],
+      "initialDistanceToAuthoredTangent": -0.0003386245877462635,
+      "blend": 1
+    },
+    {
+      "face": 549,
+      "vertex": 3470,
+      "offset": [
+        0.000036684418800471444,
+        0.000006185768450078947,
+        0.000004655215830404063
+      ],
+      "initialDistanceToAuthoredTangent": 0.00005066542866622272,
+      "blend": 1
+    },
+    {
+      "face": 555,
+      "vertex": 3471,
+      "offset": [
+        -0.00023608525596453445,
+        0.000021334887580744263,
+        0.00016872683116163015
+      ],
+      "initialDistanceToAuthoredTangent": -0.00039319487272347067,
+      "blend": 1
+    },
+    {
+      "face": 559,
+      "vertex": 3472,
+      "offset": [
+        0.00023489004236457736,
+        -0.0000032479126283082013,
+        0.00013517453836463182
+      ],
+      "initialDistanceToAuthoredTangent": -0.0003662537049739815,
+      "blend": 1
+    },
+    {
+      "face": 563,
+      "vertex": 3473,
+      "offset": [
+        0.00011165910669705932,
+        -0.00029212147345048585,
+        0.00026081025828401613
+      ],
+      "initialDistanceToAuthoredTangent": -0.0005502916123560041,
+      "blend": 1
+    },
+    {
+      "face": 567,
+      "vertex": 3474,
+      "offset": [
+        -0.0000041697443485790855,
+        -0.00033766447919321945,
+        0.0003529264640405592
+      ],
+      "initialDistanceToAuthoredTangent": -0.0006600791509870691,
+      "blend": 1
+    },
+    {
+      "face": 571,
+      "vertex": 3475,
+      "offset": [
+        0.00021698188296414788,
+        -0.00020086894142053513,
+        0.00019789157815349357
+      ],
+      "initialDistanceToAuthoredTangent": -0.0004808049349149373,
+      "blend": 1
+    },
+    {
+      "face": 575,
+      "vertex": 3476,
+      "offset": [
+        0.00026805386872434244,
+        -0.00015496649454537504,
+        0.0004383821660143756
+      ],
+      "initialDistanceToAuthoredTangent": -0.0007252696715778456,
+      "blend": 1
+    },
+    {
+      "face": 579,
+      "vertex": 3477,
+      "offset": [
+        -0.0000888067323957091,
+        0.000002425104951084423,
+        0.000011583945487741497
+      ],
+      "initialDistanceToAuthoredTangent": 0.00012107010572459263,
+      "blend": 1
+    },
+    {
+      "face": 583,
+      "vertex": 3478,
+      "offset": [
+        0.00015979941264469453,
+        -0.000059256646346513234,
+        0.00004472945063835326
+      ],
+      "initialDistanceToAuthoredTangent": -0.00023811380707752588,
+      "blend": 1
+    },
+    {
+      "face": 587,
+      "vertex": 3479,
+      "offset": [
+        -0.00004172438303194816,
+        -0.0001532639035440209,
+        0.00022139846723036308
+      ],
+      "initialDistanceToAuthoredTangent": -0.0003682228597405927,
+      "blend": 1
+    },
+    {
+      "face": 591,
+      "vertex": 3480,
+      "offset": [
+        -0.0000986316926134846,
+        -0.00010708338409188299,
+        0.0002501481340187976
+      ],
+      "initialDistanceToAuthoredTangent": -0.0003911202815890545,
+      "blend": 1
+    },
+    {
+      "face": 595,
+      "vertex": 3481,
+      "offset": [
+        -0.0003624067926695795,
+        -0.0001710468987047796,
+        0.0002797423283713683
+      ],
+      "initialDistanceToAuthoredTangent": -0.0006604383176256935,
+      "blend": 1
+    },
+    {
+      "face": 599,
+      "vertex": 3482,
+      "offset": [
+        -0.0003884616157338381,
+        -0.0001140981024244938,
+        0.0002567363392134036
+      ],
+      "initialDistanceToAuthoredTangent": -0.0006478519202487306,
+      "blend": 1
+    },
+    {
+      "face": 603,
+      "vertex": 3483,
+      "offset": [
+        -0.00005100292315012132,
+        0.000004975182357421302,
+        0.0000027583305858356884
+      ],
+      "initialDistanceToAuthoredTangent": 0.0000693502532639301,
+      "blend": 1
+    },
+    {
+      "face": 1103,
+      "vertex": 3484,
+      "offset": [
+        0.00014359736802393568,
+        0.0000029257002723622674,
+        0.000024441904115140175
+      ],
+      "initialDistanceToAuthoredTangent": 0.00019688113505581862,
+      "blend": 1
+    },
+    {
+      "face": 1911,
+      "vertex": 3485,
+      "offset": [
+        -0.00000389816110282347,
+        -0.000004928906360669554,
+        0.000004209893255050697
+      ],
+      "initialDistanceToAuthoredTangent": 0.000010221521852202221,
+      "blend": 1
+    },
+    {
+      "face": 1913,
+      "vertex": 3486,
+      "offset": [
+        0.000045997677811727996,
+        0.000058160307068386945,
+        -0.00004967606737118431
+      ],
+      "initialDistanceToAuthoredTangent": 0.00012061232373453978,
+      "blend": 1
+    },
+    {
+      "face": 1915,
+      "vertex": 3487,
+      "offset": [
+        0.000002733256467575556,
+        0.0000033114071929215367,
+        0.0000010529691262238201
+      ],
+      "initialDistanceToAuthoredTangent": 0.000005974264947658601,
+      "blend": 1
+    },
+    {
+      "face": 1917,
+      "vertex": 3488,
+      "offset": [
+        0.000015527143860927523,
+        -0.000001036564145015544,
+        0.000007442846179036982
+      ],
+      "initialDistanceToAuthoredTangent": -0.00002331081554835348,
+      "blend": 1
+    },
+    {
+      "face": 1999,
+      "vertex": 3489,
+      "offset": [
+        0.0002141315957725742,
+        -0.00006919638573688442,
+        0.0001262325132464941
+      ],
+      "initialDistanceToAuthoredTangent": -0.0003486777892380984,
+      "blend": 1
+    },
+    {
+      "face": 2001,
+      "vertex": 3490,
+      "offset": [
+        -0.0000024296493998829274,
+        0.0000027823345059039245,
+        5.500389724487618e-7
+      ],
+      "initialDistanceToAuthoredTangent": -0.0000050467363522558955,
+      "blend": 1
+    },
+    {
+      "face": 2003,
+      "vertex": 3491,
+      "offset": [
+        -0.0000012218180421627308,
+        0.0000017230871645736335,
+        2.1460736973249622e-7
+      ],
+      "initialDistanceToAuthoredTangent": 0.000002869172255245538,
+      "blend": 1
+    },
+    {
+      "face": 2005,
+      "vertex": 3492,
+      "offset": [
+        -3.971247422689675e-7,
+        0.000001208683000217855,
+        9.187526383081078e-8
+      ],
+      "initialDistanceToAuthoredTangent": -0.0000017237352421073198,
+      "blend": 1
+    },
+    {
+      "face": 2007,
+      "vertex": 3493,
+      "offset": [
+        -2.7127870363284763e-7,
+        0.0000013689601375074315,
+        1.212477532814801e-7
+      ],
+      "initialDistanceToAuthoredTangent": 0.0000018930233155460714,
+      "blend": 1
+    },
+    {
+      "face": 2009,
+      "vertex": 3494,
+      "offset": [
+        0.00009772083523950787,
+        -0.000362130090437203,
+        -0.0002283363464735058
+      ],
+      "initialDistanceToAuthoredTangent": 0.0005934033693285874,
+      "blend": 1
+    },
+    {
+      "face": 2011,
+      "vertex": 3495,
+      "offset": [
+        0.00017580359240608012,
+        -0.00034624690337808266,
+        -0.00000551268011804073
+      ],
+      "initialDistanceToAuthoredTangent": -0.0005248120656423129,
+      "blend": 1
+    },
+    {
+      "face": 2265,
+      "vertex": 3496,
+      "offset": [
+        -0.000038989612282980185,
+        0.0000038033198721183192,
+        0.000002108628946099205
+      ],
+      "initialDistanceToAuthoredTangent": -0.00005301538263852791,
+      "blend": 1
+    }
+  ],
+  "sourceSkinVertices": 3466,
+  "newSkinFaces": 2923,
+  "newSkinVertices": 3497,
+  "allTriangles": 6112,
+  "skinBoundaryEdgesUnchanged": 123,
+  "internalEdgeNonmanifold": 0,
+  "rest": {
+    "zero": 0,
+    "areaMin": 4.4775657003191465e-8
+  },
+  "pose": {
+    "zero": 0,
+    "areaMin": 5.7641807274808394e-8
+  },
+  "iterations": [
+    {
+      "phase": "curved-face-replacement",
+      "sourceFaces": 2861,
+      "replaced": 31,
+      "newCurvedFaces": 93
+    },
+    {
+      "phase": "small-rim-cap",
+      "smallCaps": 0,
+      "capFaces": 0,
+      "capLoops": []
+    }
+  ],
+  "bones": 63,
+  "garments": 370,
+  "protected101": true,
+  "originalAuthor908Untouched": true,
+  "sourceBoundaryVerticesUntouched": true,
+  "existingBodyUntouched": true,
+  "visualApproval": "pending",
+  "replacedCurvedFaces": 31,
+  "cappedSmallLoops": 0,
+  "capFaces": 0,
+  "remainingBoundaryEdges": 123,
+  "vertexChanges": []
+}

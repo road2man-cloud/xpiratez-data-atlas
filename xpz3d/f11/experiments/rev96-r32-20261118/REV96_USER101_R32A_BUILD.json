@@ -1,0 +1,204 @@
+{
+  "revision": "r32a",
+  "unfoldedSeamFaces": 9,
+  "anchoredVertices": 9,
+  "harmonicPasses": 54,
+  "foldedSeamsBefore": 10,
+  "foldedSeamsAfter": 4,
+  "dihedralAfter": [
+    137.12,
+    63.38,
+    60.46,
+    35.85,
+    41.67,
+    16.54,
+    13.76,
+    18.68,
+    49.9,
+    52.04,
+    4.11,
+    1.64,
+    6.97,
+    75.85,
+    45.88,
+    23.85,
+    164.71,
+    10.3,
+    14,
+    24.58,
+    22.65,
+    8.5,
+    14.66,
+    4.75,
+    10.84,
+    76.42,
+    59.2,
+    12.26,
+    10.07,
+    0.7,
+    0.39
+  ],
+  "unfolded": [
+    {
+      "edge": [
+        819,
+        818
+      ],
+      "authFace": 378,
+      "genFace": 1913,
+      "anchor": 2625,
+      "beforeAngle": 97.655,
+      "targetDelta": [
+        -0.002027681374665847,
+        -0.0019126896890214462,
+        -0.0009352775526956236
+      ]
+    },
+    {
+      "edge": [
+        908,
+        909
+      ],
+      "authFace": 492,
+      "genFace": 531,
+      "anchor": 3446,
+      "beforeAngle": 179.825,
+      "targetDelta": [
+        0.010942490884077102,
+        -0.004874478611484212,
+        0.020825727939956074
+      ]
+    },
+    {
+      "edge": [
+        909,
+        910
+      ],
+      "authFace": 494,
+      "genFace": 537,
+      "anchor": 3447,
+      "beforeAngle": 162.598,
+      "targetDelta": [
+        -0.00010144112060207766,
+        0.0029905229186790727,
+        0.0011346458615698607
+      ]
+    },
+    {
+      "edge": [
+        910,
+        911
+      ],
+      "authFace": 496,
+      "genFace": 541,
+      "anchor": 3448,
+      "beforeAngle": 166.215,
+      "targetDelta": [
+        0.001398306991112307,
+        0.0049388947876539135,
+        0.0027944192464787188
+      ]
+    },
+    {
+      "edge": [
+        911,
+        912
+      ],
+      "authFace": 498,
+      "genFace": 545,
+      "anchor": 3449,
+      "beforeAngle": 179.007,
+      "targetDelta": [
+        -0.0004000195122022543,
+        0.004854866551810652,
+        0.003810604918132121
+      ]
+    },
+    {
+      "edge": [
+        912,
+        913
+      ],
+      "authFace": 500,
+      "genFace": 549,
+      "anchor": 3450,
+      "beforeAngle": 105.703,
+      "targetDelta": [
+        0.00024311148766890597,
+        0.00041163996068145636,
+        -0.001138353752271004
+      ]
+    },
+    {
+      "edge": [
+        923,
+        924
+      ],
+      "authFace": 523,
+      "genFace": 595,
+      "anchor": 3461,
+      "beforeAngle": 117.845,
+      "targetDelta": [
+        -0.004474493630956361,
+        0.006694797911759073,
+        0.008102429624938678
+      ]
+    },
+    {
+      "edge": [
+        924,
+        925
+      ],
+      "authFace": 525,
+      "genFace": 599,
+      "anchor": 3462,
+      "beforeAngle": 122.532,
+      "targetDelta": [
+        -0.003923497064405397,
+        0.008776881663226974,
+        0.009748702747283233
+      ]
+    },
+    {
+      "edge": [
+        925,
+        926
+      ],
+      "authFace": 528,
+      "genFace": 603,
+      "anchor": 3463,
+      "beforeAngle": 179.862,
+      "targetDelta": [
+        0.000665046015389005,
+        -0.008062100456881868,
+        0.026060381666524468
+      ]
+    }
+  ],
+  "curve": "convex downward",
+  "file": "r21AO-F11-user101-integrated-oval-r32a-unfolded-convex-seam.glb",
+  "sha256": "51f0b58e0345ff0ca7ad664e6a544b22e90cd88df0d6c36b759a15016f2c5fe7",
+  "parent": "r21AO-F11-user101-integrated-oval-r31f-physically-welded-convex.glb",
+  "parentSha256": "e0564deae45481fff185931c36137f6f6c07b1622cb8bd3ab143972ed0fe8cdc",
+  "sourceSkinTriangles": 2861,
+  "resultSkinTriangles": 2861,
+  "sourceSkinVertices": 3466,
+  "resultSkinVertices": 3466,
+  "allTriangles": 6050,
+  "movedSkinVertices": 305,
+  "maximumDisplacement": 0.026095649475559604,
+  "meanDisplacement": 0.00009851930809757318,
+  "edgeFlips": 0,
+  "flipHistory": [],
+  "boundaryEdges": 123,
+  "rigBones": 63,
+  "garmentTriangles": 370,
+  "manual101Protected": true,
+  "authored908Protected": true,
+  "authored529FacesProtected": true,
+  "morphPreserved": true,
+  "restDegenerate": 0,
+  "poseDegenerate": 0,
+  "wholeBodyWatertight": false,
+  "visualAccepted": false
+}

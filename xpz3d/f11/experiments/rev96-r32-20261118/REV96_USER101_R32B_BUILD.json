@@ -1,0 +1,249 @@
+{
+  "revision": "r32b",
+  "unfoldedSeamFaces": 12,
+  "anchoredVertices": 12,
+  "harmonicPasses": 80,
+  "foldedSeamsBefore": 4,
+  "foldedSeamsAfter": 0,
+  "dihedralAfter": [
+    1.7,
+    0.12,
+    0.13,
+    0.36,
+    0.2,
+    13.67,
+    12.75,
+    16.68,
+    0.42,
+    0.71,
+    9.75,
+    2.42,
+    10.48,
+    27.78,
+    27.63,
+    52.47,
+    4.89,
+    18.14,
+    30.18,
+    48.16,
+    40.96,
+    17.42,
+    25.35,
+    11.02,
+    25.35,
+    32.82,
+    30.02,
+    20.11,
+    17,
+    1.12,
+    0.54
+  ],
+  "unfolded": [
+    {
+      "edge": [
+        445,
+        782
+      ],
+      "authFace": 331,
+      "genFace": 1917,
+      "anchor": 2627,
+      "beforeAngle": 137.122,
+      "targetDelta": [
+        -0.0010475747636855479,
+        -0.00011114594475469808,
+        0.0022758867952353823
+      ]
+    },
+    {
+      "edge": [
+        449,
+        793
+      ],
+      "authFace": 348,
+      "genFace": 2005,
+      "anchor": 2672,
+      "beforeAngle": 63.38,
+      "targetDelta": [
+        -0.000058046724289511145,
+        -0.0014164134886503477,
+        0.00170379281886468
+      ]
+    },
+    {
+      "edge": [
+        793,
+        448
+      ],
+      "authFace": 349,
+      "genFace": 2007,
+      "anchor": 2673,
+      "beforeAngle": 60.46,
+      "targetDelta": [
+        0.0000656973642462668,
+        -0.0018242415799194778,
+        0.0013367245855571142
+      ]
+    },
+    {
+      "edge": [
+        450,
+        796
+      ],
+      "authFace": 356,
+      "genFace": 2001,
+      "anchor": 2670,
+      "beforeAngle": 35.846,
+      "targetDelta": [
+        0.0010026338694992913,
+        -0.0009012668145166602,
+        0.0005214874544969827
+      ]
+    },
+    {
+      "edge": [
+        796,
+        449
+      ],
+      "authFace": 357,
+      "genFace": 2003,
+      "anchor": 2671,
+      "beforeAngle": 41.666,
+      "targetDelta": [
+        0.0011484113018364606,
+        -0.0005382195573928328,
+        0.0010973443776630676
+      ]
+    },
+    {
+      "edge": [
+        818,
+        445
+      ],
+      "authFace": 376,
+      "genFace": 1915,
+      "anchor": 2626,
+      "beforeAngle": 49.897,
+      "targetDelta": [
+        -0.001427306079186206,
+        -0.0010052487446969571,
+        0.0007811056008454331
+      ]
+    },
+    {
+      "edge": [
+        22,
+        819
+      ],
+      "authFace": 378,
+      "genFace": 1911,
+      "anchor": 2624,
+      "beforeAngle": 52.043,
+      "targetDelta": [
+        -0.0007088331677088996,
+        -0.00023756631194934985,
+        0.001846283392441972
+      ]
+    },
+    {
+      "edge": [
+        909,
+        910
+      ],
+      "authFace": 494,
+      "genFace": 537,
+      "anchor": 3447,
+      "beforeAngle": 75.851,
+      "targetDelta": [
+        0.0009292040746028095,
+        0.0009679512011222108,
+        0.0021068058048404614
+      ]
+    },
+    {
+      "edge": [
+        910,
+        911
+      ],
+      "authFace": 496,
+      "genFace": 541,
+      "anchor": 3448,
+      "beforeAngle": 45.879,
+      "targetDelta": [
+        0.001000054780992814,
+        -0.0004102478572261675,
+        0.0014262822112629525
+      ]
+    },
+    {
+      "edge": [
+        912,
+        913
+      ],
+      "authFace": 500,
+      "genFace": 549,
+      "anchor": 3450,
+      "beforeAngle": 164.709,
+      "targetDelta": [
+        -0.00044324074665658304,
+        0.0029388097706655736,
+        0.0019285613911176336
+      ]
+    },
+    {
+      "edge": [
+        921,
+        922
+      ],
+      "authFace": 519,
+      "genFace": 587,
+      "anchor": 3459,
+      "beforeAngle": 76.421,
+      "targetDelta": [
+        0.0000010899312815598056,
+        0.0009609557147493564,
+        0.00209840044250853
+      ]
+    },
+    {
+      "edge": [
+        922,
+        923
+      ],
+      "authFace": 521,
+      "genFace": 591,
+      "anchor": 3460,
+      "beforeAngle": 59.202,
+      "targetDelta": [
+        -0.0007560740850855764,
+        0.0008236216770081267,
+        0.0016399207977406682
+      ]
+    }
+  ],
+  "curve": "convex downward",
+  "file": "r21AO-F11-user101-integrated-oval-r32b-wide-tangent-seam.glb",
+  "sha256": "f8b2b58036bf8444abbde749079f2827712ec7de445387a24e7e3cceefde3213",
+  "parent": "r21AO-F11-user101-integrated-oval-r32a-unfolded-convex-seam.glb",
+  "parentSha256": "51f0b58e0345ff0ca7ad664e6a544b22e90cd88df0d6c36b759a15016f2c5fe7",
+  "sourceSkinTriangles": 2861,
+  "resultSkinTriangles": 2861,
+  "sourceSkinVertices": 3466,
+  "resultSkinVertices": 3466,
+  "allTriangles": 6050,
+  "movedSkinVertices": 291,
+  "maximumDisplacement": 0.003134822265151104,
+  "meanDisplacement": 0.0000617666624861241,
+  "edgeFlips": 0,
+  "flipHistory": [],
+  "boundaryEdges": 123,
+  "rigBones": 63,
+  "garmentTriangles": 370,
+  "manual101Protected": true,
+  "authored908Protected": true,
+  "authored529FacesProtected": true,
+  "morphPreserved": true,
+  "restDegenerate": 0,
+  "poseDegenerate": 0,
+  "wholeBodyWatertight": false,
+  "visualAccepted": false
+}

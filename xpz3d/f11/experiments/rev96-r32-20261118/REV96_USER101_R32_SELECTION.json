@@ -1,0 +1,81 @@
+{
+  "schema": "xpz3d-f11/rev96-r32-development",
+  "date": "2026-11-18",
+  "chosenStructuralBaseline": "r32c",
+  "visualCandidate": "r32e",
+  "rejected": [
+    "r32d"
+  ],
+  "userConfirmedCurvature": "convex downward",
+  "models": [
+    {
+      "id": "r32a",
+      "file": "r21AO-F11-user101-integrated-oval-r32a-unfolded-convex-seam.glb",
+      "sha256": "51f0b58e0345ff0ca7ad664e6a544b22e90cd88df0d6c36b759a15016f2c5fe7",
+      "movedVertices": 305,
+      "severeSeamAnglesBefore": 10,
+      "severeSeamAnglesAfter": 4,
+      "triangles": 6050,
+      "description": "9 seam-anchor unfolds with harmonic propagation"
+    },
+    {
+      "id": "r32b",
+      "file": "r21AO-F11-user101-integrated-oval-r32b-wide-tangent-seam.glb",
+      "sha256": "f8b2b58036bf8444abbde749079f2827712ec7de445387a24e7e3cceefde3213",
+      "movedVertices": 291,
+      "severeSeamAnglesBefore": 4,
+      "severeSeamAnglesAfter": 0,
+      "triangles": 6050,
+      "description": "12 additional seam-anchor corrections, all 31 shared seam edges preserved"
+    },
+    {
+      "id": "r32c",
+      "file": "r21AO-F11-user101-integrated-oval-r32c-welded-tangent-support-ring.glb",
+      "sha256": "19428ac2dd0be896433f93634d9d15e1e47ff17cd283759b391e52e8eb60c3e9",
+      "newSeamVertices": 31,
+      "replacedSeamFaces": 31,
+      "facesAfter": 6112,
+      "description": "31 first-ring procedural faces retopologized into 93 curved triangles; maintains physical seam weld",
+      "status": "chosen structural baseline"
+    },
+    {
+      "id": "r32d",
+      "file": "r21AO-F11-user101-integrated-oval-r32d-broad-convex-fairing.glb",
+      "sha256": "5d8cb2668ff25c190446582a0408a9ddf1029d48d61ae959f153841e8c052f7d",
+      "movedVertices": 812,
+      "triangles": 6112,
+      "description": "26-pass broad smoothing warped nearby wings",
+      "status": "rejected"
+    },
+    {
+      "id": "r32e",
+      "file": "r21AO-F11-user101-integrated-oval-r32e-constrained-convex-fairing.glb",
+      "sha256": "2ef266d3c5840bc36a97428aeede67fb4bd3e288ce8c135e2a6c20d4487f57e4",
+      "movedVertices": 510,
+      "triangles": 6112,
+      "roughnessBefore": 0.0044407985609254816,
+      "roughnessAfter": 0.00432808128456123,
+      "description": "10-pass narrow controlled fairing of posterior generated vertices",
+      "status": "visual candidate unapproved"
+    }
+  ],
+  "protected": {
+    "manualDeletedFaces": 101,
+    "manualPositions": 754,
+    "userControls": 106,
+    "authoredSourceFaces": 529,
+    "authoredSourceGeometry": true,
+    "rigBones": 63,
+    "garmentFaces": 370,
+    "analDepression": true
+  },
+  "limitations": [
+    "No true complete posterior U / ellipse aesthetic approval yet",
+    "Lateral wing-like panels persist outside seam",
+    "Remaining whole-body boundaries open, not watertight",
+    "Static 55-degree and behind renders still show residual creases",
+    "No full animation or game runtime acceptance"
+  ],
+  "rendersPerVersion": 16,
+  "report": "Actual CJS, GLB and 80 PNG render artifacts produced; geometric seam dihedral reduction is measurable but not final visual quality."
+}

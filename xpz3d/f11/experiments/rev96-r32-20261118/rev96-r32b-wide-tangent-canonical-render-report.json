@@ -1,0 +1,38 @@
+{
+  "file": "r21AO-F11-user101-integrated-oval-r32b-wide-tangent-seam.glb",
+  "loadedRequests": [
+    "r21AO-F11-user101-integrated-oval-r32b-wide-tangent-seam.glb"
+  ],
+  "createdUTC": "2026-11-17T21:13:40.640Z",
+  "captures": [
+    "rev96-r32b-wide-tangent-canonical-0-under-solid.png",
+    "rev96-r32b-wide-tangent-canonical-0-under-wire.png",
+    "rev96-r32b-wide-tangent-canonical-0-behind-solid.png",
+    "rev96-r32b-wide-tangent-canonical-0-behind-wire.png",
+    "rev96-r32b-wide-tangent-canonical-25-under-solid.png",
+    "rev96-r32b-wide-tangent-canonical-25-under-wire.png",
+    "rev96-r32b-wide-tangent-canonical-25-behind-solid.png",
+    "rev96-r32b-wide-tangent-canonical-25-behind-wire.png",
+    "rev96-r32b-wide-tangent-canonical-40-under-solid.png",
+    "rev96-r32b-wide-tangent-canonical-40-under-wire.png",
+    "rev96-r32b-wide-tangent-canonical-40-behind-solid.png",
+    "rev96-r32b-wide-tangent-canonical-40-behind-wire.png",
+    "rev96-r32b-wide-tangent-canonical-55-under-solid.png",
+    "rev96-r32b-wide-tangent-canonical-55-under-wire.png",
+    "rev96-r32b-wide-tangent-canonical-55-behind-solid.png",
+    "rev96-r32b-wide-tangent-canonical-55-behind-wire.png"
+  ],
+  "errors": [],
+  "meta": [
+    {
+      "tris": 4680,
+      "bones": 63,
+      "parts": 24
+    },
+    {
+      "tris": 6050,
+      "bones": 63,
+      "parts": 24
+    }
+  ]
+}

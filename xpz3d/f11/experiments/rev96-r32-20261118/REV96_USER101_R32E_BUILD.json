@@ -1,0 +1,40 @@
+{
+  "revision": "r32e",
+  "weldedAuthoredSeamVertices": 33,
+  "smoothedInteriorVertices": 511,
+  "smoothingIterations": 10,
+  "roughnessBefore": {
+    "mean": 0.0044407985609254816,
+    "count": 436
+  },
+  "roughnessAfter": {
+    "mean": 0.00432808128456123,
+    "count": 436
+  },
+  "curve": "convex downward",
+  "file": "r21AO-F11-user101-integrated-oval-r32e-constrained-convex-fairing.glb",
+  "sha256": "2ef266d3c5840bc36a97428aeede67fb4bd3e288ce8c135e2a6c20d4487f57e4",
+  "parent": "r21AO-F11-user101-integrated-oval-r32c-welded-tangent-support-ring.glb",
+  "parentSha256": "19428ac2dd0be896433f93634d9d15e1e47ff17cd283759b391e52e8eb60c3e9",
+  "sourceSkinTriangles": 2923,
+  "resultSkinTriangles": 2923,
+  "sourceSkinVertices": 3497,
+  "resultSkinVertices": 3497,
+  "allTriangles": 6112,
+  "movedSkinVertices": 510,
+  "maximumDisplacement": 0.006029994267057625,
+  "meanDisplacement": 0.0002645176786698869,
+  "edgeFlips": 0,
+  "flipHistory": [],
+  "boundaryEdges": 123,
+  "rigBones": 63,
+  "garmentTriangles": 370,
+  "manual101Protected": true,
+  "authored908Protected": true,
+  "authored529FacesProtected": true,
+  "morphPreserved": true,
+  "restDegenerate": 0,
+  "poseDegenerate": 0,
+  "wholeBodyWatertight": false,
+  "visualAccepted": false
+}
