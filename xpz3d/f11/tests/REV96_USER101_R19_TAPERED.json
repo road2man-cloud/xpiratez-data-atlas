@@ -1,0 +1,38 @@
+{
+  "schema": "xpz3d/f11/r19-rounded-closed-core",
+  "input": "r21AO-F11-user101-compact-core-r16-compact.glb",
+  "inputSHA256": "a18be59deed4a611d31abd0cb4e58e03c504dc8026724f2853739f235cd873e9",
+  "variant": "tapered",
+  "file": "r21AO-F11-user101-rounded-closed-core-r19-tapered.glb",
+  "sha256": "86177cb79c08a087ceffec0a55fdf025c8d91ed59611e5dbd5cd1804b64af19d",
+  "totalTriangles": 5039,
+  "garment": 370,
+  "bones": 63,
+  "original101UserDeletedFacesAbsent": true,
+  "source754SculptPositionsUnchanged": true,
+  "posteriorPitShiftY": 0.03553713257133495,
+  "analBeforeY": -0.03471580147743225,
+  "analAfterY": 0.0008213310939026996,
+  "outerCoreFaces": 957,
+  "addedBridgeFaces": 144,
+  "shellBackingFaces": 957,
+  "wallFaces": 186,
+  "coreOpenEdgeCount": 0,
+  "coreNonManifoldEdges": 0,
+  "bridgeAttachCount": 0,
+  "exactBodyRimMorphJoin": false,
+  "crossPrimitiveIndexWeld": false,
+  "overallNativeBodyOpen": true,
+  "restQuality": {
+    "zero": 0,
+    "minArea": 1.6581062806788233e-7,
+    "maxEdge": 0.04076705068416258
+  },
+  "poseQuality": {
+    "zero": 0,
+    "minArea": 1.6469676261361383e-8,
+    "maxEdge": 0.040562242058621474
+  },
+  "scope": "True closed compact core. Posterior tip is not welded to native body; surrounding body openings remain.",
+  "status": "geometry-built-visual-review-pending"
+}
