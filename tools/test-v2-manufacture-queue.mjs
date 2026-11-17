@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {createManufacturingPlanner} from '../public/manufacture-v2/planner/planner-core.mjs';
-import {simulateManufacturingQueue,compareManufacturingQueueOrders} from '../public/manufacture-v2/planner/queue-core.mjs';
+import {simulateManufacturingQueue,compareManufacturingQueueOrders,buildProcurementChecklist} from '../public/manufacture-v2/planner/queue-core.mjs';
 const data=fileURLToPath(new URL('../public/data/',import.meta.url));
 const read=name=>JSON.parse(fs.readFileSync(data+name+'-v2-index.json','utf8'));
 const planner=createManufacturingPlanner({items:read('items'),research:read('research'),manufacture:read('manufacture')});
@@ -111,4 +111,31 @@ test('alternative comparison rejects an absent or ambiguous new target',()=>{
   assert.throws(()=>compareManufacturingQueueOrders(p,orderSetup,{},'missing'),/하나/);
   assert.throws(()=>compareManufacturingQueueOrders(p,
     {...orderSetup,jobs:[...orderSetup.jobs,orderSetup.jobs[1]]},{},'new'),/하나/);
+});
+
+test('procurement checklist prioritizes first blocked order and attributes shared shortages',()=>{
+ const p=mockPlanner();
+ const a=simulateManufacturingQueue(p,{jobs:[
+   {key:'first',recipeId:'USE_A',batches:2},
+   {key:'second',recipeId:'USE_A',batches:3}
+ ],inventory:{},maxDepth:0});
+ const list=buildProcurementChecklist(p,a);
+ assert.equal(list.schema,'xpiratez-v2-procurement-checklist/v1');
+ assert.deepEqual(list.entries.map(x=>({id:x.id,quantity:x.quantity,first:x.firstNeededOrder,positions:x.affectedJobs.map(y=>y.position)})),
+   [{id:'A',quantity:5,first:1,positions:[1,2]}]);
+ assert.equal(list.totals.unresolvedUnits,5);
+ assert.equal(list.totals.pricedKinds,0);
+ assert.equal(list.entries[0].referenceBuySubtotal,null);
+});
+
+test('procurement checklist is independent of saved order progress and rejects untrusted results',()=>{
+ const p=mockPlanner();
+ const first=simulateManufacturingQueue(p,{jobs:[
+   {key:'j1',source:'saved',recipeId:'USE_A',batches:1},
+   {key:'j2',source:'new',recipeId:'MAKE_A',batches:1}
+ ],inventory:{},maxDepth:0});
+ const list=buildProcurementChecklist(p,first);
+ assert.deepEqual(list.entries.map(x=>x.id),['A','B']);
+ assert.deepEqual(list.entries.map(x=>x.firstNeededOrder),[1,2]);
+ assert.throws(()=>buildProcurementChecklist(p,{schema:'legacy-1.1',jobs:[],external:[]}),/2.1/);
 });

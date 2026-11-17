@@ -49,6 +49,53 @@ export function compareManufacturingQueueOrders(planner, settings={}, context={}
   };
 }
 
+// A source-aware procurement checklist for a hypothetical queue. This is an
+// ordering by first *unresolved* demand, not a purchasing recommendation or
+// price/availability claim. Only 2.1 item IDs from the queue planner are used.
+export function buildProcurementChecklist(planner, report) {
+  if (report?.schema !== 'xpiratez-v2-manufacture-next-batch-scenario/v1' ||
+      !Array.isArray(report.jobs) || !Array.isArray(report.external)) {
+    throw new Error('유효한 2.1 가상 제조 큐 계산 결과가 필요합니다.');
+  }
+  const byId = new Map();
+  for (const [index, job] of report.jobs.entries()) {
+    for (const missing of job.external) {
+      if (!planner.itemMap.has(missing.id) ||
+          !Number.isSafeInteger(missing.quantity) || missing.quantity <= 0)
+        throw new Error('2.1 재료 부족 정보가 잘못되었습니다.');
+      const prior=byId.get(missing.id)||{
+        id:missing.id,name:planner.name(missing.id),
+        firstNeededOrder:index+1,firstJobKey:job.key,firstRecipeId:job.recipeId,
+        quantity:0,affectedJobs:[]
+      };
+      prior.quantity+=missing.quantity;
+      if(!Number.isSafeInteger(prior.quantity))
+        throw new Error('조달 수량 합계가 안전한 정수 범위를 초과합니다.');
+      prior.affectedJobs.push({
+        position:index+1,key:job.key,recipeId:job.recipeId,
+        recipeName:job.name,quantity:missing.quantity
+      });
+      byId.set(missing.id,prior);
+    }
+  }
+  const entries=[...byId.values()].map(row=>{
+    const cost=planner.itemMap.get(row.id)?.fields?.costBuy;
+    const price=typeof cost==='number'&&Number.isFinite(cost)&&cost>=0?cost:null;
+    const subtotal=price===null?null:price*row.quantity;
+    return {...row,referenceUnitBuy:price,
+      referenceBuySubtotal:Number.isFinite(subtotal)?subtotal:null};
+  }).sort((a,b)=>a.firstNeededOrder-b.firstNeededOrder||
+    b.affectedJobs.length-a.affectedJobs.length||a.id.localeCompare(b.id,'en'));
+  const knownReferenceSubtotal=entries.reduce((sum,x)=>sum+(x.referenceBuySubtotal??0),0);
+  return {
+    schema:'xpiratez-v2-procurement-checklist/v1',entries,
+    totals:{unresolvedKinds:entries.length,unresolvedUnits:entries.reduce((sum,x)=>sum+x.quantity,0),
+      pricedKinds:entries.filter(x=>x.referenceBuySubtotal!==null).length,
+      knownReferenceSubtotal},
+    note:'우선순위는 가상 큐에서 처음 부족해지는 순서입니다. 참고 구매가는 명시된 2.1 원본 단가만 사용하며 실제 구매 가능성과 최종 비용을 확인하지 않습니다. 주문을 수행하기 위해 확보된 재고가 아닙니다.'
+  };
+}
+
 export function simulateManufacturingQueue(planner, {
   jobs, inventory={}, maxDepth=2, choices={},
   assumeImplicit=false, saveDiscoveredResearchIds

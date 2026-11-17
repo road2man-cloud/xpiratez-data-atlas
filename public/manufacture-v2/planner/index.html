@@ -125,6 +125,11 @@
 <div id="queue-report" hidden>
 <div id="queue-summary" class="summary-stats"></div>
 <div class="table-wrap"><table id="queue-steps-table" class="queue-table"><thead><tr><th>가상 실행 순서</th><th>제조비 / 명시 작업량</th><th>기초 재고 사용 / 이전 계획 산출물 사용</th><th>외부 조달</th><th>미확인 조건</th></tr></thead><tbody id="queue-steps"></tbody></table></div>
+<div class="queue-procurement">
+<div class="section-title"><h4>추가 조달 체크리스트 · 첫 부족 주문 기준</h4><button id="queue-procurement-csv" type="button" class="secondary" disabled>조달 목록 CSV 저장</button></div>
+<p class="note">어떤 주문에서 재료가 처음 부족해지는지, 어느 후속 주문에서도 필요한지 표시합니다. 구매 가능성이나 실제 게임의 보유 재고 변경을 뜻하지 않습니다.</p>
+<div id="queue-procurement-table" class="table-wrap"></div>
+</div>
 <h4>모든 선택 주문을 합친 재료 수급표</h4>
 <div id="queue-materials" class="table-wrap"></div>
 <div id="queue-order-comparison" hidden>

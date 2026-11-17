@@ -132,6 +132,14 @@ try {
   await page.locator('#queue-position').selectOption('first');
   assert((await page.locator('#queue-steps tr').first().innerText()).includes('STR_3RL_HE_XXX'));
   assert(await page.locator('#queue-download').isEnabled());
+  assert((await page.locator('#queue-procurement-table').innerText()).includes('조달') ||
+    (await page.locator('#queue-procurement-table').innerText()).includes('재료가 없습니다'));
+  if(await page.locator('#queue-procurement-csv').isEnabled()){
+    const event=page.waitForEvent('download');
+    await page.locator('#queue-procurement-csv').click();
+    const download=await event;
+    assert.equal(download.suggestedFilename(),'xpiratez-v2-procurement-list.csv');
+  }
   await page.locator('#queue-compare').click();
   assert(await page.locator('#queue-order-comparison').isVisible());
   assert((await page.locator('#queue-order-compare-summary').innerText()).includes('신규 먼저'));
