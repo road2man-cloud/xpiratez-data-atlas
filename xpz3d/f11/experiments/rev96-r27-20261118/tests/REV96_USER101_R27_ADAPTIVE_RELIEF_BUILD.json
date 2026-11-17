@@ -1,0 +1,31 @@
+{
+  "schema": "xpz3d/f11/rev96/r27-adaptive-relief-v1",
+  "source": "r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb",
+  "sourceSHA256": "08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3",
+  "file": "r21AO-F11-user101-integrated-oval-r27-adaptive-relief.glb",
+  "sha256": "857afd41108d74d031b2887c8381cce760a27c4b54c4530d6e68b7e31ce58e98",
+  "triangles": 4680,
+  "garmentTriangles": 370,
+  "bones": 63,
+  "lockedVertices": 272,
+  "eligibleVertices": 331,
+  "changedVertices": 331,
+  "maximumRestDisplacementGLB": 0.0050348890818447956,
+  "medianChangedDisplacementGLB": 0.001049765498562838,
+  "meanAcceptedFraction": 0.9546827794561934,
+  "rest": {
+    "flips": 0,
+    "degenerate": 0,
+    "minArea": 1.0139362084527469e-7
+  },
+  "posed": {
+    "flips": 0,
+    "degenerate": 0,
+    "minArea": 1.3451201366327286e-7
+  },
+  "protectedAuthoredPrimitivesUntouched": true,
+  "manual101NotResurrected": true,
+  "visualApproval": "pending",
+  "seamAudit": "pending",
+  "wholeBodyWatertight": false
+}

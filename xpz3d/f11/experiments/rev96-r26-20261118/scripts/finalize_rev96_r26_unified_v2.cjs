@@ -1,0 +1,20 @@
+'use strict';
+/** Non-destructive r26 v2 manifest and canonical alias.  No GLB geometry is changed. */
+const fs=require('fs'),path=require('path'),crypto=require('crypto'),r=__dirname,hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+const source='r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb',alias='r21AO-F11-user101-native-retopo-r26-integrated-oval.glb';
+const base='r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb',want='ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a',v2='08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3';
+const a=fs.readFileSync(path.join(r,source)),b=fs.readFileSync(path.join(r,base));
+if(hash(a)!==v2||hash(b)!==want)throw Error('Immutable source changed');
+if(fs.existsSync(path.join(r,alias))&&hash(fs.readFileSync(path.join(r,alias)))!==v2)throw Error('Canonical path reserved for different candidate');
+if(!fs.existsSync(path.join(r,alias)))fs.writeFileSync(path.join(r,alias),a,{flag:'wx'});
+const j=n=>JSON.parse(fs.readFileSync(path.join(r,n),'utf8')),baseline=j('rev96-r24-soft-v3-union-boundary.json'),newer=j('rev96-r26-unified-v2-union-boundary.json'),accept=j('REV96_USER101_R26_ACCEPTANCE.json');
+if(accept.currentCandidate.sha256!==v2)throw Error('Existing acceptance names different model');
+const diff={schema:'xpz3d/f11/rev96/r26-boundary-diff-v2',baseline:{file:base,sha256:want,openEdges:baseline.boundaryEdges,centerOpenEdges:baseline.centerBoundaryEdges,multiple:baseline.multiple,wrongPairs:baseline.wrongPairs},candidate:{file:alias,sha256:v2,originalCandidate:source,openEdges:newer.boundaryEdges,centerOpenEdges:newer.centerBoundaryEdges,multiple:newer.multiple,wrongPairs:newer.wrongPairs},delta:{totalOpenEdges:newer.boundaryEdges-baseline.boundaryEdges,centerOpenEdges:newer.centerBoundaryEdges-baseline.centerBoundaryEdges,nonManifold:newer.multiple-baseline.multiple},protection:{artist908VertexPositionsPreserved:true,manualTrim101Preserved:true,rig63:true,garment370:true},limits:{wholeBodyWatertight:false,frontBodyPhysicalWeld:false,visualAnatomyApproved:false,posteriorSmallUContourIncomplete:true,lateralSkinWingStillVisible:true}};
+const df='REV96_USER101_R26_BOUNDARY_DIFF.json';
+if(fs.existsSync(path.join(r,df)))throw Error('Refuse overwrite diff');
+fs.writeFileSync(path.join(r,df),JSON.stringify(diff,null,2)+'\n',{flag:'wx'});
+const images=[];for(const degree of [0,25,40,55])for(const view of ['under','behind'])for(const mode of ['solid','wire']){const f='rev96-r26-unified-v2-canonical-'+degree+'-'+view+'-'+mode+'.png';if(!fs.existsSync(path.join(r,f)))throw Error('Missing '+f);images.push(f);}
+const body=images.map(f=>'<figure><a href="'+f+'"><img loading="lazy" src="'+f+'"></a><figcaption>'+f+'</figcaption></figure>').join('');
+const html='<!doctype html><html lang="ko"><meta charset="utf-8"><title>XPZ3D F11 rev96 r26 candidate review</title><style>body{background:#101a22;color:#edf1f5;font:14px system-ui;margin:0}header{padding:22px 3vw;background:#1c2834}a{color:#9de9ff}main{padding:22px 3vw}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}figure{margin:0;background:#26333d;border-radius:8px;overflow:hidden}img{width:100%;display:block}figcaption{padding:8px;font:11px monospace;overflow-wrap:anywhere}@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid{grid-template-columns:1fr}}</style><header><h1>XPZ3D rev96 r26 / Unified Skin v2</h1><p>메시 통합 및 재질 일치 완료. 앞 큰 U + 후방 작은 U의 자연스러운 타원형과 좌우 피부막은 미완료로 판정합니다.</p><p><a href="http://127.0.0.1:8873/f11/r21al/review-rev96-user101-r26-smoothed.html">WebGL 3D 원본↔후보 비교 열기 (로컬 서버)</a> · <a href="REV96_USER101_R26_ACCEPTANCE.json">Acceptance</a> · <a href="'+df+'">Boundary diff</a></p></header><main><div class="grid">'+body+'</div></main></html>';
+const hf='review-rev96-user101-r26.html';if(fs.existsSync(path.join(r,hf)))throw Error('Refuse overwrite gallery');fs.writeFileSync(path.join(r,hf),html,{flag:'wx'});
+console.log(JSON.stringify({alias,sha256:v2,boundaryDiff:df,gallery:hf,png:images.length,visualApproved:false},null,2));

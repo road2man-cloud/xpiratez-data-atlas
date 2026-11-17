@@ -1,0 +1,135 @@
+{
+  "schema": "xpz3d/f11/rev96/r27-acceptance-v1",
+  "candidate": {
+    "file": "r21AO-F11-user101-integrated-oval-r27-adaptive-relief.glb",
+    "sha256": "857afd41108d74d031b2887c8381cce760a27c4b54c4530d6e68b7e31ce58e98",
+    "status": "engineering-experiment-NOT-visually-approved"
+  },
+  "parent": {
+    "file": "r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb",
+    "sha256": "08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3"
+  },
+  "concreteWork": {
+    "movedVertices": 331,
+    "lockedVertices": 272,
+    "maximumDisplacementGLB": 0.0050348890818447956,
+    "medianDisplacementGLB": 0.001049765498562838,
+    "triangleCount": 4680,
+    "boneCount": 63,
+    "garmentFaces": 370
+  },
+  "topology": {
+    "pelvicOpenEdges": 0,
+    "otherGlobalOpenEdges": 34,
+    "nonManifoldEdges": 0,
+    "wrongDirectionPairs": 0,
+    "restTriangleFlips": 0,
+    "posedTriangleFlips": 0
+  },
+  "poses": [
+    {
+      "angle": 0,
+      "sharedPairs": 236,
+      "maxGapGLB": 0
+    },
+    {
+      "angle": 25,
+      "sharedPairs": 236,
+      "maxGapGLB": 0
+    },
+    {
+      "angle": 40,
+      "sharedPairs": 236,
+      "maxGapGLB": 0
+    },
+    {
+      "angle": 55,
+      "sharedPairs": 236,
+      "maxGapGLB": 0
+    }
+  ],
+  "render": {
+    "captures": [
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-0-under-solid.png",
+        "sha256": "20a34c9a3d7687046b02192f2bbb547c946b1e8831ace1dd258ae3a39d0f2337"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-0-under-wire.png",
+        "sha256": "2e3c0cce8b478df790ee4c3e5318542401d49597497ae63136f5851a5c65a9a5"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-0-behind-solid.png",
+        "sha256": "d8b6f4959a6d523fd28dbe8abd1c40b0302f7be48a8dda50161009758a366f0c"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-0-behind-wire.png",
+        "sha256": "97d4cb12f4b7b61a21e99854b2a38d39754ae9efb2f1c4a46777a0c31dea0713"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-25-under-solid.png",
+        "sha256": "f6d1a297f55369ded9b24eb6305789719595fb75bb5712c84f5a2911dc1f48f8"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-25-under-wire.png",
+        "sha256": "35917ded6a2cc5189bbea83145084182790b130ed208e64a5a716ddf529c6eb7"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-25-behind-solid.png",
+        "sha256": "800b32ea44c1c2abcedecf87fbf27bc6a1127a2d4310c7b50279056ede58f741"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-25-behind-wire.png",
+        "sha256": "bdbc282aaf19e7b1eac16e65646b7e97a0a0b01c6edccad3172d69f56811a56b"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-40-under-solid.png",
+        "sha256": "da9d529c038d9b70040204ecce50a4fd0c4f78eda0755ea0468b199d9b799d0c"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-40-under-wire.png",
+        "sha256": "e143dd590d88dbd2905b911a3050a59830df9eff17e9af4f295cdc728724e826"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-40-behind-solid.png",
+        "sha256": "bd9686f3d4a5a4c460eb1aac04bb6497e52892018fd47396447cdf16846ac976"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-40-behind-wire.png",
+        "sha256": "14b2388506d9f29f8070edd851c9d6d8833ef9563668aafb8b6fcf23aa2beff6"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-55-under-solid.png",
+        "sha256": "776f909ceadd88c07e12b87a6dee288e18d2c2ff671ff38b4a18c6bf3982896a"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-55-under-wire.png",
+        "sha256": "b0d0c372cb2b93703d6170f8b22a155aaa83d90e29b2ddce79c785d5cd45917d"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-55-behind-solid.png",
+        "sha256": "c74a8372e5a7b396cdf32bee3f8730f482d2e642b563786550155b9fb4c569c0"
+      },
+      {
+        "file": "rev96-r27-adaptive-relief-canonical-55-behind-wire.png",
+        "sha256": "3db9d7d7f756bcb5630344c2726d93598963521d136d11876045e8bd90f00500"
+      }
+    ],
+    "errors": []
+  },
+  "visual": {
+    "testedAngles": [
+      0,
+      25,
+      40,
+      55
+    ],
+    "verdict": "NOT_APPROVED",
+    "changeIsSubtle": true,
+    "lateralWideSkinWingsPersist": true,
+    "rectangularPosteriorPlatePersists": true,
+    "anteriorLargeUAndPosteriorSmallUNotContinuouslyOval": true,
+    "analRegionNotToBeMerged": true
+  },
+  "note": "Constrained interior relief tested successfully but small displacement does not solve the pre-existing geometry; true topology reconstruction of outer side fans and authored boundary remains necessary."
+}

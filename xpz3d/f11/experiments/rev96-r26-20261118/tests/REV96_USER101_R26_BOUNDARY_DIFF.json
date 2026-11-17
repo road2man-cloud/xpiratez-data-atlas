@@ -1,0 +1,38 @@
+{
+  "schema": "xpz3d/f11/rev96/r26-boundary-diff-v2",
+  "baseline": {
+    "file": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+    "sha256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a",
+    "openEdges": 34,
+    "centerOpenEdges": 0,
+    "multiple": 0,
+    "wrongPairs": 0
+  },
+  "candidate": {
+    "file": "r21AO-F11-user101-native-retopo-r26-integrated-oval.glb",
+    "sha256": "08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3",
+    "originalCandidate": "r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb",
+    "openEdges": 34,
+    "centerOpenEdges": 0,
+    "multiple": 0,
+    "wrongPairs": 0
+  },
+  "delta": {
+    "totalOpenEdges": 0,
+    "centerOpenEdges": 0,
+    "nonManifold": 0
+  },
+  "protection": {
+    "artist908VertexPositionsPreserved": true,
+    "manualTrim101Preserved": true,
+    "rig63": true,
+    "garment370": true
+  },
+  "limits": {
+    "wholeBodyWatertight": false,
+    "frontBodyPhysicalWeld": false,
+    "visualAnatomyApproved": false,
+    "posteriorSmallUContourIncomplete": true,
+    "lateralSkinWingStillVisible": true
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "angle": 0,
+    "groupCount": 185,
+    "pairs": 236,
+    "maxDistance": 0,
+    "mean": 0,
+    "countOver0p3mm": 0,
+    "top": []
+  },
+  {
+    "angle": 25,
+    "groupCount": 185,
+    "pairs": 236,
+    "maxDistance": 0,
+    "mean": 0,
+    "countOver0p3mm": 0,
+    "top": []
+  },
+  {
+    "angle": 40,
+    "groupCount": 185,
+    "pairs": 236,
+    "maxDistance": 0,
+    "mean": 0,
+    "countOver0p3mm": 0,
+    "top": []
+  },
+  {
+    "angle": 55,
+    "groupCount": 185,
+    "pairs": 236,
+    "maxDistance": 0,
+    "mean": 0,
+    "countOver0p3mm": 0,
+    "top": []
+  }
+]
