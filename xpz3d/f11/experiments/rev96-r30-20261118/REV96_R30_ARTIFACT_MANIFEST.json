@@ -1,0 +1,221 @@
+{
+    "schema":  "xpz3d/f11/rev96/r30-artifacts-v1",
+    "selected":  "r30d",
+    "rejected":  [
+                     "r30c"
+                 ],
+    "files":  [
+                  {
+                      "file":  "rev95-user-trim-101faces-20261116T152807Z.json",
+                      "sha256":  "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+                      "bytes":  335847
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-integrated-oval-r29f-posterior-biased-compact.glb",
+                      "sha256":  "6b70c6752a69f438aafe4e0266fa29fd14d31b3a566684dff4a3c6167d5d8d8d",
+                      "bytes":  4037868
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-integrated-oval-r30a-curved-posterior-topology.glb",
+                      "sha256":  "86ad547f84ceb1950af24bd3faa5c30871e952cefcd96d9ebad326a7134c0ccc",
+                      "bytes":  4165008
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-integrated-oval-r30b-posterior-fairing.glb",
+                      "sha256":  "b63982aa926516b94290a46f216da842fac4a43eb28e56a7c67e5addd83b0d75",
+                      "bytes":  4292008
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-integrated-oval-r30c-posterior-u-face-loft.glb",
+                      "sha256":  "78be54e350ce581382b06f3669d7f82f9b7f7eca3d732657b158a17ff17f62c1",
+                      "bytes":  4450300
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-integrated-oval-r30d-continuous-oval-fairing.glb",
+                      "sha256":  "2c4fc4be131aced3613215534e7c114193f6066e50517061c1d23e56aaee060c",
+                      "bytes":  4419036
+                  },
+                  {
+                      "file":  "build_rev96_user101_r30a_curved_posterior_topology.cjs",
+                      "sha256":  "1e26f984cec8fa534ede325920674b228522de64fb4ebd24ad6274ff64efe423",
+                      "bytes":  13189
+                  },
+                  {
+                      "file":  "build_rev96_user101_r30b_posterior_fairing.cjs",
+                      "sha256":  "ce84df944295aba5600612f70ff682abdeb5e9788031f2026e84b1a2ff641e22",
+                      "bytes":  13301
+                  },
+                  {
+                      "file":  "build_rev96_user101_r30c_posterior_u_face_loft.cjs",
+                      "sha256":  "c66320b2636ca96db0288b3c862dccd20b80246a9c72ac1f4fe95eb4b850f0bd",
+                      "bytes":  13210
+                  },
+                  {
+                      "file":  "build_rev96_user101_r30d_continuous_oval_fairing.cjs",
+                      "sha256":  "cf24e109d82bfb1edab9c82fe06f5923645568939578b8a1b46b3265b86c008f",
+                      "bytes":  13230
+                  },
+                  {
+                      "file":  "render_rev96_r30a_curved_posterior.cjs",
+                      "sha256":  "2a2848f717655dc9901c501241122618d271f9b1d91e120da362c03b98d79fc7",
+                      "bytes":  3724
+                  },
+                  {
+                      "file":  "render_rev96_r30b_posterior_fairing.cjs",
+                      "sha256":  "2a0450605702a15ff28bb48c1b214d3c85d1dac291b78b64cc2b4bbf2645870d",
+                      "bytes":  3714
+                  },
+                  {
+                      "file":  "render_rev96_r30c_posterior_u.cjs",
+                      "sha256":  "a831217fa325fee275448a30403e5001966d36bddd228b7a4dd8282d1c166800",
+                      "bytes":  3703
+                  },
+                  {
+                      "file":  "render_rev96_r30d_continuous_oval.cjs",
+                      "sha256":  "396b50ce7d46e061a87a535fb5f87bb2016694998782cbeceaec3e0a5ada1983",
+                      "bytes":  3720
+                  },
+                  {
+                      "file":  "REV96_USER101_R30A_BUILD.json",
+                      "sha256":  "a85bf1cfb228cf0574073045df6f0c49c231ed497f31795ac5921665bc7da0aa",
+                      "bytes":  30626
+                  },
+                  {
+                      "file":  "REV96_USER101_R30B_BUILD.json",
+                      "sha256":  "63fcf510611f16aec033e2d11b64cfac1f596224ba4c0e72de4b714fd74ccace",
+                      "bytes":  953
+                  },
+                  {
+                      "file":  "REV96_USER101_R30C_BUILD.json",
+                      "sha256":  "f16030b01f7b10a37562c5aa3ad9c98b2d652edbf154a72c50aed536fc14b7e6",
+                      "bytes":  1279
+                  },
+                  {
+                      "file":  "REV96_USER101_R30D_BUILD.json",
+                      "sha256":  "29fd6c2f23064034f284428e635def2e0b6d5fb7d9f61f775ff76b8e0c84cd79",
+                      "bytes":  951
+                  },
+                  {
+                      "file":  "REV96_USER101_R30_SELECTION.json",
+                      "sha256":  "8177bc8c78451ccc511b40feede38087df5ead1861ca4d123296ca57d769fc38",
+                      "bytes":  2534
+                  },
+                  {
+                      "file":  "review-rev96-user101-r30.html",
+                      "sha256":  "85d4f890ea77e2ad961dec3c934683be1b9ff811394a647f839d9e87b5c4054e",
+                      "bytes":  5594
+                  },
+                  {
+                      "file":  "rev96-r30a-curved-posterior-canonical-render-report.json",
+                      "sha256":  "f6a8d169c9d1813b3cdbff2063ad143fd7c72e03e30500c8f6d89fe83db04541",
+                      "bytes":  1443
+                  },
+                  {
+                      "file":  "rev96-r30b-posterior-fairing-canonical-render-report.json",
+                      "sha256":  "d49abe2cf185198968faa1238458009334739522e7b9fa67f78e0cc66186a79c",
+                      "bytes":  1443
+                  },
+                  {
+                      "file":  "rev96-r30c-posterior-u-canonical-render-report.json",
+                      "sha256":  "a2ca078f8cf10f5654f560aff354c76e0b6283b5aa77f3831a2e3f024e041550",
+                      "bytes":  1355
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-render-report.json",
+                      "sha256":  "f6c286331bbcf9dd5274790d64aa62937bfb4014b71ac166654fd2e97dcda3f4",
+                      "bytes":  1423
+                  },
+                  {
+                      "file":  "rev96-r30c-posterior-u-canonical-55-under-solid.png",
+                      "sha256":  "998d5acdd1ce28e7617b7a4d063802f9b21279a7c2eb65dc04f2dfa7f04d2070",
+                      "bytes":  254880
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-0-under-solid.png",
+                      "sha256":  "fefd824c9daafc0ea0d1b51db543a12bd209d878d31a9d21b0160d9e65830b93",
+                      "bytes":  156780
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-0-under-wire.png",
+                      "sha256":  "e59c3dc537beda2f7a1d88ebe9e7ca543f7f1920b6bdbe852f71e7c111c00791",
+                      "bytes":  205623
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-0-behind-solid.png",
+                      "sha256":  "a54ea8d6e316a2d9c2644510d726436e01e4baa4de39b8902fd2a10763df239a",
+                      "bytes":  205311
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-0-behind-wire.png",
+                      "sha256":  "6f33c55e3defbdd2c13934ae6df8155d372eb50a7bf0d0704c967962bc2576c3",
+                      "bytes":  299029
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-25-under-solid.png",
+                      "sha256":  "448e1d4045a73b39cdc1801ff8c53698c1457b28ee7b7646506ac3f3951226c6",
+                      "bytes":  249973
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-25-under-wire.png",
+                      "sha256":  "7ea49cbf5886138cec83fff8c0f0b4e31606179ede227bc4f95e87357086d669",
+                      "bytes":  394138
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-25-behind-solid.png",
+                      "sha256":  "9e787a3547e32041bb196eebeb170d5bff46264960bf1ee438158ef1c337216b",
+                      "bytes":  265484
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-25-behind-wire.png",
+                      "sha256":  "684157271d580070b97eaf67c9332a3a7c4f9b2f54c2743aa51477881e33ef09",
+                      "bytes":  430784
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-40-under-solid.png",
+                      "sha256":  "eaa60319eff5221678e986f5277f90040f100f06d40ebcb1cbd8a6d6beb8d852",
+                      "bytes":  263257
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-40-under-wire.png",
+                      "sha256":  "8249cd9a8675ed42f7ec572b26d64ac3aa5821274f61d0f437bf8c880082af24",
+                      "bytes":  436672
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-40-behind-solid.png",
+                      "sha256":  "4d5707791d40b9e4e01df72a35a4eb1fe70ada1bf2ab00cc452ec84826d6a1c0",
+                      "bytes":  277624
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-40-behind-wire.png",
+                      "sha256":  "7cacc1a5dba3e2a8854b924a9cfce00338869d8f5eee78fc8065db492cdfb69f",
+                      "bytes":  470143
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-55-under-solid.png",
+                      "sha256":  "df039864bbc75b7364b20966994e98024ddef3ef23286bd64fb8b9abfd3d088d",
+                      "bytes":  247837
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-55-under-wire.png",
+                      "sha256":  "8e45920dae4a1da039580dc1e75cca57797017ca34d86600e5d65c25ae210c72",
+                      "bytes":  422968
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-55-behind-solid.png",
+                      "sha256":  "e01a202b64ff3fcb3a90968206632c7ca7ebb71f6c1f6526ac511da1c569cea1",
+                      "bytes":  282310
+                  },
+                  {
+                      "file":  "rev96-r30d-continuous-oval-canonical-55-behind-wire.png",
+                      "sha256":  "5aa84c6aa391cd2598aed4e0de683ad2dd5daacdc471fc8d01ae3207a7f8edf8",
+                      "bytes":  488893
+                  }
+              ],
+    "preservation":  "101 authored deleted faces, 754 manual positions, 106 settings, 908 authored points, 529 authored faces, 63 bones, 370 garment faces",
+    "pending":  [
+                    "body wing removal",
+                    "posterior closed oval aesthetic acceptance",
+                    "full body watertight",
+                    "remote git push"
+                ]
+}

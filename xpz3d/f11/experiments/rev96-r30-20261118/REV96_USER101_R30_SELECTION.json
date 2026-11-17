@@ -1,0 +1,66 @@
+{
+  "schema": "xpz3d/f11/rev96/r30-self-review",
+  "createdOn": "2026-11-18",
+  "selectedCandidate": "r30d",
+  "candidates": [
+    {
+      "id": "r30a",
+      "model": "r21AO-F11-user101-integrated-oval-r30a-curved-posterior-topology.glb",
+      "sha256": "86ad547f84ceb1950af24bd3faa5c30871e952cefcd96d9ebad326a7134c0ccc",
+      "changedVertices": 648,
+      "edgeFlips": 248,
+      "resultSkinFaces": 2292,
+      "comment": "Anisotropic posterior-oval sculpt plus topology diagonal reassignment"
+    },
+    {
+      "id": "r30b",
+      "model": "r21AO-F11-user101-integrated-oval-r30b-posterior-fairing.glb",
+      "sha256": "b63982aa926516b94290a46f216da842fac4a43eb28e56a7c67e5addd83b0d75",
+      "changedVertices": 693,
+      "resultSkinFaces": 2292,
+      "comment": "Improved local tissue-to-body fairing"
+    },
+    {
+      "id": "r30c",
+      "model": "r21AO-F11-user101-integrated-oval-r30c-posterior-u-face-loft.glb",
+      "sha256": "78be54e350ce581382b06f3669d7f82f9b7f7eca3d732657b158a17ff17f62c1",
+      "resultSkinFaces": 2892,
+      "newFaceCenterVertices": 300,
+      "decision": "rejected",
+      "reason": "Visible spiky faceting at the central underside in 55-degree view; extra faces alone did not improve form"
+    },
+    {
+      "id": "r30d",
+      "model": "r21AO-F11-user101-integrated-oval-r30d-continuous-oval-fairing.glb",
+      "sha256": "2c4fc4be131aced3613215534e7c114193f6066e50517061c1d23e56aaee060c",
+      "changedVertices": 700,
+      "maximumDisplacementFromR30b": 0.011247051448834432,
+      "resultSkinFaces": 2292,
+      "totalFaces": 5898,
+      "decision": "selected-first-choice",
+      "reason": "Broad continuous deformation avoids the spiky isolated triangle-centroid loft of r30c while retaining r30a edge-flipped topology"
+    }
+  ],
+  "conserved": {
+    "authoredPoints": 908,
+    "authoredTriangles": 529,
+    "manualDeletedTriangles": 101,
+    "rigBones": 63,
+    "garmentTriangles": 370,
+    "analDepression": true,
+    "restMorphData": true
+  },
+  "unresolved": [
+    "Large lateral wing-like body panels are not fully removed",
+    "Posterior small-U contour is not topologically complete",
+    "Full-body mesh still has pre-existing other open boundaries",
+    "No in-game rig animation acceptance"
+  ],
+  "renders": {
+    "r30a": 16,
+    "r30b": 16,
+    "r30c": 16,
+    "r30d": 16
+  },
+  "summary": "Actual native GLBs and CJS generators produced; r30c consciously rejected after visual inspection; r30d remains a new experimental candidate, not a final anatomical approval."
+}

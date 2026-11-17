@@ -1,0 +1,48 @@
+{
+  "revision": "r30c",
+  "file": "r21AO-F11-user101-integrated-oval-r30c-posterior-u-face-loft.glb",
+  "sha256": "78be54e350ce581382b06f3669d7f82f9b7f7eca3d732657b158a17ff17f62c1",
+  "source": "r21AO-F11-user101-integrated-oval-r30b-posterior-fairing.glb",
+  "sourceSHA256": "b63982aa926516b94290a46f216da842fac4a43eb28e56a7c67e5addd83b0d75",
+  "sourceSkinFaces": 2292,
+  "sourceSkinVertices": 1211,
+  "newSkinFaces": 2892,
+  "newSkinVertices": 1511,
+  "allTriangles": 6498,
+  "skinBoundaryEdgesUnchanged": 114,
+  "internalEdgeNonmanifold": 0,
+  "rest": {
+    "zero": 0,
+    "areaMin": 1.0253721449115996e-7
+  },
+  "pose": {
+    "zero": 0,
+    "areaMin": 1.1193408246630336e-7
+  },
+  "iterations": [
+    {
+      "phase": "curved-face-replacement",
+      "sourceFaces": 2292,
+      "replaced": 300,
+      "newCurvedFaces": 900
+    },
+    {
+      "phase": "small-rim-cap",
+      "smallCaps": 0,
+      "capFaces": 0,
+      "capLoops": []
+    }
+  ],
+  "bones": 63,
+  "garments": 370,
+  "protected101": true,
+  "originalAuthor908Untouched": true,
+  "sourceBoundaryVerticesUntouched": true,
+  "existingBodyUntouched": true,
+  "visualApproval": "pending",
+  "replacedCurvedFaces": 300,
+  "cappedSmallLoops": 0,
+  "capFaces": 0,
+  "remainingBoundaryEdges": 114,
+  "vertexChanges": []
+}
