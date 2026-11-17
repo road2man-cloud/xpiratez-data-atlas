@@ -1,0 +1,25 @@
+name: OXCE R135-R9G wearable policy and legacy hat regression
+on:
+  push:
+    branches:
+      - integration/oxce-r135-r9g-wearable-safe-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r9g-wearable-safe/**'
+      - '.github/workflows/oxce-r9g-wearable-regression.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r9g-wearable-safe/**'
+      - '.github/workflows/oxce-r9g-wearable-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  wearable-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check jewelry exclusions, positive hats, manual-preservation, TU safety
+        run: node --test experiments/oxce-custom-release-audit/R135-r9g-wearable-safe/check_r9g_wearable_source.test.mjs
