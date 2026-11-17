@@ -1,0 +1,50 @@
+{
+  "file": "r21AO-F11-user101-integrated-oval-r28b-lowstrain-skin-retopo.glb",
+  "sha256": "96a4ab343ea7471e9a04c0e78c1296c68dcf046e7234894241b0b2525d4da0c6",
+  "source": "r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb",
+  "sourceSHA256": "08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3",
+  "sourceSkinFaces": 1074,
+  "sourceSkinVertices": 605,
+  "newSkinFaces": 1840,
+  "newSkinVertices": 988,
+  "allTriangles": 5446,
+  "skinBoundaryEdgesUnchanged": 128,
+  "internalEdgeNonmanifold": 0,
+  "rest": {
+    "zero": 0,
+    "areaMin": 1.0136647138042037e-7
+  },
+  "pose": {
+    "zero": 0,
+    "areaMin": 1.3433517523878003e-7
+  },
+  "iterations": [
+    {
+      "pass": 0,
+      "threshold": 0.052,
+      "edgesSplit": 48,
+      "faces": 1170,
+      "vertices": 653
+    },
+    {
+      "pass": 1,
+      "threshold": 0.039,
+      "edgesSplit": 105,
+      "faces": 1380,
+      "vertices": 758
+    },
+    {
+      "pass": 2,
+      "threshold": 0.03,
+      "edgesSplit": 230,
+      "faces": 1840,
+      "vertices": 988
+    }
+  ],
+  "bones": 63,
+  "garments": 370,
+  "protected101": true,
+  "originalAuthor908Untouched": true,
+  "existingBodyUntouched": true,
+  "visualApproval": "pending"
+}
