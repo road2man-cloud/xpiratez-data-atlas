@@ -100,3 +100,13 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #queue-materials table{min-width:860px;border-collapse:collapse;width:100%}
 #queue-materials a{color:#a4caff}
 @media(max-width:850px){.queue-option{grid-template-columns:1fr 72px 52px 52px}.queue-option code{grid-column:1/-1;grid-row:2}}
+
+.queue-whatif{margin:18px 0;padding:15px;border:1px solid #39587c;border-radius:12px;background:#101e34}
+.queue-whatif h4{margin:12px 0 8px}
+.queue-whatif-inputs{margin:12px 0;max-height:440px;overflow-y:auto}
+#queue-whatif-inputs table,#queue-whatif-differences table,#queue-whatif-jobs table{border-collapse:collapse;width:100%;min-width:680px}
+#queue-whatif-inputs th,#queue-whatif-inputs td,#queue-whatif-differences th,#queue-whatif-differences td,#queue-whatif-jobs th,#queue-whatif-jobs td{padding:9px 11px;border-bottom:1px solid #344760;text-align:left;vertical-align:top;font-size:.84rem}
+#queue-whatif-inputs th,#queue-whatif-differences th,#queue-whatif-jobs th{background:#162940;color:#bed8f5}
+.queue-whatif-field{display:flex;align-items:center;gap:7px}
+.queue-whatif-field span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.queue-whatif-field input{width:130px;max-width:100%;padding:8px;background:#091c30;color:#eaf1ff;border:1px solid #496b8d;border-radius:7px;font-variant-numeric:tabular-nums}
