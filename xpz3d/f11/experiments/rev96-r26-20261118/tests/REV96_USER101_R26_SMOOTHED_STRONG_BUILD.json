@@ -1,0 +1,41 @@
+{
+  "schema": "xpz3d/f11/rev96/r26-v1",
+  "createdUTC": "2026-11-17T16:48:23.627Z",
+  "baseline": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+  "baselineSHA256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a",
+  "file": "r21AO-F11-user101-integrated-oval-r26-smoothed-strong.glb",
+  "sha256": "2bb50db84076bad0dd8f3954308a7b327076fd9544cafba0b994fc7580ace74b",
+  "sourceCoreAuthoredFaces": 529,
+  "sourceCoreGeneratedFaces": 392,
+  "sourcePelvicSkinFaces": 682,
+  "mergedPhysicalIndexFaces": 1074,
+  "mergedPhysicalVertices": 605,
+  "sharedPhysicalCoreSkinVertices": 22,
+  "addedBarycentricVertices": 0,
+  "smoothedOriginalInteriorVertices": 464,
+  "relaxationPasses": 8,
+  "newTriangles": 4680,
+  "oldTriangles": 4680,
+  "skinMaterial": 5,
+  "coreMaterial": 3,
+  "physicalMaterialIndexWeldWithinNewSkinPrimitive": true,
+  "separateMaterialBoundaryNoPhysicalIndexWeld": true,
+  "ellipticLargeAnteriorUSmallPosteriorU": true,
+  "analPosteriorShiftPreserved": 0.02,
+  "fairingScale": 0.05764800999999997,
+  "restQuality": {
+    "flip": 0,
+    "zero": 0,
+    "min": 9.357941268194605e-8
+  },
+  "poseQuality": {
+    "flip": 0,
+    "zero": 0,
+    "min": 1.2365870203001876e-7
+  },
+  "garmentFaces": 370,
+  "author908Preserved": true,
+  "sourceTrim101Preserved": true,
+  "visualApproval": "pending",
+  "seamAudit": "pending"
+}

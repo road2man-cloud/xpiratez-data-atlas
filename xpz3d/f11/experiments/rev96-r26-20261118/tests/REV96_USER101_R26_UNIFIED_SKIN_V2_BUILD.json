@@ -1,0 +1,14 @@
+{
+  "file": "r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb",
+  "sha256": "08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3",
+  "source": "r21AO-F11-user101-integrated-oval-r26-smoothed-gentle.glb",
+  "sourceSha256": "b7f323838518b4e89945df74c72c1d3804fcb2b59fde8c213b7c17cdf501b6d0",
+  "authorCoreMaterialBefore": 3,
+  "authorCoreMaterialAfter": 5,
+  "skinMaterial": 5,
+  "nonMaterialVertexDataUnchanged": true,
+  "triangles": 4680,
+  "boneCount": 63,
+  "individualGarmentFaces": 370,
+  "visualApproved": false
+}

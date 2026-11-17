@@ -1,0 +1,59 @@
+{
+  "schema": "xpz3d/f11/rev96/r26-v1",
+  "createdUTC": "2026-11-17T16:44:10.205Z",
+  "baseline": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+  "baselineSHA256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a",
+  "file": "r21AO-F11-user101-integrated-oval-r26-ribbon-gentle.glb",
+  "sha256": "f1e47a99d7b3c8bb041105426c6a81001ea8d3dcb37bfaa3886f033f3557ab08",
+  "sourceCoreAuthoredFaces": 529,
+  "sourceCoreGeneratedFaces": 392,
+  "sourcePelvicSkinFaces": 682,
+  "ribbonOutputs": [
+    {
+      "name": "left",
+      "start": 9,
+      "n": 38,
+      "sourceTriangles": 266,
+      "newRibbonTriangles": 152,
+      "railVertices": 58
+    },
+    {
+      "name": "right",
+      "start": 239,
+      "n": 35,
+      "sourceTriangles": 245,
+      "newRibbonTriangles": 149,
+      "railVertices": 58
+    }
+  ],
+  "oldFaceCountRemoved": 511,
+  "newRibbonFaceCount": 301,
+  "mergedPhysicalIndexFaces": 864,
+  "mergedPhysicalVertices": 500,
+  "sharedPhysicalCoreSkinVertices": 22,
+  "addedBarycentricVertices": 864,
+  "newTriangles": 6198,
+  "oldTriangles": 4680,
+  "skinMaterial": 5,
+  "coreMaterial": 3,
+  "physicalMaterialIndexWeldWithinNewSkinPrimitive": true,
+  "separateMaterialBoundaryNoPhysicalIndexWeld": true,
+  "ellipticLargeAnteriorUSmallPosteriorU": true,
+  "analPosteriorShiftPreserved": 0.02,
+  "fairingScale": 0.16806999999999994,
+  "restQuality": {
+    "flip": 0,
+    "zero": 0,
+    "min": 1.4655866922715927e-11
+  },
+  "poseQuality": {
+    "flip": 0,
+    "zero": 0,
+    "min": 3.899414041346264e-8
+  },
+  "garmentFaces": 370,
+  "author908Preserved": true,
+  "sourceTrim101Preserved": true,
+  "visualApproval": "pending",
+  "seamAudit": "pending"
+}

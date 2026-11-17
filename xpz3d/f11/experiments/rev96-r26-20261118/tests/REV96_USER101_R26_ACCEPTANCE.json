@@ -1,0 +1,174 @@
+{
+  "schema": "xpz3d/f11/rev96/r26-acceptance/v1",
+  "createdUTC": "2026-11-17T16:54:34.139Z",
+  "input": {
+    "file": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+    "sha256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a"
+  },
+  "manual": {
+    "file": "rev95-user-trim-101faces-20261116T152807Z.json",
+    "sha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+    "deletedFaces": 101,
+    "authoredControlCount": 106,
+    "sculptPositions": 754
+  },
+  "currentCandidate": {
+    "file": "r21AO-F11-user101-integrated-oval-r26-unified-skin-v2.glb",
+    "sha256": "08e37ff8fa981ad9f23807e090f477cdf7d97c1bfd50027f59e87b249fd6cbc3",
+    "selection": "retopology-build candidate, not final anthropomorphic silhouette",
+    "status": "LOCAL_MESH_UNIFIED__VISUAL_APPROVAL_PENDING"
+  },
+  "implementation": {
+    "movedGeneratedCoreFacesToUnifiedSkin": 392,
+    "originalSkirtFacesMovedToUnifiedSkin": 682,
+    "physicallyIndexWeldedCoreToSkinVertices": 22,
+    "authoredCoreFacesLeftSeparate": 529,
+    "originalArtistAnatomyVerticesPreserved": 908,
+    "smoothedInteriorVertices": 464,
+    "skinMaterialIndex": 5,
+    "nativeBodyUnaffected": true,
+    "bones": 63,
+    "independentGarmentFaces": 370,
+    "triangleCount": 4680,
+    "separateAuthoredCoreMaterialIndex": 5,
+    "physicalWeldingWithAuthoredCoreAcrossMaterialBoundary": false,
+    "physicalWeldingWithBodyAcrossMaterialBoundary": false
+  },
+  "geometricGates": {
+    "pelvicOpenEdges": 0,
+    "nonManifoldEdges": 0,
+    "wrongDirectionEdges": 0,
+    "otherBodyOpenEdges": 34,
+    "posteriorAnalShiftPreservedGLB": 0.02,
+    "sourceManualFaceRestored": 0
+  },
+  "runtimePose": {
+    "angles": [
+      0,
+      25,
+      40,
+      55
+    ],
+    "measuredPairsPerAngle": [
+      236,
+      236,
+      236,
+      236
+    ],
+    "maxGapGLB": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "screenshots": [
+    {
+      "file": "rev96-r26-unified-v2-canonical-0-under-solid.png",
+      "sha256": "e2c0bd87efac49aae6adb54be90680538b58876c4a470f8e344cd69dac5cea0a"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-0-under-wire.png",
+      "sha256": "27c7ea98c09eb8cc00e477f291a6b25404a847feaf5ddb0f1534289eda876267"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-0-behind-solid.png",
+      "sha256": "0a9bcbc6f28d395c400bdeb6ab3cd2e48939d0899768cae7cb6fbd554f86d0b6"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-0-behind-wire.png",
+      "sha256": "8d373158c6d3dde347265723991e0f06bbd363a8c73fe52ecfbe055e114dcb58"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-25-under-solid.png",
+      "sha256": "807ee46d1e7acaf5bbce7437b7b4cb70796f68402383ef0115f7dbc0304f64a9"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-25-under-wire.png",
+      "sha256": "fdd7d6e14f98497184a671d6305349f4c02eebe854ca94358e9887e056a6afb8"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-25-behind-solid.png",
+      "sha256": "31447aa0a9a8f687fae60d5775247abc17621a6aa697a1b79bac8bb247829d4f"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-25-behind-wire.png",
+      "sha256": "b5ea1b0c22ad0e60cbc27e1802ae8e091994b7b977d3fe31e917416349d0400c"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-40-under-solid.png",
+      "sha256": "19554fff486ad6068714e92c45c8517be1e7bf68d598d8035381a8c8d77e6162"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-40-under-wire.png",
+      "sha256": "45b6167c3f096c71692a5afea5fad288520a2aec66e15561545f39073da8bdb6"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-40-behind-solid.png",
+      "sha256": "f4159548550010469017206f6af1c520a9a8e36b726698c250f34b9500ae1302"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-40-behind-wire.png",
+      "sha256": "b5ba97ad646a51f17f1448f46af6cd5a8d6df2661eb3886cb2fb95ef08a40486"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-55-under-solid.png",
+      "sha256": "e77661f3eac5c332dd571da4fbead225c2b3201bc82d34a97432221e56c648b1"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-55-under-wire.png",
+      "sha256": "71dfe3ffed2795aa8d225beac0d36cac9b068c698fd890b4fef66b8d7d703b4b"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-55-behind-solid.png",
+      "sha256": "13e60358e83d987ff0ea6b2ac5fcdd7c0934c3e47b99c1deababd4f44fe067c3"
+    },
+    {
+      "file": "rev96-r26-unified-v2-canonical-55-behind-wire.png",
+      "sha256": "2a67d6111b4000e42f47e398394d1e543e56bf236be9914cfa9f3191342ca2c6"
+    }
+  ],
+  "abandonedExperimentalVariants": [
+    {
+      "file": "r21AO-F11-user101-integrated-oval-r26-oval-gentle.glb",
+      "sha256": "d3bbb5f21b7ed396dfe47102b8675f35d458ee73034cbbb6c26d0b04b053544b",
+      "reason": "fan subdivision with overaccentuated faceting"
+    },
+    {
+      "file": "r21AO-F11-user101-integrated-oval-r26-oval-shaded-gentle.glb",
+      "sha256": "4fe7ca574cae1b4601dd984c8a09aa2d57034338749bea45c6f335165b4955f2",
+      "reason": "shading smoother but radial fan still visible"
+    },
+    {
+      "file": "r21AO-F11-user101-integrated-oval-r26-oval-shaded-strong.glb",
+      "sha256": "83c3b60f7f409ded7d9bcbd8271218ce325d6e9634afd8dd4b2cc08449660901",
+      "reason": "same fan constraint; effective sculpt attenuated"
+    },
+    {
+      "file": "r21AO-F11-user101-integrated-oval-r26-ribbon-gentle.glb",
+      "sha256": "f1e47a99d7b3c8bb041105426c6a81001ea8d3dcb37bfaa3886f033f3557ab08",
+      "reason": "longitudinal ribbon; stretched lateral wing / spider web"
+    },
+    {
+      "file": "r21AO-F11-user101-integrated-oval-r26-ribbon-strong.glb",
+      "sha256": "5c07234675b1d5e334209eff0aa76210052cccdcb52c0eaf41d275bab0667632",
+      "reason": "longitudinal ribbon; near-degenerate rest triangles"
+    },
+    {
+      "file": "r21AO-F11-user101-integrated-oval-r26-smoothed-strong.glb",
+      "sha256": "2bb50db84076bad0dd8f3954308a7b327076fd9544cafba0b994fc7580ace74b",
+      "reason": "more aggressive curvature but full oval still unclear"
+    }
+  ],
+  "appearance": {
+    "materialMismatchReduced": true,
+    "facetedAppearanceReduced": true,
+    "leftRightBroadMembranesRemain": true,
+    "doubleUBasinNaturalOvalCompleted": false,
+    "posteriorSmallUProminent": false,
+    "bodyTransitionG1Certified": false,
+    "visualUserApproval": false
+  },
+  "conclusions": "The r26 v2 deliverable is a real GLB with physical joint index connectivity and unified skin materials, but user-requested naturally joined big/small U outline is not yet achieved. Do not call it finished.",
+  "nextTask": "Redo original 529-face authored core boundary and two broad 38/35-edge generated skin zones as a single geometric patch while preserving explicit manually sculpted 754 positions and 101 deletions; favor extra closure skin rather than holes; require 55-degree under/behind visual gate."
+}
