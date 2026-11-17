@@ -351,3 +351,32 @@ and the number of affected orders. It is not a cost-optimal build order
 or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
+
+## Independent multi-base manufacturing comparison
+
+After loading a local X-Piratez v.o2 save, the planner exposes **모든 기지의
+동일 제조 목표 비교**. Press **기지별 독립 계산** to apply the current
+recipe, quantity, producer choices, and expansion depth to *each* saved base
+independently. Only that base's catalogued 2.1 storage quantities and
+completed saved facilities are considered for its result; no inventory
+or workshop capability is pooled between bases. Previously scheduled
+production orders are listed but their possible committed ingredients
+are not deducted, because the save's work fields do not establish a safe
+reservation ledger.
+
+Each row reports the additional external materials, explicitly declared
+manufacturing cost and work, incomplete or missing facility functions
+for the selected recipe and its expanded sub-recipes, discovered-research
+evidence, and any structural rule flags. An unknown facility roster
+remains **unknown**, not “definitely missing.” Bases are shown in
+ascending order of calculated missing-material units only; this is
+**not** a total-cost ranking or proof of manufacturing feasibility.
+
+The **이 기지 재고 적용** control explicitly replaces the planner's
+manual stock with that saved base's stock. The game-save selector and
+the base operations/queue panels switch to that same base. The
+comparison stays independent, so it can be used to switch back without
+losing the other base snapshots. A new save selection or recipe change
+invalidates the old comparison. The complete comparison can be saved
+as browser-local JSON; neither the save contents nor comparison are
+uploaded by this feature.

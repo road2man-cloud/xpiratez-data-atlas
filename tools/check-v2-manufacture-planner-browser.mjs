@@ -114,6 +114,31 @@ try {
   assert((await page.locator('#stock-list').innerText()).includes('STR_CHEMICALS'));
   assert((await page.locator('#summary').innerText()).includes('기존 재고 사용량'));
   assert((await page.locator('#summary').innerText()).includes('36개'));
+  assert(await page.locator('#base-comparison').isVisible());
+  await page.locator('#base-comparison-run').click();
+  assert.equal(await page.locator('#base-comparison-results tbody tr').count(),2);
+  assert((await page.locator('#base-comparison-status').innerText()).includes('2개 기지'));
+  assert(await page.locator('#base-comparison-export').isEnabled());
+  const baseExport=page.waitForEvent('download');
+  await page.locator('#base-comparison-export').click();
+  const baseFile=await baseExport;
+  assert.equal(baseFile.suggestedFilename(),'xpiratez-v2-independent-bases.json');
+  const basePayload=JSON.parse(fs.readFileSync(await baseFile.path(),'utf8'));
+  assert.equal(basePayload.results.length,2);
+  assert.equal(basePayload.schema,'xpiratez-v2-independent-base-manufacturing/v1');
+  assert(basePayload.results[0].externalUnits <= basePayload.results[1].externalUnits);
+  assert.equal(basePayload.results[0].name,'Test Primary');
+  assert.equal(basePayload.results[1].name,'Test Secondary');
+  assert.equal(basePayload.results[0].sourceScope,'one-base-only');
+  await page.locator('#base-comparison-results tbody tr')
+    .filter({hasText:'Test Secondary'}).locator('button').click();
+  assert.equal(await page.locator('#save-base').inputValue(),'1');
+  assert((await page.locator('#tree').innerText()).includes('보유 재고 2개'));
+  assert(await page.locator('#base-comparison').isVisible());
+  await page.locator('#base-comparison-results tbody tr')
+    .filter({hasText:'Test Primary'}).locator('button').click();
+  assert.equal(await page.locator('#save-base').inputValue(),'0');
+  assert((await page.locator('#summary').innerText()).includes('36개'));
   assert((await page.locator('#research').innerText()).includes('discovered에서 확인'));
   assert(await page.locator('#base-operations').isVisible());
   assert((await page.locator('#base-facility-summary').innerText()).includes('STR_3RL_HE_XXX') ||

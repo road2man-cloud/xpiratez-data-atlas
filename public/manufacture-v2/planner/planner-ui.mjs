@@ -2,6 +2,7 @@ import { createManufacturingPlanner } from './planner-core.mjs';
 import { initV2SaveImportUI } from './save-import-ui.mjs';
 import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
 import { initQueueUI } from './queue-ui.mjs';
+import { initBaseComparisonUI } from './base-comparison-ui.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -15,10 +16,12 @@ const nf = n => typeof n === 'number' && Number.isFinite(n)
   ? n.toLocaleString('ko-KR') : '미확인';
 const slug = id => encodeURIComponent(id);
 let queueUI = null;
+let saveImportUI = null;
+let baseComparisonUI = null;
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
-  manufactureIndex: null };
+  manufactureIndex: null, saveBases: null, selectedBaseIndex: null };
 const statuses = {
   manufactured: '하위 제조식 확장',
   'choice-required': '복수 경로 · 선택 필요',
@@ -447,6 +450,7 @@ function renderPlan() {
     renderConsolidated(plan);
     renderResearch(plan);
     renderOperations(plan);
+    baseComparisonUI?.refresh();
     queueUI?.refresh();
     renderWarnings(plan);
     $('status').textContent='제조 경로 계산 완료 · 대상 '+plan.rootRecipeId;
@@ -524,20 +528,35 @@ try{
       inventory:state.inventory,choices:state.choices,
       assumeImplicit:$('assume-implicit').checked,saveDiscovered:state.saveDiscovered})
   });
-  initV2SaveImportUI({
+  baseComparisonUI=initBaseComparisonUI({
+    planner:state.planner,facilitiesIndex:facilities,
+    getState:()=>({bases:state.saveBases,selectedBaseIndex:state.selectedBaseIndex,
+      recipeId:state.currentId,batches:Number($('batches').value),
+      maxDepth:Number($('max-depth').value),choices:state.choices,
+      assumeImplicit:$('assume-implicit').checked,
+      ...(state.saveDiscovered!==null?
+        {saveDiscoveredResearchIds:state.saveDiscovered}:{})}),
+    applyBase:index=>saveImportUI.selectBase(index)
+  });
+  saveImportUI=initV2SaveImportUI({
     itemIds:new Set(items.items.map(item=>item.id)),
     researchIds:new Set(research.entries.map(topic=>topic.id)),
-    onApply:({inventory,discoveredResearchIds,operations,baseOperationsSummary})=>{
+    onApply:({inventory,discoveredResearchIds,operations,baseOperationsSummary,
+      bases,selectedBaseIndex})=>{
       state.inventory={...inventory};
       state.saveDiscovered=discoveredResearchIds;
       state.baseOperations=operations;
       state.baseOperationsSummary=baseOperationsSummary;
+      state.saveBases=bases;
+      state.selectedBaseIndex=selectedBaseIndex;
       renderInventory();renderPlan();
     },
     onDisconnect:()=>{
       state.saveDiscovered=null;
       state.baseOperations=null;
       state.baseOperationsSummary=null;
+      state.saveBases=null;
+      state.selectedBaseIndex=null;
       renderPlan();
     }
   });

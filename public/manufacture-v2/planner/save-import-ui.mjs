@@ -83,8 +83,8 @@ export function initV2SaveImportUI({ itemIds, researchIds, onApply, onDisconnect
   baseSelect.addEventListener('change', () => {
     try { renderSelection(); } catch(error) {status.textContent = error.message;}
   });
-  $('save-apply').addEventListener('click', () => {
-    if (!preview) return;
+  const applySelection = () => {
+    if (!preview) return false;
     try {
       const inventory = selectSaveInventory(preview, baseSelect.value);
       onApply({
@@ -96,6 +96,8 @@ export function initV2SaveImportUI({ itemIds, researchIds, onApply, onDisconnect
         confirmedResearchCount: preview.discovered.length,
         additionalModCount: preview.additionalMods.length,
         operations: baseSelect.value==='all' ? null : preview.bases[Number(baseSelect.value)],
+        bases: preview.bases,
+        selectedBaseIndex: baseSelect.value==='all'?'all':Number(baseSelect.value),
         baseOperationsSummary: preview.bases.map(base=>({
           name:base.name, facilities:base.facilities?.length||0,
           orders:base.productions?.length||0
@@ -108,10 +110,13 @@ export function initV2SaveImportUI({ itemIds, researchIds, onApply, onDisconnect
         ' · 재고 ' + count(Object.keys(inventory).length) + '종 · discovered 연구 ' +
         count(preview.discovered.length) + '개. 이 데이터를 서버로 전송하지 않았습니다.';
       status.textContent = '선택한 세이브 재고로 현재 입력을 대체하고 연구 목록을 연결했습니다.';
+      return true;
     } catch (error) {
       status.textContent = '세이브 적용 중단: ' + error.message;
+      return false;
     }
-  });
+  };
+  $('save-apply').addEventListener('click',applySelection);
   $('save-disconnect').addEventListener('click', () => {
     ++request;
     onDisconnect();
@@ -120,4 +125,13 @@ export function initV2SaveImportUI({ itemIds, researchIds, onApply, onDisconnect
     fileName = '';
     status.textContent = '세이브 연구 연결을 해제했습니다. 가져온 뒤 직접 수정한 재고는 유지했습니다.';
   });
+  return {
+    selectBase(index) {
+      if (!preview || !Number.isSafeInteger(index) || index<0 || index>=preview.bases.length)
+        throw new Error('불러온 세이브의 기지를 선택해야 합니다.');
+      baseSelect.value=String(index);
+      renderSelection();
+      if (!applySelection())throw new Error('기지 재고 적용이 완료되지 않았습니다.');
+    }
+  };
 }
