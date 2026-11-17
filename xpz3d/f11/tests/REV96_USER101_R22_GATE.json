@@ -1,0 +1,36 @@
+{
+  "schema": "xpz3d/f11/r22-acceptance-gate/v1",
+  "source": "r21AO-F11-user101-compact-core-r16-compact.glb",
+  "output": "r21AO-F11-user101-native-skin-bowl-r22-dome.glb",
+  "sha256": "15451f69e5c9e6041463ad15ce8668939a3f604c14ce65e5d601fdd3ceb1cb41",
+  "triangles": 5107,
+  "rigBones": 63,
+  "garmentFaces": 370,
+  "originalDeletedTrianglesAbsent": 101,
+  "unmodifiedOriginalBodyPrimitive0": true,
+  "correctNudeSkinMaterialId": 5,
+  "skinCollarPrimitive": 23,
+  "skinCollarFaces": 144,
+  "coreClosedEdges": 0,
+  "coreNonManifoldEdges": 0,
+  "exactCoreToCollarRestAndMorphMatches": 19,
+  "virtualSkinUnion": {
+    "openEdges": 99,
+    "nonManifoldEdges": 58,
+    "sameDirectionSeams": 8,
+    "centralUnclosedEdges": 51
+  },
+  "screenshotCount": 16,
+  "accepted": {
+    "posteriorAnalPositionShift": true,
+    "coreOwnShellTopology": true,
+    "nudeSkinViewerCorrected": true
+  },
+  "rejected": {
+    "bodyFullyWatertight": true,
+    "allNativeSkinSeamsWelded": true,
+    "finalNaturalSilhouette": true,
+    "additionalDecimationDone": true
+  },
+  "conclusion": "PARTIAL. Anatomical core is closed but union native skin still has 99 open and 58 over-subscribed edges. Never claim whole body watertight."
+}

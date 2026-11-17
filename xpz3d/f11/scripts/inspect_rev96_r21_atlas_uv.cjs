@@ -1,0 +1,3 @@
+'use strict';const fs=require('fs'),dir=__dirname,raw=fs.readFileSync('r21AO-F11-user101-bodygrown-core-r20-fitted.glb'),jl=raw.readUInt32LE(12),d=JSON.parse(raw.toString('utf8',20,20+jl)),bin=raw.subarray(28+jl,28+jl+raw.readUInt32LE(20+jl)),P=d.meshes[0].primitives;
+function attr(pi,k,id){const a=d.accessors[P[pi].attributes[k]],v=d.bufferViews[a.bufferView],size=k==='TEXCOORD_0'?8:12,off=(v.byteOffset||0)+(a.byteOffset||0)+id*size;return Array.from({length:k==='TEXCOORD_0'?2:3},(_,t)=>+bin.readFloatLE(off+t*4).toFixed(5))}
+for(let pi of [0,13]){console.log('pi',pi,P[pi].material);for(let id of pi===0?[908,914,919,29,913,926,935,945,960,1000,1020]:[908,927,1040,1077,1115,1133])console.log(id,'uv',attr(pi,'TEXCOORD_0',id),'p',attr(pi,'POSITION',id))}
