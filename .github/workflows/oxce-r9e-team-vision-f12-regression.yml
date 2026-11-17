@@ -1,0 +1,30 @@
+name: OXCE R135-R9E team vision and F12 regression
+on:
+  push:
+    branches:
+      - integration/oxce-r135-r9e-team-vision-f12-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r9d-f12-recovered/**'
+      - 'experiments/oxce-custom-release-audit/R135-r9e-team-vision/**'
+      - 'experiments/oxce-custom-release-audit/tools/check-r9d-r9e-team-vision.test.mjs'
+      - '.github/workflows/oxce-r9e-team-vision-f12-regression.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r9d-f12-recovered/**'
+      - 'experiments/oxce-custom-release-audit/R135-r9e-team-vision/**'
+      - 'experiments/oxce-custom-release-audit/tools/check-r9d-r9e-team-vision.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-inheritance-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check R9D F12 census and R9E team vision code paths
+        run: node --test experiments/oxce-custom-release-audit/tools/check-r9d-r9e-team-vision.test.mjs
+      - name: Preserve R8 search regression tests
+        run: node --test experiments/oxce-custom-release-audit/tools/check-oxce-r135-r9c-cumulative.test.mjs
