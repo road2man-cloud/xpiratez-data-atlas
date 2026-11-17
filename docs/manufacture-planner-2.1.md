@@ -303,3 +303,34 @@ item types. An additional JSON export preserves the complete expansion
 history and comparison without altering the player's original save.
 Rerunning the standard what-if comparison or clearing the hypothetical
 quantities clears stale history to prevent confusing different scenarios.
+
+## Evidence-based manufacturing blockers and inventory provenance
+
+The procurement what-if result now includes an **order-by-order evidence
+matrix**. It separates four distinct dimensions: externally unresolved
+materials, facility functions that are explicitly required but missing
+from the selected base's saved completed facilities, research references
+missing from that save's `discovered` list, and unresolved rule flags.
+Every row preserves the relevant detail and a first issue to inspect.
+This is an inspection priority, **not** a production-ready verdict.
+
+The table distinguishes **not checked** from **missing**: when no valid
+facility roster or no discovered-research evidence is available, it does
+not invent a negative conclusion. Even when every explicitly examined
+requirement looks covered, engine conditions, events, extra mods,
+personnel capacity and game-time availability remain unverified.
+
+A second table distinguishes starting user-entered/loaded inventory from
+**hypothetical acquired units**. Because the underlying queue merges both
+sources before consumption, the exact origin of consumed items cannot be
+recovered. Instead it shows provable lower and upper bounds for the
+hypothetical portion consumed:
+
+```text
+min hypothetically used = max(0, total used - starting held)
+max hypothetically used = min(total used, hypothetically added)
+```
+
+A zero material shortage in a hypothetical calculation never means
+those items have actually been obtained. The evidence matrix is
+included in the what-if JSON download; no save file is changed.
