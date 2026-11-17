@@ -1,0 +1,180 @@
+{
+  "schema": "xpz3d/f11/r16-compact-core",
+  "variant": "compact",
+  "input": "r21AO-F11-user101-posterior-seam-aligned-r11.glb",
+  "inputSHA256": "c0109fca67137623db40afcfea0b37d6669b92fe704a59511bd1e8778acb13c5",
+  "userSnapshotSHA256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "output": "r21AO-F11-user101-compact-core-r16-compact.glb",
+  "outputSHA256": "a18be59deed4a611d31abd0cb4e58e03c504dc8026724f2853739f235cd873e9",
+  "totalTriangles": 3752,
+  "originalTriangles": 3610,
+  "oldSeparatePerineumFacesRemoved": 192,
+  "centralOriginalFaces": 491,
+  "centralExtendedFaces": 813,
+  "newCentralFaces": 322,
+  "bodyNewFaces": 12,
+  "newCoreVertices": 169,
+  "bodyNewVertices": 12,
+  "centralBoundaryEdgesWelded": 20,
+  "posteriorNativeVerticesMatched": 19,
+  "garmentFaces": 370,
+  "skinBones": 63,
+  "protectedUserDeletedFaces": 101,
+  "originalCentralVertexPositionsPreserved": true,
+  "sourceOpenBodyHolesNotAllClosed": true,
+  "geometryCandidateOnly": true,
+  "strictPoseReviewRequired": true,
+  "rearToBodyGeometricConnectionNotLiterallySameGLTFIndex": true,
+  "compactRearNotSealed": true,
+  "qualityRest": {
+    "degenerateFaces": 0,
+    "minArea": 0.0000019338734486685335,
+    "maxArea": 0.00010751519028866452,
+    "maxEdge": 0.03961799875741247
+  },
+  "qualityOpen55": {
+    "degenerateFaces": 0,
+    "minArea": 0.000003223725947274504,
+    "maxArea": 0.0001283665143248358,
+    "maxEdge": 0.03962959682569522
+  },
+  "analBlindPit": true,
+  "poseReviewPending": true,
+  "removedOld7ColumnSeparatePrimitive": true,
+  "rim": [
+    908,
+    914,
+    915,
+    909,
+    916,
+    917,
+    910,
+    918,
+    919,
+    29,
+    920,
+    921,
+    911,
+    922,
+    923,
+    912,
+    924,
+    925,
+    913
+  ],
+  "arc": [
+    340,
+    535,
+    565,
+    568,
+    342,
+    539,
+    503,
+    330,
+    505,
+    506,
+    510,
+    332,
+    515,
+    549,
+    346,
+    584,
+    553,
+    347,
+    552,
+    554,
+    348
+  ],
+  "splitTriangles": [
+    {
+      "triangle": [
+        29,
+        28,
+        911
+      ],
+      "splitEdge": [
+        911,
+        29
+      ],
+      "inserted": [
+        921,
+        920
+      ]
+    },
+    {
+      "triangle": [
+        911,
+        28,
+        912
+      ],
+      "splitEdge": [
+        912,
+        911
+      ],
+      "inserted": [
+        923,
+        922
+      ]
+    },
+    {
+      "triangle": [
+        912,
+        28,
+        913
+      ],
+      "splitEdge": [
+        913,
+        912
+      ],
+      "inserted": [
+        925,
+        924
+      ]
+    },
+    {
+      "triangle": [
+        29,
+        910,
+        302
+      ],
+      "splitEdge": [
+        29,
+        910
+      ],
+      "inserted": [
+        919,
+        918
+      ]
+    },
+    {
+      "triangle": [
+        910,
+        909,
+        302
+      ],
+      "splitEdge": [
+        910,
+        909
+      ],
+      "inserted": [
+        917,
+        916
+      ]
+    },
+    {
+      "triangle": [
+        909,
+        908,
+        302
+      ],
+      "splitEdge": [
+        909,
+        908
+      ],
+      "inserted": [
+        915,
+        914
+      ]
+    }
+  ]
+}
