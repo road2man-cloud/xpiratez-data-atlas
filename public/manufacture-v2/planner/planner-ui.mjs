@@ -1,6 +1,7 @@
 import { createManufacturingPlanner } from './planner-core.mjs';
 import { initV2SaveImportUI } from './save-import-ui.mjs';
 import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
+import { initQueueUI } from './queue-ui.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -13,6 +14,7 @@ const make = (parent, tag, text, className) => {
 const nf = n => typeof n === 'number' && Number.isFinite(n)
   ? n.toLocaleString('ko-KR') : '미확인';
 const slug = id => encodeURIComponent(id);
+let queueUI = null;
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
@@ -445,6 +447,7 @@ function renderPlan() {
     renderConsolidated(plan);
     renderResearch(plan);
     renderOperations(plan);
+    queueUI?.refresh();
     renderWarnings(plan);
     $('status').textContent='제조 경로 계산 완료 · 대상 '+plan.rootRecipeId;
   }catch(e){
@@ -514,6 +517,13 @@ try{
   state.planner=createManufacturingPlanner({manufacture,research,items});
   state.recipes=manufacture.entries;
   state.itemEntries=items.items;
+  queueUI=initQueueUI({
+    planner:state.planner,manufactureIndex:manufacture,facilitiesIndex:facilities,
+    current:()=>({baseOperations:state.baseOperations,rootRecipeId:state.currentId,
+      batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
+      inventory:state.inventory,choices:state.choices,
+      assumeImplicit:$('assume-implicit').checked,saveDiscovered:state.saveDiscovered})
+  });
   initV2SaveImportUI({
     itemIds:new Set(items.items.map(item=>item.id)),
     researchIds:new Set(research.entries.map(topic=>topic.id)),
