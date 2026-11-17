@@ -1,0 +1,34 @@
+{
+  "revision": "r29",
+  "status": "geometry-candidate-generated-not-visually-approved",
+  "parent": "r28b",
+  "glb": "r21AO-F11-user101-integrated-oval-r29-posterior-oval-volume.glb",
+  "sha256": "ffe2553b61968756fc74ec359f4f3ed4241d04ec277363746675a4039629a406",
+  "actual": {
+    "deformedSkinVertices": 613,
+    "maxDisplacement": 0.016754485912462928,
+    "wholeTriangles": 5446,
+    "skinTriangles": 1840,
+    "skinBoundaryEdges": 128,
+    "nonManifoldInternalEdges": 0,
+    "degenerateRest": 0,
+    "degeneratePose": 0,
+    "bones": 63,
+    "garmentFaces": 370
+  },
+  "protected": {
+    "authoredGeometry": true,
+    "manualTrim101": true,
+    "skinBoundary": true,
+    "otherMeshes": true
+  },
+  "pending": [
+    "posterior smaller U topological closure",
+    "remove lateral wing-like surfaces",
+    "visual camera review 16 PNG",
+    "perineal volume profile acceptance",
+    "whole-body remaining 34 boundaries",
+    "Git commit and remote push"
+  ],
+  "note": "This is a deformation-only first candidate; no new topological closure is claimed."
+}
