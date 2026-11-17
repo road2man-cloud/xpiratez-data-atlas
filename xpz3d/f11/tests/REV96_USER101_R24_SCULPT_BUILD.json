@@ -1,0 +1,1995 @@
+{
+  "schema": "xpz3d/f11/r24-perineal-cleft-posterior-anus/v1",
+  "createdUTC": "2026-11-17T15:18:42.622Z",
+  "input": "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+  "inputSHA256": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+  "file": "r21AO-F11-user101-native-retopo-r24-posterior-cleft-sculpt.glb",
+  "sha256": "35aae49316b22645a2f58028b534faf4d66a1cc32f5e3b7a46e4b88203c0b9ce",
+  "variant": "sculpt",
+  "analPit": {
+    "oldY": 0.0008213311084546149,
+    "newY": 0.020821331068873405,
+    "posteriorShift": 0.01999999996041879
+  },
+  "cleft": {
+    "startY": -0.09,
+    "endY": 0.024,
+    "originalAuthoredVerticesChanged": 0,
+    "originalManualFacesReintroduced": 0
+  },
+  "areas": {
+    "coreRest": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 2.0977274360631744e-7,
+      "maxMove": 0.020051055508655928,
+      "changedVertices": 122
+    },
+    "coreMorph": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 1.935794903274861e-7,
+      "maxMove": 0.020051055508655928,
+      "changedVertices": 122
+    },
+    "skinRest": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 1.334233093372038e-7,
+      "maxMove": 0.0007797479629516602,
+      "changedVertices": 262
+    },
+    "skinMorph": {
+      "flips": 0,
+      "zero": 0,
+      "minArea": 1.2165021553406867e-7,
+      "maxMove": 0.0007797479629516602,
+      "changedVertices": 262
+    }
+  },
+  "skinInteriorMoved": 262,
+  "patchBoundaryVerticesPreserved": 112,
+  "bodyAndRigUnchanged": true,
+  "originalGarment370FacesPreserved": true,
+  "topologicalFullClosure": false,
+  "visualReview": "pending",
+  "log": [
+    {
+      "id": 910,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000013310000062256388
+    },
+    {
+      "id": 911,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00013012769895275807
+    },
+    {
+      "id": 912,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0004960362476037652
+    },
+    {
+      "id": 913,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000496883108240365
+    },
+    {
+      "id": 914,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0008224126204603849
+    },
+    {
+      "id": 915,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0001717422560308806
+    },
+    {
+      "id": 916,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0014805634038518919
+    },
+    {
+      "id": 917,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0022729923276983235
+    },
+    {
+      "id": 918,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0019359818101473377
+    },
+    {
+      "id": 919,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0007882022807132291
+    },
+    {
+      "id": 920,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0011589156997329256
+    },
+    {
+      "id": 921,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00011565554704813202
+    },
+    {
+      "id": 922,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006147783766925514
+    },
+    {
+      "id": 923,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000797833735660577
+    },
+    {
+      "id": 924,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00034003718546334673
+    },
+    {
+      "id": 925,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00003537051066815821
+    },
+    {
+      "id": 926,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0000026638472062891713
+    },
+    {
+      "id": 930,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00006555219557315534
+    },
+    {
+      "id": 931,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00034808720562746424
+    },
+    {
+      "id": 932,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00040184413523405583
+    },
+    {
+      "id": 933,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007023567464369861
+    },
+    {
+      "id": 934,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00031796766452598605
+    },
+    {
+      "id": 935,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0029515729945459187
+    },
+    {
+      "id": 936,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004417992327698323
+    },
+    {
+      "id": 937,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0036947151145898124
+    },
+    {
+      "id": 938,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0015660783031270808
+    },
+    {
+      "id": 939,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001880445037471368
+    },
+    {
+      "id": 940,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00019903978171222127
+    },
+    {
+      "id": 941,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006210598205970099
+    },
+    {
+      "id": 942,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005390426824624278
+    },
+    {
+      "id": 943,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00013327776880605328
+    },
+    {
+      "id": 944,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000006321486598231525
+    },
+    {
+      "id": 949,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000032495428591503426
+    },
+    {
+      "id": 950,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00024525593652183816
+    },
+    {
+      "id": 951,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00034635768946967535
+    },
+    {
+      "id": 952,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006155569904141259
+    },
+    {
+      "id": 953,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0007602483961709818
+    },
+    {
+      "id": 954,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004180829071162309
+    },
+    {
+      "id": 955,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.006172992327698324
+    },
+    {
+      "id": 956,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005029201938786304
+    },
+    {
+      "id": 957,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0019979844040432042
+    },
+    {
+      "id": 958,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0019264688079521017
+    },
+    {
+      "id": 959,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00005268336975584215
+    },
+    {
+      "id": 960,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00061539016017788
+    },
+    {
+      "id": 961,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00028626722152877746
+    },
+    {
+      "id": 962,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00003552348636458018
+    },
+    {
+      "id": 968,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000029008875644372343
+    },
+    {
+      "id": 969,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00023687158605470524
+    },
+    {
+      "id": 970,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0003835306502997897
+    },
+    {
+      "id": 971,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005929040729112673
+    },
+    {
+      "id": 972,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0010195831098138933
+    },
+    {
+      "id": 973,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0044421366764640395
+    },
+    {
+      "id": 974,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.006367992327698324
+    },
+    {
+      "id": 975,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005101688130520186
+    },
+    {
+      "id": 976,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001914789404942639
+    },
+    {
+      "id": 977,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0014234791187992017
+    },
+    {
+      "id": 978,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0003329329454629852
+    },
+    {
+      "id": 979,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005671402410360873
+    },
+    {
+      "id": 980,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00017307018482452547
+    },
+    {
+      "id": 981,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000013789353978042842
+    },
+    {
+      "id": 987,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00005614784345158447
+    },
+    {
+      "id": 988,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00033332700854797685
+    },
+    {
+      "id": 989,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005162432455177916
+    },
+    {
+      "id": 990,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005229222570259562
+    },
+    {
+      "id": 991,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00131591876105194
+    },
+    {
+      "id": 992,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004296005540086114
+    },
+    {
+      "id": 993,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.005847992327698323
+    },
+    {
+      "id": 994,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004697640546570872
+    },
+    {
+      "id": 995,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001813869118402721
+    },
+    {
+      "id": 996,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0010826754825777837
+    },
+    {
+      "id": 997,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00043754043137316927
+    },
+    {
+      "id": 998,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005690262884393589
+    },
+    {
+      "id": 999,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00017057910801281467
+    },
+    {
+      "id": 1000,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00001435917294476247
+    },
+    {
+      "id": 1005,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00000615204313530699
+    },
+    {
+      "id": 1006,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0001518380375391022
+    },
+    {
+      "id": 1007,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0005312299686873572
+    },
+    {
+      "id": 1008,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006828510280286846
+    },
+    {
+      "id": 1009,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0003666286126620571
+    },
+    {
+      "id": 1010,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0014151143406848981
+    },
+    {
+      "id": 1011,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.003587729593910395
+    },
+    {
+      "id": 1012,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.004612992327698323
+    },
+    {
+      "id": 1013,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00376662507509431
+    },
+    {
+      "id": 1014,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.001563723157154772
+    },
+    {
+      "id": 1015,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0008100409098882336
+    },
+    {
+      "id": 1016,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00048767112787728023
+    },
+    {
+      "id": 1017,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006563598456934775
+    },
+    {
+      "id": 1018,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0002528924222286692
+    },
+    {
+      "id": 1019,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00003201635415782049
+    },
+    {
+      "id": 1024,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00003243119890304837
+    },
+    {
+      "id": 1025,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00032509716625959224
+    },
+    {
+      "id": 1026,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007475116202838762
+    },
+    {
+      "id": 1027,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0008236237382406599
+    },
+    {
+      "id": 1028,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000374314604530439
+    },
+    {
+      "id": 1029,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0009016850758632502
+    },
+    {
+      "id": 1030,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0020977198646889503
+    },
+    {
+      "id": 1031,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0025979923276983233
+    },
+    {
+      "id": 1032,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0021475016269205107
+    },
+    {
+      "id": 1033,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.0008671894434501548
+    },
+    {
+      "id": 1034,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": 0.00030635923158790475
+    },
+    {
+      "id": 1035,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0006350975389348955
+    },
+    {
+      "id": 1036,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0007960257548227753
+    },
+    {
+      "id": 1037,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.0003878730625628601
+    },
+    {
+      "id": 1038,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.00007333432504461206
+    },
+    {
+      "id": 1039,
+      "region": "intervening-perineal-cleft",
+      "deltaZ": -0.000004060657985262801
+    },
+    {
+      "id": 1060,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1061,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1062,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1063,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1064,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1065,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1066,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1067,
+      "region": "anal-recess",
+      "deltaY": 0.004,
+      "deltaZ": 0.00042249999999999997
+    },
+    {
+      "id": 1068,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1069,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1070,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1071,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1072,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1073,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1074,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1075,
+      "region": "anal-recess",
+      "deltaY": 0.011,
+      "deltaZ": 0.0010400000000000001
+    },
+    {
+      "id": 1076,
+      "region": "anal-recess",
+      "deltaY": 0.02,
+      "deltaZ": 0.00143
+    },
+    {
+      "id": 47,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00021762925566835246
+    },
+    {
+      "id": 48,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006293601955278239
+    },
+    {
+      "id": 49,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005913977163910217
+    },
+    {
+      "id": 50,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005410398565137702
+    },
+    {
+      "id": 51,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004863286599275879
+    },
+    {
+      "id": 52,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000005686984767727939
+    },
+    {
+      "id": 53,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000012261417312030743
+    },
+    {
+      "id": 54,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000023644556232259177
+    },
+    {
+      "id": 55,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000009490557949147242
+    },
+    {
+      "id": 56,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00002984595930390198
+    },
+    {
+      "id": 57,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000373071653650626
+    },
+    {
+      "id": 58,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00006409100160231825
+    },
+    {
+      "id": 59,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00015954069521607832
+    },
+    {
+      "id": 60,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00015784724049471848
+    },
+    {
+      "id": 61,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00018360405572215307
+    },
+    {
+      "id": 62,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00015300474366367818
+    },
+    {
+      "id": 63,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00012743152275907461
+    },
+    {
+      "id": 64,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00014404110777893356
+    },
+    {
+      "id": 65,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00017546213112510782
+    },
+    {
+      "id": 66,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00006437273551533267
+    },
+    {
+      "id": 67,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00009133133694968751
+    },
+    {
+      "id": 68,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00008475840153109711
+    },
+    {
+      "id": 69,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000512457924489137
+    },
+    {
+      "id": 70,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00008717786594694918
+    },
+    {
+      "id": 71,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00009016250687759726
+    },
+    {
+      "id": 72,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00003204344457556435
+    },
+    {
+      "id": 73,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00005724765634135327
+    },
+    {
+      "id": 74,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000654691685439098
+    },
+    {
+      "id": 75,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00026125416560123194
+    },
+    {
+      "id": 76,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004050090962146154
+    },
+    {
+      "id": 77,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004823942972893112
+    },
+    {
+      "id": 78,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005645152276373728
+    },
+    {
+      "id": 80,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0002468816311707361
+    },
+    {
+      "id": 81,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00035677737094208663
+    },
+    {
+      "id": 82,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004768091908534252
+    },
+    {
+      "id": 83,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000536453360355858
+    },
+    {
+      "id": 84,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006153635286914781
+    },
+    {
+      "id": 85,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000493791951350331
+    },
+    {
+      "id": 86,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006771760213369668
+    },
+    {
+      "id": 87,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005499336353146963
+    },
+    {
+      "id": 88,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000756096823730915
+    },
+    {
+      "id": 89,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007315229997987696
+    },
+    {
+      "id": 90,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0002481976634237205
+    },
+    {
+      "id": 91,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003124401384907559
+    },
+    {
+      "id": 92,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00032698518254299126
+    },
+    {
+      "id": 93,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003418626499750547
+    },
+    {
+      "id": 94,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004128644944029595
+    },
+    {
+      "id": 95,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00039757177301145513
+    },
+    {
+      "id": 96,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00043938338362865565
+    },
+    {
+      "id": 97,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00048117390537066434
+    },
+    {
+      "id": 98,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00046499103241050857
+    },
+    {
+      "id": 99,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004588690689390741
+    },
+    {
+      "id": 100,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005018123754644202
+    },
+    {
+      "id": 101,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00044479382192672755
+    },
+    {
+      "id": 102,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00048824455518675457
+    },
+    {
+      "id": 103,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004459970001158043
+    },
+    {
+      "id": 104,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00042234074958982207
+    },
+    {
+      "id": 105,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00038149276219500284
+    },
+    {
+      "id": 106,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00034652632484989703
+    },
+    {
+      "id": 107,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003024409405891447
+    },
+    {
+      "id": 108,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00028267387429164054
+    },
+    {
+      "id": 109,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00022399427071299042
+    },
+    {
+      "id": 110,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00017742917753263077
+    },
+    {
+      "id": 111,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00018242713083932606
+    },
+    {
+      "id": 112,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00017894561278661547
+    },
+    {
+      "id": 113,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005338218808287373
+    },
+    {
+      "id": 114,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005830709288218131
+    },
+    {
+      "id": 115,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006064838947498616
+    },
+    {
+      "id": 116,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006544117323717776
+    },
+    {
+      "id": 118,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003750651854821574
+    },
+    {
+      "id": 119,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006325698513571206
+    },
+    {
+      "id": 120,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007592185368135895
+    },
+    {
+      "id": 121,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005527572889901767
+    },
+    {
+      "id": 122,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006543725846802215
+    },
+    {
+      "id": 123,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00033093781329806725
+    },
+    {
+      "id": 124,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00048716223583089845
+    },
+    {
+      "id": 125,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007348658294410869
+    },
+    {
+      "id": 126,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007508649434484387
+    },
+    {
+      "id": 127,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007383169504695108
+    },
+    {
+      "id": 128,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006088455857038177
+    },
+    {
+      "id": 129,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006302963337269483
+    },
+    {
+      "id": 130,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006121645325323521
+    },
+    {
+      "id": 131,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006311486261016572
+    },
+    {
+      "id": 132,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006751302233775428
+    },
+    {
+      "id": 133,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006570267871164844
+    },
+    {
+      "id": 134,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006681402375824058
+    },
+    {
+      "id": 135,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006494526498643141
+    },
+    {
+      "id": 136,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006304132890819755
+    },
+    {
+      "id": 137,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006435446987063785
+    },
+    {
+      "id": 138,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006680413447760802
+    },
+    {
+      "id": 139,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006675927250661205
+    },
+    {
+      "id": 140,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006650195013162212
+    },
+    {
+      "id": 141,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006479676821263695
+    },
+    {
+      "id": 142,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006322927054856985
+    },
+    {
+      "id": 143,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006239905339197897
+    },
+    {
+      "id": 144,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006286452799525879
+    },
+    {
+      "id": 145,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006332967029141886
+    },
+    {
+      "id": 146,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006284472744941407
+    },
+    {
+      "id": 147,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005976932119286043
+    },
+    {
+      "id": 148,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005579744216120922
+    },
+    {
+      "id": 149,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005384806369333523
+    },
+    {
+      "id": 150,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005212840850606054
+    },
+    {
+      "id": 151,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007467760911540094
+    },
+    {
+      "id": 152,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007069754616499526
+    },
+    {
+      "id": 153,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006843450306462011
+    },
+    {
+      "id": 154,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007077607597271113
+    },
+    {
+      "id": 155,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00020449373374725944
+    },
+    {
+      "id": 156,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005570194651133585
+    },
+    {
+      "id": 157,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007797736309353641
+    },
+    {
+      "id": 158,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007588355237895122
+    },
+    {
+      "id": 159,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007398486654918603
+    },
+    {
+      "id": 160,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005224454022117526
+    },
+    {
+      "id": 161,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007035551430879736
+    },
+    {
+      "id": 174,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000014745642332746874
+    },
+    {
+      "id": 176,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000002748001379658631
+    },
+    {
+      "id": 178,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000003535633280535803
+    },
+    {
+      "id": 179,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000004773343528786673
+    },
+    {
+      "id": 180,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000048701439948312446
+    },
+    {
+      "id": 181,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000013613058544502383
+    },
+    {
+      "id": 183,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000006045043392041735
+    },
+    {
+      "id": 186,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000347468662389167
+    },
+    {
+      "id": 188,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00001607817222762699
+    },
+    {
+      "id": 189,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000003875934358993899
+    },
+    {
+      "id": 190,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000014030294980052543
+    },
+    {
+      "id": 191,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00000575283308097862
+    },
+    {
+      "id": 192,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000005231573928401709
+    },
+    {
+      "id": 193,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000011478017212058314
+    },
+    {
+      "id": 195,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000009524682376911172
+    },
+    {
+      "id": 196,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000017474467991550257
+    },
+    {
+      "id": 197,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000023495769297119663
+    },
+    {
+      "id": 198,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000010350494173976453
+    },
+    {
+      "id": 199,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000006712548138989237
+    },
+    {
+      "id": 200,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000008977411313838966
+    },
+    {
+      "id": 201,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000009834010206003038
+    },
+    {
+      "id": 202,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000012862196541139762
+    },
+    {
+      "id": 203,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000003985768149297002
+    },
+    {
+      "id": 204,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000034091455057138945
+    },
+    {
+      "id": 205,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000002848352713928906
+    },
+    {
+      "id": 206,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000022364770176221195
+    },
+    {
+      "id": 207,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00000334441918246643
+    },
+    {
+      "id": 208,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000028356101701848233
+    },
+    {
+      "id": 209,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000003278074497750153
+    },
+    {
+      "id": 210,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000003858205880221876
+    },
+    {
+      "id": 221,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00003305786912242504
+    },
+    {
+      "id": 222,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000007933073736296422
+    },
+    {
+      "id": 230,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000011487160219816183
+    },
+    {
+      "id": 274,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00024287862330537135
+    },
+    {
+      "id": 275,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005571748153194998
+    },
+    {
+      "id": 276,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006097405129789597
+    },
+    {
+      "id": 277,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004940341036519131
+    },
+    {
+      "id": 278,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00036374979827322467
+    },
+    {
+      "id": 279,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0002235782856458993
+    },
+    {
+      "id": 281,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005602238312531811
+    },
+    {
+      "id": 282,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00047769173514471196
+    },
+    {
+      "id": 283,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00040077528252625984
+    },
+    {
+      "id": 284,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000034264360840441846
+    },
+    {
+      "id": 285,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000027378019187455384
+    },
+    {
+      "id": 286,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000012948203602132594
+    },
+    {
+      "id": 287,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000463492360681958
+    },
+    {
+      "id": 288,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00005953582677682266
+    },
+    {
+      "id": 289,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000029861736044957328
+    },
+    {
+      "id": 290,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00005268922333522745
+    },
+    {
+      "id": 291,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00008486954379456834
+    },
+    {
+      "id": 292,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00006997496891413379
+    },
+    {
+      "id": 293,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0001321806867417206
+    },
+    {
+      "id": 294,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00011745108618308748
+    },
+    {
+      "id": 295,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00010768875905491487
+    },
+    {
+      "id": 296,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00011257522900597873
+    },
+    {
+      "id": 297,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0001394590871622094
+    },
+    {
+      "id": 298,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0001292670081221083
+    },
+    {
+      "id": 299,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00009208352656651274
+    },
+    {
+      "id": 300,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00008222302282100652
+    },
+    {
+      "id": 301,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000870766275255582
+    },
+    {
+      "id": 302,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000028227761409085222
+    },
+    {
+      "id": 303,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00014465909089461846
+    },
+    {
+      "id": 304,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00023513664795376534
+    },
+    {
+      "id": 305,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005023358253572295
+    },
+    {
+      "id": 306,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005665949133817968
+    },
+    {
+      "id": 307,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006535017743957854
+    },
+    {
+      "id": 308,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005736653229646587
+    },
+    {
+      "id": 309,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00035784599554297166
+    },
+    {
+      "id": 310,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007100625207444061
+    },
+    {
+      "id": 311,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00048479848886940783
+    },
+    {
+      "id": 312,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007559474139418192
+    },
+    {
+      "id": 313,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006453111771207036
+    },
+    {
+      "id": 314,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00031978109149685734
+    },
+    {
+      "id": 316,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000642533051573423
+    },
+    {
+      "id": 317,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005932704350225134
+    },
+    {
+      "id": 318,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005702706700013941
+    },
+    {
+      "id": 319,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00010049495739272162
+    },
+    {
+      "id": 320,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0000934391348680155
+    },
+    {
+      "id": 321,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00009156059677855006
+    },
+    {
+      "id": 322,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0001244829945668355
+    },
+    {
+      "id": 323,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00018079434726118976
+    },
+    {
+      "id": 324,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0002516738569171474
+    },
+    {
+      "id": 325,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0002980865565495965
+    },
+    {
+      "id": 326,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003170404879110912
+    },
+    {
+      "id": 327,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003430612718619781
+    },
+    {
+      "id": 328,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003716210229043974
+    },
+    {
+      "id": 329,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004123350518486199
+    },
+    {
+      "id": 330,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00038317732133165633
+    },
+    {
+      "id": 331,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00040292511554692077
+    },
+    {
+      "id": 332,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003966836567615175
+    },
+    {
+      "id": 333,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00037222497396795093
+    },
+    {
+      "id": 334,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00034462466761076417
+    },
+    {
+      "id": 335,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003982369191920129
+    },
+    {
+      "id": 336,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00043185141666417725
+    },
+    {
+      "id": 337,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0003123762079009253
+    },
+    {
+      "id": 338,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00045012747525373495
+    },
+    {
+      "id": 339,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004897432335067702
+    },
+    {
+      "id": 340,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006911422404032025
+    },
+    {
+      "id": 341,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000750560882593676
+    },
+    {
+      "id": 342,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004256581541429679
+    },
+    {
+      "id": 343,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007112723895373448
+    },
+    {
+      "id": 344,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0002248420909075037
+    },
+    {
+      "id": 345,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004812546201231364
+    },
+    {
+      "id": 346,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006971510262915098
+    },
+    {
+      "id": 347,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007461733727490806
+    },
+    {
+      "id": 348,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007793121922063932
+    },
+    {
+      "id": 349,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004739258506487506
+    },
+    {
+      "id": 350,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000136085418620825
+    },
+    {
+      "id": 351,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006677509354123826
+    },
+    {
+      "id": 352,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006367225921185715
+    },
+    {
+      "id": 353,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006856420833450608
+    },
+    {
+      "id": 354,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00045282462235729564
+    },
+    {
+      "id": 355,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00045340481991339886
+    },
+    {
+      "id": 356,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00046671281079411017
+    },
+    {
+      "id": 357,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005035485777069719
+    },
+    {
+      "id": 358,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005295873250521275
+    },
+    {
+      "id": 359,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005322217901197465
+    },
+    {
+      "id": 360,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005292309521600789
+    },
+    {
+      "id": 361,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005278041731327563
+    },
+    {
+      "id": 362,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005314261489035155
+    },
+    {
+      "id": 363,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005523528551847794
+    },
+    {
+      "id": 364,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005735982915515367
+    },
+    {
+      "id": 365,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005821717146114256
+    },
+    {
+      "id": 366,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005855446633734065
+    },
+    {
+      "id": 367,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005617054978449852
+    },
+    {
+      "id": 368,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005410083937601656
+    },
+    {
+      "id": 369,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005317184329069108
+    },
+    {
+      "id": 370,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005831650363383872
+    },
+    {
+      "id": 371,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006277645458421233
+    },
+    {
+      "id": 372,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00054912207890231
+    },
+    {
+      "id": 373,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006060356257070151
+    },
+    {
+      "id": 374,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0005709502889184062
+    },
+    {
+      "id": 375,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006723883882988556
+    },
+    {
+      "id": 376,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0007294324052438179
+    },
+    {
+      "id": 377,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006714996690896732
+    },
+    {
+      "id": 378,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0004346842073243203
+    },
+    {
+      "id": 379,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.0006265559380920157
+    },
+    {
+      "id": 384,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000012721646909180196
+    },
+    {
+      "id": 385,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000004297386154516412
+    },
+    {
+      "id": 386,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000015980309348983793
+    },
+    {
+      "id": 387,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000004875056431982769
+    },
+    {
+      "id": 388,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000014615171813412932
+    },
+    {
+      "id": 393,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00001271534924158898
+    },
+    {
+      "id": 394,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00004248768220812316
+    },
+    {
+      "id": 395,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000017558385352745214
+    },
+    {
+      "id": 396,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000016013485700137584
+    },
+    {
+      "id": 397,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00002240449929873558
+    },
+    {
+      "id": 401,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.000006839061951311163
+    },
+    {
+      "id": 405,
+      "region": "local-skirt-interior",
+      "deltaZ": -0.00001026045775961607
+    }
+  ]
+}

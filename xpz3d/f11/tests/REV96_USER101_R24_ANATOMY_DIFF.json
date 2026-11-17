@@ -1,0 +1,22 @@
+{
+  "schema": "xpz3d/f11/r24-vs-r23-anatomy/v1",
+  "sourceSha256": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+  "selectedSha256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a",
+  "trianglesOld": 4680,
+  "trianglesNew": 4680,
+  "afterPitY": 0.020821331068873405,
+  "beforePitY": 0.0008213311084546149,
+  "pitDeltaY": 0.01999999996041879,
+  "outerRingShiftY": 0.009999999849242158,
+  "innerRingShiftY": 0.013999999937368557,
+  "movedCore": 123,
+  "movedPatch": 262,
+  "noNewFaces": true,
+  "topologyPreserved": true,
+  "poseMaxGap": [
+    0.0000032186508178710938,
+    0.000003166685203947089,
+    0.0000031175316164990343,
+    0.0000029519017914979185
+  ]
+}

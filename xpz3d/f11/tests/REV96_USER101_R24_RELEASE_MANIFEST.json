@@ -1,0 +1,259 @@
+﻿{
+    "schema":  "xpz3d/f11/r24-standalone-release/v1",
+    "creationUTC":  "2026-11-17T15:59:15.0783690Z",
+    "bestModel":  "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+    "quality":  "local-geometry-improved_visual-acceptance-pending",
+    "fileCount":  50,
+    "files":  [
+                  {
+                      "file":  "audit_rev96_r24_soft_v3_pose.cjs",
+                      "size":  2561,
+                      "sha256":  "c084990d79ff340e8da567d8fe47e2f8101a6d6a84bfd38bf92189ebc3fdb9e4"
+                  },
+                  {
+                      "file":  "build_rev96_user101_r24_posterior_cleft.cjs",
+                      "size":  11058,
+                      "sha256":  "520507ecb843f40a3e88ddfe21df57c1de7cde5e8238ec83a1ccdce0fe787fa3"
+                  },
+                  {
+                      "file":  "build_rev96_user101_r24_posterior_ellipse_v2.cjs",
+                      "size":  12645,
+                      "sha256":  "4e7dc8885656151fc08569dd62968cda4758d97945dcdc3db69f4cfe1ffdf207"
+                  },
+                  {
+                      "file":  "build_rev96_user101_r24_posterior_ellipse_v3.cjs",
+                      "size":  12997,
+                      "sha256":  "79beea883fc2eefae1e6e626ae0a8e26a47748f5df1dade81bdcb153af8c15ff"
+                  },
+                  {
+                      "file":  "inspect_rev96_r24_soft_v3_union.cjs",
+                      "size":  3770,
+                      "sha256":  "ca45c54b3dd812bfef853af4a62e5fad1117bf1579db331017bedae4b5b9f9f8"
+                  },
+                  {
+                      "file":  "pose_skinning.js",
+                      "size":  2664,
+                      "sha256":  "d7c04168ead6e575456448c8bb9c9c89c3f53b5a0f4994ef3c4423af5f0b50c3"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+                      "size":  3296504,
+                      "sha256":  "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r24-posterior-cleft-gentle.glb",
+                      "size":  3394792,
+                      "sha256":  "10b7a67565847b8bb5fecd94f061d1be7f4a47351de0fcae5d7e55b757fcfbbe"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r24-posterior-cleft-sculpt.glb",
+                      "size":  3394792,
+                      "sha256":  "35aae49316b22645a2f58028b534faf4d66a1cc32f5e3b7a46e4b88203c0b9ce"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v2.glb",
+                      "size":  3394800,
+                      "sha256":  "c9a092df27a1f63350913e9ee9b9942a0c61476474c51f0b665768af9892d981"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+                      "size":  3394800,
+                      "sha256":  "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-wide-v2.glb",
+                      "size":  3394800,
+                      "sha256":  "5b6ef1eddd20fce741af369ce33a94b77b1c534066699fa5ed559274a63ae92b"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-wide-v3.glb",
+                      "size":  3394800,
+                      "sha256":  "f02b46c8237dbebf9ff7297a69cd465401f66cca0872cc9188fc7bae08fd7de8"
+                  },
+                  {
+                      "file":  "r21AO-F11-user101-native-skin-bowl-r22-dome.glb",
+                      "size":  2935428,
+                      "sha256":  "15451f69e5c9e6041463ad15ce8668939a3f604c14ce65e5d601fdd3ceb1cb41"
+                  },
+                  {
+                      "file":  "rev95-user-trim-101faces-20261116T152807Z.json",
+                      "size":  335847,
+                      "sha256":  "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5"
+                  },
+                  {
+                      "file":  "REV96_USER101_R24_HANDOFF_20261118.md",
+                      "size":  6187,
+                      "sha256":  "058f5e0a1b783b5bfcfabde1c2b9afaaf7b1ba36c60ae38707665bbab46eb96c"
+                  },
+                  {
+                      "file":  "review-rev96-user101-r24.html",
+                      "size":  11631,
+                      "sha256":  "48be8c8051245f316bd19c49d7d93c934d3912adec4d68bf88ddf5652533166d"
+                  },
+                  {
+                      "file":  "start_review.cmd",
+                      "size":  314,
+                      "sha256":  "ff3e621310a5576d48b1be37a1d40e243b7a97a2861611316e1abe99ad0357e6"
+                  },
+                  {
+                      "file":  "verify_rev96_user101_r24_anatomy.cjs",
+                      "size":  8446,
+                      "sha256":  "9dd5155f23ee2e6eebc6e80950bad8a2004f3bcf62f12fa0e720abee7b3e27b7"
+                  },
+                  {
+                      "file":  "viewer-rev96-user101-r24.js",
+                      "size":  36200,
+                      "sha256":  "5fd79c7a3aff51ec784df4123f5e1177c614f6cc29e1b03d751eac7ee6953b3e"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-0-behind-solid.png",
+                      "size":  195699,
+                      "sha256":  "05bee404b1755d79d77119d7ce3af5d2f2fc240d4c99cb987360f10df2256b1f"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-0-behind-wire.png",
+                      "size":  277836,
+                      "sha256":  "500c8cda4d9dc1ae7c0d5696bab4519b14cc03fe502ddb0085f13b8f44c0d709"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-0-under-solid.png",
+                      "size":  146340,
+                      "sha256":  "fa9f2569040984e2829d8207e7ab46bbce9db00ced0bb95b86bab3b0bf24a5b6"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-0-under-wire.png",
+                      "size":  188482,
+                      "sha256":  "96938c7995c2d48a5b399d46e1d7807d22a106e0df9a8e50d5fec63d25c377fc"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-25-behind-solid.png",
+                      "size":  231017,
+                      "sha256":  "712d99ea2f905a2dbefde917cdd0539d3c4df7ab6b6984bb22a57141595aeca6"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-25-behind-wire.png",
+                      "size":  353368,
+                      "sha256":  "a0162e5d5e828e608e3c13a7e78c5f1fb9dfb03b0c3d10261047e076d18c7c49"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-25-under-solid.png",
+                      "size":  205136,
+                      "sha256":  "55c846978aff335e226e44ccf4654c9a07b8dd0e0abb1cbc73dbae74aece5b24"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-25-under-wire.png",
+                      "size":  303256,
+                      "sha256":  "cfa3a4d261133068c5ecbb98f05ea3f31f827c6651160beec225dcf5ec7137bd"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-40-behind-solid.png",
+                      "size":  237611,
+                      "sha256":  "bfa5d53b9988b1287c3b6de255b871bce08bd8809d8c5e9ecddc27818ad4a481"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-40-behind-wire.png",
+                      "size":  374763,
+                      "sha256":  "8c752b4d5d138375d88dff582a4845a80e52e82f3246ffd22a06d0475409a6cd"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-40-under-solid.png",
+                      "size":  207610,
+                      "sha256":  "b9107472566144541dc0d3a81f029314906cc54fe2017ea42bbea616a47fc546"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-40-under-wire.png",
+                      "size":  323613,
+                      "sha256":  "b5c17bf1a7399cce62bc4db96a14a625983c9c5257725bbc6e7c78484f20d304"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-55-behind-solid.png",
+                      "size":  239232,
+                      "sha256":  "616d22a8e934737748902c1e17c544bb60000b63c0e0eb24ef102edc429e4342"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-55-behind-wire.png",
+                      "size":  383456,
+                      "sha256":  "45620a367af6f5d1da35780f3df480f9f699f3fc52a020702daaec0a73a16067"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-55-under-solid.png",
+                      "size":  198041,
+                      "sha256":  "f404d48553801493d2d675967708c661958291e64ea931c6f2b160c9725b1e54"
+                  },
+                  {
+                      "file":  "captures/rev96-r24-soft-v3-canonical-55-under-wire.png",
+                      "size":  320331,
+                      "sha256":  "3f7a422493292e2926fa8fd4e8f7781c32b2b7d979e1568c4432e382ad8b4f5e"
+                  },
+                  {
+                      "file":  "qa/rev96-r24-soft-v3-union-boundary.json",
+                      "size":  218701,
+                      "sha256":  "33911d009cb85737d59cd5086dbd58fa5a75a2a1d9ea4782197fd25706f937e1"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ACCEPTANCE.json",
+                      "size":  4957,
+                      "sha256":  "22adbe0af7523aa23bac93e96b91ad811f6489b69a603d591edf2f4dedf02243"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ANATOMY_DIFF.json",
+                      "size":  703,
+                      "sha256":  "769782378e5d2aaec8d2e4daa15e9771d40fabbd904239c3fbd49556235f526a"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_CONTOUR_BUILD.json",
+                      "size":  1954,
+                      "sha256":  "bbcdb895ba6c9ce284c525b174f152b30c43ed6332da55958bd459444432e0f6"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ELLIPSE_SOFT_V2_POSED_SEAMS.json",
+                      "size":  739,
+                      "sha256":  "c9f165ee07917d2bc11a11383abdf80115848fc088228a2c471ac74311abb204"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ELLIPTIC-SOFT_BUILD.json",
+                      "size":  47409,
+                      "sha256":  "1eb361ce8533a119c7bbb28a861649fee87f25c4957b2de857d44cd67c66eaba"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ELLIPTIC-SOFT_V3_BUILD.json",
+                      "size":  47403,
+                      "sha256":  "3fc1ee4566d26aa0f529ad026499122faff75c34aa6d0159dbe3716afe1f5f45"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ELLIPTIC-WIDE_BUILD.json",
+                      "size":  47181,
+                      "sha256":  "d0b51b3361bbb5d7aef6e5fc39398456a7cbdcd739e4f09d8298444f68da96c2"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_ELLIPTIC-WIDE_V3_BUILD.json",
+                      "size":  47286,
+                      "sha256":  "e448f1f4961e61e4c6d4bf4f73941118c0bc8410a17d330e8e17536284e82219"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_GENTLE_BUILD.json",
+                      "size":  44463,
+                      "sha256":  "85d2cdd480c501380e4134155f79f344e6ccdfb8ca9f8a7abac950fdfead7e72"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_SCULPT_BUILD.json",
+                      "size":  44462,
+                      "sha256":  "bbeae484916c5878e9966a1be808ef2929c3050ef27368db822c2c5a306dccb2"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_SOFT_BUILD.json",
+                      "size":  1921,
+                      "sha256":  "2d0437df91245faf42626e830e3e208e34044fbc762a55cd1006cc92b644ea22"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_SOFT_V3_POSED_SEAMS.json",
+                      "size":  745,
+                      "sha256":  "6a530bbdd763edd43ac3886ceee09d4b7d07d4d3c5ae0252ada32e1ae1811fab"
+                  },
+                  {
+                      "file":  "qa/REV96_USER101_R24_VISUAL_VARIANTS.json",
+                      "size":  494,
+                      "sha256":  "e9d5de1278674e96555f8f469fd63dd2ec012bdf3e603a6b58797ee59c1b1327"
+                  }
+              ]
+}

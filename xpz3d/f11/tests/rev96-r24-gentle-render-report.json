@@ -1,0 +1,33 @@
+{
+  "captures": [
+    "rev96-r24-gentle-0-under-solid.png",
+    "rev96-r24-gentle-0-under-wire.png",
+    "rev96-r24-gentle-0-behind-solid.png",
+    "rev96-r24-gentle-0-behind-wire.png",
+    "rev96-r24-gentle-25-under-solid.png",
+    "rev96-r24-gentle-25-under-wire.png",
+    "rev96-r24-gentle-25-behind-solid.png",
+    "rev96-r24-gentle-25-behind-wire.png",
+    "rev96-r24-gentle-40-under-solid.png",
+    "rev96-r24-gentle-40-under-wire.png",
+    "rev96-r24-gentle-40-behind-solid.png",
+    "rev96-r24-gentle-40-behind-wire.png",
+    "rev96-r24-gentle-55-under-solid.png",
+    "rev96-r24-gentle-55-under-wire.png",
+    "rev96-r24-gentle-55-behind-solid.png",
+    "rev96-r24-gentle-55-behind-wire.png"
+  ],
+  "errors": [],
+  "meta": [
+    {
+      "triangles": 4680,
+      "parts": 24,
+      "bones": 63
+    },
+    {
+      "triangles": 4680,
+      "parts": 24,
+      "bones": 63
+    }
+  ]
+}

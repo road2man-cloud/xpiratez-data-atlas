@@ -1,0 +1,135 @@
+{
+  "schema": "xpz3d/f11/rev96/r24-acceptance/v1",
+  "timeUTC": "2026-11-17T15:55:13.987Z",
+  "baseline": "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+  "baselineSha256": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+  "selected": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-soft-v3.glb",
+  "selectedSha256": "ed99fb2df29767fff3258a6267ddc395b6e5b177eebc9676de7f1c5485bced7a",
+  "alternative": "r21AO-F11-user101-native-retopo-r24-posterior-opening-elliptic-wide-v3.glb",
+  "alternativeSha256": "f02b46c8237dbebf9ff7297a69cd465401f66cca0872cc9188fc7bae08fd7de8",
+  "userTrimSha256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "changes": {
+    "posteriorAnalPitShiftY": 0.01999999996041879,
+    "posteriorAnalOuterRingMeanShiftY": 0.009999999849242158,
+    "posteriorAnalInnerRingMeanShiftY": 0.013999999937368557,
+    "cleftAlongInterveningPerineum": true,
+    "vaginalAndAnalCavitiesRemainSeparate": true,
+    "movedOriginalAnatomicalVertexCount": 0,
+    "movedNewCoreVertexCount": 123,
+    "movedNewPatchVertexCount": 262
+  },
+  "preserved": {
+    "source101DeletedFaces": true,
+    "manualPositions754": true,
+    "controls106": true,
+    "bones63": true,
+    "separateGarmentTriangles370": true,
+    "bodyPrimitive0PositionsFacesUVWeights": true,
+    "sourceMorphPositions": true,
+    "protectedFirst908AuthoredNormals": true
+  },
+  "topology": {
+    "pelvicOpenEdges": 0,
+    "nonManifoldEdges": 0,
+    "wrongFacingSeams": 0,
+    "otherOpenEdges": 34,
+    "physicalIndexWeldedAcrossPrimitives": false,
+    "wholeBodyWatertight": false
+  },
+  "poses": [
+    {
+      "angle": 0,
+      "pairs": 249,
+      "maxGapGLB": 0.0000032186508178710938
+    },
+    {
+      "angle": 25,
+      "pairs": 249,
+      "maxGapGLB": 0.000003166685203947089
+    },
+    {
+      "angle": 40,
+      "pairs": 249,
+      "maxGapGLB": 0.0000031175316164990343
+    },
+    {
+      "angle": 55,
+      "pairs": 249,
+      "maxGapGLB": 0.0000029519017914979185
+    }
+  ],
+  "triangles": 4680,
+  "shots": [
+    {
+      "file": "rev96-r24-soft-v3-canonical-0-under-solid.png",
+      "sha256": "fa9f2569040984e2829d8207e7ab46bbce9db00ced0bb95b86bab3b0bf24a5b6"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-0-under-wire.png",
+      "sha256": "96938c7995c2d48a5b399d46e1d7807d22a106e0df9a8e50d5fec63d25c377fc"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-0-behind-solid.png",
+      "sha256": "05bee404b1755d79d77119d7ce3af5d2f2fc240d4c99cb987360f10df2256b1f"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-0-behind-wire.png",
+      "sha256": "500c8cda4d9dc1ae7c0d5696bab4519b14cc03fe502ddb0085f13b8f44c0d709"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-25-under-solid.png",
+      "sha256": "55c846978aff335e226e44ccf4654c9a07b8dd0e0abb1cbc73dbae74aece5b24"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-25-under-wire.png",
+      "sha256": "cfa3a4d261133068c5ecbb98f05ea3f31f827c6651160beec225dcf5ec7137bd"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-25-behind-solid.png",
+      "sha256": "712d99ea2f905a2dbefde917cdd0539d3c4df7ab6b6984bb22a57141595aeca6"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-25-behind-wire.png",
+      "sha256": "a0162e5d5e828e608e3c13a7e78c5f1fb9dfb03b0c3d10261047e076d18c7c49"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-40-under-solid.png",
+      "sha256": "b9107472566144541dc0d3a81f029314906cc54fe2017ea42bbea616a47fc546"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-40-under-wire.png",
+      "sha256": "b5c17bf1a7399cce62bc4db96a14a625983c9c5257725bbc6e7c78484f20d304"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-40-behind-solid.png",
+      "sha256": "bfa5d53b9988b1287c3b6de255b871bce08bd8809d8c5e9ecddc27818ad4a481"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-40-behind-wire.png",
+      "sha256": "8c752b4d5d138375d88dff582a4845a80e52e82f3246ffd22a06d0475409a6cd"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-55-under-solid.png",
+      "sha256": "f404d48553801493d2d675967708c661958291e64ea931c6f2b160c9725b1e54"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-55-under-wire.png",
+      "sha256": "3f7a422493292e2926fa8fd4e8f7781c32b2b7d979e1568c4432e382ad8b4f5e"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-55-behind-solid.png",
+      "sha256": "616d22a8e934737748902c1e17c544bb60000b63c0e0eb24ef102edc429e4342"
+    },
+    {
+      "file": "rev96-r24-soft-v3-canonical-55-behind-wire.png",
+      "sha256": "45620a367af6f5d1da35780f3df480f9f699f3fc52a020702daaec0a73a16067"
+    }
+  ],
+  "quality": {
+    "0": "No new inverted faces in source-rest and source-morph positions; not full physical anatomy approval",
+    "geometry": true,
+    "skinAppearanceApproved": false,
+    "externalLateralSkinMembraneStillBroad": true
+  },
+  "classification": "R24_POSTERIOR_ANATOMY_IMPROVED__LOCAL_TOPOLOGY_RETAINED__VISUAL_FINISH_PENDING"
+}

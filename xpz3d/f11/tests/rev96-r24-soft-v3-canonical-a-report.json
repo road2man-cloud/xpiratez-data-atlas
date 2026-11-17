@@ -1,0 +1,25 @@
+{
+  "captures": [
+    "rev96-r24-soft-v3-canonical-0-under-solid.png",
+    "rev96-r24-soft-v3-canonical-0-under-wire.png",
+    "rev96-r24-soft-v3-canonical-0-behind-solid.png",
+    "rev96-r24-soft-v3-canonical-0-behind-wire.png",
+    "rev96-r24-soft-v3-canonical-25-under-solid.png",
+    "rev96-r24-soft-v3-canonical-25-under-wire.png",
+    "rev96-r24-soft-v3-canonical-25-behind-solid.png",
+    "rev96-r24-soft-v3-canonical-25-behind-wire.png"
+  ],
+  "errors": [],
+  "meta": [
+    {
+      "triangles": 4680,
+      "parts": 24,
+      "bones": 63
+    },
+    {
+      "triangles": 4680,
+      "parts": 24,
+      "bones": 63
+    }
+  ]
+}
