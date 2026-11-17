@@ -89,6 +89,16 @@
 <p class="note" id="plan-id"></p>
 <div class="summary-stats" id="summary"></div>
 <p id="completeness" class="note"></p>
+<section id="base-comparison" class="planner-card" hidden aria-label="기지별 추가 제조 목표 비교">
+<h3>모든 기지의 동일 제조 목표 비교</h3>
+<p class="note">가져온 2.1 세이브의 각 기지에 <strong>동일한 추가 제조 목표</strong>를 따로 적용합니다. 기지 간 자재·시설을 합치지 않으며 기존 제조 주문의 예약 물자나 수송 가능성은 계산하지 않습니다.</p>
+<div class="control-buttons">
+<button id="base-comparison-run" type="button">기지별 독립 계산</button>
+<button id="base-comparison-export" type="button" class="secondary" disabled>비교 결과 JSON 저장</button>
+</div>
+<p id="base-comparison-status" class="note" role="status" aria-live="polite">세이브에서 기지를 불러오면 비교할 수 있습니다.</p>
+<div id="base-comparison-results" class="table-wrap"></div>
+</section>
 <section id="base-operations" class="planner-card" hidden aria-label="선택 기지 시설과 생산 주문">
 <h3>선택 기지의 시설·제조 주문</h3>
 <p id="base-operation-message" class="note"></p>
