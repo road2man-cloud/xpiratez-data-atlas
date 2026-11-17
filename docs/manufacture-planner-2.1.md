@@ -184,3 +184,60 @@ The facility snapshot contains 115 explicitly defined facilities in the
 verified v.o2 mod. It intentionally does not invent vanilla facility
 definitions, engine-supplied defaults, disabled-status logic, or rules from
 other user mods.
+
+## Additional-production queue scenarios for an imported base
+
+The production panel now includes a **hypothetical additional-production
+queue** after the user selects one specific base from a local v.o2 save.
+The calculator offers each saved manufacturing order as an optional
+*additional* 1-100 batch scenario, together with the presently selected
+new manufacturing target. Users can include/exclude a saved order, change
+its **assumed** extra batch count, move the order up/down, and put the
+new target first or last.
+
+The results combine all selected jobs against **one shared base inventory**,
+deducting each starting item only once. Explicit, deterministic unused
+outputs of earlier hypothetical jobs can satisfy later jobs. Jobs that
+still require external ingredients or contain unresolved recipe conditions
+do **not** produce fictitious transferable stock for subsequent jobs.
+A shared materials table shows consumption from starting stock, reuse of
+earlier projected outputs, remaining external demand and residual stock.
+Each job also reports known manufacturing costs, declared work/time,
+and facility/research evidence in the selected base.
+
+**Critical scope:** Saved `amount`, `spent`, and `assigned` are original
+save fields, not an API guaranteeing unfinished batch counts or a consumed
+ingredient ledger. They are displayed for reference but are **never**
+subtracted from the inventory or misrepresented as remaining work. A
+one-round saved-order scenario is an *additional hypothetical future order*,
+not a reconstruction of the existing unfinished order. The calculator
+does not claim an ETA, use engineers as throughput, perform purchases,
+combine production facilities across bases, or infer completion feasibility
+from missing external resources.
+
+The queue JSON export contains only the calculated v.o2 planning data;
+it is generated in the browser without uploading the save. The optional
+selected-base queue is hidden in the **all bases** inventory view, because
+the separate bases cannot safely share manufacturing capacity.
+
+## Side-by-side order impact (new-first versus saved-orders-first)
+
+The queue view now offers **신규 먼저 vs 나중 비교**, which simulates the
+same set of selected additional-production jobs twice with a *fresh, identical
+initial base inventory*: once with the new target first, and once with the
+saved additional-order assumptions first. It displays the material-specific
+difference in unresolved external procurement quantities, alongside both
+declared manufacturing-cost sums. Users can still move individual saved
+orders up/down and choose any initial order for the main queue.
+
+The comparison does not claim an optimal schedule or compute actual
+unfinished-game manufacturing progress. If a hypothetical job has unverified
+required inputs, missing facility functions, or required research IDs absent
+from the selected save's `discovered` list, future produced items from that
+job are **not transferred** to later queue jobs. This conservative gate does
+not assert that a missing `discovered` ID proves impossibility; it only
+prevents speculative inventory credits.
+
+The order comparison and inventory analysis use v.o2 data in the current
+browser page only and are exported as independent JSON scenarios; a user's
+saved game is never modified or uploaded.

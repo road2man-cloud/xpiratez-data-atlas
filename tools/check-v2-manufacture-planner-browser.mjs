@@ -120,15 +120,35 @@ try {
     (await page.locator('#base-facility-summary').innerText()).includes('필요 시설 기능'));
   assert((await page.locator('#base-production-orders').innerText()).includes('STR_GROG_BARREL'));
   assert((await page.locator('#base-production-orders').innerText()).includes('140'));
+  assert(await page.locator('#queue-section').isVisible());
+  assert((await page.locator('#queue-options').innerText()).includes('STR_GROG_BARREL'));
+  await page.waitForFunction(()=>document.querySelector('#queue-status')?.textContent?.includes('가상 작업 순서'));
+  assert((await page.locator('#queue-steps').innerText()).includes('STR_GROG_BARREL'));
+  assert((await page.locator('#queue-steps').innerText()).includes('STR_3RL_HE_XXX'));
+  await page.locator('#queue-select-none').click();
+  assert.equal(await page.locator('#queue-steps tr').count(),1);
+  await page.locator('#queue-select-all').click();
+  assert.equal(await page.locator('#queue-steps tr').count(),2);
+  await page.locator('#queue-position').selectOption('first');
+  assert((await page.locator('#queue-steps tr').first().innerText()).includes('STR_3RL_HE_XXX'));
+  assert(await page.locator('#queue-download').isEnabled());
+  await page.locator('#queue-compare').click();
+  assert(await page.locator('#queue-order-comparison').isVisible());
+  assert((await page.locator('#queue-order-compare-summary').innerText()).includes('신규 먼저'));
+  assert((await page.locator('#queue-order-compare-summary').innerText()).includes('신규 나중'));
   await page.locator('#save-base').selectOption('1');
   await page.locator('#save-apply').click();
   assert((await page.locator('#tree').innerText()).includes('보유 재고 2개'));
   assert((await page.locator('#base-production-orders').innerText()).includes('제조 주문이 없습니다'));
+  assert(await page.locator('#queue-section').isVisible());
+  assert.equal(await page.locator('#queue-steps tr').count(),1);
   await page.locator('#save-base').selectOption('all');
   await page.locator('#save-apply').click();
   assert((await page.locator('#summary').innerText()).includes('36개'));
   assert((await page.locator('#save-active-text').innerText()).includes('모든 기지'));
   assert((await page.locator('#base-operation-message').innerText()).includes('시설 기능이나 생산 주문을 단일 공장처럼 합치지 않습니다'));
+  assert(await page.locator('#queue-section').isHidden());
+  assert(await page.locator('#queue-order-comparison').isHidden());
   const oldSave = sample.replace('piratez ver: v.o2','piratez ver: v.o1.1.1');
   await page.locator('#save-file').setInputFiles({
     name:'old.sav',mimeType:'text/plain',buffer:Buffer.from(oldSave,'utf8')
