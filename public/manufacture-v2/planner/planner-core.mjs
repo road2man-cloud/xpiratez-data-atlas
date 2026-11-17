@@ -117,8 +117,8 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
     if (settings.inventory !== undefined && !record(settings.inventory))
       throw new Error('보유 재고는 아이템 ID별 수량 객체여야 합니다.');
     const initialInventory = record(settings.inventory) ? settings.inventory : {};
-    if (Object.keys(initialInventory).length > 400)
-      throw new Error('재고는 최대 400종까지 입력할 수 있습니다.');
+    if (Object.keys(initialInventory).length > 5000)
+      throw new Error('재고는 최대 5,000종까지 입력할 수 있습니다.');
     const owned = new Map(), surplus = new Map(), ledger = new Map();
     for (const [id, count] of Object.entries(initialInventory)) {
       if (!itemMap.has(id)) throw new Error('2.1 아이템 ID가 아닙니다: ' + id);
@@ -318,6 +318,23 @@ export function createManufacturingPlanner({ manufacture, research, items }) {
     }
     const tree = expand(root, batches, 0, [root.id]);
     const research = researchClosure(recipesUsed);
+    if (settings.saveDiscoveredResearchIds !== undefined) {
+      if (!Array.isArray(settings.saveDiscoveredResearchIds) ||
+          settings.saveDiscoveredResearchIds.length > 120000 ||
+          settings.saveDiscoveredResearchIds.some(id => typeof id !== 'string' || !researchMap.has(id)))
+        throw new Error('세이브의 2.1 discovered 연구 ID 목록이 유효하지 않습니다.');
+      const discovered = new Set(settings.saveDiscoveredResearchIds);
+      research.saveEvidence = {
+        source: 'OXCE discovered list from locally selected v.o2 save',
+        confirmed: 0, absent: 0
+      };
+      research.ids = research.ids.map(entry => {
+        const found = discovered.has(entry.id);
+        if (found) research.saveEvidence.confirmed++;
+        else research.saveEvidence.absent++;
+        return { ...entry, inSaveDiscovered: found };
+      });
+    }
     if (research.unresolved.length) addFlag('unresolved-research');
     if (research.cycles.length) addFlag('research-cycle');
     const costs = [...external.values()].map(entry => {

@@ -1,4 +1,5 @@
 import { createManufacturingPlanner } from './planner-core.mjs';
+import { initV2SaveImportUI } from './save-import-ui.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -12,7 +13,7 @@ const nf = n => typeof n === 'number' && Number.isFinite(n)
   ? n.toLocaleString('ko-KR') : '미확인';
 const slug = id => encodeURIComponent(id);
 const state = { planner: null, recipes: [], currentId: null, choices: {},
-  inventory: {}, itemEntries: [], plan: null };
+  inventory: {}, itemEntries: [], plan: null, saveDiscovered: null };
 const statuses = {
   manufactured: '하위 제조식 확장',
   'choice-required': '복수 경로 · 선택 필요',
@@ -173,12 +174,21 @@ function renderResearch(plan){
   const parent=$('research');parent.replaceChildren();
   const r=plan.research;
   make(parent,'p','연결된 연구 ID '+nf(r.ids.length)+'개 · 미확인 ID '+nf(r.unresolved.length)+'개','note');
+  if(r.saveEvidence)make(parent,'p','가져온 세이브의 discovered에서 확인 '+
+    nf(r.saveEvidence.confirmed)+'개 · discovered에 없는 연구 '+
+    nf(r.saveEvidence.absent)+'개. 목록에 없다고 연구 잠금 또는 미완료를 확정할 수는 없습니다.','note');
   if (r.ids.length){
     const details=make(parent,'details');
     const summary=make(details,'summary','연구 목록 펼치기 ('+nf(r.ids.length)+'개)');
     const body=make(details,'div');
     for(const row of r.ids.slice(0, 150)){
-      anchor(body,'../../research-v2/?id='+slug(row.id),row.name);
+      const link=anchor(body,'../../research-v2/?id='+slug(row.id),row.name);
+      if(r.saveEvidence){
+        const label=make(body,'span',row.inSaveDiscovered?
+          '세이브 discovered에 있음':'세이브 discovered에 없음',
+          'research-save-status '+(row.inSaveDiscovered?'is-discovered':'is-absent'));
+        label.title=row.id;
+      }
     }
     if(r.ids.length>150)make(body,'p','처음 150개 표시 · 원본 목록은 결과 JSON에 모두 포함됩니다.','note');
   }
@@ -246,8 +256,8 @@ function updateInventory(id,quantity) {
   if (!Number.isSafeInteger(quantity)||quantity<0||quantity>10000000)
     throw new Error(id+': 0~10,000,000 사이의 정수만 입력할 수 있습니다.');
   if (!Object.hasOwn(state.inventory,id) && quantity>0 &&
-      Object.keys(state.inventory).length>=400)
-    throw new Error('재고는 최대 400종까지 지정할 수 있습니다.');
+      Object.keys(state.inventory).length>=5000)
+    throw new Error('재고는 최대 5,000종까지 지정할 수 있습니다.');
   if (quantity>0) state.inventory[id]=quantity;
   else delete state.inventory[id];
   renderInventory();
@@ -281,7 +291,8 @@ function renderComparison(itemId) {
       batches:Number($('batches').value),
       maxDepth:Number($('max-depth').value),
       assumeImplicit:$('assume-implicit').checked,
-      inventory:state.inventory,choices:state.choices,limit:12
+      inventory:state.inventory,choices:state.choices,limit:12,
+      ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
     });
     $('comparison-title').textContent='대체 생산 경로: '+report.itemName;
     const table=make(target,'table');
@@ -328,7 +339,8 @@ function renderPlan() {
     const plan=state.planner.plan(state.currentId,{
       batches:batchNum,maxDepth:depthNum,
       assumeImplicit:$('assume-implicit').checked,choices:state.choices,
-      inventory:state.inventory
+      inventory:state.inventory,
+      ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
     });
     state.plan=plan;
     $('output').hidden=false;
@@ -387,7 +399,7 @@ $('stock-bulk-apply').addEventListener('click',()=>{
       if(quantity>0)additions[id]=quantity;
       else delete additions[id];
     }
-    if(Object.keys(additions).length>400)throw new Error('재고는 최대 400종까지 지정 가능합니다.');
+    if(Object.keys(additions).length>5000)throw new Error('재고는 최대 5,000종까지 지정 가능합니다.');
     state.inventory=additions;renderInventory();renderPlan();
   }catch(e){$('stock-message').textContent=e.message;}
 });
@@ -418,6 +430,17 @@ try{
   state.planner=createManufacturingPlanner({manufacture,research,items});
   state.recipes=manufacture.entries;
   state.itemEntries=items.items;
+  initV2SaveImportUI({
+    itemIds:new Set(items.items.map(item=>item.id)),
+    researchIds:new Set(research.entries.map(topic=>topic.id)),
+    onApply:({inventory,discoveredResearchIds})=>{
+      state.inventory={...inventory};
+      state.saveDiscovered=discoveredResearchIds;
+      renderInventory();renderPlan();
+    },
+    onDisconnect:()=>{state.saveDiscovered=null;renderPlan();}
+  });
+  $('save-file').disabled=false;
   renderInventory();
   const id=new URL(location.href).searchParams.get('id');
   const defaultId=state.planner.recipeMap.has(id)?id:

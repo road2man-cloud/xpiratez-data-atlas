@@ -183,3 +183,18 @@ test('inventory rejects unknown 1.1 IDs, fractional, negative, too-large and ove
   assert.throws(()=>p.plan('ROOT',{inventory:{STR_UNVERIFIED_1_1:1}}),/2.1 아이템/);
   assert.throws(()=>p.plan('ROOT',{inventory:['A',3]}),/수량 객체/);
 });
+
+test('save discovered list marks only IDs actually present, without guessing other gates',()=>{
+  const p=make([recipe('ROOT',{cost:8,time:1,requires:['R1','R2']})],[
+    {id:'R1',fields:{cost:5,dependencies:[]}},
+    {id:'R2',fields:{cost:9,dependencies:[]}}
+  ],[]);
+  const noSave=p.plan('ROOT');
+  assert.equal(noSave.research.saveEvidence,undefined);
+  const imported=p.plan('ROOT',{saveDiscoveredResearchIds:['R1']});
+  assert.equal(imported.research.saveEvidence.confirmed,1);
+  assert.equal(imported.research.saveEvidence.absent,1);
+  assert.equal(imported.research.ids.find(x=>x.id==='R1').inSaveDiscovered,true);
+  assert.equal(imported.research.ids.find(x=>x.id==='R2').inSaveDiscovered,false);
+  assert.throws(()=>p.plan('ROOT',{saveDiscoveredResearchIds:['R1','UNKNOWN']}),/유효하지/);
+});
