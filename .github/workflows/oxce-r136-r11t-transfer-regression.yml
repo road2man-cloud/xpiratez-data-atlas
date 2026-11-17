@@ -1,0 +1,25 @@
+name: OXCE R136-R11T transfer category and live search regression
+on:
+  push:
+    branches:
+      - integration/oxce-r136-r11t-transfer-categories-20261118
+    paths:
+      - 'experiments/oxce-custom-release-audit/R136-r11t-transfer-categories-20261118/**'
+      - '.github/workflows/oxce-r136-r11t-transfer-regression.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/R136-r11t-transfer-categories-20261118/**'
+      - '.github/workflows/oxce-r136-r11t-transfer-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  transfer-source-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify immediate search, dropdown grouping, source-to-display row safety
+        run: node --test experiments/oxce-custom-release-audit/R136-r11t-transfer-categories-20261118/check_transfer_r11t.test.mjs
