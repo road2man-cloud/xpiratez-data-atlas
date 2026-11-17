@@ -73,6 +73,11 @@
       const td=elt(tr,'td','');elt(td,'pre',label(value));$('detail-fields').appendChild(tr);
     }
     $('detail-links').replaceChildren();
+    if (kind === 'manufacture') {
+      const plannerLink=elt($('detail-links'),'a','이 제조식의 다단계 조달 경로 계산하기');
+      plannerLink.href='./planner/?id='+encodeURIComponent(row.id);
+      plannerLink.className='link-chip';
+    }
     for(const [relation,refs] of Object.entries(row.links)){
       if(!Array.isArray(refs)||!refs.length)continue;
       const wrap=elt($('detail-links'),'div','', 'relation');

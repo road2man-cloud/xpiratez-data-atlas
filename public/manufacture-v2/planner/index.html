@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>X-Piratez 2.1 제조·조달 경로 계산기</title>
+<link rel="stylesheet" href="../../items-v2/styles.css">
+<link rel="stylesheet" href="./planner.css">
+<script type="module" src="./planner-ui.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+<nav aria-label="돌아가기">
+<a href="../../">아틀라스 홈</a>
+<a href="../">2.1 제조 DB</a>
+<a href="../../research-v2/">2.1 연구 DB</a>
+<a href="../../items-v2/">2.1 아이템 DB</a>
+</nav>
+<p class="eyebrow">X-PIRATEZ 2.1 · 제조식 원본 선언 기준</p>
+<h1>제조·조달 <span>경로 계산기</span></h1>
+<p class="intro">만들 제조식을 고르고 필요한 재료를 단계별로 펼쳐 보세요. 명시된 산출량이 있는 제조식만 자동으로 이어 붙이며, 동일 재료의 여러 생산 경로는 직접 선택할 수 있습니다.</p>
+<p class="warning" role="note"><strong>실행 가능성 판정기가 아닙니다.</strong> 현재 세이브의 연구 완료·자원·시설·구매 가능성은 확인하지 않습니다. 제조비 및 시간은 규칙에 직접 선언된 숫자만 합산합니다. 재료를 사는 가격은 별도 참고값이며, 미확인 단가나 엔진 기본값은 채우지 않습니다.</p>
+</header>
+<main>
+<section class="filter-section planner-controls" aria-label="제조 경로 입력">
+<div class="recipe-search">
+<label for="recipe-search">제조식 검색</label>
+<input id="recipe-search" type="search" placeholder="한국어 이름 · 영문명 · STR_ID" autocomplete="off">
+<label for="recipe-select" class="small-label">원하는 제조식을 선택하세요</label>
+<select id="recipe-select" size="7" aria-label="제조식 선택"></select>
+<p id="match-count" class="note"></p>
+</div>
+<div class="settings-panel">
+<label>제조 횟수 <input id="batches" type="number" min="1" max="100" step="1" value="1"></label>
+<label>하위 제조 단계 <select id="max-depth">
+<option value="0">원료만 보기</option>
+<option value="1">1단계</option>
+<option value="2" selected>2단계</option>
+<option value="3">3단계</option>
+<option value="4">4단계</option>
+<option value="5">5단계</option>
+<option value="6">6단계</option>
+</select></label>
+<label class="check-label"><input id="assume-implicit" type="checkbox">
+제조식 ID=아이템 ID일 때 1개/회 산출 가정</label>
+<p class="note">위 가정은 규칙에 산출 수량이 없을 때만 사용합니다. 기본값은 꺼짐입니다.</p>
+<div class="control-buttons">
+<button id="recalculate" type="button">조달 경로 다시 계산</button>
+<button id="download-plan" type="button" class="secondary" disabled>결과 JSON 저장</button>
+</div>
+</div>
+</section>
+<p id="status" role="status" aria-live="polite">2.1 데이터 로딩 중…</p>
+<section id="output" hidden aria-label="제조 경로 결과">
+<h2 id="plan-name">제조식</h2>
+<p class="note" id="plan-id"></p>
+<div class="summary-stats" id="summary"></div>
+<p id="completeness" class="note"></p>
+<section id="choice-panel" hidden aria-label="하위 제조식 선택">
+<h3>원료별 제조 경로 선택</h3>
+<p class="note">복수 제조식이 있는 재료는 기본적으로 직접 조달로 남깁니다. 아래에서 원하는 제조식을 선택하면 트리가 재계산됩니다. 단일 제조식도 직접 조달로 변경할 수 있습니다.</p>
+<div id="choices" class="producer-choices"></div>
+</section>
+<div class="planner-sections">
+<section class="planner-card">
+<h3>단계별 제조·재료 트리</h3>
+<p class="note">각 제조 단계 비용은 <em>명시된 제조비 × 제조 횟수</em>입니다. 산출 수량에 의해 생긴 잉여 재고는 다른 분기에 재사용하지 않습니다.</p>
+<div id="tree" class="planner-tree"></div>
+</section>
+<section class="planner-card">
+<h3>외부 조달·미해결 재료</h3>
+<p class="note">제조식으로 확장하지 않은 재료입니다. 구매가가 있어도 실제 판매 중이라는 의미는 아닙니다.</p>
+<div id="external"></div>
+</section>
+<section class="planner-card">
+<h3>관련 연구 조건</h3>
+<p class="note">규칙에 직접 명시된 연구 ID와 선행 ID를 추적합니다. 조건의 AND/OR, 이벤트·시설·세이브별 잠금은 해석하지 않습니다.</p>
+<div id="research"></div>
+</section>
+<section class="planner-card">
+<h3>제약·불확실성</h3>
+<div id="warnings"></div>
+</section>
+</div>
+</section>
+</main>
+<footer>출처: <a href="../../ruleset/manifest.json">2.1 설치본 SHA-256 명세</a>. 구형 1.1 DB·외부 모드·실제 저장 게임의 상태를 참조하지 않습니다.</footer>
+</body>
+</html>
