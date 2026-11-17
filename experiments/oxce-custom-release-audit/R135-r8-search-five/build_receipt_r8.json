@@ -1,0 +1,40 @@
+﻿{
+    "surfaces":  [
+                     "buy now",
+                     "black market purchase",
+                     "manufacture",
+                     "new research",
+                     "fence/sell"
+                 ],
+    "classes":  [
+                    "PurchaseState",
+                    "SellState",
+                    "NewManufactureListState",
+                    "NewResearchListState"
+                ],
+    "exe_size":  27255583,
+    "archive_members":  413,
+    "version":  "R135 R8 R131 baseline live search",
+    "runtime_launched":  false,
+    "notes":  "Search always visible and onChange immediate filter; all original search, categories, quantity handlers retained.",
+    "exe_sha256":  "e7663bf8dec6986cf6af8b9220d84efe06c2443d249a3727b86f52ef9828fc0b",
+    "exe":  "D:\\daphne_auto\\oxce-r135-r8-live-search-five-20261117\\build\\openxcom_R135_R8_R131_BASELINE_SEARCH_FIVE.exe",
+    "files":  [
+                  {
+                      "state":  "PurchaseState",
+                      "sha256":  "051a4a41c1d70d5c23c617d9b1673f3970ca4877ca616fb6700c7ae9750b5b8b"
+                  },
+                  {
+                      "state":  "SellState",
+                      "sha256":  "a4c809d393fed7d54119a43364330efa49a2dfdf537442f15188f5c78b34023b"
+                  },
+                  {
+                      "state":  "NewManufactureListState",
+                      "sha256":  "8bea2b6134518ca39431223c3487d40ced928a799fff7e24c64b62d79a61e945"
+                  },
+                  {
+                      "state":  "NewResearchListState",
+                      "sha256":  "464f2c3b5b3e9bcd19157194404938cea13dd19e73ad766e5b9cfbf60b64d333"
+                  }
+              ]
+}
