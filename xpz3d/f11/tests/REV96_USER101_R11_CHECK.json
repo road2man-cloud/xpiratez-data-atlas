@@ -1,0 +1,51 @@
+{
+  "schema": "F11-r11-verification/v1",
+  "source": "r21AO-F11-user101-posterior-tucked-closure-r9.glb",
+  "file": "r21AO-F11-user101-posterior-seam-aligned-r11.glb",
+  "sha256": "c0109fca67137623db40afcfea0b37d6669b92fe704a59511bd1e8778acb13c5",
+  "triangles": 3610,
+  "bones": 63,
+  "garmentFaces": 370,
+  "sourceUserDeleted101AllAbsent": true,
+  "sourceOriginalVertexPositionsPreserved": true,
+  "bodySplitNewVertices": 6,
+  "matchedRearNodes": [
+    [
+      49,
+      908
+    ],
+    [
+      50,
+      909
+    ],
+    [
+      51,
+      910
+    ],
+    [
+      52,
+      29
+    ],
+    [
+      53,
+      911
+    ],
+    [
+      54,
+      912
+    ],
+    [
+      55,
+      913
+    ]
+  ],
+  "restOpen55AndWeightsAlignedExactly": true,
+  "perineumOpenEdges": 0,
+  "screenshots": 16,
+  "additionalDecimation": false,
+  "caveats": [
+    "Cross-primitive indices are not literally shared",
+    "The broad preexisting cut perimeter remains unclosed",
+    "User visual approval not yet obtained"
+  ]
+}

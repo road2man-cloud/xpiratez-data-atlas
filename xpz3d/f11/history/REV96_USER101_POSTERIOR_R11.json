@@ -1,0 +1,23 @@
+{
+  "source": "r21AO-F11-user101-posterior-tucked-closure-r9.glb",
+  "output": "r21AO-F11-user101-posterior-seam-aligned-r11.glb",
+  "sha256": "c0109fca67137623db40afcfea0b37d6669b92fe704a59511bd1e8778acb13c5",
+  "sourceSha256": "d221a17073541c02284246a438314e55352b823a9ca3fe007b8c370ad7f58f54",
+  "trianglesBefore": 3604,
+  "trianglesAfter": 3610,
+  "originalBodyVertices": 908,
+  "newRimVertices": 6,
+  "splitBodyFaces": 2,
+  "splitBodyAddedFaces": 6,
+  "perineumRearNodesMatched": 7,
+  "posteriorMatchedRestMax": 0,
+  "posteriorMatchedOpen55Max": 0,
+  "posteriorSkinWeightErrorMax": 0,
+  "skinOpenEdgesNewPerineum": 0,
+  "original101UserDeletedFacesPreserved": true,
+  "garment": 370,
+  "bones": 63,
+  "noBroadBodyPanelAdded": true,
+  "noFurtherDecimation": true,
+  "warning": "Geometric seam matched across glTF primitives; body/anatomy material primitives remain separate (not single-index welded)."
+}

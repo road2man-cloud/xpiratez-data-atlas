@@ -1,0 +1,43 @@
+{
+  "source": "r21AO-F11-user101-posterior-tucked-closure-r9.glb",
+  "sha256": "bd80af6b7c92b3620ddae26db20f395e1fdece317b7dc0b2c238fb068b9dd371",
+  "sourceSha256": "d221a17073541c02284246a438314e55352b823a9ca3fe007b8c370ad7f58f54",
+  "output": "r21AO-F11-user101-posterior-body-bridge-r10.glb",
+  "addedTriangles": 19,
+  "totalTriangles": 3623,
+  "originalDeleted": 101,
+  "garmentTriangles": 370,
+  "bones": 63,
+  "sourceBoundary": {
+    "left": [
+      29,
+      174,
+      306,
+      214,
+      216,
+      215
+    ],
+    "right": [
+      29,
+      296,
+      75,
+      78,
+      76
+    ]
+  },
+  "restQuality": {
+    "deg": 0,
+    "maxedge": 0.10267914291078549,
+    "positive": 3,
+    "negative": 16
+  },
+  "open55Quality": {
+    "deg": 0,
+    "maxedge": 0.10267914291078549,
+    "positive": 3,
+    "negative": 16
+  },
+  "status": "experimental-will-reject-if-flat-flap",
+  "notYetWelded": true,
+  "additionalDecimation": false
+}
