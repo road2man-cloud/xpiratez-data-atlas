@@ -11,7 +11,8 @@ const make = (parent, tag, text, className) => {
 const nf = n => typeof n === 'number' && Number.isFinite(n)
   ? n.toLocaleString('ko-KR') : '미확인';
 const slug = id => encodeURIComponent(id);
-const state = { planner: null, recipes: [], currentId: null, choices: {}, plan: null };
+const state = { planner: null, recipes: [], currentId: null, choices: {},
+  inventory: {}, itemEntries: [], plan: null };
 const statuses = {
   manufactured: '하위 제조식 확장',
   'choice-required': '복수 경로 · 선택 필요',
@@ -22,7 +23,9 @@ const statuses = {
   cycle: '제조식 순환 감지',
   'invalid-choice': '선택한 제조식이 현재 조건과 맞지 않음',
   'unsafe-batches': '계산 가능한 수량 초과',
-  'node-budget': '계산 노드 상한 도달'
+  'node-budget': '계산 노드 상한 도달',
+  'stock-covered': '보유 재고·기생산물로 충당',
+  'unsatisfied-output': '계획 산출 부족'
 };
 
 const label = row => row.koName || row.enName || row.id;
@@ -89,7 +92,8 @@ function buildTree(parent, node) {
     const line = make(leaf,'div',null,'tree-line');
     make(line,'strong',item.name);
     make(line,'code',item.id,'tag');
-    make(line,'span','필요 '+nf(item.quantity)+'개','tree-subtitle');
+    make(line,'span','필요 '+nf(item.quantity)+'개 · 보유 재고 '+nf(item.inventoryUsed)+
+      '개 · 생산 잉여 활용 '+nf(item.surplusUsed)+'개 · 추가 필요 '+nf(item.deficit)+'개','tree-subtitle');
     make(line,'span',statuses[item.status]||item.status,
       ['manufactured','external'].includes(item.status)?'tag':'tag warn');
     if(item.neededBatches!==null)
@@ -137,6 +141,11 @@ function renderChoicePanel(plan) {
       state.choices[item.id]=select.value;
       renderPlan();
     });
+    if (candidates.length > 1) {
+      const btn=make(wrapper,'button','대체 경로 비용 비교','secondary');
+      btn.type='button';
+      btn.addEventListener('click',()=>renderComparison(item.id));
+    }
   }
 }
 function renderExternal(plan) {
@@ -192,6 +201,125 @@ function renderWarnings(plan) {
     make(parent,'p','계산상 잉여 산출물: '+txt,'note');
   }
 }
+function searchInventoryItems() {
+  const term=$('stock-search').value.trim().toLocaleLowerCase('ko-KR');
+  const matches=state.itemEntries.filter(item =>
+    !term || [item.id,item.koName,item.enName]
+      .some(value=>String(value||'').toLocaleLowerCase('ko-KR').includes(term)));
+  const select=$('stock-select');
+  const previous=select.value;
+  select.replaceChildren();
+  for(const item of matches.slice(0,80)) {
+    const option=make(select,'option',label(item)+' — '+item.id);
+    option.value=item.id;
+  }
+  if([...select.options].some(x=>x.value===previous))select.value=previous;
+  $('stock-message').textContent='일치하는 아이템 '+nf(matches.length)+
+    '종 · 최대 80종 표시 · 입력한 재고 '+nf(Object.keys(state.inventory).length)+'종';
+}
+function renderInventory() {
+  const parent=$('stock-list');
+  parent.replaceChildren();
+  const entries=Object.entries(state.inventory).sort(([a],[b])=>
+    state.planner.name(a).localeCompare(state.planner.name(b),'ko'));
+  if(!entries.length)make(parent,'p','입력된 보유 재고 없음 · 모든 재료는 제조 또는 외부 조달로 계산됩니다.','note');
+  for(const [id,count] of entries) {
+    const row=make(parent,'div',null,'stock-row');
+    make(row,'span',state.planner.name(id),'stock-name');
+    make(row,'code',id,'tag');
+    const quantity=make(row,'input');
+    quantity.type='number';quantity.min='0';quantity.max='10000000';quantity.step='1';
+    quantity.value=String(count);quantity.setAttribute('aria-label',id+' 보유 재고 수량');
+    quantity.addEventListener('change',()=>{
+      try{updateInventory(id,Number(quantity.value));}
+      catch(e){$('stock-message').textContent=e.message;quantity.value=String(state.inventory[id]);}
+    });
+    const remove=make(row,'button','삭제','secondary');
+    remove.type='button';
+    remove.setAttribute('aria-label',id+' 재고 삭제');
+    remove.addEventListener('click',()=>updateInventory(id,0));
+  }
+  searchInventoryItems();
+}
+function updateInventory(id,quantity) {
+  if (!state.planner?.itemMap.has(id)) throw new Error('2.1 아이템 ID를 찾을 수 없습니다: '+id);
+  if (!Number.isSafeInteger(quantity)||quantity<0||quantity>10000000)
+    throw new Error(id+': 0~10,000,000 사이의 정수만 입력할 수 있습니다.');
+  if (!Object.hasOwn(state.inventory,id) && quantity>0 &&
+      Object.keys(state.inventory).length>=400)
+    throw new Error('재고는 최대 400종까지 지정할 수 있습니다.');
+  if (quantity>0) state.inventory[id]=quantity;
+  else delete state.inventory[id];
+  renderInventory();
+  renderPlan();
+}
+function renderConsolidated(plan) {
+  const parent=$('consolidated');parent.replaceChildren();
+  const rows=plan.consolidated.filter(x=>x.demand||x.produced||
+    x.remainingInventory||x.remainingProduced);
+  if(!rows.length){make(parent,'p','현재 제조식에는 재료 소요가 선언되어 있지 않습니다.','note');return;}
+  const table=make(parent,'table');
+  const head=make(table,'thead'),heading=make(head,'tr');
+  for(const title of ['재료','총 필요','보유 사용','생산물 재사용','제조 산출','외부 조달','보유 잔량','생산 잔량'])
+    make(heading,'th',title);
+  const body=make(table,'tbody');
+  for(const entry of rows.slice(0,200)) {
+    const tr=make(body,'tr');
+    const first=make(tr,'td');
+    anchor(first,'../../items-v2/?id='+slug(entry.id),entry.name);
+    make(first,'code',entry.id,'item-id');
+    for(const field of ['demand','initialUsed','surplusUsed','produced','external',
+      'remainingInventory','remainingProduced']) make(tr,'td',nf(entry[field]));
+  }
+  if(rows.length>200)make(parent,'p','표는 200종만 보여 줍니다. JSON 결과에는 모두 포함됩니다.','note');
+}
+function renderComparison(itemId) {
+  if(!state.planner || !state.currentId)return;
+  const target=$('comparison-data');target.replaceChildren();
+  try{
+    const report=state.planner.compareAlternatives(state.currentId,itemId,{
+      batches:Number($('batches').value),
+      maxDepth:Number($('max-depth').value),
+      assumeImplicit:$('assume-implicit').checked,
+      inventory:state.inventory,choices:state.choices,limit:12
+    });
+    $('comparison-title').textContent='대체 생산 경로: '+report.itemName;
+    const table=make(target,'table');
+    const head=make(table,'thead'),tr=make(head,'tr');
+    for(const title of ['생산 경로','개당 명시 제조비','전체 제조비','전체 제조 시간',
+      '미확인 조달 종류','참고 구매가 일부 합','명시 가격 합(조건부)','경로 선택'])make(tr,'th',title);
+    const body=make(table,'tbody');
+    for(const candidate of report.scenarios){
+      const line=make(body,'tr');
+      const first=make(line,'td');
+      make(first,'strong',candidate.name);
+      make(first,'code',candidate.recipeId,'item-id');
+      make(line,'td',candidate.costPerBatch===null?'미확인':nf(candidate.costPerBatch/candidate.yieldCount));
+      make(line,'td',nf(candidate.declaredManufactureCost));
+      make(line,'td',nf(candidate.declaredManufactureTime));
+      make(line,'td',nf(candidate.externalKinds)+'종 (단가 미확인 '+nf(candidate.unpricedExternalKinds)+'종)');
+      make(line,'td',nf(candidate.knownExternalBuyReference));
+      make(line,'td',candidate.declaredPlusFullyPricedReference===null?'불완전':
+        nf(candidate.declaredPlusFullyPricedReference));
+      const cell=make(line,'td');
+      const choose=make(cell,'button','선택','secondary');choose.type='button';
+      choose.addEventListener('click',()=>{
+        state.choices[itemId]=candidate.recipeId;renderPlan();
+      });
+      if(candidate.flags.length)
+        make(first,'p','제약: '+candidate.flags.slice(0,6).join(', '),'note');
+    }
+    if(report.truncated)make(target,'p','후보 '+nf(report.totalCandidates)+
+      '개 중 명시 직접 제조비/산출량 기준 상위 '+nf(report.displayedCandidates)+
+      '개만 표시합니다. 다른 후보는 위 제조식 선택창에서 직접 고를 수 있습니다.','note');
+    make(target,'p',report.caveat,'note');
+    $('comparison-section').hidden=false;
+    $('comparison-section').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(error){
+    make(target,'p',error.message,'warn-note');
+    $('comparison-section').hidden=false;
+  }
+}
 function renderPlan() {
   if(!state.planner||!state.currentId) return;
   try{
@@ -199,7 +327,8 @@ function renderPlan() {
     const depthNum=Number($('max-depth').value);
     const plan=state.planner.plan(state.currentId,{
       batches:batchNum,maxDepth:depthNum,
-      assumeImplicit:$('assume-implicit').checked,choices:state.choices
+      assumeImplicit:$('assume-implicit').checked,choices:state.choices,
+      inventory:state.inventory
     });
     state.plan=plan;
     $('output').hidden=false;
@@ -212,14 +341,20 @@ function renderPlan() {
     metric(summary,'명시된 제조 시간 합',nf(plan.totals.declaredTime));
     metric(summary,'외부 조달 항목',nf(plan.external.length)+'종');
     metric(summary,'참고 구매가 일부 합',nf(plan.priceReference.knownBuySubtotal));
+    metric(summary,'기존 재고 사용량',nf(Object.values(plan.inventory.consumed)
+      .reduce((sum,n)=>sum+n,0))+'개');
+    metric(summary,'남은 생산 산출물',nf(plan.extraOutputs.reduce((sum,x)=>sum+x.quantity,0))+'개');
     metric(summary,'누락·주의 유형',nf(plan.flags.length)+'개');
     $('completeness').textContent='참고 구매가는 외부 조달 재료 '+nf(plan.priceReference.totalCount)+
       '종 중 명시 단가 '+nf(plan.priceReference.pricedCount)+'종만 합산했습니다. '+
       '총 제조비+구매가를 실제 투입 금액으로 간주하지 마세요.';
     renderChoicePanel(plan);
+    $('comparison-section').hidden=true;
+    $('comparison-data').replaceChildren();
     $('tree').replaceChildren();
     buildTree($('tree'),plan.tree);
     renderExternal(plan);
+    renderConsolidated(plan);
     renderResearch(plan);
     renderWarnings(plan);
     $('status').textContent='제조 경로 계산 완료 · 대상 '+plan.rootRecipeId;
@@ -227,6 +362,36 @@ function renderPlan() {
     $('status').textContent='제조 경로 계산 실패: '+e.message;
   }
 }
+$('stock-search').addEventListener('input',searchInventoryItems);
+$('stock-add').addEventListener('click',()=>{
+  try{
+    const id=$('stock-select').value;
+    if(!id)throw new Error('먼저 검색 결과에서 아이템을 선택하세요.');
+    updateInventory(id,Number($('stock-qty').value));
+  }catch(e){$('stock-message').textContent=e.message;}
+});
+$('stock-clear').addEventListener('click',()=>{
+  state.inventory={};renderInventory();renderPlan();
+});
+$('stock-bulk-apply').addEventListener('click',()=>{
+  try{
+    const additions={...state.inventory};
+    for(const line of $('stock-bulk-text').value.split(/\r?\n/)){
+      if(!line.trim()||line.trim().startsWith('#'))continue;
+      const parsed=line.trim().match(/^([^\s=,]+)\s*(?:=|,|\s)\s*(\d+)$/);
+      if(!parsed)throw new Error('재고 입력 형식 오류: '+line);
+      const id=parsed[1],quantity=Number(parsed[2]);
+      if(!state.planner.itemMap.has(id))throw new Error('등록되지 않은 2.1 아이템: '+id);
+      if(!Number.isSafeInteger(quantity)||quantity>10000000)
+        throw new Error('재고 수량 범위 초과: '+id);
+      if(quantity>0)additions[id]=quantity;
+      else delete additions[id];
+    }
+    if(Object.keys(additions).length>400)throw new Error('재고는 최대 400종까지 지정 가능합니다.');
+    state.inventory=additions;renderInventory();renderPlan();
+  }catch(e){$('stock-message').textContent=e.message;}
+});
+$('comparison-close').addEventListener('click',()=>{$('comparison-section').hidden=true;});
 $('recipe-search').addEventListener('input',searchChoices);
 $('recipe-select').addEventListener('change',event=>chooseRecipe(event.target.value));
 $('recalculate').addEventListener('click',renderPlan);
@@ -252,6 +417,8 @@ try{
   const [manufacture,research,items]=await Promise.all(responses.map(x=>x.json()));
   state.planner=createManufacturingPlanner({manufacture,research,items});
   state.recipes=manufacture.entries;
+  state.itemEntries=items.items;
+  renderInventory();
   const id=new URL(location.href).searchParams.get('id');
   const defaultId=state.planner.recipeMap.has(id)?id:
     state.planner.recipeMap.has('STR_3RL_HE_XXX')?'STR_3RL_HE_XXX':state.recipes[0].id;

@@ -45,6 +45,20 @@
 <label class="check-label"><input id="assume-implicit" type="checkbox">
 제조식 ID=아이템 ID일 때 1개/회 산출 가정</label>
 <p class="note">위 가정은 규칙에 산출 수량이 없을 때만 사용합니다. 기본값은 꺼짐입니다.</p>
+<fieldset class="stock-editor">
+<legend>내 보유 재고 (세이브와 자동 연결되지 않음)</legend>
+<label>아이템 검색<input id="stock-search" type="search" placeholder="화학물질 또는 STR_CHEMICALS"></label>
+<select id="stock-select" size="5" aria-label="재고로 추가할 2.1 아이템"></select>
+<label>보유 수량<input id="stock-qty" type="number" min="0" max="10000000" step="1" value="10"></label>
+<div class="control-buttons"><button id="stock-add" type="button" class="secondary">재고 추가/수정</button><button id="stock-clear" type="button" class="secondary">모든 입력 재고 지우기</button></div>
+<p id="stock-message" class="note" role="status" aria-live="polite"></p>
+<div id="stock-list" class="stock-list" aria-label="입력한 재고"></div>
+<details class="stock-bulk"><summary>여러 아이템을 한 번에 입력</summary>
+<p class="note">한 줄에 <code>STR_CHEMICALS=12</code> 또는 <code>STR_SCRAP_METAL 30</code> 형식으로 입력합니다. 확인된 2.1 아이템 ID만 사용합니다. 기존 입력은 유지하고 같은 ID만 덮어씁니다.</p>
+<textarea id="stock-bulk-text" rows="5" placeholder="STR_CHEMICALS=12&#10;STR_SCRAP_METAL=30"></textarea>
+<button id="stock-bulk-apply" type="button" class="secondary">여러 재고 적용</button>
+</details>
+</fieldset>
 <div class="control-buttons">
 <button id="recalculate" type="button">조달 경로 다시 계산</button>
 <button id="download-plan" type="button" class="secondary" disabled>결과 JSON 저장</button>
@@ -62,11 +76,20 @@
 <p class="note">복수 제조식이 있는 재료는 기본적으로 직접 조달로 남깁니다. 아래에서 원하는 제조식을 선택하면 트리가 재계산됩니다. 단일 제조식도 직접 조달로 변경할 수 있습니다.</p>
 <div id="choices" class="producer-choices"></div>
 </section>
+<section id="comparison-section" class="planner-card" hidden aria-label="대체 생산 경로 비용 비교">
+<div class="section-title"><h3 id="comparison-title">생산 경로 비교</h3><button id="comparison-close" type="button" class="secondary">닫기</button></div>
+<p class="note">표는 동일한 시작 재고를 사용한 독립 시나리오입니다. 일부 외부 조달 가격이 있더라도 실제 최저비용이나 게임 내 제조 가능성은 확정하지 않습니다.</p>
+<div id="comparison-data" class="table-wrap"></div>
+</section>
 <div class="planner-sections">
 <section class="planner-card">
 <h3>단계별 제조·재료 트리</h3>
 <p class="note">각 제조 단계 비용은 <em>명시된 제조비 × 제조 횟수</em>입니다. 산출 수량에 의해 생긴 잉여 재고는 다른 분기에 재사용하지 않습니다.</p>
 <div id="tree" class="planner-tree"></div>
+</section>
+<section class="planner-card"><h3>통합 재료·재고 수급표</h3>
+<p class="note">모든 제조 단계에서 같은 재료 ID를 합산합니다. 입력한 보유 재고를 먼저 사용하고, 이미 만든 잉여 산출물·동시 생산물을 재사용합니다.</p>
+<div id="consolidated" class="table-wrap"></div>
 </section>
 <section class="planner-card">
 <h3>외부 조달·미해결 재료</h3>
