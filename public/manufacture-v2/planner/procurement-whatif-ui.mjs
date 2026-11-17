@@ -1,4 +1,4 @@
-import { compareProcurementAcquisitions } from './procurement-whatif-core.mjs';
+import { compareProcurementAcquisitions, expandProcurementAcquisitions } from './procurement-whatif-core.mjs';
 import { buildProcurementChecklist } from './queue-core.mjs';
 
 const $ = id => document.getElementById(id);
@@ -157,6 +157,22 @@ export function initProcurementWhatIfUI(planner) {
     const checklist=buildProcurementChecklist(planner,currentScenario.baseline);
     inputs=new Map(checklist.entries.slice(0,300).map(x=>[x.id,x.quantity]));
     renderInputs();run();
+  });
+  $('queue-whatif-expand').addEventListener('click',()=>{
+    if(!currentScenario)return;
+    try{
+      const expanded=expandProcurementAcquisitions(planner,
+        currentScenario.settings,currentScenario.context,Object.fromEntries(inputs),
+        {maxRounds:5});
+      inputs=new Map(Object.entries(expanded.additions).filter(([,n])=>n>0));
+      renderInputs();
+      comparison=expanded.result;
+      renderComparison(comparison);
+      const status=expanded.stopped==='no-unresolved-materials'
+        ? '현재 계산 범위의 외부 부족량을 해소하는 가상 수량을 찾았습니다.'
+        : '탐색이 제한에서 중단됐습니다. 남은 부족 항목을 확인하세요.';
+      showMessage(status+' 추가 부족 탐색 '+expanded.history.length+'회. 실제 확보·제조 가능성은 미확인입니다.');
+    }catch(e){showMessage('반복 부족 탐색 실패: '+e.message);}
   });
   $('queue-whatif-clear').addEventListener('click',()=>{
     inputs.clear();comparison=null;

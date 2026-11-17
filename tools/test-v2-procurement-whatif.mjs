@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createManufacturingPlanner } from '../public/manufacture-v2/planner/planner-core.mjs';
 import { simulateManufacturingQueue } from '../public/manufacture-v2/planner/queue-core.mjs';
-import { compareProcurementAcquisitions } from '../public/manufacture-v2/planner/procurement-whatif-core.mjs';
+import { compareProcurementAcquisitions, expandProcurementAcquisitions } from '../public/manufacture-v2/planner/procurement-whatif-core.mjs';
 
 const mock=()=>{
   const manifest='verified-v.o2-fixture';
@@ -94,4 +94,31 @@ test('real v.o2 manufacturing data supports procurement deltas without legacy it
   const result=compareProcurementAcquisitions(p,settings,{}, {[item.id]:item.quantity},base);
   assert(result.summary.afterExternalUnits<=result.summary.beforeExternalUnits);
   assert.equal(result.schema,'xpiratez-v2-procurement-whatif/v1');
+});
+
+test('iterative procurement resolves cascading shortages without modifying source inventory',()=>{
+  const p=mock();
+  const settings={
+    jobs:[
+      {key:'saved',recipeId:'MAKE_A',batches:1},
+      {key:'new',recipeId:'USE_A',batches:1}
+    ], inventory:{},maxDepth:1
+  };
+  const snapshot=structuredClone(settings);
+  const result=expandProcurementAcquisitions(p,settings,{}, {},{maxRounds:5});
+  assert.deepEqual(settings,snapshot);
+  assert.equal(result.stopped,'no-unresolved-materials');
+  assert.equal(result.remainingExternal.length,0);
+  assert(result.additions.B>=1);
+  assert(result.history.length>=1);
+});
+
+test('iterative procurement preserves initial hypothetical additions and respects maxRounds',()=>{
+  const p=mock();
+  const settings={jobs:[{key:'new',recipeId:'USE_A',batches:1}],inventory:{},maxDepth:0};
+  const stop=expandProcurementAcquisitions(p,settings,{}, {A:1},{maxRounds:1});
+  assert.equal(stop.additions.A,3);
+  assert.equal(stop.stopped,'no-unresolved-materials');
+  assert.equal(stop.history.length,1);
+  assert.throws(()=>expandProcurementAcquisitions(p,settings,{}, {},{maxRounds:9}),/1~8/);
 });

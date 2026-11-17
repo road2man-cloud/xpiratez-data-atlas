@@ -283,3 +283,11 @@ calculation outputs and the chosen virtual quantities. Save data remains
 in the browser, is not uploaded, and the original source `.sav` is not
 modified. This is **not** an automatic game purchase, work scheduler or
 completion-time prediction.
+
+The **새로 드러나는 부족분까지 반복 탐색** control now re-runs the same
+hypothetical queue after adding explicitly unmet material quantities,
+up to five bounded rounds. It can reveal downstream shortages that were
+not visible in an earlier scenario and explicitly reports if a bound
+stops expansion. A zero item shortage count still does not prove the
+factory, research, or event conditions are satisfied. The browser never
+writes to the original game save.
