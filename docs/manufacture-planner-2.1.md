@@ -241,3 +241,18 @@ prevents speculative inventory credits.
 The order comparison and inventory analysis use v.o2 data in the current
 browser page only and are exported as independent JSON scenarios; a user's
 saved game is never modified or uploaded.
+
+## Ordered procurement checklist and CSV export
+
+The hypothetical queue now produces a **first-shortage** procurement list.
+Each 2.1 item is grouped across all selected queue jobs, with its unresolved
+quantity, first queue position requiring it, and subsequent affected jobs.
+Ordering is based on first occurrence of unmet demand, then the number of
+affected jobs; it does not claim the item is purchasable or globally optimal.
+When a v.o2 item declares a numeric `costBuy`, the checklist includes a
+reference subtotal. Unknown prices remain unspecified. Export produces a
+UTF-8 CSV locally in the browser, without uploading the user's save.
+The main queue's order comparison and consolidated material ledger remain
+available independently. Saved `spent`, `amount` and `assigned` values
+continue to be displayed only as raw game data, never interpreted as
+unfinished batches.

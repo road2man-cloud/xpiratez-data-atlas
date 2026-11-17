@@ -1,4 +1,4 @@
-import { simulateManufacturingQueue, compareManufacturingQueueOrders } from './queue-core.mjs';
+import { simulateManufacturingQueue, compareManufacturingQueueOrders, buildProcurementChecklist } from './queue-core.mjs';
 
 const $=id=>document.getElementById(id);
 const add=(parent,tag,value,cls)=>{
@@ -17,6 +17,7 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
   let selected=new Map();
   let latest=null;
   let latestSpec=null;
+  let latestProcurement=null;
   const catalog=new Set(manufactureIndex.entries.map(row=>row.id));
   const maxSaved=31; // plus the user's new target = 32
   const updateControls=()=>{
@@ -103,6 +104,30 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
       if(!uncertain.length)uncertain.push('명시된 조건 이외는 미확인');
       add(tr,'td',uncertain.join(' / '),'note');
     }
+    const checklist=buildProcurementChecklist(planner,result);
+    latestProcurement=checklist;
+    $('queue-procurement-csv').disabled=checklist.entries.length===0;
+    const purchase=$('queue-procurement-table');purchase.replaceChildren();
+    if(!checklist.entries.length){
+      add(purchase,'p','현재 계산 단계에서 외부 조달로 남은 재료가 없습니다. 다른 게임 조건은 미확인입니다.','note');
+    }else{
+      const procurementTable=add(purchase,'table');
+      const header=add(add(procurementTable,'thead'),'tr');
+      for(const title of ['순위','조달 대상 재료','추가 수량','처음 부족한 주문','관련 주문','원본 단가 참고'])add(header,'th',title);
+      const tbody=add(procurementTable,'tbody');
+      for(const [index,item] of checklist.entries.slice(0,300).entries()){
+        const tr=add(tbody,'tr');
+        add(tr,'td',String(index+1));
+        const td=add(tr,'td');
+        const link=add(td,'a',item.name);link.href='../../items-v2/?id='+encodeURIComponent(item.id);
+        add(td,'code',item.id,'item-id');
+        add(tr,'td',fmt(item.quantity));
+        add(tr,'td',item.firstNeededOrder+'번째 · '+planner.name(item.firstRecipeId));
+        add(tr,'td',item.affectedJobs.map(x=>x.position+'번째 '+fmt(x.quantity)+'개').join(' · '));
+        add(tr,'td',item.referenceUnitBuy===null?'미확인':fmt(item.referenceUnitBuy)+' / 참고 합 '+fmt(item.referenceBuySubtotal));
+      }
+      if(checklist.entries.length>300)add(purchase,'p','300종 표시, CSV에는 모든 재료 포함','note');
+    }
     const wrap=$('queue-materials');wrap.replaceChildren();
     if(!result.materials.length){add(wrap,'p','현재 가상 시나리오에는 추적할 재료 소요가 없습니다.','note');return;}
     const table=add(wrap,'table');
@@ -147,7 +172,8 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
       renderReport(result);
       $('queue-download').disabled=false;
     }catch(error){
-      latest=null;latestSpec=null;
+      latest=null;latestSpec=null;latestProcurement=null;
+      $('queue-procurement-csv').disabled=true;
       $('queue-order-comparison').hidden=true;
       $('queue-report').hidden=true;
       $('queue-download').disabled=true;
@@ -160,7 +186,8 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
     $('queue-section').hidden=!base;
     if(!base){
       baseReference=null;order=[];selected.clear();
-      latest=null;latestSpec=null;
+      latest=null;latestSpec=null;latestProcurement=null;
+      $('queue-procurement-csv').disabled=true;
       $('queue-order-comparison').hidden=true;$('queue-report').hidden=true;return;
     }
     if(baseReference!==base){
@@ -233,6 +260,23 @@ export function initQueueUI({ planner, manufactureIndex, facilitiesIndex, curren
   });
   $('queue-select-none').addEventListener('click',()=>{
     selected.clear();updateControls();run();
+  });
+  $('queue-procurement-csv').addEventListener('click',()=>{
+    if(!latestProcurement?.entries.length)return;
+    const quote=x=>'"'+String(x??'').replaceAll('"','""')+'"';
+    const header=['우선순위','아이템 ID','이름','추가 필요 수량','최초 부족 주문','관련 작업','명시 단가 참고','명시 가격 소계 참고'];
+    const rows=latestProcurement.entries.map((row,index)=>[
+      index+1,row.id,row.name,row.quantity,row.firstNeededOrder,
+      row.affectedJobs.map(x=>x.position+':'+x.quantity).join(';'),
+      row.referenceUnitBuy??'',row.referenceBuySubtotal??''
+    ]);
+    // Excel-compatible UTF-8 BOM. Content is local 2.1 derived data only.
+    const csv='\uFEFF'+[header,...rows].map(row=>row.map(quote).join(',')).join('\r\n')+'\r\n';
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    const a=document.createElement('a');a.href=url;
+    a.download='xpiratez-v2-procurement-list.csv';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
   });
   $('queue-download').addEventListener('click',()=>{
     if(!latest)return;
