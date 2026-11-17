@@ -1,0 +1,74 @@
+{
+  "schema": "xpz3d/f11/rev96/r23-boundary-diff/v1",
+  "from": {
+    "file": "r21AO-F11-user101-native-skin-bowl-r22-dome.glb",
+    "sha256": "15451f69e5c9e6041463ad15ce8668939a3f604c14ce65e5d601fdd3ceb1cb41",
+    "triangles": 5107
+  },
+  "to": {
+    "file": "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+    "sha256": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+    "triangles": 4680
+  },
+  "virtualSkinUnion": {
+    "openEdges": [
+      99,
+      34
+    ],
+    "pelvicOpen": [
+      51,
+      0
+    ],
+    "multiple": [
+      58,
+      0
+    ],
+    "wrongDirection": [
+      8,
+      0
+    ],
+    "roi": [
+      0,
+      13,
+      17,
+      18,
+      21,
+      22,
+      23
+    ],
+    "outOfPelvis": [
+      48,
+      34
+    ],
+    "materialIndexWeldedAcrossPrimitives": false
+  },
+  "deletions": {
+    "source101Protected": 101,
+    "reintroduced": 0
+  },
+  "originalBody": {
+    "positionsAndFacesIdentical": true,
+    "uvSplitWeightVerticesAdjusted": [
+      76,
+      83,
+      215,
+      222
+    ]
+  },
+  "pose": {
+    "angles": [
+      0,
+      25,
+      40,
+      55
+    ],
+    "pairsEach": 249,
+    "maxDistanceEach": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "note": "Virtual skin union is position+morph welded. Not GLB index welding. 34 other apertures remain. Original independent core backing removed intentionally."
+}

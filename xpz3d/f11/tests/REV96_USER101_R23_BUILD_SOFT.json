@@ -1,0 +1,246 @@
+{
+  "schema": "xpz3d/f11/r23-native-retopology/v1",
+  "createdUTC": "2026-11-17T12:53:10.002Z",
+  "input": "r21AO-F11-user101-native-skin-bowl-r22-dome.glb",
+  "inputSHA256": "15451f69e5c9e6041463ad15ce8668939a3f604c14ce65e5d601fdd3ceb1cb41",
+  "file": "r21AO-F11-user101-native-retopo-r23-soft.glb",
+  "sha256": "9aba40eb050a32c9beac39d1b4b7d76e928c89b1724d728702723fc19908c5d9",
+  "variant": "soft",
+  "sourceTriangles": 5107,
+  "newTriangles": 4680,
+  "removedCoreBackingFaces": 921,
+  "removedCoreSideWalls": 182,
+  "removedConflictingSideStripFaces": 6,
+  "originalNativeBodyFacesUnchanged": true,
+  "originalArtistCore908PositionsAndMorphUnchanged": true,
+  "repairedPelvicCycles": [
+    {
+      "loop": 1,
+      "edges": 4,
+      "newFaces": 12,
+      "center": [
+        -0.0009877916745608672,
+        -0.15237941592931747,
+        0.9881974160671234
+      ],
+      "range": [
+        0.9505875706672668,
+        1.0258047580718994
+      ],
+      "rings": 2,
+      "materials": [
+        21
+      ]
+    },
+    {
+      "loop": 2,
+      "edges": 38,
+      "newFaces": 266,
+      "center": [
+        -0.03452013050647158,
+        -0.020714674356369006,
+        0.8770042720593905
+      ],
+      "range": [
+        0.7243108153343201,
+        0.9534162282943726
+      ],
+      "rings": 4,
+      "materials": [
+        17,
+        13,
+        22,
+        0,
+        21
+      ]
+    },
+    {
+      "loop": 3,
+      "edges": 12,
+      "newFaces": 84,
+      "center": [
+        -0.022614773265862215,
+        -0.13574200868606567,
+        0.9435681849718094
+      ],
+      "range": [
+        0.9377418756484985,
+        0.9534162282943726
+      ],
+      "rings": 4,
+      "materials": [
+        21,
+        13,
+        17
+      ]
+    },
+    {
+      "loop": 4,
+      "edges": 9,
+      "newFaces": 45,
+      "center": [
+        0.01127195508322782,
+        -0.14797115822633108,
+        0.9415308899349637
+      ],
+      "range": [
+        0.9353500604629517,
+        0.9533422589302063
+      ],
+      "rings": 3,
+      "materials": [
+        21,
+        18,
+        13
+      ]
+    },
+    {
+      "loop": 5,
+      "edges": 35,
+      "newFaces": 245,
+      "center": [
+        0.03214629127510956,
+        -0.018138890946283938,
+        0.8697061095918928
+      ],
+      "range": [
+        0.7243108153343201,
+        0.9533422589302063
+      ],
+      "rings": 4,
+      "materials": [
+        21,
+        0,
+        22,
+        13,
+        18
+      ]
+    },
+    {
+      "loop": 10,
+      "edges": 4,
+      "newFaces": 12,
+      "center": [
+        -0.024046875070780516,
+        -0.07761859148740768,
+        0.8870735317468643
+      ],
+      "range": [
+        0.8826653361320496,
+        0.8917009234428406
+      ],
+      "rings": 2,
+      "materials": [
+        13,
+        17
+      ]
+    },
+    {
+      "loop": 11,
+      "edges": 4,
+      "newFaces": 12,
+      "center": [
+        0.024048276245594025,
+        -0.07630489952862263,
+        0.8857457488775253
+      ],
+      "range": [
+        0.8805997967720032,
+        0.8909951448440552
+      ],
+      "rings": 2,
+      "materials": [
+        13,
+        18
+      ]
+    },
+    {
+      "loop": 12,
+      "edges": 3,
+      "newFaces": 3,
+      "center": [
+        -0.025309599315126736,
+        -0.09657608966032664,
+        0.9160760045051575
+      ],
+      "range": [
+        0.9092885851860046,
+        0.9210198521614075
+      ],
+      "rings": 1,
+      "materials": [
+        13,
+        17
+      ]
+    },
+    {
+      "loop": 13,
+      "edges": 3,
+      "newFaces": 3,
+      "center": [
+        0.025305017208059628,
+        -0.09528741240501404,
+        0.9155841668446859
+      ],
+      "range": [
+        0.908707320690155,
+        0.920221209526062
+      ],
+      "rings": 1,
+      "materials": [
+        13,
+        18
+      ]
+    }
+  ],
+  "unrelatedOpenLoopsPreserved": [
+    {
+      "loop": 0,
+      "count": 6,
+      "minZ": 1.3402526378631592,
+      "maxZ": 1.4772579669952393
+    },
+    {
+      "loop": 6,
+      "count": 7,
+      "minZ": 0.1607348620891571,
+      "maxZ": 0.18049289286136627
+    },
+    {
+      "loop": 7,
+      "count": 8,
+      "minZ": 1.5389264822006226,
+      "maxZ": 1.6052322387695312
+    },
+    {
+      "loop": 8,
+      "count": 6,
+      "minZ": 1.3273866176605225,
+      "maxZ": 1.4732855558395386
+    },
+    {
+      "loop": 9,
+      "count": 7,
+      "minZ": 0.1607348620891571,
+      "maxZ": 0.18047486245632172
+    }
+  ],
+  "virtualBoundaryBeforeRepair": 146,
+  "newPatchFaces": 682,
+  "restQuality": {
+    "zero": 0,
+    "min": 1.3328440413922135e-7
+  },
+  "morphQuality": {
+    "zero": 0,
+    "min": 1.1948160660995042e-7
+  },
+  "originalDeletedFacesReintroduced": 0,
+  "bones": 63,
+  "garmentFaces": 370,
+  "coreOldShellNoLongerClosed": true,
+  "materialBoundariesVirtualOnly": true,
+  "wholeBodyClosed": false,
+  "visualReview": "pending",
+  "acceptance": "candidate"
+}

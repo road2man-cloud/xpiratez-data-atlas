@@ -1,0 +1,135 @@
+{
+  "schema": "xpz3d/f11/rev96/r23-acceptance/v1",
+  "createdUTC": "2026-11-17T13:25:32.431Z",
+  "selectedCandidate": "r21AO-F11-user101-native-retopo-r23-lbsweld.glb",
+  "sha256": "f7e0a3d16712abfa21ce4b3a4faedea55b3fb77dac0400f64575423838db7132",
+  "sourceSHA256": "15451f69e5c9e6041463ad15ce8668939a3f604c14ce65e5d601fdd3ceb1cb41",
+  "manualTrimSHA256": "624685b103b4d610f60c38132ce3d28abde87e2552748e492632742e07347ec5",
+  "generatedGLB": true,
+  "triangles": 4680,
+  "bones": 63,
+  "garmentFaces": 370,
+  "deletedFacesReintroduced": 0,
+  "manualPositionsProtected": 754,
+  "geometricTopology": {
+    "pelvicOpenEdges": 0,
+    "multipleEdges": 0,
+    "wrongDirectionEdges": 0,
+    "otherOpenEdges": 34
+  },
+  "virtualSeamPose": {
+    "angles": [
+      0,
+      25,
+      40,
+      55
+    ],
+    "pairsPerAngle": 249,
+    "maxDistancePerAngle": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "patchQuality": {
+    "restMinArea": 1.3328440413922135e-7,
+    "posedMinArea": 1.1948160660995042e-7,
+    "degenerateFaces": 0
+  },
+  "nativeBody": {
+    "positionsAndTopologyUntouched": true,
+    "uvSplitSkinningWeightsChangedAt": [
+      76,
+      83,
+      215,
+      222
+    ]
+  },
+  "crossPrimitiveIndexWelding": false,
+  "closedAnatomicalInnerShellPreserved": false,
+  "closedLocalSkinVirtualUnion": true,
+  "closedWholeBody": false,
+  "visualReview": {
+    "screenshots": [
+      {
+        "file": "rev96-r23-lbsweld-0-under-solid.png",
+        "sha256": "bd98bb72a578b5bc30906698add7151ec42da108deb49187c9ff880e53432e9a"
+      },
+      {
+        "file": "rev96-r23-lbsweld-0-under-wire.png",
+        "sha256": "ab8b19ddad66fb998051f4269a0beeff213d4a6ddf4e2c3ddef8fd8e0c1c2690"
+      },
+      {
+        "file": "rev96-r23-lbsweld-0-behind-solid.png",
+        "sha256": "bdf4c4e128456413ac88385b6cabebbee386a7305aaa415425c950e4dc1a9ae9"
+      },
+      {
+        "file": "rev96-r23-lbsweld-0-behind-wire.png",
+        "sha256": "f1ba11b2264d6db8d42b950344067460d66e1789f805cc67c9e4c81ddf94d9bf"
+      },
+      {
+        "file": "rev96-r23-lbsweld-25-under-solid.png",
+        "sha256": "baffdbeabcb523e49969b744ac68e5c3e883b449c71a1516d8b47dea61c995f2"
+      },
+      {
+        "file": "rev96-r23-lbsweld-25-under-wire.png",
+        "sha256": "df5b8fd4ad0faf3e59706348f86085b01293d8894e9d5aa2f6447a4caa4575fc"
+      },
+      {
+        "file": "rev96-r23-lbsweld-25-behind-solid.png",
+        "sha256": "e1538c7779587609294307257d499b54d75e41adf9b3a84115946fac2b7ff162"
+      },
+      {
+        "file": "rev96-r23-lbsweld-25-behind-wire.png",
+        "sha256": "5eab14936953db80e63362f73c917463de3626e990ba0c995b37e2046a9bea4b"
+      },
+      {
+        "file": "rev96-r23-lbsweld-40-under-solid.png",
+        "sha256": "378e89243b3c7b9d06868d06351972745ba9b93ff8244a20d45646cff8e96d2c"
+      },
+      {
+        "file": "rev96-r23-lbsweld-40-under-wire.png",
+        "sha256": "9fe8e0dae064ba2670f46b8c2627ae13d69669d1bd503325729c0e1706f645a9"
+      },
+      {
+        "file": "rev96-r23-lbsweld-40-behind-solid.png",
+        "sha256": "52516316048a847c8c633ae9513e5d71759a15b2c1073923df77d215971604ac"
+      },
+      {
+        "file": "rev96-r23-lbsweld-40-behind-wire.png",
+        "sha256": "6aaaa5049f0984a5a91f804f3be3120d1674969bdcfd9f1bf7c6d55b3424895e"
+      },
+      {
+        "file": "rev96-r23-lbsweld-55-under-solid.png",
+        "sha256": "c49f12e4a6c8307569db6b58b0987ea537985a040dafe2cce031957325c8943d"
+      },
+      {
+        "file": "rev96-r23-lbsweld-55-under-wire.png",
+        "sha256": "56c10f1dd7777bf8e006ec03040f44995fcf82f76b07a53e17e064cbb895a2e2"
+      },
+      {
+        "file": "rev96-r23-lbsweld-55-behind-solid.png",
+        "sha256": "1b36700d2ae8c83eb4fd853d87a6009cb572974b7f4ec4298c8f52d80afd50c5"
+      },
+      {
+        "file": "rev96-r23-lbsweld-55-behind-wire.png",
+        "sha256": "335495cc3c1bb05c1c9837c506ccf7e1b70fc89b8e558276ed761e2bf6a786a1"
+      }
+    ],
+    "sideMembraneStillTooBroad": true,
+    "reverseCurvatureImprovedRelativeToR19": true,
+    "finalNaturalSilhouetteAccepted": false,
+    "notes": "Geometric locality of repaired lateral surfaces remains overly broad and relatively planar, especially 55° under/behind. Candidate preserved for next constrained ribbon/G1 re-topology iteration; do not claim a natural finished body."
+  },
+  "qualityGates": {
+    "geometryLocal": true,
+    "poseSeams": true,
+    "deletedUserFaces": true,
+    "rig": true,
+    "garments": true,
+    "visualSilhouette": false,
+    "fullBodyClosure": false
+  },
+  "finalClassification": "LOCAL_TOPOLOGY_ACCEPTED__VISUAL_CANDIDATE_REJECTED"
+}
