@@ -363,6 +363,27 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Exploration candidate to stock-input handoff (2026-11-18)
+
+Each successful single-goal exploration row now has two explicit handoff actions.
+**재고 입력문 준비** converts its validated hypothetical acquisitions into
+verified `STR_ID=total_on_hand` lines in the existing bulk stock editor.
+The target quantity is current input stock plus the candidate acquisition,
+not just the missing quantity. It refuses to overwrite existing unsaved
+bulk-editor text. The user must separately click **여러 재고 적용**
+before the calculator updates its input stock; the game save is never written.
+
+**선택에 불러오기** restores the candidate's materials and exact
+acquisition quantities to the existing checkbox/quantity controls.
+This permits adjustments and an explicit new calculation. Since those
+controls change, the previous bounded exploration result is invalidated
+rather than retained as a stale, downloadable report. Stored A/B slots
+remain separate until the underlying base plan is recalculated.
+
+Both actions validate the current recipe, v.o2 source, verified item IDs,
+missing quantities and the stock input caps before preparing any draft.
+The original inventory and source save remain immutable during handoff.
+
 ## Bounded procurement-combination explorer (2026-11-18)
 
 The **조달 조합 자동 탐색** action uses the current single recipe, stock,

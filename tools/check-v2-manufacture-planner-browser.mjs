@@ -154,6 +154,25 @@ try {
   assert.equal(exploreData.successes,exploredCount);
   assert(exploreData.candidates.every(x=>x.report.rootRecipeId==='STR_3RL_HE_XXX'));
   assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  await exploredRows.first().getByRole('button',{name:/후보 재고 입력문 준비/}).click();
+  const candidateDraft=await page.locator('#stock-bulk-text').inputValue();
+  assert(exploreData.candidates[0].additions.every(x=>candidateDraft.includes(x.id+'='+x.target)));
+  assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  await exploredRows.first().getByRole('button',{name:/후보 재고 입력문 준비/}).click();
+  assert((await page.locator('#external-explore-status').innerText()).includes('기존 일괄 재고 입력문'));
+  assert.equal(await page.locator('#stock-bulk-text').inputValue(),candidateDraft);
+  await page.locator('#stock-bulk-text').fill('');
+  await exploredRows.first().getByRole('button',{name:/후보 선택에 불러오기/}).click();
+  assert(await page.locator('#external-explore-results').isHidden());
+  assert(await page.locator('#external-explore-export').isDisabled());
+  assert.equal(await page.locator('#external input.external-basket-checkbox:checked').count(),
+    exploreData.candidates[0].additions.length);
+  for(const item of exploreData.candidates[0].additions){
+    const row=page.locator('#external tbody tr').filter({hasText:item.id}).first();
+    assert.equal(await row.locator('input.external-basket-amount').inputValue(),String(item.quantity));
+  }
+  assert((await page.locator('#external-basket-status').innerText()).includes('선택에 불러왔습니다'));
+  assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
   await chemicalAmount.fill(String(chemicalPartial));
   assert(await page.locator('#external-explore-export').isDisabled());
   assert(await page.locator('#external-explore-results').isHidden());

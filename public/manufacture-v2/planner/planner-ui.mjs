@@ -4,6 +4,7 @@ import { facilityReadiness, productionOrders } from './save-operations-core.mjs'
 import { initQueueUI } from './queue-ui.mjs';
 import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios } from './external-basket-core.mjs';
 import { exploreExternalCandidates, rankExternalCandidates } from './external-candidate-explorer.mjs';
+import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -372,6 +373,43 @@ function renderExternalBasketComparison() {
   $('external-basket-comparison').hidden=false;
   $('external-basket-comparison').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+function candidateHandoff(candidate) {
+  return prepareCandidateHandoff({
+    candidate,rootRecipeId:state.plan.rootRecipeId,external:state.plan.external,
+    inventory:state.inventory,itemIds:state.planner.itemMap
+  });
+}
+function draftCandidateStock(candidate) {
+  const handoff=candidateHandoff(candidate);
+  const input=$('stock-bulk-text');
+  if(input.value.trim())
+    throw new Error('기존 일괄 재고 입력문이 있어 덮어쓰지 않았습니다. 먼저 내용을 적용하거나 비워 주세요.');
+  input.value=handoff.stockText;
+  input.closest('details').open=true;
+  $('stock-message').textContent=
+    '탐색 후보 '+nf(handoff.selectedKinds)+'종 · 가상 확보 '+nf(handoff.selectedUnits)+
+    '개를 재고 입력문으로 준비했습니다. 여러 재고 적용 버튼을 누르기 전까지 실제 입력 재고와 세이브는 변경되지 않습니다.';
+  $('external-explore-status').textContent='조달 후보를 재고 입력문에 복사했습니다. 게임 세이브는 수정하지 않습니다.';
+  input.scrollIntoView({behavior:'smooth',block:'center'});
+  input.focus();
+}
+function loadCandidateSelection(candidate) {
+  const handoff=candidateHandoff(candidate);
+  externalBasketSelection=handoff.selectedIds;
+  externalBasketAmounts=handoff.requestedQuantities;
+  for(const tr of $('external').querySelectorAll('tbody tr')){
+    const checkbox=tr.querySelector('input.external-basket-checkbox');
+    const input=tr.querySelector('input.external-basket-amount');
+    if(!checkbox || !input)continue;
+    checkbox.checked=handoff.selectedIds.has(checkbox.value);
+    if(checkbox.checked)input.value=String(handoff.requestedQuantities.get(checkbox.value));
+  }
+  updateExternalBasketControls();
+  $('external-basket-status').textContent='탐색 후보 '+nf(handoff.selectedKinds)+
+    '종 · '+nf(handoff.selectedUnits)+'개의 가상 확보 수량을 일괄 선택에 불러왔습니다. '+
+    '재고와 원본 세이브는 변경하지 않았으며, 다시 탐색하려면 조합 자동 탐색을 누르세요.';
+  $('external-basket-controls').scrollIntoView({behavior:'smooth',block:'center'});
+}
 function renderExternalExploration() {
   if(!externalExploration)return;
   const exploration=externalExploration;
@@ -415,6 +453,20 @@ function renderExternalExploration() {
             slot+'에 저장했습니다. 다른 후보를 저장한 뒤 A/B 비교 버튼을 사용할 수 있습니다.';
         });
       }
+      const draft=make(actions,'button','재고 입력문 준비','secondary');
+      draft.type='button';
+      draft.setAttribute('aria-label',kind[candidate.type]+' 후보 재고 입력문 준비');
+      draft.addEventListener('click',()=>{
+        try{draftCandidateStock(candidate);}
+        catch(error){$('external-explore-status').textContent='재고 입력문 준비 중단: '+error.message;}
+      });
+      const load=make(actions,'button','선택에 불러오기','secondary');
+      load.type='button';
+      load.setAttribute('aria-label',kind[candidate.type]+' 후보 선택에 불러오기');
+      load.addEventListener('click',()=>{
+        try{loadCandidateSelection(candidate);}
+        catch(error){$('external-explore-status').textContent='후보 불러오기 중단: '+error.message;}
+      });
     }
   }
   const truncation=exploration.omittedItems?
