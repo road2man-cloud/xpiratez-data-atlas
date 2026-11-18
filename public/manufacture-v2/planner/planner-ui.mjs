@@ -12,6 +12,7 @@ import { prepareReadinessBatch, calculateReadinessBatch } from './readiness-acqu
 import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch.mjs';
 import { expandRouteAwareReadinessBatch } from './route-aware-cascade.mjs';
 import { routeAcquisitionLedgerCsvRows } from './route-acquisition-ledger.mjs';
+import { routeMaterialWorkflowCsvRows } from './route-material-workflow.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1061,7 +1062,144 @@ function renderWorkbenchEvidence() {
       make(actions,'p','나머지 '+nf(list.length-80)+'건은 JSON에 포함됩니다.','note');
   }
 }
+function clearRouteMaterialWorkflow(){
+  $('external-route-batch-workflow').hidden=true;
+  $('external-route-batch-workflow-csv').disabled=true;
+  for(const id of ['summary','groups','materials','recipes','consumption','changes'])
+    $('external-route-batch-workflow-'+id).replaceChildren();
+  $('external-route-batch-workflow-status').textContent='';
+  const filter=$('external-route-batch-workflow-filter');
+  filter.replaceChildren();
+  const option=make(filter,'option','전체');option.value='all';
+}
+function renderRouteMaterialWorkflow(){
+  const workflow=externalRouteWorkbench?.routeBatch?.expanded?.report?.materialWorkflow;
+  if(!workflow){clearRouteMaterialWorkflow();return;}
+  const main=$('external-route-batch-workflow');
+  const summary=$('external-route-batch-workflow-summary');summary.replaceChildren();
+  metric(summary,'조달 사유 그룹',nf(workflow.summary.groups)+'개');
+  metric(summary,'조달·부족 재료',nf(workflow.summary.materialKinds)+'종');
+  metric(summary,'가상 추가 확보',nf(workflow.summary.hypotheticalAcquisitionUnits)+'개');
+  metric(summary,'계산 종료 후 부족',nf(workflow.summary.remainingShortageUnits)+'개');
+  metric(summary,'가상 확보 후 제조식',nf(workflow.summary.plannedRecipeOccurrences)+'개 노드');
+  metric(summary,'제조식 변경',nf(workflow.summary.changedRecipeKinds)+'종');
+  const filter=$('external-route-batch-workflow-filter');
+  if(filter.options.length===1 && filter.value==='all'){
+    for(const group of workflow.procurementGroups){
+      const option=make(filter,'option',group.label+' ('+nf(group.kinds)+'종)');
+      option.value=group.id;
+    }
+  }
+  const groupWrap=$('external-route-batch-workflow-groups');groupWrap.replaceChildren();
+  const groups=make(groupWrap,'table'),groupHeader=make(make(groups,'thead'),'tr');
+  for(const column of ['규칙상 조달 사유','재료 종류','가상 확보량','계산 후 부족량'])
+    make(groupHeader,'th',column);
+  const groupBody=make(groups,'tbody');
+  for(const group of workflow.procurementGroups){
+    const tr=make(groupBody,'tr');
+    for(const value of [group.label,nf(group.kinds)+'종',
+      nf(group.acquiredUnits)+'개',nf(group.remainingUnits)+'개'])
+      make(tr,'td',value);
+  }
+  const selected=filter.value;
+  const order=new Map(workflow.procurementGroups.map((x,i)=>[x.id,i]));
+  const materials=workflow.materials
+    .filter(x=>selected==='all'||x.categoryId===selected)
+    .sort((a,b)=>(order.get(a.categoryId)??999)-(order.get(b.categoryId)??999)||
+      b.totalAcquisition-a.totalAcquisition||a.id.localeCompare(b.id,'en'));
+  const materialWrap=$('external-route-batch-workflow-materials');
+  materialWrap.replaceChildren();
+  const table=make(materialWrap,'table'),head=make(make(table,'thead'),'tr');
+  for(const value of ['재료','조달 근거','확보 단계',
+    '현재 재고','가상 확보 합계','남은 부족','다음에 확인할 작업'])
+    make(head,'th',value);
+  const tbody=make(table,'tbody');
+  const originLabel={
+    'initial-selected':'최초 선택','later-round':'후속 반복',
+    'unresolved-only':'확보되지 않음'
+  };
+  for(const item of materials.slice(0,200)){
+    const tr=make(tbody,'tr'),name=make(tr,'td');
+    make(name,'strong',item.name);make(name,'code',item.id,'item-id');
+    make(tr,'td',item.categoryLabel);
+    make(tr,'td',originLabel[item.origin]||'근거 확인');
+    for(const v of [item.startingInventory,item.totalAcquisition,item.remainingShortage])
+      make(tr,'td',nf(v));
+    const action=make(tr,'td');
+    make(action,'span',item.action);
+    if(item.reasonIds.length)
+      make(action,'p','규칙 근거: '+item.reasonIds.join(', '),'note');
+  }
+  if(materials.length>200)
+    make(materialWrap,'p','표에는 최대 200종만 표시합니다. CSV에는 모든 재료를 보존합니다.','note');
+  const recipes=$('external-route-batch-workflow-recipes');recipes.replaceChildren();
+  const sequence=make(recipes,'table'),sHead=make(make(sequence,'thead'),'tr');
+  for(const value of [
+    '참고 순서','제조식','제조 횟수','앞서 준비할 하위 제조식',
+    '직접 필요 재료','명시 제조비 / 작업량'
+  ])make(sHead,'th',value);
+  const sBody=make(sequence,'tbody');
+  for(const step of workflow.recipeSequenceAfter.slice(0,200)){
+    const tr=make(sBody,'tr');
+    make(tr,'td',nf(step.position));
+    const name=make(tr,'td');
+    make(name,'strong',step.recipeName);make(name,'code',step.recipeId,'item-id');
+    make(tr,'td',nf(step.batches)+'회');
+    make(tr,'td',step.prerequisiteStepNumbers.length?
+      step.prerequisiteStepNumbers.map(n=>'#'+nf(n)).join(', '):'없음');
+    const input=make(tr,'td');
+    if(!step.inputMaterials.length)make(input,'span','직접 명시 재료 없음','note');
+    for(const material of step.inputMaterials.slice(0,15))
+      make(input,'p',(material.name||material.id)+' · '+
+        (material.quantity===null?'수량 미확인':nf(material.quantity)+'개')+
+        ' · '+material.status,'note');
+    if(step.inputMaterials.length>15)
+      make(input,'p','기타 재료 '+nf(step.inputMaterials.length-15)+'종은 JSON에 포함','note');
+    make(tr,'td',nf(step.declaredCost)+' / '+nf(step.declaredTime));
+  }
+  if(workflow.recipeSequenceAfter.length>200)
+    make(recipes,'p','처음 200개의 제조식 노드만 표시합니다. 전체 순서는 JSON/CSV에 포함됩니다.','note');
+  const consumed=$('external-route-batch-workflow-consumption');consumed.replaceChildren();
+  if(!workflow.stockConsumption.length)
+    make(consumed,'p','현재 계산에서 재고 차감을 확인할 항목이 없습니다.','note');
+  else {
+    const cTable=make(consumed,'table'),cHead=make(make(cTable,'thead'),'tr');
+    for(const label of ['재료','계획상 차감 수량'])make(cHead,'th',label);
+    const cBody=make(cTable,'tbody');
+    for(const row of workflow.stockConsumption.slice(0,100)){
+      const tr=make(cBody,'tr'),cell=make(tr,'td');
+      make(cell,'span',row.name);make(cell,'code',row.id,'item-id');
+      make(tr,'td',nf(row.quantityFromPlannedStock)+'개');
+    }
+    if(workflow.stockConsumption.length>100)
+      make(consumed,'p','나머지 재료의 계산상 차감량은 JSON에서 확인할 수 있습니다.','note');
+  }
+  make(consumed,'p','계획상 차감량에는 원래 재고와 가상 확보 재고가 모두 포함될 수 있습니다. 두 출처의 실제 소비량은 분리 판정하지 않습니다.','note');
+  const changeWrap=$('external-route-batch-workflow-changes');changeWrap.replaceChildren();
+  if(!workflow.recipeChanges.length)
+    make(changeWrap,'p','원래 경로와 가상 확보 후 제조식의 종류·횟수 변화가 없습니다.','note');
+  else {
+    const cTable=make(changeWrap,'table'),cHead=make(make(cTable,'thead'),'tr');
+    for(const label of ['제조식','확보 전 횟수','가상 확보 후 횟수','차이'])
+      make(cHead,'th',label);
+    const cBody=make(cTable,'tbody');
+    for(const row of workflow.recipeChanges.slice(0,100)){
+      const tr=make(cBody,'tr'),first=make(tr,'td');
+      make(first,'strong',row.name);make(first,'code',row.recipeId,'item-id');
+      for(const v of [row.beforeBatches,row.afterBatches,
+        row.afterBatches-row.beforeBatches])make(tr,'td',nf(v));
+    }
+    if(workflow.recipeChanges.length>100)
+      make(changeWrap,'p','나머지 변경 제조식은 JSON에서 확인할 수 있습니다.','note');
+  }
+  $('external-route-batch-workflow-status').textContent=
+    '조달 사유별 '+nf(materials.length)+'종 표시 · 의존관계 기준 제조식 '+
+    nf(workflow.recipeSequenceAfter.length)+'개 노드. 구매 가능성·게임 내 제조 실행 순서는 확인되지 않았습니다.';
+  main.hidden=false;
+  $('external-route-batch-workflow-csv').disabled=false;
+}
 function clearRouteAcquisitionLedger(){
+  clearRouteMaterialWorkflow();
   $('external-route-batch-ledger').hidden=true;
   $('external-route-batch-ledger-search').value='';
   $('external-route-batch-ledger-sort').value='quantity';
@@ -1405,6 +1543,7 @@ function expandRouteBatch(){
     renderRouteBatchResult();
     renderRouteBatchTrace();
     renderRouteAcquisitionLedger();
+    renderRouteMaterialWorkflow();
     $('external-route-batch-status').textContent=
       '후속 부족 재료 반복 가정을 반영했습니다. 이후 재고 초안·CSV·JSON·A/B 버튼은 누적 가상 확보량을 사용합니다. 게임 재고는 변경하지 않았습니다.';
     $('external-route-batch-trace').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2257,6 +2396,13 @@ $('external-route-batch-preview').addEventListener('click',runRouteBatch);
 $('external-route-batch-expand').addEventListener('click',expandRouteBatch);
 $('external-route-batch-ledger-search').addEventListener('input',renderRouteAcquisitionLedger);
 $('external-route-batch-ledger-sort').addEventListener('change',renderRouteAcquisitionLedger);
+$('external-route-batch-workflow-filter').addEventListener('change',renderRouteMaterialWorkflow);
+$('external-route-batch-workflow-csv').addEventListener('click',()=>{
+  const workflow=externalRouteWorkbench?.routeBatch?.expanded?.report?.materialWorkflow;
+  if(!workflow)return;
+  downloadCsv(routeMaterialWorkflowCsvRows(workflow),
+    'xpiratez-v2-route-material-workflow-'+workflow.rootRecipeId+'.csv');
+});
 $('external-route-batch-ledger-csv').addEventListener('click',()=>{
   const ledger=externalRouteWorkbench?.routeBatch?.expanded?.report?.acquisitionLedger;
   if(!ledger)return;

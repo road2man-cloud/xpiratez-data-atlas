@@ -363,6 +363,55 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Grounded procurement reasons and dependency-first recipe order (2026-11-18)
+
+The edited-route, single-goal cascading calculation now exports
+`materialWorkflow` alongside its pre-existing `acquisitionLedger`.
+The new **조달 사유별 확인 작업 · 제조 의존 순서** view groups
+material records by the **explicit external reasons** produced
+by the current v.o2 manufacturing planner. Supported groups include
+user-chosen external supply, missing producer choice, invalid producer
+choice, recipe-depth limit, unverified output, cycle/expansion/quantity
+stalls, and resources without an explicit available producer.
+Unknown or absent reasons remain visibly unverified, rather than
+being assigned a market or loot availability category.
+
+Each material row carries the first observed simulation stage, whether
+it was included in the initial acquisition, a later cascade round,
+or remains unresolved without an acquisition assumption. Current
+entered stock, cumulative hypothetical additions, remaining shortages
+and a grounded next checking action stay separate. Filtering by
+reason does not change the calculated plan.
+
+The new recipe-order table follows `plan.tree` for the final
+hypothetical-stock scenario, walking nested producer nodes
+**children before their parent**. Each numbered occurrence includes
+its exact expanded recipe ID, batch count, explicitly declared
+input quantities, child step references and declared cost/time when
+present. A comparison against the route-only baseline lists which
+expanded recipe occurrences and batch counts differ after virtual
+materials are added. A separate plan-stock-consumption table uses
+the planner's explicit `inventory.consumed` result. That quantity
+combines original input stock and hypothetical extra stock; the UI
+does **not** claim to allocate actual consumption by those two
+sources or to schedule production in the real game.
+
+**조달·제조 순서 CSV 저장** exports all classified materials
+and all final recipe steps, even when a table is visually capped
+at 200 entries. The existing scenario JSON preserves the complete
+workflow including before/after recipe sequences and grounded
+source reasons. The workflow resets when materials or producer
+choices change, so stale data cannot be exported. It does not
+alter the save, manual inventory, producer choices or other
+workers' versions.
+
+**Important boundary:** dependency-first order is a representation
+of the expanded bill of materials, **not** a guaranteed in-game
+production queue or proof of valid facility, research, unlock,
+worker, availability or purchase conditions. The categories are
+about planner evidence and next investigation steps, not verified
+procurement methods or market inventory.
+
 ## Inventory-aware staged procurement ledger (2026-11-18)
 
 The route-aware single-recipe cascading scenario now includes an

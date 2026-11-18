@@ -40,7 +40,8 @@ const planner={
     return {
       schema:'xpiratez-v2-manufacture-plan/v1',rootRecipeId,
       external,totals:{declaredCost:44,declaredTime:3},
-      flags:[],tree:{kind:'recipe',id:rootRecipeId,inputs:[]},
+      flags:[],tree:{kind:'recipe',id:rootRecipeId,name:rootRecipeId,count:1,
+        inputs:[],cost:44,time:3,prerequisites:[]},
       research:{ids:[],unresolved:[]}
     };
   }

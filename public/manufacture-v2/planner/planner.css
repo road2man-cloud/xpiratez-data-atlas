@@ -130,6 +130,25 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-batch-ledger-table td:first-child{min-width:180px;white-space:normal}
 #external-route-batch-ledger-table .item-id{display:block;font-size:.75rem;overflow-wrap:anywhere}
 #external-route-batch-ledger-status{margin:8px 0}
+#external-route-batch-workflow{margin-top:18px;padding-top:15px;border-top:1px solid #365f83}
+#external-route-batch-workflow .section-title{align-items:center;gap:12px;flex-wrap:wrap}
+#external-route-batch-workflow .control-buttons label{display:flex;gap:8px;align-items:center;font-size:.85rem}
+#external-route-batch-workflow .control-buttons select{padding:8px;background:#0b1e31;border:1px solid #53718e;color:#eaf2ff;border-radius:7px}
+#external-route-batch-workflow h5{margin:16px 0 7px}
+#external-route-batch-workflow-groups table,
+#external-route-batch-workflow-materials table,
+#external-route-batch-workflow-recipes table,
+#external-route-batch-workflow-consumption table,
+#external-route-batch-workflow-changes table{min-width:690px;width:100%}
+#external-route-batch-workflow-materials table{min-width:1030px}
+#external-route-batch-workflow-recipes table{min-width:1000px}
+#external-route-batch-workflow-materials td,
+#external-route-batch-workflow-recipes td{vertical-align:top}
+#external-route-batch-workflow-recipes td p,
+#external-route-batch-workflow-materials td p{margin:4px 0;font-size:.77rem}
+#external-route-batch-workflow .item-id{display:block;font-size:.74rem;overflow-wrap:anywhere}
+#external-route-batch-workflow-status{margin:8px 0}
+
 
 
 #external-route-batch-results td{font-variant-numeric:tabular-nums}

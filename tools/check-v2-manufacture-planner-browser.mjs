@@ -340,6 +340,41 @@ try {
     assert.equal(expandedPayload.schema,'xpiratez-v2-route-aware-cascade/v1');
     assert.equal(expandedPayload.acquisitionLedger.schema,
       'xpiratez-v2-route-acquisition-ledger/v1');
+    assert.equal(expandedPayload.materialWorkflow.schema,
+      'xpiratez-v2-route-material-workflow/v1');
+    assert(await page.locator('#external-route-batch-workflow').isVisible());
+    assert(await page.locator('#external-route-batch-workflow-csv').isEnabled());
+    assert((await page.locator('#external-route-batch-workflow-summary').innerText())
+      .includes('조달 사유 그룹'));
+    assert((await page.locator('#external-route-batch-workflow-materials').innerText())
+      .includes('다음에 확인할 작업'));
+    assert((await page.locator('#external-route-batch-workflow-recipes').innerText())
+      .includes('하위 제조식'));
+    const workflow=expandedPayload.materialWorkflow;
+    assert.equal(workflow.rootRecipeId,'STR_3RL_HE_XXX');
+    assert.equal(workflow.summary.materialKinds,expandedPayload.acquisitionLedger.materials.length);
+    assert(workflow.recipeSequenceAfter.length>=1);
+    assert.equal(workflow.recipeSequenceAfter.at(-1).recipeId,'STR_3RL_HE_XXX');
+    assert(workflow.materials.every(x=>x.availability==='unverified'));
+    const workflowItems=page.locator('#external-route-batch-workflow-materials tbody tr');
+    const unfilteredWorkflowCount=await workflowItems.count();
+    assert(unfilteredWorkflowCount>0);
+    const workflowSelect=page.locator('#external-route-batch-workflow-filter');
+    assert((await workflowSelect.locator('option').count())>=2);
+    await workflowSelect.selectOption(workflow.procurementGroups[0].id);
+    assert((await workflowItems.count())>0);
+    assert((await workflowItems.count())<=unfilteredWorkflowCount);
+    await workflowSelect.selectOption('all');
+    assert.equal(await workflowItems.count(),unfilteredWorkflowCount);
+    const workflowCsvDownload=page.waitForEvent('download');
+    await page.locator('#external-route-batch-workflow-csv').click();
+    const workflowCsvFile=await workflowCsvDownload;
+    assert.equal(workflowCsvFile.suggestedFilename(),
+      'xpiratez-v2-route-material-workflow-STR_3RL_HE_XXX.csv');
+    const workflowCsv=fs.readFileSync(await workflowCsvFile.path(),'utf8');
+    assert(workflowCsv.startsWith('\uFEFF"종류","순서"'));
+    assert(workflowCsv.includes('"하위 제조식 선행 순서"'));
+    assert(workflowCsv.includes('STR_3RL_HE_XXX'));
     assert(await page.locator('#external-route-batch-ledger').isVisible());
     assert(await page.locator('#external-route-batch-ledger-csv').isEnabled());
     assert((await page.locator('#external-route-batch-ledger-summary').innerText())
@@ -388,6 +423,8 @@ try {
   await page.locator('#external-route-batch-clear').click();
   assert(await page.locator('#external-route-batch-ledger').isHidden());
   assert(await page.locator('#external-route-batch-ledger-csv').isDisabled());
+  assert(await page.locator('#external-route-batch-workflow').isHidden());
+  assert(await page.locator('#external-route-batch-workflow-csv').isDisabled());
   assert(await page.locator('#external-route-batch-preview').isDisabled());
   assert(await page.locator('#external-route-batch-json').isDisabled());
   assert(await page.locator('#external-route-batch-results').isHidden());

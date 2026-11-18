@@ -5,6 +5,7 @@
 import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch.mjs';
 import { compareExternalBasket } from './external-basket-core.mjs';
 import { buildRouteAcquisitionLedger } from './route-acquisition-ledger.mjs';
+import { buildRouteMaterialWorkflow } from './route-material-workflow.mjs';
 import { buildManufacturingReadinessChecklist,
   compareManufacturingChecklists } from './manufacturing-readiness-checklist.mjs';
 
@@ -93,6 +94,10 @@ export function expandRouteAwareReadinessBatch({
     history.push({
       round,
       shortageBefore:{kinds:before.length,units:sumUnits(before)},
+      shortageBeforeDetails:after.external.map(x=>({
+        id:x.id,name:x.name,quantity:x.quantity,
+        reasons:Array.isArray(x.reasons)?[...x.reasons]:[]
+      })),
       added,addedKinds:added.length,
       addedUnits:sumUnits(added),
       shortageAfter:{
@@ -100,7 +105,8 @@ export function expandRouteAwareReadinessBatch({
       },
       newlyExposed:recalculated.external
         .filter(x=>!before.some(y=>y.id===x.id))
-        .map(x=>({id:x.id,name:x.name,quantity:x.quantity}))
+        .map(x=>({id:x.id,name:x.name,quantity:x.quantity,
+          reasons:Array.isArray(x.reasons)?[...x.reasons]:[]}))
     });
     acquired.clear();
     for(const [id,quantity] of next)acquired.set(id,quantity);
@@ -166,5 +172,8 @@ export function expandRouteAwareReadinessBatch({
     caveat:'모든 재료는 가상 확보 가정이며 실제 구매·제조 가능성이나 시설·연구 조건 충족을 보장하지 않습니다. 각 반복 단계는 같은 원본 재고 및 편집 경로를 사용하며 게임 세이브를 변경하지 않습니다.'
   };
   report.acquisitionLedger=buildRouteAcquisitionLedger(report,base);
+  report.materialWorkflow=buildRouteMaterialWorkflow({
+    report,routeBaseline,finalPlan:after
+  });
   return {report,after,initial,finalChecklist};
 }
