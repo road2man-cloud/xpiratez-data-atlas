@@ -7,6 +7,7 @@ import { exploreExternalCandidates, rankExternalCandidates } from './external-ca
 import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
 import { calculateRouteWorkbench } from './candidate-route-workbench.mjs';
 import { summarizeRouteReadiness } from './candidate-route-evidence.mjs';
+import { buildManufacturingReadinessChecklist } from './manufacturing-readiness-checklist.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -27,6 +28,8 @@ let externalBasketScenarios = { A:null, B:null };
 let externalBasketComparison = null;
 let externalExploration = null;
 let externalRouteWorkbench = null;
+let mainChecklist = null;
+let mainChecklistReviewed = new Set();
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
@@ -560,6 +563,186 @@ function renderWorkbenchComparison() {
       make(tr,'td',nf(value));
   }
 }
+const CHECKLIST_VISIBLE_LIMIT=200;
+function checklistCsvRows(checklist) {
+  return [
+    ['확인 순서','종류','항목 ID','이름','수량','증거 상태','필요한 다음 확인',
+      '근거','영향 제조식','참고 구매 단가','참고 구매 소계'],
+    ...checklist.tasks.map((row,i)=>[
+      i+1,row.categoryLabel,row.requirementId,row.title,row.quantity,
+      row.statusLabel,row.action,row.evidence,row.recipeIds.join('; '),
+      row.listedUnitBuy,row.listedBuySubtotal
+    ])
+  ];
+}
+function downloadReadinessJson(checklist,reviewedKeys,filename) {
+  const payload={
+    ...checklist,
+    locallyReviewedKeys:[...reviewedKeys].sort(),
+    reviewNote:'검토 체크는 브라우저 내 표시일 뿐, 재료 확보·시설 완공·연구 달성을 의미하지 않습니다.'
+  };
+  const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)+'\n'],
+    {type:'application/json'}));
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+function appendChecklistTable(parent,checklist,{reviewed=null,onReview=null}={}) {
+  parent.replaceChildren();
+  if(!checklist.tasks.length) {
+    make(parent,'p','현재 계산에서 목록화한 추가 재료·확인 항목이 없습니다. 이는 실제 제조 가능 판정이 아닙니다.','note');
+    return;
+  }
+  const table=make(parent,'table',null,'manufacture-checklist-table');
+  const header=make(make(table,'thead'),'tr');
+  for(const column of [
+    ...(reviewed?['검토 표시']:[]),'우선 순서','종류','항목·수량',
+    '근거 상태','다음 확인·조치', '재고 입력'
+  ])make(header,'th',column);
+  const body=make(table,'tbody');
+  for(const [index,row] of checklist.tasks.slice(0,CHECKLIST_VISIBLE_LIMIT).entries()) {
+    const tr=make(body,'tr');
+    if(reviewed){
+      const cell=make(tr,'td'),check=make(cell,'input');
+      check.type='checkbox';
+      check.checked=reviewed.has(row.key);
+      check.className='readiness-review';
+      check.setAttribute('aria-label',row.title+' 검토 표시');
+      check.addEventListener('change',()=>{
+        if(check.checked)reviewed.add(row.key);
+        else reviewed.delete(row.key);
+        onReview?.();
+      });
+    }
+    make(tr,'td',nf(index+1));
+    make(tr,'td',row.categoryLabel);
+    const name=make(tr,'td');
+    make(name,'strong',row.title);
+    make(name,'code',row.requirementId,'item-id');
+    if(row.quantity!==null)make(name,'span','부족 '+nf(row.quantity)+'개','note');
+    const status=make(tr,'td');
+    make(status,'span',row.statusLabel,
+      row.status==='shortage'||row.status==='pending'?'warn-note':'note');
+    make(status,'p',row.evidence,'note');
+    const action=make(tr,'td');
+    make(action,'span',row.action);
+    if(row.recipeIds.length)
+      make(action,'p','영향 제조식: '+row.recipeIds.join(', '),'note');
+    const ctl=make(tr,'td');
+    if(row.category==='material'){
+      const btn=make(ctl,'button','재고 입력 준비','secondary');
+      btn.type='button';
+      btn.setAttribute('aria-label',row.title+' 부족분 재고 입력 준비');
+      btn.addEventListener('click',()=>{
+        try{
+          prefillStockFromExternal({
+            id:row.requirementId,name:row.title,quantity:row.quantity
+          });
+        }catch(error){
+          $('stock-message').textContent='재고 입력 준비 중단: '+error.message;
+        }
+      });
+    }else make(ctl,'span','—','note');
+  }
+  if(checklist.tasks.length>CHECKLIST_VISIBLE_LIMIT)
+    make(parent,'p','화면에는 처음 '+nf(CHECKLIST_VISIBLE_LIMIT)+
+      '개 작업만 표시합니다. CSV와 JSON에는 전체 작업을 저장합니다.','note');
+}
+function updateMainChecklistStatus(){
+  if(!mainChecklist)return;
+  const filtered=$('main-readiness-filter').value;
+  const visible=filtered==='all'?mainChecklist.tasks:
+    mainChecklist.tasks.filter(x=>x.category===filtered);
+  const reviewed=mainChecklist.tasks.filter(x=>mainChecklistReviewed.has(x.key)).length;
+  $('main-readiness-status').textContent='전체 '+nf(mainChecklist.totals.tasks)+
+    '건 · 재료 '+nf(mainChecklist.totals.shortageKinds)+'종 ('+
+    nf(mainChecklist.totals.shortageUnits)+'개 부족) · 시설 기능 '+
+    nf(mainChecklist.totals.facilityFunctions)+'건 · 연구 참조 '+
+    nf(mainChecklist.totals.researchReferences)+'건 · 규칙 확인 '+
+    nf(mainChecklist.totals.unverifiedRuleFlags)+'건 · 현재 표시 '+
+    nf(visible.length)+'건 · 개인 검토 표시 '+nf(reviewed)+'건. 검토 표시는 제조 조건 충족 판정이 아닙니다.';
+}
+function paintMainChecklist(){
+  if(!mainChecklist)return;
+  const selected=$('main-readiness-filter').value;
+  const tasks=selected==='all'?mainChecklist.tasks:
+    mainChecklist.tasks.filter(x=>x.category===selected);
+  appendChecklistTable($('main-readiness-table'),{
+    ...mainChecklist,tasks
+  },{reviewed:mainChecklistReviewed,onReview:updateMainChecklistStatus});
+  updateMainChecklistStatus();
+}
+function renderMainChecklist(plan){
+  const evidence=evidenceForCurrentPlan(plan);
+  mainChecklist=buildManufacturingReadinessChecklist(plan,evidence);
+  mainChecklistReviewed=new Set();
+  $('main-readiness-csv').disabled=false;
+  $('main-readiness-json').disabled=false;
+  paintMainChecklist();
+}
+function renderWorkbenchChecklist(){
+  const wb=externalRouteWorkbench;
+  if(!wb?.calculation)return;
+  const report=wb.calculation.report;
+  const original=report.checklists.original,
+    edited=report.checklists.editedRoute,
+    final=report.checklists.withAcquisition;
+  const container=$('external-route-workbench-checklist-summary');
+  container.replaceChildren();
+  metric(container,'원안 확인 목록',nf(original.totals.tasks)+'건');
+  metric(container,'경로 편집 후',nf(edited.totals.tasks)+'건');
+  metric(container,'재료 확보 가정 후',nf(final.totals.tasks)+'건');
+  metric(container,'남은 재료 부족',nf(final.totals.shortageKinds)+
+    '종 · '+nf(final.totals.shortageUnits)+'개');
+  const delta=$('external-route-workbench-checklist-changes');
+  delta.replaceChildren();
+  const table=make(delta,'table'),head=make(make(table,'thead'),'tr');
+  for(const title of ['확인 목록 변화','경로 변경','가상 확보 반영'])make(head,'th',title);
+  const body=make(table,'tbody');
+  for(const [name,read] of [
+    ['추가 작업',x=>x.added.length],
+    ['제외 작업',x=>x.removed.length],
+    ['수량·상태·영향 제조식 변화',x=>x.changed.length]
+  ]) {
+    const row=make(body,'tr');
+    make(row,'th',name);
+    for(const x of [
+      report.checklistChanges.routeOnly,
+      report.checklistChanges.acquisitionOnly
+    ])make(row,'td',nf(read(x))+'건');
+  }
+  const details=[];
+  for(const [origin,x] of [
+    ['경로 변경',report.checklistChanges.routeOnly],
+    ['가상 확보',report.checklistChanges.acquisitionOnly]
+  ])for(const row of x.added)
+    details.push(origin+' · 신규 확인: '+row.title+' ('+row.requirementId+')');
+  for(const [origin,x] of [
+    ['경로 변경',report.checklistChanges.routeOnly],
+    ['가상 확보',report.checklistChanges.acquisitionOnly]
+  ])for(const row of x.removed)
+    details.push(origin+' · 계산에서 제외된 확인: '+row.title+' ('+
+      row.requirementId+')'+
+      (row.quantity!==null?' · 기존 부족 '+nf(row.quantity)+'개':''));
+  for(const [origin,x] of [
+    ['경로 변경',report.checklistChanges.routeOnly],
+    ['가상 확보',report.checklistChanges.acquisitionOnly]
+  ])for(const row of x.changed)
+    details.push(origin+' · 변경: '+row.current.title+
+      ' ('+row.current.requirementId+')'+
+      (row.current.quantity!==null?' · '+nf(row.previous.quantity)+'→'+
+        nf(row.current.quantity)+'개':''));
+  if(details.length){
+    const list=make(delta,'ul');
+    for(const line of details.slice(0,30))make(list,'li',line);
+    if(details.length>30)
+      make(delta,'p','변경 내역 '+nf(details.length-30)+
+        '건은 JSON 보고서에 추가로 포함됩니다.','note');
+  }
+  appendChecklistTable($('external-route-workbench-checklist-table'),final);
+  $('external-route-workbench-checklist-csv').disabled=false;
+}
 function renderWorkbenchEvidence() {
   const wb=externalRouteWorkbench;
   if(!wb?.calculation)return;
@@ -673,10 +856,14 @@ function recalculateRouteWorkbench() {
   wb.calculation=null;
   for(const id of ['external-route-workbench-draft',
     'external-route-workbench-apply-choices','external-route-workbench-a',
-    'external-route-workbench-b','external-route-workbench-export'])
+    'external-route-workbench-b','external-route-workbench-export',
+    'external-route-workbench-checklist-csv'])
     $(id).disabled=true;
   $('external-route-workbench-summary').replaceChildren();
   $('external-route-workbench-differences').replaceChildren();
+  for(const id of ['external-route-workbench-checklist-summary',
+    'external-route-workbench-checklist-changes',
+    'external-route-workbench-checklist-table'])$(id).replaceChildren();
   for(const id of ['external-route-workbench-evidence-summary',
     'external-route-workbench-evidence-changes',
     'external-route-workbench-requirements',
@@ -698,6 +885,7 @@ function recalculateRouteWorkbench() {
     renderWorkbenchRouteChoices();
     renderWorkbenchComparison();
     renderWorkbenchEvidence();
+    renderWorkbenchChecklist();
     const rep=wb.calculation.report;
     $('external-route-workbench-status').textContent=
       '가상 확보 '+nf(rep.additions.length)+'종 · '+
@@ -1223,12 +1411,19 @@ function renderPlan() {
     renderConsolidated(plan);
     renderResearch(plan);
     renderOperations(plan);
+    renderMainChecklist(plan);
     queueUI?.refresh();
     renderWarnings(plan);
     $('status').textContent='제조 경로 계산 완료 · 대상 '+plan.rootRecipeId;
   }catch(e){
     // Never leave a previous plan downloadable or actionable after invalid input.
     state.plan=null;
+    mainChecklist=null;
+    mainChecklistReviewed.clear();
+    $('main-readiness-csv').disabled=true;
+    $('main-readiness-json').disabled=true;
+    $('main-readiness-table').replaceChildren();
+    $('main-readiness-status').textContent='계산 실패로 이전 확인 목록을 지웠습니다.';
     $('output').hidden=true;
     $('download-plan').disabled=true;
     $('external-csv').disabled=true;
@@ -1252,6 +1447,27 @@ function renderPlan() {
     $('status').textContent='제조 경로 계산 실패: '+e.message;
   }
 }
+$('main-readiness-filter').addEventListener('change',paintMainChecklist);
+$('main-readiness-reset').addEventListener('click',()=>{
+  mainChecklistReviewed.clear();
+  paintMainChecklist();
+});
+$('main-readiness-csv').addEventListener('click',()=>{
+  if(!mainChecklist)return;
+  downloadCsv(checklistCsvRows(mainChecklist),
+    'xpiratez-v2-readiness-'+mainChecklist.rootRecipeId+'.csv');
+});
+$('main-readiness-json').addEventListener('click',()=>{
+  if(!mainChecklist)return;
+  downloadReadinessJson(mainChecklist,mainChecklistReviewed,
+    'xpiratez-v2-readiness-'+mainChecklist.rootRecipeId+'.json');
+});
+$('external-route-workbench-checklist-csv').addEventListener('click',()=>{
+  const checklist=externalRouteWorkbench?.calculation?.report?.checklists?.withAcquisition;
+  if(!checklist)return;
+  downloadCsv(checklistCsvRows(checklist),
+    'xpiratez-v2-workbench-readiness-'+checklist.rootRecipeId+'.csv');
+});
 $('stock-search').addEventListener('input',searchInventoryItems);
 $('stock-add').addEventListener('click',()=>{
   try{

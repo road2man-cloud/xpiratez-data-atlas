@@ -25,6 +25,7 @@ const planner={
       quantity:missing*(crafted?2:1)
     }]:[];
     return {
+      schema:'xpiratez-v2-manufacture-plan/v1',
       rootRecipeId,external,
       totals:{declaredCost:crafted?100:40,declaredTime:crafted?22:8},
       flags:crafted?['시설 미확인']:[],
@@ -55,6 +56,14 @@ test('workbench independently compares original, route-only and route+stock stat
   assert.equal(report.evidence.original.recipeIds[0],'STR_FACTORY');
   assert.equal(report.evidence.original.facilityCounts.unverified,1);
   assert.equal(report.evidence.original.researchCounts.unverified,1);
+  assert.equal(report.checklists.original.schema,'xpiratez-v2-single-goal-readiness-checklist/v1');
+  assert.equal(report.checklists.original.totals.shortageKinds,1);
+  assert.equal(report.checklists.editedRoute.totals.shortageUnits,18);
+  assert.equal(report.checklists.withAcquisition.totals.shortageUnits,10);
+  assert(report.checklistChanges.routeOnly.added.some(x=>x.requirementId==='STR_ORE'));
+  assert(report.checklistChanges.routeOnly.removed.some(x=>x.requirementId==='STR_A'));
+  assert(report.checklistChanges.acquisitionOnly.changed.some(x=>x.current.requirementId==='STR_ORE'));
+  assert.equal(report.scenarioReport.checklist.schema,'xpiratez-v2-single-goal-readiness-checklist/v1');
   assert.equal(report.sourceVersion,'v.o2');
   assert.equal(report.activePlan.shortageUnits,9);
   assert.equal(report.editedRouteBeforeAcquisition.shortageUnits,18);

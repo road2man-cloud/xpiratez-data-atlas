@@ -98,6 +98,27 @@ padding:8px;font-variant-numeric:tabular-nums}
 #external-route-workbench-evidence-actions{padding:10px 12px;border:1px solid #354b65;border-radius:7px;background:#102039}
 #external-route-workbench-evidence-actions ul{margin:8px 0 4px;padding-left:25px;max-height:250px;overflow:auto}
 #external-route-workbench-evidence-actions li{margin-bottom:4px;font-size:.81rem;overflow-wrap:anywhere}
+#main-readiness{margin:16px 0}
+#main-readiness .section-title{align-items:center;gap:12px;flex-wrap:wrap}
+#main-readiness .control-buttons{flex-wrap:wrap;align-items:center}
+#main-readiness label{display:flex;gap:8px;align-items:center;color:#d4e2f3;font-size:.88rem}
+#main-readiness select{padding:8px;border:1px solid #587493;border-radius:7px;background:#102238;color:#eaf3ff}
+#main-readiness-status{margin:10px 0}
+.manufacture-checklist-table{width:100%;min-width:1030px;font-variant-numeric:tabular-nums}
+.manufacture-checklist-table td{vertical-align:top}
+.manufacture-checklist-table td:first-child{text-align:center}
+.manufacture-checklist-table input.readiness-review{width:18px;height:18px;accent-color:#9dc7e9}
+.manufacture-checklist-table td:nth-last-child(4){min-width:155px}
+.manufacture-checklist-table td:nth-last-child(3){min-width:160px}
+.manufacture-checklist-table td:nth-last-child(2){min-width:260px}
+.manufacture-checklist-table td:nth-last-child(1){min-width:115px}
+.manufacture-checklist-table td:last-child button{white-space:nowrap}
+.manufacture-checklist-table .item-id{display:block;margin:4px 0;overflow-wrap:anywhere}
+#external-route-workbench-checklist-changes table{min-width:650px;width:100%}
+#external-route-workbench-checklist-changes ul{padding-left:25px;max-height:230px;overflow:auto}
+#external-route-workbench-checklist-changes li{font-size:.81rem;margin-bottom:3px;overflow-wrap:anywhere}
+#external-route-workbench-checklist-table table{min-width:1040px}
+
 
 .route-workbench-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
 .route-workbench-choice{background:#0f1f34;border:1px solid #36516f;border-radius:9px;padding:9px}

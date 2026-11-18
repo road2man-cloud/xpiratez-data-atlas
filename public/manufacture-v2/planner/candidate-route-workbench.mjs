@@ -5,6 +5,7 @@
 import { prepareExternalBasket, compareExternalBasket } from './external-basket-core.mjs';
 import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
 import { summarizeRouteReadiness, compareRouteEvidence } from './candidate-route-evidence.mjs';
+import { buildManufacturingReadinessChecklist, compareManufacturingChecklists } from './manufacturing-readiness-checklist.mjs';
 
 const optionsFor = (planner, id, assumeImplicit) =>
   planner.listProducers(id, assumeImplicit).map(x=>x.recipeId);
@@ -59,6 +60,9 @@ export function calculateRouteWorkbench({
   const sourceEvidence=summarizeRouteReadiness(currentPlan,evidenceContext);
   const editedEvidence=summarizeRouteReadiness(before,evidenceContext);
   const acquiredEvidence=summarizeRouteReadiness(after,evidenceContext);
+  const originalChecklist=buildManufacturingReadinessChecklist(currentPlan,sourceEvidence);
+  const editedChecklist=buildManufacturingReadinessChecklist(before,editedEvidence);
+  const acquiredChecklist=buildManufacturingReadinessChecklist(after,acquiredEvidence);
   const summarize=plan=>({
     shortageKinds:plan.external.length,
     shortageUnits:plan.external.reduce((sum,row)=>sum+row.quantity,0),
@@ -85,10 +89,20 @@ export function calculateRouteWorkbench({
       routeOnly:compareRouteEvidence(sourceEvidence,editedEvidence),
       acquisitionOnly:compareRouteEvidence(editedEvidence,acquiredEvidence)
     },
+    checklists:{
+      original:originalChecklist,
+      editedRoute:editedChecklist,
+      withAcquisition:acquiredChecklist
+    },
+    checklistChanges:{
+      routeOnly:compareManufacturingChecklists(originalChecklist,editedChecklist),
+      acquisitionOnly:compareManufacturingChecklists(editedChecklist,acquiredChecklist)
+    },
     scenarioReport:{
       ...comparison,
       routeChoices:{...verifiedChoices},
-      evidence:acquiredEvidence
+      evidence:acquiredEvidence,
+      checklist:acquiredChecklist
     },
     stockDraft:basket.additions.map(row=>row.id+'='+row.target).join('\n'),
     caveat:'세 결과는 같은 제조 목표의 독립 계산입니다. 하위 제조 경로의 변경과 가상 재료 확보가 서로 다른 영향을 낼 수 있으며, 실제 게임 세이브·재고는 수정하지 않습니다. 시설·연구·시장·이벤트 실행 조건은 별도입니다.'

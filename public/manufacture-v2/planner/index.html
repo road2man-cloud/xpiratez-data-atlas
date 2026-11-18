@@ -89,6 +89,28 @@
 <p class="note" id="plan-id"></p>
 <div class="summary-stats" id="summary"></div>
 <p id="completeness" class="note"></p>
+<section id="main-readiness" class="planner-card" aria-label="단일 제조 목표 준비 체크리스트">
+<div class="section-title"><h3>제조 준비·조달 체크리스트</h3><div class="control-buttons">
+<button id="main-readiness-csv" class="secondary" type="button" disabled>체크리스트 CSV 저장</button>
+<button id="main-readiness-json" class="secondary" type="button" disabled>체크리스트 JSON 저장</button>
+</div></div>
+<p class="note">계산된 부족 재료·시설·연구 근거·규칙상 불확실성을 실행 전 확인할 일로 정리합니다. 순서는 점검용이며 구매 가능성·연구 잠금·제조 가능성을 확정하지 않습니다. 체크 표시는 이 화면의 개인 확인 메모일 뿐 조건 충족을 뜻하지 않습니다.</p>
+<div class="control-buttons">
+<label for="main-readiness-filter">종류
+<select id="main-readiness-filter">
+<option value="all">전체</option>
+<option value="material">재료 확보</option>
+<option value="facility">시설 기능</option>
+<option value="research">연구 근거</option>
+<option value="reference">미해결 참조</option>
+<option value="rule">규칙 확인</option>
+</select>
+</label>
+<button id="main-readiness-reset" class="secondary" type="button">검토 표시 지우기</button>
+</div>
+<p id="main-readiness-status" class="note" role="status" aria-live="polite"></p>
+<div id="main-readiness-table" class="table-wrap"></div>
+</section>
 <section id="base-operations" class="planner-card" hidden aria-label="선택 기지 시설과 생산 주문">
 <h3>선택 기지의 시설·제조 주문</h3>
 <p id="base-operation-message" class="note"></p>
@@ -254,6 +276,14 @@
 <h5>편집 후 계획의 조건별 확인 항목</h5>
 <div id="external-route-workbench-requirements" class="table-wrap"></div>
 <div id="external-route-workbench-evidence-actions"></div>
+<h5>재료·시설·연구 통합 작업 체크리스트</h5>
+<p class="note">경로 편집과 재료 확보 가정으로 생기거나 사라진 확인 항목을 비교합니다. 재료가 사라져도 시설·연구 조건이 충족됐다고 판단하지 않습니다.</p>
+<div class="control-buttons">
+<button id="external-route-workbench-checklist-csv" class="secondary" type="button" disabled>작업대 체크리스트 CSV 저장</button>
+</div>
+<div id="external-route-workbench-checklist-summary" class="summary-stats"></div>
+<div id="external-route-workbench-checklist-changes" class="table-wrap"></div>
+<div id="external-route-workbench-checklist-table" class="table-wrap"></div>
 </section>
 <div id="external-basket-comparison" class="procurement-preview" hidden>
 <div class="section-title"><h4>일괄 확보 시나리오 A/B 비교</h4><button id="external-basket-compare-close" class="secondary" type="button">닫기</button></div>

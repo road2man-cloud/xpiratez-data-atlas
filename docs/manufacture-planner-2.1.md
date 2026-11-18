@@ -363,6 +363,49 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Unified single-goal readiness and procurement checklist (2026-11-18)
+
+The main manufacturing calculator now produces a **제조 준비·조달 체크리스트**
+without requiring an exploration candidate. It unifies the selected
+recipe's remaining external input quantities, saved-base facility
+observations, `discovered` research evidence, unresolved research
+references and rule uncertainty flags into a single ordered local
+worksheet. Each record retains an actionable next check, its rule/save
+evidence, a stable ID and the affected recipe IDs where applicable.
+
+The table groups these observations into material, facility function,
+research, unresolved reference and rule categories. Shared facility
+functions are counted only once per selected base, even when multiple
+recipes require the same function, with all affected recipes preserved.
+Known completed facilities and observed research IDs are omitted from
+the *outstanding-action* list, but the checklist does not assert that
+all conditions for execution are satisfied. Its order prefers checking
+external shortages, finishing or identifying facilities, then research
+evidence and uncertain rules. It does not rank cost, availability,
+production feasibility or independent item value.
+
+Users can filter by category, mark items as **locally reviewed**, reset
+review marks and export the full list as Korean UTF-8 CSV or JSON.
+The JSON records review marks separately as UI-only notes, never as
+proof that game requirements are complete. Export includes all items
+even when the view displays at most 200 rows. The direct material
+action prepares one item for the existing stock input controls, without
+applying it or modifying the imported save.
+
+The producer-route workbench now additionally compares checklist
+counts for its three independent scenarios (original, route edit,
+route edit plus assumed acquisition), and identifies newly introduced,
+removed and quantity/status-changed actions for each transition.
+The workbench can export its final checklist as CSV; its existing
+JSON export embeds all three complete checklists and their change
+records. Invalid or changed workbench inputs cannot export a stale
+checklist.
+
+Missing research IDs in `discovered` are **not** interpreted as proof
+of a locked recipe; unknown facility types and absent facility rosters
+remain unverified. Users' local saves, starting inventory, rule data
+and default routes are never changed by checklist viewing or export.
+
 ## Conservatively linked research and facility evidence (2026-11-18)
 
 The single-goal producer-route workbench now includes a conservative
