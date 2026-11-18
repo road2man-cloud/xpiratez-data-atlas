@@ -6,6 +6,8 @@ import {previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryov
   from '../public/manufacture-v2/planner/route-action-carryover.mjs';
 import {snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsvRows}
   from '../public/manufacture-v2/planner/route-action-refresh.mjs';
+import {appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsvRows,routeReviewHistoryTimelineCsvRows}
+  from '../public/manufacture-v2/planner/route-action-history.mjs';
 
 const workflow={
   schema:'xpiratez-v2-route-material-workflow/v1',
@@ -337,6 +339,77 @@ test('repositioned recipes carry unique notes and newly introduced nodes require
     ...saved,rootRecipeId:'STR_UNRELATED'
   }),/같은 v.o2/);
   assert.throws(()=>routeActionRefreshCsvRows({schema:'invalid'}),/올바르지/);
+});
+
+test('multiple recalculations keep excluded review records in a cumulative archive',()=>{
+  const prior=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=snapshotRouteActionReview(prior,{
+    reviewed:['material::STR_ORE','condition::research::STR_R1','recipe::1','recipe::2'],
+    notes:{
+      'material::STR_ORE':'최초 광석 4개 검토 기록',
+      'condition::research::STR_R1':'동일하게 유지되는 연구 메모',
+      'recipe::2':'최초 상위 제조 메모'
+    }
+  });
+  const boardWithOre=amount=>buildRouteActionBoard({
+    workflow:{...workflow,materials:workflow.materials.map(row=>
+      row.id==='STR_ORE'?{...row,totalAcquisition:amount}:row)},
+    finalChecklist:checklist
+  });
+  const changed5=boardWithOre(5);
+  const first=refreshRouteActionReview(changed5,saved);
+  const history1=appendRouteReviewHistory(null,first);
+  assert.equal(history1.events.length,1);
+  assert.equal(history1.entries.length,3);
+  assert(history1.entries.some(x=>x.note==='최초 광석 4개 검토 기록'));
+  assert(history1.entries.some(x=>x.note==='최초 상위 제조 메모'));
+  const beforeSecond=snapshotRouteActionReview(changed5,{
+    reviewed:new Set([...first.reviewed,'material::STR_ORE']),
+    notes:new Map([...first.notes,['material::STR_ORE','수정 5개 재검토 기록']])
+  });
+  const changed6=boardWithOre(6);
+  const second=refreshRouteActionReview(changed6,beforeSecond);
+  const history2=appendRouteReviewHistory(history1,second);
+  assert.equal(history2.events.length,2);
+  assert.equal(history2.entries.length,4);
+  assert.equal(history1.events.length,1);
+  assert.equal(history1.entries.length,3);
+  assert(history2.entries.some(x=>x.revision===2&&
+    x.note==='수정 5개 재검토 기록'));
+  const third=refreshRouteActionReview(changed6,
+    snapshotRouteActionReview(changed6,{reviewed:second.reviewed,notes:second.notes}));
+  const history3=appendRouteReviewHistory(history2,third);
+  assert.equal(history3.events.length,3);
+  assert.equal(history3.events[2].excluded,0);
+  assert.equal(history3.entries.length,4);
+  assert.equal(routeReviewHistoryCsvRows(history3).length,5);
+  assert.equal(routeReviewHistoryTimelineCsvRows(history3).length,4);
+  assert.equal(routeReviewHistoryTimelineCsvRows(history3)[3][5],0);
+  assert(!second.notes.has('material::STR_ORE'));
+  assert.equal(second.notes.get('condition::research::STR_R1'),
+    '동일하게 유지되는 연구 메모');
+  const copied=JSON.parse(JSON.stringify(history3));
+  const imported=importRouteReviewHistory(copied,'STR_FACTORY');
+  assert.deepEqual(imported.events,history3.events);
+  const merged=importRouteReviewHistory(copied,'STR_FACTORY',history3);
+  assert.equal(merged.events.length,3);
+  assert.equal(merged.entries.length,4);
+  const differentOrigin=JSON.parse(JSON.stringify(copied));
+  differentOrigin.historyId='another-session';
+  for(const event of differentOrigin.events)
+    event.eventId=event.eventId.replace(copied.historyId,'another-session');
+  for(const entry of differentOrigin.entries)
+    entry.eventId=entry.eventId.replace(copied.historyId,'another-session');
+  const combined=importRouteReviewHistory(differentOrigin,'STR_FACTORY',history3);
+  assert.equal(combined.events.length,6);
+  assert.equal(combined.entries.length,8);
+  const conflict=JSON.parse(JSON.stringify(copied));
+  conflict.entries[0].note='변조된 충돌 메모';
+  assert.throws(()=>importRouteReviewHistory(conflict,'STR_FACTORY',history3),
+    /상충하는 자료/);
+  assert.throws(()=>importRouteReviewHistory(copied,'OTHER_GOAL'),/같은 v.o2/);
+  assert.throws(()=>importRouteReviewHistory({...copied,sourceVersion:'v.o1'},'STR_FACTORY'),
+    /같은 v.o2/);
 });
 
 test('unknown review keys, oversized notes, stale or invalid prerequisites fail closed',()=>{

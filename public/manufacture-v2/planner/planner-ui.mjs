@@ -16,6 +16,7 @@ import { routeMaterialWorkflowCsvRows } from './route-material-workflow.mjs';
 import { projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview } from './route-action-board.mjs';
 import { previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryoverAudit,routeActionCarryoverAuditCsvRows } from './route-action-carryover.mjs';
 import { snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsvRows } from './route-action-refresh.mjs';
+import { appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsvRows,routeReviewHistoryTimelineCsvRows } from './route-action-history.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1160,6 +1161,102 @@ function renderRouteActionCarryoverPreview(){
     nf(preview.counts.excluded)+'건. 아직 현재 작업표에는 적용하지 않았습니다.'+
     ' 기존 사용자 메모는 적용 시에도 덮어쓰지 않습니다.';
 }
+function renderRouteActionHistory(rb,board){
+  const history=rb.reviewHistory;
+  const wrap=$('external-route-action-history');
+  // Keep the import control reachable on a newly opened workbench.
+  // Users can restore a downloaded archive without making a dummy edit.
+  wrap.hidden=false;
+  $('external-route-action-history-json').disabled=!history?.events?.length;
+  $('external-route-action-history-csv').disabled=!history?.events?.length;
+  $('external-route-action-history-timeline-csv').disabled=!history?.events?.length;
+  $('external-route-action-history-timeline-table').replaceChildren();
+  if(!history?.events?.length){
+    $('external-route-action-history-summary').replaceChildren();
+    $('external-route-action-history-table').replaceChildren();
+    make($('external-route-action-history-table'),'p',
+      '아직 보관된 변경 기록이 없습니다. 이전에 저장한 기록함 JSON이 있다면 위에서 불러올 수 있습니다.','note');
+    $('external-route-action-history-status').textContent=
+      '동일 작업의 검토는 현재 작업표에 보존되며, 변경으로 제외된 메모만 이후 이곳에 쌓입니다.';
+    return;
+  }
+  const summary=$('external-route-action-history-summary');
+  summary.replaceChildren();
+  metric(summary,'누적 변경 차수',nf(history.events.length)+'회');
+  metric(summary,'누적 제외 검토 기록',nf(history.entries.length)+'건');
+  metric(summary,'이전 메모 보존',nf(history.entries.filter(x=>x.note).length)+'건');
+  metric(summary,'이전 검토 표시',nf(history.entries.filter(x=>x.reviewed).length)+'건');
+  const timeline=$('external-route-action-history-timeline-table');
+  const all=make(timeline,'table'),heading=make(make(all,'thead'),'tr');
+  for(const title of ['차수','작업 수 변화','동일 작업','제외 기록','새 재검토 대상','메모 복원'])
+    make(heading,'th',title);
+  const body=make(all,'tbody');
+  for(const event of [...history.events].reverse().slice(0,60)){
+    const row=make(body,'tr');
+    for(const value of [
+      nf(event.revision)+'차',
+      nf(event.priorTasks)+' → '+nf(event.currentTasks),
+      nf(event.eligible)+'건',
+      nf(event.excluded)+'건',
+      nf(event.changedCurrent+event.newCurrent+event.ambiguousCurrent)+'건',
+      nf(event.restoredNotes)+'건'
+    ])make(row,'td',value);
+  }
+  if(history.events.length>60)
+    make(timeline,'p','최근 60회만 표시합니다. 차수 CSV에는 전체 변경 내역이 포함됩니다.','note');
+  const query=$('external-route-action-history-search').value.trim().toLocaleLowerCase('ko-KR');
+  const filter=$('external-route-action-history-filter').value;
+  const records=history.entries.filter(x=>
+    (filter==='all'||(filter==='notes'?!!x.note:x.reviewed))&&
+    (!query||[x.oldId,x.requirementId,x.label,x.note,x.reason,
+      ...x.affectedRecipeIds].some(t=>String(t||'')
+        .toLocaleLowerCase('ko-KR').includes(query))))
+    .reverse();
+  const target=$('external-route-action-history-table');
+  target.replaceChildren();
+  if(!records.length){
+    make(target,'p','현재 검색 조건에 해당하는 보관 메모가 없습니다.','note');
+  }else{
+    const table=make(target,'table'),head=make(make(table,'thead'),'tr');
+    for(const title of ['변경 차수','이전 작업','제외 이유','이전 메모·검토','현재 동일 ID 작업 탐색'])
+      make(head,'th',title);
+    const tbody=make(table,'tbody');
+    for(const item of records.slice(0,80)){
+      const tr=make(tbody,'tr');
+      make(tr,'td',nf(item.revision)+'차');
+      const identity=make(tr,'td');
+      make(identity,'strong',item.label);
+      make(identity,'code',item.requirementId,'item-id');
+      make(identity,'span',item.type+' · '+item.oldId,'note');
+      if(item.quantity!==null)
+        make(identity,'p','이전 가상 수량 '+nf(item.quantity),'note');
+      make(tr,'td',item.reason);
+      const memo=make(tr,'td');
+      make(memo,'span',item.note||'메모 없음','note');
+      if(item.reviewed)make(memo,'p','이전에 검토 표시됨','note');
+      const search=make(tr,'td');
+      // IDs are only navigation hints. Prior dependency signatures may differ.
+      const matches=board.tasks.filter(row=>
+        row.type===item.type&&row.requirementId===item.requirementId);
+      if(matches.length)
+        make(search,'p','같은 ID의 현재 작업 '+nf(matches.length)+
+          '건 · 동일 작업 의미/제조 가능성을 보장하지 않음','note');
+      for(const row of matches.slice(0,6)){
+        const go=make(search,'button',row.id,'route-link-jump');
+        go.type='button';
+        go.addEventListener('click',()=>focusRouteActionTask(row.id));
+      }
+      if(matches.length>6)
+        make(search,'p','그 외 '+nf(matches.length-6)+'건은 작업표에서 검색','note');
+      if(!matches.length)
+        make(search,'span','현재 같은 ID의 작업 없음','note');
+    }
+  }
+  $('external-route-action-history-status').textContent=
+    '누적 '+nf(history.entries.length)+'건 중 '+nf(records.length)+
+    '건 검색됨 · 화면 최대 80건 · JSON/CSV에는 전체 보존. '+
+    '이 기록함은 현재 브라우저 작업대에만 있으며 다운로드해야 별도 보관됩니다.';
+}
 function renderRouteActionRefresh(rb){
   const wrap=$('external-route-action-refresh');
   const refresh=rb.lastReviewRefresh;
@@ -1220,6 +1317,7 @@ function renderRouteActionRefresh(rb){
 }
 function clearRouteActionBoard(){
   $('external-route-action-refresh').hidden=true;
+  $('external-route-action-history').hidden=true;
   clearRouteActionCarryover();
   $('external-route-action-board').hidden=true;
   $('external-route-action-table').replaceChildren();
@@ -1256,6 +1354,7 @@ function renderRouteActionBoard(){
   const current=routeActionState();
   if(!current){clearRouteActionBoard();return;}
   const {rb,board}=current;
+  renderRouteActionHistory(rb,board);
   renderRouteActionRefresh(rb);
   const refreshKinds=new Map((rb.lastReviewRefresh?.changes||[]).map(x=>[x.id,x]));
   const review=projectRouteActionBoard(board,{
@@ -1652,9 +1751,13 @@ function resetRouteBatch() {
   // Retain only a prior review of this very same workbench/goal.
   // Subsequent recalculations cannot silently erase user notes.
   const snapshot=capturePendingRouteReview(wb?.routeBatch);
+  const history=wb?.routeBatch?.reviewHistory||null;
+  $('external-route-action-history-search').value='';
+  $('external-route-action-history-filter').value='all';
+  $('external-route-action-history-import-status').textContent='';
   if(wb)wb.routeBatch={selected:new Set(),amounts:new Map(),result:null,
     expanded:null,actionReviewed:new Set(),actionNotes:new Map(),actionPage:0,
-    pendingReviewSnapshot:snapshot,lastReviewRefresh:null};
+    pendingReviewSnapshot:snapshot,lastReviewRefresh:null,reviewHistory:history};
   $('external-route-batch-inputs').replaceChildren();
   $('external-route-batch-results').hidden=true;
   $('external-route-batch-trace').hidden=true;
@@ -1947,6 +2050,11 @@ function expandRouteBatch(){
       try{
         const refresh=refreshRouteActionReview(
           rb.expanded.report.actionBoard,rb.pendingReviewSnapshot);
+        // Stage the new archive atomically BEFORE applying any review marks.
+        // If a bounded archive cannot accept this revision, keep the
+        // snapshot and existing annotations separate for manual export.
+        const history=appendRouteReviewHistory(rb.reviewHistory,refresh);
+        rb.reviewHistory=history;
         rb.actionReviewed=refresh.reviewed;
         rb.actionNotes=refresh.notes;
         rb.lastReviewRefresh=refresh;
@@ -2829,6 +2937,61 @@ $('external-route-batch-workflow-filter').addEventListener('change',()=>{
 $('external-route-batch-workflow-search').addEventListener('input',()=>{
   if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
   renderRouteMaterialWorkflow();
+});
+$('external-route-action-history-search').addEventListener('input',()=>{
+  const current=routeActionState();
+  if(current)renderRouteActionHistory(current.rb,current.board);
+});
+$('external-route-action-history-filter').addEventListener('change',()=>{
+  const current=routeActionState();
+  if(current)renderRouteActionHistory(current.rb,current.board);
+});
+$('external-route-action-history-json').addEventListener('click',()=>{
+  const history=routeActionState()?.rb.reviewHistory;
+  if(!history?.events.length)return;
+  const url=URL.createObjectURL(new Blob([JSON.stringify(history,null,2)+'\n'],
+    {type:'application/json;charset=utf-8'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='xpiratez-v2-route-review-history-'+history.rootRecipeId+'.json';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$('external-route-action-history-csv').addEventListener('click',()=>{
+  const history=routeActionState()?.rb.reviewHistory;
+  if(!history?.events.length)return;
+  downloadCsv(routeReviewHistoryCsvRows(history),
+    'xpiratez-v2-route-review-history-'+history.rootRecipeId+'.csv');
+});
+$('external-route-action-history-timeline-csv').addEventListener('click',()=>{
+  const history=routeActionState()?.rb.reviewHistory;
+  if(!history?.events.length)return;
+  downloadCsv(routeReviewHistoryTimelineCsvRows(history),
+    'xpiratez-v2-route-review-revisions-'+history.rootRecipeId+'.csv');
+});
+$('external-route-action-history-import').addEventListener('change',async ()=>{
+  const input=$('external-route-action-history-import');
+  const file=input.files?.[0];if(!file)return;
+  const current=routeActionState();
+  const rb=current?.rb;
+  const status=$('external-route-action-history-import-status');
+  try{
+    if(!current)throw new Error('현재 제조 작업표를 먼저 계산하세요.');
+    if(file.size>12*1024*1024)throw new Error('보관함 JSON은 12MB 이하만 처리합니다.');
+    const imported=JSON.parse(await file.text());
+    if(routeActionState()?.rb!==rb||routeActionState()?.board!==current.board)
+      throw new Error('파일을 읽는 동안 제조 작업표가 변경되었습니다.');
+    const merged=importRouteReviewHistory(imported,current.board.rootRecipeId,
+      rb.reviewHistory);
+    const before=rb.reviewHistory?.events.length||0;
+    rb.reviewHistory=merged;
+    renderRouteActionHistory(rb,current.board);
+    status.textContent='기록함 병합 완료: '+nf(merged.events.length-before)+
+      '개 변경 차수 추가 · 기존 검토 메모와 체크, 게임 상태는 그대로입니다.';
+  }catch(error){
+    status.textContent='보관함 병합 중단: '+error.message+
+      ' · 기존 기록과 현재 검토 메모는 유지됩니다.';
+  }finally{input.value='';}
 });
 $('external-route-action-refresh-filter').addEventListener('click',()=>{
   const current=routeActionState();
