@@ -201,6 +201,17 @@ test('changed material quantities invalidate dependent recipes but keep independ
   assert.equal(preview.counts.eligible,1);
   assert.equal(preview.counts.eligibleReviewed,1);
   assert.equal(preview.counts.excluded,3);
+  const ore=preview.skipped.find(x=>x.oldId==='material::STR_ORE');
+  assert.deepEqual(ore.affectedRecipeIds,['STR_FACTORY','STR_SUB']);
+  assert.deepEqual(ore.currentRecipeTaskIds,['recipe::2','recipe::1']);
+  assert.deepEqual(ore.missingRecipeIds,[]);
+  assert.equal(preview.counts.excludedAffectedRecipeKinds,2);
+  const audit=routeActionCarryoverAudit(preview);
+  assert.deepEqual(audit.skipped.find(x=>x.oldId==='material::STR_ORE')
+    .affectedRecipeIds,['STR_FACTORY','STR_SUB']);
+  assert(routeActionCarryoverAuditCsvRows(preview)
+    .some(row=>row[0]==='제외'&&row[3]==='material::STR_ORE'&&
+      row[9].includes('STR_FACTORY')&&row[10].includes('recipe::2')));
   assert.equal(preview.matched[0].currentId,'condition::research::STR_R1');
   const merged=applyRouteActionCarryover(current,preview);
   assert(merged.reviewed.has('condition::research::STR_R1'));
@@ -227,6 +238,9 @@ test('ambiguous repeated recipe occurrences are skipped, not assigned arbitraril
   assert.equal(preview.counts.eligible,1);
   assert.equal(preview.counts.excluded,1);
   assert(preview.skipped.some(x=>x.oldId==='recipe::1'&&x.reason.includes('구분 불가')));
+  const skipped=preview.skipped.find(x=>x.oldId==='recipe::1');
+  assert.deepEqual(skipped.currentRecipeTaskIds,['recipe::3','recipe::1','recipe::2']);
+  assert.deepEqual(skipped.affectedRecipeIds,['STR_FACTORY','STR_SUB']);
 });
 
 test('unsafe carry-over is rejected without altering current notes or checkmarks',()=>{

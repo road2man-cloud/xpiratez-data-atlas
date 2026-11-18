@@ -133,7 +133,7 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-batch-workflow{margin-top:18px;padding-top:15px;border-top:1px solid #365f83}
 #external-route-batch-workflow .section-title{align-items:center;gap:12px;flex-wrap:wrap}
 #external-route-batch-workflow .control-buttons label{display:flex;gap:8px;align-items:center;font-size:.85rem}
-#external-route-batch-workflow .control-buttons select{padding:8px;background:#0b1e31;border:1px solid #53718e;color:#eaf2ff;border-radius:7px}
+#external-route-batch-workflow .control-buttons select,#external-route-batch-workflow .control-buttons input{padding:8px;background:#0b1e31;border:1px solid #53718e;color:#eaf2ff;border-radius:7px}
 #external-route-batch-workflow h5{margin:16px 0 7px}
 #external-route-batch-workflow-groups table,
 #external-route-batch-workflow-materials table,
@@ -175,6 +175,9 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-action-carryover-items td:nth-child(2){min-width:145px}
 #external-route-action-carryover-items td:nth-child(5){min-width:180px}
 #external-route-action-carryover-items td span.note{display:block;font-size:.75rem}
+.route-link-jump{display:inline-block;margin:5px 5px 2px 0;padding:4px 7px;border:1px solid #527a9e;background:#142d49;color:#cee8ff;border-radius:6px;font-size:.74rem;cursor:pointer;white-space:nowrap}
+.route-link-jump:hover,.route-link-jump:focus-visible{background:#244767;outline:1px solid #89bcf1}
+#external-route-action-board tr.route-action-focused{outline:2px solid #6998c8;outline-offset:-2px}
 
 #external-route-action-board .item-id{display:block;font-size:.74rem;overflow-wrap:anywhere}
 

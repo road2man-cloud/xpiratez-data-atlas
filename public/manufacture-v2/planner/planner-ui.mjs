@@ -1089,6 +1089,7 @@ function renderRouteActionCarryoverPreview(){
   metric(summary,'재사용 가능 메모',nf(preview.counts.eligibleNotes)+'건');
   metric(summary,'제조식 위치만 변경',nf(preview.counts.positionMoved)+'건');
   metric(summary,'변경·모호함으로 제외',nf(preview.counts.excluded)+'건');
+  metric(summary,'제외 기록 관련 기존 제조식',nf(preview.counts.excludedAffectedRecipeKinds)+'종');
   const target=$('external-route-action-carryover-items');
   target.replaceChildren();
   // Always show exclusions before matches so dangerous/stale rows are not
@@ -1096,11 +1097,15 @@ function renderRouteActionCarryoverPreview(){
   const rows=[
     ...preview.skipped.map(x=>({
       status:'이어받기 제외',label:x.label,type:x.type,
-      previous:x.oldId,current:'—',detail:x.reason
+      previous:x.oldId,current:'—',detail:x.reason,
+      affectedRecipeIds:x.affectedRecipeIds,
+      currentRecipeTaskIds:x.currentRecipeTaskIds,
+      missingRecipeIds:x.missingRecipeIds
     })),
     ...preview.matched.map(x=>({
       status:'동일한 작업',label:x.label,type:x.type,
       previous:x.oldId,current:x.currentId,
+      currentRecipeTaskIds:[x.currentId],affectedRecipeIds:[],missingRecipeIds:[],
       detail:(x.reviewed?'기존 검토 표시':'검토 메모만 있음')+
         (x.note?' · 메모 포함':'')+
         (x.positionChanged?' · 위치 변경':'')
@@ -1110,7 +1115,7 @@ function renderRouteActionCarryoverPreview(){
   else{
     const table=make(target,'table');
     const header=make(make(table,'thead'),'tr');
-    for(const title of ['판정','작업','기존 ID','현재 ID','판정 근거'])
+    for(const title of ['판정','작업','기존 ID','현재 ID','판정 근거','관련 제조식·작업 이동'])
       make(header,'th',title);
     const body=make(table,'tbody');
     for(const row of rows.slice(0,100)){
@@ -1121,6 +1126,25 @@ function renderRouteActionCarryoverPreview(){
       make(tr,'td',row.previous);
       make(tr,'td',row.current);
       make(tr,'td',row.detail);
+      const links=make(tr,'td');
+      if(row.affectedRecipeIds.length)
+        make(links,'p','이전 계획 영향 제조식: '+
+          row.affectedRecipeIds.slice(0,8).join(', ')+
+          (row.affectedRecipeIds.length>8?' 외 '+nf(row.affectedRecipeIds.length-8)+'종':''),'note');
+      if(row.missingRecipeIds.length)
+        make(links,'p','현재 계획에 없는 제조식: '+
+          row.missingRecipeIds.slice(0,8).join(', ')+
+          (row.missingRecipeIds.length>8?' 외 추가':''),'note');
+      for(const taskId of row.currentRecipeTaskIds.slice(0,8)){
+        const go=make(links,'button',taskId,'route-link-jump');
+        go.type='button';
+        go.setAttribute('aria-label',taskId+' 현재 작업표에서 찾기');
+        go.addEventListener('click',()=>focusRouteActionTask(taskId));
+      }
+      if(row.currentRecipeTaskIds.length>8)
+        make(links,'span','나머지 '+nf(row.currentRecipeTaskIds.length-8)+'건은 CSV/JSON 확인','note');
+      if(!row.currentRecipeTaskIds.length)
+        make(links,'span','현재 동일 ID 제조식 작업 없음','note');
     }
     if(rows.length>100)
       make(target,'p','대응·제외 결과 '+nf(rows.length-100)+
@@ -1149,6 +1173,17 @@ function clearRouteActionBoard(){
   $('external-route-action-filter').value='all';
   $('external-route-action-search').value='';
 }
+function focusRouteActionTask(taskId){
+  const current=routeActionState();
+  if(!current||!current.board.tasks.some(row=>row.id===taskId))return false;
+  $('external-route-action-filter').value='all';
+  $('external-route-action-search').value=taskId;
+  current.rb.actionFocusId=taskId;
+  current.rb.actionPage=0;
+  renderRouteActionBoard();
+  $('external-route-action-board').scrollIntoView({behavior:'smooth',block:'start'});
+  return true;
+}
 function routeActionState(){
   const rb=externalRouteWorkbench?.routeBatch;
   const board=rb?.expanded?.report?.actionBoard;
@@ -1168,6 +1203,7 @@ function renderRouteActionBoard(){
   const filter=$('external-route-action-filter').value;
   const text=$('external-route-action-search').value.trim().toLocaleLowerCase('ko-KR');
   const rows=review.tasks.filter(row=>
+    (!rb.actionFocusId||row.id===rb.actionFocusId)&&
     (filter==='all'||(filter==='pending'?!row.reviewed:row.type===filter))&&
     (!text||[row.label,row.requirementId,row.id].some(x=>
       String(x).toLocaleLowerCase('ko-KR').includes(text))));
@@ -1198,7 +1234,8 @@ function renderRouteActionBoard(){
     recipe:'제조식 검토'};
   for(const item of visible){
     const tr=make(tbody,'tr');
-    if(item.reviewed)tr.className='action-reviewed';
+    if(item.reviewed)tr.classList.add('action-reviewed');
+    if(rb.actionFocusId===item.id)tr.classList.add('route-action-focused');
     const checkCell=make(tr,'td'),check=make(checkCell,'input');
     check.type='checkbox';check.checked=item.reviewed;
     check.className='route-action-check';
@@ -1213,6 +1250,25 @@ function renderRouteActionBoard(){
     const title=make(tr,'td');
     make(title,'strong',item.label);
     make(title,'code',item.requirementId,'item-id');
+    if(item.type==='material'){
+      const known=externalRouteWorkbench?.routeBatch?.expanded?.report?.acquisitionLedger
+        ?.materials.some(x=>x.id===item.requirementId);
+      if(known){
+        const go=make(title,'button','조달 원장 보기','route-link-jump');
+        go.type='button';
+        go.addEventListener('click',()=>focusRouteLedgerMaterial(item.requirementId));
+      }
+      const flow=make(title,'button','제조 순서에서 재료 찾기','route-link-jump');
+      flow.type='button';
+      flow.addEventListener('click',()=>focusRouteWorkflowReference(item.requirementId));
+    }else if(item.type==='recipe'){
+      const step=Number(item.id.replace(/^recipe::/,''));
+      if(Number.isSafeInteger(step)&&step>0){
+        const go=make(title,'button','제조 순서에서 보기','route-link-jump');
+        go.type='button';
+        go.addEventListener('click',()=>focusRouteWorkflowReference(item.requirementId,step));
+      }
+    }
     if(item.quantity!==null)
       make(title,'span',(item.type==='recipe'?'참고 제조 ':'가상 수량 ')+
         nf(item.quantity)+(item.type==='recipe'?'회':'개'),'note');
@@ -1256,12 +1312,33 @@ function exportRouteActionBoardJson(){
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
 }
+function focusRouteWorkflowReference(referenceId,position=null){
+  const rb=externalRouteWorkbench?.routeBatch;
+  if(!rb?.expanded?.report?.materialWorkflow)return false;
+  $('external-route-batch-workflow-filter').value='all';
+  $('external-route-batch-workflow-search').value=referenceId;
+  rb.workflowFocusPosition=position;
+  renderRouteMaterialWorkflow();
+  $('external-route-batch-workflow').scrollIntoView({behavior:'smooth',block:'start'});
+  return true;
+}
+function focusRouteLedgerMaterial(materialId){
+  const rb=externalRouteWorkbench?.routeBatch;
+  if(!rb?.expanded?.report?.acquisitionLedger?.materials.some(x=>x.id===materialId))
+    return false;
+  $('external-route-batch-ledger-search').value=materialId;
+  rb.ledgerFocusId=materialId;
+  renderRouteAcquisitionLedger();
+  $('external-route-batch-ledger').scrollIntoView({behavior:'smooth',block:'start'});
+  return true;
+}
 function clearRouteMaterialWorkflow(){
   $('external-route-batch-workflow').hidden=true;
   $('external-route-batch-workflow-csv').disabled=true;
   for(const id of ['summary','groups','materials','recipes','consumption','changes'])
     $('external-route-batch-workflow-'+id).replaceChildren();
   $('external-route-batch-workflow-status').textContent='';
+  $('external-route-batch-workflow-search').value='';
   const filter=$('external-route-batch-workflow-filter');
   filter.replaceChildren();
   const option=make(filter,'option','전체');option.value='all';
@@ -1296,9 +1373,12 @@ function renderRouteMaterialWorkflow(){
       make(tr,'td',value);
   }
   const selected=filter.value;
+  const query=$('external-route-batch-workflow-search').value.trim().toLocaleLowerCase('ko-KR');
+  const availableTaskIds=new Set(routeActionState()?.board.tasks.map(x=>x.id)||[]);
   const order=new Map(workflow.procurementGroups.map((x,i)=>[x.id,i]));
   const materials=workflow.materials
-    .filter(x=>selected==='all'||x.categoryId===selected)
+    .filter(x=>(selected==='all'||x.categoryId===selected)&&
+      (!query||[x.id,x.name].some(t=>String(t||'').toLocaleLowerCase('ko-KR').includes(query))))
     .sort((a,b)=>(order.get(a.categoryId)??999)-(order.get(b.categoryId)??999)||
       b.totalAcquisition-a.totalAcquisition||a.id.localeCompare(b.id,'en'));
   const materialWrap=$('external-route-batch-workflow-materials');
@@ -1315,6 +1395,15 @@ function renderRouteMaterialWorkflow(){
   for(const item of materials.slice(0,200)){
     const tr=make(tbody,'tr'),name=make(tr,'td');
     make(name,'strong',item.name);make(name,'code',item.id,'item-id');
+    if(availableTaskIds.has('material::'+item.id)){
+      const go=make(name,'button','작업표에서 확인','route-link-jump');
+      go.type='button';go.addEventListener('click',()=>focusRouteActionTask('material::'+item.id));
+    }
+    if(externalRouteWorkbench?.routeBatch?.expanded?.report?.acquisitionLedger
+      ?.materials.some(x=>x.id===item.id)){
+      const go=make(name,'button','조달 원장 보기','route-link-jump');
+      go.type='button';go.addEventListener('click',()=>focusRouteLedgerMaterial(item.id));
+    }
     make(tr,'td',item.categoryLabel);
     make(tr,'td',originLabel[item.origin]||'근거 확인');
     for(const v of [item.startingInventory,item.totalAcquisition,item.remainingShortage])
@@ -1333,11 +1422,21 @@ function renderRouteMaterialWorkflow(){
     '직접 필요 재료','명시 제조비 / 작업량'
   ])make(sHead,'th',value);
   const sBody=make(sequence,'tbody');
-  for(const step of workflow.recipeSequenceAfter.slice(0,200)){
+  const focusPosition=externalRouteWorkbench?.routeBatch?.workflowFocusPosition;
+  const displayedSteps=workflow.recipeSequenceAfter.filter(step=>
+    (focusPosition===null||focusPosition===undefined||step.position===focusPosition)&&
+    (!query||[step.recipeId,step.recipeName,...step.inputMaterials.flatMap(x=>[x.id,x.name])]
+      .some(t=>String(t||'').toLocaleLowerCase('ko-KR').includes(query))));
+  for(const step of displayedSteps.slice(0,200)){
     const tr=make(sBody,'tr');
     make(tr,'td',nf(step.position));
     const name=make(tr,'td');
     make(name,'strong',step.recipeName);make(name,'code',step.recipeId,'item-id');
+    if(availableTaskIds.has('recipe::'+step.position)){
+      const go=make(name,'button','작업표에서 확인','route-link-jump');
+      go.type='button';
+      go.addEventListener('click',()=>focusRouteActionTask('recipe::'+step.position));
+    }
     make(tr,'td',nf(step.batches)+'회');
     make(tr,'td',step.prerequisiteStepNumbers.length?
       step.prerequisiteStepNumbers.map(n=>'#'+nf(n)).join(', '):'없음');
@@ -1351,8 +1450,8 @@ function renderRouteMaterialWorkflow(){
       make(input,'p','기타 재료 '+nf(step.inputMaterials.length-15)+'종은 JSON에 포함','note');
     make(tr,'td',nf(step.declaredCost)+' / '+nf(step.declaredTime));
   }
-  if(workflow.recipeSequenceAfter.length>200)
-    make(recipes,'p','처음 200개의 제조식 노드만 표시합니다. 전체 순서는 JSON/CSV에 포함됩니다.','note');
+  if(displayedSteps.length>200)
+    make(recipes,'p','검색 결과 중 처음 200개의 제조식 노드만 표시합니다. 전체 순서는 JSON/CSV에 포함됩니다.','note');
   const consumed=$('external-route-batch-workflow-consumption');consumed.replaceChildren();
   if(!workflow.stockConsumption.length)
     make(consumed,'p','현재 계산에서 재고 차감을 확인할 항목이 없습니다.','note');
@@ -1387,8 +1486,9 @@ function renderRouteMaterialWorkflow(){
       make(changeWrap,'p','나머지 변경 제조식은 JSON에서 확인할 수 있습니다.','note');
   }
   $('external-route-batch-workflow-status').textContent=
-    '조달 사유별 '+nf(materials.length)+'종 표시 · 의존관계 기준 제조식 '+
-    nf(workflow.recipeSequenceAfter.length)+'개 노드. 구매 가능성·게임 내 제조 실행 순서는 확인되지 않았습니다.';
+    '조달 사유별 '+nf(materials.length)+'종 검색됨 · 관련 제조식 '+
+    nf(displayedSteps.length)+'개 노드 (전체 '+nf(workflow.recipeSequenceAfter.length)+
+    '개). 화면 최대 200건 · 구매 가능성·게임 내 제조 실행 순서는 확인되지 않았습니다.';
   main.hidden=false;
   $('external-route-batch-workflow-csv').disabled=false;
 }
@@ -1422,8 +1522,9 @@ function renderRouteAcquisitionLedger(){
       ' (단가 없는 '+nf(summary.unpricedKinds)+'종 제외)');
   const query=$('external-route-batch-ledger-search').value.trim().toLocaleLowerCase('ko-KR');
   const sort=$('external-route-batch-ledger-sort').value;
-  const list=ledger.materials.filter(x=>!query||
-    [x.id,x.name].some(s=>String(s||'').toLocaleLowerCase('ko-KR').includes(query)));
+  const focused=externalRouteWorkbench?.routeBatch?.ledgerFocusId;
+  const list=ledger.materials.filter(x=>(!focused||x.id===focused)&&(!query||
+    [x.id,x.name].some(s=>String(s||'').toLocaleLowerCase('ko-KR').includes(query))));
   list.sort((a,b)=>{
     if(sort==='name')return a.name.localeCompare(b.name,'ko')||a.id.localeCompare(b.id,'en');
     if(sort==='remaining')return b.remainingShortage-a.remainingShortage||
@@ -1441,10 +1542,19 @@ function renderRouteAcquisitionLedger(){
     '규칙 참고 단가','확보분 참고가'
   ])make(header,'th',title);
   const body=make(table,'tbody');
+  const taskIds=new Set(routeActionState()?.board.tasks.map(x=>x.id)||[]);
   for(const item of list.slice(0,200)){
     const tr=make(body,'tr'),name=make(tr,'td');
     make(name,'strong',item.name);
     make(name,'code',item.id,'item-id');
+    if(taskIds.has('material::'+item.id)){
+      const go=make(name,'button','작업표에서 확인','route-link-jump');
+      go.type='button';
+      go.addEventListener('click',()=>focusRouteActionTask('material::'+item.id));
+    }
+    const workflowGo=make(name,'button','제조식의 사용처 찾기','route-link-jump');
+    workflowGo.type='button';
+    workflowGo.addEventListener('click',()=>focusRouteWorkflowReference(item.id));
     for(const value of [
       item.startingInventory,item.initialAcquisition,...item.rounds,
       item.totalAcquisition-item.initialAcquisition,
@@ -1493,6 +1603,9 @@ function routeBatchInvalidate() {
   wb.routeBatch.actionReviewed=new Set();
   wb.routeBatch.actionNotes=new Map();
   wb.routeBatch.actionPage=0;
+  wb.routeBatch.actionFocusId=null;
+  wb.routeBatch.workflowFocusPosition=null;
+  wb.routeBatch.ledgerFocusId=null;
   $('external-route-batch-results').hidden=true;
   clearRouteAcquisitionLedger();
   $('external-route-batch-trace').hidden=true;
@@ -2597,15 +2710,25 @@ $('external-route-batch-clear').addEventListener('click',()=>{
 });
 $('external-route-batch-preview').addEventListener('click',runRouteBatch);
 $('external-route-batch-expand').addEventListener('click',expandRouteBatch);
-$('external-route-batch-ledger-search').addEventListener('input',renderRouteAcquisitionLedger);
+$('external-route-batch-ledger-search').addEventListener('input',()=>{
+  if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.ledgerFocusId=null;
+  renderRouteAcquisitionLedger();
+});
 $('external-route-batch-ledger-sort').addEventListener('change',renderRouteAcquisitionLedger);
-$('external-route-batch-workflow-filter').addEventListener('change',renderRouteMaterialWorkflow);
+$('external-route-batch-workflow-filter').addEventListener('change',()=>{
+  if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
+  renderRouteMaterialWorkflow();
+});
+$('external-route-batch-workflow-search').addEventListener('input',()=>{
+  if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
+  renderRouteMaterialWorkflow();
+});
 $('external-route-action-filter').addEventListener('change',()=>{
-  const current=routeActionState();if(current)current.rb.actionPage=0;
+  const current=routeActionState();if(current){current.rb.actionPage=0;current.rb.actionFocusId=null;}
   renderRouteActionBoard();
 });
 $('external-route-action-search').addEventListener('input',()=>{
-  const current=routeActionState();if(current)current.rb.actionPage=0;
+  const current=routeActionState();if(current){current.rb.actionPage=0;current.rb.actionFocusId=null;}
   renderRouteActionBoard();
 });
 $('external-route-action-prev').addEventListener('click',()=>{
@@ -2693,7 +2816,7 @@ $('external-route-action-carryover-apply').addEventListener('click',()=>{
     current.rb.actionReviewed=merged.reviewed;
     current.rb.actionNotes=merged.notes;
     current.rb.actionCarryoverPreview=null;
-    $('external-route-action-carryover-apply').disabled=true;
+    clearRouteActionCarryover();
     current.rb.actionPage=0;
     renderRouteActionBoard();
     $('external-route-action-carryover-status').textContent=

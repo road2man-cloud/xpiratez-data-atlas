@@ -56,6 +56,40 @@ function internGraph(rows,intern) {
   return {records,bySignature};
 }
 
+// The prior dependency graph provides traceable impact, not proof that
+// every similarly named current recipe occurrence is identical.
+function priorRecipeImpact(priorRows,currentRows) {
+  const outgoing=new Map(priorRows.map(row=>[row.id,[]]));
+  const previous=new Map(priorRows.map(row=>[row.id,row]));
+  for(const row of priorRows)
+    for(const dependency of row.dependsOn)
+      outgoing.get(dependency).push(row.id);
+  const currentRecipes=new Map();
+  for(const row of currentRows){
+    if(row.type!=='recipe')continue;
+    const found=currentRecipes.get(row.requirementId)||[];
+    found.push(row.id);currentRecipes.set(row.requirementId,found);
+  }
+  return oldId=>{
+    const visited=new Set(),queue=[oldId],recipeIds=new Set();
+    for(let index=0;index<queue.length;index++){
+      const id=queue[index];
+      if(visited.has(id))continue;
+      visited.add(id);
+      const row=previous.get(id);
+      if(row.type==='recipe')recipeIds.add(row.requirementId);
+      for(const related of row.relatedRecipeIds)recipeIds.add(related);
+      for(const dependent of outgoing.get(id)||[])queue.push(dependent);
+    }
+    const affectedRecipeIds=[...recipeIds].sort(compareText);
+    const currentRecipeTaskIds=affectedRecipeIds.flatMap(id=>currentRecipes.get(id)||[]);
+    return {
+      affectedRecipeIds,
+      currentRecipeTaskIds,
+      missingRecipeIds:affectedRecipeIds.filter(id=>!currentRecipes.has(id))
+    };
+  };
+}
 export function previewRouteActionCarryover(board,exported){
   if(board?.schema!==BOARD || exported?.schema!==REVIEW ||
     board.sourceVersion!=='v.o2'||exported.sourceVersion!=='v.o2'||
@@ -69,6 +103,7 @@ export function previewRouteActionCarryover(board,exported){
   const saved=internGraph(exported.tasks,dictionary);
   const current=internGraph(board.tasks,dictionary);
   const matched=[],skipped=[];
+  const impact=priorRecipeImpact(exported.tasks,board.tasks);
   const marked=exported.tasks.filter(x=>x.reviewed||x.note);
   for(const {row:oldRow,token} of saved.records){
     if(!oldRow.reviewed && !oldRow.note)continue;
@@ -78,6 +113,7 @@ export function previewRouteActionCarryover(board,exported){
       skipped.push({
         oldId:oldRow.id,label:oldRow.label,type:oldRow.type,
         reviewed:oldRow.reviewed,hasNote:!!oldRow.note,
+        ...impact(oldRow.id),
         reason:newGroup.length===0?'현재 계획에서 조건·수량·의존관계가 달라짐':
           '동일한 작업 의미의 반복 항목이 있어 안전하게 구분 불가'
       });
@@ -99,7 +135,9 @@ export function previewRouteActionCarryover(board,exported){
     positionMoved:matched.filter(x=>x.positionChanged).length,
     excluded:skipped.length,
     excludedReviewed:skipped.filter(x=>x.reviewed).length,
-    excludedNotes:skipped.filter(x=>x.hasNote).length
+    excludedNotes:skipped.filter(x=>x.hasNote).length,
+    excludedAffectedRecipeKinds:new Set(skipped.flatMap(x=>x.affectedRecipeIds)).size,
+    excludedCurrentRecipeOccurrences:new Set(skipped.flatMap(x=>x.currentRecipeTaskIds)).size
   };
   return {
     schema:PREVIEW,sourceVersion:'v.o2',
@@ -124,8 +162,12 @@ export function routeActionCarryoverAudit(preview) {
     matched:preview.matched.map(({oldId,currentId,type,label,reviewed,note,positionChanged})=>({
       oldId,currentId,type,label,reviewed,hasNote:!!note,positionChanged
     })),
-    skipped:preview.skipped.map(({oldId,label,type,reviewed,hasNote,reason})=>({
-      oldId,label,type,reviewed,hasNote,reason
+    skipped:preview.skipped.map(({oldId,label,type,reviewed,hasNote,reason,
+      affectedRecipeIds,currentRecipeTaskIds,missingRecipeIds})=>({
+      oldId,label,type,reviewed,hasNote,reason,
+      affectedRecipeIds:[...affectedRecipeIds],
+      currentRecipeTaskIds:[...currentRecipeTaskIds],
+      missingRecipeIds:[...missingRecipeIds]
     })),
     caveat:'비교 판정의 보존용 기록이며 실제 게임의 제조 가능성 또는 확보 상태를 증명하지 않습니다. 메모 본문은 개인정보 보호를 위해 포함하지 않습니다.'
   };
@@ -133,12 +175,14 @@ export function routeActionCarryoverAudit(preview) {
 export function routeActionCarryoverAuditCsvRows(preview) {
   const audit=routeActionCarryoverAudit(preview);
   return [
-    ['판정','작업 구분','작업명','기존 작업 ID','현재 작업 ID','검토 표시','메모 존재','위치 변경','제외 사유'],
+    ['판정','작업 구분','작업명','기존 작업 ID','현재 작업 ID','검토 표시','메모 존재','위치 변경','제외 사유','영향받는 기존 제조식 ID','현재 같은 ID 제조식 작업 ID','현재 없는 제조식 ID'],
     ...audit.skipped.map(x=>['제외',x.type,x.label,x.oldId,'',
-      x.reviewed?'예':'아니요',x.hasNote?'예':'아니요','',x.reason]),
+      x.reviewed?'예':'아니요',x.hasNote?'예':'아니요','',x.reason,
+      x.affectedRecipeIds.join('; '),x.currentRecipeTaskIds.join('; '),
+      x.missingRecipeIds.join('; ')]),
     ...audit.matched.map(x=>['재사용 가능',x.type,x.label,x.oldId,x.currentId,
       x.reviewed?'예':'아니요',x.hasNote?'예':'아니요',
-      x.positionChanged?'예':'아니요',''])
+      x.positionChanged?'예':'아니요','','','',''])
   ];
 }
 export function applyRouteActionCarryover(board,preview,{
