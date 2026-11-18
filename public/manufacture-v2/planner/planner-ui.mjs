@@ -352,10 +352,14 @@ function updateInventory(id,quantity) {
   renderInventory();
   renderPlan();
 }
+function consolidatedRows(plan) {
+  return plan.consolidated.filter(x=>x.demand||x.produced||
+    x.remainingInventory||x.remainingProduced);
+}
 function renderConsolidated(plan) {
   const parent=$('consolidated');parent.replaceChildren();
-  const rows=plan.consolidated.filter(x=>x.demand||x.produced||
-    x.remainingInventory||x.remainingProduced);
+  const rows=consolidatedRows(plan);
+  $('consolidated-csv').disabled=!rows.length;
   if(!rows.length){make(parent,'p','현재 제조식에는 재료 소요가 선언되어 있지 않습니다.','note');return;}
   const table=make(parent,'table');
   const head=make(table,'thead'),heading=make(head,'tr');
@@ -581,23 +585,37 @@ $('recalculate').addEventListener('click',renderPlan);
 $('batches').addEventListener('change',renderPlan);
 $('max-depth').addEventListener('change',renderPlan);
 $('assume-implicit').addEventListener('change',()=>{state.choices={};renderPlan();});
-$('external-csv').addEventListener('click',()=>{
-  if(!state.plan?.external?.length)return;
-  // Spreadsheet-safe CSV: quote all fields and neutralize formula-leading values.
+function downloadCsv(rows, filename) {
+  // UTF-8 BOM for Korean spreadsheets, CRLF and formula-injection escaping.
   const cell=value=>{
     const raw=String(value??'');
     const safe=/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;
     return '"'+safe.replace(/"/g,'""')+'"';
   };
-  const rows=[['아이템 ID','이름','필요 수량','원본 구매 단가','참고 구매가','미확장 이유'],
-    ...state.plan.external.map(x=>[x.id,x.name,x.quantity,x.listedUnitBuy,
-      x.listedBuySubtotal,x.reasons.join('; ')])];
   const csv='\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
   const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   const a=document.createElement('a');
-  a.href=url;a.download='xpiratez-v2-external-'+state.plan.rootRecipeId+'.csv';
+  a.href=url;a.download=filename;
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
+}
+$('consolidated-csv').addEventListener('click',()=>{
+  if(!state.plan)return;
+  const rows=consolidatedRows(state.plan);
+  if(!rows.length)return;
+  downloadCsv([
+    ['아이템 ID','이름','총 필요','보유 사용','생산물 재사용','제조 산출','외부 조달','보유 잔량','생산 잔량'],
+    ...rows.map(x=>[x.id,x.name,x.demand,x.initialUsed,x.surplusUsed,x.produced,
+      x.external,x.remainingInventory,x.remainingProduced])
+  ],'xpiratez-v2-materials-'+state.plan.rootRecipeId+'.csv');
+});
+$('external-csv').addEventListener('click',()=>{
+  if(!state.plan?.external?.length)return;
+  downloadCsv([
+    ['아이템 ID','이름','필요 수량','원본 구매 단가','참고 구매가','미확장 이유'],
+    ...state.plan.external.map(x=>[x.id,x.name,x.quantity,x.listedUnitBuy,
+      x.listedBuySubtotal,x.reasons.join('; ')])
+  ],'xpiratez-v2-external-'+state.plan.rootRecipeId+'.csv');
 });
 $('download-plan').addEventListener('click',()=>{
   if(!state.plan)return;

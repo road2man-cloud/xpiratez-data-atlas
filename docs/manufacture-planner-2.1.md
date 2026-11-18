@@ -335,6 +335,17 @@ A zero material shortage in a hypothetical calculation never means
 those items have actually been obtained. The evidence matrix is
 included in the what-if JSON download; no save file is changed.
 
+## Full single-recipe material ledger export
+
+The consolidated materials section provides **전체 수급표 CSV 저장**.
+Unlike the on-screen table (limited to 200 displayed entries), the exported
+Korean UTF-8 CSV includes every calculated material entry: total demand,
+starting inventory consumed, surplus production reused, manufactured output,
+unresolved external demand, and remaining starting/produced quantities.
+The export reflects the current selected recipe, quantities, path choices
+and loaded inventory. It is a planning ledger, not a game command, and
+does not alter saves or stock. CSV text is escaped for spreadsheet import.
+
 ## Shared first-action checklist
 
 The evidence matrix now contains a consolidated **first-action checklist**.

@@ -179,8 +179,9 @@
 <p class="note">각 제조 단계 비용은 <em>명시된 제조비 × 제조 횟수</em>입니다. 기초 재고와 앞선 제조에서 남은 산출물은 후속 분기에 재사용하며, 계산 순서에 따라 경로가 달라질 수 있습니다.</p>
 <div id="tree" class="planner-tree"></div>
 </section>
-<section class="planner-card"><h3>통합 재료·재고 수급표</h3>
-<p class="note">모든 제조 단계에서 같은 재료 ID를 합산합니다. 입력한 보유 재고를 먼저 사용하고, 이미 만든 잉여 산출물·동시 생산물을 재사용합니다.</p>
+<section class="planner-card">
+<div class="section-title"><h3>통합 재료·재고 수급표</h3><button id="consolidated-csv" type="button" class="secondary" disabled>전체 수급표 CSV 저장</button></div>
+<p class="note">모든 제조 단계에서 같은 재료 ID를 합산합니다. 입력한 보유 재고를 먼저 사용하고, 이미 만든 잉여 산출물·동시 생산물을 재사용합니다. 화면에는 최대 200종, CSV에는 전체 계산 항목이 포함됩니다.</p>
 <div id="consolidated" class="table-wrap"></div>
 </section>
 <section class="planner-card">

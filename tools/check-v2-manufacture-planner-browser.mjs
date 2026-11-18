@@ -51,6 +51,15 @@ try {
   assert((await page.locator('#tree').innerText()).includes('3회 · 제조비 30,000'));
   assert((await page.locator('#summary').innerText()).includes('명시된 제조비 합'));
   assert(await page.locator('#download-plan').isEnabled());
+  assert(await page.locator('#consolidated-csv').isEnabled());
+  const materialsDownload=page.waitForEvent('download');
+  await page.locator('#consolidated-csv').click();
+  const materialsFile=await materialsDownload;
+  assert.equal(materialsFile.suggestedFilename(),'xpiratez-v2-materials-STR_3RL_HE_XXX.csv');
+  const materialsCsv=fs.readFileSync(await materialsFile.path(),'utf8');
+  assert(materialsCsv.startsWith('\uFEFF"아이템 ID","이름","총 필요"'));
+  assert(materialsCsv.includes('"STR_CHEMICALS"'));
+  assert(materialsCsv.includes('\r\n'));
   await chemical.selectOption('external');
   assert(await page.locator('#external-csv').isEnabled());
   const externalDownload=page.waitForEvent('download');
