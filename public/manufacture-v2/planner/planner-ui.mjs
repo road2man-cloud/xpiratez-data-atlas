@@ -13,6 +13,7 @@ import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch
 import { expandRouteAwareReadinessBatch } from './route-aware-cascade.mjs';
 import { routeAcquisitionLedgerCsvRows } from './route-acquisition-ledger.mjs';
 import { routeMaterialWorkflowCsvRows } from './route-material-workflow.mjs';
+import { projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview } from './route-action-board.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1062,6 +1063,125 @@ function renderWorkbenchEvidence() {
       make(actions,'p','나머지 '+nf(list.length-80)+'건은 JSON에 포함됩니다.','note');
   }
 }
+function clearRouteActionBoard(){
+  $('external-route-action-board').hidden=true;
+  $('external-route-action-table').replaceChildren();
+  $('external-route-action-status').textContent='';
+  $('external-route-action-import-status').textContent='';
+  $('external-route-action-import').value='';
+  $('external-route-action-import').disabled=true;
+  for(const id of ['csv','json','clear','prev','next'])
+    $('external-route-action-'+id).disabled=true;
+  $('external-route-action-page').textContent='페이지 0/0';
+  $('external-route-action-filter').value='all';
+  $('external-route-action-search').value='';
+}
+function routeActionState(){
+  const rb=externalRouteWorkbench?.routeBatch;
+  const board=rb?.expanded?.report?.actionBoard;
+  if(!rb||!board)return null;
+  if(!rb.actionReviewed)rb.actionReviewed=new Set();
+  if(!rb.actionNotes)rb.actionNotes=new Map();
+  return {rb,board};
+}
+function renderRouteActionBoard(){
+  const current=routeActionState();
+  if(!current){clearRouteActionBoard();return;}
+  const {rb,board}=current;
+  const review=projectRouteActionBoard(board,{
+    reviewed:rb.actionReviewed,notes:rb.actionNotes
+  });
+  const status=$('external-route-action-status');
+  const filter=$('external-route-action-filter').value;
+  const text=$('external-route-action-search').value.trim().toLocaleLowerCase('ko-KR');
+  const rows=review.tasks.filter(row=>
+    (filter==='all'||(filter==='pending'?!row.reviewed:row.type===filter))&&
+    (!text||[row.label,row.requirementId,row.id].some(x=>
+      String(x).toLocaleLowerCase('ko-KR').includes(text))));
+  const pageSize=100;
+  const pages=Math.max(1,Math.ceil(rows.length/pageSize));
+  rb.actionPage=Math.max(0,Math.min(rb.actionPage||0,pages-1));
+  const start=rb.actionPage*pageSize;
+  const visible=rows.slice(start,start+pageSize);
+  $('external-route-action-page').textContent='페이지 '+nf(rb.actionPage+1)+
+    '/'+nf(pages)+' · '+(visible.length?nf(start+1)+'~'+nf(start+visible.length):'0')+
+    ' / '+nf(rows.length)+'건';
+  $('external-route-action-prev').disabled=rb.actionPage===0;
+  $('external-route-action-next').disabled=rb.actionPage>=pages-1;
+  status.textContent='전체 '+nf(review.summary.tasks)+'건 · 재료 확인 '+
+    nf(review.summary.material)+'건 · 연구·시설·규칙 확인 '+
+    nf(review.summary.condition)+'건 · 제조식 검토 '+nf(review.summary.recipe)+
+    '건 · 검토 표시 '+nf(review.summary.reviewed)+'건 (미검토 '+
+    nf(review.summary.unreviewed)+'건) · 현재 '+nf(rows.length)+
+    '건 표시. 검토 표시와 선행 확인 수는 게임 내 완료 판정이 아닙니다.';
+  const parent=$('external-route-action-table');parent.replaceChildren();
+  const table=make(parent,'table'),head=make(make(table,'thead'),'tr');
+  for(const heading of [
+    '사용자 검토','작업 순서','작업 구분','항목 / 참고 수량',
+    '선행 확인 작업','다음 확인할 일','사용자 메모'
+  ])make(head,'th',heading);
+  const tbody=make(table,'tbody');
+  const labels={material:'재료 확보 확인',condition:'연구·시설·규칙 검토',
+    recipe:'제조식 검토'};
+  for(const item of visible){
+    const tr=make(tbody,'tr');
+    if(item.reviewed)tr.className='action-reviewed';
+    const checkCell=make(tr,'td'),check=make(checkCell,'input');
+    check.type='checkbox';check.checked=item.reviewed;
+    check.className='route-action-check';
+    check.setAttribute('aria-label',item.label+' 사용자 검토 표시');
+    check.addEventListener('change',()=>{
+      if(check.checked)rb.actionReviewed.add(item.id);
+      else rb.actionReviewed.delete(item.id);
+      renderRouteActionBoard();
+    });
+    make(tr,'td',nf(item.order));
+    make(tr,'td',labels[item.type]||item.type);
+    const title=make(tr,'td');
+    make(title,'strong',item.label);
+    make(title,'code',item.requirementId,'item-id');
+    if(item.quantity!==null)
+      make(title,'span',(item.type==='recipe'?'참고 제조 ':'가상 수량 ')+
+        nf(item.quantity)+(item.type==='recipe'?'회':'개'),'note');
+    const deps=make(tr,'td');
+    make(deps,'span',item.dependsOn.length?
+      nf(item.dependsOn.length)+'건 중 미검토 '+nf(item.unreviewedPrerequisiteIds.length)+'건':
+      '직접 선행 작업 없음');
+    if(item.unreviewedPrerequisiteIds.length)
+      make(deps,'p',item.unreviewedPrerequisiteIds.slice(0,8).join(', ')+
+        (item.unreviewedPrerequisiteIds.length>8?' 외 추가':''),'note');
+    const action=make(tr,'td');
+    make(action,'span',item.action);
+    make(action,'p',item.detail,'note');
+    const notes=make(tr,'td'),input=make(notes,'input');
+    input.type='text';input.maxLength=300;
+    input.className='route-action-note';
+    input.value=item.note;
+    input.placeholder='검토 메모 (300자)';
+    input.setAttribute('aria-label',item.label+' 검토 메모');
+    input.addEventListener('input',()=>{
+      rb.actionNotes.set(item.id,input.value);
+    });
+  }
+  if(rows.length>pageSize)
+    make(parent,'p','대량 작업표는 100건씩 페이지로 표시합니다. CSV·JSON에는 전체 작업과 사용자 메모를 보존합니다.','note');
+  $('external-route-action-board').hidden=false;
+  $('external-route-action-import').disabled=false;
+  for(const id of ['csv','json','clear'])$('external-route-action-'+id).disabled=false;
+}
+function exportRouteActionBoardJson(){
+  const current=routeActionState();
+  if(!current)return;
+  const review=projectRouteActionBoard(current.board,{
+    reviewed:current.rb.actionReviewed,notes:current.rb.actionNotes
+  });
+  const payload=JSON.stringify(review,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([payload],{type:'application/json'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='xpiratez-v2-route-action-review-'+review.rootRecipeId+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
 function clearRouteMaterialWorkflow(){
   $('external-route-batch-workflow').hidden=true;
   $('external-route-batch-workflow-csv').disabled=true;
@@ -1199,6 +1319,7 @@ function renderRouteMaterialWorkflow(){
   $('external-route-batch-workflow-csv').disabled=false;
 }
 function clearRouteAcquisitionLedger(){
+  clearRouteActionBoard();
   clearRouteMaterialWorkflow();
   $('external-route-batch-ledger').hidden=true;
   $('external-route-batch-ledger-search').value='';
@@ -1267,7 +1388,8 @@ function renderRouteAcquisitionLedger(){
 const ROUTE_BATCH_VISIBLE_LIMIT=200;
 function resetRouteBatch() {
   const wb=externalRouteWorkbench;
-  if(wb)wb.routeBatch={selected:new Set(),amounts:new Map(),result:null,expanded:null};
+  if(wb)wb.routeBatch={selected:new Set(),amounts:new Map(),result:null,
+    expanded:null,actionReviewed:new Set(),actionNotes:new Map(),actionPage:0};
   $('external-route-batch-inputs').replaceChildren();
   $('external-route-batch-results').hidden=true;
   $('external-route-batch-trace').hidden=true;
@@ -1294,6 +1416,9 @@ function routeBatchInvalidate() {
   if(!wb?.routeBatch)return;
   wb.routeBatch.result=null;
   wb.routeBatch.expanded=null;
+  wb.routeBatch.actionReviewed=new Set();
+  wb.routeBatch.actionNotes=new Map();
+  wb.routeBatch.actionPage=0;
   $('external-route-batch-results').hidden=true;
   clearRouteAcquisitionLedger();
   $('external-route-batch-trace').hidden=true;
@@ -1439,6 +1564,9 @@ function runRouteBatch() {
   const {wb,rb}=routeBatchContext();
   rb.result=null;
   rb.expanded=null;
+  rb.actionReviewed=new Set();
+  rb.actionNotes=new Map();
+  rb.actionPage=0;
   $('external-route-batch-results').hidden=true;
   clearRouteAcquisitionLedger();
   $('external-route-batch-trace').hidden=true;
@@ -1544,6 +1672,7 @@ function expandRouteBatch(){
     renderRouteBatchTrace();
     renderRouteAcquisitionLedger();
     renderRouteMaterialWorkflow();
+    renderRouteActionBoard();
     $('external-route-batch-status').textContent=
       '후속 부족 재료 반복 가정을 반영했습니다. 이후 재고 초안·CSV·JSON·A/B 버튼은 누적 가상 확보량을 사용합니다. 게임 재고는 변경하지 않았습니다.';
     $('external-route-batch-trace').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2397,6 +2526,68 @@ $('external-route-batch-expand').addEventListener('click',expandRouteBatch);
 $('external-route-batch-ledger-search').addEventListener('input',renderRouteAcquisitionLedger);
 $('external-route-batch-ledger-sort').addEventListener('change',renderRouteAcquisitionLedger);
 $('external-route-batch-workflow-filter').addEventListener('change',renderRouteMaterialWorkflow);
+$('external-route-action-filter').addEventListener('change',()=>{
+  const current=routeActionState();if(current)current.rb.actionPage=0;
+  renderRouteActionBoard();
+});
+$('external-route-action-search').addEventListener('input',()=>{
+  const current=routeActionState();if(current)current.rb.actionPage=0;
+  renderRouteActionBoard();
+});
+$('external-route-action-prev').addEventListener('click',()=>{
+  const current=routeActionState();if(!current)return;
+  current.rb.actionPage=Math.max(0,(current.rb.actionPage||0)-1);
+  renderRouteActionBoard();
+});
+$('external-route-action-next').addEventListener('click',()=>{
+  const current=routeActionState();if(!current)return;
+  current.rb.actionPage=(current.rb.actionPage||0)+1;
+  renderRouteActionBoard();
+});
+$('external-route-action-clear').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  current.rb.actionReviewed.clear();
+  current.rb.actionNotes.clear();
+  renderRouteActionBoard();
+});
+$('external-route-action-csv').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const review=projectRouteActionBoard(current.board,{
+    reviewed:current.rb.actionReviewed,notes:current.rb.actionNotes
+  });
+  downloadCsv(routeActionReviewCsvRows(review),
+    'xpiratez-v2-route-action-review-'+review.rootRecipeId+'.csv');
+});
+$('external-route-action-json').addEventListener('click',exportRouteActionBoardJson);
+$('external-route-action-import').addEventListener('change',async ()=>{
+  const control=$('external-route-action-import');
+  const file=control.files?.[0];
+  if(!file)return;
+  try{
+    const current=routeActionState();
+    if(!current)throw new Error('먼저 현재 제조 목표의 작업표를 계산하세요.');
+    if(file.size>12*1024*1024)
+      throw new Error('검토 JSON 파일은 12MB 이하로 제한합니다.');
+    const saved=JSON.parse(await file.text());
+    if(routeActionState()?.board!==current.board)
+      throw new Error('파일을 읽는 동안 현재 제조 계획이 변경되었습니다.');
+    const restored=restoreRouteActionReview(current.board,saved);
+    current.rb.actionReviewed=restored.reviewed;
+    current.rb.actionNotes=restored.notes;
+    current.rb.actionPage=0;
+    renderRouteActionBoard();
+    $('external-route-action-import-status').textContent=
+      '현재 조달·제조 작업표에 맞는 검토 메모를 불러왔습니다. '+
+      nf(restored.reviewed.size)+'건 표시 · '+nf(restored.notes.size)+
+      '건 메모. 실제 게임 재고·연구·제조 상태는 변경되지 않았습니다.';
+  }catch(error){
+    $('external-route-action-import-status').textContent=
+      '검토 메모 불러오기 중단: '+error.message+
+      ' · 기존 작업표와 검토 메모는 유지됩니다.';
+  }finally{control.value='';}
+});
 $('external-route-batch-workflow-csv').addEventListener('click',()=>{
   const workflow=externalRouteWorkbench?.routeBatch?.expanded?.report?.materialWorkflow;
   if(!workflow)return;

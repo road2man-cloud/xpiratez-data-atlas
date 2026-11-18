@@ -148,6 +148,23 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-batch-workflow-materials td p{margin:4px 0;font-size:.77rem}
 #external-route-batch-workflow .item-id{display:block;font-size:.74rem;overflow-wrap:anywhere}
 #external-route-batch-workflow-status{margin:8px 0}
+#external-route-action-board{margin-top:20px;padding:16px 0;border-top:1px solid #456886}
+#external-route-action-board .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#external-route-action-board .control-buttons{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+#external-route-action-board .control-buttons label{display:flex;align-items:center;gap:8px;font-size:.86rem}
+#external-route-action-board .control-buttons input,
+#external-route-action-board .control-buttons select{background:#0b1d31;color:#f1f6fe;border:1px solid #526d90;padding:7px;border-radius:7px}
+#external-route-action-board table{min-width:1200px;width:100%}
+#external-route-action-board td{vertical-align:top}
+#external-route-action-board td:nth-child(5){min-width:180px}
+#external-route-action-board td:nth-child(6){min-width:260px}
+#external-route-action-board td:nth-child(7){min-width:190px}
+#external-route-action-board td p{margin:4px 0;font-size:.78rem;overflow-wrap:anywhere}
+#external-route-action-board .route-action-check{height:18px;width:18px;accent-color:#9ec1e6}
+#external-route-action-board .route-action-note{width:100%;padding:8px;background:#0a1a2c;border:1px solid #49658a;color:#eff6ff;border-radius:7px}
+#external-route-action-board .action-reviewed{opacity:.78}
+#external-route-action-board .item-id{display:block;font-size:.74rem;overflow-wrap:anywhere}
+
 
 
 

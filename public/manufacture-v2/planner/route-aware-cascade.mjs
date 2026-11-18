@@ -6,6 +6,7 @@ import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch
 import { compareExternalBasket } from './external-basket-core.mjs';
 import { buildRouteAcquisitionLedger } from './route-acquisition-ledger.mjs';
 import { buildRouteMaterialWorkflow } from './route-material-workflow.mjs';
+import { buildRouteActionBoard } from './route-action-board.mjs';
 import { buildManufacturingReadinessChecklist,
   compareManufacturingChecklists } from './manufacturing-readiness-checklist.mjs';
 
@@ -174,6 +175,9 @@ export function expandRouteAwareReadinessBatch({
   report.acquisitionLedger=buildRouteAcquisitionLedger(report,base);
   report.materialWorkflow=buildRouteMaterialWorkflow({
     report,routeBaseline,finalPlan:after
+  });
+  report.actionBoard=buildRouteActionBoard({
+    workflow:report.materialWorkflow,finalChecklist
   });
   return {report,after,initial,finalChecklist};
 }

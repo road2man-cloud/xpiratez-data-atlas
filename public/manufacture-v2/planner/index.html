@@ -371,6 +371,37 @@
 <h5>조달 가정으로 달라진 제조식</h5>
 <div id="external-route-batch-workflow-changes" class="table-wrap"></div>
 </section>
+<section id="external-route-action-board" class="route-action-board" hidden aria-label="재료 확보와 제조식 확인 작업표">
+<div class="section-title"><h5>재료 확보·제조 순서 통합 작업표</h5>
+<div class="control-buttons">
+<button id="external-route-action-csv" class="secondary" type="button" disabled>작업표 CSV 저장</button>
+<button id="external-route-action-json" class="secondary" type="button" disabled>작업표 JSON 저장</button>
+<label for="external-route-action-import">검토 메모 JSON 불러오기
+<input id="external-route-action-import" type="file" accept=".json,application/json"></label>
+<button id="external-route-action-clear" class="secondary" type="button" disabled>검토 표시 초기화</button>
+</div></div>
+<p class="note">재료 확보 확인 → 연구·시설 조건 대조 → 하위 제조식 확인 → 상위 제조식 확인을 하나의 참고 작업표로 묶었습니다. 체크는 실제 게임에서 완료했다는 표시가 아니라, 사용자가 검토한 내용을 기록하는 메모입니다. 선행 작업을 모두 체크해도 실제 제조 가능 판정은 아닙니다.</p>
+<div class="control-buttons">
+<label for="external-route-action-filter">작업 종류
+<select id="external-route-action-filter">
+<option value="all">전체</option>
+<option value="material">재료 조달</option>
+<option value="condition">연구·시설·규칙 확인</option>
+<option value="recipe">제조식 확인</option>
+<option value="pending">미검토만</option>
+</select></label>
+<label for="external-route-action-search">검색
+<input id="external-route-action-search" type="search" placeholder="재료·제조식 ID 또는 이름"></label>
+</div>
+<p id="external-route-action-status" class="note" role="status" aria-live="polite"></p>
+<p id="external-route-action-import-status" class="note" role="status" aria-live="polite"></p>
+<div class="control-buttons route-action-pagination">
+<button id="external-route-action-prev" class="secondary" type="button" disabled>이전 100건</button>
+<span id="external-route-action-page" class="note">페이지 0/0</span>
+<button id="external-route-action-next" class="secondary" type="button" disabled>다음 100건</button>
+</div>
+<div id="external-route-action-table" class="table-wrap"></div>
+</section>
 <p class="note">반복 탐색은 새로 필요한 재료를 모두 가상 확보한다고 가정합니다. 구매 가능성·연구·시설·이벤트 조건은 확인하지 않으며, 원본 세이브를 수정하지 않습니다.</p>
 </div>
 </section>

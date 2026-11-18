@@ -342,6 +342,85 @@ try {
       'xpiratez-v2-route-acquisition-ledger/v1');
     assert.equal(expandedPayload.materialWorkflow.schema,
       'xpiratez-v2-route-material-workflow/v1');
+    assert.equal(expandedPayload.actionBoard.schema,'xpiratez-v2-route-action-board/v1');
+    assert(await page.locator('#external-route-action-board').isVisible());
+    assert(await page.locator('#external-route-action-csv').isEnabled());
+    assert(await page.locator('#external-route-action-json').isEnabled());
+    const routeActionRows=page.locator('#external-route-action-table tbody tr');
+    const actionCount=await routeActionRows.count();
+    assert(actionCount>=1 && actionCount<=100);
+    if(expandedPayload.actionBoard.tasks.length>100){
+      assert(await page.locator('#external-route-action-next').isEnabled());
+      await page.locator('#external-route-action-next').click();
+      assert((await page.locator('#external-route-action-page').innerText())
+        .includes('페이지 2/'));
+      assert((await routeActionRows.first().innerText()).includes('101'));
+      await page.locator('#external-route-action-prev').click();
+      assert((await page.locator('#external-route-action-page').innerText())
+        .includes('페이지 1/'));
+    }
+    assert((await page.locator('#external-route-action-status').innerText())
+      .includes('검토 표시 0건'));
+    await page.locator('#external-route-action-table .route-action-check').first().check();
+    assert((await page.locator('#external-route-action-status').innerText())
+      .includes('검토 표시 1건'));
+    await page.locator('#external-route-action-table .route-action-note').first()
+      .fill('게임에서 재료 확보 경로 재확인');
+    const actionDownload=page.waitForEvent('download');
+    await page.locator('#external-route-action-json').click();
+    const actionFile=await actionDownload;
+    assert.equal(actionFile.suggestedFilename(),
+      'xpiratez-v2-route-action-review-STR_3RL_HE_XXX.json');
+    const actionPayload=JSON.parse(fs.readFileSync(await actionFile.path(),'utf8'));
+    assert.equal(actionPayload.schema,'xpiratez-v2-route-action-review/v1');
+    assert.equal(actionPayload.summary.reviewed,1);
+    assert.equal(actionPayload.tasks[0].note,'게임에서 재료 확보 경로 재확인');
+    assert(actionPayload.tasks.some(x=>x.type==='recipe'));
+    assert(actionPayload.tasks.every(x=>Array.isArray(x.unreviewedPrerequisiteIds)));
+    const actionCsvDownload=page.waitForEvent('download');
+    await page.locator('#external-route-action-csv').click();
+    const actionCsvFile=await actionCsvDownload;
+    assert.equal(actionCsvFile.suggestedFilename(),
+      'xpiratez-v2-route-action-review-STR_3RL_HE_XXX.csv');
+    const actionCsv=fs.readFileSync(await actionCsvFile.path(),'utf8');
+    assert(actionCsv.startsWith('\uFEFF"작업 순서","작업 구분"'));
+    assert(actionCsv.includes('게임에서 재료 확보 경로 재확인'));
+    await page.locator('#external-route-action-filter').selectOption('pending');
+    assert.equal(await routeActionRows.count(),Math.min(100,
+      actionPayload.summary.tasks-1));
+    await page.locator('#external-route-action-filter').selectOption('all');
+    await page.locator('#external-route-action-search').fill(actionPayload.tasks[0].requirementId);
+    assert((await routeActionRows.count())>=1);
+    await page.locator('#external-route-action-search').fill('');
+    await page.locator('#external-route-action-clear').click();
+    assert((await page.locator('#external-route-action-status').innerText())
+      .includes('검토 표시 0건'));
+    await page.locator('#external-route-action-import').setInputFiles({
+      name:'saved-route-review.json',mimeType:'application/json',
+      buffer:Buffer.from(JSON.stringify(actionPayload),'utf8')
+    });
+    await page.waitForFunction(()=>
+      document.getElementById('external-route-action-import-status')
+        ?.textContent.includes('검토 메모를 불러왔습니다'));
+    assert((await page.locator('#external-route-action-import-status').innerText())
+      .includes('검토 메모를 불러왔습니다'));
+    assert((await page.locator('#external-route-action-status').innerText())
+      .includes('검토 표시 1건'));
+    assert.equal(await page.locator('#external-route-action-table .route-action-note')
+      .first().inputValue(),'게임에서 재료 확보 경로 재확인');
+    await page.locator('#external-route-action-import').setInputFiles({
+      name:'wrong-recipe-review.json',mimeType:'application/json',
+      buffer:Buffer.from(JSON.stringify({
+        ...actionPayload,rootRecipeId:'STR_DIFFERENT'
+      }),'utf8')
+    });
+    await page.waitForFunction(()=>
+      document.getElementById('external-route-action-import-status')
+        ?.textContent.includes('불러오기 중단'));
+    assert((await page.locator('#external-route-action-import-status').innerText())
+      .includes('불러오기 중단'));
+    assert((await page.locator('#external-route-action-status').innerText())
+      .includes('검토 표시 1건'));
     assert(await page.locator('#external-route-batch-workflow').isVisible());
     assert(await page.locator('#external-route-batch-workflow-csv').isEnabled());
     assert((await page.locator('#external-route-batch-workflow-summary').innerText())
@@ -425,6 +504,8 @@ try {
   assert(await page.locator('#external-route-batch-ledger-csv').isDisabled());
   assert(await page.locator('#external-route-batch-workflow').isHidden());
   assert(await page.locator('#external-route-batch-workflow-csv').isDisabled());
+  assert(await page.locator('#external-route-action-board').isHidden());
+  assert(await page.locator('#external-route-action-json').isDisabled());
   assert(await page.locator('#external-route-batch-preview').isDisabled());
   assert(await page.locator('#external-route-batch-json').isDisabled());
   assert(await page.locator('#external-route-batch-results').isHidden());

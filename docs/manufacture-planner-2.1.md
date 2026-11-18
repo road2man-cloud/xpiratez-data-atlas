@@ -363,6 +363,56 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Combined route acquisition and manufacturing review board (2026-11-18)
+
+The edited-route cascading scenario now generates an additional
+**재료 확보·제조 순서 통합 작업표** that can be followed as a
+local review worksheet. This board is not a production command queue.
+It combines hypothetical material acquisition/remainder records,
+unresolved research/facility/rule evidence from the final v.o2
+readiness checklist, and dependency-first expanded recipe occurrences.
+
+Tasks have stable IDs within the current single-recipe simulation:
+`material::<itemId>`, `condition::<checklist key>` and
+`recipe::<expanded sequence position>`. Each task has a locally
+grounded next-check description, source status, and a reference to
+any prerequisite review tasks. A recipe task links to previously
+expanded child recipe steps; direct input materials that are
+modelled as existing stock or hypothetical external additions
+link to their matching material-check task, without double-counting
+an intermediate manufactured item already represented by a child
+recipe. Direct research refs and recipe-scoped facility evidence
+link to their corresponding evidence tasks when present. Unknown
+unlock and runtime constraints remain unverified.
+
+The browser table allows individual **사용자 검토** marks and short
+notes (up to 300 characters), with filtering by material, evidence,
+recipe or unreviewed tasks; text search; and **100-row pagination**
+so even large worklists are navigable. The page shows how many
+linked prerequisite tasks have not yet been marked reviewed. This
+is a review metric only, NOT a confirmation that any actual input,
+research, facility or manufactured output exists in the game.
+
+Both CSV and JSON exports include the entire task list, user review
+marks, notes and still-unreviewed dependency IDs, independent of
+the currently filtered page. A previously saved review JSON can be
+imported into the **identical** action graph; import validates the
+source version, recipe goal, task count, exact IDs, quantities,
+statuses and dependency references, and refuses stale or unrelated
+plans without overwriting the current review. The imported JSON
+is read locally in the browser; the game save is not changed.
+
+Changing producer choices, hypothetical material quantities,
+source stock or the manufacturing goal invalidates the old
+board, review marks and notes. A fresh scenario produces a new
+board that can receive a compatible exported review if desired.
+
+**Limitations:** all acquisition quantities remain hypothetical;
+local task-review marks and notes are neither saved-game edits nor
+manufacturing completion evidence. The displayed order is the
+expanded rule dependency representation, not a guaranteed game
+production schedule or purchasing route.
+
 ## Grounded procurement reasons and dependency-first recipe order (2026-11-18)
 
 The edited-route, single-goal cascading calculation now exports
