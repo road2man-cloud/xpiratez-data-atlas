@@ -19,6 +19,7 @@ import { snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCs
 import { appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsvRows,routeReviewHistoryTimelineCsvRows } from './route-action-history.mjs';
 import { summarizeRouteHistoryImpact,routeHistoryImpactCsvRows } from './route-history-impact.mjs';
 import { buildRouteHistoryPriority,routeHistoryPriorityCsvRows,routeHistoryPriorityDetailsCsvRows } from './route-history-priority.mjs';
+import { buildSharedReviewIndex,projectSharedReviewQueue,sharedReviewQueueCsvRows } from './route-shared-review-queue.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1509,9 +1510,100 @@ function renderRouteActionRefresh(rb){
       make(excluded,'p','화면에는 이전 제외 기록 60건만 표시합니다. 변경 전 검토 JSON에 전부 보존됩니다.','note');
   }
 }
+function sharedReviewQueueReport(rb,board){
+  if(rb.sharedReviewIndex?.board!==board)
+    rb.sharedReviewIndex={board,value:buildSharedReviewIndex(board)};
+  return projectSharedReviewQueue(rb.sharedReviewIndex.value,{
+    reviewed:rb.actionReviewed
+  });
+}
+function renderSharedReviewQueue(rb,board){
+  const report=sharedReviewQueueReport(rb,board);
+  const summary=$('external-route-shared-review-summary');
+  summary.replaceChildren();
+  metric(summary,'미검토',nf(report.summary.pending)+'건');
+  metric(summary,'여러 제조식의 공통 작업',nf(report.summary.shared)+'건');
+  metric(summary,'반복 제조식 관련 작업',nf(report.summary.repeated)+'건');
+  metric(summary,'독립 검토 작업',nf(report.summary.unlinked)+'건');
+  const query=$('external-route-shared-review-search').value.trim()
+    .toLocaleLowerCase('ko-KR');
+  const filter=$('external-route-shared-review-filter').value;
+  const rows=report.tasks.filter(item=>
+    (filter==='all'||(filter==='pending'?!item.reviewed:
+      filter==='reviewed'?item.reviewed:
+      filter==='shared'?item.sharing==='multi-recipe':
+      filter==='repeated'?item.sharing==='repeated-occurrence':
+      item.sharing==='unlinked'))&&
+    (!query||[item.label,item.requirementId,item.taskId,
+      ...item.affectedRecipeIds].some(term=>
+        String(term).toLocaleLowerCase('ko-KR').includes(query))));
+  $('external-route-shared-review-csv').disabled=false;
+  $('external-route-shared-review-status').textContent=
+    '전체 '+nf(report.summary.taskCount)+'건 중 '+nf(rows.length)+
+    '건 검색됨. 화면에는 최대 100건 표시하며 CSV에는 전체 '+
+    nf(report.summary.taskCount)+'건의 검토 상태와 관련 제조식 ID가 포함됩니다. '+
+    '이 작업 순서는 참고용이며 실제 생산 가능성을 증명하지 않습니다.';
+  const target=$('external-route-shared-review-table');
+  target.replaceChildren();
+  if(!rows.length){
+    make(target,'p','조건에 맞는 검토 작업이 없습니다.','note');
+    return;
+  }
+  const table=make(target,'table'),thead=make(make(table,'thead'),'tr');
+  for(const header of ['검토 상태','공통 확인 작업','관련 제조식',
+    '현재 근거·참고 수량','검토 및 제조식 이동'])
+    make(thead,'th',header);
+  const tbody=make(table,'tbody');
+  const names={
+    'multi-recipe':'여러 제조식 공통',
+    'repeated-occurrence':'같은 제조식 반복',
+    single:'단일 제조식',
+    unlinked:'연결 제조식 없음'
+  };
+  for(const item of rows.slice(0,100)){
+    const tr=make(tbody,'tr');
+    if(item.reviewed)tr.classList.add('route-shared-reviewed');
+    make(tr,'td',item.reviewed?'검토 표시됨':'미검토');
+    const title=make(tr,'td');
+    make(title,'strong',item.label);
+    make(title,'code',item.requirementId,'item-id');
+    make(title,'span',(item.type==='material'?'재료':'연구·시설·조건')+
+      ' · '+item.taskId,'note');
+    const relation=make(tr,'td');
+    make(relation,'strong',names[item.sharing]||item.sharing);
+    make(relation,'p','제조식 '+nf(item.affectedRecipeKinds)+'종 · '+
+      nf(item.affectedOccurrences)+'개 작업 노드','note');
+    if(item.affectedRecipeIds.length){
+      make(relation,'p',item.affectedRecipeIds.slice(0,8).join(', ')+
+        (item.affectedRecipeIds.length>8?' 외 '+nf(item.affectedRecipeIds.length-8)+'종':''),'note');
+    }else make(relation,'p','현재 선행 그래프에서 연결 없음','note');
+    const evidence=make(tr,'td');
+    make(evidence,'p',item.sourceStatus||'근거 미확인','note');
+    if(item.quantity!==null)
+      make(evidence,'p','참고 수량 '+nf(item.quantity)+'개 · 가상 계산','note');
+    make(evidence,'p',item.action,'note');
+    const actions=make(tr,'td');
+    const go=make(actions,'button','현재 작업표에서 검토','route-link-jump');
+    go.type='button';
+    go.addEventListener('click',()=>focusRouteActionTask(item.taskId));
+    for(const id of item.affectedRecipeTaskIds.slice(0,4)){
+      const link=make(actions,'button',id,'route-link-jump');
+      link.type='button';
+      link.setAttribute('aria-label',id+' 관련 제조식 작업표로 이동');
+      link.addEventListener('click',()=>focusRouteActionTask(id));
+    }
+    if(item.affectedRecipeTaskIds.length>4)
+      make(actions,'p','추가 '+nf(item.affectedRecipeTaskIds.length-4)+
+        '개 제조식 작업은 CSV 확인','note');
+  }
+}
 function clearRouteActionBoard(){
   $('external-route-action-refresh').hidden=true;
   $('external-route-action-history').hidden=true;
+  $('external-route-shared-review-table').replaceChildren();
+  $('external-route-shared-review-summary').replaceChildren();
+  $('external-route-shared-review-status').textContent='';
+  $('external-route-shared-review-csv').disabled=true;
   clearRouteActionCarryover();
   $('external-route-action-board').hidden=true;
   $('external-route-action-table').replaceChildren();
@@ -1533,7 +1625,10 @@ function focusRouteActionTask(taskId){
   current.rb.actionFocusId=taskId;
   current.rb.actionPage=0;
   renderRouteActionBoard();
-  $('external-route-action-board').scrollIntoView({behavior:'smooth',block:'start'});
+  const focused=$('external-route-action-table')
+    .querySelector('tr.route-action-focused');
+  (focused||$('external-route-action-table'))
+    .scrollIntoView({behavior:'smooth',block:'center'});
   return true;
 }
 function routeActionState(){
@@ -1548,6 +1643,7 @@ function renderRouteActionBoard(){
   const current=routeActionState();
   if(!current){clearRouteActionBoard();return;}
   const {rb,board}=current;
+  renderSharedReviewQueue(rb,board);
   renderRouteActionHistory(rb,board);
   renderRouteActionRefresh(rb);
   const refreshKinds=new Map((rb.lastReviewRefresh?.changes||[]).map(x=>[x.id,x]));
@@ -3131,6 +3227,21 @@ $('external-route-batch-workflow-filter').addEventListener('change',()=>{
 $('external-route-batch-workflow-search').addEventListener('input',()=>{
   if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
   renderRouteMaterialWorkflow();
+});
+$('external-route-shared-review-search').addEventListener('input',()=>{
+  const current=routeActionState();
+  if(current)renderSharedReviewQueue(current.rb,current.board);
+});
+$('external-route-shared-review-filter').addEventListener('change',()=>{
+  const current=routeActionState();
+  if(current)renderSharedReviewQueue(current.rb,current.board);
+});
+$('external-route-shared-review-csv').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const report=sharedReviewQueueReport(current.rb,current.board);
+  downloadCsv(sharedReviewQueueCsvRows(report),
+    'xpiratez-v2-route-shared-review-'+report.rootRecipeId+'.csv');
 });
 $('external-route-history-priority-search').addEventListener('input',()=>{
   const current=routeActionState();
