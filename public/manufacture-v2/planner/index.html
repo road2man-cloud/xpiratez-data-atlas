@@ -436,6 +436,17 @@
 <p id="external-route-action-history-status" class="note" role="status" aria-live="polite"></p>
 <p id="external-route-action-history-import-status" class="note" role="status" aria-live="polite"></p>
 <div id="external-route-action-history-table" class="table-wrap"></div>
+<details id="external-route-history-impact" class="route-history-impact">
+<summary>제조식별 누적 변경 영향 탐색</summary>
+<p class="note">과거 제외 기록의 영향 제조식을 그룹으로 묶습니다. 현재 동일 ID 제조식이 있으면 이동할 수 있지만 현재 조건 충족을 의미하지 않습니다.</p>
+<div class="control-buttons">
+<label for="external-route-history-impact-search">제조식·재료 ID 검색
+<input id="external-route-history-impact-search" type="search" placeholder="제조식 또는 연관 재료 ID"></label>
+<button id="external-route-history-impact-csv" class="secondary" type="button" disabled>제조식별 누적 영향 CSV 저장</button>
+</div>
+<p id="external-route-history-impact-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-history-impact-table" class="table-wrap"></div>
+</details>
 </div>
 <div id="external-route-action-carryover" class="route-action-carryover">
 <h5>제조 계획 변경 후 이전 검토 기록 선택적 이어받기</h5>

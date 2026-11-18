@@ -185,6 +185,12 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-action-history-timeline{border-top:1px solid #34516a;padding:8px 0;margin-bottom:10px}
 #external-route-action-history-timeline summary{color:#d3e8ff;cursor:pointer;font-weight:600}
 #external-route-action-history-timeline-table table{min-width:700px;width:100%}
+.route-history-impact{border-top:1px solid #34516a;margin-top:13px;padding-top:10px}
+.route-history-impact summary{cursor:pointer;color:#d3e8ff;font-weight:650}
+#external-route-history-impact-table table{min-width:850px;width:100%}
+#external-route-history-impact-table td{vertical-align:top;overflow-wrap:anywhere}
+#external-route-history-impact-table td:nth-child(4){min-width:190px}
+#external-route-history-impact-status{margin:8px 0}
 .route-action-change-label{display:block;margin:6px 0;padding:4px 7px;border-left:3px solid #9ebde5;background:#1a354d;font-size:.76rem;color:#d4e9ff}
 #external-route-action-carryover{margin:16px 0;padding:12px 14px;border:1px solid #405c79;border-radius:8px}
 #external-route-action-carryover h5{margin:0 0 6px;font-size:.93rem}

@@ -8,6 +8,43 @@ import {snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsv
   from '../public/manufacture-v2/planner/route-action-refresh.mjs';
 import {appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsvRows,routeReviewHistoryTimelineCsvRows}
   from '../public/manufacture-v2/planner/route-action-history.mjs';
+import {summarizeRouteHistoryImpact,routeHistoryImpactCsvRows}
+  from '../public/manufacture-v2/planner/route-history-impact.mjs';
+
+test('aggregates cumulative exclusions by impacted recipe across revisions without modifying archive',()=>{
+  const history={
+    schema:'xpiratez-v2-route-review-history/v1',sourceVersion:'v.o2',
+    rootRecipeId:'STR_ROOT',
+    events:[{revision:1},{revision:2}],
+    entries:[
+      {revision:1,oldId:'material::STR_ORE',type:'material',
+        requirementId:'STR_ORE',note:'old material',reviewed:true,
+        affectedRecipeIds:['STR_ROOT','STR_SUB','STR_ROOT']},
+      {revision:2,oldId:'condition::STR_TECH',type:'condition',
+        requirementId:'STR_TECH',note:'',reviewed:true,
+        affectedRecipeIds:['STR_ROOT']},
+      {revision:2,oldId:'material::STR_OTHER',type:'material',
+        requirementId:'STR_OTHER',note:'undetermined',reviewed:false,
+        affectedRecipeIds:[]}
+    ]
+  };
+  const original=JSON.stringify(history);
+  const report=summarizeRouteHistoryImpact(history);
+  assert.equal(report.summary.recipeKinds,2);
+  assert.equal(report.summary.unattributedEntries,1);
+  assert.equal(report.summary.attributedEntries,2);
+  const root=report.recipes.find(x=>x.recipeId==='STR_ROOT');
+  assert.equal(root.entries,2);
+  assert.equal(root.notes,1);
+  assert.equal(root.reviewed,2);
+  assert.deepEqual(root.revisions,[1,2]);
+  assert.deepEqual(root.materialIds,['STR_ORE']);
+  assert.deepEqual(root.conditionIds,['STR_TECH']);
+  assert.equal(routeHistoryImpactCsvRows(report).length,3);
+  assert.equal(JSON.stringify(history),original);
+  assert.throws(()=>summarizeRouteHistoryImpact({...history,sourceVersion:'v.o1.1.1'}),/v.o2/);
+  assert.throws(()=>routeHistoryImpactCsvRows({schema:'broken'}),/올바르지/);
+});
 
 const workflow={
   schema:'xpiratez-v2-route-material-workflow/v1',

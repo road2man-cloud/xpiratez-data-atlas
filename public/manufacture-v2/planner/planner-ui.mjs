@@ -17,6 +17,7 @@ import { projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionRevi
 import { previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryoverAudit,routeActionCarryoverAuditCsvRows } from './route-action-carryover.mjs';
 import { snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsvRows } from './route-action-refresh.mjs';
 import { appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsvRows,routeReviewHistoryTimelineCsvRows } from './route-action-history.mjs';
+import { summarizeRouteHistoryImpact,routeHistoryImpactCsvRows } from './route-history-impact.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1161,6 +1162,58 @@ function renderRouteActionCarryoverPreview(){
     nf(preview.counts.excluded)+'건. 아직 현재 작업표에는 적용하지 않았습니다.'+
     ' 기존 사용자 메모는 적용 시에도 덮어쓰지 않습니다.';
 }
+function renderRouteHistoryImpact(rb,board){
+  const report=rb.reviewHistory?.events?.length?
+    summarizeRouteHistoryImpact(rb.reviewHistory):null;
+  const target=$('external-route-history-impact-table');
+  target.replaceChildren();
+  $('external-route-history-impact-csv').disabled=!report;
+  if(!report){
+    $('external-route-history-impact-status').textContent=
+      '영향 분석을 위한 이전 변경 기록이 없습니다.';
+    return;
+  }
+  const query=$('external-route-history-impact-search').value.trim()
+    .toLocaleLowerCase('ko-KR');
+  const rows=report.recipes.filter(x=>!query||
+    [x.recipeId,...x.materialIds,...x.conditionIds]
+      .some(t=>t.toLocaleLowerCase('ko-KR').includes(query)));
+  $('external-route-history-impact-status').textContent=
+    '영향 제조식 '+nf(report.summary.recipeKinds)+'종 중 '+nf(rows.length)+
+    '종 검색 · 이전 기록 '+nf(report.summary.attributedEntries)+
+    '건 연결 · 영향 제조식 미기재 '+nf(report.summary.unattributedEntries)+
+    '건 · 화면 최대 100종, CSV 전체 저장.';
+  if(!rows.length){
+    make(target,'p','검색과 일치하는 제조식이 없습니다.','note');
+    return;
+  }
+  const table=make(target,'table'),header=make(make(table,'thead'),'tr');
+  for(const label of ['제조식 ID','누적 제외 기록','영향 차수','관련 재료·조건','현재 작업표 이동'])
+    make(header,'th',label);
+  const body=make(table,'tbody');
+  for(const entry of rows.slice(0,100)){
+    const tr=make(body,'tr');
+    make(tr,'td',entry.recipeId);
+    make(tr,'td',nf(entry.entries)+'건 · 과거 메모 '+nf(entry.notes)+
+      '건 · 검토 표시 '+nf(entry.reviewed)+'건');
+    make(tr,'td',entry.revisions.map(n=>nf(n)).join(', ')+'차');
+    const ids=make(tr,'td');
+    make(ids,'p','재료: '+(entry.materialIds.join(', ')||'없음'),'note');
+    make(ids,'p','조건: '+(entry.conditionIds.join(', ')||'없음'),'note');
+    const go=make(tr,'td');
+    const matches=board.tasks.filter(x=>x.type==='recipe'&&
+      x.requirementId===entry.recipeId);
+    for(const current of matches.slice(0,8)){
+      const button=make(go,'button',current.id,'route-link-jump');
+      button.type='button';
+      button.addEventListener('click',()=>focusRouteActionTask(current.id));
+    }
+    if(matches.length>8)
+      make(go,'p','추가 '+nf(matches.length-8)+'건은 작업표에서 검색','note');
+    if(!matches.length)
+      make(go,'span','현재 동일 제조식 ID 없음','note');
+  }
+}
 function renderRouteActionHistory(rb,board){
   const history=rb.reviewHistory;
   const wrap=$('external-route-action-history');
@@ -1171,6 +1224,7 @@ function renderRouteActionHistory(rb,board){
   $('external-route-action-history-csv').disabled=!history?.events?.length;
   $('external-route-action-history-timeline-csv').disabled=!history?.events?.length;
   $('external-route-action-history-timeline-table').replaceChildren();
+  renderRouteHistoryImpact(rb,board);
   if(!history?.events?.length){
     $('external-route-action-history-summary').replaceChildren();
     $('external-route-action-history-table').replaceChildren();
@@ -2937,6 +2991,17 @@ $('external-route-batch-workflow-filter').addEventListener('change',()=>{
 $('external-route-batch-workflow-search').addEventListener('input',()=>{
   if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
   renderRouteMaterialWorkflow();
+});
+$('external-route-history-impact-search').addEventListener('input',()=>{
+  const current=routeActionState();
+  if(current)renderRouteHistoryImpact(current.rb,current.board);
+});
+$('external-route-history-impact-csv').addEventListener('click',()=>{
+  const history=routeActionState()?.rb.reviewHistory;
+  if(!history?.events?.length)return;
+  const report=summarizeRouteHistoryImpact(history);
+  downloadCsv(routeHistoryImpactCsvRows(report),
+    'xpiratez-v2-route-history-impact-'+report.rootRecipeId+'.csv');
 });
 $('external-route-action-history-search').addEventListener('input',()=>{
   const current=routeActionState();
