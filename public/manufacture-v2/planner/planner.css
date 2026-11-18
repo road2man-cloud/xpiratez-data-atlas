@@ -191,6 +191,19 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-history-impact-table td{vertical-align:top;overflow-wrap:anywhere}
 #external-route-history-impact-table td:nth-child(4){min-width:190px}
 #external-route-history-impact-status{margin:8px 0}
+.route-history-priority{border-top:1px solid #34516a;margin-top:14px;padding-top:12px}
+.route-history-priority summary{cursor:pointer;color:#d5e9ff;font-weight:650}
+.route-history-priority h5{font-size:.9rem;margin:17px 0 8px}
+.route-history-priority .control-buttons{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin:10px 0}
+.route-history-priority .control-buttons label{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.route-history-priority input,.route-history-priority select{padding:7px;border:1px solid #53718d;border-radius:6px;background:#0b1d30;color:#e8f3ff}
+#external-route-history-priority-table table{min-width:850px;width:100%}
+#external-route-history-priority-detail table{min-width:840px;width:100%;margin:12px 0}
+#external-route-history-priority-table td,#external-route-history-priority-detail td{vertical-align:top;overflow-wrap:anywhere}
+#external-route-history-priority-table tr.route-history-priority-selected{background:#183652;outline:1px solid #5985a5}
+#external-route-history-priority-status{margin:9px 0}
+#external-route-history-priority-detail .item-id{display:block;font-size:.73rem}
+
 .route-action-change-label{display:block;margin:6px 0;padding:4px 7px;border-left:3px solid #9ebde5;background:#1a354d;font-size:.76rem;color:#d4e9ff}
 #external-route-action-carryover{margin:16px 0;padding:12px 14px;border:1px solid #405c79;border-radius:8px}
 #external-route-action-carryover h5{margin:0 0 6px;font-size:.93rem}

@@ -447,6 +447,29 @@
 <p id="external-route-history-impact-status" class="note" role="status" aria-live="polite"></p>
 <div id="external-route-history-impact-table" class="table-wrap"></div>
 </details>
+<details id="external-route-history-priority" class="route-history-priority">
+<summary>반복 변경 제조식 우선 검토 · 이전/현재 재료·조건 비교</summary>
+<p class="note">과거 자동 제외 기록의 변경 차수와 현재 미검토 선행 작업을 이용해 검토 순서를 추천합니다. 재료·연구·시설의 실제 획득·해금 여부는 판정하지 않습니다.</p>
+<div id="external-route-history-priority-summary" class="summary-stats"></div>
+<div class="control-buttons">
+<label for="external-route-history-priority-filter">우선순위
+<select id="external-route-history-priority-filter">
+<option value="all">전체 제조식</option>
+<option value="high">최우선</option>
+<option value="medium">다음 검토</option>
+<option value="pending">현재 미검토 선행 작업</option>
+<option value="historical">현재 계획에 없는 제조식</option>
+</select></label>
+<label for="external-route-history-priority-search">제조식·관련 재료·조건 검색
+<input id="external-route-history-priority-search" type="search" placeholder="제조식 / 재료 / 조건 ID"></label>
+<button id="external-route-history-priority-csv" class="secondary" type="button" disabled>제조식별 우선순위 CSV 저장</button>
+<button id="external-route-history-priority-details-csv" class="secondary" type="button" disabled>재료·조건 전체 대조 CSV 저장</button>
+</div>
+<p id="external-route-history-priority-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-history-priority-table" class="table-wrap"></div>
+<h5>선택한 제조식의 변경 전후 재료·조건</h5>
+<div id="external-route-history-priority-detail" class="table-wrap"></div>
+</details>
 </div>
 <div id="external-route-action-carryover" class="route-action-carryover">
 <h5>제조 계획 변경 후 이전 검토 기록 선택적 이어받기</h5>

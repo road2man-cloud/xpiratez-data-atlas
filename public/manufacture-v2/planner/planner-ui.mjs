@@ -18,6 +18,7 @@ import { previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryo
 import { snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsvRows } from './route-action-refresh.mjs';
 import { appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsvRows,routeReviewHistoryTimelineCsvRows } from './route-action-history.mjs';
 import { summarizeRouteHistoryImpact,routeHistoryImpactCsvRows } from './route-history-impact.mjs';
+import { buildRouteHistoryPriority,routeHistoryPriorityCsvRows,routeHistoryPriorityDetailsCsvRows } from './route-history-priority.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1214,6 +1215,144 @@ function renderRouteHistoryImpact(rb,board){
       make(go,'span','현재 동일 제조식 ID 없음','note');
   }
 }
+function routeHistoryPriorityReport(rb,board){
+  const data=rb?.expanded?.report;
+  if(!rb?.reviewHistory?.events?.length||!data?.materialWorkflow)return null;
+  return buildRouteHistoryPriority({
+    history:rb.reviewHistory,board,
+    workflow:data.materialWorkflow,ledger:data.acquisitionLedger,
+    reviewed:rb.actionReviewed
+  });
+}
+function renderRouteHistoryPriority(rb,board){
+  const report=routeHistoryPriorityReport(rb,board);
+  const target=$('external-route-history-priority-table');
+  const detail=$('external-route-history-priority-detail');
+  const summary=$('external-route-history-priority-summary');
+  const status=$('external-route-history-priority-status');
+  target.replaceChildren();detail.replaceChildren();summary.replaceChildren();
+  for(const id of ['csv','details-csv'])
+    $('external-route-history-priority-'+id).disabled=!report;
+  if(!report){
+    status.textContent='재계산 누적 기록과 현재 제조 작업표를 함께 준비하면 우선 검토 목록이 나옵니다.';
+    return;
+  }
+  metric(summary,'최우선',nf(report.summary.high)+'종');
+  metric(summary,'다음 검토',nf(report.summary.medium)+'종');
+  metric(summary,'현재 계획에 없는 제조식',nf(report.summary.historical)+'종');
+  metric(summary,'전체 영향 제조식',nf(report.summary.recipes)+'종');
+  const query=$('external-route-history-priority-search').value.trim().toLocaleLowerCase('ko-KR');
+  const filter=$('external-route-history-priority-filter').value;
+  const rows=report.recipes.filter(item=>
+    (filter==='all'||(filter==='pending'?item.pendingRelatedTaskCount>0:item.priority===filter))&&
+    (!query||[item.recipeId,
+      ...item.historicalMaterialIds,...item.historicalConditionIds,
+      ...item.currentMaterials.map(x=>x.id),
+      ...item.currentConditions.map(x=>x.id)].some(text=>
+      text.toLocaleLowerCase('ko-KR').includes(query))));
+  const label={high:'최우선',medium:'다음 검토',
+    reference:'참고',historical:'현재 계획 없음'};
+  status.textContent='제조식 '+nf(rows.length)+'종 검색됨 (전체 '+nf(report.summary.recipes)+
+    '종) · 현재 미검토는 게임 실행 가능성의 미확인이 아닌 사용자 검토 표시 상태입니다.'+
+    ' 변경 차수와 선행 미검토 작업을 기준으로 정렬하며 표는 최대 100종, CSV는 전체를 저장합니다.';
+  if(!rows.length){
+    make(target,'p','검색 조건에 해당하는 영향 제조식이 없습니다.','note');
+    rb.prioritySelectedRecipeId=null;
+    return;
+  }
+  if(!rows.some(x=>x.recipeId===rb.prioritySelectedRecipeId))
+    rb.prioritySelectedRecipeId=rows[0].recipeId;
+  const table=make(target,'table'),head=make(make(table,'thead'),'tr');
+  for(const column of ['검토 순서','제조식 ID','과거 변경/메모','현재 미검토 선행 작업',
+    '과거와 현재 재료·조건','선택'])make(head,'th',column);
+  const body=make(table,'tbody');
+  for(const item of rows.slice(0,100)){
+    const tr=make(body,'tr');
+    if(item.recipeId===rb.prioritySelectedRecipeId)tr.classList.add('route-history-priority-selected');
+    make(tr,'td',label[item.priority]);
+    make(tr,'td',item.recipeId);
+    make(tr,'td',nf(item.revisionCount)+'개 차수 · 제외 '+nf(item.previousExcludedEntries)+
+      '건 · 이전 메모 '+nf(item.previousNotes)+'건');
+    make(tr,'td',item.currentRecipeCount?
+      '미검토 '+nf(item.pendingRelatedTaskCount)+'건 (재료 '+nf(item.pendingMaterialCount)+
+      ', 조건 '+nf(item.pendingConditionCount)+')':'현재 제조식 노드 없음');
+    make(tr,'td','현재 재료 '+nf(item.currentMaterials.length)+'종 / 과거만 '+
+      nf(item.previousOnlyMaterialIds.length)+'종 · 현재 조건 '+
+      nf(item.currentConditions.length)+'개 / 과거만 '+
+      nf(item.previousOnlyConditionIds.length)+'개');
+    const cell=make(tr,'td'),select=make(cell,'button','상세 대조','route-link-jump');
+    select.type='button';
+    select.setAttribute('aria-label',item.recipeId+' 이전·현재 재료와 조건 대조');
+    select.addEventListener('click',()=>{
+      rb.prioritySelectedRecipeId=item.recipeId;
+      renderRouteHistoryPriority(rb,board);
+      $('external-route-history-priority-detail').scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+  }
+  const selected=rows.find(x=>x.recipeId===rb.prioritySelectedRecipeId);
+  if(!selected)return;
+  make(detail,'h5',selected.recipeId+' · '+label[selected.priority]+
+    ' · 변경 '+nf(selected.revisionCount)+'차수');
+  make(detail,'p','과거 연관 ID는 이전 제외 기록 기준이며, 현재 연결은 새로운 제조 계획의 의존관계·직접 입력 기준입니다. 검토 표시는 현재 사용자가 확인한 메모일 뿐입니다.','note');
+  if(selected.currentRecipeTaskIds.length){
+    const recipeControls=make(detail,'div',null,'control-buttons');
+    for(const id of selected.currentRecipeTaskIds.slice(0,8)){
+      const go=make(recipeControls,'button',id+' 현재 작업표','route-link-jump');
+      go.type='button';go.addEventListener('click',()=>focusRouteActionTask(id));
+    }
+  }
+  const materialTable=make(detail,'table'),mh=make(make(materialTable,'thead'),'tr');
+  for(const column of ['재료 ID','변경 전 연관','현재 참고 상태','가상 재고/확보/부족','검토 작업'])
+    make(mh,'th',column);
+  const mb=make(materialTable,'tbody');
+  for(const item of selected.currentMaterials){
+    const tr=make(mb,'tr');
+    const name=make(tr,'td');make(name,'strong',item.label);make(name,'code',item.id,'item-id');
+    make(tr,'td',item.seenBefore?
+      '과거 기록 있음'+(item.previousQuantity===null?'':' · 당시 수량 '+nf(item.previousQuantity)):'과거 영향 목록에 없음');
+    make(tr,'td',(item.sourceStatus||'직접 입력 참조')+
+      (item.inputStatuses.length?' · '+item.inputStatuses.join(', '):''));
+    make(tr,'td',item.startingInventory===null?'수량 근거 없음':
+      nf(item.startingInventory)+' / '+nf(item.hypotheticalAcquisition)+
+      ' / '+nf(item.remainingShortage));
+    const actions=make(tr,'td');
+    if(item.taskId){
+      const button=make(actions,'button',item.reviewed?'검토 표시됨 · 보기':'미검토 · 보기','route-link-jump');
+      button.type='button';button.addEventListener('click',()=>focusRouteActionTask(item.taskId));
+    }else make(actions,'span','현재 재료 작업 ID 없음','note');
+  }
+  for(const item of selected.previousOnlyMaterials){
+    const tr=make(mb,'tr');
+    make(tr,'td',item.id);
+    make(tr,'td','과거 영향에만 존재 · 당시 '+nf(item.latestRevision)+'차'+
+      (item.previousQuantity===null?'':' · 수량 '+nf(item.previousQuantity)));
+    make(tr,'td','과거 상태: '+(item.previousSourceStatus||'미확인'));
+    make(tr,'td','현재 연결된 수량 근거 없음');
+    make(tr,'td','이전 보관함 JSON/CSV 확인');
+  }
+  const conditions=make(detail,'table'),ch=make(make(conditions,'thead'),'tr');
+  for(const column of ['연구·시설·조건 ID','변경 전 연관','현재 근거 상태','검토 작업'])
+    make(ch,'th',column);
+  const cb=make(conditions,'tbody');
+  for(const item of selected.currentConditions){
+    const tr=make(cb,'tr');make(tr,'td',item.label+' · '+item.id);
+    make(tr,'td',item.seenBefore?'과거 제외 기록에서도 확인':'과거 영향 목록에 없음');
+    make(tr,'td',item.statuses.length?item.statuses.join(', '):'규칙 참조 · 상태 미확인');
+    const actions=make(tr,'td');
+    for(const id of item.taskIds.slice(0,6)){
+      const go=make(actions,'button',(item.unreviewedTaskIds.includes(id)?'미검토 ':'검토 ') +id,'route-link-jump');
+      go.type='button';go.addEventListener('click',()=>focusRouteActionTask(id));
+    }
+    if(!item.taskIds.length)make(actions,'span','현재 검토 작업 없음','note');
+  }
+  for(const item of selected.previousOnlyConditions){
+    const tr=make(cb,'tr');
+    make(tr,'td',item.id);
+    make(tr,'td','과거 영향에만 존재 · '+nf(item.latestRevision)+'차');
+    make(tr,'td','과거 상태: '+(item.previousSourceStatus||'미확인'));
+    make(tr,'td','현재 조건 연결 없음 · 이전 기록 확인');
+  }
+}
 function renderRouteActionHistory(rb,board){
   const history=rb.reviewHistory;
   const wrap=$('external-route-action-history');
@@ -1225,6 +1364,7 @@ function renderRouteActionHistory(rb,board){
   $('external-route-action-history-timeline-csv').disabled=!history?.events?.length;
   $('external-route-action-history-timeline-table').replaceChildren();
   renderRouteHistoryImpact(rb,board);
+  renderRouteHistoryPriority(rb,board);
   if(!history?.events?.length){
     $('external-route-action-history-summary').replaceChildren();
     $('external-route-action-history-table').replaceChildren();
@@ -2991,6 +3131,30 @@ $('external-route-batch-workflow-filter').addEventListener('change',()=>{
 $('external-route-batch-workflow-search').addEventListener('input',()=>{
   if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
   renderRouteMaterialWorkflow();
+});
+$('external-route-history-priority-search').addEventListener('input',()=>{
+  const current=routeActionState();
+  if(current)renderRouteHistoryPriority(current.rb,current.board);
+});
+$('external-route-history-priority-filter').addEventListener('change',()=>{
+  const current=routeActionState();
+  if(current)renderRouteHistoryPriority(current.rb,current.board);
+});
+$('external-route-history-priority-csv').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const report=routeHistoryPriorityReport(current.rb,current.board);
+  if(!report)return;
+  downloadCsv(routeHistoryPriorityCsvRows(report),
+    'xpiratez-v2-route-review-priority-'+report.rootRecipeId+'.csv');
+});
+$('external-route-history-priority-details-csv').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const report=routeHistoryPriorityReport(current.rb,current.board);
+  if(!report)return;
+  downloadCsv(routeHistoryPriorityDetailsCsvRows(report),
+    'xpiratez-v2-route-review-material-condition-'+report.rootRecipeId+'.csv');
 });
 $('external-route-history-impact-search').addEventListener('input',()=>{
   const current=routeActionState();
