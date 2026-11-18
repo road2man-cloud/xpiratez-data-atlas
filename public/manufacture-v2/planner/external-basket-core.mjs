@@ -102,15 +102,24 @@ export function compareExternalBasket(before, after, basket) {
   };
 }
 
+const routeSignature = scenario => JSON.stringify(
+  Object.entries(scenario?.routeChoices||{})
+    .sort(([left],[right])=>left.localeCompare(right,'en'))
+);
+export function compatibleExternalBasketBaselines(a,b) {
+  return a?.schema==='xpiratez-v2-single-recipe-acquisition-basket/v1' &&
+    b?.schema===a.schema && a.sourceVersion==='v.o2' &&
+    b.sourceVersion==='v.o2' && !!a.baselineSignature &&
+    a.baselineSignature===b.baselineSignature &&
+    a.rootRecipeId===b.rootRecipeId &&
+    routeSignature(a)===routeSignature(b);
+}
+
 export function compareExternalBasketScenarios(a, b) {
-  if (a?.schema !== 'xpiratez-v2-single-recipe-acquisition-basket/v1' ||
-      b?.schema !== a.schema || a.sourceVersion !== 'v.o2' ||
-      b.sourceVersion !== 'v.o2' || !a.baselineSignature ||
-      a.baselineSignature !== b.baselineSignature ||
-      a.rootRecipeId !== b.rootRecipeId ||
+  if (!compatibleExternalBasketBaselines(a,b) ||
       !Array.isArray(a.hypotheticalExternal) ||
       !Array.isArray(b.hypotheticalExternal))
-    throw new Error('같은 제조 목표와 기초 재고에서 저장한 A/B 결과만 비교할 수 있습니다.');
+    throw new Error('같은 제조 목표·기초 재고·제조 경로로 저장한 A/B 결과만 비교할 수 있습니다.');
   const left = new Map(a.hypotheticalExternal.map(row => [row.id, row]));
   const right = new Map(b.hypotheticalExternal.map(row => [row.id, row]));
   const rows = [...new Set([...left.keys(), ...right.keys()])]

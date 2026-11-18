@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios }
+import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios, compatibleExternalBasketBaselines }
   from '../public/manufacture-v2/planner/external-basket-core.mjs';
 
 const external=[
@@ -129,6 +129,23 @@ test('compares two independent saved baskets against the same baseline',()=>{
   assert.deepEqual(difference.materials.map(x=>[x.id,x.aShortage,x.bShortage]),
     [['STR_A',4,0],['STR_B',3,0]]);
   assert.equal(before.external[0].quantity,6);
+});
+
+test('matching stock outcomes do not make different producer routes comparable',()=>{
+  const before={rootRecipeId:'STR_RECIPE',external,
+    totals:{declaredCost:100,declaredTime:8},flags:[]};
+  const basket=prepareExternalBasket({
+    external,inventory:{},selectedIds:['STR_A'],itemIds,
+    requestedQuantities:{STR_A:2}
+  });
+  const ordinary=compareExternalBasket(before,before,basket);
+  const a={...ordinary,routeChoices:{STR_A:'external',STR_B:'external'}};
+  const b={...ordinary,routeChoices:{STR_A:'STR_OTHER_RECIPE',STR_B:'external'}};
+  assert.equal(compatibleExternalBasketBaselines(a,b),false);
+  assert.throws(()=>compareExternalBasketScenarios(a,b),/제조 경로/);
+  const sameOrderReversed={...ordinary,routeChoices:{STR_B:'external',STR_A:'external'}};
+  assert.equal(compatibleExternalBasketBaselines(a,sameOrderReversed),true);
+  assert.equal(compareExternalBasketScenarios(a,sameOrderReversed).scenarioA.acquiredUnits,2);
 });
 
 test('refuses to compare A/B baskets with different initial plans',()=>{

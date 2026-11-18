@@ -100,6 +100,22 @@ padding:8px;font-variant-numeric:tabular-nums}
 #external-route-workbench-evidence-actions li{margin-bottom:4px;font-size:.81rem;overflow-wrap:anywhere}
 #main-readiness{margin:16px 0}
 #main-readiness .section-title{align-items:center;gap:12px;flex-wrap:wrap}
+#external-route-batch{margin-top:20px;border:1px solid #477399;background:#0f2540;border-radius:9px;padding:14px}
+#external-route-batch h5{margin:0 0 8px}
+#external-route-batch .control-buttons{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+#external-route-batch-status{margin:8px 0}
+#external-route-batch-inputs table,#external-route-batch-summary table,
+#external-route-batch-changes table{width:100%;min-width:680px}
+#external-route-batch-inputs td:first-child{min-width:60px;text-align:center}
+#external-route-batch-inputs input.route-batch-check{width:18px;height:18px;accent-color:#9cbff4}
+#external-route-batch-inputs input.route-batch-amount{width:118px;max-width:100%;
+padding:7px;background:#0b1d31;color:#eaf4ff;border:1px solid #557a9a;
+border-radius:7px;font-variant-numeric:tabular-nums}
+#external-route-batch-inputs td:nth-child(2){min-width:165px}
+#external-route-batch-results{margin-top:16px;padding:12px;background:#122a46;border-radius:8px}
+#external-route-batch-results .item-id{display:block;font-size:.76rem;overflow-wrap:anywhere}
+#external-route-batch-results td{font-variant-numeric:tabular-nums}
+
 #main-readiness .control-buttons{flex-wrap:wrap;align-items:center}
 #main-readiness label{display:flex;gap:8px;align-items:center;color:#d4e2f3;font-size:.88rem}
 #main-readiness select{padding:8px;border:1px solid #587493;border-radius:7px;background:#102238;color:#eaf3ff}

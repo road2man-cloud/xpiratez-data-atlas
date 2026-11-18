@@ -2,13 +2,14 @@ import { createManufacturingPlanner } from './planner-core.mjs';
 import { initV2SaveImportUI } from './save-import-ui.mjs';
 import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
 import { initQueueUI } from './queue-ui.mjs';
-import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios } from './external-basket-core.mjs';
+import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios, compatibleExternalBasketBaselines } from './external-basket-core.mjs';
 import { exploreExternalCandidates, rankExternalCandidates } from './external-candidate-explorer.mjs';
 import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
 import { calculateRouteWorkbench } from './candidate-route-workbench.mjs';
 import { summarizeRouteReadiness } from './candidate-route-evidence.mjs';
 import { buildManufacturingReadinessChecklist } from './manufacturing-readiness-checklist.mjs';
 import { prepareReadinessBatch, calculateReadinessBatch } from './readiness-acquisition-batch.mjs';
+import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -340,6 +341,10 @@ function previewExternalBasket() {
 function saveExternalBasketScenario(slot) {
   if(slot!=='A' && slot!=='B')throw new Error('시나리오 이름이 올바르지 않습니다.');
   previewExternalBasket();
+  const other=slot==='A'?'B':'A';
+  if(externalBasketScenarios[other] &&
+      !compatibleExternalBasketBaselines(externalBasketScenarios[other],externalBasketReport))
+    externalBasketScenarios[other]=null;
   externalBasketScenarios[slot]=externalBasketReport;
   externalBasketComparison=null;
   $('external-basket-comparison').hidden=true;
@@ -829,7 +834,7 @@ function storeMainBatchScenario(slot) {
   const scenario=mainBatchResult.report.hypotheticalScenario;
   const opposite=slot==='A'?'B':'A';
   const old=externalBasketScenarios[opposite];
-  if(old && old.baselineSignature!==scenario.baselineSignature)
+  if(old && !compatibleExternalBasketBaselines(old,scenario))
     externalBasketScenarios[opposite]=null;
   externalBasketScenarios[slot]=scenario;
   externalBasketComparison=null;
@@ -882,6 +887,7 @@ function renderMainChecklist(plan){
   updateMainBatchStatus();
   $('main-readiness-csv').disabled=false;
   $('main-readiness-json').disabled=false;
+  $('main-route-workbench-open').disabled=!plan.external.some(canSelectExternalBasket);
   paintMainChecklist();
 }
 function renderWorkbenchChecklist(){
@@ -1053,10 +1059,230 @@ function renderWorkbenchEvidence() {
       make(actions,'p','나머지 '+nf(list.length-80)+'건은 JSON에 포함됩니다.','note');
   }
 }
+const ROUTE_BATCH_VISIBLE_LIMIT=200;
+function resetRouteBatch() {
+  const wb=externalRouteWorkbench;
+  if(wb)wb.routeBatch={selected:new Set(),amounts:new Map(),result:null};
+  $('external-route-batch-inputs').replaceChildren();
+  $('external-route-batch-results').hidden=true;
+  $('external-route-batch-summary').replaceChildren();
+  $('external-route-batch-changes').replaceChildren();
+  for(const id of ['all','clear','preview','draft','a','b','json','csv'])
+    $('external-route-batch-'+id).disabled=true;
+  $('external-route-batch-status').textContent='경로를 계산하면 해당 경로의 부족 재료를 선택할 수 있습니다.';
+}
+function routeBatchContext() {
+  const wb=externalRouteWorkbench;
+  if(!wb?.calculation || !wb.routeBatch)
+    throw new Error('먼저 편집한 제조 경로를 계산하세요.');
+  return {
+    wb,rb:wb.routeBatch,
+    plan:wb.calculation.routeBaseline,
+    checklist:wb.calculation.report.checklists.editedRoute
+  };
+}
+function routeBatchInvalidate() {
+  const wb=externalRouteWorkbench;
+  if(!wb?.routeBatch)return;
+  wb.routeBatch.result=null;
+  $('external-route-batch-results').hidden=true;
+  for(const id of ['draft','a','b','json','csv'])
+    $('external-route-batch-'+id).disabled=true;
+  updateRouteBatchStatus();
+}
+function updateRouteBatchStatus() {
+  const wb=externalRouteWorkbench;
+  if(!wb?.calculation || !wb.routeBatch)return;
+  const rb=wb.routeBatch,plan=wb.calculation.routeBaseline;
+  $('external-route-batch-clear').disabled=!rb.selected.size;
+  if(!rb.selected.size){
+    $('external-route-batch-preview').disabled=true;
+    $('external-route-batch-status').textContent=
+      '현재 경로에서 부족한 '+nf(plan.external.length)+'종 중 확보할 재료를 선택하세요.';
+    return;
+  }
+  try{
+    const basket=prepareReadinessBatch({
+      checklist:wb.calculation.report.checklists.editedRoute,
+      plan,inventory:state.inventory,itemIds:state.planner.itemMap,
+      selectedIds:rb.selected,requestedQuantities:rb.amounts
+    });
+    $('external-route-batch-preview').disabled=false;
+    $('external-route-batch-status').textContent='경로 기준으로 선택한 '+
+      nf(basket.selectedKinds)+'종 · '+nf(basket.selectedUnits)+
+      '개를 가상 확보합니다. 기존 탐색 후보의 확보량은 합산하지 않습니다.';
+  }catch(error){
+    $('external-route-batch-preview').disabled=true;
+    $('external-route-batch-status').textContent=
+      '경로 기준 일괄 확보 입력 확인: '+error.message;
+  }
+}
+function renderRouteBatchEditor() {
+  const {wb,rb,plan}=routeBatchContext();
+  const parent=$('external-route-batch-inputs');parent.replaceChildren();
+  const rows=plan.external.filter(row=>{
+    const base=state.inventory[row.id]||0;
+    return state.planner.itemMap.has(row.id) &&
+      Number.isSafeInteger(row.quantity) && row.quantity>0 &&
+      Number.isSafeInteger(base) && base>=0 && base<10000000;
+  });
+  for(const row of rows){
+    const max=Math.min(row.quantity,10000000-(state.inventory[row.id]||0));
+    rb.amounts.set(row.id,max);
+  }
+  $('external-route-batch-all').disabled=!rows.length;
+  if(!rows.length){
+    make(parent,'p','현재 경로에 가상 확보 수량을 입력할 수 있는 부족 재료가 없습니다.','note');
+    updateRouteBatchStatus();
+    return;
+  }
+  const table=make(parent,'table');
+  const head=make(make(table,'thead'),'tr');
+  for(const text of ['선택','경로에서 부족한 재료','현재 부족','입력 재고','가상 확보 수량'])
+    make(head,'th',text);
+  const body=make(table,'tbody');
+  for(const row of rows.slice(0,ROUTE_BATCH_VISIBLE_LIMIT)){
+    const tr=make(body,'tr'),mark=make(tr,'td');
+    const box=make(mark,'input');
+    box.type='checkbox';box.value=row.id;box.className='route-batch-check';
+    box.setAttribute('aria-label',row.name+' 경로 기준 확보 선택');
+    box.addEventListener('change',()=>{
+      if(box.checked)rb.selected.add(row.id);
+      else rb.selected.delete(row.id);
+      routeBatchInvalidate();
+    });
+    const material=make(tr,'td');
+    make(material,'strong',row.name);
+    make(material,'code',row.id,'item-id');
+    make(tr,'td',nf(row.quantity)+'개');
+    make(tr,'td',nf(state.inventory[row.id]||0)+'개');
+    const cell=make(tr,'td'),input=make(cell,'input');
+    input.type='number';input.min='1';
+    input.max=String(rb.amounts.get(row.id));input.step='1';
+    input.className='route-batch-amount';
+    input.value=String(rb.amounts.get(row.id));
+    input.setAttribute('aria-label',row.name+' 경로 기준 가상 확보 수량');
+    input.addEventListener('input',()=>{
+      rb.amounts.set(row.id,Number(input.value));
+      routeBatchInvalidate();
+    });
+  }
+  if(rows.length>ROUTE_BATCH_VISIBLE_LIMIT)
+    make(parent,'p','화면에는 상위 '+nf(ROUTE_BATCH_VISIBLE_LIMIT)+
+      '개 재료를 표시합니다. 전체 선택은 현재 경로의 검증 가능한 모든 부족 재료를 사용합니다.','note');
+  updateRouteBatchStatus();
+}
+function renderRouteBatchResult(){
+  const result=externalRouteWorkbench?.routeBatch?.result?.report;
+  if(!result)return;
+  const target=$('external-route-batch-summary');target.replaceChildren();
+  const table=make(target,'table'),head=make(make(table,'thead'),'tr');
+  for(const label of ['비교 항목','원안','제조 경로만 편집','경로 변경 + 가상 조달'])
+    make(head,'th',label);
+  const body=make(table,'tbody');
+  for(const [title,key,suffix] of [
+    ['외부 부족 종류','shortageKinds','종'],
+    ['외부 부족 수량','shortageUnits','개'],
+    ['명시 제조비','declaredCost',''],
+    ['명시 작업량','declaredTime',''],
+    ['불확실 조건','flags','건']
+  ]){
+    const tr=make(body,'tr');make(tr,'th',title);
+    for(const plan of [result.original,result.routeOnly,result.routeAndAcquisition])
+      make(tr,'td',nf(key==='flags'?plan.flags.length:plan[key])+suffix);
+  }
+  const changes=$('external-route-batch-changes');changes.replaceChildren();
+  make(changes,'p','경로 변경과 가상 조달의 차이를 분리한 작업 목록입니다. 계산 결과에만 적용됩니다.','note');
+  const rows=[
+    ...result.routeOnlyChanges.added.map(x=>['경로 변경','신규 확인',x]),
+    ...result.routeOnlyChanges.removed.map(x=>['경로 변경','계산에서 제외',x]),
+    ...result.acquisitionChanges.added.map(x=>['가상 조달','신규 확인',x]),
+    ...result.acquisitionChanges.removed.map(x=>['가상 조달','계산에서 제외',x]),
+    ...result.acquisitionChanges.changed.map(x=>['가상 조달','부족량·상태 변경',x.current])
+  ];
+  if(rows.length){
+    const table=make(changes,'table'),head=make(make(table,'thead'),'tr');
+    for(const name of ['변경 단계','변화','확인 항목','현재 가상 수량'])
+      make(head,'th',name);
+    const tbody=make(table,'tbody');
+    for(const [stage,kind,row] of rows.slice(0,100)){
+      const tr=make(tbody,'tr');
+      make(tr,'td',stage);make(tr,'td',kind);
+      const name=make(tr,'td');
+      make(name,'strong',row.title);
+      make(name,'code',row.requirementId,'item-id');
+      make(tr,'td',row.quantity===null?'조건 근거':nf(row.quantity)+'개');
+    }
+    if(rows.length>100)
+      make(changes,'p',nf(rows.length-100)+'건은 JSON 결과에 포함됩니다.','note');
+  }else make(changes,'p','가상 제조 확인 목록에 변동이 없습니다.','note');
+  $('external-route-batch-results').hidden=false;
+}
+function runRouteBatch() {
+  const {wb,rb}=routeBatchContext();
+  rb.result=null;
+  $('external-route-batch-results').hidden=true;
+  try{
+    rb.result=calculateRouteAwareReadinessBatch({
+      planner:state.planner,originalPlan:state.plan,
+      originalChecklist:wb.calculation.report.checklists.original,
+      routeBaseline:wb.calculation.routeBaseline,
+      routeChecklist:wb.calculation.report.checklists.editedRoute,
+      inventory:state.inventory,choices:wb.choices,
+      selectedIds:rb.selected,requestedQuantities:rb.amounts,
+      batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
+      assumeImplicit:$('assume-implicit').checked,
+      saveDiscoveredResearchIds:state.saveDiscovered,
+      evidenceForPlan:evidenceForCurrentPlan
+    });
+    for(const id of ['draft','a','b','json','csv'])
+      $('external-route-batch-'+id).disabled=false;
+    renderRouteBatchResult();
+    $('external-route-batch-status').textContent=
+      '편집한 제조 경로와 가상 조달을 함께 계산했습니다. 본 계산기의 제조 경로·재고와 게임 세이브는 변경되지 않았습니다.';
+    $('external-route-batch-results').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(error){
+    for(const id of ['draft','a','b','json','csv'])
+      $('external-route-batch-'+id).disabled=true;
+    $('external-route-batch-status').textContent='경로·조달 통합 계산 중단: '+error.message;
+  }
+}
+function draftRouteBatchStock(){
+  const report=externalRouteWorkbench?.routeBatch?.result?.report;
+  if(!report)throw new Error('먼저 경로·조달 통합 계산을 진행하세요.');
+  const editor=$('stock-bulk-text');
+  if(editor.value.trim())
+    throw new Error('기존 일괄 재고 입력문이 있어 덮어쓰지 않았습니다.');
+  editor.value=report.stockDraft;
+  editor.closest('details').open=true;
+  $('stock-message').textContent='경로 기준 가상 조달 재고를 입력문에 준비했습니다. 별도 적용 전에는 계산기 재고와 게임 세이브가 변경되지 않습니다.';
+  editor.scrollIntoView({behavior:'smooth',block:'center'});
+  editor.focus();
+}
+function storeRouteBatchScenario(slot){
+  const report=externalRouteWorkbench?.routeBatch?.result?.report;
+  if(!report||!['A','B'].includes(slot))
+    throw new Error('가상 계산 결과가 없습니다.');
+  const scenario=report.hypotheticalScenario;
+  const opposite=slot==='A'?'B':'A';
+  const old=externalBasketScenarios[opposite];
+  const incompatible=old && !compatibleExternalBasketBaselines(old,scenario);
+  if(incompatible)externalBasketScenarios[opposite]=null;
+  externalBasketScenarios[slot]=scenario;
+  externalBasketComparison=null;
+  $('external-basket-comparison').hidden=true;
+  $('external-basket-compare-export').disabled=true;
+  updateBasketScenarioControls();
+  $('external-route-batch-status').textContent='편집 경로 기준 가상 조달을 '+slot+
+    '에 저장했습니다. '+(incompatible?'기준 제조 경로가 다른 기존 '+opposite+
+      ' 결과는 비교 오류를 막기 위해 초기화했습니다. ':'')+
+    '본 계산기 재고·경로·세이브는 그대로입니다.';
+}
 function recalculateRouteWorkbench() {
   const wb=externalRouteWorkbench;
   if(!wb)return;
   wb.calculation=null;
+  resetRouteBatch();
   for(const id of ['external-route-workbench-draft',
     'external-route-workbench-apply-choices','external-route-workbench-a',
     'external-route-workbench-b','external-route-workbench-export',
@@ -1089,6 +1315,7 @@ function recalculateRouteWorkbench() {
     renderWorkbenchComparison();
     renderWorkbenchEvidence();
     renderWorkbenchChecklist();
+    renderRouteBatchEditor();
     const rep=wb.calculation.report;
     $('external-route-workbench-status').textContent=
       '가상 확보 '+nf(rep.additions.length)+'종 · '+
@@ -1120,7 +1347,7 @@ function saveWorkbenchScenario(slot) {
   const scenario=wb.calculation.report.scenarioReport;
   const other=slot==='A'?'B':'A';
   const incompatible=externalBasketScenarios[other] &&
-    externalBasketScenarios[other].baselineSignature!==scenario.baselineSignature;
+    !compatibleExternalBasketBaselines(externalBasketScenarios[other],scenario);
   if(incompatible)externalBasketScenarios[other]=null;
   externalBasketScenarios[slot]=scenario;
   externalBasketComparison=null;
@@ -1178,9 +1405,14 @@ function renderExternalExploration() {
         button.type='button';
         button.setAttribute('aria-label',kind[candidate.type]+' 후보 '+slot+'에 저장');
         button.addEventListener('click',()=>{
-          externalBasketScenarios[slot]={
+          const scenario={
             ...candidate.report,evidence:candidate.evidence
           };
+          const other=slot==='A'?'B':'A';
+          if(externalBasketScenarios[other] &&
+              !compatibleExternalBasketBaselines(externalBasketScenarios[other],scenario))
+            externalBasketScenarios[other]=null;
+          externalBasketScenarios[slot]=scenario;
           externalBasketComparison=null;
           $('external-basket-comparison').hidden=true;
           $('external-basket-compare-export').disabled=true;
@@ -1629,6 +1861,7 @@ function renderPlan() {
     updateMainBatchStatus();
     $('main-readiness-csv').disabled=true;
     $('main-readiness-json').disabled=true;
+    $('main-route-workbench-open').disabled=true;
     $('main-readiness-table').replaceChildren();
     $('main-readiness-status').textContent='계산 실패로 이전 확인 목록을 지웠습니다.';
     $('output').hidden=true;
@@ -1812,6 +2045,77 @@ $('external-basket-compare-export').addEventListener('click',()=>{
   link.download='xpiratez-v2-acquisition-a-b-'+externalBasketComparison.rootRecipeId+'.json';
   document.body.appendChild(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
+});
+$('main-route-workbench-open').addEventListener('click',()=>{
+  try{
+    if(!state.plan)throw new Error('제조 계획을 먼저 계산하세요.');
+    const row=state.plan.external.find(canSelectExternalBasket);
+    if(!row)throw new Error('현재 규칙 범위에서 가상 확보 가능한 부족 재료가 없습니다.');
+    const count=Math.min(row.quantity,10000000-(state.inventory[row.id]||0));
+    // Use a minimal valid local candidate to open the existing route editor
+    // directly from the currently selected recipe (no candidate search).
+    openRouteWorkbench({
+      report:{sourceVersion:'v.o2',rootRecipeId:state.plan.rootRecipeId},
+      additions:[{id:row.id,quantity:count}]
+    });
+    $('external-route-workbench-status').textContent=
+      '현재 제조 목표에서 작업대를 직접 열었습니다. 경로를 바꾸면 아래 일괄 확보 목록도 새 경로를 기준으로 갱신됩니다.';
+  }catch(error){$('main-readiness-status').textContent='작업대 열기 실패: '+error.message;}
+});
+$('external-route-batch-all').addEventListener('click',()=>{
+  try{
+    const {rb,plan}=routeBatchContext();
+    rb.selected=new Set(plan.external.map(row=>row.id)
+      .filter(id=>rb.amounts.has(id)));
+    for(const check of $('external-route-batch-inputs')
+      .querySelectorAll('input.route-batch-check'))
+      check.checked=rb.selected.has(check.value);
+    routeBatchInvalidate();
+  }catch(error){$('external-route-batch-status').textContent=error.message;}
+});
+$('external-route-batch-clear').addEventListener('click',()=>{
+  const rb=externalRouteWorkbench?.routeBatch;
+  if(!rb)return;
+  rb.selected.clear();
+  for(const check of $('external-route-batch-inputs')
+    .querySelectorAll('input.route-batch-check'))
+    check.checked=false;
+  routeBatchInvalidate();
+});
+$('external-route-batch-preview').addEventListener('click',runRouteBatch);
+$('external-route-batch-draft').addEventListener('click',()=>{
+  try{draftRouteBatchStock();}
+  catch(error){$('external-route-batch-status').textContent=
+    '재고 입력문 준비 중단: '+error.message;}
+});
+for(const slot of ['A','B']){
+  $('external-route-batch-'+slot.toLowerCase()).addEventListener('click',()=>{
+    try{storeRouteBatchScenario(slot);}
+    catch(error){$('external-route-batch-status').textContent=
+      '시나리오 저장 중단: '+error.message;}
+  });
+}
+$('external-route-batch-json').addEventListener('click',()=>{
+  const report=externalRouteWorkbench?.routeBatch?.result?.report;
+  if(!report)return;
+  const text=JSON.stringify(report,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='xpiratez-v2-route-aware-batch-'+report.rootRecipeId+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+});
+$('external-route-batch-csv').addEventListener('click',()=>{
+  const report=externalRouteWorkbench?.routeBatch?.result?.report;
+  if(!report)return;
+  downloadCsv([
+    ['아이템 ID','이름','경로 기준 부족','입력 재고','가상 확보 수량',
+      '확보 후 가상 재고','원본 참고 단가','참고 확보가'],
+    ...report.acquiredHypothetically.map(x=>[
+      x.id,x.name,x.shortage,x.previous,x.quantity,x.target,
+      x.listedUnitBuy,x.listedBuyReference
+    ])
+  ],'xpiratez-v2-route-aware-batch-'+report.rootRecipeId+'.csv');
 });
 $('external-route-workbench-close').addEventListener('click',()=>{
   externalRouteWorkbench=null;

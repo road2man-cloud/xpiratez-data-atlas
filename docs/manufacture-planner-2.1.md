@@ -363,6 +363,53 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Route-edited manufacturing with independent bulk procurement (2026-11-18)
+
+The **제조 준비·조달 체크리스트** now has
+**이 제조 목표의 경로·조달 작업대 열기**. This opens the existing
+single-recipe route workbench directly from the current calculated
+manufacturing goal when at least one catalogued shortage is available,
+without first running bounded procurement-candidate exploration.
+
+A new **변경된 제조 경로의 부족 재료 일괄 확보** section in the workbench
+uses the route-edited plan **before any hypothetical acquisition**.
+It lists that route's actual unresolved materials, including items
+not present in the original route. Users choose individual quantities,
+select all eligible materials, or clear the selection. This editor is
+distinct from the legacy explored-candidate acquisition controls, so
+their stock additions are never silently combined or counted twice.
+
+On **경로 + 일괄 확보 재계산**, the route is replayed with the
+original manual inventory and current workbench producer choices.
+The edited route's shortage checklist is checked for staleness
+before the selected quantities are applied to a stock copy.
+An independent route-aware batch plan is then recalculated, retaining
+three comparisons: original goal, edited route only, and edited route
+plus hypothetical acquisitions. The report separates checklist
+requirements added/removed by the producer-route edit from those
+changed by the later virtual procurement step.
+
+Successful results have explicit **재고 입력문 준비**, **A에 저장**,
+**B에 저장**, **통합 결과 JSON 저장** and **확보 초안 CSV 저장**.
+The stock draft uses validated total-on-hand quantities and is written
+only to an empty bulk-editor input. The user must separately activate
+the pre-existing **여러 재고 적용** action to change calculator stock;
+the original game save is never edited. A/B entries include the edited
+route choices and are accepted only against compatible baselines.
+A/B comparisons now also normalize and compare explicit producer-route
+choices, preventing two unrelated manufacturing paths with accidentally
+identical shortage totals and declared costs from being treated as the
+same source scenario. Saving a new incompatible A/B result clears the
+opposite saved slot rather than silently mixing incompatible routes.
+
+Changing any route, selected material, or acquisition quantity
+invalidates the previous route-aware result and disables stale
+exports. When the selected route requires no unresolved external
+materials, the new editor reports that nothing can be acquired
+instead of inventing a shortage. Facilities, research unlock
+conditions, market availability and game execution remain evidence
+checks, not claimed manufacturing readiness.
+
 ## Readiness checklist to batch acquisition handoff (2026-11-18)
 
 The single-goal **제조 준비·조달 체크리스트** now contains an embedded

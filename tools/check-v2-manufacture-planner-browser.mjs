@@ -265,9 +265,63 @@ try {
   await workbenchAmount.press('Tab');
   assert(await page.locator('#external-route-workbench-export').isEnabled());
   const workbenchChemical=page.locator('select[aria-label="화학물질 작업대 제조 경로"]');
+  const routeInputs=page.locator('#external-route-batch-inputs tbody tr');
+  assert((await routeInputs.count())>=1,await page.locator('#external-route-batch-status').innerText());
+  assert(await page.locator('#external-route-batch-all').isEnabled());
+  await page.locator('#external-route-batch-all').click();
+  const routeSelected=await page.locator('#external-route-batch-inputs .route-batch-check:checked').count();
+  assert(routeSelected>=1);
+  assert(await page.locator('#external-route-batch-preview').isEnabled());
+  const routeAmount=page.locator('#external-route-batch-inputs .route-batch-amount').first();
+  const routeFull=await routeAmount.inputValue();
+  await routeAmount.fill('0');
+  assert(await page.locator('#external-route-batch-preview').isDisabled());
+  await routeAmount.fill(routeFull);
+  assert(await page.locator('#external-route-batch-preview').isEnabled());
+  await page.locator('#external-route-batch-preview').click();
+  assert(await page.locator('#external-route-batch-results').isVisible());
+  assert((await page.locator('#external-route-batch-summary').innerText()).includes('경로 변경 + 가상 조달'));
+  assert((await page.locator('#external-route-batch-status').innerText()).includes('게임 세이브는 변경되지 않았습니다'));
+  assert(await page.locator('#external-route-batch-json').isEnabled());
+  const routeBatchDownload=page.waitForEvent('download');
+  await page.locator('#external-route-batch-json').click();
+  const routeBatchFile=await routeBatchDownload;
+  assert.equal(routeBatchFile.suggestedFilename(),
+    'xpiratez-v2-route-aware-batch-STR_3RL_HE_XXX.json');
+  const routeBatchPayload=JSON.parse(fs.readFileSync(await routeBatchFile.path(),'utf8'));
+  assert.equal(routeBatchPayload.schema,'xpiratez-v2-route-aware-readiness-batch/v1');
+  assert.equal(routeBatchPayload.rootRecipeId,'STR_3RL_HE_XXX');
+  assert.equal(routeBatchPayload.acquiredHypothetically.length,routeSelected);
+  assert.equal(routeBatchPayload.editedRouteChecklist.schema,
+    'xpiratez-v2-single-goal-readiness-checklist/v1');
+  assert.equal(routeBatchPayload.finalChecklist.schema,
+    'xpiratez-v2-single-goal-readiness-checklist/v1');
+  assert(routeBatchPayload.hypotheticalScenario.routeChoices);
+  assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  const routeBatchCsvDownload=page.waitForEvent('download');
+  await page.locator('#external-route-batch-csv').click();
+  const routeBatchCsv=await routeBatchCsvDownload;
+  assert.equal(routeBatchCsv.suggestedFilename(),
+    'xpiratez-v2-route-aware-batch-STR_3RL_HE_XXX.csv');
+  assert(fs.readFileSync(await routeBatchCsv.path(),'utf8').includes('가상 확보 수량'));
+  await page.locator('#external-route-batch-a').click();
+  await page.locator('#external-route-batch-b').click();
+  assert(await page.locator('#external-basket-compare').isEnabled());
+  await page.locator('#external-route-batch-draft').click();
+  assert.equal(await page.locator('#stock-bulk-text').inputValue(),
+    routeBatchPayload.stockDraft);
+  await page.locator('#external-route-batch-draft').click();
+  assert((await page.locator('#external-route-batch-status').innerText()).includes('덮어쓰지 않았습니다'));
+  await page.locator('#stock-bulk-text').fill('');
+  await page.locator('#external-route-batch-clear').click();
+  assert(await page.locator('#external-route-batch-preview').isDisabled());
+  assert(await page.locator('#external-route-batch-json').isDisabled());
+  assert(await page.locator('#external-route-batch-results').isHidden());
   if(await workbenchChemical.count()){
     await workbenchChemical.selectOption('STR_CHEMICALS_XXX');
     assert(await page.locator('#external-route-workbench-export').isEnabled());
+    assert(await page.locator('#external-route-batch-json').isDisabled());
+    assert(await page.locator('#external-route-batch-results').isHidden());
   }
   const workbenchDownload=page.waitForEvent('download');
   await page.locator('#external-route-workbench-export').click();
@@ -305,6 +359,13 @@ try {
   await page.locator('#external-route-workbench-close').click();
   assert(await page.locator('#external-route-workbench').isHidden());
   assert.equal(await chemical.inputValue(),'external');
+  assert(await page.locator('#main-route-workbench-open').isEnabled());
+  await page.locator('#main-route-workbench-open').click();
+  assert(await page.locator('#external-route-workbench').isVisible());
+  assert((await page.locator('#external-route-workbench-status').innerText()).includes('직접 열었습니다'));
+  assert((await page.locator('#external-route-batch-inputs').innerText()).includes('경로에서 부족한 재료'));
+  await page.locator('#external-route-workbench-close').click();
+  assert(await page.locator('#external-route-workbench').isHidden());
   await exploredRows.first().getByRole('button',{name:/후보 재고 입력문 준비/}).click();
   const candidateDraft=await page.locator('#stock-bulk-text').inputValue();
   assert(exploreData.candidates[0].additions.every(x=>candidateDraft.includes(x.id+'='+x.target)));

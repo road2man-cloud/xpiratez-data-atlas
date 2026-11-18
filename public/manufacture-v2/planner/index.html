@@ -93,6 +93,7 @@
 <div class="section-title"><h3>제조 준비·조달 체크리스트</h3><div class="control-buttons">
 <button id="main-readiness-csv" class="secondary" type="button" disabled>체크리스트 CSV 저장</button>
 <button id="main-readiness-json" class="secondary" type="button" disabled>체크리스트 JSON 저장</button>
+<button id="main-route-workbench-open" class="secondary" type="button" disabled>이 제조 목표의 경로·조달 작업대 열기</button>
 </div></div>
 <p class="note">계산된 부족 재료·시설·연구 근거·규칙상 불확실성을 실행 전 확인할 일로 정리합니다. 순서는 점검용이며 구매 가능성·연구 잠금·제조 가능성을 확정하지 않습니다. 체크 표시는 이 화면의 개인 확인 메모일 뿐 조건 충족을 뜻하지 않습니다.</p>
 <div class="control-buttons">
@@ -308,6 +309,28 @@
 <div id="external-route-workbench-checklist-summary" class="summary-stats"></div>
 <div id="external-route-workbench-checklist-changes" class="table-wrap"></div>
 <div id="external-route-workbench-checklist-table" class="table-wrap"></div>
+<section id="external-route-batch" class="route-batch-panel" aria-label="변경된 제조 경로 기준 일괄 조달">
+<h5>변경된 제조 경로의 부족 재료 일괄 확보</h5>
+<p class="note">위에서 선택한 제조 경로로 재계산한 <strong>확보 전 부족 재료</strong>를 기준으로 합니다. 원래 탐색 후보의 가상 확보량과 합산하지 않으며, 새로 나타난 하위 재료도 선택할 수 있습니다.</p>
+<div class="control-buttons">
+<button id="external-route-batch-all" class="secondary" type="button" disabled>경로 부족 재료 모두 선택</button>
+<button id="external-route-batch-clear" class="secondary" type="button" disabled>선택 해제</button>
+<button id="external-route-batch-preview" type="button" disabled>경로 + 일괄 확보 재계산</button>
+<button id="external-route-batch-draft" class="secondary" type="button" disabled>확보 재고 입력문 준비</button>
+<button id="external-route-batch-a" class="secondary" type="button" disabled>A에 저장</button>
+<button id="external-route-batch-b" class="secondary" type="button" disabled>B에 저장</button>
+<button id="external-route-batch-json" class="secondary" type="button" disabled>통합 결과 JSON 저장</button>
+<button id="external-route-batch-csv" class="secondary" type="button" disabled>확보 초안 CSV 저장</button>
+</div>
+<p id="external-route-batch-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-batch-inputs" class="table-wrap"></div>
+<div id="external-route-batch-results" hidden>
+<h5>원안 / 경로 변경 / 경로 변경 + 조달</h5>
+<div id="external-route-batch-summary" class="table-wrap"></div>
+<div id="external-route-batch-changes" class="table-wrap"></div>
+<p class="note">가상 계산에서 목록이 제외되어도 실제 게임의 구매·연구·시설·제조 조건을 충족했다는 뜻은 아닙니다.</p>
+</div>
+</section>
 </section>
 <div id="external-basket-comparison" class="procurement-preview" hidden>
 <div class="section-title"><h4>일괄 확보 시나리오 A/B 비교</h4><button id="external-basket-compare-close" class="secondary" type="button">닫기</button></div>
