@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildRouteActionBoard,projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview}
   from '../public/manufacture-v2/planner/route-action-board.mjs';
-import {previewRouteActionCarryover,applyRouteActionCarryover}
+import {previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryoverAudit,routeActionCarryoverAuditCsvRows}
   from '../public/manufacture-v2/planner/route-action-carryover.mjs';
 
 const workflow={
@@ -275,4 +275,28 @@ test('unknown review keys, oversized notes, stale or invalid prerequisites fail 
   }),/선행 하위 제조식/);
   assert.throws(()=>routeActionReviewCsvRows({schema:'old'}),
     /내보낼 제조 작업표/);
+});
+
+test('carry-over audit exports all decisions without leaking notes or board reference',()=>{
+  const board=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=projectRouteActionBoard(board,{
+    reviewed:['material::STR_ORE','recipe::1'],
+    notes:{'material::STR_ORE':'민감한 개인 메모'}
+  });
+  const changed=buildRouteActionBoard({
+    workflow:{...workflow,materials:workflow.materials.map(x=>
+      x.id==='STR_ORE'?{...x,totalAcquisition:5}:x)},
+    finalChecklist:checklist
+  });
+  const preview=previewRouteActionCarryover(changed,saved);
+  const audit=routeActionCarryoverAudit(preview);
+  assert.equal(audit.counts.excluded,preview.counts.excluded);
+  assert.equal(audit.matched.length+audit.skipped.length,2);
+  assert(audit.skipped.some(x=>x.reason));
+  assert(!JSON.stringify(audit).includes('민감한 개인 메모'));
+  assert(!('currentBoard' in audit));
+  const csv=routeActionCarryoverAuditCsvRows(preview);
+  assert.equal(csv.length,3);
+  assert(csv.some(x=>x[0]==='제외'&&x[8]));
+  assert.throws(()=>routeActionCarryoverAudit({schema:'wrong'}),/올바르지/);
 });

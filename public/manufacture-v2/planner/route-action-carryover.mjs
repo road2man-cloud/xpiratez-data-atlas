@@ -110,6 +110,37 @@ export function previewRouteActionCarryover(board,exported){
     caveat:'이전 검토 기록은 실제 게임 상태의 증거가 아닙니다. 의미·수량·상태·모든 선행 작업이 동일한 단일 항목만 선택적으로 재사용합니다. 중복 제조식은 임의로 대응시키지 않습니다.'
   };
 }
+// Serializable audit: never export the in-memory board identity guard.
+export function routeActionCarryoverAudit(preview) {
+  if(preview?.schema!==PREVIEW||preview.sourceVersion!=='v.o2'||
+     !Array.isArray(preview.matched)||!Array.isArray(preview.skipped)||
+     !preview.counts||typeof preview.rootRecipeId!=='string')
+    throw new Error('내보낼 검토 비교 결과가 올바르지 않습니다.');
+  return {
+    schema:'xpiratez-v2-route-carryover-audit/v1',
+    sourceVersion:'v.o2',
+    rootRecipeId:preview.rootRecipeId,
+    counts:{...preview.counts},
+    matched:preview.matched.map(({oldId,currentId,type,label,reviewed,note,positionChanged})=>({
+      oldId,currentId,type,label,reviewed,hasNote:!!note,positionChanged
+    })),
+    skipped:preview.skipped.map(({oldId,label,type,reviewed,hasNote,reason})=>({
+      oldId,label,type,reviewed,hasNote,reason
+    })),
+    caveat:'비교 판정의 보존용 기록이며 실제 게임의 제조 가능성 또는 확보 상태를 증명하지 않습니다. 메모 본문은 개인정보 보호를 위해 포함하지 않습니다.'
+  };
+}
+export function routeActionCarryoverAuditCsvRows(preview) {
+  const audit=routeActionCarryoverAudit(preview);
+  return [
+    ['판정','작업 구분','작업명','기존 작업 ID','현재 작업 ID','검토 표시','메모 존재','위치 변경','제외 사유'],
+    ...audit.skipped.map(x=>['제외',x.type,x.label,x.oldId,'',
+      x.reviewed?'예':'아니요',x.hasNote?'예':'아니요','',x.reason]),
+    ...audit.matched.map(x=>['재사용 가능',x.type,x.label,x.oldId,x.currentId,
+      x.reviewed?'예':'아니요',x.hasNote?'예':'아니요',
+      x.positionChanged?'예':'아니요',''])
+  ];
+}
 export function applyRouteActionCarryover(board,preview,{
   reviewed=new Set(),notes=new Map()
 }={}) {

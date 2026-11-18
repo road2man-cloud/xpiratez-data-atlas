@@ -14,7 +14,7 @@ import { expandRouteAwareReadinessBatch } from './route-aware-cascade.mjs';
 import { routeAcquisitionLedgerCsvRows } from './route-acquisition-ledger.mjs';
 import { routeMaterialWorkflowCsvRows } from './route-material-workflow.mjs';
 import { projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview } from './route-action-board.mjs';
-import { previewRouteActionCarryover,applyRouteActionCarryover } from './route-action-carryover.mjs';
+import { previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryoverAudit,routeActionCarryoverAuditCsvRows } from './route-action-carryover.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1070,6 +1070,8 @@ function clearRouteActionCarryover(){
   $('external-route-action-carryover-file').value='';
   $('external-route-action-carryover-file').disabled=true;
   $('external-route-action-carryover-apply').disabled=true;
+  $('external-route-action-carryover-json').disabled=true;
+  $('external-route-action-carryover-csv').disabled=true;
   $('external-route-action-carryover-status').textContent='';
   $('external-route-action-carryover-summary').replaceChildren();
   $('external-route-action-carryover-summary').hidden=true;
@@ -1126,6 +1128,8 @@ function renderRouteActionCarryoverPreview(){
   }
   target.hidden=false;
   $('external-route-action-carryover-apply').disabled=preview.counts.eligible===0;
+  $('external-route-action-carryover-json').disabled=false;
+  $('external-route-action-carryover-csv').disabled=false;
   $('external-route-action-carryover-status').textContent=
     '검토 JSON 비교 완료: 동일한 작업 '+nf(preview.counts.eligible)+'건, 제외 '+
     nf(preview.counts.excluded)+'건. 아직 현재 작업표에는 적용하지 않았습니다.'+
@@ -2639,6 +2643,8 @@ $('external-route-action-carryover-file').addEventListener('change',async ()=>{
   const rb=old?.rb;
   if(rb)rb.actionCarryoverPreview=null;
   $('external-route-action-carryover-apply').disabled=true;
+  $('external-route-action-carryover-json').disabled=true;
+  $('external-route-action-carryover-csv').disabled=true;
   $('external-route-action-carryover-summary').hidden=true;
   $('external-route-action-carryover-summary').replaceChildren();
   $('external-route-action-carryover-items').hidden=true;
@@ -2659,6 +2665,22 @@ $('external-route-action-carryover-file').addEventListener('change',async ()=>{
     $('external-route-action-carryover-status').textContent=
       '선택적 비교 중단: '+error.message+' · 기존 검토 메모는 유지됩니다.';
   }finally{control.value='';}
+});
+$('external-route-action-carryover-json').addEventListener('click',()=>{
+  const preview=routeActionState()?.rb.actionCarryoverPreview;
+  if(!preview)return;
+  const audit=routeActionCarryoverAudit(preview);
+  const url=URL.createObjectURL(new Blob([JSON.stringify(audit,null,2)+'\n'],
+    {type:'application/json;charset=utf-8'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='xpiratez-v2-carryover-audit-'+audit.rootRecipeId+'.json';
+  a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+$('external-route-action-carryover-csv').addEventListener('click',()=>{
+  const preview=routeActionState()?.rb.actionCarryoverPreview;
+  if(!preview)return;
+  downloadCsv(routeActionCarryoverAuditCsvRows(preview),
+    'xpiratez-v2-carryover-audit-'+preview.rootRecipeId+'.csv');
 });
 $('external-route-action-carryover-apply').addEventListener('click',()=>{
   const current=routeActionState();
