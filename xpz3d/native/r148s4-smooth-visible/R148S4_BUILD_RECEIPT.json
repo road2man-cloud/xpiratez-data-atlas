@@ -1,0 +1,14 @@
+﻿{
+    "schema":  "xpz3d.r148s4.smooth_visible_pair/v1",
+    "oxce":  "R148S3 cumulative allpatch, unchanged",
+    "oxce_sha256":  "EE84D0C5A2A727A3D5DFC7E50D0FC3A850A472DC4824208F7474FC8335F54101",
+    "s2":  "R148S4 F11 63-bone skinned native IGScene",
+    "s2_sha256":  "FD3CC01EBA66770768C4EB497A9581D40EA3B15721A09A99D43AB06F5100870E",
+    "s2_size":  7374848,
+    "position_interpolation_ms":  190,
+    "facing_interpolation_ms":  150,
+    "mesh_refresh_min_ms":  55,
+    "mouse_protection":  "R23R input seal retained; viewfix SW_SHOWNOACTIVATE only",
+    "live_gameplay_verified":  false,
+    "previous_exe_and_saves_preserved":  true
+}
