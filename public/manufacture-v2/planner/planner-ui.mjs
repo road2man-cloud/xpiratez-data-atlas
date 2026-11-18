@@ -1511,10 +1511,18 @@ function renderRouteActionRefresh(rb){
   }
 }
 function sharedReviewQueueReport(rb,board){
-  if(rb.sharedReviewIndex?.board!==board)
-    rb.sharedReviewIndex={board,value:buildSharedReviewIndex(board)};
+  if(rb.sharedReviewIndex?.board!==board){
+    const report=rb.expanded?.report;
+    rb.sharedReviewIndex={
+      board,
+      value:buildSharedReviewIndex(board,{
+        ledger:report?.acquisitionLedger||null,
+        checklist:report?.finalChecklist||null
+      })
+    };
+  }
   return projectSharedReviewQueue(rb.sharedReviewIndex.value,{
-    reviewed:rb.actionReviewed
+    reviewed:rb.actionReviewed,notes:rb.actionNotes
   });
 }
 function renderSharedReviewQueue(rb,board){
@@ -1525,19 +1533,27 @@ function renderSharedReviewQueue(rb,board){
   metric(summary,'여러 제조식의 공통 작업',nf(report.summary.shared)+'건');
   metric(summary,'반복 제조식 관련 작업',nf(report.summary.repeated)+'건');
   metric(summary,'독립 검토 작업',nf(report.summary.unlinked)+'건');
+  metric(summary,'원장상 남은 부족 재료',nf(report.summary.ledgerShortageKinds)+
+    '종 · '+nf(report.summary.ledgerShortageUnits)+'개');
+  metric(summary,'연구·시설·규칙 조건 근거',nf(report.summary.conditionsWithEvidence)+'건');
+  metric(summary,'조달 원장에 미기재된 재료',nf(report.summary.ledgerUnknownKinds)+'종');
   const query=$('external-route-shared-review-search').value.trim()
     .toLocaleLowerCase('ko-KR');
   const filter=$('external-route-shared-review-filter').value;
   const rows=report.tasks.filter(item=>
     (filter==='all'||(filter==='pending'?!item.reviewed:
       filter==='reviewed'?item.reviewed:
+      filter==='shortage'?item.type==='material'&&item.ledger?.remainingShortage>0:
+      filter==='condition'?item.type==='condition'&&!item.reviewed:
+      filter==='notes'?!!item.note:
       filter==='shared'?item.sharing==='multi-recipe':
       filter==='repeated'?item.sharing==='repeated-occurrence':
       item.sharing==='unlinked'))&&
-    (!query||[item.label,item.requirementId,item.taskId,
+    (!query||[item.label,item.requirementId,item.taskId,item.note,
       ...item.affectedRecipeIds].some(term=>
         String(term).toLocaleLowerCase('ko-KR').includes(query))));
   $('external-route-shared-review-csv').disabled=false;
+  $('external-route-shared-review-json').disabled=false;
   $('external-route-shared-review-status').textContent=
     '전체 '+nf(report.summary.taskCount)+'건 중 '+nf(rows.length)+
     '건 검색됨. 화면에는 최대 100건 표시하며 CSV에는 전체 '+
@@ -1550,8 +1566,8 @@ function renderSharedReviewQueue(rb,board){
     return;
   }
   const table=make(target,'table'),thead=make(make(table,'thead'),'tr');
-  for(const header of ['검토 상태','공통 확인 작업','관련 제조식',
-    '현재 근거·참고 수량','검토 및 제조식 이동'])
+  for(const header of ['검토·메모','공통 확인 작업','관련 제조식',
+    '조달 원장 / 연구·시설 근거','작업·원장·제조식 이동'])
     make(thead,'th',header);
   const tbody=make(table,'tbody');
   const names={
@@ -1563,7 +1579,26 @@ function renderSharedReviewQueue(rb,board){
   for(const item of rows.slice(0,100)){
     const tr=make(tbody,'tr');
     if(item.reviewed)tr.classList.add('route-shared-reviewed');
-    make(tr,'td',item.reviewed?'검토 표시됨':'미검토');
+    const review=make(tr,'td');
+    const label=make(review,'label',null,'route-shared-review-label');
+    const check=make(label,'input');
+    check.type='checkbox';check.checked=item.reviewed;
+    check.setAttribute('aria-label',item.label+' 사용자 검토 표시');
+    check.addEventListener('change',()=>{
+      if(check.checked)rb.actionReviewed.add(item.taskId);
+      else rb.actionReviewed.delete(item.taskId);
+      renderRouteActionBoard();
+    });
+    make(label,'span',item.reviewed?'검토 표시됨':'미검토');
+    const memo=make(review,'input');
+    memo.type='text';memo.maxLength=300;
+    memo.className='route-shared-review-note';
+    memo.value=item.note;memo.placeholder='검토 메모 (300자)';
+    memo.setAttribute('aria-label',item.label+' 검토 메모');
+    memo.addEventListener('input',()=>{
+      if(memo.value)rb.actionNotes.set(item.taskId,memo.value);
+      else rb.actionNotes.delete(item.taskId);
+    });
     const title=make(tr,'td');
     make(title,'strong',item.label);
     make(title,'code',item.requirementId,'item-id');
@@ -1578,14 +1613,44 @@ function renderSharedReviewQueue(rb,board){
         (item.affectedRecipeIds.length>8?' 외 '+nf(item.affectedRecipeIds.length-8)+'종':''),'note');
     }else make(relation,'p','현재 선행 그래프에서 연결 없음','note');
     const evidence=make(tr,'td');
-    make(evidence,'p',item.sourceStatus||'근거 미확인','note');
-    if(item.quantity!==null)
-      make(evidence,'p','참고 수량 '+nf(item.quantity)+'개 · 가상 계산','note');
+    if(item.type==='material'){
+      if(item.ledger){
+        const l=item.ledger;
+        make(evidence,'p','입력 재고 '+nf(l.startingInventory)+
+          '개 · 최초 가상 확보 '+nf(l.firstPass)+
+          '개 · 후속 가상 확보 '+nf(l.laterPasses)+'개','note');
+        make(evidence,'p','누적 가상 확보 '+nf(l.totalAcquisition)+
+          '개 · 확보 후 가상 재고 '+nf(l.hypotheticalStockTarget)+'개','note');
+        make(evidence,'strong','반복 계산 후 남은 부족 '+nf(l.remainingShortage)+'개',
+          l.remainingShortage>0?'route-shared-shortage':'route-shared-amount');
+        make(evidence,'p','단계별 가상 확보: '+
+          l.stages.map((value,i)=>(i?'추가 '+i+'단계 ':'최초 ')+nf(value)+'개')
+          .join(' / '),'note');
+      }else{
+        make(evidence,'p','현재 조달 원장에 해당 재료 미기재 · 부족 0개로 추정하지 않음','note');
+      }
+      make(evidence,'p',item.sourceStatus||'조달 근거 미확인','note');
+    }else{
+      if(item.condition){
+        const c=item.condition;
+        make(evidence,'strong',c.categoryLabel+' · '+c.statusLabel);
+        make(evidence,'p',c.evidence,'note');
+        make(evidence,'p',c.action,'note');
+      }else{
+        make(evidence,'p','최종 연구·시설 체크리스트에 별도 근거 미기재','note');
+        make(evidence,'p',item.sourceStatus||'근거 미확인','note');
+      }
+    }
     make(evidence,'p',item.action,'note');
     const actions=make(tr,'td');
     const go=make(actions,'button','현재 작업표에서 검토','route-link-jump');
     go.type='button';
     go.addEventListener('click',()=>focusRouteActionTask(item.taskId));
+    if(item.type==='material'&&item.ledger){
+      const ledgerLink=make(actions,'button','조달 원장 상세','route-link-jump');
+      ledgerLink.type='button';
+      ledgerLink.addEventListener('click',()=>focusRouteLedgerMaterial(item.requirementId));
+    }
     for(const id of item.affectedRecipeTaskIds.slice(0,4)){
       const link=make(actions,'button',id,'route-link-jump');
       link.type='button';
@@ -1604,6 +1669,7 @@ function clearRouteActionBoard(){
   $('external-route-shared-review-summary').replaceChildren();
   $('external-route-shared-review-status').textContent='';
   $('external-route-shared-review-csv').disabled=true;
+  $('external-route-shared-review-json').disabled=true;
   clearRouteActionCarryover();
   $('external-route-action-board').hidden=true;
   $('external-route-action-table').replaceChildren();
@@ -3242,6 +3308,18 @@ $('external-route-shared-review-csv').addEventListener('click',()=>{
   const report=sharedReviewQueueReport(current.rb,current.board);
   downloadCsv(sharedReviewQueueCsvRows(report),
     'xpiratez-v2-route-shared-review-'+report.rootRecipeId+'.csv');
+});
+$('external-route-shared-review-json').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const report=sharedReviewQueueReport(current.rb,current.board);
+  const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)+'\n'],
+    {type:'application/json;charset=utf-8'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='xpiratez-v2-shared-review-evidence-'+report.rootRecipeId+'.json';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 $('external-route-history-priority-search').addEventListener('input',()=>{
   const current=routeActionState();

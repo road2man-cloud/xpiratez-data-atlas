@@ -207,7 +207,12 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 .route-shared-review .control-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0}
 .route-shared-review .control-buttons label{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
 .route-shared-review select,.route-shared-review input{padding:7px;border:1px solid #53718d;border-radius:6px;background:#0a1e31;color:#e8f3ff}
-#external-route-shared-review-table table{min-width:880px;width:100%}
+#external-route-shared-review-table table{min-width:1100px;width:100%}
+#external-route-shared-review-table .route-shared-review-label{display:flex;gap:8px;align-items:center;font-size:.82rem;white-space:nowrap;margin-bottom:8px}
+#external-route-shared-review-table .route-shared-review-label input{width:16px;height:16px;flex:0 0 auto;accent-color:#7aa3ce}
+#external-route-shared-review-table .route-shared-review-note{width:180px;max-width:100%;min-width:140px;font-size:.79rem}
+#external-route-shared-review-table .route-shared-shortage{display:block;color:#ffd39e;font-size:.85rem;margin:4px 0}
+#external-route-shared-review-table .route-shared-amount{display:block;color:#bddbf3;font-size:.85rem;margin:4px 0}
 #external-route-shared-review-table td{vertical-align:top;white-space:normal;overflow-wrap:anywhere}
 #external-route-shared-review-table tr.route-shared-reviewed{opacity:.78}
 #external-route-shared-review-table .item-id{display:block;font-size:.73rem}

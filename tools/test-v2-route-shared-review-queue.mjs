@@ -98,6 +98,110 @@ test('rejects cross-version, stale reviews, duplicates and forward prerequisite 
   assert.throws(()=>sharedReviewQueueCsvRows({schema:'invalid'}),/올바르지/);
 });
 
+test('joins source-aligned v.o2 ledger and facility/research evidence without guessing missing amounts',()=>{
+  const stock={
+    schema:'xpiratez-v2-route-acquisition-ledger/v1',
+    sourceVersion:'v.o2',rootRecipeId:'STR_ROOT',
+    materials:[{id:'STR_SHARED',startingInventory:3,
+      initialAcquisition:1,rounds:[1,0],totalAcquisition:2,
+      hypotheticalStockTarget:5,remainingShortage:4,
+      referenceUnitBuy:12,referenceSubtotal:24}]
+  };
+  const checklist={
+    schema:'xpiratez-v2-single-goal-readiness-checklist/v1',
+    sourceVersion:'v.o2',rootRecipeId:'STR_ROOT',
+    tasks:[
+      {category:'research',key:'research',requirementId:'STR_RESEARCH',
+        categoryLabel:'연구 근거',status:'notInDiscovered',
+        statusLabel:'discovered에 없음',evidence:'선택 세이브의 발견 목록 미확인',
+        action:'연구 해금 조건 확인',recipeIds:['STR_A','STR_B']},
+      {category:'material',key:'material::STR_SHARED',requirementId:'STR_SHARED'},
+      {category:'facility',key:'orphan',requirementId:'STR_UNKNOWN',
+        categoryLabel:'시설 기능',status:'pending',statusLabel:'건설 중',
+        evidence:'완공 시점 미확인',action:'시설 완공 확인'}
+    ]
+  };
+  const source=JSON.stringify({stock,checklist,board});
+  const index=buildSharedReviewIndex(board,{ledger:stock,checklist});
+  const queue=projectSharedReviewQueue(index,{
+    reviewed:['material::STR_SHARED','recipe::3'],
+    notes:new Map([['material::STR_SHARED','세이브 확인 전'],
+      ['condition::research','연구 근거 검토 중']])
+  });
+  const shared=queue.tasks.find(x=>x.taskId==='material::STR_SHARED');
+  assert.equal(shared.note,'세이브 확인 전');
+  assert.deepEqual(shared.ledger.stages,[1,1,0]);
+  assert.equal(shared.ledger.startingInventory,3);
+  assert.equal(shared.ledger.totalAcquisition,2);
+  assert.equal(shared.ledger.hypotheticalStockTarget,5);
+  assert.equal(shared.ledger.remainingShortage,4);
+  assert.equal(queue.summary.ledgerShortageKinds,1);
+  assert.equal(queue.summary.ledgerShortageUnits,4);
+  assert.equal(queue.summary.conditionsWithEvidence,2);
+  assert.equal(queue.summary.ledgerUnknownKinds,2);
+  const noStock=queue.tasks.find(x=>x.taskId==='material::STR_REPEAT');
+  assert.equal(noStock.ledger,null);
+  const research=queue.tasks.find(x=>x.taskId==='condition::research');
+  assert.equal(research.condition.category,'research');
+  assert.equal(research.condition.status,'notInDiscovered');
+  assert.equal(research.condition.statusLabel,'discovered에 없음');
+  assert.equal(research.condition.evidence,'선택 세이브의 발견 목록 미확인');
+  assert.equal(research.note,'연구 근거 검토 중');
+  assert(queue.tasks.find(x=>x.taskId==='condition::orphan').condition);
+  const csv=sharedReviewQueueCsvRows(queue);
+  assert.equal(csv.length,6);
+  const header=csv[0],row=csv.find(x=>x[1]==='material::STR_SHARED');
+  assert.equal(row[header.indexOf('입력 재고')],3);
+  assert.equal(row[header.indexOf('남은 부족')],4);
+  assert.equal(row[header.indexOf('단계별 확보 수량')],'1; 1; 0');
+  assert.equal(row[header.indexOf('현재 메모')],'세이브 확인 전');
+  const injected=projectSharedReviewQueue(index,{
+    notes:{'material::STR_SHARED':'=HYPERLINK("bad")'}
+  });
+  const memoRow=sharedReviewQueueCsvRows(injected)
+    .find(x=>x[1]==='material::STR_SHARED');
+  assert.equal(memoRow[header.indexOf('현재 메모')],
+    '\'=HYPERLINK("bad")');
+  assert.equal(JSON.stringify({stock,checklist,board}),source);
+});
+
+test('rejects mismatched or corrupted source ledgers and checklist evidence',()=>{
+  const valid={
+    schema:'xpiratez-v2-route-acquisition-ledger/v1',
+    sourceVersion:'v.o2',rootRecipeId:'STR_ROOT',
+    materials:[{id:'STR_SHARED',startingInventory:1,
+      initialAcquisition:1,rounds:[],totalAcquisition:1,
+      hypotheticalStockTarget:2,remainingShortage:0}]
+  };
+  assert.throws(()=>buildSharedReviewIndex(board,{ledger:{...valid,rootRecipeId:'OTHER'}}),
+    /조달 원장/);
+  assert.throws(()=>buildSharedReviewIndex(board,{ledger:{
+    ...valid,materials:[valid.materials[0],valid.materials[0]]
+  }}),/중복 ID/);
+  assert.throws(()=>buildSharedReviewIndex(board,{ledger:{
+    ...valid,materials:[{...valid.materials[0],hypotheticalStockTarget:3}]
+  }}),/수량/);
+  const checklist={
+    schema:'xpiratez-v2-single-goal-readiness-checklist/v1',
+    sourceVersion:'v.o2',rootRecipeId:'STR_ROOT',
+    tasks:[{category:'research',key:'research',
+      requirementId:'STR_RESEARCH'}]
+  };
+  assert.throws(()=>buildSharedReviewIndex(board,{checklist:{
+    ...checklist,sourceVersion:'v.o1.1'
+  }}),/v.o2/);
+  assert.throws(()=>buildSharedReviewIndex(board,{checklist:{
+    ...checklist,tasks:[checklist.tasks[0],checklist.tasks[0]]
+  }}),/중복/);
+  const index=buildSharedReviewIndex(board);
+  assert.throws(()=>projectSharedReviewQueue(index,{notes:{
+    'unknown':'비정상'
+  }}),/검토 메모/);
+  assert.throws(()=>projectSharedReviewQueue(index,{notes:{
+    'condition::research':'x'.repeat(301)
+  }}),/검토 메모/);
+});
+
 test('changing a dependency only updates its actual downstream recipe group',()=>{
   const current={...board,tasks:board.tasks.map(x=>x.id==='recipe::2'?
     {...x,dependsOn:['condition::research']}:x)};

@@ -400,12 +400,15 @@
 <p id="external-route-action-import-status" class="note" role="status" aria-live="polite"></p>
 <details id="external-route-shared-review" class="route-shared-review">
 <summary>공통 재료·연구·시설 검토 작업 — 중복 없이 한 번에 확인</summary>
-<p class="note">현재 제조 작업표의 실제 선행 관계만 따라가며, 여러 제조식에 연결되는 동일 재료·조건 확인 작업을 하나로 묶습니다. 자동으로 검토 완료 표시를 하거나 세이브를 수정하지 않습니다.</p>
+<p class="note">현재 제조 작업표의 실제 선행 관계만 따라가며, 여러 제조식에 연결되는 동일 재료·조건 확인 작업을 하나로 묶습니다. 조달 원장의 모든 확보 수량은 가상 계산이며, 연구·시설 근거는 실제 가능 판정이 아닙니다. 체크와 메모는 원래 작업표에 같이 저장되는 사용자 기록입니다.</p>
 <div id="external-route-shared-review-summary" class="summary-stats"></div>
 <div class="control-buttons">
 <label for="external-route-shared-review-filter">표시 작업
 <select id="external-route-shared-review-filter">
 <option value="pending">미검토 작업</option>
+<option value="shortage">남은 조달 부족 있는 재료</option>
+<option value="condition">미검토 연구·시설 조건</option>
+<option value="notes">메모가 있는 작업</option>
 <option value="shared">복수 제조식 공통 작업</option>
 <option value="repeated">같은 제조식 반복 관련 작업</option>
 <option value="unlinked">제조식과 연결되지 않은 확인</option>
@@ -414,7 +417,8 @@
 </select></label>
 <label for="external-route-shared-review-search">재료·조건·제조식 ID 검색
 <input id="external-route-shared-review-search" type="search" placeholder="작업 이름·ID 또는 관련 제조식"></label>
-<button id="external-route-shared-review-csv" class="secondary" type="button" disabled>공통 검토 작업 전체 CSV 저장</button>
+<button id="external-route-shared-review-csv" class="secondary" type="button" disabled>공통 검토·조달 근거 CSV 저장</button>
+<button id="external-route-shared-review-json" class="secondary" type="button" disabled>공통 검토·조달 근거 JSON 저장</button>
 </div>
 <p id="external-route-shared-review-status" class="note" role="status" aria-live="polite"></p>
 <div id="external-route-shared-review-table" class="table-wrap"></div>
