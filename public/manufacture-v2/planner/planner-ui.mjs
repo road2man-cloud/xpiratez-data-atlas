@@ -3,6 +3,7 @@ import { initV2SaveImportUI } from './save-import-ui.mjs';
 import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
 import { initQueueUI } from './queue-ui.mjs';
 import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios } from './external-basket-core.mjs';
+import { exploreExternalCandidates, rankExternalCandidates } from './external-candidate-explorer.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -21,6 +22,7 @@ let externalBasketAmounts = new Map();
 let externalBasketReport = null;
 let externalBasketScenarios = { A:null, B:null };
 let externalBasketComparison = null;
+let externalExploration = null;
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
@@ -267,6 +269,11 @@ function updateExternalBasketControls() {
   externalBasketReport=null;
   $('external-basket-export').disabled=true;
   $('external-basket-report').hidden=true;
+  $('external-explore-run').disabled=!basket;
+  externalExploration=null;
+  $('external-explore-results').hidden=true;
+  $('external-explore-export').disabled=true;
+  $('external-explore-status').textContent='선택한 재료의 개별·2종·전체 조합을 탐색할 수 있습니다.';
 }
 function selectedExternalBasket() {
   return prepareExternalBasket({
@@ -365,6 +372,76 @@ function renderExternalBasketComparison() {
   $('external-basket-comparison').hidden=false;
   $('external-basket-comparison').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+function renderExternalExploration() {
+  if(!externalExploration)return;
+  const exploration=externalExploration;
+  const sortBy=$('external-explore-sort').value;
+  const candidates=rankExternalCandidates(exploration.candidates,sortBy);
+  const parent=$('external-explore-table');parent.replaceChildren();
+  if(!candidates.length)
+    make(parent,'p','계산 가능한 후보가 없습니다. JSON 결과에서 후보별 실패 이유를 확인할 수 있습니다.','warn-note');
+  else {
+    const table=make(parent,'table'),header=make(make(table,'thead'),'tr');
+    for(const label of ['후보 조합','가상 확보','잔여 외부 부족','부족 수량 감소',
+      '확보 1개당 감소','명시 제조비 / 작업량','주의 항목','시나리오에 저장'])
+      make(header,'th',label);
+    const body=make(table,'tbody');
+    const kind={single:'단일 재료',pair:'두 재료',all:'선택 전체'};
+    for(const candidate of candidates){
+      const tr=make(body,'tr');
+      const nameCell=make(tr,'td');
+      make(nameCell,'strong',kind[candidate.type]||candidate.type);
+      for(const item of candidate.additions)
+        make(nameCell,'p',item.name+' ('+item.id+') +'+nf(item.quantity)+'개','note');
+      make(tr,'td',nf(candidate.acquiredKinds)+'종 · '+nf(candidate.acquiredUnits)+'개');
+      make(tr,'td',nf(candidate.shortageKinds)+'종 · '+nf(candidate.shortageUnits)+'개');
+      make(tr,'td',nf(candidate.reducedUnits)+'개');
+      make(tr,'td',Number.isFinite(candidate.reductionPerAcquiredUnit)?
+        candidate.reductionPerAcquiredUnit.toFixed(2):'미확인');
+      make(tr,'td',nf(candidate.declaredCost)+' / '+nf(candidate.declaredTime));
+      make(tr,'td',nf(candidate.flagsCount)+'개');
+      const actions=make(tr,'td');
+      for(const slot of ['A','B']){
+        const button=make(actions,'button',slot+'에 저장','secondary');
+        button.type='button';
+        button.setAttribute('aria-label',kind[candidate.type]+' 후보 '+slot+'에 저장');
+        button.addEventListener('click',()=>{
+          externalBasketScenarios[slot]=candidate.report;
+          externalBasketComparison=null;
+          $('external-basket-comparison').hidden=true;
+          $('external-basket-compare-export').disabled=true;
+          updateBasketScenarioControls();
+          $('external-explore-status').textContent='선택한 후보를 시나리오 '+
+            slot+'에 저장했습니다. 다른 후보를 저장한 뒤 A/B 비교 버튼을 사용할 수 있습니다.';
+        });
+      }
+    }
+  }
+  const truncation=exploration.omittedItems?
+    ' · 선택한 '+nf(exploration.selectedTotal)+'종 중 확보 수량 상위 '+
+      nf(exploration.examinedItems)+'종만 탐색':'';
+  $('external-explore-status').textContent=
+    '조달 조합 '+nf(exploration.candidateCount)+'개 생성 · '+nf(exploration.successes)+
+    '개 계산 · 실패 '+nf(exploration.failures.length)+'개'+truncation+
+    '. 순위는 부족 재료 수량 기준의 참고 정보입니다.';
+  $('external-explore-results').hidden=false;
+}
+function runExternalExploration() {
+  externalExploration=exploreExternalCandidates({
+    before:state.plan,inventory:state.inventory,
+    itemIds:state.planner.itemMap,selectedIds:externalBasketSelection,
+    requestedQuantities:externalBasketAmounts,
+    planWithInventory:inventory=>state.planner.plan(state.currentId,{
+      batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
+      assumeImplicit:$('assume-implicit').checked,choices:state.choices,
+      inventory,
+      ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
+    })
+  });
+  $('external-explore-export').disabled=false;
+  renderExternalExploration();
+  $('external-explore-results').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function prefillExternalBasketStock() {
   const basket=selectedExternalBasket(), input=$('stock-bulk-text');
   if(input.value.trim())throw new Error('일괄 재고 입력란에 작성된 내용이 있어 덮어쓰지 않았습니다. 내용을 적용하거나 지운 뒤 다시 선택하세요.');
@@ -386,6 +463,10 @@ function renderExternal(plan) {
   externalBasketReport=null;
   externalBasketScenarios={A:null,B:null};
   externalBasketComparison=null;
+  externalExploration=null;
+  $('external-explore-results').hidden=true;
+  $('external-explore-export').disabled=true;
+  $('external-explore-run').disabled=true;
   $('external-basket-controls').hidden=!plan.external.length;
   $('external-basket-report').hidden=true;
   $('external-basket-comparison').hidden=true;
@@ -748,6 +829,10 @@ function renderPlan() {
     externalBasketReport=null;
     externalBasketComparison=null;
     externalBasketScenarios={A:null,B:null};
+    externalExploration=null;
+    $('external-explore-results').hidden=true;
+    $('external-explore-export').disabled=true;
+    $('external-explore-run').disabled=true;
     $('external-basket-export').disabled=true;
     $('external-basket-compare-export').disabled=true;
     $('external-basket-compare').disabled=true;
@@ -841,6 +926,37 @@ $('external-basket-compare-export').addEventListener('click',()=>{
   const link=document.createElement('a');
   link.href=url;
   link.download='xpiratez-v2-acquisition-a-b-'+externalBasketComparison.rootRecipeId+'.json';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+});
+$('external-explore-run').addEventListener('click',()=>{
+  try{runExternalExploration();}
+  catch(error){
+    externalExploration=null;
+    $('external-explore-results').hidden=true;
+    $('external-explore-export').disabled=true;
+    $('external-explore-status').textContent='조합 탐색 실패: '+error.message;
+  }
+});
+$('external-explore-sort').addEventListener('change',()=>{
+  if(externalExploration)renderExternalExploration();
+});
+$('external-explore-close').addEventListener('click',()=>{
+  $('external-explore-results').hidden=true;
+});
+$('external-explore-export').addEventListener('click',()=>{
+  if(!externalExploration)return;
+  const exportReport={
+    ...externalExploration,
+    candidates:rankExternalCandidates(externalExploration.candidates,
+      $('external-explore-sort').value),
+    sortBy:$('external-explore-sort').value
+  };
+  const content=JSON.stringify(exportReport,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='xpiratez-v2-procurement-combinations-'+exportReport.rootRecipeId+'.json';
   document.body.appendChild(link);link.click();link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
 });

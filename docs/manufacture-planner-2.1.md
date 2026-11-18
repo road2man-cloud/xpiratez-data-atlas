@@ -363,6 +363,38 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Bounded procurement-combination explorer (2026-11-18)
+
+The **조달 조합 자동 탐색** action uses the current single recipe, stock,
+research evidence, batch count, depth and explicit producer choices.
+It enumerates the selected missing materials as individual baskets,
+two-item baskets and an all-selected basket, then recalculates each
+candidate independently using a copy of the current inventory.
+
+The search is intentionally bounded to the six selected materials with
+the largest explicitly entered hypothetical acquisition quantities.
+This means at most **22 scenarios** (6 singles + 15 pairs + 1 all);
+additional selected materials are reported as omitted, not silently
+claimed to be evaluated. A failed candidate does not discard successful
+results, and per-candidate errors are retained in the downloadable JSON.
+
+The results table shows material assumptions, remaining external-shortage
+kinds and units, reduction in missing units, reduction per hypothesized
+acquired unit, declared manufacturing cost/work and rule-uncertainty
+counts. The user may reorder without recalculating by shortage reduction,
+per-acquisition-unit reduction, lowest remaining shortage, or least
+hypothetical stock acquired. Each candidate can be saved directly into
+the existing A/B slots for a detailed comparison. The entire bounded
+exploration can be exported to a local JSON file.
+
+Quantity counts combine different resource units only as a rough
+descriptive heuristic. The rankings do **not** use verified market
+pricing, travel/supply constraints, probability, game engine gates or
+facilities, so they are not an optimum-purchase or feasible-production
+recommendation. Neither the imported save nor the original input
+inventory is modified, and editing a selected amount invalidates any
+old exploration results to prevent stale exports.
+
 ## Partial acquisition quantities and A/B scenarios (2026-11-18)
 
 The single-goal external materials table now has an editable **가정 확보 수량**

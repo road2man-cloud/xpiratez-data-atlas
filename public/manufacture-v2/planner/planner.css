@@ -64,6 +64,16 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #external-basket-controls .external-basket-scenarios{margin-top:10px;flex-wrap:wrap}
 #external-basket-comparison table{min-width:750px;width:100%}
 #external-basket-compare-materials .item-id{display:block;overflow-wrap:anywhere}
+.external-explore-controls{margin-top:14px;padding-top:12px;border-top:1px solid #344f70}
+.external-explore-controls label{display:flex;align-items:center;gap:8px;font-size:.84rem;color:#c4d7f5}
+.external-explore-controls select{background:#081a30;color:#e8f1ff;border:1px solid #536a87;border-radius:7px;padding:7px}
+#external-explore-results table{min-width:1060px;width:100%}
+#external-explore-results td:first-child{min-width:195px}
+#external-explore-results td:first-child strong{display:block}
+#external-explore-results td:first-child p{margin:3px 0;font-size:.77rem}
+#external-explore-results td:last-child{min-width:112px}
+#external-explore-results td:last-child button{display:block;margin:3px 0;width:100%}
+#external-explore-results td{font-variant-numeric:tabular-nums}
 #external-basket-controls{margin:14px 0;padding:12px;border:1px solid #34597f;border-radius:9px;background:#12233a}
 #external-basket-controls[hidden]{display:none}
 #external-basket-controls .control-buttons{align-items:center}

@@ -204,8 +204,28 @@
 </div>
 <p id="external-basket-status" class="note" role="status" aria-live="polite"></p>
 <p id="external-basket-scenarios-status" class="note">시나리오 A: 미저장 · B: 미저장</p>
+<div class="external-explore-controls">
+<div class="control-buttons">
+<button id="external-explore-run" type="button" disabled>조달 조합 자동 탐색 (최대 6종)</button>
+<label for="external-explore-sort">후보 정렬
+<select id="external-explore-sort">
+<option value="reduction">부족 수량 감소 큰 순</option>
+<option value="efficiency">가상 확보 1개당 감소 순</option>
+<option value="remaining">남은 부족 수량 적은 순</option>
+<option value="acquired">가상 확보 수량 적은 순</option>
+</select>
+</label>
+<button id="external-explore-export" class="secondary" type="button" disabled>후보 전체 JSON 저장</button>
+</div>
+<p id="external-explore-status" class="note" role="status" aria-live="polite">재료를 선택하면 개별·2종·전체 조합을 제한적으로 계산할 수 있습니다.</p>
+</div>
 </div>
 <div id="external"></div>
+<div id="external-explore-results" class="procurement-preview" hidden>
+<div class="section-title"><h4>조달 조합별 가상 부족량 비교</h4><button id="external-explore-close" class="secondary" type="button">닫기</button></div>
+<p class="note">선택한 재료 가운데 지정 확보량이 많은 최대 6종만 사용합니다. 각각 1종, 2종, 전체 조합을 독립 재계산하며 최대 22개 후보를 살펴봅니다. 순위는 비용이나 실제 생산 가능성의 추천이 아닙니다.</p>
+<div id="external-explore-table" class="table-wrap"></div>
+</div>
 <div id="external-basket-comparison" class="procurement-preview" hidden>
 <div class="section-title"><h4>일괄 확보 시나리오 A/B 비교</h4><button id="external-basket-compare-close" class="secondary" type="button">닫기</button></div>
 <p class="note">두 시나리오는 같은 최초 재고를 독립적으로 사용합니다. 아래 차이는 B − A이며, 최적 비용이나 게임 실행 가능성의 판정이 아닙니다.</p>

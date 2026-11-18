@@ -127,7 +127,36 @@ try {
     chemicalPartial);
   assert.equal(abData.acquiredHypotheticallyB.find(x=>x.id==='STR_CHEMICALS').quantity,
     chemicalFull);
+  assert(await page.locator('#external-explore-run').isEnabled());
+  await page.locator('#external-explore-run').click();
+  assert(await page.locator('#external-explore-results').isVisible());
+  const exploredRows=page.locator('#external-explore-table tbody tr');
+  const exploredCount=await exploredRows.count();
+  assert(exploredCount>=1 && exploredCount<=22);
+  assert((await page.locator('#external-explore-status').innerText()).includes('조달 조합'));
+  await page.locator('#external-explore-sort').selectOption('efficiency');
+  assert.equal(await exploredRows.count(),exploredCount);
+  await exploredRows.first().getByRole('button',{name:'A에 저장'}).click();
+  await exploredRows.last().getByRole('button',{name:'B에 저장'}).click();
+  assert(await page.locator('#external-basket-compare').isEnabled());
+  await page.locator('#external-basket-compare').click();
+  assert(await page.locator('#external-basket-comparison').isVisible());
+  assert(await page.locator('#external-explore-export').isEnabled());
+  const exploreDownload=page.waitForEvent('download');
+  await page.locator('#external-explore-export').click();
+  const exploreFile=await exploreDownload;
+  assert.equal(exploreFile.suggestedFilename(),
+    'xpiratez-v2-procurement-combinations-STR_3RL_HE_XXX.json');
+  const exploreData=JSON.parse(fs.readFileSync(await exploreFile.path(),'utf8'));
+  assert.equal(exploreData.schema,'xpiratez-v2-single-recipe-procurement-explorer/v1');
+  assert.equal(exploreData.sourceVersion,'v.o2');
+  assert.equal(exploreData.sortBy,'efficiency');
+  assert.equal(exploreData.successes,exploredCount);
+  assert(exploreData.candidates.every(x=>x.report.rootRecipeId==='STR_3RL_HE_XXX'));
   assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  await chemicalAmount.fill(String(chemicalPartial));
+  assert(await page.locator('#external-explore-export').isDisabled());
+  assert(await page.locator('#external-explore-results').isHidden());
   await page.locator('#external-basket-prefill').click();
   assert((await page.locator('#stock-bulk-text').inputValue()).includes('STR_'));
   assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
