@@ -2,7 +2,7 @@ import { createManufacturingPlanner } from './planner-core.mjs';
 import { initV2SaveImportUI } from './save-import-ui.mjs';
 import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
 import { initQueueUI } from './queue-ui.mjs';
-import { prepareExternalBasket, compareExternalBasket } from './external-basket-core.mjs';
+import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScenarios } from './external-basket-core.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -17,7 +17,10 @@ const nf = n => typeof n === 'number' && Number.isFinite(n)
 const slug = id => encodeURIComponent(id);
 let queueUI = null;
 let externalBasketSelection = new Set();
+let externalBasketAmounts = new Map();
 let externalBasketReport = null;
+let externalBasketScenarios = { A:null, B:null };
+let externalBasketComparison = null;
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
@@ -222,24 +225,45 @@ function previewExternalAcquisition(row) {
 function canSelectExternalBasket(row) {
   const previous=state.inventory[row.id] || 0;
   return state.planner.itemMap.has(row.id) &&
-    Number.isSafeInteger(previous) && previous>=0 &&
-    Number.isSafeInteger(row.quantity) && row.quantity>0 &&
-    Number.isSafeInteger(previous+row.quantity) &&
-    previous+row.quantity<=10000000;
+    Number.isSafeInteger(previous) && previous>=0 && previous<10000000 &&
+    Number.isSafeInteger(row.quantity) && row.quantity>0;
+}
+function updateBasketScenarioControls() {
+  const name=slot=>{
+    const scenario=externalBasketScenarios[slot];
+    if(!scenario)return slot+': 미저장';
+    return slot+': '+nf(scenario.acquiredHypothetically.length)+'종 · '+
+      nf(scenario.acquiredHypothetically.reduce((sum,row)=>sum+row.quantity,0))+'개 확보 가정 저장';
+  };
+  $('external-basket-scenarios-status').textContent=name('A')+' / '+name('B');
+  const comparable=!!(externalBasketScenarios.A && externalBasketScenarios.B);
+  $('external-basket-compare').disabled=!comparable;
+  if(!comparable){
+    externalBasketComparison=null;
+    $('external-basket-comparison').hidden=true;
+    $('external-basket-compare-export').disabled=true;
+  }
 }
 function updateExternalBasketControls() {
   const options=state.plan?.external || [];
   externalBasketSelection=new Set([...externalBasketSelection].filter(id=>
     options.some(row=>row.id===id && canSelectExternalBasket(row))));
-  const chosen=options.filter(row=>externalBasketSelection.has(row.id));
-  const units=chosen.reduce((sum,row)=>sum+row.quantity,0);
-  $('external-basket-status').textContent=chosen.length ?
-    '선택 '+nf(chosen.length)+'종 · 부족분 '+nf(units)+'개. 아직 재고나 세이브에 반영하지 않았습니다.' :
-    '아래 표에서 부족 재료를 선택하세요. 입력 가능한 '+nf(options.filter(canSelectExternalBasket).length)+'종';
+  let basket=null, problem=null;
+  if(externalBasketSelection.size){
+    try{basket=selectedExternalBasket();}
+    catch(error){problem=error.message;}
+  }
+  $('external-basket-status').textContent=problem?
+    '확보 수량 확인 필요: '+problem : basket?
+    '선택 '+nf(basket.selectedKinds)+'종 · 지정 확보량 '+nf(basket.selectedUnits)+
+      '개. 아직 재고나 세이브에 반영하지 않았습니다.' :
+    '아래 표에서 부족 재료를 선택하세요. 입력 가능한 '+
+      nf(options.filter(canSelectExternalBasket).length)+'종';
   $('external-basket-all').disabled=!options.some(canSelectExternalBasket);
-  $('external-basket-clear').disabled=!chosen.length;
-  $('external-basket-preview').disabled=!chosen.length;
-  $('external-basket-prefill').disabled=!chosen.length;
+  $('external-basket-clear').disabled=!externalBasketSelection.size;
+  for(const id of ['external-basket-preview','external-basket-prefill',
+    'external-basket-save-a','external-basket-save-b'])
+    $(id).disabled=!basket;
   externalBasketReport=null;
   $('external-basket-export').disabled=true;
   $('external-basket-report').hidden=true;
@@ -247,7 +271,8 @@ function updateExternalBasketControls() {
 function selectedExternalBasket() {
   return prepareExternalBasket({
     external:state.plan.external,inventory:state.inventory,
-    selectedIds:externalBasketSelection,itemIds:state.planner.itemMap
+    selectedIds:externalBasketSelection,itemIds:state.planner.itemMap,
+    requestedQuantities:externalBasketAmounts
   });
 }
 function previewExternalBasket() {
@@ -287,6 +312,59 @@ function previewExternalBasket() {
     '종의 가상 확보를 재계산했습니다. 원래 입력 재고와 세이브는 수정하지 않았습니다.';
   $('external-basket-report').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+function saveExternalBasketScenario(slot) {
+  if(slot!=='A' && slot!=='B')throw new Error('시나리오 이름이 올바르지 않습니다.');
+  previewExternalBasket();
+  externalBasketScenarios[slot]=externalBasketReport;
+  externalBasketComparison=null;
+  $('external-basket-comparison').hidden=true;
+  $('external-basket-compare-export').disabled=true;
+  updateBasketScenarioControls();
+  $('external-basket-status').textContent='시나리오 '+slot+
+    '를 저장했습니다. 다른 확보 수량을 입력하고 나머지 시나리오를 저장하면 비교할 수 있습니다.';
+}
+function renderExternalBasketComparison() {
+  const result=compareExternalBasketScenarios(
+    externalBasketScenarios.A,externalBasketScenarios.B);
+  const summary=$('external-basket-compare-summary');summary.replaceChildren();
+  metric(summary,'가정 확보 A / B',
+    nf(result.scenarioA.acquiredUnits)+'개 / '+nf(result.scenarioB.acquiredUnits)+'개');
+  metric(summary,'남은 외부 부족 A / B',
+    nf(result.scenarioA.shortageUnits)+'개 / '+nf(result.scenarioB.shortageUnits)+'개');
+  metric(summary,'명시 제조비 A / B',
+    nf(result.scenarioA.declaredCost)+' / '+nf(result.scenarioB.declaredCost));
+  metric(summary,'명시 작업량 A / B',
+    nf(result.scenarioA.declaredTime)+' / '+nf(result.scenarioB.declaredTime));
+  metric(summary,'제약·불확실성 A / B',
+    nf(result.scenarioA.flags.length)+'건 / '+nf(result.scenarioB.flags.length)+'건');
+  const parent=$('external-basket-compare-materials');parent.replaceChildren();
+  const table=make(parent,'table'),header=make(make(table,'thead'),'tr');
+  for(const label of ['재료','A 확보 가정','B 확보 가정','A 남은 부족',
+    'B 남은 부족','부족 차이 B−A'])make(header,'th',label);
+  const tbody=make(table,'tbody');
+  const aQty=new Map(result.acquiredHypotheticallyA.map(row=>[row.id,row.quantity]));
+  const bQty=new Map(result.acquiredHypotheticallyB.map(row=>[row.id,row.quantity]));
+  const allIds=new Set([...aQty.keys(),...bQty.keys()]);
+  const entries=[...result.materials];
+  for(const id of allIds){
+    if(!entries.some(row=>row.id===id))
+      entries.push({id,name:state.planner.name(id),aShortage:0,bShortage:0,
+        differenceBMinusA:0});
+  }
+  entries.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  for(const row of entries){
+    const tr=make(tbody,'tr'),cell=make(tr,'td');
+    anchor(cell,'../../items-v2/?id='+slug(row.id),row.name);
+    make(cell,'code',row.id,'item-id');
+    for(const value of [aQty.get(row.id)||0,bQty.get(row.id)||0,
+      row.aShortage,row.bShortage,row.differenceBMinusA])
+      make(tr,'td',nf(value));
+  }
+  externalBasketComparison=result;
+  $('external-basket-compare-export').disabled=false;
+  $('external-basket-comparison').hidden=false;
+  $('external-basket-comparison').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function prefillExternalBasketStock() {
   const basket=selectedExternalBasket(), input=$('stock-bulk-text');
   if(input.value.trim())throw new Error('일괄 재고 입력란에 작성된 내용이 있어 덮어쓰지 않았습니다. 내용을 적용하거나 지운 뒤 다시 선택하세요.');
@@ -304,10 +382,16 @@ function renderExternal(plan) {
   $('external-preview-diff').replaceChildren();
   $('external-csv').disabled=!plan.external.length;
   externalBasketSelection.clear();
+  externalBasketAmounts.clear();
   externalBasketReport=null;
+  externalBasketScenarios={A:null,B:null};
+  externalBasketComparison=null;
   $('external-basket-controls').hidden=!plan.external.length;
   $('external-basket-report').hidden=true;
+  $('external-basket-comparison').hidden=true;
+  $('external-basket-compare-export').disabled=true;
   $('external-basket-export').disabled=true;
+  updateBasketScenarioControls();
   const parent = $('external');parent.replaceChildren();
   if (!plan.external.length){
     make(parent,'p','현재 확장 범위의 모든 재료가 하위 제조식으로 연결됐습니다. 재료 보유 여부와 실제 게임 조건은 별도입니다.','note');
@@ -315,7 +399,7 @@ function renderExternal(plan) {
   }
   const wrap=make(parent,'div',null,'table-wrap'),table=make(wrap,'table');
   const head=make(table,'thead'),hr=make(head,'tr');
-  for(const title of ['재료','수량','원본 구매 단가','참고 구매가','미확장 이유','다음 작업','일괄 선택'])make(hr,'th',title);
+  for(const title of ['재료','수량','원본 구매 단가','참고 구매가','미확장 이유','다음 작업','일괄 선택','가정 확보 수량'])make(hr,'th',title);
   const body=make(table,'tbody');
   for(const row of plan.external) {
     const tr=make(body,'tr');
@@ -354,6 +438,19 @@ function renderExternal(plan) {
     checkbox.addEventListener('change',()=>{
       if(checkbox.checked)externalBasketSelection.add(row.id);
       else externalBasketSelection.delete(row.id);
+      updateExternalBasketControls();
+    });
+    const quantityCell=make(tr,'td',null,'external-basket-amount-cell');
+    const amount=make(quantityCell,'input');
+    amount.type='number';amount.min='1';amount.step='1';
+    amount.className='external-basket-amount';
+    amount.disabled=!canSelectExternalBasket(row);
+    amount.max=String(Math.min(row.quantity,10000000-(state.inventory[row.id]||0)));
+    amount.value=amount.max;
+    amount.setAttribute('aria-label',row.name+' 가정 확보 수량');
+    if(!amount.disabled)externalBasketAmounts.set(row.id,Number(amount.value));
+    amount.addEventListener('input',()=>{
+      externalBasketAmounts.set(row.id,Number(amount.value));
       updateExternalBasketControls();
     });
   }
@@ -647,8 +744,13 @@ function renderPlan() {
     $('external-preview').hidden=true;
     $('external-basket-controls').hidden=true;
     $('external-basket-report').hidden=true;
+    $('external-basket-comparison').hidden=true;
     externalBasketReport=null;
+    externalBasketComparison=null;
+    externalBasketScenarios={A:null,B:null};
     $('external-basket-export').disabled=true;
+    $('external-basket-compare-export').disabled=true;
+    $('external-basket-compare').disabled=true;
     $('consolidated-csv').disabled=true;
     $('status').textContent='제조 경로 계산 실패: '+e.message;
   }
@@ -712,6 +814,35 @@ $('external-basket-prefill').addEventListener('click',()=>{
 });
 $('external-basket-close').addEventListener('click',()=>{
   $('external-basket-report').hidden=true;
+});
+for(const slot of ['A','B']){
+  $('external-basket-save-'+slot.toLowerCase()).addEventListener('click',()=>{
+    try{saveExternalBasketScenario(slot);}
+    catch(error){$('external-basket-status').textContent=
+      '시나리오 '+slot+' 저장 실패: '+error.message;}
+  });
+}
+$('external-basket-compare').addEventListener('click',()=>{
+  try{renderExternalBasketComparison();}
+  catch(error){
+    externalBasketComparison=null;
+    $('external-basket-comparison').hidden=true;
+    $('external-basket-compare-export').disabled=true;
+    $('external-basket-status').textContent='A/B 비교 실패: '+error.message;
+  }
+});
+$('external-basket-compare-close').addEventListener('click',()=>{
+  $('external-basket-comparison').hidden=true;
+});
+$('external-basket-compare-export').addEventListener('click',()=>{
+  if(!externalBasketComparison)return;
+  const content=JSON.stringify(externalBasketComparison,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='xpiratez-v2-acquisition-a-b-'+externalBasketComparison.rootRecipeId+'.json';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
 });
 $('external-basket-export').addEventListener('click',()=>{
   if(!externalBasketReport)return;

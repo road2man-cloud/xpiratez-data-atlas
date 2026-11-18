@@ -363,6 +363,32 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Partial acquisition quantities and A/B scenarios (2026-11-18)
+
+The single-goal external materials table now has an editable **가정 확보 수량**
+field for each catalogued missing material. It starts at the full
+shortage (or the remaining stock input cap) and accepts only whole
+numbers from 1 through the current shortage, subject to the
+10,000,000-per-item stock limit. Selecting an item alone does not
+assume that the entire missing quantity can be acquired; the
+current amount in its field is what the simulation adds.
+
+After choosing material checkboxes and quantities, **현재 확보량 A로 저장**
+or **현재 확보량 B로 저장** computes an independent scenario for that
+same goal. Edit amounts and save the other slot, then select **A/B 비교**
+to inspect remaining shortage kinds/units, declared manufacturing
+expense/work, rule flags and per-material differences between the
+two scenarios. The compared quantities, independent assumptions and
+their totals can be exported in a UTF-8 JSON report.
+
+Changing the main recipe, depth, producer path, batches, stock or saved
+research invalidates both stored A/B scenarios. Editing the draft
+quantities does not overwrite a saved slot until the user explicitly
+saves that slot again. The original inventory and imported game save
+are not modified by saving or comparing scenarios. Missing market
+availability, facility gates and uncertain research conditions are
+not inferred from a reduction in material shortages.
+
 ## Selected multi-item acquisition basket (2026-11-18)
 
 The **외부 조달·미해결 재료** table now offers a per-material

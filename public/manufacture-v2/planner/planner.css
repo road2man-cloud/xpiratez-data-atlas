@@ -59,6 +59,11 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #external td:nth-last-child(2) button{display:block;margin-bottom:5px;width:100%;white-space:nowrap}
 #external .external-basket-cell{text-align:center;min-width:80px}
 #external .external-basket-cell input{width:18px;height:18px;accent-color:#8fb8ff}
+#external .external-basket-amount-cell{min-width:116px}
+#external .external-basket-amount{width:104px;max-width:100%;padding:8px;background:#0b1c32;color:#eaf1ff;border:1px solid #506a88;border-radius:7px;font-variant-numeric:tabular-nums}
+#external-basket-controls .external-basket-scenarios{margin-top:10px;flex-wrap:wrap}
+#external-basket-comparison table{min-width:750px;width:100%}
+#external-basket-compare-materials .item-id{display:block;overflow-wrap:anywhere}
 #external-basket-controls{margin:14px 0;padding:12px;border:1px solid #34597f;border-radius:9px;background:#12233a}
 #external-basket-controls[hidden]{display:none}
 #external-basket-controls .control-buttons{align-items:center}

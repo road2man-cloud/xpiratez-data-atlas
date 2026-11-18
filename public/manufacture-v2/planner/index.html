@@ -196,12 +196,25 @@
 <button id="external-basket-prefill" class="secondary" type="button" disabled>선택 수량 재고 입력란 준비</button>
 <button id="external-basket-export" class="secondary" type="button" disabled>가정 결과 JSON 저장</button>
 </div>
+<div class="control-buttons external-basket-scenarios">
+<button id="external-basket-save-a" class="secondary" type="button" disabled>현재 확보량 A로 저장</button>
+<button id="external-basket-save-b" class="secondary" type="button" disabled>현재 확보량 B로 저장</button>
+<button id="external-basket-compare" type="button" disabled>A/B 비교</button>
+<button id="external-basket-compare-export" class="secondary" type="button" disabled>A/B 비교 JSON 저장</button>
+</div>
 <p id="external-basket-status" class="note" role="status" aria-live="polite"></p>
+<p id="external-basket-scenarios-status" class="note">시나리오 A: 미저장 · B: 미저장</p>
 </div>
 <div id="external"></div>
+<div id="external-basket-comparison" class="procurement-preview" hidden>
+<div class="section-title"><h4>일괄 확보 시나리오 A/B 비교</h4><button id="external-basket-compare-close" class="secondary" type="button">닫기</button></div>
+<p class="note">두 시나리오는 같은 최초 재고를 독립적으로 사용합니다. 아래 차이는 B − A이며, 최적 비용이나 게임 실행 가능성의 판정이 아닙니다.</p>
+<div id="external-basket-compare-summary" class="summary-stats"></div>
+<div id="external-basket-compare-materials" class="table-wrap"></div>
+</div>
 <div id="external-basket-report" class="procurement-preview" hidden>
 <div class="section-title"><h4>선택 재료 일괄 확보 가정 결과</h4><button id="external-basket-close" class="secondary" type="button">닫기</button></div>
-<p class="note">선택한 부족분을 모두 추가 보유한 독립 시나리오입니다. 원래 재고·세이브·제조 계획은 변경하지 않습니다.</p>
+<p class="note">각 재료에 지정한 확보 수량을 추가 보유한 독립 시나리오입니다. 원래 재고·세이브·제조 계획은 변경하지 않습니다.</p>
 <div id="external-basket-summary" class="summary-stats"></div>
 <div id="external-basket-diff" class="table-wrap"></div>
 <p class="note">재료 부족 해소만으로 실제 생산 가능 여부가 결정되지는 않습니다. 연구·시설·이벤트와 시장 구매 가능성은 별도 확인이 필요합니다.</p>

@@ -92,6 +92,42 @@ try {
   assert.equal(basketJson.schema,'xpiratez-v2-single-recipe-acquisition-basket/v1');
   assert.equal(basketJson.acquiredHypothetically.length,basketCount);
   assert.equal(basketJson.sourceVersion,'v.o2');
+  const chemicalBasketRow=page.locator('#external tbody tr')
+    .filter({hasText:'STR_CHEMICALS'}).first();
+  const chemicalFull=Number((await chemicalBasketRow.locator('td').nth(1)
+    .innerText()).replaceAll(',',''));
+  assert(chemicalFull>1);
+  const chemicalPartial=Math.max(1,Math.floor(chemicalFull/2));
+  const chemicalAmount=chemicalBasketRow.locator('input.external-basket-amount');
+  await chemicalAmount.fill('0');
+  assert(await page.locator('#external-basket-save-a').isDisabled());
+  assert((await page.locator('#external-basket-status').innerText()).includes('수량 확인'));
+  await chemicalAmount.fill(String(chemicalPartial));
+  assert(await page.locator('#external-basket-save-a').isEnabled());
+  await page.locator('#external-basket-save-a').click();
+  assert((await page.locator('#external-basket-scenarios-status').innerText()).includes('A:'));
+  await chemicalAmount.fill(String(chemicalFull));
+  await page.locator('#external-basket-save-b').click();
+  assert(await page.locator('#external-basket-compare').isEnabled());
+  await page.locator('#external-basket-compare').click();
+  assert(await page.locator('#external-basket-comparison').isVisible());
+  assert((await page.locator('#external-basket-compare-summary').innerText()).includes('남은 외부 부족'));
+  assert((await page.locator('#external-basket-compare-materials').innerText()).includes('STR_CHEMICALS'));
+  assert(await page.locator('#external-basket-compare-export').isEnabled());
+  const abDownload=page.waitForEvent('download');
+  await page.locator('#external-basket-compare-export').click();
+  const abFile=await abDownload;
+  assert.equal(abFile.suggestedFilename(),
+    'xpiratez-v2-acquisition-a-b-STR_3RL_HE_XXX.json');
+  const abData=JSON.parse(fs.readFileSync(await abFile.path(),'utf8'));
+  assert.equal(abData.schema,'xpiratez-v2-single-recipe-acquisition-scenarios/v1');
+  assert.equal(abData.sourceVersion,'v.o2');
+  assert(abData.scenarioB.acquiredUnits>abData.scenarioA.acquiredUnits);
+  assert.equal(abData.acquiredHypotheticallyA.find(x=>x.id==='STR_CHEMICALS').quantity,
+    chemicalPartial);
+  assert.equal(abData.acquiredHypotheticallyB.find(x=>x.id==='STR_CHEMICALS').quantity,
+    chemicalFull);
+  assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
   await page.locator('#external-basket-prefill').click();
   assert((await page.locator('#stock-bulk-text').inputValue()).includes('STR_'));
   assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
