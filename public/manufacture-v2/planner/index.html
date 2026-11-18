@@ -188,7 +188,24 @@
 <div class="section-title"><h3>외부 조달·미해결 재료</h3><button id="external-csv" type="button" class="secondary" disabled>조달 목록 CSV 저장</button></div>
 <p class="note">제조식으로 확장하지 않은 재료입니다. 구매가가 있어도 실제 판매 중이라는 의미는 아닙니다. CSV에는 현재 계산의 전체 외부 조달 목록이 포함됩니다.</p>
 <p class="note">부족 재료의 <strong>확보 가정</strong>으로 새 제조 계획을 미리 비교하거나, <strong>재고 입력</strong>으로 수량을 옮길 수 있습니다. 가상 계산은 원래 입력·세이브를 변경하지 않습니다.</p>
+<div id="external-basket-controls" hidden>
+<div class="control-buttons">
+<button id="external-basket-all" class="secondary" type="button">입력 가능한 부족 재료 모두 선택</button>
+<button id="external-basket-clear" class="secondary" type="button">선택 해제</button>
+<button id="external-basket-preview" type="button" disabled>선택 재료 일괄 확보 가정</button>
+<button id="external-basket-prefill" class="secondary" type="button" disabled>선택 수량 재고 입력란 준비</button>
+<button id="external-basket-export" class="secondary" type="button" disabled>가정 결과 JSON 저장</button>
+</div>
+<p id="external-basket-status" class="note" role="status" aria-live="polite"></p>
+</div>
 <div id="external"></div>
+<div id="external-basket-report" class="procurement-preview" hidden>
+<div class="section-title"><h4>선택 재료 일괄 확보 가정 결과</h4><button id="external-basket-close" class="secondary" type="button">닫기</button></div>
+<p class="note">선택한 부족분을 모두 추가 보유한 독립 시나리오입니다. 원래 재고·세이브·제조 계획은 변경하지 않습니다.</p>
+<div id="external-basket-summary" class="summary-stats"></div>
+<div id="external-basket-diff" class="table-wrap"></div>
+<p class="note">재료 부족 해소만으로 실제 생산 가능 여부가 결정되지는 않습니다. 연구·시설·이벤트와 시장 구매 가능성은 별도 확인이 필요합니다.</p>
+</div>
 <div id="external-preview" class="procurement-preview" hidden aria-live="polite">
 <div class="section-title"><h4>단일 재료 확보 가정 결과</h4><button id="external-preview-close" class="secondary" type="button">닫기</button></div>
 <p id="external-preview-status" class="note"></p>

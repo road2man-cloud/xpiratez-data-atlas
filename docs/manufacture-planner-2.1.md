@@ -363,6 +363,31 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Selected multi-item acquisition basket (2026-11-18)
+
+The **외부 조달·미해결 재료** table now offers a per-material
+**일괄 선택** checkbox. The actions above the table can select every
+catalogued, quantity-safe unresolved item or clear the selection. The
+**선택 재료 일괄 확보 가정** action recalculates the same single manufacturing
+goal with all selected missing quantities added to a **copy** of the
+currently entered inventory. The result shows shortage kinds and units,
+declared manufacturing cost/work, warning counts and every changed
+external-material quantity. A JSON download preserves the selected
+quantities and the before/after comparison; it does not upload game data.
+
+**선택 수량 재고 입력란 준비** uses the same validated basket to populate
+`STR_ID=target_quantity` lines in the existing bulk-stock editor. It
+never applies them without a separate click on **여러 재고 적용**, and
+refuses to replace preexisting unsaved text in that editor. Clearing the
+selection or recalculating the main plan invalidates the previous basket
+comparison. All actions are limited to catalogued v.o2 items and the
+existing 10,000,000-per-item and 5,000-kind stock input caps.
+
+Neither preview nor input preparation mutates the save, chooses a
+manufacturing facility, guarantees market availability, or interprets
+unverified research/event conditions. This is a multiple-material
+scenario for **one selected recipe**, not a comparison across bases.
+
 ## Single-goal external procurement actions (2026-11-18)
 
 The **외부 조달·미해결 재료** panel has two actions per eligible item.

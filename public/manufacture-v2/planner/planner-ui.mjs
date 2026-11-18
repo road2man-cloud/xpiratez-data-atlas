@@ -2,6 +2,7 @@ import { createManufacturingPlanner } from './planner-core.mjs';
 import { initV2SaveImportUI } from './save-import-ui.mjs';
 import { facilityReadiness, productionOrders } from './save-operations-core.mjs';
 import { initQueueUI } from './queue-ui.mjs';
+import { prepareExternalBasket, compareExternalBasket } from './external-basket-core.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -15,6 +16,8 @@ const nf = n => typeof n === 'number' && Number.isFinite(n)
   ? n.toLocaleString('ko-KR') : '미확인';
 const slug = id => encodeURIComponent(id);
 let queueUI = null;
+let externalBasketSelection = new Set();
+let externalBasketReport = null;
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
@@ -216,11 +219,95 @@ function previewExternalAcquisition(row) {
   panel.hidden=false;
   panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
+function canSelectExternalBasket(row) {
+  const previous=state.inventory[row.id] || 0;
+  return state.planner.itemMap.has(row.id) &&
+    Number.isSafeInteger(previous) && previous>=0 &&
+    Number.isSafeInteger(row.quantity) && row.quantity>0 &&
+    Number.isSafeInteger(previous+row.quantity) &&
+    previous+row.quantity<=10000000;
+}
+function updateExternalBasketControls() {
+  const options=state.plan?.external || [];
+  externalBasketSelection=new Set([...externalBasketSelection].filter(id=>
+    options.some(row=>row.id===id && canSelectExternalBasket(row))));
+  const chosen=options.filter(row=>externalBasketSelection.has(row.id));
+  const units=chosen.reduce((sum,row)=>sum+row.quantity,0);
+  $('external-basket-status').textContent=chosen.length ?
+    '선택 '+nf(chosen.length)+'종 · 부족분 '+nf(units)+'개. 아직 재고나 세이브에 반영하지 않았습니다.' :
+    '아래 표에서 부족 재료를 선택하세요. 입력 가능한 '+nf(options.filter(canSelectExternalBasket).length)+'종';
+  $('external-basket-all').disabled=!options.some(canSelectExternalBasket);
+  $('external-basket-clear').disabled=!chosen.length;
+  $('external-basket-preview').disabled=!chosen.length;
+  $('external-basket-prefill').disabled=!chosen.length;
+  externalBasketReport=null;
+  $('external-basket-export').disabled=true;
+  $('external-basket-report').hidden=true;
+}
+function selectedExternalBasket() {
+  return prepareExternalBasket({
+    external:state.plan.external,inventory:state.inventory,
+    selectedIds:externalBasketSelection,itemIds:state.planner.itemMap
+  });
+}
+function previewExternalBasket() {
+  const basket=selectedExternalBasket(), before=state.plan;
+  const after=state.planner.plan(state.currentId,{
+    batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
+    assumeImplicit:$('assume-implicit').checked,choices:state.choices,
+    inventory:basket.inventory,
+    ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
+  });
+  const result=compareExternalBasket(before,after,basket);
+  const summary=$('external-basket-summary');summary.replaceChildren();
+  metric(summary,'가상 확보 재료',nf(basket.selectedKinds)+'종 · '+nf(basket.selectedUnits)+'개');
+  metric(summary,'외부 부족 종류',nf(result.initialShortage.kinds)+'종 → '+nf(result.hypotheticalShortage.kinds)+'종');
+  metric(summary,'외부 부족 수량',nf(result.initialShortage.units)+'개 → '+nf(result.hypotheticalShortage.units)+'개');
+  metric(summary,'명시 제조비',nf(result.beforeDeclaredCost)+' → '+nf(result.afterDeclaredCost));
+  metric(summary,'명시 작업량',nf(result.beforeDeclaredTime)+' → '+nf(result.afterDeclaredTime));
+  metric(summary,'제약·불확실성',nf(result.initialFlags.length)+'개 → '+nf(result.hypotheticalFlags.length)+'개');
+  const parent=$('external-basket-diff');parent.replaceChildren();
+  if(!result.changes.length)make(parent,'p','현재 확장 조건에서 부족 수량 변화가 없습니다.','note');
+  else {
+    const table=make(parent,'table'),header=make(make(table,'thead'),'tr');
+    for(const name of ['재료','기존 외부 부족','가정 후 외부 부족','수량 변화'])make(header,'th',name);
+    const body=make(table,'tbody');
+    for(const item of result.changes){
+      const row=make(body,'tr'),name=make(row,'td');
+      anchor(name,'../../items-v2/?id='+slug(item.id),item.name);
+      make(name,'code',item.id,'item-id');
+      for(const value of [nf(item.before),nf(item.after),nf(item.after-item.before)])
+        make(row,'td',value);
+    }
+  }
+  externalBasketReport=result;
+  $('external-basket-export').disabled=false;
+  $('external-basket-report').hidden=false;
+  $('external-basket-status').textContent='선택한 '+nf(basket.selectedKinds)+
+    '종의 가상 확보를 재계산했습니다. 원래 입력 재고와 세이브는 수정하지 않았습니다.';
+  $('external-basket-report').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function prefillExternalBasketStock() {
+  const basket=selectedExternalBasket(), input=$('stock-bulk-text');
+  if(input.value.trim())throw new Error('일괄 재고 입력란에 작성된 내용이 있어 덮어쓰지 않았습니다. 내용을 적용하거나 지운 뒤 다시 선택하세요.');
+  input.value=basket.additions.map(item=>item.id+'='+item.target).join('\n');
+  input.closest('details').open=true;
+  $('stock-message').textContent='선택한 부족 재료 '+nf(basket.selectedKinds)+
+    '종을 일괄 입력란에 준비했습니다. 여러 재고 적용 버튼을 눌러야 계산기에 반영됩니다. 게임 세이브에는 영향을 주지 않습니다.';
+  $('external-basket-status').textContent='재고 입력문만 준비했습니다. 계산기 재고는 그대로입니다.';
+  input.scrollIntoView({behavior:'smooth',block:'center'});
+  input.focus();
+}
 function renderExternal(plan) {
   $('external-preview').hidden=true;
   $('external-preview-summary').replaceChildren();
   $('external-preview-diff').replaceChildren();
   $('external-csv').disabled=!plan.external.length;
+  externalBasketSelection.clear();
+  externalBasketReport=null;
+  $('external-basket-controls').hidden=!plan.external.length;
+  $('external-basket-report').hidden=true;
+  $('external-basket-export').disabled=true;
   const parent = $('external');parent.replaceChildren();
   if (!plan.external.length){
     make(parent,'p','현재 확장 범위의 모든 재료가 하위 제조식으로 연결됐습니다. 재료 보유 여부와 실제 게임 조건은 별도입니다.','note');
@@ -228,7 +315,7 @@ function renderExternal(plan) {
   }
   const wrap=make(parent,'div',null,'table-wrap'),table=make(wrap,'table');
   const head=make(table,'thead'),hr=make(head,'tr');
-  for(const title of ['재료','수량','원본 구매 단가','참고 구매가','미확장 이유','다음 작업'])make(hr,'th',title);
+  for(const title of ['재료','수량','원본 구매 단가','참고 구매가','미확장 이유','다음 작업','일괄 선택'])make(hr,'th',title);
   const body=make(table,'tbody');
   for(const row of plan.external) {
     const tr=make(body,'tr');
@@ -257,7 +344,20 @@ function renderExternal(plan) {
       try{prefillStockFromExternal(row);}
       catch(error){$('status').textContent='재고 입력 준비 실패: '+error.message;}
     });
+    const basketCell=make(tr,'td',null,'external-basket-cell');
+    const checkbox=make(basketCell,'input');
+    checkbox.type='checkbox';checkbox.value=row.id;
+    checkbox.className='external-basket-checkbox';
+    checkbox.disabled=!canSelectExternalBasket(row);
+    checkbox.setAttribute('aria-label',row.name+' 부족분 일괄 선택');
+    if(checkbox.disabled)checkbox.title='2.1 아이템 목록 또는 재고 수량 제한으로 선택 불가';
+    checkbox.addEventListener('change',()=>{
+      if(checkbox.checked)externalBasketSelection.add(row.id);
+      else externalBasketSelection.delete(row.id);
+      updateExternalBasketControls();
+    });
   }
+  updateExternalBasketControls();
 }
 function renderResearch(plan){
   const parent=$('research');parent.replaceChildren();
@@ -545,6 +645,11 @@ function renderPlan() {
     $('download-plan').disabled=true;
     $('external-csv').disabled=true;
     $('external-preview').hidden=true;
+    $('external-basket-controls').hidden=true;
+    $('external-basket-report').hidden=true;
+    externalBasketReport=null;
+    $('external-basket-export').disabled=true;
+    $('consolidated-csv').disabled=true;
     $('status').textContent='제조 경로 계산 실패: '+e.message;
   }
 }
@@ -579,6 +684,44 @@ $('stock-bulk-apply').addEventListener('click',()=>{
 });
 $('comparison-close').addEventListener('click',()=>{$('comparison-section').hidden=true;});
 $('external-preview-close').addEventListener('click',()=>{$('external-preview').hidden=true;});
+$('external-basket-all').addEventListener('click',()=>{
+  externalBasketSelection=new Set((state.plan?.external||[])
+    .filter(canSelectExternalBasket).map(row=>row.id));
+  for(const input of $('external').querySelectorAll('input.external-basket-checkbox'))
+    input.checked=externalBasketSelection.has(input.value);
+  updateExternalBasketControls();
+});
+$('external-basket-clear').addEventListener('click',()=>{
+  externalBasketSelection.clear();
+  for(const input of $('external').querySelectorAll('input.external-basket-checkbox'))
+    input.checked=false;
+  updateExternalBasketControls();
+});
+$('external-basket-preview').addEventListener('click',()=>{
+  try{previewExternalBasket();}
+  catch(error){
+    externalBasketReport=null;
+    $('external-basket-export').disabled=true;
+    $('external-basket-report').hidden=true;
+    $('external-basket-status').textContent='가상 확보 계산 실패: '+error.message;
+  }
+});
+$('external-basket-prefill').addEventListener('click',()=>{
+  try{prefillExternalBasketStock();}
+  catch(error){$('external-basket-status').textContent='재고 입력문 준비 중단: '+error.message;}
+});
+$('external-basket-close').addEventListener('click',()=>{
+  $('external-basket-report').hidden=true;
+});
+$('external-basket-export').addEventListener('click',()=>{
+  if(!externalBasketReport)return;
+  const content=JSON.stringify(externalBasketReport,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([content],{type:'application/json'}));
+  const link=document.createElement('a');
+  link.href=url;link.download='xpiratez-v2-acquisition-basket-'+externalBasketReport.rootRecipeId+'.json';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+});
 $('recipe-search').addEventListener('input',searchChoices);
 $('recipe-select').addEventListener('change',event=>chooseRecipe(event.target.value));
 $('recalculate').addEventListener('click',renderPlan);

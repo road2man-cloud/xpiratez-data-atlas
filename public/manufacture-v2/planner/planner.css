@@ -55,8 +55,16 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #comparison-data td:first-child{min-width:190px}
 #comparison-data .note{font-size:.77rem}
 #external table{min-width:900px}
-#external td:last-child{min-width:128px}
-#external td:last-child button{display:block;margin-bottom:5px;width:100%;white-space:nowrap}
+#external td:nth-last-child(2){min-width:128px}
+#external td:nth-last-child(2) button{display:block;margin-bottom:5px;width:100%;white-space:nowrap}
+#external .external-basket-cell{text-align:center;min-width:80px}
+#external .external-basket-cell input{width:18px;height:18px;accent-color:#8fb8ff}
+#external-basket-controls{margin:14px 0;padding:12px;border:1px solid #34597f;border-radius:9px;background:#12233a}
+#external-basket-controls[hidden]{display:none}
+#external-basket-controls .control-buttons{align-items:center}
+#external-basket-status{margin:9px 0 0}
+#external-basket-report table{width:100%;min-width:620px}
+#external-basket-report .item-id{display:block;overflow-wrap:anywhere}
 .procurement-preview{margin-top:14px;padding:14px;border:1px solid #456789;background:#12253a;border-radius:10px}
 .procurement-preview[hidden]{display:none}
 .procurement-preview h4{margin:0}
