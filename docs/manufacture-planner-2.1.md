@@ -363,6 +363,46 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Edited-route cascading material acquisition (2026-11-18)
+
+The route-aware single-goal batch editor now includes
+**뒤이어 생기는 부족분 반복 가정 (최대 4단계)** after an explicit
+one-pass hypothetical acquisition. The button is enabled only when
+the first independent route-aware calculation has unresolved
+materials. This supplements the existing multi-job queue iteration
+but works with the user's *edited single recipe* and its explicit
+producer choices instead of changing queued manufacturing jobs.
+
+The engine always uses a copy of the original manually entered stock.
+The first pass preserves the user's chosen partial acquisition
+quantities. Subsequent rounds inspect the newly calculated external
+shortage entries (including newly exposed downstream ingredients),
+validate their v.o2 catalogue IDs, and hypothetically add quantities
+up to the remaining per-item stock limit. It recalculates the entire
+edited recipe with **cumulative** stock after every round, rather
+than adding an earlier assumption twice. The number of rounds is
+bounded (UI uses four, engine supports one through six), with a
+5,000-kind/10,000,000-per-item stock cap.
+
+A visible trace records each pass's starting shortage counts,
+newly assumed materials/units, items first exposed after the pass
+and remaining shortages. Its stop reason distinguishes exhaustion
+of modelled external shortages from round limits, stock/item limits
+and no further progress. A zero-external-shortage result does
+**not** prove market availability, physical manufacturing readiness,
+research unlocks or completed production.
+
+After iteration the route-aware summary, A/B snapshot, stock-input
+draft, CSV and JSON refer to the **cumulative** hypothetical
+acquisitions. The JSON retains initial and additional assumptions
+separately, the full step trace and the remaining external materials.
+The stock draft contains exact hypothetical total-on-hand quantities
+and requires a separate, user-triggered application in the existing
+bulk-stock editor. Editing the producer route or any selected material
+invalidates the earlier iterative result; failure of later rounds
+preserves the valid one-pass calculation instead of showing stale
+iteration data. The source game save is never edited.
+
 ## Route-edited manufacturing with independent bulk procurement (2026-11-18)
 
 The **제조 준비·조달 체크리스트** now has

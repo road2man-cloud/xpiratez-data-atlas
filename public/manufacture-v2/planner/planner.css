@@ -114,6 +114,13 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-batch-inputs td:nth-child(2){min-width:165px}
 #external-route-batch-results{margin-top:16px;padding:12px;background:#122a46;border-radius:8px}
 #external-route-batch-results .item-id{display:block;font-size:.76rem;overflow-wrap:anywhere}
+#external-route-batch-trace{margin-top:16px;border-top:1px solid #375a7f;padding-top:13px}
+#external-route-batch-trace table{width:100%;min-width:860px}
+#external-route-batch-trace td{vertical-align:top;font-variant-numeric:tabular-nums}
+#external-route-batch-trace td:nth-child(3){min-width:180px}
+#external-route-batch-trace td p{font-size:.76rem;margin:4px 0;overflow-wrap:anywhere}
+#external-route-batch-trace-status{margin:4px 0 9px}
+
 #external-route-batch-results td{font-variant-numeric:tabular-nums}
 
 #main-readiness .control-buttons{flex-wrap:wrap;align-items:center}

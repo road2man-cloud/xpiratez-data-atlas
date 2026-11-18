@@ -316,6 +316,7 @@
 <button id="external-route-batch-all" class="secondary" type="button" disabled>경로 부족 재료 모두 선택</button>
 <button id="external-route-batch-clear" class="secondary" type="button" disabled>선택 해제</button>
 <button id="external-route-batch-preview" type="button" disabled>경로 + 일괄 확보 재계산</button>
+<button id="external-route-batch-expand" class="secondary" type="button" disabled>뒤이어 생기는 부족분 반복 가정 (최대 4단계)</button>
 <button id="external-route-batch-draft" class="secondary" type="button" disabled>확보 재고 입력문 준비</button>
 <button id="external-route-batch-a" class="secondary" type="button" disabled>A에 저장</button>
 <button id="external-route-batch-b" class="secondary" type="button" disabled>B에 저장</button>
@@ -328,7 +329,12 @@
 <h5>원안 / 경로 변경 / 경로 변경 + 조달</h5>
 <div id="external-route-batch-summary" class="table-wrap"></div>
 <div id="external-route-batch-changes" class="table-wrap"></div>
-<p class="note">가상 계산에서 목록이 제외되어도 실제 게임의 구매·연구·시설·제조 조건을 충족했다는 뜻은 아닙니다.</p>
+<div id="external-route-batch-trace" hidden>
+<h5>추가 부족 재료 반복 탐색 이력</h5>
+<p id="external-route-batch-trace-status" class="note" role="status"></p>
+<div id="external-route-batch-trace-table" class="table-wrap"></div>
+</div>
+<p class="note">반복 탐색은 새로 필요한 재료를 모두 가상 확보한다고 가정합니다. 구매 가능성·연구·시설·이벤트 조건은 확인하지 않으며, 원본 세이브를 수정하지 않습니다.</p>
 </div>
 </section>
 </section>

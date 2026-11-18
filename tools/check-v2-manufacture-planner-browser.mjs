@@ -313,6 +313,43 @@ try {
   await page.locator('#external-route-batch-draft').click();
   assert((await page.locator('#external-route-batch-status').innerText()).includes('덮어쓰지 않았습니다'));
   await page.locator('#stock-bulk-text').fill('');
+  let canExpand=false;
+  const routeInputsForPartial=page.locator('#external-route-batch-inputs .route-batch-amount');
+  for(let i=0;i<await routeInputsForPartial.count();i++){
+    const input=routeInputsForPartial.nth(i);
+    const amount=Number(await input.inputValue());
+    if(amount>1){
+      await input.fill(String(Math.max(1,Math.floor(amount/2))));
+      canExpand=true;
+      break;
+    }
+  }
+  assert(canExpand,'2.1 browser fixture needs a shortage greater than one to test repeated route acquisition');
+  if(canExpand){
+    assert(await page.locator('#external-route-batch-preview').isEnabled());
+    await page.locator('#external-route-batch-preview').click();
+    assert(await page.locator('#external-route-batch-expand').isEnabled());
+    await page.locator('#external-route-batch-expand').click();
+    assert(await page.locator('#external-route-batch-trace').isVisible());
+    assert((await page.locator('#external-route-batch-trace-status').innerText()).includes('추가 탐색'));
+    assert((await page.locator('#external-route-batch-status').innerText()).includes('누적 가상 확보량'));
+    const expandedDownload=page.waitForEvent('download');
+    await page.locator('#external-route-batch-json').click();
+    const expandedFile=await expandedDownload;
+    const expandedPayload=JSON.parse(fs.readFileSync(await expandedFile.path(),'utf8'));
+    assert.equal(expandedPayload.schema,'xpiratez-v2-route-aware-cascade/v1');
+    assert(Array.isArray(expandedPayload.history));
+    assert(expandedPayload.history.length<=4);
+    assert(expandedPayload.acquiredHypothetically.every(x=>
+      x.quantity===x.firstPass+(expandedPayload.additionalAcquired
+        .find(y=>y.id===x.id)?.quantity||0)));
+    assert.equal(expandedPayload.hypotheticalScenario.rootRecipeId,'STR_3RL_HE_XXX');
+    assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+    await page.locator('#external-route-batch-draft').click();
+    assert.equal(await page.locator('#stock-bulk-text').inputValue(),
+      expandedPayload.stockDraft);
+    await page.locator('#stock-bulk-text').fill('');
+  }
   await page.locator('#external-route-batch-clear').click();
   assert(await page.locator('#external-route-batch-preview').isDisabled());
   assert(await page.locator('#external-route-batch-json').isDisabled());
