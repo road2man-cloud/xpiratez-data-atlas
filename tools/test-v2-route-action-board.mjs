@@ -4,6 +4,8 @@ import {buildRouteActionBoard,projectRouteActionBoard,routeActionReviewCsvRows,r
   from '../public/manufacture-v2/planner/route-action-board.mjs';
 import {previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryoverAudit,routeActionCarryoverAuditCsvRows}
   from '../public/manufacture-v2/planner/route-action-carryover.mjs';
+import {snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsvRows}
+  from '../public/manufacture-v2/planner/route-action-refresh.mjs';
 
 const workflow={
   schema:'xpiratez-v2-route-material-workflow/v1',
@@ -267,6 +269,74 @@ test('unsafe carry-over is rejected without altering current notes or checkmarks
   assert.equal(applied.notes.get('material::STR_ORE'),'새 계산기의 메모');
   assert.deepEqual([...currentReviewed],['recipe::2']);
   assert.equal(currentNotes.size,1);
+});
+
+test('editing a material quantity selectively preserves independent review annotations',()=>{
+  const before=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const source=snapshotRouteActionReview(before,{
+    reviewed:new Set(['material::STR_ORE','condition::research::STR_R1',
+      'recipe::1','recipe::2']),
+    notes:new Map([
+      ['material::STR_ORE','예전 광석 검토 메모'],
+      ['condition::research::STR_R1','유지 가능한 연구 검토 메모'],
+      ['recipe::2','예전 상위 제조 메모']
+    ])
+  });
+  const sourceCopy=JSON.stringify(source);
+  const changed={...workflow,materials:workflow.materials.map(row=>
+    row.id==='STR_ORE'?{...row,totalAcquisition:5}:row)};
+  const now=buildRouteActionBoard({workflow:changed,finalChecklist:checklist});
+  const beforeNew=JSON.stringify(now);
+  const refresh=refreshRouteActionReview(now,source);
+  assert.equal(refresh.schema,'xpiratez-v2-route-action-refresh/v1');
+  assert.equal(refresh.counts.restoredReviews,1);
+  assert.equal(refresh.counts.restoredNotes,1);
+  assert.equal(refresh.counts.changedCurrent,3);
+  assert.equal(refresh.counts.newCurrent,0);
+  assert(refresh.reviewed.has('condition::research::STR_R1'));
+  assert(!refresh.reviewed.has('material::STR_ORE'));
+  assert(!refresh.reviewed.has('recipe::1'));
+  assert(!refresh.reviewed.has('recipe::2'));
+  assert.equal(refresh.notes.get('condition::research::STR_R1'),
+    '유지 가능한 연구 검토 메모');
+  assert(!refresh.notes.has('material::STR_ORE'));
+  assert.equal(refresh.priorReview.tasks.find(x=>x.id==='material::STR_ORE').note,
+    '예전 광석 검토 메모');
+  assert.deepEqual(refresh.changes.filter(x=>x.kind==='changed')
+    .map(x=>x.id).sort(),['material::STR_ORE','recipe::1','recipe::2']);
+  const csv=routeActionRefreshCsvRows(refresh);
+  assert.equal(csv.length,now.tasks.length+1);
+  assert(csv.some(x=>x[0]==='recipe::2'&&x[4]==='changed'));
+  assert.equal(JSON.stringify(source),sourceCopy);
+  assert.equal(JSON.stringify(now),beforeNew);
+});
+
+test('repositioned recipes carry unique notes and newly introduced nodes require recheck',()=>{
+  const prior=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=snapshotRouteActionReview(prior,{
+    reviewed:['recipe::1','recipe::2'],
+    notes:{'recipe::1':'하위 작업 메모'}
+  });
+  const shifted={...workflow,recipeSequenceAfter:[
+    {position:1,recipeId:'STR_EXTRA',recipeName:'새로운 제조식',batches:1,
+      inputMaterials:[],prerequisiteStepNumbers:[],prerequisiteResearch:[]},
+    {...workflow.recipeSequenceAfter[0],position:2},
+    {...workflow.recipeSequenceAfter[1],position:3,prerequisiteStepNumbers:[2]}
+  ]};
+  const current=buildRouteActionBoard({workflow:shifted,finalChecklist:checklist});
+  const result=refreshRouteActionReview(current,saved);
+  assert(result.reviewed.has('recipe::2'));
+  assert(result.reviewed.has('recipe::3'));
+  assert(!result.reviewed.has('recipe::1'));
+  assert.equal(result.notes.get('recipe::2'),'하위 작업 메모');
+  assert.equal(result.changes.find(x=>x.id==='recipe::1').kind,'new');
+  assert.equal(result.changes.find(x=>x.id==='recipe::2').kind,'unchanged');
+  assert.equal(result.counts.newCurrent,1);
+  assert.equal(result.counts.restoredReviews,2);
+  assert.throws(()=>refreshRouteActionReview(current,{
+    ...saved,rootRecipeId:'STR_UNRELATED'
+  }),/같은 v.o2/);
+  assert.throws(()=>routeActionRefreshCsvRows({schema:'invalid'}),/올바르지/);
 });
 
 test('unknown review keys, oversized notes, stale or invalid prerequisites fail closed',()=>{

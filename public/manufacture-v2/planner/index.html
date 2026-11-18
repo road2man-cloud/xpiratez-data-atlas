@@ -316,7 +316,7 @@
 <button id="external-route-batch-all" class="secondary" type="button" disabled>경로 부족 재료 모두 선택</button>
 <button id="external-route-batch-clear" class="secondary" type="button" disabled>선택 해제</button>
 <button id="external-route-batch-preview" type="button" disabled>경로 + 일괄 확보 재계산</button>
-<button id="external-route-batch-expand" class="secondary" type="button" disabled>뒤이어 생기는 부족분 반복 가정 (최대 4단계)</button>
+<button id="external-route-batch-expand" class="secondary" type="button" disabled>후속 부족 재료 계산 및 통합 작업표 갱신 (최대 4단계)</button>
 <button id="external-route-batch-draft" class="secondary" type="button" disabled>확보 재고 입력문 준비</button>
 <button id="external-route-batch-a" class="secondary" type="button" disabled>A에 저장</button>
 <button id="external-route-batch-b" class="secondary" type="button" disabled>B에 저장</button>
@@ -391,12 +391,25 @@
 <option value="condition">연구·시설·규칙 확인</option>
 <option value="recipe">제조식 확인</option>
 <option value="pending">미검토만</option>
+<option value="changed">이번 변경·신규 중 재검토 대상</option>
 </select></label>
 <label for="external-route-action-search">검색
 <input id="external-route-action-search" type="search" placeholder="재료·제조식 ID 또는 이름"></label>
 </div>
 <p id="external-route-action-status" class="note" role="status" aria-live="polite"></p>
 <p id="external-route-action-import-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-action-refresh" class="route-action-refresh" hidden>
+<h5>재계산 후 검토 기록 안전 복원 · 변경 작업 재검토</h5>
+<p class="note">이 작업대에서 재료 수량·제조 경로를 변경하면 이전 검토 기록을 비교합니다. 의미·수량·선행관계가 동일한 작업만 검토 표시와 메모를 자동 보존하고, 새롭거나 변경·중복된 작업은 검토 완료로 취급하지 않습니다.</p>
+<div id="external-route-action-refresh-summary" class="summary-stats"></div>
+<p id="external-route-action-refresh-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-action-refresh-excluded" class="table-wrap"></div>
+<div class="control-buttons">
+<button id="external-route-action-refresh-filter" class="secondary" type="button">미검토 변경 작업만 보기</button>
+<button id="external-route-action-refresh-csv" class="secondary" type="button">변경 영향 전체 CSV 저장</button>
+<button id="external-route-action-refresh-prior-json" class="secondary" type="button">변경 전 검토·메모 JSON 백업</button>
+</div>
+</div>
 <div id="external-route-action-carryover" class="route-action-carryover">
 <h5>제조 계획 변경 후 이전 검토 기록 선택적 이어받기</h5>
 <p class="note">변경 전 작업표의 JSON을 선택하면 항목별 의미·수량·선행관계를 비교합니다. 똑같은 작업으로 확인된 항목만 이어받을 후보로 표시하고, 조건이 바뀌었거나 중복되어 모호한 항목은 제외합니다. 실제 게임에서 작업이 완료되었다는 뜻은 아닙니다.</p>

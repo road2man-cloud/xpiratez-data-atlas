@@ -15,6 +15,7 @@ import { routeAcquisitionLedgerCsvRows } from './route-acquisition-ledger.mjs';
 import { routeMaterialWorkflowCsvRows } from './route-material-workflow.mjs';
 import { projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview } from './route-action-board.mjs';
 import { previewRouteActionCarryover,applyRouteActionCarryover,routeActionCarryoverAudit,routeActionCarryoverAuditCsvRows } from './route-action-carryover.mjs';
+import { snapshotRouteActionReview,refreshRouteActionReview,routeActionRefreshCsvRows } from './route-action-refresh.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1159,7 +1160,66 @@ function renderRouteActionCarryoverPreview(){
     nf(preview.counts.excluded)+'건. 아직 현재 작업표에는 적용하지 않았습니다.'+
     ' 기존 사용자 메모는 적용 시에도 덮어쓰지 않습니다.';
 }
+function renderRouteActionRefresh(rb){
+  const wrap=$('external-route-action-refresh');
+  const refresh=rb.lastReviewRefresh;
+  if(!refresh){
+    wrap.hidden=true;
+    $('external-route-action-refresh-summary').replaceChildren();
+    $('external-route-action-refresh-excluded').replaceChildren();
+    $('external-route-action-refresh-status').textContent='';
+    return;
+  }
+  wrap.hidden=false;
+  const summary=$('external-route-action-refresh-summary');
+  summary.replaceChildren();
+  const pending=refresh.changes.filter(x=>x.kind!=='unchanged'&&
+    !rb.actionReviewed.has(x.id)).length;
+  metric(summary,'동일 작업 검토 보존',nf(refresh.counts.restoredReviews)+'건');
+  metric(summary,'동일 작업 메모 보존',nf(refresh.counts.restoredNotes)+'건');
+  metric(summary,'변경·신규·중복 작업',nf(refresh.counts.recheckCurrent)+'건');
+  metric(summary,'남은 재검토 대상',nf(pending)+'건');
+  metric(summary,'과거 기록 자동 제외',nf(refresh.counts.excluded)+'건');
+  $('external-route-action-refresh-status').textContent=
+    '변경 작업 '+nf(refresh.counts.changedCurrent)+'건 · 신규 '+
+    nf(refresh.counts.newCurrent)+'건 · 중복/모호 '+
+    nf(refresh.counts.ambiguousCurrent)+'건. 기존 기록은 자동으로 수정하지 않았으며, '+
+    '동일한 의미의 단일 작업 기록만 새 작업표에 복원했습니다. 제외된 옛 메모는 백업 가능합니다.';
+  const previous=new Map(refresh.priorReview.tasks.map(x=>[x.id,x]));
+  const excluded=$('external-route-action-refresh-excluded');
+  excluded.replaceChildren();
+  if(refresh.skipped.length){
+    make(excluded,'h5','자동 제외된 이전 검토 기록 (원본은 별도 보존)');
+    const table=make(excluded,'table'),header=make(make(table,'thead'),'tr');
+    for(const column of ['이전 작업','제외 근거','예전 메모','관련 현재 제조 작업'])
+      make(header,'th',column);
+    const body=make(table,'tbody');
+    for(const item of refresh.skipped.slice(0,60)){
+      const tr=make(body,'tr'),title=make(tr,'td');
+      make(title,'strong',item.label);
+      make(title,'code',item.oldId,'item-id');
+      make(tr,'td',item.reason);
+      const prior=previous.get(item.oldId);
+      const note=make(tr,'td');
+      make(note,'span',prior?.note||'메모 없음','note');
+      if(item.reviewed)make(note,'p','이전에 검토 표시됨','note');
+      const links=make(tr,'td');
+      for(const taskId of item.currentRecipeTaskIds.slice(0,5)){
+        const go=make(links,'button',taskId,'route-link-jump');
+        go.type='button';
+        go.addEventListener('click',()=>focusRouteActionTask(taskId));
+      }
+      if(!item.currentRecipeTaskIds.length)
+        make(links,'span','동일 제조식 ID의 현재 작업 없음','note');
+      if(item.currentRecipeTaskIds.length>5)
+        make(links,'p','추가 작업은 변경 영향 CSV에서 확인','note');
+    }
+    if(refresh.skipped.length>60)
+      make(excluded,'p','화면에는 이전 제외 기록 60건만 표시합니다. 변경 전 검토 JSON에 전부 보존됩니다.','note');
+  }
+}
 function clearRouteActionBoard(){
+  $('external-route-action-refresh').hidden=true;
   clearRouteActionCarryover();
   $('external-route-action-board').hidden=true;
   $('external-route-action-table').replaceChildren();
@@ -1196,6 +1256,8 @@ function renderRouteActionBoard(){
   const current=routeActionState();
   if(!current){clearRouteActionBoard();return;}
   const {rb,board}=current;
+  renderRouteActionRefresh(rb);
+  const refreshKinds=new Map((rb.lastReviewRefresh?.changes||[]).map(x=>[x.id,x]));
   const review=projectRouteActionBoard(board,{
     reviewed:rb.actionReviewed,notes:rb.actionNotes
   });
@@ -1204,7 +1266,9 @@ function renderRouteActionBoard(){
   const text=$('external-route-action-search').value.trim().toLocaleLowerCase('ko-KR');
   const rows=review.tasks.filter(row=>
     (!rb.actionFocusId||row.id===rb.actionFocusId)&&
-    (filter==='all'||(filter==='pending'?!row.reviewed:row.type===filter))&&
+    (filter==='all'||(filter==='pending'?!row.reviewed:
+      filter==='changed'?(!row.reviewed&&refreshKinds.get(row.id)?.kind!=='unchanged'&&
+        refreshKinds.has(row.id)):row.type===filter))&&
     (!text||[row.label,row.requirementId,row.id].some(x=>
       String(x).toLocaleLowerCase('ko-KR').includes(text))));
   const pageSize=100;
@@ -1250,6 +1314,11 @@ function renderRouteActionBoard(){
     const title=make(tr,'td');
     make(title,'strong',item.label);
     make(title,'code',item.requirementId,'item-id');
+    const updated=refreshKinds.get(item.id);
+    if(updated&&updated.kind!=='unchanged')
+      make(title,'span',(updated.kind==='new'?'신규 작업':
+        updated.kind==='ambiguous'?'중복/모호한 작업':'계획 변경으로 재검토')+
+        (item.reviewed?' · 재검토 표시됨':' · 확인 필요'),'route-action-change-label');
     if(item.type==='material'){
       const known=externalRouteWorkbench?.routeBatch?.expanded?.report?.acquisitionLedger
         ?.materials.some(x=>x.id===item.requirementId);
@@ -1570,10 +1639,22 @@ function renderRouteAcquisitionLedger(){
   $('external-route-batch-ledger-csv').disabled=false;
 }
 const ROUTE_BATCH_VISIBLE_LIMIT=200;
+function capturePendingRouteReview(rb){
+  const board=rb?.expanded?.report?.actionBoard;
+  if(board)
+    rb.pendingReviewSnapshot=snapshotRouteActionReview(board,{
+      reviewed:rb.actionReviewed||new Set(),notes:rb.actionNotes||new Map()
+    });
+  return rb?.pendingReviewSnapshot||null;
+}
 function resetRouteBatch() {
   const wb=externalRouteWorkbench;
+  // Retain only a prior review of this very same workbench/goal.
+  // Subsequent recalculations cannot silently erase user notes.
+  const snapshot=capturePendingRouteReview(wb?.routeBatch);
   if(wb)wb.routeBatch={selected:new Set(),amounts:new Map(),result:null,
-    expanded:null,actionReviewed:new Set(),actionNotes:new Map(),actionPage:0};
+    expanded:null,actionReviewed:new Set(),actionNotes:new Map(),actionPage:0,
+    pendingReviewSnapshot:snapshot,lastReviewRefresh:null};
   $('external-route-batch-inputs').replaceChildren();
   $('external-route-batch-results').hidden=true;
   $('external-route-batch-trace').hidden=true;
@@ -1598,6 +1679,8 @@ function routeBatchContext() {
 function routeBatchInvalidate() {
   const wb=externalRouteWorkbench;
   if(!wb?.routeBatch)return;
+  capturePendingRouteReview(wb.routeBatch);
+  wb.routeBatch.lastReviewRefresh=null;
   wb.routeBatch.result=null;
   wb.routeBatch.expanded=null;
   wb.routeBatch.actionReviewed=new Set();
@@ -1749,6 +1832,8 @@ function renderRouteBatchResult(){
 }
 function runRouteBatch() {
   const {wb,rb}=routeBatchContext();
+  capturePendingRouteReview(rb);
+  rb.lastReviewRefresh=null;
   rb.result=null;
   rb.expanded=null;
   rb.actionReviewed=new Set();
@@ -1774,7 +1859,8 @@ function runRouteBatch() {
     });
     for(const id of ['draft','a','b','json','csv'])
       $('external-route-batch-'+id).disabled=false;
-    $('external-route-batch-expand').disabled=!rb.result.after.external.length;
+    // Even with zero shortage, build the final dependency/review board.
+    $('external-route-batch-expand').disabled=false;
     renderRouteBatchResult();
     $('external-route-batch-status').textContent=
       '편집한 제조 경로와 가상 조달을 함께 계산했습니다. 본 계산기의 제조 경로·재고와 게임 세이브는 변경되지 않았습니다.';
@@ -1840,6 +1926,8 @@ function renderRouteBatchTrace() {
 function expandRouteBatch(){
   const {wb,rb}=routeBatchContext();
   if(!rb.result)throw new Error('먼저 일괄 확보를 재계산하세요.');
+  capturePendingRouteReview(rb);
+  rb.lastReviewRefresh=null;
   rb.expanded=null;
   $('external-route-batch-expand').disabled=true;
   try{
@@ -1855,11 +1943,30 @@ function expandRouteBatch(){
       saveDiscoveredResearchIds:state.saveDiscovered,
       evidenceForPlan:evidenceForCurrentPlan,maxRounds:4
     });
+    if(rb.pendingReviewSnapshot){
+      try{
+        const refresh=refreshRouteActionReview(
+          rb.expanded.report.actionBoard,rb.pendingReviewSnapshot);
+        rb.actionReviewed=refresh.reviewed;
+        rb.actionNotes=refresh.notes;
+        rb.lastReviewRefresh=refresh;
+        rb.pendingReviewSnapshot=null;
+        rb.refreshError=null;
+      }catch(error){
+        rb.refreshError=error.message;
+        // Keep the last review separately so a later valid calculation
+        // can still restore it; never attach unchecked stale annotations.
+      }
+    }
     renderRouteBatchResult();
     renderRouteBatchTrace();
     renderRouteAcquisitionLedger();
     renderRouteMaterialWorkflow();
     renderRouteActionBoard();
+    if(rb.refreshError)
+      $('external-route-action-import-status').textContent=
+        '이전 검토 기록 자동 복원 보류: '+rb.refreshError+
+        ' · 변경 전 메모는 작업대 메모리에 보존됩니다.';
     $('external-route-batch-status').textContent=
       '후속 부족 재료 반복 가정을 반영했습니다. 이후 재고 초안·CSV·JSON·A/B 버튼은 누적 가상 확보량을 사용합니다. 게임 재고는 변경하지 않았습니다.';
     $('external-route-batch-trace').scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -2722,6 +2829,32 @@ $('external-route-batch-workflow-filter').addEventListener('change',()=>{
 $('external-route-batch-workflow-search').addEventListener('input',()=>{
   if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
   renderRouteMaterialWorkflow();
+});
+$('external-route-action-refresh-filter').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current?.rb.lastReviewRefresh)return;
+  $('external-route-action-filter').value='changed';
+  $('external-route-action-search').value='';
+  current.rb.actionFocusId=null;
+  current.rb.actionPage=0;
+  renderRouteActionBoard();
+  $('external-route-action-table').scrollIntoView({behavior:'smooth',block:'start'});
+});
+$('external-route-action-refresh-csv').addEventListener('click',()=>{
+  const refresh=routeActionState()?.rb.lastReviewRefresh;
+  if(!refresh)return;
+  downloadCsv(routeActionRefreshCsvRows(refresh),
+    'xpiratez-v2-route-review-changes-'+refresh.rootRecipeId+'.csv');
+});
+$('external-route-action-refresh-prior-json').addEventListener('click',()=>{
+  const review=routeActionState()?.rb.lastReviewRefresh?.priorReview;
+  if(!review)return;
+  const url=URL.createObjectURL(new Blob([JSON.stringify(review,null,2)+'\n'],
+    {type:'application/json;charset=utf-8'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='xpiratez-v2-route-review-before-change-'+review.rootRecipeId+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 $('external-route-action-filter').addEventListener('change',()=>{
   const current=routeActionState();if(current){current.rb.actionPage=0;current.rb.actionFocusId=null;}

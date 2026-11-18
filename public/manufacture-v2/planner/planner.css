@@ -163,6 +163,15 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-action-board .route-action-check{height:18px;width:18px;accent-color:#9ec1e6}
 #external-route-action-board .route-action-note{width:100%;padding:8px;background:#0a1a2c;border:1px solid #49658a;color:#eff6ff;border-radius:7px}
 #external-route-action-board .action-reviewed{opacity:.78}
+.route-action-refresh{margin:16px 0;padding:12px 14px;border:1px solid #45698a;border-radius:8px;background:#12283d}
+.route-action-refresh h5{margin:0 0 6px;font-size:.93rem}
+.route-action-refresh .control-buttons{display:flex;gap:9px;flex-wrap:wrap}
+.route-action-refresh .note{margin:8px 0}
+#external-route-action-refresh-excluded table{width:100%;min-width:780px}
+#external-route-action-refresh-excluded td{white-space:normal;overflow-wrap:anywhere;vertical-align:top}
+#external-route-action-refresh-excluded td:nth-child(3){max-width:260px;white-space:pre-wrap}
+#external-route-action-refresh-excluded .item-id{display:block;font-size:.74rem}
+.route-action-change-label{display:block;margin:6px 0;padding:4px 7px;border-left:3px solid #9ebde5;background:#1a354d;font-size:.76rem;color:#d4e9ff}
 #external-route-action-carryover{margin:16px 0;padding:12px 14px;border:1px solid #405c79;border-radius:8px}
 #external-route-action-carryover h5{margin:0 0 6px;font-size:.93rem}
 #external-route-action-carryover .control-buttons{display:flex;align-items:center;gap:10px;flex-wrap:wrap}

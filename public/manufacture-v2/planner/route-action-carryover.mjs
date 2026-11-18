@@ -103,6 +103,31 @@ export function previewRouteActionCarryover(board,exported){
   const saved=internGraph(exported.tasks,dictionary);
   const current=internGraph(board.tasks,dictionary);
   const matched=[],skipped=[];
+  // Compare EVERY current task, not only tasks carrying prior annotations.
+  // Recursively interned identities include material quantities, source
+  // statuses and prerequisite signatures; harmless display shifts are ignored.
+  const priorRequirements=new Map();
+  for(const row of exported.tasks){
+    const key=JSON.stringify([row.type,row.requirementId]);
+    if(!priorRequirements.has(key))priorRequirements.set(key,[]);
+    priorRequirements.get(key).push(row.id);
+  }
+  const currentChanges=current.records.map(({row,token})=>{
+    const oldMatches=saved.bySignature.get(token)||[];
+    const newMatches=current.bySignature.get(token)||[];
+    const oldIds=priorRequirements.get(JSON.stringify([row.type,row.requirementId]))||[];
+    const kind=(oldMatches.length===1&&newMatches.length===1)?'unchanged':
+      (oldMatches.length>1||newMatches.length>1)?'ambiguous':
+      oldIds.length?'changed':'new';
+    return {
+      id:row.id,type:row.type,requirementId:row.requirementId,
+      label:row.label,kind,previousTaskIds:[...oldIds],
+      reason:kind==='unchanged'?'동일한 작업 의미·수량·선행 조건':
+        kind==='ambiguous'?'같은 의미의 작업이 여러 번 등장해 자동 대응 불가':
+        kind==='changed'?'수량·상태·선행 제조 관계 등 작업 의미 변경':
+        '이전 작업표에서 찾을 수 없는 신규 작업'
+    };
+  });
   const impact=priorRecipeImpact(exported.tasks,board.tasks);
   const marked=exported.tasks.filter(x=>x.reviewed||x.note);
   for(const {row:oldRow,token} of saved.records){
@@ -137,12 +162,16 @@ export function previewRouteActionCarryover(board,exported){
     excludedReviewed:skipped.filter(x=>x.reviewed).length,
     excludedNotes:skipped.filter(x=>x.hasNote).length,
     excludedAffectedRecipeKinds:new Set(skipped.flatMap(x=>x.affectedRecipeIds)).size,
-    excludedCurrentRecipeOccurrences:new Set(skipped.flatMap(x=>x.currentRecipeTaskIds)).size
+    excludedCurrentRecipeOccurrences:new Set(skipped.flatMap(x=>x.currentRecipeTaskIds)).size,
+    unchangedCurrent:currentChanges.filter(x=>x.kind==='unchanged').length,
+    changedCurrent:currentChanges.filter(x=>x.kind==='changed').length,
+    ambiguousCurrent:currentChanges.filter(x=>x.kind==='ambiguous').length,
+    newCurrent:currentChanges.filter(x=>x.kind==='new').length
   };
   return {
     schema:PREVIEW,sourceVersion:'v.o2',
     rootRecipeId:board.rootRecipeId,
-    counts,matched,skipped,
+    counts,matched,skipped,currentChanges,
     // Deliberately kept as a runtime-only identity guard; not an export.
     currentBoard:board,
     caveat:'이전 검토 기록은 실제 게임 상태의 증거가 아닙니다. 의미·수량·상태·모든 선행 작업이 동일한 단일 항목만 선택적으로 재사용합니다. 중복 제조식은 임의로 대응시키지 않습니다.'
