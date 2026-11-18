@@ -104,6 +104,22 @@ padding:8px;font-variant-numeric:tabular-nums}
 #main-readiness label{display:flex;gap:8px;align-items:center;color:#d4e2f3;font-size:.88rem}
 #main-readiness select{padding:8px;border:1px solid #587493;border-radius:7px;background:#102238;color:#eaf3ff}
 #main-readiness-status{margin:10px 0}
+#main-batch-controls{padding:13px 14px;margin:12px 0;border:1px solid #3a5778;border-radius:9px;background:#10223a}
+#main-batch-controls h4{margin:0 0 8px;font-size:1rem}
+#main-batch-controls p{margin:4px 0 10px}
+#main-batch-controls .control-buttons{display:flex;gap:7px;flex-wrap:wrap}
+#main-batch-status{margin-top:10px}
+#main-batch-results{margin:14px 0;padding:12px;border:1px solid #4e7192;border-radius:9px}
+#main-batch-results table{width:100%;min-width:660px}
+#main-batch-items table{min-width:900px}
+#main-batch-items td{font-variant-numeric:tabular-nums}
+#main-batch-results h5{margin:15px 0 7px;font-size:.95rem}
+#main-batch-results .item-id{display:block;font-size:.75rem;overflow-wrap:anywhere}
+.readiness-batch-cell{min-width:175px}
+.readiness-batch-cell input[type=checkbox]{width:18px;height:18px;vertical-align:middle;accent-color:#9fc8f8}
+.readiness-batch-cell input.main-batch-amount{width:116px;max-width:calc(100% - 28px);padding:7px;margin-left:5px;background:#0a1c30;color:#eef5ff;border:1px solid #4c6e92;border-radius:7px;font-variant-numeric:tabular-nums}
+.readiness-batch-cell span.note{display:block}
+
 .manufacture-checklist-table{width:100%;min-width:1030px;font-variant-numeric:tabular-nums}
 .manufacture-checklist-table td{vertical-align:top}
 .manufacture-checklist-table td:first-child{text-align:center}

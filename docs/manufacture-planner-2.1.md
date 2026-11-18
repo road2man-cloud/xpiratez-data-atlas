@@ -363,6 +363,53 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Readiness checklist to batch acquisition handoff (2026-11-18)
+
+The single-goal **제조 준비·조달 체크리스트** now contains an embedded
+multi-material acquisition editor. Materials in its checklist have
+an independent checkbox and a bounded integer **일괄 확보 수량** field;
+the local review checkbox remains a separate annotation. Users can
+select every eligible shortage or explicitly choose a subset and
+replace full shortages with partial acquisition quantities.
+
+**선택 재료 확보 후 재계산** validates all current material IDs and
+shortages against the active v.o2 recipe plan, the 10,000,000
+per-item stock cap and the item catalog. It applies the acquisition
+to a copy of the current inventory, independently recalculates the
+selected manufacturing goal and reconstructs the entire material,
+facility, research and rule checklist. Results distinguish new
+checklist items, items absent from the simulated result and changes
+to quantities or evidence status. Newly exposed downstream material
+shortages remain listed; disappearance from a simulated checklist
+never means that a game task was actually completed.
+
+The scenario includes a per-material table showing shortage, starting
+stock, hypothetical acquisition, hypothetical resulting stock, and
+optional original ruleset buy-price reference. Prices are not treated
+as proof of current market availability or a real payable amount.
+The full before/after simulation and checklist change ledger can be
+downloaded as local JSON, while an Excel-friendly UTF-8 BOM CSV
+contains the precise per-material stock draft and available price
+references. Every export is generated in the browser without
+uploading the user's save.
+
+**재고 입력 초안 준비** writes exact target stock totals, not deltas,
+into the existing bulk stock editor only if it is empty. The user
+must click the pre-existing **여러 재고 적용** button to make any
+change to the calculator's manual stock; the original game save is
+never edited. A selected scenario can also be saved explicitly to
+the existing A/B comparison slots. Changing selected materials
+or amounts invalidates the old preview and disables stale exports.
+Changing recipes, producer routes, inventory or research inputs
+rebuilds and resets the scenario and its independent review marks.
+
+The full material selection can include items beyond the first
+200 rendered checklist rows, but the engine uses only current
+catalogued shortages and the existing stock limits. Facility
+requirements never pool stock or facilities from different bases,
+and evidence gaps remain unverified instead of being declared
+proof of impossible production.
+
 ## Unified single-goal readiness and procurement checklist (2026-11-18)
 
 The main manufacturing calculator now produces a **제조 준비·조달 체크리스트**

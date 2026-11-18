@@ -8,6 +8,7 @@ import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
 import { calculateRouteWorkbench } from './candidate-route-workbench.mjs';
 import { summarizeRouteReadiness } from './candidate-route-evidence.mjs';
 import { buildManufacturingReadinessChecklist } from './manufacturing-readiness-checklist.mjs';
+import { prepareReadinessBatch, calculateReadinessBatch } from './readiness-acquisition-batch.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -30,6 +31,9 @@ let externalExploration = null;
 let externalRouteWorkbench = null;
 let mainChecklist = null;
 let mainChecklistReviewed = new Set();
+let mainBatchSelected = new Set();
+let mainBatchAmounts = new Map();
+let mainBatchResult = null;
 const state = { planner: null, recipes: [], currentId: null, choices: {},
   inventory: {}, itemEntries: [], plan: null, saveDiscovered: null,
   baseOperations: null, baseOperationsSummary: null, facilitiesIndex: null,
@@ -588,7 +592,9 @@ function downloadReadinessJson(checklist,reviewedKeys,filename) {
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
 }
-function appendChecklistTable(parent,checklist,{reviewed=null,onReview=null}={}) {
+function appendChecklistTable(parent,checklist,{
+  reviewed=null,onReview=null,batchSelection=null,batchAmounts=null,onBatchChange=null
+}={}) {
   parent.replaceChildren();
   if(!checklist.tasks.length) {
     make(parent,'p','현재 계산에서 목록화한 추가 재료·확인 항목이 없습니다. 이는 실제 제조 가능 판정이 아닙니다.','note');
@@ -598,7 +604,8 @@ function appendChecklistTable(parent,checklist,{reviewed=null,onReview=null}={})
   const header=make(make(table,'thead'),'tr');
   for(const column of [
     ...(reviewed?['검토 표시']:[]),'우선 순서','종류','항목·수량',
-    '근거 상태','다음 확인·조치', '재고 입력'
+    '근거 상태','다음 확인·조치', '재고 입력',
+    ...(batchSelection?['일괄 확보 수량']:[])
   ])make(header,'th',column);
   const body=make(table,'tbody');
   for(const [index,row] of checklist.tasks.slice(0,CHECKLIST_VISIBLE_LIMIT).entries()) {
@@ -644,10 +651,193 @@ function appendChecklistTable(parent,checklist,{reviewed=null,onReview=null}={})
         }
       });
     }else make(ctl,'span','—','note');
+    if(batchSelection){
+      const cell=make(tr,'td',null,'readiness-batch-cell');
+      if(row.category!=='material'){
+        make(cell,'span','—','note');
+      }else{
+        const max=Math.min(row.quantity,10000000-(state.inventory[row.requirementId]||0));
+        const supported=state.planner.itemMap.has(row.requirementId) && max>=1;
+        const checkbox=make(cell,'input');
+        checkbox.type='checkbox';checkbox.className='main-batch-check';
+        checkbox.value=row.requirementId;
+        checkbox.checked=batchSelection.has(row.requirementId);
+        checkbox.disabled=!supported;
+        checkbox.setAttribute('aria-label',row.title+' 일괄 확보 선택');
+        checkbox.addEventListener('change',()=>{
+          if(checkbox.checked)batchSelection.add(row.requirementId);
+          else batchSelection.delete(row.requirementId);
+          onBatchChange?.();
+        });
+        const amount=make(cell,'input');
+        amount.type='number';amount.min='1';amount.step='1';
+        amount.max=String(Math.max(0,max));
+        amount.className='main-batch-amount';
+        amount.value=String(batchAmounts.get(row.requirementId)??Math.max(1,max));
+        amount.disabled=!supported;
+        amount.setAttribute('aria-label',row.title+' 일괄 확보 수량');
+        amount.addEventListener('input',()=>{
+          batchAmounts.set(row.requirementId,Number(amount.value));
+          onBatchChange?.();
+        });
+        if(!supported)make(cell,'span','재고 상한 또는 2.1 아이템 ID 미확인','note');
+      }
+    }
   }
   if(checklist.tasks.length>CHECKLIST_VISIBLE_LIMIT)
     make(parent,'p','화면에는 처음 '+nf(CHECKLIST_VISIBLE_LIMIT)+
       '개 작업만 표시합니다. CSV와 JSON에는 전체 작업을 저장합니다.','note');
+}
+function resetMainBatchResult() {
+  mainBatchResult=null;
+  $('main-batch-results').hidden=true;
+  for(const id of ['main-batch-stock','main-batch-a','main-batch-b','main-batch-json',
+    'main-batch-csv'])$(id).disabled=true;
+  $('main-batch-summary').replaceChildren();
+  $('main-batch-items').replaceChildren();
+  $('main-batch-changes').replaceChildren();
+}
+function updateMainBatchStatus(){
+  const materialRows=mainChecklist?.tasks.filter(x=>x.category==='material')||[];
+  $('main-batch-all').disabled=!materialRows.some(row=>mainBatchAmounts.has(row.requirementId));
+  $('main-batch-clear').disabled=!mainBatchSelected.size;
+  if(!mainChecklist){
+    $('main-batch-preview').disabled=true;
+    $('main-batch-status').textContent='현재 제조 계획이 없습니다.';
+    return;
+  }
+  if(!mainBatchSelected.size){
+    $('main-batch-preview').disabled=true;
+    $('main-batch-status').textContent='재료를 선택하세요. 확보할 수량을 바꾸면 현재 재고에 추가된 가상 재고로 독립 계산합니다.';
+    return;
+  }
+  try {
+    const draft=prepareReadinessBatch({
+      checklist:mainChecklist,plan:state.plan,inventory:state.inventory,
+      itemIds:state.planner.itemMap,selectedIds:mainBatchSelected,
+      requestedQuantities:mainBatchAmounts
+    });
+    $('main-batch-preview').disabled=false;
+    $('main-batch-status').textContent='선택한 재료 '+nf(draft.selectedKinds)+
+      '종 · 가상 확보 '+nf(draft.selectedUnits)+
+      '개. 계산 전에는 현재 보유 재고·세이브를 변경하지 않습니다.';
+  }catch(error){
+    $('main-batch-preview').disabled=true;
+    $('main-batch-status').textContent='가상 확보 수량 확인 필요: '+error.message;
+  }
+}
+function invalidateMainBatch(){
+  resetMainBatchResult();
+  updateMainBatchStatus();
+}
+function renderMainBatchResult(){
+  const result=mainBatchResult?.report;
+  if(!result)return;
+  const summary=$('main-batch-summary');summary.replaceChildren();
+  metric(summary,'가상 확보',nf(result.acquiredHypothetically.length)+'종 · '+
+    nf(result.acquiredHypothetically.reduce((s,x)=>s+x.quantity,0))+'개');
+  metric(summary,'재료 부족',nf(result.before.shortageKinds)+'종 · '+nf(result.before.shortageUnits)+
+    '개 → '+nf(result.after.shortageKinds)+'종 · '+nf(result.after.shortageUnits)+'개');
+  metric(summary,'확인 작업 수',nf(result.before.tasks)+'건 → '+nf(result.after.tasks)+'건');
+  metric(summary,'새로 필요한 확인',nf(result.newlyRequired.length)+'건');
+  metric(summary,'계산 목록에서 제외',nf(result.noLongerListed.length)+'건');
+  metric(summary,'수량·상태 변화',nf(result.changedTasks.length)+'건');
+  const acquisition=$('main-batch-items');acquisition.replaceChildren();
+  const aTable=make(acquisition,'table'),aHead=make(make(aTable,'thead'),'tr');
+  for(const name of ['재료','현재 부족','입력 재고','가상 확보','가상 재고',
+    '원본 참고 단가','가정 확보분 참고가'])make(aHead,'th',name);
+  const aBody=make(aTable,'tbody');
+  for(const entry of result.acquiredHypothetically){
+    const row=make(aBody,'tr'),first=make(row,'td');
+    make(first,'strong',entry.name);
+    make(first,'code',entry.id,'item-id');
+    for(const field of ['shortage','previous','quantity','target'])
+      make(row,'td',nf(entry[field]));
+    make(row,'td',nf(entry.listedUnitBuy));
+    make(row,'td',nf(entry.listedBuyReference));
+  }
+  make(acquisition,'p','참고가는 원본 규칙의 명시 단가만 계산하며 실제 판매·구매 가능성이나 지급 금액을 뜻하지 않습니다.','note');
+  const target=$('main-batch-changes');target.replaceChildren();
+  const changes=[
+    ...result.newlyRequired.map(x=>({kind:'신규',row:x,before:'—',after:x.quantity})),
+    ...result.noLongerListed.map(x=>({kind:'계산에서 제외',row:x,before:x.quantity,after:'—'})),
+    ...result.changedTasks.map(x=>({kind:'변경',row:x.current,
+      before:x.previous.quantity,after:x.current.quantity}))
+  ];
+  if(!changes.length){
+    make(target,'p','현재 확장 조건에서 체크리스트 변경 항목이 없습니다.','note');
+  }else{
+    const table=make(target,'table'),header=make(make(table,'thead'),'tr');
+    for(const name of ['유형','종류','항목','기존 수량 / 가정 후 수량'])make(header,'th',name);
+    const body=make(table,'tbody');
+    const format=v=>v===null?'조건 확인':typeof v==='number'?nf(v)+'개':v;
+    for(const entry of changes.slice(0,100)){
+      const tr=make(body,'tr');
+      make(tr,'td',entry.kind);
+      make(tr,'td',entry.row.categoryLabel);
+      const first=make(tr,'td');
+      make(first,'strong',entry.row.title);
+      make(first,'code',entry.row.requirementId,'item-id');
+      make(tr,'td',format(entry.before)+' → '+format(entry.after));
+    }
+    if(changes.length>100)
+      make(target,'p','목록의 처음 100건을 표시했습니다. 전체 변화는 JSON에 포함됩니다.','note');
+  }
+  $('main-batch-results').hidden=false;
+}
+function runMainBatch(){
+  resetMainBatchResult();
+  try{
+    const calculated=calculateReadinessBatch({
+      checklist:mainChecklist,plan:state.plan,inventory:state.inventory,
+      itemIds:state.planner.itemMap,selectedIds:mainBatchSelected,
+      requestedQuantities:mainBatchAmounts,
+      planWithInventory:inventory=>state.planner.plan(state.currentId,{
+        batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
+        assumeImplicit:$('assume-implicit').checked,choices:state.choices,
+        inventory,
+        ...(state.saveDiscovered?
+          {saveDiscoveredResearchIds:state.saveDiscovered}:{})
+      }),
+      evidenceForPlan:evidenceForCurrentPlan
+    });
+    mainBatchResult=calculated;
+    renderMainBatchResult();
+    for(const id of ['main-batch-stock','main-batch-a','main-batch-b','main-batch-json',
+      'main-batch-csv'])$(id).disabled=false;
+    $('main-batch-status').textContent='선택 재료를 가상 확보하고 제조 준비 목록을 재계산했습니다. 게임 세이브와 기존 재고는 변경하지 않았습니다.';
+    $('main-batch-results').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }catch(error){
+    $('main-batch-status').textContent='재계산 실패: '+error.message;
+  }
+}
+function mainBatchToStockDraft(){
+  const report=mainBatchResult?.report;
+  if(!report)throw new Error('먼저 가상 확보를 재계산하세요.');
+  const input=$('stock-bulk-text');
+  if(input.value.trim())
+    throw new Error('기존 일괄 재고 입력문이 있어 덮어쓰지 않았습니다. 기존 내용을 적용하거나 지운 뒤 다시 시도하세요.');
+  input.value=report.stockDraft;
+  input.closest('details').open=true;
+  $('stock-message').textContent='선택한 가상 확보 재고를 입력란에 준비했습니다. 여러 재고 적용을 누르기 전에는 계산기 재고와 게임 세이브가 바뀌지 않습니다.';
+  input.scrollIntoView({behavior:'smooth',block:'center'});
+  input.focus();
+}
+function storeMainBatchScenario(slot) {
+  if(!mainBatchResult || !['A','B'].includes(slot))
+    throw new Error('가상 확보 결과와 저장 위치가 필요합니다.');
+  const scenario=mainBatchResult.report.hypotheticalScenario;
+  const opposite=slot==='A'?'B':'A';
+  const old=externalBasketScenarios[opposite];
+  if(old && old.baselineSignature!==scenario.baselineSignature)
+    externalBasketScenarios[opposite]=null;
+  externalBasketScenarios[slot]=scenario;
+  externalBasketComparison=null;
+  $('external-basket-comparison').hidden=true;
+  $('external-basket-compare-export').disabled=true;
+  updateBasketScenarioControls();
+  $('main-batch-status').textContent='가상 조달 결과를 시나리오 '+slot+
+    '에 저장했습니다. 두 시나리오는 기존 A/B 비교 기능에서 확인할 수 있습니다. 실제 재고는 그대로입니다.';
 }
 function updateMainChecklistStatus(){
   if(!mainChecklist)return;
@@ -670,13 +860,26 @@ function paintMainChecklist(){
     mainChecklist.tasks.filter(x=>x.category===selected);
   appendChecklistTable($('main-readiness-table'),{
     ...mainChecklist,tasks
-  },{reviewed:mainChecklistReviewed,onReview:updateMainChecklistStatus});
+  },{
+    reviewed:mainChecklistReviewed,onReview:updateMainChecklistStatus,
+    batchSelection:mainBatchSelected,batchAmounts:mainBatchAmounts,
+    onBatchChange:invalidateMainBatch
+  });
   updateMainChecklistStatus();
 }
 function renderMainChecklist(plan){
   const evidence=evidenceForCurrentPlan(plan);
   mainChecklist=buildManufacturingReadinessChecklist(plan,evidence);
   mainChecklistReviewed=new Set();
+  mainBatchSelected=new Set();
+  mainBatchAmounts=new Map();
+  for(const row of mainChecklist.tasks.filter(row=>row.category==='material')){
+    const max=Math.min(row.quantity,10000000-(state.inventory[row.requirementId]||0));
+    if(state.planner.itemMap.has(row.requirementId)&&max>=1)
+      mainBatchAmounts.set(row.requirementId,max);
+  }
+  resetMainBatchResult();
+  updateMainBatchStatus();
   $('main-readiness-csv').disabled=false;
   $('main-readiness-json').disabled=false;
   paintMainChecklist();
@@ -1420,6 +1623,10 @@ function renderPlan() {
     state.plan=null;
     mainChecklist=null;
     mainChecklistReviewed.clear();
+    mainBatchSelected.clear();
+    mainBatchAmounts.clear();
+    resetMainBatchResult();
+    updateMainBatchStatus();
     $('main-readiness-csv').disabled=true;
     $('main-readiness-json').disabled=true;
     $('main-readiness-table').replaceChildren();
@@ -1447,6 +1654,55 @@ function renderPlan() {
     $('status').textContent='제조 경로 계산 실패: '+e.message;
   }
 }
+$('main-batch-all').addEventListener('click',()=>{
+  mainBatchSelected=new Set((mainChecklist?.tasks||[])
+    .filter(row=>row.category==='material'&&mainBatchAmounts.has(row.requirementId))
+    .map(row=>row.requirementId));
+  invalidateMainBatch();
+  paintMainChecklist();
+});
+$('main-batch-clear').addEventListener('click',()=>{
+  mainBatchSelected.clear();
+  invalidateMainBatch();
+  paintMainChecklist();
+});
+$('main-batch-preview').addEventListener('click',runMainBatch);
+$('main-batch-stock').addEventListener('click',()=>{
+  try{mainBatchToStockDraft();}
+  catch(error){$('main-batch-status').textContent='재고 입력문 준비 중단: '+error.message;}
+});
+for(const slot of ['A','B']){
+  $('main-batch-'+slot.toLowerCase()).addEventListener('click',()=>{
+    try{storeMainBatchScenario(slot);}
+    catch(error){$('main-batch-status').textContent='시나리오 저장 중단: '+error.message;}
+  });
+}
+$('main-batch-json').addEventListener('click',()=>{
+  if(!mainBatchResult)return;
+  const report=mainBatchResult.report;
+  const data=JSON.stringify(report,null,2)+'\n';
+  const url=URL.createObjectURL(new Blob([data],{type:'application/json'}));
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='xpiratez-v2-readiness-batch-'+report.rootRecipeId+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+});
+$('main-batch-csv').addEventListener('click',()=>{
+  const report=mainBatchResult?.report;
+  if(!report)return;
+  downloadCsv([
+    ['아이템 ID','이름','현재 부족','입력 재고','가상 확보','가상 재고',
+      '원본 참고 단가','가정 확보분 참고가'],
+    ...report.acquiredHypothetically.map(row=>[
+      row.id,row.name,row.shortage,row.previous,row.quantity,row.target,
+      row.listedUnitBuy,row.listedBuyReference
+    ])
+  ],'xpiratez-v2-acquisition-draft-'+report.rootRecipeId+'.csv');
+});
+$('main-batch-close').addEventListener('click',()=>{
+  $('main-batch-results').hidden=true;
+});
 $('main-readiness-filter').addEventListener('change',paintMainChecklist);
 $('main-readiness-reset').addEventListener('click',()=>{
   mainChecklistReviewed.clear();

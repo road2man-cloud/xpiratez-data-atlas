@@ -109,7 +109,31 @@
 <button id="main-readiness-reset" class="secondary" type="button">검토 표시 지우기</button>
 </div>
 <p id="main-readiness-status" class="note" role="status" aria-live="polite"></p>
+<div id="main-batch-controls" class="readiness-batch-controls">
+<h4>부족 재료 일괄 확보 계획</h4>
+<p class="note">아래 체크리스트에서 확보할 재료를 선택하고 수량을 지정하세요. 가상 계산은 보유 재고와 세이브를 수정하지 않습니다.</p>
+<div class="control-buttons">
+<button id="main-batch-all" class="secondary" type="button">선택 가능한 부족 재료 모두 선택</button>
+<button id="main-batch-clear" class="secondary" type="button">선택 해제</button>
+<button id="main-batch-preview" type="button" disabled>선택 재료 확보 후 재계산</button>
+<button id="main-batch-stock" class="secondary" type="button" disabled>재고 입력 초안 준비</button>
+<button id="main-batch-a" class="secondary" type="button" disabled>결과 A에 저장</button>
+<button id="main-batch-b" class="secondary" type="button" disabled>결과 B에 저장</button>
+<button id="main-batch-json" class="secondary" type="button" disabled>가정 결과 JSON 저장</button>
+<button id="main-batch-csv" class="secondary" type="button" disabled>획득 초안 CSV 저장</button>
+</div>
+<p id="main-batch-status" class="note" role="status" aria-live="polite">확보할 재료를 선택하면 조달 수량을 재계산할 수 있습니다.</p>
+</div>
 <div id="main-readiness-table" class="table-wrap"></div>
+<div id="main-batch-results" class="procurement-preview" hidden>
+<div class="section-title"><h4>가상 조달 후 제조 준비 변화</h4><button id="main-batch-close" class="secondary" type="button">닫기</button></div>
+<div id="main-batch-summary" class="summary-stats"></div>
+<h5>선택한 재료의 확보 수량</h5>
+<div id="main-batch-items" class="table-wrap"></div>
+<h5>확보 가정 전후의 확인 항목 변화</h5>
+<div id="main-batch-changes" class="table-wrap"></div>
+<p class="note">체크리스트에서 항목이 제외되어도 실제 연구·시설·게임 제조 가능성은 별도로 확인해야 합니다.</p>
+</div>
 </section>
 <section id="base-operations" class="planner-card" hidden aria-label="선택 기지 시설과 생산 주문">
 <h3>선택 기지의 시설·제조 주문</h3>
