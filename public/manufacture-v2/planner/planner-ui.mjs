@@ -6,6 +6,7 @@ import { prepareExternalBasket, compareExternalBasket, compareExternalBasketScen
 import { exploreExternalCandidates, rankExternalCandidates } from './external-candidate-explorer.mjs';
 import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
 import { calculateRouteWorkbench } from './candidate-route-workbench.mjs';
+import { summarizeRouteReadiness } from './candidate-route-evidence.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -285,6 +286,12 @@ function selectedExternalBasket() {
     requestedQuantities:externalBasketAmounts
   });
 }
+function evidenceForCurrentPlan(plan) {
+  return summarizeRouteReadiness(plan,{
+    recipeMap:state.planner.recipeMap,researchMap:state.planner.researchMap,
+    baseOperations:state.baseOperations,facilitiesIndex:state.facilitiesIndex
+  });
+}
 function previewExternalBasket() {
   const basket=selectedExternalBasket(), before=state.plan;
   const after=state.planner.plan(state.currentId,{
@@ -294,6 +301,7 @@ function previewExternalBasket() {
     ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
   });
   const result=compareExternalBasket(before,after,basket);
+  result.evidence=evidenceForCurrentPlan(after);
   const summary=$('external-basket-summary');summary.replaceChildren();
   metric(summary,'가상 확보 재료',nf(basket.selectedKinds)+'종 · '+nf(basket.selectedUnits)+'개');
   metric(summary,'외부 부족 종류',nf(result.initialShortage.kinds)+'종 → '+nf(result.hypotheticalShortage.kinds)+'종');
@@ -347,6 +355,18 @@ function renderExternalBasketComparison() {
     nf(result.scenarioA.declaredTime)+' / '+nf(result.scenarioB.declaredTime));
   metric(summary,'제약·불확실성 A / B',
     nf(result.scenarioA.flags.length)+'건 / '+nf(result.scenarioB.flags.length)+'건');
+  const evidenceA=externalBasketScenarios.A?.evidence;
+  const evidenceB=externalBasketScenarios.B?.evidence;
+  if(evidenceA||evidenceB){
+    const facilityText=e=>e?nf(e.facilityCounts.confirmed)+'건 확인 · '+
+      nf(e.facilityCounts.pending+e.facilityCounts.notObserved+
+        e.facilityCounts.unverified)+'건 확인 필요':'정보 없음';
+    const researchText=e=>e?nf(e.researchCounts.confirmed)+'개 discovered · '+
+      nf(e.researchCounts.notInDiscovered+e.researchCounts.unverified+
+        e.researchCounts.unresolved)+'개 확인 필요':'정보 없음';
+    metric(summary,'시설 기능 근거 A / B',facilityText(evidenceA)+' / '+facilityText(evidenceB));
+    metric(summary,'연구 참조 근거 A / B',researchText(evidenceA)+' / '+researchText(evidenceB));
+  }
   const parent=$('external-basket-compare-materials');parent.replaceChildren();
   const table=make(parent,'table'),header=make(make(table,'thead'),'tr');
   for(const label of ['재료','A 확보 가정','B 확보 가정','A 남은 부족',
@@ -540,6 +560,113 @@ function renderWorkbenchComparison() {
       make(tr,'td',nf(value));
   }
 }
+function renderWorkbenchEvidence() {
+  const wb=externalRouteWorkbench;
+  if(!wb?.calculation)return;
+  const evidence=wb.calculation.report.evidence;
+  const changes=wb.calculation.report.evidenceChanges;
+  const summary=$('external-route-workbench-evidence-summary');summary.replaceChildren();
+  const table=make(summary,'table'),head=make(make(table,'thead'),'tr');
+  for(const label of ['조건 증거','원안','경로 변경','경로 변경 + 확보'])
+    make(head,'th',label);
+  const body=make(table,'tbody');
+  const cols=[evidence.original,evidence.editedRoute,evidence.withAcquisition];
+  const fields=[
+    ['실제 확장된 제조식',x=>x.recipeIds.length+'종'],
+    ['명시 시설 기능 요구',x=>nf(x.facilities.length)+'건'],
+    ['저장 시설에서 기능 확인',x=>nf(x.facilityCounts.confirmed)+'건'],
+    ['시설 건설 중',x=>nf(x.facilityCounts.pending)+'건'],
+    ['기능 제공 미관측',x=>nf(x.facilityCounts.notObserved)+'건'],
+    ['시설 근거 불명',x=>nf(x.facilityCounts.unverified)+'건'],
+    ['연구 참조 (선행 포함)',x=>nf(x.research.length)+'개'],
+    ['discovered에 있음',x=>nf(x.researchCounts.confirmed)+'개'],
+    ['discovered에 없음',x=>nf(x.researchCounts.notInDiscovered)+'개'],
+    ['연구 확인 불가',x=>nf(x.researchCounts.unverified)+'개'],
+    ['규칙상 미해결 연구 ID',x=>nf(x.researchCounts.unresolved)+'개']
+  ];
+  for(const [name,read] of fields){
+    const tr=make(body,'tr');make(tr,'th',name);
+    for(const e of cols)make(tr,'td',read(e));
+  }
+  const source=evidence.withAcquisition;
+  const evidenceText=source.facilityEvidenceSource==='saved-single-base' ?
+    '선택한 단일 기지의 저장 시설 목록 사용' :
+    source.facilityEvidenceSource==='no-single-base-selected' ?
+      '선택한 단일 기지 시설 정보 없음 (합산 모드는 시설 대조하지 않음)' :
+      '세이브 시설 목록 또는 규칙 인덱스를 확인할 수 없음';
+  make(summary,'p','시설 근거: '+evidenceText+' · 연구 근거: '+
+    (source.researchEvidenceSource==='saved-discovered' ?
+      '세이브 discovered 목록 사용':'세이브 discovered 목록 미연결'),'note');
+  const delta=$('external-route-workbench-evidence-changes');delta.replaceChildren();
+  const changesTable=make(delta,'table'),changesHeader=make(make(changesTable,'thead'),'tr');
+  for(const name of ['경로 변화','경로 편집으로 추가 / 해제','재료 확보 후 추가 / 해제'])
+    make(changesHeader,'th',name);
+  const deltaBody=make(changesTable,'tbody');
+  for(const [label,prop] of [
+    ['확장 제조식','recipes'],
+    ['제조식별 시설 요구','facilityRequirements'],
+    ['제조식별 직접 연구 참조','directResearchReferences'],
+    ['선행 포함 연구 참조','researchClosure']
+  ]){
+    const row=make(deltaBody,'tr');make(row,'th',label);
+    for(const diff of [changes.routeOnly[prop],changes.acquisitionOnly[prop]]){
+      const added=diff.added.length?'추가 '+diff.added.join(', '):'';
+      const removed=diff.removed.length?'제외 '+diff.removed.join(', '):'';
+      make(row,'td',[added,removed].filter(Boolean).join(' / ')||'변동 없음');
+    }
+  }
+  const requirements=$('external-route-workbench-requirements');
+  requirements.replaceChildren();
+  const recipeRows=source.facilities;
+  const researchStatus=new Map(source.research.map(x=>[x.id,x.status]));
+  const recipeGroups=new Map();
+  for(const id of source.recipeIds)recipeGroups.set(id,{
+    facilities:[],research:[]
+  });
+  for(const entry of recipeRows)recipeGroups.get(entry.recipeId)?.facilities.push(entry);
+  for(const entry of source.directResearch)recipeGroups.get(entry.recipeId)?.research.push(entry);
+  const rTable=make(requirements,'table'),rHead=make(make(rTable,'thead'),'tr');
+  for(const name of ['제조식','필요 시설 기능 / 세이브 근거',
+    '직접 선언 연구 참조 / discovered 근거'])make(rHead,'th',name);
+  const rBody=make(rTable,'tbody');
+  const description={
+    confirmed:'저장 목록 확인',pending:'건설 중',notObserved:'제공 기능 미관측',
+    unverified:'근거 없음',notInDiscovered:'discovered에 없음',
+    'unknown-reference':'연구 인덱스 미해결'
+  };
+  for(const [id,group] of [...recipeGroups].slice(0,100)){
+    const row=make(rBody,'tr'),cell=make(row,'td');
+    anchor(cell,'../?id='+slug(id),state.planner.name(id));
+    make(cell,'code',id,'item-id');
+    const functions=make(row,'td');
+    if(!group.facilities.length)make(functions,'span','직접 명시된 요구 없음','note');
+    for(const req of group.facilities)
+      make(functions,'p',req.functionId+' · '+(description[req.status]||req.status),
+        req.status==='confirmed'?'note':'warn-note');
+    const research=make(row,'td');
+    if(!group.research.length)make(research,'span','직접 선언 참조 없음','note');
+    for(const ref of group.research){
+      const status=ref.status==='unknown-reference'?'unknown-reference':
+        (researchStatus.get(ref.researchId)||'unverified');
+      make(research,'p',ref.researchId+' · '+(description[status]||status),
+        status==='confirmed'?'note':'warn-note');
+    }
+  }
+  if(recipeGroups.size>100)
+    make(requirements,'p','화면에는 제조식 100개만 표시합니다. 전체 조건은 작업대 JSON에 보존됩니다.','note');
+  const actions=$('external-route-workbench-evidence-actions');actions.replaceChildren();
+  const list=source.actions;
+  make(actions,'p','조건 확인 필요 '+nf(list.length)+
+    '건 · 실제 연구 잠금이나 제조 가능 판정이 아닌 증거 확인 목록입니다.','note');
+  if(list.length){
+    const ul=make(actions,'ul');
+    for(const action of list.slice(0,80))
+      make(ul,'li',(action.recipeId?action.recipeId+' · ':'')+
+        action.requirementId+' — '+action.action);
+    if(list.length>80)
+      make(actions,'p','나머지 '+nf(list.length-80)+'건은 JSON에 포함됩니다.','note');
+  }
+}
 function recalculateRouteWorkbench() {
   const wb=externalRouteWorkbench;
   if(!wb)return;
@@ -550,6 +677,10 @@ function recalculateRouteWorkbench() {
     $(id).disabled=true;
   $('external-route-workbench-summary').replaceChildren();
   $('external-route-workbench-differences').replaceChildren();
+  for(const id of ['external-route-workbench-evidence-summary',
+    'external-route-workbench-evidence-changes',
+    'external-route-workbench-requirements',
+    'external-route-workbench-evidence-actions'])$(id).replaceChildren();
   try{
     wb.calculation=calculateRouteWorkbench({
       planner:state.planner,candidate:wb.candidate,currentPlan:state.plan,
@@ -557,7 +688,8 @@ function recalculateRouteWorkbench() {
       requestedQuantities:wb.amounts,selectedIds:wb.selectedIds,
       batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
       assumeImplicit:$('assume-implicit').checked,
-      saveDiscoveredResearchIds:state.saveDiscovered
+      saveDiscoveredResearchIds:state.saveDiscovered,
+      baseOperations:state.baseOperations,facilitiesIndex:state.facilitiesIndex
     });
     for(const id of ['external-route-workbench-draft',
       'external-route-workbench-apply-choices','external-route-workbench-a',
@@ -565,6 +697,7 @@ function recalculateRouteWorkbench() {
       $(id).disabled=false;
     renderWorkbenchRouteChoices();
     renderWorkbenchComparison();
+    renderWorkbenchEvidence();
     const rep=wb.calculation.report;
     $('external-route-workbench-status').textContent=
       '가상 확보 '+nf(rep.additions.length)+'종 · '+
@@ -619,7 +752,7 @@ function renderExternalExploration() {
   else {
     const table=make(parent,'table'),header=make(make(table,'thead'),'tr');
     for(const label of ['후보 조합','가상 확보','잔여 외부 부족','부족 수량 감소',
-      '확보 1개당 감소','명시 제조비 / 작업량','주의 항목','시나리오에 저장'])
+      '확보 1개당 감소','명시 제조비 / 작업량','시설·연구 근거','주의 항목','시나리오에 저장'])
       make(header,'th',label);
     const body=make(table,'tbody');
     const kind={single:'단일 재료',pair:'두 재료',all:'선택 전체'};
@@ -635,6 +768,18 @@ function renderExternalExploration() {
       make(tr,'td',Number.isFinite(candidate.reductionPerAcquiredUnit)?
         candidate.reductionPerAcquiredUnit.toFixed(2):'미확인');
       make(tr,'td',nf(candidate.declaredCost)+' / '+nf(candidate.declaredTime));
+      const evidenceCell=make(tr,'td');
+      if(candidate.evidence){
+        const e=candidate.evidence;
+        const f=e.facilityCounts,r=e.researchCounts;
+        make(evidenceCell,'p','시설 요구 '+nf(e.facilities.length)+
+          '건 · 확인 '+nf(f.confirmed)+' · 건설 중 '+nf(f.pending),'note');
+        make(evidenceCell,'p','시설 미관측 '+nf(f.notObserved)+
+          ' · 근거 불명 '+nf(f.unverified),'note');
+        make(evidenceCell,'p','연구 discovered '+nf(r.confirmed)+
+          ' · 목록에 없음 '+nf(r.notInDiscovered)+
+          ' · 미확인 '+nf(r.unverified+r.unresolved),'note');
+      } else make(evidenceCell,'span','근거 미계산','note');
       make(tr,'td',nf(candidate.flagsCount)+'개');
       const actions=make(tr,'td');
       for(const slot of ['A','B']){
@@ -642,7 +787,9 @@ function renderExternalExploration() {
         button.type='button';
         button.setAttribute('aria-label',kind[candidate.type]+' 후보 '+slot+'에 저장');
         button.addEventListener('click',()=>{
-          externalBasketScenarios[slot]=candidate.report;
+          externalBasketScenarios[slot]={
+            ...candidate.report,evidence:candidate.evidence
+          };
           externalBasketComparison=null;
           $('external-basket-comparison').hidden=true;
           $('external-basket-compare-export').disabled=true;
@@ -693,7 +840,8 @@ function runExternalExploration() {
       assumeImplicit:$('assume-implicit').checked,choices:state.choices,
       inventory,
       ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
-    })
+    }),
+    summarizeEvidence:evidenceForCurrentPlan
   });
   $('external-explore-export').disabled=false;
   renderExternalExploration();
@@ -1008,8 +1156,11 @@ function renderOperations(plan) {
   for(const instance of base.facilities){
     const match=state.facilitiesIndex.facilities.find(x=>x.id===instance.type);
     if(!match){unrecognised.add(instance.type);continue;}
-    if(instance.buildTime===undefined||instance.buildTime===0)
-      for(const name of match.fields.provideBaseFunc||[])allProvided.add(name);
+    if(instance.buildTime===undefined||instance.buildTime===0){
+      const raw=match.fields?.provideBaseFunc;
+      for(const name of Array.isArray(raw)?raw:
+        typeof raw==='string'?[raw]:[])allProvided.add(name);
+    }
   }
   make(summary,'p','저장된 완공/진행 정보로 확인된 제공 기능: '+
     ([...allProvided].sort().join(', ')||'명시값 없음'),'note');

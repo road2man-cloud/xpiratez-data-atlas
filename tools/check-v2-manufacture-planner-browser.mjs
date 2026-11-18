@@ -153,11 +153,18 @@ try {
   assert.equal(exploreData.sortBy,'efficiency');
   assert.equal(exploreData.successes,exploredCount);
   assert(exploreData.candidates.every(x=>x.report.rootRecipeId==='STR_3RL_HE_XXX'));
+  assert(exploreData.candidates.every(x=>x.evidence.schema==='xpiratez-v2-route-evidence/v1'));
+  assert(exploreData.candidates.every(x=>x.evidence.facilityEvidenceSource==='no-single-base-selected'));
+  assert((await page.locator('#external-explore-table').innerText()).includes('시설 요구'));
   assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
   await exploredRows.first().getByRole('button',{name:/후보 작업대에서 경로 편집/}).click();
   assert(await page.locator('#external-route-workbench').isVisible());
   assert((await page.locator('#external-route-workbench-summary').innerText()).includes('경로 편집 + 가상 확보'));
   assert((await page.locator('#external-route-workbench-status').innerText()).includes('게임 세이브는 그대로'));
+  assert((await page.locator('#external-route-workbench-evidence-summary').innerText()).includes('시설 근거'));
+  assert((await page.locator('#external-route-workbench-evidence-summary').innerText()).includes('연구 근거'));
+  assert((await page.locator('#external-route-workbench-requirements').innerText()).includes('STR_3RL_HE_XXX'));
+  assert((await page.locator('#external-route-workbench-evidence-actions').innerText()).includes('조건 확인'));
   const workbenchAmount=page.locator('#external-route-workbench-materials input[type=number]').first();
   const workbenchOriginalQuantity=await workbenchAmount.inputValue();
   await workbenchAmount.fill('0');
@@ -180,6 +187,10 @@ try {
   const workbenchPayload=JSON.parse(fs.readFileSync(await workbenchFile.path(),'utf8'));
   assert.equal(workbenchPayload.schema,'xpiratez-v2-route-workbench/v1');
   assert.equal(workbenchPayload.sourceVersion,'v.o2');
+  assert.equal(workbenchPayload.evidence.original.schema,'xpiratez-v2-route-evidence/v1');
+  assert.equal(workbenchPayload.evidence.original.facilityEvidenceSource,'no-single-base-selected');
+  assert.equal(workbenchPayload.evidence.original.researchEvidenceSource,'no-discovered-data');
+  assert(Array.isArray(workbenchPayload.evidenceChanges.routeOnly.facilityRequirements.added));
   assert(workbenchPayload.additions.length>=1);
   if(await workbenchChemical.count())
     assert.equal(workbenchPayload.sourceChoices.STR_CHEMICALS,'STR_CHEMICALS_XXX');

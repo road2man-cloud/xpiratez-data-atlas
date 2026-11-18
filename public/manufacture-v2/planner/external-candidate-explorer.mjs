@@ -39,9 +39,11 @@ export function rankExternalCandidates(candidates, sortBy='reduction') {
 }
 
 export function exploreExternalCandidates({
-  before, inventory, itemIds, selectedIds, requestedQuantities, planWithInventory
+  before, inventory, itemIds, selectedIds, requestedQuantities, planWithInventory,
+  summarizeEvidence=null
 }) {
-  if (!before?.external || !before?.rootRecipeId || typeof planWithInventory !== 'function')
+  if (!before?.external || !before?.rootRecipeId || typeof planWithInventory !== 'function' ||
+      (summarizeEvidence!==null && typeof summarizeEvidence!=='function'))
     throw new Error('현재 제조 목표와 독립 계산기가 필요합니다.');
   // Validate all selected quantities before truncating to a bounded search.
   const whole = prepareExternalBasket({
@@ -71,6 +73,7 @@ export function exploreExternalCandidates({
       });
       const after=planWithInventory(basket.inventory);
       const report=compareExternalBasket(before,after,basket);
+      const evidence=summarizeEvidence?summarizeEvidence(after):null;
       const reducedUnits=report.initialShortage.units-shortageUnits(report);
       candidates.push({
         key, type:entry.type,
@@ -85,7 +88,7 @@ export function exploreExternalCandidates({
         declaredTime:report.afterDeclaredTime,
         flagsCount:report.hypotheticalFlags.length,
         additions:report.acquiredHypothetically.map(row=>({...row})),
-        report
+        evidence,report
       });
     } catch (error) {
       failures.push({key, type:entry.type, error:error.message});

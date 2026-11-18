@@ -55,8 +55,8 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #comparison-data td:first-child{min-width:190px}
 #comparison-data .note{font-size:.77rem}
 #external table{min-width:900px}
-#external td:nth-last-child(2){min-width:128px}
-#external td:nth-last-child(2) button{display:block;margin-bottom:5px;width:100%;white-space:nowrap}
+#external td:nth-last-child(3){min-width:128px}
+#external td:nth-last-child(3) button{display:block;margin-bottom:5px;width:100%;white-space:nowrap}
 #external .external-basket-cell{text-align:center;min-width:80px}
 #external .external-basket-cell input{width:18px;height:18px;accent-color:#8fb8ff}
 #external .external-basket-amount-cell{min-width:116px}
@@ -67,7 +67,9 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 .external-explore-controls{margin-top:14px;padding-top:12px;border-top:1px solid #344f70}
 .external-explore-controls label{display:flex;align-items:center;gap:8px;font-size:.84rem;color:#c4d7f5}
 .external-explore-controls select{background:#081a30;color:#e8f1ff;border:1px solid #536a87;border-radius:7px;padding:7px}
-#external-explore-results table{min-width:1060px;width:100%}
+#external-explore-results table{min-width:1220px;width:100%}
+#external-explore-results td:nth-last-child(3){min-width:175px}
+#external-explore-results td:nth-last-child(3) p{font-size:.76rem;line-height:1.3;margin:3px 0}
 #external-explore-results td:first-child{min-width:195px}
 #external-explore-results td:first-child strong{display:block}
 #external-explore-results td:first-child p{margin:3px 0;font-size:.77rem}
@@ -85,6 +87,18 @@ padding:8px;font-variant-numeric:tabular-nums}
 #external-route-workbench-summary th:first-child{min-width:130px}
 #external-route-workbench-summary td{font-variant-numeric:tabular-nums}
 #external-route-workbench .item-id{display:block;font-size:.75rem;overflow-wrap:anywhere}
+#external-route-workbench-evidence-summary table,
+#external-route-workbench-evidence-changes table,
+#external-route-workbench-requirements table{width:100%;min-width:790px}
+#external-route-workbench-evidence-summary th:first-child{min-width:160px}
+#external-route-workbench-evidence-changes td{overflow-wrap:anywhere}
+#external-route-workbench-requirements td{vertical-align:top}
+#external-route-workbench-requirements td:first-child{min-width:175px}
+#external-route-workbench-requirements td p{margin:4px 0;font-size:.79rem}
+#external-route-workbench-evidence-actions{padding:10px 12px;border:1px solid #354b65;border-radius:7px;background:#102039}
+#external-route-workbench-evidence-actions ul{margin:8px 0 4px;padding-left:25px;max-height:250px;overflow:auto}
+#external-route-workbench-evidence-actions li{margin-bottom:4px;font-size:.81rem;overflow-wrap:anywhere}
+
 .route-workbench-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
 .route-workbench-choice{background:#0f1f34;border:1px solid #36516f;border-radius:9px;padding:9px}
 .route-workbench-choice label{display:grid;gap:7px}

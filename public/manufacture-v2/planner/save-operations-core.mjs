@@ -78,7 +78,8 @@ export function facilityReadiness(base, facilitiesIndex, recipe) {
   for(const instance of base?.facilities||[]){
     const field=map.get(instance.type);
     if(!field){unrecognized.add(instance.type);continue;}
-    const functions=Array.isArray(field.provideBaseFunc)?field.provideBaseFunc:[];
+    const functions=Array.isArray(field.provideBaseFunc)?field.provideBaseFunc:
+      typeof field.provideBaseFunc==='string'?[field.provideBaseFunc]:[];
     if(typeof instance.buildTime==='number'&&instance.buildTime>0){
       for(const fn of functions)pending.add(fn);
     }else if(instance.buildTime===undefined || instance.buildTime===0){

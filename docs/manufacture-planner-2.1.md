@@ -363,6 +363,51 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Conservatively linked research and facility evidence (2026-11-18)
+
+The single-goal producer-route workbench now includes a conservative
+**연구·시설 조건 증거 비교** section below its material accounting.
+Three independent plans (active, edited route, and route plus hypothetical
+stock) show expanded recipe counts, explicitly required facility functions,
+provided/pending/not-observed/unverified function evidence and research
+IDs observed or absent from a locally selected save's `discovered` list.
+
+The active recipe tree is traversed to identify exactly which explicitly
+expanded recipes need which `requiresBaseFunc` entries. Facility status
+is evaluated using the saved **single selected base**, completed
+facility instances and the v.o2 catalog's `provideBaseFunc` declarations.
+Under-construction facilities are pending. Unknown facility types,
+an absent facility roster, the optional all-base stock union and missing
+facility-index evidence remain **unverified**; the UI does not merge
+facility capabilities across bases. A feature that is not observed in
+an otherwise recognized completed-facility list is only **not observed**,
+never definitive proof that a recipe is impossible to execute.
+
+The research side shows direct recipe `requires` and
+`unlockedByResearch` references alongside the planner's transitive
+research closure. Each known ID is marked as observed/not observed in
+the selected save's `discovered` list, or unverified without a save.
+Unknown references and dependency cycles remain identified; the
+UI does not interpret unknown AND/OR, special events or engine unlocks.
+
+The workbench identifies introduced and eliminated recipe IDs,
+recipe-scoped facility functions, direct research references and
+transitive research IDs separately for route edits and subsequent
+virtual material acquisitions. Its final-plan table and bounded
+checklist enumerate concrete items to verify, and the workbench's
+local JSON export preserves the full evidence rather than only the
+first 100 displayed recipe rows or first 80 action rows.
+
+The bounded procurement explorer also attaches independent research
+and facility evidence to each successfully evaluated candidate,
+displays a compact summary per candidate and includes it in JSON
+exports. Hypothetical basket previews and saved A/B scenarios preserve
+this evidence when available. An A/B comparison displays evidence
+counts for each side but never labels either scenario manufacturing
+ready. Explicit `provideBaseFunc` declarations can be either a
+single string or an array, without treating a string as individual
+characters. Saved game files and original inventory remain untouched.
+
 ## Integrated candidate procurement and producer-route workbench (2026-11-18)
 
 Every successful bounded procurement candidate has a **작업대에서 경로 편집**

@@ -113,6 +113,27 @@ test('candidate sort order stays deterministic and preserves original array',()=
   assert.throws(()=>rankExternalCandidates(input,'cost-optimal'),/정렬/);
 });
 
+test('candidate evidence is attached to each independent scenario',()=>{
+  const before=baseline(), calls=[], examined=[];
+  const result=exploreExternalCandidates({
+    before,inventory:{},itemIds:new Set(['STR_A','STR_B','STR_C']),
+    selectedIds:new Set(['STR_A','STR_B']),
+    planWithInventory:mockPlanner(before,calls),
+    summarizeEvidence:after=>{
+      const ids=after.external.map(row=>row.id);
+      examined.push(ids);
+      return {schema:'xpiratez-v2-route-evidence/v1',
+        remainingItems:ids};
+    }
+  });
+  assert.equal(result.successes,3);
+  assert.equal(examined.length,3);
+  assert.equal(result.candidates.length,3);
+  assert(result.candidates.every(row=>
+    row.evidence?.schema==='xpiratez-v2-route-evidence/v1'));
+  assert.deepEqual(before.external,entries);
+});
+
 test('invalid quantities do not launch any calculator calls',()=>{
   const calls=[];
   assert.throws(()=>exploreExternalCandidates({

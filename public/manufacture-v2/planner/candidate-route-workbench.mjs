@@ -4,13 +4,15 @@
 // untouched; applying a producer route is a separate explicit UI action.
 import { prepareExternalBasket, compareExternalBasket } from './external-basket-core.mjs';
 import { prepareCandidateHandoff } from './external-candidate-handoff.mjs';
+import { summarizeRouteReadiness, compareRouteEvidence } from './candidate-route-evidence.mjs';
 
 const optionsFor = (planner, id, assumeImplicit) =>
   planner.listProducers(id, assumeImplicit).map(x=>x.recipeId);
 
 export function calculateRouteWorkbench({
   planner, candidate, currentPlan, inventory, choices, requestedQuantities,
-  selectedIds, batches, maxDepth, assumeImplicit=false, saveDiscoveredResearchIds=null
+  selectedIds, batches, maxDepth, assumeImplicit=false, saveDiscoveredResearchIds=null,
+  baseOperations=null, facilitiesIndex=null
 }) {
   if (!planner?.plan || !planner?.itemMap || !planner?.listProducers ||
       !currentPlan?.rootRecipeId || currentPlan.sourceVersion==='v.o1.1.1' ||
@@ -50,6 +52,13 @@ export function calculateRouteWorkbench({
     ...common,inventory:basket.inventory
   });
   const comparison=compareExternalBasket(before,after,basket);
+  const evidenceContext={
+    recipeMap:planner.recipeMap, researchMap:planner.researchMap,
+    baseOperations,facilitiesIndex
+  };
+  const sourceEvidence=summarizeRouteReadiness(currentPlan,evidenceContext);
+  const editedEvidence=summarizeRouteReadiness(before,evidenceContext);
+  const acquiredEvidence=summarizeRouteReadiness(after,evidenceContext);
   const summarize=plan=>({
     shortageKinds:plan.external.length,
     shortageUnits:plan.external.reduce((sum,row)=>sum+row.quantity,0),
@@ -67,9 +76,19 @@ export function calculateRouteWorkbench({
     editedRouteBeforeAcquisition:summarize(before),
     editedRouteAfterAcquisition:summarize(after),
     shortageChanges:comparison.changes.map(row=>({...row})),
+    evidence:{
+      original:sourceEvidence,
+      editedRoute:editedEvidence,
+      withAcquisition:acquiredEvidence
+    },
+    evidenceChanges:{
+      routeOnly:compareRouteEvidence(sourceEvidence,editedEvidence),
+      acquisitionOnly:compareRouteEvidence(editedEvidence,acquiredEvidence)
+    },
     scenarioReport:{
       ...comparison,
-      routeChoices:{...verifiedChoices}
+      routeChoices:{...verifiedChoices},
+      evidence:acquiredEvidence
     },
     stockDraft:basket.additions.map(row=>row.id+'='+row.target).join('\n'),
     caveat:'세 결과는 같은 제조 목표의 독립 계산입니다. 하위 제조 경로의 변경과 가상 재료 확보가 서로 다른 영향을 낼 수 있으며, 실제 게임 세이브·재고는 수정하지 않습니다. 시설·연구·시장·이벤트 실행 조건은 별도입니다.'

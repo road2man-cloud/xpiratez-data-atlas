@@ -7,6 +7,10 @@ const rootRecipeId='STR_FACTORY';
 const itemMap=new Map([['STR_A',{}],['STR_ORE',{}]]);
 const planner={
   itemMap,
+  recipeMap:new Map([['STR_FACTORY',{id:'STR_FACTORY',koName:'공장',fields:{
+    requiresBaseFunc:['WORKS'],requires:['STR_R_A']
+  }}]]),
+  researchMap:new Map([['STR_R_A',{}]]),
   listProducers(id){
     return id==='STR_A'?[{recipeId:'STR_A_RECIPE',name:'A 제조',
       yieldCount:1,costPerBatch:20,timePerBatch:4}]:[];
@@ -24,7 +28,8 @@ const planner={
       rootRecipeId,external,
       totals:{declaredCost:crafted?100:40,declaredTime:crafted?22:8},
       flags:crafted?['시설 미확인']:[],
-      tree:{inputs:[]}
+      tree:{kind:'recipe',id:'STR_FACTORY',inputs:[]},
+      research:{ids:[{id:'STR_R_A',name:'연구 A'}],unresolved:[]}
     };
   }
 };
@@ -47,6 +52,9 @@ test('workbench independently compares original, route-only and route+stock stat
   });
   const {report,routeBaseline,acquisitionPlan}=evaluated;
   assert.equal(report.schema,'xpiratez-v2-route-workbench/v1');
+  assert.equal(report.evidence.original.recipeIds[0],'STR_FACTORY');
+  assert.equal(report.evidence.original.facilityCounts.unverified,1);
+  assert.equal(report.evidence.original.researchCounts.unverified,1);
   assert.equal(report.sourceVersion,'v.o2');
   assert.equal(report.activePlan.shortageUnits,9);
   assert.equal(report.editedRouteBeforeAcquisition.shortageUnits,18);

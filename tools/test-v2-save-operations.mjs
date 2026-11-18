@@ -62,6 +62,18 @@ test('only completed-instance explicit functions meet factory requirements',()=>
   assert.deepEqual(result.missing,['ALKO']);
   assert(result.pending.includes('ALKO'));
 });
+test('scalar explicit facility function is treated as one ID, not separate characters',()=>{
+  const base={facilitiesPresent:true,facilities:[{type:'STR_SINGLE_FUNC'}]};
+  const index={facilities:[
+    {id:'STR_SINGLE_FUNC',fields:{provideBaseFunc:'WORKS'}}
+  ]};
+  const info=facilityReadiness(base,index,{
+    fields:{requiresBaseFunc:'WORKS'}
+  });
+  assert.deepEqual(info.provided,['WORKS']);
+  assert.deepEqual(info.missing,[]);
+});
+
 test('saved production orders are not fabricated as completion times',()=>{
   const b=parseSavedBaseOperations(fixture)[0];
   const result=productionOrders(b,{entries:[{id:'STR_3RL_HE_XXX',koName:'고폭 로켓',fields:{}}]});
