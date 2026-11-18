@@ -154,7 +154,73 @@ function renderChoicePanel(plan) {
     }
   }
 }
+function prefillStockFromExternal(row) {
+  if(!state.planner.itemMap.has(row.id))
+    throw new Error('2.1 재고 목록에 없는 아이템은 입력할 수 없습니다: '+row.id);
+  const current=state.inventory[row.id] || 0;
+  const intended=current+row.quantity;
+  if(!Number.isSafeInteger(intended)||intended>10000000)
+    throw new Error('입력 재고가 최대 10,000,000개를 초과합니다: '+row.id);
+  $('stock-search').value=row.id;
+  searchInventoryItems();
+  $('stock-select').value=row.id;
+  $('stock-qty').value=String(intended);
+  $('stock-message').textContent=row.name+' · 현재 입력 '+nf(current)+
+    '개 + 부족량 '+nf(row.quantity)+'개 = '+nf(intended)+
+    '개를 입력란에 준비했습니다. 적용 버튼을 누르기 전에는 계산·게임 세이브가 바뀌지 않습니다.';
+  $('stock-qty').focus();
+  $('stock-qty').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function previewExternalAcquisition(row) {
+  const current=state.inventory[row.id] || 0;
+  const intended=current+row.quantity;
+  if(!state.planner.itemMap.has(row.id)||!Number.isSafeInteger(intended)||
+    intended>10000000)throw new Error('이 재료는 안전하게 가상 확보할 수 없습니다: '+row.id);
+  const before=state.plan;
+  const after=state.planner.plan(state.currentId,{
+    batches:Number($('batches').value),maxDepth:Number($('max-depth').value),
+    assumeImplicit:$('assume-implicit').checked,choices:state.choices,
+    inventory:{...state.inventory,[row.id]:intended},
+    ...(state.saveDiscovered ? {saveDiscoveredResearchIds:state.saveDiscovered}: {})
+  });
+  const panel=$('external-preview');
+  $('external-preview-status').textContent=row.name+' ('+row.id+') '+nf(row.quantity)+
+    '개를 추가 확보했다고 가정한 결과입니다. 원래 입력과 세이브는 수정하지 않았습니다.';
+  const parent=$('external-preview-summary');parent.replaceChildren();
+  const total=items=>items.reduce((sum,item)=>sum+item.quantity,0);
+  metric(parent,'외부 조달 종류',nf(before.external.length)+'종 → '+nf(after.external.length)+'종');
+  metric(parent,'외부 조달 수량',nf(total(before.external))+'개 → '+nf(total(after.external))+'개');
+  metric(parent,'명시 제조비',nf(before.totals.declaredCost)+' → '+nf(after.totals.declaredCost));
+  metric(parent,'명시 작업량',nf(before.totals.declaredTime)+' → '+nf(after.totals.declaredTime));
+  const diffs=$('external-preview-diff');diffs.replaceChildren();
+  const left=new Map(before.external.map(entry=>[entry.id,entry]));
+  const right=new Map(after.external.map(entry=>[entry.id,entry]));
+  const changed=[...new Set([...left.keys(),...right.keys()])].map(id=>({
+    id,name:left.get(id)?.name||right.get(id)?.name||id,
+    previous:left.get(id)?.quantity||0,current:right.get(id)?.quantity||0
+  })).filter(entry=>entry.previous!==entry.current)
+    .sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  if(!changed.length)make(diffs,'p','현재 계획에서 표시 가능한 외부 조달 변화가 없습니다.','note');
+  else {
+    const table=make(diffs,'table'),head=make(make(table,'thead'),'tr');
+    for(const heading of ['재료','기존 부족','가정 후 부족','변화'])make(head,'th',heading);
+    const body=make(table,'tbody');
+    for(const entry of changed){
+      const tr=make(body,'tr'),nameCell=make(tr,'td');
+      anchor(nameCell,'../../items-v2/?id='+slug(entry.id),entry.name);
+      make(nameCell,'code',entry.id,'item-id');
+      for(const value of [nf(entry.previous),nf(entry.current),
+        nf(entry.current-entry.previous)])make(tr,'td',value);
+    }
+  }
+  panel.hidden=false;
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function renderExternal(plan) {
+  $('external-preview').hidden=true;
+  $('external-preview-summary').replaceChildren();
+  $('external-preview-diff').replaceChildren();
+  $('external-csv').disabled=!plan.external.length;
   const parent = $('external');parent.replaceChildren();
   if (!plan.external.length){
     make(parent,'p','현재 확장 범위의 모든 재료가 하위 제조식으로 연결됐습니다. 재료 보유 여부와 실제 게임 조건은 별도입니다.','note');
@@ -162,7 +228,7 @@ function renderExternal(plan) {
   }
   const wrap=make(parent,'div',null,'table-wrap'),table=make(wrap,'table');
   const head=make(table,'thead'),hr=make(head,'tr');
-  for(const title of ['재료','수량','원본 구매 단가','참고 구매가','미확장 이유'])make(hr,'th',title);
+  for(const title of ['재료','수량','원본 구매 단가','참고 구매가','미확장 이유','다음 작업'])make(hr,'th',title);
   const body=make(table,'tbody');
   for(const row of plan.external) {
     const tr=make(body,'tr');
@@ -173,6 +239,24 @@ function renderExternal(plan) {
     make(tr,'td',nf(row.listedUnitBuy));
     make(tr,'td',nf(row.listedBuySubtotal));
     make(tr,'td',row.reasons.join(', '));
+    const actions=make(tr,'td');
+    const safe=state.planner.itemMap.has(row.id)&&
+      Number.isSafeInteger((state.inventory[row.id]||0)+row.quantity)&&
+      (state.inventory[row.id]||0)+row.quantity<=10000000;
+    const simulate=make(actions,'button','확보 시 변화','secondary');
+    simulate.type='button';simulate.disabled=!safe;
+    simulate.setAttribute('aria-label',row.name+' 확보 시 변화');
+    simulate.addEventListener('click',()=>{
+      try{previewExternalAcquisition(row);}
+      catch(error){$('status').textContent='확보 가정 계산 실패: '+error.message;}
+    });
+    const enter=make(actions,'button','재고 입력','secondary');
+    enter.type='button';enter.disabled=!safe;
+    enter.setAttribute('aria-label',row.name+' 부족분 재고 입력');
+    enter.addEventListener('click',()=>{
+      try{prefillStockFromExternal(row);}
+      catch(error){$('status').textContent='재고 입력 준비 실패: '+error.message;}
+    });
   }
 }
 function renderResearch(plan){
@@ -451,6 +535,12 @@ function renderPlan() {
     renderWarnings(plan);
     $('status').textContent='제조 경로 계산 완료 · 대상 '+plan.rootRecipeId;
   }catch(e){
+    // Never leave a previous plan downloadable or actionable after invalid input.
+    state.plan=null;
+    $('output').hidden=true;
+    $('download-plan').disabled=true;
+    $('external-csv').disabled=true;
+    $('external-preview').hidden=true;
     $('status').textContent='제조 경로 계산 실패: '+e.message;
   }
 }
@@ -484,12 +574,31 @@ $('stock-bulk-apply').addEventListener('click',()=>{
   }catch(e){$('stock-message').textContent=e.message;}
 });
 $('comparison-close').addEventListener('click',()=>{$('comparison-section').hidden=true;});
+$('external-preview-close').addEventListener('click',()=>{$('external-preview').hidden=true;});
 $('recipe-search').addEventListener('input',searchChoices);
 $('recipe-select').addEventListener('change',event=>chooseRecipe(event.target.value));
 $('recalculate').addEventListener('click',renderPlan);
 $('batches').addEventListener('change',renderPlan);
 $('max-depth').addEventListener('change',renderPlan);
 $('assume-implicit').addEventListener('change',()=>{state.choices={};renderPlan();});
+$('external-csv').addEventListener('click',()=>{
+  if(!state.plan?.external?.length)return;
+  // Spreadsheet-safe CSV: quote all fields and neutralize formula-leading values.
+  const cell=value=>{
+    const raw=String(value??'');
+    const safe=/^[\s]*[=+@-]/.test(raw)?"'"+raw:raw;
+    return '"'+safe.replace(/"/g,'""')+'"';
+  };
+  const rows=[['아이템 ID','이름','필요 수량','원본 구매 단가','참고 구매가','미확장 이유'],
+    ...state.plan.external.map(x=>[x.id,x.name,x.quantity,x.listedUnitBuy,
+      x.listedBuySubtotal,x.reasons.join('; ')])];
+  const csv='\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n')+'\r\n';
+  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a=document.createElement('a');
+  a.href=url;a.download='xpiratez-v2-external-'+state.plan.rootRecipeId+'.csv';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+});
 $('download-plan').addEventListener('click',()=>{
   if(!state.plan)return;
   const text=JSON.stringify(state.plan,null,2)+'\n';

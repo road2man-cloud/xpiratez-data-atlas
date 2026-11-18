@@ -184,9 +184,17 @@
 <div id="consolidated" class="table-wrap"></div>
 </section>
 <section class="planner-card">
-<h3>외부 조달·미해결 재료</h3>
-<p class="note">제조식으로 확장하지 않은 재료입니다. 구매가가 있어도 실제 판매 중이라는 의미는 아닙니다.</p>
+<div class="section-title"><h3>외부 조달·미해결 재료</h3><button id="external-csv" type="button" class="secondary" disabled>조달 목록 CSV 저장</button></div>
+<p class="note">제조식으로 확장하지 않은 재료입니다. 구매가가 있어도 실제 판매 중이라는 의미는 아닙니다. CSV에는 현재 계산의 전체 외부 조달 목록이 포함됩니다.</p>
+<p class="note">부족 재료의 <strong>확보 가정</strong>으로 새 제조 계획을 미리 비교하거나, <strong>재고 입력</strong>으로 수량을 옮길 수 있습니다. 가상 계산은 원래 입력·세이브를 변경하지 않습니다.</p>
 <div id="external"></div>
+<div id="external-preview" class="procurement-preview" hidden aria-live="polite">
+<div class="section-title"><h4>단일 재료 확보 가정 결과</h4><button id="external-preview-close" class="secondary" type="button">닫기</button></div>
+<p id="external-preview-status" class="note"></p>
+<div id="external-preview-summary" class="summary-stats"></div>
+<div id="external-preview-diff" class="table-wrap"></div>
+<p class="note">시뮬레이션은 현재 제조식·경로·재고 입력에만 적용됩니다. 게임 내 확보, 시장 구매 가능 여부, 시설·연구 충족을 보장하지 않습니다.</p>
+</div>
 </section>
 <section class="planner-card">
 <h3>관련 연구 조건</h3>

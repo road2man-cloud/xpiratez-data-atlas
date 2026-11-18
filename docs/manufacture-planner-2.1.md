@@ -351,3 +351,27 @@ and the number of affected orders. It is not a cost-optimal build order
 or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
+
+## Single-goal external procurement actions (2026-11-18)
+
+The **외부 조달·미해결 재료** panel has two actions per eligible item.
+**확보 시 변화** simulates adding only that item's currently unresolved
+quantity to a fresh copy of the input inventory. It recalculates the
+**same recipe, batches, depth, producer choices and discovered research**
+and reports external item counts/units, declared manufacturing cost/work,
+and per-item shortage changes. This preview neither edits the save nor
+writes inventory back into the active planner, and resets whenever the
+active plan is recalculated.
+
+**재고 입력** fills the existing stock editor with the currently entered
+quantity plus the unresolved quantity. It does **not** apply or assert
+acquisition: the user must explicitly select **재고 추가/수정** to update
+the planner's manual input. The original save always remains unchanged.
+Rows outside the verified 2.1 item index or above the 10,000,000-item
+input limit cannot use the actions.
+
+The standalone **조달 목록 CSV 저장** button exports all current external
+material rows, independent of the currently previewed hypothetical
+scenario. CSV fields are quoted, spreadsheet formula prefixes escaped,
+and UTF-8 BOM emitted for Korean spreadsheet compatibility. A failed
+plan calculation disables downloads to avoid exporting stale results.

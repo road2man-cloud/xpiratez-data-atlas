@@ -54,6 +54,14 @@ gap:5px;align-items:center;padding:6px;background:#12283f;border-radius:7px}
 #comparison-data table{min-width:900px}
 #comparison-data td:first-child{min-width:190px}
 #comparison-data .note{font-size:.77rem}
+#external table{min-width:900px}
+#external td:last-child{min-width:128px}
+#external td:last-child button{display:block;margin-bottom:5px;width:100%;white-space:nowrap}
+.procurement-preview{margin-top:14px;padding:14px;border:1px solid #456789;background:#12253a;border-radius:10px}
+.procurement-preview[hidden]{display:none}
+.procurement-preview h4{margin:0}
+.procurement-preview table{min-width:570px}
+.procurement-preview code.item-id{display:block;font-size:.78rem;overflow-wrap:anywhere}
 #consolidated table{min-width:850px}
 #consolidated code{display:block;margin-top:3px}
 .producer-row{grid-template-columns:minmax(145px,1fr) minmax(180px,2.5fr) auto}
