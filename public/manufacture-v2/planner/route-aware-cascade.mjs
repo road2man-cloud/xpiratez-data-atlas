@@ -4,6 +4,7 @@
 // Missing materials are not proof of market availability or manufacturing readiness.
 import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch.mjs';
 import { compareExternalBasket } from './external-basket-core.mjs';
+import { buildRouteAcquisitionLedger } from './route-acquisition-ledger.mjs';
 import { buildManufacturingReadinessChecklist,
   compareManufacturingChecklists } from './manufacturing-readiness-checklist.mjs';
 
@@ -164,5 +165,6 @@ export function expandRouteAwareReadinessBatch({
     stockDraft:allAcquired.map(x=>x.id+'='+x.target).join('\n'),
     caveat:'모든 재료는 가상 확보 가정이며 실제 구매·제조 가능성이나 시설·연구 조건 충족을 보장하지 않습니다. 각 반복 단계는 같은 원본 재고 및 편집 경로를 사용하며 게임 세이브를 변경하지 않습니다.'
   };
+  report.acquisitionLedger=buildRouteAcquisitionLedger(report,base);
   return {report,after,initial,finalChecklist};
 }

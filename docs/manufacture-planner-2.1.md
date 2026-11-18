@@ -363,6 +363,47 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Inventory-aware staged procurement ledger (2026-11-18)
+
+The route-aware single-recipe cascading scenario now includes an
+**단계별 확보 계획 · 현재 재고 대조** panel, separate from the
+existing shortage trace. It reconstructs the initial **user-entered**
+stock, the user's manually chosen first-batch hypothetical acquisitions,
+each subsequent bounded cascade pass, accumulated additional acquisition
+quantities and the hypothetical final on-hand inventory for every item.
+Rows also show unresolved remaining shortages, including uncatalogued
+materials that could not be virtually acquired.
+
+Each material's hypothetical final on-hand target is explicitly
+`initial manually entered stock + the sum of stage additions`.
+First-pass quantities are not repeated in later rounds, and additions
+for the same item in more than one stage are accumulated only once
+per round. The stage reconstruction checks unique IDs, integers,
+per-item stock limits and agreement with the final cascade report
+before displaying or exporting a ledger.
+
+The new table offers item ID/Korean-name search and sort orders for
+largest hypothetical acquisition, greatest remaining shortage or
+item name. The on-screen view is limited to the first **200 filtered**
+items, but **단계별 조달 계획 CSV 저장** exports every material
+with one column per calculated pass. The CSV includes UTF-8 BOM for
+Korean spreadsheet apps and preserves zeroes and unknown reference
+prices without manufacturing new values. The existing full JSON
+export also embeds the structured acquisition ledger as
+`acquisitionLedger`, including the complete stage-by-stage sums.
+
+Ruleset `costBuy` values are only rough reference unit prices.
+The ledger shows how many item kinds have known prices, a subtotal
+for those kinds, and an overall reference subtotal only when every
+hypothetically acquired material has a known explicit reference
+price. It does **not** imply those items are sold, purchasable,
+affordable or that the workbench's producer choices can execute in
+the game. Existing stock shown in the table comes from input or an
+imported single selected base, and is not treated as a newly
+acquired quantity. When the route or selected acquisition changes,
+the old ledger and download button are cleared with the invalidated
+scenario; the original game save remains unmodified.
+
 ## Edited-route cascading material acquisition (2026-11-18)
 
 The route-aware single-goal batch editor now includes

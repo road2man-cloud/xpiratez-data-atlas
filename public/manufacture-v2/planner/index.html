@@ -334,6 +334,24 @@
 <p id="external-route-batch-trace-status" class="note" role="status"></p>
 <div id="external-route-batch-trace-table" class="table-wrap"></div>
 </div>
+<section id="external-route-batch-ledger" class="route-acquisition-ledger" hidden aria-label="반복 조달 단계별 재고 대비 확보 계획">
+<div class="section-title"><h5>단계별 확보 계획 · 현재 재고 대조</h5>
+<button id="external-route-batch-ledger-csv" class="secondary" type="button" disabled>단계별 조달 계획 CSV 저장</button></div>
+<p class="note">현재 입력 재고, 최초 확보 가정, 각 후속 단계 추가분을 구분합니다. 계산상 필요 추가 수량은 실제 구매 가능 수량이나 실제 보유 재고가 아닙니다.</p>
+<div id="external-route-batch-ledger-summary" class="summary-stats"></div>
+<div class="control-buttons">
+<label for="external-route-batch-ledger-search">재료 검색
+<input id="external-route-batch-ledger-search" type="search" placeholder="아이템 ID 또는 이름"></label>
+<label for="external-route-batch-ledger-sort">정렬
+<select id="external-route-batch-ledger-sort">
+<option value="quantity">추가 확보 가정 수량 큰 순</option>
+<option value="remaining">남은 부족량 큰 순</option>
+<option value="name">재료 이름순</option>
+</select></label>
+</div>
+<p id="external-route-batch-ledger-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-batch-ledger-table" class="table-wrap"></div>
+</section>
 <p class="note">반복 탐색은 새로 필요한 재료를 모두 가상 확보한다고 가정합니다. 구매 가능성·연구·시설·이벤트 조건은 확인하지 않으며, 원본 세이브를 수정하지 않습니다.</p>
 </div>
 </section>

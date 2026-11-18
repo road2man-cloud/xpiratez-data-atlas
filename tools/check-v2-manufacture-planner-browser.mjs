@@ -338,6 +338,41 @@ try {
     const expandedFile=await expandedDownload;
     const expandedPayload=JSON.parse(fs.readFileSync(await expandedFile.path(),'utf8'));
     assert.equal(expandedPayload.schema,'xpiratez-v2-route-aware-cascade/v1');
+    assert.equal(expandedPayload.acquisitionLedger.schema,
+      'xpiratez-v2-route-acquisition-ledger/v1');
+    assert(await page.locator('#external-route-batch-ledger').isVisible());
+    assert(await page.locator('#external-route-batch-ledger-csv').isEnabled());
+    assert((await page.locator('#external-route-batch-ledger-summary').innerText())
+      .includes('가상 추가 확보 총계'));
+    assert((await page.locator('#external-route-batch-ledger-table').innerText())
+      .includes('현재 입력 재고'));
+    const acquisitionLedger=expandedPayload.acquisitionLedger;
+    assert.equal(acquisitionLedger.summary.totalAcquiredUnits,
+      expandedPayload.acquiredHypothetically.reduce((s,x)=>s+x.quantity,0));
+    assert(acquisitionLedger.materials.every(row=>
+      row.startingInventory+row.totalAcquisition===row.hypotheticalStockTarget));
+    const ledgerRows=page.locator('#external-route-batch-ledger-table tbody tr');
+    const ledgerCount=await ledgerRows.count();
+    assert(ledgerCount>=1);
+    const firstLedgerMaterial=acquisitionLedger.materials[0];
+    await page.locator('#external-route-batch-ledger-search').fill(firstLedgerMaterial.id);
+    assert.equal(await ledgerRows.count(),1);
+    assert((await page.locator('#external-route-batch-ledger-table').innerText())
+      .includes(firstLedgerMaterial.id));
+    await page.locator('#external-route-batch-ledger-sort').selectOption('name');
+    assert.equal(await ledgerRows.count(),1);
+    await page.locator('#external-route-batch-ledger-search').fill('');
+    assert.equal(await ledgerRows.count(),ledgerCount);
+    const ledgerDownload=page.waitForEvent('download');
+    await page.locator('#external-route-batch-ledger-csv').click();
+    const ledgerFile=await ledgerDownload;
+    assert.equal(ledgerFile.suggestedFilename(),
+      'xpiratez-v2-acquisition-ledger-STR_3RL_HE_XXX.csv');
+    const ledgerCsv=fs.readFileSync(await ledgerFile.path(),'utf8');
+    assert(ledgerCsv.startsWith('\uFEFF"아이템 ID","한글 이름"'));
+    assert(ledgerCsv.includes('"최초 선택 가정"'));
+    assert(ledgerCsv.includes('"확보 후 가상 재고"'));
+    assert(ledgerCsv.includes(firstLedgerMaterial.id));
     assert(Array.isArray(expandedPayload.history));
     assert(expandedPayload.history.length<=4);
     assert(expandedPayload.acquiredHypothetically.every(x=>
@@ -351,6 +386,8 @@ try {
     await page.locator('#stock-bulk-text').fill('');
   }
   await page.locator('#external-route-batch-clear').click();
+  assert(await page.locator('#external-route-batch-ledger').isHidden());
+  assert(await page.locator('#external-route-batch-ledger-csv').isDisabled());
   assert(await page.locator('#external-route-batch-preview').isDisabled());
   assert(await page.locator('#external-route-batch-json').isDisabled());
   assert(await page.locator('#external-route-batch-results').isHidden());

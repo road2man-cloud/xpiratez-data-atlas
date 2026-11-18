@@ -11,6 +11,7 @@ import { buildManufacturingReadinessChecklist } from './manufacturing-readiness-
 import { prepareReadinessBatch, calculateReadinessBatch } from './readiness-acquisition-batch.mjs';
 import { calculateRouteAwareReadinessBatch } from './route-aware-readiness-batch.mjs';
 import { expandRouteAwareReadinessBatch } from './route-aware-cascade.mjs';
+import { routeAcquisitionLedgerCsvRows } from './route-acquisition-ledger.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1060,6 +1061,71 @@ function renderWorkbenchEvidence() {
       make(actions,'p','나머지 '+nf(list.length-80)+'건은 JSON에 포함됩니다.','note');
   }
 }
+function clearRouteAcquisitionLedger(){
+  $('external-route-batch-ledger').hidden=true;
+  $('external-route-batch-ledger-search').value='';
+  $('external-route-batch-ledger-sort').value='quantity';
+  $('external-route-batch-ledger-csv').disabled=true;
+  $('external-route-batch-ledger-table').replaceChildren();
+  $('external-route-batch-ledger-summary').replaceChildren();
+  $('external-route-batch-ledger-status').textContent='';
+}
+function renderRouteAcquisitionLedger(){
+  const ledger=externalRouteWorkbench?.routeBatch?.expanded?.report?.acquisitionLedger;
+  if(!ledger){clearRouteAcquisitionLedger();return;}
+  const container=$('external-route-batch-ledger-summary');
+  container.replaceChildren();
+  const summary=ledger.summary;
+  metric(container,'가상 추가 확보 총계',nf(summary.materialKinds)+'종 · '+
+    nf(summary.totalAcquiredUnits)+'개');
+  metric(container,'최초 선택 확보 가정',nf(summary.initialUnits)+'개');
+  metric(container,'후속 단계 추가 가정',nf(summary.additionalUnits)+'개');
+  metric(container,'반복 후 남은 부족',nf(summary.remainingShortageKinds)+'종 · '+
+    nf(summary.remainingShortageUnits)+'개');
+  metric(container,'규칙상 단가 확인',nf(summary.pricedKinds)+'종 / '+
+    nf(summary.materialKinds)+'종');
+  metric(container,'명시 구매 참고가 합계',summary.fullReferenceSubtotal!==null?
+    nf(summary.fullReferenceSubtotal):nf(summary.knownReferenceSubtotal)+
+      ' (단가 없는 '+nf(summary.unpricedKinds)+'종 제외)');
+  const query=$('external-route-batch-ledger-search').value.trim().toLocaleLowerCase('ko-KR');
+  const sort=$('external-route-batch-ledger-sort').value;
+  const list=ledger.materials.filter(x=>!query||
+    [x.id,x.name].some(s=>String(s||'').toLocaleLowerCase('ko-KR').includes(query)));
+  list.sort((a,b)=>{
+    if(sort==='name')return a.name.localeCompare(b.name,'ko')||a.id.localeCompare(b.id,'en');
+    if(sort==='remaining')return b.remainingShortage-a.remainingShortage||
+      b.totalAcquisition-a.totalAcquisition||a.id.localeCompare(b.id,'en');
+    return b.totalAcquisition-a.totalAcquisition||
+      b.remainingShortage-a.remainingShortage||a.id.localeCompare(b.id,'en');
+  });
+  const content=$('external-route-batch-ledger-table');content.replaceChildren();
+  const table=make(content,'table');
+  const header=make(make(table,'thead'),'tr');
+  for(const title of [
+    '재료','현재 입력 재고','최초 선택',
+    ...ledger.stages.slice(1).map(x=>x.title),
+    '후속 합계','총 추가 확보','확보 후 가상 재고','종료 시 남은 부족',
+    '규칙 참고 단가','확보분 참고가'
+  ])make(header,'th',title);
+  const body=make(table,'tbody');
+  for(const item of list.slice(0,200)){
+    const tr=make(body,'tr'),name=make(tr,'td');
+    make(name,'strong',item.name);
+    make(name,'code',item.id,'item-id');
+    for(const value of [
+      item.startingInventory,item.initialAcquisition,...item.rounds,
+      item.totalAcquisition-item.initialAcquisition,
+      item.totalAcquisition,item.hypotheticalStockTarget,item.remainingShortage,
+      item.referenceUnitBuy,item.referenceSubtotal
+    ])make(tr,'td',nf(value));
+  }
+  $('external-route-batch-ledger-status').textContent=
+    '전체 '+nf(ledger.materials.length)+'종 중 '+nf(list.length)+
+    '종 검색됨 · 화면에는 최대 200종 표시 · CSV에는 전체 단계별 수량을 저장합니다.'+
+    ' 현재 재고는 사용자가 입력한 값이며 실제 게임 재고를 변경하지 않았습니다.';
+  $('external-route-batch-ledger').hidden=false;
+  $('external-route-batch-ledger-csv').disabled=false;
+}
 const ROUTE_BATCH_VISIBLE_LIMIT=200;
 function resetRouteBatch() {
   const wb=externalRouteWorkbench;
@@ -1068,6 +1134,7 @@ function resetRouteBatch() {
   $('external-route-batch-results').hidden=true;
   $('external-route-batch-trace').hidden=true;
   $('external-route-batch-trace-table').replaceChildren();
+  clearRouteAcquisitionLedger();
   $('external-route-batch-summary').replaceChildren();
   $('external-route-batch-changes').replaceChildren();
   for(const id of ['all','clear','preview','expand','draft','a','b','json','csv'])
@@ -1090,6 +1157,7 @@ function routeBatchInvalidate() {
   wb.routeBatch.result=null;
   wb.routeBatch.expanded=null;
   $('external-route-batch-results').hidden=true;
+  clearRouteAcquisitionLedger();
   $('external-route-batch-trace').hidden=true;
   $('external-route-batch-trace-table').replaceChildren();
   $('external-route-batch-expand').disabled=true;
@@ -1234,6 +1302,7 @@ function runRouteBatch() {
   rb.result=null;
   rb.expanded=null;
   $('external-route-batch-results').hidden=true;
+  clearRouteAcquisitionLedger();
   $('external-route-batch-trace').hidden=true;
   $('external-route-batch-trace-table').replaceChildren();
   $('external-route-batch-expand').disabled=true;
@@ -1335,12 +1404,14 @@ function expandRouteBatch(){
     });
     renderRouteBatchResult();
     renderRouteBatchTrace();
+    renderRouteAcquisitionLedger();
     $('external-route-batch-status').textContent=
       '후속 부족 재료 반복 가정을 반영했습니다. 이후 재고 초안·CSV·JSON·A/B 버튼은 누적 가상 확보량을 사용합니다. 게임 재고는 변경하지 않았습니다.';
     $('external-route-batch-trace').scrollIntoView({behavior:'smooth',block:'nearest'});
   }catch(error){
     // Keep the successful one-pass scenario available if later rounds fail.
     rb.expanded=null;
+    clearRouteAcquisitionLedger();
     renderRouteBatchResult();
     $('external-route-batch-status').textContent=
       '반복 부족 계산 중단: '+error.message+' · 기존 1차 계산 결과는 유지됩니다.';
@@ -2184,6 +2255,14 @@ $('external-route-batch-clear').addEventListener('click',()=>{
 });
 $('external-route-batch-preview').addEventListener('click',runRouteBatch);
 $('external-route-batch-expand').addEventListener('click',expandRouteBatch);
+$('external-route-batch-ledger-search').addEventListener('input',renderRouteAcquisitionLedger);
+$('external-route-batch-ledger-sort').addEventListener('change',renderRouteAcquisitionLedger);
+$('external-route-batch-ledger-csv').addEventListener('click',()=>{
+  const ledger=externalRouteWorkbench?.routeBatch?.expanded?.report?.acquisitionLedger;
+  if(!ledger)return;
+  downloadCsv(routeAcquisitionLedgerCsvRows(ledger),
+    'xpiratez-v2-acquisition-ledger-'+ledger.rootRecipeId+'.csv');
+});
 $('external-route-batch-draft').addEventListener('click',()=>{
   try{draftRouteBatchStock();}
   catch(error){$('external-route-batch-status').textContent=
@@ -2209,11 +2288,13 @@ $('external-route-batch-json').addEventListener('click',()=>{
 $('external-route-batch-csv').addEventListener('click',()=>{
   const report=effectiveRouteBatchReport();
   if(!report)return;
+  const startingShortage=new Map(report.editedRouteChecklist.tasks
+    .filter(x=>x.category==='material').map(x=>[x.requirementId,x.quantity]));
   downloadCsv([
-    ['아이템 ID','이름','경로 기준 부족','입력 재고','가상 확보 수량',
+    ['아이템 ID','이름','경로 변경 직후 부족','입력 재고','가상 확보 수량',
       '확보 후 가상 재고','원본 참고 단가','참고 확보가'],
     ...report.acquiredHypothetically.map(x=>[
-      x.id,x.name,x.shortage,x.previous,x.quantity,x.target,
+      x.id,x.name,startingShortage.get(x.id)??0,x.previous,x.quantity,x.target,
       x.listedUnitBuy,x.listedBuyReference
     ])
   ],'xpiratez-v2-route-aware-batch-'+report.rootRecipeId+'.csv');

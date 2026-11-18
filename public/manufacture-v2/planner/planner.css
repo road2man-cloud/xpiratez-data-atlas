@@ -120,6 +120,17 @@ border-radius:7px;font-variant-numeric:tabular-nums}
 #external-route-batch-trace td:nth-child(3){min-width:180px}
 #external-route-batch-trace td p{font-size:.76rem;margin:4px 0;overflow-wrap:anywhere}
 #external-route-batch-trace-status{margin:4px 0 9px}
+#external-route-batch-ledger{margin-top:17px;padding-top:15px;border-top:1px solid #3a5e82}
+#external-route-batch-ledger .section-title{align-items:center;gap:9px;flex-wrap:wrap}
+#external-route-batch-ledger .control-buttons{display:flex;gap:12px;flex-wrap:wrap}
+#external-route-batch-ledger .control-buttons label{display:flex;gap:7px;align-items:center;font-size:.83rem}
+#external-route-batch-ledger input,#external-route-batch-ledger select{padding:7px;border:1px solid #507091;background:#0a1e31;color:#ecf4ff;border-radius:6px}
+#external-route-batch-ledger-table table{min-width:1250px;width:100%}
+#external-route-batch-ledger-table td{font-variant-numeric:tabular-nums;white-space:nowrap}
+#external-route-batch-ledger-table td:first-child{min-width:180px;white-space:normal}
+#external-route-batch-ledger-table .item-id{display:block;font-size:.75rem;overflow-wrap:anywhere}
+#external-route-batch-ledger-status{margin:8px 0}
+
 
 #external-route-batch-results td{font-variant-numeric:tabular-nums}
 
