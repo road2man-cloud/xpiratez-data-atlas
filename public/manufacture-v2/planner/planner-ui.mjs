@@ -20,6 +20,7 @@ import { appendRouteReviewHistory,importRouteReviewHistory,routeReviewHistoryCsv
 import { summarizeRouteHistoryImpact,routeHistoryImpactCsvRows } from './route-history-impact.mjs';
 import { buildRouteHistoryPriority,routeHistoryPriorityCsvRows,routeHistoryPriorityDetailsCsvRows } from './route-history-priority.mjs';
 import { buildSharedReviewIndex,projectSharedReviewQueue,sharedReviewQueueCsvRows } from './route-shared-review-queue.mjs';
+import { buildSharedReviewDispatch,sharedReviewDispatchCsvRows } from './route-shared-review-dispatch.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1525,8 +1526,73 @@ function sharedReviewQueueReport(rb,board){
     reviewed:rb.actionReviewed,notes:rb.actionNotes
   });
 }
+function sharedReviewDispatchRows(report){
+  const dispatch=buildSharedReviewDispatch(report);
+  const filter=$('external-route-shared-dispatch-filter').value;
+  return {dispatch,rows:dispatch.tasks.filter(task=>
+    filter==='all'?!task.reviewed:task.groupId===filter)};
+}
+function renderSharedReviewDispatch(report){
+  const {dispatch,rows}=sharedReviewDispatchRows(report);
+  const stats=$('external-route-shared-dispatch-summary');
+  stats.replaceChildren();
+  metric(stats,'현재 미검토',nf(dispatch.summary.unchecked)+'건');
+  metric(stats,'원장상 가상 부족 합계',nf(dispatch.summary.shortageKinds)+
+    '종 · '+nf(dispatch.summary.shortageUnits)+'개');
+  metric(stats,'그중 미검토 부족 항목',nf(dispatch.summary.uncheckedShortageKinds)+
+    '종 · '+nf(dispatch.summary.uncheckedShortageUnits)+'개');
+  metric(stats,'검토 표시된 작업',nf(dispatch.summary.reviewed)+'건');
+  const next=rows.find(row=>!row.reviewed);
+  $('external-route-shared-dispatch-next').disabled=!next;
+  $('external-route-shared-dispatch-csv').disabled=false;
+  const status=$('external-route-shared-dispatch-status');
+  status.textContent='현재 '+nf(rows.length)+'건 표시 대상 · 전체 '+nf(dispatch.summary.all)+
+    '건 중 미검토 '+nf(dispatch.summary.unchecked)+'건. 화면 첫 80개, CSV 전체. '+
+    '이 순서는 근거를 확인할 작업의 추천 순서이며 게임 제조 가능 판정이 아닙니다.';
+  const target=$('external-route-shared-dispatch-table');
+  target.replaceChildren();
+  if(!rows.length){
+    make(target,'p','선택한 분류에 해당하는 검토 작업이 없습니다.','note');
+    return;
+  }
+  const table=make(target,'table'),head=make(make(table,'thead'),'tr');
+  for(const title of ['우선 확인 종류','현재 검토 작업','관련 제조식','근거/남은 수량','작업 바로가기'])
+    make(head,'th',title);
+  const body=make(table,'tbody');
+  for(const entry of rows.slice(0,80)){
+    const tr=make(body,'tr');
+    make(tr,'td',entry.groupLabel);
+    const task=make(tr,'td');
+    make(task,'strong',entry.label);
+    make(task,'code',entry.requirementId,'item-id');
+    make(task,'p',entry.recommendedAction,'note');
+    make(tr,'td',entry.affectedRecipeKinds?
+      nf(entry.affectedRecipeKinds)+'종 · '+entry.affectedRecipeIds.slice(0,8).join(', ')+
+      (entry.affectedRecipeIds.length>8?' 외 추가':''):
+      '현재 제조식 선행 관계 없음');
+    const evidence=make(tr,'td');
+    if(entry.remainingShortage!==null)
+      make(evidence,'p','가상 계산 후 남은 부족: '+nf(entry.remainingShortage)+'개','note');
+    if(entry.virtualAcquired!==null)
+      make(evidence,'p','누적 가상 확보: '+nf(entry.virtualAcquired)+'개','note');
+    if(entry.conditionStatus)
+      make(evidence,'p','조건 근거: '+entry.conditionStatus,'note');
+    if(entry.note)
+      make(evidence,'p','사용자 메모: '+entry.note,'note');
+    const actions=make(tr,'td'),go=make(actions,'button',
+      entry.reviewed?'검토 기록 보기':'검토 작업으로 이동','route-link-jump');
+    go.type='button';
+    go.addEventListener('click',()=>focusRouteActionTask(entry.taskId));
+    if(entry.type==='material'&&entry.remainingShortage!==null){
+      const ledger=make(actions,'button','조달 원장','route-link-jump');
+      ledger.type='button';
+      ledger.addEventListener('click',()=>focusRouteLedgerMaterial(entry.requirementId));
+    }
+  }
+}
 function renderSharedReviewQueue(rb,board){
   const report=sharedReviewQueueReport(rb,board);
+  renderSharedReviewDispatch(report);
   const summary=$('external-route-shared-review-summary');
   summary.replaceChildren();
   metric(summary,'미검토',nf(report.summary.pending)+'건');
@@ -1668,6 +1734,11 @@ function clearRouteActionBoard(){
   $('external-route-shared-review-table').replaceChildren();
   $('external-route-shared-review-summary').replaceChildren();
   $('external-route-shared-review-status').textContent='';
+  $('external-route-shared-dispatch-table').replaceChildren();
+  $('external-route-shared-dispatch-summary').replaceChildren();
+  $('external-route-shared-dispatch-status').textContent='';
+  $('external-route-shared-dispatch-next').disabled=true;
+  $('external-route-shared-dispatch-csv').disabled=true;
   $('external-route-shared-review-csv').disabled=true;
   $('external-route-shared-review-json').disabled=true;
   clearRouteActionCarryover();
@@ -3293,6 +3364,26 @@ $('external-route-batch-workflow-filter').addEventListener('change',()=>{
 $('external-route-batch-workflow-search').addEventListener('input',()=>{
   if(externalRouteWorkbench?.routeBatch)externalRouteWorkbench.routeBatch.workflowFocusPosition=null;
   renderRouteMaterialWorkflow();
+});
+$('external-route-shared-dispatch-filter').addEventListener('change',()=>{
+  const current=routeActionState();
+  if(current)renderSharedReviewDispatch(sharedReviewQueueReport(current.rb,current.board));
+});
+$('external-route-shared-dispatch-next').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const report=sharedReviewQueueReport(current.rb,current.board);
+  const {rows}=sharedReviewDispatchRows(report);
+  const next=rows.find(row=>!row.reviewed);
+  if(next)focusRouteActionTask(next.taskId);
+});
+$('external-route-shared-dispatch-csv').addEventListener('click',()=>{
+  const current=routeActionState();
+  if(!current)return;
+  const dispatch=buildSharedReviewDispatch(
+    sharedReviewQueueReport(current.rb,current.board));
+  downloadCsv(sharedReviewDispatchCsvRows(dispatch),
+    'xpiratez-v2-shared-review-dispatch-'+dispatch.rootRecipeId+'.csv');
 });
 $('external-route-shared-review-search').addEventListener('input',()=>{
   const current=routeActionState();

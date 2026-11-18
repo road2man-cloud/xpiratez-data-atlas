@@ -401,6 +401,30 @@
 <details id="external-route-shared-review" class="route-shared-review">
 <summary>공통 재료·연구·시설 검토 작업 — 중복 없이 한 번에 확인</summary>
 <p class="note">현재 제조 작업표의 실제 선행 관계만 따라가며, 여러 제조식에 연결되는 동일 재료·조건 확인 작업을 하나로 묶습니다. 조달 원장의 모든 확보 수량은 가상 계산이며, 연구·시설 근거는 실제 가능 판정이 아닙니다. 체크와 메모는 원래 작업표에 같이 저장되는 사용자 기록입니다.</p>
+<details id="external-route-shared-dispatch" class="route-shared-dispatch">
+<summary>다음 검토 작업 추천 · 부족 재료·연구·시설 병목 순서</summary>
+<p class="note">가상 조달 부족, 시설·연구 상태 확인, 가상 확보의 실제 경로 확인을 분리해 검토 순서를 제안합니다. 검토 표시를 하더라도 실제 게임 작업 완료로 표시하지 않습니다.</p>
+<div id="external-route-shared-dispatch-summary" class="summary-stats"></div>
+<div class="control-buttons">
+<label for="external-route-shared-dispatch-filter">확인할 작업 분류
+<select id="external-route-shared-dispatch-filter">
+<option value="all">전체 미검토 작업</option>
+<option value="virtual-shortage">가상 계산 후 남은 부족</option>
+<option value="facility-check">시설 기능 확인</option>
+<option value="research-check">연구·해금 확인</option>
+<option value="rule-check">규칙·기타 조건 확인</option>
+<option value="virtual-acquisition">가상 확보의 실제 경로 확인</option>
+<option value="material-reference">재료 원장 근거 보완</option>
+<option value="condition-reference">조건 근거 미기재</option>
+<option value="independent-check">독립 확인 항목</option>
+<option value="reviewed">검토 표시된 항목</option>
+</select></label>
+<button id="external-route-shared-dispatch-next" class="secondary" type="button" disabled>다음 미검토 작업으로 이동</button>
+<button id="external-route-shared-dispatch-csv" class="secondary" type="button" disabled>실행 검토 목록 전체 CSV</button>
+</div>
+<p id="external-route-shared-dispatch-status" class="note" role="status" aria-live="polite"></p>
+<div id="external-route-shared-dispatch-table" class="table-wrap"></div>
+</details>
 <div id="external-route-shared-review-summary" class="summary-stats"></div>
 <div class="control-buttons">
 <label for="external-route-shared-review-filter">표시 작업
