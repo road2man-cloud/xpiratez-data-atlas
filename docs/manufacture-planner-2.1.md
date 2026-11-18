@@ -363,6 +363,41 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Integrated candidate procurement and producer-route workbench (2026-11-18)
+
+Every successful bounded procurement candidate has a **작업대에서 경로 편집**
+action. The independent workbench opens with that candidate's hypothetical
+stock quantities and a copy of the current producer choices. Users may
+select/deselect included materials, enter integer acquisition quantities,
+and switch directly declared sub-manufacturing producer recipes or
+external procurement. A change recalculates both the route-only plan
+(unmodified stock) and route-plus-acquisition plan (stock copied with
+hypothetical additions), without affecting the main calculator.
+
+The workbench shows three columns: the original main plan, edited
+producer routes without extra stock, and edited routes with hypothetical
+acquisition. This separation prevents misattributing a route change
+to a material purchase. Per-material shortage differences below the
+summary compare only the last two columns. The available producer
+selectors are discovered from the current and newly expanded recipe
+trees; all entries are validated against the matching v.o2 producer list.
+
+**재고 입력문 준비** copies validated target quantities into the bulk
+stock editor only if it is empty; the game save is never modified.
+**제조 경로만 본 계산기에 적용** is a separate explicit action that
+updates only the main planner's producer-choice settings and reruns it.
+**A에 저장** and **B에 저장** keep the hypothetical result available
+for the existing A/B comparison. Different producer-choice baselines
+cannot be compared as equivalent: when a saved workbench result uses
+a different baseline, saving it clears the incompatible opposite slot.
+
+The workbench JSON export contains route choices, acquired items,
+three independent summaries, and before/after shortage deltas. Invalid
+input disables stale exports and handoff buttons. All UI operations
+are local browser computations; the ruleset, source indexes, user's
+manual stock, and imported game save stay unchanged until the user
+explicitly applies a main-planner setting or bulk stock input.
+
 ## Exploration candidate to stock-input handoff (2026-11-18)
 
 Each successful single-goal exploration row now has two explicit handoff actions.

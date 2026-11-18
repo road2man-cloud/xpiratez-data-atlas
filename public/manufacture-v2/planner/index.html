@@ -227,6 +227,27 @@
 <p class="note">후보의 <strong>재고 입력문 준비</strong>는 일괄 입력란에 해당 수량만 복사합니다. <strong>선택에 불러오기</strong>는 후보의 재료와 수량을 위쪽 일괄 선택란에 가져옵니다. 둘 다 실제 재고·게임 세이브를 직접 수정하지 않습니다.</p>
 <div id="external-explore-table" class="table-wrap"></div>
 </div>
+<section id="external-route-workbench" class="procurement-preview" hidden aria-label="조달 후보 제조 경로 편집 작업대">
+<div class="section-title"><h4>조달 후보 · 제조 경로 통합 작업대</h4><button id="external-route-workbench-close" class="secondary" type="button">닫기</button></div>
+<p class="note">탐색 후보를 불러와 가상 확보 수량과 원료별 제조 경로를 함께 수정합니다. 변경할 때마다 원래 입력 재고를 기반으로 독립 재계산하며 실제 세이브나 본 계산기 설정은 바꾸지 않습니다.</p>
+<div class="control-buttons">
+<button id="external-route-workbench-run" type="button">변경 내용 다시 계산</button>
+<button id="external-route-workbench-draft" class="secondary" type="button" disabled>재고 입력문 준비</button>
+<button id="external-route-workbench-apply-choices" class="secondary" type="button" disabled>제조 경로만 본 계산기에 적용</button>
+<button id="external-route-workbench-a" class="secondary" type="button" disabled>A에 저장</button>
+<button id="external-route-workbench-b" class="secondary" type="button" disabled>B에 저장</button>
+<button id="external-route-workbench-export" class="secondary" type="button" disabled>작업대 JSON 저장</button>
+</div>
+<p id="external-route-workbench-status" class="note" role="status" aria-live="polite"></p>
+<h5>가상 확보 수량</h5>
+<div id="external-route-workbench-materials" class="table-wrap"></div>
+<h5>하위 제조 경로</h5>
+<p class="note">복수 경로는 직접 선택하세요. 경로별 재료 구성과 출처의 명시 제조비·시간은 재계산 결과에만 반영됩니다. 실제 제조 가능하다는 뜻은 아닙니다.</p>
+<div id="external-route-workbench-choices" class="route-workbench-choices"></div>
+<h5>원안 · 경로 편집 · 확보 가정 비교</h5>
+<div id="external-route-workbench-summary" class="table-wrap"></div>
+<div id="external-route-workbench-differences" class="table-wrap"></div>
+</section>
 <div id="external-basket-comparison" class="procurement-preview" hidden>
 <div class="section-title"><h4>일괄 확보 시나리오 A/B 비교</h4><button id="external-basket-compare-close" class="secondary" type="button">닫기</button></div>
 <p class="note">두 시나리오는 같은 최초 재고를 독립적으로 사용합니다. 아래 차이는 B − A이며, 최적 비용이나 게임 실행 가능성의 판정이 아닙니다.</p>

@@ -154,6 +154,47 @@ try {
   assert.equal(exploreData.successes,exploredCount);
   assert(exploreData.candidates.every(x=>x.report.rootRecipeId==='STR_3RL_HE_XXX'));
   assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  await exploredRows.first().getByRole('button',{name:/후보 작업대에서 경로 편집/}).click();
+  assert(await page.locator('#external-route-workbench').isVisible());
+  assert((await page.locator('#external-route-workbench-summary').innerText()).includes('경로 편집 + 가상 확보'));
+  assert((await page.locator('#external-route-workbench-status').innerText()).includes('게임 세이브는 그대로'));
+  const workbenchAmount=page.locator('#external-route-workbench-materials input[type=number]').first();
+  const workbenchOriginalQuantity=await workbenchAmount.inputValue();
+  await workbenchAmount.fill('0');
+  await workbenchAmount.press('Tab');
+  assert(await page.locator('#external-route-workbench-export').isDisabled());
+  assert((await page.locator('#external-route-workbench-status').innerText()).includes('계산 중단'));
+  await workbenchAmount.fill(workbenchOriginalQuantity);
+  await workbenchAmount.press('Tab');
+  assert(await page.locator('#external-route-workbench-export').isEnabled());
+  const workbenchChemical=page.locator('select[aria-label="화학물질 작업대 제조 경로"]');
+  if(await workbenchChemical.count()){
+    await workbenchChemical.selectOption('STR_CHEMICALS_XXX');
+    assert(await page.locator('#external-route-workbench-export').isEnabled());
+  }
+  const workbenchDownload=page.waitForEvent('download');
+  await page.locator('#external-route-workbench-export').click();
+  const workbenchFile=await workbenchDownload;
+  assert.equal(workbenchFile.suggestedFilename(),
+    'xpiratez-v2-route-workbench-STR_3RL_HE_XXX.json');
+  const workbenchPayload=JSON.parse(fs.readFileSync(await workbenchFile.path(),'utf8'));
+  assert.equal(workbenchPayload.schema,'xpiratez-v2-route-workbench/v1');
+  assert.equal(workbenchPayload.sourceVersion,'v.o2');
+  assert(workbenchPayload.additions.length>=1);
+  if(await workbenchChemical.count())
+    assert.equal(workbenchPayload.sourceChoices.STR_CHEMICALS,'STR_CHEMICALS_XXX');
+  await page.locator('#external-route-workbench-a').click();
+  await page.locator('#external-route-workbench-b').click();
+  assert(await page.locator('#external-basket-compare').isEnabled());
+  await page.locator('#external-route-workbench-draft').click();
+  assert.equal(await page.locator('#stock-bulk-text').inputValue(),workbenchPayload.stockDraft);
+  assert((await page.locator('#stock-list').innerText()).includes('입력된 보유 재고 없음'));
+  await page.locator('#external-route-workbench-draft').click();
+  assert((await page.locator('#external-route-workbench-status').innerText()).includes('덮어쓰지 않았습니다'));
+  await page.locator('#stock-bulk-text').fill('');
+  await page.locator('#external-route-workbench-close').click();
+  assert(await page.locator('#external-route-workbench').isHidden());
+  assert.equal(await chemical.inputValue(),'external');
   await exploredRows.first().getByRole('button',{name:/후보 재고 입력문 준비/}).click();
   const candidateDraft=await page.locator('#stock-bulk-text').inputValue();
   assert(exploreData.candidates[0].additions.every(x=>candidateDraft.includes(x.id+'='+x.target)));
