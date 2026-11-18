@@ -1,0 +1,20 @@
+﻿{
+    "version":  "R143 ACTOR STREAM",
+    "oxce_parent":  "R142 terrain cumulative (R140 HUD, R136 camera)",
+    "oxce_exe":  "D:\\daphne_auto\\XPZ_R143_ACTOR_STREAM_20261119\\oxce\\build\\openxcom_R143_R142_CUMULATIVE_ACTORS.exe",
+    "oxce_sha256":  "C6D76F0F91B99BE507C9E29F353BFA21218C289D93C46FBE74B8D6278EBB657E",
+    "oxce_size":  27269610,
+    "s2_parent":  "R142 S2 terrain + R136 camera",
+    "s2_exe":  "D:\\daphne_auto\\XPZ_R143_ACTOR_STREAM_20261119\\s2\\Game-r143-actors-XPZ3D-IGScene.exe",
+    "s2_sha256":  "9DCE7D0D1BADD9B86A0EE3CB0D49542957E631740B23D96DE2BFC8A78CD3F2E1",
+    "s2_size":  7362560,
+    "new_oxce_stream":  "Local\\XPZ3D_OXCE_ACTORS_R143",
+    "actor_snapshot_capacity":  128,
+    "stream_rate_hz":  12.5,
+    "visibility":  "player units and currently visible hostile/neutral units only",
+    "renderer":  "native S2 Direct3D IGScene directional proxy meshes",
+    "full_F11_GLB_rig_connected":  false,
+    "actual_MCD_LOFT_geometry":  false,
+    "live_gameplay_verified":  false,
+    "existing_game_and_saves_modified":  false
+}
