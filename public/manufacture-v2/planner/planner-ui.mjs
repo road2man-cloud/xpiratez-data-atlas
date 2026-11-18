@@ -14,6 +14,7 @@ import { expandRouteAwareReadinessBatch } from './route-aware-cascade.mjs';
 import { routeAcquisitionLedgerCsvRows } from './route-acquisition-ledger.mjs';
 import { routeMaterialWorkflowCsvRows } from './route-material-workflow.mjs';
 import { projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview } from './route-action-board.mjs';
+import { previewRouteActionCarryover,applyRouteActionCarryover } from './route-action-carryover.mjs';
 
 const $ = id => document.getElementById(id);
 const make = (parent, tag, text, className) => {
@@ -1063,7 +1064,75 @@ function renderWorkbenchEvidence() {
       make(actions,'p','나머지 '+nf(list.length-80)+'건은 JSON에 포함됩니다.','note');
   }
 }
+function clearRouteActionCarryover(){
+  const rb=externalRouteWorkbench?.routeBatch;
+  if(rb)rb.actionCarryoverPreview=null;
+  $('external-route-action-carryover-file').value='';
+  $('external-route-action-carryover-file').disabled=true;
+  $('external-route-action-carryover-apply').disabled=true;
+  $('external-route-action-carryover-status').textContent='';
+  $('external-route-action-carryover-summary').replaceChildren();
+  $('external-route-action-carryover-summary').hidden=true;
+  $('external-route-action-carryover-items').replaceChildren();
+  $('external-route-action-carryover-items').hidden=true;
+}
+function renderRouteActionCarryoverPreview(){
+  const preview=externalRouteWorkbench?.routeBatch?.actionCarryoverPreview;
+  if(!preview)return;
+  const summary=$('external-route-action-carryover-summary');
+  summary.replaceChildren();summary.hidden=false;
+  metric(summary,'이전 검토·메모 보유 항목',nf(preview.counts.priorAnnotated)+'건');
+  metric(summary,'동일 작업으로 판정',nf(preview.counts.eligible)+'건');
+  metric(summary,'재사용 가능 검토 표시',nf(preview.counts.eligibleReviewed)+'건');
+  metric(summary,'재사용 가능 메모',nf(preview.counts.eligibleNotes)+'건');
+  metric(summary,'제조식 위치만 변경',nf(preview.counts.positionMoved)+'건');
+  metric(summary,'변경·모호함으로 제외',nf(preview.counts.excluded)+'건');
+  const target=$('external-route-action-carryover-items');
+  target.replaceChildren();
+  // Always show exclusions before matches so dangerous/stale rows are not
+  // hidden behind the visible 100-row preview limit.
+  const rows=[
+    ...preview.skipped.map(x=>({
+      status:'이어받기 제외',label:x.label,type:x.type,
+      previous:x.oldId,current:'—',detail:x.reason
+    })),
+    ...preview.matched.map(x=>({
+      status:'동일한 작업',label:x.label,type:x.type,
+      previous:x.oldId,current:x.currentId,
+      detail:(x.reviewed?'기존 검토 표시':'검토 메모만 있음')+
+        (x.note?' · 메모 포함':'')+
+        (x.positionChanged?' · 위치 변경':'')
+    }))
+  ];
+  if(!rows.length)make(target,'p','이전 JSON에 이어받을 검토 표시나 메모가 없습니다.','note');
+  else{
+    const table=make(target,'table');
+    const header=make(make(table,'thead'),'tr');
+    for(const title of ['판정','작업','기존 ID','현재 ID','판정 근거'])
+      make(header,'th',title);
+    const body=make(table,'tbody');
+    for(const row of rows.slice(0,100)){
+      const tr=make(body,'tr');
+      make(tr,'td',row.status);
+      const title=make(tr,'td');make(title,'strong',row.label);
+      make(title,'span',row.type,'note');
+      make(tr,'td',row.previous);
+      make(tr,'td',row.current);
+      make(tr,'td',row.detail);
+    }
+    if(rows.length>100)
+      make(target,'p','대응·제외 결과 '+nf(rows.length-100)+
+        '건은 화면에서 생략했습니다. 안전한 동일 작업의 수는 위에 모두 집계됩니다.','note');
+  }
+  target.hidden=false;
+  $('external-route-action-carryover-apply').disabled=preview.counts.eligible===0;
+  $('external-route-action-carryover-status').textContent=
+    '검토 JSON 비교 완료: 동일한 작업 '+nf(preview.counts.eligible)+'건, 제외 '+
+    nf(preview.counts.excluded)+'건. 아직 현재 작업표에는 적용하지 않았습니다.'+
+    ' 기존 사용자 메모는 적용 시에도 덮어쓰지 않습니다.';
+}
 function clearRouteActionBoard(){
+  clearRouteActionCarryover();
   $('external-route-action-board').hidden=true;
   $('external-route-action-table').replaceChildren();
   $('external-route-action-status').textContent='';
@@ -1167,6 +1236,7 @@ function renderRouteActionBoard(){
     make(parent,'p','대량 작업표는 100건씩 페이지로 표시합니다. CSV·JSON에는 전체 작업과 사용자 메모를 보존합니다.','note');
   $('external-route-action-board').hidden=false;
   $('external-route-action-import').disabled=false;
+  $('external-route-action-carryover-file').disabled=false;
   for(const id of ['csv','json','clear'])$('external-route-action-'+id).disabled=false;
 }
 function exportRouteActionBoardJson(){
@@ -2561,6 +2631,60 @@ $('external-route-action-csv').addEventListener('click',()=>{
     'xpiratez-v2-route-action-review-'+review.rootRecipeId+'.csv');
 });
 $('external-route-action-json').addEventListener('click',exportRouteActionBoardJson);
+$('external-route-action-carryover-file').addEventListener('change',async ()=>{
+  const control=$('external-route-action-carryover-file');
+  const file=control.files?.[0];
+  if(!file)return;
+  const old=routeActionState();
+  const rb=old?.rb;
+  if(rb)rb.actionCarryoverPreview=null;
+  $('external-route-action-carryover-apply').disabled=true;
+  $('external-route-action-carryover-summary').hidden=true;
+  $('external-route-action-carryover-summary').replaceChildren();
+  $('external-route-action-carryover-items').hidden=true;
+  $('external-route-action-carryover-items').replaceChildren();
+  try{
+    if(!old)throw new Error('현재 제조 작업표를 먼저 계산하세요.');
+    if(file.size>12*1024*1024)
+      throw new Error('검토 JSON은 12MB 이하로 제한합니다.');
+    const loadId=(rb.actionCarryoverLoadId||0)+1;
+    rb.actionCarryoverLoadId=loadId;
+    const saved=JSON.parse(await file.text());
+    if(routeActionState()?.board!==old.board ||
+      rb.actionCarryoverLoadId!==loadId)
+      throw new Error('파일을 읽는 동안 작업표가 변경되었습니다.');
+    rb.actionCarryoverPreview=previewRouteActionCarryover(old.board,saved);
+    renderRouteActionCarryoverPreview();
+  }catch(error){
+    $('external-route-action-carryover-status').textContent=
+      '선택적 비교 중단: '+error.message+' · 기존 검토 메모는 유지됩니다.';
+  }finally{control.value='';}
+});
+$('external-route-action-carryover-apply').addEventListener('click',()=>{
+  const current=routeActionState();
+  const preview=current?.rb.actionCarryoverPreview;
+  if(!preview)return;
+  try{
+    const merged=applyRouteActionCarryover(current.board,preview,{
+      reviewed:current.rb.actionReviewed,notes:current.rb.actionNotes
+    });
+    current.rb.actionReviewed=merged.reviewed;
+    current.rb.actionNotes=merged.notes;
+    current.rb.actionCarryoverPreview=null;
+    $('external-route-action-carryover-apply').disabled=true;
+    current.rb.actionPage=0;
+    renderRouteActionBoard();
+    $('external-route-action-carryover-status').textContent=
+      '선택적 이어받기 완료: 검토 표시 '+nf(merged.counts.addedReviews)+
+      '건, 메모 '+nf(merged.counts.addedNotes)+'건 추가. 기존 메모 '+
+      nf(merged.counts.preservedNotes)+'건 유지, 변경·모호한 항목 '+
+      nf(merged.counts.excluded)+'건 제외. 실제 게임 상태는 변경하지 않았습니다.';
+  }catch(error){
+    $('external-route-action-carryover-status').textContent=
+      '선택적 이어받기 중단: '+error.message+
+      ' · 현재 검토 기록은 변경하지 않았습니다.';
+  }
+});
 $('external-route-action-import').addEventListener('change',async ()=>{
   const control=$('external-route-action-import');
   const file=control.files?.[0];

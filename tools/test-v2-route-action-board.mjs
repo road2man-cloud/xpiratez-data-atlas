@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildRouteActionBoard,projectRouteActionBoard,routeActionReviewCsvRows,restoreRouteActionReview}
   from '../public/manufacture-v2/planner/route-action-board.mjs';
+import {previewRouteActionCarryover,applyRouteActionCarryover}
+  from '../public/manufacture-v2/planner/route-action-carryover.mjs';
 
 const workflow={
   schema:'xpiratez-v2-route-material-workflow/v1',
@@ -132,6 +134,125 @@ test('saved review notes can be restored only onto the identical action graph',(
     ...written,tasks:written.tasks.map((x,i)=>
       i===0?{...x,dependsOn:['fabricated::dependency']}:x)
   }),/현재 조달·제조 경로/);
+});
+
+test('selectively carries reviewed recipe occurrences across harmless display-position shifts',()=>{
+  const oldBoard=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=projectRouteActionBoard(oldBoard,{
+    reviewed:['material::STR_ORE','recipe::1','recipe::2'],
+    notes:{
+      'material::STR_ORE':'광석 상태 점검',
+      'recipe::1':'하위 제조 절차 확인',
+      'recipe::2':'상위 제조 절차 확인'
+    }
+  });
+  const shifted={
+    ...workflow,
+    recipeSequenceAfter:[
+      {position:1,recipeId:'STR_EXTRA',recipeName:'새 무관한 제조',
+        batches:1,inputMaterials:[],prerequisiteStepNumbers:[],
+        prerequisiteResearch:[]},
+      {...workflow.recipeSequenceAfter[0],position:2},
+      {...workflow.recipeSequenceAfter[1],position:3,
+        prerequisiteStepNumbers:[2]}
+    ]
+  };
+  const current=buildRouteActionBoard({workflow:shifted,finalChecklist:checklist});
+  const preview=previewRouteActionCarryover(current,saved);
+  assert.equal(preview.schema,'xpiratez-v2-route-review-carryover/v1');
+  assert.equal(preview.counts.priorAnnotated,3);
+  assert.equal(preview.counts.eligible,3);
+  assert.equal(preview.counts.positionMoved,2);
+  assert.equal(preview.counts.excluded,0);
+  assert(preview.matched.some(x=>x.oldId==='recipe::1'&&x.currentId==='recipe::2'));
+  assert(preview.matched.some(x=>x.oldId==='recipe::2'&&x.currentId==='recipe::3'));
+  const priorCurrent=JSON.stringify(current);
+  const priorSaved=JSON.stringify(saved);
+  const merged=applyRouteActionCarryover(current,preview,{
+    reviewed:new Set(['condition::rule::unspecified-time']),
+    notes:new Map([['recipe::3','현재 작업자의 새 메모']])
+  });
+  assert.equal(merged.counts.addedReviews,3);
+  assert.equal(merged.counts.addedNotes,2);
+  assert.equal(merged.counts.preservedNotes,1);
+  assert(merged.reviewed.has('recipe::2'));
+  assert(merged.reviewed.has('recipe::3'));
+  assert(merged.reviewed.has('material::STR_ORE'));
+  assert.equal(merged.notes.get('recipe::2'),'하위 제조 절차 확인');
+  assert.equal(merged.notes.get('recipe::3'),'현재 작업자의 새 메모');
+  assert.equal(JSON.stringify(current),priorCurrent);
+  assert.equal(JSON.stringify(saved),priorSaved);
+});
+
+test('changed material quantities invalidate dependent recipes but keep independent condition notes',()=>{
+  const old=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=projectRouteActionBoard(old,{
+    reviewed:['material::STR_ORE','condition::research::STR_R1','recipe::1','recipe::2'],
+    notes:{
+      'material::STR_ORE':'4개 가정 점검',
+      'condition::research::STR_R1':'연구 참조 기록',
+      'recipe::1':'제조 순서 메모'
+    }
+  });
+  const modified={...workflow,materials:workflow.materials.map(x=>
+    x.id==='STR_ORE'?{...x,totalAcquisition:3}:x)};
+  const current=buildRouteActionBoard({workflow:modified,finalChecklist:checklist});
+  const preview=previewRouteActionCarryover(current,saved);
+  assert.equal(preview.counts.eligible,1);
+  assert.equal(preview.counts.eligibleReviewed,1);
+  assert.equal(preview.counts.excluded,3);
+  assert.equal(preview.matched[0].currentId,'condition::research::STR_R1');
+  const merged=applyRouteActionCarryover(current,preview);
+  assert(merged.reviewed.has('condition::research::STR_R1'));
+  assert(!merged.reviewed.has('material::STR_ORE'));
+  assert(!merged.reviewed.has('recipe::1'));
+  assert(!merged.reviewed.has('recipe::2'));
+});
+
+test('ambiguous repeated recipe occurrences are skipped, not assigned arbitrarily',()=>{
+  const original=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=projectRouteActionBoard(original,{
+    reviewed:['recipe::1','condition::research::STR_R1']
+  });
+  const repeated={
+    ...workflow,recipeSequenceAfter:[
+      workflow.recipeSequenceAfter[0],
+      {...workflow.recipeSequenceAfter[0],position:2},
+      {...workflow.recipeSequenceAfter[1],position:3,
+        prerequisiteStepNumbers:[1]}
+    ]
+  };
+  const current=buildRouteActionBoard({workflow:repeated,finalChecklist:checklist});
+  const preview=previewRouteActionCarryover(current,saved);
+  assert.equal(preview.counts.eligible,1);
+  assert.equal(preview.counts.excluded,1);
+  assert(preview.skipped.some(x=>x.oldId==='recipe::1'&&x.reason.includes('구분 불가')));
+});
+
+test('unsafe carry-over is rejected without altering current notes or checkmarks',()=>{
+  const board=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  const saved=projectRouteActionBoard(board,{reviewed:['material::STR_ORE']});
+  assert.throws(()=>previewRouteActionCarryover(board,{
+    ...saved,rootRecipeId:'STR_DIFFERENT'
+  }),/같은 v.o2/);
+  assert.throws(()=>previewRouteActionCarryover(board,{
+    ...saved,tasks:saved.tasks.map((x,i)=>i===0?{...x,note:'N'.repeat(301)}:x)
+  }),/올바르지 않은 체크 또는 메모/);
+  assert.throws(()=>previewRouteActionCarryover(board,{
+    ...saved,tasks:saved.tasks.map((x,i)=>i===7?
+      {...x,dependsOn:['does-not-exist']}:x)
+  }),/선행 작업 참조/);
+  const preview=previewRouteActionCarryover(board,saved);
+  const another=buildRouteActionBoard({workflow,finalChecklist:checklist});
+  assert.throws(()=>applyRouteActionCarryover(another,preview),/다시 선택적 비교/);
+  const currentReviewed=new Set(['recipe::2']);
+  const currentNotes=new Map([['material::STR_ORE','새 계산기의 메모']]);
+  const applied=applyRouteActionCarryover(board,preview,{
+    reviewed:currentReviewed,notes:currentNotes
+  });
+  assert.equal(applied.notes.get('material::STR_ORE'),'새 계산기의 메모');
+  assert.deepEqual([...currentReviewed],['recipe::2']);
+  assert.equal(currentNotes.size,1);
 });
 
 test('unknown review keys, oversized notes, stale or invalid prerequisites fail closed',()=>{

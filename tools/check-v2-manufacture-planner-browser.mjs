@@ -421,6 +421,37 @@ try {
       .includes('불러오기 중단'));
     assert((await page.locator('#external-route-action-status').innerText())
       .includes('검토 표시 1건'));
+    const staleReview={
+      ...actionPayload,
+      tasks:actionPayload.tasks.map((row,i)=>i===0?
+        {...row,quantity:(row.quantity||0)+1}:
+        i===1?{...row,reviewed:true,note:'변경된 계획에 선별 재사용할 메모'}:row)
+    };
+    await page.locator('#external-route-action-carryover-file').setInputFiles({
+      name:'previous-different-plan-review.json',mimeType:'application/json',
+      buffer:Buffer.from(JSON.stringify(staleReview),'utf8')
+    });
+    await page.waitForFunction(()=>
+      document.getElementById('external-route-action-carryover-status')
+        ?.textContent.includes('검토 JSON 비교 완료'));
+    assert(await page.locator('#external-route-action-carryover-apply').isEnabled());
+    assert((await page.locator('#external-route-action-carryover-summary').innerText())
+      .includes('변경·모호함으로 제외'));
+    assert((await page.locator('#external-route-action-carryover-items').innerText())
+      .includes('이어받기 제외'));
+    await page.locator('#external-route-action-carryover-apply').click();
+    assert((await page.locator('#external-route-action-carryover-status').innerText())
+      .includes('선택적 이어받기 완료'));
+    assert((await page.locator('#external-route-action-status').innerText())
+      .includes('검토 표시 2건'));
+    const carryoverReviewDownload=page.waitForEvent('download');
+    await page.locator('#external-route-action-json').click();
+    const carryoverReviewFile=await carryoverReviewDownload;
+    const carryoverReview=JSON.parse(fs.readFileSync(
+      await carryoverReviewFile.path(),'utf8'));
+    assert.equal(carryoverReview.summary.reviewed,2);
+    assert.equal(carryoverReview.tasks[0].note,'게임에서 재료 확보 경로 재확인');
+    assert.equal(carryoverReview.tasks[1].note,'변경된 계획에 선별 재사용할 메모');
     assert(await page.locator('#external-route-batch-workflow').isVisible());
     assert(await page.locator('#external-route-batch-workflow-csv').isEnabled());
     assert((await page.locator('#external-route-batch-workflow-summary').innerText())

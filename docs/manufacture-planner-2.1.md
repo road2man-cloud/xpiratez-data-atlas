@@ -363,6 +363,53 @@ or guarantee that a game action is available. The entire checklist is
 embedded in the JSON comparison export as part of the evidence matrix,
 while the original game save remains untouched.
 
+## Selective, dependency-safe review carry-over (2026-11-18)
+
+The integrated single-goal **재료 확보·제조 순서 통합 작업표** now has
+an additional **제조 계획 변경 후 이전 검토 기록 선택적 이어받기**
+workflow. It is deliberately separate from the existing
+**검토 메모 JSON 불러오기** operation, which continues to require
+an identical, same-position action graph.
+
+Users can upload a prior v.o2 review JSON, preview exactly which
+previous review marks and notes are eligible, and then explicitly
+click **동일한 검토 기록만 이어받기**. A preview counts prior
+annotated tasks, safely matched tasks, review marks, notes, moved
+recipe positions, and rejected items. A table identifies matched
+and rejected tasks with human-readable reasons. Preview alone
+does not change current marks, notes, inventory, producer choices,
+or the game save.
+
+The pure comparison engine matches only the same manufacturing
+goal and the same semantic task identity. Material and evidence
+tasks must have exactly matching IDs, item quantities, labels,
+actions, source status, and full prerequisite identity. For
+recipe occurrences the volatile display-position number is
+normalized away, while the recipe ID, declared batch count,
+condition text and recursively matched prerequisite task
+identities remain mandatory. This permits an unchanged
+dependency chain to be matched after an unrelated recipe
+adds an earlier display step. Two identical-looking repeated
+occurrences are deliberately **not** assigned arbitrarily.
+
+Changing a material quantity also invalidates review carry-over
+for any recipe task transitively dependent on that material.
+Independent research/facility notes that retain identical
+evidence and dependency structure can still be reused. The
+comparison refuses invalid file schemas, different recipe
+goals, malformed task dependencies, unsafe notes, or modified
+graph references. The file is read locally and bounded to
+12 MB.
+
+An explicit carry-over action merges matching review marks and
+empty-note slots only. Existing notes are **never overwritten**;
+the result separately counts newly marked tasks, added notes,
+preserved existing notes, and rejected old tasks. Loading
+another file or changing the source scenario invalidates the
+preview. These marks are **review annotations only**, not
+evidence that goods were acquired, facilities built, research
+discovered, or production completed in the game.
+
 ## Combined route acquisition and manufacturing review board (2026-11-18)
 
 The edited-route cascading scenario now generates an additional
