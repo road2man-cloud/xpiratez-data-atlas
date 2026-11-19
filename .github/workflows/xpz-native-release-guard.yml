@@ -1,0 +1,36 @@
+name: XPZ native ALLPATCH release guard
+
+on:
+  push:
+    paths:
+      - 'experiments/openxcom-native/release_manager.py'
+      - 'experiments/openxcom-native/release_manager_test.py'
+      - '.github/workflows/xpz-native-release-guard.yml'
+  pull_request:
+    paths:
+      - 'experiments/openxcom-native/release_manager.py'
+      - 'experiments/openxcom-native/release_manager_test.py'
+      - '.github/workflows/xpz-native-release-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-manager-unit-tests:
+    name: Native release guard (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test cumulative archive & atomic install guard
+        run: python experiments/openxcom-native/release_manager_test.py
