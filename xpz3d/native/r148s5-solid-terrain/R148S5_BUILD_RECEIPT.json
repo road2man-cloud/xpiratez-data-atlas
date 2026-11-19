@@ -1,0 +1,18 @@
+﻿{
+    "schema":  "xpz3d.r148s5.solid_visible_pair/v1",
+    "oxce":  "R148S3 cumulative allpatch, unchanged",
+    "oxce_sha256":  "EE84D0C5A2A727A3D5DFC7E50D0FC3A850A472DC4824208F7474FC8335F54101",
+    "s2":  "R148S5 F11 63-bone skinned native IGScene",
+    "s2_sha256":  "BAEF7B5E0127892472D1C9D435167C1355DA30B5B76A7F93F772B9DCC9ABEE03",
+    "s2_size":  7376896,
+    "position_interpolation_ms":  190,
+    "facing_interpolation_ms":  150,
+    "mesh_refresh_min_ms":  55,
+    "terrain_floor":  "closed thin slabs with thickness",
+    "terrain_walls":  "six-faced solid west/north wall segments with open-door suppression",
+    "terrain_objects":  "discovered OXCE object cells visualized as deterministic 3D volume proxies",
+    "geometry_uses_true_LOFT":  false,
+    "mouse_protection":  "R23R input seal retained; viewfix SW_SHOWNOACTIVATE only",
+    "live_gameplay_verified":  false,
+    "previous_exe_and_saves_preserved":  true
+}
