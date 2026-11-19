@@ -5,11 +5,15 @@ on:
     paths:
       - 'experiments/openxcom-native/release_manager.py'
       - 'experiments/openxcom-native/release_manager_test.py'
+      - 'experiments/openxcom-native/build_release.ps1'
+      - 'experiments/openxcom-native/persistent_features.json'
       - '.github/workflows/xpz-native-release-guard.yml'
   pull_request:
     paths:
       - 'experiments/openxcom-native/release_manager.py'
       - 'experiments/openxcom-native/release_manager_test.py'
+      - 'experiments/openxcom-native/build_release.ps1'
+      - 'experiments/openxcom-native/persistent_features.json'
       - '.github/workflows/xpz-native-release-guard.yml'
   workflow_dispatch:
 
