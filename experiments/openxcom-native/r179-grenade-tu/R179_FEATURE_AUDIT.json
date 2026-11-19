@@ -1,0 +1,37 @@
+{
+  "release": "R179",
+  "status": "PASS",
+  "checks": {
+    "grenade_both_action_tus": true,
+    "grenade_prepared_state": true,
+    "grenade_budget_actual_actor": true,
+    "grenade_budget_label": true,
+    "grenade_no_false_prebattle_warning": true,
+    "grenade_two_line_compact_fallback": true,
+    "grenade_primed_avoids_second_prime": true,
+    "grenade_tu_clamp": true,
+    "autoall_one_round_exclusion": true,
+    "autoall_frag_prioritized": true,
+    "autoall_both_hands": true,
+    "autoall_low_tu": true,
+    "transfer_search_r148": true,
+    "transfer_sort_r138": true,
+    "exchange_click_persisted": true,
+    "craft_only_no_crew_transfer": true,
+    "exchange_capacity_diagnostics": true,
+    "version_title": true,
+    "formatter_cpp_test_exists": true,
+    "formatter_cpp_test_passes": true,
+    "413_cumulative_members": true,
+    "only_expected_object_changes": true,
+    "exe_exists": true
+  },
+  "changed_objects": [
+    "InventoryState.cpp.obj",
+    "main.cpp.obj"
+  ],
+  "parent_objects": 413,
+  "output_objects": 413,
+  "exe_sha256": "bfa1e14d5494b980e1a9df7faf92a36bac04129a29d148ab1b892bd17f469514",
+  "gameplay_verified": false
+}
