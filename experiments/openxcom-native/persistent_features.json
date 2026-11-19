@@ -1,0 +1,26 @@
+{
+  "schema": "xpz-native-persistent-feature-contract-v1",
+  "description": "Unconditionally required feature markers for 413-object cumulative XPZ native releases. These cannot be omitted from individual release manifests.",
+  "object_count": 413,
+  "required_sources": {
+    "InventoryState.cpp": {
+      "markers": [
+        "choice.rule->getClipSize() == 1",
+        "usableOwnedFrag",
+        "r164LowTuMode",
+        "leftHandOccupied",
+        "getActionTUs(BA_PRIME, item)",
+        "getActionTUs(BA_THROW, item)"
+      ]
+    },
+    "TransferItemsState.cpp": {
+      "markers": [
+        "assigned->setCraft(0)",
+        "exchangeBlockReason",
+        "r148SearchState",
+        "r138ApplyColumnSort",
+        "queueCraftExchange"
+      ]
+    }
+  }
+}
