@@ -1,0 +1,32 @@
+{
+  "release": "R178",
+  "status": "PASS",
+  "checks": {
+    "grenade_tu_display": true,
+    "grenade_tu_personalized": true,
+    "grenade_prepared_state": true,
+    "grenade_total_tu": true,
+    "grenade_compact_fallback": true,
+    "autoall_one_round_exclusion": true,
+    "autoall_frag_prioritized": true,
+    "autoall_both_hands": true,
+    "autoall_low_tu": true,
+    "transfer_search_r148": true,
+    "transfer_sort_r138": true,
+    "exchange_click_persisted": true,
+    "craft_only_no_crew_transfer": true,
+    "exchange_capacity_diagnostics": true,
+    "version_title": true,
+    "413_cumulative_objects": true,
+    "only_expected_objects_changed": true,
+    "exe_exists": true
+  },
+  "changed_objects": [
+    "InventoryState.cpp.obj",
+    "main.cpp.obj"
+  ],
+  "parent_objects": 413,
+  "output_objects": 413,
+  "exe_sha256": "1bdffbb7104388f7b5cd6a5e0710a53be7cb2054ac4ed0360293dd7dbbee95c9",
+  "gameplay_verified": false
+}
