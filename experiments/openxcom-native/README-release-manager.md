@@ -11,6 +11,10 @@ objects cannot prove that historically promised features still exist.
 - build_release.ps1 — optional native-build integration and gated deployment.
 - release_manager_test.py — executable regression cases with synthetic archives
   and a disposable game folder.
+- persistent_features.json — mandatory feature tokens for every cumulative
+  413-object native release, even when omitted from its custom manifest.
+- .github/workflows/xpz-native-release-guard.yml — Linux/Windows CI for the
+  release manager's regression suite.
 
 All tools run locally. They do not require the network or GitHub authentication.
 
@@ -81,6 +85,10 @@ one. Neither command starts or terminates a game process.
 2. Archive members and their names must be preserved in a cumulative release.
 3. Only the explicitly listed changed object hashes are allowed.
 4. Feature source contracts must be present; missing markers block activation.
+   For a 413-object release, the built-in `persistent_features.json` *also*
+   requires `InventoryState.cpp` and `TransferItemsState.cpp` in the manifest
+   source list. It checks grenade TU, one-round exclusion, frag/AutoAll priorities,
+   and craft-only exchange even when the author omits those individual tokens.
 5. An unexpected change to the active launcher, destination EXE or backup
    prevents the latest pointer from switching.
 6. The target EXE is written via a temporary file and checked with SHA-256.
