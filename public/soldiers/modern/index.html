@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>X-Piratez 2.1 · 병종 DB</title>
 <meta name="description" content="획득처별 실제 연구 경로와 분기·배제 증거를 누적하는 X-Piratez 2.1 병종 DB">
-<link rel="stylesheet" href="origin-catalog.css?v=20261105-research-trace-1">
+<link rel="stylesheet" href="origin-catalog.css?v=20261120-rng-cap-compare-2">
 <link rel="stylesheet" href="acquisition-tech-view.css?v=20261105-body-tech-1">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 </head>
@@ -25,9 +25,17 @@
 <option value="growth">성장 완료 가정 · 조건부 상한 (기본)</option>
 <option value="provisional">연구·시술 잠정값 (성장 제외)</option>
 <option value="birth">출생 기준값 (최솟값)</option>
+<option value="birth-expected">출생 추첨 기대값 · 확률분포</option>
+<option value="route-expected">등록 경로의 조건부 RNG 평균 · 전투 성장 시점 선택</option>
 <option value="certified">확정 최종 최대치만</option>
 </select></label>
+<label id="routeGrowthTimingWrap" hidden>가정형 성장 배치<select id="routeGrowthTiming"><option value="none">전투 성장 없음</option><option value="before">첫 시술 이전</option><option value="after">마지막 시술 이후</option></select></label>
+<label id="routeGrowthAttemptsWrap" hidden>능력치별 성장 시행<input id="routeGrowthAttempts" type="number" min="0" max="40" step="1" value="10"></label>
+<label id="routeGrowthSuccessWrap" hidden>시행 성공률 (%)<input id="routeGrowthSuccess" type="number" min="0" max="100" step="1" value="50"></label>
+<label class="wide">표 안에서 비교할 기준 출생처<select id="compareOrigin"><option value="">기준 선택 안 함</option></select></label>
+<button id="compareClear" type="button">비교 해제</button>
 </section>
+<p id="compareStatus" class="status" role="status" aria-live="polite">각 행의 '기준으로 비교' 버튼이나 위 선택 메뉴로 비교를 시작할 수 있습니다.</p>
 <p id="catalogStatus" class="status" role="status" aria-live="polite">연구 경로 자료 확인 중…</p>
 <section class="card table-card" id="originMaxima" aria-label="획득처별 능력치와 연구 경로">
 <div class="table-head"><h2>출생처별 비교</h2><span id="rowCount"></span></div>
@@ -41,6 +49,7 @@
 <p>각 출생처는 독립된 병사입니다. 기본 비교는 <strong>출생 가능 최댓값에서 시작해 같은 병사의 병종 변경·훈련을 순서대로 반영</strong>하며, 각 시술 전후에 전투와 체력훈련을 충분히 반복했을 때의 조건부 상한을 계산합니다. 출생 RNG·전투 경험치 획득·시설·훈련 자격·동시 능력치 달성은 보장되지 않습니다. 이전 연구·시술 잠정값(출생 최솟값 출발, 전투 성장 제외)은 별도로 선택할 수 있습니다.</p>
 <p>등록한 연구·획득·훈련 경로 안에서 성장 상한이 큰 후보를 비교합니다. 재료·표본·시설·자금·이벤트, 전투/체력 성장 가능성과 난수 가정을 상세에 기록하며, 연구 공급 경로가 완결되지 않은 출생처에는 최종 수치를 임의로 넣지 않습니다. 각 능력치의 상한 합산이 한 병사에게 동시에 실현 가능하다는 증거는 아닙니다.</p>
 <p>더 높은 후보를 찾더라도 원본 버전·출생 이력·연구 순서·배제를 다시 검사한 뒤 갱신합니다. 기존 후보는 비교용으로 남깁니다. 목표 A인 영구 보너스 합계, 연구·시술 직후 합계, 성장 완료 가정의 조건부 상한 합계를 각각 구별합니다.</p>
+<p><strong>출생 추첨 기대값</strong>은 OXCE 병사 생성자의 균등 추첨 범위를 각 능력치별로 열거하고 출생 템플릿 및 최초 영구 보너스를 적용한 결과입니다. 합계 승률은 서로 독립적으로 생성한 신병 두 명의 비교입니다. 실제 모집 가능성, 성장 확률, 전투 RNG·훈련·변신 후 결과의 확률은 이 계산에 포함되지 않습니다.</p>
 <p><strong>확정 최종 최대치</strong>는 실행 가능성과 더 높은 경로가 없다는 전역 최적성이 모두 증명된 경우에만 사용합니다. 현재 인증은 0건입니다.</p>
 </details>
 <details class="methodology card" id="researchReference"><summary>연구 관계 · 조건과 영향</summary>
@@ -59,7 +68,7 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261105-body-tech-1"></script>
+<script type="module" src="app.js?v=20261120-conditional-route-roll-3"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 </body>
 </html>
