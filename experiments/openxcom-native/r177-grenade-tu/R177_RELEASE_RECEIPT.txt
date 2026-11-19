@@ -1,0 +1,14 @@
+R177 GRENADE TU RESTORE — RELEASE RECEIPT
+Date: 2026-11-20
+Build folder: D:\daphne_auto\XPZ_R177_GRENADE_TU_GIT_GUARD_20261120
+Actual release: C:\Dioxine_XPiratez_o2.1\Dioxine_XPiratez\openxcom_R177_ALLPATCH_GRENADE_TU.exe
+Size bytes: 27531418
+SHA256: F80897A5560B21D30A00A53C5CE0518867F321291E1E8A09A2DF82729386C6DB
+Parent release: R176 SHA256 8A4C56B5B75304CC3DF2421F41056935D91E4D323BD246BCA756D49FF700A799
+Cumulative archive: build\objects_r177_cumulative_grenade_tu.a — 413 members, 411 byte-identical to R176, changed InventoryState.cpp.obj and main.cpp.obj only.
+New feature: hovered inventory grenade/proximity grenade displays BA_PRIME TU and BA_THROW TU using selected soldier via BattleUnit::getActionTUs; text below grenade label in ammo details. Previously missing in R176.
+Regression feature gate: feature_gate_r177.py; 15 checks passed. build_r177.ps1 now invokes gate after compilation.
+Preserved source markers: auto-all one-round magazine exclusion, fragmentation grenade priority, low-TU auto mode, both hands, R148 transfer search, R138 transfer sort, click-selected craft exchange, craft-only exchange, capacity diagnostic.
+Installation: XPZ_R177_ALLPATCH_START.cmd created; XPZ_LATEST_INTEGRATED.cmd points to R177. Previous latest entrypoint backed up as XPZ_LATEST_INTEGRATED.before_R177_20261120.cmd.
+Actual gameplay testing: not performed; cannot certify actual font rendering, TU UI layout or scenario save roundtrip. No original save file altered.
+Git provenance: isolated worktree branch feat/xpz-r177-grenade-tu-regression-20261120 based on origin/main; see branch commit. Do not add pre-existing dirty files from main checkout.

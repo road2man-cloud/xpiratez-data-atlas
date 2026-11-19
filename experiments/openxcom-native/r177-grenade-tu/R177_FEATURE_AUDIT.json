@@ -1,0 +1,29 @@
+{
+  "release": "R177",
+  "status": "PASS",
+  "checks": {
+    "grenade_tu_display": true,
+    "grenade_tu_personalized": true,
+    "autoall_one_round_exclusion": true,
+    "autoall_frag_prioritized": true,
+    "autoall_both_hands": true,
+    "autoall_low_tu": true,
+    "transfer_search_r148": true,
+    "transfer_sort_r138": true,
+    "exchange_click_persisted": true,
+    "craft_only_no_crew_transfer": true,
+    "exchange_capacity_diagnostics": true,
+    "version_title": true,
+    "413_cumulative_objects": true,
+    "only_expected_objects_changed": true,
+    "exe_exists": true
+  },
+  "changed_objects": [
+    "InventoryState.cpp.obj",
+    "main.cpp.obj"
+  ],
+  "parent_objects": 413,
+  "output_objects": 413,
+  "exe_sha256": "f80897a5560b21d30a00a53c5ce0518867f321291e1e8a09a2df82729386c6db",
+  "gameplay_verified": false
+}
