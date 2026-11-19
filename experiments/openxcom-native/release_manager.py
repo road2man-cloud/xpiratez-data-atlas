@@ -183,7 +183,7 @@ def activate(spec: dict, report: dict) -> dict:
         '@echo off\r\ncd /d "%~dp0"\r\n'
         f'start "" "%~dp0{build_exe.name}"\r\n'
     )
-    if launcher.exists() and launcher.read_text(encoding="ascii") != launch_script:
+    if launcher.exists() and launcher.read_bytes() != launch_script.encode("ascii"):
         raise ReleaseError("Target launcher collision")
     backup = game / f"XPZ_LATEST_INTEGRATED.before_{spec['release_id']}.cmd"
     if backup.exists() and backup.read_bytes() != old_bytes:
