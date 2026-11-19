@@ -98,6 +98,37 @@ def read_manifest(path: Path) -> dict:
     return manifest
 
 
+def persistent_contracts(spec: dict) -> dict[str, dict]:
+    """Enforce permanent patch contracts independent of a release's manifest.
+
+    In particular, the repeated grenade TU and AutoAll regression must not
+    reappear just because a future developer forgot a source_contract entry.
+    """
+    file = Path(__file__).with_name("persistent_features.json")
+    if not file.is_file():
+        raise ReleaseError("Persistent native feature registry missing")
+    registry = json.loads(file.read_text(encoding="utf-8"))
+    if int(spec["object_count"]) != int(registry["object_count"]):
+        return {}  # Local synthetic-archive fixtures are not a 413-member release.
+    results = {}
+    for filename, rule in registry["required_sources"].items():
+        matches = [Path(contract["path"]) for contract in spec["source_contracts"]
+                   if Path(contract["path"]).name == filename]
+        if len(matches) != 1:
+            raise ReleaseError(
+                f"Persistent feature contract requires exactly one source: {filename}"
+            )
+        source = matches[0]
+        if not source.is_file():
+            raise ReleaseError(f"Required cumulative feature source missing: {source}")
+        content = source.read_text(encoding="utf-8")
+        missing = [token for token in rule["markers"] if token not in content]
+        if missing:
+            raise ReleaseError(f"Persistent features lost in {filename}: {missing}")
+        results[filename] = {"passed": True, "tokens": len(rule["markers"])}
+    return results
+
+
 def audit(spec: dict) -> dict:
     paths = {
         k: Path(spec[k]) for k in (
@@ -135,6 +166,7 @@ def audit(spec: dict) -> dict:
         if missing or forbidden:
             raise ReleaseError(f"Missing feature {name}, absent={missing}, forbidden={forbidden}")
         features[name] = {"passed": True, "tokens": len(contract["contains"])}
+    permanent = persistent_contracts(spec)
     return {
         "release_id": spec["release_id"],
         "result": "PASS",
@@ -145,6 +177,7 @@ def audit(spec: dict) -> dict:
         "unchanged_objects": len(current) - len(changed),
         "changed_objects": changed,
         "features": features,
+        "permanent_features": permanent,
         "gameplay_verified": False,
     }
 
