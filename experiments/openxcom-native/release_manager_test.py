@@ -79,6 +79,48 @@ class ReleaseManagerTests(unittest.TestCase):
             "expected_active_sha256": release.sha256(self.game / "XPZ_LATEST_INTEGRATED.cmd")
         }
 
+    def cumulative_fixture(self):
+        """Upgrade a three-object test to the real 413-object release contract."""
+        extras = {f"unused-{i:03}.cpp.obj": b"inherited" for i in range(410)}
+        synthetic_ar(self.old_archive, {**self.obj_old, **extras})
+        synthetic_ar(self.new_archive, {**self.obj_new, **extras})
+        self.manifest["object_count"] = 413
+        self.source.write_text(
+            "choice.rule->getClipSize() == 1 usableOwnedFrag r164LowTuMode "
+            "leftHandOccupied getActionTUs(BA_PRIME, item) "
+            "getActionTUs(BA_THROW, item) BA_PRIME BA_THROW "
+            "single_shot_exclusion", encoding="utf-8"
+        )
+        transfer = self.root / "TransferItemsState.cpp"
+        transfer.write_text(
+            "assigned->setCraft(0) exchangeBlockReason r148SearchState "
+            "r138ApplyColumnSort queueCraftExchange", encoding="utf-8"
+        )
+        self.manifest["source_contracts"].append({
+            "name": "craft-transaction", "path": str(transfer),
+            "contains": ["exchangeBlockReason"]
+        })
+
+    def test_cumulative_413_rejects_omitted_mandatory_source(self):
+        self.cumulative_fixture()
+        self.manifest["source_contracts"].pop()
+        with self.assertRaisesRegex(release.ReleaseError, "Persistent feature contract"):
+            release.audit(self.manifest)
+
+    def test_cumulative_413_rejects_removed_grenade_tu_even_if_manifest_omits_it(self):
+        self.cumulative_fixture()
+        self.source.write_text(
+            "single_shot_exclusion BA_PRIME BA_THROW", encoding="utf-8"
+        )
+        with self.assertRaisesRegex(release.ReleaseError, "Persistent features lost"):
+            release.audit(self.manifest)
+
+    def test_cumulative_413_permanent_contracts_are_reported(self):
+        self.cumulative_fixture()
+        result = release.audit(self.manifest)
+        self.assertTrue(result["permanent_features"]["InventoryState.cpp"]["passed"])
+        self.assertTrue(result["permanent_features"]["TransferItemsState.cpp"]["passed"])
+
     def test_audit_contains_actual_changed_members(self):
         report = release.audit(self.manifest)
         self.assertEqual(report["result"], "PASS")
