@@ -1,0 +1,23 @@
+﻿{
+  "schema": "xpz3d.r148s10.docked_native_3d_viewer/v1",
+  "version": "R148S10",
+  "oxce_parent": "R148 cumulative 413-member archive, R148S9 companion",
+  "oxce_exe": "D:\\daphne_auto\\XPZ3D_R148S10_DOCKED_VIEW_20261119\\build\\openxcom_R148S10_ALLPATCH_LOFT_PCK_DOCKED_3D.exe",
+  "oxce_sha256": "E717CC2570F50D326416A4E896F1E0DAF572DEFB57F1A0CF3F0E81F1C49E6771",
+  "oxce_size": 27531000,
+  "s2_exe": "D:\\daphne_auto\\XPZ3D_R148S9_VIEWER_TOGGLE_20261119\\R148S9_PAIRED_LOCAL_CANDIDATE\\s2-native\\Game-r148s7-pck-XPZ3D-IGScene.exe",
+  "s2_sha256": "F16BA57FCFB054099DF1989CA7033352E921F559DC2EC306ACB604A348893057",
+  "s2_rebuilt": false,
+  "hotkey_visibility": "Ctrl+Alt+F10",
+  "hotkey_layout": "Ctrl+Alt+F9",
+  "layout_modes": [
+    "right",
+    "left",
+    "float"
+  ],
+  "same_window_3d": false,
+  "mouse_keyboard_safety": "R23R directinput block unchanged; safe no-activate positioning",
+  "original_saves_modified": false,
+  "native_oxce_compiled": true,
+  "live_gameplay_verified": false
+}
