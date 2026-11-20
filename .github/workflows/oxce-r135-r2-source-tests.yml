@@ -1,0 +1,27 @@
+name: OXCE R135-r2 source regression checks
+on:
+  push:
+    branches:
+      - integration/oxce-r131-r134-source-audit-20261117
+      - main
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r2/**'
+      - 'tools/check-oxce-r135-r2-source.test.mjs'
+      - '.github/workflows/oxce-r135-r2-source-tests.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r2/**'
+      - 'tools/check-oxce-r135-r2-source.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check-static-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify cumulative ammo, whip and Backspace source requirements
+        run: node --test tools/check-oxce-source-census.test.mjs tools/check-oxce-r135-r2-source.test.mjs

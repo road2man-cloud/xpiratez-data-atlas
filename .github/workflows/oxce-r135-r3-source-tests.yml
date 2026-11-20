@@ -1,0 +1,29 @@
+name: OXCE R135-r3 integration regression checks
+on:
+  push:
+    branches:
+      - main
+      - integration/oxce-r131-r134-source-audit-20261117
+    paths:
+      - 'experiments/oxce-custom-release-audit/R135-r3/**'
+      - 'experiments/oxce-custom-release-audit/R135-r2/**'
+      - 'tools/check-oxce-r135-r3-integrated.test.mjs'
+      - 'tools/check-oxce-r135-r2-source.test.mjs'
+      - '.github/workflows/oxce-r135-r3-source-tests.yml'
+  pull_request:
+    paths:
+      - 'experiments/oxce-custom-release-audit/**'
+      - 'tools/check-oxce-r135-r3-integrated.test.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cumulative-source-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run cumulative source checks
+        run: node --test tools/check-oxce-source-census.test.mjs tools/check-oxce-r135-r2-source.test.mjs tools/check-oxce-r135-r3-integrated.test.mjs
