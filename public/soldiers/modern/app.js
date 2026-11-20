@@ -19,6 +19,7 @@ import {trainingOrderEvidence} from './training-order-evidence.js';
 import {conditionalGrowthProjection} from './conditional-growth-math.js';
 import {registeredRouteDistribution} from './route-roll-math.js';
 import {rankGrowthPlacements} from './route-growth-placement.js';
+import {candidateRollSummary,rankCandidateRollSummaries} from './route-candidate-expectation.js';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
@@ -43,7 +44,7 @@ async function expandOriginArchive(envelope){
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null,replayGeneration=0,blocked=false;
 let comparison=null;
-let activeCandidateId=null;
+let activeCandidateId=null,candidateScanGeneration=0,candidateScanCache=null;
 const verified=new Map(),routeRollCache=new Map(),traceHistory=[];
 let activeTraceViewer=null,activeBirthViewer=null;
 function renderTraceStep(){
@@ -526,11 +527,110 @@ function growthPlacementScannerHtml(){
     '</select></label><button id="scanGrowthPlacements" type="button">이 경로의 성장 위치 계산</button></div>'+
     '<div id="growthPlacementResults" role="status" aria-live="polite"><p class="fine">시행 횟수·성공률과 목표를 지정한 다음 계산할 수 있습니다.</p></div></details>';
 }
-function routeRollHtml(record,candidate){
+function candidateExpectationPanelHtml(record,sharedTerminal=false){
+  const candidates=sharedTerminal?chortCandidates(record):comparable(record);
+  const choices=new Map(candidates.map(c=>[c.finalSoldierType,name(c.finalSoldierType)]));
+  const bodyOptions=[...choices].sort((a,b)=>a[1].localeCompare(b[1],'ko'));
+  return '<details class="candidate-expectation-scan" data-candidate-scan="'+esc(record.profileId)+'">'+
+    '<summary>이 출생처의 등록 성장 경로 '+candidates.length+'개 · 기대값/문턱 확률 직접 비교</summary>'+
+    '<p class="fine">현재 선택한 출생처에 대해 연구·난이도 조건이 호환되는 등록 경로만 각각 재계산합니다. 코르트 분리와 기존 시술 순서를 유지합니다. 훈련 기회나 난이도 충돌을 합쳐 가상의 만능 경로를 만들지 않습니다.</p>'+
+    '<div class="candidate-scan-controls">'+
+    '<label>비교 목표<select id="candidateExpectationObjective"><option value="total">12종 기대값 합계</option>'+
+      DISPLAY_STATS.map(key=>'<option value="'+esc(key)+'">'+esc(DATA.statLabels[key]||key)+'</option>').join('')+'</select></label>'+
+    '<label>능력치 요건 통과율<select id="candidateExpectationMinGate">'+
+      '<option value="0">제한 없음</option><option value="0.5">50% 이상</option><option value="0.9">90% 이상</option><option value="0.999999999">거의 100%</option></select></label>'+
+    '<label>최종 병종<select id="candidateExpectationBody"><option value="all">모든 최종 병종</option>'+
+      bodyOptions.map(([id,label])=>'<option value="'+esc(id)+'">'+esc(label)+'</option>').join('')+'</select></label>'+
+    '<button type="button" id="scanCandidateExpectations">등록 경로 전부 계산</button></div>'+
+    '<p class="fine">위의 가정형 성장 배치를 선택했다면 모든 후보에 같은 시행 횟수·성공률을 적용합니다. 「마지막 시술 이후」는 후보별 마지막 시술을 기준으로 합니다. 통과율은 출생·시술 난수에서의 <strong>능력치 요건</strong>만 포함합니다.</p>'+
+    '<div id="candidateExpectationResults" aria-live="polite" role="status"><p class="fine">조건부 평균이 가장 높은 경로와 통과율이 높은 경로를 함께 확인하려면 계산을 실행하세요.</p></div></details>';
+}
+function candidateExpectationResultHtml(result,record){
+  if(result.kind!=='conditional-candidate-ranking')
+    return '<p class="failure">'+esc(result.reason||'경로 비교 미산출')+'</p>';
+  const itemById=new Map(record.candidates.map(x=>[x.id,x]));
+  const objective=result.objective==='total'?'12종 합계':DATA.statLabels[result.objective]||result.objective;
+  const candidateRow=(row,index)=>{
+    const candidate=itemById.get(row.id);
+    const names=(candidate?.transforms||[]).map(name);
+    const label=names.length?names.slice(0,3).join(' → ')+(names.length>3?' 외 '+(names.length-3)+'개':''):'시술 없음';
+    return '<tr data-candidate-ranking="'+esc(row.id)+'" data-frontier="'+row.onFrontier+'">'+
+      '<td><button type="button" data-candidate="'+esc(row.id)+'">'+(index+1)+'. '+esc(label)+'</button>'+
+        '<small>'+esc(row.id)+'</small></td>'+
+      '<td>'+esc(name(row.finalSoldierType))+'</td>'+
+      '<td>'+fmtMean(row.score)+'</td><td>'+fmtMean(row.expectedTotal)+'</td>'+
+      '<td>'+fmtPct(row.statGateProbability)+'</td>'+
+      '<td>'+fmt(row.researchCount)+'</td><td>'+fmt(row.transformCount)+'</td>'+
+      '<td>'+(row.onFrontier?'두 축 비지배':'')+'</td></tr>';
+  };
+  const ranked=result.ranked,first=ranked.slice(0,15);
+  const tableBody=(part,offset=0)=>'<div class="birth-stat-scroll"><table class="candidate-rank-table">'+
+    '<thead><tr><th>실제 등록 시술 경로</th><th>최종 병종</th><th>'+esc(objective)+'</th>'+
+    '<th>12종 평균 합</th><th>능력치 요건 통과</th><th>연구</th><th>시술</th><th>2축 비교</th></tr></thead>'+
+    '<tbody>'+part.map((x,i)=>candidateRow(x,i+offset)).join('')+'</tbody></table></div>';
+  return '<p><strong>등록 경로 '+result.registered+'개 계산 · 평균 산출 '+result.computed+
+    '개 · 능력치 요건 0% '+result.statBlocked.length+'개 · 계산 근거 부족 '+result.unverified.length+
+    '개</strong></p>'+
+    '<p class="fine">선택한 병종·통과율 조건 후 '+ranked.length+'개 · 조건 미충족 '+result.excludedByFilter+
+    '개 · 같은 최종 병종 내 '+esc(objective)+' 기대값과 통과율을 동시에 개선하는 다른 후보가 없는 경로 '+result.frontierCount+'개. <strong>이 표시는 12종 전체 우열이나 연구비용 최적화를 증명하지 않습니다.</strong></p>'+
+    (ranked.length?'<p class="fine">현재 조건에서 가장 높은 '+esc(objective)+' 기대값: <strong>'+fmtMean(ranked[0].score)+
+      '</strong>, 능력치 요건 통과 '+fmtPct(ranked[0].statGateProbability)+
+      ' · 최종 병종 '+esc(name(ranked[0].finalSoldierType))+'</p>'+tableBody(first)+
+      (ranked.length>15?'<details class="candidate-rank-rest"><summary>나머지 '+(ranked.length-15)+'개 경로 모두 보기</summary>'+
+        tableBody(ranked.slice(15),15)+'</details>':''):'<p class="fine">필터에 맞는 산출 가능 경로가 없습니다.</p>')+
+    (result.unverified.length?'<details><summary>계산 보류 '+result.unverified.length+'건 근거</summary><ul>'+
+      result.unverified.map(x=>'<li>'+esc(x.id||'?')+' · '+esc(x.reason||'원본 미확정')+'</li>').join('')+
+      '</ul></details>':'')+
+    '<p class="fine">'+esc(result.caveat)+'</p>';
+}
+function rerankCandidateExpectations(){
+  const output=$('#candidateExpectationResults'),cache=candidateScanCache;
+  if(!cache||!output||cache.profileId!==selected||
+    cache.candidateId!==activeCandidateId)return;
+  const objective=$('#candidateExpectationObjective')?.value||'total';
+  const minGate=Number($('#candidateExpectationMinGate')?.value||0);
+  const body=$('#candidateExpectationBody')?.value||'all';
+  output.innerHTML=candidateExpectationResultHtml(
+    rankCandidateRollSummaries(cache.entries,{objective,minGate,body}),cache.record);
+}
+async function scanCandidateExpectations(){
+  if(blocked||!selected||!activeCandidateId)return;
+  const record=REPORT.records.find(x=>x.profileId===selected);
+  if(!record)return;
+  const chosen=record.candidates.find(x=>x.id===activeCandidateId);
+  const isTerminal=chosen?.finalSoldierType==='STR_SOLDIER_CHORT';
+  const candidates=isTerminal?chortCandidates(record):comparable(record);
+  const output=$('#candidateExpectationResults');
+  if(!output)return;
+  const objective=$('#candidateExpectationObjective')?.value||'total';
+  const minGate=Number($('#candidateExpectationMinGate')?.value||0);
+  const body=$('#candidateExpectationBody')?.value||'all';
+  const timing=$('#routeGrowthTiming')?.value||'none';
+  const attempts=timing==='none'?0:Number($('#routeGrowthAttempts')?.value);
+  const success=timing==='none'?0:Number($('#routeGrowthSuccess')?.value);
+  const token=++candidateScanGeneration,openGeneration=replayGeneration;
+  const entries=[];
+  output.textContent='등록 경로 '+candidates.length+'개 중 확률을 계산하는 중…';
+  for(let i=0;i<candidates.length;i++){
+    if(token!==candidateScanGeneration||openGeneration!==replayGeneration||
+      !output.isConnected)return;
+    entries.push(candidateRollSummary(DATA,record.profileId,candidates[i],
+      {timing,attempts,success}));
+    if(i%8===7&&i+1<candidates.length){
+      output.textContent='출생처 '+record.name+' · '+(i+1)+' / '+candidates.length+'개 경로 계산';
+      await new Promise(resolve=>setTimeout(resolve,0));
+    }
+  }
+  if(token!==candidateScanGeneration||openGeneration!==replayGeneration||
+    !output.isConnected)return;
+  candidateScanCache={profileId:record.profileId,candidateId:activeCandidateId,record,entries};
+  rerankCandidateExpectations();
+}
+function routeRollHtml(record,candidate,sharedTerminal=false){
   const roll=routeRoll(record,candidate);
   if(roll.kind!=='conditional-route-distribution')
     return '<section class="birth-distribution"><h3>등록 경로 RNG 결과 미산출</h3>'+
-      '<p class="failure">'+esc(roll.reason||'원본 확률 계산 근거 부족')+'</p>'+growthPlacementScannerHtml()+'</section>';
+      '<p class="failure">'+esc(roll.reason||'원본 확률 계산 근거 부족')+'</p>'+growthPlacementScannerHtml()+candidateExpectationPanelHtml(record,sharedTerminal)+'</section>';
   const threshold=Math.ceil(roll.expectedTotal);
   const stages=roll.stages.length?roll.stages.map((step,i)=>
     '<li><button type="button" data-open-training="'+esc(step.id)+'">'+esc(name(step.id))+'</button>'+
@@ -552,7 +652,7 @@ function routeRollHtml(record,candidate){
     '<p id="routeRollThresholdResult" class="fine" role="status">가정이 성립하고 능력치 문턱을 통과한 병사 중 총합 '+fmt(threshold)+' 이상일 확률 '+fmtPct(newbornTailChance(roll,threshold))+'</p>'+
     '<div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>능력치</th><th>원시 평균</th><th>영구 특성</th><th>실효 평균</th><th>10%</th><th>90%</th></tr></thead><tbody>'+
     DISPLAY_STATS.map(key=>'<tr><th scope="row">'+esc(DATA.statLabels[key]||key)+'</th><td>'+fmtMean(roll.rawStats[key])+'</td><td>'+fmt(roll.bonus[key]||0)+'</td><td>'+fmtMean(roll.stats[key])+'</td><td>'+fmt(roll.bands[key].p10)+'</td><td>'+fmt(roll.bands[key].p90)+'</td></tr>').join('')+
-    '</tbody></table></div><details><summary>적용된 시술의 순서와 문턱 ('+roll.stages.length+'단계)</summary><ol>'+stages+'</ol></details>'+growthPlacementScannerHtml()+'</section>';
+    '</tbody></table></div><details><summary>적용된 시술의 순서와 문턱 ('+roll.stages.length+'단계)</summary><ol>'+stages+'</ol></details>'+growthPlacementScannerHtml()+candidateExpectationPanelHtml(record,sharedTerminal)+'</section>';
 }
 function statGrid(c,metric='growth'){
   const view=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope'?c.growth:c.display;
@@ -913,6 +1013,7 @@ function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
 }
 async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   if(blocked)return;const generation=++replayGeneration;
+  candidateScanGeneration++;candidateScanCache=null;
   activeBirthViewer?.dispose();activeBirthViewer=null;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
@@ -994,7 +1095,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
     (!sharedTerminal&&baseline(metric)?'<p class="scope-note">현재 경로의 비교는 표에서 선택한 동일 능력치 방식만 사용하며, 연구·자원 조건이 다른 두 경로를 한 대원에게 합산하지 않습니다.</p>'+compareEvidenceHtml(viewFor(record,metric,c.id),baseline(metric)):'')+
     coverageNote+
     (sharedTerminal?'<p class="shared-terminal-origin-note"><strong>코르트 별도 병종 경로</strong> · 출생처 기본 비교에서 제외된 변신 증거입니다. <a href="#chortTarget">코르트 목록 보기</a></p>':sharedTerminalOriginNote(record,profile))+
-    campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+(metric==='route-expected'?routeRollHtml(record,c):statGrid(c,metric))+
+    campaignContextHtml(record,c)+staminaBasis+birthPaths+initialChoiceHtml+transformationGateHtml(c,profile)+(metric==='route-expected'?routeRollHtml(record,c,sharedTerminal):statGrid(c,metric))+
     (sharedTerminal?'':educationChoicesHtml(record,profile,c))+routeFutureOptionsHtml(c)+
     routeEfficiencyHtml(alternateSet,c,metric)+
     (metric==='growth'?routePruningEvidenceHtml(record,c,sharedTerminal):'')+
@@ -1060,6 +1161,10 @@ async function init(){try{
     });
   for(const [id,direction] of [['#scrollStatsLeft',-1],['#scrollStatsRight',1]])
     $(id).addEventListener('click',()=>$('#originTableScroll').scrollBy({left:direction*260,behavior:'smooth'}));
+  document.addEventListener('change',e=>{
+    if(['candidateExpectationObjective','candidateExpectationMinGate',
+      'candidateExpectationBody'].includes(e.target.id))rerankCandidateExpectations();
+  });
   document.addEventListener('input',e=>{
     if(e.target.id==='routeRollThreshold'&&selected&&activeCandidateId){
       const record=REPORT.records.find(r=>r.profileId===selected);
@@ -1111,6 +1216,9 @@ async function init(){try{
     });
     if(shared){void openOrigin(shared.dataset.sharedOrigin,shared.dataset.openSharedCandidate,
       {sharedTerminal:true}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));}
+    if(e.target.closest('#scanCandidateExpectations')){
+      void scanCandidateExpectations();return;
+    }
     const metricButton=e.target.closest('[data-switch-metric]');
     if(e.target.closest('#scanGrowthPlacements')&&selected&&activeCandidateId){
       const output=$('#growthPlacementResults');
@@ -1205,7 +1313,7 @@ async function init(){try{
     });
     if(e.target.id==='originDetailClose'){
       activeBirthViewer?.dispose();activeBirthViewer=null;
-      $('#originDetails').hidden=true;replayGeneration++;
+      $('#originDetails').hidden=true;replayGeneration++;candidateScanGeneration++;candidateScanCache=null;
     }
   });
   $('#acquisitionTraceBack').onclick=previousTraceStep;

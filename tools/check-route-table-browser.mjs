@@ -108,6 +108,29 @@ try {
   assert.match(await page.locator('#routeRollThresholdResult').innerText(),/0%/);
   await page.locator('#routeGrowthTiming').selectOption('after');
   await page.waitForFunction(()=>document.querySelector('[data-route-roll]')!==null,{timeout:60000});
+  await page.locator('.candidate-expectation-scan > summary').click();
+  assert.match(await page.locator('.candidate-expectation-scan > summary').innerText(),/등록 성장 경로/);
+  await page.locator('#candidateExpectationObjective').selectOption('firing');
+  await page.locator('#candidateExpectationMinGate').selectOption('0');
+  await page.locator('#scanCandidateExpectations').click();
+  await page.waitForFunction(()=>document.querySelector('#candidateExpectationResults [data-candidate-ranking]')!==null,{
+    timeout:90000
+  });
+  const rankedRows=page.locator('#candidateExpectationResults [data-candidate-ranking]');
+  assert(await rankedRows.count()>0,'at least one ranked registered source path');
+  assert.match(await page.locator('#candidateExpectationResults').innerText(),/능력치 요건 통과/);
+  const columnBefore=await page.locator('#candidateExpectationResults .candidate-rank-table thead th').nth(2).innerText();
+  await page.locator('#candidateExpectationObjective').selectOption('tu');
+  const columnAfter=await page.locator('#candidateExpectationResults .candidate-rank-table thead th').nth(2).innerText();
+  assert.notEqual(columnAfter,columnBefore,'changing objective must reorder without rescanning');
+  await page.locator('#candidateExpectationMinGate').selectOption('0.9');
+  assert.match(await page.locator('#candidateExpectationResults').innerText(),/조건 미충족/);
+  await page.locator('#candidateExpectationMinGate').selectOption('0');
+  const rankedId=await rankedRows.first().getAttribute('data-candidate-ranking');
+  await rankedRows.first().locator('[data-candidate]').click();
+  await page.waitForFunction(id=>document.querySelector('[data-route-roll]')?.getAttribute('data-route-roll')===id,rankedId,{
+    timeout:60000
+  });
   // Upstream v.o2 keeps Chort endgame terminal separate from the birthplace
   // ranking. The new expectation metric must preserve that separation too.
   if(await page.locator('#family option[value="origin:manufacture:STR_THEBAN_ASSAULT_CLONE"]').count()){
