@@ -5,6 +5,7 @@
 import {BIRTH_STAT_KEYS,newbornRawPairs,distributionMoment,distributionQuantile}
   from './birth-rng-math.js';
 import {initialState,bonusStats} from './eligibility.js';
+import {conditionBirthPairs} from './birth-selection.js';
 const num=x=>Number.isFinite(x)?x:0;
 const int=x=>Number.isSafeInteger(x);
 const add=(map,id,p)=>map.set(id,(map.get(id)||0)+p);
@@ -135,7 +136,7 @@ function combine(all,maxStates=30000){
   }
   return sum;
 }
-function finalize(pairs,state,data,eligibility,stages,growthStages){
+function finalize(pairs,state,data,eligibility,stages,growthStages,birthSelection){
   const bonus=bonusStats(state,data),perStat={},stats={},rawStats={},bands={};
   for(const key of BIRTH_STAT_KEYS){
     const b=num(bonus[key]);
@@ -155,14 +156,19 @@ function finalize(pairs,state,data,eligibility,stages,growthStages){
     totalDistribution:sum,expectedTotal:distributionMoment(sum),
     totalBand:{min:sum[0][0],p10:distributionQuantile(sum,.1),
       p50:distributionQuantile(sum,.5),p90:distributionQuantile(sum,.9),max:sum.at(-1)[0]},
-    statGateProbability:eligibility,stages,growthStages,
+    statGateProbability:eligibility,
+    birthSelectionProbability:birthSelection.selectionProbability,
+    jointStatEligibilityProbability:birthSelection.selectionProbability*eligibility,
+    birthSelectionCount:birthSelection.constrained,
+    birthSelectionMode:birthSelection.mode,
+    stages,growthStages,
     caveat:'선택된 연구·획득·시술 순서의 비능력치 요구가 모두 충족된다는 조건. 출생 RNG·시술 난수 독립을 가정. '+
       (growthStages.length?'지정한 가상 전투 성장 횟수·성공률을 반영했으나 OXCE 경험치 실측 모델이 아님. ':'전투 성장 시행은 0회. ')+
       '훈장, 자원 소모 및 경로 최적성은 포함하지 않음'};
 }
 // Returns an exact conditional discrete distribution over twelve independent
 // stats for each source-compatible registered single-soldier transform path.
-export function registeredRouteDistribution(data,profileId,candidate,{maxStates=20000,growthSchedule=[]}={}){
+export function registeredRouteDistribution(data,profileId,candidate,{maxStates=20000,growthSchedule=[],birthSelection=null}={}){
   const profile=data?.profiles?.find(p=>p.id===profileId);
   if(!profile||!candidate||candidate.profileId!==profileId)
     return unavailable('선택 출생처와 등록 후보의 원본 연결 없음');
@@ -176,11 +182,18 @@ export function registeredRouteDistribution(data,profileId,candidate,{maxStates=
       Object.keys(x.stats).some(key=>!BIRTH_STAT_KEYS.includes(key))))
     return unavailable('가상 성장 단계·능력치 입력 오류');
   try{
-    const pairs=newbornRawPairs(data,profileId);
+    let pairs=newbornRawPairs(data,profileId);
     const state=initialState(data,profile,{band:'min'});
     const initialBonus=bonusStats(state,data);
     if(BIRTH_STAT_KEYS.some(key=>num(initialBonus[key])!==num(profile.traitStats?.[key])))
       return unavailable('초기 영구 보너스 색인과 원본 이력 불일치');
+    const selectedBirth=conditionBirthPairs(pairs,initialBonus,birthSelection);
+    if(selectedBirth.kind==='unverified'||selectedBirth.kind==='birth-incompatible')
+      return {kind:selectedBirth.kind,reason:selectedBirth.reason,
+        selectionProbability:selectedBirth.selectionProbability??null,
+        impossibleStat:selectedBirth.key??null,
+        possible:selectedBirth.possible??null};
+    pairs=selectedBirth.pairs;
     const stages=[],growthStages=[];
     let type=profile.soldierType,survival=1;
     const rules=new Map(data.transformations.map(r=>[r.id,r]));
@@ -213,7 +226,7 @@ export function registeredRouteDistribution(data,profileId,candidate,{maxStates=
       for(const key of BIRTH_STAT_KEYS){
         const passed=filterGate(pairs[key],key,rule,num(previousBonus[key]));
         stageChance*=passed.probability;
-        if(passed.probability<1e-14)
+        if(passed.probability<=0)
           return {kind:'stat-gated',reason:'능력치 요건 충족 확률 0: '+id+'/'+key,
             statGateProbability:0,stages};
         pairs[key]=passed.pairs;
@@ -245,6 +258,6 @@ export function registeredRouteDistribution(data,profileId,candidate,{maxStates=
       type=nextType;
       growAt(index+1);
     }
-    return finalize(pairs,state,data,survival,stages,growthStages);
+    return finalize(pairs,state,data,survival,stages,growthStages,selectedBirth);
   }catch(error){return unavailable(error.message);}
 }

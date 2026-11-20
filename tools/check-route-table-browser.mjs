@@ -131,6 +131,34 @@ try {
   await page.waitForFunction(id=>document.querySelector('[data-route-roll]')?.getAttribute('data-route-roll')===id,rankedId,{
     timeout:60000
   });
+  assert.equal(await page.locator('.candidate-expectation-scan').evaluate(x=>x.open),true,
+    'scanned paths stay expanded after navigating to a different candidate');
+  assert.equal(await page.locator('#candidateExpectationObjective').inputValue(),'tu',
+    'selected ranking objective survives candidate navigation');
+  if(!await page.locator('.candidate-birth-select').evaluate(x=>x.open))
+    await page.locator('.candidate-birth-select > summary').click();
+  assert.equal(await page.locator('[data-birth-stat]').count(),12);
+  await page.locator('[data-birth-stat="tu"]').fill('-9999');
+  await page.locator('#scanCandidateExpectations').click();
+  assert.match(await page.locator('#candidateExpectationResults').innerText(),/선발 조건 불일치/);
+  assert.equal(await page.locator('#candidateExpectationResults [data-candidate-ranking]').count(),0);
+  await page.locator('#candidateBirthClear').click();
+  await page.locator('#candidateBirthMode').selectOption('atLeast');
+  await page.locator('#candidateBirthMin').click();
+  assert.match(await page.locator('#candidateBirthStatus').innerText(),/12\/12종/);
+  await page.locator('#scanCandidateExpectations').click();
+  await page.waitForFunction(()=>document.querySelector('#candidateExpectationResults [data-candidate-ranking]')!==null,{
+    timeout:90000
+  });
+  assert.match(await page.locator('#candidateExpectationResults .candidate-selection-context').innerText(),/선발/);
+  assert.equal(await page.locator('#candidateExpectationResults .candidate-selection-impact').count(),1);
+  assert.match(await page.locator('#candidateExpectationResults .candidate-rank-table thead').first().innerText(),/신규 추첨에서 선발/);
+  const observedTu=await page.locator('[data-birth-stat="tu"]').inputValue();
+  await page.locator('#candidateExpectationResults [data-candidate-ranking] [data-candidate]').first().click();
+  await page.waitForFunction(()=>document.querySelector('[data-route-roll]')!==null,{timeout:60000});
+  assert.equal(await page.locator('.candidate-expectation-scan').evaluate(x=>x.open),true);
+  assert.equal(await page.locator('#candidateBirthMode').inputValue(),'atLeast');
+  assert.equal(await page.locator('[data-birth-stat="tu"]').inputValue(),observedTu);
   // Upstream v.o2 keeps Chort endgame terminal separate from the birthplace
   // ranking. The new expectation metric must preserve that separation too.
   if(await page.locator('#family option[value="origin:manufacture:STR_THEBAN_ASSAULT_CLONE"]').count()){
@@ -142,5 +170,5 @@ try {
     await page.locator('#family').selectOption('');
   }
   assert.deepEqual(errors,[]);
-  console.log("PASS generic route comparison: baseline, 12 stat deltas, metric switching, candidate, research evidence, reset");
+  console.log("PASS generic route comparison: 12 stat deltas, origin-specific birth selection, impossible RNG rejection, source path ranking, candidate persistence, Chort isolation");
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}

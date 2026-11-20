@@ -12,7 +12,7 @@ const invalid=reason=>({kind:'unverified',reason});
 export const ROUTE_EXPECTATION_OBJECTIVES=Object.freeze(['total',...BIRTH_STAT_KEYS]);
 
 export function candidateRollSummary(data,profileId,candidate,{
-  timing='none',attempts=0,success=0
+  timing='none',attempts=0,success=0,birthSelection=null
 }={}){
   if(!candidate||candidate.profileId!==profileId)
     return invalid('출생처/후보 참조 불일치');
@@ -26,9 +26,11 @@ export function candidateRollSummary(data,profileId,candidate,{
       attempts,kernel:[[0,1-success/100],[1,success/100]]
     }]))
   }];
-  const roll=registeredRouteDistribution(data,profileId,candidate,{growthSchedule:schedule});
+  const roll=registeredRouteDistribution(data,profileId,candidate,
+    {growthSchedule:schedule,birthSelection});
   if(roll.kind!=='conditional-route-distribution')
-    return {kind:roll.kind==='stat-gated'?'stat-gated':'unverified',
+    return {kind:roll.kind==='stat-gated'?'stat-gated':
+      roll.kind==='birth-incompatible'?'birth-incompatible':'unverified',
       id:candidate.id,reason:roll.reason||'실측하지 않은 변신 규칙'};
   const gate=clamp(roll.statGateProbability);
   if(!Number.isFinite(gate)||!Number.isFinite(roll.expectedTotal)||
@@ -37,6 +39,8 @@ export function candidateRollSummary(data,profileId,candidate,{
   return {kind:'source-conditional-candidate',id:candidate.id,profileId,
     finalSoldierType:candidate.finalSoldierType,stats:roll.stats,
     expectedTotal:roll.expectedTotal,statGateProbability:gate,
+    birthSelectionProbability:roll.birthSelectionProbability,
+    jointStatEligibilityProbability:roll.jointStatEligibilityProbability,
     transformCount:candidate.transforms.length,researchCount:candidate.researchCount,
     assumptions:candidate.assumptions?.length??0,
     caveat:'능력치 요건 통과를 조건으로 한 평균이며 출생·연구 획득 확률과 다름'};
@@ -51,16 +55,20 @@ export function rankCandidateRollSummaries(entries,{
     !Number.isFinite(minGate)||minGate<0||minGate>1||
     typeof body!=='string'||!body)
     return invalid('경로 비교 목표/선발 문턱 오류');
-  const unique=new Set(),valid=[],unverified=[],statBlocked=[];
+  const unique=new Set(),valid=[],unverified=[],statBlocked=[],birthIncompatible=[];
   for(const entry of entries||[]){
     if(!entry||!entry.id||unique.has(entry.id))
       return invalid('후보 ID 중복·누락');
     unique.add(entry.id);
     if(entry.kind==='stat-gated'){statBlocked.push(entry);continue;}
+    if(entry.kind==='birth-incompatible'){birthIncompatible.push(entry);continue;}
     if(entry.kind!=='source-conditional-candidate'){unverified.push(entry);continue;}
     if(!Number.isFinite(entry.expectedTotal)||
       !Number.isFinite(entry.statGateProbability)||
       entry.statGateProbability<0||entry.statGateProbability>1||
+      (entry.birthSelectionProbability!=null&&
+        (!Number.isFinite(entry.birthSelectionProbability)||
+        entry.birthSelectionProbability<0||entry.birthSelectionProbability>1))||
       !entry.stats||BIRTH_STAT_KEYS.some(k=>!Number.isFinite(entry.stats[k])))
       return invalid('등록 후보의 기대값 또는 통과율 무효');
     valid.push({...entry,score:objective==='total'?entry.expectedTotal:entry.stats[objective]});
@@ -76,7 +84,7 @@ export function rankCandidateRollSummaries(entries,{
     (y.score>x.score+EPS||y.statGateProbability>x.statGateProbability+EPS)));
   const ids=new Set(frontier.map(x=>x.id));
   return {kind:'conditional-candidate-ranking',objective,body,minGate,
-    registered:unique.size,computed:valid.length,statBlocked,unverified,
+    registered:unique.size,computed:valid.length,statBlocked,unverified,birthIncompatible,
     excludedByFilter:valid.length-available.length,
     ranked:available.map(x=>({...x,onFrontier:ids.has(x.id)})),
     frontierCount:frontier.length,best:available[0]||null,

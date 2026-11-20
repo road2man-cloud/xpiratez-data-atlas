@@ -1,3 +1,17 @@
+.candidate-birth-select{padding:10px 12px;margin:12px 0;border:1px solid #527392;border-radius:10px;background:#0d233b}
+.candidate-birth-select>summary{font-size:.83rem;color:#e3f2ff}
+.candidate-birth-select>label{display:grid;gap:5px;font-size:.78rem;color:#c2d7ee;max-width:280px;margin:10px 0}
+.candidate-birth-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0}
+.candidate-birth-grid label{min-width:0;display:grid;gap:5px;font-size:.72rem;color:#a8c8e6}
+.candidate-birth-grid input{width:100%;min-width:0;padding:8px}
+.candidate-birth-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+.candidate-selection-impact{margin:12px 0;border:1px solid #44708f;padding:10px;border-radius:9px;background:#16334a}
+.candidate-selection-impact>summary{font-size:.83rem}
+.candidate-selection-impact .birth-stat-table{min-width:570px}
+.candidate-selection-impact>p{font-size:.82rem}
+.candidate-selection-context{border-left:3px solid #80b4d7;padding:7px 12px;background:#173249;font-size:.81rem;line-height:1.6}
+@media(max-width:900px){.candidate-birth-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:550px){.candidate-birth-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .candidate-expectation-scan{margin:17px 0 4px;padding:13px;border:1px solid #4c6d8c;border-radius:10px;background:#112940}
 .candidate-expectation-scan>summary{font-size:.9rem;color:#e4f3ff}
 .candidate-scan-controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:14px 0}

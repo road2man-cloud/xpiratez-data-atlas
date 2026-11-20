@@ -14,7 +14,8 @@ import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
 import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261108-deep-route-7-1';
 import {routeCandidate,routeNumbers,routeDifference,routeEvidence,routeOnly} from './route-table-compare.js';
-import {newbornDistribution,newbornPairChance,newbornTailChance} from './birth-rng-math.js';
+import {newbornDistribution,newbornPairChance,newbornTailChance,newbornRawPairs} from './birth-rng-math.js';
+import {conditionBirthPairs} from './birth-selection.js';
 import {trainingOrderEvidence} from './training-order-evidence.js';
 import {conditionalGrowthProjection} from './conditional-growth-math.js';
 import {registeredRouteDistribution} from './route-roll-math.js';
@@ -25,6 +26,7 @@ const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>
 const fmt=n=>n==null?'—':Number(n).toLocaleString('ko-KR');
 const fmtMean=n=>n==null?'—':Number(n).toLocaleString('ko-KR',{maximumFractionDigits:2});
 const fmtPct=p=>Number(p*100).toLocaleString('ko-KR',{maximumFractionDigits:2})+'%';
+const fmtSmallChance=p=>p===0?'0%':p>0&&p<0.0001?(p*100).toExponential(2)+'%':fmtPct(p);
 const sha=async x=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(x))))].map(n=>n.toString(16).padStart(2,'0')).join('');
 async function expandOriginArchive(envelope){
   if(envelope?.format!=='xpz-origin-report-gzip-v2')return envelope;
@@ -46,6 +48,7 @@ let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null
 let comparison=null;
 let activeCandidateId=null,candidateScanGeneration=0,candidateScanCache=null;
 const verified=new Map(),routeRollCache=new Map(),traceHistory=[];
+const candidateBirthSelections=new Map();
 let activeTraceViewer=null,activeBirthViewer=null;
 function renderTraceStep(){
   const active=traceHistory.at(-1);
@@ -527,25 +530,64 @@ function growthPlacementScannerHtml(){
     '</select></label><button id="scanGrowthPlacements" type="button">이 경로의 성장 위치 계산</button></div>'+
     '<div id="growthPlacementResults" role="status" aria-live="polite"><p class="fine">시행 횟수·성공률과 목표를 지정한 다음 계산할 수 있습니다.</p></div></details>';
 }
+function candidateBirthSelectionHtml(record){
+  const stored=candidateBirthSelections.get(record.profileId)||{mode:'exact',stats:{}};
+  const count=Object.keys(stored.stats).length;
+  return '<details class="candidate-birth-select"'+(count?' open':'')+'>'+
+    '<summary>실제 신병 초기 능력치·채용 최솟값 입력 <small>('+count+'/12개 지정)</small></summary>'+
+    '<p class="fine">반드시 <strong>영입 직후, 전투 성장·추가 훈련 전에 표시된 실효 능력치</strong>를 사용하세요. 영구 특성은 계산기가 원본 출생 이력에서 이미 반영하므로 더하지 않습니다. 빈칸은 추첨 분포로 남깁니다. 현재 성장한 대원의 값을 입력하면 출생 RNG와 일치하지 않을 수 있습니다.</p>'+
+    '<label>입력값의 의미<select id="candidateBirthMode">'+
+      '<option value="exact"'+(stored.mode==='exact'?' selected':'')+'>실제 신병의 관측값과 일치</option>'+
+      '<option value="atLeast"'+(stored.mode==='atLeast'?' selected':'')+'>채용 기준: 입력값 이상</option></select></label>'+
+    '<div class="candidate-birth-grid">'+DISPLAY_STATS.map(key=>
+      '<label>'+esc(DATA.statLabels[key]||key)+'<input type="number" step="1" data-birth-stat="'+esc(key)+
+      '" placeholder="미지정" value="'+esc(stored.stats[key]??'')+'"></label>').join('')+'</div>'+
+    '<div class="candidate-birth-actions"><button type="button" id="candidateBirthMin">출생 최솟값 불러오기</button>'+
+      '<button type="button" id="candidateBirthClear">입력값 초기화</button></div>'+
+    '<p id="candidateBirthStatus" class="fine" role="status">지정 '+count+'종 · 계산 실행 시 해당 출생 RNG로 실제 가능한 값인지 확인합니다.</p>'+
+    '</details>';
+}
 function candidateExpectationPanelHtml(record,sharedTerminal=false){
   const candidates=sharedTerminal?chortCandidates(record):comparable(record);
   const choices=new Map(candidates.map(c=>[c.finalSoldierType,name(c.finalSoldierType)]));
   const bodyOptions=[...choices].sort((a,b)=>a[1].localeCompare(b[1],'ko'));
+  const previous=candidateScanCache?.profileId===record.profileId&&
+    candidateScanCache?.terminal===sharedTerminal?candidateScanCache.filters:null;
+  const selectedValue=(key,value)=>(String(previous?.[key]??(key==='minGate'?'0':key==='body'?'all':'total'))===String(value)?' selected':'');
   return '<details class="candidate-expectation-scan" data-candidate-scan="'+esc(record.profileId)+'">'+
     '<summary>이 출생처의 등록 성장 경로 '+candidates.length+'개 · 기대값/문턱 확률 직접 비교</summary>'+
-    '<p class="fine">현재 선택한 출생처에 대해 연구·난이도 조건이 호환되는 등록 경로만 각각 재계산합니다. 코르트 분리와 기존 시술 순서를 유지합니다. 훈련 기회나 난이도 충돌을 합쳐 가상의 만능 경로를 만들지 않습니다.</p>'+
+    '<p class="fine">현재 선택한 출생처에 대해 연구·난이도 조건이 호환되는 등록 경로만 각각 재계산합니다. 코르트 분리와 기존 시술 순서를 유지합니다. 훈련 기회나 난이도 충돌을 합쳐 가상의 만능 경로를 만들지 않습니다. 위에 보이는 출생처 전체 평균과 이 아래의 신병 선발 조건부 평균은 구분됩니다.</p>'+candidateBirthSelectionHtml(record)+
     '<div class="candidate-scan-controls">'+
-    '<label>비교 목표<select id="candidateExpectationObjective"><option value="total">12종 기대값 합계</option>'+
-      DISPLAY_STATS.map(key=>'<option value="'+esc(key)+'">'+esc(DATA.statLabels[key]||key)+'</option>').join('')+'</select></label>'+
+    '<label>비교 목표<select id="candidateExpectationObjective"><option value="total"'+selectedValue('objective','total')+'>12종 기대값 합계</option>'+
+      DISPLAY_STATS.map(key=>'<option value="'+esc(key)+'"'+selectedValue('objective',key)+'>'+esc(DATA.statLabels[key]||key)+'</option>').join('')+'</select></label>'+
     '<label>능력치 요건 통과율<select id="candidateExpectationMinGate">'+
-      '<option value="0">제한 없음</option><option value="0.5">50% 이상</option><option value="0.9">90% 이상</option><option value="0.999999999">거의 100%</option></select></label>'+
-    '<label>최종 병종<select id="candidateExpectationBody"><option value="all">모든 최종 병종</option>'+
-      bodyOptions.map(([id,label])=>'<option value="'+esc(id)+'">'+esc(label)+'</option>').join('')+'</select></label>'+
+      '<option value="0"'+selectedValue('minGate',0)+'>제한 없음</option><option value="0.5"'+selectedValue('minGate',0.5)+'>50% 이상</option><option value="0.9"'+selectedValue('minGate',0.9)+'>90% 이상</option><option value="0.999999999"'+selectedValue('minGate',0.999999999)+'>거의 100%</option></select></label>'+
+    '<label>최종 병종<select id="candidateExpectationBody"><option value="all"'+selectedValue('body','all')+'>모든 최종 병종</option>'+
+      bodyOptions.map(([id,label])=>'<option value="'+esc(id)+'"'+selectedValue('body',id)+'>'+esc(label)+'</option>').join('')+'</select></label>'+
     '<button type="button" id="scanCandidateExpectations">등록 경로 전부 계산</button></div>'+
     '<p class="fine">위의 가정형 성장 배치를 선택했다면 모든 후보에 같은 시행 횟수·성공률을 적용합니다. 「마지막 시술 이후」는 후보별 마지막 시술을 기준으로 합니다. 통과율은 출생·시술 난수에서의 <strong>능력치 요건</strong>만 포함합니다.</p>'+
     '<div id="candidateExpectationResults" aria-live="polite" role="status"><p class="fine">조건부 평균이 가장 높은 경로와 통과율이 높은 경로를 함께 확인하려면 계산을 실행하세요.</p></div></details>';
 }
-function candidateExpectationResultHtml(result,record){
+function candidateSelectionImpactHtml(record,entry,selectionInfo){
+  if(!selectionInfo?.constrained||!entry||entry.kind!=='source-conditional-candidate')return '';
+  const candidate=record.candidates.find(c=>c.id===entry.id);
+  const baseline=candidate?routeRoll(record,candidate):null;
+  if(baseline?.kind!=='conditional-route-distribution')return '';
+  const delta=entry.expectedTotal-baseline.expectedTotal;
+  return '<details class="candidate-selection-impact"><summary>현재 선택 경로의 선발 조건 전·후 12종 변화 자세히</summary>'+
+    '<p class="fine">같은 등록 경로·같은 성장 가정이며, 변화를 일으킨 것은 초기값 조건화뿐입니다. 이 차이는 훈련의 추가 효과나 실제 캠페인 확률이 아닙니다.</p>'+
+    '<p>출생처 전체 조건부 기대 합계 '+fmtMean(baseline.expectedTotal)+
+    ' → 입력값을 만족한 신병 조건부 합계 <strong>'+fmtMean(entry.expectedTotal)+'</strong>'+
+    ' · 차이 '+(delta>0?'+':'')+fmtMean(delta)+'</p>'+
+    '<div class="birth-stat-scroll"><table class="birth-stat-table"><thead>'+
+    '<tr><th>능력치</th><th>선발 전</th><th>선발 후</th><th>차이</th></tr></thead><tbody>'+
+    DISPLAY_STATS.map(k=>{
+      const diff=entry.stats[k]-baseline.stats[k];
+      return '<tr><th>'+esc(DATA.statLabels[k]||k)+'</th><td>'+fmtMean(baseline.stats[k])+'</td><td>'+
+        fmtMean(entry.stats[k])+'</td><td>'+(diff>0?'+':'')+fmtMean(diff)+'</td></tr>';
+    }).join('')+'</tbody></table></div></details>';
+}
+function candidateExpectationResultHtml(result,record,selectionInfo,selectedEntry){
   if(result.kind!=='conditional-candidate-ranking')
     return '<p class="failure">'+esc(result.reason||'경로 비교 미산출')+'</p>';
   const itemById=new Map(record.candidates.map(x=>[x.id,x]));
@@ -559,16 +601,25 @@ function candidateExpectationResultHtml(result,record){
         '<small>'+esc(row.id)+'</small></td>'+
       '<td>'+esc(name(row.finalSoldierType))+'</td>'+
       '<td>'+fmtMean(row.score)+'</td><td>'+fmtMean(row.expectedTotal)+'</td>'+
-      '<td>'+fmtPct(row.statGateProbability)+'</td>'+
+      '<td>'+fmtSmallChance(row.statGateProbability)+'</td>'+
+      (selectionInfo?.constrained?'<td>'+fmtSmallChance(row.jointStatEligibilityProbability)+'</td>':'')+
       '<td>'+fmt(row.researchCount)+'</td><td>'+fmt(row.transformCount)+'</td>'+
       '<td>'+(row.onFrontier?'두 축 비지배':'')+'</td></tr>';
   };
   const ranked=result.ranked,first=ranked.slice(0,15);
   const tableBody=(part,offset=0)=>'<div class="birth-stat-scroll"><table class="candidate-rank-table">'+
     '<thead><tr><th>실제 등록 시술 경로</th><th>최종 병종</th><th>'+esc(objective)+'</th>'+
-    '<th>12종 평균 합</th><th>능력치 요건 통과</th><th>연구</th><th>시술</th><th>2축 비교</th></tr></thead>'+
+    '<th>12종 평균 합</th><th>능력치 요건 통과</th>'+
+    (selectionInfo?.constrained?'<th>신규 추첨에서 선발·능력치 요건 모두 통과</th>':'')+
+    '<th>연구</th><th>시술</th><th>2축 비교</th></tr></thead>'+
     '<tbody>'+part.map((x,i)=>candidateRow(x,i+offset)).join('')+'</tbody></table></div>';
-  return '<p><strong>등록 경로 '+result.registered+'개 계산 · 평균 산출 '+result.computed+
+  const birthNote=selectionInfo?.constrained?
+    '<p class="candidate-selection-context">'+(selectionInfo.mode==='exact'?'신병 실측값':'채용 최소 기준')+
+    ' '+selectionInfo.constrained+'개 적용 · 이 출생처에서 신규 추첨 시 기준 충족 '+
+    fmtSmallChance(selectionInfo.selectionProbability)+
+    '. 표의 능력치 요건 통과율은 <strong>이미 선발 기준을 만족한 집단 안</strong>에서 계산했습니다. 신규 추첨에서 두 조건을 모두 만족할 확률은 별도 열이며, 실제 연구·훈련 실행 확률이 아닙니다.</p>':'';
+  return birthNote+candidateSelectionImpactHtml(record,selectedEntry,selectionInfo)+
+    '<p><strong>등록 경로 '+result.registered+'개 계산 · 평균 산출 '+result.computed+
     '개 · 능력치 요건 0% '+result.statBlocked.length+'개 · 계산 근거 부족 '+result.unverified.length+
     '개</strong></p>'+
     '<p class="fine">선택한 병종·통과율 조건 후 '+ranked.length+'개 · 조건 미충족 '+result.excludedByFilter+
@@ -585,13 +636,40 @@ function candidateExpectationResultHtml(result,record){
 }
 function rerankCandidateExpectations(){
   const output=$('#candidateExpectationResults'),cache=candidateScanCache;
-  if(!cache||!output||cache.profileId!==selected||
-    cache.candidateId!==activeCandidateId)return;
+  if(!cache||!output||cache.profileId!==selected)return;
   const objective=$('#candidateExpectationObjective')?.value||'total';
   const minGate=Number($('#candidateExpectationMinGate')?.value||0);
   const body=$('#candidateExpectationBody')?.value||'all';
+  cache.filters={objective,minGate:String($('#candidateExpectationMinGate')?.value??0),body};
   output.innerHTML=candidateExpectationResultHtml(
-    rankCandidateRollSummaries(cache.entries,{objective,minGate,body}),cache.record);
+    rankCandidateRollSummaries(cache.entries,{objective,minGate,body}),cache.record,
+    cache.selectionInfo,cache.entries.find(x=>x.id===activeCandidateId));
+}
+function saveCandidateBirthInputs(){
+  if(!selected)return;
+  const mode=$('#candidateBirthMode')?.value||'exact';
+  const stats={};
+  for(const input of document.querySelectorAll('[data-birth-stat]'))
+    if(input.value.trim()!=='')stats[input.dataset.birthStat]=input.value.trim();
+  candidateBirthSelections.set(selected,{mode,stats});
+  candidateScanGeneration++;candidateScanCache=null;
+  const count=Object.keys(stats).length;
+  const status=$('#candidateBirthStatus'),output=$('#candidateExpectationResults');
+  if(status)status.textContent='지정 '+count+'/12종 · 출생 RNG 검사와 조건부 경로 계산을 다시 실행해야 합니다.';
+  if(output)output.textContent='초기 능력치 선발 기준이 바뀌었습니다. 등록 경로 전부 계산을 눌러 다시 산출하세요.';
+}
+function parseCandidateBirthSelection(){
+  const mode=$('#candidateBirthMode')?.value||'exact',stats={};
+  if(!['exact','atLeast'].includes(mode))return {reason:'선발 조건 모드 오류'};
+  for(const input of document.querySelectorAll('[data-birth-stat]')){
+    const raw=input.value.trim();
+    if(!raw)continue;
+    const n=Number(raw);
+    if(!Number.isSafeInteger(n))return {
+      reason:(DATA.statLabels[input.dataset.birthStat]||input.dataset.birthStat)+'는 정수만 입력할 수 있습니다.'};
+    stats[input.dataset.birthStat]=n;
+  }
+  return {selection:Object.keys(stats).length?{mode,stats}:null};
 }
 async function scanCandidateExpectations(){
   if(blocked||!selected||!activeCandidateId)return;
@@ -602,20 +680,36 @@ async function scanCandidateExpectations(){
   const candidates=isTerminal?chortCandidates(record):comparable(record);
   const output=$('#candidateExpectationResults');
   if(!output)return;
-  const objective=$('#candidateExpectationObjective')?.value||'total';
-  const minGate=Number($('#candidateExpectationMinGate')?.value||0);
-  const body=$('#candidateExpectationBody')?.value||'all';
   const timing=$('#routeGrowthTiming')?.value||'none';
   const attempts=timing==='none'?0:Number($('#routeGrowthAttempts')?.value);
   const success=timing==='none'?0:Number($('#routeGrowthSuccess')?.value);
   const token=++candidateScanGeneration,openGeneration=replayGeneration;
+  const parsed=parseCandidateBirthSelection();
+  if(parsed.reason){output.textContent=parsed.reason;return;}
+  const birthSelection=parsed.selection;
+  let selectionInfo=null;
+  if(birthSelection){
+    try{
+      const profile=DATA.profiles.find(x=>x.id===record.profileId);
+      selectionInfo=conditionBirthPairs(newbornRawPairs(DATA,record.profileId),
+        profile?.traitStats,birthSelection);
+    }catch(error){output.textContent='원본 출생 RNG 계산 보류: '+error.message;return;}
+    if(selectionInfo.kind!=='conditioned-birth'){
+      output.textContent='원본 출생에서 선발 조건 불일치: '+selectionInfo.reason+
+        (selectionInfo.possible?' · 가능한 범위 '+selectionInfo.possible.min+'~'+selectionInfo.possible.max:'');
+      return;
+    }
+    const status=$('#candidateBirthStatus');
+    if(status)status.textContent='입력 '+selectionInfo.constrained+'종 · 신규 신병 추첨에서 기준 충족 '+
+      fmtSmallChance(selectionInfo.selectionProbability)+' · 시술 후 기대값과 구분해 계산합니다.';
+  }
   const entries=[];
   output.textContent='등록 경로 '+candidates.length+'개 중 확률을 계산하는 중…';
   for(let i=0;i<candidates.length;i++){
     if(token!==candidateScanGeneration||openGeneration!==replayGeneration||
       !output.isConnected)return;
     entries.push(candidateRollSummary(DATA,record.profileId,candidates[i],
-      {timing,attempts,success}));
+      {timing,attempts,success,birthSelection}));
     if(i%8===7&&i+1<candidates.length){
       output.textContent='출생처 '+record.name+' · '+(i+1)+' / '+candidates.length+'개 경로 계산';
       await new Promise(resolve=>setTimeout(resolve,0));
@@ -623,7 +717,7 @@ async function scanCandidateExpectations(){
   }
   if(token!==candidateScanGeneration||openGeneration!==replayGeneration||
     !output.isConnected)return;
-  candidateScanCache={profileId:record.profileId,candidateId:activeCandidateId,record,entries};
+  candidateScanCache={profileId:record.profileId,terminal:isTerminal,record,entries,selectionInfo,filters:null};
   rerankCandidateExpectations();
 }
 function routeRollHtml(record,candidate,sharedTerminal=false){
@@ -1013,7 +1107,10 @@ function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
 }
 async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   if(blocked)return;const generation=++replayGeneration;
-  candidateScanGeneration++;candidateScanCache=null;
+  candidateScanGeneration++;
+  if(candidateScanCache&&
+    (candidateScanCache.profileId!==id||candidateScanCache.terminal!==sharedTerminal))
+    candidateScanCache=null;
   activeBirthViewer?.dispose();activeBirthViewer=null;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
@@ -1105,6 +1202,10 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
     '<details class="assumptions"><summary>필수 확인 · 남은 자원·출생·확률 가정 '+c.assumptions.length+'건</summary><ul>'+assumptionHtml(c)+'</ul><h4>모델의 미검증 조건</h4><ul>'+(c.limitations||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul><details><summary>자동 연구·lookup 조건부 처리 기록</summary><ul>'+(c.modelAssumptions||[]).map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></details></details>'+
     '<details><summary>'+(sharedTerminal?'코르트 변신 후보끼리 비교':'다른 완결 후보 · 목표 A/B 비교')+'</summary><p>목표 A 영구 특성 12종 합 최고 '+fmt(bonus?.display.bonusTotal)+' / 연구·시술 12종 합 최고 '+fmt(bestAlternate('provisional')?.display.total)+' / 성장 완료 조건부 상한 합 최고 '+fmt(bestAlternate('growth')?.growth?.total)+'. 서로 다른 병사·연구 경로의 유리한 수치를 합치지 않습니다. 난이도 충돌 후보는 비교에서 제외합니다.</p>'+alternateSet.map(x=>'<p><button data-candidate="'+x.id+'">'+esc(x.description)+' · 성장상한 '+fmt(x.growth?.total)+' / 연구·시술 '+fmt(x.display.total)+'</button></p>').join('')+'</details>'+
     '<p class="fine">재생: 통과 · 실제 게임 실측: 없음 · 전역 최적성: 미증명 · 원본 v.o2. 더 높은 경로는 같은 출생처의 비교 후보로 등록한 뒤 갱신합니다.</p>';
+  if(metric==='route-expected'&&candidateScanCache?.profileId===id){
+    const scan=$('.candidate-expectation-scan');
+    if(scan){scan.open=true;rerankCandidateExpectations();}
+  }
   showBirthTech(profile);
 }
 function showResearch(id){
@@ -1157,15 +1258,18 @@ async function init(){try{
   });
   for(const id of ['#routeGrowthTiming','#routeGrowthAttempts','#routeGrowthSuccess'])
     $(id).addEventListener('change',()=>{
+      candidateScanCache=null;
       render();if(selected&&!$('#originDetails').hidden)void openOrigin(selected,activeCandidateId);
     });
   for(const [id,direction] of [['#scrollStatsLeft',-1],['#scrollStatsRight',1]])
     $(id).addEventListener('click',()=>$('#originTableScroll').scrollBy({left:direction*260,behavior:'smooth'}));
   document.addEventListener('change',e=>{
+    if(e.target.id==='candidateBirthMode'){saveCandidateBirthInputs();return;}
     if(['candidateExpectationObjective','candidateExpectationMinGate',
       'candidateExpectationBody'].includes(e.target.id))rerankCandidateExpectations();
   });
   document.addEventListener('input',e=>{
+    if(e.target.matches('[data-birth-stat]')){saveCandidateBirthInputs();return;}
     if(e.target.id==='routeRollThreshold'&&selected&&activeCandidateId){
       const record=REPORT.records.find(r=>r.profileId===selected);
       const candidate=record?.candidates.find(c=>c.id===activeCandidateId);
@@ -1216,6 +1320,16 @@ async function init(){try{
     });
     if(shared){void openOrigin(shared.dataset.sharedOrigin,shared.dataset.openSharedCandidate,
       {sharedTerminal:true}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));}
+    if(e.target.closest('#candidateBirthMin')&&selected){
+      const profile=DATA.profiles.find(x=>x.id===selected);
+      for(const input of document.querySelectorAll('[data-birth-stat]'))
+        input.value=String(profile?.effectiveStats?.min?.[input.dataset.birthStat]??'');
+      saveCandidateBirthInputs();return;
+    }
+    if(e.target.closest('#candidateBirthClear')){
+      for(const input of document.querySelectorAll('[data-birth-stat]'))input.value='';
+      saveCandidateBirthInputs();return;
+    }
     if(e.target.closest('#scanCandidateExpectations')){
       void scanCandidateExpectations();return;
     }
