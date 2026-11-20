@@ -20,6 +20,8 @@ import {trainingOrderEvidence} from './training-order-evidence.js';
 import {conditionalGrowthProjection} from './conditional-growth-math.js';
 import {registeredRouteDistribution} from './route-roll-math.js';
 import {rankGrowthPlacements} from './route-growth-placement.js';
+import {enumerateRouteBirthFloors} from './route-birth-screen-frontier.js';
+import {renderBirthFloorForm,renderBirthFloorResult} from './route-birth-screen-view.js';
 import {candidateRollSummary,rankCandidateRollSummaries} from './route-candidate-expectation.js';
 import {auditInitialChoiceEvidence,renderInitialChoiceEvidence} from './origin-start-choice-evidence.js?v=20261104-flat-research-1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -720,11 +722,38 @@ async function scanCandidateExpectations(){
   candidateScanCache={profileId:record.profileId,terminal:isTerminal,record,entries,selectionInfo,filters:null};
   rerankCandidateExpectations();
 }
+async function scanBirthFloors(){
+  if(!selected||!activeCandidateId)return;
+  const output=$('#birthFloorResults');
+  const record=REPORT.records.find(r=>r.profileId===selected);
+  const candidate=record?.candidates.find(c=>c.id===activeCandidateId);
+  if(!output||!candidate)return;
+  const config=growthScheduleFor(candidate);
+  if(config.reason){output.textContent='가상 성장 가정 오류: '+config.reason;return;}
+  const screenStat=$('#birthFloorStat')?.value||'tu';
+  const objective=$('#birthFloorObjective')?.value||'total';
+  const draws=Number($('#birthFloorDraws')?.value);
+  const requiredChance=Number($('#birthFloorRequiredChance')?.value);
+  if(!Number.isSafeInteger(draws)||draws<1||draws>10000){
+    output.textContent='독립 신규 추첨 횟수는 1~10000 정수로 입력하세요.';return;
+  }
+  const generation=replayGeneration,sourceId=selected,candidateId=activeCandidateId;
+  output.textContent='출생 RNG 및 이 경로의 시술 후 확률분포를 계산하는 중…';
+  await new Promise(resolve=>setTimeout(resolve,0));
+  if(generation!==replayGeneration||selected!==sourceId||
+    activeCandidateId!==candidateId||!output.isConnected)return;
+  const result=enumerateRouteBirthFloors(DATA,sourceId,candidate,{
+    screenStat,objective,draws,requiredChance,growthSchedule:config.schedule
+  });
+  if(generation===replayGeneration&&selected===sourceId&&
+    activeCandidateId===candidateId&&output.isConnected)
+    output.innerHTML=renderBirthFloorResult(result,DATA.statLabels);
+}
 function routeRollHtml(record,candidate,sharedTerminal=false){
   const roll=routeRoll(record,candidate);
   if(roll.kind!=='conditional-route-distribution')
     return '<section class="birth-distribution"><h3>등록 경로 RNG 결과 미산출</h3>'+
-      '<p class="failure">'+esc(roll.reason||'원본 확률 계산 근거 부족')+'</p>'+growthPlacementScannerHtml()+candidateExpectationPanelHtml(record,sharedTerminal)+'</section>';
+      '<p class="failure">'+esc(roll.reason||'원본 확률 계산 근거 부족')+'</p>'+growthPlacementScannerHtml()+renderBirthFloorForm(DATA.statLabels)+candidateExpectationPanelHtml(record,sharedTerminal)+'</section>';
   const threshold=Math.ceil(roll.expectedTotal);
   const stages=roll.stages.length?roll.stages.map((step,i)=>
     '<li><button type="button" data-open-training="'+esc(step.id)+'">'+esc(name(step.id))+'</button>'+
@@ -746,7 +775,7 @@ function routeRollHtml(record,candidate,sharedTerminal=false){
     '<p id="routeRollThresholdResult" class="fine" role="status">가정이 성립하고 능력치 문턱을 통과한 병사 중 총합 '+fmt(threshold)+' 이상일 확률 '+fmtPct(newbornTailChance(roll,threshold))+'</p>'+
     '<div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>능력치</th><th>원시 평균</th><th>영구 특성</th><th>실효 평균</th><th>10%</th><th>90%</th></tr></thead><tbody>'+
     DISPLAY_STATS.map(key=>'<tr><th scope="row">'+esc(DATA.statLabels[key]||key)+'</th><td>'+fmtMean(roll.rawStats[key])+'</td><td>'+fmt(roll.bonus[key]||0)+'</td><td>'+fmtMean(roll.stats[key])+'</td><td>'+fmt(roll.bands[key].p10)+'</td><td>'+fmt(roll.bands[key].p90)+'</td></tr>').join('')+
-    '</tbody></table></div><details><summary>적용된 시술의 순서와 문턱 ('+roll.stages.length+'단계)</summary><ol>'+stages+'</ol></details>'+growthPlacementScannerHtml()+candidateExpectationPanelHtml(record,sharedTerminal)+'</section>';
+    '</tbody></table></div><details><summary>적용된 시술의 순서와 문턱 ('+roll.stages.length+'단계)</summary><ol>'+stages+'</ol></details>'+growthPlacementScannerHtml()+renderBirthFloorForm(DATA.statLabels)+candidateExpectationPanelHtml(record,sharedTerminal)+'</section>';
 }
 function statGrid(c,metric='growth'){
   const view=metric==='growth'&&c.growth?.kind==='conditional-upper-envelope'?c.growth:c.display;
@@ -1329,6 +1358,21 @@ async function init(){try{
     if(e.target.closest('#candidateBirthClear')){
       for(const input of document.querySelectorAll('[data-birth-stat]'))input.value='';
       saveCandidateBirthInputs();return;
+    }
+    if(e.target.closest('#scanBirthFloors')){void scanBirthFloors();return;}
+    const applyFloor=e.target.closest('[data-apply-birth-floor]');
+    if(applyFloor&&selected){
+      const stat=applyFloor.dataset.applyBirthStat;
+      const minimum=Number(applyFloor.dataset.applyBirthFloor);
+      if(DISPLAY_STATS.includes(stat)&&Number.isSafeInteger(minimum)){
+        const mode=$('#candidateBirthMode');if(mode)mode.value='atLeast';
+        for(const input of document.querySelectorAll('[data-birth-stat]'))
+          input.value=input.dataset.birthStat===stat?String(minimum):'';
+        saveCandidateBirthInputs();
+        const panel=$('.candidate-expectation-scan');if(panel)panel.open=true;
+        const birth=$('.candidate-birth-select');if(birth)birth.open=true;
+      }
+      return;
     }
     if(e.target.closest('#scanCandidateExpectations')){
       void scanCandidateExpectations();return;

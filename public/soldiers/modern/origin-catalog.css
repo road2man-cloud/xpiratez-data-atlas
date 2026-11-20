@@ -1,3 +1,16 @@
+.route-birth-floor-explorer{margin:14px 0;padding:12px;border:1px solid #527a91;border-radius:10px;background:#102d41}
+.route-birth-floor-explorer>summary{font-size:.9rem;color:#def1ff}
+.birth-floor-controls{display:flex;flex-wrap:wrap;gap:11px;align-items:end;margin:12px 0}
+.birth-floor-controls label{display:grid;gap:5px;flex:1;min-width:150px;color:#b8d7ed;font-size:.77rem}
+.birth-floor-controls select{min-width:0}
+.birth-floor-controls button{min-height:42px}
+.birth-floor-table{min-width:1260px;font-size:.76rem}
+.birth-floor-table th:first-child,.birth-floor-table td:first-child{min-width:150px;max-width:180px;text-align:left}
+.birth-floor-table th:nth-child(2),.birth-floor-table td:nth-child(2){min-width:100px;text-align:right}
+.birth-floor-table td{white-space:nowrap}
+.birth-floor-table tr[data-screen-frontier=true] td:nth-last-child(2){color:#9be6c8;font-weight:750}
+.birth-floor-rest{margin:11px 0;padding:11px;border:1px solid #385b7a;border-radius:8px}
+@media(max-width:620px){.birth-floor-controls label{min-width:140px}.birth-floor-table{font-size:.7rem}}
 .candidate-birth-select{padding:10px 12px;margin:12px 0;border:1px solid #527392;border-radius:10px;background:#0d233b}
 .candidate-birth-select>summary{font-size:.83rem;color:#e3f2ff}
 .candidate-birth-select>label{display:grid;gap:5px;font-size:.78rem;color:#c2d7ee;max-width:280px;margin:10px 0}

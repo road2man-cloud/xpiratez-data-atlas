@@ -159,6 +159,25 @@ try {
   assert.equal(await page.locator('.candidate-expectation-scan').evaluate(x=>x.open),true);
   assert.equal(await page.locator('#candidateBirthMode').inputValue(),'atLeast');
   assert.equal(await page.locator('[data-birth-stat="tu"]').inputValue(),observedTu);
+  await page.locator('.route-birth-floor-explorer > summary').click();
+  await page.locator('#birthFloorStat').selectOption('tu');
+  await page.locator('#birthFloorObjective').selectOption('total');
+  await page.locator('#birthFloorDraws').fill('5');
+  await page.locator('#birthFloorRequiredChance').selectOption('0.5');
+  await page.locator('#scanBirthFloors').click();
+  await page.waitForFunction(()=>document.querySelector('#birthFloorResults [data-birth-floor]')!==null,{
+    timeout:90000
+  });
+  assert.match(await page.locator('#birthFloorResults').innerText(),/신규 추첨|출생|독립/);
+  assert(await page.locator('#birthFloorResults [data-birth-floor]').count()>0);
+  const recommended=page.locator('#birthFloorResults [data-apply-birth-floor]').first();
+  const threshold=await recommended.getAttribute('data-apply-birth-floor');
+  await recommended.click();
+  assert.equal(await page.locator('#candidateBirthMode').inputValue(),'atLeast');
+  assert.equal(await page.locator('[data-birth-stat="tu"]').inputValue(),threshold);
+  assert.equal(await page.locator('[data-birth-stat]').evaluateAll(inputs=>
+    inputs.filter(input=>input.value.trim()!=='').length),1);
+  assert.match(await page.locator('#candidateBirthStatus').innerText(),/1\/12종/);
   // Upstream v.o2 keeps Chort endgame terminal separate from the birthplace
   // ranking. The new expectation metric must preserve that separation too.
   if(await page.locator('#family option[value="origin:manufacture:STR_THEBAN_ASSAULT_CLONE"]').count()){
