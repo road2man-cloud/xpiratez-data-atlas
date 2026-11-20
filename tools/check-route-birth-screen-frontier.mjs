@@ -59,6 +59,35 @@ for(const row of gatedResult.enumerated){
   assert(Math.abs(row.chanceWithinDraws-5/9)<1e-10);
   assert.equal(row.expectedObjective,7);
 }
+// A limited cohort of candidates may favor screening more strictly than
+// unlimited stat-gate checks, even if all floors have the same joint chance.
+const limited=enumerateRouteBirthFloors(data,'X',gated,{
+  ...options,draws:10,requiredChance:.9,trainingSlots:1
+});
+assert.equal(limited.kind,'conditional-screen-frontier',limited.reason);
+assert.equal(limited.selected.minimum,7);
+assert(Math.abs(limited.enumerated[0].chanceWithinBudget-1/3)<1e-10);
+assert(Math.abs(limited.enumerated[2].chanceWithinBudget-
+  (1-Math.pow(2/3,10)))<1e-10);
+assert(Math.abs(limited.enumerated[0].chanceWithinDraws-
+  limited.enumerated[2].chanceWithinDraws)<1e-10);
+assert(limited.enumerated[0].capOverflowChance>.99);
+assert.equal(limited.trainingSlots,1);
+const unlimitedChecks=enumerateRouteBirthFloors(data,'X',gated,{
+  ...options,draws:10,requiredChance:.9
+});
+assert(unlimitedChecks.selected);
+assert(Math.abs(unlimitedChecks.enumerated[0].chanceWithinBudget-
+  unlimitedChecks.enumerated[0].chanceWithinDraws)<1e-10);
+const capNotBinding=enumerateRouteBirthFloors(data,'X',gated,{
+  ...options,draws:10,requiredChance:.9,trainingSlots:10
+});
+for(let i=0;i<capNotBinding.enumerated.length;i++)
+  assert(Math.abs(capNotBinding.enumerated[i].chanceWithinBudget-
+    unlimitedChecks.enumerated[i].chanceWithinBudget)<1e-10);
+assert.equal(enumerateRouteBirthFloors(data,'X',gated,{
+  ...options,trainingSlots:0
+}).kind,'unverified');
 const before=enumerateRouteBirthFloors(data,'X',gated,{
   ...options,draws:2,growthSchedule:[{
     beforeTransform:0,stats:{tu:{attempts:1,kernel:[[1,1]]}}
@@ -87,4 +116,4 @@ const sourceResult=enumerateRouteBirthFloors(actualData,source.profileId,
 assert.equal(sourceResult.kind,'conditional-screen-frontier',sourceResult.reason);
 assert(sourceResult.enumerated.length>=1);
 assert(sourceResult.enumerated.every(x=>x.jointChance<=x.screenProbability+1e-9));
-console.log('PASS newborn one-stat floor search, independent-trial probabilities, 12-stat source route, gate-before-growth, attainable selection, runtime '+(Date.now()-now)+'ms');
+console.log('PASS one-stat birth floors, capacity-limited stat gate, conditional expectancies, actual source route, runtime '+(Date.now()-now)+'ms');

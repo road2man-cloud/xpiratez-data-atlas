@@ -4,6 +4,7 @@
 // non-stat path prerequisites. Not an in-game shopping/recruitment guarantee.
 import {BIRTH_STAT_KEYS,newbornDistribution} from './birth-rng-math.js';
 import {registeredRouteDistribution} from './route-roll-math.js';
+import {finiteRecruitTrainingBudget} from './recruit-training-cap.js';
 
 const finite=Number.isFinite;
 const integer=Number.isSafeInteger;
@@ -23,13 +24,14 @@ export function chanceWithinIndependentRolls(singleChance,draws){
 
 export function enumerateRouteBirthFloors(data,profileId,candidate,{
   screenStat='tu',objective='total',draws=10,requiredChance=.5,
-  growthSchedule=[],maxThresholds=180
+  growthSchedule=[],maxThresholds=180,trainingSlots=null
 }={}){
   if(!BIRTH_STAT_KEYS.includes(screenStat)||
     (objective!=='total'&&!BIRTH_STAT_KEYS.includes(objective))||
     !integer(draws)||draws<1||draws>10000||
     !finite(requiredChance)||requiredChance<0||requiredChance>1||
-    !integer(maxThresholds)||maxThresholds<1)
+    !integer(maxThresholds)||maxThresholds<1||
+    (trainingSlots!==null&&(!integer(trainingSlots)||trainingSlots<1||trainingSlots>200)))
     return rejected('선발 목표·초기 능력치·모집 횟수·요구 확률 입력 오류');
   if(!candidate||candidate.profileId!==profileId)return rejected('등록 경로의 출생처 불일치');
   let birth;
@@ -54,6 +56,9 @@ export function enumerateRouteBirthFloors(data,profileId,candidate,{
     noScreen.expectedTotal=baseline.expectedTotal;
     noScreen.statGateProbability=clamp(baseline.statGateProbability);
     noScreen.chanceWithinDraws=chanceWithinIndependentRolls(noScreen.statGateProbability,draws);
+    noScreen.trainingBudget=trainingSlots===null?null:
+      finiteRecruitTrainingBudget(draws,trainingSlots,1,noScreen.statGateProbability);
+    noScreen.chanceWithinBudget=noScreen.trainingBudget?.successChance??noScreen.chanceWithinDraws;
   }else{
     noScreen.kind=baseline.kind;
     noScreen.reason=baseline.reason;
@@ -80,9 +85,19 @@ export function enumerateRouteBirthFloors(data,profileId,candidate,{
     if(!gated&&(!finite(objectiveMean)||!finite(result.expectedTotal))){
       unverified.push({minimum,reason:'최종 기대값 미산출'});continue;
     }
+    const chanceWithinDraws=chanceWithinIndependentRolls(jointChance,draws);
+    const budget=trainingSlots===null?null:
+      finiteRecruitTrainingBudget(draws,trainingSlots,screenProbability,pathChance);
+    if(budget&&budget.kind!=='conditional-training-cap'){
+      unverified.push({minimum,reason:budget.reason});continue;
+    }
     options.push({
       minimum,screenProbability,pathChance,jointChance,
-      chanceWithinDraws:chanceWithinIndependentRolls(jointChance,draws),
+      chanceWithinDraws,
+      chanceWithinBudget:budget?.successChance??chanceWithinDraws,
+      capOverflowChance:budget?.capOverflowChance??0,
+      expectedSelectedChecks:budget?.expectedSelectedChecks??draws*screenProbability,
+      expectedChecksUntilSuccess:budget?.expectedChecksUntilSuccess??null,
       expectedScreenDraws:1/screenProbability,
       expectedJointDraws:jointChance>0?1/jointChance:null,
       expectedObjective:objectiveMean,
@@ -94,19 +109,21 @@ export function enumerateRouteBirthFloors(data,profileId,candidate,{
   const frontier=usable.filter(x=>!usable.some(y=>
     x.minimum!==y.minimum&&
     y.expectedObjective+EPS>=x.expectedObjective&&
-    y.chanceWithinDraws+EPS>=x.chanceWithinDraws&&
+    y.chanceWithinBudget+EPS>=x.chanceWithinBudget&&
     (y.expectedObjective>x.expectedObjective+EPS||
-      y.chanceWithinDraws>x.chanceWithinDraws+EPS)));
+      y.chanceWithinBudget>x.chanceWithinBudget+EPS)));
   const frontierIds=new Set(frontier.map(x=>x.minimum));
-  const eligible=usable.filter(x=>x.chanceWithinDraws+EPS>=requiredChance)
+  const eligible=usable.filter(x=>x.chanceWithinBudget+EPS>=requiredChance)
     .sort((a,b)=>b.expectedObjective-a.expectedObjective||
-      b.chanceWithinDraws-a.chanceWithinDraws||
+      b.chanceWithinBudget-a.chanceWithinBudget||
       a.minimum-b.minimum);
   return {kind:'conditional-screen-frontier',profileId,candidateId:candidate.id,
-    screenStat,objective,draws,requiredChance,baseline,
+    screenStat,objective,draws,trainingSlots,requiredChance,baseline,
     enumerated:options.map(x=>({...x,onFrontier:frontierIds.has(x.minimum)})),
     candidates:usable.length,frontierCount:frontier.length,
     unverified,selected:eligible[0]||null,
     feasible:eligible.length,sourceValues:sampled.length,
-    caveat:'독립 신규 병사 추첨 N회의 수학적 모델. 한 초기 능력치의 최솟값만 선발하고, 모든 비능력치 선행조건은 별도 충족한다고 가정함. 경로의 능력치 문턱 성공을 실제 연구·시술 완료 확률로 해석하지 않으며, 실제 채용 비용·충원 가능 횟수·전투 성장 확률은 포함하지 않음'};
+    caveat:'독립 신규 병사 추첨 N회의 수학적 모델. 한 초기 능력치의 최솟값만 선발하고, '+
+      (trainingSlots===null?'선발된 인원 검토 횟수는 제한하지 않음. ':'선발된 순서대로 최대 K명만 동일 경로의 능력치 요건을 검사함. ')+
+      '모든 비능력치 선행조건은 별도 충족한다고 가정함. 능력치 문턱 통과는 실제 훈련 성공률이 아니며, 실제 채용 비용·기회·전투 성장·연구 실현 확률은 포함하지 않음'};
 }

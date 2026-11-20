@@ -163,6 +163,7 @@ try {
   await page.locator('#birthFloorStat').selectOption('tu');
   await page.locator('#birthFloorObjective').selectOption('total');
   await page.locator('#birthFloorDraws').fill('5');
+  await page.locator('#birthFloorTrainingSlots').fill('1');
   await page.locator('#birthFloorRequiredChance').selectOption('0.5');
   await page.locator('#scanBirthFloors').click();
   await page.waitForFunction(()=>document.querySelector('#birthFloorResults [data-birth-floor]')!==null,{
@@ -170,6 +171,24 @@ try {
   });
   assert.match(await page.locator('#birthFloorResults').innerText(),/신규 추첨|출생|독립/);
   assert(await page.locator('#birthFloorResults [data-birth-floor]').count()>0);
+  const floorHead=await page.locator('#birthFloorResults .birth-floor-table thead').first().innerText();
+  assert.match(floorHead,/검토 무제한/);
+  assert.match(floorHead,/최대 1명 검토/);
+  assert.match(floorHead,/검토 상한을 넘는 선발자 발생/);
+  assert.match(await page.locator('#birthFloorResults').innerText(),/검토 최대 1명/);
+  // Source-specific screening budget survives opening a different registered
+  // candidate; results themselves are recalculated against that candidate.
+  await page.locator('#candidateExpectationResults [data-candidate-ranking] [data-candidate]').first().click();
+  await page.waitForFunction(()=>document.querySelector('[data-route-roll]')!==null,{
+    timeout:60000
+  });
+  assert.equal(await page.locator('#birthFloorTrainingSlots').inputValue(),'1');
+  assert.equal(await page.locator('#birthFloorDraws').inputValue(),'5');
+  assert.equal(await page.locator('.route-birth-floor-explorer').evaluate(x=>x.open),true);
+  await page.locator('#scanBirthFloors').click();
+  await page.waitForFunction(()=>document.querySelector('#birthFloorResults [data-birth-floor]')!==null,{
+    timeout:90000
+  });
   const recommended=page.locator('#birthFloorResults [data-apply-birth-floor]').first();
   const threshold=await recommended.getAttribute('data-apply-birth-floor');
   await recommended.click();
