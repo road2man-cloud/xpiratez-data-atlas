@@ -1,8 +1,8 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-all-origin-4324-fix1';
+import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-origin-extension-1';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
-import {mergeAllOriginRows,allOriginCoverageText,originCapButton,renderAllOriginCap} from '../../branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1';
+import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -56,7 +56,7 @@ const activeBranch=new URLSearchParams(location.search).get('branch');
 let branchScope=null;
 
 function integratedRouteLink(row,label,route=row.route){
-  if(sharedRegistry?.witnesses?.[route]?.source==='ORIGINCAP12')return originCapButton(route,label);
+  if(['ORIGINCAP12','ORIGINEXT12'].includes(sharedRegistry?.witnesses?.[route]?.source))return originCapButton(route,label);
   return '<a href="#integratedCaps" data-integrated-cap-body="'+esc(row.combo)+'" data-integrated-cap-route="'+esc(route)+'">'+esc(label)+'</a>';
 }
 let activeCandidateId=null,candidateScanGeneration=0,candidateScanCache=null;
@@ -434,7 +434,7 @@ function renderBodyTable(q,family){
   const rows=bodyRows.filter(r=>(!family||r.id===family)&&(!q||[r.id,r.name,...r.candidates.flatMap(c=>[c.originProfile,REPORT.records.find(x=>x.profileId===c.originProfile)?.name])].join(' ').toLocaleLowerCase('ko').includes(q)));
   const rank=r=>bodySort==='total'?(r.best?.total??-Infinity):(r.maxima[bodySort]?.value??-Infinity);
   rows.sort((a,b)=>rank(b)-rank(a)||a.name.localeCompare(b.name,'ko'));
-  const short=m=>m.source==='CAREER12'?'고급·미재생':m.source==='UNIFIED12'?'연결 상계':'등록 상계';
+  const short=m=>m.source==='ORIGINEXT12'?'활성 연구 후속':m.source==='CAREER12'?'고급·미재생':m.source==='UNIFIED12'?'연결 상계':'등록 상계';
   const route=(m,label)=>{
     if(m.source!=='ORIGIN')return integratedRouteLink(m,label,m.route);
     const shared=m.body==='STR_SOLDIER_CHORT';
@@ -1207,7 +1207,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRou
   const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
   const currentIntegrated=integratedOrigins.get(id);
   const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 등록 후보 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
-  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+ 
+  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+renderOriginExtension(sharedRegistry,id,originCapRoute,DATA.statLabels,activeBranch)+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
     '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
@@ -1309,7 +1309,7 @@ async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
   [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json'),json('../../data/soldier-route-dependency-audit.json'),json('../../data/soldier-route-iterative-audit.json')]);
   await validate();
-  try{const registry=await loadBranchSoldierResults();sharedRegistry=registry;branchScope=registry.branches.find(b=>b.id===activeBranch)||null;integratedOrigins=buildOriginGrowthIndex(registry,DATA,DISPLAY_STATS,{branchId:activeBranch});integratedCoverage=registryCoverage(registry,integratedOrigins,REPORT.records.length);if(!activeBranch)integratedOrigins=mergeAllOriginRows(registry,integratedOrigins,DISPLAY_STATS);bodyRows=buildBodyGrowthIndex(registry,DATA,DISPLAY_STATS,REPORT.records,candidateMatchesCampaign,{branchId:activeBranch});}
+  try{const registry=await loadBranchSoldierResults();sharedRegistry=registry;branchScope=registry.branches.find(b=>b.id===activeBranch)||null;integratedOrigins=buildOriginGrowthIndex(registry,DATA,DISPLAY_STATS,{branchId:activeBranch});integratedCoverage=registryCoverage(registry,integratedOrigins,REPORT.records.length);if(!activeBranch)integratedOrigins=mergeAllOriginRows(registry,integratedOrigins,DISPLAY_STATS);integratedOrigins=mergeOriginExtensionRows(registry,integratedOrigins,DISPLAY_STATS,activeBranch);bodyRows=buildBodyGrowthIndex(registry,DATA,DISPLAY_STATS,REPORT.records,candidateMatchesCampaign,{branchId:activeBranch});}
   catch(error){integratedLoadError=error.message;console.warn('통합 육성 상계 미연결:',error.message);bodyRows=buildBodyGrowthIndex(null,DATA,DISPLAY_STATS,REPORT.records,candidateMatchesCampaign,{branchId:activeBranch});}
   if(DIAGNOSTICS.sourceVersion!=='v.o2'||
     JSON.stringify(DIAGNOSTICS.sourceHashes)!==JSON.stringify(DATA.meta.source.rules)||
@@ -1330,6 +1330,7 @@ async function init(){try{
     const u=integratedCoverage;
     coverageNode.textContent=u?(activeBranch?'선택 분기 '+(branchScope?'#'+branchScope.rank:'미확인')+' · ':'')+'공통 원장 '+fmt(u.branches)+'개 분기 · 육성 연결 '+fmt(u.conditionalPaths)+'경로 (최장 '+fmt(u.unifiedDepth)+'회)'+(u.careerPaths?' · 고급 미재생 '+fmt(u.careerPaths)+'경로 (최장 '+fmt(u.careerDepth)+'회)':'')+' · 최신 원장 연결 출생처 '+u.updatedOrigins+'/'+u.originCount+'개 · 실제 최고 인증 0건.':'통합 원장 연결 실패: '+(integratedLoadError||'자료 없음');
     if(u&&sharedRegistry?.originCap12)coverageNode.textContent+=' '+allOriginCoverageText(sharedRegistry);
+    if(u&&sharedRegistry?.originExtension12){const s=sharedRegistry.originExtension12.summary;coverageNode.textContent+=' · 활성 연구 후속: '+fmt(s.seedReplayed)+'개 접두부, '+fmt(s.extendedOrigins)+'/72 출생처, '+fmt(s.registered)+'개 대표, '+fmt(s.canonicalRootMatchedBranches)+'개 관측 정식 분기 뿌리 일치 (공동 연구 이력 미인증).';}
     coverageNode.dataset.registryStatus=u?'loaded':'unavailable';
   }
   $('#routePruningScope').textContent='훈련 1단계 생략 28건을 시간순 재생한 뒤, 동일한 12종 조건부 상한 아래 연구·지급 단계 추가 생략 '+
@@ -1417,7 +1418,7 @@ async function init(){try{
   });
   document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
     const capRoute=e.target.closest('[data-origin-cap-route]');
-    if(capRoute){const route=capRoute.dataset.originCapRoute,w=sharedRegistry?.witnesses?.[route];if(w?.source==='ORIGINCAP12')void openOrigin(w.originProfile,w.archiveScope==='full-route'?w.archiveCandidateId:null,{sharedTerminal:w.body==='STR_SOLDIER_CHORT',originCapRoute:route}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));return;}
+    if(capRoute){const route=capRoute.dataset.originCapRoute,w=sharedRegistry?.witnesses?.[route];if(w?.source==='ORIGINCAP12')void openOrigin(w.originProfile,w.archiveScope==='full-route'?w.archiveCandidateId:null,{sharedTerminal:w.body==='STR_SOLDIER_CHORT',originCapRoute:route}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));else if(w?.source==='ORIGINEXT12'&&(!activeBranch||w.branchIds.includes(activeBranch)))void openOrigin(w.originProfile,w.originExtension.seed,{sharedTerminal:w.originExtension.seedBody==='STR_SOLDIER_CHORT',originCapRoute:route}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));return;}
     const shared=e.target.closest('[data-open-shared-candidate]');
     const longest=e.target.closest('[data-open-longest]');
     if(longest)void openOrigin(longest.dataset.openLongest,longest.dataset.longestCandidate)
@@ -1562,7 +1563,9 @@ async function init(){try{
   $('#researchSearch').addEventListener('input',()=>{const q=$('#researchSearch').value.toLocaleLowerCase('ko');$('#researchMatches').innerHTML=q?Object.keys(DATA.researchRules).filter(id=>(id+' '+name(id)).toLocaleLowerCase('ko').includes(q)).slice(0,35).map(node).join(' '):''});
   render();
   $('#originMaxima').dataset.validation='validated';
-  if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort'});
+  const ext=sharedRegistry?.witnesses?.[params.get('originExt')];
+  if(ext?.source==='ORIGINEXT12'&&(!activeBranch||ext.branchIds.includes(activeBranch)))void openOrigin(ext.originProfile,ext.originExtension.seed,{sharedTerminal:ext.originExtension.seedBody==='STR_SOLDIER_CHORT',originCapRoute:params.get('originExt')}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));
+  else if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort'});
   if(params.has('training'))showTraining(params.get('training'));
   if(params.has('research'))showResearch(params.get('research'));
 }catch(error){sourceFail(error.message);console.error(error)}}
