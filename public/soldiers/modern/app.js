@@ -1562,7 +1562,7 @@ async function init(){try{
   $('#researchSearch').addEventListener('input',()=>{const q=$('#researchSearch').value.toLocaleLowerCase('ko');$('#researchMatches').innerHTML=q?Object.keys(DATA.researchRules).filter(id=>(id+' '+name(id)).toLocaleLowerCase('ko').includes(q)).slice(0,35).map(node).join(' '):''});
   render();
   $('#originMaxima').dataset.validation='validated';
-  if(params.has('profile'))void openOrigin(params.get('profile'));
+  if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort'});
   if(params.has('training'))showTraining(params.get('training'));
   if(params.has('research'))showResearch(params.get('research'));
 }catch(error){sourceFail(error.message);console.error(error)}}

@@ -1,6 +1,7 @@
 // Ensure newly published growth data reaches the existing primary origin table.
 // The source registry is the one shared gzip asset; no parallel browser data.
 import "./check-branch-soldier-pareto.mjs";
+import {checkOriginBaseline} from "./check-branch-soldier-origin-baseline.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import zlib from "node:zlib";
@@ -9,6 +10,7 @@ import {buildBranchRouteIndex,profileWitnessIds} from "../public/branch-soldier-
 import {summarizeRouteResources,matchesResources} from "../public/branch-soldier-resources.js";
 
 const db=JSON.parse(zlib.gunzipSync(fs.readFileSync("public/data/branch-soldier-results.json.gz")));
+if(db.originBaseline)checkOriginBaseline(db);
 const modern=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 const index=buildOriginGrowthIndex(db,modern,db.stats);
 const coverage=registryCoverage(db,index,modern.profiles.length);
