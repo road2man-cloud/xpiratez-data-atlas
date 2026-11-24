@@ -78,7 +78,7 @@ try{
   }
   const transform=page.locator('#originDetails .origin-transform-gates');
   if(await transform.count()){
-    await transform.locator('summary').click();
+    await transform.locator(':scope > summary').click();
     assert((await transform.textContent()).includes('요구 대원 계급'));
     const button=transform.locator('button[data-trace-research-root]').first();
     if(await button.count()){
