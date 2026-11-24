@@ -5,7 +5,7 @@ import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldie
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261124-origin-extension-1";
 import {loadRuntime} from "./db-runtime.js";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
-import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261124-unlock-d3";
+import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261125-event-birth-1";
 import {allOriginCoverageText} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
 import {buildCareerMedalPlan} from "./branch-soldier-career.js?v=20261124-career-medal-plan-1";
 import {evaluateCareerMilestones} from "./branch-soldier-career-progress.js?v=20261124-career-progress-1";
@@ -13,8 +13,8 @@ import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesRes
 import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-resource-goals-1";
 import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
 import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-packed-1";
-import {pairSearchMarkup} from "./branch-soldier-pair-search.js?v=20261124-origin-pair-search-1";
-import {pairContinuationMarkup} from "./branch-soldier-pair-continuation.js?v=20261124-origin-joint-suffix-1";
+import {pairSearchMarkup} from "./branch-soldier-pair-search.js?v=20261125-origin-pair-search-317";
+import {pairContinuationMarkup} from "./branch-soldier-pair-continuation.js?v=20261125-origin-joint-suffix-1090";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.
