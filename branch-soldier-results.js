@@ -4,6 +4,8 @@ import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileW
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261124-unified-maxima-1";
 import {loadRuntime} from "./db-runtime.js";
+import {buildCareerMedalPlan} from "./branch-soldier-career.js?v=20261124-career-medal-plan-1";
+import {evaluateCareerMilestones} from "./branch-soldier-career-progress.js?v=20261124-career-progress-1";
 import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
 import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-resource-goals-1";
 import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
@@ -24,16 +26,16 @@ if(ROOT){
  const link=(type,b,body=null,mode=null,route=null)=>{const u=new URL(type==="soldier"?"./soldiers/modern/":"./captains/",import.meta.url);if(b)u.searchParams.set("branch",b.id);if(type==="soldier"){if(body)u.searchParams.set("body",body);if(mode)u.searchParams.set("mode",mode);if(route)u.searchParams.set("route",route);}u.hash=type==="soldier"?(body||route?"integratedCaps":"originMaxima"):"integratedBranches";return u.href;};
  const query=new URL(location.href).searchParams,selectedUrl=query.get("branch"),selectedBody=query.get("body");
  const sources=()=>'<details class="bs-note"><summary>계산 근거 및 작업자별 원장 출처</summary><p>병종·분기 DB가 동일한 원장을 읽습니다. '+fmt(db.catalog.filter(x=>x.integrated).length)+'개 결과의 구조화 데이터와 '+fmt(db.summary.inventoryReports)+'개 발견된 연구 파일 목록을 관리합니다. 미연결 파일은 현재 수치에 합산하지 않습니다. 원본 실험 파일은 보존합니다.</p><ul>'+Object.entries(db.sources).map(([id,x])=>'<li><code>'+esc(id)+'</code> · '+esc(x.file)+'</li>').join("")+'</ul><p>'+Object.values(db.policies).map(esc).join("<br>")+'</p></details>';
- const overview=()=>'<p class="bs-summary">현재 정적 분기 후보 <b>'+fmt(db.summary.staticCandidates)+'</b>개 · 선장 말단 후보 '+fmt(db.summary.knownCaptainLeaves)+'개 · 대의 미선택 '+fmt(db.summary.neutralCauseCandidates)+'개 · 조건부 연구 이력 보유 '+fmt(db.summary.historiesAcceptedParents)+'개 · 원천 충돌 '+fmt(db.summary.sourceConflictCandidates)+'개 · 통합 조건부 육성 경로 <b>'+fmt(db.summary.unifiedConditionalTrainingPaths)+'</b>개 · 등록 경로 대표 '+fmt(Object.keys(db.witnesses).length)+'개 · 실제 게임 전체 최적 인증 0건.</p>';
+ const overview=()=>'<p class="bs-summary">현재 정적 분기 후보 <b>'+fmt(db.summary.staticCandidates)+'</b>개 · 선장 말단 후보 '+fmt(db.summary.knownCaptainLeaves)+'개 · 대의 미선택 '+fmt(db.summary.neutralCauseCandidates)+'개 · 조건부 연구 이력 보유 '+fmt(db.summary.historiesAcceptedParents)+'개 · 원천 충돌 '+fmt(db.summary.sourceConflictCandidates)+'개 · 통합 조건부 육성 경로 <b>'+fmt(db.summary.unifiedConditionalTrainingPaths)+'</b>개 · 별도 계급·훈장 조건부 경로 <b>'+fmt(db.summary.careerConditional?.conditionalPaths??0)+'</b>개 · 계급 전제 후속 재생 '+fmt(db.summary.careerConditional?.suffixReplayedUnderAssumedRank??0)+'개 · 등록 경로 대표 '+fmt(Object.keys(db.witnesses).length)+'개 · 실제 게임 전체 최적 인증 0건.</p>';
  const branchPaths=(b,cls)=>db.profiles[b?.evidence?.[cls]?.unified]?.conditionalPaths??null;
  const bodyEvidence=(b,c,mode="CAP_TARGET")=>{
   const e=b?b.evidence[c.classKey]:db.globalEvidence[c.classKey];
-  return {unified:db.profiles[e?.unifiedByBody?.[c.body]],continuation:db.profiles[e?.continuationByBody?.[c.body]?.[mode]]};
+  return {unified:db.profiles[e?.unifiedByBody?.[c.body]],continuation:db.profiles[e?.continuationByBody?.[c.body]?.[mode]],career:db.profiles[e?.careerConditionalByBody?.[c.body]]};
  };
  const bodyLinks=b=>db.combos.map(c=>{
-  const {unified:u,continuation:v}=bodyEvidence(b,c);
-  if(!u&&!v)return "";
-  return '<p><a href="'+esc(link("soldier",b,c.id))+'">'+esc(c.title)+'</a> · '+(u?'조건부 재생 경로 '+fmt(u.conditionalPaths)+'개':"행동 재생 미연결")+(v?' · 구조적 파레토 '+fmt(v.count)+'개':"")+'</p>';
+  const {unified:u,continuation:v,career:k}=bodyEvidence(b,c);
+  if(!u&&!v&&!k)return "";
+  return '<p><a href="'+esc(link("soldier",b,c.id))+'">'+esc(c.title)+'</a> · '+(u?'조건부 재생 경로 '+fmt(u.conditionalPaths)+'개':"행동 재생 미연결")+(v?' · 구조적 파레토 '+fmt(v.count)+'개':"")+(k?' · 계급·훈장 조건부 '+fmt(k.conditionalPaths)+'개 (후속 미재생)':"")+'</p>';
  }).filter(Boolean).join("")||"<p>연결된 병종 상계 없음 (미계산)</p>";
  function rootConflictDetail(b){
   const r=b.rootConflict,ev=db.rootConflictEvidence;
@@ -86,7 +88,7 @@ if(ROOT){
   for(const [id] of branchFacets)E(id).addEventListener("change",change);
   E("bsResetFacets").addEventListener("click",()=>{for(const [id] of branchFacets)E(id).value="";E("bsSearch").value="";change();});
  }
- const modelLabels={UNIFIED12:"연구·출생·훈련 연결 상계",GATE12:"시술 시점 조건 검사",REPLAY8:"동일 연구 이력",SOURCE8:"연구 원천 호환",CONTINUATION12:"구조적 후속 확장",CAREER12:"계급·훈장 조건부 (후속 시술 미재생)"};
+ const modelLabels={UNIFIED12:"연구·출생·훈련 연결 상계",GATE12:"시술 시점 조건 검사",REPLAY8:"동일 연구 이력",SOURCE8:"연구 원천 호환",CONTINUATION12:"구조적 후속 확장",CAREER12:"계급·훈장 조건부 고급 시술"};
  const routeName=w=>w.steps.map((x,i)=>(w.growthBefore?.[i]?"[성장] ":"")+label(x.id)+(x.count>1?" ×"+x.count:"")).join(" → ")||"추가 시술 없음";
  function ruleConstraints(t){
   if(!t)return "세부 룰 미연결";
@@ -360,6 +362,52 @@ if(ROOT){
   E("bsRouteNext").addEventListener("click",()=>{routePage++;draw(false,null,true);});
   E("bsTargetPanel").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-target-index],[data-resource-limit]")){e.preventDefault();applyTargets();}});
 
+  function careerMedalMarkup(w,source){
+   if(source.meta?.source?.metadataSha256!==db.sourceMetadataSha256)throw Error("훈장 규칙과 육성 원장의 출처 불일치");
+   const p=buildCareerMedalPlan(w,source,db.stats);
+   if(!p)return "";
+   const names={totalStatGain:"누적 능력치 증가 (일지)",killsWithCriteriaCareer:"조건 일치 누적 처치",totalValientCrux:"기사 일지 카운터",totalMissions:"조건 일치 임무"};
+   const signed=n=>n==null?"—":(n>0?"+":"")+fmt(n);
+   const delta=v=>v?v.map((n,i)=>n?esc(ko[db.stats[i]]||db.stats[i])+" "+signed(n):"").filter(Boolean).join(" · ")||"변화 없음":"미계산";
+   const rank=p.rankSteps.map(x=>'<li>'+fmt(x.step)+'단계 '+esc(label(x.id))+' 이전 최소 계급 '+fmt(x.required)+'</li>').join("");
+   const rows=p.rows.map(r=>{
+    const kills=r.killCriteria.length?'<details><summary>룰셋 처치 조건 그룹 '+fmt(r.killCriteria.length)+'개</summary><ul>'+r.killCriteria.map(g=>'<li>'+esc(Array.isArray(g)?g.map(x=>Array.isArray(x)&&Array.isArray(x[1])?x[0]+" × "+x[1].map(label).join(" + "):JSON.stringify(x)).join(" / "):JSON.stringify(g))+'</li>').join("")+'</ul></details>':"";
+    const missions=r.missionTypeFilter.length?'<details><summary>임무 유형 제한 '+fmt(r.missionTypeFilter.length)+'개</summary><p>'+list(r.missionTypeFilter)+'</p></details>':"";
+    return '<tr><td>'+esc(r.name)+'<small class="bs-sub">'+esc(r.id)+'</small></td><td>레벨 '+fmt(r.level)+' · 보유 필수</td><td>'+r.milestones.map(m=>fmt(m.step)+"단계 이전 레벨 "+fmt(m.level)+" ("+esc(label(m.ruleId))+")").join("<br>")+'</td><td>'+r.thresholds.map(t=>esc(names[t.field]||t.field)+" "+fmt(t.value)).join("<br>")+kills+missions+'</td><td>'+delta(r.bonus)+(r.overlap?' · 기존 보너스 중복 가능':r.duplicate?' · 동일 보너스 중복 합산 제외':"")+'</td></tr>';
+   }).join("");
+   const vectors=p.rows.length?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>능력치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["기존 조건부 실효값",w.vector],["필수 훈장 보너스 (별도)",p.complete?p.delta:null],["최소 요구 훈장 보유 가정",p.combined]].map(([t,v],i)=>'<tr><th>'+t+'</th>'+db.stats.map((_,j)=>'<td>'+(i===1?signed(v?.[j]):fmt(v?.[j]))+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>':"";
+   return '<section class="bs-note"><h4>계급·훈장 획득 조건과 최소 요구 훈장 보너스</h4><p class="bs-sub">실제 전투·승급·일지 수여는 재생하지 않았습니다. 슈퍼사이즈의 totalStatGain은 원본 일지 카운터이며 시술 전후 단순 차이로 대체하지 않습니다.</p>'+(rank?'<ul>'+rank+'</ul>':"")+(rows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>훈장</th><th>최고 필수 레벨</th><th>시술 전 획득 시점</th><th>룰셋 요구 카운터</th><th>해당 레벨 보너스</th></tr></thead><tbody>'+rows+'</tbody></table></div>':"<p>이 경로에는 필수 훈장이 없습니다.</p>")+vectors+(p.retentionRisks.length?'<p class="bs-warning">병종 전환·초기화 이후 훈장 유지 및 중간 계급은 별도 확인 필요: '+p.retentionRisks.map(x=>fmt(x.step)+'단계 '+esc(label(x.id))).join(" / ")+'. 합산값 보류.</p>':"")+(p.unresolved.length?'<p class="bs-warning">미확인 규칙: '+esc(p.unresolved.join(" / "))+'</p>':"")+'<p class="bs-sub">동일 훈장은 최고 요구 레벨의 보너스만 한 번 적용합니다. 합산값은 같은 경로의 수치에 최소 필수 훈장이 모두 유지된다는 가정을 적용한 별도 참고값입니다. 기존 파레토·최고값·목표 검색 결과에는 반영하지 않습니다.</p></section>';
+  }
+  function mountCareerProgress(panel,w,source){
+   const p=buildCareerMedalPlan(w,source,db.stats);
+   if(!p||(!p.rankSteps.length&&!p.rows.length))return;
+   const labels={totalStatGain:"능력치 증가 일지",killsWithCriteriaCareer:"조건 일치 처치",totalValientCrux:"기사 일지 카운터",totalMissions:"조건 일치 임무"};
+   const statuses={HELD:"현재 보유 충족",NEEDS_PROMOTION:"계급 부족",COUNTER_SHORT:"카운터 부족",AWARD_NOT_CONFIRMED:"카운터 충족 · 훈장 수여 미확인",UNKNOWN:"입력·보유 미확인",UNKNOWN_RULE:"규칙 미확인",RECHECK_AFTER_CHANGE:"전환·초기화 이후 재확인",CAREER_GATES_HELD_IN_SNAPSHOT:"현재 입력상 계급·훈장 충족",CAREER_GAP:"부족 조건 있음",CAREER_UNCONFIRMED:"미확인 조건 있음"};
+   const section=document.createElement("section");
+   section.className="bs-note";
+   section.innerHTML='<h4>현재 대원 기준 고급 시술 부족 조건 계산</h4><p class="bs-sub">현재 완료한 시술 단계와 실제 계급, 훈장 보유 레벨 및 게임 일지 카운터를 입력하세요. 빈 값은 미확인, 훈장 -1은 미보유입니다. 훈장 레벨 0은 보유입니다. 입력은 브라우저에서만 사용하며 세이브나 원장을 변경하지 않습니다.</p><div class="bs-controls"><label>완료한 시술 단계<select data-career-after>'+options([[0,"0 · 시술 전"],...(w.steps||[]).flatMap(x=>Array.from({length:x.count??1},()=>x.id)).map((id,i)=>[i+1,(i+1)+" · "+label(id)+" 완료"])],0)+'</select></label><label>현재 계급 번호<input data-career-rank type="number" min="0" step="1" placeholder="미확인"></label></div>'+p.rows.map((r,i)=>'<fieldset class="bs-note"><legend>'+esc(r.name)+'</legend><div class="bs-controls"><label>실제 훈장 레벨<input type="number" min="-1" step="1" data-career-medal="'+i+'" placeholder="-1 미보유"></label>'+r.thresholds.map((t,j)=>'<label>'+esc(labels[t.field]||t.field)+'<input type="number" min="0" step="1" data-career-counter="'+i+':'+j+'" placeholder="미확인"></label>').join("")+'</div></fieldset>').join("")+'<button type="button" data-career-clear>입력 초기화</button><div data-career-result aria-live="polite"></div><p class="bs-sub">이 결과는 입력 시점의 조건 비교입니다. 실제 훈장 지급, 계급 승급, 연구·재료·능력치 요구, 시술 실행이나 이후 전환 가능성을 인증하지 않습니다.</p>';
+   panel.append(section);
+   const get=q=>section.querySelector(q);
+   const integer=(el,min)=>{if(!el||el.value==="")return undefined;const n=Number(el.value);return Number.isSafeInteger(n)&&n>=min?n:undefined;};
+   function draw(){
+    const afterStep=Number(get("[data-career-after]").value),rank=integer(get("[data-career-rank]"),0),medals={},counters={};
+    p.rows.forEach((r,i)=>{
+     const level=integer(get('[data-career-medal="'+i+'"]'),-1);
+     if(level!==undefined)medals[r.id]=level;
+     counters[r.id]={};
+     r.thresholds.forEach((t,j)=>{const v=integer(get('[data-career-counter="'+i+':'+j+'"]'),0);if(v!==undefined)counters[r.id][t.field]=v;});
+    });
+    const results=evaluateCareerMilestones(p,source,{afterStep,rank,medals,counters});
+    get("[data-career-result]").innerHTML=results.stages.length?results.stages.map(s=>{
+     const rankRow=s.rankGate?'<p>계급 '+fmt(s.rankGate.required)+' 필요 · '+esc(statuses[s.rankGate.status])+(s.rankGate.gap!=null&&s.rankGate.gap>0?' · '+fmt(s.rankGate.gap)+'단계 부족':"")+'</p>':"";
+     const medalRows=s.medalGates.map(m=>'<tr><td>'+esc(m.name)+'</td><td>'+fmt(m.level)+'</td><td>'+(m.owned===-1?"미보유":fmt(m.owned))+'</td><td>'+m.thresholds.map(t=>esc(labels[t.field]||t.field)+': '+fmt(t.current)+' / '+fmt(t.required)+(t.gap!=null&&t.gap>0?' · '+fmt(t.gap)+' 부족':"")).join("<br>")+'</td><td>'+esc(statuses[m.status])+'</td></tr>').join("");
+     return '<div class="bs-note"><h5>'+fmt(s.step)+'단계 · '+esc(label(s.id))+' — '+esc(statuses[s.status])+'</h5>'+rankRow+(medalRows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>훈장</th><th>요구 레벨</th><th>보유 레벨</th><th>일지 현재 / 요구</th><th>판정</th></tr></thead><tbody>'+medalRows+'</tbody></table></div>':"")+'</div>';
+    }).join(""):"<p>입력한 완료 단계 이후 등록된 계급·훈장 요구가 없습니다.</p>";
+   }
+   section.addEventListener("input",draw);section.addEventListener("change",draw);
+   get("[data-career-clear]").addEventListener("click",()=>{get("[data-career-after]").value="0";section.querySelectorAll("input").forEach(el=>el.value="");draw();});
+   draw();
+  }
   function showWitness(id){
    const w=db.witnesses[id];if(!w)return;
    const route=routeName(w),ranked=w.history?db.historyEvidence?.[w.history]:null;
@@ -375,8 +423,12 @@ if(ROOT){
     return '<tr><td>'+(i+1)+'</td><td>'+esc(label(x.id))+(x.count>1?" ×"+fmt(x.count):"")+'<small class="bs-sub">'+esc(x.id)+'</small></td><td>'+(w.growthBefore?.[i]===true?"전투 성장":w.growthBefore?.[i]===false?"성장 생략":"별도 배치")+'</td><td>'+esc(ruleConstraints(db.ruleDetails?.[x.id]))+'</td><td>'+(trace?.rawAfter?trace.rawAfter.map(fmt).join(" / "):"미연결")+'</td></tr>';
    }).join("");
    const history=ranked?'<p>연구 이력 <code>'+esc(ranked.id)+'</code> · 조건부 연구 '+fmt(ranked.steps)+'단계 · '+esc(ranked.kind)+'</p>':"";
-   const career=w.source==="CAREER12"?'<p class="bs-warning">앞 '+fmt(w.replayedPrefixLength)+'회 시술과 추가 연구만 조건부 재생되었습니다. 이후 계급·훈장 획득 및 시술 미재생, 훈장 자체 보너스 미포함.</p><ul>'+ (w.careerConditions||[]).map(c=>'<li>'+esc(label(c.transformation))+' · 계급 '+fmt(c.rank?.required)+' · 훈장 '+((c.medals||[]).map(m=>esc(label(m.id||m.medal||m.commendation||m.type))+' 레벨 '+fmt(m.decorationIndex??m.level??m.requiredLevel??m.required)+' (보유 필요)').join(" / ")||"요구 없음")+'</li>').join("")+'</ul>':"";
-   E("bsWitness").innerHTML='<h3>선택 수치의 동일 경로</h3>'+career+'<p><strong>'+esc(modelLabels[w.source]||w.source)+'</strong> · '+esc(db.policies[w.source])+'</p><p>최종 병종 '+esc(label(w.body))+(w.originProfile?' · 출생 프로필 <code>'+esc(w.originProfile)+'</code>':"")+' · '+esc(route)+' · 성장 '+esc(w.placement)+'</p><p>요구 연구: '+list(w.research)+'</p>'+resourceDetails(id)+history+(w.history?researchExtensionDetail(w.history):"")+(gate?'<p>이력 종료 시 활성 연구: '+list(gate.active)+' · 미활성: '+list(gate.missing)+'</p>':"")+(w.requiredItems?.length?'<p>필요 아이템: '+list(w.requiredItems)+'</p>':"")+'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>능력치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["생성 상단",cap("maxStats")],["전투 성장캡",w.rawCombatCaps||cap("statCaps")],["별도 훈련캡",w.trainingCaps||cap("trainingStatCaps")],["원시값",w.raw],["영구 보너스",w.bonus],["실효값",w.vector]].map(([t,v])=>'<tr><th>'+t+'</th>'+db.stats.map((_,i)=>'<td>'+fmt(v?.[i])+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+(conditionRows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>단계</th><th>훈련</th><th>직전 성장</th><th>요구 조건 및 증가 제한</th><th>시술 직후 원시 12능력치 (위 표 순서)</th></tr></thead><tbody>'+conditionRows+'</tbody></table></div>':"")+(w.bonusIds?.length?'<p>유지되는 별도 보너스: '+list(w.bonusIds)+'</p>':"")+'<p><small>원장 참조: '+esc(w.reference)+(w.graphRun?' · '+esc(w.graphRun)+' / '+fmt(w.graphNode):"")+' · 연구·시술·성장 실제 공동 달성 미인증.</small></p>'+supportDetails;
+   const replayedSuffix=w.careerSuffixReplay;
+   const suffixDetail=replayedSuffix?.status==="SUFFIX_REPLAYED_UNDER_ASSUMED_RANK"?'<div class="bs-note" data-career-suffix-replayed="true"><h4>계급 전제 하의 후속 시술 재생 결과</h4><p>실제 승급·훈장 취득 미증명. 아래는 장기 상계가 아니라 기록된 조건부 수치입니다.</p>'+replayedSuffix.rankAssumptions.map(a=>'<p>'+esc(label(a.beforeTransform))+' · 계급 '+fmt(a.rank)+' ('+esc(label(a.rankId))+') 도달 가정</p>').join("")+'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>구체적 재생 수치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["원시",replayedSuffix.raw],["영구 보너스",replayedSuffix.bonus],["실효",replayedSuffix.effective]].map(([title,v])=>'<tr><th>'+title+'</th>'+v.map(n=>'<td>'+fmt(n)+'</td>').join("")+'</tr>').join("")+'</tbody></table></div><details><summary>후속 시술 전후 원시 능력치 및 계급</summary>'+replayedSuffix.steps.map(s=>'<p>'+esc(label(s.id))+' · '+esc(label(s.bodyBefore))+' → '+esc(label(s.bodyAfter))+' · 계급 '+fmt(s.rankBefore)+' → '+fmt(s.rankAfter)+'<br>원시 '+s.rawBefore.map(fmt).join(" / ")+' → '+s.rawAfter.map(fmt).join(" / ")+'</p>').join("")+'<p><code>'+esc(replayedSuffix.allRawActionsSHA256)+'</code></p></details></div>':"";
+   const career=w.source==="CAREER12"?'<p class="bs-warning">앞 '+fmt(w.replayedPrefixLength)+'회 시술과 추가 연구는 조건부 재생됨. '+(suffixDetail?"후속 시술은 계급 가정 하에 재생됨. 승급 획득 자체는 미증명.":"이후 계급·훈장 및 시술 미재생.")+' 훈장 자체 보너스는 상계에서 제외됩니다.</p>'+suffixDetail+'<ul>'+ (w.careerConditions||[]).map(c=>'<li>'+esc(label(c.transformation))+' · 계급 '+fmt(c.rank?.required)+' · 훈장 '+((c.medals||[]).map(m=>esc(label(m.id||m.medal||m.commendation||m.type))+' 레벨 '+fmt(m.decorationIndex??m.level??m.requiredLevel??m.required)+' (보유 필요)').join(" / ")||"요구 없음")+'</li>').join("")+'</ul>':"";
+   E("bsWitness").innerHTML='<h3>선택 수치의 동일 경로</h3>'+career+(w.source==="CAREER12"?'<div id="bsCareerMedalPlan"><p>훈장 규칙 연결 중…</p></div>':"")+'<p><strong>'+esc(modelLabels[w.source]||w.source)+'</strong> · '+esc(db.policies[w.source])+'</p><p>최종 병종 '+esc(label(w.body))+(w.originProfile?' · 출생 프로필 <code>'+esc(w.originProfile)+'</code>':"")+' · '+esc(route)+' · 성장 '+esc(w.placement)+'</p><p>요구 연구: '+list(w.research)+'</p>'+resourceDetails(id)+history+(w.history?researchExtensionDetail(w.history):"")+(gate?'<p>이력 종료 시 활성 연구: '+list(gate.active)+' · 미활성: '+list(gate.missing)+'</p>':"")+(w.requiredItems?.length?'<p>필요 아이템: '+list(w.requiredItems)+'</p>':"")+'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>능력치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["생성 상단",cap("maxStats")],["전투 성장캡",w.rawCombatCaps||cap("statCaps")],["별도 훈련캡",w.trainingCaps||cap("trainingStatCaps")],["원시값",w.raw],["영구 보너스",w.bonus],["실효값",w.vector]].map(([t,v])=>'<tr><th>'+t+'</th>'+db.stats.map((_,i)=>'<td>'+fmt(v?.[i])+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+(conditionRows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>단계</th><th>훈련</th><th>직전 성장</th><th>요구 조건 및 증가 제한</th><th>시술 직후 원시 12능력치 (위 표 순서)</th></tr></thead><tbody>'+conditionRows+'</tbody></table></div>':"")+(w.bonusIds?.length?'<p>유지되는 별도 보너스: '+list(w.bonusIds)+'</p>':"")+'<p><small>원장 참조: '+esc(w.reference)+(w.graphRun?' · '+esc(w.graphRun)+' / '+fmt(w.graphNode):"")+' · 연구·시술·성장 실제 공동 달성 미인증.</small></p>'+supportDetails;
+   const panel=E("bsCareerMedalPlan");
+   if(panel)(modern?Promise.resolve(modern):loadRuntime(new URL("./data/soldiers-modern-index.json",import.meta.url).href)).then(source=>{if(panel.isConnected){panel.innerHTML=careerMedalMarkup(w,source);mountCareerProgress(panel,w,source);}}).catch(error=>{if(panel.isConnected)panel.textContent="훈장 규칙 연결 실패: "+error.message;});
   }
   ROOT.addEventListener("click",ev=>{
    const goal=ev.target.closest("[data-goal-witness]");if(goal){applyGoalPreset(goal.dataset.goalWitness);return;}
