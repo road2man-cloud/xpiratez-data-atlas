@@ -1,9 +1,10 @@
 // One shared result reader for the existing Soldier and Branch DB pages.
 // No standalone viewer or model tabs. Model distinctions are columns/evidence.
-import {buildBranchRouteIndex,parseTargets,matchesTargets} from "./branch-soldier-query.js?v=20261124-stat-fee-1";
+import {buildBranchRouteIndex,parseTargets,matchesTargets} from "./branch-soldier-query.js?v=20261124-resource-goals-1";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths} from "./branch-soldier-catalog.js?v=20261124-depth-dynamic-1";
 import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
-import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-stat-fee-1";
+import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-resource-goals-1";
+import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.
@@ -111,8 +112,13 @@ if(ROOT){
  function paretoMarkup(){
   return '<h4>능력치·자원 비지배 비교 (선택)</h4><div class="bs-controls"><label>비교할 능력치<select id="bsParetoAxes">'+options([["all","모든 계산된 능력치"],["targets","입력한 목표 능력치만"],...db.stats.map(k=>[k,ko[k]||k])],"all")+'</select></label><label>비지배 필터<select id="bsParetoMode">'+options([["off","전체 등록 후보 유지"],["fees","능력치 + 직접 지출"],["requirements","능력치 + 지출·횟수·기간·재료·훈장·시설·연구 요구"]],"off")+'</select></label></div><p class="bs-sub">같은 계산 모델·출생처·최종 병종에서 비교합니다. 비교하는 능력치와 선택한 자원이 모두 같거나 우수하고 최소 하나가 더 좋으며, 상대의 모든 참조 분기를 보존할 때만 열등 후보로 판정합니다. 동점과 미판정은 남깁니다. 전체 요구 비교에서는 계급·병종 변경 이력이 다른 경로도 별도로 유지합니다. 연구·계급·성장 실현 가능성이나 전체 게임 최적성은 인증하지 않습니다.</p><p id="bsParetoStatus" class="bs-sub" aria-live="polite"></p><div id="bsParetoExamples"></div>';
  }
+ function resourceGoalMarkup(){
+  const spec=db.summary.resourceGoalCheckpoints;if(!spec)return "";
+  const goalLabel=g=>Object.entries(g.stats).map(([k,v])=>(ko[k]||k)+" "+v+" 이상").join(" · ");
+  return '<details class="bs-note"><summary>5단계 전체 상태 재계산: 자원 조건과 동시 능력치 목표</summary><p class="bs-sub">각 조건을 전체 완료 상태 그래프에 먼저 적용한 결과입니다. 반복 시술별 요구량을 구분하여 '+fmt(spec.witnessesAdded)+'개 대표 경로를 새로 연결했습니다. 본체·전투캡 성장 모델에만 적용됩니다.</p><div class="bs-controls"><label>자원 조건<select id="bsGoalPreset">'+options(spec.presets.map(p=>[p.id,p.title]),"ALL")+'</select></label><label>동시 목표<select id="bsGoalTarget">'+options(spec.goals.map(g=>[g.id,goalLabel(g)]),spec.goals[0].id)+'</select></label><button id="bsGoalApply" type="button">이 조건을 검색기에 적용</button></div><div id="bsGoalResult" aria-live="polite"></div></details>';
+ }
  function targetsMarkup(){
-  return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+paretoMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p><details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details></details>';
+  return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+paretoMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p><details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details>'+resourceGoalMarkup()+'</details>';
  }
  function mountSoldier(){
   const depths=registeredRouteDepths(db),depthValues=new Set(depths.map(String));
@@ -156,6 +162,32 @@ if(ROOT){
    if(!rows.some(x=>x.win)){el.innerHTML='<p class="bs-sub">현재 병종·성장 모드·분기에는 예산별 재탐색 결과가 연결되지 않았습니다. 본체 전투캡 5단계 모델만 지원합니다.</p>';return;}
    el.innerHTML='<p class="bs-sub">조회 분기의 기존 D5 상태 그래프 전체에서 예산별 '+esc(ko[db.stats[i]])+' 최고 대표를 추출했습니다. 아래는 다른 목표·재료 제한을 적용하기 전의 독립 최고값입니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>직접 지출 상한</th><th>최고 후보</th><th>대표 직접 지출</th><th>대표 훈련</th></tr></thead><tbody>'+rows.map(({budget,win})=>'<tr><td>'+fmt(budget)+'$</td>'+(win?valueCell(null,i,win):'<td>—</td>')+'<td>'+(win?fmt(resourceFor(win).grossFees)+"$":"—")+'</td><td>'+(win?esc(routeName(db.witnesses[win])):"—")+'</td></tr>').join("")+'</tbody></table></div>';
   }
+  function resourceGoalTable(scope){
+   const el=E("bsGoalResult");if(!el)return;
+   const p=projectResourceGoal(db,scope.columns[1].profiles,E("bsGoalPreset").value,E("bsGoalTarget").value,resourceFor);
+   if(!p?.profiles){el.innerHTML='<p class="bs-sub">현재 분기·병종·성장 모드에는 이 5단계 재계산 결과가 연결되지 않았습니다.</p>';E("bsGoalApply").disabled=true;return;}
+   E("bsGoalApply").disabled=false;
+   const objectives={fees:"최소 직접 지출",recovery:"최소 회복",transfer:"최소 이동",actions:"최소 시술 횟수"};
+   const rows=Object.entries(p.goals).map(([key,id])=>{
+    const r=id?resourceFor(id):null;
+    return '<tr><th>'+objectives[key]+'</th><td>'+(r?fmt(r.grossFees)+"$":"—")+'</td><td>'+(r?fmt(r.recoveryDays):"—")+'</td><td>'+(r?fmt(r.transferHours):"—")+'</td><td>'+(r?fmt(r.actions):"—")+'</td><td>'+(id?'<button type="button" class="bs-value" data-goal-witness="'+esc(id)+'">'+esc(routeName(db.witnesses[id]))+'</button>':"조건 일치 없음")+'</td></tr>';
+   }).join("");
+   el.innerHTML='<p class="bs-sub">'+fmt(p.profiles)+'개 정적 연구 프로필에서 이 자원 조건을 먼저 적용했습니다. 현재 조회 분기 기준이며 아래 네 경로는 서로 다를 수 있습니다. 별도의 자유 입력 목표·자원·훈련명 검색 조건은 이 표에 적용하지 않습니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>우선 목표</th><th>직접 지출</th><th>회복 (일)</th><th>이동 (시간)</th><th>시술 횟수</th><th>동시 목표를 충족하는 대표 경로</th></tr></thead><tbody>'+rows+'</tbody></table></div><p class="bs-sub">조건 일치 없음은 이 완료 그래프 내 결과이며 실제 게임의 불가능 판정이 아닙니다.</p><details><summary>같은 자원 조건의 능력치별 독립 최고 후보 (동시 목표 미적용)</summary><div class="bs-scroll"><table class="bs-table"><thead><tr>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody><tr>'+p.best.map((id,i)=>'<td>'+(id?fmt(db.witnesses[id].vector[i]):"—")+'</td>').join("")+'</tr></tbody></table></div></details>';
+  }
+  function applyGoalPreset(preferred=null){
+   const spec=db.summary.resourceGoalCheckpoints;
+   const preset=spec?.presets.find(p=>p.id===E("bsGoalPreset")?.value),goal=spec?.goals.find(g=>g.id===E("bsGoalTarget")?.value);
+   if(!preset||!goal)return;
+   for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value=goal.stats[db.stats[i]]??"";
+   for(const [id,key] of resourceFields)E(id).value=key==="maxActions"?spec.depth:(preset[key]??"");
+   for(const [id,key] of resourceChecks)E(id).checked=!!preset[key];
+   const mats=Object.entries(preset.materialLimits||{});
+   for(const i of materialSlots){E("bsItem"+i).value=mats[i-1]?.[0]||"";E("bsItemLimit"+i).value=mats[i-1]?.[1]??"";}
+   E("bsMode").value=spec.mode;E("bsEvidence").value="GATE12";E("bsStatFeeOnly").checked=false;
+   E("bsMinDepth").value="0";E("bsParetoMode").value="off";E("bsRouteSearch").value="";
+   E("bsRouteOrder").value="fees";
+   applyTargets(preferred);
+  }
   function matchedResourcesTable(rows,scope){
    const el=E("bsMatchedResources");
    if(!targets.length&&!hasResourceFilters(resources)&&!E("bsStatFeeOnly").checked&&!Number(E("bsMinDepth").value)&&E("bsParetoMode").value==="off"){
@@ -190,7 +222,7 @@ if(ROOT){
    if(!targets.length)return 0;
    return Math.min(...targets.map(([i,min])=>(w.vector[i]-min)/Math.max(1,min)));
   }
-  function applyTargets(){
+  function applyTargets(preferred=null){
    try{
     const nextTargets=parseTargets(db.stats,db.stats.map((_,i)=>E("bsTarget"+i).value));
     const nextResources=Object.fromEntries(resourceFields.map(([id,key])=>[key,parseResourceLimit(E(id).value)]));
@@ -205,7 +237,7 @@ if(ROOT){
     targets=nextTargets;resources=nextResources;
    }
    catch(err){E("bsTargetStatus").textContent=err.message;return;}
-   draw(true);
+   draw(true,typeof preferred==="string"?preferred:null);
   }
   function branchPicker(ids,kind,route=null){
    if(!ids.length)return "";
@@ -280,6 +312,7 @@ if(ROOT){
    const targetText=targets.map(([i,min])=>(ko[db.stats[i]]||db.stats[i])+" ≥ "+fmt(min)).join(" · ");
    const resourceText=[...resourceFields.filter(([,k])=>resources[k]!=null).map(([,k,t])=>t+" "+fmt(resources[k])),...resourceChecks.filter(([,k])=>resources[k]).map(([,k,t])=>t),...Object.entries(resources.materialLimits||{}).map(([id,n])=>label(id)+" ≤ "+fmt(n))].join(" · ");
    budgetTable(scope);
+   resourceGoalTable(scope);
 
    const breakdown=Object.keys(modelLabels).map(source=>{
     const own=rows.filter(id=>db.witnesses[id].source===source);
@@ -314,6 +347,8 @@ if(ROOT){
   E("bsClearTargets").addEventListener("click",()=>{for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];resources={};for(const [id] of resourceFields)E(id).value="";for(const [id] of resourceChecks)E(id).checked=false;for(const i of materialSlots){E("bsItem"+i).value="";E("bsItemLimit"+i).value="";}E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsStatFeeOnly").checked=false;E("bsMinDepth").value="0";E("bsParetoMode").value="off";E("bsParetoAxes").value="all";draw(true);});
   E("bsParetoMode").addEventListener("change",()=>draw(true));E("bsParetoAxes").addEventListener("change",()=>{if(E("bsParetoMode").value!=="off")draw(true);});
   E("bsBudgetStat").addEventListener("change",()=>{if(view)budgetTable(view.scope);});
+  for(const id of ["bsGoalPreset","bsGoalTarget"])E(id)?.addEventListener("change",()=>{if(view)resourceGoalTable(view.scope);});
+  E("bsGoalApply")?.addEventListener("click",()=>applyGoalPreset());
 
   E("bsStatFeeOnly").addEventListener("change",()=>draw(true));
   E("bsEvidence").addEventListener("change",()=>draw(true));
@@ -340,6 +375,7 @@ if(ROOT){
    E("bsWitness").innerHTML='<h3>선택 수치의 동일 경로</h3><p><strong>'+esc(modelLabels[w.source]||w.source)+'</strong> · '+esc(db.policies[w.source])+'</p><p>최종 병종 '+esc(label(w.body))+(w.originProfile?' · 출생 프로필 <code>'+esc(w.originProfile)+'</code>':"")+' · '+esc(route)+' · 성장 '+esc(w.placement)+'</p><p>요구 연구: '+list(w.research)+'</p>'+resourceDetails(id)+history+(w.history?researchExtensionDetail(w.history):"")+(gate?'<p>이력 종료 시 활성 연구: '+list(gate.active)+' · 미활성: '+list(gate.missing)+'</p>':"")+(w.requiredItems?.length?'<p>필요 아이템: '+list(w.requiredItems)+'</p>':"")+'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>능력치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["생성 상단",cap("maxStats")],["전투 성장캡",w.rawCombatCaps||cap("statCaps")],["별도 훈련캡",w.trainingCaps||cap("trainingStatCaps")],["원시값",w.raw],["영구 보너스",w.bonus],["실효값",w.vector]].map(([t,v])=>'<tr><th>'+t+'</th>'+db.stats.map((_,i)=>'<td>'+fmt(v?.[i])+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+(conditionRows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>단계</th><th>훈련</th><th>직전 성장</th><th>요구 조건 및 증가 제한</th><th>시술 직후 원시 12능력치 (위 표 순서)</th></tr></thead><tbody>'+conditionRows+'</tbody></table></div>':"")+(w.bonusIds?.length?'<p>유지되는 별도 보너스: '+list(w.bonusIds)+'</p>':"")+'<p><small>원장 참조: '+esc(w.reference)+(w.graphRun?' · '+esc(w.graphRun)+' / '+fmt(w.graphNode):"")+' · 연구·시술·성장 실제 공동 달성 미인증.</small></p>'+supportDetails;
   }
   ROOT.addEventListener("click",ev=>{
+   const goal=ev.target.closest("[data-goal-witness]");if(goal){applyGoalPreset(goal.dataset.goalWitness);return;}
    const pick=ev.target.closest("[data-support-pick]");
    if(pick){const b=index.branchMap.get(E(pick.dataset.supportPick)?.value);if(!b)return;
     const id=pick.dataset.supportRoute||view.chosen;

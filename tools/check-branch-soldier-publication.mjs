@@ -82,5 +82,41 @@ if(db.summary.statFeeFrontier){
   assert(r.complete.cash&&r.grossFees===w.directGrossFee);
  }
 }
+if(db.summary.resourceGoalCheckpoints){
+ const spec=db.summary.resourceGoalCheckpoints,cache=new Map();
+ const get=id=>{if(!cache.has(id))cache.set(id,summarizeRouteResources(db.witnesses[id],db.ruleDetails));return cache.get(id);};
+ let refs=0;
+ for(const [pid,p] of Object.entries(db.profiles)){
+  if(!p.resourceGoalCheckpoints)continue;
+  const registered=new Set(profileWitnessIds(db,pid)),own=new Set(p.resourceGoalCandidates);
+  refs+=own.size;
+  const validate=(id,preset)=>{
+   assert(registered.has(id)&&own.has(id),"Resource goal witness missing");
+   const w=db.witnesses[id],r=get(id);
+   assert.equal(w.source,"GATE12");
+   assert(routeActionCount(w)<=spec.depth);
+   assert(matchesResources(r,preset),"Resource preset mismatch");
+   return w;
+  };
+  for(const preset of spec.presets){
+   const row=p.resourceGoalCheckpoints[preset.id];
+   assert(row&&row.best.length===db.stats.length);
+   for(const id of row.best.filter(Boolean))validate(id,preset);
+   for(const goal of spec.goals){
+    const refs=Object.values(row.goals[goal.id]);
+    assert(refs.every(Boolean)||refs.every(x=>x===null),"Partial objective result");
+    for(const id of refs.filter(Boolean)){
+     const w=validate(id,preset);
+     for(const [stat,min] of Object.entries(goal.stats))assert(w.vector[db.stats.indexOf(stat)]>=min);
+    }
+   }
+  }
+ }
+ assert.equal(refs,spec.resourceReferences);
+ for(const [id,w] of Object.entries(db.witnesses).filter(([,w])=>w.resourceGoalCheckpoint)){
+  const r=get(id);
+  assert.equal(r.grossFees,w.directGrossFee);assert.equal(r.recoveryDays,w.directRecoveryDays);assert.equal(r.transferHours,w.directTransferHours);
+ }
+}
 console.log(JSON.stringify(coverage));
 console.log("PASS shared growth registry, exact origin rows, long-route links, budget candidates");
