@@ -33,6 +33,33 @@ export function mergeAllOriginRows(db,index,keys){
  }
  return out;
 }
+export function mergeOriginExtensionRows(db,index,keys,branchId=null){
+ const out=new Map(index),ext=db?.originExtension12;if(!ext)return out;
+ for(const [pid,r] of Object.entries(ext.records)){
+  const body=db.originCap12?.records?.[pid]?.body;
+  const ids=r.routeIds.filter(id=>{const w=db.witnesses[id];return w?.body===body&&(!branchId||w.branchIds.includes(branchId));});
+  if(!ids.length)continue;
+  const best=ids.reduce((a,b)=>total(db.witnesses[b])>total(db.witnesses[a])?b:a),w=db.witnesses[best];
+  const longest=ids.reduce((a,b)=>length(db.witnesses[b])>length(db.witnesses[a])?b:a);
+  const old=out.get(pid);
+  const row={profileId:pid,body,route:best,longestRoute:longest,steps:length(w),longestSteps:length(db.witnesses[longest]),representativeCount:ids.length,branchCount:new Set(ids.flatMap(id=>db.witnesses[id].branchIds)).size,additionalBranchRepresentatives:ids.filter(id=>db.witnesses[id].branchIds.length).length,stats:Object.fromEntries(keys.map(k=>[k,w.vector[db.stats.indexOf(k)]])),total:total(w),trainingIds:[...new Set(ids.flatMap(id=>db.witnesses[id].steps.map(x=>x.id)))],source:"ORIGINEXT12"};
+  if(!old){out.set(pid,row);continue;}
+  const winner=row.total>old.total?row:old,long=row.longestSteps>old.longestSteps?row:old;
+  out.set(pid,{...winner,longestSteps:long.longestSteps,longestRoute:long.longestRoute,representativeCount:old.representativeCount+row.representativeCount,trainingIds:[...new Set([...old.trainingIds,...row.trainingIds])]});
+ }
+ return out;
+}
+export function renderOriginExtension(db,pid,focus=null,labels={},branchId=null){
+ const ext=db?.originExtension12,r=ext?.records?.[pid];if(!r)return "";
+ const ids=r.routeIds.filter(id=>!branchId||db.witnesses[id]?.branchIds.includes(branchId));
+ const button=(id,label)=>originCapButton(id,label);
+ const name=id=>db.labels[id]||id;
+ if(!ids.length)return '<p class="scope-note">활성 연구 후속 탐색: 기존 접두부 '+fmt(r.baselines.length)+'개 재생 · '+(branchId?"선택 분기에 연결된":"이번 조건에서 발견된")+' 후속 후보 없음. 추가 연구·승급을 포함한 모든 경로가 불가능하다는 뜻은 아닙니다.</p>';
+ const order=ids.sort((a,b)=>total(db.witnesses[b])-total(db.witnesses[a])||db.witnesses[a].fees-db.witnesses[b].fees),id=ids.includes(focus)?focus:order[0],w=db.witnesses[id],e=w.originExtension;
+ const cols=db.stats.map(k=>'<th>'+esc(labels[k]||k)+'</th>').join("");
+ const row=(title,v)=>'<tr><th>'+esc(title)+'</th>'+v.map(n=>'<td>'+fmt(n)+'</td>').join("")+'</tr>';
+ return '<section class="scope-note" data-origin-extension="true"><h3>기존 활성 연구를 활용한 후속 육성</h3><p>출생 경로 '+fmt(r.baselines.length)+'개 재생 · 발견 '+fmt(r.candidates)+'개 · 현재 범위 대표 '+fmt(ids.length)+'개. 접두부는 원본 출생 최솟값의 기존 연구·시술 순서 재생, 후속 최대 2회는 활성 연구만 이용합니다. 전투 성장캡·자금·재료·시설 조건부이며 새 연구·진급·훈장 획득 없음.</p><p>선택 최종 병종 '+esc(name(w.body))+' · 직접 시술비 '+fmt(w.fees)+' · '+fmt(length(w))+'단계 · 관측 정식 분기 뿌리 일치 '+fmt(w.branchIds.length)+'개 (공통 연구 이력 공동 재생 미인증)</p><p>'+w.steps.map((s,i)=>(i===e.seedDepth?' → [후속] ':'')+(w.growthBefore[i]?'[성장] ':'')+esc(name(s.id))).join(' → ')+'</p><p>기존 접두부 참조 <code>'+esc(e.seed)+'</code> · 후속 요구 활성 연구 '+e.activeRequiredResearch.map(x=>esc(name(x))).join(" / ")+'</p><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>능력치</th>'+cols+'</tr></thead><tbody>'+row("접두부 전투캡 조건부 실효",e.seedCapVector)+row("후속 원시",w.raw)+row("영구 보너스",w.bonus)+row("후속 실효",w.vector)+'</tbody></table></div><details open><summary>후속 대표 경로 '+fmt(ids.length)+'개</summary><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>최종 병종</th><th>후속 시술</th><th>직접 시술비</th><th>동일 경로 합계</th></tr></thead><tbody>'+order.map(id=>{const x=db.witnesses[id];return '<tr><td>'+esc(name(x.body))+'</td><td>'+x.originExtension.appended.map(k=>esc(name(k))).join(" → ")+'</td><td>'+fmt(x.fees)+'</td><td>'+button(id,fmt(total(x)))+'</td></tr>';}).join("")+'</tbody></table></div></details></section>';
+}
 export function originCapButton(id,label){
  return '<button type="button" class="origin-open" data-origin-cap-route="'+esc(id)+'" title="전체 출생처 통합 조건부 성장 상계">'+esc(label)+'</button>';
 }

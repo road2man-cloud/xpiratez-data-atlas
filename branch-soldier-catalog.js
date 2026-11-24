@@ -1,6 +1,6 @@
 // Shared public registry loader and exact-origin growth view.
 // One gzip payload is reused by the existing Soldier and Branch DB screens.
-import {allOriginBodyWitnessIds} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
+import {allOriginBodyWitnessIds} from "./branch-soldier-origin-cap.js?v=20261124-origin-extension-1";
 import {inflateArchivedGzip} from "./soldiers/modern/origin-gzip-compat.js";
 import {profileWitnessIds} from "./branch-soldier-query.js?v=20261124-unified-maxima-1";
 import {independentMaxima,registryCandidate,groupBodyMaxima,evidencePriority} from "./branch-soldier-maxima.js";
@@ -109,6 +109,11 @@ export function buildBodyGrowthIndex(db,modern,keys,records=[],isCompatible=()=>
   }
  }
  if(db&&!branchId)for(const id of allOriginBodyWitnessIds(db)){const w=db.witnesses[id];candidates.push({...registryCandidate(db,id),steps:routeActionCount(w)});}
+ if(db)for(const id of db.originExtension12?.witnessIds||[]){
+  const w=db.witnesses[id];
+  if(w?.source!=="ORIGINEXT12"||w.actualGameCertified!==false||!origins.has(w.originProfile)||branchId&&!w.branchIds.includes(branchId))continue;
+  candidates.push({...registryCandidate(db,id),steps:routeActionCount(w)});
+ }
  return groupBodyMaxima(keys,modern.soldiers,candidates);
 }
 // Data-driven status: never encode a particular worker's report count in HTML.
