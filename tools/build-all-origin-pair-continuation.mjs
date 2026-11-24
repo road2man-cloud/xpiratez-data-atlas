@@ -12,6 +12,7 @@ import {createFoundationResearchPlanner} from "../public/soldiers/modern/foundat
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 import {STAT_KEYS,bonusStats} from "../public/soldiers/modern/eligibility.js";
 import {evaluateCapGrowthChronologies} from "./damsel-madgal-cap-growth-chronology-core.mjs";
+import {createExactPrefixCheckpointCache} from "./origin-pair-exact-prefix-checkpoint.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
 const git=a=>execFileSync("git",a,{maxBuffer:256*1024*1024,windowsHide:true});
 const hash=b=>createHash("sha256").update(b).digest("hex"),key=x=>hash(JSON.stringify(x));
@@ -26,9 +27,18 @@ for(const [f,h] of Object.entries(cohort.engineHashes))if(hash(fs.readFileSync(f
 data.originRows=ledger.rows;data.sourceItemIds=new Set(cat.itemIds);
 const numericFiles=["tools/damsel-madgal-cap-growth-chronology-core.mjs","public/soldiers/modern/stat-envelope.js","public/soldiers/modern/growth-envelope.js","public/soldiers/modern/eligibility.js","public/soldiers/modern/research-training-locks.js"];
 const numericHashes=Object.fromEntries(numericFiles.map(f=>[f,hash(fs.readFileSync(f))]));
-const engine=key(["JOINT_SUFFIX_V1",cohort.fingerprint,numericHashes,hash(fs.readFileSync(new URL(import.meta.url)))]);
+const checkpointHash=hash(fs.readFileSync(new URL("./origin-pair-exact-prefix-checkpoint.mjs",import.meta.url)));
+const engine=key(["JOINT_SUFFIX_V2",cohort.fingerprint,numericHashes,checkpointHash,hash(fs.readFileSync(new URL(import.meta.url)))]);
 const prior=db.originPairContinuation;
-if(prior&&prior.engine!==engine)throw Error("Continuation engine migration required");
+let engineMigration=null;
+if(prior&&prior.engine!==engine){
+ const legacyCommit="f09fa60972f8157eb225bcc8efdcb517eb944888";
+ const legacyHash=hash(git(["show",legacyCommit+":tools/build-all-origin-pair-continuation.mjs"]));
+ const legacyEngine=key(["JOINT_SUFFIX_V1",cohort.fingerprint,numericHashes,legacyHash]);
+ if(prior.engine!==legacyEngine||JSON.stringify(prior.numericHashes)!==JSON.stringify(numericHashes)||prior.birthFingerprint!==cohort.fingerprint)throw Error("Continuation engine migration required");
+ engineMigration={from:prior.engine,to:engine,legacyCommit,legacyHash,scope:"EXACT_PREFIX_CHECKPOINT_ONLY; PRIOR ROUTES AND MODELS RETAINED"};
+}
+const checkpoint=createExactPrefixCheckpointCache(path.join("experiments/endgame-current-save",".origin-pair-prefix-cache"),engine,{enabled:!process.argv.includes("--no-prefix-cache")});
 const routes={...(prior?.routes||{})},models={...(prior?.models||{})},attempts={...(prior?.attempts||{})};
 const profiles=new Map(data.profiles.map(p=>[p.id,p])),rules=new Map(data.transformations.map(r=>[r.id,r]));
 const byBody=new Map();
@@ -48,13 +58,17 @@ function snapshot(n){
 }
 let rootReplays=0,rootHits=0,birthReplays=0,transitions=0,numericComputed=0,numericHits=0,numericErrors=0,newRoutes=0,unresolved=0,peakRss=process.memoryUsage().rss;
 const start=performance.now(),cpu=process.cpuUsage(),limit=Number(arg("limit","300")),seconds=Number(arg("seconds","24")),depth=Number(arg("depth","3"));
-if(!Number.isInteger(depth)||depth<1||depth>3)throw Error("Depth out of bounds");
+if(!Number.isInteger(depth)||depth<1||depth>4)throw Error("Depth out of bounds");
 const before=Object.keys(routes).length;
 function rootFor(p){
  if(rootMemo.has(p.root)){rootHits++;return rootMemo.get(p.root);}
  const r=cohort.roots[p.root];if(!r||key(r.actions)!==p.root)throw Error("Invalid root identity");
- const z=replayOriginWitness(r.actions,data,{maxSteps:5000});rootReplays++;if(!z.ok)throw Error(z.reason);
- const n={world:z.world,steps:r.actions.slice(),trace:z.trace,diagnostics:[]};rootMemo.set(p.root,n);
+ let n=checkpoint.load(r.actions);
+ if(!n){
+  const z=replayOriginWitness(r.actions,data,{maxSteps:5000});rootReplays++;if(!z.ok)throw Error(z.reason);
+  n={world:z.world,steps:r.actions.slice(),trace:z.trace,diagnostics:[]};checkpoint.save(n);
+ }
+ rootMemo.set(p.root,n);
  if(rootMemo.size>12)rootMemo.delete(rootMemo.keys().next().value);
  return n;
 }
@@ -111,9 +125,15 @@ let pairsVisited=0,birthFailures=0;
 for(const [id,p] of queue){
  if(newRoutes>=limit||performance.now()-start>seconds*1000)break;
  try{
-  const n=planner.clone(rootFor(p));
-  for(const step of p.suffix)planner.append(n,step);
-  birthReplays++;
+  const full=[...cohort.roots[p.root].actions,...p.suffix];
+  let n=checkpoint.load(full,p.stateHash);
+  if(!n){
+   n=planner.clone(rootFor(p));
+   for(const step of p.suffix)planner.append(n,step);
+   birthReplays++;
+   if(snapshot(n).stateHash!==p.stateHash||key(n.steps)!==p.fullActionHash)throw Error("Birth proof differs");
+   checkpoint.save(n,p.stateHash);
+  }
   if(snapshot(n).stateHash!==p.stateHash||key(n.steps)!==p.fullActionHash)throw Error("Birth proof differs");
   pairsVisited++;run(p,id,n,[],depth);
  }catch(e){birthFailures++;if(e.message==="Prior route state changed")throw e;console.log("PAIR_UNRESOLVED",id,e.message);}
@@ -122,6 +142,6 @@ for(const [id,p] of queue){
 const all=Object.values(routes),originCounts={},byDepth={};
 for(const r of all){originCounts[r.origin]=(originCounts[r.origin]||0)+1;byDepth[r.order.length]=(byDepth[r.order.length]||0)+1;}
 const elapsed=(performance.now()-start)/1000,u=process.cpuUsage(cpu);
-const summary={registeredRoutes:all.length,priorRoutes:before,newRoutes,pairedOrigins:Object.keys(originCounts).length,pairsWithTraining:new Set(all.map(r=>r.pair)).size,pairedBranches:new Set(all.map(r=>r.branch)).size,byDepth,originCounts,numericModels:Object.keys(models).length,numericModelReferences:all.filter(r=>r.model).length,numericComputed,numericHits,numericErrors,pairsVisited,birthReplays,birthFailures,rootReplays,rootHits,transitions,limitedUnresolved:Object.keys(attempts).length,newUnresolved:unresolved,seconds:elapsed,cpuSeconds:(u.user+u.system)/1e6,peakRssBytes:peakRss,actualGameCertified:0,globalOptimalCertified:0};
-const result={schemaVersion:1,kind:"ALL_ORIGIN_PAIR_CONTINUATION",baseCommit:base,sourceMetadataSha256:db.sourceMetadataSha256,engine,numericHashes,birthFingerprint:cohort.fingerprint,generatedAt:new Date().toISOString(),routes,models,attempts,summary,policy:"Same chronological joint birth prefix, active research only, deterministic live transforms at actual birth rank, explicit indexed external resource assumptions. No mid-route growth replay, future research, random transforms, or new medals. Separate numerical envelope is relaxed, not proof that maximal roll schedule is attainable."};
+const summary={registeredRoutes:all.length,priorRoutes:before,newRoutes,pairedOrigins:Object.keys(originCounts).length,pairsWithTraining:new Set(all.map(r=>r.pair)).size,pairedBranches:new Set(all.map(r=>r.branch)).size,byDepth,originCounts,numericModels:Object.keys(models).length,numericModelReferences:all.filter(r=>r.model).length,numericComputed,numericHits,numericErrors,pairsVisited,birthReplays,birthFailures,rootReplays,rootHits,transitions,limitedUnresolved:Object.keys(attempts).length,newUnresolved:unresolved,seconds:elapsed,cpuSeconds:(u.user+u.system)/1e6,peakRssBytes:peakRss,prefixCheckpoint:{...checkpoint.metrics},actualGameCertified:0,globalOptimalCertified:0};
+const result={schemaVersion:1,kind:"ALL_ORIGIN_PAIR_CONTINUATION",baseCommit:base,sourceMetadataSha256:db.sourceMetadataSha256,engine,engineMigration,checkpointHash,numericHashes,birthFingerprint:cohort.fingerprint,generatedAt:new Date().toISOString(),routes,models,attempts,summary,policy:"Same chronological joint birth prefix, active research only, deterministic live transforms at actual birth rank, explicit indexed external resource assumptions. No mid-route growth replay, future research, random transforms, or new medals. Separate numerical envelope is relaxed, not proof that maximal roll schedule is attainable."};
 const file=path.join("experiments/endgame-current-save","12-all-origin-pair-continuation.json");fs.writeFileSync(file+".tmp",JSON.stringify(result));fs.renameSync(file+".tmp",file);console.log(JSON.stringify({file,summary}));

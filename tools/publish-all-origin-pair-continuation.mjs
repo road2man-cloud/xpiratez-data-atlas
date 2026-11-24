@@ -26,11 +26,25 @@ for(const [id,r] of Object.entries(a.routes)){
  if(r.model){const m=a.models[r.model];assert(m);assert.equal(m.origin,r.origin);assert.equal(m.body,r.body);assert.deepEqual(m.order,r.order);}
 }
 for(const m of Object.values(a.models)){assert.equal(m.actualGameCertified,false);assert(m.frontier.length&&m.frontier.every(x=>[x.vector,x.raw,x.bonus].every(v=>v.length===12&&v.every(Number.isSafeInteger))));}
-if(db.originPairContinuation){assert.equal(db.originPairContinuation.engine,a.engine);for(const [k,r] of Object.entries(db.originPairContinuation.routes))assert.deepEqual(a.routes[k],r,"Lost route "+k);for(const [k,m] of Object.entries(db.originPairContinuation.models))assert.deepEqual(a.models[k],m,"Lost model "+k);}
+if(db.originPairContinuation){
+ const old=db.originPairContinuation;
+ if(old.engine!==a.engine){
+  const m=a.engineMigration;
+  assert(m&&m.from===old.engine&&m.to===a.engine,"Unknown engine migration");
+  assert.equal(m.legacyCommit,"f09fa60972f8157eb225bcc8efdcb517eb944888");
+  assert.equal(m.legacyHash,sha(git(["show",m.legacyCommit+":tools/build-all-origin-pair-continuation.mjs"])));
+  assert.equal(old.engine,key(["JOINT_SUFFIX_V1",cohort.fingerprint,a.numericHashes,m.legacyHash]));
+  assert.deepEqual(old.numericHashes,a.numericHashes);
+  assert.equal(a.checkpointHash,sha(fs.readFileSync("tools/origin-pair-exact-prefix-checkpoint.mjs")));
+  assert.equal(a.engine,key(["JOINT_SUFFIX_V2",cohort.fingerprint,a.numericHashes,a.checkpointHash,sha(fs.readFileSync("tools/build-all-origin-pair-continuation.mjs"))]));
+ }
+ for(const [k,r] of Object.entries(old.routes))assert.deepEqual(a.routes[k],r,"Lost route "+k);
+ for(const [k,m] of Object.entries(old.models))assert.deepEqual(a.models[k],m,"Lost model "+k);
+}
 db.originPairContinuation=a;db.summary.originPairContinuation=a.summary;
 db.sources.ORIGINPAIRCONT12={file:"tools/build-all-origin-pair-continuation.mjs",sourceMetadataSha256:a.sourceMetadataSha256,engine:a.engine};
 db.policies.ORIGINPAIRCONT12="동일 연구 접두부·조건부 모집 이후 활성 연구로 확정 수치 시술을 재생. 실제 재생 실효값과 별도 성장 상계를 구분하고 기존 증거 계층에 합산하지 않음.";
-const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6}),v="20261125-origin-joint-suffix-669";
+const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6}),v="20261125-origin-joint-suffix-919";
 const replace=(text,from,to)=>{assert.equal(text.split(from).length,2,"Missing or duplicate anchor: "+from);return text.replace(from,to);};
 const bump=(text,re)=>{assert(re.test(text),"Missing cache key");return text.replace(re,(_m,a,b)=>a+v+b);};
 let shared=get("public/branch-soldier-results.js").toString("utf8");
@@ -46,7 +60,7 @@ soldier=bump(soldier,/(href="acquisition-tech-view\.css\?v=)[^"]+(")/);
 let app=get("public/soldiers/modern/app.js").toString("utf8");app=bump(app,/(acquisition-tech-view\.js\?v=)[^']+(')/);
 let captain=get("public/captains/index.html").toString("utf8");captain=bump(captain,/(src="\.\.\/branch-soldier-results\.js\?v=)[^"]+(")/);
 const patch=new Map([[asset,payload],["public/branch-soldier-results.js",Buffer.from(shared)],["public/soldiers/modern/index.html",Buffer.from(soldier)],["public/soldiers/modern/app.js",Buffer.from(app)],["public/captains/index.html",Buffer.from(captain)],["modules/captains/index.html",Buffer.from(captain)]]);
-for(const f of ["public/branch-soldier-pair-continuation.js","tools/build-all-origin-pair-continuation.mjs","tools/publish-all-origin-pair-continuation.mjs"])patch.set(f,fs.readFileSync(f));
+for(const f of ["public/branch-soldier-pair-continuation.js","tools/build-all-origin-pair-continuation.mjs","tools/publish-all-origin-pair-continuation.mjs","tools/origin-pair-exact-prefix-checkpoint.mjs"])patch.set(f,fs.readFileSync(f));
 for(const f of ["public/branch-soldier-results.js","public/soldiers/modern/app.js","public/branch-soldier-pair-continuation.js"])execFileSync(process.execPath,["--input-type=module","--check"],{input:patch.get(f),windowsHide:true});
 const idx=fs.mkdtempSync(path.join(os.tmpdir(),"atlas-joint-suffix-"));
 try{const env={...process.env,GIT_INDEX_FILE:path.join(idx,"index")};git(["read-tree",base],{env});
