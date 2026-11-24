@@ -30,7 +30,7 @@ if(db.originPairContinuation){assert.equal(db.originPairContinuation.engine,a.en
 db.originPairContinuation=a;db.summary.originPairContinuation=a.summary;
 db.sources.ORIGINPAIRCONT12={file:"tools/build-all-origin-pair-continuation.mjs",sourceMetadataSha256:a.sourceMetadataSha256,engine:a.engine};
 db.policies.ORIGINPAIRCONT12="동일 연구 접두부·조건부 모집 이후 활성 연구로 확정 수치 시술을 재생. 실제 재생 실효값과 별도 성장 상계를 구분하고 기존 증거 계층에 합산하지 않음.";
-const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6}),v="20261124-origin-joint-suffix-1";
+const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6}),v="20261125-origin-joint-suffix-669";
 const replace=(text,from,to)=>{assert.equal(text.split(from).length,2,"Missing or duplicate anchor: "+from);return text.replace(from,to);};
 const bump=(text,re)=>{assert(re.test(text),"Missing cache key");return text.replace(re,(_m,a,b)=>a+v+b);};
 let shared=get("public/branch-soldier-results.js").toString("utf8");
@@ -38,6 +38,7 @@ if(!shared.includes("pairContinuationMarkup")){
  shared=replace(shared,'const ROOT=document.querySelector("[data-branch-soldier-results]");','import {pairContinuationMarkup} from "./branch-soldier-pair-continuation.js?v='+v+'";\nconst ROOT=document.querySelector("[data-branch-soldier-results]");');
  assert.equal(shared.split("pairSearchMarkup(db)").length,3);shared=shared.replaceAll("pairSearchMarkup(db)","pairSearchMarkup(db)+pairContinuationMarkup(db)");
 }
+shared=shared.replace(/branch-soldier-pair-continuation\.js\?v=[^"]+/,"branch-soldier-pair-continuation.js?v="+v);
 let soldier=get("public/soldiers/modern/index.html").toString("utf8");
 soldier=bump(soldier,/(src="\.\.\/\.\.\/branch-soldier-results\.js\?v=)[^"]+(")/);
 soldier=bump(soldier,/(src="app\.js\?v=)[^"]+(")/);
