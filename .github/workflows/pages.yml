@@ -106,5 +106,11 @@ jobs:
           test "$(git rev-parse "$TREE:data/resource-chunks/armors")" = "$(git rev-parse HEAD:public/data/resource-chunks/armors)"
 
           PARENT=$(git rev-parse origin/gh-pages)
+          # A newer scoped deployment may have completed while this job was validating.
+          LIVE_SOURCE=$(git log -1 --format=%B "$PARENT" | sed -nE "s/^(Publish public atlas from |Atlas-Soldier-Source: )([0-9a-f]{40})$/\\2/p" | head -n 1)
+          if [ -n "$LIVE_SOURCE" ] && [ "$LIVE_SOURCE" != "$GITHUB_SHA" ] && git merge-base --is-ancestor "$GITHUB_SHA" "$LIVE_SOURCE"; then
+            echo "A newer public release already exists: $LIVE_SOURCE; skipping stale publication."
+            exit 0
+          fi
           COMMIT=$(echo "Publish public atlas from $GITHUB_SHA" | git commit-tree "$TREE" -p "$PARENT")
           git push origin "$COMMIT":refs/heads/gh-pages

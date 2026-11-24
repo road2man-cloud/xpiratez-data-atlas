@@ -345,7 +345,7 @@ async function validate(){
     REPORT.summary.withCompatibleResearch!==REPORT.records.filter(r=>allCompatible(r).length).length||
     REPORT.summary.compatibleWitnesses!==REPORT.records.reduce((sum,r)=>sum+allCompatible(r).length,0))
     throw Error('난이도 공동조건 감사 요약 불일치');
-  $('#originMaxima').dataset.validation='validated';
+  // The public readiness marker is set only after asynchronous registry loading and rendering.
 }
 function growthScheduleFor(candidate){
   const timing=$('#routeGrowthTiming')?.value||'none';
@@ -1528,6 +1528,7 @@ async function init(){try{
   $('#closeResearchDialog').onclick=()=>$('#researchDialog').close();$('#researchDialog').addEventListener('click',e=>{if(e.target===$('#researchDialog'))$('#researchDialog').close()});
   $('#researchSearch').addEventListener('input',()=>{const q=$('#researchSearch').value.toLocaleLowerCase('ko');$('#researchMatches').innerHTML=q?Object.keys(DATA.researchRules).filter(id=>(id+' '+name(id)).toLocaleLowerCase('ko').includes(q)).slice(0,35).map(node).join(' '):''});
   render();
+  $('#originMaxima').dataset.validation='validated';
   if(params.has('profile'))void openOrigin(params.get('profile'));
   if(params.has('training'))showTraining(params.get('training'));
   if(params.has('research'))showResearch(params.get('research'));
