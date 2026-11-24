@@ -1,18 +1,19 @@
 // Query the one published registry. No synthesized soldier, cross-model
 // dominance or assumed compatibility. All support is exact profile membership.
 export function modelProfiles(db,c,mode,branch=null){
- const e=branch?branch.evidence[c.classKey]:db.globalEvidence[c.classKey];
- const p=branch?branch.results[c.id]?.[mode]:db.global[c.id][mode];
+ const e=branch?branch.evidence?.[c.classKey]:db.globalEvidence?.[c.classKey];
+ const p=branch?branch.results?.[c.id]?.[mode]:db.global?.[c.id]?.[mode];
  const out=[["통합 육성 상계 · 12능력치",e?.unifiedByBody?.[c.body]],
   ["시술 조건 검사 · 12능력치",p],
   ["구조적 후속 확장 · 12능력치",e?.continuationByBody?.[c.body]?.[mode]]];
  if(c.id==="D_W"||c.id==="M_M")out.push(["동일 연구 이력 · 8능력치",e?.sameHistory],["원천 호환 상단 · 8능력치",e?.sourceUpper]);
+ if(db.summary?.careerConditional)out.push(["계급·훈장 조건부 · 12능력치",e?.careerConditionalByBody?.[c.body]]);
  return out;
 }
 export function profileWitnessIds(db,id){
  const p=db.profiles[id];
  if(!p)return [];
- return [...new Set([...(p.frontier||[]),...(p.best||[]),...(p.resourceCandidates||[]),...(p.statFeeFrontier||[]),
+ return [...new Set([...(p.frontier||[]),...(p.best||[]),...(p.resourceCandidates||[]),...(p.statFeeFrontier||[]),...(p.resourceGoalCandidates||[]),
   ...Object.values(p.frontierTies||{}).flat()].filter(x=>x&&db.witnesses[x]))];
 }
 export function matchesTargets(w,targets){

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="origin-catalog.css?v=20261121-recruit-cap-8">
 <link rel="stylesheet" href="education-endgame.css?v=20261107-endgame-choice-1">
 <link rel="stylesheet" href="shared-terminal-catalog.css?v=20261106-chort-separated-1">
-<link rel="stylesheet" href="acquisition-tech-view.css?v=20261108-deep-route-7-1">
+<link rel="stylesheet" href="acquisition-tech-view.css?v=20261124-unified-maxima-1">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 <link rel="stylesheet" href="../../branch-soldier-results.css?v=20261124-resource-1">
 </head>
@@ -23,12 +23,13 @@
 <section id="catalogSummary" class="metrics" aria-live="polite"><p>원본과 경로 증거를 확인하는 중…</p></section>
 <p class="scope-note" id="registryCoverage" role="status" data-registry-status="loading">최신 통합 원장의 실제 연결 범위를 읽는 중입니다.</p>
 <p class="scope-note"><a href="?minDepth=5#integratedCaps">등록된 5회 이상 시술·분기별 상한 검색 →</a></p>
-<section id="chortTarget" class="card shared-terminal-catalog" aria-label="별도 공통 변신 병종 코르트" data-target-type="STR_SOLDIER_CHORT"></section>
+
 <p class="scope-note" id="routePruningScope">훈련·연구·자원 단축 검증을 확인하는 중…</p>
 <p class="scope-note"><a href="?q=manufacture%3ASTR_THEBAN_ASSAULT_CLONE#originMaxima" data-assault-clone-link="true">돌격 클론 · 농부와 다른 독립 출생처 상세 보기</a> · <a href="./chort-readiness.html" data-chort-readiness-link="true">코르트 출발 병종 42개 검증표 · 초기 Psi, 계급, 획득비 및 시간순 경로 근거 자세히 보기</a></p>
 <section class="toolbar card" aria-label="병종 DB 검색">
 <label class="wide">출생처·병종 검색<input id="search" type="search" placeholder="농부 · 돌격 클론 · 영애 · STR_…"></label>
 <label>병종<select id="family"><option value="">전체 병종</option></select></label>
+<label>표 구분<select id="catalogGrouping"><option value="body">최종 병종별 최대값 (기본)</option><option value="origin">출생처별 상세</option></select></label>
 <label>능력치 보기<select id="catalogMetric">
 <option value="growth">성장 완료 가정 · 조건부 상한 (기본)</option>
 <option value="provisional">연구·시술 잠정값 (성장 제외)</option>
@@ -46,14 +47,15 @@
 <p id="compareStatus" class="status" role="status" aria-live="polite">각 행의 '기준으로 비교' 버튼이나 위 선택 메뉴로 비교를 시작할 수 있습니다.</p>
 <p id="catalogStatus" class="status" role="status" aria-live="polite">연구 경로 자료 확인 중…</p>
 <section class="card table-card" id="originMaxima" aria-label="획득처별 능력치와 연구 경로">
-<div class="table-head"><h2>출생처별 비교 <small>코르트 최종 변신 제외</small></h2><span id="rowCount"></span></div>
+<div class="table-head"><h2>전체 병종 최대값 <small>최종 병종 기준 · 12능력치</small></h2><span id="rowCount"></span></div>
 <div class="table-scroll-guide"><span>12종 능력치 비교표 · 모바일에서는 좌우로 밀어 모든 열을 확인하세요.</span><div class="table-scroll-actions"><button type="button" id="scrollStatsLeft" aria-label="표 이전 열 보기">← 이전</button><button type="button" id="scrollStatsRight" aria-label="표 다음 열 보기">다음 →</button></div></div>
 <div id="originTableScroll" class="table-shell" role="region" tabindex="0" aria-label="Mana 포함 12종 능력치 가로 스크롤 표">
 <table id="originTable"><thead></thead><tbody></tbody></table>
 </div>
 </section>
 <section id="originDetails" class="card detail" hidden aria-live="polite"></section>
-<section id="integratedCaps" class="bs-results card" data-branch-soldier-results="soldier" aria-label="선택 병종의 연구 분기별 최종 성장 상한"><p role="status">최신 통합 연구·육성 경로를 불러오는 중입니다.</p></section>
+<details class="card"><summary>코르트 전용 변신·출생 조건 상세</summary><section id="chortTarget" class="shared-terminal-catalog" aria-label="공통 변신 병종 코르트 상세" data-target-type="STR_SOLDIER_CHORT"></section></details>
+<details id="integratedCaps" class="card"><summary>선택 수치의 육성 경로 · 연구 분기 · 자원 조건 상세</summary><section class="bs-results" data-branch-soldier-results="soldier" aria-label="선택 수치의 육성 경로"><p role="status">공통 원장의 경로를 불러오는 중입니다.</p></section></details>
 <details class="methodology card" id="originProofMeaning"><summary>잠정값의 계산 범위와 갱신 원칙</summary>
 <p>각 출생처는 독립된 병사입니다. 기본 비교는 <strong>출생 가능 최댓값에서 시작해 같은 병사의 병종 변경·훈련을 순서대로 반영</strong>하며, 각 시술 전후에 전투와 체력훈련을 충분히 반복했을 때의 조건부 상한을 계산합니다. 출생 RNG·전투 경험치 획득·시설·훈련 자격·동시 능력치 달성은 보장되지 않습니다. 이전 연구·시술 잠정값(출생 최솟값 출발, 전투 성장 제외)은 별도로 선택할 수 있습니다.</p>
 <p><strong>코르트 최종 변신 경로는 별도 코르트 병종에만 표시하고, 원래 출생처의 최고 후보·능력치 순위에는 사용하지 않습니다.</strong> 출생처 원본 재생 후보는 삭제하지 않습니다.</p>
@@ -94,8 +96,8 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261124-origin-ready-2"></script>
-<script type="module" src="../../branch-soldier-results.js?v=20261124-stat-fee-1"></script>
+<script type="module" src="app.js?v=20261124-unified-maxima-1"></script>
+<script type="module" src="../../branch-soldier-results.js?v=20261124-career181-medals-1"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 </body>
 </html>

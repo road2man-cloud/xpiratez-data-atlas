@@ -40,7 +40,7 @@ function sparseSize(s){
  return Object.values(s.items).reduce((n,v)=>n+v,0)+
   Object.values(s.medals).reduce((n,v)=>n+v+1,0)+s.facilities.size+s.research.size;
 }
-const ruleModel=w=>w.source==="GATE12"&&["ORIGINAL_DAG_D5","D5_DIRECT_FEE_BUDGET_CHECKPOINT","D5_STAT_FEE_FRONTIER"].includes(w.sourceKind)
+const ruleModel=w=>w.source==="GATE12"&&["ORIGINAL_DAG_D5","D5_DIRECT_FEE_BUDGET_CHECKPOINT","D5_STAT_FEE_FRONTIER","D5_RESOURCE_GOAL_CHECKPOINT"].includes(w.sourceKind)
  ?"D5_SAME_BODY":w.source==="GATE12"?(w.sourceKind||"GATE12"):"";
 export function registeredResourcePareto({ids,witnesses,resourceFor,supportFor,statIndices=null,resourceMode="fees"}){
  if(!["fees","requirements"].includes(resourceMode))throw Error("Unknown Pareto resource mode");
