@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import zlib from "node:zlib";
 import {createHash} from "node:crypto";
+import {unpackExactResourceIndex} from "../public/branch-soldier-exact-packed.js";
 
 // A lazy-loaded extension of the common registry, not a second DB or viewer.
 export function attachExactResourceIndex(db,dir,publicDir){
@@ -28,6 +29,14 @@ export function attachExactResourceIndex(db,dir,publicDir){
   for(const id of a.ruleOrder)if(!db.ruleDetails[id])throw Error("Missing rule "+id);
   const sha256=createHash("sha256").update(bytes).digest("hex");
   classes[cls]={file:filename,sha256,bytes:bytes.length,combo,body:a.body,depth,...a.metrics};
+  const packedFile=filename.replace(".json.gz",".packed.gz"),packedInput=path.join(dir,packedFile),packedFallback=publicDir&&path.join(publicDir,packedFile);
+  const packedSource=fs.existsSync(packedInput)?packedInput:packedFallback&&fs.existsSync(packedFallback)?packedFallback:null;
+  if(packedSource){
+   const packed=fs.readFileSync(packedSource),decoded=unpackExactResourceIndex(zlib.gunzipSync(packed),sha256);
+   if(decoded.metrics.labels!==a.metrics.labels||decoded.metrics.states!==a.metrics.states||decoded.metrics.distinctMultisets!==a.metrics.distinctMultisets)throw Error("Packed index counts mismatch "+packedFile);
+   classes[cls].packedTransport={file:packedFile,bytes:packed.length,sha256:createHash("sha256").update(packed).digest("hex"),format:"XPZEX001"};
+   if(publicDir&&path.resolve(packedSource)!==path.resolve(publicDir,packedFile))fs.writeFileSync(path.join(publicDir,packedFile),packed);
+  }
   versions[sha256]=classes[cls];
   if(publicDir&&path.resolve(source)!==path.resolve(publicDir,filename))fs.writeFileSync(path.join(publicDir,filename),bytes);
   }
@@ -35,6 +44,6 @@ export function attachExactResourceIndex(db,dir,publicDir){
  db.summary.exactResourceIndex={schemaVersion:1,mode:"CAP_TARGET",depth:Math.max(...Object.values(classes).map(x=>x.depth)),classes,versions,
   scope:{allRecordedNodeMultisetLabels:true,staticResearchRiskProfiles:true,
    rankMedalAcquisitionNotSimulated:true,actualCampaignCertified:false}};
- db.sources.EXACTRESOURCE12={kind:"XPZ_MULTI_DEPTH_EXACT_RESOURCE_INDEX",files:Object.values(versions).map(x=>({file:x.file,sha256:x.sha256}))};
+ db.sources.EXACTRESOURCE12={kind:"XPZ_MULTI_DEPTH_EXACT_RESOURCE_INDEX",files:Object.values(versions).flatMap(x=>[{file:x.file,sha256:x.sha256},...(x.packedTransport?[{file:x.packedTransport.file,sha256:x.packedTransport.sha256}]:[])])};
  return db.summary.exactResourceIndex;
 }

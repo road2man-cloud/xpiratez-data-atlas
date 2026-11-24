@@ -4,6 +4,7 @@ import zlib from "node:zlib";
 import {createHash} from "node:crypto";
 import {validateExactResourceIndex,queryExactResources,exactResourceWitness} from "../public/branch-soldier-exact-resources.js";
 import {matchesResources} from "../public/branch-soldier-resources.js";
+import {unpackExactResourceIndex,exactColumns} from "../public/branch-soldier-exact-packed.js";
 
 export function checkExactResourceAssets(db){
  const spec=db.summary.exactResourceIndex;
@@ -23,6 +24,33 @@ export function checkExactResourceAssets(db){
   const targets=[[0,105],[2,95],[5,122]],resources={maxFees:200000,materialLimits:{STR_MUTANT_FISH:5,STR_GLAMOUR:25,STR_PORN:25}};
   const r=queryExactResources(db,a,{profileIds:profiles,targets,resources});
   assert.equal(r.labelsScanned,s.labels);
+  if(s.packedTransport){
+   const p=s.packedTransport,b=fs.readFileSync("public/data/"+p.file);
+   assert.equal(b.length,p.bytes);assert.equal(createHash("sha256").update(b).digest("hex"),p.sha256);
+   const packed=validateExactResourceIndex(db,s,unpackExactResourceIndex(zlib.gunzipSync(b),s.sha256));
+   const x=exactColumns(a),y=exactColumns(packed),K=a.stats.length;
+   for(let i=0;i<x.stateCount;i++){
+    if(x.mask(i)!==y.mask(i)||x.random(i)!==y.random(i))throw Error("Packed state metadata "+i);
+    for(let k=0;k<3*K;k++)if(x.stat(i,k)!==y.stat(i,k))throw Error("Packed stat "+i+"/"+k);
+   }
+   for(let i=0;i<x.labelCount;i++)if(x.node(i)!==y.node(i)||x.rid(i)!==y.rid(i)||x.code(i)!==y.code(i)||x.growth(i)!==y.growth(i))throw Error("Packed label "+i);
+   for(let i=0;i<x.resourceCount;i++){
+    if(x.resCode(i)!==y.resCode(i))throw Error("Packed resource code "+i);
+    for(let k=1;k<8;k++)if(x.res(i,k)!==y.res(i,k))throw Error("Packed resource "+i+"/"+k);
+   }
+   assert.deepEqual(packed.masks,a.masks);assert.deepEqual(packed.profileMasks,a.profileMasks);
+   assert.deepEqual(queryExactResources(db,packed,{profileIds:profiles,targets,resources}),r);
+   const rule=exactResourceWitness(db,a,r.skyline.find(p=>p.vector[3]>0)?.label??r.skyline[0].label).witness.steps[0]?.id;
+   if(rule){
+    const filtered=queryExactResources(db,packed,{profileIds:profiles,targets,resources,requiredRuleIds:[rule]});
+    assert(filtered.matched>0);
+    for(const p of filtered.skyline)assert(exactResourceWitness(db,packed,p.label).witness.steps.some(s=>s.id===rule));
+    const excluded=queryExactResources(db,packed,{profileIds:profiles,targets,resources,excludedRuleIds:[rule]});
+    for(const p of excluded.skyline)assert(!exactResourceWitness(db,packed,p.label).witness.steps.some(s=>s.id===rule));
+    assert.equal(filtered.matched+excluded.matched,r.matched);
+   }
+   console.log("PASS packed exact parity",s.combo,s.depth,s.labels);
+  }
   assert(r.matched>0);
   assert(r.skyline.length>0);
   for(const p of r.skyline){
