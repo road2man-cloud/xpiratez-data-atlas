@@ -34,6 +34,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Install atlas verification dependencies
+        run: npm install --no-save --package-lock=false playwright-core@1.64.0
+
       - name: Verify atlas data and frontend
         run: |
           # One canonical gate for all DB, choices, start bonuses, assets and JS.
@@ -47,7 +50,6 @@ jobs:
 
       - name: Browser smoke for all 14 DBs and decision guides (mobile viewport)
         run: |
-          npm install --no-save --package-lock=false playwright-core@1.64.0
           if ! command -v google-chrome >/dev/null 2>&1 && ! command -v chromium >/dev/null 2>&1; then
             npx playwright-core install chromium
           fi
