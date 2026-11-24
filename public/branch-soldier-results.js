@@ -13,7 +13,7 @@ import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesRes
 import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-resource-goals-1";
 import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
 import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-packed-1";
-import {pairSearchMarkup} from "./branch-soldier-pair-search.js?v=20261124-origin-pair-search-1";
+import {pairSearchMarkup} from "./branch-soldier-pair-search.js?v=20261125-origin-pair-search-317";
 import {pairContinuationMarkup} from "./branch-soldier-pair-continuation.js?v=20261124-origin-joint-suffix-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){

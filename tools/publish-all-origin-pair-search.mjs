@@ -18,7 +18,19 @@ const get=f=>git(["show",base+":"+f]);
 const db=JSON.parse(gunzipSync(get(asset)));
 const s=report.summary;
 assert.equal(report.kind,"ALL_ORIGIN_PAIR_SEARCH");
-assert.equal(report.baseCommit,base,"Registry changed; rebuild pair search against latest main");
+// Rebase only if the new parent still has exactly the same conditional
+// registry coverage and birth-evidence fingerprint. Other workers' independent
+// layers can advance without forcing an expensive repeat of this batch.
+if(report.baseCommit!==base){
+ const previous=JSON.parse(gunzipSync(git(["show",report.baseCommit+":"+asset])));
+ assert.equal(previous.sourceMetadataSha256,db.sourceMetadataSha256);
+ assert.deepEqual(previous.originPairSearch,db.originPairSearch,"Joint birth ledger changed; rebuild");
+ const coverage=d=>{const a=new Set();for(const w of Object.values(d.witnesses))if(["UNIFIED12","CAREER12"].includes(w.source)&&w.originProfile)for(const b of w.branchIds||[])a.add(w.originProfile+"|"+b);return [...a].sort();};
+ assert.deepEqual(coverage(previous),coverage(db),"Conditional pairing basis changed; rebuild");
+ assert.deepEqual(previous.branches.filter(b=>b.historyCount&&!b.sourceRootConflict).map(b=>[b.id,b.rank,b.captain,b.choices,b.historyCount]),db.branches.filter(b=>b.historyCount&&!b.sourceRootConflict).map(b=>[b.id,b.rank,b.captain,b.choices,b.historyCount]));
+ for(const p of Object.values(report.pairs))assert.deepEqual(previous.originCap12.models[p.birthModel],db.originCap12.models[p.birthModel],"Birth model changed");
+ report.publicationBaseCommit=base;
+}
 assert.equal(report.sourceMetadataSha256,db.sourceMetadataSha256);
 assert.equal(report.origins.length,72);
 const branches=db.branches.filter(b=>b.historyCount>0&&!b.sourceRootConflict).sort((a,b)=>a.rank-b.rank);
@@ -50,12 +62,15 @@ for(const [id,p] of Object.entries(report.pairs)){
 if(db.originPairSearch){
  for(const [id,p] of Object.entries(db.originPairSearch.pairs))assert.deepEqual(report.pairs[id],p,"Lost prior conditional pair "+id);
 }
+if(s.benchmark?.samples>0)report.lastMeasuredBenchmark={...s.benchmark,measuredAt:report.generatedAt};
+else if(db.originPairSearch?.lastMeasuredBenchmark)report.lastMeasuredBenchmark=db.originPairSearch.lastMeasuredBenchmark;
+else if(db.originPairSearch?.summary?.benchmark?.samples>0)report.lastMeasuredBenchmark={...db.originPairSearch.summary.benchmark,measuredAt:db.originPairSearch.generatedAt};
 db.originPairSearch=report;
 db.summary.originPairSearch=s;
 db.sources.ORIGINPAIRSEARCH={file:"tools/build-all-origin-pair-search.mjs",sourceMetadataSha256:db.sourceMetadataSha256,fingerprint:report.fingerprint};
 db.policies.ORIGINPAIRSEARCH="72개 출생처와 연구 이력 보유 부모의 조합별 상태표. 정확한 연구 접두부 공유와 활성 연구 비트셋을 사용한 조건부 모집 증거이며 전역 최적성 인증은 별도.";
 const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6});
-const version="20261124-origin-pair-search-1";
+const version="20261125-origin-pair-search-317";
 const replace=(text,from,to)=>{assert.equal(text.split(from).length,2,"Missing or duplicate anchor: "+from.slice(0,100));return text.replace(from,to);};
 let shared=get("public/branch-soldier-results.js").toString("utf8");
 if(!shared.includes("pairSearchMarkup")){
@@ -63,6 +78,7 @@ if(!shared.includes("pairSearchMarkup")){
  shared=replace(shared,"+overview()+'<p>하나의 육성 경로를 선택하면","+overview()+pairSearchMarkup(db)+'<p>하나의 육성 경로를 선택하면");
  shared=replace(shared,"+overview()+'<p>19개 말단은","+overview()+pairSearchMarkup(db)+'<p>19개 말단은");
 }
+shared=shared.replace(/branch-soldier-pair-search\.js\?v=[^"]+/,"branch-soldier-pair-search.js?v="+version);
 const bump=(text,re)=>{assert(re.test(text),"Missing cache key");return text.replace(re,(_m,a,b)=>a+version+b);};
 let soldier=get("public/soldiers/modern/index.html").toString("utf8");
 soldier=bump(soldier,/(src="\.\.\/\.\.\/branch-soldier-results\.js\?v=)[^"]+(")/);
@@ -74,6 +90,12 @@ let captain=get("public/captains/index.html").toString("utf8");
 captain=bump(captain,/(src="\.\.\/branch-soldier-results\.js\?v=)[^"]+(")/);
 const patch=new Map([[asset,payload],["public/branch-soldier-results.js",Buffer.from(shared)],["public/soldiers/modern/index.html",Buffer.from(soldier)],["public/soldiers/modern/app.js",Buffer.from(app)],["public/captains/index.html",Buffer.from(captain)],["modules/captains/index.html",Buffer.from(captain)]]);
 for(const f of ["public/branch-soldier-pair-search.js","tools/build-all-origin-pair-search.mjs","tools/publish-all-origin-pair-search.mjs"])patch.set(f,fs.readFileSync(f));
+// The legacy-origin detail smoke tests must select the explicit legacy detail
+// button; the integrated best/longest route links share the old CSS class.
+for(const f of ["tools/check-soldier-modern-browser.mjs","tools/check-origin-complete-condition-tree-browser.mjs"]){
+ const source=get(f).toString("utf8"),next=source.replaceAll("#originTable .origin-open","#originTable [data-open-origin]");
+ if(next!==source)patch.set(f,Buffer.from(next));
+}
 for(const f of ["public/branch-soldier-results.js","public/soldiers/modern/app.js","public/branch-soldier-pair-search.js"])execFileSync(process.execPath,["--input-type=module","--check"],{input:patch.get(f),windowsHide:true});
 const idx=fs.mkdtempSync(path.join(os.tmpdir(),"atlas-pair-publish-"));
 try{

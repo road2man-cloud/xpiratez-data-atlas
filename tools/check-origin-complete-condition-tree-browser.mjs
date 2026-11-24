@@ -92,7 +92,7 @@ try{
   await page.locator('#originDetails button[data-expand-origin-tree]').click();
   assert.equal(await page.locator('#originDetails .origin-tree-result .origin-complete-tree').count(),0);
   await page.locator('#search').fill('manufacture:STR_FREAK_RECRUITMENT');
-  await page.locator('#originTable .origin-open').click();
+  await page.locator('#originTable [data-open-origin]').click();
   const alternate=page.locator('#originDetails [data-start-choice-profile="manufacture:STR_FREAK_RECRUITMENT"]');
   await alternate.waitFor();
   await alternate.locator('summary').first().click();
@@ -104,7 +104,7 @@ try{
   // cards must not appear, but the excluded, incompatible difficulty paths
   // remain available as expandable counterexample evidence.
   await page.locator('#search').fill('manufacture:STR_POLTERGEIST_EMBODIMENT');
-  await page.locator('#originTable .origin-open').click();
+  await page.locator('#originTable [data-open-origin]').click();
   const context=page.locator('#originDetails .origin-campaign-audit[data-campaign-compatible="true"]');
   await context.waitFor();
   assert((await context.innerText()).includes('난이도 조건 일치'));

@@ -168,7 +168,7 @@ try{
  assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),provisional);
  await page.locator('#catalogMetric').selectOption('growth');
  assert.equal(Number((await page.locator('#originTable .score').innerText()).replaceAll(',','')),grown);
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('성장 완료 가정'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('동시 달성'));
  assert((await page.locator('#originDetails [data-growth-stamina-basis]').innerText()).includes('원시 성장캡'),
@@ -205,7 +205,7 @@ try{
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('꿈연결 훈련'));
  assert((await page.locator('#originDetails [data-origin-search-coverage]').innerText()).includes('최장 '+longestPath.transforms.length+'단계'));
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const coverage=await page.locator('#originDetails [data-origin-search-coverage]').innerText();
  const cloneRecord=expectedReport.records.find(x=>x.profileId==='manufacture:STR_THEBAN_ASSAULT_CLONE');
@@ -285,7 +285,7 @@ try{
  assert((await page.locator('#originDetails .detail-head + p').innerText()).includes('→ 코르트'),
    'Switching Chort candidates must remain within the separate terminal record');
  await page.locator('#search').fill('manufacture:STR_THEBAN_ASSAULT_CLONE');
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('코르트 변신은 별도 병종으로 비교합니다'),null,{timeout:60000});
  assert(!(await page.locator('#originDetails .detail-head + p').innerText()).includes('→ 코르트'),
    'A normal origin click must never inherit the special Chort terminal selection');
@@ -295,7 +295,7 @@ try{
  assert(poltergeistBest&&poltergeistBest.total>=453);
  await page.locator('#search').fill(poltergeist.profileId);
  assert((await score12()).total>poltergeistBest.total,'Mana must actually be included, not a blank 12th column');
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').textContent()).includes('전역 최적성: 미증명'));
  const routeEfficiency=page.locator('#originDetails [data-route-efficiency="true"]');
@@ -328,7 +328,7 @@ try{
  console.log('PASS Poltergeist selected route excludes impossible mixed-difficulty event and retains conditional free-research evidence');
  await page.locator('#search').fill('event:STR_MRSHAN_FIGHTER_EVENT');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),1);
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert.equal(await page.locator('#originDetails [data-iterative-proof]').count(),0,
    'Chort-only dual omissions must never leak into the normal birth ranking');
@@ -348,7 +348,7 @@ try{
  console.log('PASS iterative second-training omission: 4 replayed double cuts for one origin, no third cut, 390px detail');
  await page.locator('#search').fill('manufacture:STR_APOSTATE_OF_APOCALYPSE_RECRUITMENT');
  assert((await page.locator('#originTable .origin-route-tie').innerText()).includes('능력치·병종 다름 1'));
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  const mixedVector=page.locator('#originDetails .origin-route-efficiency');
  assert.equal(await mixedVector.getAttribute('data-different-vector'),'1');
@@ -368,7 +368,7 @@ try{
  await page.setViewportSize({width:1440,height:950});
  console.log('PASS same-score different body/stat tradeoffs stay distinct and navigable on mobile');
  await page.locator('#search').fill('direct:STR_SOLDIER_DOLL');
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails .detail-head h2')?.textContent.includes('영혼 인형'),null,{timeout:60000});
  assert((await page.locator('#originDetails [data-route-efficiency] summary').first().innerText()).includes('시술 1단계'),
    'Doll must retain its shorter one-training equal-ceiling source route');
@@ -382,7 +382,7 @@ try{
  assert(catgirlGrowth.total>=catgirlShown.total,'Endgame max must not be lower than ungrown witness');
  assert(catgirlShown.total>=660,'New proven growth paths must not lower the original 660-point 12-stat route');
  assert.equal(catgirlShown.mana,40,'A 12-stat growth candidate must preserve and display real Mana');
- await page.locator('#originTable .origin-open').click();
+ await page.locator('#originTable [data-open-origin]').click();
  await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('연구 경로 재생 완료'),null,{timeout:60000});
  assert((await page.locator('#originDetails').innerText()).includes('전역 최적성: 미증명'));
  console.log('PASS Nekomimi warrior retains '+catgirlShown.total+' ungrown 12-stat score (Mana 40), with separate '+catgirlGrowth.total+' growth ceiling');
@@ -391,7 +391,7 @@ try{
  if(pending){
    await page.locator('#search').fill(pending.profileId);
    assert.equal((await page.locator('#originTable .score').innerText()).trim(),'—');
-   await page.locator('#originTable .origin-open').click();
+   await page.locator('#originTable [data-open-origin]').click();
    await page.waitForFunction(()=>document.querySelector('#originDetails')?.textContent.includes('완결 연구 경로 미확보'));
    assert((await page.locator('#originDetails').innerText()).includes('영구 불가능 판정이 아닙니다'));
    assert((await page.locator('#originDetails').innerText()).includes('상위 연구·이벤트 근거'));
