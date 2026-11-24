@@ -1,6 +1,7 @@
 // Existing all-origin panel; read the same registry used by both databases.
 import {loadBranchSoldierResults} from "./branch-soldier-catalog.js?v=20261124-all-origin-4324";
 import {allOriginCoverageText,renderAllOriginCap} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324";
+import {mountOriginBaseline} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const n=v=>Number.isFinite(v)?v.toLocaleString("ko-KR"):"—";
 const names={tu:"행동력",stamina:"지구력",health:"체력",bravery:"용기",reactions:"반응",firing:"사격",throwing:"투척",strength:"근력",psiStrength:"부두 강도",psiSkill:"부두 기술",melee:"근접",mana:"마나"};
@@ -62,6 +63,11 @@ function mount(root,db){
   chosen=x;detail(x);el("[data-oc-detail]").scrollIntoView({block:"nearest"});
  });
  draw();
+ if(db.originBaseline){
+  root.insertAdjacentHTML("beforeend",'<details class="bs-note" data-population-binary><summary>전체 등록 경로의 전수 이진 전투캡 성장 배치 · 직접비용 비교</summary><section data-binary-baseline></section></details>');
+  const panel=root.querySelector("[data-population-binary]");
+  panel.addEventListener("toggle",()=>{if(panel.open&&!panel.dataset.loaded){panel.dataset.loaded="1";mountOriginBaseline(panel.querySelector("[data-binary-baseline]"),db,null,null);}});
+ }
 }
 if(typeof document!=="undefined")for(const root of document.querySelectorAll("[data-all-origin-cap-frontier]")){
  const wrapper=root.closest("details");
