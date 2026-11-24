@@ -3,7 +3,7 @@
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>Number.isFinite(v)?v.toLocaleString("ko-KR",{maximumFractionDigits:2}):"—";
 const total=w=>w.vector.reduce((n,x)=>n+x,0);
-const names=["미탐색·최종 모집조건 미충족","기존 조건부 경로 확보","제한 모델 계산 재사용","제한 모델 직접 계산"];
+const names=["미탐색·추가 연구 필요","기존 조건부 경로 확보","제한 모델 계산 재사용","제한 모델 직접 계산","공동 모집 연구 재생","추가 모집 연구·출생 재생"];
 const vOf=db=>db?.populationSearch?.versions?.[db.populationSearch.latest];
 function routeLink(pid,branch=null,route=null){
  const u=new URL("./soldiers/modern/",import.meta.url);
@@ -17,7 +17,11 @@ function branchLink(id){
 }
 export function populationCoverageText(db){
  const v=vOf(db);if(!v)return "";
- const s=v.summary,c=s.statusCounts,b=s.benchmark;
+ const s=v.summary,c=s.statusCounts,b=s.benchmark,j=db.populationJointCoverage,cs=j?.counts;
+ if(j&&cs){
+  const u=db.originUnlockSearch?.summary,t=db.originUnlockContinuation?.summary;
+  return "전체 "+fmt(s.pairCount)+"쌍 · 중복 제외 근거 확보 "+fmt(j.uniqueCovered)+"쌍 ("+fmt(j.uniqueCovered/s.pairCount*100)+"%) · 미탐색 "+fmt(cs.unexplored)+"쌍 · 기존 조건부 "+fmt(cs.conditionalPath)+"쌍 · 공동 모집 "+fmt(cs.jointBirth)+"쌍 · 추가 연구·모집 "+fmt(cs.chronologicalUnlock)+"쌍 · 제한 재사용 "+fmt(cs.limitedReused)+"쌍 / 직접 "+fmt(cs.limitedDirect)+"쌍. 추가 모집 "+fmt(u?.registeredOrigins)+"출생처·"+fmt(u?.registeredBranches)+"분기, 종전 수치모형 밖 "+fmt(u?.unlockOutsideModel)+"쌍. 후속 시술 "+fmt(t?.registeredRoutes)+"경로 · 중간 성장 없는 제한 D"+(t?.depth??0)+" 계산 완료 "+fmt(t?.completedPairs)+"쌍. D"+v.depth+" 수치모형 "+fmt(s.coveredPairs)+"쌍에는 이벤트 출생 미확인 "+fmt(s.eventTimingUnverifiedPairs)+"쌍 포함. 불가능·전역 최적 인증 0쌍 · 전역 잔여 시간 미산정.";
+ }
  return "전체 출생처×연구 분기 "+fmt(s.pairCount)+"쌍 · 제한 D"+v.depth+" 수치모형 "+fmt(s.coveredPairs)+"쌍 (이벤트·출생 시점 미확인 "+fmt(s.eventTimingUnverifiedPairs)+"쌍 포함) · 기존 조건부 경로 "+fmt(s.knownConditionalPairs)+"쌍 · 미탐색 "+fmt(c.UNEXPLORED)+"쌍 · 제한 직접 "+fmt(c.LIMITED_SEARCH_COMPLETE)+"쌍 / 재사용 "+fmt(c.REUSED_LIMITED_MODEL)+"쌍 (중복 상태 제외) · 불가능/전역 최적 인증 0쌍. 연구 이력-출생 조합 "+fmt(s.historyOriginRequests-s.historyOriginBirthGateMissing)+"건 → "+fmt(s.groupCalculations)+"개 대표 그룹 · 전이 캐시 적중률 "+fmt(100*s.transitionCacheHits/Math.max(1,s.transitionRequests))+"%"+(b?.identical?" · 동일 그래프 대조 "+fmt(b.uncachedMs/b.cachedMs)+"배 (그룹 압축 공통)":"")+(v.boundQueries?.queries?.length?" · 완료 DAG 상계 질의 "+fmt(v.boundQueries.queries.length)+"종 전수 대조 일치":"")+" · 전역 잔여 시간 미산정.";
 }
 export function populationBoundMarkup(db){
@@ -28,10 +32,16 @@ function flags(v,i,j){
  const e=Number(v.evidence[i][j]);
  return [e&1?"연구·시술 조건부":null,e&2?"계급·훈장 조건부":null,e&4?"관측 뿌리 일치 (공동 이력 미재생)":null].filter(Boolean).join(" / ");
 }
-function pair(v,i,j){
- const ids=v.matrix[i][j],code=Number(v.status[i][j]);
+function pair(db,v,i,j){
+ const ids=v.matrix[i][j],code=Number(db.populationJointCoverage?.status?.[i]?.[j]??v.status[i][j]);
  return {ids,code,label:names[code],flags:flags(v,i,j)};
 }
+const unlockRoutes=(db,pid,bid)=>{
+ const pair=pid+"|"+bid,r=db.originUnlockSearch?.pairs?.[pair];
+ if(!r)return [];
+ return [...r.witnessIds,...Object.entries(db.originUnlockContinuation?.routes||{}).filter(([,x])=>x.pair===pair).map(([id])=>id)].filter(id=>db.witnesses[id]);
+};
+const bestUnlock=(db,pid,bid)=>unlockRoutes(db,pid,bid).reduce((a,b)=>!a||total(db.witnesses[b])>total(db.witnesses[a])?b:a,null);
 function bestRoute(db,v,groups){
  const ids=[...new Set(groups.flatMap(k=>v.groups[k].representativeIds))];
  return ids.reduce((a,b)=>!a||total(db.witnesses[b])>total(db.witnesses[a])?b:a,null);
@@ -40,11 +50,26 @@ export function populationBranchMarkup(db,b){
  const p=db?.populationSearch,v=vOf(db);if(!v||!b)return "";
  const j=p.branches.indexOf(b.id);if(j<0)return '<p class="bs-sub">전체 출생처 탐색 대상 1,064개 연구 이력 보유 분기 밖의 후보입니다. 불가능 판정은 아닙니다.</p>';
  const rows=p.origins.map((pid,i)=>{
-  const q=pair(v,i,j),r=v.records[i],best=bestRoute(db,v,q.ids);
-  return {pid,q,r,best};
+  const q=pair(db,v,i,j),r=v.records[i],best=bestRoute(db,v,q.ids),unlock=bestUnlock(db,pid,b.id);
+  return {pid,q,r,best,unlock};
  });
  const covered=rows.filter(r=>r.q.ids.length).length;
- return '<details class="bs-note" data-population-branch="true"><summary>전체 72개 출생처 탐색 · D'+v.depth+' 제한 모형 '+fmt(covered)+'/72</summary><p class="bs-sub">현재 분기의 최종 활성 연구가 출생과 시술의 필요 연구를 충족하는지 계산했습니다. 출생·이벤트 시점, 시설·재료, 전투 성장 공동 달성 및 진급·훈장·미래 연구는 미증명입니다. 기존 조건부 경로와 별개이며 미충족을 불가능으로 처리하지 않습니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>출생처</th><th>쌍 상태</th><th>대표 계산 그룹</th><th>제한 모형 최고 단일 합계</th></tr></thead><tbody>'+rows.map(({pid,q,r,best})=>'<tr><td><a href="'+routeLink(pid,b.id,best)+'">'+esc(db.labels[pid.slice(pid.indexOf(":")+1)]||pid)+'</a><small class="bs-sub">'+esc(db.labels[r.body]||r.body)+'</small></td><td>'+esc(q.label)+(q.flags?'<small class="bs-sub">'+esc(q.flags)+'</small>':"")+(r.sourceType==="event"&&q.ids.length?'<small class="bs-sub">이벤트 출생 시점 미확인</small>':"")+'</td><td>'+fmt(q.ids.length)+'</td><td>'+(best?'<a href="'+routeLink(pid,b.id,best)+'">'+fmt(total(db.witnesses[best]))+'</a>':"—")+'</td></tr>').join("")+'</tbody></table></div></details>';
+ return '<details class="bs-note" data-population-branch="true"><summary>전체 72개 출생처 탐색 · D'+v.depth+' 제한 모형 '+fmt(covered)+'/72</summary><p class="bs-sub">현재 분기의 최종 활성 연구가 출생과 시술의 필요 연구를 충족하는지 계산했습니다. 출생·이벤트 시점, 시설·재료, 전투 성장 공동 달성 및 진급·훈장·미래 연구는 미증명입니다. 기존 조건부 경로와 별개이며 미충족을 불가능으로 처리하지 않습니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>출생처</th><th>쌍 상태</th><th>대표 계산 그룹</th><th>제한 모형 최고 단일 합계</th><th>추가 연구·모집 후 시술</th></tr></thead><tbody>'+rows.map(({pid,q,r,best,unlock})=>'<tr><td><a href="'+routeLink(pid,b.id,best)+'">'+esc(db.labels[pid.slice(pid.indexOf(":")+1)]||pid)+'</a><small class="bs-sub">'+esc(db.labels[r.body]||r.body)+'</small></td><td>'+esc(q.label)+(q.flags?'<small class="bs-sub">'+esc(q.flags)+'</small>':"")+(r.sourceType==="event"&&q.ids.length?'<small class="bs-sub">이벤트 출생 시점 미확인</small>':"")+'</td><td>'+fmt(q.ids.length)+'</td><td>'+(best?'<a href="'+routeLink(pid,b.id,best)+'">'+fmt(total(db.witnesses[best]))+'</a>':"—")+'</td><td>'+(unlock?'<a href="'+routeLink(pid,b.id,unlock)+'">'+fmt(total(db.witnesses[unlock]))+'점 · 경로</a>':"—")+'</td></tr>').join("")+'</tbody></table></div></details>';
+}
+export function populationUnlockOriginMarkup(db,pid,branchId=null,focus=null,labels={}){
+ const u=db?.originUnlockSearch,c=db?.originUnlockContinuation;if(!u)return "";
+ const rows=Object.values(u.pairs).filter(p=>p.origin===pid&&(!branchId||p.branch===branchId));
+ if(!rows.length)return "";
+ const ranks=new Map(db.branches.map(b=>[b.id,b.rank])),name=id=>db.labels[id]||id;
+ const candidates=rows.flatMap(p=>unlockRoutes(db,p.origin,p.branch));
+ const chosen=candidates.includes(focus)?focus:candidates.reduce((a,b)=>!a||total(db.witnesses[b])>total(db.witnesses[a])?b:a,null);
+ const w=db.witnesses[chosen],r=c?.routes?.[chosen],id=w.populationUnlock?.pair||w.populationUnlockContinuation?.pair,p=u.pairs[id];
+ const model=r?.model&&c.models[r.model],upper=model?.frontier.reduce((a,b)=>!a||total(b)>total(a)?b:a,null);
+ const seq=w=>(w.steps||[]).map(x=>name(x.id)).join(" → ")||"시술 없음";
+ const cols=db.stats.map(k=>'<th>'+esc(labels[k]||k)+'</th>').join("");
+ const row=(title,v)=>'<tr><th>'+esc(title)+'</th>'+v.map(n=>'<td>'+fmt(n)+'</td>').join("")+'</tr>';
+ const acts=s=>esc(s.type+" · "+name(s.id||s.research||s.transform||s.profile||s.source||s.event||""))+(s.items?'<small class="bs-sub">'+esc(Object.entries(s.items).map(([id,n])=>name(id)+" × "+n).join(" / "))+'</small>':"");
+ return '<section class="scope-note" data-population-unlock="true"><h3>추가 모집 연구를 시간순으로 재생한 육성 경로</h3><p>선택 범위 '+fmt(rows.length)+'개 분기 · '+fmt(candidates.length)+'개 모집·시술 경로. 선택 분기 #'+fmt(ranks.get(p.branch))+' · 출생 최솟값 · 시술 중간 성장 없음 · 마지막 전투캡 조건부. 연구 표본·자원·이벤트 결과는 조건부이고 실제 최종 달성 인증은 아닙니다.</p><p><b>부족했던 연구:</b> '+p.missing.map(x=>esc(name(x))).join(" / ")+' · 추가 활성 연구 '+fmt(p.addedResearch.length)+'개 · 난이도 허용 '+esc(p.allowedDifficulties.join(", "))+' · 후속 계산 완료 D'+fmt(c?.completed?.[id]||1)+'</p><p>종착 '+esc(name(w.body))+' · '+esc(seq(w))+' · 전투캡 투영 합계 '+fmt(total(w))+'</p><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>구분</th>'+cols+'</tr></thead><tbody>'+row("시술 직후 원시 (재생)",r?.rawBeforeFinalGrowth||w.populationUnlock.rawBeforeFinalGrowth)+row("마지막 전투캡 원시 (가정)",w.raw)+row("영구 보너스",w.bonus)+row("실효 (가정)",w.vector)+(upper?row("별도 성장배치 상계 (미재생)",upper.vector):"")+'</tbody></table></div><details><summary>기존 연구 접두부 '+fmt(u.roots[p.root].actions.length)+'단계 및 추가 연구·모집 '+fmt(p.suffix.length)+'단계</summary><p>접두부 <code>'+esc(p.historyId)+'</code> · 전체 행동 SHA256 <code>'+esc(p.fullActionHash)+'</code></p><ol>'+u.roots[p.root].actions.map(x=>'<li>'+acts(x)+'</li>').join("")+'</ol><h4>추가 행동</h4><ol>'+p.suffix.map(x=>'<li>'+acts(x)+'</li>').join("")+'</ol><h4>시술 행동</h4><ol>'+((r?.actions||w.populationUnlock?.actions||[]).map(x=>'<li>'+acts(x)+'</li>').join(""))+'</ol></details><details><summary>같은 출생처의 모집·후속 시술 경로 '+fmt(candidates.length)+'개</summary><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>분기</th><th>최종 병종</th><th>시술 순서</th><th>마지막 전투캡 합계</th></tr></thead><tbody>'+candidates.sort((a,b)=>total(db.witnesses[b])-total(db.witnesses[a])).map(id=>{const x=db.witnesses[id],b=x.branchIds[0];return '<tr><td><a href="'+branchLink(b)+'">#'+fmt(ranks.get(b))+'</a></td><td>'+esc(name(x.body))+'</td><td>'+esc(seq(x))+'</td><td><a href="'+routeLink(pid,b,id)+'">'+fmt(total(x))+'</a></td></tr>';}).join("")+'</tbody></table></div></details></section>';
 }
 export function populationOriginMarkup(db,pid,branchId=null,focus=null,labels={}){
  const p=db?.populationSearch,v=vOf(db);if(!v)return "";
@@ -57,7 +82,7 @@ export function populationOriginMarkup(db,pid,branchId=null,focus=null,labels={}
  const best=ids.includes(focus)?focus:bestRoute(db,v,groups);
  const w=db.witnesses[best],name=id=>db.labels[id]||id;
  const head='<section class="scope-note" data-population-origin="true"><h3>출생처 × 연구 분기 · D'+v.depth+' 제한 수치모형</h3><p>'+esc(scope)+' · 전체 출생처의 기존 조건부 경로 '+fmt(conditional)+'쌍 · 최종 모집 연구 충족 '+fmt(j<0?r.coveredPairs:Number(groups.length>0))+'쌍 · 대표 계산 그룹 '+fmt(groups.length)+'개. 출생 최솟값/최댓값, 전투캡 성장 배치, 활성 연구만 사용한 일반 시술 최대 '+fmt(v.depth)+'회입니다. '+(r.sourceType==="event"?"이벤트 발생·국가 선택과 출생 시점은 아직 확인되지 않았습니다. ":"")+'실물·자금·시설 확보는 가정이며, 승급·훈장·무작위 시술·새 연구 및 전체 최적성은 별도입니다.</p>';
- const branchRows=j<0?'<details><summary>연구 분기별 탐색 상태 '+fmt(p.branches.length)+'쌍</summary><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>분기</th><th>상태</th><th>그룹</th></tr></thead><tbody>'+p.branches.map((bid,k)=>{const q=pair(v,i,k),b=db.branches.find(b=>b.id===bid);return '<tr><td><a href="'+branchLink(bid)+'">#'+fmt(b?.rank)+'</a></td><td><a href="'+routeLink(pid,bid)+'">'+esc(q.label)+'</a>'+(q.flags?' · '+esc(q.flags):"")+'</td><td>'+fmt(q.ids.length)+'</td></tr>';}).join("")+'</tbody></table></div></details>':"<p>쌍 상태: "+esc(pair(v,i,j).label)+(pair(v,i,j).flags?" · "+esc(pair(v,i,j).flags):"")+"</p>";
+ const branchRows=j<0?'<details><summary>연구 분기별 탐색 상태 '+fmt(p.branches.length)+'쌍</summary><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>분기</th><th>상태</th><th>그룹</th></tr></thead><tbody>'+p.branches.map((bid,k)=>{const q=pair(db,v,i,k),b=db.branches.find(b=>b.id===bid);return '<tr><td><a href="'+branchLink(bid)+'">#'+fmt(b?.rank)+'</a></td><td><a href="'+routeLink(pid,bid)+'">'+esc(q.label)+'</a>'+(q.flags?' · '+esc(q.flags):"")+'</td><td>'+fmt(q.ids.length)+'</td></tr>';}).join("")+'</tbody></table></div></details>':"<p>쌍 상태: "+esc(pair(db,v,i,j).label)+(pair(db,v,i,j).flags?" · "+esc(pair(db,v,i,j).flags):"")+"</p>";
  if(!w)return head+'<p>이 범위의 제한 계산은 미진입입니다. 모집 연구가 다른 시점에 열리거나 추가 연구로 해금될 수 있으므로 불가능 증명으로 사용하지 않습니다.</p>'+branchRows+'</section>';
  const col=db.stats.map(k=>'<th>'+esc(labels[k]||k)+'</th>').join("");
  const row=(title,v)=>'<tr><th>'+esc(title)+'</th>'+v.map(n=>'<td>'+fmt(n)+'</td>').join("")+'</tr>';
