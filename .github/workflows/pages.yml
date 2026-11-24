@@ -43,6 +43,7 @@ jobs:
           npm run check:no-legacy-rules
           npm run check
           node tools/check-branch-soldier-publication.mjs
+          node tools/check-all-origin-cap12.mjs
           test ! -e public/data/items-index.json
           test ! -e public/data/research-index.json
           grep -Fq 'data-data-base="./data"' public/items/index.html
