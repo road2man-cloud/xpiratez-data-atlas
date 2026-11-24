@@ -137,5 +137,7 @@ if(db.summary.resourceGoalCheckpoints){
   assert.equal(r.grossFees,w.directGrossFee);assert.equal(r.recoveryDays,w.directRecoveryDays);assert.equal(r.transferHours,w.directTransferHours);
  }
 }
+const {checkExactResourceAssets}=await import("./check-branch-soldier-exact-resources.mjs");
+checkExactResourceAssets(db);
 console.log(JSON.stringify(coverage));
 console.log("PASS shared growth registry, exact origin rows, long-route links, budget candidates");
