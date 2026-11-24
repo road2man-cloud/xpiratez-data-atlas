@@ -8,7 +8,7 @@ import {matchesResources} from "../public/branch-soldier-resources.js";
 export function checkExactResourceAssets(db){
  const spec=db.summary.exactResourceIndex;
  if(!spec)return;
- for(const s of Object.values(spec.classes)){
+ for(const s of Object.values(spec.versions||spec.classes)){
   const bytes=fs.readFileSync("public/data/"+s.file);
   assert.equal(bytes.length,s.bytes);
   assert.equal(createHash("sha256").update(bytes).digest("hex"),s.sha256);

@@ -5,13 +5,16 @@ import {summarizeRouteResources} from "./branch-soldier-resources.js";
 const BASE=64;
 const resourceAxes=[["fees","직접 지출"],["recovery","회복 합계"],["transfer","이동 합계"],["actions","시술 횟수"]];
 let loadedKey=null,loadedPromise=null;
-export function exactResourceSpec(db,combo,mode){
+export function exactResourceSpec(db,combo,mode,sha=null){
  const spec=db.summary?.exactResourceIndex;
  if(!spec||mode!==spec.mode)return null;
- return Object.values(spec.classes).find(x=>x.combo===combo)||null;
+ const current=Object.values(spec.classes).find(x=>x.combo===combo)||null;
+ if(!sha)return current;
+ const version=spec.versions?.[sha]||(current?.sha256===sha?current:null);
+ return version?.combo===combo?version:null;
 }
 export function validateExactResourceIndex(db,spec,a){
- if(a.kind!=="XPZ_D5_EXACT_RESOURCE_INDEX"||a.schemaVersion!==1||a.body!==spec.body||a.depth!==5||a.mode!=="CAP_TARGET"||
+ if(a.kind!=="XPZ_D"+(spec.depth??5)+"_EXACT_RESOURCE_INDEX"||a.schemaVersion!==1||a.body!==spec.body||a.depth!==(spec.depth??5)||a.mode!=="CAP_TARGET"||
   a.sourceMetadataSha256!==db.sourceMetadataSha256||a.stats.join(",")!==db.stats.join(",")||
   a.stateStride!==2+3*a.stats.length||a.labelStride!==4||a.resourceStride!==8||
   a.states.length!==spec.states*a.stateStride||a.labels.length!==spec.labels*a.labelStride||
@@ -19,8 +22,8 @@ export function validateExactResourceIndex(db,spec,a){
   throw Error("전체 상태 원장 버전/형식 불일치");
  return a;
 }
-export async function loadExactResourceIndex(db,combo,mode){
- const spec=exactResourceSpec(db,combo,mode);
+export async function loadExactResourceIndex(db,combo,mode,sha=null){
+ const spec=exactResourceSpec(db,combo,mode,sha);
  if(!spec)throw Error("현재 병종·성장 방식에는 전체 상태 검색이 연결되지 않았습니다.");
  const key=spec.file+"|"+spec.sha256;
  if(key!==loadedKey){
@@ -176,7 +179,7 @@ export function exactResourceWitness(db,a,labelIndex){
  const s=node*a.stateStride,K=a.stats.length,raw=a.states.slice(s+2,s+2+K),
   bonus=a.states.slice(s+2+K,s+2+2*K),vector=a.states.slice(s+2+2*K,s+2+3*K);
  const ids=decodeRules(a,code),steps=ids.map(id=>({id,count:1}));
- const w={source:"GATE12",sourceKind:"D5_EXACT_RESOURCE_QUERY",body:a.body,classKey:a.classKey,mode:a.mode,
+ const w={source:"GATE12",sourceKind:"D"+a.depth+"_EXACT_RESOURCE_QUERY",body:a.body,classKey:a.classKey,mode:a.mode,
   raw,bonus,vector,steps,placement:"BINARY_GROWTH",growthBefore:ids.map((_,i)=>Boolean(growth&(1<<i))),
   growthAfterLastAction:true,optimisticRandomPresent:Boolean(a.states[s+1]),actualGameCertified:false,
   research:[...new Set(ids.flatMap(id=>db.ruleDetails[id]?.requires||[]))].sort(),

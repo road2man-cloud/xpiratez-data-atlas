@@ -9,7 +9,7 @@ import {evaluateCareerMilestones} from "./branch-soldier-career-progress.js?v=20
 import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
 import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-resource-goals-1";
 import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
-import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-exact-resources-1";
+import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-d6-madgal-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.
@@ -124,7 +124,7 @@ if(ROOT){
  }
  function exactResourceMarkup(){
   if(!db.summary.exactResourceIndex)return "";
-  return '<div class="bs-note"><h4>입력 조건으로 완료 상태 전체 검색</h4><p class="bs-sub">위 능력치·비용·기간·재료 입력값, 최소 시술 횟수, 현재 연구 분기를 사용합니다. 영애·미치광이 본체의 5단계 전투캡 모델에서 전체 상태·훈련 구성을 검색합니다. 훈련명 검색, 다른 근거 모델 및 기존 대표 전선 필터는 적용하지 않습니다. 지정한 재료는 각각 독립적인 최소화 축입니다.</p><button type="button" id="bsExactSearch">전체 완료 상태 재탐색</button><p id="bsExactStatus" class="bs-sub" aria-live="polite"></p><div id="bsExactResult"></div></div>';
+  return '<div class="bs-note"><h4>입력 조건으로 완료 상태 전체 검색</h4><p class="bs-sub">위 능력치·비용·기간·재료 입력값, 최소 시술 횟수, 현재 연구 분기를 사용합니다. 영애·미치광이 본체의 병종별 최신 완료 깊이 전투캡 모델에서 전체 상태·훈련 구성을 검색합니다. 훈련명 검색, 다른 근거 모델 및 기존 대표 전선 필터는 적용하지 않습니다. 지정한 재료는 각각 독립적인 최소화 축입니다.</p><button type="button" id="bsExactSearch">전체 완료 상태 재탐색</button><p id="bsExactStatus" class="bs-sub" aria-live="polite"></p><div id="bsExactResult"></div></div>';
  }
  function targetsMarkup(){
   return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+paretoMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p>'+exactResourceMarkup()+'<details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details>'+resourceGoalMarkup()+'</details>';
@@ -153,13 +153,13 @@ if(ROOT){
    if(exactLoading){E("bsExactStatus").textContent="전체 완료 상태 원장을 읽고 검색 중…";el.innerHTML="";return;}
    if(exactError){E("bsExactStatus").textContent=exactError;el.innerHTML="";return;}
    if(!exactView){
-    E("bsExactStatus").textContent="검색 가능 "+fmt(spec.labels)+"개 상태·훈련 구성 (압축 "+(spec.bytes/1048576).toFixed(1)+" MiB, 요청 시 로딩).";
+    E("bsExactStatus").textContent="D"+(spec.depth??5)+" 완료 모델 · 검색 가능 "+fmt(spec.labels)+"개 상태·훈련 구성 (압축 "+(spec.bytes/1048576).toFixed(1)+" MiB, 요청 시 로딩).";
     el.innerHTML="";return;
    }
    const {result:r,data:a}=exactView;
    const matchedProfiles=new Set(r.matchedProfiles);
    const branches=allowedBranches().filter(b=>matchedProfiles.has(b.results?.[c.id]?.[m])).length;
-   E("bsExactStatus").textContent="전체 "+fmt(r.labelsScanned)+"개 중 조건 일치 "+fmt(r.matched)+"개 · 수치 상태 "+fmt(r.matchedStates)+"개 · 호환 정적 프로필 "+fmt(r.matchedProfiles.length)+"/"+fmt(r.profileCount)+"개 · 해당 분기 "+fmt(branches)+"개. "+(r.matched?"직접 자원 비지배 조합 "+fmt(r.skyline.length)+"개.":"이 완료 모델 안에서 일치 없음.");
+   E("bsExactStatus").textContent="D"+a.depth+" 완료 모델 · 전체 "+fmt(r.labelsScanned)+"개 중 조건 일치 "+fmt(r.matched)+"개 · 수치 상태 "+fmt(r.matchedStates)+"개 · 호환 정적 프로필 "+fmt(r.matchedProfiles.length)+"/"+fmt(r.profileCount)+"개 · 해당 분기 "+fmt(branches)+"개. "+(r.matched?"직접 자원 비지배 조합 "+fmt(r.skyline.length)+"개.":"이 완료 모델 안에서 일치 없음.");
    const units=["$","일","시간","회"],axisTitle=(id,i)=>i<4?r.axes[i][1]:label(id);
    const pathFor=n=>exactResourceWitness(db,a,n).witness;
    const action=(n,title)=>n==null?"—":'<button type="button" class="bs-value" data-exact-witness="'+n+'">'+esc(title)+'</button>';
@@ -188,19 +188,19 @@ if(ROOT){
    }catch(error){if(run===exactRun&&key===exactKey)exactError="전체 상태 검색 실패: "+error.message;}
    finally{if(run===exactRun&&key===exactKey){exactLoading=false;updateExactPanel(view.scope,view.c,view.m);}}
   }
-  function selectExactWitness(labelIndex, restoredData=null){
+  function selectExactWitness(labelIndex, restoredData=null, restoredHash=null){
    if(!restoredData&&(!exactView||exactView.key!==exactKey))return;
    const a=restoredData||exactView.data,{witness,profiles}=exactResourceWitness(db,a,labelIndex);
-   const spec=exactResourceSpec(db,view.c.id,view.m);
+   const spec=exactResourceSpec(db,view.c.id,view.m,restoredHash);
    if(!spec||!profiles.some(id=>view.scope.columns[1].profiles.includes(id)))return;
    const sign=w=>JSON.stringify([w.body,w.vector,w.raw,w.bonus,w.steps,w.growthBefore]);
    const signature=sign(witness);
    let id=view.scope.columns[1].ids.find(id=>{
     const w=db.witnesses[id];return w.source==="GATE12"&&
-     ["ORIGINAL_DAG_D5","D5_DIRECT_FEE_BUDGET_CHECKPOINT","D5_STAT_FEE_FRONTIER","D5_RESOURCE_GOAL_CHECKPOINT","D5_EXACT_RESOURCE_QUERY"].includes(w.sourceKind)&&sign(w)===signature;
+     ["ORIGINAL_DAG_D5","D5_DIRECT_FEE_BUDGET_CHECKPOINT","D5_STAT_FEE_FRONTIER","D5_RESOURCE_GOAL_CHECKPOINT","D5_EXACT_RESOURCE_QUERY","D6_EXACT_RESOURCE_QUERY","D7_EXACT_RESOURCE_QUERY"].includes(w.sourceKind)&&sign(w)===signature;
    });
    if(!id){
-    id="EXACTD5:"+a.classKey+":"+spec.sha256.slice(0,12)+":"+labelIndex;
+    id="EXACTD"+a.depth+":"+a.classKey+":"+spec.sha256.slice(0,12)+":"+labelIndex;
     if(!db.witnesses[id])db.witnesses[id]=witness;
     for(const pid of profiles){
      const p=db.profiles[pid];if(!p)continue;
@@ -547,10 +547,10 @@ if(ROOT){
   if(depthValues.has(query.get("minDepth")))E("bsMinDepth").value=query.get("minDepth");
   selectOptions();draw(true,query.get("route"));
   if(query.has("exactLabel")){
-   const spec=exactResourceSpec(db,view.c.id,view.m),label=Number(query.get("exactLabel"));
+   const spec=exactResourceSpec(db,view.c.id,view.m,query.get("exactHash")),label=Number(query.get("exactLabel"));
    const fail=message=>{E("bsExactStatus").textContent=message;E("bsTargetPanel").open=true;};
    if(!spec||spec.sha256!==query.get("exactHash")||db.sourceMetadataSha256!==query.get("exactRules")||!/^\d+$/.test(query.get("exactLabel"))||!Number.isSafeInteger(label)||label>=spec.labels)fail("공유 경로의 원장 버전 또는 번호가 일치하지 않습니다.");
-   else {const initialKey=exactKey;loadExactResourceIndex(db,view.c.id,view.m).then(a=>{if(initialKey!==exactKey)return;selectExactWitness(label,a);}).catch(e=>fail("공유 경로 복원 실패: "+e.message));}
+   else {const initialKey=exactKey;loadExactResourceIndex(db,view.c.id,view.m,spec.sha256).then(a=>{if(initialKey!==exactKey)return;selectExactWitness(label,a,spec.sha256);}).catch(e=>fail("공유 경로 복원 실패: "+e.message));}
   }
  }
  function mountBranch(){
