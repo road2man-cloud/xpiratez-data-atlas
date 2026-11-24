@@ -9,7 +9,7 @@ import {evaluateCareerMilestones} from "./branch-soldier-career-progress.js?v=20
 import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
 import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-resource-goals-1";
 import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
-import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-d6-madgal-1";
+import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-packed-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.
@@ -124,7 +124,7 @@ if(ROOT){
  }
  function exactResourceMarkup(){
   if(!db.summary.exactResourceIndex)return "";
-  return '<div class="bs-note"><h4>입력 조건으로 완료 상태 전체 검색</h4><p class="bs-sub">위 능력치·비용·기간·재료 입력값, 최소 시술 횟수, 현재 연구 분기를 사용합니다. 영애·미치광이 본체의 병종별 선택한 완료 깊이 전투캡 모델에서 전체 상태·훈련 구성을 검색합니다. 훈련명 검색, 다른 근거 모델 및 기존 대표 전선 필터는 적용하지 않습니다. 지정한 재료는 각각 독립적인 최소화 축입니다.</p><label>전체 상태 검색 깊이<select id="bsExactDepth"></select></label><button type="button" id="bsExactSearch">전체 완료 상태 재탐색</button><p id="bsExactStatus" class="bs-sub" aria-live="polite"></p><div id="bsExactResult"></div></div>';
+  return '<div class="bs-note"><h4>입력 조건으로 완료 상태 전체 검색</h4><p class="bs-sub">위 능력치·비용·기간·재료 입력값, 최소 시술 횟수, 현재 연구 분기를 사용합니다. 영애·미치광이 본체의 병종별 선택한 완료 깊이 전투캡 모델에서 전체 상태·훈련 구성을 검색합니다. 아래 필수·제외 훈련 조건을 적용합니다. 일반 경로 검색어, 다른 근거 모델 및 기존 대표 전선 필터는 적용하지 않습니다. 지정한 재료는 각각 독립적인 최소화 축입니다.</p><label>전체 상태 검색 깊이<select id="bsExactDepth"></select></label><div class="bs-controls">'+[ ["bsExactRequired","반드시 포함할 훈련"],["bsExactExcluded","제외할 훈련"] ].map(([id,title])=>'<label>'+title+'<select id="'+id+'">'+options([["","제한 없음"],...Object.keys(db.ruleDetails).sort((a,b)=>label(a).localeCompare(label(b),"ko")).map(id=>[id,label(id)+" ("+id+")"])],"")+'</select></label>').join("")+'</div><button type="button" id="bsExactSearch">전체 완료 상태 재탐색</button><p id="bsExactStatus" class="bs-sub" aria-live="polite"></p><div id="bsExactResult"></div></div>';
  }
  function targetsMarkup(){
   return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+paretoMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p>'+exactResourceMarkup()+'<details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details>'+resourceGoalMarkup()+'</details>';
@@ -147,11 +147,11 @@ if(ROOT){
    if(exactBody!==bodyKey){
     exactBody=bodyKey;
     const versions=latest?Object.values(db.summary.exactResourceIndex.versions||{[latest.sha256]:latest}).filter(x=>x.combo===c.id).sort((a,b)=>(b.depth??5)-(a.depth??5)):[];
-    picker.innerHTML=options(versions.map(x=>[x.sha256,"D"+(x.depth??5)+" · "+fmt(x.labels)+"개 · "+(x.bytes/1048576).toFixed(1)+" MiB"]),latest?.sha256||"");
+    picker.innerHTML=options(versions.map(x=>[x.sha256,"D"+(x.depth??5)+" · "+fmt(x.labels)+"개 · "+((x.packedTransport?.bytes??x.bytes)/1048576).toFixed(1)+" MiB"]),latest?.sha256||"");
     picker.disabled=!latest;
    }
    const spec=selectedExactSpec(c,m);
-   const key=JSON.stringify([scopeKey,targets,resources,Number(E("bsMinDepth").value),spec?.sha256]);
+   const key=JSON.stringify([scopeKey,targets,resources,Number(E("bsMinDepth").value),spec?.sha256,E("bsExactRequired").value,E("bsExactExcluded").value]);
    if(key!==exactKey){exactKey=key;exactRun++;exactView=null;exactLoading=false;exactError=null;}
    const button=E("bsExactSearch");
    button.disabled=!spec||!scope.columns[1].profiles.length||exactLoading;
@@ -161,7 +161,7 @@ if(ROOT){
    if(exactLoading){E("bsExactStatus").textContent="전체 완료 상태 원장을 읽고 검색 중…";el.innerHTML="";return;}
    if(exactError){E("bsExactStatus").textContent=exactError;el.innerHTML="";return;}
    if(!exactView){
-    E("bsExactStatus").textContent="D"+(spec.depth??5)+" 완료 모델 · 검색 가능 "+fmt(spec.labels)+"개 상태·훈련 구성 (압축 "+(spec.bytes/1048576).toFixed(1)+" MiB, 요청 시 로딩).";
+    E("bsExactStatus").textContent="D"+(spec.depth??5)+" 완료 모델 · 검색 가능 "+fmt(spec.labels)+"개 상태·훈련 구성 (압축 "+((spec.packedTransport?.bytes??spec.bytes)/1048576).toFixed(1)+" MiB, 요청 시 로딩).";
     el.innerHTML="";return;
    }
    const {result:r,data:a}=exactView;
@@ -190,7 +190,7 @@ if(ROOT){
    try{
     const a=await loadExactResourceIndex(db,c.id,m,spec.sha256);
     if(run!==exactRun||key!==exactKey)return;
-    const r=queryExactResources(db,a,{profileIds:scope.columns[1].profiles,targets,resources,minDepth:Number(E("bsMinDepth").value)});
+    const r=queryExactResources(db,a,{profileIds:scope.columns[1].profiles,targets,resources,minDepth:Number(E("bsMinDepth").value),requiredRuleIds:[E("bsExactRequired").value].filter(Boolean),excludedRuleIds:[E("bsExactExcluded").value].filter(Boolean)});
     if(run!==exactRun||key!==exactKey)return;
     exactView={key,data:a,result:r,page:0,sha:spec.sha256};
    }catch(error){if(run===exactRun&&key===exactKey)exactError="전체 상태 검색 실패: "+error.message;}
@@ -446,13 +446,13 @@ if(ROOT){
   E("bsRouteOrder").addEventListener("change",()=>draw(true));E("bsRouteSearch").addEventListener("input",()=>draw(true));
   E("bsRoute").addEventListener("change",()=>draw(false));
   E("bsApplyTargets").addEventListener("click",applyTargets);
-  E("bsClearTargets").addEventListener("click",()=>{for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];resources={};for(const [id] of resourceFields)E(id).value="";for(const [id] of resourceChecks)E(id).checked=false;for(const i of materialSlots){E("bsItem"+i).value="";E("bsItemLimit"+i).value="";}E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsStatFeeOnly").checked=false;E("bsMinDepth").value="0";E("bsParetoMode").value="off";E("bsParetoAxes").value="all";draw(true);});
+  E("bsClearTargets").addEventListener("click",()=>{for(const id of ["bsExactRequired","bsExactExcluded"])if(E(id))E(id).value="";for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];resources={};for(const [id] of resourceFields)E(id).value="";for(const [id] of resourceChecks)E(id).checked=false;for(const i of materialSlots){E("bsItem"+i).value="";E("bsItemLimit"+i).value="";}E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsStatFeeOnly").checked=false;E("bsMinDepth").value="0";E("bsParetoMode").value="off";E("bsParetoAxes").value="all";draw(true);});
   E("bsParetoMode").addEventListener("change",()=>draw(true));E("bsParetoAxes").addEventListener("change",()=>{if(E("bsParetoMode").value!=="off")draw(true);});
   E("bsBudgetStat").addEventListener("change",()=>{if(view)budgetTable(view.scope);});
   for(const id of ["bsGoalPreset","bsGoalTarget"])E(id)?.addEventListener("change",()=>{if(view)resourceGoalTable(view.scope);});
   E("bsGoalApply")?.addEventListener("click",()=>applyGoalPreset());
   E("bsExactSearch")?.addEventListener("click",runExactSearch);
-  E("bsExactDepth")?.addEventListener("change",()=>{if(view)updateExactPanel(view.scope,view.c,view.m);});
+  for(const id of ["bsExactDepth","bsExactRequired","bsExactExcluded"])E(id)?.addEventListener("change",()=>{if(view)updateExactPanel(view.scope,view.c,view.m);});
 
   E("bsStatFeeOnly").addEventListener("change",()=>draw(true));
   E("bsEvidence").addEventListener("change",()=>draw(true));
