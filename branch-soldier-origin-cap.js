@@ -3,7 +3,7 @@
 // exact-resource views retain their own scopes.
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>Number.isFinite(n)?n.toLocaleString("ko-KR",{maximumFractionDigits:1}):"—";
-const total=w=>w.vector.reduce((a,b)=>a+b,0);
+const total=w=>(Array.isArray(w)?w:w.vector).reduce((a,b)=>a+b,0);
 const length=w=>(w.steps||[]).reduce((n,s)=>n+(s.count??1),0);
 export function allOriginCoverage(db){
  const o=db?.originCap12,s=o?.summary;if(!s)return null;

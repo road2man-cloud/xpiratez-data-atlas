@@ -1,8 +1,8 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-all-origin-4324';
+import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-all-origin-4324-fix1';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
-import {mergeAllOriginRows,allOriginCoverageText,originCapButton,renderAllOriginCap} from '../../branch-soldier-origin-cap.js?v=20261124-all-origin-4324';
+import {mergeAllOriginRows,allOriginCoverageText,originCapButton,renderAllOriginCap} from '../../branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -15,7 +15,7 @@ import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transforma
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-all-origin-4324';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-all-origin-4324-fix1';
 import {routeCandidate,routeNumbers,routeDifference,routeEvidence,routeOnly} from './route-table-compare.js';
 import {newbornDistribution,newbornPairChance,newbornTailChance,newbornRawPairs} from './birth-rng-math.js';
 import {conditionBirthPairs} from './birth-selection.js';
