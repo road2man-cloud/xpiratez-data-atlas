@@ -1,9 +1,9 @@
 // One shared result reader for the existing Soldier and Branch DB pages.
 // No standalone viewer or model tabs. Model distinctions are columns/evidence.
-import {buildBranchRouteIndex,parseTargets,matchesTargets} from "./branch-soldier-query.js?v=20261124-origin-coverage-1";
+import {buildBranchRouteIndex,parseTargets,matchesTargets} from "./branch-soldier-query.js?v=20261124-stat-fee-1";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths} from "./branch-soldier-catalog.js?v=20261124-depth-dynamic-1";
 import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
-import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-pareto-1";
+import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-stat-fee-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.
@@ -21,7 +21,7 @@ if(ROOT){
  const link=(type,b,body=null,mode=null,route=null)=>{const u=new URL(type==="soldier"?"./soldiers/modern/":"./captains/",import.meta.url);if(b)u.searchParams.set("branch",b.id);if(type==="soldier"){if(body)u.searchParams.set("body",body);if(mode)u.searchParams.set("mode",mode);if(route)u.searchParams.set("route",route);}u.hash=type==="soldier"?"integratedCaps":"integratedBranches";return u.href;};
  const query=new URL(location.href).searchParams,selectedUrl=query.get("branch"),selectedBody=query.get("body");
  const sources=()=>'<details class="bs-note"><summary>계산 근거 및 작업자별 원장 출처</summary><p>병종·분기 DB가 동일한 원장을 읽습니다. '+fmt(db.catalog.filter(x=>x.integrated).length)+'개 결과의 구조화 데이터와 '+fmt(db.summary.inventoryReports)+'개 발견된 연구 파일 목록을 관리합니다. 미연결 파일은 현재 수치에 합산하지 않습니다. 원본 실험 파일은 보존합니다.</p><ul>'+Object.entries(db.sources).map(([id,x])=>'<li><code>'+esc(id)+'</code> · '+esc(x.file)+'</li>').join("")+'</ul><p>'+Object.values(db.policies).map(esc).join("<br>")+'</p></details>';
- const overview=()=>'<p class="bs-summary">현재 정적 분기 후보 <b>'+fmt(db.summary.staticCandidates)+'</b>개 · 선장 말단 후보 '+fmt(db.summary.knownCaptainLeaves)+'개 · 대의 미선택 '+fmt(db.summary.neutralCauseCandidates)+'개 · 조건부 연구 이력 보유 '+fmt(db.summary.historiesAcceptedParents)+'개 · 원천 충돌 '+fmt(db.summary.sourceConflictCandidates)+'개 · 통합 조건부 육성 경로 <b>'+fmt(db.summary.unifiedConditionalTrainingPaths)+'</b>개 · 연결 경로 대표 '+fmt(db.summary.frontierWitnesses)+'개 · 실제 게임 전체 최적 인증 0건.</p>';
+ const overview=()=>'<p class="bs-summary">현재 정적 분기 후보 <b>'+fmt(db.summary.staticCandidates)+'</b>개 · 선장 말단 후보 '+fmt(db.summary.knownCaptainLeaves)+'개 · 대의 미선택 '+fmt(db.summary.neutralCauseCandidates)+'개 · 조건부 연구 이력 보유 '+fmt(db.summary.historiesAcceptedParents)+'개 · 원천 충돌 '+fmt(db.summary.sourceConflictCandidates)+'개 · 통합 조건부 육성 경로 <b>'+fmt(db.summary.unifiedConditionalTrainingPaths)+'</b>개 · 등록 경로 대표 '+fmt(Object.keys(db.witnesses).length)+'개 · 실제 게임 전체 최적 인증 0건.</p>';
  const branchPaths=(b,cls)=>db.profiles[b?.evidence?.[cls]?.unified]?.conditionalPaths??null;
  const bodyEvidence=(b,c,mode="CAP_TARGET")=>{
   const e=b?b.evidence[c.classKey]:db.globalEvidence[c.classKey];
@@ -106,7 +106,7 @@ if(ROOT){
  const resourceChecks=[["bsNoMedals","noMedals","훈장 요구 없는 경로"],["bsNoItems","noItems","재료 요구 없는 경로"],["bsNoFacilities","noFacilities","별도 시설 기능 요구 없는 경로"]];
  function resourceMarkup(){
   const itemIds=[...new Set(Object.values(db.ruleDetails||{}).flatMap(r=>Object.keys(r.requiredItems||{})))].sort((a,b)=>label(a).localeCompare(label(b),"ko"));
-  return '<h4>훈련 자원 제한</h4><div class="bs-target-grid">'+resourceFields.map(([id,,title])=>'<label>'+esc(title)+'<input id="'+id+'" data-resource-limit type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div><div class="bs-controls">'+materialSlots.map(i=>'<label>제한 재료 '+i+'<select id="bsItem'+i+'">'+options([["","선택 안 함"],...itemIds.map(id=>[id,label(id)+" ("+id+")"])],"")+'</select></label><label>재료 '+i+' 최대 요구량<input id="bsItemLimit'+i+'" data-resource-limit type="number" min="0" step="1" placeholder="제한 없음"></label>').join("")+resourceChecks.map(([id,,title])=>'<label class="bs-inline-check"><input type="checkbox" id="'+id+'">'+esc(title)+'</label>').join("")+'</div><p class="bs-sub">직접 시술비만 합산하며 음수 비용은 지급액으로 분리합니다. 재료는 각 단계 요구량 합계로, 회복·이동은 별도 합계로 비교합니다. 출생·연구·전투 성장·재료 조달·계급 획득 비용과 시간은 포함하지 않습니다.</p>';
+  return '<h4>훈련 자원 제한</h4><div class="bs-target-grid">'+resourceFields.map(([id,,title])=>'<label>'+esc(title)+'<input id="'+id+'" data-resource-limit type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div><div class="bs-controls">'+materialSlots.map(i=>'<label>제한 재료 '+i+'<select id="bsItem'+i+'">'+options([["","선택 안 함"],...itemIds.map(id=>[id,label(id)+" ("+id+")"])],"")+'</select></label><label>재료 '+i+' 최대 요구량<input id="bsItemLimit'+i+'" data-resource-limit type="number" min="0" step="1" placeholder="제한 없음"></label>').join("")+resourceChecks.map(([id,,title])=>'<label class="bs-inline-check"><input type="checkbox" id="'+id+'">'+esc(title)+'</label>').join("")+'</div><p class="bs-sub" id="bsStatFeeCoverage"></p><label class="bs-inline-check"><input type="checkbox" id="bsStatFeeOnly">완료된 5단계 본체 상태 그래프의 12능력치·비용 전선만 비교</label><p class="bs-sub">직접 시술비만 합산하며 음수 비용은 지급액으로 분리합니다. 재료는 각 단계 요구량 합계로, 회복·이동은 별도 합계로 비교합니다. 출생·연구·전투 성장·재료 조달·계급 획득 비용과 시간은 포함하지 않습니다.</p>';
  }
  function paretoMarkup(){
   return '<h4>능력치·자원 비지배 비교 (선택)</h4><div class="bs-controls"><label>비교할 능력치<select id="bsParetoAxes">'+options([["all","모든 계산된 능력치"],["targets","입력한 목표 능력치만"],...db.stats.map(k=>[k,ko[k]||k])],"all")+'</select></label><label>비지배 필터<select id="bsParetoMode">'+options([["off","전체 등록 후보 유지"],["fees","능력치 + 직접 지출"],["requirements","능력치 + 지출·횟수·기간·재료·훈장·시설·연구 요구"]],"off")+'</select></label></div><p class="bs-sub">같은 계산 모델·출생처·최종 병종에서 비교합니다. 비교하는 능력치와 선택한 자원이 모두 같거나 우수하고 최소 하나가 더 좋으며, 상대의 모든 참조 분기를 보존할 때만 열등 후보로 판정합니다. 동점과 미판정은 남깁니다. 전체 요구 비교에서는 계급·병종 변경 이력이 다른 경로도 별도로 유지합니다. 연구·계급·성장 실현 가능성이나 전체 게임 최적성은 인증하지 않습니다.</p><p id="bsParetoStatus" class="bs-sub" aria-live="polite"></p><div id="bsParetoExamples"></div>';
@@ -158,7 +158,7 @@ if(ROOT){
   }
   function matchedResourcesTable(rows,scope){
    const el=E("bsMatchedResources");
-   if(!targets.length&&!hasResourceFilters(resources)&&!Number(E("bsMinDepth").value)&&E("bsParetoMode").value==="off"){
+   if(!targets.length&&!hasResourceFilters(resources)&&!E("bsStatFeeOnly").checked&&!Number(E("bsMinDepth").value)&&E("bsParetoMode").value==="off"){
     el.innerHTML="";return;
    }
    const modelRows=Object.entries(modelLabels).map(([source,title])=>{
@@ -226,7 +226,10 @@ if(ROOT){
    const p=cols[1].ids.length;
    const q=E("bsRouteSearch").value.trim().toLowerCase(),order=E("bsRouteOrder").value,evidence=E("bsEvidence").value;
    const statIndex=db.stats.indexOf(order),minDepth=Number(E("bsMinDepth").value);
-   const evidenceIds=ids.filter(id=>evidence==="all"||db.witnesses[id].source===evidence);
+   const feeOnly=E("bsStatFeeOnly").checked,feeIds=scope.statFeeIds;
+   const feeSummary=db.summary.statFeeFrontier;
+   E("bsStatFeeCoverage").textContent=feeSummary?"5단계 전체 완료 상태 재탐색 · 신규 "+fmt(feeSummary.witnessesAdded)+"개 · 현재 분기·병종 전선 "+fmt(feeIds.size)+"개. 동일 상태의 최소 양수 시술비와 12능력치 기준으로 계산했습니다. 동점 대표만 남긴 수치 전선이며 재료·연구 시간순·실제 성장의 전역 최적성은 아닙니다.":"5단계 전체 비용 전선 미연결.";
+   const evidenceIds=ids.filter(id=>(!feeOnly||feeIds.has(id))&&(evidence==="all"||db.witnesses[id].source===evidence));
    const matched=evidenceIds.filter(id=>{const w=db.witnesses[id];return routeActionCount(w)>=minDepth&&matchesTargets(w,targets)&&(!hasResourceFilters(resources)||matchesResources(resourceFor(id),resources))&&(!q||[routeName(w),...w.steps.map(x=>x.id),...(w.research||[]).map(label),...(w.research||[]),w.originProfile,modelLabels[w.source]].join(" ").toLowerCase().includes(q));});
    const paretoMode=E("bsParetoMode").value,axes=E("bsParetoAxes").value;
    const dimensions=axes==="all"||axes==="targets"&&!targets.length?null:axes==="targets"?targets.map(([i])=>i):[db.stats.indexOf(axes)];
@@ -265,7 +268,7 @@ if(ROOT){
    if(paging)chosen=rows[routePage*PAGE_SIZE]||"maxima";
    else if(chosen!=="maxima")routePage=Math.floor(rows.indexOf(chosen)/PAGE_SIZE);
    const routeOptions=rows.slice(routePage*PAGE_SIZE,(routePage+1)*PAGE_SIZE).map((id,i)=>{const w=db.witnesses[id],v=statIndex>=0?w.vector[statIndex]:null;
-    const r=resourceFor(id);return [id,(routePage*PAGE_SIZE+i+1)+". "+(modelLabels[w.source]||w.source)+(w.resourceCheckpoint?" / 예산 후보":"")+(unranked.has(id)?" / 비교 미판정":"")+" · "+fmt(count(w))+"회 시술 · "+resourceSummary(r,"cash","grossFees","$")+" · "+(statIndex>=0?(ko[order]||order)+" "+fmt(v)+" · ":"")+routeName(w)];});
+    const r=resourceFor(id);return [id,(routePage*PAGE_SIZE+i+1)+". "+(modelLabels[w.source]||w.source)+(feeIds.has(id)?" / 5단계 비용 전선":w.resourceCheckpoint?" / 예산 후보":"")+(unranked.has(id)?" / 비교 미판정":"")+" · "+fmt(count(w))+"회 시술 · "+resourceSummary(r,"cash","grossFees","$")+" · "+(statIndex>=0?(ko[order]||order)+" "+fmt(v)+" · ":"")+routeName(w)];});
    routeSelect.innerHTML=options([["maxima","독립 최고값만 비교 (동일 경로 아님)"],...routeOptions],chosen);
    routeSelect.disabled=!rows.length;
    E("bsRoutePage").textContent=(routePage+1)+" / "+pageCount+" 페이지";
@@ -287,7 +290,7 @@ if(ROOT){
    const thresholdDepths=depths.filter(n=>n>=5),summaryDepths=thresholdDepths.length<=12?thresholdDepths:[...thresholdDepths.slice(0,11),thresholdDepths.at(-1)];
    const depthCounts=summaryDepths.map(n=>n+"회 이상 "+fmt(rows.filter(id=>count(db.witnesses[id])>=n).length)+"개").join(" · ");
    E("bsRouteCount").textContent="조회 경로 대표 "+fmt(ids.length)+"개 / 검색·목표·자원 만족 "+fmt(matched.length)+"개"+(pareto?" · 비지배 필터 표시 "+fmt(rows.length)+"개 (분기 "+fmt(beforeBranches.length)+" → "+fmt(matching.length)+"개)":"")+" · 분기 프로필 참조 "+fmt(matching.length)+"개"+(rows.length?" · 최장 "+maxDepth+"회 (반복 포함) · "+depthCounts:"")+(w?" · 선택 "+count(w)+"회 시술 · "+(modelLabels[w.source]||w.source):" · 독립 최대값만 표시");
-   E("bsMatchingBranches").innerHTML=(targets.length||hasResourceFilters(resources)||minDepth||q||evidence!=="all"||pareto)?(breakdown?'<p class="bs-sub">'+esc(breakdown)+' (분기 중복 가능)</p>':"")+(matching.length&&!selected?branchPicker(matching,"목표일치"):""):"";
+   E("bsMatchingBranches").innerHTML=(targets.length||hasResourceFilters(resources)||feeOnly||minDepth||q||evidence!=="all"||pareto)?(breakdown?'<p class="bs-sub">'+esc(breakdown)+' (분기 중복 가능)</p>':"")+(matching.length&&!selected?branchPicker(matching,"목표일치"):""):"";
    matchedResourcesTable(rows,scope);
    E("bsTable").innerHTML='<table class="bs-table"><thead><tr><th rowspan="2">능력치</th><th colspan="3">최종 병종 룰셋 기준</th><th rowspan="2" class="bs-chosen">선택 경로<small class="bs-sub">실효 (원시 + 보너스)</small></th><th colspan="'+cols.length+'">조회 분기 내 모델별 독립 최고 후보 — 같은 대원이 아님</th></tr><tr><th>생성 상단</th><th>전투캡</th><th>훈련캡</th>'+cols.map(col=>'<th>'+esc(col.label)+'<small class="bs-sub">참조 경로 '+fmt(col.ids.length)+'개 · 분기 '+fmt(col.coveredBranches)+'개</small></th>').join("")+'</tr></thead><tbody>'+db.stats.map((k,i)=>{
     const target=targetMap.get(i),hasTarget=targetMap.has(i),v=w?.vector[i];
@@ -308,10 +311,11 @@ if(ROOT){
   E("bsRouteOrder").addEventListener("change",()=>draw(true));E("bsRouteSearch").addEventListener("input",()=>draw(true));
   E("bsRoute").addEventListener("change",()=>draw(false));
   E("bsApplyTargets").addEventListener("click",applyTargets);
-  E("bsClearTargets").addEventListener("click",()=>{for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];resources={};for(const [id] of resourceFields)E(id).value="";for(const [id] of resourceChecks)E(id).checked=false;for(const i of materialSlots){E("bsItem"+i).value="";E("bsItemLimit"+i).value="";}E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsMinDepth").value="0";E("bsParetoMode").value="off";E("bsParetoAxes").value="all";draw(true);});
+  E("bsClearTargets").addEventListener("click",()=>{for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];resources={};for(const [id] of resourceFields)E(id).value="";for(const [id] of resourceChecks)E(id).checked=false;for(const i of materialSlots){E("bsItem"+i).value="";E("bsItemLimit"+i).value="";}E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsStatFeeOnly").checked=false;E("bsMinDepth").value="0";E("bsParetoMode").value="off";E("bsParetoAxes").value="all";draw(true);});
   E("bsParetoMode").addEventListener("change",()=>draw(true));E("bsParetoAxes").addEventListener("change",()=>{if(E("bsParetoMode").value!=="off")draw(true);});
   E("bsBudgetStat").addEventListener("change",()=>{if(view)budgetTable(view.scope);});
 
+  E("bsStatFeeOnly").addEventListener("change",()=>draw(true));
   E("bsEvidence").addEventListener("change",()=>draw(true));
   E("bsExcludeConflict").addEventListener("change",()=>draw(true));
   E("bsRoutePrev").addEventListener("click",()=>{routePage--;draw(false,null,true);});
@@ -347,7 +351,7 @@ if(ROOT){
    if(view?.rows.includes(id)&&view.chosen!==id)draw(false,id);
    else if(view?.chosen===id)showWitness(id);
    else if(view?.ids.includes(id)){
-    if(!targets.length&&!hasResourceFilters(resources)&&E("bsParetoMode").value==="off"&&!Number(E("bsMinDepth").value)&&E("bsEvidence").value==="all"){
+    if(!targets.length&&!hasResourceFilters(resources)&&!E("bsStatFeeOnly").checked&&E("bsParetoMode").value==="off"&&!Number(E("bsMinDepth").value)&&E("bsEvidence").value==="all"){
      E("bsRouteSearch").value="";draw(false,id);
     }else{
      showWitness(id);E("bsWitness").insertAdjacentHTML("afterbegin",'<p class="bs-warning">비교용 독립 최고값 상세입니다. 현재 목표·검색·근거·비지배 필터로 선택된 경로 열은 바꾸지 않았습니다.</p>');

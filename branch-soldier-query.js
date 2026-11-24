@@ -12,7 +12,7 @@ export function modelProfiles(db,c,mode,branch=null){
 export function profileWitnessIds(db,id){
  const p=db.profiles[id];
  if(!p)return [];
- return [...new Set([...(p.frontier||[]),...(p.best||[]),...(p.resourceCandidates||[]),
+ return [...new Set([...(p.frontier||[]),...(p.best||[]),...(p.resourceCandidates||[]),...(p.statFeeFrontier||[]),
   ...Object.values(p.frontierTies||{}).flat()].filter(x=>x&&db.witnesses[x]))];
 }
 export function matchesTargets(w,targets){
@@ -64,7 +64,7 @@ export function buildBranchRouteIndex(db,c,mode){
  }
  function scope(branchIds,{includeGlobal=false}={}){
   const allowed=new Set(branchIds),all=allowed.size===branchMap.size;
-  const activeProfiles=new Map(),resultColumns=[];
+  const activeProfiles=new Map(),resultColumns=[],statFeeIds=new Set();
   for(const col of columns){
    const ids=new Set(),covered=new Set(),usedProfiles=[];
    for(const [pid,parents] of col.byProfile){
@@ -73,10 +73,14 @@ export function buildBranchRouteIndex(db,c,mode){
     usedProfiles.push(pid);activeProfiles.set(pid,relevant);
     for(const b of relevant)covered.add(b);
     for(const w of routes(pid))ids.add(w);
+    for(const w of db.profiles[pid].statFeeFrontier||[])if(db.witnesses[w])statFeeIds.add(w);
    }
    // Global representative witnesses may not have the same exact ID as
    // the per-parent witnesses; never invent a parent for those.
-   if(includeGlobal&&all&&col.globalId)for(const w of routes(col.globalId))ids.add(w);
+   if(includeGlobal&&all&&col.globalId){
+    for(const w of routes(col.globalId))ids.add(w);
+    for(const w of db.profiles[col.globalId]?.statFeeFrontier||[])if(db.witnesses[w])statFeeIds.add(w);
+   }
    const best=db.stats.map((_,i)=>{
     let winner=null;
     for(const id of ids){
@@ -101,7 +105,7 @@ export function buildBranchRouteIndex(db,c,mode){
    }
    return [...parents].sort((a,b)=>branchMap.get(a).rank-branchMap.get(b).rank);
   }
-  return {columns:resultColumns,ids,branchCount:allowed.size,matchingBranches,
+  return {columns:resultColumns,ids,statFeeIds,branchCount:allowed.size,matchingBranches,
    supportFor:id=>supportFor(id).filter(b=>allowed.has(b))};
  }
  return {scope,supportFor,branchMap};
