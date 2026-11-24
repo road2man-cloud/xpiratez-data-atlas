@@ -16,6 +16,15 @@ try{
  assert.equal(await page.locator('a[href="./trainings/"]').count(),0);
  await page.locator('a.card[href="./soldiers/"]').click();
  await page.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',null,{timeout:60000});
+ assert.equal(await page.locator('#originTable tbody tr[data-body-id]').count(),29);
+ const bodyCoverage=await page.locator('#originTable tbody tr[data-body-id]').evaluateAll(rows=>({rows:rows.length,calculated:rows.filter(r=>r.querySelector('td.score')?.textContent.trim()!=='—').length}));
+ assert(bodyCoverage.calculated>=20,'Previously calculated final bodies must remain visible');
+ assert.equal(await page.locator('#originTable thead th').count(),15);
+ await page.locator('[data-body-sort="firing"]').click();
+ assert.equal(await page.locator('[data-body-sort="firing"]').textContent(),'사격 ↓');
+ console.log('PASS final-body maxima table: '+JSON.stringify(bodyCoverage));
+ assert.equal(await page.locator('#integratedCaps').evaluate(el=>el.open),false);
+ await page.locator('#catalogGrouping').selectOption('origin');
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),72);
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
@@ -23,6 +32,7 @@ try{
  // Do not accept an apparently working four-action fallback if the shared
  // growth registry is absent or stale.
  await page.waitForSelector('#registryCoverage[data-registry-status="loaded"]',{timeout:60000});
+ await page.locator('#integratedCaps > summary').click();
  await page.waitForSelector('#bsMinDepth',{timeout:60000});
  const integratedRows=page.locator('#originTable tbody tr[data-origin-id]').filter({has:page.locator('[data-integrated-max-depth]')});
  assert(await integratedRows.count()>=2);
@@ -76,6 +86,7 @@ try{
  assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
  assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses-61)));
  const chort=page.locator('#chortTarget[data-target-type="STR_SOLDIER_CHORT"]');
+ await chort.locator('..').locator(':scope > summary').click();
  assert.equal(await chort.count(),1,'Chort is a separate terminal body, not a new birth profile');
  const factValues=await chort.locator('.terminal-facts strong').allTextContents();
  assert.deepEqual(factValues,['16','42','17','25']);
@@ -412,6 +423,14 @@ try{
  assert.equal(await page.locator('#originTable').evaluate(e=>getComputedStyle(e).display),'table');
  console.log('PASS 390px mobile: genuine swipeable 12-stat table, compact pinned name and total, working next-columns control');
  await page.goto(url('captains/'));
+ await page.waitForSelector('#bsTable tr[data-branch-id]',{timeout:60000});
+ assert.equal(await page.locator('#bsBranchBody option').count(),30);
+ const branchRows=await page.locator('#bsTable tr[data-branch-id]').count();
+ assert.equal(branchRows,290);
+ await page.locator('#bsBranchBody').selectOption('STR_SOLDIER_DAMSEL');
+ assert.equal(await page.locator('#bsTable tr[data-branch-id]').count(),40);
+ assert.equal(await page.locator('#bsTable tr[data-branch-id]:not([data-body-id="STR_SOLDIER_DAMSEL"])').count(),0);
+ console.log('PASS branch table: 29 final bodies per branch, same stat columns, body filter');
  assert.equal(await page.locator('input[type=file],#choiceSaveFile').count(),0);
  assert(!requests.some(r=>r.method!=='GET'));
  console.log('PASS retired training deep link routes to read-only soldier evidence; no local file-input UI on soldier/captain views');
@@ -462,6 +481,7 @@ try{
    await wrongBranch.goto(url('soldiers/modern/'));
    await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',
      null,{timeout:60000});
+   await wrongBranch.locator('#catalogGrouping').selectOption('origin');
    await wrongBranch.locator('#originTable [data-open-origin="direct:STR_SOLDIER_PEASANT"]').click();
    await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='rejected',
      null,{timeout:60000});

@@ -4,7 +4,7 @@ import "./check-branch-soldier-pareto.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import zlib from "node:zlib";
-import {buildOriginGrowthIndex,registryCoverage,routeActionCount,registeredRouteDepths} from "../public/branch-soldier-catalog.js";
+import {buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage,routeActionCount,registeredRouteDepths} from "../public/branch-soldier-catalog.js";
 import {buildBranchRouteIndex,profileWitnessIds} from "../public/branch-soldier-query.js";
 import {summarizeRouteResources,matchesResources} from "../public/branch-soldier-resources.js";
 
@@ -12,6 +12,25 @@ const db=JSON.parse(zlib.gunzipSync(fs.readFileSync("public/data/branch-soldier-
 const modern=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 const index=buildOriginGrowthIndex(db,modern,db.stats);
 const coverage=registryCoverage(db,index,modern.profiles.length);
+const allBodies=buildBodyGrowthIndex(db,modern,db.stats);
+assert.equal(allBodies.length,modern.soldiers.length);
+assert.equal(allBodies.length,29);
+for(const row of allBodies){
+ for(const k of db.stats){
+  const m=row.maxima[k];
+  const values=row.candidates.map(c=>c.stats[k]);
+  assert.equal(m?.value??null,values.length?Math.max(...values):null);
+  if(m){assert.equal(db.witnesses[m.route].body,row.id);assert.equal(db.witnesses[m.route].vector[db.stats.indexOf(k)],m.value);}
+ }
+ if(row.best)assert.equal(row.best.total,Math.max(...row.candidates.map(c=>Object.values(c.stats).reduce((a,b)=>a+b,0))));
+}
+const parent=db.branches.find(b=>!b.sourceRootConflict&&allBodies.some(r=>r.candidates.some(c=>db.witnesses[c.route].branchIds.includes(b.id))));
+assert(parent);
+const scoped=buildBodyGrowthIndex(db,modern,db.stats,[],()=>false,{branchId:parent.id});
+assert.equal(scoped.length,29);
+for(const r of scoped)for(const c of r.candidates)assert(db.witnesses[c.route].branchIds.includes(parent.id));
+assert(buildBodyGrowthIndex(db,modern,db.stats,[],()=>false,{branchId:"__missing__"}).every(r=>!r.best));
+console.log("PASS unified final body table: "+allBodies.length+" bodies, "+allBodies.filter(r=>r.best).length+" registry-connected, exact branch "+parent.id);
 assert(coverage.updatedOrigins>=2,"Latest registry must reach primary origin rows");
 assert(coverage.unifiedDepth>=5,"Do not silently publish the old four-action scope");
 assert(coverage.structuralDepth>=8,"Structural continuation evidence missing");

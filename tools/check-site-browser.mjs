@@ -80,6 +80,9 @@ try {
         await page.waitForURL(u=>u.pathname.endsWith("/soldiers/modern/"),{timeout:30000});
         await page.waitForFunction(()=>document.querySelector("#originMaxima")
           ?.dataset.validation==="validated",{timeout:30000});
+        const bodyCount=await page.locator("#originTable tbody tr[data-body-id]").count();
+        if(bodyCount!==29)errors.push("Final body rows: "+bodyCount+"/29");
+        await page.locator("#catalogGrouping").selectOption("origin");
         count=await page.locator("#originTable tbody tr").count();
         if(count!==72)errors.push("2.1 original birth profiles: "+count+"/72");
         if(await page.locator("#legacyMaximaArchive").count()||
