@@ -1,6 +1,6 @@
 // Shared public registry loader and exact-origin growth view.
 // One gzip payload is reused by the existing Soldier and Branch DB screens.
-import {allOriginBodyWitnessIds} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324";
+import {allOriginBodyWitnessIds} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
 import {inflateArchivedGzip} from "./soldiers/modern/origin-gzip-compat.js";
 import {profileWitnessIds} from "./branch-soldier-query.js?v=20261124-unified-maxima-1";
 import {independentMaxima,registryCandidate,groupBodyMaxima,evidencePriority} from "./branch-soldier-maxima.js";

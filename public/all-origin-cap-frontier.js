@@ -1,6 +1,6 @@
 // Existing all-origin panel; read the same registry used by both databases.
-import {loadBranchSoldierResults} from "./branch-soldier-catalog.js?v=20261124-all-origin-4324";
-import {allOriginCoverageText,renderAllOriginCap} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324";
+import {loadBranchSoldierResults} from "./branch-soldier-catalog.js?v=20261124-all-origin-4324-fix1";
+import {allOriginCoverageText,renderAllOriginCap} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
 import {mountOriginBaseline} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const n=v=>Number.isFinite(v)?v.toLocaleString("ko-KR"):"—";
