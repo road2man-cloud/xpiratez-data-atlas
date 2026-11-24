@@ -2,6 +2,7 @@
 // No standalone viewer or model tabs. Model distinctions are columns/evidence.
 import {buildBranchRouteIndex,parseTargets,matchesTargets} from "./branch-soldier-query.js?v=20261124-origin-coverage-1";
 import {loadBranchSoldierResults,routeActionCount} from "./branch-soldier-catalog.js?v=20261124-origin-coverage-1";
+import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.
@@ -99,16 +100,70 @@ if(ROOT){
   if(t.cost)a.push("비용 "+t.cost.toLocaleString("ko-KR"));
   return a.join(" · ")||"별도 요구값 없음";
  }
+ const resourceFields=[["bsMaxFees","maxFees","최대 직접 지출 ($)"],["bsMaxActions","maxActions","최대 훈련 횟수"],["bsMaxRecovery","maxRecovery","최대 회복 합계 (일)"],["bsMaxTransfer","maxTransfer","최대 이동 합계 (시간)"]];
+ const materialSlots=[1,2,3];
+ const resourceChecks=[["bsNoMedals","noMedals","훈장 요구 없는 경로"],["bsNoItems","noItems","재료 요구 없는 경로"],["bsNoFacilities","noFacilities","별도 시설 기능 요구 없는 경로"]];
+ function resourceMarkup(){
+  const itemIds=[...new Set(Object.values(db.ruleDetails||{}).flatMap(r=>Object.keys(r.requiredItems||{})))].sort((a,b)=>label(a).localeCompare(label(b),"ko"));
+  return '<h4>훈련 자원 제한</h4><div class="bs-target-grid">'+resourceFields.map(([id,,title])=>'<label>'+esc(title)+'<input id="'+id+'" data-resource-limit type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div><div class="bs-controls">'+materialSlots.map(i=>'<label>제한 재료 '+i+'<select id="bsItem'+i+'">'+options([["","선택 안 함"],...itemIds.map(id=>[id,label(id)+" ("+id+")"])],"")+'</select></label><label>재료 '+i+' 최대 요구량<input id="bsItemLimit'+i+'" data-resource-limit type="number" min="0" step="1" placeholder="제한 없음"></label>').join("")+resourceChecks.map(([id,,title])=>'<label class="bs-inline-check"><input type="checkbox" id="'+id+'">'+esc(title)+'</label>').join("")+'</div><p class="bs-sub">직접 시술비만 합산하며 음수 비용은 지급액으로 분리합니다. 재료는 각 단계 요구량 합계로, 회복·이동은 별도 합계로 비교합니다. 출생·연구·전투 성장·재료 조달·계급 획득 비용과 시간은 포함하지 않습니다.</p>';
+ }
  function targetsMarkup(){
-  return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div><div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p></details>';
+  return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p><details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details></details>';
  }
  function mountSoldier(){
-  ROOT.innerHTML='<h2>영애·미치광이 최종 성장 상한</h2>'+overview()+'<p>하나의 육성 경로를 선택하면 12개 능력치가 같은 경로의 벡터로 표시됩니다. 우측 독립 최고값은 서로 다른 연구·성장 가정의 비교 근거이며 한 대원의 능력치로 합산하지 않습니다.</p><div class="bs-controls"><label>연구 분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 코덱스 · 번호"></label><label>연구 분기<select id="bsBranch"></select></label><label>출발 → 최종 병종<select id="bsBody">'+options(db.combos.map(c=>[c.id,c.title]),"D_W")+'</select></label><label>전투 성장<select id="bsMode">'+options([["CAP_TARGET","전투캡까지"],["EXP_OVERSHOOT_UPPER","마지막 성장 초과 상단"]],"CAP_TARGET")+'</select></label></div>'+facetMarkup()+targetsMarkup()+'<div class="bs-controls"><label>훈련 순서 검색<input id="bsRouteSearch" type="search" placeholder="훈련명 · ID · 연구명"></label><label>최소 시술 횟수<select id="bsMinDepth">'+options([["0","제한 없음"],["5","5회 이상"],["6","6회 이상"],["7","7회 이상"],["8","8회 이상"]],"0")+'</select></label><label>경로 우선 정렬<select id="bsRouteOrder">'+options([["evidence","연구 근거 우선"],["margin","동시 목표 최소 여유율"],...db.stats.map(k=>[k,ko[k]||k]),["short","훈련 횟수 적은 순"],["long","훈련 횟수 많은 순"]],"evidence")+'</select></label><label class="bs-route-select">통합 육성 후보<select id="bsRoute"></select></label></div><div class="bs-controls bs-route-pages"><button id="bsRoutePrev" type="button">이전 경로</button><span id="bsRoutePage"></span><button id="bsRouteNext" type="button">다음 경로</button></div><p id="bsContext"></p><p id="bsRouteCount" class="bs-sub"></p><div id="bsMatchingBranches"></div><div id="bsTable" class="bs-scroll"></div><div id="bsWitness" class="bs-note" aria-live="polite"></div><div id="bsOrigin"></div>'+sources();
+  ROOT.innerHTML='<h2>영애·미치광이 최종 성장 상한</h2>'+overview()+'<p>하나의 육성 경로를 선택하면 12개 능력치가 같은 경로의 벡터로 표시됩니다. 우측 독립 최고값은 서로 다른 연구·성장 가정의 비교 근거이며 한 대원의 능력치로 합산하지 않습니다.</p><div class="bs-controls"><label>연구 분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 코덱스 · 번호"></label><label>연구 분기<select id="bsBranch"></select></label><label>출발 → 최종 병종<select id="bsBody">'+options(db.combos.map(c=>[c.id,c.title]),"D_W")+'</select></label><label>전투 성장<select id="bsMode">'+options([["CAP_TARGET","전투캡까지"],["EXP_OVERSHOOT_UPPER","마지막 성장 초과 상단"]],"CAP_TARGET")+'</select></label></div>'+facetMarkup()+targetsMarkup()+'<div class="bs-controls"><label>훈련 순서 검색<input id="bsRouteSearch" type="search" placeholder="훈련명 · ID · 연구명"></label><label>최소 시술 횟수<select id="bsMinDepth">'+options([["0","제한 없음"],["5","5회 이상"],["6","6회 이상"],["7","7회 이상"],["8","8회 이상"]],"0")+'</select></label><label>경로 우선 정렬<select id="bsRouteOrder">'+options([["evidence","연구 근거 우선"],["margin","동시 목표 최소 여유율"],...db.stats.map(k=>[k,ko[k]||k]),["short","훈련 횟수 적은 순"],["long","훈련 횟수 많은 순"],["fees","직접 지출 적은 순"],["recovery","회복 합계 적은 순"],["transfer","이동 합계 적은 순"]],"evidence")+'</select></label><label class="bs-route-select">통합 육성 후보<select id="bsRoute"></select></label></div><div class="bs-controls bs-route-pages"><button id="bsRoutePrev" type="button">이전 경로</button><span id="bsRoutePage"></span><button id="bsRouteNext" type="button">다음 경로</button></div><p id="bsContext"></p><p id="bsRouteCount" class="bs-sub"></p><div id="bsMatchingBranches"></div><div id="bsMatchedResources"></div><div id="bsTable" class="bs-scroll"></div><div id="bsWitness" class="bs-note" aria-live="polite"></div><div id="bsOrigin"></div>'+sources();
   selected=db.branches.find(b=>b.id===selectedUrl)||null;
   const bodyUrl=new URL(location.href).searchParams.get("body");
   if(db.combos.some(c=>c.id===bodyUrl))E("bsBody").value=bodyUrl;
   const pref={UNIFIED12:0,REPLAY8:1,GATE12:2,CONTINUATION12:3,SOURCE8:4};
-  let view=null,targets=[],indexKey="",index=null,scopeKey="",scoped=null,routePage=0;
+  let view=null,targets=[],resources={},indexKey="",index=null,scopeKey="",scoped=null,routePage=0;
+  const resourceCache=new Map();
+  function resourceFor(id){
+   if(!resourceCache.has(id))resourceCache.set(id,summarizeRouteResources(db.witnesses[id],db.ruleDetails));
+   return resourceCache.get(id);
+  }
+  function resourceSummary(r,key,field,suffix=""){
+   return r.complete[key]?fmt(r[field])+suffix:"미계산 (확인 합계 "+fmt(r[field])+suffix+")";
+  }
+  function resourceDetails(id){
+   const r=resourceFor(id);
+   const entries=Object.entries(r.items).sort(([a],[b])=>label(a).localeCompare(label(b),"ko"));
+   const medals=Object.entries(r.medals).sort(([a],[b])=>label(a).localeCompare(label(b),"ko"));
+   const itemRows=entries.map(([item,n])=>'<tr><td>'+esc(label(item))+'<small class="bs-sub">'+esc(item)+'</small></td><td>'+fmt(n)+'</td><td>'+fmt(r.peakItems[item])+'</td></tr>').join("");
+   const show=(title,body)=>'<div><strong>'+esc(title)+'</strong><p>'+body+'</p></div>';
+   return '<section class="bs-resource-summary"><h4>선택 경로의 직접 훈련 자원</h4><div class="bs-resource-grid">'+show("훈련 횟수",resourceSummary(r,"actions","actions","회"))+show("직접 지출",resourceSummary(r,"cash","grossFees","$"))+show("룰셋 지급액",resourceSummary(r,"cash","credits","$"))+show("순 비용 (참고)",resourceSummary(r,"cash","netFees","$"))+show("이동 합계",resourceSummary(r,"transfer","transferHours","시간"))+show("회복 합계",resourceSummary(r,"recovery","recoveryDays","일"))+'</div><p>훈장: '+(r.complete.medals?"":"미계산 포함 · ")+(medals.map(([k,v])=>esc(label(k))+" · 레벨 "+fmt(v)+" (룰셋)").join(" / ")||"요구 없음")+'</p><p>시설 기능: '+(r.complete.facilities?"":"미계산 포함 · ")+list(r.facilities)+'</p><p>시술 연구 요구: '+(r.complete.research?"":"미계산 포함 · ")+list(r.research)+'</p>'+(r.rankRequirements.length?'<p>계급·전환 조건: '+r.rankRequirements.map(x=>x.step+"단계 "+esc(label(x.ruleId))+" · 최소 "+fmt(x.minRank)+(x.resetRank?" · 계급 초기화":"")+(x.producedBody?" · "+esc(label(x.producedBody))+" 전환":"")).join(" / ")+'</p>':"")+'<p>재료 요구 '+fmt(entries.length)+'종'+(r.complete.items?"":" · 미계산 포함")+'</p>'+(entries.length?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>재료</th><th>전 과정 요구량 합계</th><th>1회 최대 요구량</th></tr></thead><tbody>'+itemRows+'</tbody></table></div>':"<p>연결된 시술 룰의 재료 요구 없음.</p>")+(r.unknownRules.length?'<p class="bs-warning">미연결 규칙: '+list(r.unknownRules)+'</p>':"")+'<p class="bs-sub">직접 시술 룰의 합계입니다. 훈장은 누적 소비량이 아니라 요구되는 최고 레벨이며, 레벨 0도 훈장 요구입니다. 재료 획득·재사용·반환 및 실제 시술 시간은 별도로 입증해야 합니다.</p></section>';
+  }
+  function budgetTable(scope){
+   const el=E("bsBudgetCheckpoints"),i=db.stats.indexOf(E("bsBudgetStat").value);
+   const pids=scope.columns[1].profiles;
+   const budgets=db.summary.budgetCheckpoints?.budgets||[];
+   const rows=budgets.map(budget=>{
+    let win=null;
+    for(const pid of pids){
+     const x=db.profiles[pid]?.budgetCheckpoints?.find(t=>t.budget===budget)?.best[i];
+     const w=db.witnesses[x];
+     if(!w||!Number.isFinite(w.vector[i]))continue;
+     if(!win||w.vector[i]>db.witnesses[win].vector[i]||w.vector[i]===db.witnesses[win].vector[i]&&resourceFor(x).grossFees<resourceFor(win).grossFees)win=x;
+    }
+    return {budget,win};
+   });
+   if(!rows.some(x=>x.win)){el.innerHTML='<p class="bs-sub">현재 병종·성장 모드·분기에는 예산별 재탐색 결과가 연결되지 않았습니다. 본체 전투캡 5단계 모델만 지원합니다.</p>';return;}
+   el.innerHTML='<p class="bs-sub">조회 분기의 기존 D5 상태 그래프 전체에서 예산별 '+esc(ko[db.stats[i]])+' 최고 대표를 추출했습니다. 아래는 다른 목표·재료 제한을 적용하기 전의 독립 최고값입니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>직접 지출 상한</th><th>최고 후보</th><th>대표 직접 지출</th><th>대표 훈련</th></tr></thead><tbody>'+rows.map(({budget,win})=>'<tr><td>'+fmt(budget)+'$</td>'+(win?valueCell(null,i,win):'<td>—</td>')+'<td>'+(win?fmt(resourceFor(win).grossFees)+"$":"—")+'</td><td>'+(win?esc(routeName(db.witnesses[win])):"—")+'</td></tr>').join("")+'</tbody></table></div>';
+  }
+  function matchedResourcesTable(rows,scope){
+   const el=E("bsMatchedResources");
+   if(!targets.length&&!hasResourceFilters(resources)&&!Number(E("bsMinDepth").value)){
+    el.innerHTML="";return;
+   }
+   const modelRows=Object.entries(modelLabels).map(([source,title])=>{
+    const own=rows.filter(id=>db.witnesses[id].source===source);
+    const known=own.filter(id=>resourceFor(id).complete.cash);
+    const cheapest=known.reduce((best,id)=>!best||resourceFor(id).grossFees<resourceFor(best).grossFees||
+     resourceFor(id).grossFees===resourceFor(best).grossFees&&routeActionCount(db.witnesses[id])<routeActionCount(db.witnesses[best])?id:best,null);
+    return {title,own,known,cheapest};
+   }).filter(x=>x.own.length);
+   el.innerHTML=modelRows.length?'<details class="bs-note" open><summary>조건 충족 후보의 모델별 최소 직접 지출</summary><p class="bs-sub">입력한 모든 능력치·자원·시술 횟수 조건을 만족하는 등록 후보만 비교합니다. 미연결 비용은 최저 비용으로 간주하지 않습니다. 전체 경로의 최소 비용 인증이 아닙니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>계산 모델</th><th>조건 일치 / 비용 확인</th><th>분기 참조</th><th>최소 직접 지출</th><th>훈련 횟수</th><th>대표 경로</th></tr></thead><tbody>'+modelRows.map(x=>{const id=x.cheapest,r=id?resourceFor(id):null;return '<tr><th>'+esc(x.title)+'</th><td>'+fmt(x.own.length)+' / '+fmt(x.known.length)+'</td><td>'+fmt(scope.matchingBranches(x.own).length)+'</td><td>'+(r?fmt(r.grossFees)+"$":"—")+'</td><td>'+(r?fmt(r.actions):"—")+'</td><td>'+(r?'<button class="bs-value" type="button" data-witness="'+esc(id)+'">'+esc(routeName(db.witnesses[id]))+'</button>':"비용 미계산")+'</td></tr>';}).join("")+'</tbody></table></div></details>':"";
+  }
   const PAGE_SIZE=180;
   const requestedMode=query.get("mode");
   if(db.modes.includes(requestedMode))E("bsMode").value=requestedMode;
@@ -130,7 +185,19 @@ if(ROOT){
    return Math.min(...targets.map(([i,min])=>(w.vector[i]-min)/Math.max(1,min)));
   }
   function applyTargets(){
-   try{targets=parseTargets(db.stats,db.stats.map((_,i)=>E("bsTarget"+i).value));}
+   try{
+    const nextTargets=parseTargets(db.stats,db.stats.map((_,i)=>E("bsTarget"+i).value));
+    const nextResources=Object.fromEntries(resourceFields.map(([id,key])=>[key,parseResourceLimit(E(id).value)]));
+    for(const [id,key] of resourceChecks)nextResources[key]=E(id).checked;
+    nextResources.materialLimits={};
+    for(const i of materialSlots){
+     const itemId=E("bsItem"+i).value,limit=parseResourceLimit(E("bsItemLimit"+i).value);
+     if(limit==null)continue;
+     if(!itemId)throw Error("재료 "+i+"의 종류를 선택하세요.");
+     nextResources.materialLimits[itemId]=Math.min(nextResources.materialLimits[itemId]??Infinity,limit);
+    }
+    targets=nextTargets;resources=nextResources;
+   }
    catch(err){E("bsTargetStatus").textContent=err.message;return;}
    draw(true);
   }
@@ -154,7 +221,7 @@ if(ROOT){
    const q=E("bsRouteSearch").value.trim().toLowerCase(),order=E("bsRouteOrder").value,evidence=E("bsEvidence").value;
    const statIndex=db.stats.indexOf(order),minDepth=Number(E("bsMinDepth").value);
    const evidenceIds=ids.filter(id=>evidence==="all"||db.witnesses[id].source===evidence);
-   const rows=evidenceIds.filter(id=>{const w=db.witnesses[id];return routeActionCount(w)>=minDepth&&matchesTargets(w,targets)&&(!q||[routeName(w),...w.steps.map(x=>x.id),...(w.research||[]).map(label),...(w.research||[]),w.originProfile,modelLabels[w.source]].join(" ").toLowerCase().includes(q));});
+   const rows=evidenceIds.filter(id=>{const w=db.witnesses[id];return routeActionCount(w)>=minDepth&&matchesTargets(w,targets)&&(!hasResourceFilters(resources)||matchesResources(resourceFor(id),resources))&&(!q||[routeName(w),...w.steps.map(x=>x.id),...(w.research||[]).map(label),...(w.research||[]),w.originProfile,modelLabels[w.source]].join(" ").toLowerCase().includes(q));});
    const count=routeActionCount;
    rows.sort((a,b)=>{const x=db.witnesses[a],y=db.witnesses[b];
     const defaultOrder=(pref[x.source]??9)-(pref[y.source]??9);
@@ -162,6 +229,7 @@ if(ROOT){
     if(order==="margin"&&targets.length)return margin(y)-margin(x)||defaultOrder||count(x)-count(y)||a.localeCompare(b);
     if(order==="short")return count(x)-count(y)||defaultOrder||a.localeCompare(b);
     if(order==="long")return count(y)-count(x)||defaultOrder||a.localeCompare(b);
+    if(["fees","recovery","transfer"].includes(order)){const rx=resourceSortValue(resourceFor(a),order),ry=resourceSortValue(resourceFor(b),order);return (rx===ry?0:rx-ry)||defaultOrder||count(x)-count(y)||a.localeCompare(b);}
     return defaultOrder||a.localeCompare(b);
    });
    const routeSelect=E("bsRoute"),prev=preferred??(reset?null:routeSelect.value);
@@ -174,7 +242,7 @@ if(ROOT){
    if(paging)chosen=rows[routePage*PAGE_SIZE]||"maxima";
    else if(chosen!=="maxima")routePage=Math.floor(rows.indexOf(chosen)/PAGE_SIZE);
    const routeOptions=rows.slice(routePage*PAGE_SIZE,(routePage+1)*PAGE_SIZE).map((id,i)=>{const w=db.witnesses[id],v=statIndex>=0?w.vector[statIndex]:null;
-    return [id,(routePage*PAGE_SIZE+i+1)+". "+(modelLabels[w.source]||w.source)+" · "+fmt(count(w))+"회 시술 · "+(statIndex>=0?(ko[order]||order)+" "+fmt(v)+" · ":"")+routeName(w)];});
+    const r=resourceFor(id);return [id,(routePage*PAGE_SIZE+i+1)+". "+(modelLabels[w.source]||w.source)+(w.resourceCheckpoint?" / 예산 후보":"")+" · "+fmt(count(w))+"회 시술 · "+resourceSummary(r,"cash","grossFees","$")+" · "+(statIndex>=0?(ko[order]||order)+" "+fmt(v)+" · ":"")+routeName(w)];});
    routeSelect.innerHTML=options([["maxima","독립 최고값만 비교 (동일 경로 아님)"],...routeOptions],chosen);
    routeSelect.disabled=!rows.length;
    E("bsRoutePage").textContent=(routePage+1)+" / "+pageCount+" 페이지";
@@ -184,15 +252,19 @@ if(ROOT){
    const w=db.witnesses[chosen],body=db.bodies?.[c.body]||{},targetMap=new Map(targets);
    E("bsContext").innerHTML=(selected?esc(branchName(selected))+" · "+esc(status(selected))+" · 연구 이력 "+fmt(selected.historyCount)+"개":"전체 또는 선택 조건의 분기별 전선 조회")+' · 조회 분기 '+fmt(scope.branchCount)+'개'+(selected?' · <a href="'+esc(link("branch",selected))+'">이 분기의 연구·보상·상호배제</a>':' · <a href="'+esc(link("branch",null))+'">분기 DB</a>')+(!p?" · 12능력치 모델 미연결":"")+(selected?.sourceRootConflict?' <strong class="bs-warning">원천 충돌 분기 — 수치 후보를 실제 가능으로 간주하지 않음</strong>':"");
    const targetText=targets.map(([i,min])=>(ko[db.stats[i]]||db.stats[i])+" ≥ "+fmt(min)).join(" · ");
+   const resourceText=[...resourceFields.filter(([,k])=>resources[k]!=null).map(([,k,t])=>t+" "+fmt(resources[k])),...resourceChecks.filter(([,k])=>resources[k]).map(([,k,t])=>t),...Object.entries(resources.materialLimits||{}).map(([id,n])=>label(id)+" ≤ "+fmt(n))].join(" · ");
+   budgetTable(scope);
+
    const breakdown=Object.keys(modelLabels).map(source=>{
     const own=rows.filter(id=>db.witnesses[id].source===source);
     return own.length?modelLabels[source]+" "+fmt(own.length)+"경로 / "+fmt(scope.matchingBranches(own).length)+"분기":null;
    }).filter(Boolean).join(" · ");
-   E("bsTargetStatus").textContent=(targetText?"적용 목표: "+targetText:"능력치 목표 없음")+" · 조건에 맞는 경로 "+fmt(rows.length)+"개 / 정확한 분기 프로필 참조 "+fmt(matching.length)+"개. "+(!rows.length?"현재 연결된 후보에서 일치 없음. 실제 게임 불가능을 뜻하지 않습니다.":"실제 동시 달성 인증은 아닙니다.")+(breakdown?" 모델별: "+breakdown+" (분기 중복 가능).":"");
+   E("bsTargetStatus").textContent=(targetText?"적용 목표: "+targetText:"능력치 목표 없음")+(resourceText?" · 자원 제한: "+resourceText:"")+" · 조건에 맞는 경로 "+fmt(rows.length)+"개 / 정확한 분기 프로필 참조 "+fmt(matching.length)+"개. "+(!rows.length?"현재 연결된 후보에서 일치 없음. 실제 게임 불가능을 뜻하지 않습니다.":"실제 동시 달성 인증은 아닙니다.")+(breakdown?" 모델별: "+breakdown+" (분기 중복 가능).":"");
    const maxDepth=rows.reduce((n,id)=>Math.max(n,count(db.witnesses[id])),0);
    const depthCounts=[5,6,7,8].map(n=>n+"회 이상 "+fmt(rows.filter(id=>count(db.witnesses[id])>=n).length)+"개").join(" · ");
-   E("bsRouteCount").textContent="조회 경로 대표 "+fmt(ids.length)+"개 / 검색·목표 만족 "+fmt(rows.length)+"개 · 분기 프로필 참조 "+fmt(matching.length)+"개"+(rows.length?" · 최장 "+maxDepth+"회 (반복 포함) · "+depthCounts:"")+(w?" · 선택 "+count(w)+"회 시술 · "+(modelLabels[w.source]||w.source):" · 독립 최대값만 표시");
-   E("bsMatchingBranches").innerHTML=(targets.length||minDepth||q||evidence!=="all")?(breakdown?'<p class="bs-sub">'+esc(breakdown)+' (분기 중복 가능)</p>':"")+(matching.length&&!selected?branchPicker(matching,"목표일치"):""):"";
+   E("bsRouteCount").textContent="조회 경로 대표 "+fmt(ids.length)+"개 / 검색·목표·자원 만족 "+fmt(rows.length)+"개 · 분기 프로필 참조 "+fmt(matching.length)+"개"+(rows.length?" · 최장 "+maxDepth+"회 (반복 포함) · "+depthCounts:"")+(w?" · 선택 "+count(w)+"회 시술 · "+(modelLabels[w.source]||w.source):" · 독립 최대값만 표시");
+   E("bsMatchingBranches").innerHTML=(targets.length||hasResourceFilters(resources)||minDepth||q||evidence!=="all")?(breakdown?'<p class="bs-sub">'+esc(breakdown)+' (분기 중복 가능)</p>':"")+(matching.length&&!selected?branchPicker(matching,"목표일치"):""):"";
+   matchedResourcesTable(rows,scope);
    E("bsTable").innerHTML='<table class="bs-table"><thead><tr><th rowspan="2">능력치</th><th colspan="3">최종 병종 룰셋 기준</th><th rowspan="2" class="bs-chosen">선택 경로<small class="bs-sub">실효 (원시 + 보너스)</small></th><th colspan="'+cols.length+'">조회 분기 내 모델별 독립 최고 후보 — 같은 대원이 아님</th></tr><tr><th>생성 상단</th><th>전투캡</th><th>훈련캡</th>'+cols.map(col=>'<th>'+esc(col.label)+'<small class="bs-sub">참조 경로 '+fmt(col.ids.length)+'개 · 분기 '+fmt(col.coveredBranches)+'개</small></th>').join("")+'</tr></thead><tbody>'+db.stats.map((k,i)=>{
     const target=targetMap.get(i),hasTarget=targetMap.has(i),v=w?.vector[i];
     const marker=hasTarget?'<small class="bs-sub">목표 ≥ '+fmt(target)+(w?" · "+(Number.isFinite(v)&&v>=target?"충족":"미충족/미계산"):"")+'</small>':"";
@@ -212,12 +284,14 @@ if(ROOT){
   E("bsRouteOrder").addEventListener("change",()=>draw(true));E("bsRouteSearch").addEventListener("input",()=>draw(true));
   E("bsRoute").addEventListener("change",()=>draw(false));
   E("bsApplyTargets").addEventListener("click",applyTargets);
-  E("bsClearTargets").addEventListener("click",()=>{for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsMinDepth").value="0";draw(true);});
+  E("bsClearTargets").addEventListener("click",()=>{for(let i=0;i<db.stats.length;i++)E("bsTarget"+i).value="";targets=[];resources={};for(const [id] of resourceFields)E(id).value="";for(const [id] of resourceChecks)E(id).checked=false;for(const i of materialSlots){E("bsItem"+i).value="";E("bsItemLimit"+i).value="";}E("bsEvidence").value="all";E("bsExcludeConflict").checked=false;E("bsMinDepth").value="0";draw(true);});
+  E("bsBudgetStat").addEventListener("change",()=>{if(view)budgetTable(view.scope);});
+
   E("bsEvidence").addEventListener("change",()=>draw(true));
   E("bsExcludeConflict").addEventListener("change",()=>draw(true));
   E("bsRoutePrev").addEventListener("click",()=>{routePage--;draw(false,null,true);});
   E("bsRouteNext").addEventListener("click",()=>{routePage++;draw(false,null,true);});
-  E("bsTargetPanel").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-target-index]")){e.preventDefault();applyTargets();}});
+  E("bsTargetPanel").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("[data-target-index],[data-resource-limit]")){e.preventDefault();applyTargets();}});
 
   function showWitness(id){
    const w=db.witnesses[id];if(!w)return;
@@ -234,7 +308,7 @@ if(ROOT){
     return '<tr><td>'+(i+1)+'</td><td>'+esc(label(x.id))+(x.count>1?" ×"+fmt(x.count):"")+'<small class="bs-sub">'+esc(x.id)+'</small></td><td>'+(w.growthBefore?.[i]===true?"전투 성장":w.growthBefore?.[i]===false?"성장 생략":"별도 배치")+'</td><td>'+esc(ruleConstraints(db.ruleDetails?.[x.id]))+'</td><td>'+(trace?.rawAfter?trace.rawAfter.map(fmt).join(" / "):"미연결")+'</td></tr>';
    }).join("");
    const history=ranked?'<p>연구 이력 <code>'+esc(ranked.id)+'</code> · 조건부 연구 '+fmt(ranked.steps)+'단계 · '+esc(ranked.kind)+'</p>':"";
-   E("bsWitness").innerHTML='<h3>선택 수치의 동일 경로</h3><p><strong>'+esc(modelLabels[w.source]||w.source)+'</strong> · '+esc(db.policies[w.source])+'</p><p>최종 병종 '+esc(label(w.body))+(w.originProfile?' · 출생 프로필 <code>'+esc(w.originProfile)+'</code>':"")+' · '+esc(route)+' · 성장 '+esc(w.placement)+'</p><p>요구 연구: '+list(w.research)+'</p>'+history+(w.history?researchExtensionDetail(w.history):"")+(gate?'<p>이력 종료 시 활성 연구: '+list(gate.active)+' · 미활성: '+list(gate.missing)+'</p>':"")+(w.requiredItems?.length?'<p>필요 아이템: '+list(w.requiredItems)+'</p>':"")+'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>능력치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["생성 상단",cap("maxStats")],["전투 성장캡",w.rawCombatCaps||cap("statCaps")],["별도 훈련캡",w.trainingCaps||cap("trainingStatCaps")],["원시값",w.raw],["영구 보너스",w.bonus],["실효값",w.vector]].map(([t,v])=>'<tr><th>'+t+'</th>'+db.stats.map((_,i)=>'<td>'+fmt(v?.[i])+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+(conditionRows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>단계</th><th>훈련</th><th>직전 성장</th><th>요구 조건 및 증가 제한</th><th>시술 직후 원시 12능력치 (위 표 순서)</th></tr></thead><tbody>'+conditionRows+'</tbody></table></div>':"")+(w.bonusIds?.length?'<p>유지되는 별도 보너스: '+list(w.bonusIds)+'</p>':"")+'<p><small>원장 참조: '+esc(w.reference)+(w.graphRun?' · '+esc(w.graphRun)+' / '+fmt(w.graphNode):"")+' · 연구·시술·성장 실제 공동 달성 미인증.</small></p>'+supportDetails;
+   E("bsWitness").innerHTML='<h3>선택 수치의 동일 경로</h3><p><strong>'+esc(modelLabels[w.source]||w.source)+'</strong> · '+esc(db.policies[w.source])+'</p><p>최종 병종 '+esc(label(w.body))+(w.originProfile?' · 출생 프로필 <code>'+esc(w.originProfile)+'</code>':"")+' · '+esc(route)+' · 성장 '+esc(w.placement)+'</p><p>요구 연구: '+list(w.research)+'</p>'+resourceDetails(id)+history+(w.history?researchExtensionDetail(w.history):"")+(gate?'<p>이력 종료 시 활성 연구: '+list(gate.active)+' · 미활성: '+list(gate.missing)+'</p>':"")+(w.requiredItems?.length?'<p>필요 아이템: '+list(w.requiredItems)+'</p>':"")+'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>능력치</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+[["생성 상단",cap("maxStats")],["전투 성장캡",w.rawCombatCaps||cap("statCaps")],["별도 훈련캡",w.trainingCaps||cap("trainingStatCaps")],["원시값",w.raw],["영구 보너스",w.bonus],["실효값",w.vector]].map(([t,v])=>'<tr><th>'+t+'</th>'+db.stats.map((_,i)=>'<td>'+fmt(v?.[i])+'</td>').join("")+'</tr>').join("")+'</tbody></table></div>'+(conditionRows?'<div class="bs-scroll"><table class="bs-table"><thead><tr><th>단계</th><th>훈련</th><th>직전 성장</th><th>요구 조건 및 증가 제한</th><th>시술 직후 원시 12능력치 (위 표 순서)</th></tr></thead><tbody>'+conditionRows+'</tbody></table></div>':"")+(w.bonusIds?.length?'<p>유지되는 별도 보너스: '+list(w.bonusIds)+'</p>':"")+'<p><small>원장 참조: '+esc(w.reference)+(w.graphRun?' · '+esc(w.graphRun)+' / '+fmt(w.graphNode):"")+' · 연구·시술·성장 실제 공동 달성 미인증.</small></p>'+supportDetails;
   }
   ROOT.addEventListener("click",ev=>{
    const pick=ev.target.closest("[data-support-pick]");
@@ -248,7 +322,7 @@ if(ROOT){
    if(view?.rows.includes(id)&&view.chosen!==id)draw(false,id);
    else if(view?.chosen===id)showWitness(id);
    else if(view?.ids.includes(id)){
-    if(!targets.length&&!Number(E("bsMinDepth").value)&&E("bsEvidence").value==="all"){
+    if(!targets.length&&!hasResourceFilters(resources)&&!Number(E("bsMinDepth").value)&&E("bsEvidence").value==="all"){
      E("bsRouteSearch").value="";draw(false,id);
     }else{
      showWitness(id);E("bsWitness").insertAdjacentHTML("afterbegin",'<p class="bs-warning">비교용 독립 최고값 상세입니다. 현재 목표·검색·근거 조건을 만족하는 선택 경로 열은 바꾸지 않았습니다.</p>');

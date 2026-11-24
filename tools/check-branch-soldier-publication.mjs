@@ -5,6 +5,7 @@ import fs from "node:fs";
 import zlib from "node:zlib";
 import {buildOriginGrowthIndex,registryCoverage,routeActionCount} from "../public/branch-soldier-catalog.js";
 import {buildBranchRouteIndex,profileWitnessIds} from "../public/branch-soldier-query.js";
+import {summarizeRouteResources,matchesResources} from "../public/branch-soldier-resources.js";
 
 const db=JSON.parse(zlib.gunzipSync(fs.readFileSync("public/data/branch-soldier-results.json.gz")));
 const modern=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
@@ -40,5 +41,18 @@ const js=fs.readFileSync("public/branch-soldier-results.js","utf8");
 assert(html.includes('id="registryCoverage"'));
 assert(html.includes('minDepth=5#integratedCaps'));
 assert(js.includes('id="bsMinDepth"'));
+assert(js.includes('bsBudgetCheckpoints'));
+const r=summarizeRouteResources({steps:[{id:"STR_BREAD_AND_FISHES_TRAINING",count:2}]},db.ruleDetails);
+assert.equal(r.grossFees,500);
+assert.equal(r.items.STR_MUTANT_FISH,10);
+assert.equal(r.items.STR_LEEK,10);
+assert.equal(r.peakItems.STR_MUTANT_FISH,5);
+assert(matchesResources(r,{maxFees:500,materialLimits:{STR_MUTANT_FISH:10,STR_LEEK:10}}));
+assert(!matchesResources(r,{materialLimits:{STR_MUTANT_FISH:10,STR_LEEK:9}}));
+assert(!matchesResources(summarizeRouteResources({steps:[{id:"MISSING"}]},db.ruleDetails),{maxFees:0}));
+for(const w of Object.values(db.witnesses).filter(w=>w.resourceCheckpoint)){
+ const a=summarizeRouteResources(w,db.ruleDetails);
+ assert(a.complete.cash&&a.grossFees===w.directGrossFee,"Budget witness cash mismatch");
+}
 console.log(JSON.stringify(coverage));
 console.log("PASS shared growth registry, exact origin rows, long-route links, budget candidates");
