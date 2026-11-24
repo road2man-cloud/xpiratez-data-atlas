@@ -188,9 +188,9 @@ if(ROOT){
    }catch(error){if(run===exactRun&&key===exactKey)exactError="전체 상태 검색 실패: "+error.message;}
    finally{if(run===exactRun&&key===exactKey){exactLoading=false;updateExactPanel(view.scope,view.c,view.m);}}
   }
-  function selectExactWitness(labelIndex){
-   if(!exactView||exactView.key!==exactKey)return;
-   const a=exactView.data,{witness,profiles}=exactResourceWitness(db,a,labelIndex);
+  function selectExactWitness(labelIndex, restoredData=null){
+   if(!restoredData&&(!exactView||exactView.key!==exactKey))return;
+   const a=restoredData||exactView.data,{witness,profiles}=exactResourceWitness(db,a,labelIndex);
    const spec=exactResourceSpec(db,view.c.id,view.m);
    if(!spec||!profiles.some(id=>view.scope.columns[1].profiles.includes(id)))return;
    const sign=w=>JSON.stringify([w.body,w.vector,w.raw,w.bonus,w.steps,w.growthBefore]);
@@ -212,6 +212,14 @@ if(ROOT){
    E("bsEvidence").value="GATE12";E("bsStatFeeOnly").checked=false;
    E("bsParetoMode").value="off";E("bsRouteSearch").value="";
    draw(false,id);
+   const share=new URL(location.href);
+   for(const [k,v] of Object.entries({body:view.c.id,mode:view.m,exactLabel:String(labelIndex),exactHash:spec.sha256,exactRules:db.sourceMetadataSha256}))share.searchParams.set(k,v);
+   share.searchParams.delete("route");
+   if(selected)share.searchParams.set("branch",selected.id);else share.searchParams.delete("branch");
+   share.hash="integratedCaps";
+   history.replaceState(history.state,"",share);
+   const anchor=document.createElement("a");anchor.href=share.href;anchor.textContent="이 정확 경로의 공유·재현 링크";
+   E("bsWitness").prepend(anchor);
    E("bsWitness").scrollIntoView({block:"start"});
   }
   function resourceFor(id){
@@ -538,6 +546,12 @@ if(ROOT){
   if(location.hash==="#integratedCaps"||query.has("route")||query.has("minDepth")){const panel=document.getElementById("integratedCaps");if(panel?.tagName==="DETAILS")panel.open=true;}
   if(depthValues.has(query.get("minDepth")))E("bsMinDepth").value=query.get("minDepth");
   selectOptions();draw(true,query.get("route"));
+  if(query.has("exactLabel")){
+   const spec=exactResourceSpec(db,view.c.id,view.m),label=Number(query.get("exactLabel"));
+   const fail=message=>{E("bsExactStatus").textContent=message;E("bsTargetPanel").open=true;};
+   if(!spec||spec.sha256!==query.get("exactHash")||db.sourceMetadataSha256!==query.get("exactRules")||!/^\d+$/.test(query.get("exactLabel"))||!Number.isSafeInteger(label)||label>=spec.labels)fail("공유 경로의 원장 버전 또는 번호가 일치하지 않습니다.");
+   else {const initialKey=exactKey;loadExactResourceIndex(db,view.c.id,view.m).then(a=>{if(initialKey!==exactKey)return;selectExactWitness(label,a);}).catch(e=>fail("공유 경로 복원 실패: "+e.message));}
+  }
  }
  function mountBranch(){
   ROOT.innerHTML='<h2>분기별 병종 최대값</h2>'+overview()+'<p>19개 말단은 현재 발견 범위이며 전체 분기 수의 확정이 아닙니다. 대의 미선택도 후보로 보존합니다. 기존 1,520개 경로 및 연구 원천 모델의 조건부 충돌 결과를 함께 연결했습니다.</p><div class="bs-controls"><label>분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 대의 · 코덱스 · 번호"></label><label>병종<select id="bsBranchBody">'+options([["","전체 등록 병종"],...modern.soldiers.map(c=>[c.id,c.koName||c.id])],"")+'</select></label><label>연구 상태<select id="bsStatus">'+options([["all","전체"],["history","조건부 이력 있음"],["conflict","원천 충돌"],["unknown","이력 미확정"],["neutral","대의 미선택"]],"all")+'</select></label><button id="bsPrev" type="button">이전</button><button id="bsNext" type="button">다음</button></div>'+facetMarkup()+'<p id="bsCount"></p><div class="bs-scroll" id="bsTable"></div><div id="bsBranchDetail" class="bs-note" aria-live="polite"></div>'+sources();
