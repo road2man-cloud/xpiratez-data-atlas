@@ -1,5 +1,6 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
+import {loadBranchSoldierResults,buildOriginGrowthIndex} from '../../branch-soldier-catalog.js';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -48,6 +49,10 @@ async function expandOriginArchive(envelope){
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null,replayGeneration=0,blocked=false;
 let comparison=null;
+let integratedOrigins=new Map(),integratedLoadError=null;
+function integratedRouteLink(row,label,route=row.route){
+  return '<a href="#integratedCaps" data-integrated-cap-body="'+esc(row.combo)+'" data-integrated-cap-route="'+esc(route)+'">'+esc(label)+'</a>';
+}
 let activeCandidateId=null,candidateScanGeneration=0,candidateScanCache=null;
 const verified=new Map(),routeRollCache=new Map(),traceHistory=[];
 const candidateBirthSelections=new Map(),birthFloorPrefs=new Map();
@@ -373,6 +378,8 @@ function routeRoll(record,candidate){
 }
 function viewFor(record,metric,preferredId=null){
   if(!record)return null;
+  const integrated=integratedOrigins.get(record.profileId);
+  if(metric==='growth'&&integrated&&!preferredId)return {record,candidate:null,stats:integrated.stats,total:integrated.total,integrated};
   if(metric==='birth-expected'){
     const roll=newbornDistribution(DATA,record.profileId);
     return {record,candidate:null,stats:roll.stats,total:roll.total,birthRoll:roll};
@@ -428,12 +435,12 @@ function render(){
     r.profileId===family.slice(7):r.soldierType===family))&&(!q||
     [r.profileId,r.name,r.soldierName,
       ...Object.keys(DATA.profiles.find(p=>p.id===r.profileId)?.acquisitionRequiredItems||{}),
-      ...comparable(r).flatMap(c=>c.transforms.map(name))]
+      ...comparable(r).flatMap(c=>c.transforms.map(name)),...(integratedOrigins.get(r.profileId)?.trainingIds||[]).flatMap(id=>[id,name(id)])]
       .join(' ').toLocaleLowerCase('ko').includes(q)));
   const rowScore=r=>metric==='route-expected'?(viewFor(r,metric)?.total??-1):
     metric==='birth-expected'?newbornDistribution(DATA,r.profileId).total:
     metric==='birth'?displayTotal(r.displayBirth):metric==='certified'?-1:
-    score(best(r,metric==='growth'?'growth':'provisional'),metric==='growth'?'growth':'provisional');
+    metric==='growth'?(viewFor(r,metric)?.total??-1):score(best(r,'provisional'),'provisional');
   rows.sort((a,b)=>rowScore(b)-rowScore(a)||a.name.localeCompare(b.name,'ko'));
   $('#rowCount').textContent=rows.length+' / '+REPORT.records.length+'개 출생처';
   const ref=baseline(metric),baselineRecord=REPORT.records.find(r=>r.profileId===comparison?.profileId);
@@ -448,9 +455,10 @@ function render(){
   $('#originTable tbody').innerHTML=rows.map(r=>{
     const preferred=r.profileId===comparison?.profileId?comparison.candidateId:null;
     const view=viewFor(r,metric,preferred);
-    const c=metric==='birth-expected'?null:view?.candidate||routeCandidate(
+    const integrated=view?.integrated;
+    const c=metric==='birth-expected'||integrated?null:view?.candidate||routeCandidate(
       {...r,candidates:comparable(r)},metric==='route-expected'?'growth':metric,preferred);
-    const diff=routeDifference(view,ref,DISPLAY_STATS);
+    const diff=Boolean(view?.integrated)===Boolean(ref?.integrated)?routeDifference(view,ref,DISPLAY_STATS):null;
     const odds=view?.birthRoll&&ref?.birthRoll?newbornPairChance(view.birthRoll,ref.birthRoll):
       view?.routeRoll&&ref?.routeRoll?newbornPairChance(view.routeRoll,ref.routeRoll):null;
     const scoreCell=view?'<strong>'+valueLabel(view.total)+'</strong>'+
@@ -462,7 +470,7 @@ function render(){
     // The highest scoring path is not necessarily the longest witnessed route.
     // Show both without claiming the longer path is optimal or campaign-certified.
     const depth=longest?.transforms.length||0;
-    const depthNote=depth>4?
+    const depthNote=integrated?'<small data-integrated-max-depth="'+integrated.longestSteps+'">통합 상계 전선 내 최장 '+integrated.longestSteps+'단계 · '+fmt(integrated.conditionalPaths)+'개 조건부 경로</small>'+integratedRouteLink(integrated,'최장 '+integrated.longestSteps+'단계 상계 보기',integrated.longestRoute):depth>4?
       '<small data-replayed-max-depth="'+depth+'">조건부 경로 최장 '+depth+
       '개 시술 · 완주 미인증</small><button type="button" data-open-longest="'+
       esc(r.profileId)+'" data-longest-candidate="'+esc(longest.id)+'">최장 '+
@@ -482,17 +490,18 @@ function render(){
       applicableEducation.length+'">교육별 경로 검증 '+educationWitnesses+'/'+applicableEducation.length+
       ' · 누락 경로는 불가능 판정 아님</small>':'';
     const cell=k=>'<td>'+valueLabel(view?.stats[k])+(diff?'<small class="route-delta '+(diff.stats[k]>0?'positive':diff.stats[k]<0?'negative':'')+'">'+deltaLabel(diff.stats[k])+'</small>':'')+'</td>';
-    return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"'+(r.profileId===comparison?.profileId?' data-reference="true"':'')+'><td><button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button><small>'+esc(r.soldierName)+'</small>'+
+    return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"'+(r.profileId===comparison?.profileId?' data-reference="true"':'')+'><td>'+(integrated?integratedRouteLink(integrated,r.name)+'<small><button type="button" data-open-origin="'+esc(r.profileId)+'">기존 출생·연구 기록</button></small>':'<button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button>')+'<small>'+esc(r.soldierName)+'</small>'+
       (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
       tieNote+educationCoverage+'<small class="id">'+esc(r.profileId)+'</small>'+
-      '<small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':metric==='birth-expected'?'초기 추첨 평균':metric==='route-expected'?'시술 후 기대값':'미인증')+(c?' · 조건부':' · 미해결')+'</small>'+
+      '<small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':metric==='birth-expected'?'초기 추첨 평균':metric==='route-expected'?'시술 후 기대값':'미인증')+(c||integrated?' · 조건부':' · 미해결')+'</small>'+
       '<button type="button" class="route-reference-button" data-compare-origin="'+esc(r.profileId)+'">기준으로 비교</button></td><td>'+
-      (metric==='birth-expected'?'출생 RNG 기대값 · 확률분포':metric==='route-expected'?(view?'등록 경로 후 조건부 RNG 평균':'경로 평균 미산출 · 근거 확인'):metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'완결 후보 없음 · 계산 보류')+
+      (metric==='birth-expected'?'출생 RNG 기대값 · 확률분포':metric==='route-expected'?(view?'등록 경로 후 조건부 RNG 평균':'경로 평균 미산출 · 근거 확인'):metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':integrated?'통합 육성 상계 · 본체':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'완결 후보 없음 · 계산 보류')+
       '<small>'+(metric==='birth-expected'?('총합 10~90백분위 '+fmt(view.birthRoll.totalBand.p10)+' ~ '+fmt(view.birthRoll.totalBand.p90)):
       metric==='route-expected'?(view?'경로 '+c.transforms.length+'개 시술 · '+(growthTiming==='none'?'전투 성장 제외':'가상 성장 '+(growthTiming==='before'?'시술 전':'시술 후')):esc(routeRoll(r,c).reason||'완결 경로 없음')):
-      c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
+      integrated?integrated.steps+'개 시술 · '+fmt(integrated.conditionalPaths)+'개 조건부 육성 경로':c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
   $('#catalogStatus').textContent=metric==='route-expected'?'등록된 후보 가운데 기존 조건부 성장 상한 기준으로 선택된 경로에 출생 RNG와 시술 규칙을 적용한 평균입니다. '+(growthTiming==='none'?'전투 성장 0회. ':'가상 전투 성장 '+(growthTiming==='before'?'첫 시술 이전. ':'마지막 시술 이후. ')+'사용자가 지정한 시행 횟수·성공률은 OXCE의 실제 경험치 공식이 아닙니다. ')+'원본 비능력치 조건 충족 가정, 시술 난수는 균등·독립 가정입니다. 능력치 문턱 통과율만 별도로 계산하며 실제 경로 실현 확률이나 전체 후보의 기대값 최적성은 증명하지 않습니다.':metric==='growth'?'기본 비교: 코르트는 별도 병종으로 분리하며, 출생 가능 최댓값부터 연구 경로의 병종·훈련 변화를 순서대로 적용하고, 변신 전후 체력훈련·전투 성장의 조건부 상한을 투사합니다. 12종 상한 합계는 동시 달성·실전 검증이나 전역 최고 경로의 증명이 아닙니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':metric==='birth-expected'?'출생처별 병사 생성자 RNG·템플릿·영구 보너스를 적용해 가능한 12종 능력치를 정확히 합산한 이론 분포입니다. 비교 승률은 독립 생성된 신병 둘의 총합 우세 확률이며, 육성·변신·훈장 후 확률이나 같은 캠페인에서의 실제 입수 가능성이 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
+  if(metric==='growth')$('#catalogStatus').textContent+=integratedLoadError?' 최신 통합 상계 연결 실패: '+integratedLoadError+' · 이전 출생처 기록만 표시합니다.':integratedOrigins.size?' 영애·미치광이는 동일 출생처의 최신 통합 상계로 갱신했습니다. 다른 상계 모형 사이의 차이값은 표시하지 않습니다.':' 최신 통합 상계에 대응하는 출생처 없음.';
 }
 function birthDistributionHtml(record){
   const roll=newbornDistribution(DATA,record.profileId);
@@ -1169,7 +1178,9 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   activeCandidateId=c?.id||null;
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
   const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
-  const coverageNote='<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
+  const currentIntegrated=integratedOrigins.get(id);
+  const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 상계 전선 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
+  const coverageNote=currentNotice+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+ 
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
     '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
@@ -1271,6 +1282,8 @@ async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
   [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json'),json('../../data/soldier-route-dependency-audit.json'),json('../../data/soldier-route-iterative-audit.json')]);
   await validate();
+  try{integratedOrigins=buildOriginGrowthIndex(await loadBranchSoldierResults(),DATA,DISPLAY_STATS);}
+  catch(error){integratedLoadError=error.message;console.warn('통합 육성 상계 미연결:',error.message);}
   if(DIAGNOSTICS.sourceVersion!=='v.o2'||
     JSON.stringify(DIAGNOSTICS.sourceHashes)!==JSON.stringify(DATA.meta.source.rules)||
     DIAGNOSTICS.registryHash!==REPORT.sourceHash||
