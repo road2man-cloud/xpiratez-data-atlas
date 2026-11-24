@@ -2,3 +2,6 @@ public/ruleset/manifest.json text eol=lf
 public/data/items-v2-index.json text eol=lf
 public/data/research-v2-index.json text eol=lf
 public/data/manufacture-v2-index.json text eol=lf
+# Preserve the original byte-level engine fingerprints of the persisted unlock ledgers.
+tools/build-population-unlock-search.mjs text eol=lf
+tools/build-population-unlock-continuation.mjs text eol=lf
