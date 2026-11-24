@@ -17,6 +17,11 @@ export function loadBranchSoldierResults(){
  return promise;
 }
 export const routeActionCount=w=>(w?.steps||[]).reduce((s,x)=>s+(x.count??1),0);
+// Derive the depth selector from the actual registry, including repeat counts.
+// A worker extending the registry never needs a corresponding HTML edit.
+export function registeredRouteDepths(db){
+ return [...new Set([0,...Object.values(db.witnesses).map(routeActionCount).filter(n=>Number.isSafeInteger(n)&&n>=0)])].sort((a,b)=>a-b);
+}
 const total=w=>w.vector.reduce((a,b)=>a+b,0);
 // The global skyline is not sufficient to enumerate an exact origin:
 // a route dominated elsewhere may survive under a particular branch.

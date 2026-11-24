@@ -4,7 +4,7 @@ import "./check-branch-soldier-pareto.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import zlib from "node:zlib";
-import {buildOriginGrowthIndex,registryCoverage,routeActionCount} from "../public/branch-soldier-catalog.js";
+import {buildOriginGrowthIndex,registryCoverage,routeActionCount,registeredRouteDepths} from "../public/branch-soldier-catalog.js";
 import {buildBranchRouteIndex,profileWitnessIds} from "../public/branch-soldier-query.js";
 import {summarizeRouteResources,matchesResources} from "../public/branch-soldier-resources.js";
 
@@ -15,6 +15,9 @@ const coverage=registryCoverage(db,index,modern.profiles.length);
 assert(coverage.updatedOrigins>=2,"Latest registry must reach primary origin rows");
 assert(coverage.unifiedDepth>=5,"Do not silently publish the old four-action scope");
 assert(coverage.structuralDepth>=8,"Structural continuation evidence missing");
+const depths=registeredRouteDepths(db);
+assert.equal(depths.at(-1),Math.max(...Object.values(db.witnesses).map(routeActionCount)));
+assert(depths.includes(coverage.unifiedDepth),"Latest unified depth must be selectable");
 for(const [profileId,row] of index){
  const w=db.witnesses[row.route],longest=db.witnesses[row.longestRoute];
  assert.equal(w.originProfile,profileId);

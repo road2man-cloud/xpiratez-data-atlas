@@ -1,7 +1,7 @@
 // One shared result reader for the existing Soldier and Branch DB pages.
 // No standalone viewer or model tabs. Model distinctions are columns/evidence.
 import {buildBranchRouteIndex,parseTargets,matchesTargets} from "./branch-soldier-query.js?v=20261124-origin-coverage-1";
-import {loadBranchSoldierResults,routeActionCount} from "./branch-soldier-catalog.js?v=20261124-origin-coverage-1";
+import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths} from "./branch-soldier-catalog.js?v=20261124-depth-dynamic-1";
 import {summarizeRouteResources,parseResourceLimit,hasResourceFilters,matchesResources,resourceSortValue} from "./branch-soldier-resources.js?v=20261124-resource-1";
 import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-pareto-1";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
@@ -83,7 +83,7 @@ if(ROOT){
   for(const [id] of branchFacets)E(id).addEventListener("change",change);
   E("bsResetFacets").addEventListener("click",()=>{for(const [id] of branchFacets)E(id).value="";E("bsSearch").value="";change();});
  }
- const modelLabels={UNIFIED12:"연구·출생·훈련 연결 상계",GATE12:"시술 시점 조건 검사",REPLAY8:"동일 연구 이력",SOURCE8:"연구 원천 호환",CONTINUATION12:"최대 8단계 구조적 확장"};
+ const modelLabels={UNIFIED12:"연구·출생·훈련 연결 상계",GATE12:"시술 시점 조건 검사",REPLAY8:"동일 연구 이력",SOURCE8:"연구 원천 호환",CONTINUATION12:"구조적 후속 확장"};
  const routeName=w=>w.steps.map((x,i)=>(w.growthBefore?.[i]?"[성장] ":"")+label(x.id)+(x.count>1?" ×"+x.count:"")).join(" → ")||"추가 시술 없음";
  function ruleConstraints(t){
   if(!t)return "세부 룰 미연결";
@@ -115,7 +115,8 @@ if(ROOT){
   return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+paretoMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p><details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details></details>';
  }
  function mountSoldier(){
-  ROOT.innerHTML='<h2>영애·미치광이 최종 성장 상한</h2>'+overview()+'<p>하나의 육성 경로를 선택하면 12개 능력치가 같은 경로의 벡터로 표시됩니다. 우측 독립 최고값은 서로 다른 연구·성장 가정의 비교 근거이며 한 대원의 능력치로 합산하지 않습니다.</p><div class="bs-controls"><label>연구 분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 코덱스 · 번호"></label><label>연구 분기<select id="bsBranch"></select></label><label>출발 → 최종 병종<select id="bsBody">'+options(db.combos.map(c=>[c.id,c.title]),"D_W")+'</select></label><label>전투 성장<select id="bsMode">'+options([["CAP_TARGET","전투캡까지"],["EXP_OVERSHOOT_UPPER","마지막 성장 초과 상단"]],"CAP_TARGET")+'</select></label></div>'+facetMarkup()+targetsMarkup()+'<div class="bs-controls"><label>훈련 순서 검색<input id="bsRouteSearch" type="search" placeholder="훈련명 · ID · 연구명"></label><label>최소 시술 횟수<select id="bsMinDepth">'+options([["0","제한 없음"],["5","5회 이상"],["6","6회 이상"],["7","7회 이상"],["8","8회 이상"]],"0")+'</select></label><label>경로 우선 정렬<select id="bsRouteOrder">'+options([["evidence","연구 근거 우선"],["margin","동시 목표 최소 여유율"],...db.stats.map(k=>[k,ko[k]||k]),["short","훈련 횟수 적은 순"],["long","훈련 횟수 많은 순"],["fees","직접 지출 적은 순"],["recovery","회복 합계 적은 순"],["transfer","이동 합계 적은 순"]],"evidence")+'</select></label><label class="bs-route-select">통합 육성 후보<select id="bsRoute"></select></label></div><div class="bs-controls bs-route-pages"><button id="bsRoutePrev" type="button">이전 경로</button><span id="bsRoutePage"></span><button id="bsRouteNext" type="button">다음 경로</button></div><p id="bsContext"></p><p id="bsRouteCount" class="bs-sub"></p><div id="bsMatchingBranches"></div><div id="bsMatchedResources"></div><div id="bsTable" class="bs-scroll"></div><div id="bsWitness" class="bs-note" aria-live="polite"></div><div id="bsOrigin"></div>'+sources();
+  const depths=registeredRouteDepths(db),depthValues=new Set(depths.map(String));
+  ROOT.innerHTML='<h2>영애·미치광이 최종 성장 상한</h2>'+overview()+'<p>하나의 육성 경로를 선택하면 12개 능력치가 같은 경로의 벡터로 표시됩니다. 우측 독립 최고값은 서로 다른 연구·성장 가정의 비교 근거이며 한 대원의 능력치로 합산하지 않습니다.</p><div class="bs-controls"><label>연구 분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 코덱스 · 번호"></label><label>연구 분기<select id="bsBranch"></select></label><label>출발 → 최종 병종<select id="bsBody">'+options(db.combos.map(c=>[c.id,c.title]),"D_W")+'</select></label><label>전투 성장<select id="bsMode">'+options([["CAP_TARGET","전투캡까지"],["EXP_OVERSHOOT_UPPER","마지막 성장 초과 상단"]],"CAP_TARGET")+'</select></label></div>'+facetMarkup()+targetsMarkup()+'<div class="bs-controls"><label>훈련 순서 검색<input id="bsRouteSearch" type="search" placeholder="훈련명 · ID · 연구명"></label><label>최소 시술 횟수<select id="bsMinDepth">'+options(depths.map(n=>[String(n),n?n+"회 이상":"제한 없음"]),"0")+'</select></label><label>경로 우선 정렬<select id="bsRouteOrder">'+options([["evidence","연구 근거 우선"],["margin","동시 목표 최소 여유율"],...db.stats.map(k=>[k,ko[k]||k]),["short","훈련 횟수 적은 순"],["long","훈련 횟수 많은 순"],["fees","직접 지출 적은 순"],["recovery","회복 합계 적은 순"],["transfer","이동 합계 적은 순"]],"evidence")+'</select></label><label class="bs-route-select">통합 육성 후보<select id="bsRoute"></select></label></div><div class="bs-controls bs-route-pages"><button id="bsRoutePrev" type="button">이전 경로</button><span id="bsRoutePage"></span><button id="bsRouteNext" type="button">다음 경로</button></div><p id="bsContext"></p><p id="bsRouteCount" class="bs-sub"></p><div id="bsMatchingBranches"></div><div id="bsMatchedResources"></div><div id="bsTable" class="bs-scroll"></div><div id="bsWitness" class="bs-note" aria-live="polite"></div><div id="bsOrigin"></div>'+sources();
   selected=db.branches.find(b=>b.id===selectedUrl)||null;
   const bodyUrl=new URL(location.href).searchParams.get("body");
   if(db.combos.some(c=>c.id===bodyUrl))E("bsBody").value=bodyUrl;
@@ -283,7 +284,8 @@ if(ROOT){
    }).filter(Boolean).join(" · ");
    E("bsTargetStatus").textContent=(targetText?"적용 목표: "+targetText:"능력치 목표 없음")+(resourceText?" · 자원 제한: "+resourceText:"")+" · 조건에 맞는 경로 "+fmt(matched.length)+"개 / 표시 "+fmt(rows.length)+"개 / 정확한 분기 프로필 참조 "+fmt(matching.length)+"개. "+(!rows.length?"현재 연결된 후보에서 일치 없음. 실제 게임 불가능을 뜻하지 않습니다.":"실제 동시 달성 인증은 아닙니다.")+(breakdown?" 모델별: "+breakdown+" (분기 중복 가능).":"");
    const maxDepth=rows.reduce((n,id)=>Math.max(n,count(db.witnesses[id])),0);
-   const depthCounts=[5,6,7,8].map(n=>n+"회 이상 "+fmt(rows.filter(id=>count(db.witnesses[id])>=n).length)+"개").join(" · ");
+   const thresholdDepths=depths.filter(n=>n>=5),summaryDepths=thresholdDepths.length<=12?thresholdDepths:[...thresholdDepths.slice(0,11),thresholdDepths.at(-1)];
+   const depthCounts=summaryDepths.map(n=>n+"회 이상 "+fmt(rows.filter(id=>count(db.witnesses[id])>=n).length)+"개").join(" · ");
    E("bsRouteCount").textContent="조회 경로 대표 "+fmt(ids.length)+"개 / 검색·목표·자원 만족 "+fmt(matched.length)+"개"+(pareto?" · 비지배 필터 표시 "+fmt(rows.length)+"개 (분기 "+fmt(beforeBranches.length)+" → "+fmt(matching.length)+"개)":"")+" · 분기 프로필 참조 "+fmt(matching.length)+"개"+(rows.length?" · 최장 "+maxDepth+"회 (반복 포함) · "+depthCounts:"")+(w?" · 선택 "+count(w)+"회 시술 · "+(modelLabels[w.source]||w.source):" · 독립 최대값만 표시");
    E("bsMatchingBranches").innerHTML=(targets.length||hasResourceFilters(resources)||minDepth||q||evidence!=="all"||pareto)?(breakdown?'<p class="bs-sub">'+esc(breakdown)+' (분기 중복 가능)</p>':"")+(matching.length&&!selected?branchPicker(matching,"목표일치"):""):"";
    matchedResourcesTable(rows,scope);
@@ -353,7 +355,7 @@ if(ROOT){
    }
   });
   document.addEventListener("click",ev=>{const link=ev.target.closest("[data-integrated-cap-body]");if(!link)return;const body=link.dataset.integratedCapBody;if(db.combos.some(c=>c.id===body)){E("bsBody").value=body;selected=null;E("bsSearch").value="";E("bsResetFacets")?.click();E("bsClearTargets").click();E("bsRouteSearch").value="";E("bsMinDepth").value="0";E("bsRouteOrder").value="evidence";selectOptions();draw(true,link.dataset.integratedCapRoute||null);ROOT.scrollIntoView({block:"start"});}});
-  if(["5","6","7","8"].includes(query.get("minDepth")))E("bsMinDepth").value=query.get("minDepth");
+  if(depthValues.has(query.get("minDepth")))E("bsMinDepth").value=query.get("minDepth");
   selectOptions();draw(true,query.get("route"));
  }
  function mountBranch(){
