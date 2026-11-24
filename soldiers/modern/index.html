@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="origin-catalog.css?v=20261121-recruit-cap-8">
 <link rel="stylesheet" href="education-endgame.css?v=20261107-endgame-choice-1">
 <link rel="stylesheet" href="shared-terminal-catalog.css?v=20261106-chort-separated-1">
-<link rel="stylesheet" href="acquisition-tech-view.css?v=20261124-all-origin-4324-fix1">
+<link rel="stylesheet" href="acquisition-tech-view.css?v=20261124-origin-pair-search-1">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 <link rel="stylesheet" href="../../branch-soldier-results.css?v=20261124-resource-1">
 </head>
@@ -56,6 +56,7 @@
 <section id="originDetails" class="card detail" hidden aria-live="polite"></section>
 <details class="card"><summary>코르트 전용 변신·출생 조건 상세</summary><section id="chortTarget" class="shared-terminal-catalog" aria-label="공통 변신 병종 코르트 상세" data-target-type="STR_SOLDIER_CHORT"></section></details>
 <details class="card" id="allOriginCapFrontier"><summary>전체 72개 출생처 · 성장 배치 Pareto 비교</summary><section class="bs-results" data-all-origin-cap-frontier aria-label="전체 출생처 최종 성장 비교"><p>펼치면 공통 성장 원장을 불러옵니다.</p></section></details>
+<details class="card"><summary>전체 병종 성장 탐색 가속화 · 계산 재사용</summary><section data-origin-numeric-cache><p>펼치면 공통 원장의 수치 계산 진척을 불러옵니다.</p></section></details>
 <details id="integratedCaps" class="card"><summary>선택 수치의 육성 경로 · 연구 분기 · 자원 조건 상세</summary><section class="bs-results" data-branch-soldier-results="soldier" aria-label="선택 수치의 육성 경로"><p role="status">공통 원장의 경로를 불러오는 중입니다.</p></section></details>
 <details class="methodology card" id="originProofMeaning"><summary>잠정값의 계산 범위와 갱신 원칙</summary>
 <p>각 출생처는 독립된 병사입니다. 기본 비교는 <strong>출생 가능 최댓값에서 시작해 같은 병사의 병종 변경·훈련을 순서대로 반영</strong>하며, 각 시술 전후에 전투와 체력훈련을 충분히 반복했을 때의 조건부 상한을 계산합니다. 출생 RNG·전투 경험치 획득·시설·훈련 자격·동시 능력치 달성은 보장되지 않습니다. 이전 연구·시술 잠정값(출생 최솟값 출발, 전투 성장 제외)은 별도로 선택할 수 있습니다.</p>
@@ -97,9 +98,10 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261124-origin-extension-1"></script>
-<script type="module" src="../../branch-soldier-results.js?v=20261124-origin-extension-1"></script>
+<script type="module" src="app.js?v=20261124-population-d3-1"></script>
+<script type="module" src="../../branch-soldier-results.js?v=20261124-population-d3-1"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>
+<script type="module" src="../../origin-numeric-cache.js?v=20261124-cache-1"></script>
 </body>
 </html>

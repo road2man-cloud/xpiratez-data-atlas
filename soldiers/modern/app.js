@@ -3,6 +3,7 @@ import {loadRuntime} from '../../db-runtime.js';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-origin-extension-1';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
+import {populationCoverageText,populationOriginMarkup} from '../../branch-soldier-population.js?v=20261124-d3-bounds';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -15,7 +16,7 @@ import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transforma
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-all-origin-4324-fix1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-origin-pair-search-1';
 import {routeCandidate,routeNumbers,routeDifference,routeEvidence,routeOnly} from './route-table-compare.js';
 import {newbornDistribution,newbornPairChance,newbornTailChance,newbornRawPairs} from './birth-rng-math.js';
 import {conditionBirthPairs} from './birth-selection.js';
@@ -1185,7 +1186,7 @@ function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
     '캠페인 재생 및 성장 상한 12종 일치를 검사했습니다. 비용·시간 최적화와 실제 게임 실행, 전역 최고값은 증명하지 않습니다.</p>'+
     '<ol>'+entries+'</ol></details>';
 }
-async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRoute=null}={}){
+async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRoute=null,populationRoute=null}={}){
   if(blocked)return;const generation=++replayGeneration;
   const floorOpen=selected===id&&Boolean($('.route-birth-floor-explorer')?.open);
   candidateScanGeneration++;
@@ -1207,7 +1208,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRou
   const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
   const currentIntegrated=integratedOrigins.get(id);
   const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 등록 후보 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
-  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+renderOriginExtension(sharedRegistry,id,originCapRoute,DATA.statLabels,activeBranch)+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
+  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+renderOriginExtension(sharedRegistry,id,originCapRoute,DATA.statLabels,activeBranch)+populationOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
     '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
@@ -1330,6 +1331,7 @@ async function init(){try{
     const u=integratedCoverage;
     coverageNode.textContent=u?(activeBranch?'선택 분기 '+(branchScope?'#'+branchScope.rank:'미확인')+' · ':'')+'공통 원장 '+fmt(u.branches)+'개 분기 · 육성 연결 '+fmt(u.conditionalPaths)+'경로 (최장 '+fmt(u.unifiedDepth)+'회)'+(u.careerPaths?' · 고급 미재생 '+fmt(u.careerPaths)+'경로 (최장 '+fmt(u.careerDepth)+'회)':'')+' · 최신 원장 연결 출생처 '+u.updatedOrigins+'/'+u.originCount+'개 · 실제 최고 인증 0건.':'통합 원장 연결 실패: '+(integratedLoadError||'자료 없음');
     if(u&&sharedRegistry?.originCap12)coverageNode.textContent+=' '+allOriginCoverageText(sharedRegistry);
+    if(u&&sharedRegistry?.populationSearch)coverageNode.textContent+=' '+populationCoverageText(sharedRegistry);
     if(u&&sharedRegistry?.originExtension12){const s=sharedRegistry.originExtension12.summary;coverageNode.textContent+=' · 활성 연구 후속: '+fmt(s.seedReplayed)+'개 접두부, '+fmt(s.extendedOrigins)+'/72 출생처, '+fmt(s.registered)+'개 대표, '+fmt(s.canonicalRootMatchedBranches)+'개 관측 정식 분기 뿌리 일치 (공동 연구 이력 미인증).';}
     coverageNode.dataset.registryStatus=u?'loaded':'unavailable';
   }
@@ -1565,7 +1567,7 @@ async function init(){try{
   $('#originMaxima').dataset.validation='validated';
   const ext=sharedRegistry?.witnesses?.[params.get('originExt')];
   if(ext?.source==='ORIGINEXT12'&&(!activeBranch||ext.branchIds.includes(activeBranch)))void openOrigin(ext.originProfile,ext.originExtension.seed,{sharedTerminal:ext.originExtension.seedBody==='STR_SOLDIER_CHORT',originCapRoute:params.get('originExt')}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));
-  else if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort'});
+  else if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort',populationRoute:params.get('populationRoute')});
   if(params.has('training'))showTraining(params.get('training'));
   if(params.has('research'))showResearch(params.get('research'));
 }catch(error){sourceFail(error.message);console.error(error)}}
