@@ -44,7 +44,7 @@ if(db.originPairContinuation){
 db.originPairContinuation=a;db.summary.originPairContinuation=a.summary;
 db.sources.ORIGINPAIRCONT12={file:"tools/build-all-origin-pair-continuation.mjs",sourceMetadataSha256:a.sourceMetadataSha256,engine:a.engine};
 db.policies.ORIGINPAIRCONT12="동일 연구 접두부·조건부 모집 이후 활성 연구로 확정 수치 시술을 재생. 실제 재생 실효값과 별도 성장 상계를 구분하고 기존 증거 계층에 합산하지 않음.";
-const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6}),v="20261125-origin-joint-suffix-919";
+const payload=gzipSync(Buffer.from(JSON.stringify(db)),{level:6}),v="20261125-origin-joint-suffix-1090";
 const replace=(text,from,to)=>{assert.equal(text.split(from).length,2,"Missing or duplicate anchor: "+from);return text.replace(from,to);};
 const bump=(text,re)=>{assert(re.test(text),"Missing cache key");return text.replace(re,(_m,a,b)=>a+v+b);};
 let shared=get("public/branch-soldier-results.js").toString("utf8");
