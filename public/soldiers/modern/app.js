@@ -14,7 +14,7 @@ import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transforma
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261108-deep-route-7-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-unified-maxima-1';
 import {routeCandidate,routeNumbers,routeDifference,routeEvidence,routeOnly} from './route-table-compare.js';
 import {newbornDistribution,newbornPairChance,newbornTailChance,newbornRawPairs} from './birth-rng-math.js';
 import {conditionBirthPairs} from './birth-selection.js';
