@@ -1,5 +1,6 @@
 // Ensure newly published growth data reaches the existing primary origin table.
 // The source registry is the one shared gzip asset; no parallel browser data.
+import "./check-branch-soldier-pareto.mjs";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import zlib from "node:zlib";
@@ -42,6 +43,7 @@ assert(html.includes('id="registryCoverage"'));
 assert(html.includes('minDepth=5#integratedCaps'));
 assert(js.includes('id="bsMinDepth"'));
 assert(js.includes('bsBudgetCheckpoints'));
+assert(js.includes('bsParetoMode'));
 const r=summarizeRouteResources({steps:[{id:"STR_BREAD_AND_FISHES_TRAINING",count:2}]},db.ruleDetails);
 assert.equal(r.grossFees,500);
 assert.equal(r.items.STR_MUTANT_FISH,10);

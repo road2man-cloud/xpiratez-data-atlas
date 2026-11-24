@@ -45,7 +45,13 @@ try{
  assert(await page.locator('#bsMatchedResources tbody tr').count()>0);
  assert.equal(await page.locator('#bsBudgetCheckpoints tbody tr').count(),10);
  assert((await page.locator('.bs-resource-summary').innerText()).includes('직접 지출'));
+ await page.locator('#bsParetoAxes').selectOption('health');
+ await page.locator('#bsParetoMode').selectOption('fees');
+ assert((await page.locator('#bsParetoStatus').innerText()).includes('비지배'));
+ assert.notEqual(await page.locator('#bsRoute').inputValue(),'maxima');
+ assert((await page.locator('#bsRouteCount').innerText()).includes('비지배 필터 표시'));
  await page.locator('#bsClearTargets').click();
+ assert.equal(await page.locator('#bsParetoMode').inputValue(),'off');
  await page.locator('#bsTargetPanel > summary').click();
  await page.locator('#bsRouteOrder').selectOption('evidence');
  const dependencyAudit=await (await page.request.get(url('data/soldier-route-dependency-audit.json'))).json();
