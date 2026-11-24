@@ -14,7 +14,7 @@ import {registeredResourcePareto} from "./branch-soldier-pareto.js?v=20261124-re
 import {projectResourceGoal} from "./branch-soldier-resource-goals.js?v=20261124-resource-goals-1";
 import {exactResourceSpec,loadExactResourceIndex,queryExactResources,exactResourceWitness} from "./branch-soldier-exact-resources.js?v=20261124-packed-1";
 import {pairSearchMarkup} from "./branch-soldier-pair-search.js?v=20261125-origin-pair-search-317";
-import {pairContinuationMarkup} from "./branch-soldier-pair-continuation.js?v=20261125-origin-joint-suffix-1090";
+import {pairContinuationMarkup} from "./branch-soldier-pair-continuation.js?v=20261125-origin-joint-suffix-1270";
 const ROOT=document.querySelector("[data-branch-soldier-results]");
 if(ROOT){
  // One shared cached loader also serves the origin rows.

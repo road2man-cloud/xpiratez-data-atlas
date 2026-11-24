@@ -12,7 +12,7 @@ import {createFoundationResearchPlanner} from "../public/soldiers/modern/foundat
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 import {STAT_KEYS,bonusStats} from "../public/soldiers/modern/eligibility.js";
 import {evaluateCapGrowthChronologies} from "./damsel-madgal-cap-growth-chronology-core.mjs";
-import {createExactPrefixCheckpointCache} from "./origin-pair-exact-prefix-checkpoint.mjs";
+import {createExactPrefixCheckpointCache,exactStateHash} from "./origin-pair-exact-prefix-checkpoint.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
 const git=a=>execFileSync("git",a,{maxBuffer:256*1024*1024,windowsHide:true});
 const hash=b=>createHash("sha256").update(b).digest("hex"),key=x=>hash(JSON.stringify(x));
@@ -28,15 +28,16 @@ data.originRows=ledger.rows;data.sourceItemIds=new Set(cat.itemIds);
 const numericFiles=["tools/damsel-madgal-cap-growth-chronology-core.mjs","public/soldiers/modern/stat-envelope.js","public/soldiers/modern/growth-envelope.js","public/soldiers/modern/eligibility.js","public/soldiers/modern/research-training-locks.js"];
 const numericHashes=Object.fromEntries(numericFiles.map(f=>[f,hash(fs.readFileSync(f))]));
 const checkpointHash=hash(fs.readFileSync(new URL("./origin-pair-exact-prefix-checkpoint.mjs",import.meta.url)));
-const engine=key(["JOINT_SUFFIX_V2",cohort.fingerprint,numericHashes,checkpointHash,hash(fs.readFileSync(new URL(import.meta.url)))]);
+const engine=key(["JOINT_SUFFIX_V3",cohort.fingerprint,numericHashes,checkpointHash,hash(fs.readFileSync(new URL(import.meta.url)))]);
 const prior=db.originPairContinuation;
 let engineMigration=null;
 if(prior&&prior.engine!==engine){
- const legacyCommit="f09fa60972f8157eb225bcc8efdcb517eb944888";
+ const legacyCommit="e5b60e9e6b4cba44e5c239469b2a8d3aa356c736";
  const legacyHash=hash(git(["show",legacyCommit+":tools/build-all-origin-pair-continuation.mjs"]));
- const legacyEngine=key(["JOINT_SUFFIX_V1",cohort.fingerprint,numericHashes,legacyHash]);
+ const legacyCheckpointHash=hash(git(["show",legacyCommit+":tools/origin-pair-exact-prefix-checkpoint.mjs"]));
+ const legacyEngine=key(["JOINT_SUFFIX_V2",cohort.fingerprint,numericHashes,legacyCheckpointHash,legacyHash]);
  if(prior.engine!==legacyEngine||JSON.stringify(prior.numericHashes)!==JSON.stringify(numericHashes)||prior.birthFingerprint!==cohort.fingerprint)throw Error("Continuation engine migration required");
- engineMigration={from:prior.engine,to:engine,legacyCommit,legacyHash,scope:"EXACT_PREFIX_CHECKPOINT_ONLY; PRIOR ROUTES AND MODELS RETAINED"};
+ engineMigration={from:prior.engine,to:engine,legacyCommit,legacyHash,legacyCheckpointHash,scope:"ROUND_TRIP_STABLE_EXACT_PREFIX; PRIOR ROUTES AND MODELS RETAINED"};
 }
 const checkpoint=createExactPrefixCheckpointCache(path.join("experiments/endgame-current-save",".origin-pair-prefix-cache"),engine,{enabled:!process.argv.includes("--no-prefix-cache")});
 const routes={...(prior?.routes||{})},models={...(prior?.models||{})},attempts={...(prior?.attempts||{})};
@@ -56,7 +57,7 @@ function snapshot(n){
  const effective=raw.map((v,i)=>STAT_KEYS[i]==="psiSkill"&&v<=0&&bonus[i]>0?v:Math.max(STAT_KEYS[i]==="health"?1:0,v+bonus[i]));
  return {body:s.soldierType,raw,bonus,effective,rank:s.rank,stateHash:hash(serialize(n.world))};
 }
-let rootReplays=0,rootHits=0,birthReplays=0,transitions=0,numericComputed=0,numericHits=0,numericErrors=0,newRoutes=0,unresolved=0,peakRss=process.memoryUsage().rss;
+let rootReplays=0,rootHits=0,birthReplays=0,transitions=0,numericComputed=0,numericHits=0,numericErrors=0,newRoutes=0,unresolved=0,peakRss=process.memoryUsage().rss,legacyFallbacks=0,canonicalPriorMatches=0,birthCheckpointHits=0;
 const start=performance.now(),cpu=process.cpuUsage(),limit=Number(arg("limit","300")),seconds=Number(arg("seconds","24")),depth=Number(arg("depth","3"));
 if(!Number.isInteger(depth)||depth<1||depth>4)throw Error("Depth out of bounds");
 const before=Object.keys(routes).length;
@@ -101,11 +102,22 @@ function run(p,id,n,order,depthLeft){
    transitions++;
    const st=snapshot(t);
    if(routes[rid]){
-    if(routes[rid].stateHash!==st.stateHash)throw Error("Prior route state changed");
+    const old=routes[rid],same=key(t.steps)===old.fullActionHash&&st.body===old.body&&st.rank===old.rank&&JSON.stringify([st.raw,st.bonus,st.effective])===JSON.stringify([old.raw,old.bonus,old.effective]);
+    if(!same)throw Error("Prior route state changed");
+    if(old.canonicalStateHash){
+     if(exactStateHash(t.world)!==old.canonicalStateHash)throw Error("Prior route state changed");
+     canonicalPriorMatches++;
+    }else if(old.stateHash!==st.stateHash){
+     // Legacy V8 byte hash may differ after lossless restore. Reconstruct
+     // the old proof independently before accepting a semantic match.
+     const z=replayOriginWitness(t.steps,data,{maxSteps:5000});legacyFallbacks++;
+     if(!z.ok||hash(serialize(z.world))!==old.stateHash||exactStateHash(z.world)!==exactStateHash(t.world))throw Error("Prior route state changed");
+     canonicalPriorMatches++;
+    }
    }else{
     const model=numeric(p,nextOrder,st.body);
     const suffix=t.steps.slice(cohort.roots[p.root].actions.length);
-    routes[rid]={pair:id,origin:p.origin,branch:p.branch,root:p.root,order:nextOrder,suffix,fullActionHash:key(t.steps),...st,model,conditional:true,actualGameCertified:false};
+    routes[rid]={pair:id,origin:p.origin,branch:p.branch,root:p.root,order:nextOrder,suffix,fullActionHash:key(t.steps),...st,canonicalStateHash:exactStateHash(t.world),model,conditional:true,actualGameCertified:false};
     newRoutes++;
    }
    run(p,id,t,nextOrder,depthLeft-1);
@@ -127,14 +139,21 @@ for(const [id,p] of queue){
  try{
   const full=[...cohort.roots[p.root].actions,...p.suffix];
   let n=checkpoint.load(full,p.stateHash);
-  if(!n){
+  if(n)birthCheckpointHits++;
+  else{
    n=planner.clone(rootFor(p));
    for(const step of p.suffix)planner.append(n,step);
    birthReplays++;
-   if(snapshot(n).stateHash!==p.stateHash||key(n.steps)!==p.fullActionHash)throw Error("Birth proof differs");
+   if(snapshot(n).stateHash!==p.stateHash){
+    const z=replayOriginWitness(full,data,{maxSteps:5000});legacyFallbacks++;
+    if(!z.ok||hash(serialize(z.world))!==p.stateHash||exactStateHash(z.world)!==exactStateHash(n.world))throw Error("Birth proof differs");
+    n={world:z.world,steps:full,trace:z.trace,diagnostics:[]};
+   }
+   if(key(n.steps)!==p.fullActionHash)throw Error("Birth proof differs");
    checkpoint.save(n,p.stateHash);
   }
-  if(snapshot(n).stateHash!==p.stateHash||key(n.steps)!==p.fullActionHash)throw Error("Birth proof differs");
+  const born=snapshot(n);
+  if(key(n.steps)!==p.fullActionHash||born.body!==p.body||JSON.stringify([born.raw,born.bonus])!==JSON.stringify([p.raw,p.bonus]))throw Error("Birth proof differs");
   pairsVisited++;run(p,id,n,[],depth);
  }catch(e){birthFailures++;if(e.message==="Prior route state changed")throw e;console.log("PAIR_UNRESOLVED",id,e.message);}
  peakRss=Math.max(peakRss,process.memoryUsage().rss);
@@ -142,6 +161,6 @@ for(const [id,p] of queue){
 const all=Object.values(routes),originCounts={},byDepth={};
 for(const r of all){originCounts[r.origin]=(originCounts[r.origin]||0)+1;byDepth[r.order.length]=(byDepth[r.order.length]||0)+1;}
 const elapsed=(performance.now()-start)/1000,u=process.cpuUsage(cpu);
-const summary={registeredRoutes:all.length,priorRoutes:before,newRoutes,pairedOrigins:Object.keys(originCounts).length,pairsWithTraining:new Set(all.map(r=>r.pair)).size,pairedBranches:new Set(all.map(r=>r.branch)).size,byDepth,originCounts,numericModels:Object.keys(models).length,numericModelReferences:all.filter(r=>r.model).length,numericComputed,numericHits,numericErrors,pairsVisited,birthReplays,birthFailures,rootReplays,rootHits,transitions,limitedUnresolved:Object.keys(attempts).length,newUnresolved:unresolved,seconds:elapsed,cpuSeconds:(u.user+u.system)/1e6,peakRssBytes:peakRss,prefixCheckpoint:{...checkpoint.metrics},actualGameCertified:0,globalOptimalCertified:0};
+const summary={registeredRoutes:all.length,priorRoutes:before,newRoutes,pairedOrigins:Object.keys(originCounts).length,pairsWithTraining:new Set(all.map(r=>r.pair)).size,pairedBranches:new Set(all.map(r=>r.branch)).size,byDepth,originCounts,numericModels:Object.keys(models).length,numericModelReferences:all.filter(r=>r.model).length,numericComputed,numericHits,numericErrors,pairsVisited,birthReplays,birthFailures,rootReplays,rootHits,transitions,limitedUnresolved:Object.keys(attempts).length,newUnresolved:unresolved,seconds:elapsed,cpuSeconds:(u.user+u.system)/1e6,peakRssBytes:peakRss,prefixCheckpoint:{...checkpoint.metrics},birthCheckpointHits,legacyFallbacks,canonicalPriorMatches,actualGameCertified:0,globalOptimalCertified:0};
 const result={schemaVersion:1,kind:"ALL_ORIGIN_PAIR_CONTINUATION",baseCommit:base,sourceMetadataSha256:db.sourceMetadataSha256,engine,engineMigration,checkpointHash,numericHashes,birthFingerprint:cohort.fingerprint,generatedAt:new Date().toISOString(),routes,models,attempts,summary,policy:"Same chronological joint birth prefix, active research only, deterministic live transforms at actual birth rank, explicit indexed external resource assumptions. No mid-route growth replay, future research, random transforms, or new medals. Separate numerical envelope is relaxed, not proof that maximal roll schedule is attainable."};
 const file=path.join("experiments/endgame-current-save","12-all-origin-pair-continuation.json");fs.writeFileSync(file+".tmp",JSON.stringify(result));fs.renameSync(file+".tmp",file);console.log(JSON.stringify({file,summary}));
