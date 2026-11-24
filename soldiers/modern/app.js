@@ -1,7 +1,8 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-unified-maxima-1';
+import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-all-origin-4324';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
+import {mergeAllOriginRows,allOriginCoverageText,originCapButton,renderAllOriginCap} from '../../branch-soldier-origin-cap.js?v=20261124-all-origin-4324';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -14,7 +15,7 @@ import {preferredOriginCandidate,routeTieEvidence,sameRouteStatVector,transforma
 import {SHARED_TERMINALS,originRankingCandidates,sharedTerminalCandidates,sharedTerminalSourceAudit} from './shared-terminal-targets.js?v=20261106-chort-separated-1';
 import {renderAcquisitionPaths} from './acquisition-paths.js?v=20261105-compact-supply-1';
 import {buildAcquisitionTree,buildAcquisitionSubtree,renderAcquisitionTree} from './acquisition-condition-tree.js?v=20261105-compact-supply-1';
-import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-unified-maxima-1';
+import {mountAcquisitionTechViewer} from './acquisition-tech-view.js?v=20261124-all-origin-4324';
 import {routeCandidate,routeNumbers,routeDifference,routeEvidence,routeOnly} from './route-table-compare.js';
 import {newbornDistribution,newbornPairChance,newbornTailChance,newbornRawPairs} from './birth-rng-math.js';
 import {conditionBirthPairs} from './birth-selection.js';
@@ -50,11 +51,12 @@ async function expandOriginArchive(envelope){
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null,replayGeneration=0,blocked=false;
 let comparison=null;
-let integratedOrigins=new Map(),integratedLoadError=null,integratedCoverage=null,bodyRows=[],bodySort='total';
+let sharedRegistry=null,integratedOrigins=new Map(),integratedLoadError=null,integratedCoverage=null,bodyRows=[],bodySort='total';
 const activeBranch=new URLSearchParams(location.search).get('branch');
 let branchScope=null;
 
 function integratedRouteLink(row,label,route=row.route){
+  if(sharedRegistry?.witnesses?.[route]?.source==='ORIGINCAP12')return originCapButton(route,label);
   return '<a href="#integratedCaps" data-integrated-cap-body="'+esc(row.combo)+'" data-integrated-cap-route="'+esc(route)+'">'+esc(label)+'</a>';
 }
 let activeCandidateId=null,candidateScanGeneration=0,candidateScanCache=null;
@@ -495,7 +497,7 @@ function render(){
     // The highest scoring path is not necessarily the longest witnessed route.
     // Show both without claiming the longer path is optimal or campaign-certified.
     const depth=longest?.transforms.length||0;
-    const depthNote=integrated?'<small data-integrated-max-depth="'+integrated.longestSteps+'">등록 분기 후보 내 최장 '+integrated.longestSteps+'단계 · '+fmt(integrated.representativeCount)+'개 대표 경로</small>'+integratedRouteLink(integrated,'최장 '+integrated.longestSteps+'단계 상계 보기',integrated.longestRoute):depth>4?
+    const depthNote=integrated?'<small data-integrated-max-depth="'+integrated.longestSteps+'">등록 후보 내 최장 '+integrated.longestSteps+'단계 · '+fmt(integrated.representativeCount)+'개 대표 경로</small>'+integratedRouteLink(integrated,'최장 '+integrated.longestSteps+'단계 상계 보기',integrated.longestRoute):depth>4?
       '<small data-replayed-max-depth="'+depth+'">조건부 경로 최장 '+depth+
       '개 시술 · 완주 미인증</small><button type="button" data-open-longest="'+
       esc(r.profileId)+'" data-longest-candidate="'+esc(longest.id)+'">최장 '+
@@ -523,7 +525,7 @@ function render(){
       (metric==='birth-expected'?'출생 RNG 기대값 · 확률분포':metric==='route-expected'?(view?'등록 경로 후 조건부 RNG 평균':'경로 평균 미산출 · 근거 확인'):metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':integrated?'공통 원장 연결 · 조건부':activeBranch&&metric==='growth'?'선택 분기 미계산':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'완결 후보 없음 · 계산 보류')+
       '<small>'+(metric==='birth-expected'?('총합 10~90백분위 '+fmt(view.birthRoll.totalBand.p10)+' ~ '+fmt(view.birthRoll.totalBand.p90)):
       metric==='route-expected'?(view?'경로 '+c.transforms.length+'개 시술 · '+(growthTiming==='none'?'전투 성장 제외':'가상 성장 '+(growthTiming==='before'?'시술 전':'시술 후')):esc(routeRoll(r,c).reason||'완결 경로 없음')):
-      integrated?integrated.steps+'개 시술 · '+fmt(integrated.branchCount)+'개 참조 분기':c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
+      integrated?integrated.steps+'개 시술 · '+(integrated.source==='ORIGINCAP12'?'출생처 공통 부모 미연결':fmt(integrated.branchCount)+'개 참조 분기'):c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
   $('#catalogStatus').textContent=metric==='route-expected'?'등록된 후보 가운데 기존 조건부 성장 상한 기준으로 선택된 경로에 출생 RNG와 시술 규칙을 적용한 평균입니다. '+(growthTiming==='none'?'전투 성장 0회. ':'가상 전투 성장 '+(growthTiming==='before'?'첫 시술 이전. ':'마지막 시술 이후. ')+'사용자가 지정한 시행 횟수·성공률은 OXCE의 실제 경험치 공식이 아닙니다. ')+'원본 비능력치 조건 충족 가정, 시술 난수는 균등·독립 가정입니다. 능력치 문턱 통과율만 별도로 계산하며 실제 경로 실현 확률이나 전체 후보의 기대값 최적성은 증명하지 않습니다.':metric==='growth'?'기본 비교: 코르트는 별도 병종으로 분리하며, 출생 가능 최댓값부터 연구 경로의 병종·훈련 변화를 순서대로 적용하고, 변신 전후 체력훈련·전투 성장의 조건부 상한을 투사합니다. 12종 상한 합계는 동시 달성·실전 검증이나 전역 최고 경로의 증명이 아닙니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':metric==='birth-expected'?'출생처별 병사 생성자 RNG·템플릿·영구 보너스를 적용해 가능한 12종 능력치를 정확히 합산한 이론 분포입니다. 비교 승률은 독립 생성된 신병 둘의 총합 우세 확률이며, 육성·변신·훈장 후 확률이나 같은 캠페인에서의 실제 입수 가능성이 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
   if(metric==='growth')$('#catalogStatus').textContent+=integratedLoadError?' 최신 통합 상계 연결 실패: '+integratedLoadError+' · 이전 출생처 기록만 표시합니다.':integratedOrigins.size?' 연결된 출생처는 공통 원장의 최신 상계로 갱신했습니다. 다른 상계 모형 사이의 차이값은 표시하지 않습니다.':' 최신 통합 상계에 대응하는 출생처 없음.';
@@ -1183,7 +1185,7 @@ function routePruningEvidenceHtml(record,selected,sharedTerminal=false){
     '캠페인 재생 및 성장 상한 12종 일치를 검사했습니다. 비용·시간 최적화와 실제 게임 실행, 전역 최고값은 증명하지 않습니다.</p>'+
     '<ol>'+entries+'</ol></details>';
 }
-async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
+async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRoute=null}={}){
   if(blocked)return;const generation=++replayGeneration;
   const floorOpen=selected===id&&Boolean($('.route-birth-floor-explorer')?.open);
   candidateScanGeneration++;
@@ -1204,8 +1206,8 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
   const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
   const currentIntegrated=integratedOrigins.get(id);
-  const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 등록 분기 후보 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
-  const coverageNote=currentNotice+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+ 
+  const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 등록 후보 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
+  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+ 
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
     '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
@@ -1307,7 +1309,7 @@ async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
   [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json'),json('../../data/soldier-route-dependency-audit.json'),json('../../data/soldier-route-iterative-audit.json')]);
   await validate();
-  try{const registry=await loadBranchSoldierResults();branchScope=registry.branches.find(b=>b.id===activeBranch)||null;integratedOrigins=buildOriginGrowthIndex(registry,DATA,DISPLAY_STATS,{branchId:activeBranch});integratedCoverage=registryCoverage(registry,integratedOrigins,REPORT.records.length);bodyRows=buildBodyGrowthIndex(registry,DATA,DISPLAY_STATS,REPORT.records,candidateMatchesCampaign,{branchId:activeBranch});}
+  try{const registry=await loadBranchSoldierResults();sharedRegistry=registry;branchScope=registry.branches.find(b=>b.id===activeBranch)||null;integratedOrigins=buildOriginGrowthIndex(registry,DATA,DISPLAY_STATS,{branchId:activeBranch});integratedCoverage=registryCoverage(registry,integratedOrigins,REPORT.records.length);if(!activeBranch)integratedOrigins=mergeAllOriginRows(registry,integratedOrigins,DISPLAY_STATS);bodyRows=buildBodyGrowthIndex(registry,DATA,DISPLAY_STATS,REPORT.records,candidateMatchesCampaign,{branchId:activeBranch});}
   catch(error){integratedLoadError=error.message;console.warn('통합 육성 상계 미연결:',error.message);bodyRows=buildBodyGrowthIndex(null,DATA,DISPLAY_STATS,REPORT.records,candidateMatchesCampaign,{branchId:activeBranch});}
   if(DIAGNOSTICS.sourceVersion!=='v.o2'||
     JSON.stringify(DIAGNOSTICS.sourceHashes)!==JSON.stringify(DATA.meta.source.rules)||
@@ -1327,6 +1329,7 @@ async function init(){try{
   if(coverageNode){
     const u=integratedCoverage;
     coverageNode.textContent=u?(activeBranch?'선택 분기 '+(branchScope?'#'+branchScope.rank:'미확인')+' · ':'')+'공통 원장 '+fmt(u.branches)+'개 분기 · 육성 연결 '+fmt(u.conditionalPaths)+'경로 (최장 '+fmt(u.unifiedDepth)+'회)'+(u.careerPaths?' · 고급 미재생 '+fmt(u.careerPaths)+'경로 (최장 '+fmt(u.careerDepth)+'회)':'')+' · 최신 원장 연결 출생처 '+u.updatedOrigins+'/'+u.originCount+'개 · 실제 최고 인증 0건.':'통합 원장 연결 실패: '+(integratedLoadError||'자료 없음');
+    if(u&&sharedRegistry?.originCap12)coverageNode.textContent+=' '+allOriginCoverageText(sharedRegistry);
     coverageNode.dataset.registryStatus=u?'loaded':'unavailable';
   }
   $('#routePruningScope').textContent='훈련 1단계 생략 28건을 시간순 재생한 뒤, 동일한 12종 조건부 상한 아래 연구·지급 단계 추가 생략 '+
@@ -1413,6 +1416,8 @@ async function init(){try{
       '총합 기준을 정수로 입력해 주세요.';
   });
   document.addEventListener('click',e=>{const origin=e.target.closest('[data-open-origin]'),research=e.target.closest('[data-research-node]'),candidate=e.target.closest('[data-candidate]');
+    const capRoute=e.target.closest('[data-origin-cap-route]');
+    if(capRoute){const route=capRoute.dataset.originCapRoute,w=sharedRegistry?.witnesses?.[route];if(w?.source==='ORIGINCAP12')void openOrigin(w.originProfile,w.archiveScope==='full-route'?w.archiveCandidateId:null,{sharedTerminal:w.body==='STR_SOLDIER_CHORT',originCapRoute:route}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));return;}
     const shared=e.target.closest('[data-open-shared-candidate]');
     const longest=e.target.closest('[data-open-longest]');
     if(longest)void openOrigin(longest.dataset.openLongest,longest.dataset.longestCandidate)
