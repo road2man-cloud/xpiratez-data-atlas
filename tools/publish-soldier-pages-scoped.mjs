@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 const git=(args,env=process.env)=>execFileSync('git',args,{encoding:'utf8',env,maxBuffer:64*1024*1024}).trim();
-const scope=p=>/^branch-soldier-[^/]+\.(?:js|css)$/.test(p)||p.startsWith('soldiers/')||p==='captains/index.html'||/^data\/soldiers?-/.test(p)||p==='data/branch-soldier-results.json.gz'||/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.json\.gz$/.test(p);
+const scope=p=>/^branch-soldier-[^/]+\.(?:js|css)$/.test(p)||p.startsWith('soldiers/')||p==='captains/index.html'||/^data\/soldiers?-/.test(p)||p==='data/branch-soldier-results.json.gz'||/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.(?:json|packed)\.gz$/.test(p);
 const source=git(['rev-parse','HEAD']);
 git(['fetch','origin','main','gh-pages']);
 const main=git(['ls-remote','origin','refs/heads/main']).split(/\s+/)[0];
@@ -22,7 +22,7 @@ git(['merge-base','--is-ancestor',previous,source]);
 const delta=git(['diff','--name-only',previous,source,'--','public/']).split('\n').filter(Boolean).map(p=>p.slice(7)).filter(scope);
 // Reconcile exact-resource assets against the deployed tree, not just the
 // previous source SHA: an earlier scope may have skipped a newly added depth.
-const exact=/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.json\.gz$/;
+const exact=/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.(?:json|packed)\.gz$/;
 const missingExact=git(['ls-tree','-r','--name-only',source,'--','public/data/']).split('\n')
  .map(p=>p.slice(7)).filter(p=>exact.test(p)).filter(p=>{
   const next=git(['ls-tree',source,'--','public/'+p]).split(/\s+/)[2];
