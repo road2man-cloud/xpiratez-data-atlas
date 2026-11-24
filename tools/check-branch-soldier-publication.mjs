@@ -59,5 +59,28 @@ for(const w of Object.values(db.witnesses).filter(w=>w.resourceCheckpoint)){
  const a=summarizeRouteResources(w,db.ruleDetails);
  assert(a.complete.cash&&a.grossFees===w.directGrossFee,"Budget witness cash mismatch");
 }
+if(db.summary.statFeeFrontier){
+ const metric=db.summary.statFeeFrontier;
+ assert.equal(metric.depth,5);
+ assert(metric.scope.exactNumericalSkylinePerStaticRiskProfile);
+ let refs=0;
+ for(const [id,p] of Object.entries(db.profiles)){
+  for(const w of p.statFeeFrontier||[]){
+   assert.equal(db.witnesses[w]?.source,"GATE12");
+   refs++;
+  }
+ }
+ assert.equal(refs,metric.resourceReferences);
+ for(const c of db.combos.slice(0,2)){
+  const scope=buildBranchRouteIndex(db,c,"CAP_TARGET").scope(db.branches.map(b=>b.id),{includeGlobal:true});
+  assert(scope.statFeeIds.size>0);
+  const ids=new Set(scope.ids);
+  assert([...scope.statFeeIds].every(id=>ids.has(id)));
+ }
+ for(const w of Object.values(db.witnesses).filter(w=>w.resourceFrontier)){
+  const r=summarizeRouteResources(w,db.ruleDetails);
+  assert(r.complete.cash&&r.grossFees===w.directGrossFee);
+ }
+}
 console.log(JSON.stringify(coverage));
 console.log("PASS shared growth registry, exact origin rows, long-route links, budget candidates");

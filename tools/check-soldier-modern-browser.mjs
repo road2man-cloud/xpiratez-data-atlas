@@ -52,6 +52,13 @@ try{
  assert((await page.locator('#bsRouteCount').innerText()).includes('비지배 필터 표시'));
  await page.locator('#bsClearTargets').click();
  assert.equal(await page.locator('#bsParetoMode').inputValue(),'off');
+ if((await page.locator('#bsStatFeeCoverage').innerText()).includes('신규')){
+  await page.locator('#bsStatFeeOnly').check();
+  assert.notEqual(await page.locator('#bsRoute').inputValue(),'maxima');
+  assert((await page.locator('#bsRoute option:checked').innerText()).includes('5단계 비용 전선'));
+  await page.locator('#bsClearTargets').click();
+  assert.equal(await page.locator('#bsStatFeeOnly').isChecked(),false);
+ }
  await page.locator('#bsTargetPanel > summary').click();
  await page.locator('#bsRouteOrder').selectOption('evidence');
  const dependencyAudit=await (await page.request.get(url('data/soldier-route-dependency-audit.json'))).json();
