@@ -124,7 +124,7 @@ if(ROOT){
  }
  function exactResourceMarkup(){
   if(!db.summary.exactResourceIndex)return "";
-  return '<div class="bs-note"><h4>입력 조건으로 완료 상태 전체 검색</h4><p class="bs-sub">위 능력치·비용·기간·재료 입력값, 최소 시술 횟수, 현재 연구 분기를 사용합니다. 영애·미치광이 본체의 병종별 최신 완료 깊이 전투캡 모델에서 전체 상태·훈련 구성을 검색합니다. 훈련명 검색, 다른 근거 모델 및 기존 대표 전선 필터는 적용하지 않습니다. 지정한 재료는 각각 독립적인 최소화 축입니다.</p><button type="button" id="bsExactSearch">전체 완료 상태 재탐색</button><p id="bsExactStatus" class="bs-sub" aria-live="polite"></p><div id="bsExactResult"></div></div>';
+  return '<div class="bs-note"><h4>입력 조건으로 완료 상태 전체 검색</h4><p class="bs-sub">위 능력치·비용·기간·재료 입력값, 최소 시술 횟수, 현재 연구 분기를 사용합니다. 영애·미치광이 본체의 병종별 선택한 완료 깊이 전투캡 모델에서 전체 상태·훈련 구성을 검색합니다. 훈련명 검색, 다른 근거 모델 및 기존 대표 전선 필터는 적용하지 않습니다. 지정한 재료는 각각 독립적인 최소화 축입니다.</p><label>전체 상태 검색 깊이<select id="bsExactDepth"></select></label><button type="button" id="bsExactSearch">전체 완료 상태 재탐색</button><p id="bsExactStatus" class="bs-sub" aria-live="polite"></p><div id="bsExactResult"></div></div>';
  }
  function targetsMarkup(){
   return '<details class="bs-note bs-targets" id="bsTargetPanel"><summary>동시 목표 능력치 · 같은 대원에서 만족하는 경로 찾기</summary><p class="bs-sub">실효 능력치 최소값을 입력하세요. 비어 있는 능력치는 제한하지 않습니다. 미계산 값은 목표 달성으로 인정하지 않습니다.</p><div class="bs-target-grid">'+db.stats.map((k,i)=>'<label>'+esc(ko[k]||k)+'<input id="bsTarget'+i+'" data-target-index="'+i+'" type="number" min="0" step="1" inputmode="numeric" placeholder="제한 없음"></label>').join("")+'</div>'+resourceMarkup()+paretoMarkup()+'<div class="bs-controls"><label>경로 근거 범위<select id="bsEvidence">'+options([["all","모든 모델 (서로 분리)"],...Object.entries(modelLabels).map(([id,title])=>[id,title])],"all")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsExcludeConflict">원천 충돌 분기 제외</label><button type="button" id="bsApplyTargets">목표 적용</button><button type="button" id="bsClearTargets">목표 초기화</button></div><p id="bsTargetStatus" aria-live="polite" class="bs-sub"></p>'+exactResourceMarkup()+'<details class="bs-note"><summary>예산별 5단계 본체 상한 재탐색</summary><label>비교 능력치<select id="bsBudgetStat">'+options(db.stats.map(k=>[k,ko[k]||k]),"health")+'</select></label><div id="bsBudgetCheckpoints"></div></details>'+resourceGoalMarkup()+'</details>';
@@ -139,10 +139,18 @@ if(ROOT){
   let view=null,targets=[],resources={},indexKey="",index=null,scopeKey="",scoped=null,routePage=0;
   const resourceCache=new Map();
   let paretoCacheKey="",paretoCache=null;
-  let exactKey="",exactRun=0,exactView=null,exactLoading=false,exactError=null;
+  let exactKey="",exactRun=0,exactView=null,exactLoading=false,exactError=null,exactBody="";
+  function selectedExactSpec(c,m){return exactResourceSpec(db,c.id,m,E("bsExactDepth")?.value||null);}
   function updateExactPanel(scope,c,m){
    const el=E("bsExactResult");if(!el)return;
-   const spec=exactResourceSpec(db,c.id,m);
+   const latest=exactResourceSpec(db,c.id,m),picker=E("bsExactDepth"),bodyKey=c.id+"|"+m;
+   if(exactBody!==bodyKey){
+    exactBody=bodyKey;
+    const versions=latest?Object.values(db.summary.exactResourceIndex.versions||{[latest.sha256]:latest}).filter(x=>x.combo===c.id).sort((a,b)=>(b.depth??5)-(a.depth??5)):[];
+    picker.innerHTML=options(versions.map(x=>[x.sha256,"D"+(x.depth??5)+" · "+fmt(x.labels)+"개 · "+(x.bytes/1048576).toFixed(1)+" MiB"]),latest?.sha256||"");
+    picker.disabled=!latest;
+   }
+   const spec=selectedExactSpec(c,m);
    const key=JSON.stringify([scopeKey,targets,resources,Number(E("bsMinDepth").value),spec?.sha256]);
    if(key!==exactKey){exactKey=key;exactRun++;exactView=null;exactLoading=false;exactError=null;}
    const button=E("bsExactSearch");
@@ -175,23 +183,23 @@ if(ROOT){
   }
   async function runExactSearch(){
    if(!applyTargets())return;
-   const {c,m,scope}=view,spec=exactResourceSpec(db,c.id,m);
+   const {c,m,scope}=view,spec=selectedExactSpec(c,m);
    if(!spec||!scope.columns[1].profiles.length)return;
    const key=exactKey,run=++exactRun;
    exactLoading=true;exactError=null;exactView=null;updateExactPanel(scope,c,m);
    try{
-    const a=await loadExactResourceIndex(db,c.id,m);
+    const a=await loadExactResourceIndex(db,c.id,m,spec.sha256);
     if(run!==exactRun||key!==exactKey)return;
     const r=queryExactResources(db,a,{profileIds:scope.columns[1].profiles,targets,resources,minDepth:Number(E("bsMinDepth").value)});
     if(run!==exactRun||key!==exactKey)return;
-    exactView={key,data:a,result:r,page:0};
+    exactView={key,data:a,result:r,page:0,sha:spec.sha256};
    }catch(error){if(run===exactRun&&key===exactKey)exactError="전체 상태 검색 실패: "+error.message;}
    finally{if(run===exactRun&&key===exactKey){exactLoading=false;updateExactPanel(view.scope,view.c,view.m);}}
   }
   function selectExactWitness(labelIndex, restoredData=null, restoredHash=null){
    if(!restoredData&&(!exactView||exactView.key!==exactKey))return;
    const a=restoredData||exactView.data,{witness,profiles}=exactResourceWitness(db,a,labelIndex);
-   const spec=exactResourceSpec(db,view.c.id,view.m,restoredHash);
+   const spec=exactResourceSpec(db,view.c.id,view.m,restoredHash||exactView?.sha);
    if(!spec||!profiles.some(id=>view.scope.columns[1].profiles.includes(id)))return;
    const sign=w=>JSON.stringify([w.body,w.vector,w.raw,w.bonus,w.steps,w.growthBefore]);
    const signature=sign(witness);
@@ -444,6 +452,7 @@ if(ROOT){
   for(const id of ["bsGoalPreset","bsGoalTarget"])E(id)?.addEventListener("change",()=>{if(view)resourceGoalTable(view.scope);});
   E("bsGoalApply")?.addEventListener("click",()=>applyGoalPreset());
   E("bsExactSearch")?.addEventListener("click",runExactSearch);
+  E("bsExactDepth")?.addEventListener("change",()=>{if(view)updateExactPanel(view.scope,view.c,view.m);});
 
   E("bsStatFeeOnly").addEventListener("change",()=>draw(true));
   E("bsEvidence").addEventListener("change",()=>draw(true));
