@@ -1,0 +1,31 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import {gunzipSync} from "node:zlib";
+import {buildCareerMedalPlan} from "../public/branch-soldier-career.js";
+import {evaluateCareerMilestones} from "../public/branch-soldier-career-progress.js";
+const modern=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
+const db=JSON.parse(gunzipSync(fs.readFileSync("public/data/branch-soldier-results.json.gz")));
+assert.equal(modern.meta.source.metadataSha256,db.sourceMetadataSha256);
+const plans=Object.values(db.witnesses).filter(w=>w.source==="CAREER12").map(w=>buildCareerMedalPlan(w,modern,db.stats));
+const fusion=plans.find(p=>p.rows.length===4&&!p.retentionRisks.length&&p.rows.some(r=>r.id==="STR_MEDAL_PIRATE_NAME"));
+assert(fusion);
+const snapshot={afterStep:0,rank:0,medals:{STR_MEDAL_PIRATE_NAME:3,STR_MEDAL_NINJA_NAME:4,STR_MEDAL_SAVEDALL_NAME:-1,STR_MEDAL_INFILTRATION_MISSIONS_NAME:-1},counters:{
+ STR_MEDAL_PIRATE_NAME:{killsWithCriteriaCareer:80},STR_MEDAL_NINJA_NAME:{killsWithCriteriaCareer:100},
+ STR_MEDAL_SAVEDALL_NAME:{totalValientCrux:2},STR_MEDAL_INFILTRATION_MISSIONS_NAME:{totalMissions:1}}};
+const gates=evaluateCareerMilestones(fusion,modern,snapshot).stages.flatMap(s=>s.medalGates);
+const g=id=>gates.find(x=>x.id===id);
+assert.equal(g("STR_MEDAL_PIRATE_NAME").thresholds[0].gap,20);
+assert.equal(g("STR_MEDAL_NINJA_NAME").status,"HELD");
+assert.equal(g("STR_MEDAL_SAVEDALL_NAME").status,"AWARD_NOT_CONFIRMED");
+assert.equal(g("STR_MEDAL_INFILTRATION_MISSIONS_NAME").thresholds[0].gap,3);
+const synthetic={rows:[{id:"STR_MEDAL_STATGAIN_NAME",name:"Super",milestones:[{step:2,ruleId:"TEST",level:0}]}],rankSteps:[{step:2,id:"TEST",required:3}],retentionRisks:[]};
+const get=p=>evaluateCareerMilestones(synthetic,modern,p).stages[0];
+assert.equal(get({rank:2,medals:{STR_MEDAL_STATGAIN_NAME:0}}).medalGates[0].status,"HELD");
+assert.equal(get({rank:2,medals:{STR_MEDAL_STATGAIN_NAME:-1},counters:{STR_MEDAL_STATGAIN_NAME:{totalStatGain:125}}}).medalGates[0].status,"AWARD_NOT_CONFIRMED");
+assert.equal(get({rank:2}).rankGate.gap,1);
+assert.equal(get({}).rankGate.gap,null);
+assert.equal(evaluateCareerMilestones(synthetic,modern,{afterStep:2}).stages.length,0);
+const changed={...synthetic,retentionRisks:[{step:1,id:"RESET",resetRank:true}]};
+assert.equal(evaluateCareerMilestones(changed,modern,{rank:3}).stages[0].rankGate.status,"RECHECK_AFTER_CHANGE");
+assert(plans.every(p=>evaluateCareerMilestones(p,modern,{}).actualGameCertified===false));
+console.log(JSON.stringify({plans:plans.length,stages:plans.reduce((n,p)=>n+evaluateCareerMilestones(p,modern,{}).stages.length,0),fusion:gates.map(g=>({name:g.name,status:g.status,gap:g.thresholds[0].gap})),actualGameCertified:0}));
