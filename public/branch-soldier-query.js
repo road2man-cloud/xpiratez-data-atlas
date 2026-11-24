@@ -12,7 +12,7 @@ export function modelProfiles(db,c,mode,branch=null){
 export function profileWitnessIds(db,id){
  const p=db.profiles[id];
  if(!p)return [];
- return [...new Set([...(p.frontier||[]),...(p.best||[]),
+ return [...new Set([...(p.frontier||[]),...(p.best||[]),...(p.resourceCandidates||[]),
   ...Object.values(p.frontierTies||{}).flat()].filter(x=>x&&db.witnesses[x]))];
 }
 export function matchesTargets(w,targets){

@@ -20,6 +20,20 @@ try{
  assert.equal(await page.locator('input[type=file]').count(),0);
  assert.equal(await page.locator('#transformationPlanner,#legacyMaximaArchive,#maximaTable').count(),0);
  assert.equal(await page.locator('#catalogMetric').inputValue(),'growth');
+ // Do not accept an apparently working four-action fallback if the shared
+ // growth registry is absent or stale.
+ await page.waitForSelector('#registryCoverage[data-registry-status="loaded"]',{timeout:60000});
+ await page.waitForSelector('#bsMinDepth',{timeout:60000});
+ const integratedRows=page.locator('#originTable tbody tr[data-origin-id]').filter({has:page.locator('[data-integrated-max-depth]')});
+ assert(await integratedRows.count()>=2);
+ const damselRow=page.locator('#originTable tr[data-origin-id="manufacture:STR_DAMSEL_RECRUITMENT"]');
+ assert(Number(await damselRow.locator('[data-integrated-max-depth]').getAttribute('data-integrated-max-depth'))>=5);
+ await page.locator('#bsMinDepth').selectOption('5');
+ await page.locator('#bsRouteOrder').selectOption('long');
+ assert.notEqual(await page.locator('#bsRoute').inputValue(),'maxima');
+ assert((await page.locator('#bsRouteCount').innerText()).includes('5회 이상'));
+ await page.locator('#bsMinDepth').selectOption('0');
+ await page.locator('#bsRouteOrder').selectOption('evidence');
  const dependencyAudit=await (await page.request.get(url('data/soldier-route-dependency-audit.json'))).json();
  assert.equal(dependencyAudit.kind,'soldier-route-dependency-pruning-v1');
  const iterativeAudit=await (await page.request.get(url('data/soldier-route-iterative-audit.json'))).json();

@@ -1,6 +1,6 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {loadBranchSoldierResults,buildOriginGrowthIndex} from '../../branch-soldier-catalog.js';
+import {loadBranchSoldierResults,buildOriginGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-origin-coverage-1';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -49,7 +49,7 @@ async function expandOriginArchive(envelope){
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null,replayGeneration=0,blocked=false;
 let comparison=null;
-let integratedOrigins=new Map(),integratedLoadError=null;
+let integratedOrigins=new Map(),integratedLoadError=null,integratedCoverage=null;
 function integratedRouteLink(row,label,route=row.route){
   return '<a href="#integratedCaps" data-integrated-cap-body="'+esc(row.combo)+'" data-integrated-cap-route="'+esc(route)+'">'+esc(label)+'</a>';
 }
@@ -470,7 +470,7 @@ function render(){
     // The highest scoring path is not necessarily the longest witnessed route.
     // Show both without claiming the longer path is optimal or campaign-certified.
     const depth=longest?.transforms.length||0;
-    const depthNote=integrated?'<small data-integrated-max-depth="'+integrated.longestSteps+'">통합 상계 전선 내 최장 '+integrated.longestSteps+'단계 · '+fmt(integrated.conditionalPaths)+'개 조건부 경로</small>'+integratedRouteLink(integrated,'최장 '+integrated.longestSteps+'단계 상계 보기',integrated.longestRoute):depth>4?
+    const depthNote=integrated?'<small data-integrated-max-depth="'+integrated.longestSteps+'">등록 분기 후보 내 최장 '+integrated.longestSteps+'단계 · '+fmt(integrated.representativeCount)+'개 대표 경로</small>'+integratedRouteLink(integrated,'최장 '+integrated.longestSteps+'단계 상계 보기',integrated.longestRoute):depth>4?
       '<small data-replayed-max-depth="'+depth+'">조건부 경로 최장 '+depth+
       '개 시술 · 완주 미인증</small><button type="button" data-open-longest="'+
       esc(r.profileId)+'" data-longest-candidate="'+esc(longest.id)+'">최장 '+
@@ -498,7 +498,7 @@ function render(){
       (metric==='birth-expected'?'출생 RNG 기대값 · 확률분포':metric==='route-expected'?(view?'등록 경로 후 조건부 RNG 평균':'경로 평균 미산출 · 근거 확인'):metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':integrated?'통합 육성 상계 · 본체':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'완결 후보 없음 · 계산 보류')+
       '<small>'+(metric==='birth-expected'?('총합 10~90백분위 '+fmt(view.birthRoll.totalBand.p10)+' ~ '+fmt(view.birthRoll.totalBand.p90)):
       metric==='route-expected'?(view?'경로 '+c.transforms.length+'개 시술 · '+(growthTiming==='none'?'전투 성장 제외':'가상 성장 '+(growthTiming==='before'?'시술 전':'시술 후')):esc(routeRoll(r,c).reason||'완결 경로 없음')):
-      integrated?integrated.steps+'개 시술 · '+fmt(integrated.conditionalPaths)+'개 조건부 육성 경로':c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
+      integrated?integrated.steps+'개 시술 · '+fmt(integrated.branchCount)+'개 참조 분기':c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
   }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
   $('#catalogStatus').textContent=metric==='route-expected'?'등록된 후보 가운데 기존 조건부 성장 상한 기준으로 선택된 경로에 출생 RNG와 시술 규칙을 적용한 평균입니다. '+(growthTiming==='none'?'전투 성장 0회. ':'가상 전투 성장 '+(growthTiming==='before'?'첫 시술 이전. ':'마지막 시술 이후. ')+'사용자가 지정한 시행 횟수·성공률은 OXCE의 실제 경험치 공식이 아닙니다. ')+'원본 비능력치 조건 충족 가정, 시술 난수는 균등·독립 가정입니다. 능력치 문턱 통과율만 별도로 계산하며 실제 경로 실현 확률이나 전체 후보의 기대값 최적성은 증명하지 않습니다.':metric==='growth'?'기본 비교: 코르트는 별도 병종으로 분리하며, 출생 가능 최댓값부터 연구 경로의 병종·훈련 변화를 순서대로 적용하고, 변신 전후 체력훈련·전투 성장의 조건부 상한을 투사합니다. 12종 상한 합계는 동시 달성·실전 검증이나 전역 최고 경로의 증명이 아닙니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':metric==='birth-expected'?'출생처별 병사 생성자 RNG·템플릿·영구 보너스를 적용해 가능한 12종 능력치를 정확히 합산한 이론 분포입니다. 비교 승률은 독립 생성된 신병 둘의 총합 우세 확률이며, 육성·변신·훈장 후 확률이나 같은 캠페인에서의 실제 입수 가능성이 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
   if(metric==='growth')$('#catalogStatus').textContent+=integratedLoadError?' 최신 통합 상계 연결 실패: '+integratedLoadError+' · 이전 출생처 기록만 표시합니다.':integratedOrigins.size?' 영애·미치광이는 동일 출생처의 최신 통합 상계로 갱신했습니다. 다른 상계 모형 사이의 차이값은 표시하지 않습니다.':' 최신 통합 상계에 대응하는 출생처 없음.';
@@ -1179,7 +1179,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false}={}){
   const initialChoiceHtml=renderInitialChoiceEvidence(auditInitialChoiceEvidence(profile,DATA,c),{name,esc});
   const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
   const currentIntegrated=integratedOrigins.get(id);
-  const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 상계 전선 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
+  const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 등록 분기 후보 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
   const coverageNote=currentNotice+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+ 
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
@@ -1282,7 +1282,7 @@ async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
   [DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE]=await Promise.all([loadRuntime('../../data/soldiers-modern-index.json'),json('../../data/soldier-origin-candidates.json').then(expandOriginArchive),json('../../data/soldier-source-catalog.json'),json('../../data/soldier-unresolved-diagnostics.json'),json('../../data/soldier-route-pruning-audit.json'),json('../../data/soldier-route-dependency-audit.json'),json('../../data/soldier-route-iterative-audit.json')]);
   await validate();
-  try{integratedOrigins=buildOriginGrowthIndex(await loadBranchSoldierResults(),DATA,DISPLAY_STATS);}
+  try{const registry=await loadBranchSoldierResults();integratedOrigins=buildOriginGrowthIndex(registry,DATA,DISPLAY_STATS);integratedCoverage=registryCoverage(registry,integratedOrigins,REPORT.records.length);}
   catch(error){integratedLoadError=error.message;console.warn('통합 육성 상계 미연결:',error.message);}
   if(DIAGNOSTICS.sourceVersion!=='v.o2'||
     JSON.stringify(DIAGNOSTICS.sourceHashes)!==JSON.stringify(DATA.meta.source.rules)||
@@ -1298,6 +1298,12 @@ async function init(){try{
   const rankedCount=$('#originRankedCount');
   if(rankedCount)rankedCount.textContent=fmt(ranked);
   $('#catalogSummary').innerHTML=[['등록 출생처','72','같은 병종이어도 출생처 분리'],['연구 순서·난이도 일치',complete+'/72','실물·시간·이벤트는 조건부'],['출생처 비교 후보',ranked,'코르트 변신 '+separated+'건은 별도 병종'],['최종 최대치 인증','0','실측·전역 최고값은 미증명']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+v+'</strong><p>'+note+'</p></article>').join('');
+  const coverageNode=$('#registryCoverage');
+  if(coverageNode){
+    const u=integratedCoverage;
+    coverageNode.textContent=u?'최신 통합 원장 · '+fmt(u.branches)+'개 분기 · '+fmt(u.witnesses)+'개 대표 경로 · 연구·출생·훈련 연결 '+fmt(u.conditionalPaths)+'건 (최장 '+fmt(u.unifiedDepth)+'단계) · 구조적 후속 탐색 '+fmt(u.structuralDepth)+'단계. 출생처 기본 표에 직접 연결 '+u.updatedOrigins+'/'+u.originCount+'개 · 분기별 추가 대표 '+fmt(u.extraBranchRepresentatives)+'개. 다른 출생처는 기존 등록 결과를 유지합니다. 실제 최고 인증은 아닙니다.':'최신 통합 원장 연결 실패: '+(integratedLoadError||'자료 없음')+' · 아래 표는 기존 출생처 기록이며 최신 통합 결과가 아닙니다.';
+    coverageNode.dataset.registryStatus=u?'loaded':'unavailable';
+  }
   $('#routePruningScope').textContent='훈련 1단계 생략 28건을 시간순 재생한 뒤, 동일한 12종 조건부 상한 아래 연구·지급 단계 추가 생략 '+
     DEPENDENCIES.stats.withResearchRemoved+'건, 외부 자원 가정 생략 '+
     DEPENDENCIES.stats.withInputAssumptionsRemoved+

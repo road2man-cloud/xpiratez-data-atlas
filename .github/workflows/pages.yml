@@ -16,7 +16,9 @@ permissions:
 
 concurrency:
   group: xpiratez-data-atlas-pages-sync
-  cancel-in-progress: true
+  # Frequent data-worker commits must not starve a completed release.
+  # Keep the current validated run; GitHub keeps the latest pending run.
+  cancel-in-progress: false
 
 jobs:
   sync:
@@ -37,6 +39,7 @@ jobs:
           # One canonical gate for all DB, choices, start bonuses, assets and JS.
           npm run check:no-legacy-rules
           npm run check
+          node tools/check-branch-soldier-publication.mjs
           test ! -e public/data/items-index.json
           test ! -e public/data/research-index.json
           grep -Fq 'data-data-base="./data"' public/items/index.html
