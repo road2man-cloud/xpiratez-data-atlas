@@ -7,7 +7,7 @@ export function mountRouteTable({modern,catalog,registry,isActive}){
 const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'originTableScroll',reset:'routeReset',researchDialog:'routeResearchDialog',researchTitle:'routeResearchTitle',researchClose:'routeResearchClose',researchContent:'routeResearchContent'};
 const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
-const controls=['q','origin','body','captain','branch','training','trait','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly','selectedOnly','a','b','sameChoices'];
+const controls=['q','origin','body','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly','selectedOnly','a','b','sameChoices'];
 const checks=new Set(['certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly','selectedOnly','sameChoices']);
 const labels={tu:'TU',stamina:'기력',health:'체력',bravery:'용기',reactions:'반응',firing:'사격',throwing:'투척',strength:'근력',psiStrength:'Psi 강도',psiSkill:'Psi 기술',melee:'근접',mana:'Mana'};
 const columns=[
@@ -175,6 +175,7 @@ function render(){
 }
 for(const id of controls){
  if(checks.has(id))$(id).checked=params.get(id)==='1';
+ else if(['minDepth','minTraits'].includes(id))$(id).value=params.get(id)||'';
  else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 }
 if(params.has('a')||params.has('b')||location.hash==='#branchCompare')$('branchCompare').open=true;
@@ -186,7 +187,7 @@ for(const id of controls.filter(k=>k!=='q'))$(id).onchange=()=>{
  if((id==='a'||id==='b')&&$(id).value)$('branch').value='';
  page=0;sync();render();
 };
-$('reset').onclick=()=>{initial=false;for(const id of controls)if(checks.has(id))$(id).checked=false;else if(id==='q')$(id).value='';else $(id).selectedIndex=0;sort='total';dir='desc';page=0;populate();sync();render()};
+$('reset').onclick=()=>{initial=false;for(const id of controls)if(checks.has(id))$(id).checked=false;else if(['q','minDepth','minTraits'].includes(id))$(id).value='';else $(id).selectedIndex=0;sort='total';dir='desc';page=0;populate();sync();render()};
 $('clearPair').onclick=()=>{$('a').value='';$('b').value='';$('sameChoices').checked=false;populate();page=0;sync();render()};
 $('clearSelection').onclick=()=>{selected.clear();$('selectedOnly').checked=false;page=0;sync();render()};
 $('prev').onclick=()=>{page--;render();$('tableScroll').scrollTop=0};$('next').onclick=()=>{page++;render();$('tableScroll').scrollTop=0};$('pageSize').onchange=()=>{page=0;render()};

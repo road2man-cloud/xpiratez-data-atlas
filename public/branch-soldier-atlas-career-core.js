@@ -64,10 +64,23 @@ export async function loadCareerRows(modern,registry){
 export function exactCareerUrl(r){
  return 'soldiers/modern/?'+new URLSearchParams({group:'routes',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
 }
+// Empty input is unrestricted. Unknown retained traits never satisfy a numeric threshold.
+export function routeThreshold(value){
+ if(value==null||String(value).trim()==='')return null;
+ const n=Number(value);return Number.isSafeInteger(n)&&n>=0?n:null;
+}
+export function routeObjective(r,metric,stat){
+ if(stat==='depth')return r.order.length;
+ if(stat==='traitCount')return r.traits?.length??-Infinity;
+ return stat==='total'?sum(r[metric]):r[metric][statKeys.indexOf(stat)];
+}
 export function filterRows(rows,f){
+ const depth=routeThreshold(f.minDepth),traits=routeThreshold(f.minTraits);
+
  return rows.filter(r=>(!f.origin||r.origin===f.origin)&&(!f.body||r.body===f.body)&&(!f.branch||r.branch===f.branch)&&
   (!f.captain||f.branchCaptains?.get(r.branch)?.includes(f.captain))&&
   (!f.training||r.order.includes(f.training))&&(!f.trait||r.traits?.includes(f.trait))&&
+  (depth===null||!r.missing&&r.order.length>=depth)&&(traits===null||r.traits!==null&&r.traits.length>=traits)&&
   (f.difficulty===''||f.difficulty==null||r.difficulties.includes(Number(f.difficulty)))&&(!f.certified||r.certified));
 }
 export function rankRows(rows,metric='cap',stat='total'){

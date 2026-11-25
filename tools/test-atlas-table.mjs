@@ -62,6 +62,14 @@ const sample=records.find(r=>r.traits?.length&&r.order.length);
 assert(sample);const matching=filterTable(rows,{origin:sample.origin,training:sample.order[0],trait:sample.traits[0],branch:sample.branch},ctx);
 assert(matching.some(r=>r.key===sample.key));assert(matching.every(r=>r.origin===sample.origin&&r.branch===sample.branch&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
 const branchIndex=indexCareerBranches(records);
+const deep=filterTable(rows,{minDepth:'8',minTraits:'5'},ctx);
+assert(deep.every(r=>r.order.length>=8&&r.traits!==null&&r.traits.length>=5));
+assert.equal(filterTable(rows,{minTraits:'0'},ctx).length,records.filter(r=>r.traits!==null).length);
+const depthRank=bodyCareerSummary(bodies,records,{...bodyContext,stat:'depth'});
+for(const b of depthRank)if(b.best)assert.equal(b.best.order.length,Math.max(...records.filter(r=>r.body===b.id).map(r=>r.order.length)));
+const traitRank=bodyCareerSummary(bodies,records,{...bodyContext,stat:'traitCount'});
+for(const b of traitRank)if(b.best)assert.equal(b.best.traits.length,Math.max(...records.filter(r=>r.body===b.id&&r.traits!==null).map(r=>r.traits.length)));
+console.log(JSON.stringify({deepAndTraits:deep.length,maxDepth:Math.max(...records.map(r=>r.order.length)),maxTraits:Math.max(...records.map(r=>r.traits?.length??-1))}));
 assert.equal([...branchIndex.values()].reduce((n,v)=>n+v.length,0),records.length);
 let branchBodyPairs=0;
 for(const [branch,group] of branchIndex){
