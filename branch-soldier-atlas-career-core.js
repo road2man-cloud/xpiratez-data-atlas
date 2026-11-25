@@ -74,12 +74,17 @@ export function routeObjective(r,metric,stat){
  if(stat==='traitCount')return r.traits?.length??-Infinity;
  return stat==='total'?sum(r[metric]):r[metric][statKeys.indexOf(stat)];
 }
+// Existing single-ID links are also valid. Multiple IDs mean AND within one route.
+export function routeFilterIds(value){
+ return [...new Set((Array.isArray(value)?value:[value]).flatMap(v=>typeof v==='string'?v.split(','):[]).map(v=>v.trim()).filter(Boolean))];
+}
 export function filterRows(rows,f){
  const depth=routeThreshold(f.minDepth),traits=routeThreshold(f.minTraits);
+ const trainingIds=routeFilterIds(f.training),traitIds=routeFilterIds(f.trait);
 
  return rows.filter(r=>(!f.origin||r.origin===f.origin)&&(!f.body||r.body===f.body)&&(!f.branch||r.branch===f.branch)&&
   (!f.captain||f.branchCaptains?.get(r.branch)?.includes(f.captain))&&
-  (!f.training||r.order.includes(f.training))&&(!f.trait||r.traits?.includes(f.trait))&&
+  trainingIds.every(id=>r.order.includes(id))&&traitIds.every(id=>r.traits?.includes(id))&&
   (depth===null||!r.missing&&r.order.length>=depth)&&(traits===null||r.traits!==null&&r.traits.length>=traits)&&
   (f.difficulty===''||f.difficulty==null||r.difficulties.includes(Number(f.difficulty)))&&(!f.certified||r.certified));
 }
