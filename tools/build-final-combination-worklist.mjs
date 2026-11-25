@@ -2,7 +2,7 @@
 // This command emits data to stdout. It never modifies the legacy ledgers.
 // --emit=worklist|batch|prepared-batch|obligation-batch|summary ; --offset=N --limit=N
 import fs from 'node:fs';
-import {gunzipSync} from 'node:zlib';
+import {gunzipSync,gzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {ledgers,project,compileResearchSearch} from '../public/branch-soldier-atlas-career-core.js';
@@ -60,7 +60,23 @@ const worklist={schema:WORK_SCHEMA,sourceMetadataSha256:metadata,snapshot,regist
  graphSources,summary,sourceStats:result.sourceStats,flags,classificationEncoding:'canonical careerCompletion.classifications; worklist flags apply to internal scheduling only',
  queueHash,firstBatch:batch(0,24),firstObligations:obligations.items.slice(0,6).map(({units,origins,...g})=>({...g,originCount:origins.length,originSample:origins.slice(0,3),unitSample:units.slice(0,3)})),codeHashes,prefixErrors:prefixes.errors,errors};
 const mode=arg('emit','summary');
-if(mode==='worklist')console.log(JSON.stringify(worklist));
+if(mode==='publish-initial-events'){
+ const {loadInitialEventRules,produceInitialEventSchedules}=await import('./atlas-initial-event-schedule.mjs');
+ const index=loadInitialEventRules(arg('game-root','C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez'),metadata);
+ const output=produceInitialEventSchedules(obligations,index);
+ const c=registry.raw.careerCompletion;
+ assert.equal(c.summary.candidateRows,result.summary.registered,'Rebuild canonical completion classifications first');
+ output.sourceHashes=c.sourceHashes;
+ output.queueHash=queueHash;
+ output.basis=digest({metadata,sources:sourceDescriptors,queueHash,sourceFingerprint:index.evidence.fingerprint});
+ c.initialEventSchedules=output;
+ const file=new URL('branch-soldier-results.json.gz',base);
+ assert.equal(sha(fs.readFileSync(file)),registry.sha256,'Registry changed during production');
+ const temp=new URL('branch-soldier-results.json.gz.tmp',base);
+ fs.writeFileSync(temp,gzipSync(JSON.stringify(registry.raw),{level:6}));fs.renameSync(temp,file);
+ console.log(JSON.stringify({summary:output.summary,plans:Object.values(output.plans).map(p=>({event:p.event,difficulty:p.difficulty,delay:p.delay,calendar:p.conditionalCalendar})),basis:output.basis}));
+}
+else if(mode==='worklist')console.log(JSON.stringify(worklist));
 else if(mode==='batch'||mode==='prepared-batch'||mode==='obligation-batch'){
  const offset=Number(arg('offset','0')),limit=Number(arg('limit','72'));
  assert(Number.isSafeInteger(offset)&&offset>=0&&Number.isSafeInteger(limit)&&limit>=0&&limit<=1000);
