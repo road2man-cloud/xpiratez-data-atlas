@@ -19,8 +19,8 @@ export function populationCoverageText(db){
  const v=vOf(db);if(!v)return "";
  const s=v.summary,c=s.statusCounts,b=s.benchmark,j=db.populationJointCoverage,cs=j?.counts;
  if(j&&cs){
-  const u=db.originUnlockSearch?.summary,t=db.originUnlockContinuation?.summary,x=db.summary.originExtendedContinuation,y=db.summary.originResearchContinuation;
-  return "전체 "+fmt(s.pairCount)+"쌍 · 중복 제외 근거 확보 "+fmt(j.uniqueCovered)+"쌍 ("+fmt(j.uniqueCovered/s.pairCount*100)+"%) · 미탐색 "+fmt(cs.unexplored)+"쌍 · 기존 조건부 "+fmt(cs.conditionalPath)+"쌍 · 공동 모집 "+fmt(cs.jointBirth)+"쌍 · 추가 연구·모집 "+fmt(cs.chronologicalUnlock)+"쌍 · 이벤트 출생 "+fmt(cs.eventBirth??0)+"쌍 · 제한 재사용 "+fmt(cs.limitedReused)+"쌍 / 직접 "+fmt(cs.limitedDirect)+"쌍. 추가 모집 "+fmt(u?.registeredOrigins)+"출생처·"+fmt(u?.registeredBranches)+"분기, 종전 수치모형 밖 "+fmt(u?.unlockOutsideModel)+"쌍. 이벤트 "+fmt(db.originEventBirth?.summary?.registeredOrigins??0)+"출생처 · "+fmt(db.originEventBirth?.summary?.registeredVariants??0)+"개 시간순 대안. 후속 시술 "+fmt(t?.registeredRoutes)+"경로 · 중간 성장 없는 제한 D"+(t?.depth??0)+" 계산 완료 "+fmt(t?.completedPairs)+"쌍."+(x?" 통합 모집·이벤트 후속 "+fmt(x.published)+"경로 · D"+fmt(x.requestedDepth??4)+" 제한 완료 "+fmt(x.completedInputs)+"/"+fmt(x.inputCount)+"입력 · 독립 재생 복구 "+fmt(x.birthReceipts??0)+"경로 · 격리 "+fmt(x.quarantined??0)+"경로.":"")+(y?" 모집 후 추가 연구·시술 "+fmt(y.registeredRoutes)+"경로 / "+fmt(y.registeredBranches)+"분기 / "+fmt(y.registeredOrigins)+"출생처.":"")+" D"+v.depth+" 수치모형 "+fmt(s.coveredPairs)+"쌍에는 이벤트 출생 미확인 "+fmt(s.eventTimingUnverifiedPairs)+"쌍 포함. 불가능·전역 최적 인증 0쌍 · 전역 잔여 시간 미산정.";
+  const u=db.originUnlockSearch?.summary,t=db.originUnlockContinuation?.summary,x=db.summary.originExtendedContinuation,y=db.summary.originResearchContinuation,z=db.summary.originResearchChain;
+  return "전체 "+fmt(s.pairCount)+"쌍 · 중복 제외 근거 확보 "+fmt(j.uniqueCovered)+"쌍 ("+fmt(j.uniqueCovered/s.pairCount*100)+"%) · 미탐색 "+fmt(cs.unexplored)+"쌍 · 기존 조건부 "+fmt(cs.conditionalPath)+"쌍 · 공동 모집 "+fmt(cs.jointBirth)+"쌍 · 추가 연구·모집 "+fmt(cs.chronologicalUnlock)+"쌍 · 이벤트 출생 "+fmt(cs.eventBirth??0)+"쌍 · 제한 재사용 "+fmt(cs.limitedReused)+"쌍 / 직접 "+fmt(cs.limitedDirect)+"쌍. 추가 모집 "+fmt(u?.registeredOrigins)+"출생처·"+fmt(u?.registeredBranches)+"분기, 종전 수치모형 밖 "+fmt(u?.unlockOutsideModel)+"쌍. 이벤트 "+fmt(db.originEventBirth?.summary?.registeredOrigins??0)+"출생처 · "+fmt(db.originEventBirth?.summary?.registeredVariants??0)+"개 시간순 대안. 후속 시술 "+fmt(t?.registeredRoutes)+"경로 · 중간 성장 없는 제한 D"+(t?.depth??0)+" 계산 완료 "+fmt(t?.completedPairs)+"쌍."+(x?" 통합 모집·이벤트 후속 "+fmt(x.published)+"경로 · D"+fmt(x.requestedDepth??4)+" 제한 완료 "+fmt(x.completedInputs)+"/"+fmt(Object.keys(db.originUnlockSearch?.pairs||{}).length+Object.keys(db.originEventBirth?.variants||{}).length)+"입력 · 독립 재생 복구 "+fmt(x.birthReceipts??0)+"경로 · 격리 "+fmt(x.quarantined??0)+"경로.":"")+(y?" 모집 후 추가 연구·시술 "+fmt(y.registeredRoutes)+"경로 / "+fmt(y.registeredBranches)+"분기 / "+fmt(y.registeredOrigins)+"출생처.":"")+(z?" 연구 후 연속 시술 "+fmt(z.registeredRoutes)+"경로 · 2차 연구 "+fmt(z.secondaryResearchRoutes)+"경로 · 고정 연구 D"+fmt(z.requestedDepth)+" 완료 "+fmt(z.completedInputs)+"/"+fmt(Object.keys(db.originResearchContinuation?.routes||{}).length)+"시드.":"")+" D"+v.depth+" 수치모형 "+fmt(s.coveredPairs)+"쌍에는 이벤트 출생 미확인 "+fmt(s.eventTimingUnverifiedPairs)+"쌍 포함. 불가능·전역 최적 인증 0쌍 · 전역 잔여 시간 미산정.";
  }
  return "전체 출생처×연구 분기 "+fmt(s.pairCount)+"쌍 · 제한 D"+v.depth+" 수치모형 "+fmt(s.coveredPairs)+"쌍 (이벤트·출생 시점 미확인 "+fmt(s.eventTimingUnverifiedPairs)+"쌍 포함) · 기존 조건부 경로 "+fmt(s.knownConditionalPairs)+"쌍 · 미탐색 "+fmt(c.UNEXPLORED)+"쌍 · 제한 직접 "+fmt(c.LIMITED_SEARCH_COMPLETE)+"쌍 / 재사용 "+fmt(c.REUSED_LIMITED_MODEL)+"쌍 (중복 상태 제외) · 불가능/전역 최적 인증 0쌍. 연구 이력-출생 조합 "+fmt(s.historyOriginRequests-s.historyOriginBirthGateMissing)+"건 → "+fmt(s.groupCalculations)+"개 대표 그룹 · 전이 캐시 적중률 "+fmt(100*s.transitionCacheHits/Math.max(1,s.transitionRequests))+"%"+(b?.identical?" · 동일 그래프 대조 "+fmt(b.uncachedMs/b.cachedMs)+"배 (그룹 압축 공통)":"")+(v.boundQueries?.queries?.length?" · 완료 DAG 상계 질의 "+fmt(v.boundQueries.queries.length)+"종 전수 대조 일치":"")+" · 전역 잔여 시간 미산정.";
 }
@@ -59,7 +59,7 @@ const extendedRoutes=(db,pid,bid,kind)=>{
  let index=continuationRouteIndexes.get(db);
  if(!index){
   index=new Map();
-  for(const [ledger,source] of [[db.originExtendedContinuation,"POPEXT12"],[db.originResearchContinuation,"POPRESEARCH12"]]){
+  for(const [ledger,source] of [[db.originExtendedContinuation,"POPEXT12"],[db.originResearchContinuation,"POPRESEARCH12"],[db.originResearchChain,"POPRESEARCHCHAIN12"]]){
    for(const id of ledger?.published||[]){
     const r=ledger.routes[id];if(!r||db.witnesses[id]?.source!==source)continue;
     const k=JSON.stringify([r.kind,r.origin,r.branch]),ids=index.get(k)||[];ids.push(id);index.set(k,ids);
@@ -70,10 +70,10 @@ const extendedRoutes=(db,pid,bid,kind)=>{
  return index.get(JSON.stringify([kind,pid,bid]))||[];
 };
 const researchContinuationNote=(db,w)=>{
- const r=db.originResearchContinuation?.routes?.[w?.populationResearch?.route];
+ const r=db.originResearchChain?.routes?.[w?.populationResearchChain?.route]||db.originResearchContinuation?.routes?.[w?.populationResearch?.route];
  if(!r)return "";
  const name=k=>db.labels[k]||k;
- return '<p class="scope-note"><b>모집 후 추가 연구·시술 재생:</b> 부족했던 시술 연구 '+esc(r.missing.map(name).join(" / "))+' · 새 활성 연구 '+fmt(r.addedResearch.length)+'개 · 추가 행동 '+fmt(r.actions.length)+'개. '+esc(r.addedResearch.map(name).join(" / "))+' · 원래 모집 상태 해시 <code>'+esc(r.birthStateHash)+'</code> · 전체 행동 SHA256 <code>'+esc(r.fullActionHash)+'</code>. 실제 게임 달성·최고치 미인증.</p>';
+ return '<p class="scope-note"><b>모집 후 추가 연구·시술 재생:</b> 부족했던 시술 연구 '+esc(r.missing.map(name).join(" / "))+' · 새 활성 연구 '+fmt(r.addedResearch.length)+'개 · 추가 행동 '+fmt(r.actions.length)+'개. '+esc(r.addedResearch.map(name).join(" / "))+(r.seed?' · 시드 <code>'+esc(r.seed)+'</code> · 후속 추가 연구 '+fmt(r.secondaryResearch.length)+'개':'')+' · 원래 모집 상태 해시 <code>'+esc(r.birthStateHash)+'</code> · 전체 행동 SHA256 <code>'+esc(r.fullActionHash)+'</code>. 실제 게임 달성·최고치 미인증.</p>';
 };
 const unlockRoutes=(db,pid,bid)=>{
  const pair=pid+"|"+bid,r=db.originUnlockSearch?.pairs?.[pair];
