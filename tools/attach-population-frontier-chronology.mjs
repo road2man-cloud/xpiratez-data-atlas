@@ -12,6 +12,7 @@ import {RANK_POLICY,defaultRankData} from "./population-frontier-default-rank.mj
 import {proveBirthAppend} from "./population-frontier-birth-migration.mjs";
 import {baseBirthProposals} from "./population-frontier-birth-proposals.mjs";
 import {chainProposal} from "./population-frontier-chain-proposals.mjs";
+import {extendedChainProposal,successorKey} from "./population-frontier-chain-extended.mjs";
 import {exactWorld,birthActions} from "./population-growth-replay-core.mjs";
 const reg="public/data/branch-soldier-results.json.gz",decode=x=>JSON.parse(gunzipSync(x)),read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v3.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
@@ -45,11 +46,24 @@ if(db[LEDGER]){
  for(const [id,t] of Object.entries(old.recoveryAttempts||{}))assert.deepEqual(a.recoveryAttempts?.[id],t,"Prior recovery lost "+id);
  for(const [id,t] of Object.entries(old.rankDefaultAttempts||{}))assert.deepEqual(a.rankDefaultAttempts?.[id],t,"Prior rank retry lost "+id);
  for(const [id,t] of Object.entries(old.chainAttempts||{}))assert.deepEqual(a.chainAttempts?.[id],t,"Prior chain attempt lost "+id);
+ for(const [id,t] of Object.entries(old.chainAliases||{}))assert.deepEqual(a.chainAliases?.[id],t,"Prior state alias lost "+id);
 }
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 const frontier=db.populationCareerFrontier,assumed=db.populationAssumedBirthClosure,env=db.populationCareerEnvelope;
 const origins=new Map(assumed.origins.map((x,i)=>[x,i])),branches=new Map(assumed.branches.map((x,i)=>[x,i])),births=new Map(birthCatalog(db).map(r=>[r.input,r]));
 const recoveryProfiles=new Map(data.profiles.map(p=>[p.id,p])),recoveryRules=new Map(data.transformations.map(r=>[r.id,r]));
+const proposeChain=a.hashes["tools/population-frontier-chain-extended.mjs"]?extendedChainProposal:chainProposal;
+if(a.chainAliases){
+ assert.equal(Object.keys(a.chainAliases).length,a.summary.chainAliasCount);
+ for(const [aid,t] of Object.entries(a.chainAliases)){
+  assert(!a.chainAttempts[aid]);const parent=a.routes[t.parent],other=a.routes[t.equivalent.parent],target=a.routes[t.equivalent.route],success=a.chainAttempts[t.equivalent.attempt];
+  assert(parent&&other&&target&&success);assert.equal(parent.input,t.input);
+  const f=proposeChain(data,t.parent,parent,t.rule);assert(f);assert.equal(f.id,t.sourceRoute);assert.equal(aid,key([t.input,f.id]));
+  assert.equal(t.successorKey,successorKey(parent,t.rule));assert.equal(t.successorKey,successorKey(other,t.rule));
+  assert.equal(success.status,"CONDITIONAL_CHAIN_REPLAY");assert.equal(success.parent,t.equivalent.parent);assert.equal(success.rule,t.rule);assert.equal(success.route,t.equivalent.route);
+  assert.equal(target.chainParent,success.parent);assert.equal(target.chainRule,t.rule);
+ }
+}
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
 const bridge=createBridge(data,db,cacheHashes,{cache:true}),{replay,engine}=bridge;
@@ -122,7 +136,7 @@ for(const [id,r] of Object.entries(a.routes)){
  const i=origins.get(r.origin),j=branches.get(r.branch),cl=assumed.classes[assumed.classIndex[i][j]];
  assert(cl.groups.includes(r.sourceGroup));
  const chainParent=r.sourceKind==="BIRTH_RESEARCH_CHAIN"?a.routes[r.chainParent]:null;
- const candidates=chainParent?[chainProposal(data,r.chainParent,chainParent,r.chainRule)].filter(Boolean):r.sourceKind?baseBirthProposals(db,data,r.origin,r.sourceGroup):frontier.groups[r.sourceGroup]?.frontier||[];
+ const candidates=chainParent?[proposeChain(data,r.chainParent,chainParent,r.chainRule)].filter(Boolean):r.sourceKind?baseBirthProposals(db,data,r.origin,r.sourceGroup):frontier.groups[r.sourceGroup]?.frontier||[];
  const f=candidates.find(x=>x.id===r.sourceRoute);assert(f);assert.equal(r.sourceKind,f.sourceKind);
  if(r.sourceKind==="BIRTH_RESEARCH_CHAIN"){
   assert(chainParent&&!r.rankDefault&&!r.adaptation);assert.equal(chainParent.input,r.input);assert.equal(chainParent.sourceGroup,r.sourceGroup);
@@ -207,7 +221,7 @@ const summary={...a.summary,worklistComparison:{improvedRoutes:a.summary.improve
 const asset="soldier-population-frontier-chronology.json.gz";fs.writeFileSync("public/data/"+asset+".tmp",bytes);fs.renameSync("public/data/"+asset+".tmp","public/data/"+asset);
 db[LEDGER]={...a,summary,published,comparisons,careerEnvelopeConflicts:outside,file:asset,bytes:bytes.length,sha256:sha(bytes)};
 db.summary[LEDGER]=summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v9.mjs"]?"tools/build-population-frontier-chronology-v9.mjs":a.hashes["tools/build-population-frontier-chronology-v8.mjs"]?"tools/build-population-frontier-chronology-v8.mjs":a.hashes["tools/build-population-frontier-chronology-v7.mjs"]?"tools/build-population-frontier-chronology-v7.mjs":a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
+db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v10.mjs"]?"tools/build-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-frontier-chronology-v9.mjs"]?"tools/build-population-frontier-chronology-v9.mjs":a.hashes["tools/build-population-frontier-chronology-v8.mjs"]?"tools/build-population-frontier-chronology-v8.mjs":a.hashes["tools/build-population-frontier-chronology-v7.mjs"]?"tools/build-population-frontier-chronology-v7.mjs":a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
 db.policies.POPFRONTCH12="고정 수치모형 파레토 행동 순서를 원본 최솟값 출생·실제 색인 연구 규칙에서 조건부 재생. 성장·계급·훈장·자원·이벤트 가정 유지, 미해결은 불가능성 아님. 원시 및 영구 수치 재계산, 전체 캠페인 전역 미인증.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary:{...summary,top:top.slice(0,5)},newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses,bytes:bytes.length}));
