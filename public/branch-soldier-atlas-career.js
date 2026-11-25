@@ -1,5 +1,6 @@
 import {ledgers,statKeys,project,filterRows,rankRows,routeUrl,branchUrl,readResearchWitness,sum} from './branch-soldier-atlas-career-core.js?v=29';
 import {loadBranchOptions,setupBranchCompare} from './branch-soldier-atlas-branch-compare.js?v=30';
+import {setupRole} from './branch-soldier-atlas-role.js?v=31';
 const root=new URL('./',import.meta.url),$=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search),controls=['origin','body','captain','branch','training','trait','difficulty','metric','stat','certified'];
 const labels={tu:'TU',stamina:'기력',health:'체력',bravery:'용기',reactions:'반응',firing:'사격',throwing:'투척',strength:'근력',psiStrength:'Psi 강도',psiSkill:'Psi 기술',melee:'근접',mana:'Mana'};
@@ -13,6 +14,7 @@ const link=(label,path,cls)=>{const a=el('a',label,cls);a.href=new URL(path,root
 const search=(kind,id)=>'search/?'+new URLSearchParams({q:id,kind});
 const sourceOf=r=>ledgers.find(s=>s.key===r.source);
 const branchCompare=setupBranchCompare({name,originName,branchName,filter,rows:()=>rows});
+const roleView=setupRole({labels,change(){initial=false;limit=30;sync();render();}});
 async function json(path){const res=await fetch(new URL(path,root));if(!res.ok)throw Error('HTTP '+res.status);return res.json();}
 async function gzip(file){
  if(typeof DecompressionStream==='undefined')throw Error('gzip 지원 브라우저가 필요합니다');
@@ -42,7 +44,7 @@ function filter(){
 function sync(){
  const p=new URLSearchParams(location.search);for(const id of controls)p.delete(id);
  for(const id of controls){const v=id==='certified'?($(id).checked?'1':''):$(id).value;if(v&&!(id==='metric'&&v==='cap')&&!(id==='stat'&&v==='total'))p.set(id,v);}
- history.replaceState(null,'',location.pathname+(p.size?'?'+p:'')+location.hash);
+ roleView.write(p);history.replaceState(null,'',location.pathname+(p.size?'?'+p:'')+location.hash);
 }
 function vectorMarkup(r,metric,stat){
  const grid=el('div',undefined,'career-stats');statKeys.forEach((k,i)=>{const d=el('div',undefined,k===stat?'focus':'');d.append(el('small',labels[k]),el('strong',fmt(r[metric][i])));grid.append(d)});return grid;
@@ -78,10 +80,13 @@ function witness(r){
  }catch(e){panel.textContent=e.message+' · 아래 원본 경로에서 확인하세요.';started=false;}
  });return detail;
 }
-function card(r,metric,stat){
+function card(r,metric,stat,roleResult=null){
  const a=el('article',undefined,'career-card');const title=el('h2');title.append(link(originName(r.origin),search('origin',r.origin)),document.createTextNode(' → '),link(name(r.body),search('soldier',r.body)));a.append(title);
  const branch=el('p',undefined,'branch');branch.append(link(branchName(r.branch),branchUrl(r.branch)));a.append(branch);
- a.append(el('p',fmt(sum(r[metric]))+'점 · 시술 '+r.order.length+'회 · '+(r.certified?'전역 인증':'조건부 등록 후보')+' · '+sourceOf(r).label,'note'),vectorMarkup(r,metric,stat));
+ a.append(el('p',fmt(sum(r[metric]))+'점 · 시술 '+r.order.length+'회 · '+(r.certified?'전역 인증':'조건부 등록 후보')+' · '+sourceOf(r).label,'note'));
+ if(roleResult){const summary=roleResult.axes.map(k=>(labels[k]||k)+' '+fmt(r[metric][statKeys.indexOf(k)])).join(' · ');a.append(el('p',summary,'role-result-label'));
+  if(roleResult.frontier.has(r.key))a.append(el('p','역할 비지배 난이도: '+[...roleResult.frontier.get(r.key)].sort((a,b)=>a-b).join(', '),'note'));}
+ a.append(vectorMarkup(r,metric,roleResult?.axes[0]||stat));
  const list=el('ol',undefined,'career-order');r.order.forEach((id,i)=>{const li=el('li');if(i)li.append(document.createTextNode('→ '));li.append(link(name(id),search('training',id)));list.append(li);});
  a.append(el('p','기록된 시술 순서'),list);
  if(r.traits){const tr=el('div',undefined,'career-order');for(const id of r.traits)tr.append(link(name(id)+(r.traitCounts?.[id]>1?' ×'+r.traitCounts[id]:''),search('bonus',id),'trait-chip'));a.append(el('p','측정된 보유 특성 '+r.traits.length+'종'),tr);}else a.append(el('p','보유 특성 목록 미기록','note'));
@@ -91,18 +96,19 @@ function card(r,metric,stat){
  const info=el('details');info.append(el('summary','세부 조건 및 원장 ID'),el('p','난이도: '+(r.difficulties.join(', ')||'미기록')+' · 계급: '+(r.rank??'미기록')+' · ID: '+r.id),el('p','행동 이력 해시: '+r.hash),link('등록 원장 (gzip)','data/'+sourceOf(r).file+'.json.gz'));if(r.medals&&Object.keys(r.medals).length)info.append(el('p','요구 훈장: '+Object.entries(r.medals).map(([id,n])=>name(id)+' '+n).join(' · ')));a.append(info);return a;
 }
 function render(){
- const f=filter(),matches=rankRows(filterRows(rows,f),f.metric,f.stat);
+ const f=filter(),scoped=filterRows(rows,f),roleResult=roleView.active()?roleView.apply(scoped,f.metric,f.difficulty):null;
+ const matches=roleResult?roleResult.rows:rankRows(scoped,f.metric,f.stat);roleView.summary(roleResult,scoped.length);
  $('status').textContent=fmt(matches.length)+'개 등록 경로 · 연결 '+fmt(rows.length)+'개 / 원장 '+loaded+'/'+ledgers.length+(loaded<ledgers.length?' (불러오는 중)':'');
  $('errors').hidden=!errors.length;$('errors').textContent=errors.join(' · ');
  const frag=document.createDocumentFragment();if(!matches.length&&loaded===ledgers.length)frag.append(el('p','현재 연결된 원장에 해당 조건의 기록이 없습니다. 다른 조건을 선택해 보세요. 불가능 판정은 아닙니다.'));
- for(const r of matches.slice(0,limit))frag.append(card(r,f.metric,f.stat));
+ for(const r of matches.slice(0,limit))frag.append(card(r,f.metric,f.stat,roleResult));
  $('results').replaceChildren(frag);$('more').hidden=matches.length<=limit;renderCompare();branchCompare.update(branches,rows,loaded===ledgers.length,[branchWarning,ledgerIncomplete?'일부 육성 원장이 미연결 또는 불완전합니다. 비교는 현재 연결분만 반영합니다.':''].filter(Boolean).join(' · '));
 }
 for(const k of statKeys)$('stat').add(new Option(labels[k],k));
 for(const id of ['difficulty','metric','stat'])if(params.has(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 $('certified').checked=params.get('certified')==='1';
 for(const id of controls)$(id).addEventListener('change',()=>{initial=false;limit=30;sync();render();});
-$('more').onclick=()=>{limit+=30;render();};$('reset').onclick=()=>{initial=false;for(const id of controls)if(id==='certified')$(id).checked=false;else $(id).selectedIndex=0;limit=30;sync();render();};
+$('more').onclick=()=>{limit+=30;render();};$('reset').onclick=()=>{initial=false;roleView.reset();for(const id of controls)if(id==='certified')$(id).checked=false;else $(id).selectedIndex=0;limit=30;sync();render();};
 try{
  const modern=await gzip('soldiers-modern-index');
  if(modern.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
