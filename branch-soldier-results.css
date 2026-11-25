@@ -47,5 +47,9 @@ body:has(#integratedBranches) main{padding-top:4px}
 .route-stat-minima-grid input,#integratedBranches .route-stat-minima-grid input{min-width:0;width:100%;box-sizing:border-box;font:inherit}
 .route-minima-clear{font:inherit;font-size:.78rem;padding:4px 7px}
 .route-minima-clear:disabled{opacity:.55}
+.route-research-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:7px;margin-top:7px}
+.route-research-filter-grid .route-multi-filter{width:100%}
+.route-research-filter-grid .route-multi-filter select{width:100%;min-width:0}
+.route-research-status{font-size:.75rem;opacity:.85;margin:5px 0}
 @media(max-width:600px){.route-multi-control{flex:1 1 100%;}.route-multi-filter{flex:1 1 180px}}
 
