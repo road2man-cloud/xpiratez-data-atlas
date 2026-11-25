@@ -3,7 +3,7 @@ import {loadRuntime} from '../../db-runtime.js';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261124-origin-extension-1';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
-import {populationCoverageText,populationOriginMarkup,populationUnlockOriginMarkup,populationEventOriginMarkup} from '../../branch-soldier-population.js?v=20261125-event-birth-1';
+import {populationCoverageText,populationOriginMarkup,populationUnlockOriginMarkup,populationEventOriginMarkup,populationPreboundOriginMarkup} from '../../branch-soldier-population.js?v=20261125-prebound-d6';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -1208,7 +1208,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRou
   const reachedDepth=Math.max(0,...record.candidates.map(x=>x.transforms.length));
   const currentIntegrated=integratedOrigins.get(id);
   const currentNotice=currentIntegrated&&!sharedTerminal?'<p class="scope-note"><strong>최신 통합 성장 상계: '+currentIntegrated.steps+'개 시술 · '+fmt(currentIntegrated.total)+'점 · 등록 후보 최장 '+currentIntegrated.longestSteps+'단계.</strong> '+integratedRouteLink(currentIntegrated,'최신 경로와 분기별 상한 열기')+' · 아래는 기존 출생처 연구 재생 기록입니다.</p>':'';
-  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+renderOriginExtension(sharedRegistry,id,originCapRoute,DATA.statLabels,activeBranch)+populationUnlockOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+populationEventOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+populationOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
+  const coverageNote=currentNotice+(!activeBranch?renderAllOriginCap(sharedRegistry,id,originCapRoute,DATA.statLabels):'')+renderOriginExtension(sharedRegistry,id,originCapRoute,DATA.statLabels,activeBranch)+populationUnlockOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+populationEventOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+populationPreboundOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+populationOriginMarkup(sharedRegistry,id,activeBranch,populationRoute,DATA.statLabels)+'<p class="scope-note" data-origin-search-coverage="true">등록된 조건부 연구·시술 경로 '+
     record.candidates.length+'개 · 실제 기록 최장 '+reachedDepth+'단계'+
     (record.searchScope?.maxLayers?' · 탐색 설정 상한 '+record.searchScope.maxLayers+'단계':'')+
     '. <strong>전체 경로 완전탐색 및 실제 게임 완주 인증은 아직 없습니다.</strong> 연구·자원·진급·이벤트 가정이 남아 있으며, 등록 건수가 가능한 특성 조합의 총수는 아닙니다.'+
