@@ -9,6 +9,7 @@ import {createHash} from "node:crypto";
 import {performance} from "node:perf_hooks";
 import {pairShard,weightedPairManifest} from "./population-new-pair-shards.mjs";
 import {traitSummary} from "./population-new-pair-trait-evidence.mjs";
+import {assertProgress} from "./population-new-pair-trait-priority.mjs";
 const key=x=>createHash("sha256").update(JSON.stringify(x)).digest("hex"),sha=x=>createHash("sha256").update(x).digest("hex"),decode=p=>JSON.parse(z.gunzipSync(fs.readFileSync(p)));
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
 const count=Number(arg("workers","3")),seconds=Number(arg("seconds","20")),heap=Number(arg("heap-mb","4096"));
@@ -45,7 +46,7 @@ for(let i=0;i<count;i++){
  for(const [id,s] of Object.entries(a.states)){
   if(pairShard(seedMap[s.seed],count,manifest)!==i){assert(prior.states[id]);continue;}
   assert.equal(id,key([s.seed,s.actions]));
-  const old=prior.states[id];if(old){assert(s.cursor>=old.cursor);assert(!old.done||s.done);if(old.stateHash)assert.equal(s.stateHash,old.stateHash);if(old.signature)assert.equal(s.signature,old.signature);}else addedStates++;
+  const old=prior.states[id];if(old){assertProgress(old,s);assert(!old.done||s.done);if(old.stateHash)assert.equal(s.stateHash,old.stateHash);if(old.signature)assert.equal(s.signature,old.signature);}else addedStates++;
   states[id]=s;
  }
  for(const [k,ss] of Object.entries(a.planTemplates||{})){const union=new Map([...(planTemplates[k]||[]),...ss].map(s=>[key(s),s]));planTemplates[k]=[...union.values()];}

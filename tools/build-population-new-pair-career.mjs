@@ -13,6 +13,8 @@ import {preflightTemplate} from "./population-research-template-selector.mjs";
 import {createSharedResearchPool} from "./population-new-pair-template-pool.mjs";
 import {pairShard,depthOf} from "./population-new-pair-shards.mjs";
 import {traitEvidence,traitKey,traitSummary} from "./population-new-pair-trait-evidence.mjs";
+import {distinctDepth,remainingMoves,completeMove} from "./population-new-pair-trait-priority.mjs";
+import {createResearchWitnessLookup} from "./final-career-research-index.mjs";
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
 import {createFoundationResearchPlanner} from "../public/soldiers/modern/foundation-research-planner.js";
@@ -47,14 +49,18 @@ const m={seedReplays:0,rootReplays:0,rootHits:0,statesExpanded:0,attempts:0,succ
 const exactPlans=new Map(),failedPlans=new Map(),prefixWorlds=new Map();
 const breadth=process.argv.includes("--breadth"),initialOnly=process.argv.includes("--initial-only"),eligibleQuota=process.argv.includes("--eligible-quota"),seedQuota=Number(arg("seed-quota","24")),seedAttempts=new Map(),seedWork=new Map();
 const quotaCount=id=>eligibleQuota?(seedWork.get(id)||0):(seedAttempts.get(id)||0);
-const minDepth=Number(arg("deep-min","0")),retainTraits=process.argv.includes("--retain-traits");
+const minDepth=Number(arg("deep-min","0")),retainTraits=process.argv.includes("--retain-traits"),traitPriority=process.argv.includes("--trait-priority"),indexedResearch=process.argv.includes("--indexed-research");
+const researchKinds=new Set(["research","repeatResearch","freeResearch","eventResearch","missionResearch"]);
+const pairIndexed=process.argv.includes("--pair-indexed-research");
+const lookup=indexedResearch?createResearchWitnessLookup(decode("public/data/soldier-final-career-research-index.json.gz"),{sourceMetadataSha256:db.sourceMetadataSha256,sourceLedgerHash:key(Object.entries(db.populationFrontierChronology.routes).map(([id,r])=>[id,r.fullActionHash]))}):null;
+const pairLookup=pairIndexed?createResearchWitnessLookup(decode("public/data/soldier-new-pair-research-index.json.gz"),{sourceMetadataSha256:db.sourceMetadataSha256,sourceLedgerHash:key(Object.entries(db.populationNewPairCareer.routes).map(([id,r])=>[id,r.fullActionHash]))}):null;
 assert(Number.isSafeInteger(minDepth)&&minDepth>=0&&(!initialOnly||minDepth===0));
 const selected=s=>depthOf(s)>=minDepth&&(!initialOnly||!s.actions.length);
 const traitSets=new Set(Object.values(routes).filter(r=>r.traitEvidence).map(r=>traitKey(r,r.traitEvidence)));
 assert(Number.isSafeInteger(seedQuota)&&seedQuota>0);
 const prefixLimit=Number(arg("prefix-cache","512")),quantum=Number(arg("quantum","12"));
 assert(Number.isSafeInteger(prefixLimit)&&prefixLimit>=0&&Number.isSafeInteger(quantum)&&quantum>0);
-Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0,exactFailureHits:0,exactFailureStores:0,quotaDeferrals:0,freshSeedTurns:0,distinctSeedsAttempted:0,eligibleWork:0,eligibleQuota,cheapProbeSkips:0,retainedSetAdds:0,traitOnlyAdds:0,recoveredStateRoutes:0});
+Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0,exactFailureHits:0,exactFailureStores:0,quotaDeferrals:0,freshSeedTurns:0,distinctSeedsAttempted:0,eligibleWork:0,eligibleQuota,cheapProbeSkips:0,retainedSetAdds:0,traitOnlyAdds:0,recoveredStateRoutes:0,priorityOutOfOrder:0,priorityFreshAttempts:0,priorityFreshSuccess:0,priorityRepeatAttempts:0,indexedQueries:0,indexedKnownPrefixes:0,indexedCandidates:0,indexedAccepted:0,indexedRejected:0,pairIndexQueries:0,pairIndexKnownPrefixes:0,pairIndexCandidates:0,pairIndexAccepted:0,pairIndexRejected:0});
 function register(b,n,allowed,recovered=false){
  const end=g.grow(n),f=finish(end.world,end.steps),v={origin:b.r.origin,branch:b.r.branch,...f};
  const order=end.steps.filter(a=>a.type==="transform").map(a=>a.transform);
@@ -119,6 +125,25 @@ function plan(b,n,r){
   sharedPool.attempt(e,Boolean(x));
   if(x){const suffix=x.steps.slice(n.steps.length),h=key(suffix);exactPlans.set(ek,suffix);const old=planTemplates[tk]||[];if(!old.some(s=>key(s)===h))planTemplates[tk]=[suffix,...old].slice(0,4);return x;}
  }
+ // A shared prefix is a proposal, not an unlock. Every suffix is replayed locally.
+ if(pairLookup){
+  m.pairIndexQueries++;const from=pairLookup.prefix(full.filter(a=>researchKinds.has(a.type)));
+  if(from!==null){m.pairIndexKnownPrefixes++;
+   for(const c of pairLookup.candidates(b.r.branch,r.id,from).filter(c=>c.researchSuffix.length).slice(0,8)){
+    m.pairIndexCandidates++;const x=validate(c.researchSuffix);
+    if(x){m.pairIndexAccepted++;exactPlans.set(ek,c.researchSuffix);return x;}m.pairIndexRejected++;
+   }
+  }
+ }
+ if(lookup){
+  m.indexedQueries++;const from=lookup.prefix(full.filter(a=>researchKinds.has(a.type)));
+  if(from!==null){m.indexedKnownPrefixes++;
+   for(const c of lookup.candidates(b.r.branch,r.id,from).filter(c=>c.researchSuffix.length).slice(0,8)){
+    m.indexedCandidates++;const x=validate(c.researchSuffix);
+    if(x){m.indexedAccepted++;exactPlans.set(ek,c.researchSuffix);return x;}m.indexedRejected++;
+   }
+  }
+ }
  // Memoize only this batch's identical bounded planner failure, after trying all current templates. A later run or a new template may still succeed.
  if(failedPlans.has(ek)){m.exactFailureHits++;return null;}
  m.plannerCalls++;const start={world:n.world,steps:full,trace:[],diagnostics:[]},q=planner.ensure(goals,start);if(!q.ok){failedPlans.set(ek,{reason:q.reason,unresolved:q.unresolved,attempts:q.attempts});m.exactFailureStores++;return null;}
@@ -147,7 +172,7 @@ for(const [id,r] of Object.entries(entry.routes))enqueue(id,[],null,r.allowedDif
 // This avoids starving continuations behind hundreds of fresh birth states.
 const eventFirst=process.argv.includes("--event-first"),originRoutes=new Map();
 for(const r of Object.values(routes))originRoutes.set(r.origin,(originRoutes.get(r.origin)||0)+1);
-const groups=new Map();for(const id of pending){const s=states[id],r=entry.routes[s.seed],depth=s.actions.filter(a=>a.type==="transform").length;const byOrigin=groups.get(depth)||new Map(),xs=byOrigin.get(r.origin)||[];xs.push(id);byOrigin.set(r.origin,xs);groups.set(depth,byOrigin);}
+const groups=new Map();for(const id of pending){const s=states[id],r=entry.routes[s.seed],depth=traitPriority?distinctDepth(s):depthOf(s);const byOrigin=groups.get(depth)||new Map(),xs=byOrigin.get(r.origin)||[];xs.push(id);byOrigin.set(r.origin,xs);groups.set(depth,byOrigin);}
 const levels=[...groups].sort((a,b)=>breadth?Number(b[0]===0)-Number(a[0]===0)||b[0]-a[0]:b[0]-a[0]).map(([depth,byOrigin])=>{const tiers=[...byOrigin.entries()].sort((a,b)=>(breadth?(originRoutes.get(a[0])||0)-(originRoutes.get(b[0])||0):0)||(eventFirst?Number(b[0].startsWith("event:"))-Number(a[0].startsWith("event:")):0)||a[0].localeCompare(b[0])).map(x=>x[1]),out=[];for(const xs of tiers)xs.sort((a,b)=>breadth?(states[a].visits||0)-(states[b].visits||0)||states[a].cursor-states[b].cursor:Number(states[b].cursor>0)-Number(states[a].cursor>0));for(let i=0;tiers.some(xs=>i<xs.length);i++)for(const xs of tiers)if(xs[i])out.push(xs[i]);return out;});
 pending.length=0;for(let i=0;levels.some(xs=>i<xs.length);i++)for(const xs of levels)if(xs[i])pending.push(xs[i]);
 const t0=performance.now(),seconds=Number(arg("seconds","25")),limit=Number(arg("limit","2400")),timely=()=>m.attempts<limit&&performance.now()-t0<seconds*1000;
@@ -168,10 +193,14 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
   const grown=g.grow(n),choices=(byBody.get(member(w).state.soldierType)||[]).filter(r=>r.requires.every(k=>!b.r.avoid.includes(k)&&!w.disabled.has(k)));
   const moves=choices.flatMap(r=>grown===n?[{r,n,phase:"pre"}]:[{r,n,phase:"pre"},{r,n:grown,phase:"post"}]);
   const sig=key(moves.map(x=>[x.r.id,x.phase]));if(s.signature)assert.equal(s.signature,sig);s.signature=sig;
-  const stop=Math.min(moves.length,s.cursor+(eligibleQuota?Math.max(quantum,48):quantum),breadth&&!eligibleQuota?s.cursor+seedQuota-quotaCount(s.seed):Infinity);
+  const scan=Math.min(eligibleQuota?Math.max(quantum,48):quantum,breadth&&!eligibleQuota?seedQuota-quotaCount(s.seed):Infinity);
   let work=0;
-  for(;s.cursor<stop&&timely()&&(!eligibleQuota||(work<quantum&&(!breadth||quotaCount(s.seed)<seedQuota)));s.cursor++){
-   const {r,n:c,phase}=moves[s.cursor];m.attempts++;m[phase+"GrowthAttempts"]++;seedAttempts.set(s.seed,(seedAttempts.get(s.seed)||0)+1);
+  for(const idx of remainingMoves(s,moves,{priority:traitPriority,max:scan})){
+   if(!timely()||eligibleQuota&&(work>=quantum||breadth&&quotaCount(s.seed)>=seedQuota))break;
+   if(completeMove(s,idx,moves.length))m.priorityOutOfOrder++;
+   const {r,n:c,phase}=moves[idx],before=member(c.world).state,fresh=Boolean(r.soldierBonusType&&!before.bonusIds.has(r.soldierBonusType));
+   if(fresh)m.priorityFreshAttempts++;if(before.history.has(r.id))m.priorityRepeatAttempts++;
+   m.attempts++;m[phase+"GrowthAttempts"]++;seedAttempts.set(s.seed,(seedAttempts.get(s.seed)||0)+1);
    try{
     if(!probe(c,r)){m.probeRejected++;if(eligibleQuota)m.cheapProbeSkips++;continue;}
     work++;m.eligibleWork++;seedWork.set(s.seed,(seedWork.get(s.seed)||0)+1);
@@ -183,7 +212,7 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
     const ctx=auditOriginCampaignContext(full,data),allowed=ctx.allowedDifficulties.filter(k=>s.allowedDifficulties.includes(k));
     if(ctx.kind!=="compatible"||!allowed.length){m.contextRejected++;continue;}
     const hash=exactWorld(x.world);if(hash===exactWorld(c.world)){m.noop++;continue;}
-    m.success++;m[phase+"GrowthSuccess"]++;rememberWorld(s.seed,x.steps,x.world);enqueue(s.seed,x.steps,hash,allowed);
+    m.success++;m[phase+"GrowthSuccess"]++;if(fresh&&member(x.world).state.bonusIds.has(r.soldierBonusType))m.priorityFreshSuccess++;rememberWorld(s.seed,x.steps,x.world);enqueue(s.seed,x.steps,hash,allowed);
     if(x.steps.some(a=>a.type==="conditionalPromotion"||a.type==="conditionalMedal"))m.rankMedalSuccess++;
     register(b,x,allowed);
    }catch(e){m.errors++;s.lastError=String(e.message);}
@@ -192,6 +221,6 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
  }catch(e){s.error=String(e.message);m.errors++;if(entry.routes[s.seed]?.eventVariant)m.eventSeedErrors++;}
 }
 m.distinctSeedsAttempted=seedAttempts.size;Object.assign(m,sharedPool.metrics);
-const values=Object.values(routes),summary={...m,...traitSummary(routes),minDepth,retainTraits,initialOnly,breadth,seedQuota,visitedInitialSeeds:Object.values(states).filter(s=>!s.actions.length&&(s.visits||s.cursor||s.done)).length,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
+const values=Object.values(routes),summary={...m,...traitSummary(routes),traitPriority,indexedResearch,pairIndexed,minDepth,retainTraits,initialOnly,breadth,seedQuota,visitedInitialSeeds:Object.values(states).filter(s=>!s.actions.length&&(s.visits||s.cursor||s.done)).length,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
 const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,...(shardCount>1?{shard:{count:shardCount,index:shardIndex,ownedSeeds:entry.published.filter(owns).length},batchMetrics:m}:{}),routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered non-event and event minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
 fs.writeFileSync(out+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(out+".tmp",out);console.log(JSON.stringify(summary));
