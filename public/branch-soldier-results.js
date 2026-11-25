@@ -4,8 +4,9 @@ import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileW
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-v17";
 import {loadRuntime} from "./db-runtime.js";
-import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold} from "./branch-soldier-atlas-career-core.js?v=40-coverage";
-import {bodyCareerSummary,indexCareerBranches,branchCareerRows} from "./branch-soldier-atlas-table-core.js?v=40-branch";
+import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold} from "./branch-soldier-atlas-career-core.js?v=41-multi";
+import {mountMultiFilter} from "./branch-soldier-atlas-route-filter.js?v=41-multi";
+import {bodyCareerSummary,indexCareerBranches,branchCareerRows} from "./branch-soldier-atlas-table-core.js?v=41-multi";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
 import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261126-coverage-40-unified";
 import {allOriginCoverageText} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
@@ -585,7 +586,7 @@ if(ROOT){
    u.searchParams.set("group","routes");u.searchParams.set("branch",b.id);
    if(body)u.searchParams.set("body",body);
    for(const [id,k] of [["bsOrigin","origin"],["bsTraining","training"],["bsTrait","trait"],["bsDifficulty","difficulty"],["bsMinDepth","minDepth"],["bsMinTraits","minTraits"]]){
-    const value=E(id)?.value;if(value)u.searchParams.set(k,value);
+    const value=multi[id]?multi[id].value():E(id)?.value;if(value)u.searchParams.set(k,value);
    }
    if(E("bsCareerMetric")?.value==="current")u.searchParams.set("metric","current");
    u.hash="originMaxima";return u.href;
@@ -594,9 +595,13 @@ if(ROOT){
    const sorted=[...new Set(values)].filter(Boolean).sort((a,b)=>name(a).localeCompare(name(b),"ko"));
    return options([["","전체"],...sorted.map(v=>[v,name(v)])],"");
   };
-  ROOT.innerHTML='<h2>분기 DB · 2.1</h2><div class="bs-controls bs-branch-controls"><label>분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 대의 · 코덱스 · 번호"></label><label>최종 병종<select id="bsBranchBody">'+options([["","전체 병종"],...bodies.map(c=>[c.id,c.name])],validBody)+'</select></label><label>연구 상태<select id="bsStatus">'+options([["all","전체"],["history","조건부 이력 있음"],["conflict","원천 충돌"],["unknown","이력 미확정"],["neutral","대의 미선택"]],"all")+'</select></label><label>출생처<select id="bsOrigin">'+initialOption("bsOrigin",[...profiles.keys()],originName)+'</select></label><label>시술<select id="bsTraining">'+initialOption("bsTraining",modern.transformations.map(t=>t.id),title)+'</select></label><label>특성<select id="bsTrait">'+initialOption("bsTrait",modern.bonuses.map(t=>t.id),title)+'</select></label><label>난이도<select id="bsDifficulty">'+options([["","전체"],...Array.from({length:5},(_,i)=>[String(i),String(i)])],"")+'</select></label><label>수치<select id="bsCareerMetric">'+options([["cap","조건부 성장 상한"],["current","기록 시점 영구치"]],"cap")+'</select></label><label>최소 시술 횟수<input id="bsMinDepth" type="number" min="0" step="1" placeholder="전체"></label><label>최소 특성 수<input id="bsMinTraits" type="number" min="0" step="1" placeholder="전체"></label><label class="bs-inline-check"><input type="checkbox" id="bsCareerOnly"> 등록 육성 경로만</label></div>'+facetMarkup()+'<div class="bs-branch-pagination"><span id="bsCount" role="status"></span><button id="bsPrev" type="button">이전</button><button id="bsNext" type="button">다음</button></div><p class="bs-sub" id="bsCareerScope">경로 연결 중…</p><div class="bs-scroll" id="bsTable"></div><div id="bsBranchDetail" class="bs-note" aria-live="polite"></div><details class="bs-note"><summary>연구·육성 원장 및 계산 범위</summary>'+overview()+pairSearchMarkup(db)+pairContinuationMarkup(db)+sources()+'</details>';
+  ROOT.innerHTML='<h2>분기 DB · 2.1</h2><div class="bs-controls bs-branch-controls"><label>분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 대의 · 코덱스 · 번호"></label><label>최종 병종<select id="bsBranchBody">'+options([["","전체 병종"],...bodies.map(c=>[c.id,c.name])],validBody)+'</select></label><label>연구 상태<select id="bsStatus">'+options([["all","전체"],["history","조건부 이력 있음"],["conflict","원천 충돌"],["unknown","이력 미확정"],["neutral","대의 미선택"]],"all")+'</select></label><label>출생처<select id="bsOrigin">'+initialOption("bsOrigin",[...profiles.keys()],originName)+'</select></label><div class="route-multi-control"><label for="bsTraining">시술</label><select id="bsTraining">'+initialOption("bsTraining",modern.transformations.map(t=>t.id),title)+'</select></div><div class="route-multi-control"><label for="bsTrait">특성</label><select id="bsTrait">'+initialOption("bsTrait",modern.bonuses.map(t=>t.id),title)+'</select></div><label>난이도<select id="bsDifficulty">'+options([["","전체"],...Array.from({length:5},(_,i)=>[String(i),String(i)])],"")+'</select></label><label>수치<select id="bsCareerMetric">'+options([["cap","조건부 성장 상한"],["current","기록 시점 영구치"]],"cap")+'</select></label><label>최소 시술 횟수<input id="bsMinDepth" type="number" min="0" step="1" placeholder="전체"></label><label>최소 특성 수<input id="bsMinTraits" type="number" min="0" step="1" placeholder="전체"></label><label class="bs-inline-check"><input type="checkbox" id="bsCareerOnly"> 등록 육성 경로만</label></div>'+facetMarkup()+'<div class="bs-branch-pagination"><span id="bsCount" role="status"></span><button id="bsPrev" type="button">이전</button><button id="bsNext" type="button">다음</button></div><p class="bs-sub" id="bsCareerScope">경로 연결 중…</p><div class="bs-scroll" id="bsTable"></div><div id="bsBranchDetail" class="bs-note" aria-live="polite"></div><details class="bs-note"><summary>연구·육성 원장 및 계산 범위</summary>'+overview()+pairSearchMarkup(db)+pairContinuationMarkup(db)+sources()+'</details>';
+  const multi=Object.fromEntries([["bsTraining","training","시술"],["bsTrait","trait","보유 특성"]].map(([id,key,label])=>[id,mountMultiFilter(E(id),{initial:query.getAll(key),label,onChange:resetDraw})]));
+  for(const [id,key] of [["bsOrigin","origin"],["bsDifficulty","difficulty"],["bsMinDepth","minDepth"],["bsMinTraits","minTraits"],["bsCareerMetric","metric"]]){
+   if(query.has(key)&&(!E(id).options||[...E(id).options].some(o=>o.value===query.get(key))))E(id).value=query.get(key);
+  }
   selected=db.branches.find(b=>b.id===selectedUrl)||null;
-  const routeFilters=()=>({body:E("bsBranchBody").value,origin:E("bsOrigin").value,training:E("bsTraining").value,trait:E("bsTrait").value,minDepth:E("bsMinDepth").value,minTraits:E("bsMinTraits").value,difficulty:E("bsDifficulty").value});
+  const routeFilters=()=>({body:E("bsBranchBody").value,origin:E("bsOrigin").value,training:multi.bsTraining.value(),trait:multi.bsTrait.value(),minDepth:E("bsMinDepth").value,minTraits:E("bsMinTraits").value,difficulty:E("bsDifficulty").value});
   const hasRouteFilter=f=>!!(f.origin||f.training||f.trait||routeThreshold(f.minDepth)!==null||routeThreshold(f.minTraits)!==null||f.difficulty!=="");
   const numeric=r=>routeObjective(r,E("bsCareerMetric").value,objective);
   function filter(){
@@ -650,8 +655,8 @@ if(ROOT){
     });
    }).join("")+'</tbody></table>';
   }
-  function resetDraw(){page=0;draw()}
-  for(const id of ["bsSearch","bsStatus","bsBranchBody","bsOrigin","bsTraining","bsTrait","bsDifficulty","bsCareerMetric","bsCareerOnly","bsMinDepth","bsMinTraits"])E(id).addEventListener(id==="bsSearch"?"input":"change",resetDraw);
+  function resetDraw(){page=0;const u=new URL(location.href),f=routeFilters();for(const [k,v] of Object.entries({...f,metric:E("bsCareerMetric").value})){if(v)u.searchParams.set(k,v);else u.searchParams.delete(k);}history.replaceState(null,"",u);draw();detail()}
+  for(const id of ["bsSearch","bsStatus","bsBranchBody","bsOrigin","bsDifficulty","bsCareerMetric","bsCareerOnly","bsMinDepth","bsMinTraits"])E(id).addEventListener(id==="bsSearch"?"input":"change",resetDraw);
   bindFacets(()=>{page=0;const rows=filter();if(selected&&!rows.some(x=>x.b.id===selected.id))selected=null;if(rows.length===1)selected=rows[0].b;draw();detail();});
   E("bsPrev").addEventListener("click",()=>{page=Math.max(0,page-1);draw();});E("bsNext").addEventListener("click",()=>{page++;draw();});
   ROOT.addEventListener("click",ev=>{

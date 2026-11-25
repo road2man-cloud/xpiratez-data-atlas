@@ -29,3 +29,16 @@ body:has(#integratedBranches) .hero .eyebrow{margin:0}
 body:has(#integratedBranches) main{padding-top:4px}
 #branchSupplement,#branchLegacy{margin:14px 0;padding:12px}
 #branchSupplement>summary,#branchLegacy>summary{cursor:pointer;font-weight:650}
+/* Shared compact multi-condition controls for the original Soldier and Branch tables. */
+.route-multi-control{display:flex;align-items:flex-start;flex-wrap:wrap;gap:5px;min-width:120px;max-width:100%;font-size:.82rem}
+#integratedBranches .route-multi-control{flex:1 1 160px}
+#integratedBranches .route-multi-control>label{flex:0 0 auto;min-width:0}
+.route-multi-filter{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px;min-width:0;max-width:100%}
+.route-multi-filter select{width:150px;max-width:100%}
+.route-multi-chips{display:inline-flex;gap:4px;flex-wrap:wrap;min-width:0;max-width:100%}
+.route-multi-chips:empty{display:none}
+.route-multi-chips .route-multi-chip{font:inherit;padding:3px 6px;background:#233c57;border:1px solid #55759a;border-radius:4px;color:inherit;text-align:left;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.route-multi-chips .route-multi-chip:hover{border-color:#9cc9f7}
+.route-multi-chips .route-multi-chip:focus-visible{outline:2px solid #a1d8ff;outline-offset:2px}
+@media(max-width:600px){.route-multi-control{flex:1 1 100%;}.route-multi-filter{flex:1 1 180px}}
+

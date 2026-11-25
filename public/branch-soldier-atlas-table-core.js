@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum,routeObjective} from './branch-soldier-atlas-career-core.js?v=40-coverage';
+import {statKeys,filterRows,sum,routeObjective} from './branch-soldier-atlas-career-core.js?v=41-multi';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 // Select a single witness for each body under the selected objective. Keep independent
 // ceilings separate: they may come from a different conditional model or route.

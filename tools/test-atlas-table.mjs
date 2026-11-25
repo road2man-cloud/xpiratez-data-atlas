@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {ledgers,project,statKeys,exactCareerUrl} from '../public/branch-soldier-atlas-career-core.js';
+import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows} from '../public/branch-soldier-atlas-career-core.js';
 import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
@@ -62,6 +62,26 @@ const sample=records.find(r=>r.traits?.length&&r.order.length);
 assert(sample);const matching=filterTable(rows,{origin:sample.origin,training:sample.order[0],trait:sample.traits[0],branch:sample.branch},ctx);
 assert(matching.some(r=>r.key===sample.key));assert(matching.every(r=>r.origin===sample.origin&&r.branch===sample.branch&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
 const branchIndex=indexCareerBranches(records);
+// Multiple selections are conjunctions on one recorded route, never unions
+// across separate witnesses. Repeated query params and comma lists agree.
+const multiSample=records.find(r=>new Set(r.order).size>=2&&new Set(r.traits||[]).size>=2);
+assert(multiSample,'No real multi-condition witness');
+const trainingIds=[...new Set(multiSample.order)].slice(0,2);
+const traitIds=[...new Set(multiSample.traits)].slice(0,2);
+const multiFilters={training:trainingIds.join(','),trait:traitIds.join(',')};
+assert.deepEqual(routeFilterIds([trainingIds.join(','),trainingIds[0],'']),trainingIds);
+const expectedMulti=records.filter(r=>trainingIds.every(id=>r.order.includes(id))&&traitIds.every(id=>r.traits?.includes(id)));
+const multiMatches=filterTable(rows,multiFilters,ctx);
+assert.deepEqual(multiMatches.map(r=>r.key),expectedMulti.map(r=>r.key));
+assert(multiMatches.some(r=>r.key===multiSample.key));
+assert.deepEqual(filterRows(records,{training:trainingIds,trait:traitIds}).map(r=>r.key),expectedMulti.map(r=>r.key));
+assert.deepEqual(branchCareerRows(branchIndex,multiSample.branch,multiFilters).map(r=>r.key),expectedMulti.filter(r=>r.branch===multiSample.branch).map(r=>r.key));
+assert.equal(filterTable(rows,{training:[...trainingIds,'STR_NONEXISTENT_FILTER_TEST']},ctx).length,0);
+const mutuallySeparate=[{...multiSample,key:'one',order:[trainingIds[0]],traits:[traitIds[0]]},{...multiSample,key:'two',order:[trainingIds[1]],traits:[traitIds[1]]}];
+assert.equal(filterRows(mutuallySeparate,multiFilters).length,0);
+assert.equal(filterRows([{...multiSample,traits:null}],multiFilters).length,0);
+assert.equal(filterRows(records,{training:trainingIds[0]}).length,records.filter(r=>r.order.includes(trainingIds[0])).length);
+console.log(JSON.stringify({multiFilterExample:{training:trainingIds,traits:traitIds,matches:multiMatches.length,branchMatches:expectedMulti.filter(r=>r.branch===multiSample.branch).length}}));
 const deep=filterTable(rows,{minDepth:'8',minTraits:'5'},ctx);
 assert(deep.every(r=>r.order.length>=8&&r.traits!==null&&r.traits.length>=5));
 assert.equal(filterTable(rows,{minTraits:'0'},ctx).length,records.filter(r=>r.traits!==null).length);
