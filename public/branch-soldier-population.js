@@ -2,7 +2,7 @@ import {integratedCoverageText,integratedScopeMarkup} from "./branch-soldier-int
 import {careerFrontierMarkup,careerFrontierOriginMarkup} from "./branch-soldier-career-frontier.js?v=20261125-career-frontier-5";
 import {growthReplayCoverage,growthReplayMarkup,growthReplayBranchMarkup,growthReplayOriginMarkup} from "./branch-soldier-growth-replay.js?v=20261125-pop-growth-career-v2";
 import {chronologicalCareerCoverage,chronologicalCareerMarkup,chronologicalCareerBranchMarkup,chronologicalCareerOriginMarkup} from "./branch-soldier-chronological-career.js?v=20261125-pop-career-scheduler-3";
-import {frontierChronologyCoverage,frontierChronologyMarkup,frontierChronologyBranchMarkup,frontierChronologyOriginMarkup} from "./branch-soldier-frontier-chronology.js?v=20261125-frontier-chronology-7";
+import {frontierChronologyCoverage,frontierChronologyMarkup,frontierChronologyBranchMarkup,frontierChronologyOriginMarkup} from "./branch-soldier-frontier-chronology.js?v=20261125-frontier-chronology-8";
 import {researchCareerCoverage,researchCareerMarkup,researchCareerBranchMarkup,researchCareerOriginMarkup} from "./branch-soldier-research-career.js?v=20261125-pop-v15";
 import {assumedBirthCoverage,assumedBirthMarkup,assumedBirthBranchMarkup,assumedBirthOriginMarkup} from "./branch-soldier-assumed-birth.js?v=20261125-pop-assumed-birth-4";
 // Shared coverage and route-level evidence for the population search.
