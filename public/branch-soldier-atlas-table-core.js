@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=34-transition';
+import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=35-joint';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
@@ -27,6 +27,8 @@ export function filterTable(rows,f,context){
   if(f.missingOnly&&!r.missing)return false;
   if(f.fixedOptimumOnly&&!r.fixedModelOptimum)return false;
   if(f.transitionBreakthroughOnly&&!(r.researchTransition?.exceededAxes>0))return false;
+  if(f.jointOnly&&!r.jointResearch)return false;
+  if(f.jointAppliedOnly&&!(r.jointResearch?.applied.length>=2))return false;
   if(f.selectedOnly&&!selected.has(r.key))return false;
   if(!tokens.length)return true;
   const b=branches.get(r.branch),p=profiles.get(r.origin);
@@ -49,7 +51,7 @@ export function columnValue(r,col,metric,{profiles,branches,names}){
  case 'blocked':return b?.blockedResearch?.length??null;
  case 'rank':return r.rank??null;
  case 'source':return r.source;
- case 'status':return r.missing?'미등록':r.certified?'인증':r.fixedModelOptimum?'고정 연구 모형 상계 도달':r.researchTransition?.exceededAxes>0?'연구 전 상계 초과':r.conditionalScopeComplete?'조건부 종결':'조건부';
+ case 'status':return r.missing?'미등록':r.certified?'인증':r.fixedModelOptimum?'고정 연구 모형 상계 도달':r.jointResearch?.applied.length>=2?'공동 연구·복수 시술':r.researchTransition?.exceededAxes>0?'연구 전 상계 초과':r.conditionalScopeComplete?'조건부 종결':'조건부';
  default:return null;
  }
 }
