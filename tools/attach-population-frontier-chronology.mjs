@@ -14,6 +14,7 @@ import {baseBirthProposals} from "./population-frontier-birth-proposals.mjs";
 import {chainProposal} from "./population-frontier-chain-proposals.mjs";
 import {extendedChainProposal,successorKey} from "./population-frontier-chain-extended.mjs";
 import {horizonProposal,HORIZON_POLICY} from "./population-full-horizon-proposals.mjs";
+import {rankHorizonProposal,RANK_HORIZON} from "./population-rank-horizon-proposals.mjs";
 import {UNIFIED_POLICY,atGrowthCap} from "./population-frontier-unified-scheduler.mjs";
 import {PRIORITY_POLICY,branchGateIndex,gateId} from "./population-frontier-priority-index.mjs";
 import {PLATEAU_POLICY,routePlateauSummary} from "./population-frontier-plateau-scheduler.mjs";
@@ -52,6 +53,7 @@ if(db[LEDGER]){
  for(const [id,t] of Object.entries(old.chainAttempts||{}))assert.deepEqual(a.chainAttempts?.[id],t,"Prior chain attempt lost "+id);
  for(const [id,t] of Object.entries(old.chainAliases||{}))assert.deepEqual(a.chainAliases?.[id],t,"Prior state alias lost "+id);
  for(const [id,t] of Object.entries(old.unifiedReuses||{}))assert.deepEqual(a.unifiedReuses?.[id],t,"Prior unified success reference lost "+id);
+ for(const [id,t] of Object.entries(old.rankHorizonAttempts||{}))assert.deepEqual(a.rankHorizonAttempts?.[id],t,"Prior rank horizon attempt lost "+id);
 }
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 const frontier=db.populationCareerFrontier,assumed=db.populationAssumedBirthClosure,env=db.populationCareerEnvelope;
@@ -109,6 +111,12 @@ if(a.summary.plateauPolicy){
  assert.equal(a.summary.plateauPolicy,PLATEAU_POLICY);
  assert.deepEqual(a.summary.plateauSummary,routePlateauSummary(a.routes));
  assert.equal(a.summary.plateauRegularPending+a.summary.plateauDeferredPending,a.summary.horizonPending);
+}
+if(a.rankHorizonAttempts){
+ assert.equal(a.rankHorizonPolicy?.id,RANK_HORIZON);assert.deepEqual(a.rankHorizonPolicy.rankPolicy,RANK_POLICY);assert.equal(a.rankHorizonPolicy.depthLimit,null);assert.equal(a.rankHorizonPolicy.actualGameCertified,false);
+ assert.equal(Object.keys(a.rankHorizonAttempts).length,a.summary.rankHorizonAttempts);
+ assert.equal(Object.values(a.routes).filter(r=>r.rankHorizonPolicy===RANK_HORIZON).length,a.summary.rankHorizonRoutes);
+ for(const [aid,t] of Object.entries(a.rankHorizonAttempts)){const p=a.routes[t.parent];assert(p?.rankDefault);assert.equal(t.rankHorizonPolicy,RANK_HORIZON);assert.equal(t.input,p.input);const f=rankHorizonProposal(data,t.parent,p,t.rule);assert(f);assert.equal(f.id,t.sourceRoute);assert.equal(aid,key([t.input,f.id]));if(t.status==="CONDITIONAL_CHAIN_REPLAY"){const r=a.routes[t.route];assert(r);assert.equal(r.rankHorizonPolicy,RANK_HORIZON);assert.equal(r.chainParent,t.parent);assert.equal(r.chainRule,t.rule);}else if(t.status==="DUPLICATE_REPLAY"){assert(a.routes[t.route]);}else{assert.equal(t.status,"LIMITED_UNRESOLVED");assert(t.reason);}}
 }
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
@@ -182,19 +190,19 @@ for(const [id,r] of Object.entries(a.routes)){
  const i=origins.get(r.origin),j=branches.get(r.branch),cl=assumed.classes[assumed.classIndex[i][j]];
  assert(cl.groups.includes(r.sourceGroup));
  const chainParent=r.sourceKind==="BIRTH_RESEARCH_CHAIN"?a.routes[r.chainParent]:null;
- const candidates=chainParent?[(r.horizonPolicy===HORIZON_POLICY?horizonProposal:proposeChain)(data,r.chainParent,chainParent,r.chainRule)].filter(Boolean):r.sourceKind?baseBirthProposals(db,data,r.origin,r.sourceGroup):frontier.groups[r.sourceGroup]?.frontier||[];
+ const candidates=chainParent?[(r.rankHorizonPolicy===RANK_HORIZON?rankHorizonProposal:r.horizonPolicy===HORIZON_POLICY?horizonProposal:proposeChain)(data,r.chainParent,chainParent,r.chainRule)].filter(Boolean):r.sourceKind?baseBirthProposals(db,data,r.origin,r.sourceGroup):frontier.groups[r.sourceGroup]?.frontier||[];
  const f=candidates.find(x=>x.id===r.sourceRoute);assert(f);assert.equal(r.sourceKind,f.sourceKind);
  if(r.sourceKind==="BIRTH_RESEARCH_CHAIN"){
-  assert(chainParent&&!r.rankDefault&&!r.adaptation);assert.equal(chainParent.input,r.input);assert.equal(chainParent.sourceGroup,r.sourceGroup);
+  assert(chainParent&&!r.adaptation);if(r.rankHorizonPolicy){assert.equal(r.rankHorizonPolicy,RANK_HORIZON);assert(rankBridge&&chainParent.rankDefault);assert.deepEqual(r.rankDefault,chainParent.rankDefault);assert.equal(a.rankHorizonPolicy?.id,RANK_HORIZON);assert.equal(a.rankHorizonPolicy.depthLimit,null);assert.deepEqual(a.rankHorizonPolicy.rankPolicy,RANK_POLICY);}else assert(!r.rankDefault);assert.equal(chainParent.input,r.input);assert.equal(chainParent.sourceGroup,r.sourceGroup);
   assert.deepEqual(r.actions.slice(0,chainParent.actions.length),chainParent.actions);
   assert(r.actions.length>chainParent.actions.length);
   assert.deepEqual(r.order,[...chainParent.order,r.chainRule]);
-  const c=a.chainAttempts?.[key([r.input,f.id])];assert.equal(c?.parent,r.chainParent);assert.equal(c?.rule,r.chainRule);assert.equal(c?.route,id);assert.equal(c?.status,"CONDITIONAL_CHAIN_REPLAY");
+  const c=(r.rankHorizonPolicy?a.rankHorizonAttempts:a.chainAttempts)?.[key([r.input,f.id])];if(r.rankHorizonPolicy)assert.equal(c?.rankHorizonPolicy,RANK_HORIZON);assert.equal(c?.parent,r.chainParent);assert.equal(c?.rule,r.chainRule);assert.equal(c?.route,id);assert.equal(c?.status,"CONDITIONAL_CHAIN_REPLAY");
   if(r.horizonPolicy){assert.equal(r.horizonPolicy,HORIZON_POLICY);assert.equal(c.horizonPolicy,HORIZON_POLICY);assert.equal(a.horizonPolicy?.depthLimit,null);}
  }
  assert.equal(r.sourceActionHash,key(f.actions));assert.deepEqual(r.sourcePermanentVector,f.permanentVector);
  let proposal=f.actions;
- if(r.rankDefault){const x=r.rankDefault,t=a.attempts[x.originalAttempt],alt=a.rankDefaultAttempts?.[x.originalAttempt];assert(rankBridge);assert.equal(x.policy,RANK_POLICY.id);assert.equal(x.exactBuildVerified,false);assert.equal(x.originalAttempt,key([r.input,f.id]));assert.equal(t?.status,"LIMITED_UNRESOLVED");assert.equal(t?.reason,"Promotion rank list unindexed");assert.equal(t?.input,r.input);assert.equal(t?.group,r.sourceGroup);assert.equal(t?.sourceRoute,f.id);assert.equal(alt?.status,"CONDITIONAL_DEFAULT_RANK_REPLAY");assert.equal(alt?.route,id);assert.equal(alt?.policy,RANK_POLICY.id);assert(!r.adaptation);}
+ if(r.rankDefault&&!r.rankHorizonPolicy){const x=r.rankDefault,t=a.attempts[x.originalAttempt],alt=a.rankDefaultAttempts?.[x.originalAttempt];assert(rankBridge);assert.equal(x.policy,RANK_POLICY.id);assert.equal(x.exactBuildVerified,false);assert.equal(x.originalAttempt,key([r.input,f.id]));assert.equal(t?.status,"LIMITED_UNRESOLVED");assert.equal(t?.reason,"Promotion rank list unindexed");assert.equal(t?.input,r.input);assert.equal(t?.group,r.sourceGroup);assert.equal(t?.sourceRoute,f.id);assert.equal(alt?.status,"CONDITIONAL_DEFAULT_RANK_REPLAY");assert.equal(alt?.route,id);assert.equal(alt?.policy,RANK_POLICY.id);assert(!r.adaptation);}
  if(r.adaptation?.recoveryAttempt){
   const x=r.adaptation,t=a.attempts[x.originalAttempt],alt=a.recoveryAttempts?.[x.recoveryAttempt];
   assert(t&&t.status==="LIMITED_UNRESOLVED");
