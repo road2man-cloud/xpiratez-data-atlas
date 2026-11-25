@@ -19,18 +19,20 @@ const message=git(['log','-1','--format=%B',parent]);
 const previous=message.match(/^(?:Publish public atlas from |Atlas-Soldier-Source: )([0-9a-f]{40})$/m)?.[1];
 assert(previous,'Public source provenance missing; refuse a blind overlay');
 git(['merge-base','--is-ancestor',previous,source]);
-const delta=git(['diff','--name-only',previous,source,'--','public/']).split('\n').filter(Boolean).map(p=>p.slice(7)).filter(scope);
-// Reconcile exact-resource assets against the deployed tree, not just the
-// previous source SHA: an earlier scope may have skipped a newly added depth.
-const exact=/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.(?:json|packed)\.gz$/;
-const missingExact=git(['ls-tree','-r','--name-only',source,'--','public/data/']).split('\n')
- .map(p=>p.slice(7)).filter(p=>exact.test(p)).filter(p=>{
-  const next=git(['ls-tree',source,'--','public/'+p]).split(/\s+/)[2];
-  const prev=git(['ls-tree',parent,'--',p]).split(/\s+/)[2];
-  return next!==prev;
- });
-const paths=[...new Set([...delta,...missingExact])];
-assert(paths.length,'No Soldier/Captain DB changes to publish');
+// Reconcile every scoped source blob with the actual deployment tree.
+const entries=(ref,prefix)=>new Map(git(['ls-tree','-r',ref,...(prefix?['--',prefix]:[])]).split('\n').filter(Boolean).map(row=>{
+  const match=row.match(/^(100644|100755) blob ([0-9a-f]{40})\t(.+)$/);
+  return match?[match[3].slice(prefix?prefix.length+1:0),match[1]+' '+match[2]]:null;
+}).filter(Boolean));
+const expected=entries(source,'public');
+const deployed=entries(parent,'');
+const paths=[...expected.keys()].filter(p=>scope(p)&&expected.get(p)!==deployed.get(p));
+const dataPath='data/branch-soldier-results.json.gz';
+assert(expected.has(dataPath),'Required source data missing');
+if(!paths.length){
+  console.log(JSON.stringify({source,parent,files:0,changed:[],status:'already synchronized'},null,2));
+  process.exit(0);
+}
 assert(!paths.some(p=>p.includes('..')||p.includes('\\')),'Unexpected path');
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'atlas-soldier-pages-'));
 const env={...process.env,GIT_INDEX_FILE:path.join(tmp,'index')};
