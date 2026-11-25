@@ -5,7 +5,7 @@ import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldie
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-frontier-chronology-3";
 import {loadRuntime} from "./db-runtime.js";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
-import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261125-pop-v15-rank6";
+import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261125-pop-v15-birth7";
 import {allOriginCoverageText} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
 import {buildCareerMedalPlan} from "./branch-soldier-career.js?v=20261124-career-medal-plan-1";
 import {evaluateCareerMilestones} from "./branch-soldier-career-progress.js?v=20261124-career-progress-1";
