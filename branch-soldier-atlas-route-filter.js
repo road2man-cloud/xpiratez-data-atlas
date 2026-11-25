@@ -1,5 +1,5 @@
-import {routeFilterIds,routeSequenceIds,routeThreshold,loadResearchSearch} from './branch-soldier-atlas-career-core.js?v=45-sequence';
-import {minimumStatKeys,readStatMinimums} from './branch-soldier-atlas-table-core.js?v=45-sequence';
+import {routeFilterIds,routeSequenceIds,routeThreshold,loadResearchSearch} from './branch-soldier-atlas-career-core.js?v=46-completion';
+import {minimumStatKeys,readStatMinimums} from './branch-soldier-atlas-table-core.js?v=46-completion';
 // The original dropdown is reused as an add control. One compact removable list
 // shows all active conditions; no Ctrl-click, modal or extra database is needed.
 export function mountMultiFilter(select,{initial='',excludeInitial=null,sequenceInitial=null,label,onChange}){
