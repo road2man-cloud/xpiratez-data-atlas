@@ -10,6 +10,8 @@ import {sha,key,sum,dominates} from "./population-research-career-core.mjs";
 import {recoveryProposal} from "./population-frontier-recovery-core.mjs";
 import {RANK_POLICY,defaultRankData} from "./population-frontier-default-rank.mjs";
 import {proveBirthAppend} from "./population-frontier-birth-migration.mjs";
+import {proveBirthAppendV2} from "./population-birth-append-v2.mjs";
+import {TRAIT_PRIORITY,traitTransition,rankTraitSummary} from "./population-rank-trait-priority.mjs";
 import {proveCatalogExtension} from "./population-frontier-catalog-extension.mjs";
 import {baseBirthProposals} from "./population-frontier-birth-proposals.mjs";
 import {chainProposal} from "./population-frontier-chain-proposals.mjs";
@@ -41,7 +43,8 @@ for(const k of ["fullCompleted","actualGameCertified","globalOptimalCertified"])
 if(db[LEDGER]){
  const old=db[LEDGER];
  if(old.fingerprint!==a.fingerprint){
-  if(a.migration?.kind==="APPEND_ONLY_CATALOG_BOTH_FAMILIES")assert.deepEqual(a.migration.birthExtension,proveCatalogExtension(db,old,a.migration.birthExtension.oldInputs));
+  if(a.migration?.kind==="APPEND_ONLY_BIRTH_CATALOG_V2")assert.deepEqual(a.migration.birthAppend,proveBirthAppendV2(db,old));
+  else if(a.migration?.kind==="APPEND_ONLY_CATALOG_BOTH_FAMILIES")assert.deepEqual(a.migration.birthExtension,proveCatalogExtension(db,old,a.migration.birthExtension.oldInputs));
   else if(a.migration?.kind==="APPEND_ONLY_BIRTH_CATALOG")assert.deepEqual(a.migration.birthAppend,proveBirthAppend(db,old));
   else{assert.equal(a.migration?.kind,"WORKLIST_AND_PREFIX_ONLY");const {baseline:ob,...os}=old.source;assert.deepEqual(os,stable);}
   assert.equal(a.migration.fromFingerprint,old.fingerprint);
@@ -122,6 +125,7 @@ if(a.rankHorizonAttempts){
  for(const [aid,t] of Object.entries(a.rankHorizonAttempts)){const p=a.routes[t.parent];assert(p?.rankDefault);assert.equal(t.rankHorizonPolicy,RANK_HORIZON);assert.equal(t.input,p.input);const f=rankHorizonProposal(data,t.parent,p,t.rule);assert(f);assert.equal(f.id,t.sourceRoute);assert.equal(aid,key([t.input,f.id]));if(t.status==="CONDITIONAL_CHAIN_REPLAY"){const r=a.routes[t.route];assert(r);assert.equal(r.rankHorizonPolicy,RANK_HORIZON);assert.equal(r.chainParent,t.parent);assert.equal(r.chainRule,t.rule);}else if(t.status==="DUPLICATE_REPLAY"){assert(a.routes[t.route]);}else{assert.equal(t.status,"LIMITED_UNRESOLVED");assert(t.reason);}}
 }
 if(a.summary.coveragePolicy){assert.equal(a.summary.coveragePolicy,COVERAGE_POLICY);assert.deepEqual(a.summary.coverage,coverageIndex(a.routes,birthCatalog(db)).summary);}
+if(a.summary.rankTraitPolicy){assert.equal(a.summary.rankTraitPolicy,TRAIT_PRIORITY);assert.deepEqual(a.summary.rankTraitSummary,rankTraitSummary(a.routes));assert.equal(a.summary.rankTraitRound.regularPending+a.summary.rankTraitRound.deferredPending,a.summary.rankHorizonPending);}
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
 const bridge=createBridge(data,db,cacheHashes,{cache:true}),{replay,engine}=bridge;
@@ -243,13 +247,17 @@ for(const [id,r] of Object.entries(a.routes)){
   if(performance.now()-start>=budget){paused=true;break;}
   const b=independentBirth(origin),activeBridge=r.rankDefault?rankBridge:bridge,activeReplay=activeBridge.replay,activeEngine=activeBridge.engine,policy=activeEngine.policy(r.branch,b.n);let w=b.n.world;
   if(r.rankDefault){const rb=rankBridge.loadBirth(origin);assert.equal(exactWorld(rb.n.world),exactWorld(w),"Rank policy changed original birth");}
+  let traitBefore=null,actionIndex=0;
   for(const action of r.actions){
+   if(r.rankTraitEvidence&&actionIndex===chainParent.actions.length){assert.equal(exactWorld(w),chainParent.canonicalStateHash);traitBefore=w;}
+   actionIndex++;
    const next=activeReplay.apply(w,action);
    assert(![...next.researched].some(k=>!w.researched.has(k)&&(policy.blocked.has(k)||policy.opposing.has(k))),"Opposing or blocked research");
    assert(!policy.commit.some(k=>activeReplay.active(w,k)&&!activeReplay.active(next,k)),"Branch commitment lost");
    w=next;
   }
   assert(!w.pendingFree);assert.equal(exactWorld(w),r.canonicalStateHash);
+  if(r.rankTraitEvidence){assert(r.rankHorizonPolicy&&traitBefore);assert.deepEqual(r.rankTraitEvidence,traitTransition(traitBefore,w));}
   const end=activeReplay.finish(w);for(const k of Object.keys(end))assert.deepEqual(r[k],end[k],"Final field "+k);
   const allowed=activeEngine.context(r.branch,b.p,[...b.birth,...r.actions],w);assert.deepEqual(r.allowedDifficulties,chainParent?allowed.filter(i=>chainParent.allowedDifficulties.includes(i)):allowed);assert(r.allowedDifficulties.length);
   const research=[...w.researched].filter(k=>activeReplay.active(w,k)&&!activeReplay.active(b.n.world,k));assert.deepEqual(research,r.addedResearch);
