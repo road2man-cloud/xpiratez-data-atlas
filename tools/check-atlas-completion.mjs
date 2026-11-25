@@ -4,6 +4,7 @@ import {gunzipSync} from 'node:zlib';
 import {ledgers,project,loadCareerRows,completionScope,readResearchWitness} from '../public/branch-soldier-atlas-career-core.js';
 import {admitVerified,normalizedCombination} from './atlas-career-completion-core.mjs';
 import {key} from './population-research-career-core.mjs';
+import {digest} from './final-combination-production.mjs';
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync('public/data/'+f+'.json.gz')));
 const modern=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json')),db=gz('branch-soldier-results'),c=completionScope(modern,db);
 const all=ledgers.flatMap(l=>project(l,gz(l.file),db.sourceMetadataSha256).rows);
@@ -139,4 +140,36 @@ if(early){
   if(!r.blocked)assert.equal(r.processedActions,r.totalActions);
  }
 }
-console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0}));
+const researchCalendar=c.researchCalendar;
+if(researchCalendar){
+ const {fingerprint,...src}=researchCalendar.sourceEvidence;assert.equal(key(src),fingerprint);
+ const {fingerprint:eventFingerprint,...eventSrc}=researchCalendar.eventSourceEvidence;assert.equal(digest(eventSrc),eventFingerprint);
+ assert.equal(key(researchCalendar.sourceHashes),key(c.sourceHashes));
+ const list=Object.values(researchCalendar.records),s=researchCalendar.summary;
+ assert.equal(list.length,s.scenarios);assert.equal(list.filter(r=>!r.blocked).length,s.fullLogicalCalendars);
+ assert.equal(s.completeCampaigns,0);
+ let count=0;
+ for(const r of list){
+  const {routeId,linkedPlanIds,origin,branch,graph,node,options,calendarHash,...content}=r;
+  assert.equal(key(content),calendarHash);assert.equal(rows.get(routeId).hash,r.actionHash);
+  assert.equal(r.sourceFingerprint,fingerprint);assert.equal(r.eventSourceFingerprint,eventFingerprint);
+  for(const id of linkedPlanIds){assert.equal(c.terminalSupply.plans[id].graph,graph);assert.equal(c.terminalSupply.plans[id].node,node);}
+  let cash=r.scenario.openingCash,min=cash,last=-1;
+  for(const x of r.transactions){assert(x.hour>=last);last=x.hour;assert(Number.isSafeInteger(x.amount));cash+=x.amount;min=Math.min(min,cash);assert.equal(cash,x.cash);if(options.cashMode==="STRICT_CASH")assert(cash>=0);}
+  assert.equal(cash,r.closingCash);assert.equal(min,r.minimumCash);assert.equal(Math.max(0,-min),r.additionalCapitalGap);
+  const research=r.calendar.filter(x=>x.type==="LAB_RESEARCH"),fixed=new Map();
+  count+=research.length;
+  for(const x of research){
+   assert.equal(x.nominal,modern.researchRules[x.id].cost||0);
+   assert.equal(x.cost,x.nominal?Math.max(1,Math.trunc(x.nominal*options.costPercent/100)):0);
+   assert.equal(x.days,x.cost?Math.ceil(x.cost/x.assigned):0);
+   assert(x.end>=x.start);if(fixed.has(x.id))assert.equal(fixed.get(x.id),x.cost);fixed.set(x.id,x.cost);
+  }
+  assert.equal(research.reduce((n,x)=>n+x.days,0),r.researchDays);
+  assert.equal(research.reduce((n,x)=>n+x.cost,0),r.actualWork);
+  assert.equal(r.completeCampaigns,0);assert(r.openConditions.length);
+  if(!r.blocked)assert.equal(r.finishedActions,r.totalActions);
+ }
+ assert.equal(count,s.calendarResearchActions);
+}
+console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0}));

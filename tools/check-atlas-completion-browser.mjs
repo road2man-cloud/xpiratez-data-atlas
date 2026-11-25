@@ -42,6 +42,14 @@ try{
    assert.equal(await row.locator('[data-cash-ledger-rows] li').count(),100);
   }
  }
+ if(db.careerCompletion.researchCalendar){
+  assert.equal(await page.locator('[data-research-calendar]').count(),db.careerCompletion.researchCalendar.summary.scenarios);
+  const row=page.locator('[data-research-calendar-detail]').first();
+  await row.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+  await row.locator('[data-calendar-actions] li').first().waitFor();
+  assert((await row.innerText()).includes('미해결 표본 및 기능'));
+  assert((await row.innerText()).includes('이벤트 시점·조건 충돌'));
+ }
  if(db.careerCompletion.earlyEconomy){
   assert.equal(await page.locator('[data-early-economic-scenario]').count(),db.careerCompletion.earlyEconomy.summary.scenarios);
   const row=page.locator('[data-early-economic-detail]').first();
