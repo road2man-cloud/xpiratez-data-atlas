@@ -42,9 +42,34 @@ export function populationPreboundOriginMarkup(db,pid,branchId=null,focus=null,l
  const col=db.stats.map(k=>'<th>'+esc(labels[k]||k)+'</th>').join(""),row=(title,vec)=>'<tr><th>'+esc(title)+'</th>'+vec.map(n=>'<td>'+fmt(n)+'</td>').join("")+'</tr>';
  return '<section class="scope-note" data-population-prebound-origin="true"><h3>미생성 상태 상계로 확보한 목적별 최고 경로</h3><p>선택 경로는 '+fmt(v.summary.modeledOrigins)+'개 출생처 제한 모형의 '+esc(objectiveName(v.query.objective))+' 최고 동점 대표입니다. 이 분기의 모든 경로 또는 전체 게임 최고치라는 뜻은 아닙니다. D'+fmt(v.depth)+' · '+esc(preboundTarget(db,v.query)||"추가 목표 없음")+' · 전체 동점 '+fmt(v.summary.ties)+'개.</p><p>최종 병종 '+esc(name(w.body))+' · 출생 '+(w.birthBand==="max"?"최댓값":"최솟값")+' · '+esc(seq(w))+' · 마지막 전투캡 성장 가정 · 직접 시술비 '+fmt(w.fees)+' · 동일 경로 합계 '+fmt(total(w))+'</p><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>능력치</th>'+col+'</tr></thead><tbody>'+row("원시",w.raw)+row("영구 보너스",w.bonus)+row("실효 (조건부)",w.vector)+'</tbody></table></div><p>필요 연구 '+w.research.map(k=>esc(name(k))).join(" / ")+' · 연구 이력 '+fmt(w.populationPrebound.historyIds.length)+'개 · <a href="'+esc(new URL("./data/"+v.file,import.meta.url).href)+'">모든 동점·가지치기 증거 원장</a> · SHA256 <code>'+esc(v.sha256)+'</code></p><details><summary>이 출생처의 목적별 대표 '+fmt(rows.length)+'개</summary><div class="birth-stat-scroll"><table class="birth-stat-table"><thead><tr><th>목표</th><th>시술 순서</th><th>직접 시술비</th><th>최고값</th></tr></thead><tbody>'+rows.map(({v,id,w})=>'<tr><td>'+esc(objectiveName(v.query.objective))+' D'+fmt(v.depth)+'</td><td>'+esc(seq(w))+'</td><td>'+fmt(w.fees)+'</td><td><a href="'+routeLink(pid,branchId,id)+'">'+fmt(v.summary.bestScore)+'</a></td></tr>').join("")+'</tbody></table></div></details></section>';
 }
+export function populationFiniteClosureMarkup(db){
+ const a=db.populationFiniteClosure;if(!a)return "";
+ const s=a.summary,j=db.populationJointCoverage,total=s.targetPairs;
+ const partial=j?.uniqueCovered??0,unknown=j?total-partial:null;
+ const rows=[
+ ["전체 적용 후보",fmt(total),"출생처 × 연구 이력 보유 분기"],
+ ["직접 완전 판정",fmt(s.globalDirectComplete),"게임 전체 범위"],
+ ["동등성 증명 완전 판정",fmt(s.globalEquivalentComplete),"게임 전체 범위"],
+ ["불가능성 증명 판정",fmt(s.globalImpossibleComplete),"게임 전체 범위"],
+ ["부분 탐색 / 미탐색",j?fmt(partial)+" / "+fmt(unknown):"미집계","중복 제거한 기존 근거"],
+ ["전체 판정 완료율","0%","유한 모델 완결은 미포함"],
+ ["시간당 신규 완전 판정","0","이번 유한 그래프 계산에서 전역 완료 0건"],
+ ["전역 예상 잔여 계산량","미산정","반복 유한성 및 전체 전이 모델 미완성"],
+ ["D3 한정 완결 쌍",fmt(s.limitedClosedPairs),"게임 전체 완료 아님"],
+ ["D3 독립 쌍 클래스 / 동등 쌍",fmt(s.limitedDirectClasses)+" / "+fmt(s.limitedEquivalentPairs),"원본 조합 대응표 보존"],
+ ["D3 쌍 계산 절감률",fmt(s.pairCalculationReduction*100)+"%","동일 유한 행동 전이 클래스 기준"],
+ ["깊이 포함 상태 → 몫 그래프 상태",fmt(s.depthStateOccurrences)+" → "+fmt(s.quotientStates),"행동 라벨 동등성 귀납 증명"],
+ ["상태 캐시 적중 / 압축률",fmt(s.quotientHitRate*100)+"%","동일 상태 서명 재사용"],
+ ["종단 파레토 지배 제거",fmt(s.terminalDominanceRemoved),"중간 상태 및 원본 순서 제거 없음"],
+ ["전체 행동 순서 보존",fmt(s.sourceOrderedLabels),"원본 D3 그래프 참조"],
+ ["몫 그래프 계산 시간",fmt(s.elapsedMs/1000)+"초","이미 기록된 D3 그래프에서 계산"]
+ ];
+ return '<details open class="bs-note" data-population-finite-closure="true"><summary>전체 육성 완전 판정 및 동등성 압축 · 별도 집계</summary><p><b>게임 전체 완전 판정은 0건입니다.</b> 다음 표의 D3 완결은 이미 기록된 고정 연구·결정론·3회 시술 모델에만 해당합니다. 출생 시점과 무작위 결과, 승급, 훈장, 중간 성장, 자원·시간, 추가 연구, 무제한 반복은 아직 전역 증명에 포함되지 않습니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>지표</th><th>결과</th><th>범위</th></tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+esc(x)+'</td>').join("")+'</tr>').join("")+'</tbody></table></div><p><a href="'+esc(new URL("./data/"+a.file,import.meta.url).href)+'">12능력치 파레토·상태 동등성·원본 조합 대응 증거 (gzip)</a> · SHA256 <code>'+esc(a.sha256)+'</code></p></details>';
+}
 export function populationBoundMarkup(db){
- const v=vOf(db),q=v?.boundQueries?.queries;if(!q?.length)return preboundMarkup(db);
- return '<details class="bs-note" data-population-bounds="true"><summary>완료 D'+v.depth+' 그래프의 상계 기반 질의 결과</summary><p>남은 깊이별 능력치와 동일 경로 목적값 상계를 메모화합니다. 목표에 미달하거나 기존 최고보다 낮은 하위 행동 순서는 방문하지 않습니다. 상계 자체는 이미 완료된 유한 그래프에서 계산한 것이므로 게임 전체 미탐색 경로의 최적성 인증은 아닙니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>목표</th><th>조건부 최고</th><th>전체 순서</th><th>직접 방문</th><th>상계·비용으로 생략</th><th>전수 비교</th></tr></thead><tbody>'+q.map(r=>'<tr><td>'+esc(r.query.objective==="total"?"12능력치 동일 경로 합계":({firing:"사격",mana:"마나"})[r.query.objective]||r.query.objective)+'<small class="bs-sub">'+esc(Object.entries(r.query.targets).map(([k,n])=>k+" ≥ "+n).join(" / ")+(r.query.maxFees!=null?" · 직접비용 "+fmt(r.query.maxFees)+" 이하":""))+'</small></td><td>'+fmt(r.bestScore)+'</td><td>'+fmt(r.orderedLabels)+'</td><td>'+fmt(r.visitedLabels)+'</td><td>'+fmt(r.prunedLabels)+'</td><td>'+(r.identicalToFullLabelScan?"일치":"미확인")+'</td></tr>').join("")+'</tbody></table></div></details>'+preboundMarkup(db);
+ const closure=populationFiniteClosureMarkup(db);
+ const v=vOf(db),q=v?.boundQueries?.queries;if(!q?.length)return closure+preboundMarkup(db);
+ return closure+'<details class="bs-note" data-population-bounds="true"><summary>완료 D'+v.depth+' 그래프의 상계 기반 질의 결과</summary><p>남은 깊이별 능력치와 동일 경로 목적값 상계를 메모화합니다. 목표에 미달하거나 기존 최고보다 낮은 하위 행동 순서는 방문하지 않습니다. 상계 자체는 이미 완료된 유한 그래프에서 계산한 것이므로 게임 전체 미탐색 경로의 최적성 인증은 아닙니다.</p><div class="bs-scroll"><table class="bs-table"><thead><tr><th>목표</th><th>조건부 최고</th><th>전체 순서</th><th>직접 방문</th><th>상계·비용으로 생략</th><th>전수 비교</th></tr></thead><tbody>'+q.map(r=>'<tr><td>'+esc(r.query.objective==="total"?"12능력치 동일 경로 합계":({firing:"사격",mana:"마나"})[r.query.objective]||r.query.objective)+'<small class="bs-sub">'+esc(Object.entries(r.query.targets).map(([k,n])=>k+" ≥ "+n).join(" / ")+(r.query.maxFees!=null?" · 직접비용 "+fmt(r.query.maxFees)+" 이하":""))+'</small></td><td>'+fmt(r.bestScore)+'</td><td>'+fmt(r.orderedLabels)+'</td><td>'+fmt(r.visitedLabels)+'</td><td>'+fmt(r.prunedLabels)+'</td><td>'+(r.identicalToFullLabelScan?"일치":"미확인")+'</td></tr>').join("")+'</tbody></table></div></details>'+preboundMarkup(db);
 }
 function flags(v,i,j){
  const e=Number(v.evidence[i][j]);
