@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>X-Piratez 2.1 병종·육성 통합표</title>
 <link rel="stylesheet" href="../branch-soldier-unified-nav.css?v=29"><link rel="stylesheet" href="../branch-soldier-atlas-table.css?v=32">
-<script defer src="../branch-soldier-unified-nav.js?v=32"></script><script type="module" src="../branch-soldier-atlas-career.js?v=32-table"></script></head>
+<script defer src="../branch-soldier-unified-nav.js?v=32"></script><script type="module" src="../branch-soldier-atlas-career.js?v=33-upper"></script></head>
 <body><main>
 <header class="table-heading"><h1>병종·육성 통합표 <small>2.1</small></h1><a href="../soldiers/modern/?view=detail">기존 병종 상세 DB</a><a href="../captains/">분기 상세 DB</a></header>
 <section class="filters" aria-label="표 필터">
@@ -14,6 +14,7 @@
 <label>난이도<select id="difficulty"><option value="">전체</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
 <label>수치<select id="metric"><option value="cap">조건부 성장 상한</option><option value="current">기록 시점 영구치</option><option value="birthMin">출생 최소</option><option value="birthMax">출생 최대</option></select></label>
 <label class="tick"><input type="checkbox" id="certified"> 최종 인증</label>
+<label class="tick" title="추가 연구와 실제 자원 조건 등은 미인증"><input type="checkbox" id="fixedOptimumOnly"> 고정 연구 12능력치 상계 도달</label>
 <label class="tick"><input type="checkbox" id="missingOnly"> 미연결 출생처</label>
 <button id="reset" type="button">초기화</button>
 </section>
