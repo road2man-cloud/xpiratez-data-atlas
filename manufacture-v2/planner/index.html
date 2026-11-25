@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>X-Piratez 2.1 제조·조달 경로 계산기</title>
+<link rel="stylesheet" href="../../items-v2/styles.css">
+<link rel="stylesheet" href="./planner.css">
+<script type="module" src="./planner-ui.mjs"></script>
+</head>
+<body>
+<header class="site-header">
+<nav aria-label="돌아가기">
+<a href="../../">아틀라스 홈</a>
+<a href="../">2.1 제조 DB</a>
+<a href="../../research-v2/">2.1 연구 DB</a>
+<a href="../../items-v2/">2.1 아이템 DB</a>
+</nav>
+<p class="eyebrow">X-PIRATEZ 2.1 · 제조식 원본 선언 기준</p>
+<h1>제조·조달 <span>경로 계산기</span></h1>
+<p class="intro">만들 제조식을 고르고 필요한 재료를 단계별로 펼쳐 보세요. 명시된 산출량이 있는 제조식만 자동으로 이어 붙이며, 동일 재료의 여러 생산 경로는 직접 선택할 수 있습니다.</p>
+<p class="warning" role="note"><strong>실행 가능성 판정기가 아닙니다.</strong> 사용자가 세이브를 선택하면 기지 저장 물자와 <code>discovered</code> 연구 목록만 브라우저에서 확인합니다. 시설·이벤트·실제 구매 가능성과 연구 조건의 논리식은 확인하지 않습니다. 제조비 및 시간은 규칙에 직접 선언된 숫자만 합산하며 미확인 단가나 엔진 기본값은 채우지 않습니다.</p>
+</header>
+<main>
+<section class="filter-section planner-controls" aria-label="제조 경로 입력">
+<div class="recipe-search">
+<label for="recipe-search">제조식 검색</label>
+<input id="recipe-search" type="search" placeholder="한국어 이름 · 영문명 · STR_ID" autocomplete="off">
+<label for="recipe-select" class="small-label">원하는 제조식을 선택하세요</label>
+<select id="recipe-select" size="7" aria-label="제조식 선택"></select>
+<p id="match-count" class="note"></p>
+</div>
+<div class="settings-panel">
+<label>제조 횟수 <input id="batches" type="number" min="1" max="100" step="1" value="1"></label>
+<label>하위 제조 단계 <select id="max-depth">
+<option value="0">원료만 보기</option>
+<option value="1">1단계</option>
+<option value="2" selected>2단계</option>
+<option value="3">3단계</option>
+<option value="4">4단계</option>
+<option value="5">5단계</option>
+<option value="6">6단계</option>
+</select></label>
+<label class="check-label"><input id="assume-implicit" type="checkbox">
+제조식 ID=아이템 ID일 때 1개/회 산출 가정</label>
+<p class="note">위 가정은 규칙에 산출 수량이 없을 때만 사용합니다. 기본값은 꺼짐입니다.</p>
+<fieldset class="stock-editor">
+<legend>내 보유 재고 (직접 입력 또는 불러온 세이브)</legend>
+<label>아이템 검색<input id="stock-search" type="search" placeholder="화학물질 또는 STR_CHEMICALS"></label>
+<select id="stock-select" size="5" aria-label="재고로 추가할 2.1 아이템"></select>
+<label>보유 수량<input id="stock-qty" type="number" min="0" max="10000000" step="1" value="10"></label>
+<div class="control-buttons"><button id="stock-add" type="button" class="secondary">재고 추가/수정</button><button id="stock-clear" type="button" class="secondary">모든 입력 재고 지우기</button></div>
+<p id="stock-message" class="note" role="status" aria-live="polite"></p>
+<div id="stock-list" class="stock-list" aria-label="입력한 재고"></div>
+<details class="stock-bulk"><summary>여러 아이템을 한 번에 입력</summary>
+<p class="note">한 줄에 <code>STR_CHEMICALS=12</code> 또는 <code>STR_SCRAP_METAL 30</code> 형식으로 입력합니다. 확인된 2.1 아이템 ID만 사용합니다. 기존 입력은 유지하고 같은 ID만 덮어씁니다.</p>
+<textarea id="stock-bulk-text" rows="5" placeholder="STR_CHEMICALS=12&#10;STR_SCRAP_METAL=30"></textarea>
+<button id="stock-bulk-apply" type="button" class="secondary">여러 재고 적용</button>
+</details>
+</fieldset>
+<div class="control-buttons">
+<button id="recalculate" type="button">조달 경로 다시 계산</button>
+<button id="download-plan" type="button" class="secondary" disabled>결과 JSON 저장</button>
+</div>
+</div>
+</section>
+<section class="save-import-panel planner-card" aria-label="OXCE 2.1 세이브 재고 가져오기">
+<h2>세이브 재고·연구 상태 가져오기</h2>
+<p class="note">게임의 <code>user/piratez/*.sav</code> 파일을 직접 선택하세요. 브라우저 안에서만 읽으며 서버에 업로드하거나 원본을 수정하지 않습니다. 정확히 <strong>Extended 8.7.1 / piratez v.o2</strong>로 확인된 세이브만 처리합니다.</p>
+<label class="save-file-label">로컬 세이브 파일 선택 <input id="save-file" type="file" accept=".sav,text/plain" disabled></label>
+<p id="save-message" class="note" role="status" aria-live="polite">세이브는 선택하기 전까지 읽지 않습니다.</p>
+<div id="save-preview" hidden>
+<p id="save-metadata" class="note"></p>
+<label>재고를 계산에 반영할 기지
+<select id="save-base"></select>
+</label>
+<p class="note">전체 기지 합산은 기지 간 이동 비용·수송 가능 여부를 무시합니다. 기본값은 첫 번째 기지입니다.</p>
+<div id="save-warnings" class="save-warnings"></div>
+<button id="save-apply" type="button">선택 기지 재고 적용 (현재 수동 입력 대체)</button>
+</div>
+<div id="save-active" hidden><p id="save-active-text" class="note"></p>
+<button id="save-disconnect" class="secondary" type="button">세이브 연구 연결 해제 (입력 재고는 유지)</button>
+</div>
+</section>
+<p id="status" role="status" aria-live="polite">2.1 데이터 로딩 중…</p>
+<section id="output" hidden aria-label="제조 경로 결과">
+<h2 id="plan-name">제조식</h2>
+<p class="note" id="plan-id"></p>
+<div class="summary-stats" id="summary"></div>
+<p id="completeness" class="note"></p>
+<section id="base-comparison" class="planner-card" hidden aria-label="기지별 추가 제조 목표 비교">
+<h3>모든 기지의 동일 제조 목표 비교</h3>
+<p class="note">가져온 2.1 세이브의 각 기지에 <strong>동일한 추가 제조 목표</strong>를 따로 적용합니다. 기지 간 자재·시설을 합치지 않으며 기존 제조 주문의 예약 물자나 수송 가능성은 계산하지 않습니다.</p>
+<div class="control-buttons">
+<button id="base-comparison-run" type="button">기지별 독립 계산</button>
+<button id="base-comparison-export" type="button" class="secondary" disabled>비교 결과 JSON 저장</button>
+</div>
+<p id="base-comparison-status" class="note" role="status" aria-live="polite">세이브에서 기지를 불러오면 비교할 수 있습니다.</p>
+<div id="base-comparison-results" class="table-wrap"></div>
+</section>
+<section id="base-operations" class="planner-card" hidden aria-label="선택 기지 시설과 생산 주문">
+<h3>선택 기지의 시설·제조 주문</h3>
+<p id="base-operation-message" class="note"></p>
+<div id="base-facility-summary"></div>
+<div id="base-production-orders" class="table-wrap"></div>
+</section>
+<section id="choice-panel" hidden aria-label="하위 제조식 선택">
+<h3>원료별 제조 경로 선택</h3>
+<p class="note">복수 제조식이 있는 재료는 기본적으로 직접 조달로 남깁니다. 아래에서 원하는 제조식을 선택하면 트리가 재계산됩니다. 단일 제조식도 직접 조달로 변경할 수 있습니다.</p>
+<div id="choices" class="producer-choices"></div>
+</section>
+<section id="comparison-section" class="planner-card" hidden aria-label="대체 생산 경로 비용 비교">
+<div class="section-title"><h3 id="comparison-title">생산 경로 비교</h3><button id="comparison-close" type="button" class="secondary">닫기</button></div>
+<p class="note">표는 동일한 시작 재고를 사용한 독립 시나리오입니다. 일부 외부 조달 가격이 있더라도 실제 최저비용이나 게임 내 제조 가능성은 확정하지 않습니다.</p>
+<div id="comparison-data" class="table-wrap"></div>
+</section>
+
+<section id="queue-section" class="planner-card" hidden aria-label="기지 제조 주문 추가 생산 시나리오">
+<h3>기지 제조 주문 + 신규 생산 수급 시뮬레이션</h3>
+<p class="note"><strong>실제 잔여 제조량 계산이 아닙니다.</strong> 세이브에 이미 등록된 주문에서 추가로 한 회씩 생산한다고 가정하고, 신규 제조식도 함께 현재 재고에서 순차 계산합니다. 저장된 <code>amount</code>·<code>spent</code>·<code>assigned</code>는 기존 진행 정보로만 표시하며 과거에 쓴 재료를 다시 차감하지 않습니다.</p>
+<p id="queue-source" class="note"></p>
+<div class="control-buttons">
+<button id="queue-select-all" class="secondary" type="button">등록 주문 모두 선택</button>
+<button id="queue-select-none" class="secondary" type="button">등록 주문 모두 제외</button>
+<label class="queue-target-position">신규 계획 순서
+<select id="queue-position"><option value="last">기존 주문 다음</option><option value="first">신규 계획 먼저</option></select>
+</label>
+<button id="queue-run" type="button">공유 재고 기준으로 다시 계산</button>
+<button id="queue-compare" type="button" class="secondary">신규 먼저 vs 나중 비교</button>
+<button id="queue-download" type="button" class="secondary" disabled>시나리오 JSON 저장</button>
+</div>
+<div id="queue-options" class="queue-orders"></div>
+<p id="queue-status" class="note" role="status" aria-live="polite"></p>
+<div id="queue-report" hidden>
+<div id="queue-summary" class="summary-stats"></div>
+<div class="table-wrap"><table id="queue-steps-table" class="queue-table"><thead><tr><th>가상 실행 순서</th><th>제조비 / 명시 작업량</th><th>기초 재고 사용 / 이전 계획 산출물 사용</th><th>외부 조달</th><th>미확인 조건</th></tr></thead><tbody id="queue-steps"></tbody></table></div>
+<div class="queue-procurement">
+<div class="section-title"><h4>추가 조달 체크리스트 · 첫 부족 주문 기준</h4><button id="queue-procurement-csv" type="button" class="secondary" disabled>조달 목록 CSV 저장</button></div>
+<p class="note">어떤 주문에서 재료가 처음 부족해지는지, 어느 후속 주문에서도 필요한지 표시합니다. 구매 가능성이나 실제 게임의 보유 재고 변경을 뜻하지 않습니다.</p>
+<div id="queue-procurement-table" class="table-wrap"></div>
+</div>
+<section id="queue-whatif" class="queue-whatif" aria-label="가상 추가 재료 확보 영향 분석">
+<h4>가상 재료 확보 후 제조 계획 비교</h4>
+<p class="note">아래 수량은 <strong>새로 확보한다고 가정</strong>하는 수량입니다. 게임이나 기존 보유 재고를 변경하지 않으며, 실제 구매·생산 가능성은 확인하지 않습니다.</p>
+<div class="control-buttons">
+<button id="queue-whatif-fill" type="button" class="secondary">현재 부족 수량으로 가정 채우기</button>
+<button id="queue-whatif-expand" type="button" class="secondary">새로 드러나는 부족분까지 반복 탐색</button>
+<button id="queue-whatif-trace-json" type="button" class="secondary" disabled>탐색 단계 이력 JSON 저장</button>
+<button id="queue-whatif-clear" type="button" class="secondary">가상 확보 수량 초기화</button>
+<button id="queue-whatif-run" type="button">확보 전후 비교 계산</button>
+<button id="queue-whatif-json" type="button" class="secondary" disabled>비교 결과 JSON 저장</button>
+</div>
+<div id="queue-whatif-inputs" class="queue-whatif-inputs"></div>
+<p id="queue-whatif-status" class="note" role="status" aria-live="polite"></p>
+<div id="queue-whatif-trace" class="table-wrap" hidden aria-label="반복 조달 탐색 단계별 이력"></div>
+<div id="queue-whatif-report" hidden>
+<div id="queue-whatif-summary" class="summary-stats"></div>
+<h4>재료별 부족량 변화</h4>
+<div id="queue-whatif-differences" class="table-wrap"></div>
+<h4>주문별 재료 부족·기타 제약</h4>
+<div id="queue-whatif-jobs" class="table-wrap"></div>
+<h4>주문별 실행 장애 요인 · 증거 기준</h4>
+<p class="note">재료 충족은 이 가상 시나리오 내부에서만 의미가 있습니다. 기지 시설과 세이브 연구 목록에 없는 조건은 별도로 표시하며, 어떤 경우에도 실제 제조 가능 판정으로 취급하지 않습니다.</p>
+<div id="queue-readiness-summary" class="summary-stats"></div>
+<div id="queue-readiness-jobs" class="table-wrap"></div>
+<h4>중복 통합 우선 조치 목록</h4>
+<p class="note">공통 재료·시설 기능·연구 확인 항목을 여러 주문에 걸쳐 묶었습니다. 순위는 처음 영향을 받는 주문 기준이며, 게임 내 실행 가능성을 확정하지 않습니다.</p>
+<div id="queue-readiness-actions" class="table-wrap"></div>
+<h4>재고 출처: 기초 입력과 가상 추가 수량 분리</h4>
+<p class="note">기초 입력에는 세이브를 불러온 뒤 수동으로 수정한 수량도 포함될 수 있습니다. 게임의 실제 획득·소비 기록을 추정하지 않고, 두 출처가 섞인 재고의 소비량은 가능한 범위로만 보여줍니다.</p>
+<div id="queue-readiness-supplies" class="table-wrap"></div>
+</div>
+</section>
+<h4>모든 선택 주문을 합친 재료 수급표</h4>
+<div id="queue-materials" class="table-wrap"></div>
+<div id="queue-order-comparison" hidden>
+<h4>생산 순서별 외부 조달 부족량 차이</h4>
+<p class="note">같은 재고를 독립적으로 사용해 <strong>신규 제조식 먼저</strong>와 <strong>기존 선택 주문 다음</strong>을 비교합니다. 순서 변경으로 줄어드는 미확보 재료만 표시하며, 실제 게임의 완료 시각이나 최적 운영을 확정하지 않습니다.</p>
+<div id="queue-order-compare-summary" class="summary-stats"></div>
+<div id="queue-order-compare-materials" class="table-wrap"></div>
+</div>
+<p class="note">각 주문의 입력 재료는 공통 창고에서 순서대로 소비됩니다. 앞선 가상 제조로 생긴 확정적 산출물만 다음 주문에 넘깁니다. 외부 조달은 자동 구매하지 않습니다. 명시된 작업량의 합은 실제 완료까지 걸리는 시간이 아닙니다.</p>
+</div>
+</section>
+<div class="planner-sections">
+<section class="planner-card">
+<h3>단계별 제조·재료 트리</h3>
+<p class="note">각 제조 단계 비용은 <em>명시된 제조비 × 제조 횟수</em>입니다. 기초 재고와 앞선 제조에서 남은 산출물은 후속 분기에 재사용하며, 계산 순서에 따라 경로가 달라질 수 있습니다.</p>
+<div id="tree" class="planner-tree"></div>
+</section>
+<section class="planner-card"><h3>통합 재료·재고 수급표</h3>
+<p class="note">모든 제조 단계에서 같은 재료 ID를 합산합니다. 입력한 보유 재고를 먼저 사용하고, 이미 만든 잉여 산출물·동시 생산물을 재사용합니다.</p>
+<div id="consolidated" class="table-wrap"></div>
+</section>
+<section class="planner-card">
+<h3>외부 조달·미해결 재료</h3>
+<p class="note">제조식으로 확장하지 않은 재료입니다. 구매가가 있어도 실제 판매 중이라는 의미는 아닙니다.</p>
+<div id="external"></div>
+</section>
+<section class="planner-card">
+<h3>관련 연구 조건</h3>
+<p class="note">규칙에 직접 명시된 연구 ID와 선행 ID를 추적합니다. 유효한 세이브를 선택했다면 <code>discovered</code> 목록에 있는지 표시합니다. 조건의 AND/OR, 이벤트·시설별 잠금은 해석하지 않습니다.</p>
+<div id="research"></div>
+</section>
+<section class="planner-card">
+<h3>제약·불확실성</h3>
+<div id="warnings"></div>
+</section>
+</div>
+</section>
+</main>
+<footer>출처: <a href="../../ruleset/manifest.json">2.1 설치본 SHA-256 명세</a>. 구형 1.1 DB·별도 모드의 규칙은 사용하지 않습니다. 사용자가 선택한 2.1 세이브의 기지 저장량 및 discovered ID만 참고하며 세이브를 서버로 전송하지 않습니다.</footer>
+</body>
+</html>

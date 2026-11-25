@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>X-Piratez 2.1 아이템 DB · 원본 선언값</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./app.js"></script>
+<link rel="stylesheet" href="../branch-soldier-unified-nav.css?v=28">
+<script defer src="../branch-soldier-unified-nav.js?v=28"></script>
+</head>
+<body>
+<header class="site-header">
+  <nav aria-label="바로가기"><a href="../">전체 아틀라스</a><a href="../soldiers/">2.1 병종</a><a href="../items/">기존 1.1 아이템 DB</a></nav>
+  <p class="eyebrow">X-PIRATEZ v.o2 · OXCE 8.7.1 기준</p>
+  <h1>아이템 DB <span>2.1 원본 선언값</span></h1>
+  <p class="intro">v.o2 설치본의 모드 규칙 16개와 동일 설치본의 <code>Language/ko.yml</code>에서 독립 추출한 아이템 정의입니다. 출처 파일을 확인하며 검색하고, 규칙에 직접 선언된 수치를 비교할 수 있습니다.</p>
+  <p class="warning" role="note">이 화면은 <strong>2.1 모드에 정의된 items 항목</strong>만 보여 줍니다. 전투용 가상 항목도 포함되며, 기본 XCOM 항목·별도 활성 모드·OXCE 엔진 기본값·현재 세이브 구매 가능성은 병합 또는 검증하지 않았습니다. 빈 수치는 0을 뜻하지 않습니다. <strong>기존 1.1 DB의 수치는 사용하지 않습니다.</strong></p>
+</header>
+<main>
+  <section class="filter-section" aria-label="검색·정렬">
+    <label class="search-field">이름 또는 ID 검색
+      <input id="search" type="search" placeholder="한글명 · 영문명 · STR_..." autocomplete="off">
+    </label>
+    <label>전투 유형 번호
+      <select id="type"><option value="all">전체</option></select>
+    </label>
+    <label>정렬
+      <select id="sort">
+        <option value="name">이름</option>
+        <option value="id">원본 ID</option>
+        <option value="weight">무게</option>
+        <option value="power">명시 위력</option>
+        <option value="costBuy">명시 구매가</option>
+        <option value="costSell">명시 판매가</option>
+      </select>
+    </label>
+    <label class="check-label"><input id="has-ko" type="checkbox">한국어 번역 있는 항목만</label>
+    <button id="reverse" type="button" class="secondary">정렬 반전</button>
+  </section>
+  <div class="toolbar" role="status" aria-live="polite">
+    <span id="status">데이터를 불러오는 중...</span>
+    <button id="compare-trigger" type="button" disabled>선택 비교 (0/3)</button>
+  </div>
+  <section id="compare" hidden aria-label="아이템 비교">
+    <div class="section-title"><h2>선택한 아이템 비교</h2><button id="compare-close" class="secondary">닫기</button></div>
+    <div id="compare-data" class="compare-scroll"></div>
+  </section>
+  <section id="detail" hidden aria-label="아이템 상세">
+    <div class="section-title"><h2 id="detail-name"></h2><button id="detail-close" class="secondary">닫기</button></div>
+    <p id="detail-meta"></p>
+    <table class="fields-table"><tbody id="detail-fields"></tbody></table>
+  </section>
+  <section aria-label="아이템 목록">
+    <div class="table-scroll">
+      <table class="items-table">
+        <thead><tr><th scope="col">비교</th><th scope="col">아이템</th><th scope="col">battleType</th><th scope="col">무게</th><th scope="col">위력</th><th scope="col">구매가</th><th scope="col">판매가</th><th scope="col">출처</th></tr></thead>
+        <tbody id="items"></tbody>
+      </table>
+    </div>
+    <div class="more"><button id="more" type="button" hidden>100개 더 보기</button></div>
+  </section>
+</main>
+<footer>규칙 파일이 일치하는지 확인하려면 <a href="../ruleset/manifest.json">2.1 파일 해시 목록</a>과 설치본을 대조하세요. 새 데이터는 구형 아틀라스의 연구·제조 수치와 자동으로 결합되지 않습니다.</footer>
+</body>
+</html>
