@@ -1,7 +1,7 @@
-import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=41-multi';
-import {mountMultiFilter} from './branch-soldier-atlas-route-filter.js?v=41-multi';
+import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=42-minima';
+import {mountMultiFilter,mountStatMinimums} from './branch-soldier-atlas-route-filter.js?v=42-minima';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=41-multi';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=42-minima';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive}){
@@ -32,6 +32,7 @@ const context=()=>({profiles,branches,branchCaptains,names,selected});
 const sourceOf=r=>ledgers.find(s=>s.key===r.source);
 const multiChanged=()=>{if(!initial&&isActive()){page=0;sync();render();}};
 const multi=Object.fromEntries([['training','시술'],['trait','보유 특성']].map(([id,label])=>[id,mountMultiFilter($(id),{initial:params.getAll(id),label,onChange:multiChanged})]));
+const minima=mountStatMinimums($('routeFilters').querySelector('.route-filters'),{params,labels,onChange:multiChanged});
 const readValue=id=>multi[id]?multi[id].value():checks.has(id)?$(id).checked:$(id).value;
 const initialValue=id=>multi[id]?'':initial?(params.get(id)??(id==='origin'?params.get('profile'):null)??$(id).value):$(id).value;
 function options(id,values,label){
@@ -55,7 +56,7 @@ function populate(){
  if(matched&&$('b').value&&!sameChoices(branches.get(a),branches.get($('b').value)))$('b').value='';
 }
 function filter(){
- const f=Object.fromEntries(controls.map(id=>[id,readValue(id)]));
+ const f={...Object.fromEntries(controls.map(id=>[id,readValue(id)])),minima:minima.value()};
  return f;
 }
 function sync(){
@@ -63,6 +64,7 @@ function sync(){
  const p=new URLSearchParams(location.search);p.set('group','routes');
  for(const k of [...p.keys()])if(controls.includes(k)||k==='sort'||k==='dir'||k==='stat'||k==='role'||k==='primary'||k.startsWith('role')||k.startsWith('min_')||k==='profile')p.delete(k);
  for(const id of controls){const v=checks.has(id)?($(id).checked?'1':''):readValue(id);if(v&&!(id==='metric'&&v==='cap'))p.set(id,v)}
+ writeStatMinimums(p,minima.value());
  if(sort!=='total')p.set('sort',sort);if(dir==='asc')p.set('dir',dir);
  history.replaceState(null,'',location.pathname+(p.size?'?'+p:'')+location.hash);
 }
@@ -192,7 +194,7 @@ for(const id of controls.filter(k=>k!=='q'&&!multi[k]))$(id).onchange=()=>{
  if((id==='a'||id==='b')&&$(id).value)$('branch').value='';
  page=0;sync();render();
 };
-$('reset').onclick=()=>{initial=false;for(const id of controls)if(multi[id])multi[id].clear();else if(checks.has(id))$(id).checked=false;else if(['q','minDepth','minTraits'].includes(id))$(id).value='';else $(id).selectedIndex=0;sort='total';dir='desc';page=0;populate();sync();render()};
+$('reset').onclick=()=>{initial=false;minima.clear();for(const id of controls)if(multi[id])multi[id].clear();else if(checks.has(id))$(id).checked=false;else if(['q','minDepth','minTraits'].includes(id))$(id).value='';else $(id).selectedIndex=0;sort='total';dir='desc';page=0;populate();sync();render()};
 $('clearPair').onclick=()=>{$('a').value='';$('b').value='';$('sameChoices').checked=false;populate();page=0;sync();render()};
 $('clearSelection').onclick=()=>{selected.clear();$('selectedOnly').checked=false;page=0;sync();render()};
 $('prev').onclick=()=>{page--;render();$('tableScroll').scrollTop=0};$('next').onclick=()=>{page++;render();$('tableScroll').scrollTop=0};$('pageSize').onchange=()=>{page=0;render()};

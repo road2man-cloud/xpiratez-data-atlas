@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum,routeObjective} from './branch-soldier-atlas-career-core.js?v=41-multi';
+import {statKeys,filterRows,sum,routeObjective,routeThreshold} from './branch-soldier-atlas-career-core.js?v=42-minima';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 // Select a single witness for each body under the selected objective. Keep independent
 // ceilings separate: they may come from a different conditional model or route.
@@ -47,7 +47,7 @@ export function indexCareerBranches(rows){
  return byBranch;
 }
 export function branchCareerRows(index,branch,filters={}){
- return filterRows(index.get(branch)||[],{...filters,branch});
+ return filterStatMinimums(filterRows(index.get(branch)||[],{...filters,branch}),filters.minima,filters.metric||'cap');
 }
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
@@ -63,13 +63,36 @@ export function statValue(r,k,metric,profiles){
  const i=statKeys.indexOf(k);
  return k==='total'?sum(v):i>=0?v[i]:null;
 }
+// Minima are conjunctive constraints on the displayed vector of one row.
+export const minimumStatKeys=Object.freeze([...statKeys,'total']);
+export function normalizeStatMinimums(minima={}){
+ return Object.fromEntries(minimumStatKeys.flatMap(k=>{
+  const v=routeThreshold(minima?.[k]);return v===null?[]:[[k,v]];
+ }));
+}
+export function readStatMinimums(params){
+ return normalizeStatMinimums(Object.fromEntries(minimumStatKeys.map(k=>[k,params.get('min_'+k)])));
+}
+export function writeStatMinimums(params,minima){
+ for(const k of minimumStatKeys)params.delete('min_'+k);
+ for(const [k,v] of Object.entries(normalizeStatMinimums(minima)))params.set('min_'+k,String(v));
+ return params;
+}
+export function filterStatMinimums(rows,minima,metric='cap',profiles=new Map()){
+ const entries=Object.entries(normalizeStatMinimums(minima));
+ if(!entries.length)return rows;
+ return rows.filter(r=>entries.every(([k,min])=>{
+  const value=statValue(r,k,metric,profiles);
+  return Number.isFinite(value)&&value>=min;
+ }));
+}
 export function filterTable(rows,f,context){
  const {profiles,branches,names,selected}=context;
  const name=id=>names[id]||id||'',origin=id=>profiles.get(id)?.sourceKoName||profiles.get(id)?.sourceEnName||id;
  const norm=s=>String(s??'').normalize('NFKC').toLocaleLowerCase('ko-KR');
  const tokens=norm(f.q).trim().split(/\s+/).filter(Boolean);
  const pair=new Set([f.a,f.b].filter(Boolean));
- const chosen=filterRows(rows,{...f,branch:pair.size?'':f.branch,body:'',branchCaptains:context.branchCaptains});
+ const chosen=filterStatMinimums(filterRows(rows,{...f,branch:pair.size?'':f.branch,body:'',branchCaptains:context.branchCaptains}),f.minima,f.metric||'cap',profiles);
  return chosen.filter(r=>{
   if(pair.size&&!pair.has(r.branch))return false;
   if(f.body&&(r.body!==f.body))return false;

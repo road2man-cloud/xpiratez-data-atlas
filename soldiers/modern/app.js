@@ -1,8 +1,8 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=41-multi';
-import {loadCareerRows,statKeys,exactCareerUrl,branchUrl} from '../../branch-soldier-atlas-career-core.js?v=41-multi';
-import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=41-multi';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=42-minima';
+import {loadCareerRows,statKeys,exactCareerUrl,branchUrl} from '../../branch-soldier-atlas-career-core.js?v=42-minima';
+import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=42-minima';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
@@ -1410,6 +1410,7 @@ async function init(){try{
     u.searchParams.set('group',group);
     if(group!=='routes'){
       for(const k of ['origin','body','captain','training','trait','minDepth','minTraits','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly','selectedOnly','a','b','sameChoices','sort','dir','stat'])u.searchParams.delete(k);
+       for(const k of [...u.searchParams.keys()])if(k.startsWith('min_'))u.searchParams.delete(k);
       if(activeBranch)u.searchParams.set('branch',activeBranch);else u.searchParams.delete('branch');
     }
     if(group==='body')$('#catalogMetric').value='growth';
