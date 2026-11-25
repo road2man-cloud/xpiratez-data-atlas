@@ -12,16 +12,30 @@ export const statKeys=['tu','stamina','health','bravery','reactions','firing','t
 const validVector=v=>Array.isArray(v)&&v.length===statKeys.length&&v.every(Number.isFinite);
 const strings=x=>Array.isArray(x)?x.filter(v=>typeof v==='string'):[];
 export const sum=v=>v.reduce((a,b)=>a+b,0);
+const stringList=v=>Array.isArray(v)&&v.every(id=>typeof id==='string'&&id.length>0);
+// Frontier's traitTransition records the complete post-replay bonus ID set
+// as "after". Missing or malformed snapshots must never become an empty set.
+export function retainedTraitIds(r){
+ const e=r.traitEvidence;
+ if(stringList(e?.retained))return [...new Set(e.retained)];
+ const transition=(e)=>{
+  if(!stringList(e?.before)||!stringList(e?.after)||!stringList(e?.gained)||!stringList(e?.lost))return null;
+  const a=new Set(e.before),b=new Set(e.after),equal=(x,y)=>x.size===y.size&&[...x].every(id=>y.has(id));
+  if(!equal(new Set(e.gained),new Set([...b].filter(id=>!a.has(id))))||!equal(new Set(e.lost),new Set([...a].filter(id=>!b.has(id)))))return null;
+  return [...b];
+ };
+ return transition(e)??transition(r.rankTraitEvidence);
+}
 export function project(ledger,data,metadata){
  if(data.sourceMetadataSha256!==metadata||!data.routes||typeof data.routes!=='object')throw Error('원장 버전 또는 자료 불일치');
  const rows=[],rejected=[];
  for(const [id,r] of Object.entries(data.routes)){
   // These ledgers explicitly exclude decoration from permanent vectors; growth-only has no medal actions.
   const current=r.permanentVector??r.vector,cap=r.permanentCapVector??r.capVector;
-  if(!validVector(current)||!validVector(cap)||!r.origin||!r.body||!r.branch||!r.fullActionHash||!Array.isArray(r.order)){rejected.push(id);continue;}
+  if(!validVector(current)||!validVector(cap)||!r.origin||!r.body||!r.branch||!r.fullActionHash||!stringList(r.order)){rejected.push(id);continue;}
   rows.push({key:ledger.key+':'+id,id,source:ledger.key,origin:r.origin,body:r.body,branch:r.branch,
    order:strings(r.order),current,cap,hash:r.fullActionHash,difficulties:Array.isArray(r.allowedDifficulties)?r.allowedDifficulties.filter(Number.isInteger):[],
-   traits:r.traitEvidence?strings(r.traitEvidence.retained):null,
+   traits:retainedTraitIds(r),
    traitCounts:r.traitEvidence?.counts??null,requiredResearch:Array.isArray(r.traitEvidence?.requiredResearch)?strings(r.traitEvidence.requiredResearch):null,rank:r.rank??null,medals:r.medals??null,
    rootRoute:r.rootRoute??null,sourceGraph:r.sourceGraph??null,sourceNode:r.sourceNode??null,researchSet:r.researchSet??null,graphSha:data.sourceGraphSha256??null,conditionalScopeComplete:r.conditionalScopeComplete===true,
    fixedModelOptimum:r.fixedModelOptimum?.scope==='FIXED_RESEARCH_DETERMINISTIC_PERMANENT_VECTOR_ONLY'&&validVector(r.fixedModelOptimum.vector)&&r.fixedModelOptimum.vector.every((v,i)=>v===current[i])?r.fixedModelOptimum:null,
@@ -81,10 +95,13 @@ export function routeFilterIds(value){
 export function filterRows(rows,f){
  const depth=routeThreshold(f.minDepth),traits=routeThreshold(f.minTraits);
  const trainingIds=routeFilterIds(f.training),traitIds=routeFilterIds(f.trait);
+ const excludeTraining=routeFilterIds(f.excludeTraining),excludeTrait=routeFilterIds(f.excludeTrait);
 
  return rows.filter(r=>(!f.origin||r.origin===f.origin)&&(!f.body||r.body===f.body)&&(!f.branch||r.branch===f.branch)&&
   (!f.captain||f.branchCaptains?.get(r.branch)?.includes(f.captain))&&
   trainingIds.every(id=>r.order.includes(id))&&traitIds.every(id=>r.traits?.includes(id))&&
+  (!excludeTraining.length||!r.missing&&Array.isArray(r.order)&&excludeTraining.every(id=>!r.order.includes(id)))&&
+  (!excludeTrait.length||Array.isArray(r.traits)&&excludeTrait.every(id=>!r.traits.includes(id)))&&
   (depth===null||!r.missing&&r.order.length>=depth)&&(traits===null||r.traits!==null&&r.traits.length>=traits)&&
   (f.difficulty===''||f.difficulty==null||r.difficulties.includes(Number(f.difficulty)))&&(!f.certified||r.certified));
 }

@@ -40,6 +40,8 @@ body:has(#integratedBranches) main{padding-top:4px}
 .route-multi-chips .route-multi-chip{font:inherit;padding:3px 6px;background:#233c57;border:1px solid #55759a;border-radius:4px;color:inherit;text-align:left;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
 .route-multi-chips .route-multi-chip:hover{border-color:#9cc9f7}
 .route-multi-chips .route-multi-chip:focus-visible{outline:2px solid #a1d8ff;outline-offset:2px}
+.route-multi-filter .route-condition-mode,#integratedBranches .route-multi-filter .route-condition-mode{width:auto;max-width:76px;flex:0 0 auto}
+.route-multi-chips .route-chip-excluded{background:#452e30;border-color:#9b7171}
 .route-stat-minima{flex:1 1 100%;min-width:0;max-width:100%;border:1px solid #385574;border-radius:5px;padding:5px 8px}
 .route-stat-minima>summary{cursor:pointer;font-size:.84rem;font-weight:650;line-height:1.6}
 .route-stat-minima-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:6px;align-items:end;margin:7px 0}

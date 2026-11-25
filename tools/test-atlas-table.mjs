@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows,compileResearchSearch,researchActionId,filterCareerRequirements} from '../public/branch-soldier-atlas-career-core.js';
+import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows,compileResearchSearch,researchActionId,filterCareerRequirements,retainedTraitIds} from '../public/branch-soldier-atlas-career-core.js';
 import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows,normalizeStatMinimums,readStatMinimums,writeStatMinimums,filterStatMinimums} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
@@ -12,11 +12,25 @@ const branches=new Map(registry.branches.map(b=>[b.id,b]));
 const profiles=new Map(modern.profiles.map(p=>[p.id,p]));
 const names=Object.fromEntries([...modern.soldiers,...modern.transformations,...modern.bonuses].map(r=>[r.id,r.koName||r.enName||r.id]));
 const ctx={profiles,branches,names,branchCaptains:new Map([...branches].map(([id,b])=>[id,b.captain])),selected:new Set()};
+let restoredTransitionTraits=0,restoredRankTraits=0;
 const records=ledgers.flatMap(l=>{
  const raw=JSON.parse(gunzipSync(read(l.file+'.json.gz'))),canonical=l.registryKey?registry[l.registryKey]:raw;
  assert(canonical,`missing shared ledger ${l.key}`);
  assert.deepEqual(canonical.routes,raw.routes,`source mismatch ${l.key}`);
- const result=project(l,canonical,metadata);assert.deepEqual(result.rejected,[]);return result.rows;
+ const result=project(l,canonical,metadata);assert.deepEqual(result.rejected,[]);
+ for(const r of result.rows){
+  const source=canonical.routes[r.id];
+  if(Array.isArray(source.traitEvidence?.retained)){
+   assert.deepEqual(r.traits,[...new Set(source.traitEvidence.retained)]);
+  }else if(Array.isArray(source.traitEvidence?.after)){
+   assert.deepEqual(r.traits,[...new Set(source.traitEvidence.after)]);
+   restoredTransitionTraits++;
+  }else if(Array.isArray(source.rankTraitEvidence?.after)){
+   assert.deepEqual(r.traits,[...new Set(source.rankTraitEvidence.after)]);
+   restoredRankTraits++;
+  }else assert.equal(r.traits,null);
+ }
+ return result.rows;
 });
 assert(records.some(r=>r.fixedModelOptimum));
 const rows=rowsWithMissingOrigins(records,modern.profiles);
@@ -141,6 +155,24 @@ const mutuallySeparate=[{...multiSample,key:'one',order:[trainingIds[0]],traits:
 assert.equal(filterRows(mutuallySeparate,multiFilters).length,0);
 assert.equal(filterRows([{...multiSample,traits:null}],multiFilters).length,0);
 assert.equal(filterRows(records,{training:trainingIds[0]}).length,records.filter(r=>r.order.includes(trainingIds[0])).length);
+// Exclusion requires a known snapshot; lack of measurement is not absence.
+assert.equal(retainedTraitIds({traitEvidence:{}}),null);
+assert.deepEqual(retainedTraitIds({traitEvidence:{retained:[]}}),[]);
+assert.equal(retainedTraitIds({traitEvidence:{retained:['T',null]}}),null);
+assert.equal(retainedTraitIds({traitEvidence:{before:['A'],after:['B'],gained:[],lost:['A']}}),null);
+assert.deepEqual(retainedTraitIds({rankTraitEvidence:{before:['A'],after:['A','B'],gained:['B'],lost:[]}}),['A','B']);
+const exclusions={training:trainingIds[0],excludeTraining:trainingIds[1],excludeTrait:traitIds[1]};
+const expectedExcluded=records.filter(r=>r.order.includes(trainingIds[0])&&!r.order.includes(trainingIds[1])&&Array.isArray(r.traits)&&!r.traits.includes(traitIds[1]));
+const excluded=filterTable(rows,exclusions,ctx);
+assert.deepEqual(excluded.map(r=>r.key),expectedExcluded.map(r=>r.key));
+assert.deepEqual(branchCareerRows(branchIndex,multiSample.branch,exclusions).map(r=>r.key),expectedExcluded.filter(r=>r.branch===multiSample.branch).map(r=>r.key));
+assert.equal(filterRows([{...multiSample,traits:null}],{excludeTrait:traitIds[0]}).length,0);
+assert.equal(filterRows([{...multiSample,traits:[]}],{excludeTrait:traitIds[0]}).length,1);
+assert.equal(filterRows([{...multiSample,order:[],missing:true}],{excludeTraining:trainingIds[0]}).length,0);
+assert.equal(filterRows(records,{training:trainingIds[0],excludeTraining:trainingIds[0]}).length,0);
+assert.equal(filterRows(records,{trait:traitIds[0],excludeTrait:traitIds[0]}).length,0);
+assert.deepEqual(filterRows(records,{excludeTraining:[trainingIds[0],trainingIds[1]]}).map(r=>r.key),records.filter(r=>trainingIds.every(id=>!r.order.includes(id))).map(r=>r.key));
+console.log(JSON.stringify({restoredTransitionTraits,restoredRankTraits,measuredTraits:records.filter(r=>r.traits!==null).length,exclusionExample:{...exclusions,matches:excluded.length},unmeasuredTraits:records.filter(r=>r.traits===null).length}));
 console.log(JSON.stringify({multiFilterExample:{training:trainingIds,traits:traitIds,matches:multiMatches.length,branchMatches:expectedMulti.filter(r=>r.branch===multiSample.branch).length}}));
 const deep=filterTable(rows,{minDepth:'8',minTraits:'5'},ctx);
 assert(deep.every(r=>r.order.length>=8&&r.traits!==null&&r.traits.length>=5));

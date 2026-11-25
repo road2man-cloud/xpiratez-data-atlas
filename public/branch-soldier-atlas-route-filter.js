@@ -1,27 +1,39 @@
-import {routeFilterIds,routeThreshold,loadResearchSearch} from './branch-soldier-atlas-career-core.js?v=43-research';
-import {minimumStatKeys,readStatMinimums} from './branch-soldier-atlas-table-core.js?v=43-research';
+import {routeFilterIds,routeThreshold,loadResearchSearch} from './branch-soldier-atlas-career-core.js?v=44-exclusion';
+import {minimumStatKeys,readStatMinimums} from './branch-soldier-atlas-table-core.js?v=44-exclusion';
 // The original dropdown is reused as an add control. One compact removable list
 // shows all active conditions; no Ctrl-click, modal or extra database is needed.
-export function mountMultiFilter(select,{initial='',label,onChange}){
- let ids=routeFilterIds(initial);
+export function mountMultiFilter(select,{initial='',excludeInitial=null,label,onChange}){
+ let ids=routeFilterIds(initial),excluded=routeFilterIds(excludeInitial);
+ const allowExclusion=excludeInitial!==null;
  const host=document.createElement('span');host.className='route-multi-filter';
- select.before(host);host.append(select);
+ select.before(host);
+ const mode=allowExclusion?document.createElement('select'):null;
+ if(mode){mode.className='route-condition-mode';mode.setAttribute('aria-label',label+' 조건 방식');mode.title=label==='시술'?'제외: 등록 시술 순서에 없는 항목':'제외: 측정된 보유 특성에 없는 항목 (미측정 제외)';mode.append(new Option('포함','include'),new Option('제외','exclude'));host.append(mode);}
+ host.append(select);
  const chips=document.createElement('span');chips.className='route-multi-chips';chips.setAttribute('aria-label',label+' 선택 조건');host.append(chips);
  const itemName=id=>[...select.options].find(o=>o.value===id)?.textContent||id;
  function refresh(){
-  select.value='';if(select.options[0])select.options[0].textContent=label+' 추가…';
-  for(const o of select.options)if(o.value)o.disabled=ids.includes(o.value);
+  const negative=mode?.value==='exclude',active=negative?excluded:ids;
+  select.value='';if(select.options[0])select.options[0].textContent=label+(negative?' 제외…':' 추가…');
+  for(const o of select.options)if(o.value)o.disabled=active.includes(o.value);
   chips.replaceChildren();
-  for(const id of ids){
-   const button=document.createElement('button');button.type='button';button.className='route-multi-chip';
-   button.textContent=itemName(id)+' ×';button.title=id;button.setAttribute('aria-label',itemName(id)+' 조건 제거');
-   button.onclick=()=>{ids=ids.filter(v=>v!==id);refresh();onChange();select.focus();};
+  for(const [kind,items] of [['include',ids],['exclude',excluded]])for(const id of items){
+   const button=document.createElement('button');button.type='button';button.className='route-multi-chip'+(kind==='exclude'?' route-chip-excluded':'');
+   const prefix=kind==='exclude'?'제외: ':'';
+   button.textContent=prefix+itemName(id)+' ×';button.title=id;button.setAttribute('aria-label',prefix+itemName(id)+' 조건 제거');
+   button.onclick=()=>{if(kind==='exclude')excluded=excluded.filter(v=>v!==id);else ids=ids.filter(v=>v!==id);refresh();onChange();select.focus();};
    chips.append(button);
   }
  }
- select.addEventListener('change',()=>{const id=select.value;if(!id||ids.includes(id))return;ids.push(id);refresh();onChange();});
+ mode?.addEventListener('change',refresh);
+ select.addEventListener('change',()=>{
+  const id=select.value,negative=mode?.value==='exclude';if(!id)return;
+  if(negative){if(excluded.includes(id))return;excluded.push(id);ids=ids.filter(v=>v!==id);}
+  else{if(ids.includes(id))return;ids.push(id);excluded=excluded.filter(v=>v!==id);}
+  refresh();onChange();
+ });
  refresh();
- return {value:()=>ids.join(','),clear(){ids=[];refresh();},refresh};
+ return {value:()=>ids.join(','),excluded:()=>excluded.join(','),clear(){ids=[];excluded=[];if(mode)mode.value='include';refresh();},refresh};
 }
 // One compact expandable filter shared by both existing tables.
 export function mountStatMinimums(host,{params,labels,onChange}){
