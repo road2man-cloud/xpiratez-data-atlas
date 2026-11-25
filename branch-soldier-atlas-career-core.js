@@ -1,5 +1,6 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
 export const ledgers=[
+ {key:'missingbirth',file:'soldier-population-missing-origin-career',label:'미연결 출생처 모집·육성',index:'soldier-population-missing-origin-career-index'},
  {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},
  {key:'frontier',registryKey:'populationFrontierChronology',file:'soldier-population-frontier-chronology',label:'시간순 육성',index:'soldier-final-career-research-index'},
  {key:'newpair',registryKey:'populationNewPairCareer',file:'soldier-population-new-pair-career',label:'모집 후 육성',index:'soldier-new-pair-research-index'},
@@ -29,6 +30,7 @@ export function project(ledger,data,metadata){
    retention:r.retention?.scope==='ACTUAL_REPLAYED_GRAPH_ROOT_TRAIT_DELTA'&&Array.isArray(r.retention.before)&&Array.isArray(r.retention.after)&&Array.isArray(r.retention.gained)&&Array.isArray(r.retention.lost)&&JSON.stringify([...r.retention.after].sort())===JSON.stringify(strings(r.traitEvidence?.retained).sort())&&JSON.stringify([...r.retention.gained].sort())===JSON.stringify(r.retention.after.filter(k=>!r.retention.before.includes(k)).sort())&&JSON.stringify([...r.retention.lost].sort())===JSON.stringify(r.retention.before.filter(k=>!r.retention.after.includes(k)).sort())&&r.retention.lossless===(r.retention.gained.length>0&&r.retention.lost.length===0)?r.retention:null,
    resetRecovery:r.resetRecovery?.scope==='CONCRETE_LAST_RESET_LINEAGE'&&r.order.includes(r.resetRecovery.action)&&Array.isArray(r.resetRecovery.beforeTraits)&&Array.isArray(r.resetRecovery.afterTraits)&&Array.isArray(r.resetRecovery.currentTraits)&&Array.isArray(r.resetRecovery.removed)&&Array.isArray(r.resetRecovery.regained)&&Array.isArray(r.resetRecovery.newAfterReset)&&Array.isArray(r.resetRecovery.newVsBefore)&&Array.isArray(r.resetRecovery.lostVsBefore)&&validVector(r.resetRecovery.beforeVector)&&validVector(r.resetRecovery.afterVector)&&JSON.stringify([...r.resetRecovery.currentTraits].sort())===JSON.stringify(strings(r.traitEvidence?.retained).sort())&&r.resetRecovery.netSinceReset===r.resetRecovery.currentTraits.length-r.resetRecovery.afterTraits.length?r.resetRecovery:null,
    researchDiscovery:r.researchDiscovery?.scope==='PREVIOUSLY_UNREPRESENTED_BRANCH_GOAL'&&r.researchDiscovery.resultSet===r.researchSet&&Array.isArray(r.researchDiscovery.goal)&&r.researchDiscovery.goal.length?r.researchDiscovery:null,
+   birthEvidence:r.birthEvidence?.scope==='CONDITIONAL_MIN_RECRUITMENT'&&Number.isSafeInteger(r.birthEvidence.birthAt)&&r.birthEvidence.birthAt>=0&&Number.isInteger(r.birthEvidence.birthMonth)&&r.birthEvidence.birthMonth>=0&&Array.isArray(r.birthEvidence.requiredResearch)?r.birthEvidence:null,
    certified:r.actualGameCertified===true});
  }
  return {rows,rejected};
@@ -43,7 +45,7 @@ export function rankRows(rows,metric='cap',stat='total'){
  const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
  return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
 }
-export function routeUrl(r){return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
+export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
 export function branchUrl(id){return 'captains/?'+new URLSearchParams({branch:id})+'#integratedBranches';}
 export function readResearchWitness(index,r,metadata){
  if(index.sourceMetadataSha256!==metadata)throw Error('연구 인덱스 버전 불일치');
@@ -63,6 +65,7 @@ export function readResearchWitness(index,r,metadata){
   const visited=new Set();fullActions=[];let p=w.fullPrefix;
   while(p!==null){if(!Number.isInteger(p)||p<0||p>=all.length||visited.has(p))throw Error('전체 행동 이력 연결 오류');visited.add(p);const node=all[p];if(node.action)fullActions.push(node.action);p=node.parent;}
   fullActions.reverse();if(fullActions.length!==w.actionCount)throw Error('전체 행동 수 불일치');
+  if(r.birthEvidence){const a=fullActions[r.birthEvidence.birthAt];if(a?.type!=='recruit'||a.profile!==r.origin||a.soldier!=='origin'||a.band!=='min')throw Error('출생 행동 연결 불일치');}
  }
  return {actions:actions.reverse(),gates:w.transformGates??[],history:w.history,fullActions};
 }

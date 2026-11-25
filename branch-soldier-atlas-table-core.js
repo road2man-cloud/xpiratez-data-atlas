@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=37-discovery-unified';
+import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=38-coverage-unified';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
