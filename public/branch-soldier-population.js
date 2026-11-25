@@ -1,5 +1,5 @@
 import {integratedCoverageText,integratedScopeMarkup} from "./branch-soldier-integrated-coverage.js?v=20261125-v17";
-import {newPairEntryMarkup,newPairEntryScopeMarkup} from "./branch-soldier-new-pair-entry.js?v=20261125-v18";
+import {newPairEntryMarkup,newPairEntryScopeMarkup} from "./branch-soldier-new-pair-entry.js?v=20261126-v19";
 import {careerFrontierMarkup,careerFrontierOriginMarkup} from "./branch-soldier-career-frontier.js?v=20261125-career-frontier-5";
 import {growthReplayCoverage,growthReplayMarkup,growthReplayBranchMarkup,growthReplayOriginMarkup} from "./branch-soldier-growth-replay.js?v=20261125-pop-growth-career-v2";
 import {chronologicalCareerCoverage,chronologicalCareerMarkup,chronologicalCareerBranchMarkup,chronologicalCareerOriginMarkup} from "./branch-soldier-chronological-career.js?v=20261125-pop-career-scheduler-3";
