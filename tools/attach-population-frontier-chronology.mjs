@@ -10,6 +10,7 @@ import {sha,key,sum,dominates} from "./population-research-career-core.mjs";
 import {recoveryProposal} from "./population-frontier-recovery-core.mjs";
 import {RANK_POLICY,defaultRankData} from "./population-frontier-default-rank.mjs";
 import {proveBirthAppend} from "./population-frontier-birth-migration.mjs";
+import {proveCatalogExtension} from "./population-frontier-catalog-extension.mjs";
 import {baseBirthProposals} from "./population-frontier-birth-proposals.mjs";
 import {chainProposal} from "./population-frontier-chain-proposals.mjs";
 import {extendedChainProposal,successorKey} from "./population-frontier-chain-extended.mjs";
@@ -40,7 +41,8 @@ for(const k of ["fullCompleted","actualGameCertified","globalOptimalCertified"])
 if(db[LEDGER]){
  const old=db[LEDGER];
  if(old.fingerprint!==a.fingerprint){
-  if(a.migration?.kind==="APPEND_ONLY_BIRTH_CATALOG")assert.deepEqual(a.migration.birthAppend,proveBirthAppend(db,old));
+  if(a.migration?.kind==="APPEND_ONLY_CATALOG_BOTH_FAMILIES")assert.deepEqual(a.migration.birthExtension,proveCatalogExtension(db,old,a.migration.birthExtension.oldInputs));
+  else if(a.migration?.kind==="APPEND_ONLY_BIRTH_CATALOG")assert.deepEqual(a.migration.birthAppend,proveBirthAppend(db,old));
   else{assert.equal(a.migration?.kind,"WORKLIST_AND_PREFIX_ONLY");const {baseline:ob,...os}=old.source;assert.deepEqual(os,stable);}
   assert.equal(a.migration.fromFingerprint,old.fingerprint);
   assert(a.migration.fromRoutes>=old.summary.registeredRoutes);

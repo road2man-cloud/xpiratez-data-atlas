@@ -1,0 +1,25 @@
+// Rebase already merged V14 evidence on an append-only expanded catalogue.
+import fs from "node:fs";
+import assert from "node:assert/strict";
+import {execFileSync} from "node:child_process";
+import {gunzipSync,gzipSync} from "node:zlib";
+import {MODEL,LEDGER,birthCatalog,sourceIdentity} from "./population-frontier-chronology-core.mjs";
+import {sha,key} from "./population-research-career-core.mjs";
+import {proveCatalogExtension} from "./population-frontier-catalog-extension.mjs";
+import {coverageIndex,orderMissing} from "./population-frontier-coverage-seeds.mjs";
+const decode=x=>JSON.parse(gunzipSync(x)),db=decode(fs.readFileSync("public/data/branch-soldier-results.json.gz")),prior=db[LEDGER];
+const old=decode(execFileSync("git",["show",(process.argv[2]||"50d4ebb")+":public/data/branch-soldier-results.json.gz"],{maxBuffer:100000000}));
+const a=decode(fs.readFileSync("population-frontier-chronology-v14-merged.json.gz")),oldInputs=birthCatalog(old).map(r=>r.input);
+assert.equal(old[LEDGER].fingerprint,prior.fingerprint);
+assert.equal(a.source.births,prior.source.births);
+for(const [id,r] of Object.entries(prior.routes))assert.deepEqual(a.routes[id],r);
+for(const [id,t] of Object.entries(prior.attempts))assert.deepEqual(a.attempts[id],t);
+for(const [p,h] of Object.entries(prior.hashes))assert.equal(a.hashes[p],h);
+const source=sourceIdentity(db),{baseline,...stable}=source,proof=proveCatalogExtension(db,prior,oldInputs);
+const hashes={...a.hashes};for(const p of ["tools/population-frontier-catalog-extension.mjs","tools/migrate-population-coverage-v14.mjs"])hashes[p]=sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"));
+const fingerprint=key([MODEL,db.sourceMetadataSha256,stable,hashes]),migration={kind:"APPEND_ONLY_CATALOG_BOTH_FAMILIES",fromFingerprint:prior.fingerprint,fromRoutes:prior.summary.registeredRoutes,fromAttempts:Object.keys(prior.attempts).length,birthExtension:proof};
+const idx=coverageIndex(a.routes,birthCatalog(db)),data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
+const summary={...a.summary,birthInputs:proof.newCount,coverage:idx.summary,coverageSeedRemaining:orderMissing(idx,a.attempts,db,data).length};
+const result={...a,source,hashes,fingerprint,migration,summary};
+const output="population-frontier-chronology-v14-migrated.json.gz";fs.writeFileSync(output+".tmp",gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(output+".tmp",output);
+console.log(JSON.stringify({output,oldCount:proof.oldCount,newCount:proof.newCount,added:proof.added.length,coverage:summary.coverage,coverageSeedRemaining:summary.coverageSeedRemaining}));
