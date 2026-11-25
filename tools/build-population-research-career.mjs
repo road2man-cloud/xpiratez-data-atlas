@@ -137,15 +137,30 @@ if(!stateQueueMode)for(const t of queue){
 // Persistent, depth-independent continuation queue. Exact action histories
 // are deduplicated; numeric dominance never prevents further expansion.
 if(stateQueueMode){
- const pending=[],known=new Set();
+ const pending=[],known=new Set(),activeFollow=process.argv.includes("--active-follow");
+ const depth=s=>s.goals.length;
+ const finished=s=>s.done&&(!activeFollow||s.activeDone);
+ const outcome=(s,k,status,reason)=>{s.outcomes??={};s.outcomes[k]={status,...(reason?{reason}: {})};};
  function enqueue(s){
   const id=key([s.seed,s.ledger,s.actions,s.goals]);
   if(!continuationStates[id])continuationStates[id]={...s,cursor:0};
-  if(!known.has(id)&&!continuationStates[id].done){known.add(id);pending.push(id);}
+  if(!known.has(id)&&!finished(continuationStates[id])){known.add(id);pending.push(id);}
  }
- for(const [id,s] of Object.entries(continuationStates))if(!s.done){known.add(id);pending.push(id);}
+ for(const [id,s] of Object.entries(continuationStates))if(!finished(s)){known.add(id);pending.push(id);}
  for(const r of Object.values(routes).sort((a,b)=>(b.researchGoals?.length||Number(!!b.tertiaryGoal)+Number(!!b.secondaryGoal)+1)-(a.researchGoals?.length||Number(!!a.tertiaryGoal)+Number(!!a.secondaryGoal)+1)))enqueue({seed:r.seed,ledger:r.seedLedger,actions:r.actions,goals:r.researchGoals||[r.goal,r.secondaryGoal,r.tertiaryGoal].filter(Boolean),stateHash:r.canonicalStateHash});
+ // Interleave depths, deepest first. Do not leave newly discovered long
+ // careers behind every shallow seed on each subsequent bounded run.
+ const buckets=new Map();for(const id of pending){const d=depth(continuationStates[id]);if(!buckets.has(d))buckets.set(d,[]);buckets.get(d).push(id);}
+ const tiers=[...buckets].sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
+ pending.length=0;for(let i=0;tiers.some(x=>i<x.length);i++)for(const x of tiers)if(x[i])pending.push(x[i]);
  m.queueAttempts=0;m.queueSuccess=0;m.queueExpanded=0;m.queueFailures=0;m.queueProbeRejected=0;
+ m.queueActiveAttempts=0;m.queueActiveSuccess=0;m.queueActiveExpanded=0;m.queueNoop=0;
+ function successor(s,t,b,x,goals){
+  const g=replay.grow(x),stateHash=exactWorld(g.world);
+  if(stateHash===s.stateHash){m.queueNoop++;return;}
+  enqueue({seed:s.seed,ledger:s.ledger,actions:g.steps,goals,stateHash});
+  register(t,b,x,...goals);
+ }
  for(let i=0;i<pending.length&&timely();i++){
   const s=continuationStates[pending[i]];
   try{
@@ -157,20 +172,34 @@ if(stateQueueMode){
    const signature=key(targets.map(r=>r.id));if(s.targetSignature)assert.equal(s.targetSignature,signature);s.targetSignature=signature;
    for(;s.cursor<targets.length&&timely();s.cursor++){
     const r=targets[s.cursor],candidate=engine.probe(grown,r)?grown:engine.probe(n,r)?n:null;
-    if(!candidate){m.queueProbeRejected++;continue;}
+    if(!candidate){m.queueProbeRejected++;outcome(s,r.id,"PROBE_REJECTED");continue;}
     m.goalAttempts++;m.queueAttempts++;
     try{
      const q=engine.plan(candidate,b.r.branch,b.birth,r);
-     if(!q.ok){m.queueFailures++;continue;}
+     if(!q.ok){m.queueFailures++;outcome(s,r.id,"LIMITED_UNRESOLVED",q.reason);continue;}
      const x=replay.transform(q.n,r);
-     if(!x||!engine.context(b.r.branch,b.p,[...b.birth,...x.steps],x.world).some(i=>b.r.allowedDifficulties.includes(i))){m.queueFailures++;continue;}
-     m.queueSuccess++;
-     const goals=[...s.goals,r.id],g=replay.grow(x);
-     register(t,b,x,...goals);
-     enqueue({seed:s.seed,ledger:s.ledger,actions:g.steps,goals,stateHash:exactWorld(g.world)});
-    }catch(e){m.queueFailures++;}
+     if(!x||!engine.context(b.r.branch,b.p,[...b.birth,...x.steps],x.world).some(i=>b.r.allowedDifficulties.includes(i))){m.queueFailures++;outcome(s,r.id,"TRANSFORM_OR_CONTEXT_REJECTED");continue;}
+     successor(s,t,b,x,[...s.goals,r.id]);m.queueSuccess++;outcome(s,r.id,"CONDITIONAL_REPLAY");
+    }catch(e){m.queueFailures++;outcome(s,r.id,"LIMITED_UNRESOLVED",String(e.message));}
    }
-   if(s.cursor===targets.length){s.done=true;m.queueExpanded++;}
+   if(s.cursor===targets.length&&!s.done){s.done=true;m.queueExpanded++;}
+   // A research-free transformation can open a new body and future research
+   // options. Keep the same research-goal chain, but preserve its action witness.
+   if(activeFollow&&!s.activeDone){
+    const active=(engine.byBody.get(member(grown.world).state.soldierType)||[]).filter(r=>r.requires.every(k=>replay.active(grown.world,k))).sort((a,b)=>a.id.localeCompare(b.id));
+    const sig=key(active.map(r=>r.id));if(s.activeSignature)assert.equal(s.activeSignature,sig);s.activeSignature=sig;
+    s.activeCursor??=0;
+    for(;s.activeCursor<active.length&&timely();s.activeCursor++){
+     const r=active[s.activeCursor];m.goalAttempts++;m.queueActiveAttempts++;
+     try{
+      const x=replay.transform(grown,r);
+      if(!x||b.birth.length+x.steps.length>1800||!engine.context(b.r.branch,b.p,[...b.birth,...x.steps],x.world).some(i=>b.r.allowedDifficulties.includes(i))){outcome(s,"active:"+r.id,"TRANSFORM_OR_CONTEXT_OR_BUDGET_REJECTED");continue;}
+      successor(s,t,b,x,s.goals);m.queueActiveSuccess++;outcome(s,"active:"+r.id,"CONDITIONAL_REPLAY");
+     }catch(e){outcome(s,"active:"+r.id,"LIMITED_UNRESOLVED",String(e.message));}
+    }
+    if(s.activeCursor===active.length){s.activeDone=true;m.queueActiveExpanded++;}
+   }
+   delete s.error;
   }catch(e){s.error=String(e.message);m.seedFailures++;}
  }
 }
@@ -187,5 +216,7 @@ summary.continuationStates=Object.keys(continuationStates).length;
 summary.continuationPending=Object.values(continuationStates).filter(s=>!s.done).length;
 summary.maxResearchStages=Math.max(0,...all.map(r=>r.researchGoals?.length||1+Number(!!r.secondaryGoal)+Number(!!r.tertiaryGoal)));
 summary.fourPlusStageRoutes=all.filter(r=>(r.researchGoals?.length||0)>3).length;
+summary.activeContinuationPending=Object.values(continuationStates).filter(s=>!s.activeDone).length;
+summary.queueOutcomeCounts={};for(const s of Object.values(continuationStates))for(const o of Object.values(s.outcomes||{}))summary.queueOutcomeCounts[o.status]=(summary.queueOutcomeCounts[o.status]||0)+1;
 const result={schemaVersion:1,kind:"POPULATION_RESEARCH_CAREER",model:MODEL,fingerprint,hashes,seedCacheHashes,planTemplates:engine.templates,sourceMetadataSha256:db.sourceMetadataSha256,sourceFingerprints:fingerprints,routes,attempts,visited,retryHistory,continuationStates,summary,totals,scope:"Chronological source recruitment and research, extra research actions replayed with branch commitments preserved, assumed cap growth, promotion and required medal decoration, deterministic transformations; conditional supplies and events. Permanent vectors exclude medal bonuses. Bounded goal/seed/follow-up search; failed attempts do not imply impossibility."};
 fs.writeFileSync(output+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(output+".tmp",output);console.log(JSON.stringify(summary));
