@@ -5,6 +5,9 @@ import {ledgers,project,loadCareerRows,completionScope,readResearchWitness} from
 import {admitVerified,normalizedCombination} from './atlas-career-completion-core.mjs';
 import {key} from './population-research-career-core.mjs';
 import {digest} from './final-combination-production.mjs';
+import {loadFinancedDetail} from './atlas-financed-career-detail-store.mjs';
+import {createCareerReplay} from './population-chronological-career-core.mjs';
+import {financedSoldierSignature} from './atlas-financed-career-calendar.mjs';
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync('public/data/'+f+'.json.gz')));
 const modern=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json')),db=gz('branch-soldier-results'),c=completionScope(modern,db);
 const all=ledgers.flatMap(l=>project(l,gz(l.file),db.sourceMetadataSha256).rows);
@@ -202,4 +205,42 @@ if(codex){
   for(const id of r.linkedPlanIds){assert.equal(c.terminalSupply.plans[id].graph,r.graph);assert.equal(c.terminalSupply.plans[id].node,r.node);}
  }
 }
-console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0,codexScenarios:codex?.summary.scenarios??0,codexSameSoldier:codex?.summary.sameSoldierFullReplays??0}));
+const financed=c.financedCareerCalendar;
+let independentlyReplayed=0;
+if(financed){
+ assert.equal(key(financed.sourceHashes),key(c.sourceHashes));
+ assert.equal(financed.codexFingerprint,codex.producerFingerprint);
+ assert.equal(financed.sourceEvidence.fingerprint,codex.sourceEvidence.fingerprint);
+ const list=Object.values(financed.records),s=financed.summary;
+ assert.equal(list.length,s.scenarios);assert.equal(s.completeCampaigns,0);
+ assert.equal(list.filter(r=>r.status.startsWith("FULL_")).length,s.fullLogicalReplays);
+ assert.equal(list.filter(r=>r.sameSoldierState&&!r.missingOriginalActiveResearchCount).length,s.sameSoldierFullReplays);
+ assert.equal(list.reduce((n,r)=>n+r.financeGates.filter(g=>g.event==="STR_THE_GREAT_CAUSE"&&g.met).length,0),s.greatCauseFundsMet);
+ assert.equal(list.reduce((n,r)=>n+r.counts.deadlineResolved,0),s.deadlineEventsReordered);
+ assert.equal(new Set(list.map(r=>r.detailHash)).size,s.detailShards);
+ modern.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
+ modern.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
+ const replay=createCareerReplay(modern),tested=new Set();
+ for(const r of list){
+  const x=loadFinancedDetail(r),p=codex.prefixes[r.prefixHash];
+  assert.equal(codex.records[r.codexId].prefixId,r.prefixHash);assert.equal(rows.get(r.routeId).hash,r.actionHash);
+  const {routeId,origin,branch,graph,node,linkedPlanIds,codexId,options,originalSoldierSignature,sameSoldierState,missingOriginalActiveResearch,calendarHash,...content}=x;
+  assert.equal(key(content),calendarHash);assert.equal(calendarHash,r.calendarHash);
+  assert.equal(missingOriginalActiveResearch.length,r.missingOriginalActiveResearchCount);
+  assert.equal(x.unresolved.length,r.counts.unresolved);assert.equal(x.logicalSteps.length,r.counts.logicalSteps);assert.equal(x.transactions.length,r.counts.transactions);
+  assert.equal(x.scenario.openingCash,p.finance.closingCash);
+  let cash=x.scenario.openingCash,min=cash,last=x.prefixHours;
+  for(const e of x.transactions){assert(e.hour>=last);last=e.hour;assert(Number.isSafeInteger(e.amount));cash+=e.amount;min=Math.min(min,cash);assert.equal(cash,e.cash);assert(cash>=0);}
+  assert.equal(cash,x.closingCash);assert.equal(min,x.minimumCash);assert.equal(Math.min(min,p.finance.minimumCash),x.wholePrefixMinimumCash);
+  for(const g of x.financeGates){assert.equal(g.met,g.dispatchCash>=g.minimum&&(g.maximum===null||g.dispatchCash<=g.maximum));assert(x.monthly.some(m=>m.month===g.dispatchMonth&&m.cash===g.dispatchCash));}
+  for(const a of x.logicalSteps)if(a.action.type==="externalInputs")assert.equal(a.action.funds,0);
+  for(const g of x.sourceRewards)assert(x.eventGates.some(e=>e.at===g.at&&e.kind!=="blocked"));
+  if(x.status.startsWith("FULL_")&&!tested.has(x.origin)){
+   tested.add(x.origin);let w=replay.replay(p.steps);
+   for(const a of x.logicalSteps){w=replay.apply({...w,month:a.month,funds:a.funds},a.action);w={...w,month:a.afterMonth,funds:a.afterFunds};}
+   assert(!w.pendingFree);assert.equal(financedSoldierSignature(w,replay),x.finalSoldierSignature);independentlyReplayed++;
+  }
+  assert.equal(x.completeCampaigns,0);
+ }
+}
+console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0,codexScenarios:codex?.summary.scenarios??0,codexSameSoldier:codex?.summary.sameSoldierFullReplays??0,financedScenarios:financed?.summary.scenarios??0,independentlyReplayed}));
