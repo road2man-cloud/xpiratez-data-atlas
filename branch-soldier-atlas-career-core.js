@@ -24,6 +24,7 @@ export function project(ledger,data,metadata){
    traitCounts:r.traitEvidence?.counts??null,requiredResearch:Array.isArray(r.traitEvidence?.requiredResearch)?strings(r.traitEvidence.requiredResearch):null,rank:r.rank??null,medals:r.medals??null,
    rootRoute:r.rootRoute??null,sourceGraph:r.sourceGraph??null,sourceNode:r.sourceNode??null,researchSet:r.researchSet??null,graphSha:data.sourceGraphSha256??null,conditionalScopeComplete:r.conditionalScopeComplete===true,
    fixedModelOptimum:r.fixedModelOptimum?.scope==='FIXED_RESEARCH_DETERMINISTIC_PERMANENT_VECTOR_ONLY'&&validVector(r.fixedModelOptimum.vector)&&r.fixedModelOptimum.vector.every((v,i)=>v===current[i])?r.fixedModelOptimum:null,
+   researchTransition:r.researchTransition?.scope==='CONDITIONAL_RESEARCH_TRANSITION_ONLY'&&r.researchTransition.resultSet===r.researchSet&&Array.isArray(r.researchTransition.beforeAxes)&&r.researchTransition.beforeAxes.length===12&&Array.isArray(r.researchTransition.afterAxes)&&r.researchTransition.afterAxes.length===12&&Array.isArray(r.researchTransition.actualExceeded)&&r.researchTransition.actualExceeded.length===12&&r.researchTransition.actualExceeded.every((v,i)=>r.researchTransition.beforeAxes[i]===null?v===null:Number.isFinite(r.researchTransition.beforeAxes[i])&&v===Math.max(0,current[i]-r.researchTransition.beforeAxes[i]))&&r.researchTransition.exceededAxes===r.researchTransition.actualExceeded.filter(v=>v>0).length?r.researchTransition:null,
    certified:r.actualGameCertified===true});
  }
  return {rows,rejected};
