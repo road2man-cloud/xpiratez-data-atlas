@@ -172,4 +172,34 @@ if(researchCalendar){
  }
  assert.equal(count,s.calendarResearchActions);
 }
-console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0}));
+const codex=c.codexSourcePrefixes;
+if(codex){
+ const {fingerprint,...src}=codex.sourceEvidence;assert.equal(key(src),fingerprint);
+ const {fingerprint:eventFingerprint,...eventSrc}=codex.eventSourceEvidence;assert.equal(digest(eventSrc),eventFingerprint);
+ assert.equal(key(codex.sourceHashes),key(c.sourceHashes));
+ const list=Object.values(codex.records),s=codex.summary;
+ assert.equal(list.length,s.scenarios);assert.equal(s.completeCampaigns,0);
+ assert.equal(list.filter(r=>r.status==="CONDITIONAL_FULL_SUFFIX_REPLAY_SAME_SOLDIER").length,s.sameSoldierFullReplays);
+ for(const [id,p] of Object.entries(codex.prefixes)){
+  if(p.status==="SOURCE_BOUND_CODEX_PREFIX"){
+   const {prefixHash,...content}=p;assert.equal(key(content),prefixHash);assert.equal(prefixHash,id);
+   assert.equal(key(p.steps),p.stepHash);assert(p.stock[p.target]>=1);
+   assert.equal(p.sourceFingerprint,eventFingerprint);
+   assert(p.workshop>p.schedule.find(x=>x.type==="MANUFACTURE_ANOMALY").space);
+   assert(p.schedule.some(x=>x.type==="EVENT_DELIVERY"&&x.rewards[p.target]>=1));
+  }else assert.equal(key(p),id);
+  assert.equal(p.completeCampaigns,0);
+  if(p.finance){
+   let cash=p.finance.openingCash,min=cash,h=-1;
+   for(const x of p.finance.cashLedger){assert(x.hour>=h);h=x.hour;assert(Number.isSafeInteger(x.amount));cash+=x.amount;min=Math.min(min,cash);assert.equal(cash,x.cash);assert(cash>=0);}
+   assert.equal(cash,p.finance.closingCash);assert.equal(min,p.finance.minimumCash);
+  }
+ }
+ for(const r of list){
+  assert.equal(rows.get(r.routeId).hash,r.originalActionHash);
+  const p=codex.prefixes[r.prefixId];assert(p);
+  if(r.suffix)assert.equal(key([...p.steps,...r.suffix]),r.stepHash);
+  for(const id of r.linkedPlanIds){assert.equal(c.terminalSupply.plans[id].graph,r.graph);assert.equal(c.terminalSupply.plans[id].node,r.node);}
+ }
+}
+console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0,codexScenarios:codex?.summary.scenarios??0,codexSameSoldier:codex?.summary.sameSoldierFullReplays??0}));

@@ -42,6 +42,18 @@ try{
    assert.equal(await row.locator('[data-cash-ledger-rows] li').count(),100);
   }
  }
+ if(db.careerCompletion.codexSourcePrefixes){
+  const s=db.careerCompletion.codexSourcePrefixes.summary;
+  assert.equal(await page.locator('[data-codex-source-scenario]').count(),s.scenarios);
+  assert.equal(await page.locator('[data-codex-finite="true"]').count(),s.finiteCashRouteScenarios);
+  const id=await page.locator('[data-codex-finite="true"]').first().getAttribute('data-codex-source-scenario');
+  const row=page.locator('[data-codex-source-detail="'+id+'"]');
+  await row.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+  await row.locator('[data-codex-actions] li').first().waitFor();
+  assert((await row.innerText()).includes('유한자금 장부'));
+  await row.locator('[data-codex-cash]').evaluate(el=>el.open=true);
+  await row.locator('[data-codex-cash-rows] li').first().waitFor();
+ }
  if(db.careerCompletion.researchCalendar){
   assert.equal(await page.locator('[data-research-calendar]').count(),db.careerCompletion.researchCalendar.summary.scenarios);
   const row=page.locator('[data-research-calendar-detail]').first();
