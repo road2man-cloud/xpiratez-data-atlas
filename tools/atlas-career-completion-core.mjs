@@ -17,7 +17,7 @@ function canon(x){
  if(x&&typeof x==="object")return Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])]));
  return x;
 }
-function fullActions(ledger,row,raw,db,index){
+export function reconstructCareerActions(ledger,row,raw,db,index){
  if(row.sourceGraph)return readResearchWitness(index,row,db.sourceMetadataSha256).fullActions;
  if(ledger.key==="newpair"){
   const entry=db.populationNewPairEntry,s=entry.routes[raw.seed];
@@ -37,7 +37,7 @@ export function evidenceIdentity(row){return key([row.origin,row.branch,row.hash
 export function classifyCandidate({ledger,row,raw,db,index}){
  let actions=null,traceError=null;
  try{
-  actions=fullActions(ledger,row,raw,db,index);
+  actions=reconstructCareerActions(ledger,row,raw,db,index);
   if(!Array.isArray(actions)||key(actions)!==row.hash)throw Error("ACTION_HASH_MISMATCH");
   const births=actions.filter(a=>a.type==="recruit"&&a.soldier==="origin");
   if(births.length!==1||births[0].profile!==row.origin)throw Error("RECRUITMENT_IDENTITY");
