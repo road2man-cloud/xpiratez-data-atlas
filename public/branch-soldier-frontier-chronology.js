@@ -1,8 +1,8 @@
 // Fixed frontier proposals replayed from original minimum-birth records.
 // Display chronological evidence separately from numerical closure and
 // never count promotion, medal, resource or RNG assumptions as gameplay.
-import {researchWitnessSummary as rw} from "./branch-soldier-research-witness-summary.js?v=20261126-research-segments-18";
-import {researchSetSummary as rs} from "./branch-soldier-research-set-summary.js?v=20261126-research-segments-18";
+import {researchWitnessSummary as rw} from "./branch-soldier-research-witness-summary.js?v=20261126-active-sets-20-pair25";
+import {researchSetSummary as rs} from "./branch-soldier-research-set-summary.js?v=20261126-active-sets-20-pair25";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>Number.isFinite(v)?v.toLocaleString("ko-KR",{maximumFractionDigits:2}):"—";
 const name=(db,k)=>db.labels?.[k]||db.labels?.[String(k).slice(String(k).indexOf(":")+1)]||k;
