@@ -6,6 +6,7 @@ import z from "node:zlib";
 import assert from "node:assert/strict";
 import {performance} from "node:perf_hooks";
 import {MODEL,sha,key,sum,SOURCES,sourceFingerprints,pairKey,dominates,baseline,createResearchCareer} from "./population-research-career-v2-core.mjs";
+import {createQueueRecovery} from "./population-research-queue-recovery.mjs";
 import {member,exactWorld,statStateKey} from "./population-growth-replay-core.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(z.gunzipSync(fs.readFileSync(p)));
@@ -13,7 +14,7 @@ const db=decode("public/data/branch-soldier-results.json.gz"),data=read("public/
 assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
 data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
-const hashes=Object.fromEntries([...new Set([...Object.keys(db.populationChronologicalCareer.hashes),"public/soldiers/modern/foundation-research-planner.js","tools/population-research-career-core.mjs","tools/population-research-career-v2-core.mjs","tools/population-research-template-selector.mjs","tools/build-population-research-career.mjs"])].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
+const hashes=Object.fromEntries([...new Set([...Object.keys(db.populationChronologicalCareer.hashes),"public/soldiers/modern/foundation-research-planner.js","tools/population-research-career-core.mjs","tools/population-research-career-v2-core.mjs","tools/population-research-template-selector.mjs","tools/population-research-queue-recovery.mjs","tools/build-population-research-career.mjs"])].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
 const fingerprints=sourceFingerprints(db),fingerprint=key([MODEL,db.sourceMetadataSha256,fingerprints,hashes]);
 const output=arg("out","population-research-career.json.gz"),prior=fs.existsSync(output)?decode(output):null;
 if(prior&&prior.fingerprint!==fingerprint){
@@ -137,9 +138,11 @@ if(!stateQueueMode)for(const t of queue){
 // Persistent, depth-independent continuation queue. Exact action histories
 // are deduplicated; numeric dominance never prevents further expansion.
 if(stateQueueMode){
- const pending=[],known=new Set(),activeFollow=process.argv.includes("--active-follow");
+ const pending=[],known=new Set(),activeFollow=process.argv.includes("--active-follow"),recover=process.argv.includes("--recover-queue");
+ const recovery=recover?createQueueRecovery(data,engine):null;
+ const retryKeys=s=>Object.keys(s.outcomes||{}).filter(k=>!k.startsWith("active:")&&s.outcomes[k].status==="LIMITED_UNRESOLVED"&&!s.recovery?.[k]);
  const depth=s=>s.goals.length;
- const finished=s=>s.done&&(!activeFollow||s.activeDone);
+ const finished=s=>s.done&&(!activeFollow||s.activeDone)&&(!recover||!retryKeys(s).length);
  const outcome=(s,k,status,reason)=>{s.outcomes??={};s.outcomes[k]={status,...(reason?{reason}: {})};};
  function enqueue(s){
   const id=key([s.seed,s.ledger,s.actions,s.goals]);
@@ -154,7 +157,8 @@ if(stateQueueMode){
  const tiers=[...buckets].sort((a,b)=>b[0]-a[0]).map(x=>x[1]);
  pending.length=0;for(let i=0;tiers.some(x=>i<x.length);i++)for(const x of tiers)if(x[i])pending.push(x[i]);
  m.queueAttempts=0;m.queueSuccess=0;m.queueExpanded=0;m.queueFailures=0;m.queueProbeRejected=0;
- m.queueActiveAttempts=0;m.queueActiveSuccess=0;m.queueActiveExpanded=0;m.queueNoop=0;
+ m.queueActiveAttempts=0;m.queueActiveSuccess=0;m.queueActiveExpanded=0;m.queueNoop=0;m.queueRecoveryAttempts=0;m.queueRecoverySuccess=0;
+ const recoveryLimit=Number(arg("recovery-limit","30"));assert(Number.isSafeInteger(recoveryLimit)&&recoveryLimit>0);
  function successor(s,t,b,x,goals){
   const g=replay.grow(x),stateHash=exactWorld(g.world);
   if(stateHash===s.stateHash){m.queueNoop++;return;}
@@ -170,6 +174,19 @@ if(stateQueueMode){
    const n={world,steps:s.actions},grown=replay.grow(n),targets=engine.targets(grown,b.r.branch);
    // Store the target ordering to detect any scheduler/model drift on resume.
    const signature=key(targets.map(r=>r.id));if(s.targetSignature)assert.equal(s.targetSignature,signature);s.targetSignature=signature;
+   if(recover)for(const id of retryKeys(s)){
+    if(!timely()||m.queueRecoveryAttempts>=recoveryLimit)break;
+    const r=targets.find(x=>x.id===id);if(!r)continue;
+    const candidate=engine.probe(grown,r)?grown:engine.probe(n,r)?n:null;if(!candidate)continue;
+    s.recovery??={};m.goalAttempts++;m.queueRecoveryAttempts++;
+    try{
+     const q=recovery.plan(candidate,b.r.branch,b.birth,r);
+     if(!q.ok){s.recovery[id]={status:"LIMITED_UNRESOLVED",reason:q.reason,unresolved:q.unresolved};continue;}
+     const x=replay.transform(q.n,r);
+     if(!x||!engine.context(b.r.branch,b.p,[...b.birth,...x.steps],x.world).some(i=>b.r.allowedDifficulties.includes(i))){s.recovery[id]={status:"TRANSFORM_OR_CONTEXT_REJECTED"};continue;}
+     successor(s,t,b,x,[...s.goals,r.id]);m.queueRecoverySuccess++;s.recovery[id]={status:"CONDITIONAL_REPLAY"};
+    }catch(e){s.recovery[id]={status:"LIMITED_UNRESOLVED",reason:String(e.message)};}
+   }
    for(;s.cursor<targets.length&&timely();s.cursor++){
     const r=targets[s.cursor],candidate=engine.probe(grown,r)?grown:engine.probe(n,r)?n:null;
     if(!candidate){m.queueProbeRejected++;outcome(s,r.id,"PROBE_REJECTED");continue;}
@@ -202,6 +219,7 @@ if(stateQueueMode){
    delete s.error;
   }catch(e){s.error=String(e.message);m.seedFailures++;}
  }
+ if(recovery)Object.assign(m,recovery.metrics);
 }
 const all=Object.values(routes),totals=Object.fromEntries([...new Set([...Object.keys(prior?.totals||{}),...Object.keys(m),...Object.keys(engine.metrics)])].map(k=>[k,(m[k]||engine.metrics[k]||0)+(prior?.totals?.[k]||0)])),elapsedSeconds=(performance.now()-started)/1000;
 const summary={seedCandidates:selected.length,visitedSeeds:Object.keys(visited).length,attemptedGoals:Object.keys(attempts).length,successfulGoals:Object.values(attempts).filter(x=>x.status==="CONDITIONAL_REPLAY").length,registeredRoutes:all.length,newRoutes:all.length-n0,improvedPairs:new Set(all.map(r=>r.origin+"|"+r.branch)).size,improvedPairBodies:new Set(all.map(pairKey)).size,improvedOrigins:new Set(all.map(r=>r.origin)).size,improvedBranches:new Set(all.map(r=>r.branch)).size,newResearchTopics:new Set(all.flatMap(r=>r.addedResearch)).size,goalRules:new Set(all.map(r=>r.goal)).size,newTerminalPairBodies:new Set(all.filter(r=>r.baselineBestSum===null).map(pairKey)).size,positiveSumPairBodies:new Set(all.filter(r=>r.sumDelta>0).map(pairKey)).size,maxSumDelta:Math.max(0,...all.map(r=>r.sumDelta||0)),promotionRoutes:all.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:all.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds,cumulativeSeconds:(prior?.summary.cumulativeSeconds||0)+elapsedSeconds,metrics:{...m,...engine.metrics},totals,fullCompleted:0,actualGameCertified:0,globalOptimalCertified:0};
@@ -217,6 +235,8 @@ summary.continuationPending=Object.values(continuationStates).filter(s=>!s.done)
 summary.maxResearchStages=Math.max(0,...all.map(r=>r.researchGoals?.length||1+Number(!!r.secondaryGoal)+Number(!!r.tertiaryGoal)));
 summary.fourPlusStageRoutes=all.filter(r=>(r.researchGoals?.length||0)>3).length;
 summary.activeContinuationPending=Object.values(continuationStates).filter(s=>!s.activeDone).length;
+summary.queueRecoveryAttempted=Object.values(continuationStates).reduce((n,s)=>n+Object.keys(s.recovery||{}).length,0);
+summary.queueRecoveryRecovered=Object.values(continuationStates).reduce((n,s)=>n+Object.values(s.recovery||{}).filter(o=>o.status==="CONDITIONAL_REPLAY").length,0);
 summary.queueOutcomeCounts={};for(const s of Object.values(continuationStates))for(const o of Object.values(s.outcomes||{}))summary.queueOutcomeCounts[o.status]=(summary.queueOutcomeCounts[o.status]||0)+1;
 const result={schemaVersion:1,kind:"POPULATION_RESEARCH_CAREER",model:MODEL,fingerprint,hashes,seedCacheHashes,planTemplates:engine.templates,sourceMetadataSha256:db.sourceMetadataSha256,sourceFingerprints:fingerprints,routes,attempts,visited,retryHistory,continuationStates,summary,totals,scope:"Chronological source recruitment and research, extra research actions replayed with branch commitments preserved, assumed cap growth, promotion and required medal decoration, deterministic transformations; conditional supplies and events. Permanent vectors exclude medal bonuses. Bounded goal/seed/follow-up search; failed attempts do not imply impossibility."};
 fs.writeFileSync(output+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(output+".tmp",output);console.log(JSON.stringify(summary));
