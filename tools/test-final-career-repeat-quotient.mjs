@@ -1,0 +1,12 @@
+import assert from "node:assert/strict";
+import {createRepeatQuotient} from "./final-career-repeat-quotient.mjs";
+import {exactWorld} from "./population-growth-replay-core.mjs";
+const data={transformations:[{id:"A",soldierBonusType:"X"},{id:"B",soldierBonusType:"Y"},{id:"C",soldierBonusType:"Y"},{id:"D",removeTransformations:["B"]}]};
+const q=createRepeatQuotient(data);
+const world=(a,b,c,funds=0)=>({funds,soldiers:[{id:"origin",state:{history:new Map([["A",a],["B",b],["C",c]]),bonusCounts:new Map([["X",a],["Y",b+c]]),bonusIds:new Set(["X","Y"]),steps:Array(a).fill("A")}}]});
+assert.notEqual(exactWorld(world(1,1,1)),exactWorld(world(2,1,1)));
+assert.equal(q.project(world(1,1,1)),q.project(world(2,1,1)));
+assert.notEqual(q.project(world(1,1,1)),q.project(world(1,2,1)));
+assert.notEqual(q.project(world(1,1,1)),q.project(world(1,1,2)));
+assert.notEqual(q.project(world(1,1,1)),q.project(world(1,1,1,1)));
+console.log("repeat quotient tests passed");
