@@ -8,6 +8,7 @@ import {performance} from "node:perf_hooks";
 import {MODEL,LEDGER,birthCatalog,sourceIdentity,createBridge,pairKey} from "./population-frontier-chronology-core.mjs";
 import {sha,key,sum,dominates} from "./population-research-career-core.mjs";
 import {recoveryProposal} from "./population-frontier-recovery-core.mjs";
+import {RANK_POLICY,defaultRankData} from "./population-frontier-default-rank.mjs";
 import {exactWorld,birthActions} from "./population-growth-replay-core.mjs";
 const reg="public/data/branch-soldier-results.json.gz",decode=x=>JSON.parse(gunzipSync(x)),read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v3.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
@@ -38,6 +39,7 @@ if(db[LEDGER]){
  for(const [id,t] of Object.entries(old.attempts))assert.deepEqual(a.attempts[id],t,"Prior attempt lost "+id);
  for(const [id,t] of Object.entries(old.adaptedAttempts||{}))assert.deepEqual(a.adaptedAttempts?.[id],t,"Prior adaptation lost "+id);
  for(const [id,t] of Object.entries(old.recoveryAttempts||{}))assert.deepEqual(a.recoveryAttempts?.[id],t,"Prior recovery lost "+id);
+ for(const [id,t] of Object.entries(old.rankDefaultAttempts||{}))assert.deepEqual(a.rankDefaultAttempts?.[id],t,"Prior rank retry lost "+id);
 }
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 const frontier=db.populationCareerFrontier,assumed=db.populationAssumedBirthClosure,env=db.populationCareerEnvelope;
@@ -46,6 +48,8 @@ const recoveryProfiles=new Map(data.profiles.map(p=>[p.id,p])),recoveryRules=new
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
 const bridge=createBridge(data,db,cacheHashes,{cache:true}),{replay,engine}=bridge;
+let rankBridge=null;
+if(a.rankPolicy){assert.deepEqual(a.rankPolicy,RANK_POLICY);const rd=defaultRankData(data);assert.deepEqual(rd.indexed,a.summary.rankDefaultBodies);rankBridge=createBridge(rd.data,db,cacheHashes,{cache:false});}
 // Share independent replay prefixes, not precomputed final states.
 // Every branch point is built by applying the original actions to the
 // empty world; applyOriginWitnessStep clones its input. Retain only fork
@@ -115,6 +119,7 @@ for(const [id,r] of Object.entries(a.routes)){
  const f=frontier.groups[r.sourceGroup].frontier.find(x=>x.id===r.sourceRoute);assert(f);
  assert.equal(r.sourceActionHash,key(f.actions));assert.deepEqual(r.sourcePermanentVector,f.permanentVector);
  let proposal=f.actions;
+ if(r.rankDefault){const x=r.rankDefault,t=a.attempts[x.originalAttempt],alt=a.rankDefaultAttempts?.[x.originalAttempt];assert(rankBridge);assert.equal(x.policy,RANK_POLICY.id);assert.equal(x.exactBuildVerified,false);assert.equal(x.originalAttempt,key([r.input,f.id]));assert.equal(t?.status,"LIMITED_UNRESOLVED");assert.equal(t?.reason,"Promotion rank list unindexed");assert.equal(t?.input,r.input);assert.equal(t?.group,r.sourceGroup);assert.equal(t?.sourceRoute,f.id);assert.equal(alt?.status,"CONDITIONAL_DEFAULT_RANK_REPLAY");assert.equal(alt?.route,id);assert.equal(alt?.policy,RANK_POLICY.id);assert(!r.adaptation);}
  if(r.adaptation?.recoveryAttempt){
   const x=r.adaptation,t=a.attempts[x.originalAttempt],alt=a.recoveryAttempts?.[x.recoveryAttempt];
   assert(t&&t.status==="LIMITED_UNRESOLVED");
@@ -147,17 +152,18 @@ for(const [id,r] of Object.entries(a.routes)){
   assert.equal(receipts[id].routeHash,routeHash);assert.equal(receipts[id].stateHash,r.canonicalStateHash);reusedReceipts++;
  }else{
   if(performance.now()-start>=budget){paused=true;break;}
-  const b=independentBirth(origin),policy=engine.policy(r.branch,b.n);let w=b.n.world;
+  const b=independentBirth(origin),activeBridge=r.rankDefault?rankBridge:bridge,activeReplay=activeBridge.replay,activeEngine=activeBridge.engine,policy=activeEngine.policy(r.branch,b.n);let w=b.n.world;
+  if(r.rankDefault){const rb=rankBridge.loadBirth(origin);assert.equal(exactWorld(rb.n.world),exactWorld(w),"Rank policy changed original birth");}
   for(const action of r.actions){
-   const next=replay.apply(w,action);
+   const next=activeReplay.apply(w,action);
    assert(![...next.researched].some(k=>!w.researched.has(k)&&(policy.blocked.has(k)||policy.opposing.has(k))),"Opposing or blocked research");
-   assert(!policy.commit.some(k=>replay.active(w,k)&&!replay.active(next,k)),"Branch commitment lost");
+   assert(!policy.commit.some(k=>activeReplay.active(w,k)&&!activeReplay.active(next,k)),"Branch commitment lost");
    w=next;
   }
   assert(!w.pendingFree);assert.equal(exactWorld(w),r.canonicalStateHash);
-  const end=replay.finish(w);for(const k of Object.keys(end))assert.deepEqual(r[k],end[k],"Final field "+k);
-  assert.deepEqual(r.allowedDifficulties,engine.context(r.branch,b.p,[...b.birth,...r.actions],w));assert(r.allowedDifficulties.length);
-  const research=[...w.researched].filter(k=>replay.active(w,k)&&!replay.active(b.n.world,k));assert.deepEqual(research,r.addedResearch);
+  const end=activeReplay.finish(w);for(const k of Object.keys(end))assert.deepEqual(r[k],end[k],"Final field "+k);
+  assert.deepEqual(r.allowedDifficulties,activeEngine.context(r.branch,b.p,[...b.birth,...r.actions],w));assert(r.allowedDifficulties.length);
+  const research=[...w.researched].filter(k=>activeReplay.active(w,k)&&!activeReplay.active(b.n.world,k));assert.deepEqual(research,r.addedResearch);
   receipts[id]={routeHash,stateHash:r.canonicalStateHash,birthHash:exactWorld(b.n.world),birthByteDifferent:sha(serialize(b.n.world))!==b.p.stateHash};
   fresh++;saveReceipts();
  }
@@ -173,7 +179,7 @@ for(const [id,r] of Object.entries(a.routes)){
  if(!bound||r.vector.some((v,k)=>v>bound.effective[k])||r.raw.some((v,k)=>v>bound.raw[k]))outside.push(id);
  const witness={source:"POPFRONTCH12",originProfile:r.origin,branchIds:[r.branch],body:r.body,raw:r.raw,bonus:r.permanentBonus,vector:r.permanentVector,
   steps:r.order.map(id=>({id,count:1})),research:[...new Set([...r.addedResearch,...r.order.flatMap(id=>replay.rules.get(id)?.requires||[])])],
-  placement:"FRONTIER_GUIDED_MIN_BIRTH_CHRONOLOGY",populationFrontierChronology:{route:id,sourceGroup:r.sourceGroup,sourceRoute:r.sourceRoute,fullActionHash:r.fullActionHash,rank:r.rank,medals:r.medals,...(r.adaptation?{adaptation:r.adaptation}:{})},actualGameCertified:false};
+  placement:"FRONTIER_GUIDED_MIN_BIRTH_CHRONOLOGY",populationFrontierChronology:{route:id,sourceGroup:r.sourceGroup,sourceRoute:r.sourceRoute,fullActionHash:r.fullActionHash,rank:r.rank,medals:r.medals,...(r.adaptation?{adaptation:r.adaptation}:{}),...(r.rankDefault?{rankDefault:r.rankDefault}:{})},actualGameCertified:false};
  if(db.witnesses[id])assert.deepEqual(db.witnesses[id],witness);db.witnesses[id]=witness;published.push(id);
 }
 if(paused){console.log(JSON.stringify({status:"ATTACH_PAUSED",processed:published.length,total:a.summary.registeredRoutes,reusedPublished,reusedReceipts,fresh,receipts:Object.keys(receipts).length}));process.exit(0);}
@@ -187,7 +193,7 @@ const summary={...a.summary,worklistComparison:{improvedRoutes:a.summary.improve
 const asset="soldier-population-frontier-chronology.json.gz";fs.writeFileSync("public/data/"+asset+".tmp",bytes);fs.renameSync("public/data/"+asset+".tmp","public/data/"+asset);
 db[LEDGER]={...a,summary,published,comparisons,careerEnvelopeConflicts:outside,file:asset,bytes:bytes.length,sha256:sha(bytes)};
 db.summary[LEDGER]=summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
+db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
 db.policies.POPFRONTCH12="고정 수치모형 파레토 행동 순서를 원본 최솟값 출생·실제 색인 연구 규칙에서 조건부 재생. 성장·계급·훈장·자원·이벤트 가정 유지, 미해결은 불가능성 아님. 원시 및 영구 수치 재계산, 전체 캠페인 전역 미인증.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary:{...summary,top:top.slice(0,5)},newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses,bytes:bytes.length}));
