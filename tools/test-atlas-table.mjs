@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows,compileResearchSearch,researchActionId,filterCareerRequirements,retainedTraitIds} from '../public/branch-soldier-atlas-career-core.js';
+import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows,compileResearchSearch,researchActionId,filterCareerRequirements,retainedTraitIds,routeSequenceIds,containsOrderedActions} from '../public/branch-soldier-atlas-career-core.js';
 import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows,normalizeStatMinimums,readStatMinimums,writeStatMinimums,filterStatMinimums} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
@@ -83,7 +83,7 @@ for(const l of ledgers.filter(l=>l.index)){
  const raw=JSON.parse(gunzipSync(read(l.index+'.json.gz')));
  researchRaw.set(l.key,raw);researchSources.set(l.key,compileResearchSearch(l,raw,metadata));
 }
-const researchIndex={hasWitness:r=>researchSources.get(r.source)?.hasWitness(r)===true,matches:(r,ids)=>researchSources.get(r.source)?.matches(r,ids)===true};
+const researchIndex={hasWitness:r=>researchSources.get(r.source)?.hasWitness(r)===true,matches:(r,ids)=>researchSources.get(r.source)?.matches(r,ids)===true,matchesSequence:(r,ids)=>researchSources.get(r.source)?.matchesSequence(r,ids)===true};
 const exactResearchIds=r=>{
  if(!researchIndex.hasWitness(r))return null;
  const raw=researchRaw.get(r.source),ids=new Set();let i=raw.routes[r.id].prefix;
@@ -109,6 +109,44 @@ assert(!researchIndex.matches({...sampleResearch,branch:'different'},researchIds
 assert(!researchIndex.matches(sampleResearch,['STR_NONEXISTENT_RESEARCH_TEST']));
 assert.equal(researchActionId({type:'transform',id:'STR_NONRESEARCH_TEST'}),null);
 console.log(JSON.stringify({researchWitnesses:witnesses.length,researchActionIds:new Set([...researchSources.values()].flatMap(s=>s.ids)).size,example:{researchIds,req,item,matches:matchedResearch.length}}));
+// Order and repetition must survive query serialization and shared prefix replay.
+assert.deepEqual(routeSequenceIds(['A,B','A']),['A','B','A']);
+assert(containsOrderedActions(['A','X','B','A'],['A','B','A']));
+assert(!containsOrderedActions(['A','B'],['A','B','A']));
+assert(!containsOrderedActions(['A','B'],['B','A']));
+assert(!containsOrderedActions(null,['A']));
+assert(containsOrderedActions([],[]));
+const exactResearchOrder=r=>{
+ if(!researchIndex.hasWitness(r))return null;
+ const raw=researchRaw.get(r.source),ids=[];let i=raw.routes[r.id].prefix;
+ while(i!==null){const n=raw.nodes[i],id=researchActionId(n.action);if(id)ids.push(id);i=n.parent;}
+ return ids.reverse();
+};
+const rawOrder=exactResearchOrder(sampleResearch),researchSequence=[...new Set(rawOrder)].slice(0,3);
+assert.equal(researchSequence.length,3);
+const researchForward=filterTable(rows,{researchSequence:researchSequence.join(',')},researchContext);
+const researchReverse=filterTable(rows,{researchSequence:researchSequence.slice().reverse().join(',')},researchContext);
+for(const sequence of [researchSequence,researchSequence.slice().reverse(),[researchSequence[0],researchSequence[0]],['STR_NONEXISTENT_RESEARCH_TEST']]){
+ const expected=records.filter(r=>containsOrderedActions(exactResearchOrder(r),sequence));
+ assert.deepEqual(filterTable(rows,{researchSequence:sequence},researchContext).map(r=>r.key),expected.map(r=>r.key));
+ assert.deepEqual(branchCareerRows(branchIndex,sampleResearch.branch,{researchSequence:sequence},researchContext).map(r=>r.key),expected.filter(r=>r.branch===sampleResearch.branch).map(r=>r.key));
+}
+assert(researchForward.includes(sampleResearch));
+assert(!researchIndex.matchesSequence({...sampleResearch,hash:'different'},researchSequence));
+assert.equal(filterCareerRequirements([sampleResearch],{researchSequence},{profiles}).length,0);
+const repeated=records.find(r=>r.order.length>=3&&r.order.some((id,i)=>r.order.indexOf(id)!==i));
+assert(repeated);
+const repeatedId=repeated.order.find((id,i)=>repeated.order.indexOf(id)!==i);
+const repeatedSequence=[repeatedId,repeatedId];
+const repeatedMatches=filterTable(rows,{trainingSequence:repeatedSequence},ctx);
+assert(repeatedMatches.includes(repeated));
+assert.deepEqual(repeatedMatches.map(r=>r.key),records.filter(r=>r.order.filter(id=>id===repeatedId).length>=2).map(r=>r.key));
+const trainingSequence=['STR_BASIC_FIREARMS_TRAINING','STR_MMA_TRAINING'];
+const tf=filterTable(rows,{trainingSequence},ctx),tr=filterTable(rows,{trainingSequence:trainingSequence.slice().reverse()},ctx);
+assert.deepEqual(tf.map(r=>r.key),records.filter(r=>containsOrderedActions(r.order,trainingSequence)).map(r=>r.key));
+assert.deepEqual(tr.map(r=>r.key),records.filter(r=>containsOrderedActions(r.order,trainingSequence.slice().reverse())).map(r=>r.key));
+assert.equal(filterTable(rows,{trainingSequence,excludeTraining:trainingSequence[0]},ctx).length,0);
+console.log(JSON.stringify({sequenceSearch:{trainingSequence,forward:tf.length,reverse:tr.length,repeatedId,repeated:repeatedMatches.length,researchSequence,researchForward:researchForward.length,researchReverse:researchReverse.length}}));
 // A minimum in one column cannot borrow a value from a different witness.
 const minimums={tu:90,firing:120,health:60};
 const minimumMatches={};

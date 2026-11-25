@@ -89,17 +89,27 @@ export function routeObjective(r,metric,stat){
  return stat==='total'?sum(r[metric]):r[metric][statKeys.indexOf(stat)];
 }
 // Existing single-ID links are also valid. Multiple IDs mean AND within one route.
-export function routeFilterIds(value){
- return [...new Set((Array.isArray(value)?value:[value]).flatMap(v=>typeof v==='string'?v.split(','):[]).map(v=>v.trim()).filter(Boolean))];
+// A sequence preserves repetitions; unordered inclusion/exclusion remains a set.
+export function routeSequenceIds(value){
+ return (Array.isArray(value)?value:[value]).flatMap(v=>typeof v==='string'?v.split(','):[]).map(v=>v.trim()).filter(Boolean);
+}
+export function routeFilterIds(value){return [...new Set(routeSequenceIds(value))];}
+export function containsOrderedActions(actions,sequence){
+ if(!sequence.length)return true;
+ if(!Array.isArray(actions))return false;
+ let i=0;
+ for(const id of actions)if(id===sequence[i]&&++i===sequence.length)return true;
+ return false;
 }
 export function filterRows(rows,f){
  const depth=routeThreshold(f.minDepth),traits=routeThreshold(f.minTraits);
  const trainingIds=routeFilterIds(f.training),traitIds=routeFilterIds(f.trait);
- const excludeTraining=routeFilterIds(f.excludeTraining),excludeTrait=routeFilterIds(f.excludeTrait);
+ const excludeTraining=routeFilterIds(f.excludeTraining),excludeTrait=routeFilterIds(f.excludeTrait),trainingSequence=routeSequenceIds(f.trainingSequence);
 
  return rows.filter(r=>(!f.origin||r.origin===f.origin)&&(!f.body||r.body===f.body)&&(!f.branch||r.branch===f.branch)&&
   (!f.captain||f.branchCaptains?.get(r.branch)?.includes(f.captain))&&
   trainingIds.every(id=>r.order.includes(id))&&traitIds.every(id=>r.traits?.includes(id))&&
+  (!trainingSequence.length||!r.missing&&containsOrderedActions(r.order,trainingSequence))&&
   (!excludeTraining.length||!r.missing&&Array.isArray(r.order)&&excludeTraining.every(id=>!r.order.includes(id)))&&
   (!excludeTrait.length||Array.isArray(r.traits)&&excludeTrait.every(id=>!r.traits.includes(id)))&&
   (depth===null||!r.missing&&r.order.length>=depth)&&(traits===null||r.traits!==null&&r.traits.length>=traits)&&
@@ -130,7 +140,22 @@ export function compileResearchSearch(ledger,index,metadata){
   if(!Number.isInteger(w.prefix)||w.prefix<0||w.prefix>=parents.length)continue;
   routes.set(id,{prefix:w.prefix,origin:w.origin,branch:w.branch,hash:w.fullActionHash,graph:w.sourceGraph,node:w.sourceNode});
  }
- const cache=new Map();
+ const cache=new Map(),sequenceCache=new Map();
+ // Dynamic programming across shared chronological prefixes. Greedy matching
+ // gives the longest matched subsequence per node, without replaying each route.
+ function progress(requested){
+  const key=JSON.stringify(requested);
+  if(sequenceCache.has(key)){const hit=sequenceCache.get(key);sequenceCache.delete(key);sequenceCache.set(key,hit);return hit;}
+  const target=requested.map(id=>dictionary.get(id));
+  if(target.some(id=>id===undefined))return null;
+  const result=new Uint32Array(parents.length);
+  for(let i=0;i<parents.length;i++){
+   const prior=parents[i]<0?0:result[parents[i]];
+   result[i]=prior<target.length&&ids[i]===target[prior]?prior+1:prior;
+  }
+  sequenceCache.set(key,result);if(sequenceCache.size>8)sequenceCache.delete(sequenceCache.keys().next().value);
+  return result;
+ }
  function bits(id){
   const n=dictionary.get(id);if(n===undefined)return null;
   if(cache.has(id)){const found=cache.get(id);cache.delete(id);cache.set(id,found);return found;}
@@ -147,6 +172,8 @@ export function compileResearchSearch(ledger,index,metadata){
  }
  return {ids:[...dictionary.keys()],hasWitness:row=>!!entry(row),matches(row,requested){
   const w=entry(row);return !!w&&requested.every(id=>bits(id)?.[w.prefix]===1);
+ },matchesSequence(row,requested){
+  const w=entry(row);return !!w&&(!requested.length||progress(requested)?.[w.prefix]===requested.length);
  }};
 }
 const researchSearchCache=new WeakMap();
@@ -165,15 +192,16 @@ export async function loadResearchSearch(modern){
    }catch(e){errors.push(ledger.label+' 연구 이력: '+e.message)}
   }
   const ids=[...new Set([...sources.values()].flatMap(s=>s.ids))];
-  return {ids,errors,sources:sources.size,hasWitness:r=>sources.get(r.source)?.hasWitness(r)===true,matches:(r,requested)=>sources.get(r.source)?.matches(r,requested)===true};
+  return {ids,errors,sources:sources.size,hasWitness:r=>sources.get(r.source)?.hasWitness(r)===true,matches:(r,requested)=>sources.get(r.source)?.matches(r,requested)===true,matchesSequence:(r,requested)=>sources.get(r.source)?.matchesSequence(r,requested)===true};
  })();
  researchSearchCache.set(modern,promise);return promise;
 }
 export function filterCareerRequirements(rows,filters,{profiles=new Map(),researchIndex=null}={}){
- const research=routeFilterIds(filters.researchAction),recruit=routeFilterIds(filters.recruitResearch),items=routeFilterIds(filters.recruitItem);
- if(!research.length&&!recruit.length&&!items.length)return rows;
+ const research=routeFilterIds(filters.researchAction),sequence=routeSequenceIds(filters.researchSequence),recruit=routeFilterIds(filters.recruitResearch),items=routeFilterIds(filters.recruitItem);
+ if(!research.length&&!sequence.length&&!recruit.length&&!items.length)return rows;
  return rows.filter(r=>{
   if(research.length&&!researchIndex?.matches(r,research))return false;
+  if(sequence.length&&!researchIndex?.matchesSequence?.(r,sequence))return false;
   const profile=profiles.get(r.origin);
   if(recruit.length&&!recruit.every(id=>profile?.requires?.includes(id)))return false;
   if(items.length&&!items.every(id=>Number(profile?.acquisitionRequiredItems?.[id])>0))return false;
