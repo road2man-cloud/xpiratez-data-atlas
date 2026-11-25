@@ -37,6 +37,18 @@ export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch=
  return result.sort((a,b)=>(b.best?score(b.best):-Infinity)-(a.best?score(a.best):-Infinity)||a.name.localeCompare(b.name,'ko'));
 }
 
+// Shared branch/body index. Restrict before selecting representatives, not after.
+export function indexCareerBranches(rows){
+ const byBranch=new Map();
+ for(const r of rows){
+  if(!byBranch.has(r.branch))byBranch.set(r.branch,[]);
+  byBranch.get(r.branch).push(r);
+ }
+ return byBranch;
+}
+export function branchCareerRows(index,branch,filters={}){
+ return filterRows(index.get(branch)||[],{...filters,branch});
+}
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
  return [...rows,...profiles.filter(p=>!known.has(p.id)).map(p=>({key:'missing:'+p.id,id:null,origin:p.id,body:null,branch:null,source:null,order:[],traits:null,rank:null,medals:null,difficulties:[],current:null,cap:null,certified:false,missing:true}))];
