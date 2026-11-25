@@ -45,6 +45,9 @@ for(const xs of byBranch.values())xs.sort((a,b)=>(visited[a.id]||0)-(visited[b.i
 const branchCounts={};for(const r of Object.values(routes))branchCounts[r.branch]=(branchCounts[r.branch]||0)+1;
 const groups=[...byBranch].sort(([a],[b])=>(branchCounts[a]||0)-(branchCounts[b]||0)||a.localeCompare(b));
 const queue=[];for(let i=0;;i++){let more=false;for(const [,xs] of groups)if(xs[i]){queue.push(xs[i]);more=true;}if(!more)break;}
+// Globally prioritize unseen seeds, retaining branch round-robin order within each tier.
+const unseenOnly=process.argv.includes("--unvisited-only");
+queue.sort((a,b)=>Number(Boolean(visited[a.id]))-Number(Boolean(visited[b.id])));
 const seconds=Number(arg("seconds","20")),goalLimit=Number(arg("goals","80")),perSeed=Number(arg("per-seed","2")),followLimit=Number(arg("follow","3")),chainDepth=Number(arg("chain-depth",process.argv.includes("--chain")?"2":"1")),retryLimit=Number(arg("retry-limit","1"));
 const retryEnabled=process.argv.includes("--retry-unresolved");
 assert(Number.isSafeInteger(chainDepth)&&chainDepth>=1&&chainDepth<=3&&Number.isSafeInteger(retryLimit)&&retryLimit>=0);
@@ -68,6 +71,7 @@ function register(t,b,n,goal,secondaryGoal=null,tertiaryGoal=null){
 }
 for(const t of queue){
  if(!timely())break;
+ if(unseenOnly&&visited[t.id])continue;
  let b;try{b=engine.load(t.l,t.id);}catch(e){m.seedFailures++;continue;}
  m.seeds++;visited[t.id]=(visited[t.id]||0)+1;
  const grown=replay.grow(b.n),targets=engine.targets(grown,t.r.branch);
