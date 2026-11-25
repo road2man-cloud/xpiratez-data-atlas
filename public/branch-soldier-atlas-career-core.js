@@ -1,11 +1,11 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
 export const ledgers=[
  {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},
- {key:'frontier',file:'soldier-population-frontier-chronology',label:'시간순 육성',index:'soldier-final-career-research-index'},
- {key:'newpair',file:'soldier-population-new-pair-career',label:'모집 후 육성',index:'soldier-new-pair-research-index'},
- {key:'research',file:'soldier-population-research-career',label:'추가 연구 육성'},
- {key:'chronological',file:'soldier-population-chronological-career',label:'승급·시술 육성'},
- {key:'growth',file:'soldier-population-growth-replay',label:'성장 순서 재생'}
+ {key:'frontier',registryKey:'populationFrontierChronology',file:'soldier-population-frontier-chronology',label:'시간순 육성',index:'soldier-final-career-research-index'},
+ {key:'newpair',registryKey:'populationNewPairCareer',file:'soldier-population-new-pair-career',label:'모집 후 육성',index:'soldier-new-pair-research-index'},
+ {key:'research',registryKey:'populationResearchCareer',file:'soldier-population-research-career',label:'추가 연구 육성'},
+ {key:'chronological',registryKey:'populationChronologicalCareer',file:'soldier-population-chronological-career',label:'승급·시술 육성'},
+ {key:'growth',registryKey:'populationGrowthReplay',file:'soldier-population-growth-replay',label:'성장 순서 재생'}
 ];
 export const statKeys=['tu','stamina','health','bravery','reactions','firing','throwing','strength','psiStrength','psiSkill','melee','mana'];
 const validVector=v=>Array.isArray(v)&&v.length===statKeys.length&&v.every(Number.isFinite);

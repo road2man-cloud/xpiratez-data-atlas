@@ -57,7 +57,7 @@ export function setupBranchCompare(context){
    card.append(el('p','조건부 연구 이력 '+fmt(b.historyCount)+'개'+(b.sourceRootConflict?' · 원천 모델 충돌 있음':''),'note'));
    if(b.blockedRoots?.length)card.append(el('p','원천 충돌 연구'),chips(b.blockedRoots,'research'));
   }else card.append(el('p','분기 메타데이터 미연결','note'));
-  const url=new URL('career/',root);const f=context.filter();for(const k of ['origin','body','training','trait','difficulty','metric','stat'])if(f[k])url.searchParams.set(k,f[k]);if(f.certified)url.searchParams.set('certified','1');url.searchParams.set('branch',id);
+  const url=new URL('soldiers/modern/?group=routes#originMaxima',root);const f=context.filter();for(const k of ['origin','body','training','trait','difficulty','metric','stat'])if(f[k])url.searchParams.set(k,f[k]);if(f.certified)url.searchParams.set('certified','1');url.searchParams.set('branch',id);
   const a=el('a','이 분기의 육성 경로 보기');a.href=url;card.append(a);return card;
  }
  function render(){

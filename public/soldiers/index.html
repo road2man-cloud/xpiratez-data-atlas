@@ -5,14 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>X-Piratez 2.1 병종 DB</title>
 <meta name="robots" content="noindex,follow">
-<noscript><meta http-equiv="refresh" content="0;url=../career/"></noscript>
+<noscript><meta http-equiv="refresh" content="0;url=./modern/"></noscript>
 <script>
 (() => {
   // All Soldier DB entries now resolve to one current v.o2 ruleset.
-  if (!location.search && !location.hash) { location.replace(new URL("../career/", location.href)); return; }
   const target = new URL("./modern/", location.href);
   const from = new URLSearchParams(location.search);
-  for (const key of ["family","q","profile","training","research","branch","body","mode","route","minDepth","view"]) {
+  for (const key of ["family","q","profile","training","research","branch","body","mode","route","minDepth","view","group","origin","captain","trait","difficulty","metric","certified","fixedOptimumOnly","transitionBreakthroughOnly","missingOnly","selectedOnly","a","b","sameChoices","sort","dir","stat","populationRoute","candidate"]) {
     if (from.has(key)) target.searchParams.set(key,from.get(key));
   }
   if (["profiles","soldiers","transformations"].includes(from.get("dataset")))
@@ -26,7 +25,7 @@
 <body>
 <main>
   <p>X-Piratez 2.1 병종 DB로 이동합니다.</p>
-  <p><a href="../career/">병종·육성 통합표 열기</a> · <a href="./modern/?view=detail">기존 병종 상세 DB</a></p>
+  <p><a href="./modern/">병종 DB 열기</a></p>
 </main>
 </body>
 </html>

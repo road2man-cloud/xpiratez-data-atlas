@@ -33,7 +33,7 @@ function card(r){
   else a.append(el('p','기록된 능력치 변화 없음 (기타 효과는 별도).'));
  }
  const careerKey={soldier:'body',origin:'origin',training:'training',bonus:'trait'}[r.kind];
- if(careerKey){const aLink=el('a','이 항목의 등록 육성 경로 보기');aLink.href=new URL('career/?'+new URLSearchParams({[careerKey]:r.id}),root);const p=el('p');p.append(aLink);a.append(p);}
+ if(careerKey){const aLink=el('a','이 항목의 등록 육성 경로 보기');aLink.href=new URL('soldiers/modern/?'+new URLSearchParams({group:'routes',[careerKey]:r.id})+'#originMaxima',root);const p=el('p');p.append(aLink);a.append(p);}
  const links=related(r,state.byKey,state.byId);
  if(links.length){
   const detail=el('details');detail.append(el('summary','관련 자료 '+links.length+'개'));

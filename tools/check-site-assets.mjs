@@ -6,8 +6,8 @@ const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 const home=read('index.html');
 const expected=['starting','captains','soldiers','crafts','craft-weapons','facilities','armors','items','research','manufacture','events','forces','weapons','reference'];
 const nav=[...home.matchAll(/<a\s+href="\.\/([a-z-]+)\/(?:\?[^\"]*)?"/g)].map(m=>m[1]);
-assert.deepEqual([...new Set(nav)].sort(),[...expected.filter(x=>x!=='soldiers'),'career','search'].sort());
-assert.equal(home.split('class="card" href="./career/').length-1,1);
+assert.deepEqual([...new Set(nav)].sort(),[...expected,'search'].sort());
+assert.equal(home.split('class="card" href="./soldiers/').length-1,1);
 assert(!home.includes('href="./trainings/'),'Retired training DB entrance must not return');
 const redirect=read('soldiers/index.html'),retired=read('trainings/index.html'),modern=read('soldiers/modern/index.html');
 assert(redirect.includes('location.replace(target.href)'));
@@ -36,7 +36,7 @@ execFileSync(process.execPath,['--check',path.join(root,'atlas-reader-guide.js')
 const selectors={starting:'cards',captains:'matrixTable',soldiers:'originTable',crafts:'craftTable','craft-weapons':'weaponTable',facilities:'facilityTable',armors:'armorTable',items:'tbody',research:'tbody',manufacture:'manufactureTable',events:'eventTable',forces:'forceTable',weapons:'weaponTable',reference:'modes'};
 for(const rel of pages){
   const html=read(rel),file=path.join(root,rel),slug=rel.split('/')[0];
-  const isRedirect=rel==='soldiers/index.html'||rel==='trainings/index.html';
+  const isRedirect=rel==='soldiers/index.html'||rel==='trainings/index.html'||rel==='career/index.html';
   if(!isRedirect&&selectors[slug]&&!html.includes('id="'+selectors[slug]+'"'))errors.push(rel+' missing primary table');
   if(rel!=='index.html'&&!isRedirect&&rel!=='career/index.html'&&!html.includes('id="search"'))errors.push(rel+' missing search');
   if(/<input\b[^>]*\btype=["']file["']/i.test(html))errors.push(rel+' forbidden local file-upload UI');
