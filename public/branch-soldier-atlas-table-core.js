@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum,routeObjective,routeThreshold} from './branch-soldier-atlas-career-core.js?v=42-minima';
+import {statKeys,filterRows,sum,routeObjective,routeThreshold,filterCareerRequirements} from './branch-soldier-atlas-career-core.js?v=44-exclusion';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 // Select a single witness for each body under the selected objective. Keep independent
 // ceilings separate: they may come from a different conditional model or route.
@@ -46,8 +46,8 @@ export function indexCareerBranches(rows){
  }
  return byBranch;
 }
-export function branchCareerRows(index,branch,filters={}){
- return filterStatMinimums(filterRows(index.get(branch)||[],{...filters,branch}),filters.minima,filters.metric||'cap');
+export function branchCareerRows(index,branch,filters={},context={}){
+ return filterCareerRequirements(filterStatMinimums(filterRows(index.get(branch)||[],{...filters,branch}),filters.minima,filters.metric||'cap'),filters,context);
 }
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
@@ -92,7 +92,7 @@ export function filterTable(rows,f,context){
  const norm=s=>String(s??'').normalize('NFKC').toLocaleLowerCase('ko-KR');
  const tokens=norm(f.q).trim().split(/\s+/).filter(Boolean);
  const pair=new Set([f.a,f.b].filter(Boolean));
- const chosen=filterStatMinimums(filterRows(rows,{...f,branch:pair.size?'':f.branch,body:'',branchCaptains:context.branchCaptains}),f.minima,f.metric||'cap',profiles);
+ const chosen=filterCareerRequirements(filterStatMinimums(filterRows(rows,{...f,branch:pair.size?'':f.branch,body:'',branchCaptains:context.branchCaptains}),f.minima,f.metric||'cap',profiles),f,context);
  return chosen.filter(r=>{
   if(pair.size&&!pair.has(r.branch))return false;
   if(f.body&&(r.body!==f.body))return false;
