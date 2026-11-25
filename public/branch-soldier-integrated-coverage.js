@@ -2,7 +2,7 @@
 // Historical joint status codes are retained; newer registered chronological
 // ledgers are unioned live so concurrent writers cannot leave a stale total.
 const memo=new WeakMap();
-export const chronologicalLedgers=["originExtendedContinuation","originResearchContinuation","originResearchChain","populationGrowthReplay","populationChronologicalCareer","populationResearchCareer","populationFrontierChronology","populationNewPairEntry"];
+export const chronologicalLedgers=["originExtendedContinuation","originResearchContinuation","originResearchChain","populationGrowthReplay","populationChronologicalCareer","populationResearchCareer","populationFrontierChronology","populationNewPairEntry","populationNewPairCareer"];
 export function integratedCoverage(db){
  if(memo.has(db))return memo.get(db);
  const j=db.populationJointCoverage;if(!j)return null;
