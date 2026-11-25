@@ -25,15 +25,26 @@ export function baseline(db){
  }
  return b;
 }
-export function createResearchCareer(data,db,hashes){
+export function createResearchCareer(data,db,hashes,{templates={},seedCacheHashes=null}={}){
  const replay=createCareerReplay(data),planner=createFoundationResearchPlanner(data,{maxAttempts:65,maxDepth:25,maxSteps:1800,methodLimit:16}),branches=new Map(db.branches.map(b=>[b.id,b]));
  const legacyHashes={...db.originExtendedContinuation.hashes,"tools/build-population-extended-continuation.mjs":"64fa7f15eee999512b0fc6a254b5fa8e2841e5f1ce460650783fc4bafd918f2c"};
  const diskBirth=createExactPrefixCheckpointCache(".population-extended-cache",key([db.sourceMetadataSha256,db.originUnlockSearch.fingerprint,db.originEventBirth.fingerprint,legacyHashes]));
  const diskGrowth=createExactPrefixCheckpointCache(".population-growth-replay-cache",key([GROWTH_MODEL,db.sourceMetadataSha256,db.originUnlockSearch.fingerprint,db.originEventBirth.fingerprint,hashes["tools/population-growth-replay-core.mjs"]]));
  const diskSeed=createExactPrefixCheckpointCache(".population-research-career-cache",key([MODEL,db.sourceMetadataSha256,hashes]));
+ const oldDiskSeed=seedCacheHashes?createExactPrefixCheckpointCache(".population-research-career-cache",key([MODEL,db.sourceMetadataSha256,seedCacheHashes])):null;
  const births=new Map(),seeds=new Map(),plans=new Map(),byBody=new Map();
+ // Successful action templates are proposals, not state equivalence
+ // certificates. Revalidate each action on the entire target world.
+ const templateLimit=6,templateBucketLimit=2500;
+ const templateKey=(n,goals)=>key(goals.filter(k=>!replay.active(n.world,k)).slice().sort());
+ function remember(k,suffix,worldHash,body){
+  if(!templates[k]&&Object.keys(templates).length>=templateBucketLimit)return;
+  const list=templates[k]||[],sig=key(suffix);
+  if(!list.some(x=>x.hash===sig))list.unshift({hash:sig,suffix,worldHash,body});
+  templates[k]=list.slice(0,templateLimit);
+ }
  const choices=new Set(db.branches.flatMap(b=>[...b.captain,...Object.values(b.choices||{})]).filter(Boolean));
- const metrics={birthHits:0,birthReplays:0,seedHits:0,seedReplays:0,planHits:0,planComputations:0,plannerAttempts:0};
+ const metrics={birthHits:0,birthReplays:0,seedHits:0,seedReplays:0,planHits:0,planComputations:0,plannerAttempts:0,templateTrials:0,templateHits:0,templateRejects:0,templateReplaySteps:0,templateCrossWorldHits:0,templateCrossBodyHits:0};
  for(const r of data.transformations)if(r.allowsLiveSoldiers&&!r.createsClone&&!r.producedItem&&!r.requires.includes("STR_UNAVAILABLE"))for(const body of r.allowedSoldierTypes||[]){
   const dest=replay.bodies.get(r.producedSoldierType||body);if(!dest||!deterministicRule(r,[dest]))continue;
   const xs=byBody.get(body)||[];xs.push(r);byBody.set(body,xs);
@@ -42,7 +53,7 @@ export function createResearchCareer(data,db,hashes){
   if(seeds.has(id)){metrics.seedHits++;return seeds.get(id);}
   const r=db[l].routes[id],{p,steps}=birthActions(db,r),full=[...steps,...r.actions];
   assert.equal(key(steps),p.fullActionHash);assert.equal(key(full),r.fullActionHash);
-  let w=diskSeed.load(full)?.world;
+  let w=(diskSeed.load(full)||oldDiskSeed?.load(full))?.world;
   if(w)metrics.seedHits++;else{
    let b=births.get(p.fullActionHash);
    if(b)metrics.birthHits++;else{
@@ -82,33 +93,47 @@ export function createResearchCareer(data,db,hashes){
  }
  function plan(n,b,birth,r){
   const p=policy(b,n),goals=[...new Set([...p.commit,...r.requires])],before=exactWorld(n.world),k=key([before,goals,[...p.blocked].sort(),[...p.opposing].sort(),birth.length+n.steps.length]);
-  let suffix=plans.get(k);
-  if(suffix)metrics.planHits++;else{
-   metrics.planComputations++;
-   const start={world:n.world,steps:[...birth,...n.steps],trace:[],diagnostics:[]};
-   const q=planner.ensure(goals,start);metrics.plannerAttempts+=q.attempts||0;
-   if(!q.ok)return {ok:false,reason:q.reason||"RESEARCH_UNRESOLVED"};
-   if(q.node.trace.some(z=>(z.added||[]).some(id=>p.blocked.has(id)||p.opposing.has(id))||(z.closed||[]).some(id=>p.commit.includes(id))))return {ok:false,reason:"BRANCH_CONFLICT"};
-   suffix=q.node.steps.slice(start.steps.length);
-   if(!suffix.length)return {ok:false,reason:"NO_NEW_RESEARCH_ACTION"};
-   if(plans.size<10000)plans.set(k,suffix);
+  function validate(suffix){
+   if(!Array.isArray(suffix)||!suffix.length||birth.length+n.steps.length+suffix.length>1800)return {ok:false,reason:"TEMPLATE_STEP_LIMIT"};
+   let w=n.world;
+   try{
+    for(const a of suffix){
+     const next=replay.apply(w,a);
+     if([...next.researched].some(id=>!w.researched.has(id)&&(p.blocked.has(id)||p.opposing.has(id)))||p.commit.some(id=>replay.active(w,id)&&!replay.active(next,id)))return {ok:false,reason:"BRANCH_CONFLICT_REPLAY"};
+     w=next;
+    }
+   }catch(e){return {ok:false,reason:String(e.message)};}
+   if(w.pendingFree||!goals.every(id=>replay.active(w,id)))return {ok:false,reason:"GOAL_INACTIVE"};
+   const added=[...w.researched].filter(id=>replay.active(w,id)&&!replay.active(n.world,id));
+   if(!added.length)return {ok:false,reason:"NO_NEW_ACTIVE_RESEARCH"};
+   return {ok:true,n:{world:w,steps:[...n.steps,...suffix]},suffix,added};
   }
-  // Check every emitted step against the original verifier even on cache hit.
-  let w=n.world;
-  for(const a of suffix){
-   const next=replay.apply(w,a);
-   if([...next.researched].some(id=>!w.researched.has(id)&&(p.blocked.has(id)||p.opposing.has(id)))||p.commit.some(id=>w.researched.has(id)&&!w.disabled.has(id)&&next.disabled.has(id)))return {ok:false,reason:"BRANCH_CONFLICT_REPLAY"};
-   w=next;
+  const exact=plans.get(k);
+  if(exact){const v=validate(exact);if(v.ok){metrics.planHits++;return v;}}
+  const tk=templateKey(n,goals),body=member(n.world).state.soldierType;
+  for(const entry of templates[tk]||[]){
+   metrics.templateTrials++;
+   const v=validate(entry.suffix);
+   if(!v.ok){metrics.templateRejects++;continue;}
+   metrics.templateHits++;metrics.templateReplaySteps+=entry.suffix.length;
+   if(entry.worldHash!==before)metrics.templateCrossWorldHits++;
+   if(entry.body!==body)metrics.templateCrossBodyHits++;
+   if(plans.size<10000)plans.set(k,entry.suffix);
+   return v;
   }
-  if(w.pendingFree||!goals.every(id=>replay.active(w,id)))return {ok:false,reason:"GOAL_INACTIVE"};
-  const added=[...w.researched].filter(id=>replay.active(w,id)&&!replay.active(n.world,id));
-  if(!added.length)return {ok:false,reason:"NO_NEW_ACTIVE_RESEARCH"};
-  return {ok:true,n:{world:w,steps:[...n.steps,...suffix]},suffix,added};
+  metrics.planComputations++;
+  const start={world:n.world,steps:[...birth,...n.steps],trace:[],diagnostics:[]};
+  const q=planner.ensure(goals,start);metrics.plannerAttempts+=q.attempts||0;
+  if(!q.ok)return {ok:false,reason:q.reason||"RESEARCH_UNRESOLVED"};
+  if(q.node.trace.some(z=>(z.added||[]).some(id=>p.blocked.has(id)||p.opposing.has(id))||(z.closed||[]).some(id=>p.commit.includes(id))))return {ok:false,reason:"BRANCH_CONFLICT"};
+  const suffix=q.node.steps.slice(start.steps.length),v=validate(suffix);
+  if(v.ok){if(plans.size<10000)plans.set(k,suffix);remember(tk,suffix,before,body);}
+  return v;
  }
  function context(b,p,steps,w){
   const branch=branches.get(b),commit=[...branch.captain,...Object.values(branch.choices||{})].filter(Boolean),ctx=auditOriginCampaignContext(steps,data);
   if(branch.sourceRootConflict||ctx.kind!=="compatible"||!commit.every(k=>replay.active(w,k)))return [];
   return ctx.allowedDifficulties.filter(i=>p.allowedDifficulties.includes(i));
  }
- return {replay,load,targets,probe,plan,context,policy,byBody,metrics,planner};
+ return {replay,load,targets,probe,plan,context,policy,byBody,metrics,planner,templates};
 }
