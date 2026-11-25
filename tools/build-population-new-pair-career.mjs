@@ -34,10 +34,12 @@ for(const r of Object.values(entry.routes))addFront(r);for(const r of Object.val
 for(const r of data.transformations)if(r.allowsLiveSoldiers&&!r.createsClone&&!r.producedItem&&!r.requires.includes("STR_UNAVAILABLE"))for(const b of r.allowedSoldierTypes||[]){const dest=g.bodies.get(r.producedSoldierType||b);if(!dest||!deterministicRule(r,[dest]))continue;const xs=byBody.get(b)||[];xs.push(r);byBody.set(b,xs);}
 for(const xs of byBody.values())xs.sort((a,b)=>a.id.localeCompare(b.id));
 const m={seedReplays:0,rootReplays:0,rootHits:0,statesExpanded:0,attempts:0,success:0,rejected:0,contextRejected:0,unchanged:0,newRoutes:0,newBodyPairs:0,preGrowthAttempts:0,preGrowthSuccess:0,postGrowthAttempts:0,postGrowthSuccess:0,errors:0,noop:0,researchAttempts:0,researchSuccess:0,researchFailed:0,probeRejected:0,templateHits:0,templateRejected:0,plannerCalls:0,templatePreflightRejects:0,exactPlanHits:0,rankMedalSuccess:0};
-const exactPlans=new Map(),prefixWorlds=new Map();
+const exactPlans=new Map(),failedPlans=new Map(),prefixWorlds=new Map();
+const breadth=process.argv.includes("--breadth"),initialOnly=process.argv.includes("--initial-only"),seedQuota=Number(arg("seed-quota","24")),seedAttempts=new Map();
+assert(Number.isSafeInteger(seedQuota)&&seedQuota>0);
 const prefixLimit=Number(arg("prefix-cache","512")),quantum=Number(arg("quantum","12"));
 assert(Number.isSafeInteger(prefixLimit)&&prefixLimit>=0&&Number.isSafeInteger(quantum)&&quantum>0);
-Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0});
+Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0,exactFailureHits:0,exactFailureStores:0,quotaDeferrals:0,freshSeedTurns:0,distinctSeedsAttempted:0});
 function rememberWorld(seedId,actions,w){
  if(!prefixLimit)return;
  const k=key([seedId,actions]);if(prefixWorlds.has(k))return;
@@ -61,7 +63,9 @@ function plan(b,n,r){
  function validate(suffix){try{if(!suffix.length||full.length+suffix.length>1800)return null;let w=n.world;for(const a of suffix){const next=g.apply(w,a);if([...next.researched].some(k=>!w.researched.has(k)&&avoid.has(k))||b.r.commit.some(k=>g.active(w,k)&&!g.active(next,k)))return null;w=next;}return !w.pendingFree&&goals.every(k=>g.active(w,k))?{world:w,steps:[...n.steps,...suffix]}:null;}catch{return null;}}
  const exact=exactPlans.get(ek);if(exact){const x=validate(exact);if(x){m.exactPlanHits++;return x;}}
  for(const suffix of planTemplates[tk]||[]){if(preflightTemplate(n.world,suffix,data)){m.templatePreflightRejects++;continue;}const x=validate(suffix);if(x){m.templateHits++;exactPlans.set(ek,suffix);return x;}m.templateRejected++;}
- m.plannerCalls++;const start={world:n.world,steps:full,trace:[],diagnostics:[]},q=planner.ensure(goals,start);if(!q.ok)return null;
+ // Memoize only this batch's identical bounded planner failure, after trying all current templates. A later run or a new template may still succeed.
+ if(failedPlans.has(ek)){m.exactFailureHits++;return null;}
+ m.plannerCalls++;const start={world:n.world,steps:full,trace:[],diagnostics:[]},q=planner.ensure(goals,start);if(!q.ok){failedPlans.set(ek,{reason:q.reason,unresolved:q.unresolved,attempts:q.attempts});m.exactFailureStores++;return null;}
  const suffix=q.node.steps.slice(full.length),x=validate(suffix);if(x){exactPlans.set(ek,suffix);const old=planTemplates[tk]||[];if(!old.some(s=>key(s)===key(suffix)))planTemplates[tk]=[suffix,...old].slice(0,4);}return x;
 }
 function seed(id){
@@ -77,23 +81,28 @@ function seed(id){
 }
 function enqueue(seedId,actions,hash,allowed){
  const id=key([seedId,actions]);if(!states[id])states[id]={seed:seedId,actions,stateHash:hash,allowedDifficulties:allowed,cursor:0};
- if(!states[id].done&&!queued.has(id)){(running?hot:pending).push(id);queued.add(id);}
+ // Initial-pass mode defers continuations without deleting their work records.
+ if(!states[id].done&&!queued.has(id)&&(!initialOnly||!actions.length)){(running?hot:pending).push(id);queued.add(id);}
 }
-for(const [id,s] of Object.entries(states))if(!s.done){pending.push(id);queued.add(id);}
+for(const [id,s] of Object.entries(states))if(!s.done&&(!initialOnly||!s.actions.length)){pending.push(id);queued.add(id);}
 for(const [id,r] of Object.entries(entry.routes))enqueue(id,[],null,r.allowedDifficulties);
 // First interleave origins within each depth, then interleave depth levels.
 // This avoids starving continuations behind hundreds of fresh birth states.
-const eventFirst=process.argv.includes("--event-first");
+const eventFirst=process.argv.includes("--event-first"),originRoutes=new Map();
+for(const r of Object.values(routes))originRoutes.set(r.origin,(originRoutes.get(r.origin)||0)+1);
 const groups=new Map();for(const id of pending){const s=states[id],r=entry.routes[s.seed],depth=s.actions.filter(a=>a.type==="transform").length;const byOrigin=groups.get(depth)||new Map(),xs=byOrigin.get(r.origin)||[];xs.push(id);byOrigin.set(r.origin,xs);groups.set(depth,byOrigin);}
-const levels=[...groups].sort((a,b)=>b[0]-a[0]).map(([depth,byOrigin])=>{const tiers=[...byOrigin.entries()].sort((a,b)=>eventFirst?Number(b[0].startsWith("event:"))-Number(a[0].startsWith("event:")):0).map(x=>x[1]),out=[];for(const xs of tiers)xs.sort((a,b)=>Number(states[b].cursor>0)-Number(states[a].cursor>0));for(let i=0;tiers.some(xs=>i<xs.length);i++)for(const xs of tiers)if(xs[i])out.push(xs[i]);return out;});
+const levels=[...groups].sort((a,b)=>breadth?Number(b[0]===0)-Number(a[0]===0)||b[0]-a[0]:b[0]-a[0]).map(([depth,byOrigin])=>{const tiers=[...byOrigin.entries()].sort((a,b)=>(breadth?(originRoutes.get(a[0])||0)-(originRoutes.get(b[0])||0):0)||(eventFirst?Number(b[0].startsWith("event:"))-Number(a[0].startsWith("event:")):0)||a[0].localeCompare(b[0])).map(x=>x[1]),out=[];for(const xs of tiers)xs.sort((a,b)=>breadth?(states[a].visits||0)-(states[b].visits||0)||states[a].cursor-states[b].cursor:Number(states[b].cursor>0)-Number(states[a].cursor>0));for(let i=0;tiers.some(xs=>i<xs.length);i++)for(const xs of tiers)if(xs[i])out.push(xs[i]);return out;});
 pending.length=0;for(let i=0;levels.some(xs=>i<xs.length);i++)for(const xs of levels)if(xs[i])pending.push(xs[i]);
 const t0=performance.now(),seconds=Number(arg("seconds","25")),limit=Number(arg("limit","2400")),timely=()=>m.attempts<limit&&performance.now()-t0<seconds*1000;
 running=true;
-let coldAt=0,hotAt=0,preferHot=false;
+let coldAt=0,hotAt=0,preferHot=false,coldSinceHot=0;
 while((coldAt<pending.length||hotAt<hot.length)&&timely()){
- const takeHot=hotAt<hot.length&&(preferHot||coldAt>=pending.length),id=takeHot?hot[hotAt++]:pending[coldAt++];
- preferHot=!takeHot;m[takeHot?"hotTurns":"coldTurns"]++;
+ const takeHot=hotAt<hot.length&&((breadth?coldSinceHot>=3:preferHot)||coldAt>=pending.length),id=takeHot?hot[hotAt++]:pending[coldAt++];
+ preferHot=!takeHot;coldSinceHot=takeHot?0:coldSinceHot+1;m[takeHot?"hotTurns":"coldTurns"]++;
  const s=states[id];if(s.done)continue;
+ if(breadth&&(seedAttempts.get(s.seed)||0)>=seedQuota){m.quotaDeferrals++;continue;}
+ if(!s.actions.length&&!s.visits&&!s.cursor)m.freshSeedTurns++;
+ s.visits=(s.visits||0)+1;
  try{
   const b=seed(s.seed),w=replayState(s,b),n={world:w,steps:s.actions};
   if(s.stateHash)assert.equal(exactWorld(w),s.stateHash);else s.stateHash=exactWorld(w);
@@ -101,9 +110,9 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
   const grown=g.grow(n),choices=(byBody.get(member(w).state.soldierType)||[]).filter(r=>r.requires.every(k=>!b.r.avoid.includes(k)&&!w.disabled.has(k)));
   const moves=choices.flatMap(r=>grown===n?[{r,n,phase:"pre"}]:[{r,n,phase:"pre"},{r,n:grown,phase:"post"}]);
   const sig=key(moves.map(x=>[x.r.id,x.phase]));if(s.signature)assert.equal(s.signature,sig);s.signature=sig;
-  const stop=Math.min(moves.length,s.cursor+quantum);
+  const stop=Math.min(moves.length,s.cursor+quantum,breadth?s.cursor+seedQuota-(seedAttempts.get(s.seed)||0):Infinity);
   for(;s.cursor<stop&&timely();s.cursor++){
-   const {r,n:c,phase}=moves[s.cursor];m.attempts++;m[phase+"GrowthAttempts"]++;
+   const {r,n:c,phase}=moves[s.cursor];m.attempts++;m[phase+"GrowthAttempts"]++;seedAttempts.set(s.seed,(seedAttempts.get(s.seed)||0)+1);
    try{
     if(!probe(c,r)){m.probeRejected++;continue;}
     const needs=r.requires.some(k=>!g.active(c.world,k));let planned=c;
@@ -127,6 +136,7 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
   if(s.cursor===moves.length){s.done=true;m.statesExpanded++;}else if(timely()){hot.push(id);m.quantumYields++;}
  }catch(e){s.error=String(e.message);m.errors++;if(entry.routes[s.seed]?.eventVariant)m.eventSeedErrors++;}
 }
-const values=Object.values(routes),summary={...m,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
+m.distinctSeedsAttempted=seedAttempts.size;
+const values=Object.values(routes),summary={...m,initialOnly,breadth,seedQuota,visitedInitialSeeds:Object.values(states).filter(s=>!s.actions.length&&(s.visits||s.cursor||s.done)).length,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
 const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered non-event and event minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
 fs.writeFileSync(out+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(out+".tmp",out);console.log(JSON.stringify(summary));
