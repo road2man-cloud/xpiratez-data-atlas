@@ -11,6 +11,7 @@ import {createNewPairCareerPolicy,POLICY} from "./population-new-pair-career-pol
 import {createEventSeeds,replayEventSeed} from "./population-new-pair-event-seeds.mjs";
 import {preflightTemplate} from "./population-research-template-selector.mjs";
 import {createSharedResearchPool} from "./population-new-pair-template-pool.mjs";
+import {pairShard} from "./population-new-pair-shards.mjs";
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
 import {createFoundationResearchPlanner} from "../public/soldiers/modern/foundation-research-planner.js";
@@ -21,7 +22,11 @@ const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+
 const db=decode("public/data/branch-soldier-results.json.gz"),data=read("public/data/soldiers-modern-index.json"),nonEventEntry=db.populationNewPairEntry,eventSeeds=createEventSeeds(db),entry={...nonEventEntry,routes:{...nonEventEntry.routes,...eventSeeds.routes},published:[...nonEventEntry.published,...Object.keys(eventSeeds.routes)]};
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
-const out=arg("out","population-new-pair-career.json.gz"),prior=fs.existsSync(out)?decode(out):db.populationNewPairCareer;
+const out=arg("out","population-new-pair-career.json.gz"),priorFile=arg("prior",out),prior=fs.existsSync(priorFile)?decode(priorFile):db.populationNewPairCareer;
+const shardCount=Number(arg("shard-count","1")),shardIndex=Number(arg("shard-index","0"));
+assert(Number.isSafeInteger(shardCount)&&shardCount>=1&&Number.isSafeInteger(shardIndex)&&shardIndex>=0&&shardIndex<shardCount);
+const owns=id=>shardCount===1||pairShard(entry.routes[id],shardCount)===shardIndex;
+if(shardCount>1)assert(prior?.scheduler===3,"Migrate the checkpoint before sharding");
 if(prior){assert.equal(prior.sourceMetadataSha256,db.sourceMetadataSha256);for(const [id,r] of Object.entries(db.populationNewPairCareer?.routes||{}))assert.deepEqual(prior.routes[id],r);}
 const routes={...prior?.routes},states={...prior?.states},{g,finish,rankDefaultBodies}=createNewPairCareerPolicy(data);
 const planner=createFoundationResearchPlanner(data,{maxAttempts:90,maxDepth:30,maxSteps:1800,methodLimit:24});
@@ -104,11 +109,12 @@ function seed(id){
  const s={r,root,birth,world:w};seedCache.set(id,s);m.seedReplays++;return s;
 }
 function enqueue(seedId,actions,hash,allowed){
+ if(!owns(seedId))return;
  const id=key([seedId,actions]);if(!states[id])states[id]={seed:seedId,actions,stateHash:hash,allowedDifficulties:allowed,cursor:0};
  // Initial-pass mode defers continuations without deleting their work records.
  if(!states[id].done&&!queued.has(id)&&(!initialOnly||!actions.length)){(running?hot:pending).push(id);queued.add(id);}
 }
-for(const [id,s] of Object.entries(states))if(!s.done&&(!initialOnly||!s.actions.length)){pending.push(id);queued.add(id);}
+for(const [id,s] of Object.entries(states))if(owns(s.seed)&&!s.done&&(!initialOnly||!s.actions.length)){pending.push(id);queued.add(id);}
 for(const [id,r] of Object.entries(entry.routes))enqueue(id,[],null,r.allowedDifficulties);
 // First interleave origins within each depth, then interleave depth levels.
 // This avoids starving continuations behind hundreds of fresh birth states.
@@ -164,5 +170,5 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
 }
 m.distinctSeedsAttempted=seedAttempts.size;Object.assign(m,sharedPool.metrics);
 const values=Object.values(routes),summary={...m,initialOnly,breadth,seedQuota,visitedInitialSeeds:Object.values(states).filter(s=>!s.actions.length&&(s.visits||s.cursor||s.done)).length,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
-const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered non-event and event minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
+const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,...(shardCount>1?{shard:{count:shardCount,index:shardIndex,ownedSeeds:entry.published.filter(owns).length},batchMetrics:m}:{}),routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered non-event and event minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
 fs.writeFileSync(out+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(out+".tmp",out);console.log(JSON.stringify(summary));
