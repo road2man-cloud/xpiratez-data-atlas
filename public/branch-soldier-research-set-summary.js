@@ -1,0 +1,1 @@
+export const researchSetSummary={"routes":3690,"sets":783,"matchedSets":783,"maxDistinctTransforms":11,"actualGameCertified":0,"sourceLedgerHash":"fd1a62f3e6e4030c722ea5f4632a19b6b4638e328bc88689232f8d27ba8d702a"};
