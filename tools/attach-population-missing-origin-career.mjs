@@ -19,9 +19,19 @@ const old=db.populationMissingOriginCareer,branches=new Map(db.branches.map(b=>[
 for(const [id,r] of Object.entries(old?.routes||{}))assert.deepEqual(a.routes[id],r);
 const active=(w,k)=>replay.active(w,k),worldCache=new Map([[0,foundationWorld()]]);
 function full(prefix){const out=[];let i=prefix;while(i!==0){assert(Number.isInteger(i)&&i>0&&i<index.actionNodes.length);const n=index.actionNodes[i];out.push(n.action);assert(n.parent<i);i=n.parent;}return out.reverse();}
+const replayMetrics={applied:0,checkpointHits:0};
+function remember(i,w){
+ if(i===0)return;
+ worldCache.delete(i);worldCache.set(i,w);
+ if(worldCache.size>160){const victim=[...worldCache.keys()].find(k=>k!==0);worldCache.delete(victim);}
+}
 function world(prefix){
  let p=prefix,path=[];while(!worldCache.has(p)){const n=index.actionNodes[p];assert(n.parent<p);path.push(p);p=n.parent;}
- let w=worldCache.get(p);for(const i of path.reverse()){w=replay.apply(w,index.actionNodes[i].action);if(i===prefix)worldCache.set(i,w);}return w;
+ let w=worldCache.get(p);if(p!==0){replayMetrics.checkpointHits++;remember(p,w);}
+ let step=0;for(const i of path.reverse()){w=replay.apply(w,index.actionNodes[i].action);replayMetrics.applied++;if(++step%32===0||i===prefix)remember(i,w);}return w;
+}
+function ancestor(prefix,count){
+ let i=prefix;for(let n=0;n<count;n++){assert(i>0);i=index.actionNodes[i].parent;}return i;
 }
 let replayed=0;
 for(const [id,r] of Object.entries(a.routes)){
@@ -32,7 +42,7 @@ for(const [id,r] of Object.entries(a.routes)){
  assert.equal(steps.filter(x=>x.type==="recruit"&&x.soldier==="origin").length,1);
  const c=auditOriginCampaignContext(steps,data);assert.equal(c.kind,"compatible");assert.deepEqual(r.allowedDifficulties,c.allowedDifficulties.filter(k=>g.allowedDifficulties.includes(k)));
  if(!old?.routes?.[id]){
-  const before=replay.replay(steps.slice(0,r.birthEvidence.birthAt));assert(!member(before));assert(p.requires.every(k=>active(before,k)));
+  const before=world(ancestor(i.fullPrefix,steps.length-r.birthEvidence.birthAt));assert(!before.pendingFree&&!member(before));assert(p.requires.every(k=>active(before,k)));
   const w=world(i.fullPrefix);assert(!w.pendingFree);
   assert([...b.captain,...Object.values(b.choices||{})].filter(Boolean).every(k=>active(w,k)));
   assert(!(b.blockedResearch||[]).some(k=>w.researched.has(k)));
@@ -48,7 +58,7 @@ for(const [id,r] of Object.entries(a.routes)){
 const published=Object.keys(a.routes),pairs=new Set(Object.values(a.routes).map(r=>r.origin+"|"+r.branch));
 db.populationMissingOriginCareer={schema:a.schema,sourceMetadataSha256:a.sourceMetadataSha256,sourceGraphSha256:a.sourceGraphSha256,fingerprint:a.fingerprint,file:asset,sha256:sha(fs.readFileSync("public/data/"+asset)),routes:a.routes,published,summary:{...a.summary,registeredPairs:pairs.size,newIndependentReplays:replayed},scope:a.scope};
 db.summary.populationMissingOriginCareer=db.populationMissingOriginCareer.summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.MISSCAR={file:a.schema==="COVERAGE_FIRST_RECRUITMENT_AND_CAREER_V7_SHARED"?"tools/build-population-shared-career-v1.mjs":"tools/build-population-missing-origin-career-v6.mjs",sourceMetadataSha256:a.sourceMetadataSha256};
+db.sources.MISSCAR={file:a.schema==="COVERAGE_FIRST_RECRUITMENT_AND_CAREER_V8_SHARED_PREFIX"?"tools/build-population-shared-career-v2.mjs":a.schema==="COVERAGE_FIRST_RECRUITMENT_AND_CAREER_V7_SHARED"?"tools/build-population-shared-career-v1.mjs":"tools/build-population-missing-origin-career-v6.mjs",sourceMetadataSha256:a.sourceMetadataSha256};
 db.policies.MISSCAR="동일 v.o2 연구·모집·성장·시술의 조건부 시간순 재생. 최솟값 모집, 자원 및 성장 가정. 실제 게임 전역 인증 아님.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
-console.log(JSON.stringify({routes:published.length,pairs:pairs.size,replayed,origins:new Set(Object.values(a.routes).map(r=>r.origin)).size}));
+console.log(JSON.stringify({routes:published.length,pairs:pairs.size,replayed,origins:new Set(Object.values(a.routes).map(r=>r.origin)).size,replayMetrics}));
