@@ -7,6 +7,7 @@ import {serialize} from "node:v8";
 import {performance} from "node:perf_hooks";
 import {MODEL,LEDGER,birthCatalog,sourceIdentity,createBridge,pairKey} from "./population-frontier-chronology-core.mjs";
 import {sha,key,sum,dominates} from "./population-research-career-core.mjs";
+import {recoveryProposal} from "./population-frontier-recovery-core.mjs";
 import {exactWorld,birthActions} from "./population-growth-replay-core.mjs";
 const reg="public/data/branch-soldier-results.json.gz",decode=x=>JSON.parse(gunzipSync(x)),read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v3.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
@@ -36,10 +37,12 @@ if(db[LEDGER]){
  for(const [id,r] of Object.entries(old.routes))assert.deepEqual(a.routes[id],r,"Prior route lost "+id);
  for(const [id,t] of Object.entries(old.attempts))assert.deepEqual(a.attempts[id],t,"Prior attempt lost "+id);
  for(const [id,t] of Object.entries(old.adaptedAttempts||{}))assert.deepEqual(a.adaptedAttempts?.[id],t,"Prior adaptation lost "+id);
+ for(const [id,t] of Object.entries(old.recoveryAttempts||{}))assert.deepEqual(a.recoveryAttempts?.[id],t,"Prior recovery lost "+id);
 }
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 const frontier=db.populationCareerFrontier,assumed=db.populationAssumedBirthClosure,env=db.populationCareerEnvelope;
 const origins=new Map(assumed.origins.map((x,i)=>[x,i])),branches=new Map(assumed.branches.map((x,i)=>[x,i])),births=new Map(birthCatalog(db).map(r=>[r.input,r]));
+const recoveryProfiles=new Map(data.profiles.map(p=>[p.id,p])),recoveryRules=new Map(data.transformations.map(r=>[r.id,r]));
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
 const bridge=createBridge(data,db,cacheHashes,{cache:true}),{replay,engine}=bridge;
@@ -112,7 +115,16 @@ for(const [id,r] of Object.entries(a.routes)){
  const f=frontier.groups[r.sourceGroup].frontier.find(x=>x.id===r.sourceRoute);assert(f);
  assert.equal(r.sourceActionHash,key(f.actions));assert.deepEqual(r.sourcePermanentVector,f.permanentVector);
  let proposal=f.actions;
- if(r.adaptation){
+ if(r.adaptation?.recoveryAttempt){
+  const x=r.adaptation,t=a.attempts[x.originalAttempt],alt=a.recoveryAttempts?.[x.recoveryAttempt];
+  assert(t&&t.status==="LIMITED_UNRESOLVED");
+  assert.equal(t.input,r.input);assert.equal(t.group,r.sourceGroup);assert.equal(t.sourceRoute,f.id);
+  assert.equal(x.originalAttempt,key([r.input,f.id]));assert.equal(x.recoveryAttempt,key([x.originalAttempt,x.kind]));
+  assert.equal(alt?.originalAttempt,x.originalAttempt);assert.equal(alt?.kind,x.kind);assert.equal(alt?.route,id);assert.equal(alt?.status,"CONDITIONAL_ALTERNATIVE_REPLAY");
+  const variant=recoveryProposal(f,t,x.kind,recoveryRules,recoveryProfiles.get(r.origin)?.soldierType);assert(variant);
+  assert.equal(x.actionHash,key(variant.actions));assert.equal(alt.actionHash,x.actionHash);assert.equal(alt.terminalBody,variant.body);assert.equal(r.body,variant.body);assert.deepEqual(alt.vector,r.permanentVector);
+  proposal=variant.actions;
+ }else if(r.adaptation){
   const x=r.adaptation,t=a.attempts[x.originalAttempt],alt=a.adaptedAttempts[x.originalAttempt];
   assert.equal(x.kind,"RANK_BLOCKED_PREFIX_THEN_CAP");assert.equal(x.appendCap,true);
   assert(t&&t.status==="LIMITED_UNRESOLVED"&&t.reason==="Promotion rank list unindexed");
@@ -175,7 +187,7 @@ const summary={...a.summary,worklistComparison:{improvedRoutes:a.summary.improve
 const asset="soldier-population-frontier-chronology.json.gz";fs.writeFileSync("public/data/"+asset+".tmp",bytes);fs.renameSync("public/data/"+asset+".tmp","public/data/"+asset);
 db[LEDGER]={...a,summary,published,comparisons,careerEnvelopeConflicts:outside,file:asset,bytes:bytes.length,sha256:sha(bytes)};
 db.summary[LEDGER]=summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
+db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
 db.policies.POPFRONTCH12="고정 수치모형 파레토 행동 순서를 원본 최솟값 출생·실제 색인 연구 규칙에서 조건부 재생. 성장·계급·훈장·자원·이벤트 가정 유지, 미해결은 불가능성 아님. 원시 및 영구 수치 재계산, 전체 캠페인 전역 미인증.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary:{...summary,top:top.slice(0,5)},newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses,bytes:bytes.length}));
