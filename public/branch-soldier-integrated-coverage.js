@@ -2,7 +2,7 @@
 // Historical joint status codes are retained; newer registered chronological
 // ledgers are unioned live so concurrent writers cannot leave a stale total.
 const memo=new WeakMap();
-export const chronologicalLedgers=["originExtendedContinuation","originResearchContinuation","originResearchChain","populationGrowthReplay","populationChronologicalCareer","populationResearchCareer","populationFrontierChronology","populationNewPairEntry","populationNewPairCareer"];
+export const chronologicalLedgers=["originExtendedContinuation","originResearchContinuation","originResearchChain","populationGrowthReplay","populationChronologicalCareer","populationResearchCareer","populationFrontierChronology","populationNewPairEntry","populationNewPairCareer","populationMissingOriginCareer"];
 export function integratedCoverage(db){
  if(memo.has(db))return memo.get(db);
  const j=db.populationJointCoverage;if(!j)return null;
@@ -36,7 +36,8 @@ export function integratedCoverage(db){
 const fmt=n=>n.toLocaleString("ko-KR"),pct=(n,d)=>(100*n/Math.max(1,d)).toFixed(2)+"%";
 export function integratedCoverageText(db){
  const c=integratedCoverage(db);if(!c)return "";
- return " 최신 원장 합집합: 조건부 경로·모집 근거 "+fmt(c.conditional)+"/"+fmt(c.total)+"쌍 ("+pct(c.conditional,c.total)+") · 기존 D모형 포함 근거 "+fmt(c.known)+"쌍 (구 집계 "+fmt(c.legacyKnown)+" + "+fmt(c.addedKnown)+") · 신규 시간순 원장 자체 "+fmt(c.newerChronologicalPairs)+"쌍. 제한 수치 폐쇄 및 전역 완전 판정과 별도.";
+ const origins=Object.values(c.byOrigin).filter(x=>x.conditional>0).length;
+ return " 조건부 근거 연결 출생처 "+fmt(origins)+"/"+fmt(Object.keys(c.byOrigin).length)+"개 · 최신 원장 합집합: 조건부 경로·모집 근거 "+fmt(c.conditional)+"/"+fmt(c.total)+"쌍 ("+pct(c.conditional,c.total)+") · 기존 D모형 포함 근거 "+fmt(c.known)+"쌍 (구 집계 "+fmt(c.legacyKnown)+" + "+fmt(c.addedKnown)+") · 신규 시간순 원장 자체 "+fmt(c.newerChronologicalPairs)+"쌍. 제한 수치 폐쇄 및 전역 완전 판정과 별도.";
 }
 export function integratedScopeMarkup(db,origin=null,branch=null){
  const c=integratedCoverage(db);if(!c)return "";
