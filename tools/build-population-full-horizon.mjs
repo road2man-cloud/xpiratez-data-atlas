@@ -1,0 +1,160 @@
+// Resumable full-horizon continuation of the existing chronological registry.
+// No transformation-count cutoff. No terminal-score dominance pruning.
+// Each budget stops work, not the model. Unsupported action families stay open.
+import fs from "node:fs";
+import assert from "node:assert/strict";
+import {gunzipSync,gzipSync} from "node:zlib";
+import {performance} from "node:perf_hooks";
+import {MODEL,LEDGER,birthCatalog,sourceIdentity,chronologicalBaseline,createBridge,pairKey} from "./population-frontier-chronology-core.mjs";
+import {sha,key,sum,dominates} from "./population-research-career-core.mjs";
+import {horizonProposal,HORIZON_POLICY} from "./population-full-horizon-proposals.mjs";
+import {exactWorld,member} from "./population-growth-replay-core.mjs";
+const arg=(k,d)=>process.argv.find(s=>s.startsWith("--"+k+"="))?.slice(k.length+3)??d;
+const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
+const db=decode("public/data/branch-soldier-results.json.gz"),data=read("public/data/soldiers-modern-index.json");
+data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
+data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
+assert.equal(data.meta.mod.version,"v.o2");assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
+const output=arg("out","population-full-horizon.json.gz"),published=db[LEDGER],prior=fs.existsSync(output)?decode(output):published;
+const source=sourceIdentity(db),{baseline:baselineIdentity,...stable}=source,{baseline:oldBaseline,...oldStable}=prior.source;
+assert.deepEqual(stable,oldStable,"Source migration required");
+assert.equal(prior.model,MODEL);assert.equal(prior.fingerprint,key([MODEL,db.sourceMetadataSha256,oldStable,prior.hashes]));
+const hashes={...prior.hashes},cacheHashes=prior.cacheHashes||prior.hashes;
+for(const [p,h] of Object.entries(prior.hashes)){
+ const actual=sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"));
+ if(actual!==h&&p==="tools/build-population-research-career.mjs")continue;
+ assert.equal(actual,h,"Dependency drift "+p);
+}
+for(const p of ["tools/build-population-full-horizon.mjs","tools/population-full-horizon-proposals.mjs"])hashes[p]=sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"));
+const fingerprint=key([MODEL,db.sourceMetadataSha256,stable,hashes]);
+const migration=published.fingerprint===fingerprint?published.migration:{kind:"WORKLIST_AND_PREFIX_ONLY",fromFingerprint:published.fingerprint,fromRoutes:Object.keys(published.routes).length,fromAttempts:Object.keys(published.attempts).length};
+for(const [id,r] of Object.entries(published.routes))assert.deepEqual(prior.routes[id],r,"Published route lost "+id);
+for(const [id,a] of Object.entries(published.chainAttempts||{}))assert.deepEqual(prior.chainAttempts[id],a,"Published attempt lost "+id);
+const routes={...prior.routes},chainAttempts={...prior.chainAttempts};
+const imports=[...(prior.horizonImports||[])],importPath=arg("import","");
+if(importPath){
+ const bytes=fs.readFileSync(importPath),incoming=JSON.parse(gunzipSync(bytes));
+ const {baseline:ib,...istable}=incoming.source;
+ assert.deepEqual(istable,stable);assert.equal(incoming.sourceMetadataSha256,db.sourceMetadataSha256);
+ assert.equal(incoming.fingerprint,key([MODEL,db.sourceMetadataSha256,istable,incoming.hashes]));
+ assert.equal(incoming.horizonPolicy?.id,HORIZON_POLICY);
+ for(const [p,h] of Object.entries(incoming.cacheHashes||{}))assert.equal(cacheHashes[p],h,"Import runtime provenance drift "+p);
+ let importedRoutes=0,importedAttempts=0;
+ for(const [id,r] of Object.entries(incoming.routes)){
+  if(routes[id]){assert.deepEqual(routes[id],r,"Import conflict "+id);continue;}
+  assert.equal(r.horizonPolicy,HORIZON_POLICY);assert.equal(r.actualGameCertified,false);
+  routes[id]=r;importedRoutes++;
+ }
+ for(const [id,t] of Object.entries(incoming.chainAttempts||{})){
+  if(chainAttempts[id]){assert.deepEqual(chainAttempts[id],t,"Import attempt conflict "+id);continue;}
+  assert.equal(t.horizonPolicy,HORIZON_POLICY);assert(routes[t.parent]);
+  if(t.status==="CONDITIONAL_CHAIN_REPLAY")assert(routes[t.route]);
+  chainAttempts[id]=t;importedAttempts++;
+ }
+ for(const r of Object.values(routes))if(r.horizonPolicy===HORIZON_POLICY)assert(routes[r.chainParent],"Import parent absent");
+ imports.push({fingerprint:incoming.fingerprint,artifactSha256:sha(bytes),producerHashes:incoming.hashes,importedRoutes,importedAttempts});
+ console.log(JSON.stringify({importedRoutes,importedAttempts}));
+}
+
+const bridge=createBridge(data,db,cacheHashes,{templates:structuredClone(prior.templates||{}),cache:false});
+const {engine,replay}=bridge,births=birthCatalog(db),birthById=new Map(births.map(b=>[b.input,b]));
+const routeKeys=new Map(Object.entries(routes).map(([id,r])=>[key([r.input,r.fullActionHash]),id]));
+const queues=new Map(),activeOrigins=[],originQueued=new Set(),seedWorlds=new Map(),stateOwners=new Map(),aliases={...prior.horizonAliases};
+const stats={attempted:0,completed:0,newRoutes:0,duplicate:0,failed:0,probeRejected:0,planFailed:0,seedFailed:0};
+const reasons={},newIds=[],initialRoutes=Object.keys(routes).length;
+let queuedEdges=0,rankDefaultParents=0,aliasParents=0;
+const policyRecord={id:HORIZON_POLICY,depthLimit:null,completion:"NO_GAME_CERTIFICATE",scope:"All registered non-default-rank chronology seeds, deterministic live transformations, conditional cap growth and indexed research planning with minimum required promotion and medal assumptions.",unmodeled:["Unrepresented origin/branch births and unobserved research histories","Partial growth and actual battle growth outcomes","Actual rank/commendation acquisition and default-rank variants","Random transformations, wounds, death, revival, cloning, calendar, events and material acquisition","Proof of all successor families and repeat/loop closure"],plannerLimitsAreUnresolved:true};
+function enqueue(id,r,front=false){
+ if(r.rankDefault){rankDefaultParents++;return;}
+ if(!birthById.has(r.input))return;
+ // Equal exact full-world hashes, identical birth, difficulty and prefix
+ // lengths: retain one expansion alias. Never merge by terminal stats.
+ const sk=key([r.input,r.canonicalStateHash,r.allowedDifficulties,r.actions.length]);
+ if(stateOwners.has(sk)){aliases[id]=stateOwners.get(sk);aliasParents++;return;}
+ stateOwners.set(sk,id);
+ const xs=[];
+ for(const rule of engine.byBody.get(r.body)||[]){
+  const f=horizonProposal(data,id,r,rule.id);if(!f)continue;
+  const aid=key([r.input,f.id]);if(chainAttempts[aid])continue;
+  xs.push({id,parent:r,f,aid});
+ }
+ xs.sort((a,b)=>Number(r.order.includes(a.f.rule.id))-Number(r.order.includes(b.f.rule.id))||Number(b.f.rule.requires.every(k=>r.addedResearch.includes(k)))-Number(a.f.rule.requires.every(k=>r.addedResearch.includes(k)))||a.f.rule.requires.length-b.f.rule.requires.length||a.f.rule.id.localeCompare(b.f.rule.id));
+ if(!xs.length)return;
+ if(!queues.has(r.origin))queues.set(r.origin,{jobs:[],cursor:0});
+ const q=queues.get(r.origin),job={xs,cursor:0};
+ // New descendants get immediate opportunities, but only one per origin
+ // per round. All older jobs stay on the queue and are reconstructible.
+ if(front)q.jobs.splice(q.cursor,0,job);else q.jobs.push(job);
+ queuedEdges+=xs.length;
+ if(!originQueued.has(r.origin)){activeOrigins.push(r.origin);originQueued.add(r.origin);}
+}
+// Prefer origins not visited in the last run, then existing longer paths.
+// There is neither a minimum nor a maximum transformation count.
+const lastOrigins=new Set(prior.summary.horizonRound?.visitedOrigins||[]);
+const seeds=Object.entries(routes).sort((a,b)=>Number(lastOrigins.has(a[1].origin))-Number(lastOrigins.has(b[1].origin))||b[1].order.length-a[1].order.length||sum(b[1].permanentVector)-sum(a[1].permanentVector)||a[0].localeCompare(b[0]));
+for(const [id,r] of seeds)enqueue(id,r);
+const initialEdges=queuedEdges,initialOrigins=activeOrigins.length;
+const seconds=Number(arg("seconds","25")),limit=Number(arg("limit","200"));
+assert(Number.isFinite(seconds)&&seconds>0&&Number.isSafeInteger(limit)&&limit>0);
+const start=performance.now(),visited=new Set();let cursor=0;
+function nextJob(){
+ while(activeOrigins.length){
+  if(cursor>=activeOrigins.length)cursor=0;
+  const origin=activeOrigins[cursor],q=queues.get(origin);
+  while(q.cursor<q.jobs.length&&q.jobs[q.cursor].cursor>=q.jobs[q.cursor].xs.length)q.cursor++;
+  if(q.cursor>=q.jobs.length){activeOrigins.splice(cursor,1);originQueued.delete(origin);continue;}
+  const job=q.jobs[q.cursor],edge=job.xs[job.cursor++];cursor++;return edge;
+ }
+ return null;
+}
+while(stats.attempted<limit&&performance.now()-start<seconds*1000){
+ const q=nextJob();if(!q)break;
+ stats.attempted++;visited.add(q.parent.origin);
+ const rec={parent:q.id,rule:q.f.rule.id,input:q.parent.input,sourceRoute:q.f.id,horizonPolicy:HORIZON_POLICY};
+ const fail=reason=>{stats.failed++;reasons[reason]=(reasons[reason]||0)+1;chainAttempts[q.aid]={...rec,status:"LIMITED_UNRESOLVED",reason};};
+ try{
+  const birth=birthById.get(q.parent.input);assert(birth);
+  let b=seedWorlds.get(q.id);
+  if(!b){
+   const original=bridge.loadBirth(birth),w=replay.replay(q.parent.actions,original.n.world);
+   assert.equal(exactWorld(w),q.parent.canonicalStateHash,"Parent state replay drift");
+   b={original,n:{world:w,steps:q.parent.actions}};
+   if(seedWorlds.size>=40)seedWorlds.delete(seedWorlds.keys().next().value);
+   seedWorlds.set(q.id,b);
+  }
+  let n=b.n,rule=q.f.rule;
+  const p=engine.policy(birth.branch,n);
+  if(rule.requires.some(k=>p.blocked.has(k)||p.opposing.has(k)||n.world.disabled.has(k))){fail("BRANCH_RESEARCH_GATE");continue;}
+  n=replay.grow(n);
+  if(!engine.probe(n,rule)){stats.probeRejected++;fail("NUMERIC_OR_RANK_GATE");continue;}
+  if(!rule.requires.every(k=>replay.active(n.world,k))){
+   const plan=engine.plan(n,birth.branch,b.original.birth,rule);
+   if(!plan.ok){stats.planFailed++;fail(plan.reason||"RESEARCH_UNRESOLVED");continue;}
+   n=plan.n;
+  }
+  const x=replay.transform(n,rule);if(!x){fail("TRANSFORM_GATE");continue;}
+  const g=replay.grow(x),full=[...b.original.birth,...g.steps];
+  const allowed=engine.context(birth.branch,b.original.p,full,g.world).filter(i=>q.parent.allowedDifficulties.includes(i));
+  if(!allowed.length){fail("CONTEXT_GATE");continue;}
+  const f=replay.finish(g.world);assert.equal(f.body,q.f.body);
+  const fullActionHash=key(full),rk=key([birth.input,fullActionHash]),id="POPFRONTCH12:"+rk.slice(0,24);
+  stats.completed++;
+  if(routeKeys.has(rk)){stats.duplicate++;chainAttempts[q.aid]={...rec,status:"DUPLICATE_REPLAY",route:routeKeys.get(rk)};continue;}
+  const r={...birth,sourceGroup:q.parent.sourceGroup,sourceRoute:q.f.id,sourceActionHash:key(q.f.actions),sourcePermanentVector:q.f.permanentVector,sourceKind:"BIRTH_RESEARCH_CHAIN",horizonPolicy:HORIZON_POLICY,chainParent:q.id,chainRule:rule.id,birthActionHash:b.original.p.fullActionHash,birthStateHash:b.original.p.stateHash,actions:g.steps,order:g.steps.filter(a=>a.type==="transform").map(a=>a.transform),addedResearch:[...g.world.researched].filter(k=>replay.active(g.world,k)&&!replay.active(b.original.n.world,k)),allowedDifficulties:allowed,fullActionHash,canonicalStateHash:exactWorld(g.world),...f,numericExactMatch:false,actualGameCertified:false};
+  assert.deepEqual(r.order,[...q.parent.order,rule.id]);
+  routes[id]=r;routeKeys.set(rk,id);newIds.push(id);stats.newRoutes++;
+  chainAttempts[q.aid]={...rec,status:"CONDITIONAL_CHAIN_REPLAY",route:id};
+  if(seedWorlds.size>=40)seedWorlds.delete(seedWorlds.keys().next().value);
+  seedWorlds.set(id,{original:b.original,n:g});enqueue(id,r,true);
+ }catch(e){stats.seedFailed++;fail(String(e.message));}
+}
+const all=Object.values(routes),newRoutes=newIds.map(id=>routes[id]),base=chronologicalBaseline(db);
+const improved=all.filter(r=>!(base.get(pairKey(r))||[]).some(v=>dominates(v,r.permanentVector)));
+const history={};for(const r of newRoutes)history[r.order.length]=(history[r.order.length]||0)+1;
+const pending=queuedEdges-stats.attempted;
+const horizonRound={...stats,initialRoutes,initialEdges,initialOrigins,queuedEdges,pending,visitedOrigins:[...visited],newOrigins:new Set(newRoutes.map(r=>r.origin)).size,newPairs:new Set(newRoutes.map(r=>r.pair)).size,newDepthHistogram:history,maxNewDepth:Math.max(0,...newRoutes.map(r=>r.order.length)),rankDefaultParents,aliasParents,reasons,elapsedSeconds:(performance.now()-start)/1000};
+const summary={...prior.summary,registeredRoutes:all.length,newRoutes:stats.newRoutes,improvedRoutes:improved.length,improvedPairs:new Set(improved.map(r=>r.origin+"|"+r.branch)).size,improvedPairBodies:new Set(improved.map(pairKey)).size,newTerminalPairBodies:new Set(improved.filter(r=>!base.has(pairKey(r))).map(pairKey)).size,exactNumericMatches:all.filter(r=>r.numericExactMatch).length,additionalResearchRoutes:all.filter(r=>r.addedResearch.length).length,researchTopics:new Set(all.flatMap(r=>r.addedResearch)).size,chainRoutes:all.filter(r=>r.sourceKind==="BIRTH_RESEARCH_CHAIN").length,chainAttempts:Object.keys(chainAttempts).length,horizonRound,horizonPending:pending,horizonRoutes:all.filter(r=>r.horizonPolicy===HORIZON_POLICY).length,fullCompleted:0,actualGameCertified:0,globalOptimalCertified:0};
+const {published:oldPublished,comparisons,careerEnvelopeConflicts,file,bytes,sha256,...clean}=prior;
+const result={...clean,fingerprint,source,hashes,cacheHashes,migration,routes,chainAttempts,horizonAliases:aliases,horizonImports:imports,horizonPolicy:policyRecord,templates:bridge.templates,summary,scope:"No transformation-depth cutoff in the registered deterministic live chronology continuation; full campaign and other action families remain unresolved."};
+fs.writeFileSync(output+".tmp",gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(output+".tmp",output);
+console.log(JSON.stringify({output,horizonRound,horizonRoutes:summary.horizonRoutes,registeredRoutes:all.length,actualGameCertified:0,examples:newRoutes.sort((a,b)=>b.order.length-a.order.length).slice(0,5).map(r=>({origin:r.origin,branch:r.branch,order:r.order,vector:r.permanentVector}))}));

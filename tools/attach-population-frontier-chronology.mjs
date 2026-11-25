@@ -13,6 +13,7 @@ import {proveBirthAppend} from "./population-frontier-birth-migration.mjs";
 import {baseBirthProposals} from "./population-frontier-birth-proposals.mjs";
 import {chainProposal} from "./population-frontier-chain-proposals.mjs";
 import {extendedChainProposal,successorKey} from "./population-frontier-chain-extended.mjs";
+import {horizonProposal,HORIZON_POLICY} from "./population-full-horizon-proposals.mjs";
 import {exactWorld,birthActions} from "./population-growth-replay-core.mjs";
 const reg="public/data/branch-soldier-results.json.gz",decode=x=>JSON.parse(gunzipSync(x)),read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v3.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
@@ -136,7 +137,7 @@ for(const [id,r] of Object.entries(a.routes)){
  const i=origins.get(r.origin),j=branches.get(r.branch),cl=assumed.classes[assumed.classIndex[i][j]];
  assert(cl.groups.includes(r.sourceGroup));
  const chainParent=r.sourceKind==="BIRTH_RESEARCH_CHAIN"?a.routes[r.chainParent]:null;
- const candidates=chainParent?[proposeChain(data,r.chainParent,chainParent,r.chainRule)].filter(Boolean):r.sourceKind?baseBirthProposals(db,data,r.origin,r.sourceGroup):frontier.groups[r.sourceGroup]?.frontier||[];
+ const candidates=chainParent?[(r.horizonPolicy===HORIZON_POLICY?horizonProposal:proposeChain)(data,r.chainParent,chainParent,r.chainRule)].filter(Boolean):r.sourceKind?baseBirthProposals(db,data,r.origin,r.sourceGroup):frontier.groups[r.sourceGroup]?.frontier||[];
  const f=candidates.find(x=>x.id===r.sourceRoute);assert(f);assert.equal(r.sourceKind,f.sourceKind);
  if(r.sourceKind==="BIRTH_RESEARCH_CHAIN"){
   assert(chainParent&&!r.rankDefault&&!r.adaptation);assert.equal(chainParent.input,r.input);assert.equal(chainParent.sourceGroup,r.sourceGroup);
@@ -144,6 +145,7 @@ for(const [id,r] of Object.entries(a.routes)){
   assert(r.actions.length>chainParent.actions.length);
   assert.deepEqual(r.order,[...chainParent.order,r.chainRule]);
   const c=a.chainAttempts?.[key([r.input,f.id])];assert.equal(c?.parent,r.chainParent);assert.equal(c?.rule,r.chainRule);assert.equal(c?.route,id);assert.equal(c?.status,"CONDITIONAL_CHAIN_REPLAY");
+  if(r.horizonPolicy){assert.equal(r.horizonPolicy,HORIZON_POLICY);assert.equal(c.horizonPolicy,HORIZON_POLICY);assert.equal(a.horizonPolicy?.depthLimit,null);}
  }
  assert.equal(r.sourceActionHash,key(f.actions));assert.deepEqual(r.sourcePermanentVector,f.permanentVector);
  let proposal=f.actions;
@@ -221,7 +223,7 @@ const summary={...a.summary,worklistComparison:{improvedRoutes:a.summary.improve
 const asset="soldier-population-frontier-chronology.json.gz";fs.writeFileSync("public/data/"+asset+".tmp",bytes);fs.renameSync("public/data/"+asset+".tmp","public/data/"+asset);
 db[LEDGER]={...a,summary,published,comparisons,careerEnvelopeConflicts:outside,file:asset,bytes:bytes.length,sha256:sha(bytes)};
 db.summary[LEDGER]=summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v10.mjs"]?"tools/build-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-frontier-chronology-v9.mjs"]?"tools/build-population-frontier-chronology-v9.mjs":a.hashes["tools/build-population-frontier-chronology-v8.mjs"]?"tools/build-population-frontier-chronology-v8.mjs":a.hashes["tools/build-population-frontier-chronology-v7.mjs"]?"tools/build-population-frontier-chronology-v7.mjs":a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
+db.sources.POPFRONTCH12={file:a.hashes["tools/merge-population-frontier-chronology-v10.mjs"]?"tools/merge-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-full-horizon.mjs"]?"tools/build-population-full-horizon.mjs":a.hashes["tools/build-population-frontier-chronology-v10.mjs"]?"tools/build-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-frontier-chronology-v9.mjs"]?"tools/build-population-frontier-chronology-v9.mjs":a.hashes["tools/build-population-frontier-chronology-v8.mjs"]?"tools/build-population-frontier-chronology-v8.mjs":a.hashes["tools/build-population-frontier-chronology-v7.mjs"]?"tools/build-population-frontier-chronology-v7.mjs":a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
 db.policies.POPFRONTCH12="고정 수치모형 파레토 행동 순서를 원본 최솟값 출생·실제 색인 연구 규칙에서 조건부 재생. 성장·계급·훈장·자원·이벤트 가정 유지, 미해결은 불가능성 아님. 원시 및 영구 수치 재계산, 전체 캠페인 전역 미인증.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary:{...summary,top:top.slice(0,5)},newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses,bytes:bytes.length}));
