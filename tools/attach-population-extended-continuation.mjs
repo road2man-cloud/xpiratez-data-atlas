@@ -15,7 +15,21 @@ assert.equal(a.summary.actualGameCertified,0);assert.equal(a.summary.globalOptim
 assert.equal(a.engine,key([a.sourceMetadataSha256,u.fingerprint,e.fingerprint,a.hashes]));
 for(const [p,h] of Object.entries(a.hashes))assert.equal(sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n")),h,"Dependency changed "+p);
 const old=db.originExtendedContinuation;
-if(old){assert.equal(old.engine,a.engine);for(const k of ["routes","models"])for(const [id,r] of Object.entries(old[k]))assert.deepEqual(a[k][id],r,"Lost prior "+id);}
+if(old){
+ if(old.engine!==a.engine){
+  const legacyHashes={...a.hashes,"tools/build-population-extended-continuation.mjs":"64fa7f15eee999512b0fc6a254b5fa8e2841e5f1ce460650783fc4bafd918f2c"};
+  assert.deepEqual(old.hashes,legacyHashes);assert.equal(old.engine,key([a.sourceMetadataSha256,u.fingerprint,e.fingerprint,legacyHashes]));
+  const migration={from:old.engine,to:a.engine,scope:"CHECKPOINT_RECEIPTS_AND_COMPLETED_SUBTREE_REUSE_ONLY"};
+  // An additional local batch may have already used the new engine.
+  // Reconstruct the explicit migration from the actual public predecessor.
+  if(a.migration)assert.deepEqual(a.migration,migration);else a.migration=migration;
+ }
+ for(const k of ["routes","models","birthReceipts","subtrees"])for(const [id,r] of Object.entries(old[k]||{})){
+  if(k==="subtrees")assert((a[k]?.[id]||0)>=r,"Lost completed subtree "+id);
+  else assert.deepEqual(a[k]?.[id],r,"Lost prior "+id);
+ }
+ for(const [id,d] of Object.entries(old.complete||{}))assert((a.complete[id]||0)>=d,"Lost completed input "+id);
+}
 const before=Object.keys(db.witnesses).length,published=[],quarantined=[];
 const valid=v=>Array.isArray(v)&&v.length===12&&v.every(Number.isSafeInteger);
 for(const [id,r] of Object.entries(a.routes)){
@@ -36,7 +50,15 @@ for(const [id,r] of Object.entries(a.routes)){
  const effective=v=>v.map((x,i)=>db.stats[i]==="psiSkill"&&x<=0&&r.bonus[i]>0?x:Math.max(db.stats[i]==="health"?1:0,x+r.bonus[i]));
  assert.deepEqual(r.vector,effective(r.raw));assert.deepEqual(r.capVector,effective(r.capRaw));
  if(r.model){const m=a.models[r.model];assert(m&&m.origin===r.origin&&m.body===r.body);assert.deepEqual(m.order,r.order);assert(m.frontier.every(f=>[f.raw,f.bonus,f.vector].every(valid)));}
- if(!r.birthProof.hashMatch){quarantined.push(id);continue;}
+ if(!r.birthProof.hashMatch){
+  const receipt=a.birthReceipts?.[id];
+  if(!receipt){quarantined.push(id);continue;}
+  const proof=receipt.birthProof;
+  assert.equal(receipt.scope,"INDEPENDENT_EXACT_SUFFIX_REPLAY");
+  assert.equal(proof.expected,p.stateHash);assert.equal(proof.observed,p.stateHash);assert.equal(proof.hashMatch,true);
+  assert.equal(proof.canonical,r.birthProof.canonical);assert.equal(receipt.fullActionHash,r.fullActionHash);assert.equal(receipt.canonicalStateHash,r.canonicalStateHash);
+  assert(proof.allowedDifficulties.length&&proof.allowedDifficulties.every(x=>p.allowedDifficulties.includes(x)));
+ }
  const metadata=r.kind==="unlock"?{populationUnlock:{pair:r.pair,actions:r.actions,rawBeforeFinalGrowth:r.raw}}:{populationEvent:{variant:p.id,actions:r.actions,rawBeforeFinalGrowth:r.raw}};
  const w={source:"POPEXT12",originProfile:r.origin,branchIds:[r.branch],body:r.body,raw:r.capRaw,bonus:r.bonus,vector:r.capVector,steps:r.order.map(id=>({id,count:1})),placement:"REPLAYED_BIRTH_AND_TRANSFORMS_THEN_CONDITIONAL_CAP",populationExtended:{route:id,input:r.input,model:r.model,rawBeforeFinalGrowth:r.raw,fullActionHash:r.fullActionHash},...metadata,actualGameCertified:false};
  if(db.witnesses[id])assert.deepEqual(db.witnesses[id],w);db.witnesses[id]=w;published.push(id);
@@ -46,6 +68,6 @@ db.originExtendedContinuation={...a,published,quarantined};
 db.summary.originExtendedContinuation={...a.summary,published:published.length,quarantined:quarantined.length};
 db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
 db.sources.POPEXT12={file:"tools/build-population-extended-continuation.mjs",fingerprint:a.engine,sourceMetadataSha256:a.sourceMetadataSha256};
-db.policies.POPEXT12="추가 연구·이벤트 출생의 원본 행동과 모집 상태 해시가 일치한 경로만 비교에 등록. 시술 직후 재생값과 마지막 전투캡 조건부 투영을 구분하며 별도 성장 순서 상계는 실제 달성 미인증. 이전 모집 해시 불일치는 독립 원장에만 보존.";
+db.policies.POPEXT12="추가 연구·이벤트 출생의 원본 행동과 모집 상태 해시가 일치한 경로 또는 원본 저장 상태와 전체 후속 행동의 독립 재생이 모두 일치한 경로만 비교에 등록. 시술 직후 재생값과 마지막 전투캡 조건부 투영을 구분하며 별도 성장 순서 상계는 실제 달성 미인증. 미복구 불일치는 원장에만 보존.";
 fs.writeFileSync(file+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({published:published.length,quarantined:quarantined.length,newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses}));
