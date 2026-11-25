@@ -1396,7 +1396,7 @@ async function init(){try{
   const rankedCount=$('#originRankedCount');
   if(rankedCount)rankedCount.textContent=fmt(ranked);
   const completion=sharedRegistry?.careerCompletion,cs=completion?.summary;
-  const terminal=completion?.terminalRule,tr=completion?.terminalResearch,supply=completion?.terminalSupply,economy=completion?.terminalEconomy;
+  const terminal=completion?.terminalRule,tr=completion?.terminalResearch,supply=completion?.terminalSupply,economy=completion?.terminalEconomy,earlyEconomy=completion?.earlyEconomy;
   const originLabel=id=>DATA.profiles.find(p=>p.id===id)?.sourceKoName||id;
   const routeHref=(r,node)=>'?'+esc(new URLSearchParams({scope:'reference',group:'routes',origin:r.origin,branch:r.branch,q:'MISSCAR:'+r.graph+':'+node}))+'#originMaxima';
   const assetLabel=k=>{const id=String(k||'').replace(/^(ITEM|CRAFT|UNKNOWN):/,'');return name(id)||id;};
@@ -1411,6 +1411,15 @@ async function init(){try{
       const method=f?(s.funding.mode==='PASSIVE'?'농장 월수입':esc(name(f.recipe)||f.recipe)+' '+fmt(f.cycles)+'회 (묶음 '+fmt(f.lotSize)+')'):(s.prefundCycles?esc(name(s.prefundRecipe)||s.prefundRecipe)+' '+fmt(s.prefundCycles)+'회 (묶음 '+fmt(s.prefundLotSize)+')':'추가 판매 없음');
       return '<tr data-economic-scenario="'+esc(r.scheduleHash)+'"'+(f?' data-finite-seed="true"':'')+'><td>'+fmt(s.staff)+' / '+fmt(s.farmCount)+'</td><td>'+(s.purchaseElerium?'구매':'제조')+'</td><td>'+method+'</td><td>'+fmt(b.requiredCapital)+(f?' (고정)':' (추정)')+'</td><td>'+fmt(Math.ceil(b.elapsedDays))+'</td><td>'+fmt(b.payroll)+'</td></tr>';
     }).join('')+'</tbody></table></div>'+records.map(r=>'<details data-economic-detail="'+esc(r.scheduleHash)+'"><summary>기술자 '+fmt(r.scenario.staff)+' · 농장 '+fmt(r.scenario.farmCount)+' · '+(r.financing?'유한자금 · 판매 '+fmt(r.financing.cycles)+'회':'추정 자본 · 판매 '+fmt(r.scenario.prefundCycles)+'회')+' · '+fmt(Math.ceil(r.budget.elapsedDays))+'일 — 월별 장부·기지 배치·행동 이력</summary><div data-economic-body>펼칠 때 계산 근거 표시</div></details>').join('')+'</details>';
+  };
+  const earlyRows=Object.values(earlyEconomy?.records||{}),earlyByHash=new Map(earlyRows.map(r=>[r.companionHash,r]));
+  const earlyHtml=()=>{
+    const groups=new Map();
+    for(const r of earlyRows){if(activeBranch&&r.branch!==activeBranch)continue;const a=groups.get(r.routeId)||[];a.push(r);groups.set(r.routeId,a);}
+    if(!groups.size)return '';
+    return '<details><summary>원본 시작 기지 · 연구 이력별 초기 경제 동반 일정 ('+fmt([...groups.values()].reduce((n,r)=>n+r.length,0))+'개)</summary><p>국가별 초기 지원금 최솟값 추첨 후 엔진 조정식을 적용한 조건부 시작 자금 '+fmt(earlyEconomy.sourceEvidence.openingCash)+'달러. 기존 연구 이력의 명시적 월 경과 구간에서만 제조·판매·농장 건설을 계산했습니다. 국가 지원금 고정 가정, 실제 연구 시간과 임무 생존 및 외부 자원은 미증명입니다. 자금조건 통과는 캠페인 완결이 아닙니다.</p>'+[...groups.values()].map(list=>{
+      const r=list[0];return '<details><summary>'+esc(originLabel(r.origin))+' · '+fmt(list.filter(x=>x.status==='CONDITIONAL_PREFIX_CASH_SCHEDULED').length)+'/'+fmt(list.length)+' 자금조건 통과</summary><p><a href="'+routeHref(r,r.node)+'">기존 시간순 육성 경로</a></p><div class="table-wrap"><table><thead><tr><th>기술자 상한</th><th>농장 상한</th><th>도달 월</th><th>잔액</th><th>직접 지출</th><th>상태</th></tr></thead><tbody>'+list.map(x=>'<tr data-early-economic-scenario="'+esc(x.companionHash)+'"><td>'+fmt(x.options.staffLimit)+'</td><td>'+fmt(x.options.farmLimit)+'</td><td>'+fmt(x.months)+'</td><td>'+fmt(x.closingCash)+'</td><td>'+fmt(x.careerCashPaid)+'</td><td>'+(x.blocked?'자금 부족':'자금조건 통과 (조건부)')+'</td></tr>').join('')+'</tbody></table></div>'+list.map(x=>'<details data-early-economic-detail="'+esc(x.companionHash)+'"><summary>기술자 상한 '+fmt(x.options.staffLimit)+' · 농장 상한 '+fmt(x.options.farmLimit)+' · '+fmt(x.months)+'개월 · 상세 근거</summary><div data-early-economic-body>펼칠 때 계산 근거 표시</div></details>').join('')+'</details>';
+    }).join('')+'</details>';
   };
   const planHtml=r=>{
     if(!r.plan)return '';
@@ -1431,7 +1440,7 @@ async function init(){try{
   const terminalHost=$('#terminalResearchProgress');
   if(terminalHost&&terminal?.targets){
     const entries=Object.values(tr?.records||{});
-    terminalHost.innerHTML='<p>원본 룰셋 및 보존 엔진에서 추출한 진입 목표. 연구 목표 충족은 승리·자원 수급·전체 육성 종결의 증명이 아닙니다.</p>'+
+    terminalHost.innerHTML='<p>원본 룰셋 및 보존 엔진에서 추출한 진입 목표. 연구 목표 충족은 승리·자원 수급·전체 육성 종결의 증명이 아닙니다.</p>'+earlyHtml()+
       terminal.targets.map(t=>{
         const matched=entries.filter(r=>r.target===t.id&&r.status==='CONDITIONAL_TARGET_RESEARCH_READY');
         const goal=t.researchGoals.map(k=>esc(name(k))).join(' · ');
@@ -1442,7 +1451,18 @@ async function init(){try{
         return '<details><summary>'+esc(t.craft?name(t.craft):t.stages.at(-1).name)+' · 조건부 연구 충족 '+fmt(matched.length)+'건 · 조달 계획 '+fmt(plans.length)+'개</summary><p>목표 연구: '+goal+'</p><p>임무 단계: '+stage+'</p>'+(links?'<ul>'+links+'</ul>':'<p>아직 목표 연구 충족 근거 없음</p>')+(research?'<h4>조달 선행 연구 확장</h4><ul>'+research+'</ul>':'')+(plans.length?'<h4>조건부 조달 계획 (완결 등록 제외)</h4>'+plans.sort((a,b)=>(b.plannerVersion||1)-(a.plannerVersion||1)||a.node-b.node).map(planHtml).join(''):'')+'</details>';
       }).join('');
     terminalHost.addEventListener('toggle',event=>{
-      const el=event.target,hash=el?.dataset?.economicDetail;
+      const el=event.target,earlyHash=el?.dataset?.earlyEconomicDetail;
+      if(earlyHash&&el.open){
+        const r=earlyByHash.get(earlyHash),host=el.querySelector('[data-early-economic-body]');
+        if(!r||!host||host.dataset.loaded)return;
+        host.dataset.loaded='1';
+        const capacity=r.researchCapacity,blocked=r.blocked;
+        host.innerHTML='<p>최저 잔액 '+fmt(r.minimumCash)+'달러 · 판매 매출 '+fmt(r.sales)+'달러 · 육성 직접 지출 '+fmt(r.careerCashPaid)+'달러 · 원본 시작 물품 배정 후보 '+fmt(r.initialStockUnitsAllocated)+'개 · 기지 기능 요청 대응 '+fmt(r.baseFunctionRequestsCovered)+'회 · 미해결 자원 '+fmt(r.unresolvedResources.length)+'건.</p>'+(blocked?'<p>중단: '+esc(blocked.kind)+' · 행동 '+fmt(blocked.at)+' · 필요 '+fmt(blocked.required)+' / 잔액 '+fmt(blocked.cash)+'</p>':'<p>기존 논리적 연구 이력 끝까지 자금조건 통과. 실제 연구 시간·자원 및 캠페인 생존은 미증명.</p>')+'<p>연구 소요량 원본 명목 '+fmt(capacity.nominalScientistDays)+' 연구원일 · 최소 추첨 '+fmt(capacity.minScientistDays)+' · 연구원 '+fmt(capacity.initialScientists)+'명 · 연구실 '+fmt(capacity.labSlots)+'석 · 마지막 월 경과 이후 미배정 연구 '+fmt(capacity.trailingWork.nominal)+' 연구원일 (실제 연구 달력 아님).</p><h4>월별 장부</h4><div class="table-wrap"><table><thead><tr><th>월</th><th>기술자</th><th>농장</th><th>제조</th><th>국가 지원금</th><th>유지비</th><th>잔액</th></tr></thead><tbody>'+r.windows.map(m=>'<tr><td>'+fmt(m.month)+'</td><td>'+fmt(m.engineers)+'</td><td>'+fmt(m.farms)+'</td><td>'+m.manufacture.map(p=>esc(name(p.recipe)||p.recipe)+' '+fmt(p.batches)+'회').join(' · ')+'</td><td>'+fmt(m.monthlyFunding)+'</td><td>'+fmt(m.maintenance.total)+'</td><td>'+fmt(m.closingCash)+'</td></tr>').join('')+'</tbody></table></div><details><summary>원본 시작 재고·기지 기능 대응 ('+fmt(r.allocation.length)+'건)</summary><ol>'+r.allocation.map(a=>'<li>행동 '+fmt(a.at)+' · '+esc(a.asset?assetLabel(a.asset):a.function)+' '+(a.quantity?'× '+fmt(a.quantity):'')+'</li>').join('')+'</ol></details><details><summary>미해결 자원 의무 ('+fmt(r.unresolvedResources.length)+'건)</summary><ol>'+r.unresolvedResources.map(a=>'<li>행동 '+fmt(a.at)+' · '+esc(assetLabel(a.id))+(a.quantity?' × '+fmt(a.quantity):'')+'</li>').join('')+'</ol></details><h4>현금 거래 ('+fmt(r.cashLedger.length)+'건)</h4><div data-early-transactions></div><button type="button" data-early-more>다음 100개 보기</button>';
+        let pos=0;const box=host.querySelector('[data-early-transactions]'),more=host.querySelector('[data-early-more]');
+        const next=()=>{const chunk=r.cashLedger.slice(pos,pos+100),list=document.createElement('ol');list.start=pos+1;list.innerHTML=chunk.map(e=>'<li>'+esc(e.date)+' · '+esc(e.reason)+' · '+(e.amount>0?'+':'')+fmt(e.amount)+'달러 · 잔액 '+fmt(e.cash)+'달러</li>').join('');box.append(list);pos+=chunk.length;more.hidden=pos>=r.cashLedger.length;};
+        more.addEventListener('click',next);next();return;
+      }
+      const hash=el?.dataset?.economicDetail;
       if(!hash||!el.open)return;
       const r=economicByHash.get(hash),host=el.querySelector('[data-economic-body]');
       if(!r||!host||host.dataset.loaded)return;
@@ -1462,7 +1482,7 @@ async function init(){try{
       }
     },true);
   }
-  $('#catalogSummary').innerHTML=[['전체 출생처',DATA.profiles.length,'같은 병종이어도 출생처 분리'],['조건부 연구 이력 확보 분기',cs?.branchesWithConditionalResearch??'미확정','최종 탐색 대상 전체는 미확정'],['완결 조합',cs?.completeCombinations??'미확정','최종 테이블 등록 기준'],['미해결 고유 탐색 근거',cs?.unresolvedEvidence??'미확정','중간 경로이며 최종 집계 제외'],['완전 탐색 분기',cs?.fullyEnumeratedBranches??'미확정','전체 탐색 공간 미확정'],['원본 최종 목표',sharedRegistry?.careerCompletion?.terminalRule?.targets?.length??'미확정','승리 임무 및 우주선 진입 조건'],['조건부 최종 연구 충족',sharedRegistry?.careerCompletion?.terminalResearch?.ready??0,'실제 임무 승리·완결과 구분'],['최종 목표 조달 계획',supply?.terminalPlans??0,'구매·제조·시설 조건부 계획, 대체안 포함'],['조달 선행 연구 확장',supply?.resourceResearchAdvanced??0,'시간순 연구 재생 상태'],['조건부 경제 일정',economy?.summary?.produced??0,'시설·고용·월별 장부·제조시간, 완결 제외'],['유한자금 조달 일정',economy?.summary?.finiteSeedSchedules??0,'최종 연구 상태의 지정 자금에서 무추가지급 생산, 완결 제외'],['전역 최고치 인증',cs?.globalOptimalCertified??'미확정','개별 조합 완결 여부와 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+esc(v)+'</strong><p>'+note+'</p></article>').join('');
+  $('#catalogSummary').innerHTML=[['전체 출생처',DATA.profiles.length,'같은 병종이어도 출생처 분리'],['조건부 연구 이력 확보 분기',cs?.branchesWithConditionalResearch??'미확정','최종 탐색 대상 전체는 미확정'],['완결 조합',cs?.completeCombinations??'미확정','최종 테이블 등록 기준'],['미해결 고유 탐색 근거',cs?.unresolvedEvidence??'미확정','중간 경로이며 최종 집계 제외'],['완전 탐색 분기',cs?.fullyEnumeratedBranches??'미확정','전체 탐색 공간 미확정'],['원본 최종 목표',sharedRegistry?.careerCompletion?.terminalRule?.targets?.length??'미확정','승리 임무 및 우주선 진입 조건'],['조건부 최종 연구 충족',sharedRegistry?.careerCompletion?.terminalResearch?.ready??0,'실제 임무 승리·완결과 구분'],['최종 목표 조달 계획',supply?.terminalPlans??0,'구매·제조·시설 조건부 계획, 대체안 포함'],['조달 선행 연구 확장',supply?.resourceResearchAdvanced??0,'시간순 연구 재생 상태'],['조건부 경제 일정',economy?.summary?.produced??0,'시설·고용·월별 장부·제조시간, 완결 제외'],['유한자금 조달 일정',economy?.summary?.finiteSeedSchedules??0,'최종 연구 상태의 지정 자금에서 무추가지급 생산, 완결 제외'],['초기 경제 동반 일정',earlyEconomy?.summary?.scenarios??0,'원본 시작 기지 및 연구 월 경과 기준, 완결 제외'],['전역 최고치 인증',cs?.globalOptimalCertified??'미확정','개별 조합 완결 여부와 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+esc(v)+'</strong><p>'+note+'</p></article>').join('');
   const coverageNode=$('#registryCoverage');
   if(coverageNode){
     const u=integratedCoverage;

@@ -117,4 +117,26 @@ if(economy){
  assert.equal(Math.min(...Object.values(economy.records).map(r=>r.budget.requiredCapital)),economy.summary.minimumCapital);
  if(economy.summary.finiteSeedSchedules!==undefined)assert.equal(economy.summary.finiteSeedSchedules,Object.values(economy.records).filter(r=>r.scenario.capitalMode==="FINITE_CONDITIONAL_SEED").length);
 }
-console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch}));
+const early=c.earlyEconomy;
+if(early){
+ const {fingerprint,...src}=early.sourceEvidence;assert.equal(key(src),fingerprint);
+ assert.equal(key(early.sourceHashes),key(c.sourceHashes));
+ const records=Object.values(early.records);
+ assert.equal(records.length,early.summary.scenarios);
+ assert.equal(records.filter(r=>!r.blocked).length,early.summary.cashScheduled);
+ assert.equal(early.summary.completeCampaigns,0);
+ for(const r of records){
+  const {planId,routeId,linkedPlanIds,origin,branch,graph,node,options,companionHash,...companion}=r;
+  assert.equal(key(companion),companionHash);assert.equal(rows.get(routeId).hash,r.actionHash);
+  assert.equal(r.sourceFingerprint,fingerprint);
+  assert(linkedPlanIds.includes(planId));
+  for(const id of linkedPlanIds){assert.equal(c.terminalSupply.plans[id].graph,graph);assert.equal(c.terminalSupply.plans[id].node,node);}
+  let cash=r.scenario.openingCash,min=cash,last=-1;
+  for(const e of r.cashLedger){assert(e.hour>=last);last=e.hour;assert(Number.isSafeInteger(e.amount));cash+=e.amount;min=Math.min(min,cash);assert(cash>=0);assert.equal(cash,e.cash);}
+  assert.equal(cash,r.closingCash);assert.equal(min,r.minimumCash);assert.equal(r.completeCampaigns,0);
+  assert(r.openConditions.includes("NO_CAMPAIGN_SURVIVAL_OR_TERMINAL_BASE_TRANSFER_PROOF"));
+  assert.equal(r.researchCapacity.trailingWork.calendarAssigned,false);
+  if(!r.blocked)assert.equal(r.processedActions,r.totalActions);
+ }
+}
+console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0}));

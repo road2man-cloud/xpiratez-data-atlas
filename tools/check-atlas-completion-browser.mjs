@@ -42,6 +42,14 @@ try{
    assert.equal(await row.locator('[data-cash-ledger-rows] li').count(),100);
   }
  }
+ if(db.careerCompletion.earlyEconomy){
+  assert.equal(await page.locator('[data-early-economic-scenario]').count(),db.careerCompletion.earlyEconomy.summary.scenarios);
+  const row=page.locator('[data-early-economic-detail]').first();
+  await row.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+  await row.locator('[data-early-transactions] li').first().waitFor();
+  assert((await row.innerText()).includes('월별 장부'));
+  assert((await row.innerText()).includes('실제 연구 달력 아님'));
+ }
  for(const group of ['origin','body','routes']){
   await page.locator('#catalogGrouping').selectOption(group);
   if(!summary.completeCombinations)assert.equal(await count(),0);
