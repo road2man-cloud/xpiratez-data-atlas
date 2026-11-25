@@ -49,34 +49,86 @@ export function project(ledger,data,metadata){
  }
  return {rows,rejected};
 }
-// The two display modes reuse one projection of the canonical ledgers.
+// Public tables use ONLY the admission index in the existing common registry.
+// The seven chronological ledgers remain available to offline search builders.
+// Never fall back to intermediate rows, even when the completion index is missing.
+export const completionSchema='ATLAS_COMPLETE_CAREER_V1';
+export function completionScope(modern,registry){
+ const metadata=modern?.meta?.source?.metadataSha256,c=registry?.careerCompletion;
+ if(modern?.meta?.mod?.version!=='v.o2'||registry?.sourceMetadataSha256!==metadata||
+    c?.schema!==completionSchema||c.sourceMetadataSha256!==metadata||c.engineVersion!=='8.7.1'||
+    !Array.isArray(c.rows)||c.summary?.completeCombinations!==c.rows.length)throw Error('완결 육성 판정 원장이 없거나 버전이 일치하지 않습니다');
+ return c;
+}
 const projectionCache=new WeakMap();
 export async function loadCareerRows(modern,registry){
  if(modern?.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
- if(projectionCache.has(modern))return projectionCache.get(modern);
+ if(projectionCache.get(modern)?.registry===registry)return projectionCache.get(modern).promise;
  const metadata=modern.meta.source.metadataSha256;
  const promise=(async()=>{
-  const rows=[],errors=[];
-  for(const source of ledgers){
+  const rows=[],errors=[],completion=completionScope(modern,registry);
+  const seen=new Set(),validBranches=new Set(registry.branches.map(b=>b.id));
+  // Empty final admission index needs NO raw career ledger download/replay.
+  const bySource=new Map();
+  for(const a of completion.rows){
+   const valid=typeof a.id==='string'&&/^[a-f0-9]{64}$/.test(a.id)&&
+    typeof a.proofHash==='string'&&/^[a-f0-9]{64}$/.test(a.proofHash)&&
+    typeof a.researchPathId==='string'&&a.researchPathId.length&&
+    ['GAMEPLAY_REPLAY','RULESET_ENGINE_PROOF'].includes(a.proofKind)&&
+    completion.classifications?.[a.source]?.[a.routeId]?.status==='COMPLETE';
+   if(!valid||seen.has(a.id)||!ledgers.some(l=>l.key===a.source)){errors.push('완결 승인 참조 오류');continue;}
+   seen.add(a.id);const refs=bySource.get(a.source)||[];refs.push(a);bySource.set(a.source,refs);
+  }
+  for(const [key,refs] of bySource){
+   const source=ledgers.find(s=>s.key===key);
    try{
-    let data=source.registryKey&&registry?.sourceMetadataSha256===metadata?registry[source.registryKey]:null;
+    let data=source.registryKey?registry[source.registryKey]:null;
     if(!data){
      const url=new URL('./data/'+source.file+'.json.gz',import.meta.url),res=await fetch(url);
      if(!res.ok)throw Error('HTTP '+res.status);
      if(typeof DecompressionStream==='undefined')throw Error('gzip 지원 브라우저 필요');
      data=await new Response(res.body.pipeThrough(new DecompressionStream('gzip'))).json();
     }
-    const projected=project(source,data,metadata);rows.push(...projected.rows);
-    if(projected.rejected.length)errors.push(source.label+' '+projected.rejected.length+'행 제외');
-   }catch(e){errors.push(source.label+' 미연결: '+e.message)}
+    const projected=project(source,{...data,routes:Object.fromEntries(refs.filter(a=>data.routes?.[a.routeId]).map(a=>[a.routeId,data.routes[a.routeId]]))},metadata);
+    const candidates=new Map(projected.rows.map(r=>[r.id,r]));
+    for(const a of refs){
+     const r=candidates.get(a.routeId),p=data.routes?.[a.routeId]?.completionProof;
+     if(!r||r.hash!==a.actionHash||!validBranches.has(r.branch)||!p||p.researchPathId!==a.researchPathId||p.actionHash!==r.hash||p.sourceMetadataSha256!==metadata){errors.push('완결 경로 근거 불일치: '+a.routeId);continue;}
+     rows.push({...r,complete:true,completionId:a.id,completionProofKind:a.proofKind,
+      researchPathId:a.researchPathId,traitCounts:p.traitCounts,globalOptimal:a.globalOptimal===true,
+      alternatives:a.alternatives||[],traitHistory:p.traitHistory||null});
+    }
+   }catch(e){errors.push(source.label+' 완결 경로 미연결: '+e.message)}
   }
-  return {rows,errors};
+  return {rows,errors,completion};
  })();
- projectionCache.set(modern,promise);
+ projectionCache.set(modern,{registry,promise});
  return promise;
 }
+// Explicit reference mode only: never used to populate the complete table.
+const explorationCache=new WeakMap();
+export async function loadExplorationRows(modern,registry){
+ if(modern?.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
+ if(explorationCache.get(modern)?.registry===registry)return explorationCache.get(modern).promise;
+ const metadata=modern.meta.source.metadataSha256;
+ const promise=(async()=>{const rows=[],errors=[];
+  for(const source of ledgers){try{
+   let data=source.registryKey&&registry?.sourceMetadataSha256===metadata?registry[source.registryKey]:null;
+   if(!data){const res=await fetch(new URL('./data/'+source.file+'.json.gz',import.meta.url));if(!res.ok)throw Error('HTTP '+res.status);if(typeof DecompressionStream==='undefined')throw Error('gzip 지원 브라우저 필요');data=await new Response(res.body.pipeThrough(new DecompressionStream('gzip'))).json();}
+   const p=project(source,data,metadata);rows.push(...p.rows);if(p.rejected.length)errors.push(source.label+' '+p.rejected.length+'행 제외');
+  }catch(e){errors.push(source.label+' 미연결: '+e.message);}}
+  return {rows,errors};
+ })();
+ explorationCache.set(modern,{registry,promise});return promise;
+}
+export function completionSummaryText(completion){
+ const s=completion?.summary;if(!s)return '완결 판정 자료 미연결';
+ const f=n=>Number.isSafeInteger(n)?n.toLocaleString('ko-KR'):'미확정';
+ const t=completion.terminalResearch,goals=completion.terminalRule?.targets;
+ return '완결 조합 '+f(s.completeCombinations)+'개 · 고유 탐색 근거 '+f(s.uniqueEvidence)+'개 (최종 집계 제외)'+(goals?' · 원본 최종 연구 목표 '+f(goals.length)+'종':'')+(t?' · 조건부 최종 목표 연구 충족 '+f(t.ready)+'건':'')+' · 탐색 완료 분기 '+f(s.fullyEnumeratedBranches)+'개 · 전역 최고치 인증 '+f(s.globalOptimalCertified)+'개 · 전체 탐색 공간 미확정';
+}
 export function exactCareerUrl(r){
- return 'soldiers/modern/?'+new URLSearchParams({group:'routes',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
+ return 'soldiers/modern/?'+new URLSearchParams({group:'routes',...(!r.complete?{scope:'reference'}:{}),origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
 }
 // Empty input is unrestricted. Unknown retained traits never satisfy a numeric threshold.
 export function routeThreshold(value){
@@ -113,7 +165,7 @@ export function filterRows(rows,f){
   (!excludeTraining.length||!r.missing&&Array.isArray(r.order)&&excludeTraining.every(id=>!r.order.includes(id)))&&
   (!excludeTrait.length||Array.isArray(r.traits)&&excludeTrait.every(id=>!r.traits.includes(id)))&&
   (depth===null||!r.missing&&r.order.length>=depth)&&(traits===null||r.traits!==null&&r.traits.length>=traits)&&
-  (f.difficulty===''||f.difficulty==null||r.difficulties.includes(Number(f.difficulty)))&&(!f.certified||r.certified));
+  (f.difficulty===''||f.difficulty==null||r.difficulties.includes(Number(f.difficulty)))&&(!f.certified||(r.complete?r.globalOptimal===true:r.certified)));
 }
 // Search only explicitly recorded research actions. Assumed event outcomes remain
 // conditional records; a rule requirement or a research-set ID is not a witness.
@@ -212,7 +264,7 @@ export function rankRows(rows,metric='cap',stat='total'){
  const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
  return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
 }
-export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
+export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',...(!r.complete?{scope:'reference'}:{}),origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
 export function branchUrl(id){return 'captains/?'+new URLSearchParams({branch:id})+'#integratedBranches';}
 export function readResearchWitness(index,r,metadata){
  if(index.sourceMetadataSha256!==metadata)throw Error('연구 인덱스 버전 불일치');

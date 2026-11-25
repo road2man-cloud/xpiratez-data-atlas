@@ -22,7 +22,7 @@ const browser=await chromium.launch({
 try {
   const page=await browser.newPage();
   const errors=[];page.on("pageerror",e=>errors.push(e.message));
-  await page.goto("http://127.0.0.1:"+server.address().port+"/soldiers/modern/");
+  await page.goto("http://127.0.0.1:"+server.address().port+"/soldiers/modern/?scope=reference&group=origin");
   await page.waitForFunction(()=>document.querySelector("#originMaxima")?.dataset.validation==="validated",{timeout:60000});
   await page.locator("#catalogGrouping").selectOption("origin");
   const first=page.locator("#originTable tbody tr[data-origin-id]").first();

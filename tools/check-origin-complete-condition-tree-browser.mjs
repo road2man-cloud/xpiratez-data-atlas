@@ -32,7 +32,7 @@ try{
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   page.setDefaultTimeout(30000);
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  const url=base+'/soldiers/modern/?profile=manufacture%3ASTR_THEBAN_ASSAULT_CLONE';
+  const url=base+'/soldiers/modern/?scope=reference&profile=manufacture%3ASTR_THEBAN_ASSAULT_CLONE';
   await page.goto(url,{waitUntil:'domcontentloaded'});
   await page.locator('#originMaxima[data-validation="validated"]').waitFor();
   await page.locator('#originDetails button[data-expand-origin-tree]').waitFor();

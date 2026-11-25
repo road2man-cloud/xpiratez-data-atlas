@@ -80,6 +80,10 @@ try {
         await page.waitForURL(u=>u.pathname.endsWith("/soldiers/modern/"),{timeout:30000});
         await page.waitForFunction(()=>document.querySelector("#originMaxima")
           ?.dataset.validation==="validated",{timeout:30000});
+        await page.waitForSelector('#rowCount[data-route-status="loaded"]',{timeout:60000});
+        if(!/0개 완결 조합/.test(await page.locator('#rowCount').innerText()))errors.push('Complete table admission mismatch');
+        await page.goto(new URL('soldiers/modern/?scope=reference&group=body',base).href);
+        await page.waitForSelector('#rowCount[data-body-career-status="loaded"]',{timeout:60000});
         const bodyCount=await page.locator("#originTable tbody tr[data-body-id]").count();
         if(bodyCount!==29)errors.push("Final body rows: "+bodyCount+"/29");
         await page.locator("#catalogGrouping").selectOption("origin");

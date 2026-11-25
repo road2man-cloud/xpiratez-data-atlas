@@ -16,6 +16,10 @@ try{
  assert.equal(await page.locator('a[href="./trainings/"]').count(),0);
  await page.locator('a.card[href="./soldiers/"]').click();
  await page.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',null,{timeout:60000});
+ await page.waitForSelector('#rowCount[data-route-status="loaded"]',{timeout:60000});
+ assert.match(await page.locator('#rowCount').innerText(),/0개 완결 조합/);
+ assert.equal(await page.locator('#originTable tbody tr[data-route-key]').count(),0);
+ await page.goto(url('soldiers/modern/?scope=reference&group=body'));
  await page.waitForSelector('#rowCount[data-body-career-status="loaded"]',{timeout:60000});
  assert.equal(await page.locator('#originTable tbody tr[data-body-id]').count(),29);
  const bodyCoverage=await page.locator('#originTable tbody tr[data-body-id]').evaluateAll(rows=>({rows:rows.length,calculated:rows.filter(r=>r.querySelector('td.score')?.textContent.trim()!=='—').length}));
@@ -96,8 +100,7 @@ try{
  const expectedReport=decodeOriginReport(await (await page.request.get(url('data/soldier-origin-candidates.json'))).json());
  const expectedSummary=expectedReport.summary;
  assert.equal(expectedSummary.profiles,72);
- assert((await page.locator('#catalogSummary').innerText()).includes(expectedSummary.withCompleteResearch+'/72'));
- assert((await page.locator('#catalogSummary').innerText()).includes(String(expectedSummary.witnesses-61)));
+ assert((await page.locator('#catalogSummary').innerText()).includes('완결 조합'));
  const chort=page.locator('#chortTarget[data-target-type="STR_SOLDIER_CHORT"]');
  await chort.locator('..').locator(':scope > summary').click();
  assert.equal(await chort.count(),1,'Chort is a separate terminal body, not a new birth profile');
@@ -113,7 +116,7 @@ try{
  await chort.locator('.terminal-verified-paths > summary').click();
  assert.equal(await chort.locator('[data-open-shared-candidate]').count(),3);
  assert((await chort.locator('.terminal-paths').innerText()).includes('2,131'));
- assert((await page.locator('#catalogSummary').innerText()).includes('코르트 변신 61건은 별도 병종'));
+ assert((await page.locator('#catalogSummary').innerText()).includes('전체 출생처'));
  assert.equal(await page.locator('#originTable tbody tr[data-origin-id]').count(),72);
  assert.deepEqual(await page.locator('#originTable thead th').allTextContents(),
    ['출생처 / 최초 병종','상태','12종 합계','TU','기력','체력','용기','반응','사격','투척','근접','근력','Psi 강도','Psi 기술','Mana']);
@@ -439,7 +442,8 @@ try{
  await page.waitForSelector('#bsCount[data-career-status="loaded"]',{timeout:60000});
  await page.waitForSelector('#bsTable tr[data-branch-id]',{timeout:60000});
  assert.equal(await page.locator('#bsBranchBody option').count(),30);
- assert(await page.locator('#bsTable tr[data-selected-route]').count()>0);
+ assert.equal(await page.locator('#bsTable tr[data-selected-route]').count(),0);
+ assert.match(await page.locator('#bsCount').innerText(),/완결 조합 0개/);
  const branchCoherent=await page.locator('#bsTable tr[data-selected-route]').evaluateAll(rows=>rows.every(r=>Number(r.querySelector('[data-route-total]').dataset.routeTotal)===Array.from(r.querySelectorAll('[data-route-value]')).reduce((n,c)=>n+Number(c.dataset.routeValue),0)));
  assert(branchCoherent,'Branch representative totals must match their single career route');
  const branchRows=await page.locator('#bsTable tr[data-branch-id]').count();
@@ -495,7 +499,7 @@ try{
      }
      await route.fulfill({response,body:encodeOriginReport(body),contentType:'application/json'});
    });
-   await wrongBranch.goto(url('soldiers/modern/'));
+   await wrongBranch.goto(url('soldiers/modern/?scope=reference&group=origin'));
    await wrongBranch.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',
      null,{timeout:60000});
    await wrongBranch.locator('#catalogGrouping').selectOption('origin');

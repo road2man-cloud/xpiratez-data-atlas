@@ -66,7 +66,7 @@ try{
   await home.close();
   const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(base+'soldiers/modern/?profile=manufacture%3ASTR_THEBAN_ASSAULT_CLONE',
+  await page.goto(base+'soldiers/modern/?scope=reference&profile=manufacture%3ASTR_THEBAN_ASSAULT_CLONE',
     {waitUntil:'domcontentloaded',timeout:30000});
   await page.locator('#originMaxima[data-validation="validated"]').waitFor({timeout:60000});
   const visual=page.locator('#originDetails .tech-viewer').first();

@@ -1,8 +1,9 @@
-import {statKeys,filterRows,sum,routeObjective,routeThreshold,filterCareerRequirements} from './branch-soldier-atlas-career-core.js?v=45-sequence';
+import {statKeys,filterRows,sum,routeObjective,routeThreshold,filterCareerRequirements} from './branch-soldier-atlas-career-core.js?v=46-completion';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 // Select a single witness for each body under the selected objective. Keep independent
 // ceilings separate: they may come from a different conditional model or route.
-export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch='',q='',family='',profiles=new Map(),names={}}={}){
+export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch='',q='',family='',profiles=new Map(),names={},completeOnly=false}={}){
+ if(completeOnly)rows=rows.filter(r=>r.complete===true);
  const norm=s=>String(s??'').normalize('NFKC').toLocaleLowerCase('ko-KR');
  const tokens=norm(q).trim().split(/\s+/).filter(Boolean);
  const name=id=>names[id]||id||'';
@@ -20,7 +21,7 @@ export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch=
   if(family&&b.id!==family)continue;
   const bodyText=[b.id,b.name].join(' '),bodyMatch=matches(bodyText);
   const candidates=(byBody.get(b.id)||[]).filter(r=>bodyMatch||matches([bodyText,originText(r.origin),r.branch,r.id,...r.order.flatMap(t=>[t,name(t)]),...(r.traits||[]).flatMap(t=>[t,name(t)])].join(' ')));
-  const legacy=(b.candidates||[]).filter(r=>bodyMatch||matches([bodyText,originText(r.originProfile),r.route].join(' ')));
+  const legacy=completeOnly?[]:(b.candidates||[]).filter(r=>bodyMatch||matches([bodyText,originText(r.originProfile),r.route].join(' ')));
   if(!bodyMatch&&!candidates.length&&!legacy.length)continue;
   // Objective, then full-vector total, then stable identifier. No cross-row maxima.
   const best=candidates.filter(r=>Number.isFinite(score(r))).reduce((a,r)=>!a||score(r)>score(a)||score(r)===score(a)&&(sum(r[metric])>sum(a[metric])||sum(r[metric])===sum(a[metric])&&r.key.localeCompare(a.key)<0)?r:a,null);
@@ -48,6 +49,15 @@ export function indexCareerBranches(rows){
 }
 export function branchCareerRows(index,branch,filters={},context={}){
  return filterCareerRequirements(filterStatMinimums(filterRows(index.get(branch)||[],{...filters,branch}),filters.minima,filters.metric||'cap'),filters,context);
+}
+// Public complete-combination table grouping uses actual single rows only.
+export function groupCompleteRows(sorted,group){
+ const seen=new Set();
+ return sorted.filter(r=>{
+  if(r.complete!==true)return false;
+  if(group!=='body')return true;
+  const k=r.body;if(seen.has(k))return false;seen.add(k);return true;
+ });
 }
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
@@ -127,7 +137,7 @@ export function columnValue(r,col,metric,{profiles,branches,names}){
  case 'blocked':return b?.blockedResearch?.length??null;
  case 'rank':return r.rank??null;
  case 'source':return r.source;
- case 'status':return r.missing?'미등록':r.certified?'인증':r.fixedModelOptimum?'고정 연구 모형 상계 도달':r.jointResearch?.applied.length>=2?'공동 연구·복수 시술':r.researchTransition?.exceededAxes>0?'연구 전 상계 초과':r.conditionalScopeComplete?'조건부 종결':'조건부';
+ case 'status':return r.complete?(r.globalOptimal?'전역 최고치 인증':'완결 조합'):r.missing?'미등록':r.certified?'인증':r.fixedModelOptimum?'고정 연구 모형 상계 도달':r.jointResearch?.applied.length>=2?'공동 연구·복수 시술':r.researchTransition?.exceededAxes>0?'연구 전 상계 초과':r.conditionalScopeComplete?'조건부 종결':'조건부';
  default:return null;
  }
 }

@@ -44,6 +44,7 @@ jobs:
           npm run check
           node tools/check-branch-soldier-publication.mjs
           node tools/check-all-origin-cap12.mjs
+          node tools/check-atlas-completion.mjs
           test ! -e public/data/items-index.json
           test ! -e public/data/research-index.json
           grep -Fq 'data-data-base="./data"' public/items/index.html
@@ -57,6 +58,7 @@ jobs:
           node tools/check-site-browser.mjs --local
           # One 2.1 birth-origin catalog gate: provisional chronology evidence,
           # retired training redirects, directional research branches and no save inputs.
+          node tools/check-atlas-completion-browser.mjs
           node tools/check-soldier-modern-browser.mjs
           # Source-backed Chort eligibility table: 42 sources and distinct replay evidence.
           node tools/check-soldier-chort-readiness-browser.mjs
