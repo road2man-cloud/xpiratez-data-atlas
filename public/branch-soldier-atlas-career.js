@@ -1,11 +1,11 @@
-import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=32-table';
+import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=33-upper';
 import {loadBranchOptions} from './branch-soldier-atlas-branch-compare.js?v=30';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=32';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=33-upper';
 const root=new URL('./',import.meta.url),$=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
-const controls=['q','origin','body','captain','branch','training','trait','difficulty','metric','certified','missingOnly','selectedOnly','a','b','sameChoices'];
-const checks=new Set(['certified','missingOnly','selectedOnly','sameChoices']);
+const controls=['q','origin','body','captain','branch','training','trait','difficulty','metric','certified','fixedOptimumOnly','missingOnly','selectedOnly','a','b','sameChoices'];
+const checks=new Set(['certified','fixedOptimumOnly','missingOnly','selectedOnly','sameChoices']);
 const labels={tu:'TU',stamina:'기력',health:'체력',bravery:'용기',reactions:'반응',firing:'사격',throwing:'투척',strength:'근력',psiStrength:'Psi 강도',psiSkill:'Psi 기술',melee:'근접',mana:'Mana'};
 const columns=[
  ['select','선택','sticky-select'],['origin','출생처','sticky-origin'],['body','최종 병종','sticky-body'],
@@ -82,6 +82,7 @@ async function showResearch(r){
  try{
   const w=readResearchWitness(await indexLoad(source.index),r,metadata);if(token!==dialogToken)return;
   content.replaceChildren(link(r.rootRoute?'기존 출발 경로':'전체 육성 근거',routeUrl(r)),el('h3','시술 시점별 연구 요구'));
+  if(r.fixedModelOptimum){const proof=r.fixedModelOptimum;content.append(el('h3','고정 연구 모형의 12능력치 동시 상계 도달'),el('p','이 연구 세트와 출발 상태에서 결정론적 비복제 생존 시술·성장을 허용한 조건부 모형의 상계와 기록 수치가 모두 일치합니다. 연구 순서 전체, 추가 연구, 실제 자원 및 미지원 행동의 최종 인증은 아닙니다.'),el('p',statKeys.map((k,i)=>labels[k]+' '+fmt(proof.vector[i])).join(' · ')),el('p','연구 세트 '+proof.researchSet+' · 상계 근거 '+proof.bound,'small'),link('조건부 상계 도달 원장','data/soldier-final-career-fixed-model-optima.json.gz'));}
   if(r.researchSet)content.append(el('p','연구 세트: '+r.researchSet,'small'));
   const gates=el('ol',undefined,'dialog-list');
   for(const g of w.gates){const li=el('li');li.append(link(name(g.transform),search('training',g.transform)),document.createTextNode(' · '));appendList(li,g.requires,'research');gates.append(li)}
@@ -139,7 +140,7 @@ function renderRow(r,f){
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);filled=true}break;
   case 'medals':if(r.medals){const ids=Object.keys(r.medals);appendList(td,ids,'bonus',' · ',r.medals);filled=true}break;
-  case 'status':td.textContent=r.missing?'미연결':r.certified?'최종 인증':r.conditionalScopeComplete?'조건부 종결':'조건부';if(r.missing)td.classList.add('missing');filled=true;break;
+  case 'status':td.textContent=r.missing?'미연결':r.certified?'최종 인증':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부';if(r.missing)td.classList.add('missing');filled=true;break;
   case 'source':if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }
   if(!filled){td.textContent='—';td.classList.add('missing')}
