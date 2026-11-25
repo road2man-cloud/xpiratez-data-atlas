@@ -68,6 +68,7 @@ const summary={origins:modern.profiles.length,originsWithSeeds:origins.size,stat
  exploredOriginBranchPairs:pairs.size,totalSearchSpace:null,completionRate:null,pendingBySource,missingProofs,assumptions};
 db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"8.7.1",sourceHashes,
  terminalRule,terminalResearch,terminalSupply,
+ ...(prior?.terminalEconomy?.sourceMetadataSha256===metadata&&prior.terminalEconomy.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&[...Object.values(prior.terminalEconomy.records||{}),...(prior.terminalEconomy.unresolved||[])].every(r=>terminalSupply?.plans?.[r.planId]?.plan?.planHash===r.planHash)?{terminalEconomy:prior.terminalEconomy}:{}),
  requiredProofs:REQUIRED_PROOFS,summary,bySource,classifications,rows,
  scope:"Only verified full campaign combinations; all conditional ledgers remain search seeds. No final admission based on conditional closure or numerical upper bounds."};
 db.summary.careerCompletion=summary;

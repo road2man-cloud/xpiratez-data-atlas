@@ -1,8 +1,8 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=48-supply';
-import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=48-supply';
-import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=48-supply';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=49-economy';
+import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=49-economy';
+import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
@@ -1396,11 +1396,21 @@ async function init(){try{
   const rankedCount=$('#originRankedCount');
   if(rankedCount)rankedCount.textContent=fmt(ranked);
   const completion=sharedRegistry?.careerCompletion,cs=completion?.summary;
-  const terminal=completion?.terminalRule,tr=completion?.terminalResearch,supply=completion?.terminalSupply;
+  const terminal=completion?.terminalRule,tr=completion?.terminalResearch,supply=completion?.terminalSupply,economy=completion?.terminalEconomy;
   const originLabel=id=>DATA.profiles.find(p=>p.id===id)?.sourceKoName||id;
   const routeHref=(r,node)=>'?'+esc(new URLSearchParams({scope:'reference',group:'routes',origin:r.origin,branch:r.branch,q:'MISSCAR:'+r.graph+':'+node}))+'#originMaxima';
   const assetLabel=k=>{const id=String(k||'').replace(/^(ITEM|CRAFT|UNKNOWN):/,'');return name(id)||id;};
   const quantities=o=>Object.entries(o||{}).map(([k,v])=>esc(assetLabel(k))+' × '+fmt(v)).join(' · ')||'없음';
+  const economicRows=Object.values(economy?.records||{}),economicByHash=new Map(economicRows.map(r=>[r.scheduleHash,r]));
+  const econHtml=p=>{
+    const records=economicRows.filter(r=>r.planHash===p.planHash).sort((a,b)=>a.budget.elapsedHours-b.budget.elapsedHours);
+    if(!records.length)return '';
+    return '<details><summary>조건부 경제 일정 '+fmt(records.length)+'개 비교</summary><p>연구 완료 상태부터의 독립 프로젝트 기지 모형. 시작 자본의 실제 획득, 기존 빈 엘리베이터와 부지, 다른 기지 비용, 엔진 배치·스크립트·임무 승리 미증명. 국가지원금 0달러 가정.</p>'+
+    '<div class="table-wrap"><table><thead><tr><th>기술자/농장</th><th>헬러륨</th><th>추가 판매 제조</th><th>필요 시작 자본</th><th>소요일</th><th>월급 합계</th></tr></thead><tbody>'+records.map(r=>{
+      const s=r.scenario,b=r.budget;
+      return '<tr data-economic-scenario="'+esc(r.scheduleHash)+'"><td>'+fmt(s.staff)+' / '+fmt(s.farmCount)+'</td><td>'+(s.purchaseElerium?'구매':'제조')+'</td><td>'+(s.prefundCycles?esc(name(s.prefundRecipe)||s.prefundRecipe)+' '+fmt(s.prefundCycles)+'회 (묶음 '+fmt(s.prefundLotSize)+')':'없음')+'</td><td>'+fmt(b.requiredCapital)+'</td><td>'+fmt(Math.ceil(b.elapsedDays))+'</td><td>'+fmt(b.payroll)+'</td></tr>';
+    }).join('')+'</tbody></table></div>'+records.map(r=>'<details data-economic-detail="'+esc(r.scheduleHash)+'"><summary>기술자 '+fmt(r.scenario.staff)+' · 농장 '+fmt(r.scenario.farmCount)+' · 판매 '+fmt(r.scenario.prefundCycles)+'회 · '+fmt(Math.ceil(r.budget.elapsedDays))+'일 — 월별 장부·기지 배치·행동 이력</summary><div data-economic-body>펼칠 때 계산 근거 표시</div></details>').join('')+'</details>';
+  };
   const planHtml=r=>{
     if(!r.plan)return '';
     const p=r.plan,b=p.budget||{},rows=(p.steps||[]).map(s=>{
@@ -1415,7 +1425,7 @@ async function init(){try{
       return '<li><strong>'+esc(title)+'</strong> · '+body+(s.source?.length?' <small>('+s.source.map(esc).join(', ')+')</small>':'')+'</li>';
     }).join('');
     const open=(p.obligations||[]).map(o=>'<li>'+esc(o.asset?assetLabel(o.asset):o.function||o.reason)+(o.quantity?' × '+fmt(o.quantity):'')+' · '+esc(o.reason)+(o.sourceAlternatives?.length?' · 후보 '+o.sourceAlternatives.map(c=>esc(c.recipe||c.event||c.kind)+(c.missingResearch?.length?' (연구 '+c.missingResearch.map(k=>esc(name(k)||k)).join(', ')+')':'')).join(' / '):'')+'</li>').join('');
-    return '<details data-terminal-supply-plan="'+esc(p.planHash)+'"><summary>'+esc(originLabel(r.origin))+' · '+(r.plannerVersion===2?'개선 조달안':'초기 대체안')+' · 미해결 '+fmt(p.obligations?.length||0)+'건</summary><p><a href="'+routeHref(r,r.node)+'">해당 시간순 육성 경로</a> · 추가 조달 예산 '+fmt(b.additionalFunds)+'달러 · 제조 '+fmt(b.manufacturingEngineerHours)+' 엔지니어시간 · 시설 순차 건설 '+fmt(b.sequentialFacilityBuildDays)+'일</p><p>조건부 재고: '+quantities(p.openingStock)+' · 실제 자금 조달, 기지 배치, 경과 시간, 임무 승리는 미증명.</p>'+(open?'<ul>'+open+'</ul>':'<p>계획 내 열린 자재 의무 없음 (게임 내 획득·완결 인증 아님)</p>')+'<details><summary>구매·건설·제조 순서 ('+fmt(p.steps?.length||0)+'단계)</summary><ol>'+rows+'</ol></details></details>';
+    return '<details data-terminal-supply-plan="'+esc(p.planHash)+'"><summary>'+esc(originLabel(r.origin))+' · '+(r.plannerVersion===2?'개선 조달안':'초기 대체안')+' · 미해결 '+fmt(p.obligations?.length||0)+'건</summary><p><a href="'+routeHref(r,r.node)+'">해당 시간순 육성 경로</a> · 추가 조달 예산 '+fmt(b.additionalFunds)+'달러 · 제조 '+fmt(b.manufacturingEngineerHours)+' 엔지니어시간 · 시설 순차 건설 '+fmt(b.sequentialFacilityBuildDays)+'일</p><p>조건부 재고: '+quantities(p.openingStock)+' · 실제 자금 조달, 기지 배치, 경과 시간, 임무 승리는 미증명.</p>'+(open?'<ul>'+open+'</ul>':'<p>계획 내 열린 자재 의무 없음 (게임 내 획득·완결 인증 아님)</p>')+'<details><summary>구매·건설·제조 순서 ('+fmt(p.steps?.length||0)+'단계)</summary><ol>'+rows+'</ol></details>'+econHtml(p)+'</details></details>';
   };
   const terminalHost=$('#terminalResearchProgress');
   if(terminalHost&&terminal?.targets){
@@ -1430,8 +1440,20 @@ async function init(){try{
         const research=Object.values(supply?.resourceResearch||{}).filter(r=>r.target===t.id&&Number.isInteger(r.to)&&(!activeBranch||r.branch===activeBranch)).map(r=>'<li><a href="'+routeHref(r,r.to)+'">'+esc(originLabel(r.origin))+'</a> · 조달 선행 연구 '+(r.achieved||[]).map(k=>esc(name(k)||k)).join(', ')+' · 추가 활성 '+fmt(r.added?.length||0)+'건</li>').join('');
         return '<details><summary>'+esc(t.craft?name(t.craft):t.stages.at(-1).name)+' · 조건부 연구 충족 '+fmt(matched.length)+'건 · 조달 계획 '+fmt(plans.length)+'개</summary><p>목표 연구: '+goal+'</p><p>임무 단계: '+stage+'</p>'+(links?'<ul>'+links+'</ul>':'<p>아직 목표 연구 충족 근거 없음</p>')+(research?'<h4>조달 선행 연구 확장</h4><ul>'+research+'</ul>':'')+(plans.length?'<h4>조건부 조달 계획 (완결 등록 제외)</h4>'+plans.sort((a,b)=>(b.plannerVersion||1)-(a.plannerVersion||1)||a.node-b.node).map(planHtml).join(''):'')+'</details>';
       }).join('');
+    terminalHost.addEventListener('toggle',event=>{
+      const el=event.target,hash=el?.dataset?.economicDetail;
+      if(!hash||!el.open)return;
+      const r=economicByHash.get(hash),host=el.querySelector('[data-economic-body]');
+      if(!r||!host||host.dataset.loaded)return;
+      host.dataset.loaded='1';
+      const b=r.budget,layout=Array.from({length:6},()=>Array(6).fill(''));
+      for(const f of r.layout)for(let y=f.y;y<f.y+f.sizeY;y++)for(let x=f.x;x<f.x+f.sizeX;x++)layout[y][x]=f.id;
+      host.innerHTML='<p>시작 자본 '+fmt(b.requiredCapital)+'달러 · 지출 '+fmt(b.expenses)+' · 순월간 지급/판매 수입 '+fmt(b.income)+' · 시설 순수입 '+fmt(b.netFacilities)+' · 판매 매출 '+fmt(b.sales)+' · 최대 저장공간 '+b.peakStores.toFixed(2)+' · 최대 동일 유형 포로 '+fmt(b.peakCaptives)+'</p><h4>6×6 배치 후보 (엔진 배치 검증 아님)</h4><div class="table-wrap"><table><tbody>'+layout.map(row=>'<tr>'+row.map(id=>'<td>'+esc(id?(name(id)||id):'빈 칸')+'</td>').join('')+'</tr>').join('')+'</tbody></table></div><h4>월별 장부</h4><div class="table-wrap"><table><thead><tr><th>월</th><th>시설 유지비</th><th>기술자 급여</th><th>재고/기체 유지비</th><th>잔액</th></tr></thead><tbody>'+r.monthly.map(m=>'<tr><td>'+esc(m.date.slice(0,7))+'</td><td>'+fmt(m.facilities)+'</td><td>'+fmt(m.engineers)+'</td><td>'+fmt(m.inventoryAndCraft)+'</td><td>'+fmt(b.requiredCapital+m.balance)+'</td></tr>').join('')+'</tbody></table></div><h4>시간순 행동 ('+fmt(r.events.length)+'개)</h4><div data-economic-events></div><button type="button" data-economic-more>다음 100개 보기</button>';
+      let offset=0;const box=host.querySelector('[data-economic-events]'),button=host.querySelector('[data-economic-more]');
+      const next=()=>{const chunk=r.events.slice(offset,offset+100);const list=document.createElement('ol');list.start=offset+1;list.innerHTML=chunk.map(e=>'<li>'+esc(e.date)+' · '+esc(e.type)+' · '+esc(e.asset?assetLabel(e.asset):name(e.recipe||e.id)||e.recipe||e.id||'')+(e.quantity||e.batches||e.count?' × '+fmt(e.quantity||e.batches||e.count):'')+' · 잔액 '+fmt(b.requiredCapital+e.balance)+'</li>').join('');box.append(list);offset+=chunk.length;button.hidden=offset>=r.events.length;};button.addEventListener('click',next);next();
+    },true);
   }
-  $('#catalogSummary').innerHTML=[['전체 출생처',DATA.profiles.length,'같은 병종이어도 출생처 분리'],['조건부 연구 이력 확보 분기',cs?.branchesWithConditionalResearch??'미확정','최종 탐색 대상 전체는 미확정'],['완결 조합',cs?.completeCombinations??'미확정','최종 테이블 등록 기준'],['미해결 고유 탐색 근거',cs?.unresolvedEvidence??'미확정','중간 경로이며 최종 집계 제외'],['완전 탐색 분기',cs?.fullyEnumeratedBranches??'미확정','전체 탐색 공간 미확정'],['원본 최종 목표',sharedRegistry?.careerCompletion?.terminalRule?.targets?.length??'미확정','승리 임무 및 우주선 진입 조건'],['조건부 최종 연구 충족',sharedRegistry?.careerCompletion?.terminalResearch?.ready??0,'실제 임무 승리·완결과 구분'],['최종 목표 조달 계획',supply?.terminalPlans??0,'구매·제조·시설 조건부 계획, 대체안 포함'],['조달 선행 연구 확장',supply?.resourceResearchAdvanced??0,'시간순 연구 재생 상태'],['전역 최고치 인증',cs?.globalOptimalCertified??'미확정','개별 조합 완결 여부와 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+esc(v)+'</strong><p>'+note+'</p></article>').join('');
+  $('#catalogSummary').innerHTML=[['전체 출생처',DATA.profiles.length,'같은 병종이어도 출생처 분리'],['조건부 연구 이력 확보 분기',cs?.branchesWithConditionalResearch??'미확정','최종 탐색 대상 전체는 미확정'],['완결 조합',cs?.completeCombinations??'미확정','최종 테이블 등록 기준'],['미해결 고유 탐색 근거',cs?.unresolvedEvidence??'미확정','중간 경로이며 최종 집계 제외'],['완전 탐색 분기',cs?.fullyEnumeratedBranches??'미확정','전체 탐색 공간 미확정'],['원본 최종 목표',sharedRegistry?.careerCompletion?.terminalRule?.targets?.length??'미확정','승리 임무 및 우주선 진입 조건'],['조건부 최종 연구 충족',sharedRegistry?.careerCompletion?.terminalResearch?.ready??0,'실제 임무 승리·완결과 구분'],['최종 목표 조달 계획',supply?.terminalPlans??0,'구매·제조·시설 조건부 계획, 대체안 포함'],['조달 선행 연구 확장',supply?.resourceResearchAdvanced??0,'시간순 연구 재생 상태'],['조건부 경제 일정',economy?.summary?.produced??0,'시설·고용·월별 장부·제조시간, 완결 제외'],['전역 최고치 인증',cs?.globalOptimalCertified??'미확정','개별 조합 완결 여부와 구분']].map(([label,v,note])=>'<article class="card"><small>'+label+'</small><strong>'+esc(v)+'</strong><p>'+note+'</p></article>').join('');
   const coverageNode=$('#registryCoverage');
   if(coverageNode){
     const u=integratedCoverage;

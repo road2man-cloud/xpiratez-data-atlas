@@ -70,4 +70,31 @@ for(const r of Object.values(supply.resourceResearch||{})){
 assert.equal(terminalPlans,c.terminalSupply.terminalPlans);assert.equal(surgeryPlans,c.terminalSupply.surgeryPlans);
 assert.equal(open,c.terminalSupply.procurementObligations);assert.equal(resourceResearch,c.terminalSupply.resourceResearchAdvanced);
 assert.equal(c.terminalSupply.completeCampaigns,0);
+const economy=c.terminalEconomy;
+if(economy){
+ const {fingerprint,...src}=economy.sourceEvidence;assert.equal(key(src),fingerprint);
+ assert.equal(economy.summary.produced,Object.keys(economy.records).length);
+ assert.equal(economy.summary.completeCampaigns,0);
+ for(const r of Object.values(economy.records)){
+  const {planId,graph,node,origin,branch,routeId,actionHash,options,scheduleHash,...schedule}=r;
+  assert.equal(key(schedule),scheduleHash);
+  assert.equal(c.terminalSupply.plans[planId].plan.planHash,r.planHash);
+  assert.equal(rows.get(routeId).hash,actionHash);
+  assert.equal(r.sourceFingerprint,fingerprint);
+  assert(r.openConditions.length>0);
+  const b=r.budget;
+  assert.equal(b.requiredCapital+b.income-b.expenses,b.closingCash);
+  assert(r.monthly.every(m=>b.requiredCapital+m.balance>=0));
+  assert(r.events.every(e=>b.requiredCapital+e.balance>=0));
+  assert.equal(r.monthly.reduce((n,m)=>n+m.engineers,0),b.payroll);
+  assert.equal(r.monthly.reduce((n,m)=>n-m.facilities,0),b.netFacilities);
+  assert.equal(r.events.at(-1).type,'targetReserved');
+  assert(r.inventory[r.events.at(-1).asset]>=r.events.at(-1).quantity);
+  const tiles=new Set();
+  for(const f of r.layout)for(let y=f.y;y<f.y+f.sizeY;y++)for(let x=f.x;x<f.x+f.sizeX;x++){
+   assert(x>=0&&x<6&&y>=0&&y<6);const k=x+':'+y;assert(!tiles.has(k));tiles.add(k);
+  }
+ }
+ assert.equal(Math.min(...Object.values(economy.records).map(r=>r.budget.requiredCapital)),economy.summary.minimumCapital);
+}
 console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch}));

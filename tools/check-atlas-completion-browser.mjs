@@ -22,6 +22,14 @@ try{
  assert.equal(await page.locator('[data-terminal-supply-plan]').count(),db.careerCompletion.terminalSupply.terminalPlans);
  assert((await page.locator('#terminalResearchProgress').textContent()).includes('실제 자금 조달'));
  assert((await page.locator('#catalogStatus').innerText()).includes('조건부 조달 계획'));
+ if(db.careerCompletion.terminalEconomy){
+  assert.equal(await page.locator('[data-economic-scenario]').count(),db.careerCompletion.terminalEconomy.summary.produced);
+  const details=page.locator('[data-economic-detail]').first();
+  await details.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+  await page.waitForFunction(()=>document.querySelector('[data-economic-body]')?.dataset.loaded==='1');
+  assert((await details.innerText()).includes('월별 장부'));
+  assert((await details.innerText()).includes('6×6 배치 후보'));
+ }
  for(const group of ['origin','body','routes']){
   await page.locator('#catalogGrouping').selectOption(group);
   if(!summary.completeCombinations)assert.equal(await count(),0);

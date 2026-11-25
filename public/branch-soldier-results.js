@@ -4,9 +4,9 @@ import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileW
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-v17";
 import {loadRuntime} from "./db-runtime.js";
-import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=48-supply";
-import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=48-supply";
-import {bodyCareerSummary,indexCareerBranches,branchCareerRows,writeStatMinimums} from "./branch-soldier-atlas-table-core.js?v=48-supply";
+import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=49-economy";
+import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=49-economy";
+import {bodyCareerSummary,indexCareerBranches,branchCareerRows,writeStatMinimums} from "./branch-soldier-atlas-table-core.js?v=49-economy";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
 import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261126-coverage-40-unified";
 import {allOriginCoverageText} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
