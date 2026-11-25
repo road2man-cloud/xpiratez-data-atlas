@@ -1,5 +1,5 @@
-import {careerFrontierMarkup,careerFrontierOriginMarkup} from "./branch-soldier-career-frontier.js?v=20261125-career-frontier-1";
-import {growthReplayCoverage,growthReplayMarkup,growthReplayBranchMarkup,growthReplayOriginMarkup} from "./branch-soldier-growth-replay.js?v=20261125-pop-growth-replay-5";
+import {careerFrontierMarkup,careerFrontierOriginMarkup} from "./branch-soldier-career-frontier.js?v=20261125-career-frontier-2";
+import {growthReplayCoverage,growthReplayMarkup,growthReplayBranchMarkup,growthReplayOriginMarkup} from "./branch-soldier-growth-replay.js?v=20261125-pop-growth-career-v2";
 import {assumedBirthCoverage,assumedBirthMarkup,assumedBirthBranchMarkup,assumedBirthOriginMarkup} from "./branch-soldier-assumed-birth.js?v=20261125-pop-assumed-birth-4";
 // Shared coverage and route-level evidence for the population search.
 // These are a finite numerical model, not certified campaign routes.
