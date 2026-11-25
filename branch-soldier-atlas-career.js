@@ -1,6 +1,6 @@
-import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=39-shared';
+import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=40-coverage';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=39-shared';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=40-coverage';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive}){
