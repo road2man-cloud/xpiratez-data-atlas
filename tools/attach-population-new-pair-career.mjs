@@ -4,6 +4,7 @@ import z from "node:zlib";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {exactWorld,member} from "./population-growth-replay-core.mjs";
+import {traitEvidence,traitSummary} from "./population-new-pair-trait-evidence.mjs";
 import {createNewPairCareerPolicy,POLICY} from "./population-new-pair-career-policy.mjs";
 import {createEventSeeds,replayEventSeed} from "./population-new-pair-event-seeds.mjs";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
@@ -49,6 +50,7 @@ for(const [id,r] of Object.entries(a.routes)){
   const f=finish(w,r.actions);for(const k of Object.keys(f))assert.deepEqual(r[k],f[k],k);
   assert.equal(Boolean(r.careerPolicy),hasCareer(r.actions));
   assert.deepEqual(r.raw,r.capRaw);
+  if(r.traitEvidence){assert.deepEqual(r.traitEvidence,traitEvidence(w,r.actions,g.rules));assert(["PARETO_IMPROVEMENT","RETAINED_TRAIT_SET"].includes(r.publication));if(r.publication==="RETAINED_TRAIT_SET")assert(r.traitEvidence.retained.length>=2);}
   assert.deepEqual(r.order,r.actions.filter(a=>a.type==="transform").map(a=>a.transform));
   const ctx=auditOriginCampaignContext(full,data);assert.equal(ctx.kind,"compatible");assert.deepEqual(r.allowedDifficulties,ctx.allowedDifficulties.filter(k=>p.allowedDifficulties.includes(k)));
   replayed++;
@@ -58,6 +60,7 @@ for(const [id,r] of Object.entries(a.routes)){
 }
 assert.equal(a.published.length,Object.keys(a.routes).length);assert.equal(new Set(a.published).size,a.published.length);for(const id of a.published)assert(a.routes[id]);
 assert.equal(a.summary.registeredRoutes,a.published.length);
+ if(a.summary.traitMeasuredRoutes!==undefined)for(const [k,v] of Object.entries(traitSummary(a.routes)))assert.equal(a.summary[k],v,k);
 const asset="soldier-population-new-pair-career.json.gz";
 fs.writeFileSync("public/data/"+asset,bytes);
 db.populationNewPairCareer={...a,replayHashes:hashes,file:asset,bytes:bytes.length,sha256:sha(bytes),summary:{...a.summary,newIndependentReplays:replayed,reusedPublished:reused}};

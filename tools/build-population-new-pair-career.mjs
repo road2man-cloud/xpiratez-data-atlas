@@ -11,7 +11,8 @@ import {createNewPairCareerPolicy,POLICY} from "./population-new-pair-career-pol
 import {createEventSeeds,replayEventSeed} from "./population-new-pair-event-seeds.mjs";
 import {preflightTemplate} from "./population-research-template-selector.mjs";
 import {createSharedResearchPool} from "./population-new-pair-template-pool.mjs";
-import {pairShard} from "./population-new-pair-shards.mjs";
+import {pairShard,depthOf} from "./population-new-pair-shards.mjs";
+import {traitEvidence,traitKey,traitSummary} from "./population-new-pair-trait-evidence.mjs";
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
 import {createFoundationResearchPlanner} from "../public/soldiers/modern/foundation-research-planner.js";
@@ -25,7 +26,9 @@ assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 const out=arg("out","population-new-pair-career.json.gz"),priorFile=arg("prior",out),prior=fs.existsSync(priorFile)?decode(priorFile):db.populationNewPairCareer;
 const shardCount=Number(arg("shard-count","1")),shardIndex=Number(arg("shard-index","0"));
 assert(Number.isSafeInteger(shardCount)&&shardCount>=1&&Number.isSafeInteger(shardIndex)&&shardIndex>=0&&shardIndex<shardCount);
-const owns=id=>shardCount===1||pairShard(entry.routes[id],shardCount)===shardIndex;
+const manifestPath=arg("shard-manifest",null),manifest=manifestPath?read(manifestPath):null;
+if(manifest)assert.equal(manifest.count,shardCount);
+const owns=id=>shardCount===1||pairShard(entry.routes[id],shardCount,manifest)===shardIndex;
 if(shardCount>1)assert(prior?.scheduler===3,"Migrate the checkpoint before sharding");
 if(prior){assert.equal(prior.sourceMetadataSha256,db.sourceMetadataSha256);for(const [id,r] of Object.entries(db.populationNewPairCareer?.routes||{}))assert.deepEqual(prior.routes[id],r);}
 const routes={...prior?.routes},states={...prior?.states},{g,finish,rankDefaultBodies}=createNewPairCareerPolicy(data);
@@ -44,10 +47,34 @@ const m={seedReplays:0,rootReplays:0,rootHits:0,statesExpanded:0,attempts:0,succ
 const exactPlans=new Map(),failedPlans=new Map(),prefixWorlds=new Map();
 const breadth=process.argv.includes("--breadth"),initialOnly=process.argv.includes("--initial-only"),eligibleQuota=process.argv.includes("--eligible-quota"),seedQuota=Number(arg("seed-quota","24")),seedAttempts=new Map(),seedWork=new Map();
 const quotaCount=id=>eligibleQuota?(seedWork.get(id)||0):(seedAttempts.get(id)||0);
+const minDepth=Number(arg("deep-min","0")),retainTraits=process.argv.includes("--retain-traits");
+assert(Number.isSafeInteger(minDepth)&&minDepth>=0&&(!initialOnly||minDepth===0));
+const selected=s=>depthOf(s)>=minDepth&&(!initialOnly||!s.actions.length);
+const traitSets=new Set(Object.values(routes).filter(r=>r.traitEvidence).map(r=>traitKey(r,r.traitEvidence)));
 assert(Number.isSafeInteger(seedQuota)&&seedQuota>0);
 const prefixLimit=Number(arg("prefix-cache","512")),quantum=Number(arg("quantum","12"));
 assert(Number.isSafeInteger(prefixLimit)&&prefixLimit>=0&&Number.isSafeInteger(quantum)&&quantum>0);
-Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0,exactFailureHits:0,exactFailureStores:0,quotaDeferrals:0,freshSeedTurns:0,distinctSeedsAttempted:0,eligibleWork:0,eligibleQuota,cheapProbeSkips:0});
+Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0,exactFailureHits:0,exactFailureStores:0,quotaDeferrals:0,freshSeedTurns:0,distinctSeedsAttempted:0,eligibleWork:0,eligibleQuota,cheapProbeSkips:0,retainedSetAdds:0,traitOnlyAdds:0,recoveredStateRoutes:0});
+function register(b,n,allowed,recovered=false){
+ const end=g.grow(n),f=finish(end.world,end.steps),v={origin:b.r.origin,branch:b.r.branch,...f};
+ const order=end.steps.filter(a=>a.type==="transform").map(a=>a.transform);
+ if(!order.length)return false;
+ // The actual seed ID is supplied by the caller; never infer it from body.
+ const rid="POPNEWCAREER12:"+key([b.seed,end.steps]).slice(0,24);
+ if(routes[rid])return false;
+ const evidence=retainTraits?traitEvidence(end.world,end.steps,g.rules):null,tk=evidence?traitKey(v,evidence):null;
+ const fresh=Boolean(evidence&&evidence.retained.length>=2&&!traitSets.has(tk));
+ const isNewBody=!front.has(pk(v)),improved=!(front.get(pk(v))||[]).some(old=>dom(old,v.vector));
+ if(!improved&&!fresh){m.unchanged++;return false;}
+ const fullEnd=[...b.root.actions,...b.birth,...end.steps];
+ if(fullEnd.length>1800||!b.r.commit.every(k=>g.active(end.world,k)))return false;
+ const ctx=auditOriginCampaignContext(fullEnd,data);if(ctx.kind!=="compatible"||!ctx.allowedDifficulties.length)return false;
+ assert.deepEqual(allowed,ctx.allowedDifficulties.filter(k=>b.r.allowedDifficulties.includes(k)));
+ if(improved)assert(addFront(v));
+ routes[rid]={seed:b.seed,seedActionHash:b.r.fullActionHash,origin:b.r.origin,branch:b.r.branch,root:b.r.root,actions:end.steps,order,fullActionHash:key(fullEnd),canonicalStateHash:exactWorld(end.world),allowedDifficulties:allowed,...f,...(evidence?{traitEvidence:evidence,publication:improved?"PARETO_IMPROVEMENT":"RETAINED_TRAIT_SET"}:{}),actualGameCertified:false};
+ if(evidence)traitSets.add(tk);if(fresh)m.retainedSetAdds++;if(!improved)m.traitOnlyAdds++;if(recovered)m.recoveredStateRoutes++;
+ m.newRoutes++;if(isNewBody)m.newBodyPairs++;return true;
+}
 function rememberWorld(seedId,actions,w){
  if(!prefixLimit)return;
  const k=key([seedId,actions]);if(prefixWorlds.has(k))return;
@@ -112,9 +139,9 @@ function enqueue(seedId,actions,hash,allowed){
  if(!owns(seedId))return;
  const id=key([seedId,actions]);if(!states[id])states[id]={seed:seedId,actions,stateHash:hash,allowedDifficulties:allowed,cursor:0};
  // Initial-pass mode defers continuations without deleting their work records.
- if(!states[id].done&&!queued.has(id)&&(!initialOnly||!actions.length)){(running?hot:pending).push(id);queued.add(id);}
+ if(!states[id].done&&!queued.has(id)&&selected(states[id])){(running?hot:pending).push(id);queued.add(id);}
 }
-for(const [id,s] of Object.entries(states))if(owns(s.seed)&&!s.done&&(!initialOnly||!s.actions.length)){pending.push(id);queued.add(id);}
+for(const [id,s] of Object.entries(states))if(owns(s.seed)&&!s.done&&selected(s)){pending.push(id);queued.add(id);}
 for(const [id,r] of Object.entries(entry.routes))enqueue(id,[],null,r.allowedDifficulties);
 // First interleave origins within each depth, then interleave depth levels.
 // This avoids starving continuations behind hundreds of fresh birth states.
@@ -134,9 +161,10 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
  if(!s.actions.length&&!s.visits&&!s.cursor)m.freshSeedTurns++;
  s.visits=(s.visits||0)+1;
  try{
-  const b=seed(s.seed),w=replayState(s,b),n={world:w,steps:s.actions};
+  const b={...seed(s.seed),seed:s.seed},w=replayState(s,b),n={world:w,steps:s.actions};
   if(s.stateHash)assert.equal(exactWorld(w),s.stateHash);else s.stateHash=exactWorld(w);
   if(s.actions.length)rememberWorld(s.seed,s.actions,w);
+  if(retainTraits&&s.actions.length)register(b,n,s.allowedDifficulties,true);
   const grown=g.grow(n),choices=(byBody.get(member(w).state.soldierType)||[]).filter(r=>r.requires.every(k=>!b.r.avoid.includes(k)&&!w.disabled.has(k)));
   const moves=choices.flatMap(r=>grown===n?[{r,n,phase:"pre"}]:[{r,n,phase:"pre"},{r,n:grown,phase:"post"}]);
   const sig=key(moves.map(x=>[x.r.id,x.phase]));if(s.signature)assert.equal(s.signature,sig);s.signature=sig;
@@ -156,19 +184,14 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
     if(ctx.kind!=="compatible"||!allowed.length){m.contextRejected++;continue;}
     const hash=exactWorld(x.world);if(hash===exactWorld(c.world)){m.noop++;continue;}
     m.success++;m[phase+"GrowthSuccess"]++;rememberWorld(s.seed,x.steps,x.world);enqueue(s.seed,x.steps,hash,allowed);
-    const end=g.grow(x),f=finish(end.world,end.steps),v={origin:b.r.origin,branch:b.r.branch,...f};
-    if(f.careerPolicy)m.rankMedalSuccess++;
-    const isNewBody=!front.has(pk(v));if(!addFront(v)){m.unchanged++;continue;}
-    const id="POPNEWCAREER12:"+key([s.seed,end.steps]).slice(0,24);
-    const fullEnd=[...b.root.actions,...b.birth,...end.steps];
-    routes[id]={seed:s.seed,seedActionHash:b.r.fullActionHash,origin:b.r.origin,branch:b.r.branch,root:b.r.root,actions:end.steps,order:end.steps.filter(a=>a.type==="transform").map(a=>a.transform),fullActionHash:key(fullEnd),canonicalStateHash:exactWorld(end.world),allowedDifficulties:allowed,...f,actualGameCertified:false};
-    m.newRoutes++;if(isNewBody)m.newBodyPairs++;
+    if(x.steps.some(a=>a.type==="conditionalPromotion"||a.type==="conditionalMedal"))m.rankMedalSuccess++;
+    register(b,x,allowed);
    }catch(e){m.errors++;s.lastError=String(e.message);}
   }
   if(s.cursor===moves.length){s.done=true;m.statesExpanded++;}else if(timely()){hot.push(id);m.quantumYields++;}
  }catch(e){s.error=String(e.message);m.errors++;if(entry.routes[s.seed]?.eventVariant)m.eventSeedErrors++;}
 }
 m.distinctSeedsAttempted=seedAttempts.size;Object.assign(m,sharedPool.metrics);
-const values=Object.values(routes),summary={...m,initialOnly,breadth,seedQuota,visitedInitialSeeds:Object.values(states).filter(s=>!s.actions.length&&(s.visits||s.cursor||s.done)).length,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
+const values=Object.values(routes),summary={...m,...traitSummary(routes),minDepth,retainTraits,initialOnly,breadth,seedQuota,visitedInitialSeeds:Object.values(states).filter(s=>!s.actions.length&&(s.visits||s.cursor||s.done)).length,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
 const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,...(shardCount>1?{shard:{count:shardCount,index:shardIndex,ownedSeeds:entry.published.filter(owns).length},batchMetrics:m}:{}),routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered non-event and event minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
 fs.writeFileSync(out+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(out+".tmp",out);console.log(JSON.stringify(summary));
