@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 <link rel="stylesheet" href="../../branch-soldier-results.css?v=20261124-resource-1">
 <link rel="stylesheet" href="../../branch-soldier-unified-nav.css?v=27">
-<link rel="stylesheet" href="../../branch-soldier-atlas-table.css?v=34">
+<link rel="stylesheet" href="../../branch-soldier-atlas-table.css?v=39-shared">
 <script defer src="../../branch-soldier-unified-nav.js?v=34"></script>
 </head>
 <body>
@@ -19,20 +19,13 @@
 <a class="back" href="../../">← Data Atlas</a>
 <p class="eyebrow">X-PIRATEZ 2.1 · 출생처별 경로 기록</p>
 <h1>병종 DB</h1>
-<p class="lede">어디에서 태어났는지부터, 어떤 분기를 선택해 어디까지 도달했는지까지.<br>성장이 완료된 병사의 <strong>조건부 성장한계</strong>를 기본 비교하고 더 좋은 연구·성장 경로가 확인되면 갱신합니다.</p>
-<p class="scope-note">출생 최댓값·전투/체력훈련의 장기 상한·시술 전후 성장을 순서대로 반영한 추정입니다. <strong>모든 능력치의 동시 달성과 전역 최고 경로는 미증명</strong>입니다.</p>
+<p class="lede">출생처 · 병종 · 능력치 · 연구 분기 · 시술 · 특성</p>
 </div></header>
 <main class="wrap">
-<section id="catalogSummary" class="metrics" aria-live="polite"><p>원본과 경로 증거를 확인하는 중…</p></section>
-<p class="scope-note" id="registryCoverage" role="status" data-registry-status="loading">최신 통합 원장의 실제 연결 범위를 읽는 중입니다.</p>
-<p class="scope-note"><a href="?minDepth=5#integratedCaps">등록된 5회 이상 시술·분기별 상한 검색 →</a></p>
-
-<p class="scope-note" id="routePruningScope">훈련·연구·자원 단축 검증을 확인하는 중…</p>
-<p class="scope-note"><a href="?q=manufacture%3ASTR_THEBAN_ASSAULT_CLONE#originMaxima" data-assault-clone-link="true">돌격 클론 · 농부와 다른 독립 출생처 상세 보기</a> · <a href="./chort-readiness.html" data-chort-readiness-link="true">코르트 출발 병종 42개 검증표 · 초기 Psi, 계급, 획득비 및 시간순 경로 근거 자세히 보기</a></p>
 <section class="toolbar card" aria-label="병종 DB 검색">
 <label class="wide">출생처·병종 검색<input id="search" type="search" placeholder="농부 · 돌격 클론 · 영애 · STR_…"></label>
 <label>병종<select id="family"><option value="">전체 병종</option></select></label>
-<label>표 구분<select id="catalogGrouping"><option value="body">최종 병종별 최대값 (기본)</option><option value="origin">출생처별 상세</option><option value="routes">개별 육성 경로</option></select></label>
+<label>표 구분<select id="catalogGrouping"><option value="body">최종 병종별 대표 경로</option><option value="origin">출생처별 상세</option><option value="routes">개별 육성 경로</option></select></label>
 <label>능력치 보기<select id="catalogMetric">
 <option value="growth">성장 완료 가정 · 조건부 상한 (기본)</option>
 <option value="provisional">연구·시술 잠정값 (성장 제외)</option>
@@ -84,7 +77,11 @@
 <details class="card" id="allOriginCapFrontier"><summary>전체 72개 출생처 · 성장 배치 Pareto 비교</summary><section class="bs-results" data-all-origin-cap-frontier aria-label="전체 출생처 최종 성장 비교"><p>펼치면 공통 성장 원장을 불러옵니다.</p></section></details>
 <details class="card"><summary>전체 병종 성장 탐색 가속화 · 계산 재사용</summary><section data-origin-numeric-cache><p>펼치면 공통 원장의 수치 계산 진척을 불러옵니다.</p></section></details>
 <details id="integratedCaps" class="card"><summary>선택 수치의 육성 경로 · 연구 분기 · 자원 조건 상세</summary><section class="bs-results" data-branch-soldier-results="soldier" aria-label="선택 수치의 육성 경로"><p role="status">공통 원장의 경로를 불러오는 중입니다.</p></section></details>
-<details class="methodology card" id="originProofMeaning"><summary>잠정값의 계산 범위와 갱신 원칙</summary>
+<details class="methodology card" id="originProofMeaning"><summary>자료 범위 및 계산 근거</summary>
+<section id="catalogSummary" class="metrics" aria-live="polite"><p>원본과 경로 증거를 확인하는 중…</p></section>
+<p class="scope-note" id="registryCoverage" role="status" data-registry-status="loading">최신 통합 원장의 실제 연결 범위를 읽는 중입니다.</p>
+<p class="scope-note" id="routePruningScope">훈련·연구·자원 단축 검증을 확인하는 중…</p>
+<p class="scope-note"><a href="?minDepth=5#integratedCaps">5회 이상 시술 검색</a> · <a href="?q=manufacture%3ASTR_THEBAN_ASSAULT_CLONE#originMaxima" data-assault-clone-link="true">돌격 클론 출생처</a> · <a href="./chort-readiness.html" data-chort-readiness-link="true">코르트 출생·획득 근거</a></p>
 <p>각 출생처는 독립된 병사입니다. 기본 비교는 <strong>출생 가능 최댓값에서 시작해 같은 병사의 병종 변경·훈련을 순서대로 반영</strong>하며, 각 시술 전후에 전투와 체력훈련을 충분히 반복했을 때의 조건부 상한을 계산합니다. 출생 RNG·전투 경험치 획득·시설·훈련 자격·동시 능력치 달성은 보장되지 않습니다. 이전 연구·시술 잠정값(출생 최솟값 출발, 전투 성장 제외)은 별도로 선택할 수 있습니다.</p>
 <p><strong>코르트 최종 변신 경로는 별도 코르트 병종에만 표시하고, 원래 출생처의 최고 후보·능력치 순위에는 사용하지 않습니다.</strong> 출생처 원본 재생 후보는 삭제하지 않습니다.</p>
 <p>세 교육(문화 교육·군사 훈련·얼간이 교육)은 출생 병종의 성장캡 도달 시점에 교육을 적용한 가상 효과와 실제 원본 재생 후보를 분리해 표시합니다. 문화 교육은 생성 최대치(maxStats)를, 군사 훈련과 얼간이 교육은 성장 상한(statCaps)을 직접 증가의 상한으로 적용합니다. <strong>이 가상 비교를 실제 연구·육성 경로로 검증했다고 주장하지 않습니다.</strong> 선택 후 이력으로 직접 막히는 후속 훈련 및 선행조건 연쇄 차단은 최종 병종에서 가능한 규칙만 계산합니다. 연구·시설·아이템·개체별 선행 능력치가 없으면 그 훈련을 자동으로 획득 가능하다고 보지 않습니다.</p>
@@ -125,7 +122,7 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261126-coverage-38-unified"></script>
+<script type="module" src="app.js?v=20261126-career-39-coherent"></script>
 <script type="module" src="../../branch-soldier-results.js?v=20261126-alternating-9-pair26-unified"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>

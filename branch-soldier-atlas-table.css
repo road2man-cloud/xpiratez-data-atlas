@@ -50,3 +50,25 @@
 .route-table-active #originTable td.sticky-body{position:static;min-width:85px;width:85px;max-width:85px}
 .route-table-active #originTable th.sticky-body{left:auto;z-index:4}
 .route-filters select{max-width:140px}}
+/* The original Soldier DB remains the sole body / origin / route table. */
+.body-career-active #originTable{width:max-content;min-width:100%;table-layout:auto;font-size:.82rem;font-variant-numeric:tabular-nums}
+.body-career-active #originTable .body-stat{min-width:55px;white-space:nowrap;text-align:right}
+.body-career-active #originTable .body-exact-route{font-weight:650;color:var(--blue,#a8caff)}
+.body-career-active #originTable .independent-upper{font-size:.72rem;color:#91a5be;font-weight:400}
+.body-career-active #originTable .independent-upper a,.body-career-active #originTable .independent-upper button{font-weight:400;font-size:inherit}
+.body-career-active #originTable .body-route-meta{width:180px;min-width:140px;max-width:210px;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.body-career-active #originTable .body-route-list{width:290px;min-width:220px;max-width:330px;line-height:1.6}
+.body-career-active #originTable th:nth-child(n+16){min-width:140px}
+.body-career-active #originTable th:nth-child(n+18){min-width:220px}
+body:has(#originMaxima) .hero{padding:15px 0 12px}
+body:has(#originMaxima) .hero h1{font-size:1.8rem;margin:4px 0}
+body:has(#originMaxima) .hero .eyebrow{margin:0}
+body:has(#originMaxima) .hero .lede{margin:3px 0;font-size:.86rem}
+body:has(#originMaxima) #catalogStatus,body:has(#originMaxima) #compareStatus{font-size:.8rem;margin:6px 0}
+@media(max-width:640px){
+.body-career-active #originTable td:nth-child(2),.body-career-active #originTable th:nth-child(2){display:table-cell;min-width:115px;max-width:140px}
+.body-career-active #originTable td:nth-child(3),.body-career-active #originTable th:nth-child(3){left:auto}
+.body-career-active #originTable td.body-route-meta{min-width:140px;max-width:220px;width:180px;text-align:left}
+.body-career-active #originTable td.body-route-list{min-width:220px;max-width:280px;width:260px}
+}
+

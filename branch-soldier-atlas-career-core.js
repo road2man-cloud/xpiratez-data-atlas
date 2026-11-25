@@ -35,6 +35,35 @@ export function project(ledger,data,metadata){
  }
  return {rows,rejected};
 }
+// The two display modes reuse one projection of the canonical ledgers.
+const projectionCache=new WeakMap();
+export async function loadCareerRows(modern,registry){
+ if(modern?.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
+ if(projectionCache.has(modern))return projectionCache.get(modern);
+ const metadata=modern.meta.source.metadataSha256;
+ const promise=(async()=>{
+  const rows=[],errors=[];
+  for(const source of ledgers){
+   try{
+    let data=source.registryKey&&registry?.sourceMetadataSha256===metadata?registry[source.registryKey]:null;
+    if(!data){
+     const url=new URL('./data/'+source.file+'.json.gz',import.meta.url),res=await fetch(url);
+     if(!res.ok)throw Error('HTTP '+res.status);
+     if(typeof DecompressionStream==='undefined')throw Error('gzip 지원 브라우저 필요');
+     data=await new Response(res.body.pipeThrough(new DecompressionStream('gzip'))).json();
+    }
+    const projected=project(source,data,metadata);rows.push(...projected.rows);
+    if(projected.rejected.length)errors.push(source.label+' '+projected.rejected.length+'행 제외');
+   }catch(e){errors.push(source.label+' 미연결: '+e.message)}
+  }
+  return {rows,errors};
+ })();
+ projectionCache.set(modern,promise);
+ return promise;
+}
+export function exactCareerUrl(r){
+ return 'soldiers/modern/?'+new URLSearchParams({group:'routes',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
+}
 export function filterRows(rows,f){
  return rows.filter(r=>(!f.origin||r.origin===f.origin)&&(!f.body||r.body===f.body)&&(!f.branch||r.branch===f.branch)&&
   (!f.captain||f.branchCaptains?.get(r.branch)?.includes(f.captain))&&

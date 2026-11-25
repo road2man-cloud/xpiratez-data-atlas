@@ -1,5 +1,42 @@
-import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=38-coverage-unified';
+import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=39-shared';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
+// Select a single witness for each body under the selected objective. Keep independent
+// ceilings separate: they may come from a different conditional model or route.
+export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch='',q='',family='',profiles=new Map(),names={}}={}){
+ const norm=s=>String(s??'').normalize('NFKC').toLocaleLowerCase('ko-KR');
+ const tokens=norm(q).trim().split(/\s+/).filter(Boolean);
+ const name=id=>names[id]||id||'';
+ const originText=id=>{const p=profiles.get(id);return [id,p?.sourceKoName,p?.sourceEnName,p?.soldierKoName].filter(Boolean).join(' ')};
+ const matches=s=>tokens.every(t=>norm(s).includes(t));
+ const i=statKeys.indexOf(stat),score=r=>i<0?sum(r[metric]):r[metric][i];
+ const byBody=new Map();
+ for(const r of rows){
+  if(branch&&r.branch!==branch)continue;
+  if(!byBody.has(r.body))byBody.set(r.body,[]);
+  byBody.get(r.body).push(r);
+ }
+ const result=[];
+ for(const b of bodies){
+  if(family&&b.id!==family)continue;
+  const bodyText=[b.id,b.name].join(' '),bodyMatch=matches(bodyText);
+  const candidates=(byBody.get(b.id)||[]).filter(r=>bodyMatch||matches([bodyText,originText(r.origin),r.branch,r.id,...r.order.flatMap(t=>[t,name(t)]),...(r.traits||[]).flatMap(t=>[t,name(t)])].join(' ')));
+  const legacy=(b.candidates||[]).filter(r=>bodyMatch||matches([bodyText,originText(r.originProfile),r.route].join(' ')));
+  if(!bodyMatch&&!candidates.length&&!legacy.length)continue;
+  // Objective, then full-vector total, then stable identifier. No cross-row maxima.
+  const best=candidates.reduce((a,r)=>!a||score(r)>score(a)||score(r)===score(a)&&(sum(r[metric])>sum(a[metric])||sum(r[metric])===sum(a[metric])&&r.key.localeCompare(a.key)<0)?r:a,null);
+  const independent=Object.fromEntries(statKeys.map(k=>[k,null]));
+  for(const r of candidates)for(const [j,k] of statKeys.entries()){
+   const value=r[metric][j];if(!independent[k]||value>independent[k].value)independent[k]={value,career:r};
+  }
+  // Legacy registry values are conditional growth ceilings only, not current stats.
+  if(metric==='cap')for(const r of legacy)for(const k of statKeys){
+   const value=r.stats?.[k];if(Number.isFinite(value)&&(!independent[k]||value>independent[k].value))independent[k]={...r,value};
+  }
+  result.push({id:b.id,name:b.name,best,independent,count:candidates.length,originCount:new Set(candidates.map(r=>r.origin)).size,legacyCount:legacy.length});
+ }
+ return result.sort((a,b)=>(b.best?score(b.best):-Infinity)-(a.best?score(a.best):-Infinity)||a.name.localeCompare(b.name,'ko'));
+}
+
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
  return [...rows,...profiles.filter(p=>!known.has(p.id)).map(p=>({key:'missing:'+p.id,id:null,origin:p.id,body:null,branch:null,source:null,order:[],traits:null,rank:null,medals:null,difficulties:[],current:null,cap:null,certified:false,missing:true}))];
