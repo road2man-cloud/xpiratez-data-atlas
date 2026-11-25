@@ -1,39 +1,40 @@
-import {routeFilterIds,routeThreshold,loadResearchSearch} from './branch-soldier-atlas-career-core.js?v=44-exclusion';
-import {minimumStatKeys,readStatMinimums} from './branch-soldier-atlas-table-core.js?v=44-exclusion';
+import {routeFilterIds,routeSequenceIds,routeThreshold,loadResearchSearch} from './branch-soldier-atlas-career-core.js?v=45-sequence';
+import {minimumStatKeys,readStatMinimums} from './branch-soldier-atlas-table-core.js?v=45-sequence';
 // The original dropdown is reused as an add control. One compact removable list
 // shows all active conditions; no Ctrl-click, modal or extra database is needed.
-export function mountMultiFilter(select,{initial='',excludeInitial=null,label,onChange}){
- let ids=routeFilterIds(initial),excluded=routeFilterIds(excludeInitial);
- const allowExclusion=excludeInitial!==null;
+export function mountMultiFilter(select,{initial='',excludeInitial=null,sequenceInitial=null,label,onChange}){
+ let ids=routeFilterIds(initial),excluded=routeFilterIds(excludeInitial),sequence=routeSequenceIds(sequenceInitial);
+ const allowExclusion=excludeInitial!==null,allowSequence=sequenceInitial!==null;
  const host=document.createElement('span');host.className='route-multi-filter';
  select.before(host);
- const mode=allowExclusion?document.createElement('select'):null;
- if(mode){mode.className='route-condition-mode';mode.setAttribute('aria-label',label+' 조건 방식');mode.title=label==='시술'?'제외: 등록 시술 순서에 없는 항목':'제외: 측정된 보유 특성에 없는 항목 (미측정 제외)';mode.append(new Option('포함','include'),new Option('제외','exclude'));host.append(mode);}
+ const mode=allowExclusion||allowSequence?document.createElement('select'):null;
+ if(mode){mode.className='route-condition-mode';mode.setAttribute('aria-label',label+' 조건 방식');mode.title=(allowExclusion?(label==='시술'?'제외: 등록 시술 순서에 없는 항목':'제외: 측정된 보유 특성에 없는 항목 (미측정 제외)'):'')+(allowSequence?' · 순서: 선택한 순서대로 등장 (사이에 다른 행동 허용, 반복 선택 가능)':'');mode.append(new Option('포함','include'));if(allowExclusion)mode.append(new Option('제외','exclude'));if(allowSequence)mode.append(new Option('순서','sequence'));host.append(mode);}
  host.append(select);
  const chips=document.createElement('span');chips.className='route-multi-chips';chips.setAttribute('aria-label',label+' 선택 조건');host.append(chips);
  const itemName=id=>[...select.options].find(o=>o.value===id)?.textContent||id;
  function refresh(){
-  const negative=mode?.value==='exclude',active=negative?excluded:ids;
-  select.value='';if(select.options[0])select.options[0].textContent=label+(negative?' 제외…':' 추가…');
+  const negative=mode?.value==='exclude',ordered=mode?.value==='sequence',active=ordered?[]:negative?excluded:ids;
+  select.value='';if(select.options[0])select.options[0].textContent=label+(ordered?' 순서 추가…':negative?' 제외…':' 추가…');
   for(const o of select.options)if(o.value)o.disabled=active.includes(o.value);
   chips.replaceChildren();
-  for(const [kind,items] of [['include',ids],['exclude',excluded]])for(const id of items){
-   const button=document.createElement('button');button.type='button';button.className='route-multi-chip'+(kind==='exclude'?' route-chip-excluded':'');
-   const prefix=kind==='exclude'?'제외: ':'';
+  for(const [kind,items] of [['include',ids],['exclude',excluded],['sequence',sequence]])for(const [i,id] of items.entries()){
+   const button=document.createElement('button');button.type='button';button.className='route-multi-chip'+(kind==='exclude'?' route-chip-excluded':kind==='sequence'?' route-chip-sequence':'');
+   const prefix=kind==='exclude'?'제외: ':kind==='sequence'?(i+1)+'. ':'';
    button.textContent=prefix+itemName(id)+' ×';button.title=id;button.setAttribute('aria-label',prefix+itemName(id)+' 조건 제거');
-   button.onclick=()=>{if(kind==='exclude')excluded=excluded.filter(v=>v!==id);else ids=ids.filter(v=>v!==id);refresh();onChange();select.focus();};
+   button.onclick=()=>{if(kind==='sequence')sequence.splice(i,1);else if(kind==='exclude')excluded=excluded.filter(v=>v!==id);else ids=ids.filter(v=>v!==id);refresh();onChange();select.focus();};
    chips.append(button);
   }
  }
  mode?.addEventListener('change',refresh);
  select.addEventListener('change',()=>{
   const id=select.value,negative=mode?.value==='exclude';if(!id)return;
-  if(negative){if(excluded.includes(id))return;excluded.push(id);ids=ids.filter(v=>v!==id);}
+  if(mode?.value==='sequence')sequence.push(id);
+  else if(negative){if(excluded.includes(id))return;excluded.push(id);ids=ids.filter(v=>v!==id);}
   else{if(ids.includes(id))return;ids.push(id);excluded=excluded.filter(v=>v!==id);}
   refresh();onChange();
  });
  refresh();
- return {value:()=>ids.join(','),excluded:()=>excluded.join(','),clear(){ids=[];excluded=[];if(mode)mode.value='include';refresh();},refresh};
+ return {value:()=>ids.join(','),excluded:()=>excluded.join(','),sequence:()=>sequence.join(','),clear(){ids=[];excluded=[];sequence=[];if(mode)mode.value='include';refresh();},refresh};
 }
 // One compact expandable filter shared by both existing tables.
 export function mountStatMinimums(host,{params,labels,onChange}){
@@ -72,7 +73,7 @@ export function mountStatMinimums(host,{params,labels,onChange}){
 // large research witnesses merely to display ability values.
 export const researchFilterKeys=['researchAction','recruitResearch','recruitItem'];
 export function writeResearchFilters(params,filters){
- for(const k of researchFilterKeys){params.delete(k);const value=routeFilterIds(filters[k]).join(',');if(value)params.set(k,value);}
+ for(const k of [...researchFilterKeys,'researchSequence']){params.delete(k);const value=(k==='researchSequence'?routeSequenceIds:routeFilterIds)(filters[k]).join(',');if(value)params.set(k,value);}
  return params;
 }
 export function mountResearchFilters(host,{modern,params,name,onChange}){
@@ -89,16 +90,16 @@ export function mountResearchFilters(host,{modern,params,name,onChange}){
  const labels={researchAction:'기록 연구 행동',recruitResearch:'모집 요구 연구',recruitItem:'모집 요구 재료'};
  const controls=new Map(),selects=new Map();
  let index=null,loading=false;
- function value(){return Object.fromEntries([...controls].map(([k,c])=>[k,c.value()]));}
+ function value(){return {...Object.fromEntries([...controls].map(([k,c])=>[k,c.value()])),researchSequence:controls.get('researchAction')?.sequence()||''};}
  function refresh(){
-  const f=value(),count=researchFilterKeys.reduce((n,k)=>n+routeFilterIds(f[k]).length,0);
+  const f=value(),count=researchFilterKeys.reduce((n,k)=>n+routeFilterIds(f[k]).length,routeSequenceIds(f.researchSequence).length);
   summary.textContent='연구·모집 조건'+(count?' ('+count+')':'');
   clear.disabled=!count;
   status.textContent=loading?'연구 이력 연결 중…':index?('기록 연구 행동: '+index.sources+'/4 원장 · 조건부 이벤트 포함'+(index.errors.length?' · 일부 미연결: '+index.errors.join(' / '):'')):'기록 연구 행동은 등록된 시간순 이력 기준입니다.';
  }
  function refill(key){
   const select=selects.get(key),control=controls.get(key);
-  const ids=[...new Set([...known[key],...routeFilterIds(control.value())])].sort((a,b)=>name(a).localeCompare(name(b),'ko',{numeric:true}));
+  const ids=[...new Set([...known[key],...routeFilterIds(control.value()),...routeSequenceIds(control.sequence())])].sort((a,b)=>name(a).localeCompare(name(b),'ko',{numeric:true}));
   select.replaceChildren(new Option('전체',''),...ids.map(id=>new Option(name(id),id)));
   control.refresh();
   select.disabled=key==='researchAction'&&!index;
@@ -107,7 +108,7 @@ export function mountResearchFilters(host,{modern,params,name,onChange}){
   const div=document.createElement('div');div.className='route-multi-control';
   const select=document.createElement('select');select.setAttribute('aria-label',labels[key]);
   div.append(select);grid.append(div);selects.set(key,select);
-  controls.set(key,mountMultiFilter(select,{initial:params.getAll(key),label:labels[key],onChange:()=>{refresh();onChange();}}));
+  controls.set(key,mountMultiFilter(select,{initial:params.getAll(key),sequenceInitial:key==='researchAction'?params.getAll('researchSequence'):null,label:labels[key],onChange:()=>{refresh();onChange();}}));
   refill(key);
  }
  async function ensure(){
@@ -121,9 +122,9 @@ export function mountResearchFilters(host,{modern,params,name,onChange}){
  clear.onclick=()=>{reset();onChange()};
  details.addEventListener('toggle',()=>{if(details.open)void ensure()});
  host.append(details);
- details.open=researchFilterKeys.some(k=>routeFilterIds(value()[k]).length);
+ details.open=Object.values(value()).some(v=>routeSequenceIds(v).length);
  refresh();if(details.open)void ensure();
- return {value,clear:reset,refreshNames(){for(const k of researchFilterKeys)refill(k);},index:()=>index,notice(){return value().researchAction?(loading||!index?' · 연구 이력 연결 중':index.errors.length?' · 일부 연구 원장 미연결':' · 연구 행동 기록 기준'):'';}};
+ return {value,clear:reset,refreshNames(){for(const k of researchFilterKeys)refill(k);},index:()=>index,notice(){return (value().researchAction||value().researchSequence)?(loading||!index?' · 연구 이력 연결 중':index.errors.length?' · 일부 연구 원장 미연결':' · 연구 행동 기록 기준'):'';}};
 }
 
 

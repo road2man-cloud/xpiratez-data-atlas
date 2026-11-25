@@ -1,7 +1,7 @@
-import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=44-exclusion';
-import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=44-exclusion';
+import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=45-sequence';
+import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=45-sequence';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=44-exclusion';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=45-sequence';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive}){
@@ -31,7 +31,7 @@ const search=(kind,id)=>'search/?'+new URLSearchParams({kind,q:id});
 const context=()=>({profiles,branches,branchCaptains,names,selected,researchIndex:researchFilters.index()});
 const sourceOf=r=>ledgers.find(s=>s.key===r.source);
 const multiChanged=()=>{if(!initial&&isActive()){page=0;sync();render();}};
-const multi=Object.fromEntries([['training','시술'],['trait','보유 특성']].map(([id,label])=>[id,mountMultiFilter($(id),{initial:params.getAll(id),excludeInitial:params.getAll(id==='training'?'excludeTraining':'excludeTrait'),label,onChange:multiChanged})]));
+const multi=Object.fromEntries([['training','시술'],['trait','보유 특성']].map(([id,label])=>[id,mountMultiFilter($(id),{initial:params.getAll(id),excludeInitial:params.getAll(id==='training'?'excludeTraining':'excludeTrait'),sequenceInitial:id==='training'?params.getAll('trainingSequence'):null,label,onChange:multiChanged})]));
 const filterHost=$('routeFilters').querySelector('.route-filters');
 const minima=mountStatMinimums(filterHost,{params,labels,onChange:multiChanged});
 const researchFilters=mountResearchFilters(filterHost,{modern,params,name,onChange:multiChanged});
@@ -58,7 +58,7 @@ function populate(){
  if(matched&&$('b').value&&!sameChoices(branches.get(a),branches.get($('b').value)))$('b').value='';
 }
 function filter(){
- const f={...Object.fromEntries(controls.map(id=>[id,readValue(id)])),minima:minima.value(),excludeTraining:multi.training.excluded(),excludeTrait:multi.trait.excluded(),...researchFilters.value()};
+ const f={...Object.fromEntries(controls.map(id=>[id,readValue(id)])),minima:minima.value(),excludeTraining:multi.training.excluded(),excludeTrait:multi.trait.excluded(),trainingSequence:multi.training.sequence(),...researchFilters.value()};
  return f;
 }
 function sync(){
@@ -67,6 +67,7 @@ function sync(){
  for(const k of [...p.keys()])if(controls.includes(k)||k==='sort'||k==='dir'||k==='stat'||k==='role'||k==='primary'||k.startsWith('role')||k.startsWith('min_')||k==='profile')p.delete(k);
  for(const id of controls){const v=checks.has(id)?($(id).checked?'1':''):readValue(id);if(v&&!(id==='metric'&&v==='cap'))p.set(id,v)}
  for(const [key,id] of [['excludeTraining','training'],['excludeTrait','trait']]){const v=multi[id].excluded();p.delete(key);if(v)p.set(key,v);}
+ p.delete('trainingSequence');if(multi.training.sequence())p.set('trainingSequence',multi.training.sequence());
  writeStatMinimums(p,minima.value());writeResearchFilters(p,researchFilters.value());
  if(sort!=='total')p.set('sort',sort);if(dir==='asc')p.set('dir',dir);
  history.replaceState(null,'',location.pathname+(p.size?'?'+p:'')+location.hash);
@@ -181,7 +182,7 @@ function render(){
  $('page').textContent=(page+1)+' / '+pages;$('prev').disabled=page===0;$('next').disabled=page>=pages-1;
  renderHead();const frag=document.createDocumentFragment();
  for(const r of matches.slice(page*size,(page+1)*size))frag.append(renderRow(r,f));
- if(!matches.length){const tr=el('tr'),td=el('td',f.researchAction&&!researchFilters.index()?'연구 이력 연결 중…':'등록 기록 없음');td.colSpan=columns.length;tr.append(td);frag.append(tr)}
+ if(!matches.length){const tr=el('tr'),td=el('td',(f.researchAction||f.researchSequence)&&!researchFilters.index()?'연구 이력 연결 중…':'등록 기록 없음');td.colSpan=columns.length;tr.append(td);frag.append(tr)}
  $('results').replaceChildren(frag);updateSelection();
 }
 for(const id of controls){

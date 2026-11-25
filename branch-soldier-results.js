@@ -4,9 +4,9 @@ import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileW
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-v17";
 import {loadRuntime} from "./db-runtime.js";
-import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold} from "./branch-soldier-atlas-career-core.js?v=44-exclusion";
-import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=44-exclusion";
-import {bodyCareerSummary,indexCareerBranches,branchCareerRows,writeStatMinimums} from "./branch-soldier-atlas-table-core.js?v=44-exclusion";
+import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold} from "./branch-soldier-atlas-career-core.js?v=45-sequence";
+import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=45-sequence";
+import {bodyCareerSummary,indexCareerBranches,branchCareerRows,writeStatMinimums} from "./branch-soldier-atlas-table-core.js?v=45-sequence";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
 import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261126-coverage-40-unified";
 import {allOriginCoverageText} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
@@ -590,6 +590,7 @@ if(ROOT){
    }
    if(E("bsCareerMetric")?.value==="current")u.searchParams.set("metric","current");
    for(const [key,id] of [["excludeTraining","bsTraining"],["excludeTrait","bsTrait"]]){const value=multi[id].excluded();if(value)u.searchParams.set(key,value);}
+   if(multi.bsTraining.sequence())u.searchParams.set('trainingSequence',multi.bsTraining.sequence());
    writeStatMinimums(u.searchParams,minima.value());writeResearchFilters(u.searchParams,researchFilters.value());
    u.hash="originMaxima";return u.href;
   };
@@ -598,7 +599,7 @@ if(ROOT){
    return options([["","전체"],...sorted.map(v=>[v,name(v)])],"");
   };
   ROOT.innerHTML='<h2>분기 DB · 2.1</h2><div class="bs-controls bs-branch-controls"><label>분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 대의 · 코덱스 · 번호"></label><label>최종 병종<select id="bsBranchBody">'+options([["","전체 병종"],...bodies.map(c=>[c.id,c.name])],validBody)+'</select></label><label>연구 상태<select id="bsStatus">'+options([["all","전체"],["history","조건부 이력 있음"],["conflict","원천 충돌"],["unknown","이력 미확정"],["neutral","대의 미선택"]],"all")+'</select></label><label>출생처<select id="bsOrigin">'+initialOption("bsOrigin",[...profiles.keys()],originName)+'</select></label><div class="route-multi-control"><label for="bsTraining">시술</label><select id="bsTraining">'+initialOption("bsTraining",modern.transformations.map(t=>t.id),title)+'</select></div><div class="route-multi-control"><label for="bsTrait">특성</label><select id="bsTrait">'+initialOption("bsTrait",modern.bonuses.map(t=>t.id),title)+'</select></div><label>난이도<select id="bsDifficulty">'+options([["","전체"],...Array.from({length:5},(_,i)=>[String(i),String(i)])],"")+'</select></label><label>수치<select id="bsCareerMetric">'+options([["cap","조건부 성장 상한"],["current","기록 시점 영구치"]],"cap")+'</select></label><label>최소 시술 횟수<input id="bsMinDepth" type="number" min="0" step="1" placeholder="전체"></label><label>최소 특성 수<input id="bsMinTraits" type="number" min="0" step="1" placeholder="전체"></label><label class="bs-inline-check"><input type="checkbox" id="bsCareerOnly"> 등록 육성 경로만</label></div>'+facetMarkup()+'<div class="bs-branch-pagination"><span id="bsCount" role="status"></span><button id="bsPrev" type="button">이전</button><button id="bsNext" type="button">다음</button></div><p class="bs-sub" id="bsCareerScope">경로 연결 중…</p><div class="bs-scroll" id="bsTable"></div><div id="bsBranchDetail" class="bs-note" aria-live="polite"></div><details class="bs-note"><summary>연구·육성 원장 및 계산 범위</summary>'+overview()+pairSearchMarkup(db)+pairContinuationMarkup(db)+sources()+'</details>';
-  const multi=Object.fromEntries([["bsTraining","training","시술"],["bsTrait","trait","보유 특성"]].map(([id,key,label])=>[id,mountMultiFilter(E(id),{initial:query.getAll(key),excludeInitial:query.getAll(key==='training'?'excludeTraining':'excludeTrait'),label,onChange:resetDraw})]));
+  const multi=Object.fromEntries([["bsTraining","training","시술"],["bsTrait","trait","보유 특성"]].map(([id,key,label])=>[id,mountMultiFilter(E(id),{initial:query.getAll(key),excludeInitial:query.getAll(key==='training'?'excludeTraining':'excludeTrait'),sequenceInitial:key==='training'?query.getAll('trainingSequence'):null,label,onChange:resetDraw})]));
   const filterHost=ROOT.querySelector(".bs-branch-controls");
   const minima=mountStatMinimums(filterHost,{params:query,labels:ko,onChange:resetDraw});
   const researchFilters=mountResearchFilters(filterHost,{modern,params:query,name:title,onChange:resetDraw});
@@ -606,8 +607,8 @@ if(ROOT){
    if(query.has(key)&&(!E(id).options||[...E(id).options].some(o=>o.value===query.get(key))))E(id).value=query.get(key);
   }
   selected=db.branches.find(b=>b.id===selectedUrl)||null;
-  const routeFilters=()=>({body:E("bsBranchBody").value,origin:E("bsOrigin").value,training:multi.bsTraining.value(),trait:multi.bsTrait.value(),excludeTraining:multi.bsTraining.excluded(),excludeTrait:multi.bsTrait.excluded(),minDepth:E("bsMinDepth").value,minTraits:E("bsMinTraits").value,difficulty:E("bsDifficulty").value,metric:E("bsCareerMetric").value,minima:minima.value(),...researchFilters.value()});
-  const hasRouteFilter=f=>!!(f.origin||f.training||f.trait||f.excludeTraining||f.excludeTrait||routeThreshold(f.minDepth)!==null||routeThreshold(f.minTraits)!==null||Object.keys(f.minima).length||f.researchAction||f.recruitResearch||f.recruitItem||f.difficulty!=="");
+  const routeFilters=()=>({body:E("bsBranchBody").value,origin:E("bsOrigin").value,training:multi.bsTraining.value(),trait:multi.bsTrait.value(),excludeTraining:multi.bsTraining.excluded(),excludeTrait:multi.bsTrait.excluded(),trainingSequence:multi.bsTraining.sequence(),minDepth:E("bsMinDepth").value,minTraits:E("bsMinTraits").value,difficulty:E("bsDifficulty").value,metric:E("bsCareerMetric").value,minima:minima.value(),...researchFilters.value()});
+  const hasRouteFilter=f=>!!(f.origin||f.training||f.trait||f.excludeTraining||f.excludeTrait||f.trainingSequence||f.researchSequence||routeThreshold(f.minDepth)!==null||routeThreshold(f.minTraits)!==null||Object.keys(f.minima).length||f.researchAction||f.recruitResearch||f.recruitItem||f.difficulty!=="");
   const numeric=r=>routeObjective(r,E("bsCareerMetric").value,objective);
   function filter(){
    const q=E("bsSearch").value.trim().toLowerCase(),s=E("bsStatus").value,f=routeFilters(),mustHave=E("bsCareerOnly").checked||hasRouteFilter(f);
