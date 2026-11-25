@@ -9,7 +9,7 @@ import {MODEL,LEDGER,birthCatalog,sourceIdentity,createBridge,pairKey} from "./p
 import {sha,key,sum,dominates} from "./population-research-career-core.mjs";
 import {exactWorld,birthActions} from "./population-growth-replay-core.mjs";
 const reg="public/data/branch-soldier-results.json.gz",decode=x=>JSON.parse(gunzipSync(x)),read=p=>JSON.parse(fs.readFileSync(p));
-const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v2.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
+const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v3.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
 assert.equal(a.kind,"POPULATION_FRONTIER_CHRONOLOGY");assert.equal(a.model,MODEL);
 assert.equal(a.sourceMetadataSha256,db.sourceMetadataSha256);assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 const {baseline:oldBaseline,...stable}=a.source,{baseline:currentBaseline,...current}=sourceIdentity(db);
@@ -40,7 +40,35 @@ if(db[LEDGER]){
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 const frontier=db.populationCareerFrontier,assumed=db.populationAssumedBirthClosure,env=db.populationCareerEnvelope;
 const origins=new Map(assumed.origins.map((x,i)=>[x,i])),branches=new Map(assumed.branches.map((x,i)=>[x,i])),births=new Map(birthCatalog(db).map(r=>[r.input,r]));
-const bridge=createBridge(data,db,a.hashes,{cache:true}),{replay,engine}=bridge;
+const cacheHashes=a.cacheHashes||a.hashes;
+for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
+const bridge=createBridge(data,db,cacheHashes,{cache:true}),{replay,engine}=bridge;
+// Share independent replay prefixes, not precomputed final states.
+// Every branch point is built by applying the original actions to the
+// empty world; applyOriginWitnessStep clones its input. Retain only fork
+// worlds and final worlds to bound the amount of live state.
+const trie={children:new Map(),world:replay.replay([])},birthPaths=new Map();
+for(const [id,r] of Object.entries(a.routes)){
+ if(db[LEDGER]?.routes[id]||birthPaths.has(r.input))continue;
+ const {steps}=birthActions(db,r),path=[trie];let n=trie;
+ for(const action of steps){
+  const k=JSON.stringify(action);
+  if(!n.children.has(k))n.children.set(k,{children:new Map(),action});
+  n=n.children.get(k);path.push(n);
+ }
+ n.terminal=true;birthPaths.set(r.input,path);
+}
+let independentBirthSteps=0,sharedBirthSteps=0;
+function replayBirthPrefix(input){
+ const path=birthPaths.get(input);assert(path);
+ let i=path.length-1;while(!path[i].world)i--;
+ let w=path[i].world;sharedBirthSteps+=i;
+ for(let j=i+1;j<path.length;j++){
+  const n=path[j];w=replay.apply(w,n.action);independentBirthSteps++;
+  if(n.children.size>1||n.terminal)n.world=w;
+ }
+ assert(!w.pendingFree);return w;
+}
 // Legacy byte hashes can differ after independent V8 serialization. A
 // cached birth is accepted only by the exact expected byte hash in the
 // cache loader, then compared to a fresh independent replay using the
@@ -48,7 +76,7 @@ const bridge=createBridge(data,db,a.hashes,{cache:true}),{replay,engine}=bridge;
 const checkedBirths=new Map();let byteDifferentCanonicalEqual=0;
 function independentBirth(origin){
  if(checkedBirths.has(origin.input))return checkedBirths.get(origin.input);
- const b=bridge.loadBirth(origin),w=replay.replay(b.birth),observed=sha(serialize(w));
+ const b=bridge.loadBirth(origin),w=replayBirthPrefix(origin.input),observed=sha(serialize(w));
  assert.equal(exactWorld(w),exactWorld(b.n.world),"Independent birth differs from exact verified birth "+origin.input);
  if(observed!==b.p.stateHash)byteDifferentCanonicalEqual++;
  const out={...b,n:{world:w,steps:[]}};checkedBirths.set(origin.input,out);return out;
@@ -143,11 +171,11 @@ const top=published.filter(id=>comparisons[id].novel).sort((x,y)=>(comparisons[y
 const summary={...a.summary,worklistComparison:{improvedRoutes:a.summary.improvedRoutes,newTerminalPairBodies:a.summary.newTerminalPairBodies},
  improvedRoutes:improved,improvedPairs:improvedPairs.size,improvedPairBodies:improvedBodies.size,newTerminalPairBodies:newBodies.size,
  positiveSumRoutes:positive,positiveSumPairBodies:positivePairs.size,maxSumDelta:maxDelta,permanentMax:maxima,independentRouteReplays:published.length,
- independentBirthReplays:new Set(Object.keys(receipts).map(id=>a.routes[id].input)).size,byteDifferentCanonicalEqual:Object.values(receipts).filter(r=>r.birthByteDifferent).length,registration:{reusedPublished,reusedReceipts,fresh,receiptCount:Object.keys(receipts).length,historicalBuilderDrift},careerEnvelopeConflicts:outside.length,baselineSources:[...baselineSources],top};
+ independentBirthReplays:new Set(Object.keys(receipts).map(id=>a.routes[id].input)).size,byteDifferentCanonicalEqual:Object.values(receipts).filter(r=>r.birthByteDifferent).length,registration:{reusedPublished,reusedReceipts,fresh,receiptCount:Object.keys(receipts).length,historicalBuilderDrift,independentBirthSteps,sharedBirthSteps},careerEnvelopeConflicts:outside.length,baselineSources:[...baselineSources],top};
 const asset="soldier-population-frontier-chronology.json.gz";fs.writeFileSync("public/data/"+asset+".tmp",bytes);fs.renameSync("public/data/"+asset+".tmp","public/data/"+asset);
 db[LEDGER]={...a,summary,published,comparisons,careerEnvelopeConflicts:outside,file:asset,bytes:bytes.length,sha256:sha(bytes)};
 db.summary[LEDGER]=summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
+db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
 db.policies.POPFRONTCH12="고정 수치모형 파레토 행동 순서를 원본 최솟값 출생·실제 색인 연구 규칙에서 조건부 재생. 성장·계급·훈장·자원·이벤트 가정 유지, 미해결은 불가능성 아님. 원시 및 영구 수치 재계산, 전체 캠페인 전역 미인증.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary:{...summary,top:top.slice(0,5)},newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses,bytes:bytes.length}));
