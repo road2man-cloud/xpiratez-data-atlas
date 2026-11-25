@@ -5,7 +5,7 @@ import fs from "node:fs";
 import z from "node:zlib";
 import assert from "node:assert/strict";
 import {performance} from "node:perf_hooks";
-import {MODEL,sha,key,sum,SOURCES,sourceFingerprints,pairKey,dominates,baseline,createResearchCareer} from "./population-research-career-core.mjs";
+import {MODEL,sha,key,sum,SOURCES,sourceFingerprints,pairKey,dominates,baseline,createResearchCareer} from "./population-research-career-v2-core.mjs";
 import {member,exactWorld,statStateKey} from "./population-growth-replay-core.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(z.gunzipSync(fs.readFileSync(p)));
@@ -13,7 +13,7 @@ const db=decode("public/data/branch-soldier-results.json.gz"),data=read("public/
 assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
 data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
-const hashes=Object.fromEntries([...new Set([...Object.keys(db.populationChronologicalCareer.hashes),"public/soldiers/modern/foundation-research-planner.js","tools/population-research-career-core.mjs","tools/build-population-research-career.mjs"])].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
+const hashes=Object.fromEntries([...new Set([...Object.keys(db.populationChronologicalCareer.hashes),"public/soldiers/modern/foundation-research-planner.js","tools/population-research-career-core.mjs","tools/population-research-career-v2-core.mjs","tools/population-research-template-selector.mjs","tools/build-population-research-career.mjs"])].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
 const fingerprints=sourceFingerprints(db),fingerprint=key([MODEL,db.sourceMetadataSha256,fingerprints,hashes]);
 const output=arg("out","population-research-career.json.gz"),prior=fs.existsSync(output)?decode(output):null;
 if(prior&&prior.fingerprint!==fingerprint){
@@ -22,7 +22,7 @@ if(prior&&prior.fingerprint!==fingerprint){
  for(const [p,h] of Object.entries(prior.hashes))if(!["tools/build-population-research-career.mjs","tools/population-research-career-core.mjs"].includes(p))assert.equal(hashes[p],h,"Dependency drift "+p);
 }
 if(db.populationResearchCareer)for(const [id,r] of Object.entries(db.populationResearchCareer.routes))assert.deepEqual(prior?.routes?.[id],r,"Existing published route missing "+id);
-const seedCacheHashes=prior?.seedCacheHashes||prior?.hashes||null;
+const seedCacheHashes=[...new Map([...(Array.isArray(prior?.seedCacheHashes)?prior.seedCacheHashes:prior?.seedCacheHashes?[prior.seedCacheHashes]:[]),...(prior?.hashes?[prior.hashes]:[])].map(h=>[key(h),h])).values()].filter(h=>key(h)!==key(hashes));
 const routes={...(prior?.routes||{})},attempts={...(prior?.attempts||{})},visited={...(prior?.visited||{})};
 const engine=createResearchCareer(data,db,hashes,{templates:prior?.planTemplates||{},seedCacheHashes}),{replay}=engine,base=baseline(db),found=new Map([...base].map(([k,v])=>[k,v.slice()]));
 function addFront(k,v){const xs=found.get(k)||[];if(xs.some(x=>dominates(x,v)))return false;found.set(k,[...xs.filter(x=>!dominates(v,x)),v]);return true;}
@@ -118,7 +118,7 @@ for(const t of queue){
   }catch(e){m.plannerFailed++;attempts[aid]={...rec,status:"LIMITED_UNRESOLVED",reason:String(e.message)};}
  }
 }
-const all=Object.values(routes),totals=Object.fromEntries(Object.entries({...m,...engine.metrics}).map(([k,v])=>[k,v+(prior?.totals?.[k]||0)])),elapsedSeconds=(performance.now()-started)/1000;
+const all=Object.values(routes),totals=Object.fromEntries([...new Set([...Object.keys(prior?.totals||{}),...Object.keys(m),...Object.keys(engine.metrics)])].map(k=>[k,(m[k]||engine.metrics[k]||0)+(prior?.totals?.[k]||0)])),elapsedSeconds=(performance.now()-started)/1000;
 const summary={seedCandidates:selected.length,visitedSeeds:Object.keys(visited).length,attemptedGoals:Object.keys(attempts).length,successfulGoals:Object.values(attempts).filter(x=>x.status==="CONDITIONAL_REPLAY").length,registeredRoutes:all.length,newRoutes:all.length-n0,improvedPairs:new Set(all.map(r=>r.origin+"|"+r.branch)).size,improvedPairBodies:new Set(all.map(pairKey)).size,improvedOrigins:new Set(all.map(r=>r.origin)).size,improvedBranches:new Set(all.map(r=>r.branch)).size,newResearchTopics:new Set(all.flatMap(r=>r.addedResearch)).size,goalRules:new Set(all.map(r=>r.goal)).size,newTerminalPairBodies:new Set(all.filter(r=>r.baselineBestSum===null).map(pairKey)).size,positiveSumPairBodies:new Set(all.filter(r=>r.sumDelta>0).map(pairKey)).size,maxSumDelta:Math.max(0,...all.map(r=>r.sumDelta||0)),promotionRoutes:all.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:all.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds,cumulativeSeconds:(prior?.summary.cumulativeSeconds||0)+elapsedSeconds,metrics:{...m,...engine.metrics},totals,fullCompleted:0,actualGameCertified:0,globalOptimalCertified:0};
 summary.chainedRoutes=all.filter(r=>r.secondaryGoal).length;
 summary.templateBuckets=Object.keys(engine.templates).length;

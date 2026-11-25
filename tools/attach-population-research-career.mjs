@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import z from "node:zlib";
 import assert from "node:assert/strict";
-import {MODEL,sha,key,sum,SOURCES,sourceFingerprints,pairKey,dominates,baseline,createResearchCareer} from "./population-research-career-core.mjs";
+import {MODEL,sha,key,sum,SOURCES,sourceFingerprints,pairKey,dominates,baseline,createResearchCareer} from "./population-research-career-v2-core.mjs";
 import {exactWorld} from "./population-growth-replay-core.mjs";
 const file="public/data/branch-soldier-results.json.gz",decode=b=>JSON.parse(z.gunzipSync(b)),read=p=>JSON.parse(fs.readFileSync(p));
 const db=decode(fs.readFileSync(file)),bytes=fs.readFileSync(process.argv[2]||"population-research-career.json.gz"),a=decode(bytes),data=read("public/data/soldiers-modern-index.json");
