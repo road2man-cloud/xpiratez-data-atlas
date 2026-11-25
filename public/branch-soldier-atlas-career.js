@@ -1,4 +1,4 @@
-import {ledgers,statKeys,project,filterRows,rankRows,routeUrl,branchUrl,readResearchWitness,sum} from './branch-soldier-atlas-career-core.js?v=29';
+import {ledgers,statKeys,project,filterRows,rankRows,routeUrl,branchUrl,readResearchWitness,sum} from './branch-soldier-atlas-career-core.js?v=32-alt4';
 import {loadBranchOptions,setupBranchCompare} from './branch-soldier-atlas-branch-compare.js?v=30';
 import {setupRole} from './branch-soldier-atlas-role.js?v=31';
 const root=new URL('./',import.meta.url),$=id=>document.getElementById(id);
@@ -76,6 +76,7 @@ function witness(r){
  try{const w=readResearchWitness(await indexLoad(source.index),r,metadata);panel.replaceChildren();
   const gates=el('ol',undefined,'research-gates');for(const g of w.gates){const li=el('li');li.append(link(name(g.transform),search('training',g.transform)),document.createTextNode(' · 행동 '+(g.index+1)+' · 필요 연구: '));for(const id of g.requires||[])li.append(link(name(id),search('research',id)),document.createTextNode(' '));if(!g.requires?.length)li.append(document.createTextNode('명시 조건 없음'));gates.append(li);}
   panel.append(el('p','기록된 시술별 연구 요구 '+w.gates.length+'개 (시간순 인덱스 연결)'),gates);
+  if(w.fullActions){const full=el('details');full.append(el('summary','전체 시간순 행동 '+w.fullActions.length+'개 (출생·연구·시술·가정)'));const list=el('ol',undefined,'research-history');for(const a of w.fullActions){const li=el('li',actionLabel(a));const detail=el('small',' '+JSON.stringify(a));li.append(detail);list.append(li);}full.append(list);panel.append(full,el('p','교대 탐색 그래프의 대표 상태를 연결한 조건부 행동 이력입니다. 실제 게임 최종 인증이 아닙니다.','note'));}
   const d=el('details');d.append(el('summary','등록 연구 행동 '+w.actions.length+'개'));const list=el('ol',undefined,'research-history');for(const a of w.actions)list.append(el('li',actionLabel(a)));d.append(list);panel.append(d,el('p','위 목록은 연구 행동 접두부이며 출생·공급·승급·시술 전체 행동은 원본 경로에서 확인하세요.','note'));
  }catch(e){panel.textContent=e.message+' · 아래 원본 경로에서 확인하세요.';started=false;}
  });return detail;
@@ -83,14 +84,14 @@ function witness(r){
 function card(r,metric,stat,roleResult=null){
  const a=el('article',undefined,'career-card');const title=el('h2');title.append(link(originName(r.origin),search('origin',r.origin)),document.createTextNode(' → '),link(name(r.body),search('soldier',r.body)));a.append(title);
  const branch=el('p',undefined,'branch');branch.append(link(branchName(r.branch),branchUrl(r.branch)));a.append(branch);
- a.append(el('p',fmt(sum(r[metric]))+'점 · 시술 '+r.order.length+'회 · '+(r.certified?'전역 인증':'조건부 등록 후보')+' · '+sourceOf(r).label,'note'));
+ a.append(el('p',fmt(sum(r[metric]))+'점 · 시술 '+r.order.length+'회 · '+(r.certified?'전역 인증':'조건부 등록 후보')+' · '+sourceOf(r).label,'note'));if(r.sourceGraph)a.append(el('p',r.conditionalScopeComplete?'고정 연구 모형 범위 종결 · 전체 최종 미인증':'고정 연구 모형 탐색 중 · 전체 최종 미인증','note'));
  if(roleResult){const summary=roleResult.axes.map(k=>(labels[k]||k)+' '+fmt(r[metric][statKeys.indexOf(k)])).join(' · ');a.append(el('p',summary,'role-result-label'));
   if(roleResult.frontier.has(r.key))a.append(el('p','역할 비지배 난이도: '+[...roleResult.frontier.get(r.key)].sort((a,b)=>a-b).join(', '),'note'));}
  a.append(vectorMarkup(r,metric,roleResult?.axes[0]||stat));
  const list=el('ol',undefined,'career-order');r.order.forEach((id,i)=>{const li=el('li');if(i)li.append(document.createTextNode('→ '));li.append(link(name(id),search('training',id)));list.append(li);});
  a.append(el('p','기록된 시술 순서'),list);
  if(r.traits){const tr=el('div',undefined,'career-order');for(const id of r.traits)tr.append(link(name(id)+(r.traitCounts?.[id]>1?' ×'+r.traitCounts[id]:''),search('bonus',id),'trait-chip'));a.append(el('p','측정된 보유 특성 '+r.traits.length+'종'),tr);}else a.append(el('p','보유 특성 목록 미기록','note'));
- const tool=el('div',undefined,'toolbar');tool.append(link('전체 연구·육성 근거 열기',routeUrl(r)));
+ const tool=el('div',undefined,'toolbar');tool.append(link(r.rootRoute?'기존 출발 경로 열기':'전체 연구·육성 근거 열기',routeUrl(r)));
  const pin=el('button',pins.has(r.key)?'비교 해제':'비교에 추가');pin.disabled=!pins.has(r.key)&&pins.size>=3;pin.onclick=()=>{if(pins.has(r.key))pins.delete(r.key);else if(pins.size<3)pins.set(r.key,r);render();};tool.append(pin);const compareBranch=el('button','분기 비교에 추가');compareBranch.onclick=()=>branchCompare.pick(r.branch);tool.append(compareBranch);a.append(tool);
  const w=witness(r);if(w)a.append(w);
  const info=el('details');info.append(el('summary','세부 조건 및 원장 ID'),el('p','난이도: '+(r.difficulties.join(', ')||'미기록')+' · 계급: '+(r.rank??'미기록')+' · ID: '+r.id),el('p','행동 이력 해시: '+r.hash),link('등록 원장 (gzip)','data/'+sourceOf(r).file+'.json.gz'));if(r.medals&&Object.keys(r.medals).length)info.append(el('p','요구 훈장: '+Object.entries(r.medals).map(([id,n])=>name(id)+' '+n).join(' · ')));a.append(info);return a;

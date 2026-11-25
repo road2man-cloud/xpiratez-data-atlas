@@ -1,5 +1,6 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
 export const ledgers=[
+ {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},
  {key:'frontier',file:'soldier-population-frontier-chronology',label:'시간순 육성',index:'soldier-final-career-research-index'},
  {key:'newpair',file:'soldier-population-new-pair-career',label:'모집 후 육성',index:'soldier-new-pair-research-index'},
  {key:'research',file:'soldier-population-research-career',label:'추가 연구 육성'},
@@ -21,6 +22,7 @@ export function project(ledger,data,metadata){
    order:strings(r.order),current,cap,hash:r.fullActionHash,difficulties:Array.isArray(r.allowedDifficulties)?r.allowedDifficulties.filter(Number.isInteger):[],
    traits:r.traitEvidence?strings(r.traitEvidence.retained):null,
    traitCounts:r.traitEvidence?.counts??null,rank:r.rank??null,medals:r.medals??null,
+   rootRoute:r.rootRoute??null,sourceGraph:r.sourceGraph??null,sourceNode:r.sourceNode??null,graphSha:data.sourceGraphSha256??null,conditionalScopeComplete:r.conditionalScopeComplete===true,
    certified:r.actualGameCertified===true});
  }
  return {rows,rejected};
@@ -35,7 +37,7 @@ export function rankRows(rows,metric='cap',stat='total'){
  const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
  return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
 }
-export function routeUrl(r){return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.id})+'#originDetails';}
+export function routeUrl(r){return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
 export function branchUrl(id){return 'captains/?'+new URLSearchParams({branch:id})+'#integratedBranches';}
 export function readResearchWitness(index,r,metadata){
  if(index.sourceMetadataSha256!==metadata)throw Error('연구 인덱스 버전 불일치');
@@ -48,5 +50,13 @@ export function readResearchWitness(index,r,metadata){
   if(!Number.isInteger(i)||i<0||i>=nodes.length||seen.has(i))throw Error('연구 이력 연결 오류');
   seen.add(i);const node=nodes[i];if(node.action)actions.push(node.action);i=node.parent;
  }
- return {actions:actions.reverse(),gates:w.transformGates??[],history:w.history};
+ let fullActions=null;
+ if(r.sourceGraph){
+  if(!r.graphSha||index.sourceGraphSha256!==r.graphSha||w.sourceGraph!==r.sourceGraph||w.sourceNode!==r.sourceNode)throw Error('교대 탐색 원장 지문 불일치');
+  const all=index.actionNodes;if(!Array.isArray(all))throw Error('전체 행동 이력 누락');
+  const visited=new Set();fullActions=[];let p=w.fullPrefix;
+  while(p!==null){if(!Number.isInteger(p)||p<0||p>=all.length||visited.has(p))throw Error('전체 행동 이력 연결 오류');visited.add(p);const node=all[p];if(node.action)fullActions.push(node.action);p=node.parent;}
+  fullActions.reverse();if(fullActions.length!==w.actionCount)throw Error('전체 행동 수 불일치');
+ }
+ return {actions:actions.reverse(),gates:w.transformGates??[],history:w.history,fullActions};
 }
