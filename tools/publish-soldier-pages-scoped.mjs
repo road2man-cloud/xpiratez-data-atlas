@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 const git=(args,env=process.env)=>execFileSync('git',args,{encoding:'utf8',env,maxBuffer:64*1024*1024}).trim();
-const scope=p=>/^branch-soldier-[^/]+\.(?:js|css)$/.test(p)||p.startsWith('soldiers/')||p==='captains/index.html'||p==='all-origin-cap-frontier.js'||p==='origin-numeric-cache.js'||/^data\/soldiers?-/.test(p)||p==='data/branch-soldier-results.json.gz'||/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.(?:json|packed)\.gz$/.test(p);
+const scope=p=>p==='index.html'||p==='search/index.html'||/^(?:items-v2|research-v2|manufacture-v2)\//.test(p)||/^tech-v2\.(?:js|css)$/.test(p)||/^data\/(?:items|research|manufacture|facilities)-v2-index\.json$/.test(p)||p==='ruleset/manifest.json'||/^branch-soldier-[^/]+\.(?:js|css)$/.test(p)||p.startsWith('soldiers/')||p==='captains/index.html'||p==='all-origin-cap-frontier.js'||p==='origin-numeric-cache.js'||/^data\/soldiers?-/.test(p)||p==='data/branch-soldier-results.json.gz'||/^data\/branch-soldier-d[1-9]\d*-exact-(damsel|madgal)\.(?:json|packed)\.gz$/.test(p);
 const source=git(['rev-parse','HEAD']);
 git(['fetch','origin','main','gh-pages']);
 const main=git(['ls-remote','origin','refs/heads/main']).split(/\s+/)[0];
