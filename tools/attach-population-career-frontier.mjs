@@ -7,6 +7,7 @@ import {createHash} from "node:crypto";
 import {gunzipSync,gzipSync} from "node:zlib";
 import {MODEL,createCareerModel,PROMOTE,GROW} from "./population-career-frontier-core.mjs";
 import {CACHE_SCHEMA} from "./population-career-transition-cache.mjs";
+import {SCHEDULER_SCHEMA} from "./population-career-closure-scheduler.mjs";
 const sha=x=>createHash("sha256").update(x).digest("hex"),key=x=>sha(JSON.stringify(x)),decode=x=>JSON.parse(gunzipSync(x));
 const path="public/data/",reg=path+"branch-soldier-results.json.gz",file="soldier-population-career-frontier.json.gz",proofFile="soldier-population-career-frontier-proof.json.gz";
 const bytes=fs.readFileSync(path+file),a=decode(bytes),db=decode(fs.readFileSync(reg)),meta=db.populationAssumedBirthClosure,env=db.populationCareerEnvelope,v=db.populationSearch.versions.D3;
@@ -20,9 +21,10 @@ const src=load(meta),snap=load(v),data=JSON.parse(fs.readFileSync(path+"soldiers
 assert.deepEqual(a.origins,src.origins);assert.deepEqual(a.branches,src.branches);assert.deepEqual(a.stats,db.stats);
 for(const k of ["globalCompleted","globalOptimalCertified","actualGameCertified"])assert.equal(a.summary[k],0);
 const {base,preset,scenario,careerBits}=createCareerModel(data,snap);
-const proof=fs.readFileSync(process.argv[2]||(a.cacheSchema===CACHE_SCHEMA?"population-career-frontier-v2.checkpoint.json.gz":"population-career-frontier.checkpoint.json.gz")),p=decode(proof);
+const proof=fs.readFileSync(process.argv[2]||(a.schedulerSchema===SCHEDULER_SCHEMA?"population-career-frontier-v3.checkpoint.json.gz":a.cacheSchema===CACHE_SCHEMA?"population-career-frontier-v2.checkpoint.json.gz":"population-career-frontier.checkpoint.json.gz")),p=decode(proof);
 assert.equal(p.identity,a.identity);assert.equal(p.digest,key(p.payload));
 if(a.cacheSchema){assert.equal(a.cacheSchema,CACHE_SCHEMA);assert.equal(p.payload.cacheSchema,CACHE_SCHEMA);assert.deepEqual(a.migration,p.payload.migration);}
+if(a.schedulerSchema){assert.equal(a.schedulerSchema,SCHEDULER_SCHEMA);assert.equal(p.payload.schedulerSchema,SCHEDULER_SCHEMA);assert.deepEqual(a.schedulerMigration,p.payload.schedulerMigration);assert.deepEqual(a.summary.roundScheduler,p.payload.roundScheduler);}
 assert.equal(p.payload.nodes.length,a.summary.storedStates);
 const work=new Map(p.payload.work.map(g=>[g.group,g])),groups={},routeIds=new Set();
 let count=0,closed=0,permanentNovel=0;
@@ -83,12 +85,19 @@ const old=db.populationCareerFrontier;
 if(old){
  if(old.identity!==a.identity){
   assert.equal(a.cacheSchema,CACHE_SCHEMA,"Unknown frontier migration");
-  assert.equal(a.migration?.fromIdentity,old.identity,"Migration identity mismatch");
-  assert.equal(a.migration?.fromProofSha256,old.proof.sha256,"Migration proof mismatch");
+  const migration=a.schedulerSchema===SCHEDULER_SCHEMA?a.schedulerMigration:a.migration;
+  assert.equal(migration?.fromIdentity,old.identity,"Migration identity mismatch");
+  assert.equal(migration?.fromProofSha256,old.proof.sha256,"Migration proof mismatch");
   assert.equal(sha(fs.readFileSync(path+old.proof.file)),old.proof.sha256,"Prior proof asset drift");
-  assert.equal(a.migration.fromGroups,old.summary.processedGroups);
-  assert.equal(a.migration.fromRoutes,old.summary.novelRoutes);
-  assert.equal(a.migration.legacyEdges,a.migration.uniqueEdges+a.migration.mergedEdges);
+  assert.equal(migration.fromGroups,old.summary.processedGroups);
+  assert.equal(migration.fromRoutes,old.summary.novelRoutes);
+  if(a.schedulerSchema===SCHEDULER_SCHEMA){
+   assert.equal(migration.kind,"SCHEDULING_ONLY");
+   assert.equal(migration.fromStates,old.summary.storedStates);
+   assert.equal(migration.fromClosedGroups,old.summary.closedGroups);
+   assert.equal(migration.fromClosedPairs,old.summary.modelClosedPairs);
+   assert(summary.modelClosedPairs>=old.summary.modelClosedPairs,"Refusing pair closure rollback");
+  }else assert.equal(migration.legacyEdges,migration.uniqueEdges+migration.mergedEdges);
  }
  assert(summary.processedGroups>=old.summary.processedGroups,"Refusing frontier rollback");
  assert(summary.closedGroups>=old.summary.closedGroups,"Refusing closed-group rollback");
@@ -109,10 +118,10 @@ if(old){
 }
 fs.writeFileSync(path+proofFile+".tmp",proof);fs.renameSync(path+proofFile+".tmp",path+proofFile);
 db.populationCareerFrontier={schemaVersion:1,kind:a.kind,model:a.model,identity:a.identity,sourceMetadataSha256:a.sourceMetadataSha256,
- source:a.source,envelope:a.envelope,scope:a.scope,summary,file,sha256:sha(bytes),bytes:bytes.length,cacheSchema:a.cacheSchema||null,migration:a.migration||null,
+ source:a.source,envelope:a.envelope,scope:a.scope,summary,file,sha256:sha(bytes),bytes:bytes.length,cacheSchema:a.cacheSchema||null,migration:a.migration||null,schedulerSchema:a.schedulerSchema||null,schedulerMigration:a.schedulerMigration||null,
  proof:{file:proofFile,sha256:sha(proof),bytes:proof.length},groups,classImprovements};
 db.summary.populationCareerFrontier=summary;
-db.sources.POPCAREERFRONTIER12={file:a.cacheSchema===CACHE_SCHEMA?"tools/build-population-career-frontier-v2.mjs":"tools/build-population-career-frontier.mjs",fingerprint:a.identity,sourceMetadataSha256:a.sourceMetadataSha256,asset:file,sha256:sha(bytes)};
+db.sources.POPCAREERFRONTIER12={file:a.schedulerSchema===SCHEDULER_SCHEMA?"tools/build-population-career-frontier-v3.mjs":a.cacheSchema===CACHE_SCHEMA?"tools/build-population-career-frontier-v2.mjs":"tools/build-population-career-frontier.mjs",fingerprint:a.identity,sourceMetadataSha256:a.sourceMetadataSha256,asset:file,sha256:sha(bytes)};
 db.policies.POPCAREERFRONTIER12="출생 가정, 관측 고정 연구 및 필수 훈장 단일 프리셋, 가정 승급, 독립 최대 난수/성장 모형의 신규 조건부 파레토 후보. 개별 행동 재생은 수치모형 안의 도달성을 보이며 실제 캠페인 달성이나 전체 분기의 최적성 인증이 아님.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary,routeBytes:bytes.length,proofBytes:proof.length,registeredWitnesses:Object.keys(db.witnesses).length}));
