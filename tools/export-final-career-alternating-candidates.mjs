@@ -11,7 +11,7 @@ const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.
 const db=decode("public/data/branch-soldier-results.json.gz"),ledger=db.populationFrontierChronology;
 const data=read("public/data/soldiers-modern-index.json");data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
 const fixed=decode("public/data/soldier-final-career-active-closure-v3.json.gz"),exp=decode("public/data/soldier-final-career-research-expansion.json.gz"),ec=decode("public/data/soldier-final-career-expanded-closure.json.gz");
-const sourceFile="public/data/soldier-final-career-alternating-v5.json.gz",sourceBytes=fs.readFileSync(sourceFile),alt=JSON.parse(gunzipSync(sourceBytes));
+const sourceFile="public/data/soldier-final-career-alternating-v6.json.gz",sourceBytes=fs.readFileSync(sourceFile),alt=JSON.parse(gunzipSync(sourceBytes));
 for(const x of [fixed,exp,ec,alt])assert.equal(x.sourceMetadataSha256,db.sourceMetadataSha256);
 assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);assert.equal(alt.sourceExpansionFingerprint,exp.fingerprint);assert.equal(alt.sourceExpandedClosureFingerprint,ec.fingerprint);
 const rules=new Map(data.transformations.map(x=>[x.id,x])),memo=new Map(),rootMemo=new Map();
@@ -30,7 +30,7 @@ function graphPath(ref){const [kind,id,i]=ref,k=[kind,id,i].join("|");if(memo.ha
 const researchTypes=new Set(["research","repeatResearch","freeResearch","eventResearch","missionResearch"]);
 function trie(){const nodes=[{parent:null,action:null}],map=new Map();return {nodes,push(parent,action){const k=key([parent,action]);let n=map.get(k);if(n===undefined){n=nodes.length;nodes.push({parent,action});map.set(k,n);}return n;}};}
 const research=trie(),actions=trie(),routes={},indexRoutes={},rejects=[];
-let inputStates=0,displayCandidates=0,duplicateVectors=0;const certificates={};
+let inputStates=0,displayCandidates=0,duplicateVectors=0;const certificates={},breakthroughs={};
 const labels={};
 function displayFrontier(g){
  const groups=new Map();
@@ -54,7 +54,13 @@ for(const [gid,g] of Object.entries(alt.graphs)){
   if(consistent)witness=g.nodes.findIndex(n=>n.permanentVector.every((v,j)=>v===ceiling[j]));
   else ceiling=null;
  }
- const selected=[...new Set([...displayFrontier(g),...(witness>=0?[witness]:[])])].sort((a,b)=>a-b);
+ const tr=alt.upperTransitions?.[gid];
+ const transition=tr&&tr.sourceStateHash===g.sourceStateHash&&tr.resultStateHash===g.rootStateHash&&tr.sourceSet===g.sourceSet&&tr.resultSet===g.researchSet&&tr.after===ref?.bound&&alt.upperBounds?.[tr.before]?tr:null;
+ const exceeded=n=>transition?transition.beforeAxes.map((v,j)=>v===null?null:Math.max(0,n.permanentVector[j]-v)):Array(12).fill(null);
+ const score=n=>exceeded(n).reduce((a,b)=>a+(b??0),0);
+ let breakthrough=-1,bestScore=0;
+ if(transition)for(const [i,n] of g.nodes.entries()){const sc=score(n);if(sc>bestScore){bestScore=sc;breakthrough=i;}}
+ const selected=[...new Set([...displayFrontier(g),...(witness>=0?[witness]:[]),...(breakthrough>=0?[breakthrough]:[])])].sort((a,b)=>a-b);
  for(const i of selected){
   displayCandidates++;const n=g.nodes[i],id="ALT4:"+gid+":"+i;
   try{
@@ -70,6 +76,11 @@ for(const [gid,g] of Object.entries(alt.graphs)){
     }
    }
    const v={origin:g.origin,body:n.body,branch:g.branch,order,permanentVector:n.permanentVector,permanentCapVector:n.permanentCapVector,fullActionHash:hash,canonicalStateHash:n.stateHash,allowedDifficulties:allowed,traitEvidence:{retained:n.traits},rank:n.rank,medals:n.medals,rootRoute:g.root,sourceGraph:gid,sourceNode:i,researchSet:g.researchSet,conditionalScopeComplete:g.scopeComplete,actualGameCertified:false};
+   if(transition){
+    const actual=exceeded(n),exceededAxes=actual.filter(x=>x>0).length;
+    v.researchTransition={scope:"CONDITIONAL_RESEARCH_TRANSITION_ONLY",sourceSet:g.sourceSet,resultSet:g.researchSet,before:transition.before,after:transition.after,beforeAxes:transition.beforeAxes,afterAxes:transition.afterAxes,raisedAxes:transition.raisedAxes,delta:transition.delta,actualExceeded:actual,exceededAxes};
+    if(exceededAxes)breakthroughs[id]={origin:g.origin,branch:g.branch,body:n.body,graph:gid,node:i,fullActionHash:hash,vector:n.permanentVector,...v.researchTransition,actualGameCertified:false};
+   }
    if(i===witness){
     v.fixedModelOptimum={policy:bound.policy,bound:ref.bound,vector:ceiling,rootStateHash:g.rootStateHash,researchSet:g.researchSet,scope:"FIXED_RESEARCH_DETERMINISTIC_PERMANENT_VECTOR_ONLY"};
     certificates[id]={origin:g.origin,branch:g.branch,body:n.body,graph:gid,node:i,researchSet:g.researchSet,bound:ref.bound,rootStateHash:g.rootStateHash,stateHash:n.stateHash,fullActionHash:hash,vector:ceiling,allowedDifficulties:allowed,actualGameCertified:false};
@@ -78,12 +89,13 @@ for(const [gid,g] of Object.entries(alt.graphs)){
   }catch(e){rejects.push({id,reason:String(e.message)});}
  }
 }
-const summary={sourceStates:inputStates,displayCandidates,published:Object.keys(routes).length,rejected:rejects.length,graphs:Object.keys(alt.graphs).length,origins:new Set(Object.values(routes).map(r=>r.origin)).size,branches:new Set(Object.values(routes).map(r=>r.branch)).size,fullActionNodes:actions.nodes.length-1,researchNodes:research.nodes.length-1,fixedModelOptimumWitnesses:Object.keys(certificates).length,fixedModelOptimumPairs:new Set(Object.values(certificates).map(r=>key([r.origin,r.branch]))).size,fixedModelOptimumResearchSets:new Set(Object.values(certificates).map(r=>r.researchSet)).size,actualGameCertified:0};
+const summary={sourceStates:inputStates,displayCandidates,published:Object.keys(routes).length,rejected:rejects.length,graphs:Object.keys(alt.graphs).length,origins:new Set(Object.values(routes).map(r=>r.origin)).size,branches:new Set(Object.values(routes).map(r=>r.branch)).size,fullActionNodes:actions.nodes.length-1,researchNodes:research.nodes.length-1,fixedModelOptimumWitnesses:Object.keys(certificates).length,fixedModelOptimumPairs:new Set(Object.values(certificates).map(r=>key([r.origin,r.branch]))).size,fixedModelOptimumResearchSets:new Set(Object.values(certificates).map(r=>r.researchSet)).size,breakthroughWitnesses:Object.keys(breakthroughs).length,breakthroughGraphs:new Set(Object.values(breakthroughs).map(r=>r.graph)).size,breakthroughPairs:new Set(Object.values(breakthroughs).map(r=>key([r.origin,r.branch]))).size,actualGameCertified:0};
 const scope="Presentation-only current/cap Pareto representatives inside each conditional research graph, body, trait set, rank and medal class, plus every root. All other states remain in the search graph. No actual-game final certification.";
 const common={sourceMetadataSha256:db.sourceMetadataSha256,sourceGraphSha256:sha(sourceBytes),sourceGraphFingerprint:alt.fingerprint,summary,scope};
 const write=(p,x)=>fs.writeFileSync("public/data/"+p+".json.gz",gzipSync(JSON.stringify(x)));
 write("soldier-final-career-alternating-candidates",{schema:"CONDITIONAL_ALTERNATING_DISPLAY_V1",...common,routes,rejects});
 write("soldier-final-career-alternating-candidate-index",{schema:"CONDITIONAL_ALTERNATING_WITNESS_INDEX_V1",...common,nodes:research.nodes,actionNodes:actions.nodes,routes:indexRoutes});
 write("soldier-final-career-fixed-model-optima",{schema:"FIXED_MODEL_SIMULTANEOUS_BOUND_ATTAINMENT_V1",...common,scope:"Only the fixed-active-research deterministic nonclone healthy live model and permanent stats without medals. All 12 relaxed bounds attained simultaneously in a concrete conditional witness. Not a proof over alternative research, recruitment, partial growth, RNG, resources, rank or other omitted gameplay.",certificates});
+write("soldier-final-career-research-breakthroughs",{schema:"CONDITIONAL_RESEARCH_BOUND_EXCEEDANCE_V1",...common,scope:"A concrete conditional state exceeds at least one finite relaxed upper bound of its immediate pre-research fixed model. Not a global optimum or a game acquisition certificate.",breakthroughs});
 fs.writeFileSync("public/branch-soldier-fixed-model-optima-summary.js","export const fixedModelOptimaSummary="+JSON.stringify({...summary,sourceMetadataSha256:db.sourceMetadataSha256,sourceGraphFingerprint:alt.fingerprint,file:"soldier-final-career-fixed-model-optima.json.gz",certificates:Object.entries(certificates).map(([id,c])=>({id,...c}))})+";\n");
 console.log(JSON.stringify(summary));
