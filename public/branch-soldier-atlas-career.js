@@ -1,14 +1,14 @@
-import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=35-joint-unified';
+import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=36-retained-unified';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=35-joint-unified';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=36-retained-unified';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive}){
 const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'originTableScroll',reset:'routeReset',researchDialog:'routeResearchDialog',researchTitle:'routeResearchTitle',researchClose:'routeResearchClose',researchContent:'routeResearchContent'};
 const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
-const controls=['q','origin','body','captain','branch','training','trait','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','missingOnly','selectedOnly','a','b','sameChoices'];
-const checks=new Set(['certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','missingOnly','selectedOnly','sameChoices']);
+const controls=['q','origin','body','captain','branch','training','trait','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','missingOnly','selectedOnly','a','b','sameChoices'];
+const checks=new Set(['certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','missingOnly','selectedOnly','sameChoices']);
 const labels={tu:'TU',stamina:'기력',health:'체력',bravery:'용기',reactions:'반응',firing:'사격',throwing:'투척',strength:'근력',psiStrength:'Psi 강도',psiSkill:'Psi 기술',melee:'근접',mana:'Mana'};
 const columns=[
  ['select','선택','sticky-select'],['origin','출생처','sticky-origin'],['body','최종 병종','sticky-body'],
@@ -89,6 +89,7 @@ async function showResearch(r){
   if(r.fixedModelOptimum){const proof=r.fixedModelOptimum;content.append(el('h3','고정 연구 모형의 12능력치 동시 상계 도달'),el('p','이 연구 세트와 출발 상태에서 결정론적 비복제 생존 시술·성장을 허용한 조건부 모형의 상계와 기록 수치가 모두 일치합니다. 연구 순서 전체, 추가 연구, 실제 자원 및 미지원 행동의 최종 인증은 아닙니다.'),el('p',statKeys.map((k,i)=>labels[k]+' '+fmt(proof.vector[i])).join(' · ')),el('p','연구 세트 '+proof.researchSet+' · 상계 근거 '+proof.bound,'small'),link('조건부 상계 도달 원장','data/soldier-final-career-fixed-model-optima.json.gz'));}
   if(r.researchTransition){const t=r.researchTransition;content.append(el('h3','추가 연구 전후 상계와 실제 도달치'),el('p','동일 경로의 연구 직전 상태와 직후 상태를 비교한 조건부 모형입니다. 연구 전후 상계는 달성 수치가 아니며, 다른 육성 경로 전체의 최고치를 뜻하지 않습니다.'));const tbl=el('table');const head=el('tr');for(const x of ['능력치','연구 전 상계','연구 후 상계','기록 영구치','연구 전 상계 초과'])head.append(el('th',x));tbl.append(head);for(const [i,k] of statKeys.entries()){const row=el('tr');for(const x of [labels[k],fmt(t.beforeAxes[i]),fmt(t.afterAxes[i]),fmt(r.current[i]),t.actualExceeded[i]>0?'+'+fmt(t.actualExceeded[i]):t.actualExceeded[i]===null?'—':'0'])row.append(el('td',x));tbl.append(row);}content.append(tbl,el('p','연구 세트 '+t.sourceSet+' → '+t.resultSet,'small'),link('연구 확장 이전 상계 초과 원장','data/soldier-final-career-research-breakthroughs.json.gz'));}
   if(r.jointResearch){const j=r.jointResearch;content.append(el('h3','공동 연구 세트와 실제 수행 시술'),el('p','요청 '+j.requested.length+'개 중 '+j.achieved.length+'개 연구를 한 상태에서 동시에 활성화했습니다. '+(j.full?'요청 전체 충족':'부분 충족')+' · 실제 지원 시술 '+j.applied.length+'종. 시술 수행과 최종 특성 보유는 별개입니다.'),el('p','활성 연구: '+j.achieved.map(name).join(' · ')),el('p','남은 연구: '+(j.remaining.map(name).join(' · ')||'없음')),el('p','지원 시술: '+j.targets.map(name).join(' · ')),el('p','실제 후속 수행: '+(j.applied.map(name).join(' · ')||'아직 없음')),link('공동 연구·시술 근거 원장','data/soldier-final-career-joint-research.json.gz'));}
+  if(r.retention){const t=r.retention;content.append(el('h3','시술 후 실제 유지 특성'),el('p','해당 연구 그래프 출발 상태 '+t.before.length+'종 → 현재 '+t.after.length+'종 · 신규 '+t.gained.length+'종 · 소실 '+t.lost.length+'종. 전체 게임 최종 특성 상한은 아닙니다.'),el('p','추가된 특성: '+(t.gained.map(name).join(' · ')||'없음')),el('p','소실된 특성: '+(t.lost.map(name).join(' · ')||'없음')),el('p','현재 보유: '+t.after.map(name).join(' · ')));if(r.jointResearch)content.append(el('p','공동 연구 후 수행 시술에서 얻어 현재 남은 신규 특성: '+(r.jointResearch.retainedApplied?.map(name).join(' · ')||'없음')));if(t.lossless)content.append(link('기존 특성 무손실 증가 근거 원장','data/soldier-final-career-retained-traits.json.gz'));}
   if(r.researchSet)content.append(el('p','연구 세트: '+r.researchSet,'small'));
   const gates=el('ol',undefined,'dialog-list');
   for(const g of w.gates){const li=el('li');li.append(link(name(g.transform),search('training',g.transform)),document.createTextNode(' · '));appendList(li,g.requires,'research');gates.append(li)}

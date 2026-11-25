@@ -11,7 +11,7 @@ const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.
 const db=decode("public/data/branch-soldier-results.json.gz"),ledger=db.populationFrontierChronology;
 const data=read("public/data/soldiers-modern-index.json");data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
 const fixed=decode("public/data/soldier-final-career-active-closure-v3.json.gz"),exp=decode("public/data/soldier-final-career-research-expansion.json.gz"),ec=decode("public/data/soldier-final-career-expanded-closure.json.gz");
-const sourceFile="public/data/soldier-final-career-alternating-v7.json.gz",sourceBytes=fs.readFileSync(sourceFile),alt=JSON.parse(gunzipSync(sourceBytes));
+const sourceFile="public/data/soldier-final-career-alternating-v8.json.gz",sourceBytes=fs.readFileSync(sourceFile),alt=JSON.parse(gunzipSync(sourceBytes));
 for(const x of [fixed,exp,ec,alt])assert.equal(x.sourceMetadataSha256,db.sourceMetadataSha256);
 assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);assert.equal(alt.sourceExpansionFingerprint,exp.fingerprint);assert.equal(alt.sourceExpandedClosureFingerprint,ec.fingerprint);
 const rules=new Map(data.transformations.map(x=>[x.id,x])),memo=new Map(),rootMemo=new Map();
@@ -30,12 +30,12 @@ function graphPath(ref){const [kind,id,i]=ref,k=[kind,id,i].join("|");if(memo.ha
 const researchTypes=new Set(["research","repeatResearch","freeResearch","eventResearch","missionResearch"]);
 function trie(){const nodes=[{parent:null,action:null}],map=new Map();return {nodes,push(parent,action){const k=key([parent,action]);let n=map.get(k);if(n===undefined){n=nodes.length;nodes.push({parent,action});map.set(k,n);}return n;}};}
 const research=trie(),actions=trie(),routes={},indexRoutes={},rejects=[];
-let inputStates=0,displayCandidates=0,duplicateVectors=0;const certificates={},breakthroughs={},jointWitnesses={},jointByGraph=new Map();
+let inputStates=0,displayCandidates=0,duplicateVectors=0;const certificates={},breakthroughs={},jointWitnesses={},retainedWitnesses={},jointByGraph=new Map();
 for(const [request,rs] of Object.entries(alt.jointReceipts||{}))for(const receipt of rs){
  if(!receipt.graph)continue;
  const g=alt.graphs[receipt.graph],t=alt.jointRequests[request],s=g&&alt.sets[g.researchSet],task=alt.tasks[receipt.task];
  assert(g&&t&&s&&task&&receipt.achieved.length>=2&&receipt.achieved.every(k=>s.active.includes(k)));
- const j={request,requested:t.goal,achieved:receipt.achieved,remaining:receipt.remaining,full:receipt.status==="FULL",targets:task.targets,sourceSet:t.sourceSet,resultSet:g.researchSet,conflicts:receipt.conflicts};
+ const j={request,requested:t.goal,achieved:receipt.achieved,remaining:receipt.remaining,full:receipt.status==="FULL",targets:receipt.targets||task.targets,sourceSet:t.sourceSet,resultSet:g.researchSet,conflicts:receipt.conflicts,envelopeBodies:receipt.envelopeBodies||null};
  const a=jointByGraph.get(receipt.graph)||[];a.push(j);jointByGraph.set(receipt.graph,a);
 }
 for(const a of jointByGraph.values())a.sort((x,y)=>y.achieved.length-x.achieved.length||Number(y.full)-Number(x.full)||x.request.localeCompare(y.request));
@@ -72,7 +72,13 @@ for(const [gid,g] of Object.entries(alt.graphs)){
  const jointApplied=i=>joint?[...new Set(path(g,i,[]).filter(a=>a.type==="transform"&&a.soldier==="origin"&&joint.targets.includes(a.transform)).map(a=>a.transform))].sort():[];
  let jointBest=-1,jointCount=0;
  if(joint)for(const [i,n] of g.nodes.entries()){const count=jointApplied(i).length;if(count>jointCount){jointCount=count;jointBest=i;}}
- const selected=[...new Set([...displayFrontier(g),...(witness>=0?[witness]:[]),...(breakthrough>=0?[breakthrough]:[]),...(jointBest>=0?[jointBest]:[])])].sort((a,b)=>a-b);
+ const rootTraits=new Set(g.nodes[0].traits),retained=n=>({before:[...rootTraits],after:n.traits,gained:n.traits.filter(k=>!rootTraits.has(k)),lost:[...rootTraits].filter(k=>!n.traits.includes(k))});
+ let most=0,lossless=0;
+ for(const [i,n] of g.nodes.entries()){
+  if(n.traits.length>g.nodes[most].traits.length)most=i;
+  if(!retained(n).lost.length&&n.traits.length>g.nodes[lossless].traits.length)lossless=i;
+ }
+ const selected=[...new Set([...displayFrontier(g),most,lossless,...(witness>=0?[witness]:[]),...(breakthrough>=0?[breakthrough]:[]),...(jointBest>=0?[jointBest]:[])])].sort((a,b)=>a-b);
  for(const i of selected){
   displayCandidates++;const n=g.nodes[i],id="ALT4:"+gid+":"+i;
   try{
@@ -88,9 +94,13 @@ for(const [gid,g] of Object.entries(alt.graphs)){
     }
    }
    const v={origin:g.origin,body:n.body,branch:g.branch,order,permanentVector:n.permanentVector,permanentCapVector:n.permanentCapVector,fullActionHash:hash,canonicalStateHash:n.stateHash,allowedDifficulties:allowed,traitEvidence:{retained:n.traits},rank:n.rank,medals:n.medals,rootRoute:g.root,sourceGraph:gid,sourceNode:i,researchSet:g.researchSet,conditionalScopeComplete:g.scopeComplete,actualGameCertified:false};
+   const delta=retained(n);
+   v.retention={scope:"ACTUAL_REPLAYED_GRAPH_ROOT_TRAIT_DELTA",rootStateHash:g.rootStateHash,...delta,net:delta.after.length-delta.before.length,lossless:delta.gained.length>0&&delta.lost.length===0};
+   if(v.retention.lossless)retainedWitnesses[id]={origin:g.origin,branch:g.branch,body:n.body,graph:gid,node:i,fullActionHash:hash,stateHash:n.stateHash,vector:n.permanentVector,...v.retention,actualGameCertified:false};
    if(joint){
     const applied=jointApplied(i);
-    v.jointResearch={scope:"JOINT_ACTIVE_RESEARCH_CONDITIONAL_REPLAY",...joint,applied,activeGoalCount:joint.achieved.length};
+    const retainedApplied=[...new Set(applied.map(k=>rules.get(k)?.soldierBonusType).filter(k=>k&&delta.gained.includes(k)))].sort();
+    v.jointResearch={scope:"JOINT_ACTIVE_RESEARCH_CONDITIONAL_REPLAY",...joint,applied,retainedApplied,activeGoalCount:joint.achieved.length};
     jointWitnesses[id]={origin:g.origin,branch:g.branch,body:n.body,graph:gid,node:i,fullActionHash:hash,vector:n.permanentVector,...v.jointResearch,actualGameCertified:false};
    }
    if(transition){
@@ -106,7 +116,7 @@ for(const [gid,g] of Object.entries(alt.graphs)){
   }catch(e){rejects.push({id,reason:String(e.message)});}
  }
 }
-const summary={sourceStates:inputStates,displayCandidates,published:Object.keys(routes).length,rejected:rejects.length,graphs:Object.keys(alt.graphs).length,origins:new Set(Object.values(routes).map(r=>r.origin)).size,branches:new Set(Object.values(routes).map(r=>r.branch)).size,fullActionNodes:actions.nodes.length-1,researchNodes:research.nodes.length-1,fixedModelOptimumWitnesses:Object.keys(certificates).length,fixedModelOptimumPairs:new Set(Object.values(certificates).map(r=>key([r.origin,r.branch]))).size,fixedModelOptimumResearchSets:new Set(Object.values(certificates).map(r=>r.researchSet)).size,breakthroughWitnesses:Object.keys(breakthroughs).length,breakthroughGraphs:new Set(Object.values(breakthroughs).map(r=>r.graph)).size,breakthroughPairs:new Set(Object.values(breakthroughs).map(r=>key([r.origin,r.branch]))).size,jointWitnesses:Object.keys(jointWitnesses).length,jointGraphs:jointByGraph.size,jointAppliedWitnesses:Object.values(jointWitnesses).filter(r=>r.applied.length>0).length,jointMultipleAppliedWitnesses:Object.values(jointWitnesses).filter(r=>r.applied.length>=2).length,jointMaxApplied:Math.max(0,...Object.values(jointWitnesses).map(r=>r.applied.length)),actualGameCertified:0};
+const summary={sourceStates:inputStates,displayCandidates,published:Object.keys(routes).length,rejected:rejects.length,graphs:Object.keys(alt.graphs).length,origins:new Set(Object.values(routes).map(r=>r.origin)).size,branches:new Set(Object.values(routes).map(r=>r.branch)).size,fullActionNodes:actions.nodes.length-1,researchNodes:research.nodes.length-1,fixedModelOptimumWitnesses:Object.keys(certificates).length,fixedModelOptimumPairs:new Set(Object.values(certificates).map(r=>key([r.origin,r.branch]))).size,fixedModelOptimumResearchSets:new Set(Object.values(certificates).map(r=>r.researchSet)).size,breakthroughWitnesses:Object.keys(breakthroughs).length,breakthroughGraphs:new Set(Object.values(breakthroughs).map(r=>r.graph)).size,breakthroughPairs:new Set(Object.values(breakthroughs).map(r=>key([r.origin,r.branch]))).size,jointWitnesses:Object.keys(jointWitnesses).length,jointGraphs:jointByGraph.size,jointAppliedWitnesses:Object.values(jointWitnesses).filter(r=>r.applied.length>0).length,jointMultipleAppliedWitnesses:Object.values(jointWitnesses).filter(r=>r.applied.length>=2).length,jointMaxApplied:Math.max(0,...Object.values(jointWitnesses).map(r=>r.applied.length)),losslessRetainedWitnesses:Object.keys(retainedWitnesses).length,losslessRetainedGraphs:new Set(Object.values(retainedWitnesses).map(r=>r.graph)).size,losslessRetainedPairs:new Set(Object.values(retainedWitnesses).map(r=>key([r.origin,r.branch]))).size,losslessRetainedSets:new Set(Object.values(retainedWitnesses).map(r=>key([r.origin,r.branch,r.body,[...r.after].sort()]))).size,maxRetainedTraits:Math.max(0,...Object.values(routes).map(r=>r.traitEvidence.retained.length)),jointRetainedWitnesses:Object.values(jointWitnesses).filter(r=>r.retainedApplied.length>0).length,jointMultipleRetainedWitnesses:Object.values(jointWitnesses).filter(r=>r.retainedApplied.length>=2).length,actualGameCertified:0};
 const scope="Presentation-only current/cap Pareto representatives inside each conditional research graph, body, trait set, rank and medal class, plus every root. All other states remain in the search graph. No actual-game final certification.";
 const common={sourceMetadataSha256:db.sourceMetadataSha256,sourceGraphSha256:sha(sourceBytes),sourceGraphFingerprint:alt.fingerprint,summary,scope};
 const write=(p,x)=>fs.writeFileSync("public/data/"+p+".json.gz",gzipSync(JSON.stringify(x)));
@@ -115,5 +125,6 @@ write("soldier-final-career-alternating-candidate-index",{schema:"CONDITIONAL_AL
 write("soldier-final-career-fixed-model-optima",{schema:"FIXED_MODEL_SIMULTANEOUS_BOUND_ATTAINMENT_V1",...common,scope:"Only the fixed-active-research deterministic nonclone healthy live model and permanent stats without medals. All 12 relaxed bounds attained simultaneously in a concrete conditional witness. Not a proof over alternative research, recruitment, partial growth, RNG, resources, rank or other omitted gameplay.",certificates});
 write("soldier-final-career-research-breakthroughs",{schema:"CONDITIONAL_RESEARCH_BOUND_EXCEEDANCE_V1",...common,scope:"A concrete conditional state exceeds at least one finite relaxed upper bound of its immediate pre-research fixed model. Not a global optimum or a game acquisition certificate.",breakthroughs});
 write("soldier-final-career-joint-research",{schema:"JOINT_ACTIVE_RESEARCH_CONDITIONAL_WITNESSES_V1",...common,scope:"Jointly active research goals at a concrete replayed graph root. Applied treatment IDs count only actual origin transformations after that root. Not simultaneous retained traits, complete research coverage or actual-game certification.",witnesses:jointWitnesses,requests:alt.jointRequests,receipts:alt.jointReceipts});
+write("soldier-final-career-retained-traits",{schema:"CONDITIONAL_LOSSLESS_TRAIT_GAIN_V1",...common,scope:"Concrete recorded traits at graph root and successor. All root traits remain and at least one new trait is present. No claim of globally maximal traits or of real campaign resource acquisition.",witnesses:retainedWitnesses});
 fs.writeFileSync("public/branch-soldier-fixed-model-optima-summary.js","export const fixedModelOptimaSummary="+JSON.stringify({...summary,sourceMetadataSha256:db.sourceMetadataSha256,sourceGraphFingerprint:alt.fingerprint,file:"soldier-final-career-fixed-model-optima.json.gz",certificates:Object.entries(certificates).map(([id,c])=>({id,...c}))})+";\n");
 console.log(JSON.stringify(summary));

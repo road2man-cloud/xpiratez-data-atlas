@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=35-joint';
+import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=36-retained-unified';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 export function rowsWithMissingOrigins(rows,profiles){
  const known=new Set(rows.map(r=>r.origin));
@@ -29,6 +29,8 @@ export function filterTable(rows,f,context){
   if(f.transitionBreakthroughOnly&&!(r.researchTransition?.exceededAxes>0))return false;
   if(f.jointOnly&&!r.jointResearch)return false;
   if(f.jointAppliedOnly&&!(r.jointResearch?.applied.length>=2))return false;
+  if(f.losslessTraitOnly&&!r.retention?.lossless)return false;
+  if(f.jointRetainedOnly&&!(r.jointResearch?.retainedApplied?.length>=2))return false;
   if(f.selectedOnly&&!selected.has(r.key))return false;
   if(!tokens.length)return true;
   const b=branches.get(r.branch),p=profiles.get(r.origin);
