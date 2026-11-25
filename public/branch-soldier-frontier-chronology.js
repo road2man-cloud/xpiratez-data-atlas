@@ -4,8 +4,9 @@
 import {researchWitnessSummary as rw} from "./branch-soldier-research-witness-summary.js?v=20261126-active-sets-20-pair25";
 import {researchSetSummary as rs} from "./branch-soldier-research-set-summary.js?v=20261126-active-sets-20-pair25";
 import {activeClosureSummary as ac} from "./branch-soldier-active-closure-summary.js?v=20261126-active-closure-3";
-import {researchExpansionSummary as re} from "./branch-soldier-research-expansion-summary.js?v=20261126-research-expansion-1";
-import {expandedClosureSummary as ec} from "./branch-soldier-expanded-closure-summary.js?v=20261126-research-expansion-1";
+import {researchExpansionSummary as re} from "./branch-soldier-research-expansion-summary.js?v=20261126-alternating-1";
+import {expandedClosureSummary as ec} from "./branch-soldier-expanded-closure-summary.js?v=20261126-alternating-1";
+import {alternatingSummary as alt} from "./branch-soldier-alternating-summary.js?v=20261126-alternating-1";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>Number.isFinite(v)?v.toLocaleString("ko-KR",{maximumFractionDigits:2}):"—";
 const name=(db,k)=>db.labels?.[k]||db.labels?.[String(k).slice(String(k).indexOf(":")+1)]||k;
@@ -28,6 +29,15 @@ function closureRoots(db){
  const a=db.populationFrontierChronology;
  if(!a||ac.sourceMetadataSha256!==db.sourceMetadataSha256)return [];
  return ac.details.filter(x=>a.routes[x.id]?.fullActionHash===x.rootActionHash&&a.routes[x.id]?.canonicalStateHash===x.rootStateHash&&a.activeResearchIndex?.refs?.[x.id]?.set===x.researchSet);
+}
+function alternatingMarkup(db,filter=null){
+ if(alt.sourceMetadataSha256!==db.sourceMetadataSha256||alt.sourceExpansionFingerprint!==ec.sourceExpansionFingerprint)return "";
+ const roots=new Map(closureRoots(db).map(x=>[x.id,x]));
+ const rows=alt.details.filter(x=>{const r=roots.get(x.root);return r&&r.rootActionHash===x.rootActionHash&&r.rootStateHash===x.rootStateHash&&(!filter||filter(x));});
+ if(!rows.length)return "";
+ const closed=rows.filter(x=>x.scopeComplete).length,global=!filter&&rows.length===alt.details.length;
+ const stages=global?'<p>동적 연구 목표 작업 '+fmt(alt.attempted)+' / '+fmt(alt.goalTasks)+' 시도 ('+fmt(100*alt.attempted/alt.goalTasks)+'%). 신규 연구 세트에서 발생한 목표 '+fmt(alt.taskSources.R)+'개 포함. 미시도 '+fmt(alt.pending)+'개 · 제한 탐색 미해결 '+fmt((alt.counts.LIMITED_PLANNER_UNRESOLVED||0)+(alt.counts.JOINT_REPLAY_UNRESOLVED||0))+'개 · 현재 분기 정책 제외 '+fmt(alt.counts.CURRENT_BRANCH_POLICY_EXCLUDED||0)+'개. 연구 획득 순서 대안 전체의 완료율이 아닙니다.</p>':'';
+ return '<details class="bs-note"><summary>연구·시술 교대 탐색 · 신규 연구 상태 '+fmt(rows.length)+'개 · 범위 종결 '+fmt(closed)+'개</summary><p><strong>조건부 탐색이며 최종 인증 아님.</strong> 추가 연구를 실제 행동 순서로 재생한 뒤 시술·성장을 확장하고, 새로 도달한 상태마다 추가 연구 목표를 자동 생성합니다. 고정 연구 세트 내 동등 상태 압축은 연구 획득 시점 간 동등성 증명이 아니므로 해당 시점은 미해결로 보존합니다.</p>'+stages+table(["출생처","연구 확장 차수","추가 지원 시술","상태 / 처리","최대 동시 특성","조건부 판정"],rows.map(x=>['<a href="'+link(x.origin,x.branch,x.root)+'">'+esc(name(db,x.origin))+'</a>',fmt(x.generation),esc(x.newlySupported.map(k=>name(db,k)).join(" · ")||"없음"),fmt(x.states)+' / '+fmt(x.processed),fmt(x.maxTraits),x.scopeComplete?"범위 종결":"미종결 / 미해결"]))+'<p><a href="'+esc(new URL("./data/"+alt.file,import.meta.url).href)+'">교대 탐색 연구·시술 순서, 상태 그래프 및 대기 원장 (gzip)</a></p></details>';
 }
 function researchExpansionMarkup(db,filter=null){
  if(re.sourceMetadataSha256!==db.sourceMetadataSha256||ec.sourceMetadataSha256!==db.sourceMetadataSha256||re.sourceClosureFingerprint!==ac.fingerprint)return "";
@@ -86,7 +96,7 @@ export function frontierChronologyMarkup(db){
  const coverageRows=Object.entries(s.traitCoverage?.byOrigin||{}).sort((a,b)=>Number(b[1].maxTraits??-1)-Number(a[1].maxTraits??-1)||a[0].localeCompare(b[0])).map(([pid,o])=>{const r=a.routes[o.bestRoute];return [r?'<a href="'+link(pid,r.branch,o.bestRoute)+'">'+esc(name(db,pid))+'</a>':esc(name(db,pid)),fmt(o.routes),fmt(o.measured),fmt(o.measuredPairs),o.maxTraits===null?"미측정":fmt(o.maxTraits),o.routes?"중간 상태":"시간순 원장 미확보"];});
  const coverageMarkup=coverageRows.length?'<details><summary>전체 출생처별 실측 특성 보유량 (최종 상한 아님)</summary><p>미측정은 특성 0개가 아니라 증거 부족입니다. 수치는 재생한 영구 보너스 ID 종류 수이며 출생 특성을 포함합니다.</p>'+table(["출생처","시간순 경로","실측 경로","실측 분기","동시 보유 최대","상태"],coverageRows)+'</details>':"";
  const failed=[...reasons].map(([reason,n])=>[esc(reason==="Promotion rank list unindexed"?"계급표 미색인":reason),fmt(n)]);
- return '<details open class="bs-note" data-population-frontier-chronology="true"><summary>중간 육성 경로 원장 (최종 비교 제외)</summary>'+finalProgress+researchIndexMarkup+closureMarkup(db)+researchExpansionMarkup(db)+'<p><strong>최종 비교 인증 '+fmt(s.globalOptimalCertified??0)+'건.</strong> 연구 상호배제, 실제 획득 조건, 성장·시술의 모든 후속 가능성 및 최적성 증명이 충족되기 전에는 최종 조합으로 표시하지 않습니다. 시술 횟수는 완료 기준이 아닙니다.</p><p>원래 고정 수치 후보의 시술 순서를 원본 최솟값 출생에서 재생합니다. 필요한 연구를 순서대로 획득하고 수치를 다시 계산합니다. 최대 출생 수치를 부여하지 않습니다. 성장·승급·훈장·자원·이벤트는 가정이며 무작위 시술과 미확인 계급은 제외 또는 미해결로 남깁니다. 계급표가 없어 막힌 경우 승급 전 시술까지만 재생하고 전투캡 성장을 적용한 대체 후보를 별도로 표시합니다. 원래 경로 성공으로 계산하지 않습니다. 색인 모집과 지원 시술을 기준으로 대기열을 확장했습니다. 고정 연구 상태에서 추가 시술이 없는 그룹도 실제 모집 이후 전투캡 성장 및 신규 연구·시술 후보를 별도로 재생합니다. 조건 미충족 후보는 성장 삽입·시술 순서 교환·일부 행동 제외 등으로 대체 재생합니다. 대체 성공은 원래 경로 성공이 아니며, 잔여 제안 0은 전체 고점 후보의 전수 재생 완료를 뜻하지 않습니다. 완전 판정에 합산하지 않습니다.</p>'+rankNote+table(["측정 지표","값"],rows.map(r=>r.map(esc)))+coverageMarkup+'<details><summary>중간 상태 수치 참고 (최종 순위 아님)</summary>'+table(["출생처","현재 병종","이전 중간 합계","재생 중간 합계","차이"],top)+'</details>'+(failed.length?table(["미해결 이유","후보"],failed):"")+(recoveryRows.length?table(["대체 방식","시도","재생 성공","신규 등록","미해결"],recoveryRows):"")+'<p><a href="'+esc(new URL("./data/"+a.file,import.meta.url).href)+'">시간순 행동·모집·연구 연결 원장 (gzip)</a></p></details>';
+ return '<details open class="bs-note" data-population-frontier-chronology="true"><summary>중간 육성 경로 원장 (최종 비교 제외)</summary>'+finalProgress+researchIndexMarkup+closureMarkup(db)+researchExpansionMarkup(db)+alternatingMarkup(db)+'<p><strong>최종 비교 인증 '+fmt(s.globalOptimalCertified??0)+'건.</strong> 연구 상호배제, 실제 획득 조건, 성장·시술의 모든 후속 가능성 및 최적성 증명이 충족되기 전에는 최종 조합으로 표시하지 않습니다. 시술 횟수는 완료 기준이 아닙니다.</p><p>원래 고정 수치 후보의 시술 순서를 원본 최솟값 출생에서 재생합니다. 필요한 연구를 순서대로 획득하고 수치를 다시 계산합니다. 최대 출생 수치를 부여하지 않습니다. 성장·승급·훈장·자원·이벤트는 가정이며 무작위 시술과 미확인 계급은 제외 또는 미해결로 남깁니다. 계급표가 없어 막힌 경우 승급 전 시술까지만 재생하고 전투캡 성장을 적용한 대체 후보를 별도로 표시합니다. 원래 경로 성공으로 계산하지 않습니다. 색인 모집과 지원 시술을 기준으로 대기열을 확장했습니다. 고정 연구 상태에서 추가 시술이 없는 그룹도 실제 모집 이후 전투캡 성장 및 신규 연구·시술 후보를 별도로 재생합니다. 조건 미충족 후보는 성장 삽입·시술 순서 교환·일부 행동 제외 등으로 대체 재생합니다. 대체 성공은 원래 경로 성공이 아니며, 잔여 제안 0은 전체 고점 후보의 전수 재생 완료를 뜻하지 않습니다. 완전 판정에 합산하지 않습니다.</p>'+rankNote+table(["측정 지표","값"],rows.map(r=>r.map(esc)))+coverageMarkup+'<details><summary>중간 상태 수치 참고 (최종 순위 아님)</summary>'+table(["출생처","현재 병종","이전 중간 합계","재생 중간 합계","차이"],top)+'</details>'+(failed.length?table(["미해결 이유","후보"],failed):"")+(recoveryRows.length?table(["대체 방식","시도","재생 성공","신규 등록","미해결"],recoveryRows):"")+'<p><a href="'+esc(new URL("./data/"+a.file,import.meta.url).href)+'">시간순 행동·모집·연구 연결 원장 (gzip)</a></p></details>';
 }
 export function frontierChronologyBranchMarkup(db,bid){
  const a=db.populationFrontierChronology;if(!a)return "";
@@ -95,14 +105,14 @@ export function frontierChronologyBranchMarkup(db,bid){
  const rs=[...best.values()].sort((x,y)=>sum(y[1].permanentVector)-sum(x[1].permanentVector));
  const ts=Object.values(a.summary.traitCoverage?.byPair||{}).filter(x=>x.branch===bid).sort((x,y)=>y.maxTraits-x.maxTraits||x.origin.localeCompare(y.origin));
  const branchTraits=ts.length?'<details><summary>이 분기 특성 측정 '+fmt(ts.length)+'개 출생처</summary><p>실제 재생 상태의 고유 보너스 ID 수이며 최종 상한이 아닙니다.</p>'+table(["출생처","실측 경로","동시 보유 최대"],ts.map(x=>['<a href="'+link(x.origin,bid,x.bestRoute)+'">'+esc(name(db,x.origin))+'</a>',fmt(x.measured),fmt(x.maxTraits)]))+'</details>':'<p>이 분기의 특성 실측 기록은 아직 없습니다.</p>';
- return '<details class="bs-note" data-frontier-chronology-branch="true"><summary>중간 탐색 상태 '+fmt(rs.length)+'개 조합 (최종 비교 제외)</summary><p>조건부 중간 상태의 참고 수치입니다. 최종 연구·시술 가능성 및 전역 최적성 미인증.</p>'+table(["출생처","종착 병종","영구 합계","이전 대비"],rs.map(([id,r])=>['<a href="'+link(r.origin,bid,id)+'">'+esc(name(db,r.origin))+'</a>',esc(name(db,r.body))+(r.rankDefault?' · 기본 계급 조건부':''),fmt(sum(r.permanentVector)),delta(a.comparisons[id]?.sumDelta)]))+branchTraits+closureMarkup(db,x=>x.branch===bid)+researchExpansionMarkup(db,x=>x.branch===bid)+'</details>';
+ return '<details class="bs-note" data-frontier-chronology-branch="true"><summary>중간 탐색 상태 '+fmt(rs.length)+'개 조합 (최종 비교 제외)</summary><p>조건부 중간 상태의 참고 수치입니다. 최종 연구·시술 가능성 및 전역 최적성 미인증.</p>'+table(["출생처","종착 병종","영구 합계","이전 대비"],rs.map(([id,r])=>['<a href="'+link(r.origin,bid,id)+'">'+esc(name(db,r.origin))+'</a>',esc(name(db,r.body))+(r.rankDefault?' · 기본 계급 조건부':''),fmt(sum(r.permanentVector)),delta(a.comparisons[id]?.sumDelta)]))+branchTraits+closureMarkup(db,x=>x.branch===bid)+researchExpansionMarkup(db,x=>x.branch===bid)+alternatingMarkup(db,x=>x.branch===bid)+'</details>';
 }
 const rankNoteForRoute=()=>'<p>기본 계급 규칙을 적용한 조건부 경로입니다. 설치된 OXCE 8.7 빌드 일치와 실제 승급 획득은 미인증.</p>';
 export function frontierChronologyOriginMarkup(db,pid,bid,focus,labels={}){
  const a=db.populationFrontierChronology;if(!a)return "";
  const c=bid?a.summary.traitCoverage?.byPair?.[pid+"|"+bid]:a.summary.traitCoverage?.byOrigin?.[pid];
  const bestTrait=c?.bestRoute&&a.routes[c.bestRoute];
- const closureHeader=closureMarkup(db,x=>x.origin===pid&&(!bid||x.branch===bid))+researchExpansionMarkup(db,x=>x.origin===pid&&(!bid||x.branch===bid));
+ const closureHeader=closureMarkup(db,x=>x.origin===pid&&(!bid||x.branch===bid))+researchExpansionMarkup(db,x=>x.origin===pid&&(!bid||x.branch===bid))+alternatingMarkup(db,x=>x.origin===pid&&(!bid||x.branch===bid));
  const traitHeader=c?'<p><strong>실측 동시 보유 특성: '+(c.maxTraits===null?"미측정":fmt(c.maxTraits)+"종")+'</strong> · 실측 경로 '+fmt(c.measured)+'개 (최종 상한 아님)'+(bestTrait?' · <a href="'+link(pid,bestTrait.branch,c.bestRoute)+'">해당 육성 경로</a>':"")+'</p>':"";
  const rs=Object.entries(a.routes).filter(([,r])=>r.origin===pid&&(!bid||r.branch===bid)).sort((x,y)=>Number(y[0]===focus)-Number(x[0]===focus)||sum(y[1].permanentVector)-sum(x[1].permanentVector)||x[1].actions.length-y[1].actions.length);if(!rs.length)return traitHeader+closureHeader;
  const cols=db.stats.map(k=>labels[k]||db.statLabels?.[k]||k);
