@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {ledgers,project,statKeys,exactCareerUrl} from '../public/branch-soldier-atlas-career-core.js';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary} from '../public/branch-soldier-atlas-table-core.js';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
 const metadata=modern.meta.source.metadataSha256;
@@ -61,6 +61,30 @@ assert.notEqual(separate.best.cap[statKeys.indexOf('firing')],9999);
 const sample=records.find(r=>r.traits?.length&&r.order.length);
 assert(sample);const matching=filterTable(rows,{origin:sample.origin,training:sample.order[0],trait:sample.traits[0],branch:sample.branch},ctx);
 assert(matching.some(r=>r.key===sample.key));assert(matching.every(r=>r.origin===sample.origin&&r.branch===sample.branch&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
+const branchIndex=indexCareerBranches(records);
+assert.equal([...branchIndex.values()].reduce((n,v)=>n+v.length,0),records.length);
+let branchBodyPairs=0;
+for(const [branch,group] of branchIndex){
+ assert(branches.has(branch)&&group.every(r=>r.branch===branch));
+ const summaries=bodyCareerSummary(bodies,branchCareerRows(branchIndex,branch),{...bodyContext,branch});
+ for(const row of summaries){
+  const exact=group.filter(r=>r.body===row.id);
+  assert.equal(row.count,exact.length);
+  if(!exact.length){assert.equal(row.best,null);continue}
+  branchBodyPairs++;
+  assert(exact.includes(row.best));
+  assert.equal(row.best.cap.reduce((a,b)=>a+b,0),Math.max(...exact.map(r=>r.cap.reduce((a,b)=>a+b,0))));
+ }
+}
+const scopedBranch=branchCareerRows(branchIndex,sample.branch,{origin:sample.origin,body:sample.body,training:sample.order[0],trait:sample.traits[0],difficulty:sample.difficulties[0]??''});
+assert(scopedBranch.includes(sample));
+assert(scopedBranch.every(r=>r.branch===sample.branch&&r.origin===sample.origin&&r.body===sample.body&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
+assert.equal(branchCareerRows(branchIndex,'nonexistent-branch').length,0);
+for(const file of ['../public/captains/index.html','../modules/captains/index.html']){
+ const page=fs.readFileSync(new URL(file,import.meta.url),'utf8');
+ assert.equal((page.match(/id="integratedBranches"/g)||[]).length,1);
+ assert(page.indexOf('id="integratedBranches"')<page.indexOf('id="branchLegacy"'));
+}
 const pair=[...new Set(records.map(r=>r.branch))].slice(0,2);
 assert(filterTable(rows,{a:pair[0],b:pair[1]},ctx).every(r=>pair.includes(r.branch)));
 ctx.selected.add(sample.key);assert.deepEqual(filterTable(rows,{selectedOnly:true},ctx).map(r=>r.key),[sample.key]);
@@ -72,4 +96,4 @@ assert(!html.includes('roleButtons')&&!html.includes('roleAdvanced'));
 assert(html.includes('id="originTable"')&&html.includes('value="routes"'));
 assert(!retired.includes('<table')&&retired.includes('location.replace(target.href)'));
 assert.equal(filterTable(rows,{fixedOptimumOnly:true},ctx).length,records.filter(r=>r.fixedModelOptimum).length);
-console.log(JSON.stringify({routes:records.length,rows:rows.length,origins:profiles.size,missing:missing.length,stats:statKeys.length,branches:branches.size,requiredResearchRecorded:records.filter(r=>r.requiredResearch!==null).length,bodyRepresentatives:bodyResults.filter(r=>r.best).length},null,2));
+console.log(JSON.stringify({routes:records.length,rows:rows.length,origins:profiles.size,missing:missing.length,stats:statKeys.length,branches:branches.size,requiredResearchRecorded:records.filter(r=>r.requiredResearch!==null).length,bodyRepresentatives:bodyResults.filter(r=>r.best).length,careerBranches:branchIndex.size,branchBodyPairs},null,2));

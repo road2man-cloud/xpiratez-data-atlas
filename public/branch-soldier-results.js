@@ -1,9 +1,11 @@
 // One shared result reader for the existing Soldier and Branch DB pages.
-// Same final-body maxima projection for both pages; evidence belongs to the cell.
+// Same time-ordered career projection for both pages; independent ceilings remain separate.
 import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileWitnessIds} from "./branch-soldier-query.js?v=20261124-exact-resources-1";
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-v17";
 import {loadRuntime} from "./db-runtime.js";
+import {loadCareerRows,statKeys,sum,exactCareerUrl} from "./branch-soldier-atlas-career-core.js?v=40-coverage";
+import {bodyCareerSummary,indexCareerBranches,branchCareerRows} from "./branch-soldier-atlas-table-core.js?v=40-branch";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
 import {populationCoverageText,populationBranchMarkup,populationBoundMarkup} from "./branch-soldier-population.js?v=20261126-coverage-40-unified";
 import {allOriginCoverageText} from "./branch-soldier-origin-cap.js?v=20261124-all-origin-4324-fix1";
@@ -570,34 +572,96 @@ if(ROOT){
   }
  }
  function mountBranch(){
-  ROOT.innerHTML='<h2>분기별 병종 최대값</h2>'+overview()+pairSearchMarkup(db)+pairContinuationMarkup(db)+'<p>19개 말단은 현재 발견 범위이며 전체 분기 수의 확정이 아닙니다. 대의 미선택도 후보로 보존합니다. 기존 1,520개 경로 및 연구 원천 모델의 조건부 충돌 결과를 함께 연결했습니다.</p><div class="bs-controls"><label>분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 대의 · 코덱스 · 번호"></label><label>병종<select id="bsBranchBody">'+options([["","전체 등록 병종"],...modern.soldiers.map(c=>[c.id,c.koName||c.id])],"")+'</select></label><label>연구 상태<select id="bsStatus">'+options([["all","전체"],["history","조건부 이력 있음"],["conflict","원천 충돌"],["unknown","이력 미확정"],["neutral","대의 미선택"]],"all")+'</select></label><button id="bsPrev" type="button">이전</button><button id="bsNext" type="button">다음</button></div>'+facetMarkup()+'<p id="bsCount"></p><div class="bs-scroll" id="bsTable"></div><div id="bsBranchDetail" class="bs-note" aria-live="polite"></div>'+sources();
-  selected=db.branches.find(b=>b.id===selectedUrl)||null;let page=0;
+  const profiles=new Map(modern.profiles.map(p=>[p.id,p]));
+  const bodies=modern.soldiers.map(s=>({id:s.id,name:s.koName||s.id,candidates:[]}));
+  const names={...db.labels,...Object.fromEntries([...modern.soldiers,...modern.transformations,...modern.bonuses].map(s=>[s.id,s.koName||s.enName||s.id]))};
+  const title=id=>names[id]||id||"—";
+  const originName=id=>profiles.get(id)?.sourceKoName||profiles.get(id)?.sourceEnName||id;
+  const validBody=bodies.some(b=>b.id===selectedBody)?selectedBody:"";
+  let indexed=new Map(),careerState=null,page=0,objective="total",sortByScore=!selectedUrl;
+  const legacyCache=new Map();
+  const routeList=(b,body=null)=>{
+   const u=new URL("./soldiers/modern/",import.meta.url);
+   u.searchParams.set("group","routes");u.searchParams.set("branch",b.id);
+   if(body)u.searchParams.set("body",body);
+   for(const [id,k] of [["bsOrigin","origin"],["bsTraining","training"],["bsTrait","trait"],["bsDifficulty","difficulty"]]){
+    const value=E(id)?.value;if(value)u.searchParams.set(k,value);
+   }
+   if(E("bsCareerMetric")?.value==="current")u.searchParams.set("metric","current");
+   u.hash="originMaxima";return u.href;
+  };
+  const initialOption=(id,values,name)=>{
+   const sorted=[...new Set(values)].filter(Boolean).sort((a,b)=>name(a).localeCompare(name(b),"ko"));
+   return options([["","전체"],...sorted.map(v=>[v,name(v)])],"");
+  };
+  ROOT.innerHTML='<h2>분기 DB · 2.1</h2><div class="bs-controls bs-branch-controls"><label>분기 검색<input id="bsSearch" type="search" placeholder="선장 · 진로 · 대의 · 코덱스 · 번호"></label><label>최종 병종<select id="bsBranchBody">'+options([["","전체 병종"],...bodies.map(c=>[c.id,c.name])],validBody)+'</select></label><label>연구 상태<select id="bsStatus">'+options([["all","전체"],["history","조건부 이력 있음"],["conflict","원천 충돌"],["unknown","이력 미확정"],["neutral","대의 미선택"]],"all")+'</select></label><label>출생처<select id="bsOrigin">'+initialOption("bsOrigin",[...profiles.keys()],originName)+'</select></label><label>시술<select id="bsTraining">'+initialOption("bsTraining",modern.transformations.map(t=>t.id),title)+'</select></label><label>특성<select id="bsTrait">'+initialOption("bsTrait",modern.bonuses.map(t=>t.id),title)+'</select></label><label>난이도<select id="bsDifficulty">'+options([["","전체"],...Array.from({length:5},(_,i)=>[String(i),String(i)])],"")+'</select></label><label>수치<select id="bsCareerMetric">'+options([["cap","조건부 성장 상한"],["current","기록 시점 영구치"]],"cap")+'</select></label><label class="bs-inline-check"><input type="checkbox" id="bsCareerOnly"> 등록 육성 경로만</label></div>'+facetMarkup()+'<div class="bs-branch-pagination"><span id="bsCount" role="status"></span><button id="bsPrev" type="button">이전</button><button id="bsNext" type="button">다음</button></div><p class="bs-sub" id="bsCareerScope">경로 연결 중…</p><div class="bs-scroll" id="bsTable"></div><div id="bsBranchDetail" class="bs-note" aria-live="polite"></div><details class="bs-note"><summary>연구·육성 원장 및 계산 범위</summary>'+overview()+pairSearchMarkup(db)+pairContinuationMarkup(db)+sources()+'</details>';
+  selected=db.branches.find(b=>b.id===selectedUrl)||null;
+  const routeFilters=()=>({body:E("bsBranchBody").value,origin:E("bsOrigin").value,training:E("bsTraining").value,trait:E("bsTrait").value,difficulty:E("bsDifficulty").value});
+  const hasRouteFilter=f=>!!(f.origin||f.training||f.trait||f.difficulty!=="");
+  const numeric=r=>objective==="total"?sum(r[E("bsCareerMetric").value]):r[E("bsCareerMetric").value][statKeys.indexOf(objective)];
   function filter(){
-   const q=E("bsSearch").value.trim().toLowerCase(),s=E("bsStatus").value;
-   return db.branches.filter(b=>matchesFacets(b)&&(!q||searchText(b).includes(q))&&(s==="all"||s==="history"&&b.historyCount||s==="conflict"&&b.sourceRootConflict||s==="unknown"&&!b.sourceRootConflict&&!b.historyCount||s==="neutral"&&b.neutralCause));
+   const q=E("bsSearch").value.trim().toLowerCase(),s=E("bsStatus").value,f=routeFilters(),mustHave=E("bsCareerOnly").checked||hasRouteFilter(f);
+   const result=db.branches.filter(b=>matchesFacets(b)&&(!q||searchText(b).includes(q))&&(s==="all"||s==="history"&&b.historyCount||s==="conflict"&&b.sourceRootConflict||s==="unknown"&&!b.sourceRootConflict&&!b.historyCount||s==="neutral"&&b.neutralCause)).map(b=>({b,records:branchCareerRows(indexed,b.id,f)})).filter(x=>!mustHave||x.records.length);
+   if(sortByScore){
+    const scores=new Map(result.map(x=>[x.b.id,x.records.reduce((v,r)=>Math.max(v,numeric(r)),-Infinity)]));
+    result.sort((a,b)=>scores.get(b.b.id)-scores.get(a.b.id)||a.b.rank-b.b.rank);
+   }
+   return result;
   }
   function detail(){
-   E("bsBranchDetail").innerHTML=selected?branchDescription(selected)+'<p><a href="'+esc(link("soldier",selected))+'">이 분기의 병종 최종 상한과 훈련 순서 보기 →</a></p><h3>병종별 육성 후보</h3>'+bodyLinks(selected):"<p>분기를 선택하면 연구 순서, 보상, 차단 원인 및 병종 결과가 여기에 표시됩니다.</p>";
+   E("bsBranchDetail").innerHTML=selected?'<details class="bs-note" open><summary>'+esc(branchName(selected))+' · 연구·보상 상세</summary>'+branchDescription(selected)+'<p><a href="'+esc(routeList(selected))+'">이 분기의 전체 등록 육성 경로</a></p><details><summary>기존 조건부 상계 원장</summary>'+bodyLinks(selected)+'</details></details>':"";
   }
+  function legacyBodies(b){
+   if(!legacyCache.has(b.id))legacyCache.set(b.id,buildBodyGrowthIndex(db,modern,db.stats,[],()=>false,{branchId:b.id}));
+   return legacyCache.get(b.id);
+  }
+  const legacyLink=(b,m,v)=>{
+   const u=new URL(link("soldier",b,m.combo,"CAP_TARGET",m.route));
+   if(m.source==="ORIGINEXT12"){u.searchParams.delete("route");u.searchParams.set("originExt",m.route);u.hash="originDetails";}
+   else if(["POPEXT12","POPRESEARCH12","POPRESEARCHCHAIN12","POPGROW12","POPCHCAREER12","POPRCAREER12","POPNEWPAIR12","POPNEWCAREER12"].includes(m.source)){u.searchParams.delete("route");u.searchParams.set("profile",m.originProfile);u.searchParams.set("populationRoute",m.route);u.hash="originDetails";}
+   return '<a href="'+esc(u.href)+'" title="'+esc(evidenceLabel(m.source))+'">'+fmt(v)+'</a>';
+  };
+  const exact=(r,value,metric)=>{
+   const u=new URL(exactCareerUrl(r),new URL("./",import.meta.url));
+   if(metric==="current")u.searchParams.set("metric","current");
+   return '<a class="bs-career-value" href="'+esc(u.href)+'" title="'+esc(r.id)+'">'+esc(value)+'</a>';
+  };
+  const sortButton=(k,t)=>'<button type="button" class="bs-value" data-branch-stat="'+esc(k)+'">'+esc(t)+(sortByScore&&objective===k?" ↓":"")+'</button>';
   function draw(){
-   const rows=filter(),perPage=E("bsBranchBody").value?40:10,pages=Math.max(1,Math.ceil(rows.length/perPage));page=Math.min(page,pages-1);
-   E("bsCount").textContent=rows.length.toLocaleString("ko-KR")+"개 분기 · "+(page+1)+"/"+pages+" 페이지";
+   const filtered=filter(),perPage=E("bsBranchBody").value?40:10,pages=Math.max(1,Math.ceil(filtered.length/perPage));
+   page=Math.max(0,Math.min(page,pages-1));
+   const f=routeFilters(),metric=E("bsCareerMetric").value,only=E("bsCareerOnly").checked||hasRouteFilter(f),allowLegacy=metric==="cap"&&!hasRouteFilter(f);
+   E("bsCount").textContent=fmt(filtered.length)+"개 분기 · 등록 경로 "+fmt(filtered.reduce((s,x)=>s+x.records.length,0))+"개 · "+(page+1)+"/"+pages;
    E("bsPrev").disabled=page===0;E("bsNext").disabled=page+1>=pages;
-   const bodies=modern.soldiers.filter(c=>!E("bsBranchBody").value||c.id===E("bsBranchBody").value);
-   E("bsTable").innerHTML='<table class="bs-table"><thead><tr><th>분기</th><th>선장 이력</th><th>진로</th><th>대의</th><th>코덱스 / 여왕</th><th>연구 상태 / 성자</th><th>최종 병종</th><th>단일 경로 최고 합계</th>'+db.stats.map(k=>'<th>'+esc(ko[k]||k)+'</th>').join("")+'</tr></thead><tbody>'+rows.slice(page*perPage,page*perPage+perPage).flatMap(b=>buildBodyGrowthIndex(db,modern,db.stats,[],()=>false,{branchId:b.id}).filter(c=>bodies.some(x=>x.id===c.id)).map((c,j)=>{
-    const maxima=c.maxima;
-    const meta=j===0?'<td rowspan="'+bodies.length+'"><button type="button" class="bs-value" data-branch="'+esc(b.id)+'">#'+b.rank+'</button><small class="bs-sub"><a href="'+esc(link("soldier",b))+'">전체 병종표</a></small></td><td rowspan="'+bodies.length+'">'+list(b.captain)+'</td><td rowspan="'+bodies.length+'">'+esc(label(b.choices.path))+'</td><td rowspan="'+bodies.length+'">'+esc(label(b.choices.cause))+'</td><td rowspan="'+bodies.length+'">'+esc(label(b.choices.codex))+' / '+esc(label(b.choices.queen))+'</td><td rowspan="'+bodies.length+'">'+esc(status(b))+'<small class="bs-sub">이력 '+fmt(b.historyCount)+' · 성자 '+(b.saintBlockedByPussy?"PUSSY 이후 차단":"조건부")+'</small></td>':"";
-    const cell=(m,v)=>{if(!m)return '<td>—</td>';const u=new URL(link("soldier",b,m.combo,"CAP_TARGET",m.route));if(m.source==="ORIGINEXT12"){u.searchParams.delete("route");u.searchParams.set("originExt",m.route);u.hash="originDetails";}else if(["POPEXT12","POPRESEARCH12","POPRESEARCHCHAIN12","POPGROW12","POPCHCAREER12","POPRCAREER12","POPNEWPAIR12","POPNEWCAREER12"].includes(m.source)){u.searchParams.delete("route");u.searchParams.set("profile",m.originProfile);u.searchParams.set("populationRoute",m.route);u.hash="originDetails";}return '<td><a href="'+esc(u.href)+'">'+fmt(v)+'</a><small class="bs-sub">'+(m.source==="POPRESEARCHCHAIN12"?"모집 후 연구·연속 시술":m.source==="POPRESEARCH12"?"모집 후 연구·시술 재생":m.source==="POPEXT12"?"모집 재생·후속":m.source==="ORIGINEXT12"?"관측 분기 일치·후속":m.source==="CAREER12"?"고급·미재생":"연결 상계")+'</small></td>';};
-    return '<tr data-body-id="'+esc(c.id)+'" data-branch-id="'+esc(b.id)+'">'+meta+'<td>'+esc(c.name)+'</td>'+cell(c.best,c.best?.total)+db.stats.map(k=>cell(maxima[k],maxima[k]?.value)).join("")+'</tr>';
-   })).join("")+'</tbody></table><p class="bs-sub">— 는 해당 분기에서 연결된 육성 경로 미계산입니다. 독립 최고값은 동일 대원으로 합산하지 않습니다.</p>';
+   E("bsCareerScope").textContent=!careerState?"경로 연결 중…":(metric==="cap"?"큰 수치: 동일 경로의 조건부 성장 상한 · 작은 수치: 독립 상계":"동일 경로의 기록 시점 영구 능력치")+" · — 미연결 · 전역 최종 미인증"+(careerState.errors.length?" · "+careerState.errors.join(" / "):"");
+   E("bsCount").dataset.careerStatus=careerState?(careerState.errors.length?"partial":"loaded"):"loading";
+   E("bsTable").innerHTML='<table class="bs-table bs-branch-career"><thead><tr><th>'+sortButton("branch","분기")+'</th><th>선장 이력</th><th>진로</th><th>대의</th><th>코덱스 / 여왕</th><th>연구 상태 / 성자</th><th>차단 연구</th><th>조건부 이벤트</th><th>최종 병종</th><th>'+sortButton("total","합계")+'</th>'+db.stats.map(k=>'<th>'+sortButton(k,ko[k]||k)+'</th>').join("")+'<th>등록 경로</th><th>출생처</th><th>시술 순서</th><th>보유 특성</th></tr></thead><tbody>'+filtered.slice(page*perPage,page*perPage+perPage).flatMap(({b,records})=>{
+    const model=allowLegacy?legacyBodies(b):bodies;
+    const summaries=bodyCareerSummary(model,records,{stat:objective,metric,branch:b.id,family:f.body,profiles,names}).filter(c=>!only||c.best);
+    if(!summaries.length)return [];
+    const span=summaries.length,ep=db.eventProfiles[b.eventProfile],button=(label)=>'<button class="bs-value" type="button" data-branch="'+esc(b.id)+'">'+esc(label)+'</button>';
+    const meta='<td rowspan="'+span+'">'+button("#"+b.rank)+'<small class="bs-sub"><a href="'+esc(routeList(b))+'">전체 육성</a></small></td><td rowspan="'+span+'">'+list(b.captain)+'</td><td rowspan="'+span+'">'+esc(label(b.choices.path))+'</td><td rowspan="'+span+'">'+esc(label(b.choices.cause))+'</td><td rowspan="'+span+'">'+esc(label(b.choices.codex))+' / '+esc(label(b.choices.queen))+'</td><td rowspan="'+span+'">'+esc(status(b))+'<small class="bs-sub">이력 '+fmt(b.historyCount)+' · 성자 '+(b.saintBlockedByPussy?"PUSSY 이후 차단":"조건부")+'</small></td><td rowspan="'+span+'">'+(Array.isArray(b.blockedResearch)?button(fmt(b.blockedResearch.length)+"개"):"—")+'</td><td rowspan="'+span+'">'+(ep?button(fmt(ep.count)+"개")+'<small class="bs-sub">연구 '+fmt(ep.research)+' · 아이템 '+fmt(ep.items)+'</small>':"—")+'</td>';
+    return summaries.map((c,j)=>{
+     const r=c.best,vector=r?.[metric],total=vector?sum(vector):null;
+     const cell=k=>{const i=statKeys.indexOf(k),v=vector?.[i],m=c.independent[k],upper=metric==="cap"&&m&&(v==null||m.value>v);
+      return '<td class="bs-career-num" data-route-value="'+esc(v??"")+'">'+(v==null?"—":exact(r,fmt(v),metric))+(upper?'<small class="bs-sub bs-ceiling">상계 '+(m.career?exact(m.career,fmt(m.value),metric):legacyLink(b,m,m.value))+'</small>':"")+'</td>'};
+     const namesList=(ids,empty,separator=" → ",counts=null)=>ids===null?"—":ids.length?ids.map(x=>esc(title(x)+(counts?.[x]>1?" ×"+counts[x]:""))).join(separator):empty;
+     return '<tr data-body-id="'+esc(c.id)+'" data-branch-id="'+esc(b.id)+'"'+(r?' data-selected-route="'+esc(r.id)+'"':'')+'>'+(j===0?meta:"")+'<td>'+esc(c.name)+'</td><td class="bs-career-num" data-route-total="'+esc(total??"")+'">'+(r?exact(r,fmt(total),metric):"—")+'</td>'+db.stats.map(cell).join("")+'<td><a href="'+esc(routeList(b,c.id))+'">'+fmt(c.count)+'개</a><small class="bs-sub">'+fmt(c.originCount)+'출생처</small></td><td class="bs-career-meta">'+(r?exact(r,originName(r.origin),metric):"—")+'</td><td class="bs-career-list">'+(r?'<small class="bs-sub">'+r.order.length+'회</small>'+namesList(r.order,"0"):"—")+'</td><td class="bs-career-list">'+(r&&r.traits!==null?'<small class="bs-sub">'+r.traits.length+'종</small>'+namesList(r.traits,"0"," · ",r.traitCounts):"—")+'</td></tr>';
+    });
+   }).join("")+'</tbody></table>';
   }
-  if(selected){const i=filter().findIndex(b=>b.id===selected.id);if(i>=0)page=Math.floor(i/(E("bsBranchBody").value?40:10));}
-  E("bsSearch").addEventListener("input",()=>{page=0;draw();});E("bsStatus").addEventListener("change",()=>{page=0;draw();});
-  bindFacets(()=>{page=0;const rows=filter();if(selected&&!rows.includes(selected))selected=null;if(rows.length===1)selected=rows[0];draw();detail();});
-  E("bsBranchBody").addEventListener("change",()=>{page=0;draw();});
+  function resetDraw(){page=0;draw()}
+  for(const id of ["bsSearch","bsStatus","bsBranchBody","bsOrigin","bsTraining","bsTrait","bsDifficulty","bsCareerMetric","bsCareerOnly"])E(id).addEventListener(id==="bsSearch"?"input":"change",resetDraw);
+  bindFacets(()=>{page=0;const rows=filter();if(selected&&!rows.some(x=>x.b.id===selected.id))selected=null;if(rows.length===1)selected=rows[0].b;draw();detail();});
   E("bsPrev").addEventListener("click",()=>{page=Math.max(0,page-1);draw();});E("bsNext").addEventListener("click",()=>{page++;draw();});
-  ROOT.addEventListener("click",ev=>{const b=ev.target.closest("[data-branch]");if(!b)return;selected=db.branches.find(x=>x.id===b.dataset.branch);detail();});
+  ROOT.addEventListener("click",ev=>{
+   const sort=ev.target.closest("[data-branch-stat]");
+   if(sort){const k=sort.dataset.branchStat;sortByScore=k!=="branch";objective=sortByScore?k:"total";page=0;draw();return;}
+   const b=ev.target.closest("[data-branch]");if(!b)return;selected=db.branches.find(x=>x.id===b.dataset.branch);detail();E("bsBranchDetail").scrollIntoView({block:"start"});
+  });
+  if(selected){const i=filter().findIndex(x=>x.b.id===selected.id);if(i>=0)page=Math.floor(i/(E("bsBranchBody").value?40:10));}
   draw();detail();
+  loadCareerRows(modern,db).then(result=>{careerState=result;indexed=indexCareerBranches(result.rows);draw()}).catch(e=>{careerState={rows:[],errors:[e.message]};draw()});
  }
  async function load(){return loadBranchSoldierResults();}
  const init=async()=>{db=await load();if(db.schemaVersion!==1)throw Error("데이터 형식 불일치");if(ROOT.dataset.branchSoldierResults==="soldier")mountSoldier();else{modern=await loadRuntime(new URL("./data/soldiers-modern-index.json",import.meta.url).href);mountBranch();}};

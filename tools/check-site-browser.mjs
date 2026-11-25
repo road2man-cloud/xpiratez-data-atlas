@@ -166,6 +166,7 @@ try {
       await page.locator(ready[slug]).first().waitFor({state:"attached",timeout:25000});
       count=await page.locator(ready[slug]).count();
       if(slug==="captains"){
+        await page.locator('#branchLegacy').evaluate(el=>el.open=true);
         await page.waitForFunction(()=>window.CaptainBenefits&&document.querySelector('#captainBenefitsStatus')?.textContent.includes('22개 선택지'),{timeout:20000});
         const benefitStatus=await page.locator('#captainBenefitsStatus').innerText();
         if(!benefitStatus.includes('원본 근거 검증'))errors.push('Captain payoff index not loaded');

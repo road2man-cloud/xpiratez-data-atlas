@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="XPiratez v.o1.1.1 영구 선택·분기 DB: 선장 성격, Codex, 사회·병종·세력·스토리 상호배타 선택의 획득과 영구 손실을 비교합니다." />
+  <meta name="description" content="XPiratez 2.1 분기 DB: 선장, 연구 선택, 차단 연구, 등록 육성 경로와 능력치 비교." />
   <title>XPiratez 영구 선택·분기 DB</title>
   <link rel="stylesheet" href="styles.css?v=captain-shared-visitor-20261011-v4" />
   <link rel="stylesheet" href="diverging-paths-v02.css?v=20261105-1" />
   <link rel="stylesheet" href="../play-guide.css?v=20261010">
 <link rel="stylesheet" href="../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
-<link rel="stylesheet" href="../branch-soldier-results.css?v=20261124-cap-4327">
+<link rel="stylesheet" href="../branch-soldier-results.css?v=20261126-career-branch">
 <link rel="stylesheet" href="../branch-soldier-unified-nav.css?v=27">
 <script defer src="../branch-soldier-unified-nav.js?v=34"></script>
 </head>
@@ -17,24 +17,25 @@
   <header class="hero">
     <div class="hero__inner">
       <div>
-        <p class="eyebrow">XPiratez v.o1.1.1 · OXCE 8.6</p>
+        <p class="eyebrow">X-Piratez 2.1</p>
         <h1>영구 선택·분기 DB</h1>
-        <p class="lede">선장 성격, Codex, 사회·병종·세력·스토리 분기까지. 무엇을 얻는지뿐 아니라 무엇을 영구 포기하는지 원본 룰셋 기준으로 비교합니다.</p>
-        <a class="choice-sim-jump" href="#choiceSimulator">선택 조합 직접 계산하기 ↓</a>
-        <a class="choice-sim-jump" href="../soldiers/modern/?group=routes#branchCompare">두 연구 분기의 육성·시술 비교 →</a>
-      </div>
-      <div class="legend card">
-        <strong>표시</strong>
-        <span><b class="yes">✅</b> 해당 경로에서 자연 접근</span>
-        <span><b class="late">◇</b> 후기/추가 조건으로 가능</span>
-        <span><b class="no">❌</b> 해당 경로에서 봉쇄/불가</span>
-        <span><b class="warn">⚠</b> 가능하지만 큰 비용·페널티</span>
       </div>
     </div>
   </header>
 
   <main>
+    <section id="integratedBranches" class="bs-results card" data-branch-soldier-results="branch" aria-label="통합 선장·연구 분기"><p role="status">최신 통합 연구·육성 경로를 불러오는 중입니다.</p></section>
+    <details id="branchSupplement" class="card"><summary>2.1 갈라지는 길 · 선택 및 보상 상세</summary>
     <section id="divergingPathsV02" aria-label="갈라지는 길 5대 영구 선택 보상 비교"><p role="status">X-Piratez v.o2 원본 경로·보상 데이터를 불러오는 중입니다.</p></section>
+    </details>
+    <details id="branchLegacy" class="card"><summary>기존 O/X 매트릭스 · 선택 시뮬레이터 · 상세 참고 (v.o1.1.1 기반, 일부 최신 자료 연동)</summary>
+    <div class="legend card">
+        <strong>표시</strong>
+        <span><b class="yes">✅</b> 해당 경로에서 자연 접근</span>
+        <span><b class="late">◇</b> 후기/추가 조건으로 가능</span>
+        <span><b class="no">❌</b> 해당 경로에서 봉쇄/불가</span>
+        <span><b class="warn">⚠</b> 가능하지만 큰 비용·페널티</span>
+    </div>
     <section class="summary-grid">
       <article class="card accent">
         <span class="kicker">룰셋 전체 상호배타 감사</span>
@@ -222,13 +223,13 @@
         <li>방사탑/Flak은 지나가는 UFO를 자동사격하지 않습니다. UFO가 기지를 실제 공격할 때 Base Defense 단계에서 발사합니다.</li>
       </ul>
     </section>
+    </details>
     <details class="card" id="allOriginCapFrontier"><summary>전체 72개 출생처 · 성장 배치 Pareto 비교</summary><section class="bs-results" data-all-origin-cap-frontier aria-label="전체 출생처 최종 성장 비교"><p>펼치면 공통 성장 원장을 불러옵니다.</p></section></details>
 <details class="card"><summary>전체 병종 성장 탐색 가속화 · 계산 재사용</summary><section data-origin-numeric-cache><p>펼치면 공통 원장의 수치 계산 진척을 불러옵니다.</p></section></details>
-<section id="integratedBranches" class="bs-results card" data-branch-soldier-results="branch" aria-label="통합 선장·연구 분기"><p role="status">최신 통합 연구·육성 경로를 불러오는 중입니다.</p></section>
   </main>
 
   <footer>
-    <p>Ruleset 직접 검증 기반 · XPiratez v.o1.1.1 / OpenXcom Extended 8.6</p>
+    <p>2.1 통합 원장 · 구버전 참고 자료는 별도 표시</p>
   </footer>
 
   <dialog id="detailDialog">
@@ -244,7 +245,7 @@
   <script src="extra-choices.js?v=choice-history-20261010"></script>
   <script type="module" src="choice-simulator.js?v=branch-audit-20261011-v4"></script>
   <script defer src="../play-guide.js?v=20261010"></script>
-<script type="module" src="../branch-soldier-results.js?v=20261126-coverage-40-unified"></script>
+<script type="module" src="../branch-soldier-results.js?v=20261126-coverage-40-branch-career"></script>
 <script defer src="../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>
 <script type="module" src="../origin-numeric-cache.js?v=20261124-cache-1"></script>

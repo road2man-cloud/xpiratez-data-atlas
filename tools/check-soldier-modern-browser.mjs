@@ -436,8 +436,12 @@ try{
  assert.equal(await page.locator('#originTable').evaluate(e=>getComputedStyle(e).display),'table');
  console.log('PASS 390px mobile: genuine swipeable 12-stat table, compact pinned name and total, working next-columns control');
  await page.goto(url('captains/'));
+ await page.waitForSelector('#bsCount[data-career-status="loaded"]',{timeout:60000});
  await page.waitForSelector('#bsTable tr[data-branch-id]',{timeout:60000});
  assert.equal(await page.locator('#bsBranchBody option').count(),30);
+ assert(await page.locator('#bsTable tr[data-selected-route]').count()>0);
+ const branchCoherent=await page.locator('#bsTable tr[data-selected-route]').evaluateAll(rows=>rows.every(r=>Number(r.querySelector('[data-route-total]').dataset.routeTotal)===Array.from(r.querySelectorAll('[data-route-value]')).reduce((n,c)=>n+Number(c.dataset.routeValue),0)));
+ assert(branchCoherent,'Branch representative totals must match their single career route');
  const branchRows=await page.locator('#bsTable tr[data-branch-id]').count();
  assert.equal(branchRows,290);
  await page.locator('#bsBranchBody').selectOption('STR_SOLDIER_DAMSEL');
