@@ -1,7 +1,7 @@
-import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=43-research';
-import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=43-research';
+import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=44-exclusion';
+import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=44-exclusion';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=43-research';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=44-exclusion';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive}){
@@ -31,7 +31,7 @@ const search=(kind,id)=>'search/?'+new URLSearchParams({kind,q:id});
 const context=()=>({profiles,branches,branchCaptains,names,selected,researchIndex:researchFilters.index()});
 const sourceOf=r=>ledgers.find(s=>s.key===r.source);
 const multiChanged=()=>{if(!initial&&isActive()){page=0;sync();render();}};
-const multi=Object.fromEntries([['training','시술'],['trait','보유 특성']].map(([id,label])=>[id,mountMultiFilter($(id),{initial:params.getAll(id),label,onChange:multiChanged})]));
+const multi=Object.fromEntries([['training','시술'],['trait','보유 특성']].map(([id,label])=>[id,mountMultiFilter($(id),{initial:params.getAll(id),excludeInitial:params.getAll(id==='training'?'excludeTraining':'excludeTrait'),label,onChange:multiChanged})]));
 const filterHost=$('routeFilters').querySelector('.route-filters');
 const minima=mountStatMinimums(filterHost,{params,labels,onChange:multiChanged});
 const researchFilters=mountResearchFilters(filterHost,{modern,params,name,onChange:multiChanged});
@@ -58,7 +58,7 @@ function populate(){
  if(matched&&$('b').value&&!sameChoices(branches.get(a),branches.get($('b').value)))$('b').value='';
 }
 function filter(){
- const f={...Object.fromEntries(controls.map(id=>[id,readValue(id)])),minima:minima.value(),...researchFilters.value()};
+ const f={...Object.fromEntries(controls.map(id=>[id,readValue(id)])),minima:minima.value(),excludeTraining:multi.training.excluded(),excludeTrait:multi.trait.excluded(),...researchFilters.value()};
  return f;
 }
 function sync(){
@@ -66,6 +66,7 @@ function sync(){
  const p=new URLSearchParams(location.search);p.set('group','routes');
  for(const k of [...p.keys()])if(controls.includes(k)||k==='sort'||k==='dir'||k==='stat'||k==='role'||k==='primary'||k.startsWith('role')||k.startsWith('min_')||k==='profile')p.delete(k);
  for(const id of controls){const v=checks.has(id)?($(id).checked?'1':''):readValue(id);if(v&&!(id==='metric'&&v==='cap'))p.set(id,v)}
+ for(const [key,id] of [['excludeTraining','training'],['excludeTrait','trait']]){const v=multi[id].excluded();p.delete(key);if(v)p.set(key,v);}
  writeStatMinimums(p,minima.value());writeResearchFilters(p,researchFilters.value());
  if(sort!=='total')p.set('sort',sort);if(dir==='asc')p.set('dir',dir);
  history.replaceState(null,'',location.pathname+(p.size?'?'+p:'')+location.hash);

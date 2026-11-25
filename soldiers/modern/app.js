@@ -1,8 +1,8 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=43-research';
-import {loadCareerRows,statKeys,exactCareerUrl,branchUrl} from '../../branch-soldier-atlas-career-core.js?v=43-research';
-import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=43-research';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=44-exclusion';
+import {loadCareerRows,statKeys,exactCareerUrl,branchUrl} from '../../branch-soldier-atlas-career-core.js?v=44-exclusion';
+import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=44-exclusion';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
@@ -1409,7 +1409,7 @@ async function init(){try{
     const group=$('#catalogGrouping').value,u=new URL(location.href);
     u.searchParams.set('group',group);
     if(group!=='routes'){
-      for(const k of ['origin','body','captain','training','trait','researchAction','recruitResearch','recruitItem','minDepth','minTraits','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly','selectedOnly','a','b','sameChoices','sort','dir','stat'])u.searchParams.delete(k);
+      for(const k of ['origin','body','captain','training','trait','excludeTraining','excludeTrait','researchAction','recruitResearch','recruitItem','minDepth','minTraits','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly','selectedOnly','a','b','sameChoices','sort','dir','stat'])u.searchParams.delete(k);
        for(const k of [...u.searchParams.keys()])if(k.startsWith('min_'))u.searchParams.delete(k);
       if(activeBranch)u.searchParams.set('branch',activeBranch);else u.searchParams.delete('branch');
     }
