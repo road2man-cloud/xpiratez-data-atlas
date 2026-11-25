@@ -1,40 +1,27 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>X-Piratez 2.1 육성 경로 찾기</title>
-<link rel="stylesheet" href="../branch-soldier-unified-nav.css?v=29"><link rel="stylesheet" href="../branch-soldier-atlas-search.css?v=28"><link rel="stylesheet" href="../branch-soldier-atlas-career.css?v=30"><link rel="stylesheet" href="../branch-soldier-atlas-branch-compare.css?v=30"><link rel="stylesheet" href="../branch-soldier-atlas-role.css?v=31">
-<script defer src="../branch-soldier-unified-nav.js?v=29"></script><script type="module" src="../branch-soldier-atlas-career.js?v=32-alt4"></script></head>
-<body><main><h1>대원을 어떻게 키울까요?</h1><p>출생처, 최종 병종, 선장 분기, 시술을 선택하고 실제 등록된 시간순 육성 경로를 비교하세요.</p>
-<p class="notice">등록 후보는 연구·성장·자원 등의 조건부 재생 기록입니다. 게임 전체 최종 최고치는 아직 미증명이며, 훈장 자체 보너스를 제외한 영구 수치를 비교합니다.</p>
-<section class="role-panel" aria-label="역할별 육성 후보">
-<h2>어떤 대원을 찾고 있나요?</h2><p class="note">역할을 선택하면 관련 능력치를 우선순위대로 비교합니다. 전투 피해량이나 실제 승률 계산은 아닙니다.</p>
-<div class="role-buttons" id="roleButtons"></div>
-<div id="roleAdvanced" hidden>
-<label>가장 중요한 능력치 <select id="rolePrimary"></select></label>
-<p id="rolePriority" class="role-priority"></p>
-<div class="role-minima" id="roleMinima" aria-label="목표 최저 능력치"></div>
-<div class="role-options"><label><input id="rolePareto" type="checkbox"> 역할 능력치 비지배 후보만</label><label><input id="roleRepresentative" type="checkbox"> 동일 출생처·병종·분기·난이도 대표만</label><button id="roleClear" type="button">역할 조건 초기화</button></div>
-<p class="note">비지배는 같은 최종 병종·난이도에서 선택한 역할 능력치가 모두 같거나 더 높고 하나라도 높은 다른 등록 경로가 없는 후보입니다. 난이도 미기록 경로는 비지배 판정에서 제외합니다. 코르트 등 특수 병종은 최종 병종 필터로 따로 비교하세요. 대표 표시는 경로를 삭제하지 않습니다. 역할 조건은 아래 육성 후보 목록에 적용되며, 분기 비교는 별도로 아래 정렬 기준을 사용합니다.</p>
-</div><p id="roleSummary" role="status" aria-live="polite"></p>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>X-Piratez 2.1 병종·육성 통합표</title>
+<link rel="stylesheet" href="../branch-soldier-unified-nav.css?v=29"><link rel="stylesheet" href="../branch-soldier-atlas-table.css?v=32">
+<script defer src="../branch-soldier-unified-nav.js?v=32"></script><script type="module" src="../branch-soldier-atlas-career.js?v=32-table"></script></head>
+<body><main>
+<header class="table-heading"><h1>병종·육성 통합표 <small>2.1</small></h1><a href="../soldiers/modern/?view=detail">기존 병종 상세 DB</a><a href="../captains/">분기 상세 DB</a></header>
+<section class="filters" aria-label="표 필터">
+<input id="q" type="search" placeholder="출생처 · 병종 · 시술 · 특성 · 연구 분기 검색" aria-label="통합표 검색">
+<label>출생처<select id="origin"><option value="">전체</option></select></label>
+<label>최종 병종<select id="body"><option value="">전체</option></select></label>
+<label>선장<select id="captain"><option value="">전체</option></select></label>
+<label>분기<select id="branch"><option value="">전체</option></select></label>
+<label>시술<select id="training"><option value="">전체</option></select></label>
+<label>특성<select id="trait"><option value="">전체</option></select></label>
+<label>난이도<select id="difficulty"><option value="">전체</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+<label>수치<select id="metric"><option value="cap">조건부 성장 상한</option><option value="current">기록 시점 영구치</option><option value="birthMin">출생 최소</option><option value="birthMax">출생 최대</option></select></label>
+<label class="tick"><input type="checkbox" id="certified"> 최종 인증</label>
+<label class="tick"><input type="checkbox" id="missingOnly"> 미연결 출생처</label>
+<button id="reset" type="button">초기화</button>
 </section>
-<section aria-label="육성 조건" class="career-filters">
-<label>출생처<select id="origin"><option value="">전체 출생처</option></select></label>
-<label>최종 병종<select id="body"><option value="">전체 병종</option></select></label>
-<label>선장<select id="captain"><option value="">전체 선장</option></select></label>
-<label>연구 분기<select id="branch"><option value="">전체 분기</option></select></label>
-<label>포함 시술<select id="training"><option value="">전체 시술</option></select></label>
-<label>보유 특성<select id="trait"><option value="">제한 없음</option></select></label>
-<label>난이도<select id="difficulty"><option value="">모든 등록 난이도</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
-<label>능력치 보기<select id="metric"><option value="cap">조건부 성장 상한</option><option value="current">기록 시점 영구 수치</option></select></label>
-<label>일반·분기 비교 정렬 기준<select id="stat"><option value="total">12능력치 합계</option></select></label>
-<label class="check"><input type="checkbox" id="certified"> 전역 최종 인증 경로만</label>
-<button id="reset" type="button">조건 초기화</button>
-</section><p class="note">보유 특성 필터는 실제 특성 측정 자료가 연결된 경로에만 적용됩니다. 미기록은 특성이 없다는 뜻이 아닙니다.</p>
-<p id="status" role="status" aria-live="polite">원본 육성 원장 연결 중…</p><p id="errors" role="alert" hidden></p>
-<details id="branchCompare" class="bc-panel">
-<summary>두 연구 분기 비교하기</summary>
-<p class="note">두 선장·연구 선택의 등록 육성 차이와 원장상 차단 연구를 확인하세요. 위의 출생처·최종 병종·난이도·능력치 조건이 양쪽에 적용됩니다.</p>
-<div class="bc-pickers"><label>분기 A<input id="branchSearchA" type="search" placeholder="선장, 연구 선택, 분기 번호"><select id="branchA"><option value="">분기 선택</option></select></label><label>분기 B<input id="branchSearchB" type="search" placeholder="선장, 연구 선택, 분기 번호"><select id="branchB"><option value="">분기 선택</option></select></label></div>
-<div class="bc-actions"><label><input id="branchRegistered" type="checkbox"> 육성 기록이 있는 분기만</label><label><input id="branchSameChoices" type="checkbox"> B의 선장 외 선택을 A와 동일하게 제한</label><button id="branchSwap" type="button">A ↔ B 교환</button></div>
-<div id="branchCompareOutput" aria-live="polite"><p>분기를 선택하세요.</p></div>
-</details>
-<section id="compare" aria-label="육성 경로 비교" hidden></section><section id="results" aria-label="등록 경로"></section><button type="button" id="more" hidden>더 보기</button>
-<footer><details><summary>계산 범위와 원장 출처</summary><p>등록된 시간순 육성 기록 6종을 직접 불러옵니다. 연구·시술 교대 탐색은 각 그래프의 병종·보유 특성·계급·훈장별 능력치 대표만 비교 목록에 등록하며 전체 상태는 별도 원장에 보존합니다. 각 능력치는 동일 경로의 벡터이며 서로 다른 경로의 최고값을 합치지 않습니다. 합계 정렬은 파레토 최적성 증명이 아닙니다. 출생 범위, 자원·이벤트, 성장, 난수, 승급 등은 각 원장에 기록된 조건과 가정에 따릅니다.</p><ul id="source-list"></ul></details><p><a href="../search/">통합 검색</a> · <a href="../soldiers/modern/">전체 병종 DB</a> · <a href="../captains/">분기 DB</a></p></footer>
-<noscript>JavaScript가 필요합니다. <a href="../soldiers/modern/">병종 도감</a></noscript></main></body></html>
+<details id="branchCompare" class="branch-filter"><summary>두 분기 함께 보기</summary><div class="pair-controls"><label>A<select id="a"><option value="">선택</option></select></label><label>B<select id="b"><option value="">선택</option></select></label><label class="tick"><input id="sameChoices" type="checkbox"> 선장 외 동일 선택</label><button id="clearPair" type="button">해제</button></div></details>
+<div class="table-toolbar"><span id="status" role="status" aria-live="polite">불러오는 중…</span><span class="scope">조건부 기록·종결은 원장 범위 기준 · 전역 최고치 미증명</span><label class="tick"><input type="checkbox" id="selectedOnly"> 선택 행만</label><button id="clearSelection" type="button">선택 해제</button><label>행 수<select id="pageSize"><option>50</option><option selected>100</option><option>200</option></select></label><button type="button" id="prev" aria-label="이전 페이지">‹</button><span id="page" aria-live="polite"></span><button type="button" id="next" aria-label="다음 페이지">›</button></div>
+<p id="errors" role="alert" hidden></p>
+<div class="table-scroll" id="tableScroll" tabindex="0" role="region" aria-label="병종·육성 통합표, 가로 스크롤 가능"><table id="careerTable"><thead id="head"></thead><tbody id="results"></tbody></table></div>
+<footer><span>— 미기록 · 출생 수치는 원본 출생 범위이며 개별 육성 경로의 실제 초기값 아님</span><a href="../search/">전체 DB 검색</a><a href="../">홈</a></footer>
+<dialog id="researchDialog"><div class="dialog-head"><h2 id="researchTitle">연구 이력</h2><button type="button" id="researchClose">닫기</button></div><div id="researchContent"></div></dialog>
+<noscript>JavaScript가 필요합니다. <a href="../soldiers/modern/?view=detail">기존 병종 DB</a></noscript>
+</main></body></html>

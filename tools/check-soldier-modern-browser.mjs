@@ -12,9 +12,11 @@ try{
  const page=await browser.newPage({viewport:{width:1440,height:950}}),errors=[],requests=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>requests.push({url:r.url(),method:r.method()}));
  await page.goto(url(''),{waitUntil:'domcontentloaded'});
- assert.equal(await page.locator('a.card[href="./soldiers/"]').count(),1);
+ assert.equal(await page.locator('a.card[href="./career/"]').count(),1);
  assert.equal(await page.locator('a[href="./trainings/"]').count(),0);
- await page.locator('a.card[href="./soldiers/"]').click();
+ await page.locator('a.card[href="./career/"]').click();
+ await page.waitForSelector('#careerTable');
+ await page.locator('a[href="../soldiers/modern/?view=detail"]').click();
  await page.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',null,{timeout:60000});
  assert.equal(await page.locator('#originTable tbody tr[data-body-id]').count(),29);
  const bodyCoverage=await page.locator('#originTable tbody tr[data-body-id]').evaluateAll(rows=>({rows:rows.length,calculated:rows.filter(r=>r.querySelector('td.score')?.textContent.trim()!=='—').length}));

@@ -77,6 +77,9 @@ try {
       await page.goto(new URL(slug+"/",base).href,{waitUntil:"domcontentloaded",timeout:45000});
       if(slug==="soldiers"){
         // The old 1.1.1 catalog no longer exists. Verify only 2.1 source evidence.
+        await page.waitForURL(u=>u.pathname.endsWith("/career/"),{timeout:30000});
+        await page.waitForSelector('#careerTable',{timeout:30000});
+        await page.locator('a[href="../soldiers/modern/?view=detail"]').click();
         await page.waitForURL(u=>u.pathname.endsWith("/soldiers/modern/"),{timeout:30000});
         await page.waitForFunction(()=>document.querySelector("#originMaxima")
           ?.dataset.validation==="validated",{timeout:30000});
