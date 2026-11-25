@@ -54,13 +54,14 @@ function pair(db,v,i,j){
  const ids=v.matrix[i][j],code=Number(db.populationJointCoverage?.status?.[i]?.[j]??v.status[i][j]);
  return {ids,code,label:names[code],flags:flags(v,i,j)};
 }
+const extendedRoutes=(db,pid,bid,kind)=> (db.originExtendedContinuation?.published||[]).filter(id=>{const r=db.originExtendedContinuation.routes[id];return r?.kind===kind&&r.origin===pid&&r.branch===bid&&db.witnesses[id]?.source==="POPEXT12";});
 const unlockRoutes=(db,pid,bid)=>{
  const pair=pid+"|"+bid,r=db.originUnlockSearch?.pairs?.[pair];
  if(!r)return [];
- return [...r.witnessIds,...Object.entries(db.originUnlockContinuation?.routes||{}).filter(([,x])=>x.pair===pair).map(([id])=>id)].filter(id=>db.witnesses[id]);
+ return [...r.witnessIds,...Object.entries(db.originUnlockContinuation?.routes||{}).filter(([,x])=>x.pair===pair).map(([id])=>id),...extendedRoutes(db,pid,bid,"unlock")].filter(id=>db.witnesses[id]);
 };
 const eventRoutes=(db,pid,bid)=>{
- const e=db.originEventBirth,r=e?.pairs?.[pid+"|"+bid];return (r?.variants||[]).flatMap(id=>e.variants[id].witnessIds).filter(id=>db.witnesses[id]);
+ const e=db.originEventBirth,r=e?.pairs?.[pid+"|"+bid];return [...(r?.variants||[]).flatMap(id=>e.variants[id].witnessIds),...extendedRoutes(db,pid,bid,"event")].filter(id=>db.witnesses[id]);
 };
 const bestUnlock=(db,pid,bid)=>[...unlockRoutes(db,pid,bid),...eventRoutes(db,pid,bid)].reduce((a,b)=>!a||total(db.witnesses[b])>total(db.witnesses[a])?b:a,null);
 function bestRoute(db,v,groups){
@@ -98,7 +99,8 @@ export function populationUnlockOriginMarkup(db,pid,branchId=null,focus=null,lab
  const candidates=rows.flatMap(p=>unlockRoutes(db,p.origin,p.branch));
  const chosen=candidates.includes(focus)?focus:candidates.reduce((a,b)=>!a||total(db.witnesses[b])>total(db.witnesses[a])?b:a,null);
  const w=db.witnesses[chosen],r=c?.routes?.[chosen],id=w.populationUnlock?.pair||w.populationUnlockContinuation?.pair,p=u.pairs[id];
- const model=r?.model&&c.models[r.model],upper=model?.frontier.reduce((a,b)=>!a||total(b)>total(a)?b:a,null);
+ const ext=db.originExtendedContinuation?.routes?.[chosen];
+ const model=ext?.model?db.originExtendedContinuation.models[ext.model]:r?.model&&c.models[r.model],upper=model?.frontier.reduce((a,b)=>!a||total(b)>total(a)?b:a,null);
  const seq=w=>(w.steps||[]).map(x=>name(x.id)).join(" → ")||"시술 없음";
  const cols=db.stats.map(k=>'<th>'+esc(labels[k]||k)+'</th>').join("");
  const row=(title,v)=>'<tr><th>'+esc(title)+'</th>'+v.map(n=>'<td>'+fmt(n)+'</td>').join("")+'</tr>';

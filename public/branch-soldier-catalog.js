@@ -114,6 +114,11 @@ export function buildBodyGrowthIndex(db,modern,keys,records=[],isCompatible=()=>
   if(w?.source!=="ORIGINEXT12"||w.actualGameCertified!==false||!origins.has(w.originProfile)||branchId&&!w.branchIds.includes(branchId))continue;
   candidates.push({...registryCandidate(db,id),steps:routeActionCount(w)});
  }
+ if(db)for(const id of db.originExtendedContinuation?.published||[]){
+  const w=db.witnesses[id];
+  if(w?.source!=="POPEXT12"||w.actualGameCertified!==false||!origins.has(w.originProfile)||branchId&&!w.branchIds.includes(branchId)||!keys.every(k=>Number.isSafeInteger(w.vector[db.stats.indexOf(k)])))continue;
+  candidates.push({...registryCandidate(db,id),steps:routeActionCount(w)});
+ }
  return groupBodyMaxima(keys,modern.soldiers,candidates);
 }
 // Data-driven status: never encode a particular worker's report count in HTML.
