@@ -15,6 +15,7 @@ import {chainProposal} from "./population-frontier-chain-proposals.mjs";
 import {extendedChainProposal,successorKey} from "./population-frontier-chain-extended.mjs";
 import {horizonProposal,HORIZON_POLICY} from "./population-full-horizon-proposals.mjs";
 import {UNIFIED_POLICY,atGrowthCap} from "./population-frontier-unified-scheduler.mjs";
+import {PRIORITY_POLICY,branchGateIndex,gateId} from "./population-frontier-priority-index.mjs";
 import {exactWorld,birthActions} from "./population-growth-replay-core.mjs";
 const reg="public/data/branch-soldier-results.json.gz",decode=x=>JSON.parse(gunzipSync(x)),read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=fs.readFileSync(process.argv[2]||"population-frontier-chronology-v3.json.gz"),a=decode(bytes),db=decode(fs.readFileSync(reg)),data=read("public/data/soldiers-modern-index.json");
@@ -80,6 +81,28 @@ if(a.unifiedReuses){
   assert.equal(success.status,"CONDITIONAL_CHAIN_REPLAY");assert.equal(success.parent,t.equivalent.parent);assert.equal(success.rule,t.rule);assert.equal(success.route,t.equivalent.route);
   assert.equal(target.chainParent,success.parent);assert.equal(target.chainRule,t.rule);
  }
+}
+// The gate index is a snapshot of explicit branch-policy exclusions, not
+// an append-only global impossibility certificate. Rebuild every reference
+// against the current source and the original horizon proposal.
+if(a.branchGates||a.gateRefs){
+ assert.equal(a.summary.priorityPolicy,PRIORITY_POLICY);
+ assert.equal(Object.keys(a.branchGates||{}).length,a.summary.staticGateGroups);
+ assert.equal(Object.keys(a.gateRefs||{}).length,a.summary.staticGateEdges);
+ const getGate=branchGateIndex(db),used=new Set();
+ for(const [gid,g] of Object.entries(a.branchGates||{})){
+  const r=recoveryRules.get(g.rule);assert(r);
+  assert.equal(g.policy,PRIORITY_POLICY);assert.equal(gid,gateId(g));
+  assert.deepEqual(g,getGate(g.branch,r));
+ }
+ for(const [aid,t] of Object.entries(a.gateRefs||{})){
+  assert(!a.chainAttempts[aid]&&!a.unifiedReuses?.[aid]);
+  const g=a.branchGates[t.gate],p=a.routes[t.parent];assert(g&&p);
+  assert.equal(p.branch,g.branch);
+  const f=horizonProposal(data,t.parent,p,g.rule);assert(f);
+  assert.equal(aid,key([p.input,f.id]));used.add(t.gate);
+ }
+ assert.equal(used.size,Object.keys(a.branchGates||{}).length);
 }
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
@@ -239,7 +262,7 @@ const summary={...a.summary,worklistComparison:{improvedRoutes:a.summary.improve
 const asset="soldier-population-frontier-chronology.json.gz";fs.writeFileSync("public/data/"+asset+".tmp",bytes);fs.renameSync("public/data/"+asset+".tmp","public/data/"+asset);
 db[LEDGER]={...a,summary,published,comparisons,careerEnvelopeConflicts:outside,file:asset,bytes:bytes.length,sha256:sha(bytes)};
 db.summary[LEDGER]=summary;db.summary.registeredWitnesses=Object.keys(db.witnesses).length;
-db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v11.mjs"]?"tools/build-population-frontier-chronology-v11.mjs":a.hashes["tools/merge-population-frontier-chronology-v10.mjs"]?"tools/merge-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-full-horizon.mjs"]?"tools/build-population-full-horizon.mjs":a.hashes["tools/build-population-frontier-chronology-v10.mjs"]?"tools/build-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-frontier-chronology-v9.mjs"]?"tools/build-population-frontier-chronology-v9.mjs":a.hashes["tools/build-population-frontier-chronology-v8.mjs"]?"tools/build-population-frontier-chronology-v8.mjs":a.hashes["tools/build-population-frontier-chronology-v7.mjs"]?"tools/build-population-frontier-chronology-v7.mjs":a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
+db.sources.POPFRONTCH12={file:a.hashes["tools/build-population-frontier-chronology-v12.mjs"]?"tools/build-population-frontier-chronology-v12.mjs":a.hashes["tools/build-population-frontier-chronology-v11.mjs"]?"tools/build-population-frontier-chronology-v11.mjs":a.hashes["tools/merge-population-frontier-chronology-v10.mjs"]?"tools/merge-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-full-horizon.mjs"]?"tools/build-population-full-horizon.mjs":a.hashes["tools/build-population-frontier-chronology-v10.mjs"]?"tools/build-population-frontier-chronology-v10.mjs":a.hashes["tools/build-population-frontier-chronology-v9.mjs"]?"tools/build-population-frontier-chronology-v9.mjs":a.hashes["tools/build-population-frontier-chronology-v8.mjs"]?"tools/build-population-frontier-chronology-v8.mjs":a.hashes["tools/build-population-frontier-chronology-v7.mjs"]?"tools/build-population-frontier-chronology-v7.mjs":a.hashes["tools/build-population-frontier-chronology-v6.mjs"]?"tools/build-population-frontier-chronology-v6.mjs":a.hashes["tools/build-population-frontier-chronology-v5.mjs"]?"tools/build-population-frontier-chronology-v5.mjs":a.hashes["tools/build-population-frontier-chronology-v4.mjs"]?"tools/build-population-frontier-chronology-v4.mjs":a.hashes["tools/build-population-frontier-chronology-v3.mjs"]?"tools/build-population-frontier-chronology-v3.mjs":a.hashes["tools/build-population-frontier-chronology-v2.mjs"]?"tools/build-population-frontier-chronology-v2.mjs":"tools/build-population-frontier-chronology.mjs",fingerprint:a.fingerprint,sourceMetadataSha256:a.sourceMetadataSha256,asset,sha256:sha(bytes)};
 db.policies.POPFRONTCH12="고정 수치모형 파레토 행동 순서를 원본 최솟값 출생·실제 색인 연구 규칙에서 조건부 재생. 성장·계급·훈장·자원·이벤트 가정 유지, 미해결은 불가능성 아님. 원시 및 영구 수치 재계산, 전체 캠페인 전역 미인증.";
 fs.writeFileSync(reg+".tmp",gzipSync(Buffer.from(JSON.stringify(db)),{level:6}));fs.renameSync(reg+".tmp",reg);
 console.log(JSON.stringify({summary:{...summary,top:top.slice(0,5)},newWitnesses:Object.keys(db.witnesses).length-before,registeredWitnesses:db.summary.registeredWitnesses,bytes:bytes.length}));
