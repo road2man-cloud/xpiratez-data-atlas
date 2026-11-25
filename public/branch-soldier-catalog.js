@@ -3,7 +3,7 @@
 import {allOriginBodyWitnessIds} from "./branch-soldier-origin-cap.js?v=20261124-origin-extension-1";
 import {inflateArchivedGzip} from "./soldiers/modern/origin-gzip-compat.js";
 import {profileWitnessIds} from "./branch-soldier-query.js?v=20261124-unified-maxima-1";
-import {independentMaxima,registryCandidate,groupBodyMaxima,evidencePriority} from "./branch-soldier-maxima.js?v=20261125-pop-growth-replay-5";
+import {independentMaxima,registryCandidate,groupBodyMaxima,evidencePriority} from "./branch-soldier-maxima.js?v=20261125-pop-chrono-career-6";
 const url=new URL("./data/branch-soldier-results.json.gz",import.meta.url);
 let promise;
 export function loadBranchSoldierResults(){
@@ -114,9 +114,9 @@ export function buildBodyGrowthIndex(db,modern,keys,records=[],isCompatible=()=>
   if(w?.source!=="ORIGINEXT12"||w.actualGameCertified!==false||!origins.has(w.originProfile)||branchId&&!w.branchIds.includes(branchId))continue;
   candidates.push({...registryCandidate(db,id),steps:routeActionCount(w)});
  }
- if(db)for(const id of [...(db.originExtendedContinuation?.published||[]),...(db.originResearchContinuation?.published||[]),...(db.originResearchChain?.published||[]),...(db.populationGrowthReplay?.published||[])]){
+ if(db)for(const id of [...(db.originExtendedContinuation?.published||[]),...(db.originResearchContinuation?.published||[]),...(db.originResearchChain?.published||[]),...(db.populationGrowthReplay?.published||[]),...(db.populationChronologicalCareer?.published||[])]){
   const w=db.witnesses[id];
-  if(!["POPEXT12","POPRESEARCH12","POPRESEARCHCHAIN12","POPGROW12"].includes(w?.source)||w.actualGameCertified!==false||!origins.has(w.originProfile)||branchId&&!w.branchIds.includes(branchId)||!keys.every(k=>Number.isSafeInteger(w.vector[db.stats.indexOf(k)])))continue;
+  if(!["POPEXT12","POPRESEARCH12","POPRESEARCHCHAIN12","POPGROW12","POPCHCAREER12"].includes(w?.source)||w.actualGameCertified!==false||!origins.has(w.originProfile)||branchId&&!w.branchIds.includes(branchId)||!keys.every(k=>Number.isSafeInteger(w.vector[db.stats.indexOf(k)])))continue;
   candidates.push({...registryCandidate(db,id),steps:routeActionCount(w)});
  }
  return groupBodyMaxima(keys,modern.soldiers,candidates);

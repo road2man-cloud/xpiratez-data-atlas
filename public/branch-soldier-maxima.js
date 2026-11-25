@@ -16,9 +16,9 @@ export function independentMaxima(keys, candidates) {
 export const evidenceLabel=source=>({
  UNIFIED12:"연구·시술 연결 조건부",CAREER12:"계급·훈장·후속 시술 미재생",
  GATE12:"시술 조건 모델",CONTINUATION12:"구조적 후속 상계",
- SOURCE8:"연구 원천 상계",REPLAY8:"동일 연구 이력",ORIGIN:"출생처 등록 경로",ORIGINCAP12:"전체 출생처 시간순 성장 상계",ORIGINEXT12:"활성 연구 후속 시술 조건부",POPEXT12:"모집·이벤트 연대기 후속 시술 조건부",POPRESEARCH12:"모집 후 추가 연구·시술 연대기 조건부",POPRESEARCHCHAIN12:"모집 후 연구·연속 시술 조건부",POPGROW12:"모집·연구·중간 성장 재생 조건부"
+ SOURCE8:"연구 원천 상계",REPLAY8:"동일 연구 이력",ORIGIN:"출생처 등록 경로",ORIGINCAP12:"전체 출생처 시간순 성장 상계",ORIGINEXT12:"활성 연구 후속 시술 조건부",POPEXT12:"모집·이벤트 연대기 후속 시술 조건부",POPRESEARCH12:"모집 후 추가 연구·시술 연대기 조건부",POPRESEARCHCHAIN12:"모집 후 연구·연속 시술 조건부",POPGROW12:"모집·연구·중간 성장 재생 조건부",POPCHCAREER12:"시간순 모집·성장·계급·훈장 조건부 (훈장 제외)"
 })[source]||source;
-export const evidencePriority=source=>({UNIFIED12:0,POPEXT12:1,POPRESEARCH12:1,POPRESEARCHCHAIN12:1,POPGROW12:1,ORIGINEXT12:1,ORIGINCAP12:1,ORIGIN:2,CAREER12:2,GATE12:3,REPLAY8:4,CONTINUATION12:5,SOURCE8:6})[source]??9;
+export const evidencePriority=source=>({UNIFIED12:0,POPEXT12:1,POPRESEARCH12:1,POPRESEARCHCHAIN12:1,POPGROW12:1,POPCHCAREER12:1,ORIGINEXT12:1,ORIGINCAP12:1,ORIGIN:2,CAREER12:2,GATE12:3,REPLAY8:4,CONTINUATION12:5,SOURCE8:6})[source]??9;
 export function registryCandidate(db,id,combo=null){
  const w=db.witnesses[id];if(!w)return null;
  return {route:id,source:w.source,body:w.body,combo,originProfile:w.originProfile??null,priority:evidencePriority(w.source),
