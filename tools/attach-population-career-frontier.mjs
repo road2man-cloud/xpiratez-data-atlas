@@ -79,8 +79,30 @@ for(let pi=0;pi<src.pairGroups.length;pi++){
  if(refs.some(r=>r.permanent&&admitted.has(r.group)))admittedImproved++;
  if(refs.some(r=>r.effective))medalImproved++;
 }
+// Materialize the exact remaining obligations from the original pair map.
+// This is a resume queue, not a new pruning criterion or impossibility proof.
+const affected=new Set(src.groups.filter(g=>BigInt("0x"+g.mask)&careerBits).map(g=>g.id));
+const closedSet=new Set([...work.values()].filter(g=>g.status==="FIXED_PRESET_NUMERIC_CLOSED").map(g=>g.group));
+const remainingPairs=[],remainingGroups=new Map();
+for(let pi=0;pi<src.pairGroups.length;pi++){
+ const missing=[...new Set(src.pairGroups[pi].filter(id=>affected.has(id)&&!closedSet.has(id)))].sort((a,b)=>a-b);
+ if(!missing.length)continue;
+ remainingPairs.push({pairIndex:pi,origin:src.origins[Math.floor(pi/width)],branch:src.branches[pi%width],groups:missing});
+ for(const id of missing){
+  let row=remainingGroups.get(id);
+  if(!row){
+   const g=work.get(id),records=g?.records.length||0,cursor=g?.cursor||0;
+   row={group:id,status:g?.status||"UNSTARTED",records,cursor,pendingRecords:records-cursor,liveRecords:g?.records.filter(r=>r.live).length||0,pairs:[]};
+   remainingGroups.set(id,row);
+  }
+  row.pairs.push(pi);
+ }
+}
+assert.equal(remainingPairs.length,a.summary.modelPartialPairs+a.summary.modelUnprocessedPairs,"Residual pair count mismatch");
+assert.equal(remainingGroups.size,a.summary.affectedGroups-a.summary.closedGroups,"Residual group count mismatch");
+const resumeQueue={schemaVersion:1,scope:"FIXED_PRESET_NUMERIC_ONLY",pairs:remainingPairs,groups:[...remainingGroups.values()].sort((x,y)=>y.pairs.length-x.pairs.length||x.group-y.group)};
 const summary={...a.summary,pairLevelPermanentImproved:pairImproved,admittedPairLevelPermanentImproved:admittedImproved,pairLevelEffectiveImproved:medalImproved,
- improvedClasses:Object.values(classImprovements).filter(rs=>rs.some(r=>r.permanent)).length,independentRouteReplays:count};
+ improvedClasses:Object.values(classImprovements).filter(rs=>rs.some(r=>r.permanent)).length,independentRouteReplays:count,residualPairs:remainingPairs.length,residualGroups:remainingGroups.size};
 const old=db.populationCareerFrontier;
 if(old){
  if(old.identity!==a.identity){
@@ -119,7 +141,7 @@ if(old){
 fs.writeFileSync(path+proofFile+".tmp",proof);fs.renameSync(path+proofFile+".tmp",path+proofFile);
 db.populationCareerFrontier={schemaVersion:1,kind:a.kind,model:a.model,identity:a.identity,sourceMetadataSha256:a.sourceMetadataSha256,
  source:a.source,envelope:a.envelope,scope:a.scope,summary,file,sha256:sha(bytes),bytes:bytes.length,cacheSchema:a.cacheSchema||null,migration:a.migration||null,schedulerSchema:a.schedulerSchema||null,schedulerMigration:a.schedulerMigration||null,
- proof:{file:proofFile,sha256:sha(proof),bytes:proof.length},groups,classImprovements};
+ proof:{file:proofFile,sha256:sha(proof),bytes:proof.length},groups,classImprovements,resumeQueue};
 db.summary.populationCareerFrontier=summary;
 db.sources.POPCAREERFRONTIER12={file:a.schedulerSchema===SCHEDULER_SCHEMA?"tools/build-population-career-frontier-v3.mjs":a.cacheSchema===CACHE_SCHEMA?"tools/build-population-career-frontier-v2.mjs":"tools/build-population-career-frontier.mjs",fingerprint:a.identity,sourceMetadataSha256:a.sourceMetadataSha256,asset:file,sha256:sha(bytes)};
 db.policies.POPCAREERFRONTIER12="출생 가정, 관측 고정 연구 및 필수 훈장 단일 프리셋, 가정 승급, 독립 최대 난수/성장 모형의 신규 조건부 파레토 후보. 개별 행동 재생은 수치모형 안의 도달성을 보이며 실제 캠페인 달성이나 전체 분기의 최적성 인증이 아님.";
