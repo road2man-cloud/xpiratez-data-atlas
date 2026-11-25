@@ -8,6 +8,7 @@ import {createHash} from "node:crypto";
 import {performance} from "node:perf_hooks";
 import {exactWorld,member} from "./population-growth-replay-core.mjs";
 import {createNewPairCareerPolicy,POLICY} from "./population-new-pair-career-policy.mjs";
+import {createEventSeeds,replayEventSeed} from "./population-new-pair-event-seeds.mjs";
 import {preflightTemplate} from "./population-research-template-selector.mjs";
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
@@ -16,7 +17,7 @@ import {applyTransformation} from "../public/soldiers/modern/eligibility.js";
 import {deterministicRule} from "./population-scalar-upper-bound.mjs";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(z.gunzipSync(fs.readFileSync(p))),key=x=>createHash("sha256").update(JSON.stringify(x)).digest("hex");
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)??d;
-const db=decode("public/data/branch-soldier-results.json.gz"),data=read("public/data/soldiers-modern-index.json"),entry=db.populationNewPairEntry;
+const db=decode("public/data/branch-soldier-results.json.gz"),data=read("public/data/soldiers-modern-index.json"),nonEventEntry=db.populationNewPairEntry,eventSeeds=createEventSeeds(db),entry={...nonEventEntry,routes:{...nonEventEntry.routes,...eventSeeds.routes},published:[...nonEventEntry.published,...Object.keys(eventSeeds.routes)]};
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 const out=arg("out","population-new-pair-career.json.gz"),prior=fs.existsSync(out)?decode(out):db.populationNewPairCareer;
@@ -36,7 +37,7 @@ const m={seedReplays:0,rootReplays:0,rootHits:0,statesExpanded:0,attempts:0,succ
 const exactPlans=new Map(),prefixWorlds=new Map();
 const prefixLimit=Number(arg("prefix-cache","512")),quantum=Number(arg("quantum","12"));
 assert(Number.isSafeInteger(prefixLimit)&&prefixLimit>=0&&Number.isSafeInteger(quantum)&&quantum>0);
-Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0});
+Object.assign(m,{prefixHits:0,prefixStores:0,prefixEvictions:0,prefixReplayAvoided:0,quantumYields:0,hotTurns:0,coldTurns:0,eventSeedReplays:0,eventSeedErrors:0});
 function rememberWorld(seedId,actions,w){
  if(!prefixLimit)return;
  const k=key([seedId,actions]);if(prefixWorlds.has(k))return;
@@ -65,7 +66,9 @@ function plan(b,n,r){
 }
 function seed(id){
  if(seedCache.has(id))return seedCache.get(id);
- const r=entry.routes[id],root=entry.roots[r.root];assert(r&&root);
+ const r=entry.routes[id];assert(r);
+ if(r.eventVariant){const s=replayEventSeed(r,data,g);seedCache.set(id,s);m.seedReplays++;m.eventSeedReplays++;return s;}
+ const root=entry.roots[r.root];assert(root);
  let base=rootCache.get(r.root);
  if(!base){const rr=replayOriginWitness(root.actions,data,{requireCompatibleContext:true});assert(rr.ok,rr.reason);base=rr.world;rootCache.set(r.root,base);m.rootReplays++;}else m.rootHits++;
  const birth=r.actions.at(-1)?.type==="conditionalCapGrowth"?r.actions.slice(0,-1):r.actions;
@@ -80,8 +83,9 @@ for(const [id,s] of Object.entries(states))if(!s.done){pending.push(id);queued.a
 for(const [id,r] of Object.entries(entry.routes))enqueue(id,[],null,r.allowedDifficulties);
 // First interleave origins within each depth, then interleave depth levels.
 // This avoids starving continuations behind hundreds of fresh birth states.
+const eventFirst=process.argv.includes("--event-first");
 const groups=new Map();for(const id of pending){const s=states[id],r=entry.routes[s.seed],depth=s.actions.filter(a=>a.type==="transform").length;const byOrigin=groups.get(depth)||new Map(),xs=byOrigin.get(r.origin)||[];xs.push(id);byOrigin.set(r.origin,xs);groups.set(depth,byOrigin);}
-const levels=[...groups].sort((a,b)=>b[0]-a[0]).map(([depth,byOrigin])=>{const tiers=[...byOrigin.values()],out=[];for(const xs of tiers)xs.sort((a,b)=>Number(states[b].cursor>0)-Number(states[a].cursor>0));for(let i=0;tiers.some(xs=>i<xs.length);i++)for(const xs of tiers)if(xs[i])out.push(xs[i]);return out;});
+const levels=[...groups].sort((a,b)=>b[0]-a[0]).map(([depth,byOrigin])=>{const tiers=[...byOrigin.entries()].sort((a,b)=>eventFirst?Number(b[0].startsWith("event:"))-Number(a[0].startsWith("event:")):0).map(x=>x[1]),out=[];for(const xs of tiers)xs.sort((a,b)=>Number(states[b].cursor>0)-Number(states[a].cursor>0));for(let i=0;tiers.some(xs=>i<xs.length);i++)for(const xs of tiers)if(xs[i])out.push(xs[i]);return out;});
 pending.length=0;for(let i=0;levels.some(xs=>i<xs.length);i++)for(const xs of levels)if(xs[i])pending.push(xs[i]);
 const t0=performance.now(),seconds=Number(arg("seconds","25")),limit=Number(arg("limit","2400")),timely=()=>m.attempts<limit&&performance.now()-t0<seconds*1000;
 running=true;
@@ -121,8 +125,8 @@ while((coldAt<pending.length||hotAt<hot.length)&&timely()){
    }catch(e){m.errors++;s.lastError=String(e.message);}
   }
   if(s.cursor===moves.length){s.done=true;m.statesExpanded++;}else if(timely()){hot.push(id);m.quantumYields++;}
- }catch(e){s.error=String(e.message);m.errors++;}
+ }catch(e){s.error=String(e.message);m.errors++;if(entry.routes[s.seed]?.eventVariant)m.eventSeedErrors++;}
 }
-const values=Object.values(routes),summary={...m,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
-const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
+const values=Object.values(routes),summary={...m,registeredRoutes:values.length,coveredPairs:new Set(values.map(r=>r.origin+"|"+r.branch)).size,coveredPairBodies:new Set(values.map(pk)).size,seedCandidates:entry.published.length,nonEventSeedCandidates:nonEventEntry.published.length,eventSeedCandidates:Object.keys(eventSeeds.routes).length,eventSeedRejected:Object.keys(eventSeeds.skipped).length,eventCareerRoutes:values.filter(r=>entry.routes[r.seed]?.eventVariant).length,eventCareerPairs:new Set(values.filter(r=>entry.routes[r.seed]?.eventVariant).map(r=>r.origin+"|"+r.branch)).size,processedSeedStates:Object.values(states).filter(s=>!s.actions.length&&s.done).length,states:Object.keys(states).length,pendingStates:Object.values(states).filter(s=>!s.done).length,maxTransforms:Math.max(0,...values.map(r=>r.order.length)),rankMedalRoutes:values.filter(r=>r.careerPolicy).length,promotionRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalPromotion")).length,medalRoutes:values.filter(r=>r.actions.some(a=>a.type==="conditionalMedal")).length,elapsedSeconds:(performance.now()-t0)/1000,fullCompleted:0,actualGameCertified:0};
+const result={kind:"POPULATION_NEW_PAIR_CAREER",schemaVersion:1,scheduler:3,careerPolicy:POLICY,rankDefaultBodies,sourceMetadataSha256:db.sourceMetadataSha256,routes,states,planTemplates,published:Object.keys(routes),summary,scope:"Conditional deterministic transformations with additional replayed research from registered non-event and event minimum births; pre/post combat-cap growth, assumed rank and required medals; medal decoration excluded from permanent comparison; conditional resources; bounded batches, no global certification."};
 fs.writeFileSync(out+".tmp",z.gzipSync(Buffer.from(JSON.stringify(result)),{level:6}));fs.renameSync(out+".tmp",out);console.log(JSON.stringify(summary));

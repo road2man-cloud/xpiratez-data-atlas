@@ -5,10 +5,11 @@ import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {exactWorld,member} from "./population-growth-replay-core.mjs";
 import {createNewPairCareerPolicy,POLICY} from "./population-new-pair-career-policy.mjs";
+import {createEventSeeds,replayEventSeed} from "./population-new-pair-event-seeds.mjs";
 import {auditOriginCampaignContext} from "../public/soldiers/modern/origin-campaign-context.js";
 import {replayOriginWitness} from "../public/soldiers/modern/origin-witness.js";
 const sha=x=>createHash("sha256").update(x).digest("hex"),key=x=>sha(JSON.stringify(x)),decode=b=>JSON.parse(z.gunzipSync(b)),read=p=>JSON.parse(fs.readFileSync(p));
-const file="public/data/branch-soldier-results.json.gz",db=decode(fs.readFileSync(file)),bytes=fs.readFileSync(process.argv[2]||"population-new-pair-career.json.gz"),a=decode(bytes),data=read("public/data/soldiers-modern-index.json"),entry=db.populationNewPairEntry;
+const file="public/data/branch-soldier-results.json.gz",db=decode(fs.readFileSync(file)),bytes=fs.readFileSync(process.argv[2]||"population-new-pair-career.json.gz"),a=decode(bytes),data=read("public/data/soldiers-modern-index.json"),nonEventEntry=db.populationNewPairEntry,eventSeeds=createEventSeeds(db),entry={...nonEventEntry,routes:{...nonEventEntry.routes,...eventSeeds.routes},published:[...nonEventEntry.published,...Object.keys(eventSeeds.routes)]};
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
 assert.equal(a.kind,"POPULATION_NEW_PAIR_CAREER");assert.equal(a.scheduler,3);assert.deepEqual(a.careerPolicy,POLICY);assert.equal(a.sourceMetadataSha256,db.sourceMetadataSha256);assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 assert.equal(a.summary.actualGameCertified,0);assert.equal(a.summary.fullCompleted,0);
@@ -18,13 +19,15 @@ const {g,finish,hasCareer,rankDefaultBodies}=createNewPairCareerPolicy(data),roo
 assert.deepEqual(a.rankDefaultBodies,rankDefaultBodies);
 function seed(id){
  if(seedCache.has(id))return seedCache.get(id);
- const r=entry.routes[id],root=entry.roots[r.root];assert(r&&root&&db.witnesses[id]);
+ const r=entry.routes[id];assert(r);
+ if(r.eventVariant){assert(db.witnesses[r.witness]);const s=replayEventSeed(r,data,g);seedCache.set(id,s);return s;}
+ const root=entry.roots[r.root];assert(root&&db.witnesses[id]);
  let base=rootCache.get(r.root);if(!base){const rr=replayOriginWitness(root.actions,data,{requireCompatibleContext:true});assert(rr.ok,rr.reason);base=rr.world;rootCache.set(r.root,base);}
  const birth=r.actions.at(-1)?.type==="conditionalCapGrowth"?r.actions.slice(0,-1):r.actions;
  const w=g.replay(birth,base);assert.equal(exactWorld(g.grow({world:w,steps:birth}).world),r.canonicalStateHash);
  const b={r,root,birth,world:w};seedCache.set(id,b);return b;
 }
-const hashes=Object.fromEntries(["tools/population-new-pair-career-policy.mjs","tools/population-chronological-career-core.mjs","tools/population-frontier-default-rank.mjs","tools/population-growth-replay-core.mjs","tools/population-scalar-upper-bound.mjs","tools/origin-pair-exact-prefix-checkpoint.mjs",...fs.readdirSync("public/soldiers/modern").filter(n=>n.endsWith(".js")&&n!=="app.js").sort().map(n=>"public/soldiers/modern/"+n)].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
+const hashes=Object.fromEntries(["tools/population-new-pair-event-seeds.mjs","tools/population-new-pair-career-policy.mjs","tools/population-chronological-career-core.mjs","tools/population-frontier-default-rank.mjs","tools/population-growth-replay-core.mjs","tools/population-scalar-upper-bound.mjs","tools/origin-pair-exact-prefix-checkpoint.mjs",...fs.readdirSync("public/soldiers/modern").filter(n=>n.endsWith(".js")&&n!=="app.js").sort().map(n=>"public/soldiers/modern/"+n)].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
 const sameDeps=prior&&key(prior.replayHashes)===key(hashes);
 let replayed=0,reused=0,added=0;
 for(const [id,r] of Object.entries(a.routes)){
