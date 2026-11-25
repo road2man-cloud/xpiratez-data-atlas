@@ -1,7 +1,7 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=48-supply';
-import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=48-supply';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=49-economy';
+import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {groupCompleteRows,rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=48-supply';
+import {groupCompleteRows,rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive,group=()=> 'routes',reference=false}){
