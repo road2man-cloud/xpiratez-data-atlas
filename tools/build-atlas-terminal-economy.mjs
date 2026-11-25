@@ -47,8 +47,16 @@ for(const [id,p] of candidates){
   else unresolved.push(ref);
  }
 }
-const values=Object.values(records);
-const result={schema:"ATLAS_CONDITIONAL_PROJECT_ECONOMY_V1",sourceMetadataSha256:a.sourceMetadataSha256,sourceEvidence:economy.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,records,unresolved,summary:{eligibleCraftPlans:candidates.length,scenarios:candidates.length*scenarios.length,produced:values.length,unresolved:unresolved.length,minimumCapital:values.length?Math.min(...values.map(r=>r.budget.requiredCapital)):null,fastestHours:values.length?Math.min(...values.map(r=>r.budget.elapsedHours)):null,completeCampaigns:0}};
+// Preserve finite-seed schedules only while their exact V49 baseline,
+// procurement plan and chronological evidence still match.
+const previous=c.terminalEconomy,baselineHashes=new Set(Object.values(records).map(r=>r.scheduleHash));
+function current(r){return r.options?.funding&&baselineHashes.has(r.options.funding.baselineScheduleHash)&&c.terminalSupply.plans[r.planId]?.plan?.planHash===r.planHash&&rows.get(r.routeId)?.hash===r.actionHash&&r.sourceFingerprint===economy.evidence.fingerprint;}
+if(previous?.terminalSupplyFingerprint===index.evidence.fingerprint){
+ for(const [id,r] of Object.entries(previous.records||{}))if(current(r))records[id]=r;
+ for(const r of previous.unresolved||[])if(current(r))unresolved.push(r);
+}
+const values=Object.values(records),funded=values.filter(r=>r.scenario.capitalMode==="FINITE_CONDITIONAL_SEED"),estimated=values.filter(r=>!r.scenario.capitalMode);
+const result={schema:"ATLAS_CONDITIONAL_PROJECT_ECONOMY_V1",sourceMetadataSha256:a.sourceMetadataSha256,sourceEvidence:economy.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,records,unresolved,...(funded.length&&previous.bootstrap?{bootstrap:previous.bootstrap}:{}),summary:{eligibleCraftPlans:candidates.length,scenarios:values.length+unresolved.length,produced:values.length,unresolved:unresolved.length,minimumCapital:values.length?Math.min(...values.map(r=>r.budget.requiredCapital)):null,fastestHours:values.length?Math.min(...values.map(r=>r.budget.elapsedHours)):null,estimatedCapitalSchedules:estimated.length,minimumEstimatedCapital:estimated.length?Math.min(...estimated.map(r=>r.budget.requiredCapital)):null,finiteSeedSchedules:funded.length,finiteSeedUnresolved:unresolved.filter(r=>r.options?.funding).length,minimumFiniteSeed:funded.length?Math.min(...funded.map(r=>r.budget.requiredCapital)):null,fastestFiniteSeedHours:funded.length?Math.min(...funded.map(r=>r.budget.elapsedHours)):null,completeCampaigns:0}};
 db.careerCompletion.terminalEconomy=result;
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary:result.summary,results:values.map(r=>({scenario:r.options,budget:r.budget,facilities:r.layout.length,events:r.events.length})),unresolved:unresolved.map(r=>({options:r.options,reason:r.reason,partialEvents:r.partialEvents}))}));

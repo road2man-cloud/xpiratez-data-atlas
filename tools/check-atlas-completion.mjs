@@ -86,6 +86,25 @@ if(economy){
   assert.equal(b.requiredCapital+b.income-b.expenses,b.closingCash);
   assert(r.monthly.every(m=>b.requiredCapital+m.balance>=0));
   assert(r.events.every(e=>b.requiredCapital+e.balance>=0));
+  if(r.scenario.capitalMode==="FINITE_CONDITIONAL_SEED"){
+   const seed=r.scenario.funding.seed,ledger=r.cashLedger;
+   assert.equal(seed,b.requiredCapital);assert(ledger.length>0);
+   let actual=seed,min=seed,last=-1,cost=0,rev=0;
+   for(const e of ledger){
+    assert(Number.isSafeInteger(e.delta)&&e.hour>=last);last=e.hour;
+    assert(/^(monthlyFunding|facility:|purchase:|engineerHire|manufacture:|sale:)/.test(e.reason),"unrecognized cash source");
+    actual+=e.delta;min=Math.min(min,actual);
+    assert(actual>=0);assert.equal(actual,e.balance);
+    if(e.delta<0)cost-=e.delta;else rev+=e.delta;
+   }
+   assert.equal(actual,b.closingCash);assert.equal(min,r.minimumActualBalance);
+   assert.equal(cost,b.expenses);assert.equal(rev,b.income);
+   assert.equal(ledger.filter(e=>e.reason==="monthlyFunding").length,r.monthly.length);
+   assert.equal(ledger.filter(e=>e.reason.startsWith("sale:")).reduce((n,e)=>n+e.delta,0),b.sales);
+   assert(Object.values(economy.records).some(x=>x.scheduleHash===r.scenario.funding.baselineScheduleHash&&!x.options.funding));
+   assert(r.financing.reserveReached>=r.scenario.funding.reserve);
+   assert(r.openConditions.includes("FINITE_SEED_AT_TERMINAL_RESEARCH_STATE_NOT_OBTAINED_FROM_GAME_START"));
+  }
   assert.equal(r.monthly.reduce((n,m)=>n+m.engineers,0),b.payroll);
   assert.equal(r.monthly.reduce((n,m)=>n-m.facilities,0),b.netFacilities);
   assert.equal(r.events.at(-1).type,'targetReserved');
@@ -96,5 +115,6 @@ if(economy){
   }
  }
  assert.equal(Math.min(...Object.values(economy.records).map(r=>r.budget.requiredCapital)),economy.summary.minimumCapital);
+ if(economy.summary.finiteSeedSchedules!==undefined)assert.equal(economy.summary.finiteSeedSchedules,Object.values(economy.records).filter(r=>r.scenario.capitalMode==="FINITE_CONDITIONAL_SEED").length);
 }
 console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch}));

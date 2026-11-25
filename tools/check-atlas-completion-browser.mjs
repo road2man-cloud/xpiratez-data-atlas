@@ -29,6 +29,18 @@ try{
   await page.waitForFunction(()=>document.querySelector('[data-economic-body]')?.dataset.loaded==='1');
   assert((await details.innerText()).includes('월별 장부'));
   assert((await details.innerText()).includes('6×6 배치 후보'));
+  const finite=db.careerCompletion.terminalEconomy.summary.finiteSeedSchedules;
+  if(finite){
+   assert.equal(await page.locator('[data-finite-seed="true"]').count(),finite);
+   const hash=await page.locator('[data-finite-seed="true"]').first().getAttribute('data-economic-scenario');
+   const row=page.locator('[data-economic-detail="'+hash+'"]');
+   await row.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+   await row.locator('[data-financing-summary]').waitFor();
+   assert((await row.locator('[data-financing-summary]').innerText()).includes('외부 자금 추가 지급 0'));
+   await row.locator('[data-cash-ledger]').evaluate(el=>el.open=true);
+   await row.locator('[data-cash-ledger-rows] li').first().waitFor();
+   assert.equal(await row.locator('[data-cash-ledger-rows] li').count(),100);
+  }
  }
  for(const group of ['origin','body','routes']){
   await page.locator('#catalogGrouping').selectOption(group);
