@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {ledgers,project,statKeys} from '../public/branch-soldier-atlas-career-core.js';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from '../public/branch-soldier-atlas-table-core.js';
+import {ledgers,project,statKeys,exactCareerUrl} from '../public/branch-soldier-atlas-career-core.js';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
 const metadata=modern.meta.source.metadataSha256;
@@ -32,6 +32,32 @@ for(const key of statKeys){
  const ordered=sortTable(rows,key,'desc','cap',ctx).filter(r=>!r.missing);
  assert(ordered.every((r,i)=>!i||statValue(ordered[i-1],key,'cap',profiles)>=statValue(r,key,'cap',profiles)));
 }
+// The default body view must select one real row, not assemble independent maxima.
+const bodies=modern.soldiers.map(s=>({id:s.id,name:s.koName,candidates:[]}));
+const bodyContext={profiles,names};
+const bodyResults=bodyCareerSummary(bodies,records,bodyContext);
+assert.equal(bodyResults.length,modern.soldiers.length);
+for(const objective of ['total',...statKeys]){
+ const result=bodyCareerSummary(bodies,records,{...bodyContext,stat:objective});
+ const score=r=>objective==='total'?r.cap.reduce((a,b)=>a+b,0):r.cap[statKeys.indexOf(objective)];
+ for(const row of result){
+  const eligible=records.filter(r=>r.body===row.id);
+  assert.equal(row.count,eligible.length);
+  if(!eligible.length){assert.equal(row.best,null);continue}
+  assert(eligible.includes(row.best),'Representative must be an original route');
+  assert.equal(score(row.best),Math.max(...eligible.map(score)));
+  const u=new URL(exactCareerUrl(row.best),'https://atlas.invalid/');
+  assert.equal(u.searchParams.get('group'),'routes');
+  assert.equal(u.searchParams.get('q'),row.best.id);
+  const same=filterTable(records,{origin:row.best.origin,body:row.best.body,branch:row.best.branch,q:row.best.id},ctx);
+  assert(same.some(r=>r.key===row.best.key));
+ }
+}
+const knownBody=bodyResults.find(b=>b.best);
+const artificialUpper={id:knownBody.id,name:knownBody.name,candidates:[{route:'legacy-ceiling-test',originProfile:knownBody.best.origin,stats:{firing:9999}}]};
+const separate=bodyCareerSummary([artificialUpper],records,bodyContext)[0];
+assert.equal(separate.independent.firing.value,9999);
+assert.notEqual(separate.best.cap[statKeys.indexOf('firing')],9999);
 const sample=records.find(r=>r.traits?.length&&r.order.length);
 assert(sample);const matching=filterTable(rows,{origin:sample.origin,training:sample.order[0],trait:sample.traits[0],branch:sample.branch},ctx);
 assert(matching.some(r=>r.key===sample.key));assert(matching.every(r=>r.origin===sample.origin&&r.branch===sample.branch&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
@@ -46,4 +72,4 @@ assert(!html.includes('roleButtons')&&!html.includes('roleAdvanced'));
 assert(html.includes('id="originTable"')&&html.includes('value="routes"'));
 assert(!retired.includes('<table')&&retired.includes('location.replace(target.href)'));
 assert.equal(filterTable(rows,{fixedOptimumOnly:true},ctx).length,records.filter(r=>r.fixedModelOptimum).length);
-console.log(JSON.stringify({routes:records.length,rows:rows.length,origins:profiles.size,missing:missing.length,stats:statKeys.length,branches:branches.size,requiredResearchRecorded:records.filter(r=>r.requiredResearch!==null).length},null,2));
+console.log(JSON.stringify({routes:records.length,rows:rows.length,origins:profiles.size,missing:missing.length,stats:statKeys.length,branches:branches.size,requiredResearchRecorded:records.filter(r=>r.requiredResearch!==null).length,bodyRepresentatives:bodyResults.filter(r=>r.best).length},null,2));

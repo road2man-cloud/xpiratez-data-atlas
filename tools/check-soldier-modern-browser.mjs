@@ -16,10 +16,13 @@ try{
  assert.equal(await page.locator('a[href="./trainings/"]').count(),0);
  await page.locator('a.card[href="./soldiers/"]').click();
  await page.waitForFunction(()=>document.querySelector('#originMaxima')?.dataset.validation==='validated',null,{timeout:60000});
+ await page.waitForSelector('#rowCount[data-body-career-status="loaded"]',{timeout:60000});
  assert.equal(await page.locator('#originTable tbody tr[data-body-id]').count(),29);
  const bodyCoverage=await page.locator('#originTable tbody tr[data-body-id]').evaluateAll(rows=>({rows:rows.length,calculated:rows.filter(r=>r.querySelector('td.score')?.textContent.trim()!=='—').length}));
  assert(bodyCoverage.calculated>=20,'Previously calculated final bodies must remain visible');
- assert.equal(await page.locator('#originTable thead th').count(),15);
+ assert.equal(await page.locator('#originTable thead th').count(),19);
+ const coherent=await page.locator('#originTable tbody tr[data-selected-route]').evaluateAll(rows=>rows.every(r=>Number(r.querySelector('[data-route-total]').dataset.routeTotal)===Array.from(r.querySelectorAll('[data-route-value]')).reduce((n,c)=>n+Number(c.dataset.routeValue),0)));
+ assert(coherent,'Displayed total must equal the same route’s 12 values');
  await page.locator('[data-body-sort="firing"]').click();
  assert.equal(await page.locator('[data-body-sort="firing"]').textContent(),'사격 ↓');
  console.log('PASS final-body maxima table: '+JSON.stringify(bodyCoverage));

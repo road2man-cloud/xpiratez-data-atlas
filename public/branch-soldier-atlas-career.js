@@ -1,6 +1,6 @@
-import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=38-coverage-unified';
+import {ledgers,statKeys,loadCareerRows,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=39-shared';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=38-coverage-unified';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=39-shared';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive}){
@@ -175,7 +175,7 @@ function render(){
 }
 for(const id of controls){
  if(checks.has(id))$(id).checked=params.get(id)==='1';
- else if(id==='q'){}else if(['difficulty','metric'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
+ else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 }
 if(params.has('a')||params.has('b')||location.hash==='#branchCompare')$('branchCompare').open=true;
 
@@ -203,14 +203,8 @@ async function load(){
  }else errors.push('공통 분기 원장 미연결');
  branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));
  populate();initial=false;render();
- for(const source of ledgers){
-  try{
-   const canonical=source.registryKey&&registry?.sourceMetadataSha256===metadata?registry[source.registryKey]:null;
-   const {rows:added,rejected}=project(source,canonical||await gzip(source.file),metadata);
-   rows.push(...added);if(rejected.length)errors.push(source.label+' '+rejected.length+'행 제외');
-  }catch(e){errors.push(source.label+' 미연결: '+e.message)}
-  finally{loaded++;populate();render();await new Promise(resolve=>setTimeout(resolve,0))}
- }
+ const projected=await loadCareerRows(modern,registry);
+ rows=projected.rows;errors.push(...projected.errors);loaded=ledgers.length;populate();render();
  }catch(e){errors.push('병종 원본 미연결: '+e.message);loaded=ledgers.length;initial=false;render()}
 }
 render();void load();
