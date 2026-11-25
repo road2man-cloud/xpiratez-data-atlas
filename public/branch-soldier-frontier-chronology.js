@@ -6,7 +6,7 @@ import {researchSetSummary as rs} from "./branch-soldier-research-set-summary.js
 import {activeClosureSummary as ac} from "./branch-soldier-active-closure-summary.js?v=20261126-active-closure-3";
 import {researchExpansionSummary as re} from "./branch-soldier-research-expansion-summary.js?v=20261126-alternating-1";
 import {expandedClosureSummary as ec} from "./branch-soldier-expanded-closure-summary.js?v=20261126-alternating-1";
-import {alternatingSummary as alt} from "./branch-soldier-alternating-summary.js?v=20261126-alternating-1";
+import {alternatingSummary as alt} from "./branch-soldier-alternating-v2-summary.js?v=20261126-alternating-2";
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=v=>Number.isFinite(v)?v.toLocaleString("ko-KR",{maximumFractionDigits:2}):"—";
 const name=(db,k)=>db.labels?.[k]||db.labels?.[String(k).slice(String(k).indexOf(":")+1)]||k;
@@ -37,7 +37,8 @@ function alternatingMarkup(db,filter=null){
  if(!rows.length)return "";
  const closed=rows.filter(x=>x.scopeComplete).length,global=!filter&&rows.length===alt.details.length;
  const stages=global?'<p>동적 연구 목표 작업 '+fmt(alt.attempted)+' / '+fmt(alt.goalTasks)+' 시도 ('+fmt(100*alt.attempted/alt.goalTasks)+'%). 신규 연구 세트에서 발생한 목표 '+fmt(alt.taskSources.R)+'개 포함. 미시도 '+fmt(alt.pending)+'개 · 제한 탐색 미해결 '+fmt((alt.counts.LIMITED_PLANNER_UNRESOLVED||0)+(alt.counts.JOINT_REPLAY_UNRESOLVED||0))+'개 · 현재 분기 정책 제외 '+fmt(alt.counts.CURRENT_BRANCH_POLICY_EXCLUDED||0)+'개. 연구 획득 순서 대안 전체의 완료율이 아닙니다.</p>':'';
- return '<details class="bs-note"><summary>연구·시술 교대 탐색 · 신규 연구 상태 '+fmt(rows.length)+'개 · 범위 종결 '+fmt(closed)+'개</summary><p><strong>조건부 탐색이며 최종 인증 아님.</strong> 추가 연구를 실제 행동 순서로 재생한 뒤 시술·성장을 확장하고, 새로 도달한 상태마다 추가 연구 목표를 자동 생성합니다. 고정 연구 세트 내 동등 상태 압축은 연구 획득 시점 간 동등성 증명이 아니므로 해당 시점은 미해결로 보존합니다.</p>'+stages+table(["출생처","연구 확장 차수","추가 지원 시술","상태 / 처리","최대 동시 특성","조건부 판정"],rows.map(x=>['<a href="'+link(x.origin,x.branch,x.root)+'">'+esc(name(db,x.origin))+'</a>',fmt(x.generation),esc(x.newlySupported.map(k=>name(db,k)).join(" · ")||"없음"),fmt(x.states)+' / '+fmt(x.processed),fmt(x.maxTraits),x.scopeComplete?"범위 종결":"미종결 / 미해결"]))+'<p><a href="'+esc(new URL("./data/"+alt.file,import.meta.url).href)+'">교대 탐색 연구·시술 순서, 상태 그래프 및 대기 원장 (gzip)</a></p></details>';
+ const reuse=global?'<p>공유 연구 목표 그룹 '+fmt(alt.researchGoalGroups)+'개 · 시도 그룹 '+fmt(alt.attemptedGroups)+'개 · 연구 경로 확보 그룹 '+fmt(alt.successfulGroups)+'개. 그룹은 활성·비활성 연구 세트, 분기 및 목표 연구 집합을 기준으로 묶은 계산 재사용 단위이며 병종 상태의 동등성이나 전체 획득 순서의 완전성을 뜻하지 않습니다. 미해결 목표 대체 경로 재시도 '+fmt(alt.retryCount)+'건 · 재생 성공으로 전환 '+fmt(alt.recoveredCount)+'개.</p>':'';
+ return '<details class="bs-note"><summary>연구·시술 교대 탐색 V2 · 신규 연구 상태 '+fmt(rows.length)+'개 · 범위 종결 '+fmt(closed)+'개</summary><p><strong>조건부 탐색이며 최종 인증 아님.</strong> 추가 연구를 실제 행동 순서로 재생한 뒤 시술·성장을 확장하고, 새로 도달한 상태마다 추가 연구 목표를 자동 생성합니다. 고정 연구 세트 내 동등 상태 압축은 연구 획득 시점 간 동등성 증명이 아니므로 해당 시점은 미해결로 보존합니다.</p>'+stages+reuse+table(["출생처","연구 확장 차수","추가 지원 시술","상태 / 처리","최대 동시 특성","조건부 판정"],rows.map(x=>['<a href="'+link(x.origin,x.branch,x.root)+'">'+esc(name(db,x.origin))+'</a>',fmt(x.generation),esc(x.newlySupported.map(k=>name(db,k)).join(" · ")||"없음"),fmt(x.states)+' / '+fmt(x.processed),fmt(x.maxTraits),x.scopeComplete?"범위 종결":"미종결 / 미해결"]))+'<p><a href="'+esc(new URL("./data/"+alt.file,import.meta.url).href)+'">교대 탐색 연구·시술 순서, 상태 그래프 및 대기 원장 (gzip)</a></p></details>';
 }
 function researchExpansionMarkup(db,filter=null){
  if(re.sourceMetadataSha256!==db.sourceMetadataSha256||ec.sourceMetadataSha256!==db.sourceMetadataSha256||re.sourceClosureFingerprint!==ac.fingerprint)return "";
