@@ -12,6 +12,7 @@ import {RANK_POLICY,defaultRankData} from "./population-frontier-default-rank.mj
 import {proveBirthAppend} from "./population-frontier-birth-migration.mjs";
 import {proveBirthAppendV2} from "./population-birth-append-v2.mjs";
 import {TRAIT_PRIORITY,traitTransition,rankTraitSummary} from "./population-rank-trait-priority.mjs";
+import {RETAINED_POLICY,retainedSummary} from "./population-retained-trait-scheduler.mjs";
 import {proveCatalogExtension} from "./population-frontier-catalog-extension.mjs";
 import {baseBirthProposals} from "./population-frontier-birth-proposals.mjs";
 import {chainProposal} from "./population-frontier-chain-proposals.mjs";
@@ -126,6 +127,7 @@ if(a.rankHorizonAttempts){
 }
 if(a.summary.coveragePolicy){assert.equal(a.summary.coveragePolicy,COVERAGE_POLICY);assert.deepEqual(a.summary.coverage,coverageIndex(a.routes,birthCatalog(db)).summary);}
 if(a.summary.rankTraitPolicy){assert.equal(a.summary.rankTraitPolicy,TRAIT_PRIORITY);assert.deepEqual(a.summary.rankTraitSummary,rankTraitSummary(a.routes));assert.equal(a.summary.rankTraitRound.regularPending+a.summary.rankTraitRound.deferredPending,a.summary.rankHorizonPending);}
+if(a.summary.retainedTraitPolicy){assert.equal(a.summary.retainedTraitPolicy,RETAINED_POLICY);assert.deepEqual(a.summary.retainedTraitSummary,retainedSummary(a.routes));}
 const cacheHashes=a.cacheHashes||a.hashes;
 for(const [p,h] of Object.entries(cacheHashes))assert.equal(a.hashes[p],h,"Cache runtime/provenance mismatch "+p);
 const bridge=createBridge(data,db,cacheHashes,{cache:true}),{replay,engine}=bridge;
@@ -249,7 +251,7 @@ for(const [id,r] of Object.entries(a.routes)){
   if(r.rankDefault){const rb=rankBridge.loadBirth(origin);assert.equal(exactWorld(rb.n.world),exactWorld(w),"Rank policy changed original birth");}
   let traitBefore=null,actionIndex=0;
   for(const action of r.actions){
-   if(r.rankTraitEvidence&&actionIndex===chainParent.actions.length){assert.equal(exactWorld(w),chainParent.canonicalStateHash);traitBefore=w;}
+   if((r.rankTraitEvidence||r.traitEvidence)&&actionIndex===chainParent.actions.length){assert.equal(exactWorld(w),chainParent.canonicalStateHash);traitBefore=w;}
    actionIndex++;
    const next=activeReplay.apply(w,action);
    assert(![...next.researched].some(k=>!w.researched.has(k)&&(policy.blocked.has(k)||policy.opposing.has(k))),"Opposing or blocked research");
@@ -258,6 +260,7 @@ for(const [id,r] of Object.entries(a.routes)){
   }
   assert(!w.pendingFree);assert.equal(exactWorld(w),r.canonicalStateHash);
   if(r.rankTraitEvidence){assert(r.rankHorizonPolicy&&traitBefore);assert.deepEqual(r.rankTraitEvidence,traitTransition(traitBefore,w));}
+  if(r.traitEvidence){assert(r.horizonPolicy===HORIZON_POLICY&&traitBefore);assert.deepEqual(r.traitEvidence,traitTransition(traitBefore,w));}
   const end=activeReplay.finish(w);for(const k of Object.keys(end))assert.deepEqual(r[k],end[k],"Final field "+k);
   const allowed=activeEngine.context(r.branch,b.p,[...b.birth,...r.actions],w);assert.deepEqual(r.allowedDifficulties,chainParent?allowed.filter(i=>chainParent.allowedDifficulties.includes(i)):allowed);assert(r.allowedDifficulties.length);
   const research=[...w.researched].filter(k=>activeReplay.active(w,k)&&!activeReplay.active(b.n.world,k));assert.deepEqual(research,r.addedResearch);
