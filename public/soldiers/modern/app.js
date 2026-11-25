@@ -1,9 +1,9 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-frontier-chronology-3';
+import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v16';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
-import {populationCoverageText,populationOriginMarkup,populationUnlockOriginMarkup,populationEventOriginMarkup,populationPreboundOriginMarkup} from '../../branch-soldier-population.js?v=20261125-pop-v15-birth7';
+import {populationCoverageText,populationOriginMarkup,populationUnlockOriginMarkup,populationEventOriginMarkup,populationPreboundOriginMarkup} from '../../branch-soldier-population.js?v=20261125-pop-v16';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -58,7 +58,7 @@ let branchScope=null;
 
 function integratedRouteLink(row,label,route=row.route){
   const w=sharedRegistry?.witnesses?.[route];
-  if(['POPEXT12','POPRESEARCH12','POPRESEARCHCHAIN12','POPGROW12','POPCHCAREER12','POPRCAREER12'].includes(w?.source)){
+  if(['POPEXT12','POPRESEARCH12','POPRESEARCHCHAIN12','POPGROW12','POPCHCAREER12','POPRCAREER12','POPNEWPAIR12'].includes(w?.source)){
     const u=new URL(location.href);u.searchParams.set('profile',w.originProfile);u.searchParams.set('populationRoute',route);if(activeBranch||w.branchIds?.[0])u.searchParams.set('branch',activeBranch||w.branchIds[0]);u.hash='originDetails';
     return '<a href="'+esc(u.href)+'">'+esc(label)+'</a>';
   }

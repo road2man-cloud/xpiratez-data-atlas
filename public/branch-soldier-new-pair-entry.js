@@ -1,0 +1,17 @@
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>Number.isFinite(n)?n.toLocaleString("ko-KR"):"—";
+const label=(db,id)=>db.labels?.[id]||db.labels?.[id.slice(id.indexOf(":")+1)]||id;
+const sum=v=>v.reduce((a,b)=>a+b,0);
+function link(r,id){const u=new URL("./soldiers/modern/",import.meta.url);u.searchParams.set("profile",r.origin);u.searchParams.set("branch",r.branch);u.searchParams.set("populationRoute",id);u.hash="originDetails";return esc(u.href);}
+export function newPairEntryMarkup(db){
+ const a=db.populationNewPairEntry;if(!a)return "";
+ const s=a.summary;
+ return '<details open class="bs-note" data-new-pair-entry="true"><summary>신규 출생처 × 연구 분기 진입 '+fmt(s.registeredPairs)+'쌍</summary><p>이전 조건부 근거가 없는 조합부터 보존 연구 이력을 재생하고, 비이벤트 출생의 최솟값 모집 및 마지막 전투캡 성장을 가정합니다. 신규 근거이지 전역 완료는 아닙니다.</p><p>'+fmt(s.registeredOrigins)+'개 출생처 · '+fmt(s.registeredBranches)+'개 연구 분기 · 마지막 배치 '+fmt(s.added)+'쌍 신규 / '+fmt(s.attempted)+'회 시도 · '+fmt(s.newIndependentReplays)+'개 독립 재생 · 실패는 불가능 증명 아님.</p><p><a href="'+esc(new URL("./data/"+a.file,import.meta.url).href)+'">전체 행동 원장 (gzip)</a></p></details>';
+}
+export function newPairEntryScopeMarkup(db,origin=null,branch=null,focus=null){
+ const a=db.populationNewPairEntry;if(!a)return "";
+ const rows=Object.entries(a.routes).filter(([,r])=>(!origin||r.origin===origin)&&(!branch||r.branch===branch)).sort((x,y)=>Number(y[0]===focus)-Number(x[0]===focus)||sum(y[1].vector)-sum(x[1].vector));
+ if(!rows.length)return "";
+ const renderAction=x=>esc(x.type+": "+(x.id||x.research||x.profile||x.transform||"")+(x.assumption?" (가정)":""));
+ return '<details '+(focus&&rows.some(([id])=>id===focus)?"open ":"")+'class="bs-note" data-new-pair-scope="true"><summary>신규 시간순 모집 근거 '+fmt(rows.length)+'쌍</summary>'+rows.map(([id,r])=>'<details '+(id===focus?"open ":"")+'><summary><a href="'+link(r,id)+'">'+esc(label(db,r.origin))+' · 분기 '+esc(db.branches.find(b=>b.id===r.branch)?.rank??r.branch)+'</a> · '+esc(label(db,r.body))+' · 합계 '+fmt(sum(r.vector))+'</summary><p>연구 이력 '+esc(a.roots[r.root].historyId)+' · 추가 모집 연구 '+esc(r.missing.map(k=>label(db,k)).join(" · ")||"없음")+' · 난이도 '+esc(r.allowedDifficulties.join(", "))+'</p><p>'+db.stats.map((k,i)=>esc(db.statLabels?.[k]||k)+' '+fmt(r.raw[i])+' + '+fmt(r.bonus[i])+' = '+fmt(r.vector[i])).join(" · ")+'</p><details><summary>선행 연구 행동 '+fmt(a.roots[r.root].actions.length)+'개</summary>'+a.roots[r.root].actions.map(renderAction).join("<br>")+'</details><p>'+r.actions.map(renderAction).join(" → ")+'</p><p>조건부 공급·성장 가정, 전역 최적성 미인증 · <code>'+esc(r.fullActionHash)+'</code></p></details>').join("")+'</details>';
+}
