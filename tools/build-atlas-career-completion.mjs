@@ -5,14 +5,14 @@ import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project} from "../public/branch-soldier-atlas-career-core.js";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
-import {extractTerminalRules} from "./atlas-terminal-rule-source.mjs";
+// Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const db=decode(file),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
 assert.equal(modern.meta.source.metadataSha256,metadata);
 const prior=db.careerCompletion;
 const gameRoot=process.argv.find(x=>x.startsWith("--game-root="))?.slice(12);
-const terminalRule=gameRoot?extractTerminalRules(modern,gameRoot):prior?.terminalRule?.sourceMetadataSha256===metadata?prior.terminalRule:{status:"UNRESOLVED",reason:"Original terminal rules not extracted"};
+const terminalRule=gameRoot?(await import("./atlas-terminal-rule-source.mjs")).extractTerminalRules(modern,gameRoot):prior?.terminalRule?.sourceMetadataSha256===metadata?prior.terminalRule:{status:"UNRESOLVED",reason:"Original terminal rules not extracted"};
 const terminalResearch=db.populationMissingOriginCareer?.terminalResearch||null;
 const terminalSupply=db.populationMissingOriginCareer?.terminalSupply||null;
 const bySource={},classifications={},sourceHashes={},seen=new Set(),pairs=new Set(),branches=new Set(),origins=new Set(),admitted=new Map();
