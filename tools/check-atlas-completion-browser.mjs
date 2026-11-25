@@ -19,6 +19,9 @@ try{
  const count=()=>page.locator('#originTable tbody tr[data-route-key]').count();
  assert.equal(await count(),Math.min(summary.completeCombinations,100));
  assert((await page.locator('#catalogStatus').innerText()).includes('완결 조합 '+summary.completeCombinations.toLocaleString('ko-KR')+'개'));
+ assert.equal(await page.locator('[data-terminal-supply-plan]').count(),db.careerCompletion.terminalSupply.terminalPlans);
+ assert((await page.locator('#terminalResearchProgress').textContent()).includes('실제 자금 조달'));
+ assert((await page.locator('#catalogStatus').innerText()).includes('조건부 조달 계획'));
  for(const group of ['origin','body','routes']){
   await page.locator('#catalogGrouping').selectOption(group);
   if(!summary.completeCombinations)assert.equal(await count(),0);

@@ -14,6 +14,7 @@ const prior=db.careerCompletion;
 const gameRoot=process.argv.find(x=>x.startsWith("--game-root="))?.slice(12);
 const terminalRule=gameRoot?extractTerminalRules(modern,gameRoot):prior?.terminalRule?.sourceMetadataSha256===metadata?prior.terminalRule:{status:"UNRESOLVED",reason:"Original terminal rules not extracted"};
 const terminalResearch=db.populationMissingOriginCareer?.terminalResearch||null;
+const terminalSupply=db.populationMissingOriginCareer?.terminalSupply||null;
 const bySource={},classifications={},sourceHashes={},seen=new Set(),pairs=new Set(),branches=new Set(),origins=new Set(),admitted=new Map();
 const missingProofs=Object.fromEntries(REQUIRED_PROOFS.map(k=>[k,0])),assumptions={};
 let candidates=0,traceVerified=0,traceMissing=0,conditionalClosed=0,fixedModelBound=0,legacyCertified=0,invalidProjection=0,duplicateEvidence=0;
@@ -56,7 +57,7 @@ const shared=db.populationMissingOriginCareer?.summary||{},newpair=db.population
 const alternatingPath="public/data/soldier-final-career-alternating-v9.json.gz";
 const alt=fs.existsSync(alternatingPath)?decode(alternatingPath):null;
 const n=x=>Number.isSafeInteger(x)&&x>=0?x:null;
-const pendingBySource={missingbirth:n(shared.states-shared.processed),alternating:alt?.graphs?Object.values(alt.graphs).reduce((s,g)=>s+(g.nodes||[]).filter(n=>!n.edges).length,0):null,
+const pendingBySource={terminalSupply:n(terminalSupply?.pending),missingbirth:n(shared.states-shared.processed),alternating:alt?.graphs?Object.values(alt.graphs).reduce((s,g)=>s+(g.nodes||[]).filter(n=>!n.edges).length,0):null,
  newpair:n(newpair.pendingStates),research:n(research.continuationPending),frontierHorizon:n(frontier.horizonPending),frontierRankHorizon:n(frontier.rankHorizonPending)};
 const summary={origins:modern.profiles.length,originsWithSeeds:origins.size,staticBranches:db.branches.length,
  branchesWithConditionalResearch:db.branches.filter(b=>!b.sourceRootConflict&&b.historyCount).length,branchesWithSeeds:branches.size,
@@ -66,7 +67,7 @@ const summary={origins:modern.profiles.length,originsWithSeeds:origins.size,stat
  impossibleCertified:0,fullyEnumeratedBranches:0,globalOptimalCertified:rows.filter(r=>r.globalOptimal).length,
  exploredOriginBranchPairs:pairs.size,totalSearchSpace:null,completionRate:null,pendingBySource,missingProofs,assumptions};
 db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"8.7.1",sourceHashes,
- terminalRule,terminalResearch,
+ terminalRule,terminalResearch,terminalSupply,
  requiredProofs:REQUIRED_PROOFS,summary,bySource,classifications,rows,
  scope:"Only verified full campaign combinations; all conditional ledgers remain search seeds. No final admission based on conditional closure or numerical upper bounds."};
 db.summary.careerCompletion=summary;

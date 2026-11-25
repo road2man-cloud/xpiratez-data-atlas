@@ -34,4 +34,40 @@ for(const r of Object.values(a.terminalResearch.records)){
 }
 assert.equal(advanced,a.terminalResearch.advanced);
 assert.equal(ready,a.terminalResearch.ready);
-console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready}));
+const supply=a.terminalSupply,plans=Object.values(supply.plans).filter(r=>r.plan);
+const {fingerprint:sourceFingerprint,...supplySource}=supply.sourceEvidence;
+assert.equal(key(supplySource),sourceFingerprint);
+let terminalPlans=0,surgeryPlans=0,open=0,resourceResearch=0;
+for(const r of plans){
+ const p=r.plan,{planHash,...rest}=p;
+ assert.equal(key(rest),planHash);assert.equal(p.sourceFingerprint,sourceFingerprint);
+ assert(a.graphs[r.graph]?.nodes[r.node]);
+ const stock={...p.openingStock},functions=new Set(),obligationIds=new Set(p.obligations.map(o=>o.id));
+ let dollars=0,hours=0,days=0;
+ const add=(k,n)=>{assert(Number.isSafeInteger(n)&&n>=0);stock[k]=(stock[k]||0)+n;};
+ const use=(k,n)=>{assert(Number.isSafeInteger(n)&&n>=0&&(stock[k]||0)>=n,'Resource underflow: '+k+' in '+p.target);stock[k]-=n;};
+ for(const s of p.steps){
+  if(s.type==='procurementObligation'){assert(obligationIds.has(s.id));add(s.asset,s.quantity);}
+  else if(s.type==='facilityObligation'){assert(obligationIds.has(s.id));functions.add(s.function);}
+  else if(s.type==='capacityObligation'){assert(obligationIds.has(s.id));}
+  else if(s.type==='purchase'){assert((s.functions||[]).every(f=>functions.has(f)));add(s.asset,s.quantity);dollars+=s.cost;}
+  else if(s.type==='manufacture'){assert((s.functions||[]).every(f=>functions.has(f)));for(const [k,n] of Object.entries(s.inputs))use(k,n);for(const [k,n] of Object.entries(s.outputs))add(k,n);dollars+=s.cost;hours+=s.hours;}
+  else if(s.type==='buildFacility'){assert((s.requiresFunctions||[]).every(f=>functions.has(f)));for(const [k,n] of Object.entries(s.materials))use(k,n);for(const f of s.provides)functions.add(f);dollars+=s.cost;days+=s.days;}
+  else if(s.type==='reserveForTarget')use(s.asset,s.quantity);
+  else if(s.type==='reserveSurgery')dollars+=s.cost;
+  else assert.fail('Unknown procurement step: '+s.type);
+ }
+ assert.equal(dollars,p.budget.dollars);assert.equal(hours,p.budget.manufacturingEngineerHours);assert.equal(days,p.budget.sequentialFacilityBuildDays);
+ assert(p.openConditions.length>0);open+=p.obligations.length;
+ if(r.kind==='terminal'){terminalPlans++;assert(rows.has('MISSCAR:'+r.graph+':'+r.node));}else surgeryPlans++;
+}
+for(const r of Object.values(supply.resourceResearch||{})){
+ if(!r.suffixHash)continue;resourceResearch++;
+ const row=rows.get('MISSCAR:'+r.graph+':'+r.to);assert(row);
+ assert.equal(a.graphs[r.graph].nodes[r.to].stateHash,r.stateHash);
+ assert.equal(key(readResearchWitness(idx,row,db.sourceMetadataSha256).fullActions),row.hash);
+}
+assert.equal(terminalPlans,c.terminalSupply.terminalPlans);assert.equal(surgeryPlans,c.terminalSupply.surgeryPlans);
+assert.equal(open,c.terminalSupply.procurementObligations);assert.equal(resourceResearch,c.terminalSupply.resourceResearchAdvanced);
+assert.equal(c.terminalSupply.completeCampaigns,0);
+console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch}));
