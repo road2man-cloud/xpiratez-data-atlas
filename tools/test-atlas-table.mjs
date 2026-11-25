@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows} from '../public/branch-soldier-atlas-career-core.js';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows} from '../public/branch-soldier-atlas-table-core.js';
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows,normalizeStatMinimums,readStatMinimums,writeStatMinimums,filterStatMinimums} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
 const metadata=modern.meta.source.metadataSha256;
@@ -62,6 +62,33 @@ const sample=records.find(r=>r.traits?.length&&r.order.length);
 assert(sample);const matching=filterTable(rows,{origin:sample.origin,training:sample.order[0],trait:sample.traits[0],branch:sample.branch},ctx);
 assert(matching.some(r=>r.key===sample.key));assert(matching.every(r=>r.origin===sample.origin&&r.branch===sample.branch&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
 const branchIndex=indexCareerBranches(records);
+// A minimum in one column cannot borrow a value from a different witness.
+const minimums={tu:90,firing:120,health:60};
+const minimumMatches={};
+for(const metric of ['cap','current','birthMin','birthMax']){
+ const expected=rows.filter(r=>Object.entries(minimums).every(([k,v])=>Number.isFinite(statValue(r,k,metric,profiles))&&statValue(r,k,metric,profiles)>=v));
+ const matches=filterTable(rows,{metric,minima:minimums},ctx);
+ assert.deepEqual(matches.map(r=>r.key),expected.map(r=>r.key));
+ minimumMatches[metric]=matches.length;
+ if(metric==='cap'||metric==='current'){
+  for(const [branch] of branchIndex)assert.deepEqual(branchCareerRows(branchIndex,branch,{metric,minima:minimums}).map(r=>r.key),expected.filter(r=>r.branch===branch).map(r=>r.key));
+ }
+}
+const blankVector=statKeys.map(()=>0);
+const v=(tu,firing)=>blankVector.map((n,i)=>statKeys[i]==='tu'?tu:statKeys[i]==='firing'?firing:n);
+const splitRows=[{...records[0],key:'minimum-a',cap:v(100,40)},{...records[0],key:'minimum-b',cap:v(40,130)}];
+assert.equal(filterStatMinimums(splitRows,{tu:90,firing:120}).length,0);
+assert.equal(filterStatMinimums([{...records[0],cap:null}],{tu:0}).length,0);
+assert.equal(filterStatMinimums(splitRows,{total:160}).length,1);
+assert.deepEqual(normalizeStatMinimums({tu:'0',firing:'120',health:'',mana:-1,total:'x',unsupported:99}),{tu:0,firing:120});
+const p=new URLSearchParams('branch=branch-a&min_tu=1&min_health=999');
+writeStatMinimums(p,{tu:90,firing:120,total:0});
+assert.deepEqual(readStatMinimums(p),{tu:90,firing:120,total:0});
+assert.equal(p.get('branch'),'branch-a');assert.equal(p.has('min_health'),false);
+writeStatMinimums(p,{});assert.deepEqual(readStatMinimums(p),{});
+const multiMinimum=filterTable(rows,{metric:'cap',minima:minimums,minDepth:'8',minTraits:'5'},ctx);
+assert(multiMinimum.every(r=>r.order.length>=8&&r.traits?.length>=5&&Object.entries(minimums).every(([k,v])=>statValue(r,k,'cap',profiles)>=v)));
+console.log(JSON.stringify({minimums,minimumMatches,withDepthAndTraits:multiMinimum.length}));
 // Multiple selections are conjunctions on one recorded route, never unions
 // across separate witnesses. Repeated query params and comma lists agree.
 const multiSample=records.find(r=>new Set(r.order).size>=2&&new Set(r.traits||[]).size>=2);
