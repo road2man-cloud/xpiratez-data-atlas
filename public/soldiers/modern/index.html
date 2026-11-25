@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="shared-terminal-catalog.css?v=20261106-chort-separated-1">
 <link rel="stylesheet" href="acquisition-tech-view.css?v=20261125-origin-joint-suffix-1520">
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
-<link rel="stylesheet" href="../../branch-soldier-results.css?v=20261124-resource-1">
+<link rel="stylesheet" href="../../branch-soldier-results.css?v=20261126-multi-41">
 <link rel="stylesheet" href="../../branch-soldier-unified-nav.css?v=27">
 <link rel="stylesheet" href="../../branch-soldier-atlas-table.css?v=39-shared">
 <script defer src="../../branch-soldier-unified-nav.js?v=34"></script>
@@ -45,8 +45,8 @@
 <label>최종 병종<select id="body"><option value="">전체</option></select></label>
 <label>선장<select id="captain"><option value="">전체</option></select></label>
 <label>분기<select id="branch"><option value="">전체</option></select></label>
-<label>시술<select id="training"><option value="">전체</option></select></label>
-<label>특성<select id="trait"><option value="">전체</option></select></label>
+<div class="route-multi-control"><label for="training">시술</label><select id="training"><option value="">전체</option></select></div>
+<div class="route-multi-control"><label for="trait">특성</label><select id="trait"><option value="">전체</option></select></div>
 <label>최소 시술 횟수<input id="minDepth" type="number" min="0" step="1" placeholder="전체"></label>
 <label>최소 보유 특성 수<input id="minTraits" type="number" min="0" step="1" placeholder="전체"></label>
 <label>난이도<select id="difficulty"><option value="">전체</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
@@ -124,8 +124,8 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261126-coverage-40-unified"></script>
-<script type="module" src="../../branch-soldier-results.js?v=20261126-depth-traits"></script>
+<script type="module" src="app.js?v=20261126-multi-41"></script>
+<script type="module" src="../../branch-soldier-results.js?v=20261126-multi-41"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>
 <script type="module" src="../../origin-numeric-cache.js?v=20261124-cache-1"></script>
