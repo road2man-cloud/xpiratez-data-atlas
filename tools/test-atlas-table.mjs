@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
-import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows} from '../public/branch-soldier-atlas-career-core.js';
+import {ledgers,project,statKeys,exactCareerUrl,routeFilterIds,filterRows,compileResearchSearch,researchActionId,filterCareerRequirements} from '../public/branch-soldier-atlas-career-core.js';
 import {rowsWithMissingOrigins,statValue,filterTable,sortTable,bodyCareerSummary,indexCareerBranches,branchCareerRows,normalizeStatMinimums,readStatMinimums,writeStatMinimums,filterStatMinimums} from '../public/branch-soldier-atlas-table-core.js';
 const read=n=>fs.readFileSync(new URL('../public/data/'+n,import.meta.url));
 const modern=JSON.parse(read('soldiers-modern-index.json'));
@@ -62,6 +62,39 @@ const sample=records.find(r=>r.traits?.length&&r.order.length);
 assert(sample);const matching=filterTable(rows,{origin:sample.origin,training:sample.order[0],trait:sample.traits[0],branch:sample.branch},ctx);
 assert(matching.some(r=>r.key===sample.key));assert(matching.every(r=>r.origin===sample.origin&&r.branch===sample.branch&&r.order.includes(sample.order[0])&&r.traits.includes(sample.traits[0])));
 const branchIndex=indexCareerBranches(records);
+// Compact research search must agree with the actual witness prefix. A required
+// research field is not accepted as a completed/recorded research action.
+const researchSources=new Map(),researchRaw=new Map();
+for(const l of ledgers.filter(l=>l.index)){
+ const raw=JSON.parse(gunzipSync(read(l.index+'.json.gz')));
+ researchRaw.set(l.key,raw);researchSources.set(l.key,compileResearchSearch(l,raw,metadata));
+}
+const researchIndex={hasWitness:r=>researchSources.get(r.source)?.hasWitness(r)===true,matches:(r,ids)=>researchSources.get(r.source)?.matches(r,ids)===true};
+const exactResearchIds=r=>{
+ if(!researchIndex.hasWitness(r))return null;
+ const raw=researchRaw.get(r.source),ids=new Set();let i=raw.routes[r.id].prefix;
+ while(i!==null){const n=raw.nodes[i],id=researchActionId(n.action);if(id)ids.add(id);i=n.parent;}
+ return ids;
+};
+const witnesses=records.filter(r=>researchIndex.hasWitness(r));
+const sampleResearch=witnesses.find(r=>profiles.get(r.origin)?.requires?.length&&Object.keys(profiles.get(r.origin)?.acquisitionRequiredItems||{}).length&&exactResearchIds(r).size>=2);
+assert(sampleResearch,'No research/recruitment witness');
+const sampleProfile=profiles.get(sampleResearch.origin),req=sampleProfile.requires[0],item=Object.keys(sampleProfile.acquisitionRequiredItems)[0];
+const researchIds=[...exactResearchIds(sampleResearch)].filter(id=>id!==req).slice(0,2);
+assert.equal(researchIds.length,2);
+const researchFilters={researchAction:researchIds.join(','),recruitResearch:req,recruitItem:item};
+const expectedResearch=records.filter(r=>{const ids=exactResearchIds(r),p=profiles.get(r.origin);return ids&&researchIds.every(id=>ids.has(id))&&p?.requires?.includes(req)&&Number(p?.acquisitionRequiredItems?.[item])>0;});
+const researchContext={...ctx,researchIndex};
+const matchedResearch=filterTable(rows,researchFilters,researchContext);
+assert.deepEqual(matchedResearch.map(r=>r.key),expectedResearch.map(r=>r.key));
+assert(matchedResearch.includes(sampleResearch));
+assert.deepEqual(branchCareerRows(branchIndex,sampleResearch.branch,researchFilters,researchContext).map(r=>r.key),expectedResearch.filter(r=>r.branch===sampleResearch.branch).map(r=>r.key));
+assert.equal(filterCareerRequirements([sampleResearch],researchFilters,{profiles}).length,0);
+assert(!researchIndex.matches({...sampleResearch,hash:'different'},researchIds));
+assert(!researchIndex.matches({...sampleResearch,branch:'different'},researchIds));
+assert(!researchIndex.matches(sampleResearch,['STR_NONEXISTENT_RESEARCH_TEST']));
+assert.equal(researchActionId({type:'transform',id:'STR_NONRESEARCH_TEST'}),null);
+console.log(JSON.stringify({researchWitnesses:witnesses.length,researchActionIds:new Set([...researchSources.values()].flatMap(s=>s.ids)).size,example:{researchIds,req,item,matches:matchedResearch.length}}));
 // A minimum in one column cannot borrow a value from a different witness.
 const minimums={tu:90,firing:120,health:60};
 const minimumMatches={};

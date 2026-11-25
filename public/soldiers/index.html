@@ -11,8 +11,8 @@
   // All Soldier DB entries now resolve to one current v.o2 ruleset.
   const target = new URL("./modern/", location.href);
   const from = new URLSearchParams(location.search);
-  for (const key of ["family","q","profile","training","research","branch","body","mode","route","minDepth","minTraits","view","group","origin","captain","trait","difficulty","metric","certified","fixedOptimumOnly","transitionBreakthroughOnly","missingOnly","selectedOnly","a","b","sameChoices","sort","dir","stat","populationRoute","candidate"]) {
-    if (from.has(key)) target.searchParams.set(key,["training","trait"].includes(key)?from.getAll(key).join(","):from.get(key));
+  for (const key of ["family","q","profile","training","research","branch","body","mode","route","minDepth","minTraits","researchAction","recruitResearch","recruitItem","view","group","origin","captain","trait","difficulty","metric","certified","fixedOptimumOnly","transitionBreakthroughOnly","missingOnly","selectedOnly","a","b","sameChoices","sort","dir","stat","populationRoute","candidate"]) {
+    if (from.has(key)) target.searchParams.set(key,["training","trait","researchAction","recruitResearch","recruitItem"].includes(key)?from.getAll(key).join(","):from.get(key));
   }
   for (const stat of ["tu","stamina","health","bravery","reactions","firing","throwing","strength","psiStrength","psiSkill","melee","mana","total"]) {
     const key="min_"+stat;if(from.has(key))target.searchParams.set(key,from.get(key));

@@ -88,6 +88,81 @@ export function filterRows(rows,f){
   (depth===null||!r.missing&&r.order.length>=depth)&&(traits===null||r.traits!==null&&r.traits.length>=traits)&&
   (f.difficulty===''||f.difficulty==null||r.difficulties.includes(Number(f.difficulty)))&&(!f.certified||r.certified));
 }
+// Search only explicitly recorded research actions. Assumed event outcomes remain
+// conditional records; a rule requirement or a research-set ID is not a witness.
+export function researchActionId(action){
+ if(!action)return null;
+ if(['research','repeatResearch'].includes(action.type))return typeof action.id==='string'?action.id:null;
+ if(['eventResearch','freeResearch','missionResearch'].includes(action.type))return typeof action.research==='string'?action.research:null;
+ return null;
+}
+export function compileResearchSearch(ledger,index,metadata){
+ if(index.sourceMetadataSha256!==metadata||!Array.isArray(index.nodes)||!index.routes)throw Error('연구 색인 버전 불일치');
+ const graphSha=index.sourceGraphSha256;
+ const parents=new Int32Array(index.nodes.length),ids=new Int32Array(index.nodes.length),dictionary=new Map();
+ ids.fill(-1);
+ for(const [i,node] of index.nodes.entries()){
+  const p=node.parent;if(p!==null&&(!Number.isInteger(p)||p<0||p>=i))throw Error('연구 이력 노드 연결 오류');
+  parents[i]=p===null?-1:p;
+  const id=researchActionId(node.action);if(!id)continue;
+  if(!dictionary.has(id))dictionary.set(id,dictionary.size);
+  ids[i]=dictionary.get(id);
+ }
+ const routes=new Map();
+ for(const [id,w] of Object.entries(index.routes)){
+  if(!Number.isInteger(w.prefix)||w.prefix<0||w.prefix>=parents.length)continue;
+  routes.set(id,{prefix:w.prefix,origin:w.origin,branch:w.branch,hash:w.fullActionHash,graph:w.sourceGraph,node:w.sourceNode});
+ }
+ const cache=new Map();
+ function bits(id){
+  const n=dictionary.get(id);if(n===undefined)return null;
+  if(cache.has(id)){const found=cache.get(id);cache.delete(id);cache.set(id,found);return found;}
+  const result=new Uint8Array(parents.length);
+  for(let i=0;i<parents.length;i++)result[i]=ids[i]===n||parents[i]>=0&&result[parents[i]]?1:0;
+  cache.set(id,result);if(cache.size>32)cache.delete(cache.keys().next().value);
+  return result;
+ }
+ function entry(row){
+  const w=routes.get(row.id);
+  if(row.source!==ledger.key||!w||w.origin!==row.origin||w.branch!==row.branch||w.hash!==row.hash)return null;
+  if(row.sourceGraph&&(!row.graphSha||graphSha!==row.graphSha||w.graph!==row.sourceGraph||w.node!==row.sourceNode))return null;
+  return w;
+ }
+ return {ids:[...dictionary.keys()],hasWitness:row=>!!entry(row),matches(row,requested){
+  const w=entry(row);return !!w&&requested.every(id=>bits(id)?.[w.prefix]===1);
+ }};
+}
+const researchSearchCache=new WeakMap();
+export async function loadResearchSearch(modern){
+ if(researchSearchCache.has(modern))return researchSearchCache.get(modern);
+ const metadata=modern.meta.source.metadataSha256;
+ const promise=(async()=>{
+  const sources=new Map(),errors=[];
+  for(const ledger of ledgers.filter(l=>l.index)){
+   try{
+    const response=await fetch(new URL('./data/'+ledger.index+'.json.gz',import.meta.url));
+    if(!response.ok)throw Error('HTTP '+response.status);
+    if(typeof DecompressionStream==='undefined')throw Error('gzip 지원 브라우저 필요');
+    const raw=await new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+    sources.set(ledger.key,compileResearchSearch(ledger,raw,metadata));
+   }catch(e){errors.push(ledger.label+' 연구 이력: '+e.message)}
+  }
+  const ids=[...new Set([...sources.values()].flatMap(s=>s.ids))];
+  return {ids,errors,sources:sources.size,hasWitness:r=>sources.get(r.source)?.hasWitness(r)===true,matches:(r,requested)=>sources.get(r.source)?.matches(r,requested)===true};
+ })();
+ researchSearchCache.set(modern,promise);return promise;
+}
+export function filterCareerRequirements(rows,filters,{profiles=new Map(),researchIndex=null}={}){
+ const research=routeFilterIds(filters.researchAction),recruit=routeFilterIds(filters.recruitResearch),items=routeFilterIds(filters.recruitItem);
+ if(!research.length&&!recruit.length&&!items.length)return rows;
+ return rows.filter(r=>{
+  if(research.length&&!researchIndex?.matches(r,research))return false;
+  const profile=profiles.get(r.origin);
+  if(recruit.length&&!recruit.every(id=>profile?.requires?.includes(id)))return false;
+  if(items.length&&!items.every(id=>Number(profile?.acquisitionRequiredItems?.[id])>0))return false;
+  return true;
+ });
+}
 export function rankRows(rows,metric='cap',stat='total'){
  const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
  return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
