@@ -1,7 +1,7 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=49-economy';
-import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=49-economy';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=50-initial-events';
+import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=50-initial-events';
 import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
