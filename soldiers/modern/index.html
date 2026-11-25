@@ -11,13 +11,14 @@
 <link rel="stylesheet" href="../../atlas-reader-guide.css?v=20261105-horizontal-flow-1">
 <link rel="stylesheet" href="../../branch-soldier-results.css?v=20261124-resource-1">
 <link rel="stylesheet" href="../../branch-soldier-unified-nav.css?v=27">
-<script defer src="../../branch-soldier-unified-nav.js?v=32"></script>
+<link rel="stylesheet" href="../../branch-soldier-atlas-table.css?v=34">
+<script defer src="../../branch-soldier-unified-nav.js?v=34"></script>
 </head>
 <body>
 <header class="hero"><div class="wrap">
 <a class="back" href="../../">← Data Atlas</a>
 <p class="eyebrow">X-PIRATEZ 2.1 · 출생처별 경로 기록</p>
-<h1>병종 DB</h1><a href="../../career/">병종·육성 통합표 →</a>
+<h1>병종 DB</h1>
 <p class="lede">어디에서 태어났는지부터, 어떤 분기를 선택해 어디까지 도달했는지까지.<br>성장이 완료된 병사의 <strong>조건부 성장한계</strong>를 기본 비교하고 더 좋은 연구·성장 경로가 확인되면 갱신합니다.</p>
 <p class="scope-note">출생 최댓값·전투/체력훈련의 장기 상한·시술 전후 성장을 순서대로 반영한 추정입니다. <strong>모든 능력치의 동시 달성과 전역 최고 경로는 미증명</strong>입니다.</p>
 </div></header>
@@ -31,7 +32,7 @@
 <section class="toolbar card" aria-label="병종 DB 검색">
 <label class="wide">출생처·병종 검색<input id="search" type="search" placeholder="농부 · 돌격 클론 · 영애 · STR_…"></label>
 <label>병종<select id="family"><option value="">전체 병종</option></select></label>
-<label>표 구분<select id="catalogGrouping"><option value="body">최종 병종별 최대값 (기본)</option><option value="origin">출생처별 상세</option></select></label>
+<label>표 구분<select id="catalogGrouping"><option value="body">최종 병종별 최대값 (기본)</option><option value="origin">출생처별 상세</option><option value="routes">개별 육성 경로</option></select></label>
 <label>능력치 보기<select id="catalogMetric">
 <option value="growth">성장 완료 가정 · 조건부 상한 (기본)</option>
 <option value="provisional">연구·시술 잠정값 (성장 제외)</option>
@@ -46,11 +47,28 @@
 <label class="wide">표 안에서 비교할 기준 출생처<select id="compareOrigin"><option value="">기준 선택 안 함</option></select></label>
 <button id="compareClear" type="button">비교 해제</button>
 </section>
+<div id="routeFilters" hidden><section class="route-filters" aria-label="표 필터">
+<label>출생처<select id="origin"><option value="">전체</option></select></label>
+<label>최종 병종<select id="body"><option value="">전체</option></select></label>
+<label>선장<select id="captain"><option value="">전체</option></select></label>
+<label>분기<select id="branch"><option value="">전체</option></select></label>
+<label>시술<select id="training"><option value="">전체</option></select></label>
+<label>특성<select id="trait"><option value="">전체</option></select></label>
+<label>난이도<select id="difficulty"><option value="">전체</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
+<label>수치<select id="metric"><option value="cap">조건부 성장 상한</option><option value="current">기록 시점 영구치</option><option value="birthMin">출생 최소</option><option value="birthMax">출생 최대</option></select></label>
+<label class="tick"><input type="checkbox" id="certified"> 최종 인증</label>
+<label class="tick" title="추가 연구와 실제 자원 조건 등은 미인증"><input type="checkbox" id="fixedOptimumOnly"> 고정 연구 12능력치 상계 도달</label>
+<label class="tick" title="연구 직전 고정 모형의 상계를 실제 조건부 기록이 초과한 경로"><input type="checkbox" id="transitionBreakthroughOnly"> 연구 전 상계 초과</label>
+<label class="tick"><input type="checkbox" id="missingOnly"> 미연결 출생처</label>
+<button id="routeReset" type="button">초기화</button>
+</section>
+<details id="branchCompare" class="route-branch-filter"><summary>두 분기 함께 보기</summary><div class="pair-controls"><label>A<select id="a"><option value="">선택</option></select></label><label>B<select id="b"><option value="">선택</option></select></label><label class="tick"><input id="sameChoices" type="checkbox"> 선장 외 동일 선택</label><button id="clearPair" type="button">해제</button></div></details></div>
 <p id="compareStatus" class="status" role="status" aria-live="polite">각 행의 '기준으로 비교' 버튼이나 위 선택 메뉴로 비교를 시작할 수 있습니다.</p>
 <p id="catalogStatus" class="status" role="status" aria-live="polite">연구 경로 자료 확인 중…</p>
 <section class="card table-card" id="originMaxima" aria-label="획득처별 능력치와 연구 경로">
 <div class="table-head"><h2>전체 병종 최대값 <small>최종 병종 기준 · 12능력치</small></h2><span id="rowCount"></span></div>
 <div class="table-scroll-guide"><span>12종 능력치 비교표 · 모바일에서는 좌우로 밀어 모든 열을 확인하세요.</span><div class="table-scroll-actions"><button type="button" id="scrollStatsLeft" aria-label="표 이전 열 보기">← 이전</button><button type="button" id="scrollStatsRight" aria-label="표 다음 열 보기">다음 →</button></div></div>
+<div id="routeTools" hidden><div class="route-toolbar"><label class="tick"><input type="checkbox" id="selectedOnly"> 선택 행만</label><button id="clearSelection" type="button">선택 해제</button><label>행 수<select id="pageSize"><option>50</option><option selected>100</option><option>200</option></select></label><button type="button" id="prev" aria-label="이전 페이지">‹</button><span id="page" aria-live="polite"></span><button type="button" id="next" aria-label="다음 페이지">›</button></div><p id="routeErrors" role="alert" hidden></p></div>
 <div id="originTableScroll" class="table-shell" role="region" tabindex="0" aria-label="Mana 포함 12종 능력치 가로 스크롤 표">
 <table id="originTable"><thead></thead><tbody></tbody></table>
 </div>
@@ -90,6 +108,7 @@
 <div id="researchMatches" class="research-matches"></div>
 </details>
 </main>
+<dialog id="routeResearchDialog"><div class="dialog-head"><h2 id="routeResearchTitle">연구 이력</h2><button type="button" id="routeResearchClose">닫기</button></div><div id="routeResearchContent"></div></dialog>
 <dialog id="researchDialog"><button id="closeResearchDialog" type="button" class="close" aria-label="닫기">닫기</button><div id="researchDetail"></div></dialog>
 <dialog id="acquisitionTraceDialog" aria-labelledby="acquisitionTraceTitle">
   <div class="trace-dialog-head">
@@ -100,8 +119,8 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261126-alternating-6-pair26"></script>
-<script type="module" src="../../branch-soldier-results.js?v=20261126-alternating-6-pair26-v30"></script>
+<script type="module" src="app.js?v=20261126-alternating-6-pair26-unified"></script>
+<script type="module" src="../../branch-soldier-results.js?v=20261126-alternating-6-pair26-unified"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>
 <script type="module" src="../../origin-numeric-cache.js?v=20261124-cache-1"></script>

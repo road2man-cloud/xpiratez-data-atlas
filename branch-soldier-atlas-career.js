@@ -1,8 +1,11 @@
-import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=34-transition';
-import {loadBranchOptions} from './branch-soldier-atlas-branch-compare.js?v=30';
+import {ledgers,statKeys,project,routeUrl,branchUrl,readResearchWitness} from './branch-soldier-atlas-career-core.js?v=34-transition-unified';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=34-transition';
-const root=new URL('./',import.meta.url),$=id=>document.getElementById(id);
+import {rowsWithMissingOrigins,statValue,filterTable,sortTable} from './branch-soldier-atlas-table-core.js?v=34-transition-unified';
+// Mounted only in the existing Soldier DB's originTable. No standalone page.
+const root=new URL('./',import.meta.url);
+export function mountRouteTable({modern,catalog,registry,isActive}){
+const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'originTableScroll',reset:'routeReset',researchDialog:'routeResearchDialog',researchTitle:'routeResearchTitle',researchClose:'routeResearchClose',researchContent:'routeResearchContent'};
+const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
 const controls=['q','origin','body','captain','branch','training','trait','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','missingOnly','selectedOnly','a','b','sameChoices'];
 const checks=new Set(['certified','fixedOptimumOnly','transitionBreakthroughOnly','missingOnly','selectedOnly','sameChoices']);
@@ -51,7 +54,8 @@ function filter(){
  return f;
 }
 function sync(){
- const p=new URLSearchParams(location.search);
+ if(!isActive())return;
+ const p=new URLSearchParams(location.search);p.set('group','routes');
  for(const k of [...p.keys()])if(controls.includes(k)||k==='sort'||k==='dir'||k==='stat'||k==='role'||k==='primary'||k.startsWith('role')||k.startsWith('min_')||k==='profile')p.delete(k);
  for(const id of controls){const v=checks.has(id)?($(id).checked?'1':''):$(id).value;if(v&&!(id==='metric'&&v==='cap'))p.set(id,v)}
  if(sort!=='total')p.set('sort',sort);if(dir==='asc')p.set('dir',dir);
@@ -112,7 +116,7 @@ function renderHead(){
  $('head').replaceChildren(row);
 }
 function renderRow(r,f){
- const tr=el('tr');tr.classList.toggle('selected',selected.has(r.key));const b=branches.get(r.branch),p=profiles.get(r.origin),source=sourceOf(r);
+ const tr=el('tr');tr.dataset.routeKey=r.key;tr.classList.toggle('selected',selected.has(r.key));const b=branches.get(r.branch),p=profiles.get(r.origin),source=sourceOf(r);
  for(const [key,title,cls] of columns){
   const td=el('td',undefined,cls);let filled=false;
   if(key==='total'||statKeys.includes(key)){td.textContent=fmt(statValue(r,key,f.metric,profiles));filled=true}
@@ -151,10 +155,12 @@ function renderRow(r,f){
 }
 function updateSelection(){$('clearSelection').textContent='선택 해제 ('+selected.size+')';$('clearSelection').disabled=!selected.size}
 function render(){
+ if(!isActive())return;
  const f=filter(),all=loaded===ledgers.length?rowsWithMissingOrigins(rows,[...profiles.values()]):rows;
  const matches=sortTable(filterTable(all,f,context()),sort,dir,f.metric,context());
  const size=Number($('pageSize').value),pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages-1);
  $('status').textContent=fmt(matches.length)+'행 / '+fmt(all.length)+'행'+(loaded<ledgers.length?' · 로딩 '+loaded+'/'+ledgers.length:'');
+ $('status').dataset.routeStatus=loaded===ledgers.length?(errors.length?'partial':'loaded'):'loading';
  $('errors').hidden=!errors.length;$('errors').textContent=errors.join(' · ');
  $('page').textContent=(page+1)+' / '+pages;$('prev').disabled=page===0;$('next').disabled=page>=pages-1;
  renderHead();const frag=document.createDocumentFragment();
@@ -164,13 +170,12 @@ function render(){
 }
 for(const id of controls){
  if(checks.has(id))$(id).checked=params.get(id)==='1';
- else if(id==='q')$(id).value=params.get(id)||'';else if(['difficulty','metric'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
+ else if(id==='q'){}else if(['difficulty','metric'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 }
 if(params.has('a')||params.has('b')||location.hash==='#branchCompare')$('branchCompare').open=true;
-let queryTimer;
-$('q').oninput=()=>{clearTimeout(queryTimer);queryTimer=setTimeout(()=>{page=0;sync();render()},140)};
+
 for(const id of controls.filter(k=>k!=='q'))$(id).onchange=()=>{
- if(initial)return;
+ if(initial||!isActive())return;
  if(id==='a'||id==='sameChoices'){if($('sameChoices').checked&&$('b').value&&!sameChoices(branches.get($('a').value),branches.get($('b').value)))$('b').value='';populate()}
  if(id==='branch'&&$('branch').value){$('a').value='';$('b').value=''}
  if((id==='a'||id==='b')&&$(id).value)$('branch').value='';
@@ -181,21 +186,28 @@ $('clearPair').onclick=()=>{$('a').value='';$('b').value='';$('sameChoices').che
 $('clearSelection').onclick=()=>{selected.clear();$('selectedOnly').checked=false;page=0;sync();render()};
 $('prev').onclick=()=>{page--;render();$('tableScroll').scrollTop=0};$('next').onclick=()=>{page++;render();$('tableScroll').scrollTop=0};$('pageSize').onchange=()=>{page=0;render()};
 $('researchClose').onclick=()=>{dialogToken++;$('researchDialog').close()};
-render();
-try{
- const modern=await gzip('soldiers-modern-index');
- if(modern.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
+async function load(){
+ try{
+ if(modern?.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
  metadata=modern.meta.source.metadataSha256;
+ names={...(registry?.labels||{}),...(catalog?.names||{})};
  for(const r of [...modern.soldiers,...modern.transformations,...modern.bonuses])names[r.id]=r.koName||r.enName||r.id;
  profiles=new Map(modern.profiles.map(p=>[p.id,p]));
- try{const cat=await json('data/soldier-source-catalog.json');if(cat.sourceVersion==='v.o2')names={...cat.names,...names}}catch(e){errors.push('일부 번역 미연결')}
- try{branches=await loadBranchOptions(metadata)}catch(e){
-  errors.push('전체 분기 색인 미연결');try{const b=await json('data/soldier-atlas-career-branches.json');if(b.sourceMetadataSha256!==metadata)throw Error('버전 불일치');branches=new Map(b.branches.map(x=>[x.id,x]))}catch(e){errors.push('분기 정보 미연결')}
- }
- branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));populate();initial=false;render();
+ if(registry?.sourceMetadataSha256===metadata){
+  branches=new Map(registry.branches.map(x=>[x.id,x]));
+ }else errors.push('공통 분기 원장 미연결');
+ branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));
+ populate();initial=false;render();
  for(const source of ledgers){
-  try{const {rows:added,rejected}=project(source,await gzip(source.file),metadata);rows.push(...added);if(rejected.length)errors.push(source.label+' '+rejected.length+'행 제외')}
-  catch(e){errors.push(source.label+' 미연결: '+e.message)}
+  try{
+   const canonical=source.registryKey&&registry?.sourceMetadataSha256===metadata?registry[source.registryKey]:null;
+   const {rows:added,rejected}=project(source,canonical||await gzip(source.file),metadata);
+   rows.push(...added);if(rejected.length)errors.push(source.label+' '+rejected.length+'행 제외');
+  }catch(e){errors.push(source.label+' 미연결: '+e.message)}
   finally{loaded++;populate();render();await new Promise(resolve=>setTimeout(resolve,0))}
  }
-}catch(e){errors.push('병종 원본 미연결: '+e.message);loaded=ledgers.length;initial=false;render()}
+ }catch(e){errors.push('병종 원본 미연결: '+e.message);loaded=ledgers.length;initial=false;render()}
+}
+render();void load();
+return {render,searchChanged(){page=0;sync();render();}};
+}

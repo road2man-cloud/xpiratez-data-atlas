@@ -1,29 +1,12 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>X-Piratez 2.1 병종·육성 통합표</title>
-<link rel="stylesheet" href="../branch-soldier-unified-nav.css?v=29"><link rel="stylesheet" href="../branch-soldier-atlas-table.css?v=32">
-<script defer src="../branch-soldier-unified-nav.js?v=32"></script><script type="module" src="../branch-soldier-atlas-career.js?v=34-transition"></script></head>
-<body><main>
-<header class="table-heading"><h1>병종·육성 통합표 <small>2.1</small></h1><a href="../soldiers/modern/?view=detail">기존 병종 상세 DB</a><a href="../captains/">분기 상세 DB</a></header>
-<section class="filters" aria-label="표 필터">
-<input id="q" type="search" placeholder="출생처 · 병종 · 시술 · 특성 · 연구 분기 검색" aria-label="통합표 검색">
-<label>출생처<select id="origin"><option value="">전체</option></select></label>
-<label>최종 병종<select id="body"><option value="">전체</option></select></label>
-<label>선장<select id="captain"><option value="">전체</option></select></label>
-<label>분기<select id="branch"><option value="">전체</option></select></label>
-<label>시술<select id="training"><option value="">전체</option></select></label>
-<label>특성<select id="trait"><option value="">전체</option></select></label>
-<label>난이도<select id="difficulty"><option value="">전체</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
-<label>수치<select id="metric"><option value="cap">조건부 성장 상한</option><option value="current">기록 시점 영구치</option><option value="birthMin">출생 최소</option><option value="birthMax">출생 최대</option></select></label>
-<label class="tick"><input type="checkbox" id="certified"> 최종 인증</label>
-<label class="tick" title="추가 연구와 실제 자원 조건 등은 미인증"><input type="checkbox" id="fixedOptimumOnly"> 고정 연구 12능력치 상계 도달</label>
-<label class="tick" title="연구 직전 고정 모형의 상계를 실제 조건부 기록이 초과한 경로"><input type="checkbox" id="transitionBreakthroughOnly"> 연구 전 상계 초과</label>
-<label class="tick"><input type="checkbox" id="missingOnly"> 미연결 출생처</label>
-<button id="reset" type="button">초기화</button>
-</section>
-<details id="branchCompare" class="branch-filter"><summary>두 분기 함께 보기</summary><div class="pair-controls"><label>A<select id="a"><option value="">선택</option></select></label><label>B<select id="b"><option value="">선택</option></select></label><label class="tick"><input id="sameChoices" type="checkbox"> 선장 외 동일 선택</label><button id="clearPair" type="button">해제</button></div></details>
-<div class="table-toolbar"><span id="status" role="status" aria-live="polite">불러오는 중…</span><span class="scope">조건부 기록·종결은 원장 범위 기준 · 전역 최고치 미증명</span><label class="tick"><input type="checkbox" id="selectedOnly"> 선택 행만</label><button id="clearSelection" type="button">선택 해제</button><label>행 수<select id="pageSize"><option>50</option><option selected>100</option><option>200</option></select></label><button type="button" id="prev" aria-label="이전 페이지">‹</button><span id="page" aria-live="polite"></span><button type="button" id="next" aria-label="다음 페이지">›</button></div>
-<p id="errors" role="alert" hidden></p>
-<div class="table-scroll" id="tableScroll" tabindex="0" role="region" aria-label="병종·육성 통합표, 가로 스크롤 가능"><table id="careerTable"><thead id="head"></thead><tbody id="results"></tbody></table></div>
-<footer><span>— 미기록 · 출생 수치는 원본 출생 범위이며 개별 육성 경로의 실제 초기값 아님</span><a href="../search/">전체 DB 검색</a><a href="../">홈</a></footer>
-<dialog id="researchDialog"><div class="dialog-head"><h2 id="researchTitle">연구 이력</h2><button type="button" id="researchClose">닫기</button></div><div id="researchContent"></div></dialog>
-<noscript>JavaScript가 필요합니다. <a href="../soldiers/modern/?view=detail">기존 병종 DB</a></noscript>
-</main></body></html>
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>병종 DB로 이동</title><meta name="robots" content="noindex,follow">
+<link rel="canonical" href="../soldiers/modern/">
+<script>
+const target=new URL('../soldiers/modern/',location.href);
+target.search=location.search;
+target.searchParams.set('group','routes');
+target.hash=location.hash==='#branchCompare'?'#branchCompare':'#originMaxima';
+location.replace(target.href);
+</script><noscript><meta http-equiv="refresh" content="0;url=../soldiers/modern/?group=routes"></noscript></head>
+<body><a href="../soldiers/modern/?group=routes">병종 DB</a></body></html>

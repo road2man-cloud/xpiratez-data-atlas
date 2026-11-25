@@ -1,9 +1,10 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=34';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
 import {mergeAllOriginRows,mergeOriginExtensionRows,allOriginCoverageText,originCapButton,renderAllOriginCap,renderOriginExtension} from '../../branch-soldier-origin-cap.js?v=20261124-origin-extension-1';
-import {populationCoverageText,populationOriginMarkup,populationUnlockOriginMarkup,populationEventOriginMarkup,populationPreboundOriginMarkup} from '../../branch-soldier-population.js?v=20261126-alternating-6-pair26';
+import {populationCoverageText,populationOriginMarkup,populationUnlockOriginMarkup,populationEventOriginMarkup,populationPreboundOriginMarkup} from '../../branch-soldier-population.js?v=20261126-alternating-6-pair26-unified';
 import {inflateArchivedGzip} from './origin-gzip-compat.js?v=20261105-legacy-gzip-1';
 import {renderResearchRelations,researchRelations} from '../../research-relations.js';
 import {replayOriginWitness,WITNESS_STATS} from './origin-witness.js?v=20261105-campaign-context-1';
@@ -51,7 +52,7 @@ async function expandOriginArchive(envelope){
   return report;
 }
 let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null,replayGeneration=0,blocked=false;
-let comparison=null;
+let comparison=null,routeTable=null;
 let sharedRegistry=null,integratedOrigins=new Map(),integratedLoadError=null,integratedCoverage=null,bodyRows=[],bodySort='total';
 const activeBranch=new URLSearchParams(location.search).get('branch');
 let branchScope=null;
@@ -455,6 +456,20 @@ function renderBodyTable(q,family){
 }
 function render(){
   if(blocked||!REPORT)return;
+  const showRoutes=$('#catalogGrouping').value==='routes';
+  $('#routeFilters').hidden=!showRoutes;$('#routeTools').hidden=!showRoutes;
+  $('#originMaxima').classList.toggle('route-table-active',showRoutes);
+  for(const id of ['#family','#catalogMetric','#compareOrigin'])$(id).closest('label').hidden=showRoutes;
+  $('#compareClear').hidden=showRoutes;$('#compareStatus').hidden=showRoutes;
+  if(showRoutes){
+    for(const id of ['#routeGrowthTimingWrap','#routeGrowthAttemptsWrap','#routeGrowthSuccessWrap'])$(id).hidden=true;
+    $('#catalogStatus').textContent='등록 육성 경로 · 조건부 결과 · 전역 최고치 미인증';
+    $('#originMaxima .table-head h2').textContent='개별 육성 경로';
+    if(!routeTable)routeTable=mountRouteTable({modern:DATA,catalog:CATALOG,registry:sharedRegistry,isActive:()=>$('#catalogGrouping').value==='routes'});
+    else routeTable.render();
+    return;
+  }
+  $('#originMaxima .table-head h2').textContent=$('#catalogGrouping').value==='body'?'전체 병종 최대값':'출생처별 능력치';
   const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
   const bodyMode=metric==='growth'&&$('#catalogGrouping').value==='body'&&!family.startsWith('origin:');
   $('#compareOrigin').disabled=bodyMode;$('#compareClear').disabled=bodyMode;
@@ -1356,8 +1371,18 @@ async function init(){try{
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';if(params.has('family'))$('#family').value=params.get('family');
   if(params.has('compare')&&REPORT.records.some(r=>r.profileId===params.get('compare'))){comparison={profileId:params.get('compare'),candidateId:null};picker.value=comparison.profileId;}
   if(params.get('group')==='origin'||params.has('profile')||params.has('compare')||REPORT.records.some(r=>r.profileId===params.get('q')))$('#catalogGrouping').value='origin';
-  $('#search').addEventListener('input',render);$('#family').addEventListener('change',render);
-  $('#catalogGrouping').addEventListener('change',()=>{if($('#catalogGrouping').value==='body')$('#catalogMetric').value='growth';render();});
+  if(params.get('group')==='routes')$('#catalogGrouping').value='routes';
+  $('#search').addEventListener('input',()=>{if($('#catalogGrouping').value==='routes'&&routeTable)routeTable.searchChanged();else render();});$('#family').addEventListener('change',render);
+  $('#catalogGrouping').addEventListener('change',()=>{
+    const group=$('#catalogGrouping').value,u=new URL(location.href);
+    u.searchParams.set('group',group);
+    if(group!=='routes'){
+      for(const k of ['origin','body','captain','training','trait','difficulty','metric','certified','fixedOptimumOnly','transitionBreakthroughOnly','missingOnly','selectedOnly','a','b','sameChoices','sort','dir','stat'])u.searchParams.delete(k);
+      if(activeBranch)u.searchParams.set('branch',activeBranch);else u.searchParams.delete('branch');
+    }
+    if(group==='body')$('#catalogMetric').value='growth';
+    history.replaceState(null,'',u);render();
+  });
   $('#originTable').addEventListener('click',e=>{const s=e.target.closest('[data-body-sort]'),o=e.target.closest('[data-body-origins]');if(s){bodySort=s.dataset.bodySort;render();}if(o){$('#catalogGrouping').value='origin';$('#family').value=o.dataset.bodyOrigins;$('#search').value='';render();}});
   $('#catalogMetric').addEventListener('change',()=>{
     render();if(selected&&!$('#originDetails').hidden)void openOrigin(selected,activeCandidateId);
@@ -1573,7 +1598,7 @@ async function init(){try{
   const ext=sharedRegistry?.witnesses?.[params.get('originExt')];
   if(ext?.source==='ORIGINEXT12'&&(!activeBranch||ext.branchIds.includes(activeBranch)))void openOrigin(ext.originProfile,ext.originExtension.seed,{sharedTerminal:ext.originExtension.seedBody==='STR_SOLDIER_CHORT',originCapRoute:params.get('originExt')}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));
   else if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort',populationRoute:params.get('populationRoute')});
-  if(params.has('training'))showTraining(params.get('training'));
-  if(params.has('research'))showResearch(params.get('research'));
+  if(params.get('group')!=='routes'&&params.has('training'))showTraining(params.get('training'));
+  if(params.get('group')!=='routes'&&params.has('research'))showResearch(params.get('research'));
 }catch(error){sourceFail(error.message);console.error(error)}}
 void init();
