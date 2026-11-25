@@ -1,4 +1,4 @@
-import {statKeys,filterRows,sum} from './branch-soldier-atlas-career-core.js?v=40-coverage';
+import {statKeys,filterRows,sum,routeObjective} from './branch-soldier-atlas-career-core.js?v=40-coverage';
 // One row is one recorded route, never a synthetic maximum assembled from other rows.
 // Select a single witness for each body under the selected objective. Keep independent
 // ceilings separate: they may come from a different conditional model or route.
@@ -8,7 +8,7 @@ export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch=
  const name=id=>names[id]||id||'';
  const originText=id=>{const p=profiles.get(id);return [id,p?.sourceKoName,p?.sourceEnName,p?.soldierKoName].filter(Boolean).join(' ')};
  const matches=s=>tokens.every(t=>norm(s).includes(t));
- const i=statKeys.indexOf(stat),score=r=>i<0?sum(r[metric]):r[metric][i];
+ const score=r=>routeObjective(r,metric,stat);
  const byBody=new Map();
  for(const r of rows){
   if(branch&&r.branch!==branch)continue;
@@ -23,7 +23,7 @@ export function bodyCareerSummary(bodies,rows,{stat='total',metric='cap',branch=
   const legacy=(b.candidates||[]).filter(r=>bodyMatch||matches([bodyText,originText(r.originProfile),r.route].join(' ')));
   if(!bodyMatch&&!candidates.length&&!legacy.length)continue;
   // Objective, then full-vector total, then stable identifier. No cross-row maxima.
-  const best=candidates.reduce((a,r)=>!a||score(r)>score(a)||score(r)===score(a)&&(sum(r[metric])>sum(a[metric])||sum(r[metric])===sum(a[metric])&&r.key.localeCompare(a.key)<0)?r:a,null);
+  const best=candidates.filter(r=>Number.isFinite(score(r))).reduce((a,r)=>!a||score(r)>score(a)||score(r)===score(a)&&(sum(r[metric])>sum(a[metric])||sum(r[metric])===sum(a[metric])&&r.key.localeCompare(a.key)<0)?r:a,null);
   const independent=Object.fromEntries(statKeys.map(k=>[k,null]));
   for(const r of candidates)for(const [j,k] of statKeys.entries()){
    const value=r[metric][j];if(!independent[k]||value>independent[k].value)independent[k]={value,career:r};

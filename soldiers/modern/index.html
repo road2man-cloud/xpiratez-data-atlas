@@ -47,6 +47,8 @@
 <label>분기<select id="branch"><option value="">전체</option></select></label>
 <label>시술<select id="training"><option value="">전체</option></select></label>
 <label>특성<select id="trait"><option value="">전체</option></select></label>
+<label>최소 시술 횟수<input id="minDepth" type="number" min="0" step="1" placeholder="전체"></label>
+<label>최소 보유 특성 수<input id="minTraits" type="number" min="0" step="1" placeholder="전체"></label>
 <label>난이도<select id="difficulty"><option value="">전체</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></label>
 <label>수치<select id="metric"><option value="cap">조건부 성장 상한</option><option value="current">기록 시점 영구치</option><option value="birthMin">출생 최소</option><option value="birthMax">출생 최대</option></select></label>
 <label class="tick"><input type="checkbox" id="certified"> 최종 인증</label>
@@ -123,7 +125,7 @@
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
 <script type="module" src="app.js?v=20261126-coverage-40-unified"></script>
-<script type="module" src="../../branch-soldier-results.js?v=20261126-coverage-40-branch-career"></script>
+<script type="module" src="../../branch-soldier-results.js?v=20261126-depth-traits"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>
 <script type="module" src="../../origin-numeric-cache.js?v=20261124-cache-1"></script>
