@@ -36,7 +36,8 @@ for(const [id,r] of Object.entries(a.routes)){
  assert.equal(r.birthActionHash,b.p.fullActionHash);assert.equal(r.birthStateHash,b.p.stateHash);
  assert.equal(r.fullActionHash,key([...b.birth,...r.actions]));assert.equal(id,"POPRCAREER12:"+key([r.input,r.actions]).slice(0,24));
  assert.deepEqual(r.actions.slice(0,s.actions.length),s.actions);
- const suffix=r.actions.slice(s.actions.length),policy=engine.policy(r.branch,b.n),goals=[r.goal,r.secondaryGoal,r.tertiaryGoal].filter(Boolean);
+ const suffix=r.actions.slice(s.actions.length),policy=engine.policy(r.branch,b.n),goals=r.researchGoals||[r.goal,r.secondaryGoal,r.tertiaryGoal].filter(Boolean);
+ if(r.researchGoals)assert.deepEqual(goals.slice(0,3),[r.goal,r.secondaryGoal,r.tertiaryGoal]);
  assert(r.goal&&(!r.tertiaryGoal||r.secondaryGoal));
  let w=b.n.world,stage=0,missing=replay.rules.get(goals[0]).requires.some(k=>!replay.active(w,k));
  for(const action of suffix){
@@ -64,7 +65,7 @@ for(const [id,r] of Object.entries(a.routes)){
  const bound=env.groups[env.pairClasses[oi.get(r.origin)][bi.get(r.branch)]]?.bounds.find(v=>v.body===r.body);
  if(!bound||r.vector.some((v,i)=>v>bound.effective[i])||r.raw.some((v,i)=>v>bound.raw[i]))outside.push(id);
  const prev=best.get(pk);if(!prev||sum(r.permanentVector)>sum(prev.permanentVector))best.set(pk,{id,...r,careerGap:bound?sum(bound.effective)-sum(r.vector):null});
- const witness={source:"POPRCAREER12",originProfile:r.origin,branchIds:[r.branch],body:r.body,raw:r.raw,bonus:r.permanentBonus,vector:r.permanentVector,steps:r.order.map(id=>({id,count:1})),research:[...new Set([...r.addedResearch,...r.order.flatMap(id=>replay.rules.get(id)?.requires||[])])],placement:"CHRONOLOGICAL_ADDITIONAL_RESEARCH_CAREER_GROWTH",populationResearchCareer:{route:id,seed:r.seed,goal:r.goal,...(r.secondaryGoal?{secondaryGoal:r.secondaryGoal}:{}),...(r.tertiaryGoal?{tertiaryGoal:r.tertiaryGoal}:{}),addedResearch:r.addedResearch,fullActionHash:r.fullActionHash,rank:r.rank,medals:r.medals},actualGameCertified:false};
+ const witness={source:"POPRCAREER12",originProfile:r.origin,branchIds:[r.branch],body:r.body,raw:r.raw,bonus:r.permanentBonus,vector:r.permanentVector,steps:r.order.map(id=>({id,count:1})),research:[...new Set([...r.addedResearch,...r.order.flatMap(id=>replay.rules.get(id)?.requires||[])])],placement:"CHRONOLOGICAL_ADDITIONAL_RESEARCH_CAREER_GROWTH",populationResearchCareer:{route:id,seed:r.seed,goal:r.goal,...(r.secondaryGoal?{secondaryGoal:r.secondaryGoal}:{}),...(r.tertiaryGoal?{tertiaryGoal:r.tertiaryGoal}:{}),...(r.researchGoals?{researchGoals:r.researchGoals}:{}),addedResearch:r.addedResearch,fullActionHash:r.fullActionHash,rank:r.rank,medals:r.medals},actualGameCertified:false};
  if(db.witnesses[id])assert.deepEqual(db.witnesses[id],witness);db.witnesses[id]=witness;published.push(id);
 }
 assert.equal(published.length,a.summary.registeredRoutes);assert.equal(best.size,a.summary.improvedPairBodies);
