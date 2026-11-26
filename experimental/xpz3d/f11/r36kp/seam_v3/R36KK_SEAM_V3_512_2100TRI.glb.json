@@ -1,0 +1,85 @@
+{
+  "output": "R36KK_SEAM_V3_512_2100TRI.glb",
+  "source": "R36KK_SEAM_V3_1024_2100TRI.glb",
+  "sha256": "2895a8a32498dfe2f31e6dc34a658aa200fa9f3459aac0fca6e05910f257b2ee",
+  "sourceSha256": "405983e48533d75d8b6fedc28e1c843368bf24957fdd20d5c4b53587b9fd9932",
+  "bytes": 375132,
+  "sizeReductionPct": 6.444340253184766,
+  "bones": 63,
+  "triangles": 2100,
+  "otherImagesUntouched": true,
+  "skinTextureMeans": [
+    {
+      "kind": "ALBEDO",
+      "inputSize": [
+        1024,
+        1024
+      ],
+      "outputSize": [
+        512,
+        512
+      ],
+      "inputBytes": 80970,
+      "outputBytes": 46965,
+      "meanRGBBefore": [
+        231.78829669952393,
+        204.36168956756592,
+        157.9050407409668
+      ],
+      "meanRGBAfter": [
+        231.82176971435547,
+        204.38806915283203,
+        157.92301177978516
+      ],
+      "maxChannelMeanDelta": 0.03347301483154297
+    },
+    {
+      "kind": "NORMAL",
+      "inputSize": [
+        1024,
+        1024
+      ],
+      "outputSize": [
+        512,
+        512
+      ],
+      "inputBytes": 116649,
+      "outputBytes": 123113,
+      "meanRGBBefore": [
+        127.9956226348877,
+        128.03944778442383,
+        254.87417030334473
+      ],
+      "meanRGBAfter": [
+        127.99362564086914,
+        128.03943252563477,
+        254.8606414794922
+      ],
+      "maxChannelMeanDelta": 0.013528823852539062
+    },
+    {
+      "kind": "ORM",
+      "inputSize": [
+        1024,
+        1024
+      ],
+      "outputSize": [
+        512,
+        512
+      ],
+      "inputBytes": 34258,
+      "outputBytes": 35954,
+      "meanRGBBefore": [
+        251.1793909072876,
+        233.42491340637207,
+        0
+      ],
+      "meanRGBAfter": [
+        251.1870002746582,
+        233.4364128112793,
+        0
+      ],
+      "maxChannelMeanDelta": 0.011499404907226562
+    }
+  ]
+}
