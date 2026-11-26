@@ -123,7 +123,7 @@ for(const [id,orig] of Object.entries(local.terminalResearch.records)){
   if(v.suffixHash)assert.equal(key(n.steps),v.suffixHash);
  }
  for(const f of v.fragments||[])if(f.source)f.source.node=remapChecked(f.source.graph,f.source.node);
- putNew(out.terminalResearch.records,key([anchor,v.node,v.attempt-1]),v,"terminalResearch.records",withoutRound);
+ putNew(out.terminalResearch.records,key([anchor,v.node,v.attempt-1]),v,"terminalResearch.records",x=>omit(x,["roundToken","elapsedMs"]));
  const previous=localTerminalByAnchor.get(anchor);if(!previous||orig.attempt>previous.orig.attempt)localTerminalByAnchor.set(anchor,{orig,v});
 }
 for(const [id,orig] of Object.entries(local.terminalResearch.anchors)){
