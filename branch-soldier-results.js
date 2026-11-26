@@ -4,7 +4,7 @@ import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileW
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-v17";
 import {loadRuntime} from "./db-runtime.js";
-import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=62-research-line";
+import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=63-max-frontier";
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=49-economy";
 import {bodyCareerSummary,indexCareerBranches,branchCareerRows,writeStatMinimums} from "./branch-soldier-atlas-table-core.js?v=49-economy";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
@@ -642,7 +642,7 @@ if(ROOT){
    const filtered=filter(),perPage=E("bsBranchBody").value?40:10,pages=Math.max(1,Math.ceil(filtered.length/perPage));
    page=Math.max(0,Math.min(page,pages-1));
    const f=routeFilters(),metric=E("bsCareerMetric").value,only=E("bsCareerOnly").checked||hasRouteFilter(f),allowLegacy=false;
-   E("bsCount").textContent=fmt(filtered.length)+"개 분기 · 완결 조합 "+fmt(filtered.reduce((s,x)=>s+x.records.length,0))+"개 · "+(page+1)+"/"+pages;
+   E("bsCount").textContent=fmt(filtered.length)+"개 분기 · 완결 재생 근거 "+fmt(filtered.reduce((s,x)=>s+x.records.length,0))+"개 · "+(page+1)+"/"+pages;
    E("bsPrev").disabled=page===0;E("bsNext").disabled=page+1>=pages;
    E("bsCareerScope").textContent=!careerState?"완결 조합 연결 중…":completionSummaryText(careerState.completion)+(careerState.rows.length?"":" · — 완결 조합 없음")+(careerState.errors.length?" · "+careerState.errors.join(" / "):"");
    E("bsCount").textContent+=researchFilters.notice();
@@ -673,7 +673,7 @@ if(ROOT){
   });
   if(selected){const i=filter().findIndex(x=>x.b.id===selected.id);if(i>=0)page=Math.floor(i/(E("bsBranchBody").value?40:10));}
   draw();detail();
-  loadCareerRows(modern,db).then(result=>{careerState=result;indexed=indexCareerBranches(result.rows);draw()}).catch(e=>{careerState={rows:[],errors:[e.message]};draw()});
+  loadCareerRows(modern,db,{includeWitnesses:true}).then(result=>{careerState=result;indexed=indexCareerBranches(result.rows);draw()}).catch(e=>{careerState={rows:[],errors:[e.message]};draw()});
  }
  async function load(){return loadBranchSoldierResults();}
  const init=async()=>{db=await load();if(db.schemaVersion!==1)throw Error("데이터 형식 불일치");if(ROOT.dataset.branchSoldierResults==="soldier")mountSoldier();else{modern=await loadRuntime(new URL("./data/soldiers-modern-index.json",import.meta.url).href);mountBranch();}};

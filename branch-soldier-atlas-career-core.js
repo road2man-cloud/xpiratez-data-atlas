@@ -61,9 +61,9 @@ export function completionScope(modern,registry){
  return c;
 }
 const projectionCache=new WeakMap();
-export async function loadCareerRows(modern,registry){
+export async function loadCareerRows(modern,registry,{includeWitnesses=false}={}){
  if(modern?.meta?.mod?.version!=='v.o2')throw Error('2.1 병종 자료가 아닙니다');
- if(projectionCache.get(modern)?.registry===registry)return projectionCache.get(modern).promise;
+ const cached=projectionCache.get(modern);if(cached?.registry===registry&&cached[includeWitnesses?'witnesses':'pairs'])return cached[includeWitnesses?'witnesses':'pairs'];
  const metadata=modern.meta.source.metadataSha256;
  const promise=(async()=>{
   const rows=[],errors=[],completion=completionScope(modern,registry);
@@ -76,7 +76,14 @@ export async function loadCareerRows(modern,registry){
     typeof a.researchPathId==='string'&&a.researchPathId.length&&
     (['GAMEPLAY_REPLAY','RULESET_ENGINE_PROOF'].includes(a.proofKind)&&completion.classifications?.[a.source]?.[a.routeId]?.status==='COMPLETE'||a.proofKind==='REPLAYED_RESEARCH_LINE_V1'&&completion.researchLineAdmission?.schema===a.proofKind&&completion.classifications?.[a.source]?.[a.routeId]?.status==='RESEARCH_LINE_COMPLETE');
    if(!valid||seen.has(a.id)||!ledgers.some(l=>l.key===a.source)){errors.push('완결 승인 참조 오류');continue;}
-   seen.add(a.id);const refs=bySource.get(a.source)||[];refs.push(a);bySource.set(a.source,refs);
+   seen.add(a.id);const refs=bySource.get(a.source)||[];refs.push(a);
+   if(includeWitnesses&&a.proofKind==='REPLAYED_RESEARCH_LINE_V1'){
+    for(const v of a.alternatives||[]){
+     if(v.source!==a.source||v.routeId===a.routeId||completion.classifications?.[v.source]?.[v.routeId]?.researchLineId!==a.id)continue;
+     refs.push({...a,...v,id:a.id,alternatives:[]});
+    }
+   }
+   bySource.set(a.source,refs);
   }
   for(const [key,refs] of bySource){
    const source=ledgers.find(s=>s.key===key);
@@ -108,7 +115,7 @@ export async function loadCareerRows(modern,registry){
   }
   return {rows,errors,completion};
  })();
- projectionCache.set(modern,{registry,promise});
+ projectionCache.set(modern,{...(cached?.registry===registry?cached:{}),registry,[includeWitnesses?'witnesses':'pairs']:promise});
  return promise;
 }
 // Explicit reference mode only: never used to populate the complete table.
@@ -136,10 +143,10 @@ export function completionSummaryText(completion){
  const s=completion?.summary;if(!s)return '완결 판정 자료 미연결';
  const f=n=>Number.isSafeInteger(n)?n.toLocaleString('ko-KR'):'미확정';
  const t=completion.terminalResearch,goals=completion.terminalRule?.targets,supply=completion.terminalSupply,economy=completion.terminalEconomy,initialEvents=completion.initialEventSchedules,earlyEconomy=completion.earlyEconomy,researchCalendar=completion.researchCalendar,codex=completion.codexSourcePrefixes,financed=completion.financedCareerCalendar,auxiliary=completion.auxiliaryCareerCalendar;
- return '연구경로 완결 조합 '+f(s.researchLineCombinations??s.completeCombinations)+'개 (조건부 모형) · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개'+(completion.researchTreePolicy?' · 연구 트리 기준: 반복 자원 조달·전투캡 성장 가정, 구조적 조건 유지':'')+' · 고유 탐색 근거 '+f(s.uniqueEvidence)+'개 (완결 근거 포함)'+(goals?' · 원본 최종 연구 목표 '+f(goals.length)+'종':'')+(t?' · 조건부 최종 목표 연구 충족 '+f(t.ready)+'건':'')+(completion.endStage?' · 최종 연구 이후 재생 상태 '+f(completion.endStage.distinctStates)+'개 (후속 탐색 가능)':'')+(completion.resetRecovery?' · 초기화 후 특성 재획득 '+f(completion.resetRecovery.reacquisitionTransitions)+'건 (후속 탐색 가능)':'')+(completion.traitChain?' · 연쇄 특성 증가 '+f(completion.traitChain.traitGains)+'건 (연구 재사용 '+f(completion.traitChain.templateHits)+'건, 완결 제외)':'')+(completion.branchCoverage?' · 추가 분기 출생 그래프 '+f(completion.branchCoverage.totalGraphs)+'개':'')+(completion.researchTraitSets?' · 연구·특성 결합 후보 '+f(completion.researchTraitSets.summary.pairs)+'세트 (최종 연구 유지 근거 '+f(completion.researchTraitSets.summary.withActiveGoal)+'건)':'')+(supply?' · 조건부 조달 계획 '+f(supply.terminalPlans)+'개 (대체안 포함) · 조달 연구 확장 '+f(supply.resourceResearchAdvanced)+'건':'')+(economy?' · 조건부 경제 일정 '+f(economy.summary.produced)+'개'+(economy.summary.finiteSeedSchedules?' (유한자금 '+f(economy.summary.finiteSeedSchedules)+'개 포함)':''):'')+(initialEvents?' · 시작 이벤트 일정 '+f(initialEvents.summary.planTemplates)+'종 (미해결 그룹 '+f(initialEvents.summary.scheduledGroups)+'개 연결)':'')+(earlyEconomy?' · 초기 경제 동반 일정 '+f(earlyEconomy.summary.scenarios)+'개 (자금조건 통과 '+f(earlyEconomy.summary.cashScheduled)+'개)':'')+(researchCalendar?' · 연구시간·조달 달력 '+f(researchCalendar.summary.scenarios)+'개 (논리 이력 끝까지 계산 '+f(researchCalendar.summary.fullLogicalCalendars)+'개, 완결 제외)':'')+(codex?' · 초기 코덱스 공급 대안 '+f(codex.summary.scenarios)+'개 (유한자금 접두부 '+f(codex.summary.finiteCashRouteScenarios)+'개, 동일 대원 후속 재생 '+f(codex.summary.sameSoldierFullReplays)+'개, 완결 제외)':'')+(financed?' · 연속 유한자금 육성 달력 '+f(financed.summary.scenarios)+'개 (위대한 대의 자금 조건 '+f(financed.summary.greatCauseFundsMet)+'건, 논리 재생 '+f(financed.summary.fullLogicalReplays)+'개, 완결 제외)':'')+(auxiliary?' · 위대한 대의 병영·자금 동시 충족 '+f(auxiliary.summary.greatCauseBothMet)+'건 (점수 미확인, 완결 제외)':'')+' · 탐색 완료 분기 '+f(s.fullyEnumeratedBranches)+'개 · 전역 최고치 인증 '+f(s.globalOptimalCertified)+'개 · 전체 탐색 공간 미확정';
+ return '연구경로 완결 조합 '+f(s.researchLineCombinations??s.completeCombinations)+'개 (조건부 모형) · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개'+(completion.researchTreePolicy?' · 연구 트리 기준: 반복 자원 조달·전투캡 성장 가정, 구조적 조건 유지':'')+' · 고유 탐색 근거 '+f(s.uniqueEvidence)+'개 (완결 근거 포함)'+(goals?' · 원본 최종 연구 목표 '+f(goals.length)+'종':'')+(t?' · 조건부 최종 목표 연구 충족 '+f(t.ready)+'건':'')+(completion.endStage?' · 최종 연구 이후 재생 상태 '+f(completion.endStage.distinctStates)+'개 (후속 탐색 가능)':'')+(completion.resetRecovery?' · 초기화 후 특성 재획득 '+f(completion.resetRecovery.reacquisitionTransitions)+'건 (후속 탐색 가능)':'')+(completion.traitChain?' · 연쇄 특성 증가 '+f(completion.traitChain.traitGains)+'건 (연구 재사용 '+f(completion.traitChain.templateHits)+'건, 완결 제외)':'')+(completion.branchCoverage?' · 추가 분기 출생 그래프 '+f(completion.branchCoverage.totalGraphs)+'개':'')+(completion.researchTraitSets?' · 연구·특성 결합 후보 '+f(completion.researchTraitSets.summary.pairs)+'세트 (최종 연구 유지 근거 '+f(completion.researchTraitSets.summary.withActiveGoal)+'건)':'')+(supply?' · 조건부 조달 계획 '+f(supply.terminalPlans)+'개 (대체안 포함) · 조달 연구 확장 '+f(supply.resourceResearchAdvanced)+'건':'')+(economy?' · 조건부 경제 일정 '+f(economy.summary.produced)+'개'+(economy.summary.finiteSeedSchedules?' (유한자금 '+f(economy.summary.finiteSeedSchedules)+'개 포함)':''):'')+(initialEvents?' · 시작 이벤트 일정 '+f(initialEvents.summary.planTemplates)+'종 (미해결 그룹 '+f(initialEvents.summary.scheduledGroups)+'개 연결)':'')+(earlyEconomy?' · 초기 경제 동반 일정 '+f(earlyEconomy.summary.scenarios)+'개 (자금조건 통과 '+f(earlyEconomy.summary.cashScheduled)+'개)':'')+(researchCalendar?' · 연구시간·조달 달력 '+f(researchCalendar.summary.scenarios)+'개 (논리 이력 끝까지 계산 '+f(researchCalendar.summary.fullLogicalCalendars)+'개, 완결 제외)':'')+(codex?' · 초기 코덱스 공급 대안 '+f(codex.summary.scenarios)+'개 (유한자금 접두부 '+f(codex.summary.finiteCashRouteScenarios)+'개, 동일 대원 후속 재생 '+f(codex.summary.sameSoldierFullReplays)+'개, 완결 제외)':'')+(financed?' · 연속 유한자금 육성 달력 '+f(financed.summary.scenarios)+'개 (위대한 대의 자금 조건 '+f(financed.summary.greatCauseFundsMet)+'건, 논리 재생 '+f(financed.summary.fullLogicalReplays)+'개, 완결 제외)':'')+(auxiliary?' · 위대한 대의 병영·자금 동시 충족 '+f(auxiliary.summary.greatCauseBothMet)+'건 (점수 미확인, 완결 제외)':'')+(s.maxComparison?' · 최대값 비교 파레토 '+f(s.maxComparison.frontier)+'개 / 재생 근거 '+f(s.maxComparison.witnesses)+'개':'')+' · 탐색 완료 분기 '+f(s.fullyEnumeratedBranches)+'개 · 전역 최고치 인증 '+f(s.globalOptimalCertified)+'개 · 전체 탐색 공간 미확정';
 }
 export function exactCareerUrl(r){
- return 'soldiers/modern/?'+new URLSearchParams({group:'routes',...(!r.complete?{scope:'reference'}:{}),origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
+ return 'soldiers/modern/?'+new URLSearchParams({group:'routes',...(!r.complete?{scope:'reference'}:{maxView:'all'}),origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
 }
 // Empty input is unrestricted. Unknown retained traits never satisfy a numeric threshold.
 export function routeThreshold(value){
@@ -275,7 +282,7 @@ export function rankRows(rows,metric='cap',stat='total'){
  const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
  return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
 }
-export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',...(!r.complete?{scope:'reference'}:{}),origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
+export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',...(!r.complete?{scope:'reference'}:{maxView:'all'}),origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
 export function branchUrl(id){return 'captains/?'+new URLSearchParams({branch:id})+'#integratedBranches';}
 export function readResearchWitness(index,r,metadata){
  if(index.sourceMetadataSha256!==metadata)throw Error('연구 인덱스 버전 불일치');
