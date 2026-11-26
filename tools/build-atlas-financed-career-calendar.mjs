@@ -12,6 +12,7 @@ import {loadInitialEventRules} from "./atlas-initial-event-schedule.mjs";
 import {produceFinancedCareerCalendar,financedSoldierSignature} from "./atlas-financed-career-calendar.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 import {storeFinancedDetail} from "./atlas-financed-career-detail-store.mjs";
+import {createExactPrefixReplay} from "./atlas-exact-prefix-replay.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)||d;
 const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez"),gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
 const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,codex=c.codexSourcePrefixes;
@@ -36,6 +37,7 @@ for(const [id,r] of Object.entries(codex.records)){
 const byOrigin=new Map();for(const [id,g] of groups){const k=g[0][1].origin,l=byOrigin.get(k)||[];l.push([id,g]);byOrigin.set(k,l);}
 const ordered=[];while([...byOrigin.values()].some(x=>x.length))for(const l of byOrigin.values())if(l.length)ordered.push(l.shift());
 const policies=[{staff:30,scientistTarget:1,farmLimit:2},{staff:40,scientistTarget:1,farmLimit:2},{staff:25,scientistTarget:2,farmLimit:2}];
+const prefixReplay=createExactPrefixReplay(foundationWorld(),replay.apply,{maxNodes:512});
 let processed=0,produced=0;
 for(const [routeId,list] of ordered){
  const options=list.slice().sort((a,b)=>a[2].variant.costPercent-b[2].variant.costPercent||b[2].finance.closingCash-a[2].finance.closingCash)[0];
@@ -45,8 +47,7 @@ for(const [routeId,list] of ordered){
  if(processed>=Number(arg("routes","3")))break;
  processed++;
  const row=rows.get(routeId),actions=readResearchWitness(idx,row,a.sourceMetadataSha256).fullActions;assert.equal(key(actions),row.hash);
- let world=foundationWorld();const trace=[];
- for(const action of actions){world=replay.apply(world,action);trace.push({researched:world.researched,disabled:world.disabled,items:world.items,funds:world.funds,month:world.month});}
+ const {world,trace}=prefixReplay.run(actions,w=>({researched:w.researched,disabled:w.disabled,items:w.items,funds:w.funds,month:w.month}));
  assert(!world.pendingFree);
  for(const o of jobs){
   const id=key([routeId,r.prefixId,o]);
@@ -61,4 +62,4 @@ const list=Object.values(records),full=list.filter(r=>r.status.startsWith("FULL_
 const summary={routes:new Set(list.map(r=>r.routeId)).size,scenarios:list.length,fullLogicalReplays:full.length,sameSoldierFullReplays:full.filter(r=>r.sameSoldierState&&!r.missingOriginalActiveResearchCount).length,partial:list.length-full.length,greatCauseAttempts:gate.length,greatCauseFundsMet:met.length,financeGatesMet:list.reduce((s,r)=>s+r.financeGates.filter(g=>g.met).length,0),prefixStockReuse:list.reduce((s,r)=>s+r.counts.prefixStockReuse,0),fixedRewardDeliveries:list.reduce((s,r)=>s+r.counts.fixedRewardDeliveries,0),deadlineEventsReordered:list.reduce((s,r)=>s+r.counts.deadlineResolved,0),detailShards:new Set(list.map(r=>r.detailHash)).size,detailUncompressedBytes:list.reduce((s,r)=>s+r.detailBytes,0),detailGzipBytes:list.reduce((s,r)=>s+r.detailGzipBytes,0),pendingRoutes:groups.size-new Set(list.map(r=>r.routeId)).size,completeCampaigns:0};
 c.financedCareerCalendar={schema:"ATLAS_FINANCED_CAREER_LEDGER_V2_SHARDED",coreFingerprint,sourceMetadataSha256:a.sourceMetadataSha256,sourceHashes:c.sourceHashes,sourceEvidence:early.evidence,eventSourceEvidence:eventIndex.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,codexFingerprint:codex.producerFingerprint,producerFingerprint,records,summary};
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
-console.log(JSON.stringify({summary,processed,produced,migrated}));
+console.log(JSON.stringify({summary,processed,produced,migrated,prefixReplay:prefixReplay.metrics}));
