@@ -115,6 +115,18 @@ const comparison=await loadCareerRows(modern,db,{includeWitnesses:true});
 assert.deepEqual(comparison.errors,[]);
 db.careerCompletion.maxComparison=summarizeMaxComparison(comparison.rows);
 summary.maxComparison={...db.careerCompletion.maxComparison};delete summary.maxComparison.routeIds;
+const coverage={};
+for(const p of modern.profiles)coverage[p.id]={witnesses:0,capTotal:null,currentTotal:null,capRoute:null,currentRoute:null};
+for(const r of comparison.rows){
+ const c=coverage[r.origin];assert(c,"Unknown origin "+r.origin);c.witnesses++;
+ for(const [metric,totalKey,routeKey] of [["cap","capTotal","capRoute"],["current","currentTotal","currentRoute"]]){
+  const total=r[metric].reduce((a,b)=>a+b,0);
+  if(c[totalKey]===null||total>c[totalKey]||total===c[totalKey]&&r.id<c[routeKey]){c[totalKey]=total;c[routeKey]=r.id;}
+ }
+}
+summary.completeOrigins=Object.values(coverage).filter(c=>c.witnesses>0).length;
+summary.completeBranches=new Set(comparison.rows.map(r=>r.branch)).size;
+db.careerCompletion.originCoverage=coverage;
 db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생이 성립한 연구경로·특성 세트를 조건부 완결로 등록. 전체 후속 탐색 종결과 최고점은 요구하지 않는다. 반복 조달·성장 및 별도 가정은 공개하며 실제 게임 승리 인증과 구분한다.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
