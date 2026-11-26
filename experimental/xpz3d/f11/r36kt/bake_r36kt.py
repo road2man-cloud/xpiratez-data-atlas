@@ -42,6 +42,7 @@ def main():
     bpy.ops.object.select_all(action='SELECT')
     bpy.ops.object.delete(use_global=False)
     bpy.ops.import_scene.gltf(filepath=str(Path(args.low).resolve()))
+    low_all={o.as_pointer() for o in bpy.data.objects}
     low_objects={o.name:o for o in bpy.data.objects if o.type=='MESH'}
     low_names=set(low_objects)
     before_tri=tris(low_objects.values())
@@ -49,8 +50,8 @@ def main():
     # Rename the imported high-detail scene to make the two namespaces unambiguous.
     bpy.ops.import_scene.gltf(filepath=str(Path(args.high).resolve()))
     # Newly imported GLTF objects may be auto suffixed, and names can collide.
-    high_candidates=[o for o in bpy.data.objects if o.type=='MESH' and o.as_pointer() not in
-                     {v.as_pointer() for v in low_objects.values()}]
+    high_all=[o for o in bpy.data.objects if o.as_pointer() not in low_all]
+    high_candidates=[o for o in high_all if o.type=='MESH']
     high_objects={o.name:o for o in high_candidates}
     used_low=set(); used_high=set(); baked=[]
     bpy.context.scene.render.engine='CYCLES'
@@ -112,7 +113,7 @@ def main():
         image.pack()
         baked.append({'low':ln,'high':hn,'normalPng':image.filepath_raw,'pixels':args.resolution})
     # Export only the low-poly hierarchy, including skin and animations, not the hi mesh.
-    for o in high_candidates:bpy.data.objects.remove(o,do_unlink=True)
+    for o in high_all:bpy.data.objects.remove(o,do_unlink=True)
     bpy.ops.object.select_all(action='DESELECT')
     for o in bpy.data.objects:o.select_set(True)
     bpy.ops.export_scene.gltf(filepath=str(Path(args.out).resolve()),export_format='GLB',
