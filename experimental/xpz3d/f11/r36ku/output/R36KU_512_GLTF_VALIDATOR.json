@@ -1,0 +1,348 @@
+{
+  "uri": "output/R36KU_F11_BALANCED_DETAIL_512_2100TRI.glb",
+  "mimeType": "model/gltf-binary",
+  "validatorVersion": "2.0.0-dev.3.10",
+  "validatedAt": "2026-11-26T23:44:37.427Z",
+  "issues": {
+    "numErrors": 0,
+    "numWarnings": 30,
+    "numInfos": 2,
+    "numHints": 0,
+    "messages": [
+      {
+        "code": "UNUSED_OBJECT",
+        "message": "This object may be unused.",
+        "severity": 2,
+        "pointer": "/meshes/0/primitives/2/attributes/TEXCOORD_0"
+      },
+      {
+        "code": "MESH_PRIMITIVE_GENERATED_TANGENT_SPACE",
+        "message": "Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/7/material"
+      },
+      {
+        "code": "MESH_PRIMITIVE_GENERATED_TANGENT_SPACE",
+        "message": "Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/material"
+      },
+      {
+        "code": "MESH_PRIMITIVE_GENERATED_TANGENT_SPACE",
+        "message": "Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/material"
+      },
+      {
+        "code": "MESH_PRIMITIVE_GENERATED_TANGENT_SPACE",
+        "message": "Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/10/material"
+      },
+      {
+        "code": "MESH_PRIMITIVE_GENERATED_TANGENT_SPACE",
+        "message": "Material requires a tangent space but the mesh primitive does not provide it. Runtime-generated tangent space may be non-portable across implementations.",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/11/material"
+      },
+      {
+        "code": "NODE_SKINNED_MESH_NON_ROOT",
+        "message": "Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+        "severity": 1,
+        "pointer": "/nodes/63"
+      },
+      {
+        "code": "IMAGE_NPOT_DIMENSIONS",
+        "message": "Image has non-power-of-two dimensions: 192x96.",
+        "severity": 2,
+        "pointer": "/images/1"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 3 (component index 3) is used with zero weight but has non-zero value (7).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 41 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 41 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 45 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 45 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 49 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 49 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 53 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 53 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 57 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 57 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 61 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 61 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 65 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 65 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 69 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 69 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 73 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 73 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 77 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 77 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 83 (component index 3) is used with zero weight but has non-zero value (7).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 85 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/8/attributes/JOINTS_0"
+      },
+      {
+        "code": "ACCESSOR_JOINTS_USED_ZERO_WEIGHT",
+        "message": "Joints accessor element at index 85 (component index 1) is used with zero weight but has non-zero value (4).",
+        "severity": 1,
+        "pointer": "/meshes/0/primitives/9/attributes/JOINTS_0"
+      }
+    ],
+    "truncated": false
+  },
+  "info": {
+    "version": "2.0",
+    "generator": "XPZ3D R36KU mesh-anchored supplementary material detail",
+    "resources": [
+      {
+        "pointer": "/buffers/0",
+        "mimeType": "application/gltf-buffer",
+        "storage": "glb",
+        "byteLength": 695944
+      },
+      {
+        "pointer": "/images/0",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 256,
+          "height": 256,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/1",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 192,
+          "height": 96,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/2",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/3",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/4",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/5",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/6",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 512,
+          "height": 512,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/7",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 256,
+          "height": 256,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      },
+      {
+        "pointer": "/images/8",
+        "mimeType": "image/png",
+        "storage": "buffer-view",
+        "image": {
+          "width": 256,
+          "height": 256,
+          "format": "rgb",
+          "primaries": "srgb",
+          "transfer": "srgb",
+          "bits": 8
+        }
+      }
+    ],
+    "animationCount": 0,
+    "materialCount": 10,
+    "hasMorphTargets": false,
+    "hasSkins": true,
+    "hasTextures": true,
+    "hasDefaultScene": true,
+    "drawCallCount": 12,
+    "totalVertexCount": 4707,
+    "totalTriangleCount": 2100,
+    "maxUVs": 2,
+    "maxInfluences": 4,
+    "maxAttributes": 8
+  }
+}

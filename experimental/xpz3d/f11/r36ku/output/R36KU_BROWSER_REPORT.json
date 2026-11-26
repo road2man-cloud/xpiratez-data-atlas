@@ -1,0 +1,17 @@
+{
+  "engine": "three.js r170 in headless Microsoft Edge; NOT S2/S3",
+  "renders": [
+    "R36KU_COMPARE_HEAD.png",
+    "R36KU_COMPARE_ARM.png",
+    "R36KU_COMPARE_FULL.png"
+  ],
+  "errors": [],
+  "model": {
+    "height": 1.9435557761205928,
+    "before": "R36KS",
+    "after": "R36KU",
+    "triangles": 2100,
+    "bones": 63
+  },
+  "offlineFileProtocol": true
+}
