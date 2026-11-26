@@ -1,0 +1,17 @@
+{
+  "version": "R36KH",
+  "created": "2026-11-27",
+  "origin": "ChatGPT container",
+  "base": "R36KG",
+  "baseSha256": "7d4058152fec3dcfed90dd170a0302f92e91eaf1d079e32912e92e9ba7a9c1f7",
+  "file": "R36KH_F11_SMOOTH_EXTERIOR_2100TRI.glb",
+  "sha256": "ed55a2f8ae3bc2c28e6c542fdf9afe9a32f1b0d77a127387cb4944c6f53cd615",
+  "triangles": 2100,
+  "bones": 63,
+  "faceTriangles": 644,
+  "hairTriangles": 294,
+  "refinedFrontCells": 10,
+  "refinedAdditionalTorsoVertices": 54,
+  "anatomyDonorEmbedded": false,
+  "binaryUploadedToGithub": false
+}
