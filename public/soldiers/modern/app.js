@@ -1,7 +1,7 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=50-initial-events';
-import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=56-research-tree';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=58-research-traits';
+import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=58-reset-recovery';
 import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';
@@ -1468,13 +1468,15 @@ async function init(){try{
       terminal.targets.map(t=>{
         const matched=entries.filter(r=>r.target===t.id&&r.status==='CONDITIONAL_TARGET_RESEARCH_READY'&&(!activeBranch||r.branch===activeBranch));
         const expanded=endStates.filter(r=>r.target===t.id);
+        const recovery=Object.values(completion.resetRecovery?.records||{}).filter(r=>r.target===t.id&&(!activeBranch||r.branch===activeBranch)).flatMap(r=>(r.outcomes||[]).filter(e=>e.status==='CONDITIONAL_REPLAY').map(e=>({r,e})));
+        const recoveryHtml=recovery.length?'<details data-reset-recovery><summary>특성 초기화·재획득 경로 '+fmt(recovery.length)+'개 (완결 제외)</summary><p>실제 시술 전후 특성 중첩을 비교합니다. 소실·재획득 여부는 동일 계보를 기준으로 하며 현재 연구 목표는 유지됩니다.</p><ol>'+recovery.map(({r,e})=>'<li><a href="'+routeHref(r,e.to)+'">'+esc(originLabel(r.origin))+' · '+esc(name(r.action)||r.action)+'</a> · '+esc(name(e.fromBody)||e.fromBody)+' → '+esc(name(e.toBody)||e.toBody)+' · 특성 '+fmt(Object.keys(e.pre).length)+' → '+fmt(Object.keys(e.after).length)+'<br>소실: '+quantities(e.lost)+' · 획득: '+quantities(e.gained)+' · 재획득: '+quantities(e.reacquired)+'</li>').join('')+'</ol></details>':'';
         const continuation=expanded.length?'<details><summary>최종 연구 이후 탐색 상태 '+fmt(expanded.length)+'개 (완결 제외)</summary><p>동일한 최종 연구 목표를 유지하며 후속 시술을 재생한 상태입니다. 기존 개별 육성경로를 참조하며, 특성 중첩 횟수와 추가 연구 이력을 보존합니다.</p><div data-end-stage-list="'+esc(t.id)+'"></div><button type="button" data-end-stage-more="'+esc(t.id)+'">다음 50개 보기</button></details>':'';
         const goal=t.researchGoals.map(k=>esc(name(k))).join(' · ');
         const stage=t.stages.map(s=>esc(s.name||s.id)).join(' → ');
         const links=matched.map(r=>{const id='MISSCAR:'+r.graph+':'+r.to;const u=new URLSearchParams({scope:'reference',group:'routes',origin:r.origin,branch:r.branch,q:id});return '<li><a href="?'+esc(u)+'#originMaxima">'+esc(DATA.profiles.find(p=>p.id===r.origin)?.sourceKoName||r.origin)+'</a> · 추가 활성 연구 '+fmt(r.added?.length||0)+'건 · 자원 미충족 종류 '+fmt(r.missingItems?.length||0)+'</li>';}).join('');
         const plans=Object.values(supply?.plans||{}).filter(p=>p.target===t.id&&(!activeBranch||p.branch===activeBranch));
         const research=Object.values(supply?.resourceResearch||{}).filter(r=>r.target===t.id&&Number.isInteger(r.to)&&(!activeBranch||r.branch===activeBranch)).map(r=>'<li><a href="'+routeHref(r,r.to)+'">'+esc(originLabel(r.origin))+'</a> · 조달 선행 연구 '+(r.achieved||[]).map(k=>esc(name(k)||k)).join(', ')+' · 추가 활성 '+fmt(r.added?.length||0)+'건</li>').join('');
-        return '<details><summary>'+esc(t.craft?name(t.craft):t.stages.at(-1).name)+' · 조건부 연구 충족 '+fmt(matched.length)+'건 · 조달 계획 '+fmt(plans.length)+'개</summary><p>목표 연구: '+goal+'</p><p>임무 단계: '+stage+'</p>'+(links?'<ul>'+links+'</ul>':'<p>아직 목표 연구 충족 근거 없음</p>')+continuation+(research?'<h4>조달 선행 연구 확장</h4><ul>'+research+'</ul>':'')+(plans.length?'<h4>조건부 조달 계획 (완결 등록 제외)</h4>'+plans.sort((a,b)=>(b.plannerVersion||1)-(a.plannerVersion||1)||a.node-b.node).map(planHtml).join(''):'')+'</details>';
+        return '<details><summary>'+esc(t.craft?name(t.craft):t.stages.at(-1).name)+' · 조건부 연구 충족 '+fmt(matched.length)+'건 · 조달 계획 '+fmt(plans.length)+'개</summary><p>목표 연구: '+goal+'</p><p>임무 단계: '+stage+'</p>'+(links?'<ul>'+links+'</ul>':'<p>아직 목표 연구 충족 근거 없음</p>')+continuation+recoveryHtml+(research?'<h4>조달 선행 연구 확장</h4><ul>'+research+'</ul>':'')+(plans.length?'<h4>조건부 조달 계획 (완결 등록 제외)</h4>'+plans.sort((a,b)=>(b.plannerVersion||1)-(a.plannerVersion||1)||a.node-b.node).map(planHtml).join(''):'')+'</details>';
       }).join('');
     for(const host of terminalHost.querySelectorAll('[data-end-stage-list]')){
       const target=host.dataset.endStageList,list=endStates.filter(r=>r.target===target).sort((a,b)=>Object.keys(b.traitCounts).length-Object.keys(a.traitCounts).length||a.origin.localeCompare(b.origin)),button=host.parentElement.querySelector('[data-end-stage-more]');let pos=0;

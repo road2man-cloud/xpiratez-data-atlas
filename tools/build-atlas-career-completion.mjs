@@ -6,6 +6,8 @@ import {ledgers,project} from "../public/branch-soldier-atlas-career-core.js";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
+import {createCareerReplay} from "./population-chronological-career-core.mjs";
+import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
@@ -78,6 +80,7 @@ const summary={origins:modern.profiles.length,originsWithSeeds:origins.size,stat
 db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"8.7.1",sourceHashes,
  terminalRule,terminalResearch,terminalSupply,researchTreePolicy:RESEARCH_TREE_POLICY,
  ...(db.populationMissingOriginCareer?.endStage?.sourceFingerprint===terminalRule.fingerprint?{endStage:db.populationMissingOriginCareer.endStage}:{}),
+ ...(db.populationMissingOriginCareer?.resetRecovery?.sourceFingerprint===terminalRule.fingerprint?{resetRecovery:db.populationMissingOriginCareer.resetRecovery}:{}),
  ...(prior?.terminalEconomy?.sourceMetadataSha256===metadata&&prior.terminalEconomy.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&[...Object.values(prior.terminalEconomy.records||{}),...(prior.terminalEconomy.unresolved||[])].every(r=>terminalSupply?.plans?.[r.planId]?.plan?.planHash===r.planHash)?{terminalEconomy:prior.terminalEconomy}:{}),
  ...(prior?.earlyEconomy?.sourceMetadataSha256===metadata&&prior.earlyEconomy.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.earlyEconomy.sourceHashes)===key(sourceHashes)&&Object.values(prior.earlyEconomy.records||{}).every(r=>r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node))?{earlyEconomy:prior.earlyEconomy}:{}),
  ...(prior?.researchCalendar?.sourceMetadataSha256===metadata&&prior.researchCalendar.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.researchCalendar.sourceHashes)===key(sourceHashes)&&Object.values(prior.researchCalendar.records||{}).every(r=>r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node))?{researchCalendar:prior.researchCalendar}:{}),
@@ -87,6 +90,11 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
  ...(prior?.initialEventSchedules?.sourceMetadataSha256===metadata&&key(prior.initialEventSchedules.sourceHashes)===key(sourceHashes)?{initialEventSchedules:prior.initialEventSchedules}:{}),
  requiredProofs:REQUIRED_PROOFS,summary,bySource,classifications,rows,
  scope:"Research-tree completion under explicit ordinary-effort abstraction. Conditional intermediate ledgers remain search seeds; no final admission based on fixed-depth or incomplete structural closure."};
+if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
+ const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
+ const sets=buildTerminalResearchTraitSets({db,ledger:decode("public/data/soldier-population-missing-origin-career.json.gz"),index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(replayData)});
+ db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
+}
 db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="연구 트리 및 최종 육성의 구조적 실현 가능성·후속 탐색 종결·독립 재생을 확인한 조합만 등록. 반복 조달·자금·일반 시설 건설·전투캡 도달은 정상 플레이로 충족한다고 가정하며, 한정 자원·연구 해금·상호배제·시간 제한은 유지. 경제 달력은 선택 참고 자료.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
