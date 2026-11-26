@@ -1,4 +1,4 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=50-initial-events';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=58-research-traits';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {groupCompleteRows,rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
@@ -105,6 +105,17 @@ async function showResearch(r){
   if(r.resetRecovery){const t=r.resetRecovery;content.append(el('h3','마지막 기록 초기화 이후 재육성'),el('p',name(t.action)+' · '+name(t.beforeBody)+' → '+name(t.afterBody)+' · 초기화 직전 '+t.beforeTraits.length+'종 → 직후 '+t.afterTraits.length+'종 → 현재 '+t.currentTraits.length+'종. 초기화 전 대비 '+(t.netVsBefore>0?'+':'')+t.netVsBefore+'종.'),el('p','초기화로 소실: '+(t.removed.map(name).join(' · ')||'없음')),el('p','다시 획득: '+(t.regained.map(name).join(' · ')||'없음')),el('p','초기화 전에는 없던 현재 특성: '+(t.newVsBefore.map(name).join(' · ')||'없음')),el('p','아직 회복하지 못한 초기화 전 특성: '+(t.lostVsBefore.map(name).join(' · ')||'없음')));const tbl=el('table');const head=el('tr');for(const x of ['능력치','초기화 전','초기화 직후','현재'])head.append(el('th',x));tbl.append(head);for(const [i,k] of statKeys.entries()){const row=el('tr');for(const x of [labels[k],fmt(t.beforeVector[i]),fmt(t.afterVector[i]),fmt(r.current[i])])row.append(el('td',x));tbl.append(row);}content.append(tbl,el('p','원장에 기록된 초기화만 추적하며, 이전 출발 경로의 초기화는 포함하지 않을 수 있습니다.','note'),link('초기화 이후 재육성 근거','data/soldier-final-career-reset-recovery.json.gz'));}
   if(r.researchDiscovery){const t=r.researchDiscovery;content.append(el('h3','미확보 연구 분기·목표 신규 재생'),el('p',t.goal.map(name).join(' · ')),el('p','이 생산기의 기존 연구 이력에서 확보하지 못했던 분기·연구 목표를 재생한 결과입니다. 게임에 새로운 연구가 추가된 것은 아닙니다.'),link('신규 연구 목표 탐색 원장','data/soldier-final-career-research-discoveries.json.gz'));}
   if(r.birthEvidence){const t=r.birthEvidence,mode={DIRECT_ACTIVE:'기존 연구 활성 상태에서 모집',RESEARCH_THEN_BIRTH:'선행 연구 후 모집',EARLY_BIRTH:'모집 후 분기 연구 확정'}[t.mode]||t.mode;content.append(el('h3','모집 시점 및 조건부 육성'),el('p',mode+' · 모형의 '+t.birthMonth+'개월 시점 · 모집 시 초기 능력치 최솟값을 사용합니다.'),el('p','모집 요구 연구: '+t.requiredResearch.map(name).join(' · ')),el('p','재생된 연구·모집·후속 성장 경로입니다. 실제 자원 수급, 연구 기간, 모집 가능 시점 전체 및 최종 최고치는 미인증입니다.'),link('모집·육성 근거 원장','data/soldier-population-missing-origin-career.json.gz'));}
+  if(r.researchTraitPair){
+   const ref=r.researchTraitPair,sets=registry.careerCompletion.researchTraitSets,path=sets.paths[ref.pathId],traits=sets.traits[ref.traitId];
+   content.append(el('h3','연구경로 · 특성 결합 후보'),el('p','동일 대원 시간순 재생 근거. 실제 완결 또는 최고치 인증은 아닙니다.'),
+    el('p','현재 충족 최종 연구 목표: '+(ref.goals.join(' · ')||'없음')),el('p','계통상 도달했던 목표: '+(ref.historyGoals.join(' · ')||'없음')),
+    el('p','연구 행동 '+path.actions.length+'회 · 활성 연구 '+path.active.length+'종 · 비활성 연구 '+path.disabled.length+'종'),
+    el('p','결합 후보 ID: '+ref.pairId,'small'));
+   const t=el('div');appendList(t,Object.keys(traits),'bonus',' · ',traits);content.append(el('h3','재생된 보유 특성·중첩'),t);
+   const d=el('details');d.append(el('summary','현재 활성 연구 ('+path.active.length+')'));const a=el('div');appendList(a,path.active,'research');d.append(a);content.append(d);
+   if(path.disabled.length){const q=el('details');q.append(el('summary','현재 비활성 연구 ('+path.disabled.length+')'));const a=el('div');appendList(a,path.disabled,'research');q.append(a);content.append(q);}
+   content.append(el('p','후속 탐색: '+(ref.pendingExpansion?'미확장':ref.openEdges.length+'개 후속·미해결 행동')+' · 완결 미인증'));
+  }
   if(r.researchSet)content.append(el('p','연구 세트: '+r.researchSet,'small'));
   const gates=el('ol',undefined,'dialog-list');
   for(const g of w.gates){const li=el('li');li.append(link(name(g.transform),search('training',g.transform)),document.createTextNode(' · '));appendList(li,g.requires,'research');gates.append(li)}
@@ -162,7 +173,7 @@ function renderRow(r,f){
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);filled=true}break;
   case 'medals':if(r.medals){const ids=Object.keys(r.medals);appendList(td,ids,'bonus',' · ',r.medals);filled=true}break;
-  case 'status':td.textContent=reference?(r.missing?'미연결':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색'):r.globalOptimal?'전역 최고치 인증':r.complete?'완결 조합':'미완결';filled=true;break;
+  case 'status':td.textContent=reference?(r.researchTraitPair?.goals.length?'최종 연구 유지·결합 후보':r.researchTraitPair?'최종 연구 계통·결합 후보':r.missing?'미연결':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색'):r.globalOptimal?'전역 최고치 인증':r.complete?'완결 조합':'미완결';filled=true;break;
   case 'source':if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }
   if(!filled){td.textContent='—';td.classList.add('missing')}
