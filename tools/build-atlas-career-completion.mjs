@@ -8,6 +8,7 @@ import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
 import {createCareerReplay} from "./population-chronological-career-core.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
+import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
@@ -63,7 +64,7 @@ if(appendOnly&&key(prior.sourceHashes)!==key(sourceHashes)){
  }
 }
 const rows=[...admitted.values()].sort((a,b)=>a.id.localeCompare(b.id));
-if(prior?.rows?.length)for(const p of prior.rows)assert(admitted.has(p.id),"Previously admitted combination needs a re-verifier: "+p.id);
+if(prior?.rows?.length)for(const p of prior.rows)if(p.proofKind!==RESEARCH_LINE_PROOF)assert(admitted.has(p.id),"Previously certified gameplay combination needs a re-verifier: "+p.id);
 const shared=db.populationMissingOriginCareer?.summary||{},newpair=db.populationNewPairCareer?.summary||{},research=db.populationResearchCareer?.summary||{},frontier=db.populationFrontierChronology?.summary||{};
 const alternatingPath="public/data/soldier-final-career-alternating-v9.json.gz";
 const alt=fs.existsSync(alternatingPath)?decode(alternatingPath):null;
@@ -91,13 +92,25 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
  ...(prior?.auxiliaryCareerCalendar?.sourceMetadataSha256===metadata&&prior.auxiliaryCareerCalendar.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.auxiliaryCareerCalendar.sourceHashes)===key(sourceHashes)&&prior.auxiliaryCareerCalendar.codexFingerprint===prior.codexSourcePrefixes?.producerFingerprint&&prior.auxiliaryCareerCalendar.financedFingerprint===prior.financedCareerCalendar?.producerFingerprint&&Object.values(prior.auxiliaryCareerCalendar.records||{}).every(r=>prior.financedCareerCalendar?.records?.[r.financedId]?.routeId===r.routeId&&prior.financedCareerCalendar.records[r.financedId].prefixHash===r.prefixHash&&prior.codexSourcePrefixes?.records?.[r.codexId]?.prefixId===r.prefixHash&&r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node)&&/^data\/soldier-financed-career-details\/[a-f0-9]{64}\.json\.gz$/.test(r.detailFile)&&fs.existsSync("public/"+r.detailFile))?{auxiliaryCareerCalendar:prior.auxiliaryCareerCalendar}:{}),
  ...(prior?.initialEventSchedules?.sourceMetadataSha256===metadata&&key(prior.initialEventSchedules.sourceHashes)===key(sourceHashes)?{initialEventSchedules:prior.initialEventSchedules}:{}),
  requiredProofs:REQUIRED_PROOFS,summary,bySource,classifications,rows,
- scope:"Research-tree completion under explicit ordinary-effort abstraction. Conditional intermediate ledgers remain search seeds; no final admission based on fixed-depth or incomplete structural closure."};
+ scope:"A complete research line is one replayed start-to-terminal-research witness with its retained trait multiset. Actual game victory, exhaustive search and global optimum are separate."};
 if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
  const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
- const sets=buildTerminalResearchTraitSets({db,ledger:decode("public/data/soldier-population-missing-origin-career.json.gz"),index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(replayData),prior:prior?.researchTraitSets});
+ const ledger=decode("public/data/soldier-population-missing-origin-career.json.gz");
+ const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(replayData),prior:prior?.researchTraitSets});
+ const lines=admitResearchLines({db,sets,ledger,classifications,prior});
+ const lineIds=new Set(lines.rows.map(r=>r.id));
+ for(const p of prior?.rows||[])if(p.proofKind===RESEARCH_LINE_PROOF)assert(lineIds.has(p.id),"Previously complete research line lost: "+p.id);
+ const actualGameCombinations=rows.length;
+ rows.push(...lines.rows);rows.sort((a,b)=>a.id.localeCompare(b.id));
+ summary.researchLineCombinations=lines.rows.length;summary.actualGameCombinations=actualGameCombinations;
+ summary.completeCombinations=rows.length;
+ summary.researchLineWitnesses=lines.covered.size;summary.actualGameProofMissing=missingProofs;sets.summary.researchLineCombinations=lines.rows.length;sets.summary.actualGameCombinations=0;
+ summary.unresolvedEvidence=seen.size-new Set([...lines.covered].map(id=>classifications.missingbirth[id].evidenceId).concat([...admitted.values()].map(r=>classifications[r.source][r.routeId].evidenceId))).size;
+ bySource.missingbirth.researchLineCombinations=lines.rows.length;bySource.missingbirth.researchLineWitnesses=lines.covered.size;
+ db.careerCompletion.researchLineAdmission={schema:RESEARCH_LINE_PROOF,scope:"One continuous replay from foundation to active terminal research goal; ordinary effort and other explicit replay assumptions remain conditional. No exhaustive successor closure or actual victory claim.",rejected:lines.rejected};
  db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
 }
 db.summary.careerCompletion=summary;
-db.policies.CAREER_COMPLETION="연구 트리 및 최종 육성의 구조적 실현 가능성·후속 탐색 종결·독립 재생을 확인한 조합만 등록. 반복 조달·자금·일반 시설 건설·전투캡 도달은 정상 플레이로 충족한다고 가정하며, 한정 자원·연구 해금·상호배제·시간 제한은 유지. 경제 달력은 선택 참고 자료.";
+db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생이 성립한 연구경로·특성 세트를 조건부 완결로 등록. 전체 후속 탐색 종결과 최고점은 요구하지 않는다. 반복 조달·성장 및 별도 가정은 공개하며 실제 게임 승리 인증과 구분한다.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));

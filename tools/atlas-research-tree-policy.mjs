@@ -13,9 +13,9 @@ export const RESEARCH_TREE_POLICY=Object.freeze({
   "Research dependency, requires, disables, reenables, lookup, free research and mutually exclusive choice chronology.",
   "Recruitment, body, transformation, trait counts, reset, history, rank and exact stat thresholds.",
   "Finite/unique rewards, item grants with exclusive sources, time windows, limited repetitions and unknown acquisition sources.",
-  "End-stage research targets, reachable successor closure, independent replay and equivalence of full final state."
+  "End-stage research targets and concrete chronological replay of the same soldier. Exhaustive successor closure, global optimum and full-state equivalence are separate research questions."
  ],
- completion:"A complete research-tree combination need not have a month-by-month economy, construction schedule or actual battle log. Abstract ordinary effort is explicit, not a hard blocker. Do not admit an intermediate route, an unsupported resource source, unresolved research branch or a fixed-depth numerical result as complete.",
+ completion:"A completed modeled research line is a concrete chronological witness from foundation to a designated active terminal research goal, together with the retained traits of the same soldier. No requirement to exhaust optional successors or maximize stats. Disclose replay assumptions including unresolved real-world acquisition; do not claim a played victory or an exhaustive search.",
  actualGameCertified:false,
  optionalEvidence:"Existing finance, construction and campaign calendar companions remain optional; no further production of those models is required for research-tree completion."
 });
