@@ -1,0 +1,38 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import {gunzipSync} from "node:zlib";
+import {projectResearchDonor} from "./population-research-donor-projection.mjs";
+import {createGrowthReplay,member} from "./population-growth-replay-core.mjs";
+import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
+const inputs={type:"externalInputs",items:{STR_NOOSE:2,STR_MOONSHINE:10},functions:["WELL"],funds:50,reason:"test",assumption:true};
+const transform={type:"transform",soldier:"origin",transform:"STR_SHAKEUP"},lab={type:"research",id:"STR_UNDERGROUND_ECOSYSTEM"};
+const full=[inputs,transform,lab],projection=projectResearchDonor(full);
+assert.deepEqual(projection,[{type:"externalInputs",items:{},functions:["WELL"],funds:0,reason:"Retained conditional base functions: test",assumption:true},lab]);
+assert.deepEqual(inputs.items,{STR_NOOSE:2,STR_MOONSHINE:10});assert.equal(inputs.funds,50);
+assert.deepEqual(projectResearchDonor([inputs,lab]),[inputs,lab]);
+assert.deepEqual(projectResearchDonor([{...inputs,functions:[]},transform,lab]),[lab]);
+assert.deepEqual(projectResearchDonor([{...inputs,assumption:false},transform,lab]),[lab]);
+assert.equal(projectResearchDonor([{type:"unknown"}]),null);
+const read=p=>JSON.parse(fs.readFileSync(p));
+const data=read("public/data/soldiers-modern-index.json");
+data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
+data.sourceItemIds=new Set(read("public/data/soldier-source-catalog.json").itemIds);
+assert(data.researchRules.STR_UNDERGROUND_ECOSYSTEM.requiresBaseFunc.includes("WELL"));
+const ledger=JSON.parse(gunzipSync(fs.readFileSync("public/data/soldier-population-missing-origin-career.json.gz")));
+const replay=createGrowthReplay(data),material=createResearchMaterialPolicy(data);
+const graph=ledger.graphs["47a5b7dac5a9819b1c70b507c5eea595f289624fbfa35e0be0255417b9fc9cc6"];
+assert(graph,"Expected original WELL failure witness");
+const removed=new Set(["recruit","transform","conditionalCapGrowth","conditionalPromotion","conditionalMedal"]);
+for(const node of [78,117]){
+ const suffix=[];for(let i=node;i>0;i=graph.nodes[i].parent)suffix.unshift(graph.nodes[i].steps);
+ const actions=[...graph.birthActions,...suffix.flat()];
+ const old=actions.filter((a,i)=>!removed.has(a.type)&&!(a.type==="externalInputs"&&removed.has(actions[i+1]?.type)));
+ assert.throws(()=>replay.replay(old),/WELL/);
+ const projected=projectResearchDonor(actions);assert(projected);
+ const w=replay.replay(projected);
+ assert(!member(w)&&!w.pendingFree&&w.baseFunctions.has("WELL"));
+ assert(w.researched.has("STR_UNDERGROUND_ECOSYSTEM")&&!w.disabled.has("STR_UNDERGROUND_ECOSYSTEM"));
+ const v=material.check({birthActions:projected},null,[]);
+ console.log(JSON.stringify({node,oldFailure:"WELL",newReplay:"passed",actions:projected.length,activeResearch:[...w.researched].filter(k=>!w.disabled.has(k)).length,finiteConsumption:v.consumed}));
+}
+console.log("Research donor facility projection passed.");
