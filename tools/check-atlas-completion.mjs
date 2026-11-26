@@ -37,7 +37,24 @@ for(const r of Object.values(a.terminalResearch.records)){
  advanced++;if(r.status==='CONDITIONAL_TARGET_RESEARCH_READY'){const goal=t.targets.find(x=>x.id===r.target);assert.deepEqual(r.remaining,[]);assert(goal.researchGoals.every(k=>r.achieved.includes(k)));ready++;}
 }
 assert.equal(advanced,a.terminalResearch.advanced);
-assert.equal(ready,a.terminalResearch.ready);
+assert.equal(ready,Object.values(a.terminalResearch.records).filter(r=>r.suffixHash&&r.status==="CONDITIONAL_TARGET_RESEARCH_READY").length);
+assert.equal(a.terminalResearch.ready,Object.values(a.terminalResearch.anchors).filter(r=>r.status==="CONDITIONAL_TARGET_RESEARCH_READY").length);
+if(a.endStage){
+ const e=a.endStage,known=Object.values(e.records).filter(r=>r.status==="TERMINAL_RESEARCH_READY_NOT_CLOSED");
+ assert.deepEqual(c.endStage,e);assert.equal(e.ready,known.length);
+ assert.equal(e.distinctStates,new Set(known.map(r=>r.graph+"|"+r.node)).size);
+ assert.equal(e.completeCombinations,0);
+ for(const r of known){
+  const row=rows.get("MISSCAR:"+r.graph+":"+r.node),node=a.graphs[r.graph].nodes[r.node];
+  assert(row&&node);assert.equal(node.stateHash,r.stateHash);
+  assert.deepEqual(Object.keys(r.traitCounts).sort(),node.traits.slice().sort());
+  assert(Object.values(r.traitCounts).every(n=>Number.isSafeInteger(n)&&n>0));
+ }
+ for(const r of Object.values(e.research).filter(r=>r.suffixHash)){
+  assert(a.graphs[r.graph].nodes[r.to]);assert.equal(key(a.graphs[r.graph].nodes[r.to].steps),r.suffixHash);
+  for(const x of r.outcomes||[])if(Number.isInteger(x.to))assert(a.graphs[r.graph].nodes[x.to]);
+ }
+}
 const supply=a.terminalSupply,plans=Object.values(supply.plans).filter(r=>r.plan);
 const {fingerprint:sourceFingerprint,...supplySource}=supply.sourceEvidence;
 assert.equal(key(supplySource),sourceFingerprint);
