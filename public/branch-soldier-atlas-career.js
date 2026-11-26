@@ -2,14 +2,14 @@ import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,r
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {groupCompleteRows,rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
-import {maxComparisonRows} from './branch-soldier-max-frontier.js?v=63';
+import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-frontier.js?v=64-chort';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive,group=()=> 'routes',reference=false}){
 const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'originTableScroll',reset:'routeReset',researchDialog:'routeResearchDialog',researchTitle:'routeResearchTitle',researchClose:'routeResearchClose',researchContent:'routeResearchContent'};
 const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
-const controls=['q','origin','body','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','selectedOnly','a','b','sameChoices'];
+const controls=['q','origin','body','careerClass','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','selectedOnly','a','b','sameChoices'];
 const checks=new Set(['certified','selectedOnly','sameChoices']);
 $('maxViewWrap').hidden=reference;if(!reference)controls.push('maxView');
 if(reference){for(const id of ['fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly']){controls.push(id);checks.add(id);}}
@@ -187,16 +187,17 @@ function updateSelection(){$('clearSelection').textContent='선택 해제 ('+sel
 function render(){
  if(!isActive())return;
  const f=filter(),all=reference&&loaded===ledgers.length?rowsWithMissingOrigins(rows,[...profiles.values()]):rows;
- const filtered=filterTable(all,f,context());
+ const scoped=all.filter(r=>f.careerClass==='all'||careerClass(r)===(f.careerClass||'ordinary'));
+ const filtered=filterTable(scoped,f,context());
  const useFrontier=!reference&&f.maxView!=='all'&&!f.selectedOnly&&dir==='desc'&&(sort==='total'||statKeys.includes(sort));
  const comparison=useFrontier?maxComparisonRows(filtered):filtered;
  const sorted=sortTable(comparison,sort,dir,f.metric,context());
  const matches=reference?sorted:groupCompleteRows(sorted,group());
  const size=Number($('pageSize').value),pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages-1);
- $('status').textContent=reference?fmt(matches.length)+'개 표시 / '+fmt(all.length)+'개 탐색 근거 (완결 조합 아님)':fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 재생 근거 · 완결 세트 '+fmt(completion?.summary?.completeCombinations??0)+'개'+(useFrontier?' · 수치 지배 경로 '+fmt(filtered.length-comparison.length)+'개 숨김':'')+(loaded<ledgers.length?' · 완결 원장 연결 중':' · 완결 출생처 '+new Set(rows.map(r=>r.origin)).size+'/'+profiles.size);
+ $('status').textContent=reference?fmt(matches.length)+'개 표시 / '+fmt(all.length)+'개 탐색 근거 (완결 조합 아님)':fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 재생 근거 · 완결 세트 '+fmt(completion?.summary?.completeCombinations??0)+'개'+(useFrontier?' · 수치 지배 경로 '+fmt(filtered.length-comparison.length)+'개 숨김':'')+(loaded<ledgers.length?' · 완결 원장 연결 중':' · 완결 출생처 '+new Set(rows.filter(r=>careerClass(r)==='ordinary').map(r=>r.origin)).size+'/'+profiles.size);
  if(reference)document.getElementById('catalogStatus').textContent='조건부 탐색 근거 · 완결 조합 및 최종 순위에서 제외';
  else if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
- $('status').textContent+=researchFilters.notice();
+ $('status').textContent+=(f.careerClass==='chort'?' · 코르트 독립 비교 (출생처는 획득 근거)':f.careerClass==='all'?' · 전체 근거 열람 (코르트 포함)':' · 코르트 제외')+researchFilters.notice();
  $('status').dataset.routeStatus=loaded===ledgers.length?(errors.length?'partial':'loaded'):'loading';
  $('errors').hidden=!errors.length;$('errors').textContent=errors.join(' · ');
  $('page').textContent=(page+1)+' / '+pages;$('prev').disabled=page===0;$('next').disabled=page>=pages-1;
@@ -208,13 +209,17 @@ function render(){
 for(const id of controls){
  if(checks.has(id))$(id).checked=params.get(id)==='1';
  else if(['minDepth','minTraits'].includes(id))$(id).value=params.get(id)||'';
- else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric','maxView'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
+ else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric','maxView','careerClass'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 }
+if(!params.has('careerClass')&&params.get('body')===CHORT_BODY)$('careerClass').value='chort';
 if(params.has('a')||params.has('b')||location.hash==='#branchCompare')$('branchCompare').open=true;
 
 for(const id of controls.filter(k=>k!=='q'&&!multi[k]))$(id).onchange=()=>{
  if(initial||!isActive())return;
  if(id==='a'||id==='sameChoices'){if($('sameChoices').checked&&$('b').value&&!sameChoices(branches.get($('a').value),branches.get($('b').value)))$('b').value='';populate()}
+ if(id==='body'&&$('body').value===CHORT_BODY)$('careerClass').value='chort';
+ if(id==='body'&&$('body').value&&$('body').value!==CHORT_BODY&&$('careerClass').value==='chort')$('careerClass').value='ordinary';
+ if(id==='careerClass'&&$('careerClass').value!=='all'&&$('body').value&&($('body').value===CHORT_BODY)!==($('careerClass').value==='chort'))$('body').value='';
  if(id==='branch'&&$('branch').value){$('a').value='';$('b').value=''}
  if((id==='a'||id==='b')&&$(id).value)$('branch').value='';
  page=0;sync();render();
@@ -237,7 +242,7 @@ async function load(){
  branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));
  populate();initial=false;render();
  const projected=await (reference?loadExplorationRows:loadCareerRows)(modern,registry,{includeWitnesses:true});
- rows=projected.rows;completion=projected.completion;errors.push(...projected.errors);loaded=ledgers.length;populate();render();
+ rows=projected.rows;completion=projected.completion;if(!params.has('careerClass')&&rows.some(r=>r.id===$('q').value&&r.body===CHORT_BODY))$('careerClass').value='chort';errors.push(...projected.errors);loaded=ledgers.length;populate();render();
  }catch(e){errors.push('병종 원본 미연결: '+e.message);loaded=ledgers.length;initial=false;render()}
 }
 render();void load();
