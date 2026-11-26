@@ -121,6 +121,18 @@ async function showResearch(r){
    if(path.disabled.length){const q=el('details');q.append(el('summary','현재 비활성 연구 ('+path.disabled.length+')'));const a=el('div');appendList(a,path.disabled,'research');q.append(a);content.append(q);}
    content.append(el('p','후속 탐색: '+(ref.pendingExpansion?'미확장':ref.openEdges.length+'개 후속·미해결 행동')+' · 전체 탐색 및 실제 승리 미인증'));
   }
+  const budget=registry.careerCompletion?.materialBudget;
+  if(budget&&r.id?.startsWith('MISSCAR:')){
+   content.append(el('h3','재료 획득 가정 · 한정 공급량'),el('p','범용 재료 조달은 가정합니다. 한정품은 각 대안 육성경로에서 별도로 계산하며 여러 대안을 동시에 실현할 수 있다는 뜻은 아닙니다.'));
+   const entry=budget.records?.[r.id];
+   if(entry){
+    const tbl=el('table'),head=el('tr');for(const x of ['한정 재료','이력상 조달','소비','공급 상한','잔여 한도','근거'])head.append(el('th',x));tbl.append(head);
+    for(const [id,u] of Object.entries(entry.use)){const f=budget.finite[id],tr=el('tr');for(const x of [f?.name||name(id),fmt(u.granted),fmt(u.consumed),fmt(u.cap),fmt(u.remaining),f?.hard?'확정 한도':'확인된 이벤트 공급분'])tr.append(el('td',x));tbl.append(tr);}
+    content.append(tbl);
+    if(entry.hard.length||entry.uncertain.length)content.append(el('p','재료 한도 미해결: '+[...entry.hard,...entry.uncertain].join(' · '),'note'));
+   }else content.append(el('p','이 재생 경로에서 집계된 한정 재료 소비 없음.'));
+   content.append(el('p','획득처 자료가 불완전한 재료의 총 공급량은 미확인입니다. 잔여 한도는 다른 대원의 소비를 제외한 잠재 한도이며 실제 인벤토리 수량은 아닙니다.','note'));
+  }
   if(r.researchSet)content.append(el('p','연구 세트: '+r.researchSet,'small'));
   const gates=el('ol',undefined,'dialog-list');
   for(const g of w.gates){const li=el('li');li.append(link(name(g.transform),search('training',g.transform)),document.createTextNode(' · '));appendList(li,g.requires,'research');gates.append(li)}

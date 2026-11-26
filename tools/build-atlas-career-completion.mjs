@@ -11,6 +11,7 @@ import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
 import {createCareerReplay} from "./population-chronological-career-core.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
+import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
@@ -111,6 +112,22 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
  bySource.missingbirth.researchLineCombinations=lines.rows.length;bySource.missingbirth.researchLineWitnesses=lines.covered.size;
  db.careerCompletion.researchLineAdmission={schema:RESEARCH_LINE_PROOF,scope:"One continuous replay from foundation to active terminal research goal; ordinary effort and other explicit replay assumptions remain conditional. No exhaustive successor closure or actual victory claim.",rejected:lines.rejected};
  db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
+ // Keep per-witness finite use in the canonical completion registry.
+ const budget=createResearchMaterialPolicy(replayData),description=budget.describe(),records={};
+ let checked=0,hardViolations=0,indexedUnresolved=0,withFinite=0;
+ for(const [id,r] of Object.entries(ledger.routes)){
+  const g=ledger.graphs[r.sourceGraph],i=r.sourceNode;if(!g?.nodes[i])continue;
+  const v=budget.state(g,i),q=budget.issues(v);checked++;
+  if(q.hard.length)hardViolations++;if(q.uncertain.length)indexedUnresolved++;
+  const use={};for(const [k,f] of budget.finite){
+   const granted=v.granted[k]||0,consumed=v.consumed[k]||0;
+   if(granted||consumed)use[k]={granted,consumed,cap:f.cap,remaining:Math.max(0,f.cap-consumed)};
+  }
+  if(Object.keys(use).length||q.hard.length||q.uncertain.length){withFinite++;records[id]={use,hard:q.hard,uncertain:q.uncertain};}
+ }
+ db.careerCompletion.materialBudget={schema:description.schema,source:description.source,sha256:description.sha256,scope:description.scope,finite:description.finite,counts:description.counts,records,checked,withFinite,hardViolations,indexedUnresolved};
+ summary.materialBudget={checked,withFinite,hardViolations,indexedUnresolved,counts:description.counts};
+
 }
 const comparison=await loadCareerRows(modern,db,{includeWitnesses:true});
 assert.deepEqual(comparison.errors,[]);
