@@ -1,0 +1,40 @@
+{
+  "version": "R36KI",
+  "status": "experimental",
+  "productionDate": "2026-11-27",
+  "origin": "ChatGPT sandbox",
+  "triangles": 2100,
+  "bones": 63,
+  "originalFaceTriangles": 644,
+  "originalHairTriangles": 294,
+  "texturedPrimitives": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "textureMaps": [
+    "albedo",
+    "normal",
+    "occlusion-roughness-metallic"
+  ],
+  "atlasSize": [
+    1024,
+    1024
+  ],
+  "extraUVSeamVertices": 36,
+  "sourceR36HWsha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "glb": {
+    "filename": "R36KI_F11_TEXTURED_SKIN_2100TRI.glb",
+    "sha256": "c9d6650b4addf24412d512f1d00844cd861be74bcbe821c640f62be5ff8f3d0c",
+    "bytes": 560840,
+    "uploaded": false
+  },
+  "zip": {
+    "filename": "XPZ3D_R36KI_F11_TEXTURE_ATLAS_2100TRI_20261127.zip",
+    "sha256": "6fb84f91e0c6cfa127e90b6f55068526ebe423b39d69cc65fd243135ab0796f3",
+    "uploaded": false
+  },
+  "highDensityAnatomyEmbedded": false
+}
