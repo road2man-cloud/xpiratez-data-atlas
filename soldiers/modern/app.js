@@ -1,6 +1,6 @@
 // Read-only, source-first Soldier DB. No local-save input or custom planner.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=64-chort';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=68-unified';
 import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=63-max-frontier';
 import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261125-pop-v17';
@@ -58,7 +58,7 @@ let DATA,REPORT,CATALOG,DIAGNOSTICS,PRUNING,DEPENDENCIES,ITERATIVE,selected=null
 let comparison=null,routeTable=null,bodyCareer=null,bodyCareerPending=false;
 let sharedRegistry=null,integratedOrigins=new Map(),integratedLoadError=null,integratedCoverage=null,bodyRows=[],bodySort='total';
 const viewParams=new URLSearchParams(location.search);
-const referenceMode=viewParams.get('scope')==='reference'||(!viewParams.has('scope')&&!viewParams.has('group')&&['profile','candidate','compare','originExt','terminal','training','research'].some(k=>viewParams.has(k)));
+const legacyLink=viewParams.get('scope')==='reference'||(!viewParams.has('scope')&&!viewParams.has('group')&&['profile','candidate','compare','originExt','terminal','training','research'].some(k=>viewParams.has(k)));
 const activeBranch=viewParams.get('branch');
 let branchScope=null;
 
@@ -488,119 +488,46 @@ function renderBodyTable(q,family){
       '<td class="body-route-meta body-route-list">'+(b&&b.traits!==null?'<small>'+b.traits.length+'종</small>'+list(b.traits):'—')+'</td></tr>';
   }).join('')||'<tr><td colspan="19">해당 병종 없음</td></tr>';
 }
-// The existing three catalog views now share the complete-combination registry.
-// Conditional reference functions remain available for explicit evidence links.
-function render(){
-  if(blocked||!REPORT)return;
-  if(referenceMode){renderConditionalReference();return;}
-  const group=$('#catalogGrouping').value;
-  $('#routeFilters').hidden=false;$('#routeTools').hidden=false;
-  $('#originMaxima').classList.add('route-table-active');
-  $('#originMaxima').classList.remove('body-career-active');
-  for(const id of ['#family','#catalogMetric','#compareOrigin'])$(id).closest('label').hidden=true;
-  $('#compareClear').hidden=true;$('#compareStatus').hidden=true;
-  for(const id of ['#routeGrowthTimingWrap','#routeGrowthAttemptsWrap','#routeGrowthSuccessWrap'])$(id).hidden=true;
-  $('#originMaxima .table-head h2').textContent=group==='body'?'최종 병종별 완결 대표 경로':group==='origin'?'출생처별 완결 육성 경로':'개별 완결 육성 경로';
-  if(!routeTable)routeTable=mountRouteTable({modern:DATA,catalog:CATALOG,registry:sharedRegistry,isActive:()=>!blocked,group:()=>$('#catalogGrouping').value});
-  else routeTable.render();
-}
-function renderConditionalReference(){
-  if(blocked||!REPORT)return;
-  const showRoutes=$('#catalogGrouping').value==='routes';
-  $('#routeFilters').hidden=!showRoutes;$('#routeTools').hidden=!showRoutes;
-  $('#originMaxima').classList.toggle('route-table-active',showRoutes);
-  $('#originMaxima').classList.toggle('body-career-active',!showRoutes&&$('#catalogGrouping').value==='body'&&$('#catalogMetric').value==='growth'&&!$('#family').value.startsWith('origin:'));
-  for(const id of ['#family','#catalogMetric','#compareOrigin'])$(id).closest('label').hidden=showRoutes;
-  $('#compareClear').hidden=showRoutes;$('#compareStatus').hidden=showRoutes;
-  if(showRoutes){
-    for(const id of ['#routeGrowthTimingWrap','#routeGrowthAttemptsWrap','#routeGrowthSuccessWrap'])$(id).hidden=true;
-    $('#catalogStatus').textContent='등록 육성 경로 · 조건부 결과 · 전역 최고치 미인증';
-    $('#originMaxima .table-head h2').textContent='개별 육성 경로';
-    if(!routeTable)routeTable=mountRouteTable({modern:DATA,catalog:CATALOG,registry:sharedRegistry,isActive:()=>$('#catalogGrouping').value==='routes',reference:true});
-    else routeTable.render();
-    return;
+// Preserve the old birth/conditional representatives as explicitly separate
+// evidence rows in the same table. Never combine scores from two candidates.
+function legacyCareerRows(){
+ const rows=[],vector=s=>statKeys.every(k=>Number.isSafeInteger(s?.[k]))?statKeys.map(k=>s[k]):null;
+ const common=(id,body)=>({origin:id,body,branch:null,source:null,order:[],traits:null,rank:null,medals:null,difficulties:[],current:null,cap:null,certified:false,complete:false});
+ const href=(id,extra={})=>'soldiers/modern/?'+new URLSearchParams({profile:id,...extra})+'#originDetails';
+ for(const r of REPORT.records){
+  const id=r.profileId;
+  rows.push({...common(id,r.soldierType),key:'birth:'+id,id:'birth:'+id,birthOnly:true,detailUrl:href(id)});
+  const c=best(r,'growth')||best(r,'provisional');
+  if(c&&c.finalSoldierType!=='STR_SOLDIER_CHORT'){
+   const current=vector(c.display?.stats),cap=c.growth?.kind==='conditional-upper-envelope'?vector(c.growth.stats):null;
+   if(current||cap)rows.push({...common(id,c.finalSoldierType),key:'legacy-origin:'+id+':'+c.id,id:c.id,legacy:true,current,cap,order:c.transforms||[],detailUrl:href(id,{candidate:c.id})});
   }
-  $('#originMaxima .table-head h2').textContent=$('#catalogGrouping').value==='body'?'탐색 참고 · 병종별 조건부 수치':'탐색 참고 · 출생처별 능력치';
-  const q=$('#search').value.toLocaleLowerCase('ko').trim(),family=$('#family').value,metric=$('#catalogMetric').value;
-  const bodyMode=metric==='growth'&&$('#catalogGrouping').value==='body'&&!family.startsWith('origin:');
-  $('#compareOrigin').disabled=bodyMode;$('#compareClear').disabled=bodyMode;
-  const routeMode=metric==='route-expected';
-  const growthTiming=$('#routeGrowthTiming')?.value||'none';
-  $('#routeGrowthTimingWrap').hidden=!routeMode;
-  $('#routeGrowthAttemptsWrap').hidden=!routeMode||growthTiming==='none';
-  $('#routeGrowthSuccessWrap').hidden=!routeMode||growthTiming==='none';
-  if(bodyMode){renderBodyTable(q,family);return;}
-  const rows=REPORT.records.filter(r=>(!family||(family.startsWith('origin:')?
-    r.profileId===family.slice(7):r.soldierType===family))&&(!q||
-    [r.profileId,r.name,r.soldierName,
-      ...Object.keys(DATA.profiles.find(p=>p.id===r.profileId)?.acquisitionRequiredItems||{}),
-      ...comparable(r).flatMap(c=>c.transforms.map(name)),...(integratedOrigins.get(r.profileId)?.trainingIds||[]).flatMap(id=>[id,name(id)])]
-      .join(' ').toLocaleLowerCase('ko').includes(q)));
-  const rowScore=r=>metric==='route-expected'?(viewFor(r,metric)?.total??-1):
-    metric==='birth-expected'?newbornDistribution(DATA,r.profileId).total:
-    metric==='birth'?displayTotal(r.displayBirth):metric==='certified'?-1:
-    metric==='growth'?(viewFor(r,metric)?.total??-1):score(best(r,'provisional'),'provisional');
-  rows.sort((a,b)=>rowScore(b)-rowScore(a)||a.name.localeCompare(b.name,'ko'));
-  $('#rowCount').textContent=rows.length+' / '+REPORT.records.length+'개 출생처';
-  const ref=baseline(metric),baselineRecord=REPORT.records.find(r=>r.profileId===comparison?.profileId);
-  const valueLabel=n=>metric==='birth-expected'||metric==='route-expected'?fmtMean(n):fmt(n);
-  const deltaLabel=n=>n>0?'+'+valueLabel(n):valueLabel(n);
-  $('#compareStatus').textContent=comparison?
-    '비교 기준: '+(baselineRecord?.name||comparison.profileId)+
-      (ref?' · 같은 표시 방식의 12종 합계 '+valueLabel(ref.total)+'와 각 능력치 차이 표시':' · 해당 표시 방식에 기준 수치 없음 (추정값 사용 안 함)')+
-      ' · 비교 대상은 같은 병사가 아닌 출생처별 조건부 경로입니다.':
-    '기준 출생처를 선택하면 모든 행에 같은 계산 방식의 차이를 표시합니다. 미완료 경로는 수치를 생성하지 않습니다.';
-  $('#originTable thead').innerHTML='<tr><th>출생처 / 최초 병종</th><th>상태</th><th>12종 합계'+(comparison?' / 기준 대비':'')+'</th>'+DISPLAY_STATS.map(k=>'<th>'+esc(DATA.statLabels[k])+'</th>').join('')+'</tr>';
-  $('#originTable tbody').innerHTML=rows.map(r=>{
-    const preferred=r.profileId===comparison?.profileId?comparison.candidateId:null;
-    const view=viewFor(r,metric,preferred);
-    const integrated=view?.integrated;
-    const c=metric==='birth-expected'||integrated||(activeBranch&&metric==='growth')?null:view?.candidate||routeCandidate(
-      {...r,candidates:comparable(r)},metric==='route-expected'?'growth':metric,preferred);
-    const diff=Boolean(view?.integrated)===Boolean(ref?.integrated)?routeDifference(view,ref,DISPLAY_STATS):null;
-    const odds=view?.birthRoll&&ref?.birthRoll?newbornPairChance(view.birthRoll,ref.birthRoll):
-      view?.routeRoll&&ref?.routeRoll?newbornPairChance(view.routeRoll,ref.routeRoll):null;
-    const scoreCell=view?'<strong>'+valueLabel(view.total)+'</strong>'+
-      (diff?'<small class="route-delta '+(diff.total>0?'positive':diff.total<0?'negative':'')+'">기준 대비 '+deltaLabel(diff.total)+'</small>':'')+
-      (odds?'<small class="birth-win-chance">'+(metric==='route-expected'?'조건부 독립 추첨 우세 ':'독립 추첨 우세 ')+fmtPct(odds.win)+' · 동률 '+fmtPct(odds.tie)+'</small>':'')+
-      (view.routeRoll?'<small>능력치 요구 통과 '+fmtPct(Math.min(1,view.routeRoll.statGateProbability))+'</small>':''):'—';
-    const longest=comparable(r).reduce((winner,x)=>
-      !winner||x.transforms.length>winner.transforms.length?x:winner,null);
-    // The highest scoring path is not necessarily the longest witnessed route.
-    // Show both without claiming the longer path is optimal or campaign-certified.
-    const depth=longest?.transforms.length||0;
-    const depthNote=integrated?'<small data-integrated-max-depth="'+integrated.longestSteps+'">등록 후보 내 최장 '+integrated.longestSteps+'단계 · '+fmt(integrated.representativeCount)+'개 대표 경로</small>'+integratedRouteLink(integrated,'최장 '+integrated.longestSteps+'단계 상계 보기',integrated.longestRoute):depth>4?
-      '<small data-replayed-max-depth="'+depth+'">조건부 경로 최장 '+depth+
-      '개 시술 · 완주 미인증</small><button type="button" data-open-longest="'+
-      esc(r.profileId)+'" data-longest-candidate="'+esc(longest.id)+'">최장 '+
-      depth+'단계 경로 확인</button>':'';
-    const terminal=chortCandidates(r).reduce((winner,x)=>preferredOriginCandidate(winner,x,score),null);
-    const ties=(metric==='growth'||metric==='provisional')&&c?
-      routeTieEvidence(comparable(r),c,x=>score(x,metric),metric):null;
-    const tieNote=ties?.equalTotal.length>1?
-      '<small class="origin-route-tie" data-route-tie="true">상한 합계 동점 '+ties.equalTotal.length+
-      '경로 · 최종 병종·12종 동일 '+ties.sameVector.length+' / 능력치·병종 다름 '+ties.differentVector.length+'</small>':'';
-    const sourceProfile=DATA.profiles.find(p=>p.id===r.profileId);
-    const educationChoices=educationBranchReport(DATA,sourceProfile,comparable(r));
-    const applicableEducation=educationChoices.filter(x=>x.available);
-    const educationWitnesses=applicableEducation.filter(x=>x.candidateCount>0).length;
-    const educationCoverage=applicableEducation.length?
-      '<small class="origin-education-coverage" data-education-witnessed="'+educationWitnesses+"/"+
-      applicableEducation.length+'">교육별 경로 검증 '+educationWitnesses+'/'+applicableEducation.length+
-      ' · 누락 경로는 불가능 판정 아님</small>':'';
-    const cell=k=>'<td>'+valueLabel(view?.stats[k])+(diff?'<small class="route-delta '+(diff.stats[k]>0?'positive':diff.stats[k]<0?'negative':'')+'">'+deltaLabel(diff.stats[k])+'</small>':'')+'</td>';
-    return '<tr data-origin-id="'+esc(r.profileId)+'" data-proof="'+r.status+'"'+(r.profileId===comparison?.profileId?' data-reference="true"':'')+'><td>'+(integrated?integratedRouteLink(integrated,r.name)+'<small><button type="button" data-open-origin="'+esc(r.profileId)+'">기존 출생·연구 기록</button></small>':'<button class="origin-open" data-open-origin="'+esc(r.profileId)+'">'+esc(r.name)+'</button>')+'<small>'+esc(r.soldierName)+'</small>'+
-      (terminal?'<small class="origin-terminal-tag">코르트 변환 상한 '+fmt(terminal.growth?.total)+' · 기본 비교 제외</small>':'')+
-      tieNote+educationCoverage+'<small class="id">'+esc(r.profileId)+'</small>'+
-      '<small class="mobile-proof">'+(metric==='growth'?'성장상한':metric==='provisional'?'연구·시술':metric==='birth'?'출생 기준':metric==='birth-expected'?'초기 추첨 평균':metric==='route-expected'?'시술 후 기대값':'미인증')+(c||integrated?' · 조건부':' · 미해결')+'</small>'+
-      '<button type="button" class="route-reference-button" data-compare-origin="'+esc(r.profileId)+'">기준으로 비교</button></td><td>'+
-      (metric==='birth-expected'?'출생 RNG 기대값 · 확률분포':metric==='route-expected'?(view?'등록 경로 후 조건부 RNG 평균':'경로 평균 미산출 · 근거 확인'):metric==='certified'?'최종 인증 없음':metric==='birth'?'원본 출생 기준값':integrated?'공통 원장 연결 · 조건부':activeBranch&&metric==='growth'?'선택 분기 미계산':c?metric==='growth'?'성장 완료 가정 · 상한 추정':'조건부 연구·시술 값':'완결 후보 없음 · 계산 보류')+
-      '<small>'+(metric==='birth-expected'?('총합 10~90백분위 '+fmt(view.birthRoll.totalBand.p10)+' ~ '+fmt(view.birthRoll.totalBand.p90)):
-      metric==='route-expected'?(view?'경로 '+c.transforms.length+'개 시술 · '+(growthTiming==='none'?'전투 성장 제외':'가상 성장 '+(growthTiming==='before'?'시술 전':'시술 후')):esc(routeRoll(r,c).reason||'완결 경로 없음')):
-      integrated?integrated.steps+'개 시술 · '+(integrated.source==='ORIGINCAP12'?'출생처 공통 부모 미연결':fmt(integrated.branchCount)+'개 참조 분기'):c?c.researchCount+'개 연구 재생 · '+c.transforms.length+'개 시술':'미완료 연구: '+esc(r.unresolved?.id||'조사 중'))+'</small>'+depthNote+'</td><td class="score">'+scoreCell+'</td>'+DISPLAY_STATS.map(cell).join('')+'</tr>';
-  }).join('')||'<tr><td colspan="15">해당 출생처 없음</td></tr>';
-  $('#catalogStatus').textContent=metric==='route-expected'?'등록된 후보 가운데 기존 조건부 성장 상한 기준으로 선택된 경로에 출생 RNG와 시술 규칙을 적용한 평균입니다. '+(growthTiming==='none'?'전투 성장 0회. ':'가상 전투 성장 '+(growthTiming==='before'?'첫 시술 이전. ':'마지막 시술 이후. ')+'사용자가 지정한 시행 횟수·성공률은 OXCE의 실제 경험치 공식이 아닙니다. ')+'원본 비능력치 조건 충족 가정, 시술 난수는 균등·독립 가정입니다. 능력치 문턱 통과율만 별도로 계산하며 실제 경로 실현 확률이나 전체 후보의 기대값 최적성은 증명하지 않습니다.':metric==='growth'?'기본 비교: 코르트는 별도 병종으로 분리하며, 출생 가능 최댓값부터 연구 경로의 병종·훈련 변화를 순서대로 적용하고, 변신 전후 체력훈련·전투 성장의 조건부 상한을 투사합니다. 12종 상한 합계는 동시 달성·실전 검증이나 전역 최고 경로의 증명이 아닙니다.':metric==='provisional'?'기존 연구·시술 잠정값: 출생 최솟값에서 시작한 경로이며 전투·체력 성장은 더하지 않은 값입니다.':metric==='birth'?'출생 시점의 원본 최솟값입니다. 성장 이후 잠정값이나 최종 최대치가 아닙니다.':metric==='birth-expected'?'출생처별 병사 생성자 RNG·템플릿·영구 보너스를 적용해 가능한 12종 능력치를 정확히 합산한 이론 분포입니다. 비교 승률은 독립 생성된 신병 둘의 총합 우세 확률이며, 육성·변신·훈장 후 확률이나 같은 캠페인에서의 실제 입수 가능성이 아닙니다.':'확정 최종 최대치 0건. 잠정값을 확정값으로 바꿔 표시하지 않습니다.';
-  if(metric==='growth')$('#catalogStatus').textContent+=integratedLoadError?' 최신 통합 상계 연결 실패: '+integratedLoadError+' · 이전 출생처 기록만 표시합니다.':integratedOrigins.size?' 연결된 출생처는 공통 원장의 최신 상계로 갱신했습니다. 다른 상계 모형 사이의 차이값은 표시하지 않습니다.':' 최신 통합 상계에 대응하는 출생처 없음.';
+  const integrated=integratedOrigins.get(id),w=sharedRegistry?.witnesses?.[integrated?.route];
+  // The old aggregate picked one actual witness for the total; retain that
+  // single vector, not its independent per-stat maxima.
+  if(w&&integrated.body!=='STR_SOLDIER_CHORT'&&vector(integrated.stats)){
+   const route=integrated.route,extra=integrated.source==='ORIGINEXT12'?{originExt:route}:integrated.source==='ORIGINCAP12'?{originCapRoute:route}:{populationRoute:route};
+   rows.push({...common(id,integrated.body),key:'legacy-registry:'+route,id:route,legacy:true,cap:vector(integrated.stats),order:(w.steps||[]).flatMap(x=>Array(Math.max(1,x.count??1)).fill(x.id)),detailUrl:href(id,extra)});
+  }
+ }
+ return rows;
+}
+// A single mounted table is used for all status and grouping combinations.
+function render(){
+ if(blocked||!REPORT)return;
+ const group=$('#catalogGrouping').value;
+ $('#routeFilters').hidden=false;$('#routeTools').hidden=false;
+ $('#originMaxima').classList.add('route-table-active');
+ $('#originMaxima').classList.remove('body-career-active');
+ for(const id of ['#family','#compareOrigin'])$(id).closest('label').hidden=true;
+ // Keep the existing detailed RNG and growth calculations accessible without a second table.
+ $('#catalogMetric').closest('label').hidden=false;
+ $('#compareClear').hidden=true;$('#compareStatus').hidden=true;
+ const expectation=$('#catalogMetric').value==='route-expected',timing=$('#routeGrowthTiming').value;
+ $('#routeGrowthTimingWrap').hidden=!expectation;$('#routeGrowthAttemptsWrap').hidden=!expectation||timing==='none';$('#routeGrowthSuccessWrap').hidden=!expectation||timing==='none';
+ $('#originMaxima .table-head h2').textContent=group==='body'?'최종 병종별 통합 대표 경로':group==='origin'?'출생처별 통합 대표 경로':'통합 육성 경로';
+ if(!routeTable)routeTable=mountRouteTable({modern:DATA,catalog:CATALOG,registry:sharedRegistry,isActive:()=>!blocked,group:()=>$('#catalogGrouping').value,legacyRows:legacyCareerRows});
+ else routeTable.render();
 }
 function birthDistributionHtml(record){
   const roll=newbornDistribution(DATA,record.profileId);
@@ -1565,27 +1492,20 @@ async function init(){try{
   picker.addEventListener('change',()=>setComparison(picker.value));
   $('#compareClear').addEventListener('click',()=>setComparison(null));
   const params=new URLSearchParams(location.search);$('#search').value=params.get('q')||'';
-  const scopeLink=$('#careerScopeLink');
-  const scopeURL=new URL(location.href);scopeURL.search='';
-  if(referenceMode){
-   scopeLink.textContent='완결 육성 조합 표로 돌아가기';
-   scopeURL.searchParams.set('group','routes');
-   $('#metric').replaceChildren(new Option('조건부 성장 상한','cap'),new Option('기록 시점 영구치','current'),new Option('출생 최소','birthMin'),new Option('출생 최대','birthMax'));
-   for(const e of document.querySelectorAll('[data-reference-only]'))e.hidden=false;
-   if(!params.has('group'))$('#catalogGrouping').value='body';
-  }else{scopeURL.searchParams.set('scope','reference');scopeURL.searchParams.set('group','origin');}
-  scopeURL.hash='originMaxima';scopeLink.href=scopeURL.href;
+  // Old reference URLs now open the same table; keep deep origin links.
+  for(const e of document.querySelectorAll('[data-reference-only]'))e.hidden=false;
+  if(legacyLink&&!params.has('group'))$('#catalogGrouping').value='origin';
   if(params.get('group')==='body')$('#catalogGrouping').value='body';if(params.has('family'))$('#family').value=params.get('family');
   if(params.has('compare')&&REPORT.records.some(r=>r.profileId===params.get('compare'))){comparison={profileId:params.get('compare'),candidateId:null};picker.value=comparison.profileId;}
   if(params.get('group')==='origin'||params.has('profile')||params.has('compare')||REPORT.records.some(r=>r.profileId===params.get('q')))$('#catalogGrouping').value='origin';
   if(params.get('group')==='routes')$('#catalogGrouping').value='routes';
-  $('#search').addEventListener('input',()=>{if(routeTable&&(!referenceMode||$('#catalogGrouping').value==='routes'))routeTable.searchChanged();else render();});$('#family').addEventListener('change',render);
+  $('#search').addEventListener('input',()=>{if(routeTable)routeTable.searchChanged();else render();});$('#family').addEventListener('change',render);
   $('#catalogGrouping').addEventListener('change',()=>{
     const group=$('#catalogGrouping').value,u=new URL(location.href);
     u.searchParams.set('group',group);
-    history.replaceState(null,'',u);render();if(!referenceMode||group==='routes')routeTable?.groupChanged();
+    u.searchParams.delete('scope');history.replaceState(null,'',u);render();routeTable?.groupChanged();
   });
-  $('#originTable').addEventListener('click',e=>{const s=e.target.closest('[data-body-sort]'),o=e.target.closest('[data-body-origins]');if(s){bodySort=s.dataset.bodySort;render();}if(o){const u=new URL(location.href);u.search='';u.searchParams.set('group','routes');if(referenceMode)u.searchParams.set('scope','reference');u.searchParams.set('body',o.dataset.bodyOrigins);if(activeBranch)u.searchParams.set('branch',activeBranch);u.hash='originMaxima';location.assign(u.href);}});
+  $('#originTable').addEventListener('click',e=>{const s=e.target.closest('[data-body-sort]'),o=e.target.closest('[data-body-origins]');if(s){bodySort=s.dataset.bodySort;render();}if(o){const u=new URL(location.href);u.search='';u.searchParams.set('group','routes');u.searchParams.set('routeStatus','all');u.searchParams.set('body',o.dataset.bodyOrigins);if(activeBranch)u.searchParams.set('branch',activeBranch);u.hash='originMaxima';location.assign(u.href);}});
   $('#catalogMetric').addEventListener('change',()=>{
     render();if(selected&&!$('#originDetails').hidden)void openOrigin(selected,activeCandidateId);
   });
@@ -1799,7 +1719,7 @@ async function init(){try{
   $('#originMaxima').dataset.validation='validated';
   const ext=sharedRegistry?.witnesses?.[params.get('originExt')];
   if(ext?.source==='ORIGINEXT12'&&(!activeBranch||ext.branchIds.includes(activeBranch)))void openOrigin(ext.originProfile,ext.originExtension.seed,{sharedTerminal:ext.originExtension.seedBody==='STR_SOLDIER_CHORT',originCapRoute:params.get('originExt')}).then(()=>$('#originDetails').scrollIntoView({block:'start'}));
-  else if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort',populationRoute:params.get('populationRoute')});
+  else if(params.has('profile'))void openOrigin(params.get('profile'),params.get('candidate'),{sharedTerminal:params.get('terminal')==='chort',populationRoute:params.get('populationRoute'),originCapRoute:params.get('originCapRoute')});
   if(params.get('group')!=='routes'&&params.has('training'))showTraining(params.get('training'));
   if(params.get('group')!=='routes'&&params.has('research'))showResearch(params.get('research'));
 }catch(error){sourceFail(error.message);console.error(error)}}
