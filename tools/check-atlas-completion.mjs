@@ -243,4 +243,52 @@ if(financed){
   assert.equal(x.completeCampaigns,0);
  }
 }
-console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0,codexScenarios:codex?.summary.scenarios??0,codexSameSoldier:codex?.summary.sameSoldierFullReplays??0,financedScenarios:financed?.summary.scenarios??0,independentlyReplayed}));
+const auxiliary=c.auxiliaryCareerCalendar;let auxiliaryReplayed=0;
+if(auxiliary){
+ const {fingerprint,...src}=auxiliary.auxiliarySource;assert.equal(key(src),fingerprint);
+ assert.equal(key(auxiliary.sourceHashes),key(c.sourceHashes));assert.equal(auxiliary.financedFingerprint,financed.producerFingerprint);
+ assert.equal(auxiliary.codexFingerprint,codex.producerFingerprint);
+ const list=Object.values(auxiliary.records),s=auxiliary.summary;
+ assert.equal(list.length,s.scenarios);assert.equal(s.completeCampaigns,0);
+ assert.equal(list.filter(r=>r.status.startsWith("FULL_")).length,s.fullLogicalReplays);
+ assert.equal(list.filter(r=>r.sameSoldierState).length,s.sameSoldierFullReplays);
+ assert.equal(list.reduce((n,r)=>n+r.eventGates.filter(g=>g.event==="STR_THE_GREAT_CAUSE"&&g.fundsMet&&g.auxiliaryFacilityMet).length,0),s.greatCauseBothMet);
+ assert.equal(new Set(list.map(r=>r.detailHash)).size,s.detailShards);
+ const replay=createCareerReplay(modern),tested=new Set();
+ for(const r of list){
+  const x=loadFinancedDetail(r),p=codex.prefixes[r.prefixHash],f=financed.records[r.financedId];
+  assert(f&&f.routeId===r.routeId&&f.prefixHash===r.prefixHash&&f.actionHash===r.actionHash);
+  const {routeId,origin,branch,graph,node,linkedPlanIds,codexId,financedId,options,originalSoldierSignature,sameSoldierState,missingOriginalActiveResearch,calendarHash,...content}=x;
+  assert.equal(key(content),calendarHash);assert.equal(calendarHash,r.calendarHash);
+  assert.equal(x.auxiliarySourceFingerprint,fingerprint);assert.equal(x.scenario.openingCash,p.finance.closingCash);
+  let cash=x.scenario.openingCash,min=cash,last=x.prefixHours;
+  for(const e of x.transactions){assert(e.hour>=last);last=e.hour;assert(Number.isSafeInteger(e.amount));cash+=e.amount;min=Math.min(min,cash);assert.equal(cash,e.cash);assert(cash>=0);}
+  assert.equal(cash,x.closingCash);assert.equal(min,x.minimumCash);
+  for(const b of x.auxiliaryBridges.filter(b=>b.status==="CONDITIONAL_AUXILIARY_FACILITY_BUILT")){
+   const base=x.auxiliaryBases.find(a=>a.id===b.base),g=x.eventGates.find(e=>e.event===b.event);assert(base&&g);
+   const plan=b.plan,grid=Array.from({length:6},()=>Array(6).fill(null));
+   assert.equal(plan.sourceFingerprint,fingerprint);assert.equal(plan.site.polygon.index,src.site.polygon.index);
+   assert(plan.storageBeforeTarget>=plan.materialVolume);
+   assert.equal(b.operations.reduce((n,o)=>n+(o.cost||0),0),plan.directCost);
+   assert.equal(x.transactions.filter(t=>t.reason.startsWith("auxiliary")).reduce((n,t)=>n-t.amount,0),plan.directCost);
+   for(const f of base.facilities){
+    assert(f.ready>=f.placed);
+    for(let y=f.y;y<f.y+f.sy;y++)for(let z=f.x;z<f.x+f.sx;z++){assert(grid[y]&&z>=0&&z<6&&!grid[y][z]);grid[y][z]=f.id;}
+   }
+   const target=base.facilities.find(f=>f.id===b.id),purchase=b.operations.find(o=>o.type==="AUX_PURCHASE");
+   assert(target.ready<=g.gateState?.hour||target.ready<=x.financeGates.find(f=>f.event===b.event).end);
+   assert(purchase.end<=target.placed&&purchase.storage>=purchase.volume);
+   assert.equal(purchase.qty,plan.materials[purchase.id]);assert.equal(base.stock[purchase.id],0);
+   assert.equal(g.auxiliaryFacilityMet,true);assert.equal(g.fundsMet,true);assert(g.unknown.includes("평가 점수 미확인"));
+   for(const m of x.monthly)assert.equal(m.auxiliaryFacility,base.facilities.filter(f=>f.ready<=m.hour&&f.placed<m.hour).reduce((n,f)=>n+f.monthlyCost,0));
+  }
+  for(const a of x.logicalSteps)if(a.action.type==="externalInputs")assert.equal(a.action.funds,0);
+  if(x.status.startsWith("FULL_")&&!tested.has(x.origin)){
+   tested.add(x.origin);let w=replay.replay(p.steps);
+   for(const a of x.logicalSteps){w=replay.apply({...w,month:a.month,funds:a.funds},a.action);w={...w,month:a.afterMonth,funds:a.afterFunds};}
+   assert(!w.pendingFree);assert.equal(financedSoldierSignature(w,replay),x.finalSoldierSignature);auxiliaryReplayed++;
+  }
+  assert.equal(x.completeCampaigns,0);
+ }
+}
+console.log(JSON.stringify({complete:final.rows.length,conditional:all.length,unique:c.summary.uniqueEvidence,terminalTargets:t.targets.length,terminalAdvanced:advanced,terminalReady:ready,terminalPlans,surgeryPlans,open,resourceResearch,earlyScenarios:early?.summary.scenarios??0,researchCalendars:researchCalendar?.summary.scenarios??0,codexScenarios:codex?.summary.scenarios??0,codexSameSoldier:codex?.summary.sameSoldierFullReplays??0,financedScenarios:financed?.summary.scenarios??0,independentlyReplayed,auxiliaryScenarios:auxiliary?.summary.scenarios??0,auxiliaryReplayed}));

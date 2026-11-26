@@ -5,6 +5,7 @@ import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project} from "../public/branch-soldier-atlas-career-core.js";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
+import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
@@ -51,6 +52,14 @@ for(const ledger of ledgers){
    duplicateEvidence:duplicate,missing:record?[]:cls.missing};
  }
 }
+// Existing companions are tied to exact route/action IDs. A pure append
+// must not invalidate them just because the containing archive grew.
+const appendOnly=!!prior?.classifications&&Object.entries(prior.classifications).every(([source,old])=>Object.entries(old).every(([id,r])=>classifications[source]?.[id]?.evidenceId===r.evidenceId));
+if(appendOnly&&key(prior.sourceHashes)!==key(sourceHashes)){
+ for(const name of ["earlyEconomy","researchCalendar","codexSourcePrefixes","financedCareerCalendar","auxiliaryCareerCalendar","initialEventSchedules"]){
+  const old=prior[name];if(old&&key(old.sourceHashes)===key(prior.sourceHashes))prior[name]={...old,sourceHashesAtProduction:old.sourceHashesAtProduction||old.sourceHashes,sourceHashes};
+ }
+}
 const rows=[...admitted.values()].sort((a,b)=>a.id.localeCompare(b.id));
 if(prior?.rows?.length)for(const p of prior.rows)assert(admitted.has(p.id),"Previously admitted combination needs a re-verifier: "+p.id);
 const shared=db.populationMissingOriginCareer?.summary||{},newpair=db.populationNewPairCareer?.summary||{},research=db.populationResearchCareer?.summary||{},frontier=db.populationFrontierChronology?.summary||{};
@@ -67,16 +76,17 @@ const summary={origins:modern.profiles.length,originsWithSeeds:origins.size,stat
  impossibleCertified:0,fullyEnumeratedBranches:0,globalOptimalCertified:rows.filter(r=>r.globalOptimal).length,
  exploredOriginBranchPairs:pairs.size,totalSearchSpace:null,completionRate:null,pendingBySource,missingProofs,assumptions};
 db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"8.7.1",sourceHashes,
- terminalRule,terminalResearch,terminalSupply,
+ terminalRule,terminalResearch,terminalSupply,researchTreePolicy:RESEARCH_TREE_POLICY,
  ...(prior?.terminalEconomy?.sourceMetadataSha256===metadata&&prior.terminalEconomy.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&[...Object.values(prior.terminalEconomy.records||{}),...(prior.terminalEconomy.unresolved||[])].every(r=>terminalSupply?.plans?.[r.planId]?.plan?.planHash===r.planHash)?{terminalEconomy:prior.terminalEconomy}:{}),
  ...(prior?.earlyEconomy?.sourceMetadataSha256===metadata&&prior.earlyEconomy.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.earlyEconomy.sourceHashes)===key(sourceHashes)&&Object.values(prior.earlyEconomy.records||{}).every(r=>r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node))?{earlyEconomy:prior.earlyEconomy}:{}),
  ...(prior?.researchCalendar?.sourceMetadataSha256===metadata&&prior.researchCalendar.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.researchCalendar.sourceHashes)===key(sourceHashes)&&Object.values(prior.researchCalendar.records||{}).every(r=>r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node))?{researchCalendar:prior.researchCalendar}:{}),
  ...(prior?.codexSourcePrefixes?.sourceMetadataSha256===metadata&&prior.codexSourcePrefixes.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.codexSourcePrefixes.sourceHashes)===key(sourceHashes)&&Object.values(prior.codexSourcePrefixes.records||{}).every(r=>r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node))?{codexSourcePrefixes:prior.codexSourcePrefixes}:{}),
  ...(prior?.financedCareerCalendar?.sourceMetadataSha256===metadata&&prior.financedCareerCalendar.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.financedCareerCalendar.sourceHashes)===key(sourceHashes)&&prior.financedCareerCalendar.codexFingerprint===prior.codexSourcePrefixes?.producerFingerprint&&Object.values(prior.financedCareerCalendar.records||{}).every(r=>prior.codexSourcePrefixes?.records?.[r.codexId]?.prefixId===r.prefixHash&&r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node)&&/^data\/soldier-financed-career-details\/[a-f0-9]{64}\.json\.gz$/.test(r.detailFile)&&fs.existsSync("public/"+r.detailFile))?{financedCareerCalendar:prior.financedCareerCalendar}:{}),
+ ...(prior?.auxiliaryCareerCalendar?.sourceMetadataSha256===metadata&&prior.auxiliaryCareerCalendar.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.auxiliaryCareerCalendar.sourceHashes)===key(sourceHashes)&&prior.auxiliaryCareerCalendar.codexFingerprint===prior.codexSourcePrefixes?.producerFingerprint&&prior.auxiliaryCareerCalendar.financedFingerprint===prior.financedCareerCalendar?.producerFingerprint&&Object.values(prior.auxiliaryCareerCalendar.records||{}).every(r=>prior.financedCareerCalendar?.records?.[r.financedId]?.routeId===r.routeId&&prior.financedCareerCalendar.records[r.financedId].prefixHash===r.prefixHash&&prior.codexSourcePrefixes?.records?.[r.codexId]?.prefixId===r.prefixHash&&r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node)&&/^data\/soldier-financed-career-details\/[a-f0-9]{64}\.json\.gz$/.test(r.detailFile)&&fs.existsSync("public/"+r.detailFile))?{auxiliaryCareerCalendar:prior.auxiliaryCareerCalendar}:{}),
  ...(prior?.initialEventSchedules?.sourceMetadataSha256===metadata&&key(prior.initialEventSchedules.sourceHashes)===key(sourceHashes)?{initialEventSchedules:prior.initialEventSchedules}:{}),
  requiredProofs:REQUIRED_PROOFS,summary,bySource,classifications,rows,
- scope:"Only verified full campaign combinations; all conditional ledgers remain search seeds. No final admission based on conditional closure or numerical upper bounds."};
+ scope:"Research-tree completion under explicit ordinary-effort abstraction. Conditional intermediate ledgers remain search seeds; no final admission based on fixed-depth or incomplete structural closure."};
 db.summary.careerCompletion=summary;
-db.policies.CAREER_COMPLETION="실제 게임 종료 조건·최종 연구·시간순 성장·자원·후속 가능성·독립 재생 증명을 모두 통과한 완결 조합만 기존 DB 표에 등록. 조건부 원장은 탐색 자료로 보존.";
+db.policies.CAREER_COMPLETION="연구 트리 및 최종 육성의 구조적 실현 가능성·후속 탐색 종결·독립 재생을 확인한 조합만 등록. 반복 조달·자금·일반 시설 건설·전투캡 도달은 정상 플레이로 충족한다고 가정하며, 한정 자원·연구 해금·상호배제·시간 제한은 유지. 경제 달력은 선택 참고 자료.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));

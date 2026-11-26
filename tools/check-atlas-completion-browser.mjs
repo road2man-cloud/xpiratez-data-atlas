@@ -44,8 +44,9 @@ try{
  }
  if(db.careerCompletion.financedCareerCalendar){
   const s=db.careerCompletion.financedCareerCalendar.summary;
-  assert.equal(await page.locator('[data-financed-career-row]').count(),s.scenarios);
-  const row=page.locator('[data-financed-career-detail]').first();
+  const host=page.locator('[data-financed-career-ledger="base"]');
+  assert.equal(await host.locator('[data-financed-career-row]').count(),s.scenarios);
+  const row=host.locator('[data-financed-career-detail]').first();
   assert.equal(await row.locator('[data-financed-career-body]').getAttribute('data-loaded'),null);
   const response=page.waitForResponse(r=>r.url().includes('/data/soldier-financed-career-details/')&&r.ok());
   await row.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
@@ -55,6 +56,15 @@ try{
   await row.locator('[data-financed-cash]').evaluate(el=>el.open=true);
   await row.locator('[data-financed-list="transactions"] li').first().waitFor();
   assert.equal(await row.locator('[data-financed-list="transactions"] li').count(),100);
+ }
+ if(db.careerCompletion.auxiliaryCareerCalendar){
+  const s=db.careerCompletion.auxiliaryCareerCalendar.summary,host=page.locator('[data-financed-career-ledger="auxiliary"]');
+  assert.equal(await host.locator('[data-financed-career-row]').count(),s.scenarios);
+  const row=host.locator('[data-financed-career-detail]').first();
+  await row.evaluate(el=>{for(let p=el;p;p=p.parentElement)if(p.tagName==='DETAILS')p.open=true;});
+  await row.locator('[data-auxiliary-layout]').waitFor({timeout:30000});
+  assert.equal(await row.locator('[data-auxiliary-layout] tbody td').count(),36);
+  assert((await row.innerText()).includes('평가 점수 6,000점 조건 미확인'));
  }
  if(db.careerCompletion.codexSourcePrefixes){
   const s=db.careerCompletion.codexSourcePrefixes.summary;
