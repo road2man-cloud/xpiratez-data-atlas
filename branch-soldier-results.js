@@ -4,7 +4,7 @@ import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileW
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
 import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261125-pop-v17";
 import {loadRuntime} from "./db-runtime.js";
-import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=59-trait-chain";
+import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=62-research-line";
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=49-economy";
 import {bodyCareerSummary,indexCareerBranches,branchCareerRows,writeStatMinimums} from "./branch-soldier-atlas-table-core.js?v=49-economy";
 import {branchOriginBaselineMarkup} from "./branch-soldier-origin-baseline.js?v=20261124-population-1";
@@ -644,7 +644,7 @@ if(ROOT){
    const f=routeFilters(),metric=E("bsCareerMetric").value,only=E("bsCareerOnly").checked||hasRouteFilter(f),allowLegacy=false;
    E("bsCount").textContent=fmt(filtered.length)+"개 분기 · 완결 조합 "+fmt(filtered.reduce((s,x)=>s+x.records.length,0))+"개 · "+(page+1)+"/"+pages;
    E("bsPrev").disabled=page===0;E("bsNext").disabled=page+1>=pages;
-   E("bsCareerScope").textContent=!careerState?"완결 조합 연결 중…":completionSummaryText(careerState.completion)+" · — 완결 조합 없음"+(careerState.errors.length?" · "+careerState.errors.join(" / "):"");
+   E("bsCareerScope").textContent=!careerState?"완결 조합 연결 중…":completionSummaryText(careerState.completion)+(careerState.rows.length?"":" · — 완결 조합 없음")+(careerState.errors.length?" · "+careerState.errors.join(" / "):"");
    E("bsCount").textContent+=researchFilters.notice();
    E("bsCount").dataset.careerStatus=careerState?(careerState.errors.length?"partial":"loaded"):"loading";
    E("bsTable").innerHTML='<table class="bs-table bs-branch-career"><thead><tr><th>'+sortButton("branch","분기")+'</th><th>선장 이력</th><th>진로</th><th>대의</th><th>코덱스 / 여왕</th><th>연구 상태 / 성자</th><th>차단 연구</th><th>조건부 이벤트</th><th>최종 병종</th><th>'+sortButton("total","합계")+'</th>'+db.stats.map(k=>'<th>'+sortButton(k,ko[k]||k)+'</th>').join("")+'<th>등록 경로</th><th>출생처</th><th>'+sortButton("depth","시술 횟수·순서")+'</th><th>'+sortButton("traitCount","특성 수·목록")+'</th></tr></thead><tbody>'+filtered.slice(page*perPage,page*perPage+perPage).flatMap(({b,records})=>{
