@@ -1,0 +1,61 @@
+{
+  "name": "R36KK_SEAM_V3_1024_2100TRI.glb",
+  "kind": "R36KK derivative (not R36KP)",
+  "source": "R36KK_F11_SEAM_AWARE_SKIN_1024_2100TRI.glb",
+  "sourceSha256": "a33df6ea166f5c08ab70d735f4c8caa150fc5810ed2bb7990247bd63a6ed3ff7",
+  "protectedPrimitiveRange": "0..9",
+  "skinMaterialsAndImages": "byte-identical to source",
+  "method": "triangle-surface rim proximity, limited displacement, second-ring falloff, normal recompute blending",
+  "settings": {
+    "minTopZ": 0.948,
+    "maxTopZ": 0.975,
+    "minGap": 0.0045,
+    "maxGap": 0.029,
+    "maxStep": 0.0036,
+    "secondRingFactor": 0.28,
+    "normalMix": 0.32
+  },
+  "mirrorPairs": 99,
+  "changes": [
+    {
+      "primitive": 10,
+      "seedVertices": 7,
+      "changedVertices": 14,
+      "meanSurfaceGapBefore": 0.015649931810314235,
+      "meanSurfaceGapAfter": 0.012796934649982305,
+      "maxDisplacement": 0.0036,
+      "seedIndices": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48
+      ]
+    },
+    {
+      "primitive": 11,
+      "seedVertices": 8,
+      "changedVertices": 16,
+      "meanSurfaceGapBefore": 0.01552930818310349,
+      "meanSurfaceGapAfter": 0.012582882208424965,
+      "maxDisplacement": 0.0036,
+      "seedIndices": [
+        40,
+        41,
+        42,
+        43,
+        47,
+        48,
+        49,
+        94
+      ]
+    }
+  ],
+  "bytes": 400972,
+  "sha256": "405983e48533d75d8b6fedc28e1c843368bf24957fdd20d5c4b53587b9fd9932",
+  "triangles": 2100,
+  "bones": 63,
+  "protectedByteRangesEqual": true
+}
