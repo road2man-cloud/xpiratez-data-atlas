@@ -13,7 +13,7 @@ export function createRepeatComparison(registry){
   if(r.status!=="COMPACT_REPLAY")continue;
   const to="MISSCAR:"+r.graph+":"+r.to,a=raw[id],b=raw[to],x=sets?.records?.[id],y=sets?.records?.[to],cx=c?.classifications?.missingbirth?.[id],cy=c?.classifications?.missingbirth?.[to];
   const m=material.cost(id),n=material.cost(to);
-  if(r.source!==id||!a||!b||!x||!y||!m||!n||cx?.status!=="RESEARCH_LINE_COMPLETE"||cy?.status!=="RESEARCH_LINE_COMPLETE"||
+  if(r.source!==id||!a||!b||!x||!y||!m||!n||!["RESEARCH_LINE_COMPLETE","RESEARCH_LINE_EXPLORATION","FINAL_CAREER_COMPLETE"].includes(cx?.status)||!["RESEARCH_LINE_COMPLETE","RESEARCH_LINE_EXPLORATION","FINAL_CAREER_COMPLETE"].includes(cy?.status)||
      cx.researchLineId!==x.pairId||cy.researchLineId!==y.pairId||
      a.sourceGraph!==r.graph||b.sourceGraph!==r.graph||a.sourceNode!==r.from||b.sourceNode!==r.to||
      a.canonicalStateHash!==r.sourceStateHash||b.canonicalStateHash!==r.targetStateHash||
