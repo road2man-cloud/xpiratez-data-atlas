@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,loadCareerRows} from "../public/branch-soldier-atlas-career-core.js";
 import {summarizeMaxComparison} from "../public/branch-soldier-max-frontier.js";
+import {summarizeCareerIncumbents} from "./population-career-incumbents.mjs";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
@@ -127,6 +128,9 @@ for(const r of comparison.rows){
 summary.completeOrigins=Object.values(coverage).filter(c=>c.witnesses>0).length;
 summary.completeBranches=new Set(comparison.rows.map(r=>r.branch)).size;
 db.careerCompletion.originCoverage=coverage;
+const incumbents=summarizeCareerIncumbents(comparison.rows);
+db.careerCompletion.observedIncumbents=incumbents;
+summary.observedIncumbents=incumbents.summary;
 db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생이 성립한 연구경로·특성 세트를 조건부 완결로 등록. 전체 후속 탐색 종결과 최고점은 요구하지 않는다. 반복 조달·성장 및 별도 가정은 공개하며 실제 게임 승리 인증과 구분한다.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
