@@ -3,7 +3,7 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
-import {createCareerReplay} from "./population-chronological-career-core.mjs";
+import {createSharedCareerReplay,flatRollEvidence} from "./population-shared-flat-roll.mjs";
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {loadSupplyRules} from "./atlas-terminal-supply-core-v2.mjs";
 import {loadEconomyRules,simulateProject} from "./atlas-terminal-economy-core.mjs";
@@ -17,7 +17,7 @@ const d=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 d.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
 d.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
 const l=ledgers.find(x=>x.key==="missingbirth"),rows=new Map(project(l,a,a.sourceMetadataSha256).rows.map(r=>[r.id,r]));
-const replay=createCareerReplay(sharedRankData(d,a.summary.defaultRankPolicy)),index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index);
+const replay=createSharedCareerReplay(d,a.summary),index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index);
 assert.equal(index.evidence.fingerprint,c.terminalSupply.sourceFingerprint);
 const targets=new Map(c.terminalRule.targets.map(t=>[t.id,t])),records={},unresolved=[];
 const scenarios=[

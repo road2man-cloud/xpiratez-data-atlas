@@ -49,6 +49,7 @@ export function classifyCandidate({ledger,row,raw,db,index}){
   if(a.type==="conditionalCapGrowth")assumed.add("CAP_GROWTH");
   if(a.type==="conditionalPromotion")assumed.add("PROMOTION");
   if(a.type==="conditionalMedal")assumed.add("MEDAL");
+  if(a.type==="transform"&&a.flatRoll)assumed.add("FLAT_ROLL_OUTCOME_MODEL");
   if(a.assumption===true||a.assumeOutcome===true)assumed.add("CONDITIONAL_ACTION");
  }
  // Legacy flags never establish a completed campaign.

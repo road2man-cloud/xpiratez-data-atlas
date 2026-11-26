@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
 import {foundationWorld} from "../public/soldiers/modern/origin-witness.js";
-import {createCareerReplay} from "./population-chronological-career-core.mjs";
+import {createSharedCareerReplay,flatRollEvidence} from "./population-shared-flat-roll.mjs";
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {loadSupplyRules} from "./atlas-terminal-supply-core-v2.mjs";
 import {loadEconomyRules} from "./atlas-terminal-economy-core.mjs";
@@ -20,7 +20,7 @@ const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez"),gz=f=>JS
 const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,codex=c.codexSourcePrefixes,prior=c.financedCareerCalendar;
 assert(prior&&codex);
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));data.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;data.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
-const index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index),early=loadEarlyEconomyRules(root,index,economy),eventIndex=loadInitialEventRules(root,a.sourceMetadataSha256),auxiliarySource=loadAuxiliaryFacilityRules(root,a.sourceMetadataSha256),replay=createCareerReplay(sharedRankData(data,a.summary.defaultRankPolicy));
+const index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index),early=loadEarlyEconomyRules(root,index,economy),eventIndex=loadInitialEventRules(root,a.sourceMetadataSha256),auxiliarySource=loadAuxiliaryFacilityRules(root,a.sourceMetadataSha256),replay=createSharedCareerReplay(data,a.summary);
 assert.equal(index.evidence.fingerprint,c.terminalSupply.sourceFingerprint);assert.equal(early.evidence.fingerprint,codex.sourceEvidence.fingerprint);
 const ledger=ledgers.find(x=>x.key==="missingbirth"),rows=new Map(project(ledger,a,a.sourceMetadataSha256).rows.map(r=>[r.id,r]));
 const sourceHash=p=>sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"));

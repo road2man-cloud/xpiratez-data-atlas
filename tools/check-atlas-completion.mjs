@@ -8,7 +8,7 @@ import {createRepeatComparison} from '../public/branch-soldier-repeat-comparison
 import {key} from './population-research-career-core.mjs';
 import {digest} from './final-combination-production.mjs';
 import {loadFinancedDetail} from './atlas-financed-career-detail-store.mjs';
-import {createCareerReplay} from './population-chronological-career-core.mjs';
+import {createSharedCareerReplay,flatRollEvidence,flatRollPolicy} from './population-shared-flat-roll.mjs';
 import {sharedRankData,createSharedRankEvidence} from './population-shared-default-rank.mjs';
 import {financedSoldierSignature} from './atlas-financed-career-calendar.mjs';
 import {hydrateResearchPaths} from '../public/branch-soldier-research-path-codec.js';
@@ -50,6 +50,24 @@ if(a.summary.defaultRankPolicy){
   const actions=readResearchWitness(idx,rows.get(id),db.sourceMetadataSha256).fullActions;
   assert.deepEqual(evidence(actions),r.rankDefault);
   assert(r.rankDefault.promotions.every(p=>rankData.soldiers.find(b=>b.id===p.body)?.raw.rankStrings[p.rank]));
+ }
+}
+if(a.summary.flatRollPolicy){
+ const replay=createSharedCareerReplay(modern,a.summary),policy=a.summary.flatRollPolicy;
+ assert.deepEqual(policy,flatRollPolicy(sharedRankData(modern,a.summary.defaultRankPolicy)));
+ const rolled=Object.entries(a.routes).filter(([,r])=>r.flatRoll);
+ assert.equal(rolled.length,a.summary.flatRollRoutes);
+ for(const [id,r] of rolled){
+  const actions=readResearchWitness(idx,rows.get(id),db.sourceMetadataSha256).fullActions;
+  assert.deepEqual(flatRollEvidence(actions,policy),r.flatRoll);
+  assert.equal(r.flatRoll.exhaustive,false);assert.equal(r.actualGameCertified,false);
+  for(const q of r.flatRoll.rolls){
+   const rule=replay.rules.get(q.transform);assert(replay.flatRollRules.has(q.transform));assert(q.ruleHash===replay.flatRollRules.get(q.transform).ruleHash);
+   for(const [k,v] of Object.entries(q.flat)){
+    assert(Number.isSafeInteger(v)&&v>=rule.flatMin[k]&&v<=rule.flatMax[k]);
+    assert.equal(v,q.band==="MIN"?rule.flatMin[k]:q.band==="MAX"?rule.flatMax[k]:Math.floor((rule.flatMin[k]+rule.flatMax[k])/2));
+   }
+  }
  }
 }
 let ready=0,advanced=0;
@@ -262,7 +280,7 @@ if(financed){
  assert.equal(new Set(list.map(r=>r.detailHash)).size,s.detailShards);
  modern.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
  modern.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
- const replay=createCareerReplay(sharedRankData(modern,a.summary.defaultRankPolicy)),tested=new Set();
+ const replay=createSharedCareerReplay(modern,a.summary),tested=new Set();
  for(const r of list){
   const x=loadFinancedDetail(r),p=codex.prefixes[r.prefixHash];
   assert.equal(codex.records[r.codexId].prefixId,r.prefixHash);assert.equal(rows.get(r.routeId).hash,r.actionHash);
@@ -296,7 +314,7 @@ if(auxiliary){
  assert.equal(list.filter(r=>r.sameSoldierState).length,s.sameSoldierFullReplays);
  assert.equal(list.reduce((n,r)=>n+r.eventGates.filter(g=>g.event==="STR_THE_GREAT_CAUSE"&&g.fundsMet&&g.auxiliaryFacilityMet).length,0),s.greatCauseBothMet);
  assert.equal(new Set(list.map(r=>r.detailHash)).size,s.detailShards);
- const replay=createCareerReplay(sharedRankData(modern,a.summary.defaultRankPolicy)),tested=new Set();
+ const replay=createSharedCareerReplay(modern,a.summary),tested=new Set();
  for(const r of list){
   const x=loadFinancedDetail(r),p=codex.prefixes[r.prefixHash],f=financed.records[r.financedId];
   assert(f&&f.routeId===r.routeId&&f.prefixHash===r.prefixHash&&f.actionHash===r.actionHash);

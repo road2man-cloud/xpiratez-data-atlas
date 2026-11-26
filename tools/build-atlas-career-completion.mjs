@@ -8,7 +8,7 @@ import {summarizeCareerIncumbents} from "./population-career-incumbents.mjs";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
-import {createCareerReplay} from "./population-chronological-career-core.mjs";
+import {createSharedCareerReplay} from "./population-shared-flat-roll.mjs";
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
@@ -105,7 +105,7 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
 if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
  const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
  const ledger=decode("public/data/soldier-population-missing-origin-career.json.gz");
- const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(sharedRankData(replayData,ledger.summary.defaultRankPolicy)),prior:prior?.researchTraitSets});
+ const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createSharedCareerReplay(replayData,ledger.summary),prior:prior?.researchTraitSets});
  const lines=admitResearchLines({db,sets,ledger,classifications,prior:{...prior,rows:priorLineRows}});
  const lineIds=new Set(lines.rows.map(r=>r.id));
  for(const p of priorLineRows)if(p.proofKind===RESEARCH_LINE_PROOF)assert(lineIds.has(p.id),"Previously complete research line lost: "+p.id);
@@ -160,7 +160,7 @@ c.researchLineRows=c.rows.filter(r=>r.proofKind===RESEARCH_LINE_PROOF);
 c.researchLineExploration={summary:{...summary},originCoverage:c.originCoverage,chortCoverage:c.chortCoverage,observedIncumbents:c.observedIncumbents,maxComparison:c.maxComparison,materialComparison:c.materialComparison,repeatComparison:c.repeatComparison};
 const finalLedger=decode("public/data/soldier-population-missing-origin-career.json.gz");
 const finalData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
-const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createCareerReplay(sharedRankData(finalData,finalLedger.summary.defaultRankPolicy)),lines:c.researchLineRows});
+const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createSharedCareerReplay(finalData,finalLedger.summary),lines:c.researchLineRows});
 c.finalCareerAdmission=final;
 c.rows=final.rows;
 summary.completeCombinations=final.rows.length;

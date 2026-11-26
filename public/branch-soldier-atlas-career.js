@@ -126,6 +126,15 @@ async function showResearch(r){
   if(rankDefault){
    content.append(el('h3','기본 계급 승급 가정'),el('p','원본 병종에 별도 계급 목록이 없고 승급이 허용된 경우, OXCE의 기본 계급 0~5를 조건부 적용한 경로입니다. 설치된 8.7.1 실행 파일의 동작 일치 및 실제 승급 달성은 미인증입니다.','note'),el('p',rankDefault.promotions.map(p=>name(p.body)+' '+p.rank+' ('+(p.index+1)+'번째 행동)').join(' · ')),link('OXCE 공개 엔진 승급 규칙','https://github.com/MeridianOXC/OpenXcom/blob/oxce-plus/src/Savegame/Soldier.cpp'));
   }
+  const flatRoll=registry?.populationMissingOriginCareer?.routes?.[r.id]?.flatRoll;
+  if(flatRoll){
+   const samples={MIN:'최소',MID:'중간',MAX:'최대'};
+   content.append(el('h3','무작위 능력치 변화 결과 가정'),el('p','원본 시술의 독립 정수 가산 범위 안에서 선택한 구체적 결과를 시간순으로 재생했습니다. 실제 게임의 확률·난수 구현 일치 및 전체 결과 탐색은 미인증입니다. 중간값은 기댓값이 아니며, 표시된 가산량과 최종 능력치 변화는 상하한 적용 때문에 다를 수 있습니다.','note'));
+   for(const q of flatRoll.rolls){
+    content.append(el('p',name(q.transform)+' · '+(samples[q.band]||q.band)+' 결과 · '+(q.index+1)+'번째 행동'));
+    content.append(el('p',statKeys.map(k=>labels[k]+' '+(q.flat[k]>=0?'+':'')+q.flat[k]).join(' · '),'small'));
+   }
+  }
   if(r.researchTraitPair){
    const ref=r.researchTraitPair,sets=registry.careerCompletion.researchTraitSets,path=sets.paths[ref.pathId],traits=sets.traits[ref.traitId];
    content.append(el('h3',r.modelComplete?'완결 연구경로 · 특성 세트':'연구경로 · 특성 결합 후보'),el('p',r.modelComplete?'시작부터 최종 연구 목표까지 조건부 모형에서 재생된 단일 경로입니다. 실제 게임 승리 또는 최고치 인증은 아닙니다.':'동일 대원 시간순 재생 근거. 실제 게임 승리 또는 최고치 인증은 아닙니다.'),el('p','재생 가정: '+(ref.assumptions.join(' · ')||'없음')),
@@ -214,7 +223,7 @@ function renderRow(r,f){
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.rankDefault){td.append(el('div','기본 계급 가정','small'));}filled=true}break;
   case 'medals':if(r.medals){const ids=Object.keys(r.medals);appendList(td,ids,'bonus',' · ',r.medals);filled=true}break;
-  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'최종 육성 종결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.researchTraitPair?.goals.length?'최종 연구 도달 · 후속 탐색':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';filled=true;break;
+  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'최종 육성 종결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.researchTraitPair?.goals.length?'최종 연구 도달 · 후속 탐색':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.flatRoll)td.append(el('div','난수 결과 가정','small'));filled=true;break;
   case 'source':if(r.legacy||r.birthOnly){td.append(link(r.birthOnly?'출생 원본':'기존 출생 원장',r.detailUrl));filled=true;}else if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }
   if(!filled){td.textContent='—';td.classList.add('missing')}
