@@ -12,6 +12,7 @@ import {createCareerReplay} from "./population-chronological-career-core.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
+import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier.js";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
@@ -114,10 +115,10 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
  db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
  // Keep per-witness finite use in the canonical completion registry.
  const budget=createResearchMaterialPolicy(replayData),description=budget.describe(),records={};
- let checked=0,hardViolations=0,indexedUnresolved=0,withFinite=0;
+ let checked=0,hardViolations=0,indexedUnresolved=0,withFinite=0;const checkedRouteIds=[];
  for(const [id,r] of Object.entries(ledger.routes)){
   const g=ledger.graphs[r.sourceGraph],i=r.sourceNode;if(!g?.nodes[i])continue;
-  const v=budget.state(g,i),q=budget.issues(v);checked++;
+  const v=budget.state(g,i),q=budget.issues(v);checked++;checkedRouteIds.push(id);
   if(q.hard.length)hardViolations++;if(q.uncertain.length)indexedUnresolved++;
   const use={};for(const [k,f] of budget.finite){
    const granted=v.granted[k]||0,consumed=v.consumed[k]||0;
@@ -125,7 +126,7 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
   }
   if(Object.keys(use).length||q.hard.length||q.uncertain.length){withFinite++;records[id]={use,hard:q.hard,uncertain:q.uncertain};}
  }
- db.careerCompletion.materialBudget={schema:description.schema,source:description.source,sha256:description.sha256,scope:description.scope,finite:description.finite,counts:description.counts,records,checked,withFinite,hardViolations,indexedUnresolved};
+ db.careerCompletion.materialBudget={schema:description.schema,source:description.source,sha256:description.sha256,scope:description.scope,finite:description.finite,counts:description.counts,records,checkedRouteIds:checkedRouteIds.sort(),checked,withFinite,hardViolations,indexedUnresolved};
  summary.materialBudget={checked,withFinite,hardViolations,indexedUnresolved,counts:description.counts};
 
 }
@@ -133,6 +134,11 @@ const comparison=await loadCareerRows(modern,db,{includeWitnesses:true});
 assert.deepEqual(comparison.errors,[]);
 db.careerCompletion.maxComparison=summarizeMaxComparison(comparison.rows);
 summary.maxComparison={...db.careerCompletion.maxComparison};delete summary.maxComparison.routeIds;
+if(db.careerCompletion.materialBudget){
+ const index=createMaterialIndex(db.careerCompletion.materialBudget);
+ db.careerCompletion.materialComparison=summarizeMaterialComparison(comparison.rows,index);
+ summary.materialComparison={...db.careerCompletion.materialComparison};delete summary.materialComparison.routeIds;
+}
 const coverage=summarizeOriginCoverage(modern.profiles,comparison.rows);
 Object.assign(summary,coverage.summary);
 db.careerCompletion.originCoverage=coverage.origins;db.careerCompletion.chortCoverage=coverage.chort;
