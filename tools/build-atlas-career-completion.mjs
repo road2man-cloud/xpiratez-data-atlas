@@ -94,7 +94,7 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
  scope:"Research-tree completion under explicit ordinary-effort abstraction. Conditional intermediate ledgers remain search seeds; no final admission based on fixed-depth or incomplete structural closure."};
 if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
  const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
- const sets=buildTerminalResearchTraitSets({db,ledger:decode("public/data/soldier-population-missing-origin-career.json.gz"),index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(replayData)});
+ const sets=buildTerminalResearchTraitSets({db,ledger:decode("public/data/soldier-population-missing-origin-career.json.gz"),index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(replayData),prior:prior?.researchTraitSets});
  db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
 }
 db.summary.careerCompletion=summary;
