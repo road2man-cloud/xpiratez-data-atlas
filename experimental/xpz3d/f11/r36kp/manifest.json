@@ -1,0 +1,49 @@
+{
+  "version": "R36KP",
+  "created": "2026-11-27",
+  "source": "ChatGPT internal artifact workspace",
+  "repositoryPath": "experimental/xpz3d/f11/r36kp/",
+  "authority": {
+    "r36hwSha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+    "r36ko1024Sha256": "60258bcc845e4063710dd20872f8df12cbe97f493f235885d9ec11adf4ad2ba4",
+    "r36ko512Sha256": "dbc17138a9674fbbe03f95aa0d153e65fd7f30d464b6a00a77a74246771b21cf"
+  },
+  "models": [
+    {
+      "file": "R36KP_F11_MEDIAL_HIP_BLEND_1024_2100TRI.glb",
+      "sha256": "285d9c17848992231da5ffc10ebc6d807b52da1e577c64147bb5408a53584829",
+      "bytes": 424876,
+      "triangles": 2100,
+      "bones": 63,
+      "githubBinaryUploaded": false
+    },
+    {
+      "file": "R36KP_F11_MEDIAL_HIP_BLEND_512_2100TRI.glb",
+      "sha256": "1a89353c3a2b15cf1e0073be2c72c2b962bd263622b3288e1f678c39e6112c04",
+      "bytes": 309392,
+      "triangles": 2100,
+      "bones": 63,
+      "githubBinaryUploaded": false
+    }
+  ],
+  "geometry": {
+    "centerPatchTriangles": 40,
+    "centerAdjustedVertices": 24,
+    "maxAdditionalPosterior": 0.005423395120457503,
+    "maxAdditionalSuperior": 0.0019104476273016369,
+    "medialThighAdjustedVerticesPerSide": 5,
+    "fullyWelded": false
+  },
+  "textures": [
+    "R36KP_1024_SKIN_ALBEDO.png",
+    "R36KP_1024_SKIN_NORMAL.png",
+    "R36KP_1024_SKIN_ORM.png",
+    "R36KP_512_SKIN_ALBEDO.png",
+    "R36KP_512_SKIN_NORMAL.png",
+    "R36KP_512_SKIN_ORM.png"
+  ],
+  "donorR36JBHighPolyMerged": false,
+  "gameEngineApplied": false,
+  "spriteColorAuthority": "Dark brown F11 original sprite and R36HW original color; do not brighten based on ACES PBR preview",
+  "handoffStatus": "GITHUB_TEXT_RECORDS_UPLOADED; BINARY_DELIVERY_PENDING"
+}
