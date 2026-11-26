@@ -1,0 +1,55 @@
+{
+  "version": "R36KL",
+  "productionDate": "2026-11-27",
+  "releaseType": "experimental",
+  "game": "XPZ3D F11",
+  "baseline": "R36KK",
+  "authoritativeExterior": "R36HW",
+  "sourceR36HWsha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "donorR36JBsha256": "f6b53320cc9eb43f870957a8d3db6b067a18aaa3a3feb2a85463cfc3e36c041d",
+  "donorSamples": 37,
+  "donorTriangles": 6044,
+  "donorGeometryEmbedded": false,
+  "geometry": {
+    "triangles": 2100,
+    "bones": 63,
+    "faceTriangles": 644,
+    "hairTriangles": 294,
+    "removedTorsoRingTriangles": 40,
+    "replacedBridgeTriangles": 20,
+    "newCentralSkinTriangles": 20,
+    "newCentralVertices": 13,
+    "sharedTorsoBoundaryVertexIndices": [
+      3,
+      2
+    ]
+  },
+  "models": [
+    {
+      "filename": "R36KL_F11_DONOR_SAMPLED_CENTRAL_1024_2100TRI.glb",
+      "resolution": 1024,
+      "sha256": "af5faf202a32e901d4ede64c120f003a9f7e8f6912582bb5ac0e76054dd76f65",
+      "uploaded": false
+    },
+    {
+      "filename": "R36KL_F11_DONOR_SAMPLED_CENTRAL_512_2100TRI.glb",
+      "resolution": 512,
+      "sha256": "aa2f7a9d2375fe0077c3ac1d5fbd69536760e5e472c6a62315ba4179b547ef14",
+      "uploaded": false
+    }
+  ],
+  "archive": {
+    "filename": "XPZ3D_R36KL_CENTRAL_SKIN_2100TRI_20261127.zip",
+    "bytes": 4261599,
+    "entries": 30,
+    "sha256": "1d11c1efb8fa4a769a1cd01eb0dcdad61c4ceebcd6fdfa44aac770dd5f3de1e3",
+    "uploaded": false
+  },
+  "githubUploadScope": "README and manifest metadata only",
+  "limitations": [
+    "High-resolution R36JB donor not embedded",
+    "Partial central skin representation only",
+    "Thigh-pelvis and shoulder junctions incomplete",
+    "No target game engine validation"
+  ]
+}
