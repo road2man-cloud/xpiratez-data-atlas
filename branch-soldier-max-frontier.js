@@ -8,7 +8,9 @@ export const comparisonScope=r=>JSON.stringify([comparisonOrigin(r),r.branch,r.b
 const vector=r=>[...r.current,...r.cap];
 const usable=r=>Array.isArray(r.current)&&r.current.length===12&&Array.isArray(r.cap)&&r.cap.length===12&&vector(r).every(Number.isFinite);
 const weaklyDominates=(a,b)=>a.every((v,i)=>v>=b[i]);
-const stable=(a,b)=>String(a.key||a.id).localeCompare(String(b.key||b.id));
+// For equal performance, prefer a real witness with fewer surgery actions.
+// Missing order is not evidence of a shorter path.
+export const stable=(a,b)=>(Array.isArray(a.order)?a.order.length:Infinity)-(Array.isArray(b.order)?b.order.length:Infinity)||String(a.key||a.id).localeCompare(String(b.key||b.id));
 // Return a real witness for every nondominated numeric vector. Equal vectors
 // share one representative, but all original paths remain in the archive.
 export function maxComparisonRows(rows){

@@ -3,8 +3,8 @@ import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFil
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
 import {unifyCareerRows,unifiedStatusRows,groupUnifiedRows,rowStatus} from './branch-soldier-unified-career-core.js?v=68';
-import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-frontier.js?v=64-chort';
-import {createMaterialIndex,materialComparisonRows} from './branch-soldier-material-frontier.js?v=78';
+import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-frontier.js?v=82-repeat-compact';
+import {createMaterialIndex,materialComparisonRows} from './branch-soldier-material-frontier-v2.js?v=82-repeat-compact';
 import {mountLiveCareerGuide} from './soldiers/modern/live-career-guide.js?v=69';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
@@ -13,6 +13,14 @@ const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'or
 const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
 const materialIndex=createMaterialIndex(registry?.careerCompletion?.materialBudget);
+const compactRecords=registry?.populationMissingOriginCareer?.summary?.repeatCompaction?.records||{};
+const compactTargets=new Map();
+for(const x of Object.values(compactRecords))if(x.status==="COMPACT_REPLAY"){
+ const id="MISSCAR:"+x.graph+":"+x.to;
+ const source=registry?.populationMissingOriginCareer?.routes?.[x.source],dest=registry?.populationMissingOriginCareer?.routes?.[id];
+ if(!source||!dest||source.canonicalStateHash!==x.sourceStateHash||dest.canonicalStateHash!==x.targetStateHash||dest.order.length>=source.order.length)continue;
+ const old=compactTargets.get(id);if(!old||x.removed.length>old.removed.length)compactTargets.set(id,x);
+}
 const controls=['q','origin','body','routeStatus','careerClass','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','selectedOnly','a','b','sameChoices'];
 const checks=new Set(['certified','selectedOnly','sameChoices']);
 controls.push('maxView');
@@ -176,7 +184,14 @@ function renderRow(r,f){
   case 'path':case 'cause':case 'queen':case 'codex':if(b?.choices[key]){td.append(link(name(b.choices[key]),search('research',b.choices[key])));filled=true}break;
   case 'material':{const costs=materialIndex.cost(r.id);if(costs){const used=materialIndex.ids.flatMap((id,i)=>costs[i]>0?[[id,costs[i]]]:[]);if(used.length){for(const [id,n] of used){const d=el('div',undefined,'small');d.append(link((materialIndex.finite[id]?.name||name(id))+' ×'+n,search('item',id)));td.append(d);}}else td.textContent='0';td.title='확인된 한정 재료만 합산하지 않고 각각 표시합니다.';filled=true;}break;}
   case 'depth':if(!r.missing){td.textContent=fmt(r.order.length);filled=true}break;
-  case 'order':if(!r.missing){appendList(td,r.order,'training',' → ');filled=true}break;
+  case 'order':if(!r.missing){
+    appendList(td,r.order,'training',' → ');
+    const compact=compactRecords[r.id],betterId=compact?.status==="COMPACT_REPLAY"?"MISSCAR:"+compact.graph+":"+compact.to:null,better=registry?.populationMissingOriginCareer?.routes?.[betterId];
+    if(better&&r.source==="missingbirth"&&better.canonicalStateHash===compact.targetStateHash&&registry.populationMissingOriginCareer.routes[r.id]?.canonicalStateHash===compact.sourceStateHash&&better.order.length<r.order.length){
+     const note=el('div',undefined,'small');note.append(link('동일 효과 단축 경로 ('+fmt(r.order.length-better.order.length)+'회 절약)',routeUrl({id:betterId,...better})));td.append(note);
+    }else if(compactTargets.has(r.id)){td.append(el('div','반복 압축 재생 근거 확보','small'));}
+    filled=true
+   }break;
   case 'traitCount':if(r.traits!==null){td.textContent=fmt(r.traits.length);filled=true}break;
   case 'traits':if(r.traits!==null){appendList(td,r.traits,'bonus',' · ',r.traitCounts);filled=true}break;
   case 'research':if(r.legacy||r.birthOnly){td.append(link('출생·연구 원본',r.detailUrl));filled=true;}else if(!r.missing){const btn=el('button',source?.index?'시점별 이력':'원본 이력');btn.type='button';btn.onclick=()=>showResearch(r);td.append(btn);if(r.requiredResearch?.length){const req=el('div');detailsList(req,r.requiredResearch,'research','요구 연구 '+r.requiredResearch.length+'개');td.append(req)}filled=true}break;
