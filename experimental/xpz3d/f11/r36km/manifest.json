@@ -1,0 +1,62 @@
+{
+  "version": "R36KM",
+  "date": "2026-11-27",
+  "status": "experimental-produced",
+  "baseline": "R36KL",
+  "authoritativeExterior": "R36HW",
+  "sourceR36HWSha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "triangleLimit": 2100,
+  "bones": 63,
+  "protected": {
+    "faceTriangles": 644,
+    "hairTriangles": 294,
+    "eyesHandsOriginal": true
+  },
+  "geometry": {
+    "centralSkinTrianglesBefore": 20,
+    "centralSkinTrianglesAfter": 40,
+    "upperTorsoFacesRemoved": 40,
+    "upperTorsoBridgeFaces": 20,
+    "upperLegVerticesAdjustedPerSide": 55,
+    "hipThighTopologyWelded": false
+  },
+  "textures": [
+    "Albedo",
+    "Normal",
+    "ORM"
+  ],
+  "variants": [
+    {
+      "file": "R36KM_F11_CENTER_AND_THIGH_SKIN_1024_2100TRI.glb",
+      "resolution": 1024,
+      "bytes": 408272,
+      "sha256": "02999db6b39eb364a65b39375dda14e13557271d579d0b187d2ffa7d06652503",
+      "uploaded": false
+    },
+    {
+      "file": "R36KM_F11_CENTER_AND_THIGH_SKIN_512_2100TRI.glb",
+      "resolution": 512,
+      "bytes": 295776,
+      "sha256": "e6acdee480c99adf57168f0726a385afec66ff32ff175996663cc29df423c1de",
+      "uploaded": false
+    }
+  ],
+  "archive": {
+    "file": "XPZ3D_R36KM_CENTRAL_AND_THIGH_2100TRI_20261127.zip",
+    "entries": 33,
+    "bytes": 3735620,
+    "sha256": "c29fd4a87cb21baaa43fca4a75ae3cc72ee78232213d12358454f31065aa586c",
+    "uploaded": false
+  },
+  "editorDonor": {
+    "name": "R36JB",
+    "triangles": 6044,
+    "highDetailEmbedded": false
+  },
+  "notes": [
+    "Software render produced",
+    "S2/S3 integration not done",
+    "Not fully welded"
+  ],
+  "githubUploadScope": "README + manifest only"
+}
