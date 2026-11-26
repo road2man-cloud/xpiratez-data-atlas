@@ -16,12 +16,15 @@ The outputs are built by `build_r36kq.py` against the exact source GLBs, modifyi
 
 Mean selected ring gap left: 0.00882460 → 0.00749345. Right: 0.00744981 → 0.00646235 (model units). This is an actual geometric derivation, not a topology weld or an S2/S3 in-game result.
 
-## Remote delivery status
+## GitHub 전달 현황 (2026-11-27 갱신)
 
-This README is uploaded, but **R36KP original model binaries and R36KQ final binaries have not been uploaded to this GitHub branch in this session**. The user-supplied original ZIP is locally accessible to the ChatGPT artifact environment, and the produced 1.5 MB R36KQ bundle can be downloaded there. Do not mark the remote handoff complete without checking both GLB blobs.
-
-The separate `r36kp/seam_v3` files refer to the **older R36KK** derivative and are not replacements for R36KP/R36KQ.
+- R36KP 원본 GLB 1024/512 및 피부 텍스처 6종: `../r36kp/originals/`에 실제 바이너리 업로드됨
+- R36KQ 1024/512 GLB 및 `build_r36kq.py`: 본 `r36kq/` 폴더에 실제 업로드됨
+- 신규 파생 R36KR 1024/512 GLB 및 제작 코드·포즈 보고서: `../r36kr/` 업로드됨
+- 최초 바이너리 업로드 커밋: `af4423f674f23be8fc19755bab9e9f9225668f93`
+- 분리된 `r36kp/seam_v3` 모델은 **R36KK 파생본**이며 R36KP/R36KQ/R36KR 기준본과 별개의 계보입니다.
+- 게임 엔진 S2/S3 적용 및 완전 위상 용접은 여전히 미완료입니다.
 
 ## Next steps
 
-Transfer the two exact R36KP source binaries and both R36KQ output binaries, reports and `build_r36kq.py` to `experimental/xpz3d/f11/r36kq`. Prefer the original signed SHA-256 over filenames. Continue selective seam refinement and pose tests without changing protected facial/material primitives. Game engine integration and full topology welding remain open.
+Use R36KQ as an exact SHA-256 locked comparison baseline. R36KR is the current derived version; use `../r36kr/` for source, build reports and captures. Continue pose-driven seam refinement without changing protected facial/material primitives. Game engine integration and full topology welding remain open.
