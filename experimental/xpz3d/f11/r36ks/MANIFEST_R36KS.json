@@ -1,0 +1,114 @@
+{
+  "version": "R36KS",
+  "date": "2026-11-27",
+  "source": "R36KR",
+  "sourceLock": {
+    "1024": "1524a18298659f43f25464b94931a3127bdcde9ae8f70062c4e8877971b2935b",
+    "512": "43ed7b3dcdbf3f12c3d1608fbce71888eff99a1efd99924ce49f7c6b4c085198"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 3866,
+      "sha256": "24049b6665ea7667802f339c05e084efc2d6ea1ed18750c7a4f0cbfa23696cbf"
+    },
+    "build_r36ks.py": {
+      "bytes": 13718,
+      "sha256": "66d081d46adad2af97187563dfb95a7631a4b43f2a15c33078043a55f6e6f57e"
+    },
+    "build_preview_package.py": {
+      "bytes": 7534,
+      "sha256": "b960085ac05bb5085b37e6b1405d53cf68b7a480a3fc6a85ef43f7df49290893"
+    },
+    "render_r36ks.py": {
+      "bytes": 7441,
+      "sha256": "552d51925b76542029455c19c3525c3eef3a5ead7f03d8b1d6863ea33acf478a"
+    },
+    "glb_io_r36kj.py": {
+      "bytes": 14740,
+      "sha256": "5373bd8049a65d1c21102b7be4fccfa24157f374438d98e931ae98a1d454472c"
+    },
+    "compact_gltf.py": {
+      "bytes": 5218,
+      "sha256": "0d3722c8752a7744542a6fd13ac1efd6b93c131f8785316f8eaef7385672e190"
+    },
+    "requirements.txt": {
+      "bytes": 76,
+      "sha256": "646616edff5d04d3853b1fc4638e5abac60b6c8b37335be76b349c06cbc1cd9b"
+    },
+    "output/R36KS_1024_BUILD_REPORT.json": {
+      "bytes": 14120,
+      "sha256": "d6a2cbbe40f9a16fa3ded301a394e71807dbdc79b21134749d55bd801519dde1"
+    },
+    "output/R36KS_512_BUILD_REPORT.json": {
+      "bytes": 14118,
+      "sha256": "ad4e4c2978b4fb5015d3ef63887cc5ee4b1966dffc25d5aa4447f9002fbf7097"
+    },
+    "output/R36KS_F11_MULTI_POSE_HIP_1024_2100TRI.glb": {
+      "bytes": 425120,
+      "sha256": "ea8d7caeb39bb69f564300fcf43e747978504deafee2537feaff0cb778943411"
+    },
+    "output/R36KS_F11_MULTI_POSE_HIP_512_2100TRI.glb": {
+      "bytes": 309636,
+      "sha256": "b13b059cc7b1c01e3a84d840c059fadc4934605e846cab1c3fb98e345548cf85"
+    },
+    "output/R36KS_POSE_COMPARISON.json": {
+      "bytes": 5327,
+      "sha256": "ddd0f54fd0cb2326fdd9cdc4d3723e147b4c29dc64d5e471e4c863fe5ea1650a"
+    },
+    "preview/COMPARE_FRONT_6_HIP.png": {
+      "bytes": 63874,
+      "sha256": "903e0463d4d12ed94a18aade0c06094c7c2ecc77bb0c7c45e042e09566f129e6"
+    },
+    "preview/COMPARE_OBLIQUE_32_HIP.png": {
+      "bytes": 78966,
+      "sha256": "34fd1e0d0ded2cb9fb9018f2dddd04920f7faec295f710e86667683a4b38a9dd"
+    },
+    "preview/R36KR_FRONT_6.png": {
+      "bytes": 56391,
+      "sha256": "ceb1eadf9d4bdfdbe2fb612655b0f073410470cad31c8f26d1b113cea0f4c315"
+    },
+    "preview/R36KR_FRONT_6_HIP.png": {
+      "bytes": 46134,
+      "sha256": "5f9d8a28ccf666b029e99d19eefe7c6594fa39183fa4c4ee4df99ff7b514fa75"
+    },
+    "preview/R36KR_OBLIQUE_32.png": {
+      "bytes": 58399,
+      "sha256": "c59b2501c5d89ae8a09151d2f5f9a357c6d2a1d280ea9aba84115b7fe2e2d6f4"
+    },
+    "preview/R36KR_OBLIQUE_32_HIP.png": {
+      "bytes": 55477,
+      "sha256": "01a26017458d1db447109f981a57c1f4fd3913023b876fb6a561a64287323c17"
+    },
+    "preview/R36KS_FRONT_6.png": {
+      "bytes": 56438,
+      "sha256": "ac6944780ee1d31f2a13b0e5b5d2d1e97e0e8629d24eb8b867f936ba24497a70"
+    },
+    "preview/R36KS_FRONT_6_HIP.png": {
+      "bytes": 46377,
+      "sha256": "b19667169781652ff0dcb8c6b39614d31948d29f43a59cdb9f1f708d8c497d61"
+    },
+    "preview/R36KS_OBLIQUE_32.png": {
+      "bytes": 58591,
+      "sha256": "c1ab53a538dcde26085a31a5d8fe6803382b45e5654c3d47210a71091988b223"
+    },
+    "preview/R36KS_OBLIQUE_32_HIP.png": {
+      "bytes": 55750,
+      "sha256": "09b1b82a671377bf30783b883ef2390ced8b820117d7007e6fe25d5f3c1fe00d"
+    },
+    "preview/index.html": {
+      "bytes": 9200,
+      "sha256": "4e5b5d4b65e08989e09b2cde25c0482252d92ed31dfc75f78b91acd233b6a4d5"
+    },
+    "r36kr_source/R36KR_F11_POSE_AWARE_HIP_1024_2100TRI.glb": {
+      "bytes": 425132,
+      "sha256": "1524a18298659f43f25464b94931a3127bdcde9ae8f70062c4e8877971b2935b"
+    },
+    "r36kr_source/R36KR_F11_POSE_AWARE_HIP_512_2100TRI.glb": {
+      "bytes": 309648,
+      "sha256": "43ed7b3dcdbf3f12c3d1608fbce71888eff99a1efd99924ce49f7c6b4c085198"
+    }
+  },
+  "engineApplied": false,
+  "topologicallyWelded": false,
+  "metricsSource": "CPU glTF LBS over nine poses"
+}

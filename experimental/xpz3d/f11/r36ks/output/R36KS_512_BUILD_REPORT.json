@@ -1,0 +1,513 @@
+{
+  "version": "R36KS",
+  "source": "R36KR_F11_POSE_AWARE_HIP_512_2100TRI.glb",
+  "sourceSha256": "43ed7b3dcdbf3f12c3d1608fbce71888eff99a1efd99924ce49f7c6b4c085198",
+  "simulation": "authored glTF LBS; NOT S2/S3 engine execution",
+  "anglesDegrees": [
+    -32,
+    -24,
+    -16,
+    -8,
+    0,
+    8,
+    16,
+    24,
+    32
+  ],
+  "poseBySide": [
+    {
+      "primitive": 10,
+      "before": [
+        {
+          "spreadDegrees": -32,
+          "primitive": 10,
+          "meanGap": 0.005219812509724067,
+          "maxGap": 0.008129682420738554,
+          "rmsGap": 0.0055698831674250915
+        },
+        {
+          "spreadDegrees": -24,
+          "primitive": 10,
+          "meanGap": 0.005065617126990928,
+          "maxGap": 0.007974738040261293,
+          "rmsGap": 0.00540050920091764
+        },
+        {
+          "spreadDegrees": -16,
+          "primitive": 10,
+          "meanGap": 0.004911214559992198,
+          "maxGap": 0.00782177283091666,
+          "rmsGap": 0.005242430359834012
+        },
+        {
+          "spreadDegrees": -8,
+          "primitive": 10,
+          "meanGap": 0.00475718821425269,
+          "maxGap": 0.007670698247764009,
+          "rmsGap": 0.00509648708944902
+        },
+        {
+          "spreadDegrees": 0,
+          "primitive": 10,
+          "meanGap": 0.004604171736163355,
+          "maxGap": 0.007521353008745427,
+          "rmsGap": 0.004963305163005852
+        },
+        {
+          "spreadDegrees": 8,
+          "primitive": 10,
+          "meanGap": 0.004452875774948438,
+          "maxGap": 0.007373551514612991,
+          "rmsGap": 0.00484326790872188
+        },
+        {
+          "spreadDegrees": 16,
+          "primitive": 10,
+          "meanGap": 0.004304118641325659,
+          "maxGap": 0.007227124746745257,
+          "rmsGap": 0.0047364780097558954
+        },
+        {
+          "spreadDegrees": 24,
+          "primitive": 10,
+          "meanGap": 0.004159546321354819,
+          "maxGap": 0.007081965030142119,
+          "rmsGap": 0.00464298212289183
+        },
+        {
+          "spreadDegrees": 32,
+          "primitive": 10,
+          "meanGap": 0.0040204852676316875,
+          "maxGap": 0.006938072330850429,
+          "rmsGap": 0.004562123254317801
+        }
+      ],
+      "after": [
+        {
+          "spreadDegrees": -32,
+          "primitive": 10,
+          "meanGap": 0.0036801991028555096,
+          "maxGap": 0.006045148316179895,
+          "rmsGap": 0.004017809989768966
+        },
+        {
+          "spreadDegrees": -24,
+          "primitive": 10,
+          "meanGap": 0.003531950256148733,
+          "maxGap": 0.005890210651435309,
+          "rmsGap": 0.003837449390823129
+        },
+        {
+          "spreadDegrees": -16,
+          "primitive": 10,
+          "meanGap": 0.0033849537640874405,
+          "maxGap": 0.005738915297240644,
+          "rmsGap": 0.0036717204625699214
+        },
+        {
+          "spreadDegrees": -8,
+          "primitive": 10,
+          "meanGap": 0.0032396472635421534,
+          "maxGap": 0.005590933552760619,
+          "rmsGap": 0.0035218665114795356
+        },
+        {
+          "spreadDegrees": 0,
+          "primitive": 10,
+          "meanGap": 0.0030965304651179968,
+          "maxGap": 0.005445920234390317,
+          "rmsGap": 0.0033888971504755496
+        },
+        {
+          "spreadDegrees": 8,
+          "primitive": 10,
+          "meanGap": 0.0029561865544914293,
+          "maxGap": 0.005303549469050568,
+          "rmsGap": 0.0032734988883220844
+        },
+        {
+          "spreadDegrees": 16,
+          "primitive": 10,
+          "meanGap": 0.002819307389778865,
+          "maxGap": 0.005163545441149179,
+          "rmsGap": 0.0031759270374886444
+        },
+        {
+          "spreadDegrees": 24,
+          "primitive": 10,
+          "meanGap": 0.002686734488285629,
+          "maxGap": 0.005025718506246655,
+          "rmsGap": 0.0030958996682742346
+        },
+        {
+          "spreadDegrees": 32,
+          "primitive": 10,
+          "meanGap": 0.0025609168729990145,
+          "maxGap": 0.0048900039621211705,
+          "rmsGap": 0.003032801729392944
+        }
+      ]
+    },
+    {
+      "primitive": 11,
+      "before": [
+        {
+          "spreadDegrees": -32,
+          "primitive": 11,
+          "meanGap": 0.0053885008656654465,
+          "maxGap": 0.008297770963027196,
+          "rmsGap": 0.005760403026731598
+        },
+        {
+          "spreadDegrees": -24,
+          "primitive": 11,
+          "meanGap": 0.0052086012937174,
+          "maxGap": 0.008032469467627028,
+          "rmsGap": 0.005530973757360065
+        },
+        {
+          "spreadDegrees": -16,
+          "primitive": 11,
+          "meanGap": 0.005023828465709643,
+          "maxGap": 0.007772260176411707,
+          "rmsGap": 0.005318268152249028
+        },
+        {
+          "spreadDegrees": -8,
+          "primitive": 11,
+          "meanGap": 0.004835018589504122,
+          "maxGap": 0.007516877692776193,
+          "rmsGap": 0.005124950553367444
+        },
+        {
+          "spreadDegrees": 0,
+          "primitive": 11,
+          "meanGap": 0.0046429793223911235,
+          "maxGap": 0.007266205300226417,
+          "rmsGap": 0.004953641844466939
+        },
+        {
+          "spreadDegrees": 8,
+          "primitive": 11,
+          "meanGap": 0.004448512264397751,
+          "maxGap": 0.007020336057594451,
+          "rmsGap": 0.004806787969338659
+        },
+        {
+          "spreadDegrees": 16,
+          "primitive": 11,
+          "meanGap": 0.004256730513594385,
+          "maxGap": 0.006779655514380233,
+          "rmsGap": 0.004687803729009315
+        },
+        {
+          "spreadDegrees": 24,
+          "primitive": 11,
+          "meanGap": 0.004079905927216181,
+          "maxGap": 0.006544952834049335,
+          "rmsGap": 0.004598264705876923
+        },
+        {
+          "spreadDegrees": 32,
+          "primitive": 11,
+          "meanGap": 0.003910491164082403,
+          "maxGap": 0.00631756753873548,
+          "rmsGap": 0.0045319767218106434
+        }
+      ],
+      "after": [
+        {
+          "spreadDegrees": -32,
+          "primitive": 11,
+          "meanGap": 0.0038057120869322398,
+          "maxGap": 0.006206949619869165,
+          "rmsGap": 0.0042127725281239856
+        },
+        {
+          "spreadDegrees": -24,
+          "primitive": 11,
+          "meanGap": 0.003633851440364996,
+          "maxGap": 0.0059389060652365894,
+          "rmsGap": 0.003962197531089031
+        },
+        {
+          "spreadDegrees": -16,
+          "primitive": 11,
+          "meanGap": 0.003459086585208434,
+          "maxGap": 0.0056778618096854794,
+          "rmsGap": 0.0037322324849431263
+        },
+        {
+          "spreadDegrees": -8,
+          "primitive": 11,
+          "meanGap": 0.0032821029458124655,
+          "maxGap": 0.005423436870093133,
+          "rmsGap": 0.0035268324420513614
+        },
+        {
+          "spreadDegrees": 0,
+          "primitive": 11,
+          "meanGap": 0.003103573348124264,
+          "maxGap": 0.005175428095473116,
+          "rmsGap": 0.0033501690056450774
+        },
+        {
+          "spreadDegrees": 8,
+          "primitive": 11,
+          "meanGap": 0.002924176284706192,
+          "maxGap": 0.004933865792726447,
+          "rmsGap": 0.003206326288174268
+        },
+        {
+          "spreadDegrees": 16,
+          "primitive": 11,
+          "meanGap": 0.002744680905352104,
+          "maxGap": 0.004699091242170856,
+          "rmsGap": 0.0030988455165659504
+        },
+        {
+          "spreadDegrees": 24,
+          "primitive": 11,
+          "meanGap": 0.0025814610134902312,
+          "maxGap": 0.004471861724221984,
+          "rmsGap": 0.0030301051478238733
+        },
+        {
+          "spreadDegrees": 32,
+          "primitive": 11,
+          "meanGap": 0.0026023643138600246,
+          "maxGap": 0.004253489742558864,
+          "rmsGap": 0.002993086850083606
+        }
+      ]
+    }
+  ],
+  "perLeg": [
+    {
+      "primitive": 10,
+      "seedVertices": [
+        42,
+        43,
+        44,
+        46,
+        47,
+        48
+      ],
+      "optimized": [
+        {
+          "i": 42,
+          "meanGapBefore": 0.00452667831368371,
+          "maxGapBefore": 0.004980124583310742,
+          "deltaRest": [
+            -0.0009361956163383888,
+            -0.001651472839873978,
+            0.00017391662862010744
+          ],
+          "deltaThighWeight": 0.002069690710343578,
+          "iterations": 7
+        },
+        {
+          "i": 43,
+          "meanGapBefore": 0.006635822357069766,
+          "maxGapBefore": 0.007302667280939347,
+          "deltaRest": [
+            0.0014452164914914003,
+            0.0015915759840992622,
+            2.7114194801835536e-05
+          ],
+          "deltaThighWeight": 0.0023774362871240937,
+          "iterations": 9
+        },
+        {
+          "i": 44,
+          "meanGapBefore": 0.0029842538061252764,
+          "maxGapBefore": 0.0046317357928201556,
+          "deltaRest": [
+            0.0008748426894585547,
+            0.00036312490475135347,
+            -4.899202846394106e-05
+          ],
+          "deltaThighWeight": 0.008534663469029601,
+          "iterations": 6
+        },
+        {
+          "i": 46,
+          "meanGapBefore": 0.002978823616651045,
+          "maxGapBefore": 0.004839993875467057,
+          "deltaRest": [
+            0.000859997684327046,
+            -0.0003582169753679372,
+            1.0308669763909474e-06
+          ],
+          "deltaThighWeight": 0.008924649257531218,
+          "iterations": 6
+        },
+        {
+          "i": 47,
+          "meanGapBefore": 0.007526555046375557,
+          "maxGapBefore": 0.00812968245954795,
+          "deltaRest": [
+            0.0014294430825069007,
+            -0.001599937964096593,
+            0.00013925151674440948
+          ],
+          "deltaThighWeight": 0.0012133276286724719,
+          "iterations": 9
+        },
+        {
+          "i": 48,
+          "meanGapBefore": 0.0030112294149980657,
+          "maxGapBefore": 0.003547457322695588,
+          "deltaRest": [
+            -0.0005207941206286739,
+            0.0009202001343157711,
+            -9.98305252797153e-05
+          ],
+          "deltaThighWeight": 0.003244253532779154,
+          "iterations": 6
+        }
+      ],
+      "followRingCount": 6,
+      "canonicalizedDuplicateWeightCount": 11,
+      "changedPositionCount": 12,
+      "changedWeightCount": 23,
+      "maxPositionChange": 0.0021500000000000026,
+      "beforeMeanNinePose": 0.004610558905820426,
+      "afterMeanNinePose": 0.0031062695730340855
+    },
+    {
+      "primitive": 11,
+      "seedVertices": [
+        41,
+        42,
+        43,
+        47,
+        48,
+        49
+      ],
+      "optimized": [
+        {
+          "i": 41,
+          "meanGapBefore": 0.0029839839015295003,
+          "maxGapBefore": 0.004630541434964886,
+          "deltaRest": [
+            -0.0008747055254074058,
+            0.00036307581432621803,
+            -4.9027951712103985e-05
+          ],
+          "deltaThighWeight": 0.008559401458274909,
+          "iterations": 6
+        },
+        {
+          "i": 42,
+          "meanGapBefore": 0.006635726322699235,
+          "maxGapBefore": 0.007302473812389118,
+          "deltaRest": [
+            -0.0014451951328043205,
+            0.0015915958106865276,
+            2.7088808091118423e-05
+          ],
+          "deltaThighWeight": 0.002399077717123253,
+          "iterations": 9
+        },
+        {
+          "i": 43,
+          "meanGapBefore": 0.004526787628517508,
+          "maxGapBefore": 0.004980074289140827,
+          "deltaRest": [
+            0.0009361908086134295,
+            -0.0016515034704942505,
+            0.00017393818029960966
+          ],
+          "deltaThighWeight": 0.0020642285117831983,
+          "iterations": 7
+        },
+        {
+          "i": 47,
+          "meanGapBefore": 0.003462539759514102,
+          "maxGapBefore": 0.004536395175137285,
+          "deltaRest": [
+            0.000637279071903666,
+            0.0011263471372646209,
+            -3.370761390428169e-05
+          ],
+          "deltaThighWeight": 0.004855324931778443,
+          "iterations": 6
+        },
+        {
+          "i": 48,
+          "meanGapBefore": 0.007283121727203119,
+          "maxGapBefore": 0.0082977709630272,
+          "deltaRest": [
+            -0.001455840291432802,
+            -0.001577525719022895,
+            0.00012017342327716328
+          ],
+          "deltaThighWeight": 0.002001626568159385,
+          "iterations": 9
+        },
+        {
+          "i": 49,
+          "meanGapBefore": 0.002970884005819229,
+          "maxGapBefore": 0.0058737165794323035,
+          "deltaRest": [
+            -0.0008154669942839045,
+            -0.00032447418327949515,
+            6.675204968694048e-06
+          ],
+          "deltaThighWeight": 0.015114153123332738,
+          "iterations": 12
+        }
+      ],
+      "followRingCount": 6,
+      "canonicalizedDuplicateWeightCount": 12,
+      "changedPositionCount": 12,
+      "changedWeightCount": 24,
+      "maxPositionChange": 0.0021500000000000048,
+      "beforeMeanNinePose": 0.00464384093403094,
+      "afterMeanNinePose": 0.003126334324872328
+    }
+  ],
+  "protectedPrimitives": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "changedPrimitives": [
+    10,
+    11
+  ],
+  "noTopologyWeld": true,
+  "originalSkinColorPreserved": true,
+  "limits": {
+    "maxAdditionalDisplacement": 0.00215,
+    "maxThighWeightChange": 0.05
+  },
+  "output": "R36KS_F11_MULTI_POSE_HIP_512_2100TRI.glb",
+  "sha256": "b13b059cc7b1c01e3a84d840c059fadc4934605e846cab1c3fb98e345548cf85",
+  "bytes": 309636,
+  "compaction": {
+    "oldBinaryBytes": 279768,
+    "newBinaryBytes": 271848,
+    "materialCountBefore": 10,
+    "materialCountAfter": 10,
+    "imagesBefore": 5,
+    "imagesAfter": 5,
+    "accessorsBefore": 88,
+    "accessorsAfter": 82,
+    "bufferViewsBefore": 93,
+    "bufferViewsAfter": 87,
+    "texturesBefore": 5,
+    "texturesAfter": 5
+  },
+  "triangles": 2100,
+  "bones": 63,
+  "protectedAndMaterialProof": "PASS: data-identical except proximal leg POSITION, NORMAL, WEIGHTS_0"
+}
