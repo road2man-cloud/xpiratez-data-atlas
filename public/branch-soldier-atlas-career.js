@@ -1,28 +1,29 @@
 import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=63-max-frontier';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
-import {groupCompleteRows,rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
+import {statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
+import {unifyCareerRows,unifiedStatusRows,groupUnifiedRows,rowStatus} from './branch-soldier-unified-career-core.js?v=68';
 import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-frontier.js?v=64-chort';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
-export function mountRouteTable({modern,catalog,registry,isActive,group=()=> 'routes',reference=false}){
+export function mountRouteTable({modern,catalog,registry,isActive,group=()=> 'routes',legacyRows=()=>[]}){
 const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'originTableScroll',reset:'routeReset',researchDialog:'routeResearchDialog',researchTitle:'routeResearchTitle',researchClose:'routeResearchClose',researchContent:'routeResearchContent'};
 const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
-const controls=['q','origin','body','careerClass','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','selectedOnly','a','b','sameChoices'];
+const controls=['q','origin','body','routeStatus','careerClass','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','selectedOnly','a','b','sameChoices'];
 const checks=new Set(['certified','selectedOnly','sameChoices']);
-$('maxViewWrap').hidden=reference;if(!reference)controls.push('maxView');
-if(reference){for(const id of ['fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly']){controls.push(id);checks.add(id);}}
+controls.push('maxView');
+{for(const id of ['fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly']){controls.push(id);checks.add(id);}}
 const labels={tu:'TU',stamina:'기력',health:'체력',bravery:'용기',reactions:'반응',firing:'사격',throwing:'투척',strength:'근력',psiStrength:'Psi 강도',psiSkill:'Psi 기술',melee:'근접',mana:'Mana'};
 const columns=[
- ['select','선택','sticky-select'],['origin','출생처','sticky-origin'],['body','최종 병종','sticky-body'],
+ ['select','선택','sticky-select'],['origin','출생처','sticky-origin'],['body','최종 병종','sticky-body'],['status','경로 상태','choice'],
  ...statKeys.map(k=>[k,labels[k],'num']),['total','합계','num sum'],
  ['captain','선장','choice'],['branch','분기','choice'],['path','진로','choice'],['cause','대의','choice'],['queen','여왕','choice'],['codex','코덱스','choice'],
  ['depth','시술 횟수','num'],['order','시술 순서','text-list'],['traitCount','특성 수','num'],['traits','보유 특성','text-list'],
  ['research','연구 이력','research'],['blocked','차단 연구','research'],['acquisition','모집 조건','text-list'],['difficulty','난이도','choice'],
- ['rank','계급','choice'],['medals','요구 훈장','text-list'],['status','상태','choice'],['source','원장·상세','source']
+ ['rank','계급','choice'],['medals','요구 훈장','text-list'],['source','원장·상세','source']
 ];
-const sortable=new Set(columns.map(x=>x[0]).filter(k=>!['select','order','traits','research','acquisition','medals'].includes(k)));
+const sortable=new Set(columns.map(x=>x[0]).filter(k=>!['select','status','order','traits','research','acquisition','medals'].includes(k)));
 let sort=sortable.has(params.get('sort'))?params.get('sort'):statKeys.includes(params.get('stat'))?params.get('stat'):'total';
 let dir=params.get('dir')==='asc'?'asc':'desc',page=0,metadata,loaded=0,errors=[],rows=[],completion=null,profiles=new Map(),names={},branches=new Map(),branchCaptains=new Map(),initial=true,dialogToken=0;
 const selected=new Set(),indexCache=new Map(),fmt=x=>Number.isFinite(x)?x.toLocaleString('ko-KR'):'—';
@@ -39,7 +40,7 @@ const filterHost=$('routeFilters').querySelector('.route-filters');
 const minima=mountStatMinimums(filterHost,{params,labels,onChange:multiChanged});
 const researchFilters=mountResearchFilters(filterHost,{modern,params,name,onChange:multiChanged});
 const readValue=id=>multi[id]?multi[id].value():checks.has(id)?$(id).checked:$(id).value;
-const initialValue=id=>multi[id]?'':initial?(params.get(id)??(id==='origin'?params.get('profile'):null)??$(id).value):$(id).value;
+const initialValue=id=>multi[id]?'':initial?(params.get(id)??(id==='origin'?(params.get('profile')||(params.get('family')?.startsWith('origin:')?params.get('family').slice(7):null)):id==='body'&&params.get('family')&&!params.get('family').startsWith('origin:')?params.get('family'):null)??$(id).value):$(id).value;
 function options(id,values,label){
  const select=$(id),value=initialValue(id),first=select.options[0]?.textContent||'전체';
  select.replaceChildren(new Option(first,''));
@@ -66,9 +67,9 @@ function filter(){
 }
 function sync(){
  if(!isActive())return;
- const p=new URLSearchParams(location.search);p.set('group',group());if(reference)p.set('scope','reference');
+ const p=new URLSearchParams(location.search);p.set('group',group());p.delete('scope');
  for(const k of [...p.keys()])if(controls.includes(k)||k==='sort'||k==='dir'||k==='stat'||k==='role'||k==='primary'||k.startsWith('role')||k.startsWith('min_')||k==='profile')p.delete(k);
- for(const id of controls){const v=checks.has(id)?($(id).checked?'1':''):readValue(id);if(v&&!(id==='metric'&&v===(reference?'cap':'current')))p.set(id,v)}
+ for(const id of controls){const v=checks.has(id)?($(id).checked?'1':''):readValue(id);if(v&&!(id==='metric'&&v==='cap'))p.set(id,v)}
  for(const [key,id] of [['excludeTraining','training'],['excludeTrait','trait']]){const v=multi[id].excluded();p.delete(key);if(v)p.set(key,v);}
  p.delete('trainingSequence');if(multi.training.sequence())p.set('trainingSequence',multi.training.sequence());
  writeStatMinimums(p,minima.value());writeResearchFilters(p,researchFilters.value());
@@ -146,13 +147,13 @@ function renderHead(){
  $('head').replaceChildren(row);
 }
 function renderRow(r,f){
- const tr=el('tr');tr.dataset.routeKey=r.key;tr.classList.toggle('selected',selected.has(r.key));const b=branches.get(r.branch),p=profiles.get(r.origin),source=sourceOf(r);
+ const tr=el('tr');tr.dataset.routeKey=r.key;tr.dataset.careerStatus=rowStatus(r);tr.classList.toggle('selected',selected.has(r.key));const b=branches.get(r.branch),p=profiles.get(r.origin),source=sourceOf(r);
  for(const [key,title,cls] of columns){
   const td=el('td',undefined,cls);let filled=false;
   if(key==='total'||statKeys.includes(key)){td.textContent=fmt(statValue(r,key,f.metric,profiles));filled=true}
   else switch(key){
   case 'select':{const cb=el('input');cb.type='checkbox';cb.checked=selected.has(r.key);cb.setAttribute('aria-label',originName(r.origin)+' 행 선택');cb.onchange=()=>{if(cb.checked)selected.add(r.key);else selected.delete(r.key);tr.classList.toggle('selected',cb.checked);if($('selectedOnly').checked)render();else updateSelection()};td.append(cb);filled=true;break}
-  case 'origin':td.append(link(originName(r.origin),'soldiers/modern/?'+new URLSearchParams({group:'origin',origin:r.origin})+'#originMaxima'));if(p?.soldierKoName)td.append(el('span',p.soldierKoName,'small'));filled=true;break;
+  case 'origin':td.append(link(originName(r.origin),'soldiers/modern/?'+new URLSearchParams({group:'origin',origin:r.origin})+'#originMaxima'));const detail=el('button','출생·연구 상세','small');detail.type='button';detail.dataset.openOrigin=r.origin;td.append(detail);if(p?.soldierKoName)td.append(el('span',p.soldierKoName,'small'));filled=true;break;
   case 'body':if(r.body){td.append(link(name(r.body),search('soldier',r.body)));filled=true}break;
   case 'captain':if(b){appendList(td,b.captain,'research',' → ');filled=true}break;
   case 'branch':if(r.branch){if(f.a===r.branch||f.b===r.branch)td.append(el('span',[f.a===r.branch?'A':'',f.b===r.branch?'B':''].filter(Boolean).join('/')+' ','pair-tag'));td.append(link(b?'#'+b.rank:r.branch,branchUrl(r.branch)));filled=true}break;
@@ -161,7 +162,7 @@ function renderRow(r,f){
   case 'order':if(!r.missing){appendList(td,r.order,'training',' → ');filled=true}break;
   case 'traitCount':if(r.traits!==null){td.textContent=fmt(r.traits.length);filled=true}break;
   case 'traits':if(r.traits!==null){appendList(td,r.traits,'bonus',' · ',r.traitCounts);filled=true}break;
-  case 'research':if(!r.missing){const btn=el('button',source?.index?'시점별 이력':'원본 이력');btn.type='button';btn.onclick=()=>showResearch(r);td.append(btn);if(r.requiredResearch?.length){const req=el('div');detailsList(req,r.requiredResearch,'research','요구 연구 '+r.requiredResearch.length+'개');td.append(req)}filled=true}break;
+  case 'research':if(r.legacy||r.birthOnly){td.append(link('출생·연구 원본',r.detailUrl));filled=true;}else if(!r.missing){const btn=el('button',source?.index?'시점별 이력':'원본 이력');btn.type='button';btn.onclick=()=>showResearch(r);td.append(btn);if(r.requiredResearch?.length){const req=el('div');detailsList(req,r.requiredResearch,'research','요구 연구 '+r.requiredResearch.length+'개');td.append(req)}filled=true}break;
   case 'blocked':if(b?.blockedResearch){detailsList(td,b.blockedResearch,'research');filled=true}break;
   case 'acquisition':if(p){
    const items=p.acquisitionRequiredItems||{},req=p.requires||[];const d=el('details'),label=p.sourceType||'획득';
@@ -175,8 +176,8 @@ function renderRow(r,f){
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);filled=true}break;
   case 'medals':if(r.medals){const ids=Object.keys(r.medals);appendList(td,ids,'bonus',' · ',r.medals);filled=true}break;
-  case 'status':td.textContent=reference?(r.researchTraitPair?.goals.length?'최종 연구 유지·결합 후보':r.researchTraitPair?'최종 연구 계통·결합 후보':r.missing?'미연결':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색'):r.globalOptimal?'전역 최고치 인증':r.modelComplete?'연구경로 완결 (조건부)':r.complete?'완결 조합':'미완결';filled=true;break;
-  case 'source':if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
+  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'연구경로 완결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.researchTraitPair?.goals.length?'최종 연구 유지·결합 후보':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';filled=true;break;
+  case 'source':if(r.legacy||r.birthOnly){td.append(link(r.birthOnly?'출생 원본':'기존 출생 원장',r.detailUrl));filled=true;}else if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }
   if(!filled){td.textContent='—';td.classList.add('missing')}
   tr.append(td);
@@ -186,37 +187,43 @@ function renderRow(r,f){
 function updateSelection(){$('clearSelection').textContent='선택 해제 ('+selected.size+')';$('clearSelection').disabled=!selected.size}
 function render(){
  if(!isActive())return;
- const f=filter(),all=reference&&loaded===ledgers.length?rowsWithMissingOrigins(rows,[...profiles.values()]):rows;
- const scoped=all.filter(r=>f.careerClass==='all'||careerClass(r)===(f.careerClass||'ordinary'));
- const filtered=filterTable(scoped,f,context());
- const useFrontier=!reference&&f.maxView!=='all'&&!f.selectedOnly&&dir==='desc'&&(sort==='total'||statKeys.includes(sort));
- const comparison=useFrontier?maxComparisonRows(filtered):filtered;
- const sorted=sortTable(comparison,sort,dir,f.metric,context());
- const matches=reference?sorted:groupCompleteRows(sorted,group());
+ const f=filter(),all=rows;
+ const scoped=unifiedStatusRows(all,f.routeStatus).filter(r=>f.careerClass==='all'||careerClass(r)===(f.careerClass||'ordinary'));
+ const filtered=filterTable(scoped,f,context()),completeRows=filtered.filter(r=>r.complete===true),others=filtered.filter(r=>r.complete!==true);
+ const useFrontier=f.maxView!=='all'&&!f.selectedOnly&&!['birthMin','birthMax'].includes(f.metric)&&dir==='desc'&&(sort==='total'||statKeys.includes(sort));
+ const comparison=useFrontier?maxComparisonRows(completeRows):completeRows;
+ const sorted=sortTable([...comparison,...others],sort,dir,f.metric,context());
+ const matches=groupUnifiedRows(sorted,group());
  const size=Number($('pageSize').value),pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages-1);
- $('status').textContent=reference?fmt(matches.length)+'개 표시 / '+fmt(all.length)+'개 탐색 근거 (완결 조합 아님)':fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 재생 근거 · 완결 세트 '+fmt((f.careerClass==='chort'?completion?.summary?.chortCompleteCombinations:f.careerClass==='ordinary'?completion?.summary?.ordinaryCompleteCombinations:completion?.summary?.completeCombinations)??completion?.summary?.completeCombinations??0)+'개'+(useFrontier?' · 수치 지배 경로 '+fmt(filtered.length-comparison.length)+'개 숨김':'')+(loaded<ledgers.length?' · 완결 원장 연결 중':' · 완결 출생처 '+new Set(rows.filter(r=>careerClass(r)==='ordinary').map(r=>r.origin)).size+'/'+profiles.size);
- if(reference)document.getElementById('catalogStatus').textContent='조건부 탐색 근거 · 완결 조합 및 최종 순위에서 제외';
- else if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
+ $('status').textContent=fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 · 완결 '+fmt(completeRows.length)+' · 조건부 '+fmt(others.filter(r=>rowStatus(r)==='conditional').length)+' · 출생 '+fmt(others.filter(r=>r.birthOnly).length)+' · 미연결 '+fmt(others.filter(r=>r.missing&&!r.birthOnly).length)+(useFrontier?' · 완결 수치 지배 경로 '+fmt(completeRows.length-comparison.length)+'개 숨김':'')+(loaded<ledgers.length?' · 원장 연결 중':'');
+ $('maxViewWrap').hidden=!['complete','all'].includes(f.routeStatus);
+ if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
  $('status').textContent+=(f.careerClass==='chort'?' · 코르트 독립 비교 (출생처는 획득 근거)':f.careerClass==='all'?' · 전체 근거 열람 (코르트 포함)':' · 코르트 제외')+researchFilters.notice();
  $('status').dataset.routeStatus=loaded===ledgers.length?(errors.length?'partial':'loaded'):'loading';
  $('errors').hidden=!errors.length;$('errors').textContent=errors.join(' · ');
  $('page').textContent=(page+1)+' / '+pages;$('prev').disabled=page===0;$('next').disabled=page>=pages-1;
  renderHead();const frag=document.createDocumentFragment();
  for(const r of matches.slice(page*size,(page+1)*size))frag.append(renderRow(r,f));
- if(!matches.length){const tr=el('tr'),td=el('td',(f.researchAction||f.researchSequence)&&!researchFilters.index()?'연구 이력 연결 중…':(loaded<ledgers.length?'완결 조합 원장을 읽는 중…':reference?'조건부 탐색 근거 없음':rows.length?'필터에 맞는 완결 조합 없음':errors.length?'완결 원장 연결 오류. 미연결 자료를 0개로 확정하지 않습니다.':'아직 검증된 완결 육성 조합이 없습니다. 중간 경로는 이 표에 등록하지 않습니다.'));td.colSpan=columns.length;tr.append(td);frag.append(tr)}
+ if(!matches.length){const tr=el('tr'),td=el('td',(f.researchAction||f.researchSequence)&&!researchFilters.index()?'연구 이력 연결 중…':loaded<ledgers.length?'통합 원장을 읽는 중…':errors.length?'일부 원장 연결 오류. 미연결 자료를 0개로 확정하지 않습니다.':'필터에 맞는 육성경로 없음');td.colSpan=columns.length;tr.append(td);frag.append(tr)}
  $('results').replaceChildren(frag);updateSelection();
 }
 for(const id of controls){
  if(checks.has(id))$(id).checked=params.get(id)==='1';
  else if(['minDepth','minTraits'].includes(id))$(id).value=params.get(id)||'';
- else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric','maxView','careerClass'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
+ else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric','maxView','careerClass','routeStatus'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 }
+if(!params.has('routeStatus')&&params.get('scope')==='reference')$('routeStatus').value='all';
+if($('routeStatus').value==='birth'&&!params.has('metric'))$('metric').value='birthMin';
+if((params.get('q')||params.get('populationRoute')||'').match(/^(MISSCAR|POPEXT|POP|GROW|ALTCAR):/))$('maxView').value='all';
 if(!params.has('careerClass')&&params.get('body')===CHORT_BODY)$('careerClass').value='chort';
 if(params.has('a')||params.has('b')||location.hash==='#branchCompare')$('branchCompare').open=true;
 
 for(const id of controls.filter(k=>k!=='q'&&!multi[k]))$(id).onchange=()=>{
  if(initial||!isActive())return;
  if(id==='a'||id==='sameChoices'){if($('sameChoices').checked&&$('b').value&&!sameChoices(branches.get($('a').value),branches.get($('b').value)))$('b').value='';populate()}
+ if(id==='routeStatus'&&$('routeStatus').value==='birth')$('metric').value='birthMin';
+ if(id==='metric'&&['birthMin','birthMax'].includes($('metric').value))$('routeStatus').value='birth';
+ if(id==='routeStatus'&&['complete','conditional'].includes($('routeStatus').value)&&['birthMin','birthMax'].includes($('metric').value))$('metric').value='cap';
  if(id==='body'&&$('body').value===CHORT_BODY)$('careerClass').value='chort';
  if(id==='body'&&$('body').value&&$('body').value!==CHORT_BODY&&$('careerClass').value==='chort')$('careerClass').value='ordinary';
  if(id==='careerClass'&&$('careerClass').value!=='all'&&$('body').value&&($('body').value===CHORT_BODY)!==($('careerClass').value==='chort'))$('body').value='';
@@ -240,9 +247,15 @@ async function load(){
   branches=new Map(registry.branches.map(x=>[x.id,x]));
  }else errors.push('공통 분기 원장 미연결');
  branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));
- populate();initial=false;render();
- const projected=await (reference?loadExplorationRows:loadCareerRows)(modern,registry,{includeWitnesses:true});
- rows=projected.rows;completion=projected.completion;if(!params.has('careerClass')&&rows.some(r=>r.id===$('q').value&&r.body===CHORT_BODY))$('careerClass').value='chort';errors.push(...projected.errors);loaded=ledgers.length;populate();render();
+ const legacy=legacyRows();rows=legacy;populate();initial=false;render();
+ let final={rows:[],errors:[]};
+ try{final=await loadCareerRows(modern,registry,{includeWitnesses:true});completion=final.completion;errors.push(...final.errors);}catch(e){errors.push('완결 원장 미연결: '+e.message);}
+ rows=unifyCareerRows(final.rows,[],legacy);render();
+ const exploration=await loadExplorationRows(modern,registry);
+ const represented=new Set([...final.rows,...exploration.rows].map(r=>r.origin));
+ const missing=profiles.size?[...profiles.values()].filter(p=>!represented.has(p.id)&&!legacy.some(r=>r.origin===p.id&&r.legacy)).map(p=>({key:'missing:'+p.id,id:null,origin:p.id,body:p.soldierType,branch:null,source:null,order:[],traits:null,rank:null,medals:null,difficulties:[],current:null,cap:null,certified:false,missing:true})): [];
+ rows=unifyCareerRows(final.rows,exploration.rows,[...legacy,...missing]);if(!params.has('careerClass')&&rows.some(r=>r.id===$('q').value&&r.body===CHORT_BODY))$('careerClass').value='chort';
+ errors.push(...exploration.errors);loaded=ledgers.length;populate();render();
  }catch(e){errors.push('병종 원본 미연결: '+e.message);loaded=ledgers.length;initial=false;render()}
 }
 render();void load();
