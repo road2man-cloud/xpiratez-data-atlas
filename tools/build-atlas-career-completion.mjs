@@ -12,7 +12,7 @@ import {createCareerReplay} from "./population-chronological-career-core.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
-import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier.js";
+import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
