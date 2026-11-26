@@ -1,0 +1,41 @@
+{
+  "source": "R36KK_F11_SEAM_AWARE_SKIN_1024_2100TRI.glb",
+  "output": "R36KK_SEAM_V2_1024_2100TRI.glb",
+  "algorithm": "proximal leg to torso soft seam blend; nearest high-z torso vertex",
+  "changes": [
+    {
+      "primitive": 10,
+      "selectedIndices": [
+        35,
+        22,
+        42,
+        37,
+        45
+      ],
+      "vertexCount": 5,
+      "meanGapBefore": 0.01992974261640749,
+      "meanGapAfter": 0.0175495622020304,
+      "maxDisplacement": 0.002500000000000033
+    },
+    {
+      "primitive": 11,
+      "selectedIndices": [
+        30,
+        93,
+        23,
+        43,
+        38
+      ],
+      "vertexCount": 5,
+      "meanGapBefore": 0.017098879143057587,
+      "meanGapAfter": 0.01483851831430342,
+      "maxDisplacement": 0.002499999999999998
+    }
+  ],
+  "maxAllowedDisplacement": 0.0025,
+  "bytes": 400972,
+  "sha256": "402cc505330212e4f377badad5cd3a8bb7760a2be4d2dca8d0ec766561e9e0bd",
+  "triangles": 2100,
+  "bones": 63,
+  "sourceSha256": "a33df6ea166f5c08ab70d735f4c8caa150fc5810ed2bb7990247bd63a6ed3ff7"
+}
