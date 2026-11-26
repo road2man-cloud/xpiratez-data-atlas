@@ -13,10 +13,11 @@ import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-se
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier.js";
+import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
-const db=decode(file),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
+const db=hydrateResearchPaths(decode(file)),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
 assert.equal(modern.meta.source.metadataSha256,metadata);
 const prior=db.careerCompletion;
 const gameRoot=process.argv.find(x=>x.startsWith("--game-root="))?.slice(12);
@@ -147,5 +148,5 @@ db.careerCompletion.observedIncumbents=incumbents;
 summary.observedIncumbents=incumbents.summary;
 db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생이 성립한 연구경로·특성 세트를 조건부 완결로 등록. 전체 후속 탐색 종결과 최고점은 요구하지 않는다. 반복 조달·성장 및 별도 가정은 공개하며 실제 게임 승리 인증과 구분한다.";
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packResearchPaths(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
