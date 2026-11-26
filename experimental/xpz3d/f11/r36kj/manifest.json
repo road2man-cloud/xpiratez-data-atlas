@@ -1,0 +1,54 @@
+{
+  "version": "R36KJ",
+  "date": "2026-11-27",
+  "status": "experimental",
+  "origin": "ChatGPT sandbox",
+  "source": "R36KI",
+  "authoritativeExterior": "R36HW",
+  "triangles": 2100,
+  "bones": 63,
+  "faceTriangles": 644,
+  "hairTriangles": 294,
+  "sourceR36HWsha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "sourceR36KIsha256": "c9d6650b4addf24412d512f1d00844cd861be74bcbe821c640f62be5ff8f3d0c",
+  "uv": {
+    "skinPrimitives": [
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "horizontalUtilizationBefore": 0.5,
+    "horizontalUtilizationAfter": 1
+  },
+  "variants": [
+    {
+      "filename": "R36KJ_F11_TEXTURED_SKIN_1024_2100TRI.glb",
+      "atlasSize": 1024,
+      "bytes": 1264312,
+      "sha256": "f40231b0be8fd1d1ea2f6736f2864d733c6410b08f23127ee1485023b4949635",
+      "uploadedToGithub": false
+    },
+    {
+      "filename": "R36KJ_F11_TEXTURED_SKIN_512_2100TRI.glb",
+      "atlasSize": 512,
+      "bytes": 899508,
+      "sha256": "429ef61ca23b7be493014233348f0efc2673c56e1228d229cf5ca50321bef2d2",
+      "uploadedToGithub": false
+    }
+  ],
+  "archive": {
+    "filename": "XPZ3D_R36KJ_TEXTURE_EFFICIENCY_2100TRI_20261127.zip",
+    "bytes": 7904073,
+    "sha256": "e829b7dc8d05ff2249aabc224fc7d06fa598902fcf61dcb2ed0b24f2c9804771",
+    "uploadedToGithub": false
+  },
+  "limitations": [
+    "R36JB high-density anatomy geometry not embedded",
+    "Shoulder/thigh mesh junctions not welded",
+    "S2/S3 engine integration pending",
+    "Browser runtime inspection unavailable"
+  ],
+  "githubUploadScope": "metadata-only"
+}
