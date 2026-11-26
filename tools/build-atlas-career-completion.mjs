@@ -13,6 +13,7 @@ import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-se
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
+import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
 import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
@@ -140,6 +141,9 @@ if(db.careerCompletion.materialBudget){
  db.careerCompletion.materialComparison=summarizeMaterialComparison(comparison.rows,index);
  summary.materialComparison={...db.careerCompletion.materialComparison};delete summary.materialComparison.routeIds;
 }
+const repeatComparison=createRepeatComparison(db).summarize(comparison.rows);
+db.careerCompletion.repeatComparison=repeatComparison;
+summary.repeatComparison={...repeatComparison};delete summary.repeatComparison.suppressedRouteIds;
 const coverage=summarizeOriginCoverage(modern.profiles,comparison.rows);
 Object.assign(summary,coverage.summary);
 db.careerCompletion.originCoverage=coverage.origins;db.careerCompletion.chortCoverage=coverage.chort;

@@ -1,10 +1,11 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=63-max-frontier';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=83-repeat-accounting';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
 import {unifyCareerRows,unifiedStatusRows,groupUnifiedRows,rowStatus} from './branch-soldier-unified-career-core.js?v=68';
 import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-frontier.js?v=82-repeat-compact';
 import {createMaterialIndex,materialComparisonRows} from './branch-soldier-material-frontier-v2.js?v=82-repeat-compact';
+import {createRepeatComparison} from './branch-soldier-repeat-comparison.js?v=83-repeat-accounting';
 import {mountLiveCareerGuide} from './soldiers/modern/live-career-guide.js?v=69';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
@@ -13,6 +14,7 @@ const aliases={q:'search',status:'rowCount',errors:'routeErrors',tableScroll:'or
 const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='results'?document.querySelector('#originTable tbody'):document.getElementById(aliases[id]||id);
 const params=new URLSearchParams(location.search);
 const materialIndex=createMaterialIndex(registry?.careerCompletion?.materialBudget);
+const repeatComparison=createRepeatComparison(registry);
 const compactRecords=registry?.populationMissingOriginCareer?.summary?.repeatCompaction?.records||{};
 const compactTargets=new Map();
 for(const x of Object.values(compactRecords))if(x.status==="COMPACT_REPLAY"){
@@ -221,14 +223,15 @@ function render(){
  if(!isActive())return;
  const f=filter(),all=rows;
  const scoped=unifiedStatusRows(all,f.routeStatus).filter(r=>f.careerClass==='all'||careerClass(r)===(f.careerClass||'ordinary'));
- const filtered=filterTable(scoped,f,context()),completeRows=filtered.filter(r=>r.complete===true),others=filtered.filter(r=>r.complete!==true);
+ const filtered=filterTable(scoped,f,context()),rawCompleteRows=filtered.filter(r=>r.complete===true),others=filtered.filter(r=>r.complete!==true);
+ const completeRows=f.maxView!=='all'&&!f.selectedOnly?repeatComparison.filter(rawCompleteRows):rawCompleteRows;
  const useFrontier=f.maxView!=='all'&&!f.selectedOnly&&!['birthMin','birthMax'].includes(f.metric)&&dir==='desc'&&(sort==='total'||statKeys.includes(sort));
  const materialView=useFrontier&&f.maxView==='material';
  const comparison=useFrontier?(materialView?materialComparisonRows(completeRows,materialIndex):maxComparisonRows(completeRows)):completeRows;
  const sorted=sortTable([...comparison,...others],sort,dir,f.metric,context());
  const matches=groupUnifiedRows(sorted,group());
  const size=Number($('pageSize').value),pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages-1);
- $('status').textContent=fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 · 완결 '+fmt(completeRows.length)+' · 조건부 '+fmt(others.filter(r=>rowStatus(r)==='conditional').length)+' · 출생 '+fmt(others.filter(r=>r.birthOnly).length)+' · 미연결 '+fmt(others.filter(r=>r.missing&&!r.birthOnly).length)+(useFrontier?' · '+(materialView?'수치·한정품 동시 지배':'완결 수치 지배')+' 경로 '+fmt(completeRows.length-comparison.length)+'개 숨김':'')+(materialView?' · 한정품 소비 미확인 '+fmt(completeRows.filter(r=>materialIndex.cost(r.id)===null).length)+'개 보존':'')+(loaded<ledgers.length?' · 원장 연결 중':'');
+ $('status').textContent=fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 · 완결 '+fmt(completeRows.length)+(rawCompleteRows.length>completeRows.length?' · 동일효과 반복 경로 '+fmt(rawCompleteRows.length-completeRows.length)+'개 숨김':'')+' · 조건부 '+fmt(others.filter(r=>rowStatus(r)==='conditional').length)+' · 출생 '+fmt(others.filter(r=>r.birthOnly).length)+' · 미연결 '+fmt(others.filter(r=>r.missing&&!r.birthOnly).length)+(useFrontier?' · '+(materialView?'수치·한정품 동시 지배':'완결 수치 지배')+' 경로 '+fmt(completeRows.length-comparison.length)+'개 숨김':'')+(materialView?' · 한정품 소비 미확인 '+fmt(completeRows.filter(r=>materialIndex.cost(r.id)===null).length)+'개 보존':'')+(loaded<ledgers.length?' · 원장 연결 중':'');
  $('maxViewWrap').hidden=!['complete','all'].includes(f.routeStatus);
  if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
  $('status').textContent+=(f.careerClass==='chort'?' · 코르트 독립 비교 (출생처는 획득 근거)':f.careerClass==='all'?' · 전체 근거 열람 (코르트 포함)':' · 코르트 제외')+researchFilters.notice();

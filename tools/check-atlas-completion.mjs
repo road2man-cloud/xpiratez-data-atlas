@@ -4,6 +4,7 @@ import {gunzipSync} from 'node:zlib';
 import {ledgers,project,loadCareerRows,completionScope,readResearchWitness} from '../public/branch-soldier-atlas-career-core.js';
 import {admitVerified,normalizedCombination} from './atlas-career-completion-core.mjs';
 import {maxComparisonRows,summarizeMaxComparison,comparisonScope} from '../public/branch-soldier-max-frontier.js';
+import {createRepeatComparison} from '../public/branch-soldier-repeat-comparison.js';
 import {key} from './population-research-career-core.mjs';
 import {digest} from './final-combination-production.mjs';
 import {loadFinancedDetail} from './atlas-financed-career-detail-store.mjs';
@@ -25,6 +26,7 @@ if(c.maxComparison){
  assert.deepEqual(all.errors,[]);
  assert.equal(all.rows.length,c.summary.researchLineWitnesses+(c.summary.actualGameCombinations||0));
  assert.deepEqual(summarizeMaxComparison(all.rows),c.maxComparison);
+ if(c.repeatComparison){const repeat=createRepeatComparison(db);assert.deepEqual(repeat.summarize(all.rows),c.repeatComparison);assert.equal(c.repeatComparison.rejectedReceipts,0);for(const [id,to] of repeat.edges){const pair=all.rows.filter(r=>r.id===id||r.id===to);assert.equal(pair.length,2);assert.equal(repeat.filter(pair).length,1);assert.equal(repeat.filter(pair.filter(r=>r.id===id)).length,1);}}
  const front=maxComparisonRows(all.rows),groups=new Map();
  for(const r of front){const k=comparisonScope(r),a=groups.get(k)||[];a.push([...r.current,...r.cap]);groups.set(k,a);}
  for(const r of all.rows){const v=[...r.current,...r.cap];assert(groups.get(comparisonScope(r)).some(q=>q.every((x,i)=>x>=v[i])),"Lost numeric maximum: "+r.id);}
