@@ -1,0 +1,70 @@
+{
+  "version": "R36KO",
+  "date": "2026-11-27",
+  "status": "experimental-produced",
+  "baseline": "R36KN",
+  "authoritativeSource": "R36HW",
+  "sourceSha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "geometry": {
+    "triangles": 2100,
+    "bones": 63,
+    "faceTriangles": 644,
+    "hairTriangles": 294,
+    "centralPatchTriangles": 40,
+    "posteriorShiftMax": 0.027,
+    "superiorShiftMax": 0.02,
+    "highPolyDonorEmbedded": false
+  },
+  "material": {
+    "faceUsesImageTexture": false,
+    "faceSource": "R36HW COLOR_0 and PBR face material",
+    "hairImageOriginal": true,
+    "eyeImageOriginal": true,
+    "originalSourcePrimitiveToOutput": {
+      "0": 0,
+      "1": 1,
+      "7": 3,
+      "8": 4,
+      "11": 5,
+      "12": 6
+    }
+  },
+  "outputGLBs": [
+    {
+      "filename": "R36KO_F11_HW_MATERIAL_LOCK_RECESSED_1024_2100TRI.glb",
+      "bytes": 416536,
+      "sha256": "60258bcc845e4063710dd20872f8df12cbe97f493f235885d9ec11adf4ad2ba4",
+      "githubUploaded": false
+    },
+    {
+      "filename": "R36KO_F11_HW_MATERIAL_LOCK_RECESSED_512_2100TRI.glb",
+      "bytes": 304976,
+      "sha256": "dbc17138a9674fbbe03f95aa0d153e65fd7f30d464b6a00a77a74246771b21cf",
+      "githubUploaded": false
+    }
+  ],
+  "archive": {
+    "filename": "XPZ3D_R36KO_HW_MATERIAL_LOCK_2100TRI_20261127.zip",
+    "bytes": 3782507,
+    "sha256": "20fb80dc5673ada2beef5a7c28cda86e49f0328131a1c0eafb6538e969fb0ace",
+    "entries": 36,
+    "githubUploaded": false
+  },
+  "visualComparison": {
+    "pixelCrop": [
+      480,
+      135,
+      630,
+      312
+    ],
+    "pixelCount": 26550,
+    "meanRGBDifference": 0
+  },
+  "browserValidation": "blocked by administrator; offline HTML authored but interactive use unverified",
+  "unfinished": [
+    "non-explicit detailed center anatomy",
+    "shoulder-thigh manifold joining",
+    "S2/S3 engine validation"
+  ],
+  "githubUploadScope": "README and manifest only"
+}
