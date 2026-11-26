@@ -17,6 +17,6 @@ assert.equal(unifiedStatusRows(all,"birth").length,modern.profiles.length);
 for(const r of c.rows)assert.equal(all.find(q=>q.key===r.key),r);
 const grouped=groupUnifiedRows(all,"origin");
 assert.equal(new Set(grouped.map(r=>JSON.stringify([rowStatus(r),r.origin,r.body==="STR_SOLDIER_CHORT"]))).size,grouped.length);
-assert(grouped.some(r=>r.complete));assert(grouped.some(r=>rowStatus(r)==="conditional"));
+assert.equal(grouped.some(r=>r.complete),c.rows.length>0);assert(grouped.some(r=>rowStatus(r)==="conditional"));
 const firstPartial=grouped.findIndex(r=>!r.complete);assert(grouped.slice(firstPartial).every(r=>!r.complete));
 console.log(JSON.stringify({complete:c.rows.length,exploration:e.rows.length,unified:all.length,birth:birth.length,representatives:grouped.length}));

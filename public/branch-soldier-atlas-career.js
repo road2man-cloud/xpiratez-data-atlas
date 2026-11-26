@@ -1,11 +1,11 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=83-repeat-accounting';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=85-final-closure';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
 import {unifyCareerRows,unifiedStatusRows,groupUnifiedRows,rowStatus} from './branch-soldier-unified-career-core.js?v=68';
 import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-frontier.js?v=82-repeat-compact';
 import {createMaterialIndex,materialComparisonRows} from './branch-soldier-material-frontier-v2.js?v=82-repeat-compact';
-import {createRepeatComparison} from './branch-soldier-repeat-comparison.js?v=83-repeat-accounting';
+import {createRepeatComparison} from './branch-soldier-repeat-comparison.js?v=85-final-closure';
 import {mountLiveCareerGuide} from './soldiers/modern/live-career-guide.js?v=69';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
@@ -214,7 +214,7 @@ function renderRow(r,f){
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.rankDefault){td.append(el('div','기본 계급 가정','small'));}filled=true}break;
   case 'medals':if(r.medals){const ids=Object.keys(r.medals);appendList(td,ids,'bonus',' · ',r.medals);filled=true}break;
-  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'연구경로 완결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.researchTraitPair?.goals.length?'최종 연구 유지·결합 후보':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';filled=true;break;
+  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'최종 육성 종결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.researchTraitPair?.goals.length?'최종 연구 도달 · 후속 탐색':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';filled=true;break;
   case 'source':if(r.legacy||r.birthOnly){td.append(link(r.birthOnly?'출생 원본':'기존 출생 원장',r.detailUrl));filled=true;}else if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }
   if(!filled){td.textContent='—';td.classList.add('missing')}
@@ -226,7 +226,7 @@ function updateSelection(){$('clearSelection').textContent='선택 해제 ('+sel
 function render(){
  if(!isActive())return;
  const f=filter(),all=rows;
- const scoped=unifiedStatusRows(all,f.routeStatus).filter(r=>f.careerClass==='all'||careerClass(r)===(f.careerClass||'ordinary'));
+ const scoped=unifiedStatusRows(f.routeStatus==='all'?all.filter(r=>!r.complete):all,f.routeStatus).filter(r=>f.careerClass==='all'||careerClass(r)===(f.careerClass||'ordinary'));
  const filtered=filterTable(scoped,f,context()),rawCompleteRows=filtered.filter(r=>r.complete===true),others=filtered.filter(r=>r.complete!==true);
  const completeRows=f.maxView!=='all'&&!f.selectedOnly?repeatComparison.filter(rawCompleteRows):rawCompleteRows;
  const useFrontier=f.maxView!=='all'&&!f.selectedOnly&&!['birthMin','birthMax'].includes(f.metric)&&dir==='desc'&&(sort==='total'||statKeys.includes(sort));
@@ -236,7 +236,7 @@ function render(){
  const matches=groupUnifiedRows(sorted,group());
  const size=Number($('pageSize').value),pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages-1);
  $('status').textContent=fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 · 완결 '+fmt(completeRows.length)+(rawCompleteRows.length>completeRows.length?' · 동일효과 반복 경로 '+fmt(rawCompleteRows.length-completeRows.length)+'개 숨김':'')+' · 조건부 '+fmt(others.filter(r=>rowStatus(r)==='conditional').length)+' · 출생 '+fmt(others.filter(r=>r.birthOnly).length)+' · 미연결 '+fmt(others.filter(r=>r.missing&&!r.birthOnly).length)+(useFrontier?' · '+(materialView?'수치·한정품 동시 지배':'완결 수치 지배')+' 경로 '+fmt(completeRows.length-comparison.length)+'개 숨김':'')+(materialView?' · 한정품 소비 미확인 '+fmt(completeRows.filter(r=>materialIndex.cost(r.id)===null).length)+'개 보존':'')+(loaded<ledgers.length?' · 원장 연결 중':'');
- $('maxViewWrap').hidden=!['complete','all'].includes(f.routeStatus);
+ $('maxViewWrap').hidden=f.routeStatus!=='complete';
  if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
  $('status').textContent+=(f.careerClass==='chort'?' · 코르트 독립 비교 (출생처는 획득 근거)':f.careerClass==='all'?' · 전체 근거 열람 (코르트 포함)':' · 코르트 제외')+researchFilters.notice();
  $('status').dataset.routeStatus=loaded===ledgers.length?(errors.length?'partial':'loaded'):'loading';
@@ -244,7 +244,7 @@ function render(){
  $('page').textContent=(page+1)+' / '+pages;$('prev').disabled=page===0;$('next').disabled=page>=pages-1;
  renderHead();const frag=document.createDocumentFragment();
  for(const r of matches.slice(page*size,(page+1)*size))frag.append(renderRow(r,f));
- if(!matches.length){const tr=el('tr'),td=el('td',(f.researchAction||f.researchSequence)&&!researchFilters.index()?'연구 이력 연결 중…':loaded<ledgers.length?'통합 원장을 읽는 중…':errors.length?'일부 원장 연결 오류. 미연결 자료를 0개로 확정하지 않습니다.':'필터에 맞는 육성경로 없음');td.colSpan=columns.length;tr.append(td);frag.append(tr)}
+ if(!matches.length){const tr=el('tr'),td=el('td',(f.researchAction||f.researchSequence)&&!researchFilters.index()?'연구 이력 연결 중…':loaded<ledgers.length?'통합 원장을 읽는 중…':errors.length?'일부 원장 연결 오류. 미연결 자료를 0개로 확정하지 않습니다.':f.routeStatus==='complete'?'종결이 증명된 최종 조합 없음 · 탐색 자료는 경로 상태에서 열람':'필터에 맞는 탐색 경로 없음');td.colSpan=columns.length;tr.append(td);frag.append(tr)}
  $('results').replaceChildren(frag);updateSelection();
 }
 for(const id of controls){
@@ -289,7 +289,7 @@ async function load(){
  branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));
  const legacy=legacyRows();rows=legacy;populate();initial=false;render();
  let final={rows:[],errors:[]};
- try{final=await loadCareerRows(modern,registry,{includeWitnesses:true});completion=final.completion;errors.push(...final.errors);}catch(e){errors.push('완결 원장 미연결: '+e.message);}
+ try{final=await loadCareerRows(modern,registry);completion=final.completion;errors.push(...final.errors);}catch(e){errors.push('완결 원장 미연결: '+e.message);}
  rows=unifyCareerRows(final.rows,[],legacy);render();
  const exploration=await loadExplorationRows(modern,registry);
  const represented=new Set([...final.rows,...exploration.rows].map(r=>r.origin));

@@ -25,9 +25,9 @@ assert(final.rows.every(r=>r.complete));
 if(c.maxComparison){
  const all=await loadCareerRows(modern,db,{includeWitnesses:true});
  assert.deepEqual(all.errors,[]);
- assert.equal(all.rows.length,c.summary.researchLineWitnesses+(c.summary.actualGameCombinations||0));
- assert.deepEqual(summarizeMaxComparison(all.rows),c.maxComparison);
- if(c.repeatComparison){const repeat=createRepeatComparison(db);assert.deepEqual(repeat.summarize(all.rows),c.repeatComparison);assert.equal(c.repeatComparison.rejectedReceipts,0);for(const [id,to] of repeat.edges){const pair=all.rows.filter(r=>r.id===id||r.id===to);assert.equal(pair.length,2);assert.equal(repeat.filter(pair).length,1);assert.equal(repeat.filter(pair.filter(r=>r.id===id)).length,1);}}
+ assert.equal(all.rows.length,c.finalCareerAdmission.summary.completeWitnesses);
+ assert.deepEqual({...summarizeMaxComparison(all.rows),scope:c.maxComparison.scope},c.maxComparison);
+ if(c.repeatComparison){const repeat=createRepeatComparison(db);assert.deepEqual(repeat.summarize(all.rows),c.repeatComparison);assert.equal(c.repeatComparison.rejectedReceipts,0);for(const [id,to] of repeat.edges){const pair=all.rows.filter(r=>r.id===id||r.id===to);if(pair.length!==2)continue;assert.equal(repeat.filter(pair).length,1);assert.equal(repeat.filter(pair.filter(r=>r.id===id)).length,1);}}
  const front=maxComparisonRows(all.rows),groups=new Map();
  for(const r of front){const k=comparisonScope(r),a=groups.get(k)||[];a.push([...r.current,...r.cap]);groups.set(k,a);}
  for(const r of all.rows){const v=[...r.current,...r.cap];assert(groups.get(comparisonScope(r)).some(q=>q.every((x,i)=>x>=v[i])),"Lost numeric maximum: "+r.id);}

@@ -12,6 +12,7 @@ import {createCareerReplay} from "./population-chronological-career-core.mjs";
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
+import {classifyFinalCareers} from "./atlas-final-career-admission.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
@@ -22,6 +23,7 @@ const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.
 const db=hydrateResearchPaths(decode(file)),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
 assert.equal(modern.meta.source.metadataSha256,metadata);
 const prior=db.careerCompletion;
+const priorLineRows=prior?.researchLineRows||prior?.rows||[];
 const gameRoot=process.argv.find(x=>x.startsWith("--game-root="))?.slice(12);
 const terminalRule=gameRoot?(await import("./atlas-terminal-rule-source.mjs")).extractTerminalRules(modern,gameRoot):prior?.terminalRule?.sourceMetadataSha256===metadata?prior.terminalRule:{status:"UNRESOLVED",reason:"Original terminal rules not extracted"};
 const terminalResearch=db.populationMissingOriginCareer?.terminalResearch||null;
@@ -99,14 +101,14 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
  ...(prior?.auxiliaryCareerCalendar?.sourceMetadataSha256===metadata&&prior.auxiliaryCareerCalendar.terminalSupplyFingerprint===terminalSupply?.sourceFingerprint&&key(prior.auxiliaryCareerCalendar.sourceHashes)===key(sourceHashes)&&prior.auxiliaryCareerCalendar.codexFingerprint===prior.codexSourcePrefixes?.producerFingerprint&&prior.auxiliaryCareerCalendar.financedFingerprint===prior.financedCareerCalendar?.producerFingerprint&&Object.values(prior.auxiliaryCareerCalendar.records||{}).every(r=>prior.financedCareerCalendar?.records?.[r.financedId]?.routeId===r.routeId&&prior.financedCareerCalendar.records[r.financedId].prefixHash===r.prefixHash&&prior.codexSourcePrefixes?.records?.[r.codexId]?.prefixId===r.prefixHash&&r.linkedPlanIds.every(id=>terminalSupply?.plans?.[id]?.graph===r.graph&&terminalSupply?.plans?.[id]?.node===r.node)&&/^data\/soldier-financed-career-details\/[a-f0-9]{64}\.json\.gz$/.test(r.detailFile)&&fs.existsSync("public/"+r.detailFile))?{auxiliaryCareerCalendar:prior.auxiliaryCareerCalendar}:{}),
  ...(prior?.initialEventSchedules?.sourceMetadataSha256===metadata&&key(prior.initialEventSchedules.sourceHashes)===key(sourceHashes)?{initialEventSchedules:prior.initialEventSchedules}:{}),
  requiredProofs:REQUIRED_PROOFS,summary,bySource,classifications,rows,
- scope:"A complete research line is one replayed start-to-terminal-research witness with its retained trait multiset. Actual game victory, exhaustive search and global optimum are separate."};
+ scope:"Only successor-closed replayed research and development outcomes are final; terminal-research witnesses remain exploration. Actual victory and global optimum are separate."};
 if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
  const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
  const ledger=decode("public/data/soldier-population-missing-origin-career.json.gz");
  const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(sharedRankData(replayData,ledger.summary.defaultRankPolicy)),prior:prior?.researchTraitSets});
- const lines=admitResearchLines({db,sets,ledger,classifications,prior});
+ const lines=admitResearchLines({db,sets,ledger,classifications,prior:{...prior,rows:priorLineRows}});
  const lineIds=new Set(lines.rows.map(r=>r.id));
- for(const p of prior?.rows||[])if(p.proofKind===RESEARCH_LINE_PROOF)assert(lineIds.has(p.id),"Previously complete research line lost: "+p.id);
+ for(const p of priorLineRows)if(p.proofKind===RESEARCH_LINE_PROOF)assert(lineIds.has(p.id),"Previously complete research line lost: "+p.id);
  const actualGameCombinations=rows.length;
  rows.push(...lines.rows);rows.sort((a,b)=>a.id.localeCompare(b.id));
  summary.researchLineCombinations=lines.rows.length;summary.actualGameCombinations=actualGameCombinations;
@@ -114,7 +116,7 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
  summary.researchLineWitnesses=lines.covered.size;summary.actualGameProofMissing=missingProofs;sets.summary.researchLineCombinations=lines.rows.length;sets.summary.actualGameCombinations=0;
  summary.unresolvedEvidence=seen.size-new Set([...lines.covered].map(id=>classifications.missingbirth[id].evidenceId).concat([...admitted.values()].map(r=>classifications[r.source][r.routeId].evidenceId))).size;
  bySource.missingbirth.researchLineCombinations=lines.rows.length;bySource.missingbirth.researchLineWitnesses=lines.covered.size;
- db.careerCompletion.researchLineAdmission={schema:RESEARCH_LINE_PROOF,scope:"One continuous replay from foundation to active terminal research goal; ordinary effort and other explicit replay assumptions remain conditional. No exhaustive successor closure or actual victory claim.",rejected:lines.rejected};
+ db.careerCompletion.researchLineAdmission={schema:RESEARCH_LINE_PROOF,scope:"EXPLORATION: continuous replay to active terminal research goal, not final development closure.",rejected:lines.rejected};
  db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
  // Keep per-witness finite use in the canonical completion registry.
  const budget=createResearchMaterialPolicy(replayData),description=budget.describe(),records={};
@@ -133,7 +135,7 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
  summary.materialBudget={checked,withFinite,hardViolations,indexedUnresolved,counts:description.counts};
 
 }
-const comparison=await loadCareerRows(modern,db,{includeWitnesses:true});
+const comparison=await loadCareerRows(modern,db,{includeWitnesses:true,scope:"research-line"});
 assert.deepEqual(comparison.errors,[]);
 db.careerCompletion.maxComparison=summarizeMaxComparison(comparison.rows);
 summary.maxComparison={...db.careerCompletion.maxComparison};delete summary.maxComparison.routeIds;
@@ -142,7 +144,7 @@ if(db.careerCompletion.materialBudget){
  db.careerCompletion.materialComparison=summarizeMaterialComparison(comparison.rows,index);
  summary.materialComparison={...db.careerCompletion.materialComparison};delete summary.materialComparison.routeIds;
 }
-const repeatComparison=createRepeatComparison(db).summarize(comparison.rows);
+const repeatComparison=createRepeatComparison(db).summarize(comparison.rows.map(r=>({...r,complete:true})));
 db.careerCompletion.repeatComparison=repeatComparison;
 summary.repeatComparison={...repeatComparison};delete summary.repeatComparison.suppressedRouteIds;
 const coverage=summarizeOriginCoverage(modern.profiles,comparison.rows);
@@ -151,7 +153,33 @@ db.careerCompletion.originCoverage=coverage.origins;db.careerCompletion.chortCov
 const incumbents=summarizeCareerIncumbents(comparison.rows);
 db.careerCompletion.observedIncumbents=incumbents;
 summary.observedIncumbents=incumbents.summary;
+// Preserve the old archive and its observed scheduling hints. It is not a
+// final table, and none of its numerical scores are pruning certificates.
+const c=db.careerCompletion;
+c.researchLineRows=c.rows.filter(r=>r.proofKind===RESEARCH_LINE_PROOF);
+c.researchLineExploration={summary:{...summary},originCoverage:c.originCoverage,chortCoverage:c.chortCoverage,observedIncumbents:c.observedIncumbents,maxComparison:c.maxComparison,materialComparison:c.materialComparison,repeatComparison:c.repeatComparison};
+const finalLedger=decode("public/data/soldier-population-missing-origin-career.json.gz");
+const finalData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
+const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createCareerReplay(sharedRankData(finalData,finalLedger.summary.defaultRankPolicy)),lines:c.researchLineRows});
+c.finalCareerAdmission=final;
+c.rows=final.rows;
+summary.completeCombinations=final.rows.length;
+summary.finalCareer=final.summary;
+summary.unresolvedEvidence=seen.size-new Set(final.rows.flatMap(r=>[r,...r.alternatives]).map(r=>classifications[r.source][r.routeId].evidenceId)).size;
+bySource.missingbirth.complete=final.rows.length;
+c.researchTraitSets.summary.complete=final.rows.length;
+const finalRows=comparison.rows.filter(r=>final.witnesses[r.id]?.status==="FINAL_CLOSED").map(r=>({...r,complete:true}));
+const finalCoverage=summarizeOriginCoverage(modern.profiles,finalRows);
+Object.assign(summary,finalCoverage.summary);
+c.originCoverage=finalCoverage.origins;c.chortCoverage=finalCoverage.chort;
+c.observedIncumbents=summarizeCareerIncumbents(finalRows);summary.observedIncumbents=c.observedIncumbents.summary;
+c.maxComparison=summarizeMaxComparison(finalRows);c.maxComparison.scope="Successor-closed final career witnesses only.";
+summary.maxComparison={...c.maxComparison};delete summary.maxComparison.routeIds;
+c.materialComparison=summarizeMaterialComparison(finalRows,createMaterialIndex(c.materialBudget));c.materialComparison.scope="Successor-closed final career witnesses only.";
+summary.materialComparison={...c.materialComparison};delete summary.materialComparison.routeIds;
+c.repeatComparison=createRepeatComparison(db).summarize(finalRows);
+summary.repeatComparison={...c.repeatComparison};delete summary.repeatComparison.suppressedRouteIds;
 db.summary.careerCompletion=summary;
-db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생이 성립한 연구경로·특성 세트를 조건부 완결로 등록. 전체 후속 탐색 종결과 최고점은 요구하지 않는다. 반복 조달·성장 및 별도 가정은 공개하며 실제 게임 승리 인증과 구분한다.";
+db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생 및 후속 연구·시술 종결이 증명된 고유 경로·특성 조합만 최종 등록. 연구 목표 도달만 한 경로는 탐색 원장에 유지. 후속 가능성이 미확인되거나 탐색 예산이 소진된 상태는 완결 아님.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packResearchPaths(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
