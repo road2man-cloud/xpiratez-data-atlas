@@ -3,7 +3,7 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,loadCareerRows} from "../public/branch-soldier-atlas-career-core.js";
-import {summarizeMaxComparison} from "../public/branch-soldier-max-frontier.js";
+import {summarizeMaxComparison,summarizeOriginCoverage} from "../public/branch-soldier-max-frontier.js";
 import {summarizeCareerIncumbents} from "./population-career-incumbents.mjs";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
@@ -116,18 +116,9 @@ const comparison=await loadCareerRows(modern,db,{includeWitnesses:true});
 assert.deepEqual(comparison.errors,[]);
 db.careerCompletion.maxComparison=summarizeMaxComparison(comparison.rows);
 summary.maxComparison={...db.careerCompletion.maxComparison};delete summary.maxComparison.routeIds;
-const coverage={};
-for(const p of modern.profiles)coverage[p.id]={witnesses:0,capTotal:null,currentTotal:null,capRoute:null,currentRoute:null};
-for(const r of comparison.rows){
- const c=coverage[r.origin];assert(c,"Unknown origin "+r.origin);c.witnesses++;
- for(const [metric,totalKey,routeKey] of [["cap","capTotal","capRoute"],["current","currentTotal","currentRoute"]]){
-  const total=r[metric].reduce((a,b)=>a+b,0);
-  if(c[totalKey]===null||total>c[totalKey]||total===c[totalKey]&&r.id<c[routeKey]){c[totalKey]=total;c[routeKey]=r.id;}
- }
-}
-summary.completeOrigins=Object.values(coverage).filter(c=>c.witnesses>0).length;
-summary.completeBranches=new Set(comparison.rows.map(r=>r.branch)).size;
-db.careerCompletion.originCoverage=coverage;
+const coverage=summarizeOriginCoverage(modern.profiles,comparison.rows);
+Object.assign(summary,coverage.summary);
+db.careerCompletion.originCoverage=coverage.origins;db.careerCompletion.chortCoverage=coverage.chort;
 const incumbents=summarizeCareerIncumbents(comparison.rows);
 db.careerCompletion.observedIncumbents=incumbents;
 summary.observedIncumbents=incumbents.summary;
