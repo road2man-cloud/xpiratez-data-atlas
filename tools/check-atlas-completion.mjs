@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {gunzipSync} from 'node:zlib';
 import {ledgers,project,loadCareerRows,completionScope,readResearchWitness} from '../public/branch-soldier-atlas-career-core.js';
 import {admitVerified,normalizedCombination} from './atlas-career-completion-core.mjs';
+import {maxComparisonRows,summarizeMaxComparison,comparisonScope} from '../public/branch-soldier-max-frontier.js';
 import {key} from './population-research-career-core.mjs';
 import {digest} from './final-combination-production.mjs';
 import {loadFinancedDetail} from './atlas-financed-career-detail-store.mjs';
@@ -18,6 +19,15 @@ assert.equal(c.rows.length,c.summary.completeCombinations);
 const final=await loadCareerRows(modern,db);
 assert.deepEqual(final.errors,[]);assert.equal(final.rows.length,c.rows.length);
 assert(final.rows.every(r=>r.complete));
+if(c.maxComparison){
+ const all=await loadCareerRows(modern,db,{includeWitnesses:true});
+ assert.deepEqual(all.errors,[]);
+ assert.equal(all.rows.length,c.summary.researchLineWitnesses+(c.summary.actualGameCombinations||0));
+ assert.deepEqual(summarizeMaxComparison(all.rows),c.maxComparison);
+ const front=maxComparisonRows(all.rows),groups=new Map();
+ for(const r of front){const k=comparisonScope(r),a=groups.get(k)||[];a.push([...r.current,...r.cap]);groups.set(k,a);}
+ for(const r of all.rows){const v=[...r.current,...r.cap];assert(groups.get(comparisonScope(r)).some(q=>q.every((x,i)=>x>=v[i])),"Lost numeric maximum: "+r.id);}
+}
 assert.equal(admitVerified({row:all[0],raw:{completionProof:{kind:'GAMEPLAY_REPLAY'}},db,classification:{traceHashVerified:true}}),null);
 const t=c.terminalRule;
 assert.equal(t.status,'RULES_AND_PRESERVED_ENGINE_EXTRACTED');

@@ -1,7 +1,8 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=62-research-line';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=63-max-frontier';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {groupCompleteRows,rowsWithMissingOrigins,statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
+import {maxComparisonRows} from './branch-soldier-max-frontier.js?v=63';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive,group=()=> 'routes',reference=false}){
@@ -10,6 +11,7 @@ const $=id=>id==='head'?document.querySelector('#originTable thead'):id==='resul
 const params=new URLSearchParams(location.search);
 const controls=['q','origin','body','captain','branch','training','trait','minDepth','minTraits','difficulty','metric','certified','selectedOnly','a','b','sameChoices'];
 const checks=new Set(['certified','selectedOnly','sameChoices']);
+$('maxViewWrap').hidden=reference;if(!reference)controls.push('maxView');
 if(reference){for(const id of ['fixedOptimumOnly','transitionBreakthroughOnly','jointOnly','jointAppliedOnly','losslessTraitOnly','jointRetainedOnly','resetRecoveryOnly','researchDiscoveryOnly','missingOnly']){controls.push(id);checks.add(id);}}
 const labels={tu:'TU',stamina:'기력',health:'체력',bravery:'용기',reactions:'반응',firing:'사격',throwing:'투척',strength:'근력',psiStrength:'Psi 강도',psiSkill:'Psi 기술',melee:'근접',mana:'Mana'};
 const columns=[
@@ -185,10 +187,13 @@ function updateSelection(){$('clearSelection').textContent='선택 해제 ('+sel
 function render(){
  if(!isActive())return;
  const f=filter(),all=reference&&loaded===ledgers.length?rowsWithMissingOrigins(rows,[...profiles.values()]):rows;
- const sorted=sortTable(filterTable(all,f,context()),sort,dir,f.metric,context());
+ const filtered=filterTable(all,f,context());
+ const useFrontier=!reference&&f.maxView!=='all'&&!f.selectedOnly&&dir==='desc'&&(sort==='total'||statKeys.includes(sort));
+ const comparison=useFrontier?maxComparisonRows(filtered):filtered;
+ const sorted=sortTable(comparison,sort,dir,f.metric,context());
  const matches=reference?sorted:groupCompleteRows(sorted,group());
  const size=Number($('pageSize').value),pages=Math.max(1,Math.ceil(matches.length/size));page=Math.min(page,pages-1);
- $('status').textContent=reference?fmt(matches.length)+'개 표시 / '+fmt(all.length)+'개 탐색 근거 (완결 조합 아님)':fmt(matches.length)+'개 표시 / '+fmt(all.length)+'개 완결 조합'+(loaded<ledgers.length?' · 완결 원장 연결 중':' · 완결 출생처 '+new Set(rows.map(r=>r.origin)).size+'/'+profiles.size);
+ $('status').textContent=reference?fmt(matches.length)+'개 표시 / '+fmt(all.length)+'개 탐색 근거 (완결 조합 아님)':fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 재생 근거 · 완결 세트 '+fmt(completion?.summary?.completeCombinations??0)+'개'+(useFrontier?' · 수치 지배 경로 '+fmt(filtered.length-comparison.length)+'개 숨김':'')+(loaded<ledgers.length?' · 완결 원장 연결 중':' · 완결 출생처 '+new Set(rows.map(r=>r.origin)).size+'/'+profiles.size);
  if(reference)document.getElementById('catalogStatus').textContent='조건부 탐색 근거 · 완결 조합 및 최종 순위에서 제외';
  else if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
  $('status').textContent+=researchFilters.notice();
@@ -203,7 +208,7 @@ function render(){
 for(const id of controls){
  if(checks.has(id))$(id).checked=params.get(id)==='1';
  else if(['minDepth','minTraits'].includes(id))$(id).value=params.get(id)||'';
- else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
+ else if(id==='q'){if(params.get('group')==='routes'&&!$(id).value&&params.has('populationRoute'))$(id).value=params.get('populationRoute')}else if(['difficulty','metric','maxView'].includes(id)&&[...$(id).options].some(o=>o.value===params.get(id)))$(id).value=params.get(id);
 }
 if(params.has('a')||params.has('b')||location.hash==='#branchCompare')$('branchCompare').open=true;
 
@@ -231,7 +236,7 @@ async function load(){
  }else errors.push('공통 분기 원장 미연결');
  branchCaptains=new Map([...branches].map(([id,b])=>[id,b.captain]));
  populate();initial=false;render();
- const projected=await (reference?loadExplorationRows:loadCareerRows)(modern,registry);
+ const projected=await (reference?loadExplorationRows:loadCareerRows)(modern,registry,{includeWitnesses:true});
  rows=projected.rows;completion=projected.completion;errors.push(...projected.errors);loaded=ledgers.length;populate();render();
  }catch(e){errors.push('병종 원본 미연결: '+e.message);loaded=ledgers.length;initial=false;render()}
 }

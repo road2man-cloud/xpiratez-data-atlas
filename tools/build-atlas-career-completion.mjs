@@ -2,7 +2,8 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
-import {ledgers,project} from "../public/branch-soldier-atlas-career-core.js";
+import {ledgers,project,loadCareerRows} from "../public/branch-soldier-atlas-career-core.js";
+import {summarizeMaxComparison} from "../public/branch-soldier-max-frontier.js";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
@@ -110,6 +111,10 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
  db.careerCompletion.researchLineAdmission={schema:RESEARCH_LINE_PROOF,scope:"One continuous replay from foundation to active terminal research goal; ordinary effort and other explicit replay assumptions remain conditional. No exhaustive successor closure or actual victory claim.",rejected:lines.rejected};
  db.careerCompletion.researchTraitSets=sets;summary.researchTraitSets=sets.summary;
 }
+const comparison=await loadCareerRows(modern,db,{includeWitnesses:true});
+assert.deepEqual(comparison.errors,[]);
+db.careerCompletion.maxComparison=summarizeMaxComparison(comparison.rows);
+summary.maxComparison={...db.careerCompletion.maxComparison};delete summary.maxComparison.routeIds;
 db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="게임 시작부터 최종 목표 연구까지 동일 대원의 시간순 재생이 성립한 연구경로·특성 세트를 조건부 완결로 등록. 전체 후속 탐색 종결과 최고점은 요구하지 않는다. 반복 조달·성장 및 별도 가정은 공개하며 실제 게임 승리 인증과 구분한다.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
