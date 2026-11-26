@@ -15,7 +15,8 @@
       "bytes": 424876,
       "triangles": 2100,
       "bones": 63,
-      "githubBinaryUploaded": false
+      "githubBinaryUploaded": true,
+      "githubPath": "experimental/xpz3d/f11/r36kp/originals/R36KP_F11_MEDIAL_HIP_BLEND_1024_2100TRI.glb"
     },
     {
       "file": "R36KP_F11_MEDIAL_HIP_BLEND_512_2100TRI.glb",
@@ -23,7 +24,8 @@
       "bytes": 309392,
       "triangles": 2100,
       "bones": 63,
-      "githubBinaryUploaded": false
+      "githubBinaryUploaded": true,
+      "githubPath": "experimental/xpz3d/f11/r36kp/originals/R36KP_F11_MEDIAL_HIP_BLEND_512_2100TRI.glb"
     }
   ],
   "geometry": {
@@ -45,5 +47,7 @@
   "donorR36JBHighPolyMerged": false,
   "gameEngineApplied": false,
   "spriteColorAuthority": "Dark brown F11 original sprite and R36HW original color; do not brighten based on ACES PBR preview",
-  "handoffStatus": "GITHUB_TEXT_RECORDS_UPLOADED; BINARY_DELIVERY_PENDING"
+  "handoffStatus": "GITHUB_R36KP_BINARY_AND_TEXTURES_UPLOADED; GAME_ENGINE_INTEGRATION_PENDING",
+  "binaryDeliveryCommit": "af4423f674f23be8fc19755bab9e9f9225668f93",
+  "textureSourceLocation": "experimental/xpz3d/f11/r36kp/originals/"
 }
