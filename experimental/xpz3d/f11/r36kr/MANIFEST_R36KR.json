@@ -1,0 +1,91 @@
+{
+  "version": "R36KR",
+  "created": "2026-11-27",
+  "files": {
+    "output/POSE_SURFACE_REPORT.json": {
+      "bytes": 14386,
+      "sha256": "027e313e0257ea39c85f22c2080af9e694d336ba243f6a0d70afd689b928b073"
+    },
+    "output/R36KR_512_BUILD_REPORT.json": {
+      "bytes": 1657,
+      "sha256": "2f4f57704e14e4084e69c16f1e4230f6c78ea8d5a3bca683064e369af362e0df"
+    },
+    "output/R36KR_F11_POSE_AWARE_HIP_512_2100TRI.glb": {
+      "bytes": 309648,
+      "sha256": "43ed7b3dcdbf3f12c3d1608fbce71888eff99a1efd99924ce49f7c6b4c085198"
+    },
+    "output/R36KR_F11_POSE_AWARE_HIP_1024_2100TRI.glb": {
+      "bytes": 425132,
+      "sha256": "1524a18298659f43f25464b94931a3127bdcde9ae8f70062c4e8877971b2935b"
+    },
+    "output/R36KR_1024_BUILD_REPORT.json": {
+      "bytes": 1659,
+      "sha256": "e012d87d3c6a7292fb77acac291c174b84d94eecfd3530d0f88222ef20afd876"
+    },
+    "preview/R36KR_FRONT.png": {
+      "bytes": 81143,
+      "sha256": "8baad2e968306d8ceeb1fe5a48147e6eae4207a788ebcc2cff4df2ca57bd7d02"
+    },
+    "preview/R36KQ_OBLIQUE.png": {
+      "bytes": 76035,
+      "sha256": "0275fd763b732d9e1bfe4a1a93a9a95d09999f7ff16a1fd9ae7343ddee30860e"
+    },
+    "preview/R36KR_OBLIQUE_HIP.png": {
+      "bytes": 16022,
+      "sha256": "394acaf89dbd22244c0820a9acdacb08ec52b7f319efd41cf60b9101f4fbe07d"
+    },
+    "preview/compare.html": {
+      "bytes": 4575,
+      "sha256": "c4bcca6e2e734765b8c769674c9a21e54e2f68fdb7c280e232c6e5fa4898b054"
+    },
+    "preview/R36KQ_OBLIQUE_HIP.png": {
+      "bytes": 16043,
+      "sha256": "197efd07e6e92d84dd2e2016043783f74e6bfd9276deefe676385ab3ccac7fea"
+    },
+    "preview/R36KQ_FRONT_HIP.png": {
+      "bytes": 16536,
+      "sha256": "40bfe7a5afbf760e9865d52392ba235878207d1fdfc7a8e2c39c369e77a8df79"
+    },
+    "preview/R36KR_FRONT_HIP.png": {
+      "bytes": 16561,
+      "sha256": "cbb99a67a6ab0ed84a2033d75c4cfbb67dd4d264bc88bd95f9c2d6163c5b4334"
+    },
+    "preview/R36KR_OBLIQUE.png": {
+      "bytes": 75944,
+      "sha256": "f4e5544697b4c2fc1a041c4ea4145e24547442173505755ce2e53c6146e00a70"
+    },
+    "preview/R36KQ_FRONT.png": {
+      "bytes": 81127,
+      "sha256": "8eb25933e64af74555823bdbe5cdb6cdf6113cc5b45ddcb2027d9a5e9869d576"
+    },
+    "README_R36KR.md": {
+      "bytes": 3570,
+      "sha256": "26ca6ba50842f4a91f3e9903d7d0f0526ddb762d69829bcfa62add56a9035941"
+    },
+    "build_r36kr.py": {
+      "bytes": 10261,
+      "sha256": "2c9e2858305034fa488145027478c6294ccb36fb33194ce01510ceb44a3eb8ec"
+    },
+    "pose_surface_report.py": {
+      "bytes": 2799,
+      "sha256": "a1f394f2a21c299b69b0bf316247e0400b88dd6356d4008158da17c548ddbf75"
+    },
+    "glb_io_r36kj.py": {
+      "bytes": 14740,
+      "sha256": "5373bd8049a65d1c21102b7be4fccfa24157f374438d98e931ae98a1d454472c"
+    },
+    "compact_gltf.py": {
+      "bytes": 5218,
+      "sha256": "0d3722c8752a7744542a6fd13ac1efd6b93c131f8785316f8eaef7385672e190"
+    },
+    "render_r36kj.py": {
+      "bytes": 7340,
+      "sha256": "8f41f22838155ebeec50aa710e39e8c6f381e16faae2c128c66f70def4b15e1f"
+    },
+    "requirements.txt": {
+      "bytes": 91,
+      "sha256": "cf8ff8c33d97f2f2da36f455e4ba229ba3bc7ef84719d461baf4fbc787ab321d"
+    }
+  },
+  "gameEngineApplied": false
+}
