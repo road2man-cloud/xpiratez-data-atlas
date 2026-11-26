@@ -9,6 +9,7 @@ import {key} from './population-research-career-core.mjs';
 import {digest} from './final-combination-production.mjs';
 import {loadFinancedDetail} from './atlas-financed-career-detail-store.mjs';
 import {createCareerReplay} from './population-chronological-career-core.mjs';
+import {sharedRankData,createSharedRankEvidence} from './population-shared-default-rank.mjs';
 import {financedSoldierSignature} from './atlas-financed-career-calendar.mjs';
 import {hydrateResearchPaths} from '../public/branch-soldier-research-path-codec.js';
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync('public/data/'+f+'.json.gz')));
@@ -40,6 +41,17 @@ for(const target of t.targets){assert.equal(target.stages.at(-1).winCutscene,tar
 const standard=t.targets.filter(r=>r.kind==='FINAL_DESTINATION');assert(standard.every(r=>r.stages.at(-1).id==='STR_CHECKMATE'));
 const a=gz('soldier-population-missing-origin-career'),idx=gz('soldier-population-missing-origin-career-index'),l=ledgers.find(x=>x.key==='missingbirth');
 const rows=new Map(project(l,a,db.sourceMetadataSha256).rows.map(r=>[r.id,r]));
+if(a.summary.defaultRankPolicy){
+ const rankData=sharedRankData(modern,a.summary.defaultRankPolicy);
+ const evidence=createSharedRankEvidence(modern,a.summary.defaultRankPolicy);
+ const ranked=Object.entries(a.routes).filter(([,r])=>r.rankDefault);
+ assert.equal(ranked.length,a.summary.defaultRankRoutes);
+ for(const [id,r] of ranked){
+  const actions=readResearchWitness(idx,rows.get(id),db.sourceMetadataSha256).fullActions;
+  assert.deepEqual(evidence(actions),r.rankDefault);
+  assert(r.rankDefault.promotions.every(p=>rankData.soldiers.find(b=>b.id===p.body)?.raw.rankStrings[p.rank]));
+ }
+}
 let ready=0,advanced=0;
 for(const r of Object.values(a.terminalResearch.records)){
  if(!r.suffixHash)continue;
@@ -250,7 +262,7 @@ if(financed){
  assert.equal(new Set(list.map(r=>r.detailHash)).size,s.detailShards);
  modern.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
  modern.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
- const replay=createCareerReplay(modern),tested=new Set();
+ const replay=createCareerReplay(sharedRankData(modern,a.summary.defaultRankPolicy)),tested=new Set();
  for(const r of list){
   const x=loadFinancedDetail(r),p=codex.prefixes[r.prefixHash];
   assert.equal(codex.records[r.codexId].prefixId,r.prefixHash);assert.equal(rows.get(r.routeId).hash,r.actionHash);
@@ -284,7 +296,7 @@ if(auxiliary){
  assert.equal(list.filter(r=>r.sameSoldierState).length,s.sameSoldierFullReplays);
  assert.equal(list.reduce((n,r)=>n+r.eventGates.filter(g=>g.event==="STR_THE_GREAT_CAUSE"&&g.fundsMet&&g.auxiliaryFacilityMet).length,0),s.greatCauseBothMet);
  assert.equal(new Set(list.map(r=>r.detailHash)).size,s.detailShards);
- const replay=createCareerReplay(modern),tested=new Set();
+ const replay=createCareerReplay(sharedRankData(modern,a.summary.defaultRankPolicy)),tested=new Set();
  for(const r of list){
   const x=loadFinancedDetail(r),p=codex.prefixes[r.prefixHash],f=financed.records[r.financedId];
   assert(f&&f.routeId===r.routeId&&f.prefixHash===r.prefixHash&&f.actionHash===r.actionHash);

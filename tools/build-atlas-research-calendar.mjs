@@ -5,6 +5,7 @@ import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
 import {foundationWorld} from "../public/soldiers/modern/origin-witness.js";
 import {createCareerReplay} from "./population-chronological-career-core.mjs";
+import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {loadSupplyRules} from "./atlas-terminal-supply-core-v2.mjs";
 import {loadEconomyRules} from "./atlas-terminal-economy-core.mjs";
 import {loadEarlyEconomyRules} from "./atlas-early-campaign-economy.mjs";
@@ -18,7 +19,7 @@ const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-re
 const d=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 d.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
 d.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
-const index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index),early=loadEarlyEconomyRules(root,index,economy),eventIndex=loadInitialEventRules(root,a.sourceMetadataSha256),replay=createCareerReplay(d);
+const index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index),early=loadEarlyEconomyRules(root,index,economy),eventIndex=loadInitialEventRules(root,a.sourceMetadataSha256),replay=createCareerReplay(sharedRankData(d,a.summary.defaultRankPolicy));
 assert.equal(index.evidence.fingerprint,c.terminalSupply.sourceFingerprint);
 const l=ledgers.find(x=>x.key==="missingbirth"),rows=new Map(project(l,a,a.sourceMetadataSha256).rows.map(r=>[r.id,r]));
 const producerFingerprint=key(["tools/atlas-research-calendar-core.mjs","tools/build-atlas-research-calendar.mjs"].map(p=>[p,sha(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));

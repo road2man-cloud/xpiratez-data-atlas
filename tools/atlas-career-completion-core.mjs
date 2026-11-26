@@ -43,6 +43,7 @@ export function classifyCandidate({ledger,row,raw,db,index}){
   if(births.length!==1||births[0].profile!==row.origin)throw Error("RECRUITMENT_IDENTITY");
  }catch(e){actions=null;traceError=String(e.message);}
  const assumed=new Set();
+ if(raw.rankDefault?.policy==="OXCE_DEFAULT_RANK_CONDITIONAL_V1"&&raw.rankDefault.exactBuildVerified===false)assumed.add("DEFAULT_RANK_MODEL");
  if(actions)for(const a of actions){
   if(a.type==="externalInputs")assumed.add("EXTERNAL_RESOURCES");
   if(a.type==="conditionalCapGrowth")assumed.add("CAP_GROWTH");

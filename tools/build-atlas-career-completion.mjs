@@ -9,6 +9,7 @@ import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified}
 import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
 import {createCareerReplay} from "./population-chronological-career-core.mjs";
+import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
@@ -102,7 +103,7 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
 if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
  const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
  const ledger=decode("public/data/soldier-population-missing-origin-career.json.gz");
- const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(replayData),prior:prior?.researchTraitSets});
+ const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createCareerReplay(sharedRankData(replayData,ledger.summary.defaultRankPolicy)),prior:prior?.researchTraitSets});
  const lines=admitResearchLines({db,sets,ledger,classifications,prior});
  const lineIds=new Set(lines.rows.map(r=>r.id));
  for(const p of prior?.rows||[])if(p.proofKind===RESEARCH_LINE_PROOF)assert(lineIds.has(p.id),"Previously complete research line lost: "+p.id);
