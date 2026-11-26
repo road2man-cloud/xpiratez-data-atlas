@@ -1,0 +1,653 @@
+{
+  "note": "Synthetic LBS thigh rotations; not S2/S3 engine capture",
+  "runs": [
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005488474241995133,
+      "maxGap": 0.00950549372023392
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005666649957408073,
+      "maxGap": 0.009556162048811483
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005439292002192145,
+      "maxGap": 0.009462066370700581
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005589011918656866,
+      "maxGap": 0.00940239120862564
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005380219920619755,
+      "maxGap": 0.00940935130896307
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0054996986278018295,
+      "maxGap": 0.009245920918990826
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005312046198368372,
+      "maxGap": 0.009348337987064633
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": -8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005399555492329292,
+      "maxGap": 0.009086858671761674
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 0,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005235454478024679,
+      "maxGap": 0.009279661852078918
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 0,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005289284207454607,
+      "maxGap": 0.008925278998945706
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005151003145270456,
+      "maxGap": 0.009203682610557928
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0051694435309824925,
+      "maxGap": 0.008761286230488934
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005059178152628937,
+      "maxGap": 0.009120543968652866
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005040491423398235,
+      "maxGap": 0.00859508220343665
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004960390744778103,
+      "maxGap": 0.009030157034440937
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004902772207621792,
+      "maxGap": 0.008427025155791459
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.00485502425407352,
+      "maxGap": 0.008932270311822586
+    },
+    {
+      "version": "R36KQ",
+      "size": 1024,
+      "spreadDegrees": 32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0047644707798910465,
+      "maxGap": 0.008257731363994885
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.0052198207048595605,
+      "maxGap": 0.008129691793305749
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005388494829168607,
+      "maxGap": 0.008297770028565611
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005065617553055295,
+      "maxGap": 0.007974730371513498
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005208595025135174,
+      "maxGap": 0.008032470808255114
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004911214756658193,
+      "maxGap": 0.007821772988537277
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005023821892501101,
+      "maxGap": 0.007772261354405063
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004757186950389034,
+      "maxGap": 0.007670697924564905
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": -8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004835012820363337,
+      "maxGap": 0.007516876950964503
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 0,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.00460417288570996,
+      "maxGap": 0.007521351931377578
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 0,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004642977076827633,
+      "maxGap": 0.007266207396221787
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004452874333084126,
+      "maxGap": 0.007373549084480248
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004448507841245268,
+      "maxGap": 0.00702034007091506
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004304115946423312,
+      "maxGap": 0.007227131164034223
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0042567268992000995,
+      "maxGap": 0.006779663043131711
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004159543410082391,
+      "maxGap": 0.007081968560336536
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004079903112390899,
+      "maxGap": 0.0065449549082331245
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004020480714063787,
+      "maxGap": 0.006938075934187105
+    },
+    {
+      "version": "R36KR",
+      "size": 1024,
+      "spreadDegrees": 32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.003910488869471243,
+      "maxGap": 0.006317577147995538
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005488474241995133,
+      "maxGap": 0.00950549372023392
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005666649957408073,
+      "maxGap": 0.009556162048811483
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005439292002192145,
+      "maxGap": 0.009462066370700581
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005589011918656866,
+      "maxGap": 0.00940239120862564
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005380219920619755,
+      "maxGap": 0.00940935130896307
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0054996986278018295,
+      "maxGap": 0.009245920918990826
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005312046198368372,
+      "maxGap": 0.009348337987064633
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": -8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005399555492329292,
+      "maxGap": 0.009086858671761674
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 0,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005235454478024679,
+      "maxGap": 0.009279661852078918
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 0,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005289284207454607,
+      "maxGap": 0.008925278998945706
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005151003145270456,
+      "maxGap": 0.009203682610557928
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0051694435309824925,
+      "maxGap": 0.008761286230488934
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005059178152628937,
+      "maxGap": 0.009120543968652866
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005040491423398235,
+      "maxGap": 0.00859508220343665
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004960390744778103,
+      "maxGap": 0.009030157034440937
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004902772207621792,
+      "maxGap": 0.008427025155791459
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.00485502425407352,
+      "maxGap": 0.008932270311822586
+    },
+    {
+      "version": "R36KQ",
+      "size": 512,
+      "spreadDegrees": 32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0047644707798910465,
+      "maxGap": 0.008257731363994885
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.0052198207048595605,
+      "maxGap": 0.008129691793305749
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005388494829168607,
+      "maxGap": 0.008297770028565611
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.005065617553055295,
+      "maxGap": 0.007974730371513498
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005208595025135174,
+      "maxGap": 0.008032470808255114
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004911214756658193,
+      "maxGap": 0.007821772988537277
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.005023821892501101,
+      "maxGap": 0.007772261354405063
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004757186950389034,
+      "maxGap": 0.007670697924564905
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": -8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004835012820363337,
+      "maxGap": 0.007516876950964503
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 0,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.00460417288570996,
+      "maxGap": 0.007521351931377578
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 0,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004642977076827633,
+      "maxGap": 0.007266207396221787
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 8,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004452874333084126,
+      "maxGap": 0.007373549084480248
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 8,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004448507841245268,
+      "maxGap": 0.00702034007091506
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 16,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004304115946423312,
+      "maxGap": 0.007227131164034223
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 16,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.0042567268992000995,
+      "maxGap": 0.006779663043131711
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 24,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004159543410082391,
+      "maxGap": 0.007081968560336536
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 24,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.004079903112390899,
+      "maxGap": 0.0065449549082331245
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 32,
+      "primitive": 10,
+      "n": 6,
+      "meanGap": 0.004020480714063787,
+      "maxGap": 0.006938075934187105
+    },
+    {
+      "version": "R36KR",
+      "size": 512,
+      "spreadDegrees": 32,
+      "primitive": 11,
+      "n": 6,
+      "meanGap": 0.003910488869471243,
+      "maxGap": 0.006317577147995538
+    }
+  ]
+}

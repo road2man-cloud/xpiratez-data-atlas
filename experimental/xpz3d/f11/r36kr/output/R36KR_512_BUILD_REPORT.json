@@ -1,0 +1,68 @@
+{
+  "version": "R36KR",
+  "source": "R36KQ_F11_HIP_TRANSITION_512_2100TRI.glb",
+  "sourceSha256": "bd67abee6c0220c6767b9af6071ebba612870f886bcf869973af574e4440f41f",
+  "output": "R36KR_F11_POSE_AWARE_HIP_512_2100TRI.glb",
+  "sha256": "43ed7b3dcdbf3f12c3d1608fbce71888eff99a1efd99924ce49f7c6b4c085198",
+  "bytes": 309648,
+  "triangles": 2100,
+  "bones": 63,
+  "changes": [
+    {
+      "primitive": 10,
+      "anchorVertices": 6,
+      "changedPositions": 8,
+      "changedWeights": 12,
+      "meanGapBefore": 0.005235457133462358,
+      "meanGapAfter": 0.004604172762361859,
+      "maxMove": 0.001758304813375344,
+      "anchorIndices": [
+        42,
+        43,
+        44,
+        46,
+        47,
+        48
+      ]
+    },
+    {
+      "primitive": 11,
+      "anchorVertices": 6,
+      "changedPositions": 8,
+      "changedWeights": 12,
+      "meanGapBefore": 0.005289284576299912,
+      "meanGapAfter": 0.004642978692224996,
+      "maxMove": 0.0016590790287381875,
+      "anchorIndices": [
+        41,
+        42,
+        43,
+        47,
+        48,
+        49
+      ]
+    }
+  ],
+  "compaction": {
+    "oldBinaryBytes": 284520,
+    "newBinaryBytes": 271848,
+    "materialCountBefore": 10,
+    "materialCountAfter": 10,
+    "imagesBefore": 5,
+    "imagesAfter": 5,
+    "accessorsBefore": 92,
+    "accessorsAfter": 82,
+    "bufferViewsBefore": 97,
+    "bufferViewsAfter": 87,
+    "texturesBefore": 5,
+    "texturesAfter": 5
+  },
+  "geometryRestOnly": true,
+  "gameEngineApplied": false,
+  "textureDesign": "unchanged from R36KQ/R36KP",
+  "incomplete": [
+    "not a topology weld",
+    "in-engine capture pending",
+    "dynamic pose comparison pending"
+  ]
+}
