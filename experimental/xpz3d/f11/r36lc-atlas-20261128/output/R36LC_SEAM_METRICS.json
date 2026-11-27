@@ -1,0 +1,50 @@
+{
+  "format": "R36LC_SEAM_METRICS_V1",
+  "baseline": "R36LB",
+  "candidate": "R36LC",
+  "sharedEdges": 1698,
+  "before": {
+    "color": {
+      "samples": 10188,
+      "meanRgb8": 0.0885,
+      "p95Rgb8": 0.34,
+      "p99Rgb8": 0.6664,
+      "over10": 0
+    },
+    "orm": {
+      "samples": 10188,
+      "meanRgb8": 0.0253,
+      "p95Rgb8": 0.18,
+      "p99Rgb8": 0.3333,
+      "over10": 0
+    }
+  },
+  "after": {
+    "color": {
+      "samples": 10188,
+      "meanRgb8": 0.0491,
+      "p95Rgb8": 0.2133,
+      "p99Rgb8": 0.3333,
+      "over10": 0
+    },
+    "orm": {
+      "samples": 10188,
+      "meanRgb8": 0.0221,
+      "p95Rgb8": 0.1601,
+      "p99Rgb8": 0.1667,
+      "over10": 0
+    }
+  },
+  "meanColorRelativeReduction": 44.52,
+  "meanOrmRelativeReduction": 12.65,
+  "budget": {
+    "head": 968,
+    "body": 1132,
+    "total": 2100,
+    "limit": 2100
+  },
+  "bones": 63,
+  "referenceFit": "unverified; no metric 3D ground truth",
+  "engineApplied": false
+}
+
