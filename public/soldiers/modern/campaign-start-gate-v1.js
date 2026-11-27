@@ -1,6 +1,7 @@
 // Campaign-start gate. Legacy hypothetical witnesses remain unchanged.
 import {foundationWorld,applyOriginWitnessStep} from './origin-witness.js';
-import {researchStep} from './event-chronology.js';
+import {researchStep,eventScriptVerdict} from './event-chronology.js';
+import {START_EVENT_RULES} from './campaign-start-event-rules-v1.js';
 export const START_RESEARCH=Object.freeze({
  STR_JACKSTOWN_SCOUTING:3,STR_WAT_DO:3,STR_RECRUIT_PEASANTS:3,STR_INSPECT_MACHINERY:6
 });
@@ -38,6 +39,29 @@ export function campaignStartWorld(data,snapshot){
  if(!same(actual,Object.keys(START_RESEARCH)))throw Error('start-menu-mismatch:'+JSON.stringify(actual));
  return world;
 }
+// Both the planner and replay use this identical transactional action.
+export function applyCampaignStartStep(input,step,data){
+ if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
+ if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
+ const e=START_EVENT_RULES[step.event];
+ if(step.type!=='eventResearch'||!e)return applyOriginWitnessStep(input,step,data);
+ try{
+  if(step.research!==e.research||step.assumeOutcome!==true)throw Error('event-outcome-not-explicit');
+  if(input.generatedEvents?.[step.event])throw Error('repeat-event-not-modeled');
+  const script=e.scripts.find(s=>s.script===step.script);
+  if(!script)throw Error('event-script-not-indexed');
+  const verdict=eventScriptVerdict({...script,eventId:step.event},input,{mode:'current'});
+  if(verdict.blocked.length||verdict.unknown.length)throw Error([...verdict.blocked,...verdict.unknown].join('; '));
+  // Existing event verifier must see the pre-event inventory. Reward-dependent\n  // automatic research ordering remains unresolved and never certified.\n  const result=applyOriginWitnessStep(input,step,data);
+  if(!result.ok)throw Error(result.reason);
+  // Existing verifier does not apply event inventory. Do not rerun a grant
+  // or allow newly received items to satisfy that event's own trigger.
+  for(const [id,n] of Object.entries(e.items))result.world.items[id]=(result.world.items[id]||0)+n;
+  if(Number.isFinite(result.world.score))result.world.score+=e.points;
+  result.world.funds+=e.funds;
+  return {...result,assumed:true,notes:[...(result.notes||[]),'fixed-event-bundle:'+step.event,'event-clock-and-reward-order-unverified']};
+ }catch(err){return {ok:false,world:input,reason:err.message};}
+}
 export function replayCampaignStart(steps,data,snapshot){
  let world;const trace=[];
  const fail=(status,reason,failedAt)=>({ok:false,status,reason,failedAt,trace,world,gameCertified:false});
@@ -55,7 +79,7 @@ export function replayCampaignStart(steps,data,snapshot){
    if(!v.ok)return fail('research-order-error',v.reason,index);
   }
   const before=world;
-  const result=applyOriginWitnessStep(world,step,data);
+  const result=applyCampaignStartStep(world,step,data);
   if(!result.ok)return fail('repair-pending',result.reason,index);
   world=result.world;
   if(result.assumed)assumptions.push('conditional-action:'+index);
