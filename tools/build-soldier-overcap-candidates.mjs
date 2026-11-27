@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {makeOverCapReport} from '../public/branch-soldier-overcap-candidates.js';
+const source=process.argv[2]||'public/data/soldiers-modern-index.json.gz';
+const target=process.argv[3]||'public/data/soldier-overcap-training-candidates.json';
+const bytes=readFileSync(source),data=JSON.parse((source.endsWith('.gz')?gunzipSync(bytes):bytes).toString('utf8'));
+if(data.meta?.mod?.version!=='v.o2')throw Error('Wrong game version');
+const report=makeOverCapReport(data,process.argv[4]||null);
+writeFileSync(target,JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify(report.summary));
