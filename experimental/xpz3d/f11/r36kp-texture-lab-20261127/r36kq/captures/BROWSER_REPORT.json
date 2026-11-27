@@ -1,0 +1,66 @@
+{
+  "url": "http://127.0.0.1:9400/r36kq/preview/index.html",
+  "ready": {
+    "ready": true,
+    "status": {
+      "original": "2098 triangles",
+      "high": "20610 triangles",
+      "detail": "2088 triangles",
+      "low": "2088 triangles",
+      "legacy": "2088 triangles"
+    },
+    "ui": "F11 · R36KO 2100 | 고밀도 → 텍스처 베이크 비교"
+  },
+  "end": {
+    "loaded": {
+      "original": "2098 triangles",
+      "high": "20610 triangles",
+      "detail": "2088 triangles",
+      "low": "2088 triangles",
+      "legacy": "2088 triangles"
+    },
+    "triangles": {
+      "original": 2098,
+      "high": 20610,
+      "detail": 2088,
+      "low": 2088,
+      "legacy": 2088
+    },
+    "gpu": "21,996 △ / 14 calls",
+    "glError": 0,
+    "mode": "low"
+  },
+  "exceptions": [],
+  "files": [
+    {
+      "name": "R36KQ_BALANCED_FRONT.png",
+      "bytes": 225597,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KQ_BALANCED_PELVIS.png",
+      "bytes": 356502,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KQ_DETAIL_PELVIS.png",
+      "bytes": 389916,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KQ_R36KP_PELVIS.png",
+      "bytes": 413886,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KQ_SPLIT_PREVIOUS.png",
+      "bytes": 611691,
+      "render": "4,176 △ / 12 calls"
+    },
+    {
+      "name": "R36KQ_SPLIT_HIGH.png",
+      "bytes": 313338,
+      "render": "21,996 △ / 14 calls"
+    }
+  ]
+}

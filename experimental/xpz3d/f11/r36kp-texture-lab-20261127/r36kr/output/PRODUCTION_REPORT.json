@@ -1,0 +1,66 @@
+{
+  "version": "R36KR",
+  "sourceLow": "eeb7b9a817ecb87b0ab9a03dec0cf6f161b0d7d3359e6574f0fb7501c8980f68",
+  "sourceDonor": "f6b53320cc9eb43f870957a8d3db6b067a18aaa3a3feb2a85463cfc3e36c041d",
+  "glb": "r36kq-production-20261127\\r36kr_detail_v1\\R36KR_F11_HIGH_POLY_DETAIL_2088TRI.glb",
+  "sizeBytes": 2698208,
+  "sha256": "816aba5a40541a2c496dac47af04a67252857302f53002829fbe1cd8f11e9e94",
+  "triangleBudget": 2100,
+  "activeTriangles": 2088,
+  "centralOverlayTriangles": 0,
+  "centerDepthModel": "2.5D forward height sampled from 6,044 source triangles",
+  "sourceMaterial": [
+    0.7,
+    0.47,
+    0.36
+  ],
+  "grid": {
+    "bodyRaster": {
+      "faceCount": 3084,
+      "pixelTests": 796065,
+      "pixelSets": 87756
+    },
+    "coreRaster": {
+      "faceCount": 6044,
+      "pixelTests": 355047,
+      "pixelSets": 14369
+    },
+    "valid": 10180,
+    "raised": 3174,
+    "coverageFraction": 0.0994140625,
+    "peakHeight": 0.041999999433755875
+  },
+  "affectedPixels": 31008,
+  "positiveHeight": 30343,
+  "sourcePixels": 34371,
+  "candidatePixels": 484033,
+  "weightedMask": 24829.452592907168,
+  "pigmentSample": 0,
+  "textureFiles": {
+    "body_color": {
+      "bytes": 264262,
+      "sha256": "51077ef519075642b587efbd60ced9c43a18bbefa01a26d93fcbc161a6743c49"
+    },
+    "body_normal": {
+      "bytes": 1706443,
+      "sha256": "950dca6824f6d9a3c33451c611123e8274e87cb978db864da0d2175cf5b1f5cd"
+    },
+    "body_orm": {
+      "bytes": 190090,
+      "sha256": "b56ba6f76f61135ea28bc841d7dc27409782398d7c40160d81b49f7ac292e035"
+    },
+    "body_emissive": {
+      "bytes": 64335,
+      "sha256": "f145d9eec536f7bf6b530aec598e37f88c70fac87dd356b9284684f29bdc768e"
+    },
+    "source_height": {
+      "bytes": 97509,
+      "sha256": "56bcbe1fe35ec09774129dc4647699ca89aa80ffac920ed7e0ad3ff6425c5f0a"
+    },
+    "source_mask": {
+      "bytes": 65208,
+      "sha256": "96c2df90a6746089a1a540e8cf3c90d04be32611a361243f5283d16648bcf43b"
+    }
+  },
+  "note": "Transparent/hidden source features are not fully representable by texture; use R36KP fallback for native engine testing."
+}

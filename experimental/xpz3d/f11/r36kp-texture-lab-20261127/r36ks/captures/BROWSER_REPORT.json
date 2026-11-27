@@ -1,0 +1,66 @@
+{
+  "url": "http://127.0.0.1:9400/r36ks/preview/index.html",
+  "ready": {
+    "ready": true,
+    "status": {
+      "original": "2098 triangles",
+      "high": "20610 triangles",
+      "low": "2088 triangles",
+      "detail": "2088 triangles",
+      "legacy": "2088 triangles"
+    },
+    "ui": "F11 · R36KS 형상·텍스처 개선 | 2,088△"
+  },
+  "end": {
+    "loaded": {
+      "original": "2098 triangles",
+      "high": "20610 triangles",
+      "low": "2088 triangles",
+      "detail": "2088 triangles",
+      "legacy": "2088 triangles"
+    },
+    "triangles": {
+      "original": 2098,
+      "high": 20610,
+      "low": 2088,
+      "detail": 2088,
+      "legacy": 2088
+    },
+    "gpu": "21,996 △ / 14 calls",
+    "glError": 0,
+    "mode": "low"
+  },
+  "exceptions": [],
+  "files": [
+    {
+      "name": "R36KS_BALANCED_FRONT.png",
+      "bytes": 250182,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KS_BALANCED_PELVIS.png",
+      "bytes": 383108,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KS_DETAIL_PELVIS.png",
+      "bytes": 383266,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KS_R36KP_PELVIS.png",
+      "bytes": 382322,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KS_SPLIT_PREVIOUS.png",
+      "bytes": 474208,
+      "render": "4,176 △ / 12 calls"
+    },
+    {
+      "name": "R36KS_SPLIT_HIGH.png",
+      "bytes": 339342,
+      "render": "21,996 △ / 14 calls"
+    }
+  ]
+}

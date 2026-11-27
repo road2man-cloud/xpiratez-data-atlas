@@ -1,0 +1,66 @@
+{
+  "url": "http://127.0.0.1:9400/r36kt/preview/index.html",
+  "ready": {
+    "ready": true,
+    "status": {
+      "original": "2098 triangles",
+      "high": "20610 triangles",
+      "low": "2088 triangles",
+      "detail": "2088 triangles",
+      "legacy": "2088 triangles"
+    },
+    "ui": "F11 · R36KT 색상·노멀 텍스처 강화 | 2,088△"
+  },
+  "end": {
+    "loaded": {
+      "original": "2098 triangles",
+      "high": "20610 triangles",
+      "low": "2088 triangles",
+      "detail": "2088 triangles",
+      "legacy": "2088 triangles"
+    },
+    "triangles": {
+      "original": 2098,
+      "high": 20610,
+      "low": 2088,
+      "detail": 2088,
+      "legacy": 2088
+    },
+    "gpu": "21,996 △ / 14 calls",
+    "glError": 0,
+    "mode": "low"
+  },
+  "exceptions": [],
+  "files": [
+    {
+      "name": "R36KT_BALANCED_FRONT.png",
+      "bytes": 273464,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KT_BALANCED_PELVIS.png",
+      "bytes": 385964,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KT_DETAIL_PELVIS.png",
+      "bytes": 385013,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KT_R36KP_PELVIS.png",
+      "bytes": 383293,
+      "render": "2,088 △ / 6 calls"
+    },
+    {
+      "name": "R36KT_SPLIT_PREVIOUS.png",
+      "bytes": 400934,
+      "render": "4,176 △ / 12 calls"
+    },
+    {
+      "name": "R36KT_SPLIT_HIGH.png",
+      "bytes": 361725,
+      "render": "21,996 △ / 14 calls"
+    }
+  ]
+}

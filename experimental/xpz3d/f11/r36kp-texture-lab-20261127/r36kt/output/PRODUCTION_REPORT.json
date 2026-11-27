@@ -1,0 +1,50 @@
+{
+  "version": "R36KT",
+  "actualTriangles": 2088,
+  "donorSourceMaterial": true,
+  "nominalPolygonBudget": 2100,
+  "natural": {
+    "file": "r36kq-production-20261127\\r36kt_output_v2\\R36KT_F11_SOURCE_SKIN_2088TRI.glb",
+    "sha256": "e3af78f2a42049b5d2b6bd8b3501e212471609a8ae8595c41df9453f6411ebc0",
+    "bytes": 3353776,
+    "changedPixels": 400084,
+    "meanInfluence": 0.560158143717133,
+    "linear": [
+      0.7,
+      0.47,
+      0.36
+    ],
+    "srgb": [
+      218,
+      182,
+      162
+    ],
+    "params": {
+      "spread": 0.85,
+      "pigment": 0.82,
+      "light": 0.92
+    }
+  },
+  "softer": {
+    "file": "r36kq-production-20261127\\r36kt_output_v2\\R36KT_F11_SOFT_SKIN_2088TRI.glb",
+    "sha256": "170aeb8d6a12de716899c20d5a7ed720d24c48d6184f12eb859a9061eead60cf",
+    "bytes": 3194896,
+    "changedPixels": 393552,
+    "meanInfluence": 0.35578881188960126,
+    "linear": [
+      0.7,
+      0.47,
+      0.36
+    ],
+    "srgb": [
+      218,
+      182,
+      162
+    ],
+    "params": {
+      "spread": 0.5,
+      "pigment": 0.6,
+      "light": 0.64
+    }
+  }
+}

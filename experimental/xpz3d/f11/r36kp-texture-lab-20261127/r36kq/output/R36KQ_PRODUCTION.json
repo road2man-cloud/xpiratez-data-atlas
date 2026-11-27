@@ -1,0 +1,106 @@
+{
+  "version": "R36KQ",
+  "triangleBudget": 2100,
+  "actualTriangles": 2088,
+  "source": "R36KP_2088_ATTACHED_FINAL.glb",
+  "balanced": {
+    "file": "r36kq-production-20261127\\output-v2\\R36KQ_F11_BALANCED_NORMAL_2088TRI.glb",
+    "output": {
+      "sha256": "eeb7b9a817ecb87b0ab9a03dec0cf6f161b0d7d3359e6574f0fb7501c8980f68",
+      "bytes": 2419160
+    },
+    "sourceSha256": "3e1308b2903d75dbb2c2d93ffe117c91bfe86c10391a3da5efa5cfa58cb1fa85",
+    "params": {
+      "meanFactor": 0.12,
+      "detailFactor": 0.55,
+      "maxSlope": 0.44
+    },
+    "metrics": {
+      "triangles": 1120,
+      "cols": 34,
+      "tile": 60,
+      "pad": 3,
+      "movedPixels": 4032000,
+      "meanSlopeBefore": 0.11792419988744363,
+      "meanSlopeAfter": 0.014292197981097291,
+      "highTileMean": 1,
+      "topFive": [
+        {
+          "tri": 403,
+          "originalMeanSlope": 0.60134,
+          "rebasedMeanSlope": 0.07216
+        },
+        {
+          "tri": 99,
+          "originalMeanSlope": 0.58552,
+          "rebasedMeanSlope": 0.07026
+        },
+        {
+          "tri": 1090,
+          "originalMeanSlope": 0.54412,
+          "rebasedMeanSlope": 0.06529
+        },
+        {
+          "tri": 904,
+          "originalMeanSlope": 0.52878,
+          "rebasedMeanSlope": 0.06638
+        },
+        {
+          "tri": 643,
+          "originalMeanSlope": 0.50959,
+          "rebasedMeanSlope": 0.06115
+        }
+      ]
+    }
+  },
+  "detailed": {
+    "file": "r36kq-production-20261127\\output-v2\\R36KQ_F11_DETAIL_NORMAL_2088TRI.glb",
+    "output": {
+      "sha256": "255b0eb02655f366b07b680564fd5663d37667c697879e2e55423abba53c9a5e",
+      "bytes": 2912740
+    },
+    "sourceSha256": "3e1308b2903d75dbb2c2d93ffe117c91bfe86c10391a3da5efa5cfa58cb1fa85",
+    "params": {
+      "meanFactor": 0.22,
+      "detailFactor": 0.83,
+      "maxSlope": 0.62
+    },
+    "metrics": {
+      "triangles": 1120,
+      "cols": 34,
+      "tile": 60,
+      "pad": 3,
+      "movedPixels": 4032000,
+      "meanSlopeBefore": 0.11792419988744363,
+      "meanSlopeAfter": 0.02616938591655051,
+      "highTileMean": 1,
+      "topFive": [
+        {
+          "tri": 403,
+          "originalMeanSlope": 0.60134,
+          "rebasedMeanSlope": 0.1323
+        },
+        {
+          "tri": 99,
+          "originalMeanSlope": 0.58552,
+          "rebasedMeanSlope": 0.12882
+        },
+        {
+          "tri": 1090,
+          "originalMeanSlope": 0.54412,
+          "rebasedMeanSlope": 0.11971
+        },
+        {
+          "tri": 904,
+          "originalMeanSlope": 0.52878,
+          "rebasedMeanSlope": 0.12095
+        },
+        {
+          "tri": 643,
+          "originalMeanSlope": 0.50959,
+          "rebasedMeanSlope": 0.11211
+        }
+      ]
+    }
+  }
+}
