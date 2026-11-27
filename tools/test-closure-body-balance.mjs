@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {balanceClosureGraphs as pick} from './atlas-closure-body-balance.mjs';
+const c=(graph,body,priority)=>({graph,body,priority});
+const compare=(a,b)=>a.priority-b.priority||a.graph.localeCompare(b.graph);
+const data=[c('a','W',1),c('b','W',2),c('c','H',8),c('d','H',9),c('z','OTHER',0)];
+const select=(xs,bodies,limit)=>pick(xs,{bodies,limit,compare}).map(x=>x.graph);
+assert.deepEqual(select(data,['W','H'],2),['a','c']);
+assert.deepEqual(select(data,['H','W'],1),['c']);
+assert.deepEqual(select(data,['W','H'],3),['a','c','b']);
+assert.deepEqual(select([...data,c('a','H',7)],['W','H'],2),['a','b']);
+assert.deepEqual(select(data,['NONE','H','H'],2),['c','d']);
+assert.deepEqual(select([],['W'],2),[]);
+console.log('6 graph-balance cases passed');
