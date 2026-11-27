@@ -30,3 +30,20 @@ node experimental/xpz3d/f11/r36ld-character-compare-20261128/serve.cjs
 - 이번 작업에서 새 HTML 뷰어/실행기·안내문 생산 및 GitHub 게시.
 - R36LA/LC 기존 3D 모델 파일 및 텍스처는 덮어쓰지 않음.
 - 실제 크롬 WebGL 렌더와 35° 비교 캡처는 추가 실행 검증 필요.
+
+
+## 2026-11-28 UI 개선 (commit 02cf4ca)
+- 기본 카메라가 `currentView=whole`이므로 **R36LC 전체 노출광 캐릭터**부터 표시한다. 확대 카메라 전환은 이전대로 유지한다.
+- 모델 로딩 로그에 실제 삼각형 수/스킨 메시/전체 메시 개수를 표시한다.
+- 정점 위치 평균 0.0000732 모델 단위, 법선 평균 방향 변화 0.078°, UV 변화 0의 **실제 GLB 비교 측정값**을 화면에 표시한다. 이 수치는 전신 형태의 안정성 참조이며 렌더링 개선률이 아니다.
+- 브라우저의 SHA-256 검증을 사용할 수 없는 환경에서는 R36LC GLB 조각을 로드하지 않는다. `localhost` 또는 HTTPS에서 실행한다.
+- 0°/18°/35° 포즈 및 모델 비교 조작은 기존 R36LA 뷰어를 계승한다.
+- 실제 WebGL 렌더 결과를 이 커밋에서 새로 제작했다는 뜻은 아니다.
+
+### 화면 표시용 주소와 실행 방식
+GitHub 소스: `experimental/xpz3d/f11/r36ld-character-compare-20261128/preview/index.html`
+
+리포지터리 전체를 로컬에 체크아웃한 후 `OPEN_R36LD.cmd` 또는 `node experimental/xpz3d/f11/r36ld-character-compare-20261128/serve.cjs`로 실행한다.
+접속 URL: `http://127.0.0.1:9406/experimental/xpz3d/f11/r36ld-character-compare-20261128/preview/index.html`
+
+GitHub Pages 배포는 별도 설정에 따라 달라질 수 있으므로 실시간 URL의 가동 상태를 확인하기 전까지 배포 완료로 표시하지 않는다.
