@@ -1,0 +1,86 @@
+{
+  "version": "R36KW",
+  "glb": {
+    "file": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\r36kw_designed_2048_build\\R36KW_2088_DESIGNED_ART.glb",
+    "bytes": 3681008,
+    "sha": "92053f23383772f290d15f5267d9cc64386ad14430a85b7b3a2488bdf7e8c059"
+  },
+  "budget": {
+    "head": 968,
+    "body": 1120,
+    "total": 2088,
+    "limit": 2100
+  },
+  "topology": {
+    "method": "posterior-superior-embedded-continuous-surface",
+    "before": 880,
+    "after": 1120,
+    "extraTriangles": 240,
+    "edgeSplits": 120,
+    "splitAllocation": {
+      "floor": 120,
+      "transition": 0,
+      "upper": 0
+    },
+    "boundaryEdges": 0,
+    "nonmanifoldEdges": 0,
+    "watertight": true,
+    "vertices": 562,
+    "posterior": 0.02,
+    "superior": 0.026,
+    "reliefMax": 0.008,
+    "reliefVertexCount": 29,
+    "minAppliedRelief": 0.00013268134042207735,
+    "maxAppliedRelief": 0.008,
+    "avgAppliedRelief": 0.006367766837213981,
+    "minArea": 0.000016535841478499172,
+    "limitation": "Topology continuous; not an exact reconstruction of the full 6044-triangle internal anatomy"
+  },
+  "atlas": 2048,
+  "bakeStats": {
+    "mesh": "body",
+    "triangles": 1120,
+    "atlasPixels": 2048,
+    "grid": 34,
+    "tile": 60,
+    "pad": 3,
+    "elapsedMs": 45073,
+    "sourceBVH": {
+      "triangles": 12896,
+      "queries": 1663200,
+      "tests": 27077558
+    },
+    "artReport": {
+      "artStyle": "R36HW-DESIGNED-INK-EDGES",
+      "sourceBodyTriangles": 12896,
+      "sourceCoreTriangles": 6044,
+      "artPixels": 1663200,
+      "corePixels": 449810,
+      "designedInkPixels": 143123,
+      "highlightPixels": 326626,
+      "structuralPixels": 453043,
+      "uniquePaletteCells": 74,
+      "channelMean": [
+        0.700871064235774,
+        0.5567311320078514,
+        0.4073900785231395
+      ],
+      "channelStd": [
+        0.0249657162615831,
+        0.024551400620148742,
+        0.02531577349873033
+      ]
+    },
+    "paths": {
+      "color": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\r36kw_designed_2048_build\\textures\\body_color_2048.png",
+      "normal": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\r36kw_designed_2048_build\\textures\\body_normal_2048.png",
+      "orm": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\r36kw_designed_2048_build\\textures\\body_orm_2048.png",
+      "relief": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\r36kw_designed_2048_build\\textures\\body_relief_2048.png"
+    }
+  },
+  "sourceSHA256": {
+    "head": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+    "donor": "f6b53320cc9eb43f870957a8d3db6b067a18aaa3a3feb2a85463cfc3e36c041d"
+  },
+  "engineApplied": false
+}

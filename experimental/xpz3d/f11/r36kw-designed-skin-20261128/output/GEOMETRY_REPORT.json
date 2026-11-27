@@ -1,0 +1,37 @@
+{
+  "budget": {
+    "head": 968,
+    "body": 1120,
+    "total": 2088,
+    "limit": 2100
+  },
+  "body": {
+    "method": "posterior-superior-embedded-continuous-surface",
+    "before": 880,
+    "after": 1120,
+    "extraTriangles": 240,
+    "edgeSplits": 120,
+    "splitAllocation": {
+      "floor": 120,
+      "transition": 0,
+      "upper": 0
+    },
+    "boundaryEdges": 0,
+    "nonmanifoldEdges": 0,
+    "watertight": true,
+    "vertices": 562,
+    "posterior": 0.02,
+    "superior": 0.026,
+    "reliefMax": 0.008,
+    "reliefVertexCount": 29,
+    "minAppliedRelief": 0.00013268134042207735,
+    "maxAppliedRelief": 0.008,
+    "avgAppliedRelief": 0.006367766837213981,
+    "minArea": 0.000016535841478499172,
+    "limitation": "Topology continuous; not an exact reconstruction of the full 6044-triangle internal anatomy"
+  },
+  "sources": {
+    "head": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+    "donor": "f6b53320cc9eb43f870957a8d3db6b067a18aaa3a3feb2a85463cfc3e36c041d"
+  }
+}
