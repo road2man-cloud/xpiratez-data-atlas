@@ -1,0 +1,103 @@
+{
+  "triangles": 2100,
+  "bones": 63,
+  "verticesBefore": 4707,
+  "verticesAfter": 1837,
+  "vertexReductionPercent": 60.973018908009344,
+  "geometryAttributeAndIndexBytesBefore": 363980,
+  "geometryAttributeAndIndexBytesAfter": 145252,
+  "sourceGLBBytes": 737076,
+  "bytes": 527200,
+  "sha256": "661e63962e9c0597188083f043ff1e303c2f2f6e6abd2fef4b547dde38b68548",
+  "unchangedImageIndices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    7,
+    8
+  ],
+  "originalCornerAttributesPreserved": true,
+  "allMaterialsUnchanged": true,
+  "engineApplied": false,
+  "highPolyRecoveryClaimed": false,
+  "version": "R36KV",
+  "output": "R36KV_F11_SHARED_UV_512_2100TRI.glb",
+  "sourceSha256": "84496d92a60e0d7dba46639c3d1b6c9dc53a0f2086257c6d4a20e27953f39110",
+  "atlas": {
+    "atlasCount": 1,
+    "charts": 116,
+    "packedWidth": 629,
+    "packedHeight": 627,
+    "paddingRequested": 4,
+    "targetResolution": 512,
+    "xatlas": "0.0.11"
+  },
+  "bake": {
+    "parts": [
+      {
+        "primitive": 0,
+        "sourceVertices": 352,
+        "outputVertices": 593,
+        "triangles": 644,
+        "charts": 41,
+        "coveredTexels": 83209,
+        "subpixelFaces": 0,
+        "degenerateUVFaces": 0,
+        "chartFootprintMin": 0.0029078922985813363,
+        "chartFootprintMax": 0.0036131498202841934
+      },
+      {
+        "primitive": 2,
+        "sourceVertices": 28,
+        "outputVertices": 68,
+        "triangles": 48,
+        "charts": 12,
+        "coveredTexels": 38077,
+        "subpixelFaces": 0,
+        "degenerateUVFaces": 0,
+        "chartFootprintMin": 0.0029155156857537494,
+        "chartFootprintMax": 0.0034794223785509044
+      },
+      {
+        "primitive": 4,
+        "sourceVertices": 230,
+        "outputVertices": 504,
+        "triangles": 428,
+        "charts": 63,
+        "coveredTexels": 429081,
+        "subpixelFaces": 0,
+        "degenerateUVFaces": 0,
+        "chartFootprintMin": 0.002632528553880457,
+        "chartFootprintMax": 0.003295025562381693
+      }
+    ],
+    "coverageFraction": 0.5414619445800781,
+    "sampledTexels": 550367,
+    "supersampling": 2,
+    "sharedEdgeOrOverlapTexels": 0,
+    "maxNormalAngleDegrees": 2.750596666289301,
+    "meanNormalAngleDegrees": 0.7715457197310199
+  },
+  "hair": {
+    "beforeVertices": 882,
+    "afterVertices": 207,
+    "degenerateUVFaces": 14,
+    "existingNormalAndMRImagesUnchanged": true
+  },
+  "compaction": {
+    "oldBinaryBytes": 921044,
+    "newBinaryBytes": 485624,
+    "materialCountBefore": 10,
+    "materialCountAfter": 10,
+    "imagesBefore": 9,
+    "imagesAfter": 9,
+    "accessorsBefore": 122,
+    "accessorsAfter": 89,
+    "bufferViewsBefore": 133,
+    "bufferViewsAfter": 98,
+    "texturesBefore": 9,
+    "texturesAfter": 9
+  }
+}

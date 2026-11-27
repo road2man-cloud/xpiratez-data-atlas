@@ -1,0 +1,150 @@
+{
+  "version": "R36KU",
+  "sourceCommit": "7352b2396b974939f4e9d9193bbd05d4839c6b4a",
+  "engineApplied": false,
+  "highPolyRecoveryClaimed": false,
+  "environment": {
+    "numpy": "1.26.4",
+    "scipy": "1.17.0",
+    "Pillow": "12.2.0",
+    "playwright": "1.62.0"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 6307,
+      "sha256": "fac33f152ab17b74d6cda80d7fab9551e612c4e42deeab0ff7056c78d473dcc4"
+    },
+    "requirements.txt": {
+      "bytes": 30,
+      "sha256": "426f9033745c6727a97255f9d18f8a31bf1d7ec94043a3b1e4f8e5d29409c3e7"
+    },
+    "prepare_r36ku.py": {
+      "bytes": 2659,
+      "sha256": "6ea13e920f7b40073b317df46476c825cd15880b42808be38824874ae8cc9590"
+    },
+    "build_r36ku.py": {
+      "bytes": 13197,
+      "sha256": "dd01ade69d9417a0d264bd91437f6d970a5ac052da7e09242483ef3cf099dafb"
+    },
+    "viewer_r36ku.js": {
+      "bytes": 5731,
+      "sha256": "6011baa26a6e629ca7bb0d46b4bc7ffdb826a504c1feddc29a62b56a73eb0823"
+    },
+    "build_preview.py": {
+      "bytes": 4682,
+      "sha256": "44f7960819abf6fa3a3f1b46f879c3ecb1381b0268367f9f8ae48a7c7b3fa445"
+    },
+    "review_r36ku.py": {
+      "bytes": 2208,
+      "sha256": "ddd03af6b94e3f28d5191dc46fb4f353bc929f93128a50b6361bfdabdf68aa1f"
+    },
+    "validate_glb.cjs": {
+      "bytes": 593,
+      "sha256": "88713fc0d196c718d95940157827027d308b575d0f234eacc53e65910c91221b"
+    },
+    "publish_r36ku.py": {
+      "bytes": 5698,
+      "sha256": "832ae87f1ad321c1246415357de30bb3c1265f56686e141507f7963f8f0e78e0"
+    },
+    "source/glb_io_r36kj.py": {
+      "bytes": 14740,
+      "sha256": "5373bd8049a65d1c21102b7be4fccfa24157f374438d98e931ae98a1d454472c"
+    },
+    "source/compact_gltf.py": {
+      "bytes": 5218,
+      "sha256": "0d3722c8752a7744542a6fd13ac1efd6b93c131f8785316f8eaef7385672e190"
+    },
+    "source/MANIFEST_R36KS.json": {
+      "bytes": 4145,
+      "sha256": "a8e84cb44b7519d9a3c909dfb551ac6178567534f1e78117fc5a647be819fe9a"
+    },
+    "source/output/R36KS_F11_MULTI_POSE_HIP_1024_2100TRI.glb": {
+      "bytes": 425120,
+      "sha256": "ea8d7caeb39bb69f564300fcf43e747978504deafee2537feaff0cb778943411"
+    },
+    "source/output/R36KS_F11_MULTI_POSE_HIP_512_2100TRI.glb": {
+      "bytes": 309636,
+      "sha256": "b13b059cc7b1c01e3a84d840c059fadc4934605e846cab1c3fb98e345548cf85"
+    },
+    "output/R36KU_1024_BUILD_REPORT.json": {
+      "bytes": 2037,
+      "sha256": "2bc7065b2837bacba1743db32c391afe1db6bf452b627944f972aba8be20182d"
+    },
+    "output/R36KU_1024_GLTF_VALIDATOR.json": {
+      "bytes": 12778,
+      "sha256": "df8332fc584746418f3c051c72af66419643a01fc1fa978ca73336db68a59eb5"
+    },
+    "output/R36KU_512_BUILD_REPORT.json": {
+      "bytes": 2033,
+      "sha256": "2892eead926e560af2e637110ab6ccb04d3ca2f903e013b1a59d894111dbbef8"
+    },
+    "output/R36KU_512_GLTF_VALIDATOR.json": {
+      "bytes": 12766,
+      "sha256": "22f80a4e508c21183dabac38e22c7a7c9af9a00d095e4b4d932a23c6ce66d24a"
+    },
+    "output/R36KU_BROWSER_REPORT.json": {
+      "bytes": 378,
+      "sha256": "7234f3fd7fb85aab44059459939f4931a1a50ae0e20e6e9b1619156db10006b8"
+    },
+    "output/R36KU_F11_BALANCED_DETAIL_1024_2100TRI.glb": {
+      "bytes": 1063816,
+      "sha256": "03bc2a0830178dbaec1482500909f8be7d8ca3fbf061f9931696d367ba0fd99e"
+    },
+    "output/R36KU_F11_BALANCED_DETAIL_512_2100TRI.glb": {
+      "bytes": 737076,
+      "sha256": "84496d92a60e0d7dba46639c3d1b6c9dc53a0f2086257c6d4a20e27953f39110"
+    },
+    "output/R36KU_HAIR_MR_256.png": {
+      "bytes": 13326,
+      "sha256": "c1ba495987af2406d28223a225fb82a7a5c71719690aa80a85161e42d11a1f79"
+    },
+    "output/R36KU_HAIR_NORMAL_256.png": {
+      "bytes": 26213,
+      "sha256": "9d7a91536a7cc3a95e539f8e3a83c4c9ca5f60c88e8f95da21aab159ea265c5d"
+    },
+    "output/R36KU_SKIN_DETAIL_MR_1024.png": {
+      "bytes": 91691,
+      "sha256": "65c81beb3191d158862715666ac05eaea1c4db983ed5b27b08fbaf2dff3bc784"
+    },
+    "output/R36KU_SKIN_DETAIL_MR_512.png": {
+      "bytes": 41100,
+      "sha256": "12dbb0440ae8982b2ddd23802015d472dd7ee5e61dff99dae64e3e75de8dddb6"
+    },
+    "output/R36KU_SKIN_DETAIL_NORMAL_1024.png": {
+      "bytes": 222946,
+      "sha256": "c06f3629534e48460ce77f6bc46f2aec153caf61998dfbf1f471d684bdbc1f42"
+    },
+    "output/R36KU_SKIN_DETAIL_NORMAL_512.png": {
+      "bytes": 62290,
+      "sha256": "1635c6f1f754b8d83578c407df4de95b9558a30289a77ebc5fd79a603300b57d"
+    },
+    "preview/index.html": {
+      "bytes": 3559546,
+      "sha256": "dabd641d71712295eadccbf309447fb2404f07d471570cae73d60f3d39a5df01"
+    },
+    "preview/THIRD_PARTY_NOTICES.txt": {
+      "bytes": 1117,
+      "sha256": "970729236e39e576886239e79e200004003409a637849dc5bc0d962b71597f59"
+    },
+    "preview/R36KU_COMPARE_HEAD.png": {
+      "bytes": 279041,
+      "sha256": "d65418316ec5b78c7783b1d69a8063968c882bf512985b40aa06e3c7d8bd3ed6"
+    },
+    "preview/R36KU_COMPARE_ARM.png": {
+      "bytes": 84885,
+      "sha256": "1e9c5eb0d8e5c32750cee0ad54b86fc7f75bb38811dcc40af9797b4c8c3023fd"
+    },
+    "preview/R36KU_COMPARE_FULL.png": {
+      "bytes": 100935,
+      "sha256": "9c2f874142b896619d63b7196652f54dc8664ff4886e40f52f272714502d3929"
+    },
+    "preview/R36KU_ALBEDO_PRESERVED.png": {
+      "bytes": 162478,
+      "sha256": "5ba8bb5989d1b097ea62de724fa9d93b82dfc260c032019da9d1e8cdb5de9b48"
+    },
+    "preview/R36KU_COMPARE_512.png": {
+      "bytes": 277162,
+      "sha256": "9d1a64fab3c6fbbe4654ac9e1a26c5eb582c72754dae7f2953c926cd57dca727"
+    }
+  }
+}

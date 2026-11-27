@@ -1,0 +1,83 @@
+{
+  "renderer": "three.js r170 / headless Microsoft Edge / file://; NOT S2/S3",
+  "models": {
+    "before": "R36KU",
+    "after": "R36KV",
+    "stats": {
+      "512": {
+        "vertices": 1837,
+        "triangles": 2100,
+        "bones": 63
+      },
+      "1024": {
+        "vertices": 1837,
+        "triangles": 2100,
+        "bones": 63
+      },
+      "before": {
+        "vertices": 4707,
+        "triangles": 2100,
+        "bones": 63
+      }
+    }
+  },
+  "jsErrors": [],
+  "pixelComparisons": [
+    {
+      "preset": "head",
+      "resolution": 1024,
+      "mode": "pbr",
+      "width": 720,
+      "height": 580,
+      "meanAbsoluteRGB": 0.04109674329501916,
+      "maxChannelDifference": 2,
+      "differentPixels": 39717,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "arm",
+      "resolution": 1024,
+      "mode": "pbr",
+      "width": 720,
+      "height": 580,
+      "meanAbsoluteRGB": 0.013675766283524904,
+      "maxChannelDifference": 3,
+      "differentPixels": 12721,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "full",
+      "resolution": 1024,
+      "mode": "pbr",
+      "width": 720,
+      "height": 580,
+      "meanAbsoluteRGB": 0.005750319284802043,
+      "maxChannelDifference": 2,
+      "differentPixels": 5066,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "head",
+      "resolution": 1024,
+      "mode": "albedo",
+      "width": 720,
+      "height": 580,
+      "meanAbsoluteRGB": 0,
+      "maxChannelDifference": 0,
+      "differentPixels": 0,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "head",
+      "resolution": 512,
+      "mode": "pbr",
+      "width": 720,
+      "height": 580,
+      "meanAbsoluteRGB": 0.04821439974457216,
+      "maxChannelDifference": 2,
+      "differentPixels": 46278,
+      "totalPixels": 417600
+    }
+  ],
+  "actualGameEngineRun": false
+}

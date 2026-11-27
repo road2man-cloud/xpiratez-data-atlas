@@ -1,0 +1,171 @@
+{
+  "version": "R36KV",
+  "sourceCommit": "d2b576f59ddd9388ec4aff1180c1542d6451fb69",
+  "engineApplied": false,
+  "highPolyRecoveryClaimed": false,
+  "environment": {
+    "numpy": "1.26.4",
+    "scipy": "1.17.0",
+    "Pillow": "12.2.0",
+    "xatlas": "0.0.11",
+    "playwright": "1.62.0"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 6692,
+      "sha256": "ec9aa579f051dd047e210e7997968f99bd862d53f2e76a85f87d80b5e055f0c9"
+    },
+    "requirements.txt": {
+      "bytes": 97,
+      "sha256": "9f2b3d29dde92e53d0dda1d7dcccf16019823ef714642637595ba747a29d3857"
+    },
+    "prepare_r36kv.py": {
+      "bytes": 1437,
+      "sha256": "b4afa7d56d77d6830c95711eb4fa3d584345aea95cb3df5f3bf987c108e85622"
+    },
+    "build_r36kv.py": {
+      "bytes": 15198,
+      "sha256": "3102182f60ab6a340d90c38fe7f533615fbe3e034495ba911a90e61f47b133d7"
+    },
+    "viewer_r36kv.js": {
+      "bytes": 6390,
+      "sha256": "a346561bd457449e87e7381ca284beb0aa104f1d63341c3541d19f33519527e1"
+    },
+    "build_preview.py": {
+      "bytes": 4701,
+      "sha256": "9bd4028e15196c6a9cfd6cb6a41dda88e39788fe8fe9704e7454f32d63f826c0"
+    },
+    "review_r36kv.py": {
+      "bytes": 2553,
+      "sha256": "0a02a438aa5f092a0e8c21b3b5e561143613b8bfcea67a6ccda4c2ab350ab039"
+    },
+    "validate_glb.cjs": {
+      "bytes": 750,
+      "sha256": "4f3dff78c96b9ecfae2cee91a3426965c13d19ab4210097c0a1fc6f362436e22"
+    },
+    "publish_r36kv.py": {
+      "bytes": 6290,
+      "sha256": "0d7da353b092b35dc59ee26f5645994d7a3342a05d9c714fe7434664b287ff0d"
+    },
+    "source/build_r36ku.py": {
+      "bytes": 13197,
+      "sha256": "dd01ade69d9417a0d264bd91437f6d970a5ac052da7e09242483ef3cf099dafb"
+    },
+    "source/glb_io_r36kj.py": {
+      "bytes": 14740,
+      "sha256": "5373bd8049a65d1c21102b7be4fccfa24157f374438d98e931ae98a1d454472c"
+    },
+    "source/compact_gltf.py": {
+      "bytes": 5218,
+      "sha256": "0d3722c8752a7744542a6fd13ac1efd6b93c131f8785316f8eaef7385672e190"
+    },
+    "input/MANIFEST_R36KU.json": {
+      "bytes": 5573,
+      "sha256": "845733226481bf9e0bce7bc570b3fc85b2193f997fe20780f9ece788cfd30dce"
+    },
+    "input/R36KU_F11_BALANCED_DETAIL_1024_2100TRI.glb": {
+      "bytes": 1063816,
+      "sha256": "03bc2a0830178dbaec1482500909f8be7d8ca3fbf061f9931696d367ba0fd99e"
+    },
+    "input/R36KU_F11_BALANCED_DETAIL_512_2100TRI.glb": {
+      "bytes": 737076,
+      "sha256": "84496d92a60e0d7dba46639c3d1b6c9dc53a0f2086257c6d4a20e27953f39110"
+    },
+    "input/SOURCE_RECEIPT.json": {
+      "bytes": 2029,
+      "sha256": "7488e033765ff93b25b601caf656c18361cab194f7383bd14fb5213ec29ff004"
+    },
+    "source/output/R36KS_F11_MULTI_POSE_HIP_1024_2100TRI.glb": {
+      "bytes": 425120,
+      "sha256": "ea8d7caeb39bb69f564300fcf43e747978504deafee2537feaff0cb778943411"
+    },
+    "source/output/R36KS_F11_MULTI_POSE_HIP_512_2100TRI.glb": {
+      "bytes": 309636,
+      "sha256": "b13b059cc7b1c01e3a84d840c059fadc4934605e846cab1c3fb98e345548cf85"
+    },
+    "output/R36KV_1024_BUILD_REPORT.json": {
+      "bytes": 2837,
+      "sha256": "366b0c4cdb11bef9e94d1f01becf7ee1348ad5bc895c959fcc0debfa84b1e5b5"
+    },
+    "output/R36KV_1024_VALIDATION.json": {
+      "bytes": 12762,
+      "sha256": "a620cb60ac4cc059436b5bd1c98a8850efbb1744bc7fac40dce33177f93257c9"
+    },
+    "output/R36KV_512_BUILD_REPORT.json": {
+      "bytes": 2831,
+      "sha256": "0f37052c490caad0ca2f9c51b542a0325cb27759fb69e5e96a438c2bade80068"
+    },
+    "output/R36KV_512_VALIDATION.json": {
+      "bytes": 12751,
+      "sha256": "7607131af2ee3ee0c03ff227ae02cfe966c297cda5a7df75f4ab48bb120a43a0"
+    },
+    "output/R36KV_F11_SHARED_UV_1024_2100TRI.glb": {
+      "bytes": 870632,
+      "sha256": "b7a9deee15f043e0cf50ff97e1d8b2944b15edb0b8163548bdd569e20fca7a84"
+    },
+    "output/R36KV_F11_SHARED_UV_512_2100TRI.glb": {
+      "bytes": 527200,
+      "sha256": "661e63962e9c0597188083f043ff1e303c2f2f6e6abd2fef4b547dde38b68548"
+    },
+    "output/R36KV_SKIN_MR_1024.png": {
+      "bytes": 76210,
+      "sha256": "9bb7ceee56fb6049ef14b89a75d0cff1ad13770b4a0696bf3d7997c8e777b5ae"
+    },
+    "output/R36KV_SKIN_MR_512.png": {
+      "bytes": 35205,
+      "sha256": "56a5e52febdcf6349ba73c92d769bb4a4eaeac591b29dcf9c1b448971b4f394a"
+    },
+    "output/R36KV_SKIN_NORMAL_1024.png": {
+      "bytes": 263529,
+      "sha256": "f084ba7bccc87a89f00529cdd0c3575ebb44637bce1bc1f4e32db4f36d479b67"
+    },
+    "output/R36KV_SKIN_NORMAL_512.png": {
+      "bytes": 76590,
+      "sha256": "3c42650db7f3d604989e2d6910c7d87f747acaebcd71e933617d54d633b34130"
+    },
+    "output/R36KV_UV_COVERAGE_1024.png": {
+      "bytes": 15173,
+      "sha256": "80e52156e3fe2c474a6013a18642e0cfd072c1098fdcb6d02f70438adf499f4a"
+    },
+    "output/R36KV_UV_COVERAGE_512.png": {
+      "bytes": 6725,
+      "sha256": "2fb86688f0358c665d9d9d5c8eee59d249062309157deed9a8bc2e2448cb7245"
+    },
+    "preview/index.html": {
+      "bytes": 3874141,
+      "sha256": "5f7f15fe872ee1ef880f62cd1549cdf93e59168961f0b5ae499b7e9a2980c796"
+    },
+    "preview/THIRD_PARTY_NOTICES.txt": {
+      "bytes": 1117,
+      "sha256": "970729236e39e576886239e79e200004003409a637849dc5bc0d962b71597f59"
+    },
+    "preview/RENDER_REPORT.json": {
+      "bytes": 1921,
+      "sha256": "f7da8d21488bd2dc03f9d8ae15b9225c809f540905773fb0b03b5948d0cc2b7c"
+    },
+    "preview/R36KV_COMPARE_HEAD.png": {
+      "bytes": 252542,
+      "sha256": "e8457915fa957348b08b59a09e202b9e83413bd126ae0f9363cc260bb35ae300"
+    },
+    "preview/R36KV_COMPARE_ARM.png": {
+      "bytes": 87140,
+      "sha256": "3894b8ce46722da877195d8c090b23671ed7e0174d67ce61e6b6a15ca345b5a0"
+    },
+    "preview/R36KV_COMPARE_FULL.png": {
+      "bytes": 98251,
+      "sha256": "288904b5c37ec2f14c24ef851d94d0eeddc02a24f5ce36d374d9a8e6ee1e2407"
+    },
+    "preview/R36KV_ALBEDO_COMPARE.png": {
+      "bytes": 161813,
+      "sha256": "01c11dd0e8b93538acd304426f40251f83114e209aad94ec9e83af6c9f57872f"
+    },
+    "preview/R36KV_COMPARE_512.png": {
+      "bytes": 253331,
+      "sha256": "c6ea0f26f0ee9f1ee6ceca720d1f0acbcc6a044ef62f83f3fec2aba24f2b73ab"
+    },
+    "preview/R36KV_POSE_70_32.png": {
+      "bytes": 102542,
+      "sha256": "a255c0e3ebbee86feb97332a47e1f7428936b4fdf22d7a309119521f995f30bd"
+    }
+  }
+}
