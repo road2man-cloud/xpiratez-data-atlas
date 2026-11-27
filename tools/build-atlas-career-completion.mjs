@@ -12,7 +12,8 @@ import {createSharedCareerReplay} from "./population-shared-lifecycle-replay.mjs
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
-import {classifyFinalCareers} from "./atlas-final-career-admission-v3-body-scope.mjs";
+import {classifyFinalCareers} from "./atlas-final-career-admission-v4-incremental.mjs";
+const phase=(label)=>{if(process.argv.includes("--phase-log"))console.error("CAREER_COMPLETION "+label+" "+Math.round(performance.now())+"ms");};
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
@@ -23,6 +24,7 @@ const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.
 const db=hydrateResearchPaths(decode(file)),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
 assert.equal(modern.meta.source.metadataSha256,metadata);
 const prior=db.careerCompletion;
+phase("loaded");
 const priorLineRows=prior?.researchLineRows||prior?.rows||[];
 const gameRoot=process.argv.find(x=>x.startsWith("--game-root="))?.slice(12);
 const terminalRule=gameRoot?(await import("./atlas-terminal-rule-source.mjs")).extractTerminalRules(modern,gameRoot):prior?.terminalRule?.sourceMetadataSha256===metadata?prior.terminalRule:{status:"UNRESOLVED",reason:"Original terminal rules not extracted"};
@@ -105,6 +107,7 @@ db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"
 if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearch){
  const replayData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
  const ledger=decode("public/data/soldier-population-missing-origin-career.json.gz");
+ phase("research trait sets");
  const sets=buildTerminalResearchTraitSets({db,ledger,index:decode("public/data/soldier-population-missing-origin-career-index.json.gz"),replay:createSharedCareerReplay(replayData,ledger.summary),prior:prior?.researchTraitSets});
  const lines=admitResearchLines({db,sets,ledger,classifications,prior:{...prior,rows:priorLineRows}});
  const lineIds=new Set(lines.rows.map(r=>r.id));
@@ -135,6 +138,7 @@ if(terminalRule.status==="RULES_AND_PRESERVED_ENGINE_EXTRACTED"&&terminalResearc
  summary.materialBudget={checked,withFinite,hardViolations,indexedUnresolved,counts:description.counts};
 
 }
+phase("research line comparisons");
 const comparison=await loadCareerRows(modern,db,{includeWitnesses:true,scope:"research-line"});
 assert.deepEqual(comparison.errors,[]);
 db.careerCompletion.maxComparison=summarizeMaxComparison(comparison.rows);
@@ -160,7 +164,10 @@ c.researchLineRows=c.rows.filter(r=>r.proofKind===RESEARCH_LINE_PROOF);
 c.researchLineExploration={summary:{...summary},originCoverage:c.originCoverage,chortCoverage:c.chortCoverage,observedIncumbents:c.observedIncumbents,maxComparison:c.maxComparison,materialComparison:c.materialComparison,repeatComparison:c.repeatComparison};
 const finalLedger=decode("public/data/soldier-population-missing-origin-career.json.gz");
 const finalData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
-const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createSharedCareerReplay(finalData,finalLedger.summary),lines:c.researchLineRows});
+phase("final career admission");
+const baselineRef=process.argv.find(x=>x.startsWith("--reuse-final-from="))?.slice("--reuse-final-from=".length)||null;
+const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createSharedCareerReplay(finalData,finalLedger.summary),lines:c.researchLineRows,baselineRef});
+phase("final career admitted");
 c.finalCareerAdmission=final;
 c.rows=final.rows;
 summary.completeCombinations=final.rows.length;
@@ -181,5 +188,6 @@ c.repeatComparison=createRepeatComparison(db).summarize(finalRows);
 summary.repeatComparison={...c.repeatComparison};delete summary.repeatComparison.suppressedRouteIds;
 db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="선택 연구 분기와 최종 병종을 유지하는 조건부 육성 종결 조합을 등록. 다른 병종 및 복제는 별도 목표로 분리. 반복 시술은 실제 재생 및 성장캡 복원 후 동일 상태일 때만 종결 의무에서 제외. 병종 순환과 실제 게임·전역 최적은 미인증.";
+phase("serialize");
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packResearchPaths(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
