@@ -9,7 +9,7 @@ import {rankNearClosureGraphs} from "./atlas-near-closure-graph-priority.mjs";
 const options=new Map(process.argv.slice(2).map(a=>{
  const m=/^--([a-z-]+)=(.+)$/.exec(a);assert(m,"Expected --key=value: "+a);return [m[1],m[2]];
 }));
-const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage","graphs","graph-limit","ready-graph","recruit-origins","recruit-goals","recruit-branches","recruit-limit","recruit-attempts","recruit-overlap","recruit-seconds","exact-leaves"]);
+const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage","graphs","graph-limit","ready-graph","recruit-origins","recruit-goals","recruit-branches","recruit-limit","recruit-attempts","recruit-overlap","recruit-seconds","exact-leaves","reuse-final-from"]);
 for(const k of options.keys())assert(allowed.has(k),"Unknown option "+k);
 const phase=options.get("phase")||"all";
 assert(["all","produce","attach","complete","index","recruit","recruit-close"].includes(phase));
@@ -22,6 +22,8 @@ assert(bodies.length&&bodies.every(x=>known.has(x)),"Unknown soldier body");
 const focus=(options.get("focus")||"").split(",").filter(Boolean),rules=new Set(modern.transformations.map(r=>r.id));
 assert(focus.every(x=>x==="CAP_GROWTH"||rules.has(x)),"Unknown focused action");
 const completionStage=options.get("completion-stage")||"all";assert(["all","prepare","finalize"].includes(completionStage));
+const finalBase=options.get("reuse-final-from");
+if(finalBase){assert(["all","complete"].includes(phase),"Final baseline requires completion phase");assert(/^[a-f0-9]{7,40}$/.test(finalBase),"Use a concrete final baseline commit SHA");}
 const data="public/data/",ledgerFile=data+"soldier-population-missing-origin-career.json.gz",indexFile=data+"soldier-population-missing-origin-career-index.json.gz";
 const read=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const initial=read(ledgerFile);
@@ -78,9 +80,9 @@ if(["all","produce","index","recruit","recruit-close"].includes(phase)){
 }
 if(["all","attach"].includes(phase))run("tools/attach-population-missing-origin-career.mjs",options.has("append-base")?["--append-base="+options.get("append-base")]:[]);
 if(["all","complete"].includes(phase)){
- run("tools/build-atlas-career-completion.mjs",["--completion-stage="+completionStage]);
+ run("tools/build-atlas-career-completion.mjs",["--completion-stage="+completionStage,...(finalBase?["--reuse-final-from="+finalBase]:[])]);
  if(completionStage==="prepare")process.exit(0);
  const c=read(data+"branch-soldier-results.json.gz").careerCompletion;
- console.log(JSON.stringify({finalCount:c.summary.completeCombinations,byFinalBody:c.summary.finalCareer.byFinalBody,researchCombinations:c.researchTraitSets.summary.pairs}));
+ console.log(JSON.stringify({finalCount:c.summary.completeCombinations,byFinalBody:c.summary.finalCareer.byFinalBody,researchCombinations:c.researchTraitSets.summary.pairs,incremental:c.summary.finalCareer.incremental,replayCheckpoint:c.summary.finalCareer.replayCheckpoint}));
 }
 
