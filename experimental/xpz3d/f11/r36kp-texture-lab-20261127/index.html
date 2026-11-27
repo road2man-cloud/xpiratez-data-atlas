@@ -4,7 +4,17 @@
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{font:14px system-ui,"Malgun Gothic",sans-serif;background:#0a1924;color:#eaf3f7;margin:0}header{padding:28px max(18px,calc((100vw - 1100px)/2));border-bottom:1px solid #294d60;background:#133044}h1{font-size:25px;margin:0 0 10px}p{line-height:1.7;color:#bcd0db}.stat{display:inline-block;background:#23485a;border:1px solid #39677b;padding:7px 13px;border-radius:40px;margin:7px 6px 0 0}main{max-width:1100px;margin:auto;padding:22px 18px 50px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:15px}article{border:1px solid #2f5469;border-radius:12px;overflow:hidden;background:#132f41}article img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center center;display:block;background:#142737}article div{padding:15px}article h2{margin:0 0 7px;font-size:16px}article p{margin:0 0 15px;font-size:12px;min-height:70px}a.action{display:inline-block;color:#061e27;background:#83d8bd;text-decoration:none;font-weight:700;padding:9px 13px;border-radius:7px}a.action:hover{background:#a9f7d9}.warn{background:#2b2b29;border:1px solid #705d43;color:#e9d0a0;padding:14px 18px;border-radius:10px;margin:23px 0}
 </style></head><body><header><h1>R36KP 피부 텍스처 연구 작업실</h1><p>2,100삼각형 예산을 지키면서 실제 고밀도 모델의 색상과 표면 굴곡을 저폴리곤 모델에 옮기는 생산 기록입니다. 안정 기준 모델은 보존합니다.</p><span class="stat">모든 저폴리곤 후보 2,088△</span><span class="stat">2048² 텍스처</span><span class="stat">63본 피부 골격</span></header>
-<main><div class="grid">
+<main>
+<section style="padding:17px 18px;margin-bottom:23px;background:#143443;border:1px solid #47756f;border-radius:12px">
+<h2 style="margin:0 0 8px;font-size:19px">R36KU · 허벅지 벌림 반전 오류 수정</h2>
+<p style="margin:0 0 12px">기존에는 슬라이더를 올리면 양쪽 다리가 안쪽으로 움직였습니다. R36KP와 R36KQ~KT 대시보드를 모두 수정했습니다. 실제 GLB에서 측정한 양쪽 무릎 사이 거리는 0° <strong>0.180</strong>, 18° <strong>0.453</strong>, 35° <strong>0.686</strong> 모델 단위입니다. 몸체 삼각형과 텍스처는 변경하지 않았습니다.</p>
+<div class="grid" style="margin-bottom:15px">
+<article><img src="../r36kp/preview/captures/R36KP_SPREAD_0.png" alt="0도, 무릎이 가까운 기본자세"><div><h2>0° · 원본 기본 자세</h2><p style="min-height:0">무릎 간격 0.180 · 관절 회전 없음</p></div></article>
+<article><img src="../r36kp/preview/captures/R36KP_SPREAD_35.png" alt="35도, 양쪽 무릎을 바깥으로 벌린 자세"><div><h2>35° · 정상 벌림 자세</h2><p style="min-height:0">무릎 간격 0.686 · 양쪽 모두 바깥 이동</p></div></article>
+</div>
+<a class="action" href="../r36kp/preview/index.html">R36KP에서 벌림 직접 조절</a>
+</section>
+<div class="grid">
 <article><img src="r36kq/captures/R36KQ_BALANCED_PELVIS.png" alt="R36KQ 노멀맵 비교"><div><h2>R36KQ · 노멀맵 균형</h2><p>삼각형 UV 섬의 과도한 접선 노멀 편향을 완화한 균형형·세부강조형 GLB 두 가지.</p><a class="action" href="r36kq/preview/index.html">3D 대시보드</a></div></article>
 <article><img src="r36kr/captures/R36KR_BALANCED_PELVIS.png" alt="R36KR 원본 중심부 전사"><div><h2>R36KR · 원본 디테일 전사</h2><p>고밀도 6,044삼각형 중심부의 색상·높이·노멀을 기존 피부 UV에 반영한 GLB와 텍스처.</p><a class="action" href="r36kr/preview/index.html">3D 대시보드</a></div></article>
 <article><img src="r36ks/captures/R36KS_BALANCED_PELVIS.png" alt="R36KS 전면 형상 보정"><div><h2>R36KS · 표면 형상 보정</h2><p>한 몸체를 유지하며 중앙 표면의 정점 위치만 조정한 두 가지 후보. 검은 실제 틈은 남습니다.</p><a class="action" href="r36ks/preview/index.html">3D 대시보드</a></div></article>

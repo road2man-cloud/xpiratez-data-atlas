@@ -75,6 +75,9 @@ canvas{width:100%;height:100%;display:block;touch-action:none}
 <section><h2>04 / 포즈 및 명암</h2>
 <label for="spread">허벅지 벌림 <span id="spreadText" style="float:right;color:#e9f3f6">0°</span></label>
 <input type="range" id="spread" min="0" max="35" value="0">
+<div class="buttons" style="margin-top:8px"><button type="button" data-spread="0" class="selected">0° 기본</button><button type="button" data-spread="18">18° 벌림</button><button type="button" data-spread="35">35° 벌림</button></div>
+<div class="row" style="align-items:baseline"><span style="white-space:nowrap">무릎 간격</span><strong id="spreadDistance" style="white-space:nowrap;font-variant-numeric:tabular-nums">로딩 중</strong></div>
+<p class="note">허벅지 벌림을 높이면 실제 무릎 사이의 거리가 증가합니다. 0°는 원본 포즈입니다.</p>
 <label for="exposure">렌더 노출 <span id="exposureText" style="float:right;color:#e9f3f6">1.00</span></label>
 <input id="exposure" type="range" min="55" max="180" value="100">
 <label for="detail">노멀맵 강도 <span id="detailText" style="float:right;color:#e9f3f6">100%</span></label>
@@ -93,6 +96,7 @@ canvas{width:100%;height:100%;display:block;touch-action:none}
 </main>
 <script type="module">
 import * as THREE from 'three';import{GLTFLoader}from'three/addons/loaders/GLTFLoader.js';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
+import {applyThighSpread} from '../../../r36kp/preview/pose-spread.mjs';
 const $=id=>document.getElementById(id),canvas=$('view');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
 renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setClearColor(0x09131c);
@@ -144,14 +148,24 @@ function applyLayer(){
   }
  });}
 }
-function applyPose(){const spread=Number($('spread').value)*Math.PI/180;
- $('spreadText').textContent=$('spread').value+'°';
- for(const root of Object.values(assets)){if(!root)continue;root.traverse(o=>{
-  if(!o.isBone)return;const baseline=boneBases.get(o);if(!baseline)return;
-  o.quaternion.copy(baseline);
-  if(/L_Thigh/i.test(o.name))o.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),spread));
-  if(/R_Thigh/i.test(o.name))o.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),-spread));
- });}
+function applyPose(){
+ const angle=Number($('spread').value);
+ $('spreadText').textContent=angle+'°';
+ const measurements={};
+ for(const [assetName,root]of Object.entries(assets)){
+  if(!root)continue;
+  const data=applyThighSpread(root,boneBases,THREE,angle);
+  if(data)measurements[assetName]=data;
+ }
+ const value=measurements[mode]||measurements.low||Object.values(measurements)[0];
+ const indicator=$('spreadDistance');
+ if(value){
+  indicator.textContent=value.neutralSpan.toFixed(3)+' → '+value.kneeSpan.toFixed(3)+' (+'+Math.max(0,value.extraSpan).toFixed(3)+')';
+  indicator.style.color=value.outward?'#83e0c2':'#f3a38a';
+  indicator.title=value.outward?'좌·우 무릎이 실제로 바깥쪽으로 이동 중':'관절 움직임을 확인하세요';
+ }else{indicator.textContent='로딩 중';}
+ document.querySelectorAll('[data-spread]').forEach(b=>
+  b.classList.toggle('selected',Number(b.dataset.spread)===angle));
 }
 function active(){return assets[mode]||assets.low||assets.high||assets.original;}
 function focus(name){currentView=name;const root=active();if(!root)return;
@@ -193,6 +207,7 @@ for(const k of ['body','core','head','clothing','normal','emission','skinMap','w
 });
 $('spin').addEventListener('change',()=>ctl.autoRotate=$('spin').checked);
 $('spread').addEventListener('input',applyPose);
+document.querySelectorAll('[data-spread]').forEach(b=>b.addEventListener('click',()=>{$('spread').value=b.dataset.spread;applyPose();}));
 $('exposure').addEventListener('input',()=>{renderer.toneMappingExposure=Number($('exposure').value)/100;$('exposureText').textContent=renderer.toneMappingExposure.toFixed(2)});
 $('save').addEventListener('click',()=>{const a=document.createElement('a');a.download='R36KT_2088_pigment_comparison.png';a.href=canvas.toDataURL('image/png');a.click()});
 if(location.protocol==='file:')$('status').textContent='file:// 실행은 차단될 수 있습니다. OPEN_DASHBOARD.cmd를 사용하세요.';
