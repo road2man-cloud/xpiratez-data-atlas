@@ -1,6 +1,6 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
 import {CAREER_STAT_POLICY,comparisonStats} from "./branch-soldier-stat-comparison-policy.js?v=1";
-import {loadOvercapRows} from "./branch-soldier-overcap-unified.js?v=109";
+import {loadOvercapRows} from "./branch-soldier-overcap-unified.js?v=110";
 export const ledgers=[
  {key:'missingbirth',registryKey:'populationMissingOriginCareer',file:'soldier-population-missing-origin-career',label:'미연결 출생처 모집·육성',index:'soldier-population-missing-origin-career-index'},
  {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},

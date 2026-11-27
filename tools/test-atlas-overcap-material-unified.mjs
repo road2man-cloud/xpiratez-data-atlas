@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {webcrypto} from 'node:crypto';
+import {projectOvercapExploration,loadOvercapRows,loadOvercapEvidence,loadOvercapMaterial,overcapSource} from '../public/branch-soldier-overcap-unified.js';
+import {unifyCareerRows,unifiedStatusRows} from '../public/branch-soldier-unified-career-core.js';
+const read=n=>JSON.parse(fs.readFileSync(new URL('../public/data/'+n+'.json',import.meta.url),'utf8'));
+const modern=read('soldiers-modern-index'),projection=read('soldier-overcap-unified-exploration'),archive=read('soldier-overcap-expanded-lifecycle'),materials=read('soldier-overcap-material-ledger');
+if(!globalThis.crypto)globalThis.crypto=webcrypto;
+const fetches=new Map();
+globalThis.fetch=async url=>{
+ const file=new URL(url).pathname.split('/').pop();
+ fetches.set(file,(fetches.get(file)||0)+1);
+ return new Response(fs.readFileSync(new URL('../public/data/'+file,import.meta.url)));
+};
+const rows=await loadOvercapRows(modern);
+assert.equal(rows.length,archive.summary.complete);
+assert.equal(rows.length,materials.summary.routes);
+assert.equal(projection.summary.materialLinked,rows.length);
+assert.equal(new Set(rows.map(r=>r.key)).size,rows.length);
+const orig=new Map(archive.results.map(r=>[r.id,r])),mat=new Map(materials.rows.map(r=>[r.id,r]));
+for(const row of rows){
+ assert.equal(row.complete,false);assert.equal(row.finalAdmission,false);assert.equal(row.materialBudgetVerified,false);assert.equal(row.commendationStatsIncluded,false);
+ const expected=orig.get(row.sourceRecordId),m=mat.get(row.sourceRecordId);
+ assert(expected&&m);assert.deepEqual(row.current,expected.effective);
+ assert(row.capRaw.every((n,i)=>n>=row.raw[i]));
+ assert.equal(row.materialEvidence.status,m.status);
+ assert.equal(row.materialEvidence.unresolvedCount,m.materials.filter(x=>materials.catalog[x.id].kind==='SOURCE_UNRESOLVED').length);
+ assert.deepEqual(await loadOvercapEvidence(modern,row),expected);
+ assert.deepEqual((await loadOvercapMaterial(modern,row)).row,m);
+}
+assert.equal(fetches.get(overcapSource.projection),1);assert.equal(fetches.get(overcapSource.file),1);assert.equal(fetches.get(overcapSource.material),1);
+const byStatus={};for(const r of rows)byStatus[r.materialEvidence.status]=(byStatus[r.materialEvidence.status]||0)+1;
+assert.deepEqual(byStatus,materials.summary.byStatus);
+assert.equal(rows.filter(r=>r.body==='STR_SOLDIER_CHORT').length,projection.summary.chort);
+const final={key:'test-final',complete:true},combined=unifyCareerRows([final],rows);
+assert.equal(unifiedStatusRows(combined,'complete').length,1);
+assert.equal(unifiedStatusRows(combined,'conditional').length,rows.length);
+const corrupt={...projection,rows:[{...projection.rows[0],materialEvidence:{...projection.rows[0].materialEvidence,hash:'bad'}},...projection.rows.slice(1)]};
+assert.throws(()=>projectOvercapExploration(modern,corrupt),/성장캡 근거 오류/);
+await assert.rejects(loadOvercapMaterial(modern,{...rows[0],materialEvidence:{...rows[0].materialEvidence,hash:'0'.repeat(64)}}),/지문 불일치/);
+console.log(JSON.stringify({rows:rows.length,materialLinked:rows.length,ordinary:projection.summary.ordinary,chort:projection.summary.chort,statuses:byStatus,finalCountPreserved:true,detailHashes:'pass',fetchCache:'pass',corruptRejected:true}));
