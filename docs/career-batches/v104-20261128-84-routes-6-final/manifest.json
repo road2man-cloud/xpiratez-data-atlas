@@ -1,0 +1,64 @@
+{
+  "schema": "XPZ_CAREER_BATCH_CHUNKS_V1",
+  "baseRef": "8484e3b90108980eb67ee8c5d62fcaa456fa7e0b",
+  "bytes": 2147555,
+  "sha256": "3cdcecb69341edff4aaa7c5d53fe272ad88d5d7dbaecc011d6fac84fb806329d",
+  "chunks": [
+    {
+      "file": "part-00.bin",
+      "bytes": 240000,
+      "gitBlobSha": "c84f7a22e5619f0b399448583b37e24175b5e427"
+    },
+    {
+      "file": "part-01.bin",
+      "bytes": 240000,
+      "gitBlobSha": "cce107930b39bb1dad21fada40d73c71a30a465f"
+    },
+    {
+      "file": "part-02.bin",
+      "bytes": 240000,
+      "gitBlobSha": "80c0c73e583c9715e5c57550c8630013ba3eb0bb"
+    },
+    {
+      "file": "part-03.bin",
+      "bytes": 240000,
+      "gitBlobSha": "164044be7cca069f2449ea6d242c5277b8ec8d4f"
+    },
+    {
+      "file": "part-04.bin",
+      "bytes": 240000,
+      "gitBlobSha": "f46116c88ebf79f4bc89f1775af0ee6958901fec"
+    },
+    {
+      "file": "part-05.bin",
+      "bytes": 240000,
+      "gitBlobSha": "9c85baf6e726508d885b236718d8ccb58568ac43"
+    },
+    {
+      "file": "part-06.bin",
+      "bytes": 240000,
+      "gitBlobSha": "7aff62e2d8f5bb6572d13799f3c41e85a35f46e5"
+    },
+    {
+      "file": "part-07.bin",
+      "bytes": 240000,
+      "gitBlobSha": "b7c8b0f842454fdf6c61e9ae84268c48236c6b36"
+    },
+    {
+      "file": "part-08.bin",
+      "bytes": 227555,
+      "gitBlobSha": "5e1b2964bca8aa5a14a02959a9bda2a8f63a619b"
+    }
+  ],
+  "results": {
+    "newRoutes": 84,
+    "replayed": 84,
+    "priorFinal": 75,
+    "final": 81,
+    "newFinalByBody": {
+      "STR_SOLDIER_W": 3,
+      "STR_SOLDIER_NEKOMIMI_W": 3
+    }
+  },
+  "policyCaveat": "Historical V104 production prior to medal-free comparison policy; integrate routes and rebuild final classification under current policy. Never overwrite current main with this exact-base package."
+}

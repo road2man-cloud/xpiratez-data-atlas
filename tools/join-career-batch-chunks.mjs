@@ -1,0 +1,9 @@
+// Reassemble a lossless career transport packet. No game data is modified here.
+import fs from "node:fs";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
+const [dir,out]=process.argv.slice(2);assert(dir&&out,"Usage: node tools/join-career-batch-chunks.mjs <chunk-directory> <output.json.gz>");
+const m=JSON.parse(fs.readFileSync(path.join(dir,"manifest.json"),"utf8"));assert.equal(m.schema,"XPZ_CAREER_BATCH_CHUNKS_V1");
+const parts=m.chunks.map(c=>{assert(/^part-[0-9]+\.bin$/.test(c.file));const b=fs.readFileSync(path.join(dir,c.file));assert.equal(b.length,c.bytes);const h=createHash("sha1").update("blob "+b.length+"\0").update(b).digest("hex");assert.equal(h,c.gitBlobSha);return b;});
+const data=Buffer.concat(parts);assert.equal(data.length,m.bytes);assert.equal(createHash("sha256").update(data).digest("hex"),m.sha256);fs.writeFileSync(out,data,{flag:"wx"});console.log(JSON.stringify({out,bytes:data.length,sha256:m.sha256}));
