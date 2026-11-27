@@ -1,0 +1,55 @@
+{
+  "version": "R36LC",
+  "sourceCommit": "fd96b9e8a8e3f72c09c3008f986974753b3bfadb",
+  "engineApplied": false,
+  "files": {
+    "README.md": {
+      "bytes": 4009,
+      "sha256": "897db23c05feebf595caa14e25ace9ff4eb075d5f40ceaf93cd5af874125c442"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "prepare_r36lc.py": {
+      "bytes": 813,
+      "sha256": "cab129e658ce5d56b8456b065cbdd3f039d4158c4e6c23f729651e9a4ed83105"
+    },
+    "build_r36lc.py": {
+      "bytes": 12803,
+      "sha256": "f7f999a27d30121489ac48b155912530faedb5386a170fba04a157c1a2834529"
+    },
+    "publish_r36lc.py": {
+      "bytes": 4930,
+      "sha256": "13dc4357979601f95571b1c30f1939f066aadb583966fd25db47af5bc620df8d"
+    },
+    "input/R36LB_F11_CONTACT_MOTION_POT_1024_2100TRI.glb": {
+      "bytes": 1068080,
+      "sha256": "013b9290ced521fc566c86f65751b087b079a88e3a293cb4fd1dac7c6f6fbe89"
+    },
+    "input/R36LB_F11_CONTACT_MOTION_POT_512_2100TRI.glb": {
+      "bytes": 722228,
+      "sha256": "9f4cbc919500a4ca527986f712a49d10eb30f546563c400853c01c894bda92c3"
+    },
+    "output/R36LC_F11_SOLE_MOTION_POT_1024_2100TRI.glb": {
+      "bytes": 1115948,
+      "sha256": "5a57a09f230036df17e55c5a8e18d5a31db9429d76f2a3dd59beac3d17967fa6"
+    },
+    "output/R36LC_F11_SOLE_MOTION_POT_512_2100TRI.glb": {
+      "bytes": 770064,
+      "sha256": "f2f2dab1436256616123b0b499ce27fe313cbff9f30686efd8ac9b72a76d9002"
+    },
+    "output/R36LC_1024_BUILD_REPORT.json": {
+      "bytes": 6670,
+      "sha256": "10a84b26b7e9147600d45336799e9d6402b3fab572ddb2f87146df1ef821cf6d"
+    },
+    "output/R36LC_512_BUILD_REPORT.json": {
+      "bytes": 6667,
+      "sha256": "9452c29b8269f6ca8fe3d5c8c790992b57e862c1c03360ba809c5d641342adf3"
+    },
+    "output/R36LC_SOLE_TRACKS.json": {
+      "bytes": 570857,
+      "sha256": "ccfd2065859524791ee5cfd8363be85ac2dce954007a6cf2f0efc0c798bf82b3"
+    }
+  }
+}

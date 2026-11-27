@@ -1,0 +1,158 @@
+{
+  "version": "R36LC",
+  "sourceCommit": "fd96b9e8a8e3f72c09c3008f986974753b3bfadb",
+  "sourceSha256": "9f4cbc919500a4ca527986f712a49d10eb30f546563c400853c01c894bda92c3",
+  "output": "R36LC_F11_SOLE_MOTION_POT_512_2100TRI.glb",
+  "sha256": "f2f2dab1436256616123b0b499ce27fe313cbff9f30686efd8ac9b72a76d9002",
+  "bytes": 770064,
+  "sourceBytes": 722228,
+  "triangles": 2100,
+  "vertices": 2047,
+  "bones": 63,
+  "imagesUnchanged": 11,
+  "existingClipsPreserved": 6,
+  "clipsTotal": 8,
+  "groundLocalZ": 0.03599999975831375,
+  "footCandidates": {
+    "L": {
+      "uniqueFootVertices": 20,
+      "soleSupportVertices": 10
+    },
+    "R": {
+      "uniqueFootVertices": 20,
+      "soleSupportVertices": 10
+    }
+  },
+  "analyticSolverMaxError": 3.1401849173675503e-16,
+  "measurements": {
+    "F11_Walk_Contact_RootMotion": {
+      "baked73": {
+        "L": {
+          "maxStanceSupportYDrift": 3.1062612149135305e-08,
+          "maxAbsStanceFloorError": 2.5591673981362195e-08,
+          "maxPenetrationAllSamples": 2.5416636351138777e-08,
+          "maxSwingOrStanceClearance": 0.09499998597386455,
+          "minFootPitchDegrees": -2.4370297733254813e-06,
+          "maxFootPitchDegrees": 3.1036482232365297e-06
+        },
+        "R": {
+          "maxStanceSupportYDrift": 3.8266172674994436e-08,
+          "maxAbsStanceFloorError": 2.5561330690981876e-08,
+          "maxPenetrationAllSamples": 2.54865245852276e-08,
+          "maxSwingOrStanceClearance": 0.09499998646022981,
+          "minFootPitchDegrees": -2.43706016883978e-06,
+          "maxFootPitchDegrees": 3.103891401473745e-06
+        }
+      },
+      "interpolated289": {
+        "L": {
+          "maxStanceSupportYDrift": 2.3239746910763692e-06,
+          "maxAbsStanceFloorError": 1.8794303156807746e-05,
+          "maxPenetrationAllSamples": 1.8794303156807746e-05,
+          "maxSwingOrStanceClearance": 0.09499998597386455,
+          "minFootPitchDegrees": -2.854868904507661e-05,
+          "maxFootPitchDegrees": 2.8664385260500157e-05
+        },
+        "R": {
+          "maxStanceSupportYDrift": 2.314631899348607e-06,
+          "maxAbsStanceFloorError": 1.8794303160520054e-05,
+          "maxPenetrationAllSamples": 1.8794303160520054e-05,
+          "maxSwingOrStanceClearance": 0.09499998646022981,
+          "minFootPitchDegrees": -2.854867713806485e-05,
+          "maxFootPitchDegrees": 2.8664380133634076e-05
+        }
+      }
+    },
+    "F11_Walk_Rollover_RootMotion": {
+      "baked73": {
+        "L": {
+          "maxStanceSupportYDrift": 0.18004452777122254,
+          "maxAbsStanceFloorError": 6.542394556663389e-09,
+          "maxPenetrationAllSamples": 6.542394556663389e-09,
+          "maxSwingOrStanceClearance": 0.09499999018715258,
+          "minFootPitchDegrees": -11.999999278248518,
+          "maxFootPitchDegrees": 18.000000150941087,
+          "maxStancePivotYError": 2.7196997043343885e-08
+        },
+        "R": {
+          "maxStanceSupportYDrift": 0.1800445084460296,
+          "maxAbsStanceFloorError": 6.42977288772828e-09,
+          "maxPenetrationAllSamples": 6.42977288772828e-09,
+          "maxSwingOrStanceClearance": 0.09499999067890355,
+          "minFootPitchDegrees": -11.999999138378817,
+          "maxFootPitchDegrees": 18.000000187947556,
+          "maxStancePivotYError": 2.7196999430323388e-08
+        }
+      },
+      "interpolated289": {
+        "L": {
+          "maxStanceSupportYDrift": 0.1800618225523738,
+          "maxAbsStanceFloorError": 5.396828258648345e-05,
+          "maxPenetrationAllSamples": 5.396828258648345e-05,
+          "maxSwingOrStanceClearance": 0.09499999018715258,
+          "minFootPitchDegrees": -11.999999278248518,
+          "maxFootPitchDegrees": 18.000000150941087,
+          "maxStancePivotYError": 2.8014087151362332e-05
+        },
+        "R": {
+          "maxStanceSupportYDrift": 0.1800445084460296,
+          "maxAbsStanceFloorError": 5.396828268855458e-05,
+          "maxPenetrationAllSamples": 5.396828268855458e-05,
+          "maxSwingOrStanceClearance": 0.09499999067890355,
+          "minFootPitchDegrees": -11.999999138378817,
+          "maxFootPitchDegrees": 18.000000187947556,
+          "maxStancePivotYError": 2.801437790755923e-05
+        }
+      }
+    },
+    "F11_Walk_Rollover_InPlace": {
+      "baked73": {
+        "L": {
+          "maxStanceSupportYDrift": 0.18004452777122254,
+          "maxAbsStanceFloorError": 6.542394556663389e-09,
+          "maxPenetrationAllSamples": 6.542394556663389e-09,
+          "maxSwingOrStanceClearance": 0.09499999018715258,
+          "minFootPitchDegrees": -11.999999278248518,
+          "maxFootPitchDegrees": 18.000000150941087,
+          "maxStancePivotYError": 2.7196997043343885e-08
+        },
+        "R": {
+          "maxStanceSupportYDrift": 0.1800445084460296,
+          "maxAbsStanceFloorError": 6.42977288772828e-09,
+          "maxPenetrationAllSamples": 6.42977288772828e-09,
+          "maxSwingOrStanceClearance": 0.09499999067890355,
+          "minFootPitchDegrees": -11.999999138378817,
+          "maxFootPitchDegrees": 18.000000187947556,
+          "maxStancePivotYError": 2.7196999430323388e-08
+        }
+      },
+      "interpolated289": {
+        "L": {
+          "maxStanceSupportYDrift": 0.1800618225523738,
+          "maxAbsStanceFloorError": 5.396828258648345e-05,
+          "maxPenetrationAllSamples": 5.396828258648345e-05,
+          "maxSwingOrStanceClearance": 0.09499999018715258,
+          "minFootPitchDegrees": -11.999999278248518,
+          "maxFootPitchDegrees": 18.000000150941087,
+          "maxStancePivotYError": 2.8014087151362332e-05
+        },
+        "R": {
+          "maxStanceSupportYDrift": 0.1800445084460296,
+          "maxAbsStanceFloorError": 5.396828268855458e-05,
+          "maxPenetrationAllSamples": 5.396828268855458e-05,
+          "maxSwingOrStanceClearance": 0.09499999067890355,
+          "minFootPitchDegrees": -11.999999138378817,
+          "maxFootPitchDegrees": 18.000000187947556,
+          "maxStancePivotYError": 2.801437790755923e-05
+        }
+      }
+    }
+  },
+  "engineApplied": false,
+  "limitations": [
+    "Flat ground at rest minimum Z; candidate region below 0.22 local Z, unique weighted vertices.",
+    "Support pivot is a pitch-dependent blend of rest-selected heel/center/toe vertices; rolling contact is not full no-slip collision.",
+    "CPU linear blend skinning and quaternion slerp at 73/289 samples, not renderer or terrain collision.",
+    "Root-motion accumulation and external matching in-place speed still required."
+  ]
+}
