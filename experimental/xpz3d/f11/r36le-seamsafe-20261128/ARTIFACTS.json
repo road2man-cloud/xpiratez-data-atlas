@@ -1,0 +1,116 @@
+{
+  "format": "R36LE_GITHUB_CHUNK_ARCHIVE_V1",
+  "source": "R36LC",
+  "modelBudget": {
+    "head": 968,
+    "body": 1132,
+    "total": 2100,
+    "bones": 63
+  },
+  "files": [
+    {
+      "output": "output/R36LE_SEAMSAFE_SKIN_2100TRI.glb",
+      "bytes": 3334288,
+      "sha256": "29619c81e381ee6afe1fc7e3efd7a6d82e777ff9068c243910a32c7981683e37",
+      "parts": [
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part00",
+          "git_blob_sha": "33ba6bbe3a86465178ce398dafed436fe7f8df12",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part01",
+          "git_blob_sha": "47fea1352283d1e7a938c20bfdcc2bd90377d678",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part02",
+          "git_blob_sha": "f562d1eb927d06f67b025e73946297b664eb4310",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part03",
+          "git_blob_sha": "8bb30e6c61eedf477ac1978bcfd81e4791cdb677",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part04",
+          "git_blob_sha": "d4cacae19b640cd9d34dcd8dbe8cf6bfa847164b",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part05",
+          "git_blob_sha": "5018d4bc23993fa777e6e23e46bc18c54a1d102b",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part06",
+          "git_blob_sha": "a04cb73471f6dd043f9c460c509d9ca4dbb39b3d",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part07",
+          "git_blob_sha": "6f2358ab2fada583c65e550dd13a9552b7bc6142",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/skin__R36LE_SEAMSAFE_SKIN_2100TRI.glb.part08",
+          "git_blob_sha": "cad8f6780ffbcf262a17ff04e8ad907bb712cb48",
+          "bytes": 188560
+        }
+      ]
+    },
+    {
+      "output": "output/R36LE_SEAMSAFE_FLOW_2100TRI.glb",
+      "bytes": 3334000,
+      "sha256": "4ce9cbc71ae6d431354d7aa729ceba5d7018781c46917d6836500da892445630",
+      "parts": [
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part00",
+          "git_blob_sha": "b125473921445c3b6925c513795e95eb999149c1",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part01",
+          "git_blob_sha": "fbb27e791682af47551c9d4665381e45c2c56612",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part02",
+          "git_blob_sha": "5a4a7f63b4f03eeee3ba27c2ab3455a95755fb80",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part03",
+          "git_blob_sha": "c86a03d820ef9b4ef7ef24f4b3eaed695ff15ec7",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part04",
+          "git_blob_sha": "be010c49aa93fbba4f1b2d9dcce108e8eaa6486a",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part05",
+          "git_blob_sha": "ac1985406252c42ac2cbf98156ff2bec8cce9347",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part06",
+          "git_blob_sha": "ed4618e6b0f97eb57bea7878fbf708be5a2ec20a",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part07",
+          "git_blob_sha": "f191206a1cc0738037d1a1188a358a7d78f60b74",
+          "bytes": 393216
+        },
+        {
+          "path": "assets/parts/flow__R36LE_SEAMSAFE_FLOW_2100TRI.glb.part08",
+          "git_blob_sha": "c6f4b76ea6e3d9660c59c3542d745850d4ebf3f2",
+          "bytes": 188272
+        }
+      ]
+    }
+  ]
+}
