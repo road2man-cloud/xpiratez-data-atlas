@@ -19,12 +19,13 @@ import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
 import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
 import {completionStage} from "./atlas-career-completion-stage.mjs";
+import {hydrateSharedCareerSections,packSharedCareerSections} from "../public/branch-soldier-registry-shared.js";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const stage=completionStage();
 async function prepare(){
-const db=hydrateResearchPaths(decode(file)),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
+const db=hydrateSharedCareerSections(hydrateResearchPaths(decode(file))),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
 assert.equal(modern.meta.source.metadataSha256,metadata);
 const prior=db.careerCompletion;
 const priorLineRows=prior?.researchLineRows||prior?.rows||[];
@@ -198,6 +199,6 @@ summary.repeatComparison={...c.repeatComparison};delete summary.repeatComparison
 db.summary.careerCompletion=summary;
 db.policies.CAREER_STAT_COMPARISON=CAREER_STAT_POLICY.medals;
 db.policies.CAREER_COMPLETION="선택 연구 분기와 최종 병종을 유지하는 조건부 육성 종결 조합을 등록. 다른 병종 및 복제는 별도 목표로 분리. 반복 시술은 실제 재생 및 성장캡 복원 후 동일 상태일 때만 종결 의무에서 제외. 병종 순환과 실제 게임·전역 최적은 미인증.";
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packResearchPaths(db)),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packSharedCareerSections(packResearchPaths(db))),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
 }

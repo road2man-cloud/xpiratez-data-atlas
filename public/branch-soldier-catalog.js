@@ -5,6 +5,7 @@ import {inflateArchivedGzip} from "./soldiers/modern/origin-gzip-compat.js";
 import {profileWitnessIds} from "./branch-soldier-query.js?v=20261124-unified-maxima-1";
 import {independentMaxima,registryCandidate,groupBodyMaxima,evidencePriority} from "./branch-soldier-maxima.js?v=20261125-pop-v17";
 import {hydrateResearchPaths} from "./branch-soldier-research-path-codec.js";
+import {hydrateSharedCareerSections} from "./branch-soldier-registry-shared.js";
 const url=new URL("./data/branch-soldier-results.json.gz",import.meta.url);
 let promise;
 export function loadBranchSoldierResults(){
@@ -12,7 +13,7 @@ export function loadBranchSoldierResults(){
   const r=await fetch(url,{cache:"no-cache"});
   if(!r.ok)throw Error("통합 원장 HTTP "+r.status);
   const bytes=new Uint8Array(await r.arrayBuffer());
-  const db=hydrateResearchPaths(JSON.parse(new TextDecoder().decode(await inflateArchivedGzip(bytes))));
+  const db=hydrateSharedCareerSections(hydrateResearchPaths(JSON.parse(new TextDecoder().decode(await inflateArchivedGzip(bytes)))));
   if(db.schemaVersion!==1||!db.sourceMetadataSha256||!db.globalEvidence||!db.witnesses||!db.profiles)
    throw Error("통합 원장 형식 불일치");
   return db;
