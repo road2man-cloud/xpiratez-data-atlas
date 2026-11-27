@@ -160,6 +160,7 @@ export function completionSummaryText(completion){
  return (final.schema==='ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'?'병종 유지·성장캡 복원 조건부 최종 완결 조합 ':'최종 완결 조합 ')+f(s.completeCombinations)+'개 (일반 '+f(s.completeCombinations-(s.finalCareer?.byFinalBody?.STR_SOLDIER_CHORT||0))+' / 코르트 '+f(s.finalCareer?.byFinalBody?.STR_SOLDIER_CHORT||0)+') · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · '+CAREER_STAT_POLICY.label+' 기준 · 전체 탐색 공간 미확정';
 }
 export function exactCareerUrl(r){
+ if(r.overcapEvidence)return routeUrl(r);
  return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:r.complete?'complete':'all',maxView:'all',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
 }
 // Empty input is unrestricted. Unknown retained traits never satisfy a numeric threshold.
@@ -275,8 +276,10 @@ export async function loadResearchSearch(modern){
     sources.set(ledger.key,compileResearchSearch(ledger,raw,metadata));
    }catch(e){errors.push(ledger.label+' 연구 이력: '+e.message)}
   }
-  const ids=[...new Set([...sources.values()].flatMap(s=>s.ids))];
-  return {ids,errors,sources:sources.size,hasWitness:r=>sources.get(r.source)?.hasWitness(r)===true,matches:(r,requested)=>sources.get(r.source)?.matches(r,requested)===true,matchesSequence:(r,requested)=>sources.get(r.source)?.matchesSequence(r,requested)===true};
+  let overcap=[];if(typeof window!=='undefined')try{overcap=await loadOvercapRows(modern);}catch(e){errors.push('성장캡 연구 이력: '+e.message);}
+  const direct=new Map(overcap.map(r=>[r.id,r])),actions=r=>{const v=direct.get(r.id);return r.overcapEvidence&&v?.hash===r.hash?v.researchActions:null;};
+  const ids=[...new Set([...sources.values()].flatMap(s=>s.ids).concat(overcap.flatMap(r=>r.researchActions||[])))];
+  return {ids,errors,sources:sources.size,hasWitness:r=>r.overcapEvidence?Array.isArray(actions(r)):sources.get(r.source)?.hasWitness(r)===true,matches:(r,requested)=>r.overcapEvidence?Array.isArray(actions(r))&&requested.every(k=>actions(r).includes(k)):sources.get(r.source)?.matches(r,requested)===true,matchesSequence:(r,requested)=>r.overcapEvidence?Array.isArray(actions(r))&&containsOrderedActions(actions(r),requested):sources.get(r.source)?.matchesSequence(r,requested)===true};
  })();
  researchSearchCache.set(modern,promise);return promise;
 }
