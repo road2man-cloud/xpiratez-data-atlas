@@ -119,24 +119,35 @@ for(const job of selected){
     try{const v=verifyTail(w,d.suffix,b);if(!targetReady(v,t)||!materialCheck(d.suffix,base).ok)continue;publish(job,child,parent,base,v,d.suffix,t,receipt,'CONDITIONAL_TERMINAL_RESEARCH_READY');metrics.donorReplays++;done=true;break;}catch{}
    }
    if(done)break;if(callsLeft<=0)continue;callsLeft--;metrics.plannerCalls++;
-   const start={world:w,steps:expanded.actions,trace:[],diagnostics:[]},res=p.ensure(t.researchGoals,start);
+   const start={world:w,steps:expanded.actions,trace:[],diagnostics:[]},res=p.ensureProgress(t.researchGoals,start);
+   let progressNode=null,progressLength=0;
    metrics.researchAttempts+=res.attempts||0;
    if(res.ok){
     const tail=suffixFrom(res,expanded.actions);
     try{const v=verifyTail(w,tail,b);assert.equal(exactWorld(v),exactWorld(res.node.world));if(!targetReady(v,t))throw Error('target not ready');publish(job,child,parent,base,v,tail,t,receipt,'CONDITIONAL_TERMINAL_RESEARCH_READY');done=true;break;}catch(e){receipt.attempts.push({target:t.id,reason:'REPLAY_OR_MATERIAL_BLOCKED',detail:e.message});}
-   }else receipt.attempts.push({target:t.id,reason:res.reason,unresolved:res.unresolved,attempts:res.attempts,deadEnds:res.deadEnds?.slice(-5)||[]});
+   }else{
+    receipt.attempts.push({target:t.id,reason:res.reason,unresolved:res.unresolved,remaining:res.remaining,gained:res.gained,attempts:res.attempts,deadEnds:res.deadEnds?.slice(-5)||[]});
+    if(res.status==='PARTIAL')try{
+     const tail=suffixFrom(res,expanded.actions),v=verifyTail(w,tail,b);
+     assert.equal(exactWorld(v),exactWorld(res.node.world));
+     if(targetReady(v,t)){publish(job,child,parent,base,v,tail,t,receipt,'CONDITIONAL_TERMINAL_RESEARCH_READY');done=true;break;}
+     publish(job,child,parent,base,v,tail,t,receipt,'CONDITIONAL_TERMINAL_RESEARCH_PARTIAL');
+     progressNode=res.node;progressLength=tail.length;
+    }catch(e){receipt.attempts.push({target:t.id,reason:'GOAL_PROGRESS_REPLAY_BLOCKED',detail:e.message});}
+   }
    // Preserve actual progress toward direct prerequisites; never a guessed
    // completion or proof that the failed target is impossible.
    if(partialLeft>0){
-    let n=start,tail=[];
-    const deps=[...new Set(t.researchGoals.flatMap(k=>data.researchRules[k]?.dependencies||[]))].filter(k=>!active(w,k)&&!b.blockedResearch.includes(k));
+    let n=progressNode||start,tail=n.steps.slice(expanded.actions.length);
+    const deps=[...new Set(t.researchGoals.filter(k=>!active(n.world,k)).flatMap(k=>data.researchRules[k]?.dependencies||[]))].filter(k=>!active(n.world,k)&&!b.blockedResearch.includes(k));
     for(const goal of deps.slice(0,3)){
      if(partialLeft<=0)break;partialLeft--;metrics.plannerCalls++;
      const a=p.ensure([goal],n);metrics.researchAttempts+=a.attempts||0;
-     if(a.ok){n=a.node;tail=n.steps.slice(expanded.actions.length);}
+     if(a.ok&&t.researchGoals.every(k=>!active(n.world,k)||active(a.node.world,k))){n=a.node;tail=n.steps.slice(expanded.actions.length);}
+     else if(a.ok)receipt.attempts.push({target:t.id,goal,reason:'GOAL_PROGRESS_LOST'});
      else receipt.attempts.push({target:t.id,goal,reason:a.reason,unresolved:a.unresolved,attempts:a.attempts});
     }
-    if(tail.length)try{
+    if(tail.length>progressLength)try{
      const v=verifyTail(w,tail,b);assert.equal(exactWorld(v),exactWorld(n.world));
      if(targetReady(v,t)){publish(job,child,parent,base,v,tail,t,receipt,'CONDITIONAL_TERMINAL_RESEARCH_READY');done=true;break;}
      if([...v.researched].some(k=>active(v,k)&&!active(w,k)))publish(job,child,parent,base,v,tail,t,receipt,'CONDITIONAL_TERMINAL_RESEARCH_PARTIAL');

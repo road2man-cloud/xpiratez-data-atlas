@@ -3,6 +3,7 @@
 // actions; origin-witness -> campaign-proof owns all research state changes.
 import {foundationWorld,applyOriginWitnessStep,originEventScript} from './origin-witness.js';
 import {auditOriginCampaignContext} from './origin-campaign-context.js';
+import {advanceResearchGoals} from './research-progress-core.mjs';
 const arr=x=>Array.isArray(x)?x:[];
 const uniq=x=>[...new Set(x.filter(Boolean))];
 const active=(w,id)=>w.researched.has(id)&&!w.disabled.has(id);
@@ -294,5 +295,16 @@ export function createBranchContextResearchPlanner(data,{maxAttempts=650,maxDept
     if(missing.length)return {ok:false,node:start,unresolved:missing[0],attempts:budget.attempts,reason:'나중 선택이 필요한 연구를 폐쇄함'};
     return {ok:true,node,attempts:budget.attempts};
   }
-  return {newNode,ensure,append,supply,clone,distance,methods};
+  // Explicit opt-in: keep only successful, replayable goal advances.
+  // Legacy ensure retains its original all-or-nothing contract.
+  function ensureProgress(goals,start=newNode(),{maxPasses=3}={}){
+    const budget={attempts:0,last:null,failures:[],deadEnds:[]};
+    const result=advanceResearchGoals({targets:uniq(goals),start:clone(start),active,
+      solve:(id,node,goalSet)=>solve(id,node,new Set(),0,budget,goalSet),
+      canAttempt:()=>budget.attempts<maxAttempts,maxPasses});
+    return {...result,attempts:budget.attempts,unresolved:result.remaining[0]||null,
+      ...(collectFailures?{failures:budget.failures,deadEnds:budget.deadEnds}:{}),
+      reason:result.ok?null:budget.last||'RESEARCH_PROGRESS_SEARCH_LIMIT'};
+  }
+  return {newNode,ensure,ensureProgress,append,supply,clone,distance,methods};
 }
