@@ -1,0 +1,411 @@
+{
+  "version": "R36LE",
+  "sourceCommit": "6d63a67d4108a5403bad2efbb49a812de9288d26",
+  "sourceSha256": "fd6b1633c2e460f1098054a31fa393a8de92d1ce66d4d6cb83ed2933b43d8a70",
+  "output": "R36LE_F11_KNEE_CORRECTIVES_POT_1024_2100TRI.glb",
+  "sha256": "a3dcd5522711f9bb4613c0fee241106cc00b7251133eddeb2987484ad8d440cd",
+  "bytes": 1242336,
+  "sourceBytes": 1115936,
+  "triangles": 2100,
+  "vertices": 2047,
+  "bones": 63,
+  "imagesUnchanged": 11,
+  "existingClipsPreserved": 8,
+  "morphTargets": [
+    "L_Knee_45",
+    "L_Knee_90",
+    "R_Knee_45",
+    "R_Knee_90"
+  ],
+  "regions": [
+    {
+      "side": "L",
+      "strength": 1.0,
+      "affectedVertexRecords": 39,
+      "localEdges": 120,
+      "fit": [
+        {
+          "angle": 15,
+          "baselineRMS": 0.034293034099670015,
+          "correctedRMS": 0.03326958103668038,
+          "baselineMax": 0.09545167021809482,
+          "correctedMax": 0.09467353034609051
+        },
+        {
+          "angle": 30,
+          "baselineRMS": 0.0649511070110568,
+          "correctedRMS": 0.05839263995491953,
+          "baselineMax": 0.17976128963383356,
+          "correctedMax": 0.16779708176312216
+        },
+        {
+          "angle": 45,
+          "baselineRMS": 0.08983637137705101,
+          "correctedRMS": 0.06957889417251507,
+          "baselineMax": 0.23569993789796984,
+          "correctedMax": 0.18875944894226596
+        },
+        {
+          "angle": 60,
+          "baselineRMS": 0.10880303687268428,
+          "correctedRMS": 0.08019157887997742,
+          "baselineMax": 0.247473887867968,
+          "correctedMax": 0.20870908541396926
+        },
+        {
+          "angle": 75,
+          "baselineRMS": 0.1250456827397384,
+          "correctedRMS": 0.08352741658521201,
+          "baselineMax": 0.2631122789877214,
+          "correctedMax": 0.19948312683237002
+        },
+        {
+          "angle": 90,
+          "baselineRMS": 0.14372708128798384,
+          "correctedRMS": 0.08533238457484439,
+          "baselineMax": 0.3409694969259787,
+          "correctedMax": 0.22288233722134349
+        }
+      ],
+      "holdout": [
+        {
+          "angle": 10,
+          "baselineRMS": 0.02314224949426909,
+          "correctedRMS": 0.02276674748493983,
+          "baselineMax": 0.06414141965372933,
+          "correctedMax": 0.06407338153681869
+        },
+        {
+          "angle": 22.5,
+          "baselineRMS": 0.05023193972944033,
+          "correctedRMS": 0.04726216073716502,
+          "baselineMax": 0.13999856813753314,
+          "correctedMax": 0.13586972413875534
+        },
+        {
+          "angle": 37.5,
+          "baselineRMS": 0.07819567637786674,
+          "correctedRMS": 0.06594069324192338,
+          "baselineMax": 0.21242200787644716,
+          "correctedMax": 0.1864338480507119
+        },
+        {
+          "angle": 52.5,
+          "baselineRMS": 0.09993862536810433,
+          "correctedRMS": 0.07599160785155094,
+          "baselineMax": 0.2477329555539548,
+          "correctedMax": 0.20529468988975916
+        },
+        {
+          "angle": 67.5,
+          "baselineRMS": 0.11695073413599288,
+          "correctedRMS": 0.08248686723664296,
+          "baselineMax": 0.2403501431104806,
+          "correctedMax": 0.20266302337910386
+        },
+        {
+          "angle": 82.5,
+          "baselineRMS": 0.13377461755071718,
+          "correctedRMS": 0.084177199456435,
+          "baselineMax": 0.2832070445594642,
+          "correctedMax": 0.21226404005860025
+        },
+        {
+          "angle": 95,
+          "baselineRMS": 0.15125437719247736,
+          "correctedRMS": 0.0891538569426972,
+          "baselineMax": 0.38410289568459544,
+          "correctedMax": 0.23259052705066796
+        }
+      ],
+      "fitRMSRatio": 0.7240588086822929,
+      "maxDeltaAt90": 0.01977463167739468
+    },
+    {
+      "side": "R",
+      "strength": 1.0,
+      "affectedVertexRecords": 39,
+      "localEdges": 120,
+      "fit": [
+        {
+          "angle": 15,
+          "baselineRMS": 0.03426744352255541,
+          "correctedRMS": 0.03324471244415416,
+          "baselineMax": 0.0946223433359825,
+          "correctedMax": 0.0938044558581364
+        },
+        {
+          "angle": 30,
+          "baselineRMS": 0.06486167636707713,
+          "correctedRMS": 0.05831067049534115,
+          "baselineMax": 0.1780569717289134,
+          "correctedMax": 0.16621216263806324
+        },
+        {
+          "angle": 45,
+          "baselineRMS": 0.08963584549914333,
+          "correctedRMS": 0.06943409276872002,
+          "baselineMax": 0.23332913535491018,
+          "correctedMax": 0.18737151018729725
+        },
+        {
+          "angle": 60,
+          "baselineRMS": 0.10846824285424883,
+          "correctedRMS": 0.07999046206325022,
+          "baselineMax": 0.24495317325267704,
+          "correctedMax": 0.2065727520070965
+        },
+        {
+          "angle": 75,
+          "baselineRMS": 0.12461328364914939,
+          "correctedRMS": 0.08323530947783027,
+          "baselineMax": 0.25351531654074455,
+          "correctedMax": 0.19024571681591057
+        },
+        {
+          "angle": 90,
+          "baselineRMS": 0.14328452348092371,
+          "correctedRMS": 0.08495665223684824,
+          "baselineMax": 0.3409694969259787,
+          "correctedMax": 0.212322932658563
+        }
+      ],
+      "holdout": [
+        {
+          "angle": 10,
+          "baselineRMS": 0.023128563325399837,
+          "correctedRMS": 0.022753407158034585,
+          "baselineMax": 0.06360160192638772,
+          "correctedMax": 0.06350830091367715
+        },
+        {
+          "angle": 22.5,
+          "baselineRMS": 0.05018023731070322,
+          "correctedRMS": 0.047212669587992216,
+          "baselineMax": 0.13872513016130217,
+          "correctedMax": 0.13457814178041563
+        },
+        {
+          "angle": 37.5,
+          "baselineRMS": 0.07805614476862266,
+          "correctedRMS": 0.06582350471174661,
+          "baselineMax": 0.21033752724031726,
+          "correctedMax": 0.18479138907058343
+        },
+        {
+          "angle": 52.5,
+          "baselineRMS": 0.09967062560787628,
+          "correctedRMS": 0.07582321687074042,
+          "baselineMax": 0.24520890301071976,
+          "correctedMax": 0.20342443846586242
+        },
+        {
+          "angle": 67.5,
+          "baselineRMS": 0.1165584492091006,
+          "correctedRMS": 0.08224357240284194,
+          "baselineMax": 0.23260766233741945,
+          "correctedMax": 0.2024709459685731
+        },
+        {
+          "angle": 82.5,
+          "baselineRMS": 0.13332495709542902,
+          "correctedRMS": 0.08383685753900179,
+          "baselineMax": 0.28320712752401467,
+          "correctedMax": 0.20228181404676834
+        },
+        {
+          "angle": 95,
+          "baselineRMS": 0.1508289263361325,
+          "correctedRMS": 0.08877129037846632,
+          "baselineMax": 0.38410289568459544,
+          "correctedMax": 0.2218304233981305
+        }
+      ],
+      "fitRMSRatio": 0.7240301600081355,
+      "maxDeltaAt90": 0.019925806987338417
+    }
+  ],
+  "targetsByPrimitive": [
+    {
+      "primitive": 0,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 1,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 2,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 3,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 4,
+      "nonzeroTargetVertexRecords": 68
+    },
+    {
+      "primitive": 5,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 6,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 7,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 8,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 9,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 10,
+      "nonzeroTargetVertexRecords": 44
+    },
+    {
+      "primitive": 11,
+      "nonzeroTargetVertexRecords": 44
+    },
+    {
+      "primitive": 12,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 13,
+      "nonzeroTargetVertexRecords": 0
+    },
+    {
+      "primitive": 14,
+      "nonzeroTargetVertexRecords": 0
+    }
+  ],
+  "clipWeights": [
+    {
+      "clip": "F11_Idle_Loop",
+      "samples": 91,
+      "maximumWeights": [
+        4.1335148051523987e-29,
+        0.0,
+        4.1335148051523987e-29,
+        0.0
+      ],
+      "maximumKneeFlexDegrees": [
+        2.893158690814132e-13,
+        2.893158690814132e-13
+      ]
+    },
+    {
+      "clip": "F11_Walk_InPlace_Loop",
+      "samples": 37,
+      "maximumWeights": [
+        0.7130864262580872,
+        0.0,
+        0.7130864262580872,
+        0.0
+      ],
+      "maximumKneeFlexDegrees": [
+        38.00000036801013,
+        38.00000036801013
+      ]
+    },
+    {
+      "clip": "F11_LookAround_Loop",
+      "samples": 121,
+      "maximumWeights": [
+        4.1335148051523987e-29,
+        0.0,
+        4.1335148051523987e-29,
+        0.0
+      ],
+      "maximumKneeFlexDegrees": [
+        2.893158690814132e-13,
+        2.893158690814132e-13
+      ]
+    },
+    {
+      "clip": "F11_Ready_Reset",
+      "samples": 46,
+      "maximumWeights": [
+        0.049262501299381256,
+        0.0,
+        0.049262501299381256,
+        0.0
+      ],
+      "maximumKneeFlexDegrees": [
+        9.987820918953432,
+        9.987820918953432
+      ]
+    },
+    {
+      "clip": "F11_Walk_Contact_InPlace",
+      "samples": 73,
+      "maximumWeights": [
+        0.9960514903068542,
+        0.12869220972061157,
+        0.9960514903068542,
+        0.12869220972061157
+      ],
+      "maximumKneeFlexDegrees": [
+        50.791149288470386,
+        50.791149288470386
+      ]
+    },
+    {
+      "clip": "F11_Walk_Contact_RootMotion",
+      "samples": 73,
+      "maximumWeights": [
+        0.9960514903068542,
+        0.12869220972061157,
+        0.9960514903068542,
+        0.12869220972061157
+      ],
+      "maximumKneeFlexDegrees": [
+        50.791149288470386,
+        50.791149288470386
+      ]
+    },
+    {
+      "clip": "F11_Walk_Rollover_InPlace",
+      "samples": 73,
+      "maximumWeights": [
+        0.9978452920913696,
+        0.20208673179149628,
+        0.9978452920913696,
+        0.20208673179149628
+      ],
+      "maximumKneeFlexDegrees": [
+        54.09390326213091,
+        54.09390326213091
+      ]
+    },
+    {
+      "clip": "F11_Walk_Rollover_RootMotion",
+      "samples": 73,
+      "maximumWeights": [
+        0.9978452920913696,
+        0.20208673179149628,
+        0.9978452920913696,
+        0.20208673179149628
+      ],
+      "maximumKneeFlexDegrees": [
+        54.09390326213091,
+        54.09390326213091
+      ]
+    }
+  ],
+  "engineApplied": false,
+  "limitations": [
+    "Local single-axis CPU edge-length proxy; not a volume or rendered quality measurement.",
+    "Correctives use constrained local edge-length least squares at two angles; not a full DQS runtime.",
+    "Direction corrections are approximate, material shading must be reviewed.",
+    "Other external animations need their own corrective weight driver. S2/S3 morph and weight-track support not verified."
+  ]
+}
