@@ -11,7 +11,7 @@ const catalog=read('public/data/soldier-source-catalog.json'), ledger=read('publ
 if(JSON.stringify(catalog.sourceHashes)!==JSON.stringify(data.meta.source.rules))throw Error('catalog source mismatch');
 data.sourceItemIds=new Set(catalog.itemIds);
 data.originRows=ledger.rows;
-const queue=read('public/data/soldier-overcap-research-queue.json'), prep=read('public/data/soldier-overcap-context-recovery.json');
+const queue=read('public/data/soldier-overcap-research-queue.json'), prep=read(process.argv.find(a=>a.startsWith('--prep='))?.slice(7)||'public/data/soldier-overcap-context-recovery.json');
 if(queue.sourceMetadataSha256!==prep.sourceMetadataSha256||prep.sourceMetadataSha256!==data.meta.source.metadataSha256||queue.sourceLedgerHash!==prep.sourceLedgerHash)throw Error('source mismatch');
 const keys=STAT_KEYS, active=(w,k)=>w.researched.has(k)&&!w.disabled.has(k), vec=o=>keys.map(k=>o[k]), equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b), sum=a=>a.reduce((x,y)=>x+y,0);
 const profiles=new Map(data.profiles.map(p=>[p.id,p])), rules=new Map(data.transformations.map(r=>[r.id,r])), bodies=new Map(data.soldiers.map(b=>[b.id,b])), jobs=new Map(queue.jobs.map(j=>[j.id,j])), prefixes=new Map(prep.prefixes.map(p=>[p.id,p]));
@@ -65,7 +65,7 @@ for(const entry of prep.entries){
 }
 const complete=results.filter(r=>r.status==='CONDITIONAL_LIFECYCLE_COMPLETE'), pareto=complete.filter(a=>!complete.some(b=>a!==b&&a.body===b.body&&a.origin===b.origin&&b.effective.every((v,i)=>v>=a.effective[i])&&b.effective.some((v,i)=>v>a.effective[i]))).map(r=>r.id);
 const report={schema:'ATLAS_OVERCAP_CONDITIONAL_LIFECYCLE_V1',sourceMetadataSha256:prep.sourceMetadataSha256,sourceLedgerHash:prep.sourceLedgerHash,statKeys:keys,scope:'Chronological recruitment and deterministic transformation with conditional cap growth and external inputs. Not finite supply proof or actual game certification. No commendation stat bonuses.',summary:{attempted:results.length,complete:complete.length,blocked:results.length-complete.length,paretoWithinOrigin:pareto.length,byBody:Object.fromEntries([...new Set(results.map(r=>r.body))].map(b=>[b,{complete:complete.filter(r=>r.body===b).length,attempted:results.filter(r=>r.body===b).length}]))},paretoWithinOrigin:pareto,results};
-const target=offset||limit!==Infinity?'public/data/soldier-overcap-conditional-lifecycle-'+offset+'.json':'public/data/soldier-overcap-conditional-lifecycle.json';
+const target=process.argv.find(a=>a.startsWith('--output='))?.slice(9)||(offset||limit!==Infinity?'public/data/soldier-overcap-conditional-lifecycle-'+offset+'.json':'public/data/soldier-overcap-conditional-lifecycle.json');
 report.batch={offset,limit:limit===Infinity?null:limit,total:ordinal};
 fs.writeFileSync(target,JSON.stringify(report)+'\n');
 console.log(JSON.stringify({summary:report.summary,blocked:results.filter(r=>r.status!=='CONDITIONAL_LIFECYCLE_COMPLETE').map(r=>({origin:r.origin,order:r.order,reason:r.reason.slice(0,500)}))}));
