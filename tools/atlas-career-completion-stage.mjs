@@ -11,6 +11,7 @@ import {createInterface} from "node:readline";
 import {key,sha} from "./population-research-career-core.mjs";
 import {ledgers} from "../public/branch-soldier-atlas-career-core.js";
 import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
+import {packEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
 const schema="ATLAS_CAREER_COMPLETION_PREPARED_STAGE_V2";
 export function completionStage(){
  const mode=process.argv.find(x=>x.startsWith("--completion-stage="))?.slice(19)||"all";
@@ -31,7 +32,7 @@ export function completionStage(){
  if(mode!=="all")assert(!process.argv.some(x=>x.startsWith("--game-root=")),"Staged build requires already extracted terminal rules");
  async function save({db,comparisonRows,seenSize}){
   assert(mode==="prepare");
-  packResearchPaths(db);
+  packEconomyDetails(packResearchPaths(db));
   const temp=file+"."+process.pid+".tmp";
   // Split top-level object maps and arrays into bounded records, not a
   // single massive JSON string. Projected comparison rows can be rebuilt.

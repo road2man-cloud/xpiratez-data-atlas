@@ -1,5 +1,7 @@
 // Produce early economy companions from canonical terminal supply witnesses.
 import fs from "node:fs";
+import {packEconomyDetails,hydrateEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
+import {hydrateSharedCareerSections,packSharedCareerSections} from "../public/branch-soldier-registry-shared.js";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
@@ -11,7 +13,7 @@ import {loadEarlyEconomyRules,produceEarlyEconomy,traceEarlyEconomy} from "./atl
 import {key,sha} from "./population-research-career-core.mjs";
 const root=process.argv.find(x=>x.startsWith("--game-root="))?.slice(12)||"C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez";
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
-const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion;
+const file="public/data/branch-soldier-results.json.gz",db=hydrateSharedCareerSections(hydrateEconomyDetails(gz("branch-soldier-results"))),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion;
 const d=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 d.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
 d.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
@@ -35,5 +37,5 @@ for(const [planId,p] of candidates){
 const values=Object.values(records),complete=values.filter(r=>r.status==="CONDITIONAL_PREFIX_CASH_SCHEDULED"),allAlloc=new Set(values.flatMap(r=>r.allocation.map(a=>key([r.actionHash,a])))),maxCash=complete.length?Math.max(...complete.map(r=>r.closingCash)):null;
 const summary={routes:routeIds.size,scenarios:values.length,chronologicalReplays:routeIds.size,reusedScenarioTraces:values.length-routeIds.size,cashScheduled:complete.length,partial:values.length-complete.length,sourceAllocations:allAlloc.size,highestConditionalClosingCash:maxCash,monthsReached:Math.max(0,...values.map(r=>r.months)),completeCampaigns:0};
 c.earlyEconomy={schema:"ATLAS_EARLY_ECONOMY_LEDGER_V1",sourceMetadataSha256:a.sourceMetadataSha256,sourceEvidence:early.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,sourceHashes:c.sourceHashes,producerFingerprint,records,summary};
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packSharedCareerSections(packEconomyDetails(db))),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,openingCash:early.openingCash,sourceCountries:early.rolls.length,best:complete.sort((a,b)=>b.closingCash-a.closingCash).slice(0,8).map(r=>({origin:r.origin,route:r.routeId,options:r.options,months:r.months,closing:r.closingCash,min:r.minimumCash,paid:r.careerCashPaid,sales:r.sales,allocated:r.initialStockUnitsAllocated,functions:r.baseFunctionRequestsCovered,farms:r.layout.filter(f=>f.id==="STR_HYDROPONICS").length,work:r.nominalResearchWork,unresolved:r.unresolvedResources.length})),blocked:values.filter(r=>r.blocked).reduce((a,r)=>(a[r.blocked.kind]=(a[r.blocked.kind]||0)+1,a),{})}));

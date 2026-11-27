@@ -2,7 +2,7 @@
 // Same time-ordered career projection for both pages; independent ceilings remain separate.
 import {buildBranchRouteIndex,parseTargets,matchesTargets,modelProfiles,profileWitnessIds} from "./branch-soldier-query.js?v=20261124-exact-resources-1";
 import {independentMaxima,registryCandidate,evidenceLabel} from "./branch-soldier-maxima.js";
-import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261128-shared-v1";
+import {loadBranchSoldierResults,routeActionCount,registeredRouteDepths,buildBodyGrowthIndex} from "./branch-soldier-catalog.js?v=20261128-economy-codec-108";
 import {loadRuntime} from "./db-runtime.js";
 import {loadCareerRows,statKeys,sum,exactCareerUrl,routeObjective,routeThreshold,completionSummaryText} from "./branch-soldier-atlas-career-core.js?v=105-no-medal-bonus";
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from "./branch-soldier-atlas-route-filter.js?v=49-economy";

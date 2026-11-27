@@ -13,12 +13,13 @@ import {createSharedCareerReplay} from "./population-shared-lifecycle-replay.mjs
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
-import {classifyFinalCareers} from "./atlas-final-career-admission-v6-transitive.mjs";
+import {classifyFinalCareers} from "./atlas-final-career-admission-v7-passive-armor.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
 import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
 import {completionStage} from "./atlas-career-completion-stage.mjs";
+import {packEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
 import {hydrateSharedCareerSections,packSharedCareerSections} from "../public/branch-soldier-registry-shared.js";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
@@ -199,6 +200,6 @@ summary.repeatComparison={...c.repeatComparison};delete summary.repeatComparison
 db.summary.careerCompletion=summary;
 db.policies.CAREER_STAT_COMPARISON=CAREER_STAT_POLICY.medals;
 db.policies.CAREER_COMPLETION="선택 연구 분기와 최종 병종을 유지하는 조건부 육성 종결 조합을 등록. 다른 병종 및 복제는 별도 목표로 분리. 반복 시술은 실제 재생 및 성장캡 복원 후 동일 상태일 때만 종결 의무에서 제외. 병종 순환과 실제 게임·전역 최적은 미인증.";
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packSharedCareerSections(packResearchPaths(db))),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packSharedCareerSections(packEconomyDetails(packResearchPaths(db)))),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
 }

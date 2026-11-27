@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {passiveArmorReturns,passiveReturnDelta} from './atlas-passive-armor-return.mjs';
+const data={armorCatalog:['ordinary','passive','hard','consumed','uncertain','STR_NONE'].map(k=>({id:k+'_UC',storeItem:k})),transformations:[{requiredItems:{consumed:1}}],researchRules:{R:{needItem:true,neededItem:'passive'}},profiles:[{id:'P',acquisitionRequiredItems:{passive:1}}]};
+const soft={hard:false,kind:'INDEXED_FINITE_GRANT_POOL',cap:1,grants:[{event:'E',quantity:1}]};
+const materials={finite:new Map([['passive',soft],['hard',{...soft,hard:true}],['consumed',soft],['uncertain',{...soft,grants:[]} ]])};
+const p=passiveArmorReturns(data,materials);
+assert.deepEqual([...p.all],['ordinary','passive']);
+assert.deepEqual(p.indexedFinite.get('passive').researchReaders,['R']);
+assert.deepEqual(p.indexedFinite.get('passive').recruitReaders,['P']);
+assert(passiveReturnDelta('passive',2,3,'passive',p));
+for(const args of [['passive',2,4,'passive'],['passive',2,1,'passive'],['passive',2,3,'ordinary'],['hard',0,1,'hard'],['consumed',0,1,'consumed']])assert(!passiveReturnDelta(...args,p));
+assert.equal(materials.finite.get('passive').cap,1);
+console.log('passive armor return: exact +1, no hard/consumed projection, no grant mutation');

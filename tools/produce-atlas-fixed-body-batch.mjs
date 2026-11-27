@@ -51,7 +51,7 @@ function run(file,args=[]){
 const quiet=["attempts","coverage-births","shared-scan","closed-recruit","repeat-compact","terminal-transfer","terminal-extension","terminal-event-recruit","trait-chain","terminal","supply-plans","supply-research","terminal-follow","end-stage","end-research","reset-recovery","follow","chain","nodes","research"].map(k=>"--"+k+"=0");
 if(["all","produce","index","recruit","recruit-close"].includes(phase)){
  const recruitment=recruitmentMode?["--terminal-extension="+int("recruit-limit",4,1,100),"--extension-attempts="+int("recruit-attempts",12,1,100),"--extension-scope=pair","--extension-origins="+recruitOrigins.join(","),"--extension-goals="+recruitGoals.join(","),"--extension-branches="+recruitBranches.join(","),"--extension-goal-overlap="+int("recruit-overlap",recruitGoals.length,0,recruitGoals.length),"--extension-fragment-ms="+int("fragment-ms",1500,0,20000)]:[];
- const producer="tools/build-population-shared-career-v105-exact-leaves.mjs";
+ const producer="tools/build-population-shared-career-v106-passive-armor.mjs";
  function closureArgs(ids,limit,budget){
   return ["--seconds="+budget,"--closure-wave="+limit,"--closure-body-scope=1","--closure-medal-preparation=1","--closure-preserve-body=1","--closure-bodies="+bodies.join(","),"--closure-graphs="+ids.join(","),"--closure-ready-graph="+int("ready-graph",1,0,1),"--closure-exact-leaves="+(ids.length?int("exact-leaves",3,0,12):0),"--closure-focus-actions="+focus.join(","),"--closure-chain-quantum="+int("chain-quantum",6,1,100),"--closure-root-attempts="+int("root-attempts",8,1,100),"--closure-rule-attempts="+int("rule-attempts",2,1,100),"--closure-fragment-ms="+int("fragment-ms",1500,0,20000)];
  }

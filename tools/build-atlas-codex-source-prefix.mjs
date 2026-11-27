@@ -1,6 +1,8 @@
 // Produce source-bound early Codex alternatives for existing terminal
 // research witnesses, then replay their remaining original actions.
 import fs from "node:fs";
+import {packEconomyDetails,hydrateEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
+import {hydrateSharedCareerSections,packSharedCareerSections} from "../public/branch-soldier-registry-shared.js";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
@@ -15,7 +17,7 @@ import {createCodexPrefixProducer} from "./atlas-codex-source-prefix.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)||d;
 const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez"),gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
-const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion;
+const file="public/data/branch-soldier-results.json.gz",db=hydrateSharedCareerSections(hydrateEconomyDetails(gz("branch-soldier-results"))),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion;
 assert(c.researchCalendar&&c.terminalSupply);
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 data.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
@@ -52,5 +54,5 @@ for(const [routeId,r] of candidates){
 const list=Object.values(records),used=new Set(list.map(r=>r.prefixId)),successful=Object.values(prefixes).filter(p=>p.status==="SOURCE_BOUND_CODEX_PREFIX"),full=list.filter(r=>r.status.startsWith("CONDITIONAL_FULL_SUFFIX_REPLAY")),same=full.filter(r=>r.status==="CONDITIONAL_FULL_SUFFIX_REPLAY_SAME_SOLDIER"),stats=list.reduce((s,r)=>(s[r.status]=(s[r.status]||0)+1,s),{});
 const summary={routes:new Set(list.map(r=>r.routeId)).size,scenarios:list.length,prefixTemplates:used.size,sourceBoundPrefixes:successful.length,sourceBoundRouteScenarios:list.filter(r=>prefixes[r.prefixId].status==="SOURCE_BOUND_CODEX_PREFIX").length,fullSuffixReplays:full.length,sameSoldierFullReplays:same.length,finiteCashPrefixes:successful.filter(p=>p.finance?.status==="CONDITIONAL_NONNEGATIVE_PREFIX_CASH").length,finiteCashRouteScenarios:list.filter(r=>prefixes[r.prefixId].finance?.status==="CONDITIONAL_NONNEGATIVE_PREFIX_CASH").length,skippedRoutes:Object.keys(skipped).length,pendingRoutes:candidates.size-new Set(list.map(r=>r.routeId)).size-Object.keys(skipped).length,stats,completeCampaigns:0,dischargedAssumptions:0};
 c.codexSourcePrefixes={schema:"ATLAS_CODEX_SOURCE_PREFIXES_V1",sourceMetadataSha256:a.sourceMetadataSha256,sourceHashes:c.sourceHashes,sourceEvidence:early.evidence,eventSourceEvidence:eventIndex.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,producerFingerprint,prefixes,records,skipped,summary};
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packSharedCareerSections(packEconomyDetails(db))),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,newRoutes,attempts,templates:Object.entries(prefixes).map(([id,p])=>({id,status:p.status,target:p.target,variant:p.variant,month:p.month,days:p.elapsedHours/24,cost:p.cost,workshop:p.workshop,steps:p.steps.length,open:p.open.length,finance:p.finance?{status:p.finance.status,closingCash:p.finance.closingCash,minimumCash:p.finance.minimumCash,sales:p.finance.sales}:null,reason:p.reason,gates:p.gates.map(g=>({event:g.event,month:g.month,blocked:g.blocked,unknown:g.unknown}))})),failures:list.filter(r=>!r.status.startsWith("CONDITIONAL_FULL_SUFFIX_REPLAY")).slice(0,12).map(r=>({origin:r.origin,variant:r.variant,status:r.status,at:r.failedAt,reason:r.reason}))}));

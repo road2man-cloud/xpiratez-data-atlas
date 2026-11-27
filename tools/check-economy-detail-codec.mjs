@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {packEconomyDetails,hydrateEconomyDetails} from '../public/branch-soldier-economy-detail-codec.js';
+const x={hour:1,reason:'long repeated economy action'.repeat(8),items:{A:1,B:[0,null,2]}};
+const db={careerCompletion:{terminalEconomy:{records:{A:{cashLedger:Array.from({length:200},()=>structuredClone(x)),events:null},B:{cashLedger:[x],other:true},C:{note:'no ledger'}}},earlyEconomy:{records:{A:{cashLedger:[{k:1}]}}}}};
+const original=JSON.stringify(db),packed=packEconomyDetails(structuredClone(db));
+assert(packed.careerCompletion.terminalEconomy.detailCodec);
+assert(JSON.stringify(packed).length<original.length/3);
+assert.equal(JSON.stringify(packEconomyDetails(packed)),JSON.stringify(packed));
+const invalid=structuredClone(packed);invalid.careerCompletion.terminalEconomy.records.A.cashLedger.economyRowIds[0]=99999;
+assert.throws(()=>hydrateEconomyDetails(invalid),/Invalid economy row index/);
+const hydrated=hydrateEconomyDetails(JSON.parse(JSON.stringify(packed)));
+assert.equal(JSON.stringify(hydrated),original);
+hydrated.careerCompletion.terminalEconomy.records.A.cashLedger[0].items.B[0]=99;
+assert.equal(hydrated.careerCompletion.terminalEconomy.records.A.cashLedger[1].items.B[0],0);
+assert.equal(hydrated.careerCompletion.terminalEconomy.records.B.cashLedger[0].items.B[0],0);
+console.log('lossless economy codec: exact JSON roundtrip, no mutation alias, malformed ref rejection');

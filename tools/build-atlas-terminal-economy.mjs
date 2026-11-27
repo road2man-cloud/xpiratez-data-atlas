@@ -1,5 +1,7 @@
 // Append conditional project schedules to the existing common registry.
 import fs from "node:fs";
+import {packEconomyDetails,hydrateEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
+import {hydrateSharedCareerSections,packSharedCareerSections} from "../public/branch-soldier-registry-shared.js";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
@@ -11,7 +13,7 @@ import {key} from "./population-research-career-core.mjs";
 const arg=(name,fallback)=>process.argv.find(x=>x.startsWith("--"+name+"="))?.slice(name.length+3)||fallback;
 const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez");
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
-const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion;
+const file="public/data/branch-soldier-results.json.gz",db=hydrateSharedCareerSections(hydrateEconomyDetails(gz("branch-soldier-results"))),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion;
 assert(c?.terminalSupply);
 const d=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 d.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
@@ -59,5 +61,5 @@ if(previous?.terminalSupplyFingerprint===index.evidence.fingerprint){
 const values=Object.values(records),funded=values.filter(r=>r.scenario.capitalMode==="FINITE_CONDITIONAL_SEED"),estimated=values.filter(r=>!r.scenario.capitalMode);
 const result={schema:"ATLAS_CONDITIONAL_PROJECT_ECONOMY_V1",sourceMetadataSha256:a.sourceMetadataSha256,sourceEvidence:economy.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,records,unresolved,...(funded.length&&previous.bootstrap?{bootstrap:previous.bootstrap}:{}),summary:{eligibleCraftPlans:candidates.length,scenarios:values.length+unresolved.length,produced:values.length,unresolved:unresolved.length,minimumCapital:values.length?Math.min(...values.map(r=>r.budget.requiredCapital)):null,fastestHours:values.length?Math.min(...values.map(r=>r.budget.elapsedHours)):null,estimatedCapitalSchedules:estimated.length,minimumEstimatedCapital:estimated.length?Math.min(...estimated.map(r=>r.budget.requiredCapital)):null,finiteSeedSchedules:funded.length,finiteSeedUnresolved:unresolved.filter(r=>r.options?.funding).length,minimumFiniteSeed:funded.length?Math.min(...funded.map(r=>r.budget.requiredCapital)):null,fastestFiniteSeedHours:funded.length?Math.min(...funded.map(r=>r.budget.elapsedHours)):null,completeCampaigns:0}};
 db.careerCompletion.terminalEconomy=result;
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packSharedCareerSections(packEconomyDetails(db))),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary:result.summary,results:values.map(r=>({scenario:r.options,budget:r.budget,facilities:r.layout.length,events:r.events.length})),unresolved:unresolved.map(r=>({options:r.options,reason:r.reason,partialEvents:r.partialEvents}))}));
