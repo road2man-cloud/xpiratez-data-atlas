@@ -52,8 +52,8 @@ export function careerFrontierOriginMarkup(db,pid,bid,labels={}){
  const render=r=>{
   const f=r.f,g=r.g,med=Object.entries(g.medals).map(([id,n])=>name(db,id)+" (내부 등급 "+n+")").join(", ")||"없음";
   const route=f.actions.map(a=>action(db,a)).join(" → ")||"출생 상태";
-  const rows=[["원시",f.raw],["훈장 제외 보너스",f.permanentBonus],["훈장 제외 실효",f.permanentVector],["프리셋 포함 보너스",f.bonus],["프리셋 포함 실효",f.vector]].map(([k,v])=>[esc(k),...v.map(fmt)]);
-  return '<details><summary>'+esc(name(db,f.body))+' · 영구 합계 '+fmt(sum(f.permanentVector))+' · '+(r.permanent?"영구 비지배 개선":"훈장 포함 개선")+'</summary><p>'+esc(route)+'</p><p>계급 '+fmt(f.rank)+' · '+esc(status(g))+' · '+(r.admitted?"최종 연구 모집요건 충족 이력":"출생 자체 가정")+' · 그룹 #'+fmt(r.group+1)+'</p><p>가정 훈장 프리셋: '+esc(med)+'</p>'+table(["구분",...cols],rows,"birth-stat-table")+'<small>후보 ID '+esc(f.id)+'</small></details>';
+  const rows=[["원시",f.raw],["훈장 제외 보너스",f.permanentBonus],["훈장 제외 실효",f.permanentVector]].map(([k,v])=>[esc(k),...v.map(fmt)]);
+  return '<details><summary>'+esc(name(db,f.body))+' · 영구 합계 '+fmt(sum(f.permanentVector))+' · '+(r.permanent?"영구 비지배 개선":"시술 조건용 훈장 경로 (비교 제외)")+'</summary><p>'+esc(route)+'</p><p>계급 '+fmt(f.rank)+' · '+esc(status(g))+' · '+(r.admitted?"최종 연구 모집요건 충족 이력":"출생 자체 가정")+' · 그룹 #'+fmt(r.group+1)+'</p><p>가정 훈장 프리셋: '+esc(med)+'</p>'+table(["구분",...cols],rows,"birth-stat-table")+'<small>후보 ID '+esc(f.id)+'</small></details>';
  };
  return head+'<p>기존 전체 그룹 대비 신규 후보 '+fmt(rs.length)+'개 · 훈장 제외 개선 '+fmt(rs.filter(r=>r.permanent).length)+'개 · 모집 요구 연구 충족 이력 '+fmt(rs.filter(r=>r.admitted).length)+'개 후보. 새 후보끼리의 전역 최적성은 미증명입니다.</p>'+rs.map(render).join("")+'</section>';
 }
