@@ -1,0 +1,66 @@
+{
+  "version": "R36LB",
+  "sourceCommit": "4f517765fe12ed00e70d989e179f7d81faefead2",
+  "sourceSha256": "8c68dbc7a3ef64214821c51cd43410bf86f96a8f7391dab7f1ff5be276e8bfd4",
+  "output": "R36LB_F11_CONTACT_MOTION_POT_512_2100TRI.glb",
+  "sha256": "9f4cbc919500a4ca527986f712a49d10eb30f546563c400853c01c894bda92c3",
+  "bytes": 722228,
+  "sourceBytes": 674392,
+  "triangles": 2100,
+  "vertices": 2047,
+  "bones": 63,
+  "originalClipsPreserved": 4,
+  "clipsTotal": 6,
+  "originalMeshRigAnd11ImagesPreserved": true,
+  "newClips": [
+    {
+      "name": "F11_Walk_Contact_InPlace",
+      "duration": 1.2,
+      "samples": 73,
+      "channels": 17,
+      "rootMotion": false,
+      "strideLocalUnits": 0.6,
+      "referenceSpeedLocalUnitsPerSecond": 0.5,
+      "stanceFraction": 0.5833333333333334,
+      "maxAnkleTargetError": 3.3277144077393785e-08,
+      "stanceDrift": {
+        "L": {
+          "oldMaxAnkleDriftSameReference": 0.480934873010398,
+          "newMaxAnkleDrift": 2.9286923572189657e-08
+        },
+        "R": {
+          "oldMaxAnkleDriftSameReference": 0.4809348554043277,
+          "newMaxAnkleDrift": 2.9286923576314793e-08
+        }
+      }
+    },
+    {
+      "name": "F11_Walk_Contact_RootMotion",
+      "duration": 1.2,
+      "samples": 73,
+      "channels": 17,
+      "rootMotion": true,
+      "strideLocalUnits": 0.6,
+      "referenceSpeedLocalUnitsPerSecond": 0.5,
+      "stanceFraction": 0.5833333333333334,
+      "maxAnkleTargetError": 4.4657985155292037e-08,
+      "stanceDrift": {
+        "L": {
+          "oldMaxAnkleDriftSameReference": 0.480934873010398,
+          "newMaxAnkleDrift": 2.9006249072935587e-08
+        },
+        "R": {
+          "oldMaxAnkleDriftSameReference": 0.4809348554043277,
+          "newMaxAnkleDrift": 4.0419206523757495e-08
+        }
+      }
+    }
+  ],
+  "engineApplied": false,
+  "limitations": [
+    "Ankle anchors in local model units, not skinned sole collision.",
+    "Drift measured only on baked samples and reference translation; in-place requires matching external root speed.",
+    "Root-motion clip advances 0.60 local units and must accumulate translation across repeats.",
+    "No terrain IK, rendered visual review, engine playback, or actual game install."
+  ]
+}
