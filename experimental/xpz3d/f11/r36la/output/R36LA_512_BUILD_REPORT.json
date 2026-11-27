@@ -1,0 +1,51 @@
+{
+  "version": "R36LA",
+  "source": "R36KY_F11_POT_COMPAT_512_2100TRI.glb",
+  "sourceSha256": "9c422442d6e39e3a55b1ea939ef0abbd82d538a07a2f859e0296791c912ba6f1",
+  "output": "R36LA_F11_MOTION_POT_512_2100TRI.glb",
+  "sha256": "8c68dbc7a3ef64214821c51cd43410bf86f96a8f7391dab7f1ff5be276e8bfd4",
+  "bytes": 674392,
+  "sourceBytes": 577956,
+  "triangles": 2100,
+  "vertices": 2047,
+  "bones": 63,
+  "primitives": 15,
+  "imagesByteIdentical": 11,
+  "geometryRigAndMaterialsIdentical": true,
+  "clips": [
+    {
+      "clip": "F11_Idle_Loop",
+      "durationSeconds": 3.0,
+      "frames": 91,
+      "channels": 17,
+      "loopEndpointEqual": true
+    },
+    {
+      "clip": "F11_Walk_InPlace_Loop",
+      "durationSeconds": 1.2,
+      "frames": 37,
+      "channels": 17,
+      "loopEndpointEqual": true
+    },
+    {
+      "clip": "F11_LookAround_Loop",
+      "durationSeconds": 4.0,
+      "frames": 121,
+      "channels": 17,
+      "loopEndpointEqual": true
+    },
+    {
+      "clip": "F11_Ready_Reset",
+      "durationSeconds": 1.5,
+      "frames": 46,
+      "channels": 17,
+      "loopEndpointEqual": true
+    }
+  ],
+  "engineApplied": false,
+  "limitations": [
+    "Synthetic local-space motion; no original game animation source.",
+    "No ground-contact IK or measured foot sliding correction.",
+    "No game-engine import or animation playback verified."
+  ]
+}

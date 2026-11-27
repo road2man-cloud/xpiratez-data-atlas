@@ -1,0 +1,454 @@
+{
+  "version": "R36LA",
+  "coordinateConvention": "local Z-up, root conversion retained; +X left, -Y forward",
+  "engineMappingVerified": false,
+  "joints": [
+    {
+      "skinIndex": 0,
+      "nodeIndex": 0,
+      "name": "Hip",
+      "parent": "Z-up to glTF Y-up",
+      "animated": true
+    },
+    {
+      "skinIndex": 1,
+      "nodeIndex": 1,
+      "name": "Spine",
+      "parent": "Hip",
+      "animated": true
+    },
+    {
+      "skinIndex": 2,
+      "nodeIndex": 2,
+      "name": "L_Thigh",
+      "parent": "Hip",
+      "animated": true
+    },
+    {
+      "skinIndex": 3,
+      "nodeIndex": 3,
+      "name": "R_Thigh",
+      "parent": "Hip",
+      "animated": true
+    },
+    {
+      "skinIndex": 4,
+      "nodeIndex": 4,
+      "name": "Chest",
+      "parent": "Spine",
+      "animated": true
+    },
+    {
+      "skinIndex": 5,
+      "nodeIndex": 5,
+      "name": "L_Leg",
+      "parent": "L_Thigh",
+      "animated": true
+    },
+    {
+      "skinIndex": 6,
+      "nodeIndex": 6,
+      "name": "R_Leg",
+      "parent": "R_Thigh",
+      "animated": true
+    },
+    {
+      "skinIndex": 7,
+      "nodeIndex": 7,
+      "name": "Neck",
+      "parent": "Chest",
+      "animated": true
+    },
+    {
+      "skinIndex": 8,
+      "nodeIndex": 8,
+      "name": "R_Clavicle",
+      "parent": "Chest",
+      "animated": false
+    },
+    {
+      "skinIndex": 9,
+      "nodeIndex": 9,
+      "name": "L_Clavicle",
+      "parent": "Chest",
+      "animated": false
+    },
+    {
+      "skinIndex": 10,
+      "nodeIndex": 10,
+      "name": "L_Foot",
+      "parent": "L_Leg",
+      "animated": true
+    },
+    {
+      "skinIndex": 11,
+      "nodeIndex": 11,
+      "name": "R_Foot",
+      "parent": "R_Leg",
+      "animated": true
+    },
+    {
+      "skinIndex": 12,
+      "nodeIndex": 12,
+      "name": "Head",
+      "parent": "Neck",
+      "animated": true
+    },
+    {
+      "skinIndex": 13,
+      "nodeIndex": 13,
+      "name": "R_UArm",
+      "parent": "R_Clavicle",
+      "animated": true
+    },
+    {
+      "skinIndex": 14,
+      "nodeIndex": 14,
+      "name": "L_UArm",
+      "parent": "L_Clavicle",
+      "animated": true
+    },
+    {
+      "skinIndex": 15,
+      "nodeIndex": 15,
+      "name": "L_Toe",
+      "parent": "L_Foot",
+      "animated": true
+    },
+    {
+      "skinIndex": 16,
+      "nodeIndex": 16,
+      "name": "R_Toe",
+      "parent": "R_Foot",
+      "animated": true
+    },
+    {
+      "skinIndex": 17,
+      "nodeIndex": 17,
+      "name": "HeadTip",
+      "parent": "Head",
+      "animated": false
+    },
+    {
+      "skinIndex": 18,
+      "nodeIndex": 18,
+      "name": "R_LArm",
+      "parent": "R_UArm",
+      "animated": true
+    },
+    {
+      "skinIndex": 19,
+      "nodeIndex": 19,
+      "name": "R_UArmCorr",
+      "parent": "R_UArm",
+      "animated": false
+    },
+    {
+      "skinIndex": 20,
+      "nodeIndex": 20,
+      "name": "L_LArm",
+      "parent": "L_UArm",
+      "animated": true
+    },
+    {
+      "skinIndex": 21,
+      "nodeIndex": 21,
+      "name": "L_UArmCorr",
+      "parent": "L_UArm",
+      "animated": false
+    },
+    {
+      "skinIndex": 22,
+      "nodeIndex": 22,
+      "name": "L_ToeTip",
+      "parent": "L_Toe",
+      "animated": false
+    },
+    {
+      "skinIndex": 23,
+      "nodeIndex": 23,
+      "name": "R_ToeTip",
+      "parent": "R_Toe",
+      "animated": false
+    },
+    {
+      "skinIndex": 24,
+      "nodeIndex": 24,
+      "name": "R_Hand",
+      "parent": "R_LArm",
+      "animated": false
+    },
+    {
+      "skinIndex": 25,
+      "nodeIndex": 25,
+      "name": "R_UArmCorrTip",
+      "parent": "R_UArmCorr",
+      "animated": false
+    },
+    {
+      "skinIndex": 26,
+      "nodeIndex": 26,
+      "name": "L_Hand",
+      "parent": "L_LArm",
+      "animated": false
+    },
+    {
+      "skinIndex": 27,
+      "nodeIndex": 27,
+      "name": "L_UArmCorrTip",
+      "parent": "L_UArmCorr",
+      "animated": false
+    },
+    {
+      "skinIndex": 28,
+      "nodeIndex": 28,
+      "name": "R_Palm1",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 29,
+      "nodeIndex": 29,
+      "name": "R_Point1",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 30,
+      "nodeIndex": 30,
+      "name": "R_Thumb1",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 31,
+      "nodeIndex": 31,
+      "name": "L_Palm1",
+      "parent": "L_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 32,
+      "nodeIndex": 32,
+      "name": "L_Point1",
+      "parent": "L_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 33,
+      "nodeIndex": 33,
+      "name": "L_Thumb1",
+      "parent": "L_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 34,
+      "nodeIndex": 34,
+      "name": "R_Palm2",
+      "parent": "R_Palm1",
+      "animated": false
+    },
+    {
+      "skinIndex": 35,
+      "nodeIndex": 35,
+      "name": "R_Point2",
+      "parent": "R_Point1",
+      "animated": false
+    },
+    {
+      "skinIndex": 36,
+      "nodeIndex": 36,
+      "name": "R_Thumb2",
+      "parent": "R_Thumb1",
+      "animated": false
+    },
+    {
+      "skinIndex": 37,
+      "nodeIndex": 37,
+      "name": "L_Palm2",
+      "parent": "L_Palm1",
+      "animated": false
+    },
+    {
+      "skinIndex": 38,
+      "nodeIndex": 38,
+      "name": "L_Point2",
+      "parent": "L_Point1",
+      "animated": false
+    },
+    {
+      "skinIndex": 39,
+      "nodeIndex": 39,
+      "name": "L_Thumb2",
+      "parent": "L_Thumb1",
+      "animated": false
+    },
+    {
+      "skinIndex": 40,
+      "nodeIndex": 40,
+      "name": "R_Palm2tip",
+      "parent": "R_Palm2",
+      "animated": false
+    },
+    {
+      "skinIndex": 41,
+      "nodeIndex": 41,
+      "name": "R_Point2tip",
+      "parent": "R_Point2",
+      "animated": false
+    },
+    {
+      "skinIndex": 42,
+      "nodeIndex": 42,
+      "name": "R_Thumb2tip",
+      "parent": "R_Thumb2",
+      "animated": false
+    },
+    {
+      "skinIndex": 43,
+      "nodeIndex": 43,
+      "name": "L_Palm2tip",
+      "parent": "L_Palm2",
+      "animated": false
+    },
+    {
+      "skinIndex": 44,
+      "nodeIndex": 44,
+      "name": "L_Point2tip",
+      "parent": "L_Point2",
+      "animated": false
+    },
+    {
+      "skinIndex": 45,
+      "nodeIndex": 45,
+      "name": "L_Thumb2tip",
+      "parent": "L_Thumb2",
+      "animated": false
+    },
+    {
+      "skinIndex": 46,
+      "nodeIndex": 46,
+      "name": "Cap",
+      "parent": "Head",
+      "animated": false
+    },
+    {
+      "skinIndex": 47,
+      "nodeIndex": 47,
+      "name": "BackPack",
+      "parent": "Chest",
+      "animated": false
+    },
+    {
+      "skinIndex": 48,
+      "nodeIndex": 48,
+      "name": "Corpse",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 49,
+      "nodeIndex": 49,
+      "name": "Slot1",
+      "parent": "Chest",
+      "animated": false
+    },
+    {
+      "skinIndex": 50,
+      "nodeIndex": 50,
+      "name": "Slot2",
+      "parent": "Chest",
+      "animated": false
+    },
+    {
+      "skinIndex": 51,
+      "nodeIndex": 51,
+      "name": "Slot3",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 52,
+      "nodeIndex": 52,
+      "name": "Slot4",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 53,
+      "nodeIndex": 53,
+      "name": "Slot5",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 54,
+      "nodeIndex": 54,
+      "name": "Slot6",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 55,
+      "nodeIndex": 55,
+      "name": "Slot7",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 56,
+      "nodeIndex": 56,
+      "name": "Slot8",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 57,
+      "nodeIndex": 57,
+      "name": "Slot9",
+      "parent": "Hip",
+      "animated": false
+    },
+    {
+      "skinIndex": 58,
+      "nodeIndex": 58,
+      "name": "Item",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 59,
+      "nodeIndex": 59,
+      "name": "MachineGun",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 60,
+      "nodeIndex": 60,
+      "name": "Rifle",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 61,
+      "nodeIndex": 61,
+      "name": "RocketLauncher",
+      "parent": "R_Hand",
+      "animated": false
+    },
+    {
+      "skinIndex": 62,
+      "nodeIndex": 62,
+      "name": "SubMachineGun",
+      "parent": "R_Hand",
+      "animated": false
+    }
+  ],
+  "clipNames": [
+    "F11_Idle_Loop",
+    "F11_Walk_InPlace_Loop",
+    "F11_LookAround_Loop",
+    "F11_Ready_Reset"
+  ]
+}

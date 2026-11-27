@@ -1,0 +1,59 @@
+{
+  "version": "R36LA",
+  "sourceCommit": "b0a2626acd479123a919ab5b2bfd8039098df5a2",
+  "engineApplied": false,
+  "files": {
+    "README.md": {
+      "bytes": 2269,
+      "sha256": "c5b9034ef4b3931175f33160c1905a90e448a895e11b1595c7a8f74947c80d14"
+    },
+    "profiles.json": {
+      "bytes": 2910,
+      "sha256": "ecfbd4bf47e3202288fdb05d615e83bad0edc839af5ffdc218279049883e4f30"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "prepare_r36la.py": {
+      "bytes": 673,
+      "sha256": "671efdeededb022a815d6ec5497192f43d9f3f8dcf47f29c97c44028c5924e19"
+    },
+    "build_r36la.py": {
+      "bytes": 7476,
+      "sha256": "34a92fe24d12bbb05b0bc76dc164a2d86aeb90c766ba49ffd8d4148b8c5f0a80"
+    },
+    "publish_r36la.py": {
+      "bytes": 4921,
+      "sha256": "8890751d0fb1917ed687cead2313eba23d2d44a35878f5d36d251b46bd80fc37"
+    },
+    "input/R36KY_F11_POT_COMPAT_1024_2100TRI.glb": {
+      "bytes": 923808,
+      "sha256": "004bd78095b9e8dd64a98646c6952d85067c3ec2b91f6f297d45377570c237cb"
+    },
+    "input/R36KY_F11_POT_COMPAT_512_2100TRI.glb": {
+      "bytes": 577956,
+      "sha256": "9c422442d6e39e3a55b1ea939ef0abbd82d538a07a2f859e0296791c912ba6f1"
+    },
+    "output/R36LA_F11_MOTION_POT_1024_2100TRI.glb": {
+      "bytes": 1020244,
+      "sha256": "5d8338be76e25718fdab9499ce1fbdba7fb206b8d8bda4631eab04793c5ce89b"
+    },
+    "output/R36LA_F11_MOTION_POT_512_2100TRI.glb": {
+      "bytes": 674392,
+      "sha256": "8c68dbc7a3ef64214821c51cd43410bf86f96a8f7391dab7f1ff5be276e8bfd4"
+    },
+    "output/R36LA_1024_BUILD_REPORT.json": {
+      "bytes": 1415,
+      "sha256": "4dcfc34aa2d57d73dd2e8604d48239effbba50cd5111309ab0355813e0262339"
+    },
+    "output/R36LA_512_BUILD_REPORT.json": {
+      "bytes": 1412,
+      "sha256": "0432073e7b451d131bf10b3bf931afc0777804cbc85d5ba83d8faae13787a493"
+    },
+    "output/R36LA_RIG_MAP.json": {
+      "bytes": 9161,
+      "sha256": "d9c53d93b084df85c7414485380cee3a2342a1479e9b214a4f8072b68e800a03"
+    }
+  }
+}
