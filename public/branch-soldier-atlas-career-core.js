@@ -1,3 +1,5 @@
+import {randomRule,careerRandomDistribution,projectRandomStandard} from './branch-soldier-career-random-standard.js';
+import {STAT_KEYS,initialState,bonusStats} from './soldiers/modern/eligibility.js';
 // All values are projections of canonical replay ledgers, never independent maxima.
 export const ledgers=[
  {key:'missingbirth',registryKey:'populationMissingOriginCareer',file:'soldier-population-missing-origin-career',label:'미연결 출생처 모집·육성',index:'soldier-population-missing-origin-career-index'},
@@ -122,6 +124,26 @@ export async function loadCareerRows(modern,registry,{includeWitnesses=false,sco
     }
    }catch(e){errors.push(source.label+' 완결 경로 미연결: '+e.message)}
   }
+  // Only public final projection changes; immutable replay and offline worklists retain integer witnesses.
+  if(strict){
+   const rules=new Map(modern.transformations.map(t=>[t.id,t])),indices=new Map();
+   for(let i=0;i<rows.length;i++){
+    const r=rows[i];if(!r.order.some(id=>randomRule(rules.get(id),STAT_KEYS)))continue;
+    let result;
+    try{
+     const source=ledgers.find(l=>l.key===r.source);
+     if(!source?.index)throw Error('전체 행동 색인 없음');
+     if(!indices.has(source.index))indices.set(source.index,(async()=>{
+      const response=await fetch(new URL('./data/'+source.index+'.json.gz',import.meta.url));
+      if(!response.ok)throw Error('HTTP '+response.status);
+      return new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+     })());
+     const w=readResearchWitness(await indices.get(source.index),r,metadata);
+     result=careerRandomDistribution(modern,r,w.fullActions,{keys:STAT_KEYS,initialState,bonusStats});
+    }catch(e){result={kind:'unverified',reason:e.message};}
+    rows[i]=projectRandomStandard(r,result);
+   }
+  }
   return {rows,errors,completion};
  })();
  projectionCache.set(modern,{...(cached?.registry===registry?cached:{}),registry,[cacheKey]:promise});
@@ -166,6 +188,7 @@ export function routeThreshold(value){
 export function routeObjective(r,metric,stat){
  if(stat==='depth')return r.order.length;
  if(stat==='traitCount')return r.traits?.length??-Infinity;
+ if(!validVector(r[metric]))return -Infinity;
  return stat==='total'?sum(r[metric]):r[metric][statKeys.indexOf(stat)];
 }
 // Existing single-ID links are also valid. Multiple IDs mean AND within one route.
@@ -289,8 +312,8 @@ export function filterCareerRequirements(rows,filters,{profiles=new Map(),resear
  });
 }
 export function rankRows(rows,metric='cap',stat='total'){
- const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
- return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
+ const value=r=>routeObjective(r,metric,stat),total=r=>routeObjective(r,metric,'total');
+ return rows.slice().sort((a,b)=>value(b)-value(a)||total(b)-total(a)||a.key.localeCompare(b.key));
 }
 export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:'all',maxView:'all',origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
 export function branchUrl(id){return 'captains/?'+new URLSearchParams({branch:id})+'#integratedBranches';}
