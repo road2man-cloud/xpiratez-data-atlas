@@ -3,7 +3,8 @@
 // Goal-directed planning from ZERO completed research. This only selects
 // actions; origin-witness -> campaign-proof owns all research state changes.
 import {applyOriginWitnessStep,originEventScript} from './origin-witness.js';
-import {campaignStartWorld,labVerdict,availableResearch} from './campaign-start-gate-v1.js';
+import {campaignStartWorld,labVerdict,availableResearch,applyCampaignStartStep} from './campaign-start-gate-v1.js';
+import {eventItemRoutes} from './campaign-start-event-rules-v1.js';
 import {auditOriginCampaignContext} from './origin-campaign-context.js';
 const arr=x=>Array.isArray(x)?x:[];
 const uniq=x=>[...new Set(x.filter(Boolean))];
@@ -93,7 +94,7 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
       const v=labVerdict(before,step.id,data,{repeat:step.type==='repeatResearch'});
       if(!v.ok)throw Error('LAB_NOT_AVAILABLE: '+step.id+' '+v.reason);
     }
-    const result=applyOriginWitnessStep(before,step,data);
+    const result=applyCampaignStartStep(before,step,data);
     if(!result.ok)throw Error(result.reason);
     const world=result.world;
     if([...world.researched].some(k=>forbidden.has(k)&&!before.researched.has(k))||[...forbidden].some(k=>active(world,k)&&!active(before,k)))throw Error('BRANCH_FORBIDDEN_RESEARCH');
@@ -111,7 +112,7 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
     n.world=world;n.steps.push(step);return n;
   }
   // Supply is an actual sequence of manufacture actions, never a resource grant.
-  // Events, construction, salaries and market purchase remain explicit gaps.
+  // Selected fixed event bundles supported; construction, salaries and market purchase remain gaps.
   function supply(n,{items={},functions=[],funds=0},reason,budget=null,goalSet=new Set(),depth=0){
     budget ||= {attempts:0,last:null,failures:[],deadEnds:[]};
     if(depth>maxDepth)throw Error('SUPPLY_DEPTH_LIMIT');
@@ -124,7 +125,26 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
       supplyStack.add(id);
       let solved=null;
       try{
-        for(const recipe of arr(data.itemSupply?.[id]?.manufacture)){
+        for(const route of eventItemRoutes(id)){
+          if(++budget.attempts>maxAttempts)break;
+          if(n.world.generatedEvents?.[route.event])continue;
+          let trial=clone(n);
+          try{
+            for(const dep of arr(route.script.researchPositive)){
+              const next=solve(dep,trial,new Set(),depth+1,budget,goalSet);
+              if(!next)throw Error('EVENT_RESEARCH_UNRESOLVED: '+dep);
+              trial=next;
+            }
+            supply(trial,{items:Object.fromEntries(arr(route.script.itemPositive).map(k=>[k,1]))},
+              'event trigger '+route.event,budget,goalSet,depth+1);
+            if(trial.world.month<route.script.firstMonth)append(trial,{type:'advanceMonth',month:route.script.firstMonth,assumeContinuity:true});
+            append(trial,{type:'eventResearch',event:route.event,script:route.script.script,research:route.research,assumeOutcome:true});
+            finish(trial,route.research,goalSet);
+            if(Number(trial.world.items[id]||0)<qty)throw Error('EVENT_OUTPUT_SHORTFALL');
+            solved=trial;break;
+          }catch(e){budget.last=e.message;}
+        }
+        for(const recipe of solved?[]:arr(data.itemSupply?.[id]?.manufacture)){
           if(++budget.attempts>maxAttempts)break;
           const q=Number(recipe.quantity??recipe.count??1);
           if(!Number.isSafeInteger(q)||q<=0||recipe.weight!==undefined)continue;
