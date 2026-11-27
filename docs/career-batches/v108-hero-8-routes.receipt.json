@@ -1,0 +1,18 @@
+{
+  "schema": "XPZ_CAREER_BATCH_RECEIPT_V1",
+  "baseRef": "43a3e80f831e590e65d29e6fc8efffc671ae5113",
+  "localCommit": "cc28988809cbbff4024080b001a1953a5ef1c48a",
+  "packet": "v108-hero-8-routes.json.gz",
+  "bytes": 59458,
+  "sha256": "742c7e0dd8758e7bb24e95d6cc821f01f2a936ac503967d9501b1f2e5fbe0e30",
+  "gitBlobSha": "918b6a01239bad2fbb53aa56f1566ee50b9e326c",
+  "routesBefore": 6931,
+  "routesAfter": 6939,
+  "heroBefore": 145,
+  "heroAfter": 153,
+  "states": 9373,
+  "graphSha": "91cfa73bbb139898ef32fe1b038be10c4509f48aa54ba64e19ca6086af3d7b52",
+  "ledgerSchema": "COVERAGE_FIRST_RECRUITMENT_AND_CAREER_V114_OVERCAP_CLOUD",
+  "finalAdmission": "not run",
+  "registryAttach": "not run"
+}
