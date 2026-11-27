@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {advanceResearchGoals} from '../public/soldiers/modern/research-progress-core.mjs';
+const node=(ids=[],steps=[],pendingFree=false)=>({world:{ids:new Set(ids),pendingFree},steps});
+const active=(w,id)=>w.ids.has(id);
+const append=(n,id)=>node([...n.world.ids,id],[...n.steps,id]);
+const run=(targets,start,solve,extra={})=>advanceResearchGoals({targets,start,active,solve,canAttempt:()=>true,...extra});
+const empty=node();
+let r=run(['A','B'],empty,(id,n)=>id==='A'?append(n,id):null);
+assert.equal(r.status,'PARTIAL');assert.deepEqual(r.gained,['A']);assert.deepEqual(r.remaining,['B']);assert.deepEqual(r.node.steps,['A']);assert.equal(empty.steps.length,0);
+r=run(['B','A'],empty,(id,n)=>id==='B'&&!active(n.world,'A')?null:append(n,id));
+assert.equal(r.status,'READY');assert.deepEqual(r.node.steps,['A','B']);assert.equal(r.passes,2);
+r=run(['A','B'],node(['A']),()=>node(['B'],['B']));assert.equal(r.status,'NO_PROGRESS');assert.deepEqual(r.remaining,['B']);assert.equal(r.rejected[0].reason,'NO_SAFE_REPLAYABLE_PROGRESS');
+r=run(['A'],empty,()=>node(['A'],['A'],true));assert.equal(r.status,'NO_PROGRESS');
+r=run(['A'],empty,()=>node(['A']));assert.equal(r.status,'NO_PROGRESS');
+r=run(['A','B'],empty,(id,n)=>append(n,id),{canAttempt:()=>false});assert.equal(r.tries,0);assert.equal(r.status,'NO_PROGRESS');
+r=run(['A','A'],node(['A']),()=>{throw Error('already active');});assert.equal(r.status,'READY');assert.deepEqual(r.gained,[]);
+assert.throws(()=>run(['A'],empty,()=>null,{maxPasses:0}));
+console.log('research progress: 8 regression cases passed');
