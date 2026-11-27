@@ -1,0 +1,36 @@
+import {randomRule,careerRandomDistribution,projectRandomStandard} from '../public/branch-soldier-career-random-standard.js';
+function regression() {
+  const keys=['tu','stamina','health','bravery','reactions','firing','throwing','strength','psiStrength','psiSkill','melee','mana'];
+  const all=(v)=>Object.fromEntries(keys.map(k=>[k,v]));
+  const b={id:'B',statCaps:{...all(100),mana:0},maxStats:all(120),minStats:all(1)};
+  const base={id:'birth',soldierType:'B'};
+  const r={id:'random',allowedSoldierTypes:['B'],flatMin:{health:0,strength:0},flatMax:{health:20,strength:20}};
+  const train={id:'train',allowedSoldierTypes:['B'],flatOverallStatChange:{health:15,strength:15},upperBoundAtMaxStats:true};
+  const d={soldiers:[b],profiles:[base],transformations:[r,train],growthRules:{manaPrimary:false}};
+  const deps={keys,initialState:()=>({soldierType:'B',initialStats:{...all(100),mana:0},currentStats:{...all(100),mana:0},history:new Map(),bonusCounts:new Map(),bonusIds:new Set()}),bonusStats:()=>({})};
+  const rec={type:'recruit',soldier:'origin',profile:'birth',band:'min'};
+  const tr=id=>({type:'transform',soldier:'origin',transform:id});
+  const growth={type:'conditionalCapGrowth',soldier:'origin',assumption:true};
+  const vector=keys.map(k=>k==='health'||k==='strength'?120:k==='mana'?0:100);
+  const row={origin:'birth',body:'B',order:['random','train'],current:vector,cap:vector};
+  const result=careerRandomDistribution(d,row,[rec,tr('random'),growth,tr('train'),growth],deps);
+  const assert=(x,m)=>{if(!x)throw Error(m)};
+  assert(result.kind==='conditional-expected',JSON.stringify(result));
+  const expected=(15+16+17+18+19+16*20)/21+100;
+  assert(Math.abs(result.current.expected[keys.indexOf('health')]-expected)<1e-8,'Clamped mean');
+  assert(Math.abs(result.current.maxProbability-(16/21)**2)<1e-8,'Clamped simultaneous max');
+  assert(result.current.max[keys.indexOf('health')]===120,'MaxStats above battle cap retained');
+  const bare={...row,order:['random']},bareResult=careerRandomDistribution(d,bare,[rec,tr('random'),growth],deps);
+  assert(bareResult.kind==='conditional-expected'&&Math.abs(bareResult.current.expected[2]-110)<1e-8,'Unclamped mean');
+  assert(bareResult.current.rareWitness&&Math.abs(bareResult.current.maxProbability-1/441)<1e-9,'Rare endpoint');
+  const projected=projectRandomStandard(bare,bareResult);
+  assert(projected.current[2]!==projected.witnessCurrent[2],'Raw witness preserved');
+  const gate={id:'gate',allowedSoldierTypes:['B'],requiredMinStats:{health:120}};
+  const gated=careerRandomDistribution({...d,transformations:[r,gate]},{...bare,order:['random','gate']},[rec,tr('random'),tr('gate')],deps);
+  assert(gated.kind==='conditional-expected'&&Math.abs(gated.gateProbability-1/21)<1e-8&&gated.current.expected[2]===120,'Gate conditioning');
+  const missing=projectRandomStandard(bare,{kind:'unverified',reason:'missing'});
+  assert(missing.current===null&&missing.cap===null&&missing.witnessCap[2]===120,'No sample fallback');
+  assert(careerRandomDistribution(d,bare,[rec,tr('random'),{type:'unknown',soldier:'origin'}],deps).kind==='unverified','Unsupported action');
+  return {passed:7,clampedExpected:result.current.expected[2],clampedMaxChance:result.current.maxProbability,unclampedMaxChance:bareResult.current.maxProbability,gateChance:gated.gateProbability};
+}
+console.log(regression());
