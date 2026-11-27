@@ -30,7 +30,8 @@ for(const r of src.results){
  assert.deepEqual(current,r.effective,id);
  assert.equal(current.reduce((s,v)=>s+v,0),r.total);
  const capRaw=r.raw.map((v,i)=>scalarGrowth(body,STAT_KEYS[i],v,d)),cap=effective(capRaw);
- rows.push({id,sourceRecordId:r.id,origin:r.origin,body:r.body,order:r.order,current,cap,raw:r.raw,capRaw,branch:null,traits:r.traits.map(([k])=>k),traitCounts,rank:r.rank,medals:{},difficulties:[r.difficulty],hash:key(r.actions),sourceReplayVerified:true,capProjection:'SCALAR_GROWTH_FROM_REPLAYED_ENDPOINT',finalAdmission:false,materialBudgetVerified:false,commendationStatsIncluded:false});
+ const researchActions=r.actions.flatMap(a=>['research','repeatResearch'].includes(a.type)&&typeof a.id==='string'?[a.id]:['freeResearch','eventResearch','missionResearch'].includes(a.type)&&typeof a.research==='string'?[a.research]:[]);
+ rows.push({id,sourceRecordId:r.id,origin:r.origin,body:r.body,order:r.order,current,cap,raw:r.raw,capRaw,branch:null,traits:r.traits.map(([k])=>k),traitCounts,rank:r.rank,medals:{},difficulties:[r.difficulty],hash:key(r.actions),researchActions,sourceReplayVerified:true,capProjection:'SCALAR_GROWTH_FROM_REPLAYED_ENDPOINT',finalAdmission:false,materialBudgetVerified:false,commendationStatsIncluded:false});
 }
 assert.equal(new Set(rows.map(r=>r.id)).size,rows.length);
 const report={schema:'ATLAS_OVERCAP_UNIFIED_EXPLORATION_V1',sourceMetadataSha256:src.sourceMetadataSha256,sourceLedgerHash:src.sourceLedgerHash,sourceFile:'soldier-overcap-expanded-lifecycle.json',sourceHash:key(src),summary:{rows:rows.length,capProjected:rows.length,committedBranchVerified:0,final:0},rows,failures};

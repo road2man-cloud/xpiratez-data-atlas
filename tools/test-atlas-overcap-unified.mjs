@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {createHash,webcrypto} from 'node:crypto';
+import {hydrateResearchPaths} from '../public/branch-soldier-research-path-codec.js';
+import {hydrateSharedCareerSections} from '../public/branch-soldier-registry-shared.js';
+import {loadCareerRows,loadExplorationRows,loadResearchSearch,exactCareerUrl,completionSummaryText} from '../public/branch-soldier-atlas-career-core.js';
+import {loadOvercapEvidence} from '../public/branch-soldier-overcap-unified.js';
+import {unifyCareerRows,unifiedStatusRows} from '../public/branch-soldier-unified-career-core.js';
+const read=n=>JSON.parse(fs.readFileSync('public/data/'+n+'.json'));
+const modern=read('soldiers-modern-index'),registry=hydrateSharedCareerSections(hydrateResearchPaths(JSON.parse(gunzipSync(fs.readFileSync('public/data/branch-soldier-results.json.gz')))));
+globalThis.window={};globalThis.fetch=async url=>new Response(fs.readFileSync(url));
+const final=await loadCareerRows(modern,registry),explore=await loadExplorationRows(modern,registry);
+assert.deepEqual(final.errors,[]);assert.deepEqual(explore.errors,[]);
+const over=explore.rows.filter(r=>r.overcapEvidence),archive=read('soldier-overcap-expanded-lifecycle'),byId=new Map(archive.results.map(r=>[r.id,r]));
+assert.equal(over.length,archive.results.length);
+for(const r of over){const v=byId.get(r.sourceRecordId);assert(v);assert.equal(r.hash,createHash('sha256').update(JSON.stringify(v.actions)).digest('hex'));assert.deepEqual(r.current,v.effective);assert(!r.complete&&!r.certified&&r.branch===null);assert(r.capRaw.every((n,i)=>n>=r.raw[i]));assert(r.statPolicy==='CAREER_COMPARISON_NO_COMMENDATION_BONUS_V1');}
+const rows=unifyCareerRows(final.rows,explore.rows);
+assert.equal(unifiedStatusRows(rows,'complete').length,registry.careerCompletion.summary.completeCombinations);
+assert(over.every(r=>unifiedStatusRows(rows,'conditional').some(x=>x.key===r.key)));
+assert(exactCareerUrl(over[0]).includes('routeStatus=conditional')&&!exactCareerUrl(over[0]).includes('branch=null'));
+const detail=await loadOvercapEvidence(modern,over[0]);assert.deepEqual(detail.actions,byId.get(over[0].sourceRecordId).actions);
+const search=await loadResearchSearch(modern);assert.deepEqual(search.errors,[]);
+const r=over.find(r=>r.researchActions.length>1);assert(search.hasWitness(r)&&search.matches(r,r.researchActions.slice(0,2))&&search.matchesSequence(r,r.researchActions.slice(0,2)));assert(!search.matches(r,['NOT_A_REAL_RESEARCH']));
+const summary=completionSummaryText(registry.careerCompletion);assert(summary.includes('일반')&&summary.includes('코르트'));
+console.log(JSON.stringify({final:final.rows.length,overcap:over.length,combined:rows.length,researchFilter:'pass',detail:'pass',medalFree:true}));
