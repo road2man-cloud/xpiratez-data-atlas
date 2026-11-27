@@ -7,62 +7,62 @@
     {
       "file": "part-00.bin",
       "bytes": 240000,
-      "sha": "e717976f4fa20afaa08387df51a40567370eb65e"
+      "gitBlobSha": "e717976f4fa20afaa08387df51a40567370eb65e"
     },
     {
       "file": "part-01.bin",
       "bytes": 240000,
-      "sha": "79dda4ca2a75309c5aa7b8e2a3839b5fb68bd8e7"
+      "gitBlobSha": "79dda4ca2a75309c5aa7b8e2a3839b5fb68bd8e7"
     },
     {
       "file": "part-02.bin",
       "bytes": 240000,
-      "sha": "c2fc7bf6dc4393bf01b2165b50d223d3408320c5"
+      "gitBlobSha": "c2fc7bf6dc4393bf01b2165b50d223d3408320c5"
     },
     {
       "file": "part-03.bin",
       "bytes": 240000,
-      "sha": "75f34803994448be02c89694606b4c2a9325b348"
+      "gitBlobSha": "75f34803994448be02c89694606b4c2a9325b348"
     },
     {
       "file": "part-04.bin",
       "bytes": 240000,
-      "sha": "a5cd0efd696fb07768782a157805ff2b0204386f"
+      "gitBlobSha": "a5cd0efd696fb07768782a157805ff2b0204386f"
     },
     {
       "file": "part-05.bin",
       "bytes": 240000,
-      "sha": "fb44f52d31c8c1653c6f3847de29f380107d2e99"
+      "gitBlobSha": "fb44f52d31c8c1653c6f3847de29f380107d2e99"
     },
     {
       "file": "part-06.bin",
       "bytes": 240000,
-      "sha": "9d1d0e51af16a69e3edd34f060ae4e874515ff33"
+      "gitBlobSha": "9d1d0e51af16a69e3edd34f060ae4e874515ff33"
     },
     {
       "file": "part-07.bin",
       "bytes": 240000,
-      "sha": "73e68a31a360941dcfd99b89142bf1466f5d5ebd"
+      "gitBlobSha": "73e68a31a360941dcfd99b89142bf1466f5d5ebd"
     },
     {
       "file": "part-08.bin",
       "bytes": 240000,
-      "sha": "f555414f3eb58a6700bf94b6d8ee0088dfb83029"
+      "gitBlobSha": "f555414f3eb58a6700bf94b6d8ee0088dfb83029"
     },
     {
       "file": "part-09.bin",
       "bytes": 240000,
-      "sha": "79e20c1d727a52f7c68d88ef8950ccd5d31e13ef"
+      "gitBlobSha": "79e20c1d727a52f7c68d88ef8950ccd5d31e13ef"
     },
     {
       "file": "part-10.bin",
       "bytes": 240000,
-      "sha": "b25360caadf31a706128497db1f5ded6f2719603"
+      "gitBlobSha": "b25360caadf31a706128497db1f5ded6f2719603"
     },
     {
       "file": "part-11.bin",
       "bytes": 101249,
-      "sha": "ab2c83e5edcda2bb1bc72a36f7dffc4d861ef672"
+      "gitBlobSha": "ab2c83e5edcda2bb1bc72a36f7dffc4d861ef672"
     }
   ],
   "importedRoutes": 61,
