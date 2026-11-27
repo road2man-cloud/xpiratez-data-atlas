@@ -1,0 +1,72 @@
+{
+  "schema": "XPZ_CAREER_BATCH_CHUNKS_V1",
+  "baseRef": "1d1ad60d5ec2ac34fc754d0184611edc3a99f6ca",
+  "bytes": 2180266,
+  "sha256": "560fb318bed3d5afdfd94763aabeab7e33eaadfd34c39cf17122826a76f7ec7d",
+  "chunks": [
+    {
+      "file": "part-00.bin",
+      "bytes": 240000,
+      "gitBlobSha": "a3f811abc21fe283135cc503d1ae391d559fd0b5"
+    },
+    {
+      "file": "part-01.bin",
+      "bytes": 240000,
+      "gitBlobSha": "197e530fb6bdc3ec494ea7e6298a951d1c583e11"
+    },
+    {
+      "file": "part-02.bin",
+      "bytes": 240000,
+      "gitBlobSha": "bc9a36d05723c4e5abf895dd2bb36e76e0b5d198"
+    },
+    {
+      "file": "part-03.bin",
+      "bytes": 240000,
+      "gitBlobSha": "fac5b25171c211b7117cbab28f26dbf38962f5e7"
+    },
+    {
+      "file": "part-04.bin",
+      "bytes": 240000,
+      "gitBlobSha": "a1b7fa31377e14ae8b50c38b4628cb0877f484ec"
+    },
+    {
+      "file": "part-05.bin",
+      "bytes": 240000,
+      "gitBlobSha": "0645d7816a702c75dc7608e76b09f0e8a2b32411"
+    },
+    {
+      "file": "part-06.bin",
+      "bytes": 240000,
+      "gitBlobSha": "9f0c99f932fa18acd2d9ba2532b9f1ea2e3a02a3"
+    },
+    {
+      "file": "part-07.bin",
+      "bytes": 240000,
+      "gitBlobSha": "eba2c665c183e785ae9b585b88f3c6ca78dada6c"
+    },
+    {
+      "file": "part-08.bin",
+      "bytes": 240000,
+      "gitBlobSha": "de85c26ba72eb495c600266fdf01089010b2bcf4"
+    },
+    {
+      "file": "part-09.bin",
+      "bytes": 20266,
+      "gitBlobSha": "f0841106f65f1d16ea83142496722782938256da"
+    }
+  ],
+  "results": {
+    "importedRoutes": 80,
+    "totalRoutes": 6024,
+    "priorFinal": 81,
+    "final": 87,
+    "newFinalByBody": {
+      "STR_SOLDIER_W": 3,
+      "STR_SOLDIER_NEKOMIMI_W": 3
+    },
+    "finalWitnesses": 119,
+    "researchLineCombinations": 3733,
+    "statPolicy": "CAREER_COMPARISON_NO_COMMENDATION_BONUS_V1"
+  },
+  "integration": "Exact base snapshot only. Current main has advanced; use append-only integration and recompute admission."
+}
