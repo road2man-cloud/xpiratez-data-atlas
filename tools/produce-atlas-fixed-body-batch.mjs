@@ -9,10 +9,10 @@ import {rankNearClosureGraphs} from "./atlas-near-closure-graph-priority.mjs";
 const options=new Map(process.argv.slice(2).map(a=>{
  const m=/^--([a-z-]+)=(.+)$/.exec(a);assert(m,"Expected --key=value: "+a);return [m[1],m[2]];
 }));
-const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage","graphs","graph-limit","ready-graph"]);
+const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage","graphs","graph-limit","ready-graph","recruit-origins","recruit-goals","recruit-branches","recruit-limit","recruit-attempts","recruit-overlap"]);
 for(const k of options.keys())assert(allowed.has(k),"Unknown option "+k);
 const phase=options.get("phase")||"all";
-assert(["all","produce","attach","complete","index"].includes(phase));
+assert(["all","produce","attach","complete","index","recruit"].includes(phase));
 function int(k,d,min,max){const n=Number(options.get(k)||d);assert(Number.isSafeInteger(n)&&n>=min&&n<=max,k);return n;}
 const seconds=int("seconds",60,1,600),wave=int("wave",40,1,1000);
 const bodies=(options.get("bodies")||"STR_SOLDIER_PEASANT,STR_SOLDIER_OGRE,STR_SOLDIER_SLAVE,STR_SOLDIER_SYNTH,STR_SOLDIER_GNOME,STR_SOLDIER_DOGE").split(",");
@@ -25,6 +25,13 @@ const completionStage=options.get("completion-stage")||"all";assert(["all","prep
 const data="public/data/",ledgerFile=data+"soldier-population-missing-origin-career.json.gz",indexFile=data+"soldier-population-missing-origin-career-index.json.gz";
 const read=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const initial=read(ledgerFile);
+const recruitOrigins=(options.get("recruit-origins")||"").split(",").filter(Boolean),recruitGoals=(options.get("recruit-goals")||"").split(",").filter(Boolean),recruitBranches=(options.get("recruit-branches")||"").split(",").filter(Boolean);
+if(phase==="recruit"){
+ const profiles=new Map(modern.profiles.map(p=>[p.id,p]));
+ assert(recruitOrigins.length&&recruitGoals.length,"Recruitment requires explicit origins and research goals");
+ assert(recruitOrigins.every(id=>profiles.has(id)&&bodies.includes(profiles.get(id).soldierType)&&profiles.get(id).sourceType!=="event"),"Invalid recruit origin");
+ assert(recruitGoals.every(id=>Object.hasOwn(modern.researchRules,id)),"Unknown recruit research goal");
+}
 let graphs=(options.get("graphs")||"").split(",").filter(Boolean);
 if(graphs.length===1&&graphs[0]==="auto"&&["all","produce"].includes(phase)){
  const db=read(data+"branch-soldier-results.json.gz");
@@ -40,12 +47,17 @@ function run(file,args=[]){
  console.log(JSON.stringify({phase:file,elapsedMs:Date.now()-t,...(file.includes("attach-")?{receipt:JSON.parse(output)}:{})}));
 }
 const quiet=["attempts","coverage-births","shared-scan","closed-recruit","repeat-compact","terminal-transfer","terminal-extension","terminal-event-recruit","trait-chain","terminal","supply-plans","supply-research","terminal-follow","end-stage","end-research","reset-recovery","follow","chain","nodes","research"].map(k=>"--"+k+"=0");
-if(["all","produce","index"].includes(phase)){
- run("tools/build-population-shared-career-v104-transitive.mjs",[...quiet,"--seconds="+seconds,"--closure-wave="+(phase==="index"?0:wave),"--closure-body-scope=1","--closure-medal-preparation=1","--closure-preserve-body=1","--closure-bodies="+bodies.join(","),"--closure-graphs="+graphs.join(","),"--closure-ready-graph="+int("ready-graph",1,0,1),"--closure-focus-actions="+focus.join(","),"--closure-chain-quantum="+int("chain-quantum",6,1,100),"--closure-root-attempts="+int("root-attempts",8,1,100),"--closure-rule-attempts="+int("rule-attempts",2,1,100),"--closure-fragment-ms="+int("fragment-ms",1500,0,20000)]);
+if(["all","produce","index","recruit"].includes(phase)){
+ const recruitment=phase==="recruit"?["--terminal-extension="+int("recruit-limit",4,1,100),"--extension-attempts="+int("recruit-attempts",12,1,100),"--extension-scope=pair","--extension-origins="+recruitOrigins.join(","),"--extension-goals="+recruitGoals.join(","),"--extension-branches="+recruitBranches.join(","),"--extension-goal-overlap="+int("recruit-overlap",recruitGoals.length,0,recruitGoals.length),"--extension-fragment-ms="+int("fragment-ms",1500,0,20000)]:[];
+ run("tools/build-population-shared-career-v104-transitive.mjs",[...recruitment,...quiet.filter(x=>phase!=="recruit"||!x.startsWith("--terminal-extension=")),"--seconds="+seconds,"--closure-wave="+(["index","recruit"].includes(phase)?0:wave),"--closure-body-scope=1","--closure-medal-preparation=1","--closure-preserve-body=1","--closure-bodies="+bodies.join(","),"--closure-graphs="+graphs.join(","),"--closure-ready-graph="+int("ready-graph",1,0,1),"--closure-focus-actions="+focus.join(","),"--closure-chain-quantum="+int("chain-quantum",6,1,100),"--closure-root-attempts="+int("root-attempts",8,1,100),"--closure-rule-attempts="+int("rule-attempts",2,1,100),"--closure-fragment-ms="+int("fragment-ms",1500,0,20000)]);
  const l=read(ledgerFile),i=read(indexFile);
  assert.equal(l.sourceGraphSha256,i.sourceGraphSha256);
  const fresh=Object.entries(l.routes).filter(([k])=>!initial.routes[k]);
  const byBody={};for(const [,r] of fresh)byBody[r.body]=(byBody[r.body]||0)+1;
+ if(phase==="recruit"){
+  const addedGraphs=Object.entries(l.graphs).filter(([k])=>!initial.graphs[k]).map(([graph,g])=>({graph,origin:g.origin,branch:g.branch,body:g.nodes[0]?.body}));
+  console.log(JSON.stringify({newRecruitGraphs:addedGraphs,extension:l.summary.terminalExtension||null}));
+ }
  console.log(JSON.stringify({states:Object.values(l.graphs).reduce((s,g)=>s+g.nodes.length,0),routes:Object.keys(l.routes).length,newRoutes:fresh.length,byBody,closureCandidates:l.summary.closureWave?.scopeNewCandidates||0,closureAttempts:l.summary.closureWave?.attempts||0,closureMetrics:l.summary.closureWave?.byBody}));
 }
 if(["all","attach"].includes(phase))run("tools/attach-population-missing-origin-career.mjs",options.has("append-base")?["--append-base="+options.get("append-base")]:[]);
