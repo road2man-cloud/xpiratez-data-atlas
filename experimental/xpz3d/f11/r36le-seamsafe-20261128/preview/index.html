@@ -92,7 +92,13 @@ canvas{width:100%;height:100%;display:block;touch-action:none}
 <section><h2>07 / 모델 변경량 (실제 GLB 측정)</h2>
 <div class="kpis"><div class="kpi"><small>R36LC→LE 메시 좌표</small><strong>동일</strong></div><div class="kpi"><small>임베디드 PNG</small><strong>동일</strong></div><div class="kpi"><small>몸체 샘플링</small><strong>Bilinear</strong></div><div class="kpi"><small>폴리곤 / 본</small><strong>2100 / 63</strong></div></div>
 <p class="note">R36LC→R36LE는 GLB BIN 청크 전체 바이트를 보존하고, 몸체 재질의 텍스처 참조 및 샘플러만 교체합니다. 먼 거리 깜빡임 위험은 별도로 관찰해야 합니다.</p></section>
-<section><h2>08 / 런타임</h2><div id="status" role="status">모델 로딩 준비 중…</div></section>
+<section><h2>08 / 실물 캡처 자료</h2>
+<p class="note">아래는 이전에 생성한 가상 이미지가 아니라 R36LE 및 R36LC 전체 GLB를 WebGL로 렌더링한 실제 비교 캡처입니다.</p>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+<a href="captures/R36LE_VS_R36LC_WHOLE_0.png" target="_blank" style="color:#b3e3d4"><img loading="lazy" src="captures/R36LE_VS_R36LC_WHOLE_0.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center;border-radius:6px;border:1px solid #487183">전신 0°</a>
+<a href="captures/R36LE_VS_R36LC_PELVIS_35.png" target="_blank" style="color:#b3e3d4"><img loading="lazy" src="captures/R36LE_VS_R36LC_PELVIS_35.png" style="width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center;border-radius:6px;border:1px solid #487183">골반 35°</a>
+</div><p class="note warning">장거리 깜빡임과 미해결 검은 틈은 이 캡처만으로 해결되었다고 판정하지 않습니다.</p></section>
+<section><h2>09 / 런타임</h2><div id="status" role="status">모델 로딩 준비 중…</div></section>
 </aside>
 <div class="viewer"><canvas id="view"></canvas>
 <div class="hud"><div class="pane"><small>표시 모델</small><strong id="modelLabel">저폴리곤 + 디테일 텍스처</strong></div><div class="pane"><small>GPU 삼각형 / 호출</small><strong id="gpu">—</strong></div></div>
