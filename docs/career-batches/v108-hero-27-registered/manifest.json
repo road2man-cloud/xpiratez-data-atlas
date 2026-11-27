@@ -1,0 +1,29 @@
+{
+  "schema": "XPZ_CAREER_BATCH_CHUNKS_V1",
+  "baseRef": "43a3e80f831e590e65d29e6fc8efffc671ae5113",
+  "bytes": 457057,
+  "sha256": "3a779e7093a14971b2a754cdfd1d4a4ecaa91fc5b1eff14cee0e52e49975bc2b",
+  "chunks": [
+    {
+      "file": "part-00.bin",
+      "bytes": 240000,
+      "gitBlobSha": "45c0830adf18d46b16b2f94c3ded3aa08ed6551a"
+    },
+    {
+      "file": "part-01.bin",
+      "bytes": 217057,
+      "gitBlobSha": "b211ebf1c677c06fd19ee258d65c2fdfd84b4d58"
+    }
+  ],
+  "registeredRoutes": 6958,
+  "heroRoutes": 172,
+  "newRoutesThisBatch": 19,
+  "cumulativeNewRoutes": 27,
+  "independentReplayThisBatch": 19,
+  "newOriginBranchPairs": 1,
+  "graphSha": "a27d10f76ceaba89a972746af17abfde24f3ec6f7daee7651e91d3a3acac0b86",
+  "finalAdmission": "not recalculated",
+  "mainMerge": "not executed",
+  "newGraph": "122bd822140048f32fd1085081f5328e33dc4dd5ec6c9beff29aad429c5ae06a",
+  "recruitmentResearch": "STR_HERO_RED_TRAINING"
+}

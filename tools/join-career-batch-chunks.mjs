@@ -1,0 +1,32 @@
+import fs from "node:fs";
+import path from "node:path";
+import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
+
+const [dir,out]=process.argv.slice(2);
+assert(dir&&out,"Usage: node tools/join-career-batch-chunks.mjs <directory> <output>");
+const m=JSON.parse(fs.readFileSync(path.join(dir,"manifest.json"),"utf8"));
+assert.equal(m.schema,"XPZ_CAREER_BATCH_CHUNKS_V1");
+assert(Number.isSafeInteger(m.bytes)&&m.bytes>0,"Invalid packet length");
+assert(typeof m.sha256==="string"&&/^[0-9a-f]{64}$/.test(m.sha256),"Invalid packet SHA-256");
+assert(Array.isArray(m.chunks)&&m.chunks.length>0,"Missing packet chunks");
+let total=0;
+const parts=m.chunks.map((c,i)=>{
+ const match=typeof c.file==="string"&&/^part-([0-9]+)\.bin$/.exec(c.file);
+ assert(match&&Number(match[1])===i,"Missing, duplicate or out-of-order chunk at index "+i);
+ assert(Number.isSafeInteger(c.bytes)&&c.bytes>0,"Invalid chunk length: "+c.file);
+ const expected=c.gitBlobSha??c.sha;
+ assert(typeof expected==="string"&&/^[0-9a-f]{40}$/.test(expected),"Missing Git blob SHA: "+c.file);
+ if(c.gitBlobSha!==undefined&&c.sha!==undefined)assert.equal(c.gitBlobSha,c.sha,"Conflicting chunk SHA fields: "+c.file);
+ const b=fs.readFileSync(path.join(dir,c.file));
+ assert.equal(b.length,c.bytes,"Wrong chunk length: "+c.file);
+ assert.equal(createHash("sha1").update("blob "+b.length+"\0").update(b).digest("hex"),expected,"Wrong Git blob SHA: "+c.file);
+ total+=b.length;
+ assert(total<=m.bytes,"Packet length exceeded");
+ return b;
+});
+assert.equal(total,m.bytes,"Wrong packet length");
+const data=Buffer.concat(parts,total);
+assert.equal(createHash("sha256").update(data).digest("hex"),m.sha256,"Wrong packet SHA-256");
+fs.writeFileSync(out,data,{flag:"wx"});
+console.log(JSON.stringify({out,bytes:data.length,sha256:m.sha256}));
