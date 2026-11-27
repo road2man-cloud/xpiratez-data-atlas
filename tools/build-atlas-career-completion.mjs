@@ -17,9 +17,12 @@ import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
 import {packResearchPaths,hydrateResearchPaths} from "../public/branch-soldier-research-path-codec.js";
+import {completionStage} from "./atlas-career-completion-stage.mjs";
 // Original YAML is needed only for a fresh source extraction.
 const file="public/data/branch-soldier-results.json.gz";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
+const stage=completionStage();
+async function prepare(){
 const db=hydrateResearchPaths(decode(file)),modern=read("public/data/soldiers-modern-index.json"),metadata=db.sourceMetadataSha256;
 assert.equal(modern.meta.source.metadataSha256,metadata);
 const prior=db.careerCompletion;
@@ -158,6 +161,16 @@ summary.observedIncumbents=incumbents.summary;
 const c=db.careerCompletion;
 c.researchLineRows=c.rows.filter(r=>r.proofKind===RESEARCH_LINE_PROOF);
 c.researchLineExploration={summary:{...summary},originCoverage:c.originCoverage,chortCoverage:c.chortCoverage,observedIncumbents:c.observedIncumbents,maxComparison:c.maxComparison,materialComparison:c.materialComparison,repeatComparison:c.repeatComparison};
+return {db,comparisonRows:comparison.rows,seenSize:seen.size};
+}
+const prepared=stage.mode==="finalize"?await stage.load():await prepare();
+if(stage.mode==="prepare"){await stage.save(prepared);}else{
+const {db,seenSize}=prepared,modern=read("public/data/soldiers-modern-index.json");
+const comparison=prepared.comparisonRows?{rows:prepared.comparisonRows,errors:[]}:await loadCareerRows(modern,db,{includeWitnesses:true,scope:"research-line"});
+assert.deepEqual(comparison.errors,[]);
+const comparisonRows=comparison.rows;
+const c=db.careerCompletion,{summary,bySource,classifications}=c;
+summary.researchTraitSets=c.researchTraitSets.summary;
 const finalLedger=decode("public/data/soldier-population-missing-origin-career.json.gz");
 const finalData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
 const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createSharedCareerReplay(finalData,finalLedger.summary),lines:c.researchLineRows});
@@ -165,10 +178,10 @@ c.finalCareerAdmission=final;
 c.rows=final.rows;
 summary.completeCombinations=final.rows.length;
 summary.finalCareer=final.summary;
-summary.unresolvedEvidence=seen.size-new Set(Object.entries(final.witnesses).filter(([,v])=>['FINAL_CLOSED','FINAL_EQUIVALENT'].includes(v.status)).map(([id])=>classifications.missingbirth[id].evidenceId)).size;
+summary.unresolvedEvidence=seenSize-new Set(Object.entries(final.witnesses).filter(([,v])=>['FINAL_CLOSED','FINAL_EQUIVALENT'].includes(v.status)).map(([id])=>classifications.missingbirth[id].evidenceId)).size;
 bySource.missingbirth.complete=final.rows.length;
 c.researchTraitSets.summary.complete=final.rows.length;
-const finalRows=comparison.rows.filter(r=>final.witnesses[r.id]?.status==="FINAL_CLOSED").map(r=>({...r,complete:true}));
+const finalRows=comparisonRows.filter(r=>final.witnesses[r.id]?.status==="FINAL_CLOSED").map(r=>({...r,complete:true}));
 const finalCoverage=summarizeOriginCoverage(modern.profiles,finalRows);
 Object.assign(summary,finalCoverage.summary);
 c.originCoverage=finalCoverage.origins;c.chortCoverage=finalCoverage.chort;
@@ -183,3 +196,4 @@ db.summary.careerCompletion=summary;
 db.policies.CAREER_COMPLETION="선택 연구 분기와 최종 병종을 유지하는 조건부 육성 종결 조합을 등록. 다른 병종 및 복제는 별도 목표로 분리. 반복 시술은 실제 재생 및 성장캡 복원 후 동일 상태일 때만 종결 의무에서 제외. 병종 순환과 실제 게임·전역 최적은 미인증.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packResearchPaths(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
+}
