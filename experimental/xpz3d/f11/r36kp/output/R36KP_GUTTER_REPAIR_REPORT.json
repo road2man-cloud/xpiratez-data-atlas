@@ -1,0 +1,58 @@
+{
+  "source": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\r36kp_2048\\R36KP_2088_CONTINUOUS.glb",
+  "destination": "D:\\daphne_auto\\F11_Web_Review_ghpages_20261105\\f11\\r36ko-seam-integrated-20261127\\R36KP_2088_ATTACHED_FINAL.glb",
+  "originalSha256": "3cdc4f3a5b1a79c3bf311007df6c3e73b81a2f56ee9aeb3c0609a628f8fc7230",
+  "output": {
+    "bytes": 3408028,
+    "sha256": "3e1308b2903d75dbb2c2d93ffe117c91bfe86c10391a3da5efa5cfa58cb1fa85"
+  },
+  "textureRepair": [
+    {
+      "name": "body_color",
+      "file": "textures\\body_color_SEAMFIX_2048.png",
+      "original": 367429,
+      "updated": 217869,
+      "sha256": "8443935c290a0ea822523e6778dc9c30a3596f5649d54f537c015c11b19d9e16",
+      "triCount": 1120,
+      "cols": 34,
+      "tile": 60,
+      "pad": 3,
+      "span": 54,
+      "repaired": 2368800,
+      "previousBlack": 338240,
+      "afterBlack": 0
+    },
+    {
+      "name": "body_normal",
+      "file": "textures\\body_normal_SEAMFIX_2048.png",
+      "original": 2522383,
+      "updated": 2554324,
+      "sha256": "684b35bc9bb6334f88bb9292de9ff5f4179ce3b383729964eb33bd68415f371f",
+      "triCount": 1120,
+      "cols": 34,
+      "tile": 60,
+      "pad": 3,
+      "span": 54,
+      "repaired": 2368800,
+      "previousBlack": 0,
+      "afterBlack": 0
+    },
+    {
+      "name": "body_orm",
+      "file": "textures\\body_orm_SEAMFIX_2048.png",
+      "original": 299377,
+      "updated": 164261,
+      "sha256": "820f6e50741edcdec1bcb10bdcdad1a49656f23d6b53addf831584963e14f10c",
+      "triCount": 1120,
+      "cols": 34,
+      "tile": 60,
+      "pad": 3,
+      "span": 54,
+      "repaired": 2368800,
+      "previousBlack": 0,
+      "afterBlack": 0
+    }
+  ],
+  "geometryChanged": false,
+  "bindingChanged": false
+}
