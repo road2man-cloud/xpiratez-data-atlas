@@ -1,0 +1,385 @@
+{
+  "url": "http://127.0.0.1:9400/r36la-surface-flow-20261128/preview/index.html",
+  "assets": {
+    "low": [
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+        "verts": 352,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_1",
+        "verts": 174,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_2",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_3",
+        "verts": 18,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_4",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_GAME_SKIN_WITH_EMBEDDED_ANATOMY",
+        "verts": 3396,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      }
+    ],
+    "soft": [
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+        "verts": 352,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_1",
+        "verts": 174,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_2",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_3",
+        "verts": 18,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_4",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_GAME_SKIN_WITH_EMBEDDED_ANATOMY",
+        "verts": 3396,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      }
+    ],
+    "legacy": [
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+        "verts": 352,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_1",
+        "verts": 174,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_2",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_3",
+        "verts": 18,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED_4",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KP_GAME_SKIN_WITH_EMBEDDED_ANATOMY",
+        "verts": 3360,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      }
+    ],
+    "high": [
+      {
+        "mesh": "R36KO_R36HW_AUTHORITATIVE_HEAD_EYES_HAIR",
+        "verts": 352,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_R36HW_AUTHORITATIVE_HEAD_EYES_HAIR_1",
+        "verts": 174,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_R36HW_AUTHORITATIVE_HEAD_EYES_HAIR_2",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_R36HW_AUTHORITATIVE_HEAD_EYES_HAIR_3",
+        "verts": 18,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_R36HW_AUTHORITATIVE_HEAD_EYES_HAIR_4",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_EDITOR_NUDE_BODY",
+        "verts": 6450,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KF_ONLY_CENTER_ANATOMY_R36JB",
+        "verts": 95,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KF_ONLY_CENTER_ANATOMY_R36JB_1",
+        "verts": 3359,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY",
+        "verts": 96,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_1",
+        "verts": 92,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_2",
+        "verts": 74,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_3",
+        "verts": 28,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_4",
+        "verts": 24,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_5",
+        "verts": 40,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_6",
+        "verts": 20,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_7",
+        "verts": 48,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "R36KO_OPTIONAL_R36HW_GARMENTS_ONLY_8",
+        "verts": 22,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      }
+    ],
+    "original": [
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate",
+        "verts": 352,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_1",
+        "verts": 174,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_2",
+        "verts": 96,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_3",
+        "verts": 92,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_4",
+        "verts": 74,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_5",
+        "verts": 28,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_6",
+        "verts": 24,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_7",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_8",
+        "verts": 230,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_9",
+        "verts": 40,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_10",
+        "verts": 20,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_11",
+        "verts": 18,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_12",
+        "verts": 8,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_13",
+        "verts": 48,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      },
+      {
+        "mesh": "F11_R36HH_clothed_source_detail_candidate_14",
+        "verts": 22,
+        "skinningMethod": "function",
+        "oldSkinningMethod": "undefined"
+      }
+    ]
+  },
+  "loaded": {
+    "original": "2098 triangles",
+    "high": "20610 triangles"
+  },
+  "exceptions": [],
+  "captures": [
+    {
+      "name": "R36LA_00_PELVIS_VS_R36KZ.png",
+      "size": 607703,
+      "angle": "0°",
+      "mode": "low",
+      "right": "legacy",
+      "split": true,
+      "draw": "4,188 △ / 12 calls",
+      "spacing": "0.180 → 0.180 (+0.000)",
+      "error": 0
+    },
+    {
+      "name": "R36LA_35_PELVIS_VS_R36KZ.png",
+      "size": 547443,
+      "angle": "35°",
+      "mode": "low",
+      "right": "legacy",
+      "split": true,
+      "draw": "4,188 △ / 12 calls",
+      "spacing": "0.180 → 0.686 (+0.506)",
+      "error": 0
+    },
+    {
+      "name": "R36LA_00_STRONG_FLOW.png",
+      "size": 607718,
+      "angle": "0°",
+      "mode": "soft",
+      "right": "legacy",
+      "split": true,
+      "draw": "4,188 △ / 12 calls",
+      "spacing": "0.180 → 0.180 (+0.000)",
+      "error": 0
+    },
+    {
+      "name": "R36LA_00_CHEST_VS_R36KZ.png",
+      "size": 597934,
+      "angle": "0°",
+      "mode": "low",
+      "right": "legacy",
+      "split": true,
+      "draw": "4,188 △ / 12 calls",
+      "spacing": "0.180 → 0.180 (+0.000)",
+      "error": 0
+    },
+    {
+      "name": "R36LA_00_COLOR_ONLY.png",
+      "size": 393115,
+      "angle": "0°",
+      "mode": "low",
+      "right": "legacy",
+      "split": true,
+      "draw": "4,188 △ / 12 calls",
+      "spacing": "0.180 → 0.180 (+0.000)",
+      "error": 0
+    }
+  ],
+  "triangles": {
+    "original": 2098,
+    "high": 20610,
+    "low": 2100,
+    "legacy": 2088,
+    "soft": 2100
+  },
+  "pass": true
+}
