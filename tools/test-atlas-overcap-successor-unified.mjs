@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {webcrypto,createHash} from 'node:crypto';
+import {loadOvercapRows,loadOvercapSuccessorRows,loadOvercapEvidence,loadOvercapMaterial,projectOvercapExploration,overcapSource,overcapSuccessorSource} from '../public/branch-soldier-overcap-unified.js';
+import {unifyCareerRows,unifiedStatusRows} from '../public/branch-soldier-unified-career-core.js';
+const read=n=>JSON.parse(fs.readFileSync(new URL('../public/data/'+n+'.json',import.meta.url)));
+const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+const modern=read('soldiers-modern-index'),base=read('soldier-overcap-expanded-lifecycle'),next=read('soldier-overcap-direct-successors'),mat=read('soldier-overcap-successor-material-ledger'),proj=read('soldier-overcap-successor-unified-exploration');
+if(!globalThis.crypto)globalThis.crypto=webcrypto;
+const calls=new Map();
+globalThis.fetch=async url=>{const n=new URL(url).pathname.split('/').pop();calls.set(n,(calls.get(n)||0)+1);return new Response(fs.readFileSync(new URL('../public/data/'+n,import.meta.url)));};
+const [original,rows]=await Promise.all([loadOvercapRows(modern),loadOvercapSuccessorRows(modern)]);
+assert.equal(original.length,base.summary.complete);assert.equal(rows.length,next.summary.uniqueActionWitnesses);assert.equal(rows.length,mat.summary.routes);
+assert.equal(new Set([...original,...rows].map(r=>r.key)).size,original.length+rows.length);
+assert.equal(new Set([...original,...rows].map(r=>r.hash)).size,original.length+rows.length);
+const parents=new Map(base.results.map(r=>[r.id,r])),children=new Map(next.rows.map(r=>[r.id,r])),materials=new Map(mat.rows.map(r=>[r.id,r]));
+for(const row of rows){
+ assert.equal(row.complete,false);assert.equal(row.finalAdmission,false);assert.equal(row.materialBudgetVerified,false);assert.equal(row.commendationStatsIncluded,false);
+ const child=children.get(row.sourceRecordId),p=parents.get(row.parentRecordId);assert(child&&p);
+ assert.deepEqual(row.current,child.effective);assert.deepEqual(row.cap,child.cap);
+ const evidence=await loadOvercapEvidence(modern,row);assert.deepEqual(evidence.actions,[...p.actions,...child.suffix]);assert.equal(hash(evidence.actions),child.fullActionHash);
+ assert.deepEqual((await loadOvercapMaterial(modern,row)).row,materials.get(child.id));
+}
+assert.equal(calls.get(overcapSuccessorSource.file),1);assert.equal(calls.get(overcapSource.file),1);assert.equal(calls.get(overcapSuccessorSource.material),1);
+const merged=unifyCareerRows([{key:'example-final',complete:true}], [...original,...rows]);
+assert.equal(unifiedStatusRows(merged,'complete').length,1);
+assert.equal(unifiedStatusRows(merged,'conditional').length,original.length+rows.length);
+assert.throws(()=>projectOvercapExploration(modern,{...proj,baseSourceHash:'bad'},overcapSuccessorSource),/버전/);
+await assert.rejects(loadOvercapEvidence(modern,{...rows[0],parentRecordId:'bad'}),/원본/);
+await assert.rejects(loadOvercapMaterial(modern,{...rows[0],baseSourceHash:'0'.repeat(64)}),/버전/);
+console.log(JSON.stringify({original:original.length,successors:rows.length,unified:original.length+rows.length,materialLinked:rows.length,hashes:'pass',corruptionRejected:true,finalCountPreserved:true}));

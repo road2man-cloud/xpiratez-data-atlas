@@ -1,4 +1,4 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=110-overcap-material';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=111-overcap-successors';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
@@ -7,7 +7,7 @@ import {maxComparisonRows,careerClass,CHORT_BODY} from './branch-soldier-max-fro
 import {createMaterialIndex,materialComparisonRows} from './branch-soldier-material-frontier-v2.js?v=82-repeat-compact';
 import {createRepeatComparison} from './branch-soldier-repeat-comparison.js?v=85-final-closure';
 import {mountLiveCareerGuide} from './soldiers/modern/live-career-guide.js?v=69';
-import {overcapSource,loadOvercapEvidence,loadOvercapMaterial} from './branch-soldier-overcap-unified.js?v=110';
+import {overcapSource,overcapSuccessorSource,loadOvercapEvidence,loadOvercapMaterial} from './branch-soldier-overcap-unified.js?v=111';
 // Mounted only in the existing Soldier DB's originTable. No standalone page.
 const root=new URL('./',import.meta.url);
 export function mountRouteTable({modern,catalog,registry,isActive,group=()=> 'routes',legacyRows=()=>[]}){
@@ -47,7 +47,7 @@ const branchName=id=>{const b=branches.get(id);return b?'#'+b.rank+' · '+b.capt
 const link=(text,path)=>{const a=el('a',text);a.href=new URL(path,root);return a};
 const search=(kind,id)=>'search/?'+new URLSearchParams({kind,q:id});
 const context=()=>({profiles,branches,branchCaptains,names,selected,researchIndex:researchFilters.index()});
-const sourceOf=r=>r.overcapEvidence?overcapSource:ledgers.find(s=>s.key===r.source);
+const sourceOf=r=>r.successorEvidence?overcapSuccessorSource:r.overcapEvidence?overcapSource:ledgers.find(s=>s.key===r.source);
 const multiChanged=()=>{if(!initial&&isActive()){page=0;sync();render();}};
 const multi=Object.fromEntries([['training','시술'],['trait','보유 특성']].map(([id,label])=>[id,mountMultiFilter($(id),{initial:params.getAll(id),excludeInitial:params.getAll(id==='training'?'excludeTraining':'excludeTrait'),sequenceInitial:id==='training'?params.getAll('trainingSequence'):null,label,onChange:multiChanged})]));
 const filterHost=$('routeFilters').querySelector('.route-filters');
@@ -120,7 +120,7 @@ async function appendOvercapMaterials(content,r,token){
    const detail=(overcapSourceLabel[c?.kind]||c?.kind||'미확인')+(x.pool?' · 한도 '+fmt(x.pool.cap)+' · 이벤트 미연결 '+fmt(x.pool.unbackedExternalUnits):'');
    tr.append(el('td',detail));table.append(tr);
   }
-  section.append(table,el('p','총소모는 기록된 직접 소비량이며 중간재·자동 연구·환급은 포함하지 않습니다. 재사용 표본은 사용 횟수입니다.','small'),link('전체 재료 원장 JSON','data/'+overcapSource.material));
+  section.append(table,el('p','총소모는 기록된 직접 소비량이며 중간재·자동 연구·환급은 포함하지 않습니다. 재사용 표본은 사용 횟수입니다.','small'),link('전체 재료 원장 JSON','data/'+sourceOf(r).material));
  }catch(e){if(token===dialogToken)section.append(el('p','재료 상세 미연결: '+e.message));}
 }
 async function showResearch(r){
@@ -128,7 +128,7 @@ async function showResearch(r){
  $('researchTitle').textContent=originName(r.origin)+' · 연구 이력';
  content.replaceChildren(link(r.rootRoute?'기존 출발 경로':'전체 육성 근거',routeUrl(r)),el('p','불러오는 중…'));
  if(!dialog.open)dialog.showModal();
- if(r.overcapEvidence){try{const v=await loadOvercapEvidence(modern,r);if(token!==dialogToken)return;content.replaceChildren(el('h3','성장캡 초과 훈련 · 조건부 재생'),el('p','훈장 보너스 제외 · 원 작업자의 독립 시간순 재생 근거. 승리 분기·한정 재료·최종 종결 미인증. 성장캡은 기록 원시값에서 산출한 조건부 성장 투영입니다.'));const t=el('table'),h=el('tr');for(const x of ['능력치','기록 영구치','조건부 성장캡'])h.append(el('th',x));t.append(h);for(const [i,k] of statKeys.entries()){const tr=el('tr');for(const x of [labels[k],fmt(r.current[i]),fmt(r.cap[i])])tr.append(el('td',x));t.append(tr);}content.append(t,el('p','활성 연구 '+v.activeResearch.length+'개 · 난이도 '+v.difficulty),el('p','시술: '+v.order.map(name).join(' → ')));for(const [title,data] of [['활성 연구',v.activeResearch],['시점별 이정표',v.milestones],['전체 시간순 행동',v.actions]]){const d=el('details');d.append(el('summary',title+' ('+data.length+')'));d.append(el('pre',JSON.stringify(data,null,2)));content.append(d);}content.append(link('원본 재생 원장 JSON','data/'+source.file));await appendOvercapMaterials(content,r,token);}catch(e){if(token===dialogToken)content.replaceChildren(el('p',e.message));}return;}
+ if(r.overcapEvidence){try{const v=await loadOvercapEvidence(modern,r);if(token!==dialogToken)return;content.replaceChildren(el('h3',r.successorEvidence?'후속 육성 · 조건부 재생':'성장캡 초과 훈련 · 조건부 재생'),el('p','훈장 보너스 제외 · 원 작업자의 독립 시간순 재생 근거. 승리 분기·한정 재료·최종 종결 미인증. 성장캡은 기록 원시값에서 산출한 조건부 성장 투영입니다.'));const t=el('table'),h=el('tr');for(const x of ['능력치','기록 영구치','조건부 성장캡'])h.append(el('th',x));t.append(h);for(const [i,k] of statKeys.entries()){const tr=el('tr');for(const x of [labels[k],fmt(r.current[i]),fmt(r.cap[i])])tr.append(el('td',x));t.append(tr);}if(r.successorEvidence)content.append(el('p','기초 경로 대비 성장캡 합계 +'+fmt(r.capGain)+' · 활성 분기 후보 '+fmt(r.fullyActiveBranchCandidates.length)+'개 · 종결 미인증'),link('기초 육성 경로','soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:'conditional',q:v.sourceId})+'#originMaxima'));content.append(t,el('p','활성 연구 '+v.activeResearch.length+'개 · 난이도 '+v.difficulty),el('p','시술: '+v.order.map(name).join(' → ')));for(const [title,data] of [['활성 연구',v.activeResearch],['시점별 이정표',v.milestones],['전체 시간순 행동',v.actions]]){const d=el('details');d.append(el('summary',title+' ('+data.length+')'));d.append(el('pre',JSON.stringify(data,null,2)));content.append(d);}content.append(link('원본 재생 원장 JSON','data/'+source.file));await appendOvercapMaterials(content,r,token);}catch(e){if(token===dialogToken)content.replaceChildren(el('p',e.message));}return;}
  if(!source?.index){content.replaceChildren(link('원본 경로에서 연구·시술 이력 보기',routeUrl(r)));return}
  try{
   const w=readResearchWitness(await indexLoad(source.index),r,metadata);if(token!==dialogToken)return;
@@ -248,7 +248,7 @@ function renderRow(r,f){
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.rankDefault){td.append(el('div','기본 계급 가정','small'));}filled=true}break;
   case 'medals':if(r.medals){const entries=Object.entries(r.medals);if(entries.length){for(const [id,level] of entries){const d=el('div');d.append(link(name(id)+' '+(Number.isInteger(level)?String(level+1)+'단계':'단계 미확인'),search('bonus',id)));td.append(d);}td.title='시술 조건 충족을 위해 가정한 훈장. 이 열의 보너스는 비교 능력치에 포함되지 않습니다.';}else td.textContent='—';filled=true}break;
-  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'최종 육성 종결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.overcapEvidence?'성장캡 초과 육성 · 종결 미인증':r.researchTraitPair?.goals.length?'최종 연구 도달 · 후속 탐색':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.flatRoll)td.append(el('div','난수 결과 가정','small'));filled=true;break;
+  case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'최종 육성 종결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.successorEvidence?'후속 육성 · 종결 미인증':r.overcapEvidence?'성장캡 초과 육성 · 종결 미인증':r.researchTraitPair?.goals.length?'최종 연구 도달 · 후속 탐색':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.flatRoll)td.append(el('div','난수 결과 가정','small'));filled=true;break;
   case 'source':if(r.legacy||r.birthOnly){td.append(link(r.birthOnly?'출생 원본':'기존 출생 원장',r.detailUrl));filled=true;}else if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }
   if(!filled){td.textContent='—';td.classList.add('missing')}
@@ -272,7 +272,7 @@ function render(){
  $('status').textContent=fmt(matches.length)+'개 표시 / '+fmt(filtered.length)+'개 필터 일치 · 완결 '+fmt(completeRows.length)+(rawCompleteRows.length>completeRows.length?' · 동일효과 반복 경로 '+fmt(rawCompleteRows.length-completeRows.length)+'개 숨김':'')+' · 조건부 '+fmt(others.filter(r=>rowStatus(r)==='conditional').length)+' · 출생 '+fmt(others.filter(r=>r.birthOnly).length)+' · 미연결 '+fmt(others.filter(r=>r.missing&&!r.birthOnly).length)+(useFrontier?' · '+(materialView?'수치·한정품 동시 지배':'완결 수치 지배')+' 경로 '+fmt(completeRows.length-comparison.length)+'개 숨김':'')+(materialView?' · 한정품 소비 미확인 '+fmt(completeRows.filter(r=>materialIndex.cost(r.id)===null).length)+'개 보존':'')+(loaded<ledgers.length?' · 원장 연결 중':'');
  $('maxViewWrap').hidden=f.routeStatus!=='complete';
  if(completion)document.getElementById('catalogStatus').textContent=completionSummaryText(completion);
- $('status').textContent+=(f.careerClass==='chort'?' · 코르트 비교 (출생처는 획득 근거)':f.careerClass==='all'?' · 전체 병종 (코르트 포함)':' · 코르트 제외')+' · 성장캡 초과 재생 '+fmt(all.filter(r=>r.overcapEvidence).length)+'개 / 재료 연결 '+fmt(all.filter(r=>r.overcapEvidence&&r.materialEvidence).length)+'개 (최종 미합산)'+researchFilters.notice();
+ $('status').textContent+=(f.careerClass==='chort'?' · 코르트 비교 (출생처는 획득 근거)':f.careerClass==='all'?' · 전체 병종 (코르트 포함)':' · 코르트 제외')+' · 성장캡 초과 기초 '+fmt(all.filter(r=>r.overcapEvidence&&!r.successorEvidence).length)+'개 / 후속 '+fmt(all.filter(r=>r.successorEvidence).length)+'개 / 재료 연결 '+fmt(all.filter(r=>r.overcapEvidence&&r.materialEvidence).length)+'개 (최종 미합산)'+researchFilters.notice();
  $('status').dataset.routeStatus=loaded===ledgers.length?(errors.length?'partial':'loaded'):'loading';
  $('errors').hidden=!errors.length;$('errors').textContent=errors.join(' · ');
  $('page').textContent=(page+1)+' / '+pages;$('prev').disabled=page===0;$('next').disabled=page>=pages-1;

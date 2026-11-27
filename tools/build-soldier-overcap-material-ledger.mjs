@@ -4,14 +4,25 @@ import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
-const path='public/data/soldier-overcap-expanded-lifecycle.json';
-const output='public/data/soldier-overcap-material-ledger.json';
+import {expandOvercapSuccessor} from '../public/branch-soldier-overcap-successor-core.js';
+const successorMode=process.argv.includes('--successors');
+const basePath='public/data/soldier-overcap-expanded-lifecycle.json';
+const path=successorMode?'public/data/soldier-overcap-direct-successors.json':basePath;
+const output=successorMode?'public/data/soldier-overcap-successor-material-ledger.json':'public/data/soldier-overcap-material-ledger.json';
 const readBytes=p=>fs.existsSync(p)?fs.readFileSync(p):execFileSync('git',['-c','safe.directory='+process.cwd().replaceAll('\\','/'),'show','HEAD:'+p],{maxBuffer:128*1024*1024});
 const read=p=>JSON.parse(readBytes(p));
 const digest=b=>createHash('sha256').update(b).digest('hex');
 // JSON fingerprints are insensitive to checkout CRLF conversion.
 const jsonDigest=x=>digest(JSON.stringify(x));
-const lifeBytes=readBytes(path),life=JSON.parse(lifeBytes);
+const lifeBytes=readBytes(path),source=JSON.parse(lifeBytes);
+let life=source,base=null;
+if(successorMode){
+ base=read(basePath);if(source.schema!=='ATLAS_OVERCAP_DIRECT_SUCCESSOR_LEDGER_V1'||source.sourceHash!==jsonDigest(base)||source.sourceLedgerHash!==base.sourceLedgerHash||source.sourceMetadataSha256!==base.sourceMetadataSha256)throw Error('successor ledger mismatch');
+ const parents=new Map(base.results.map(r=>[r.id,r]));
+ const results=source.rows.map(r=>{const p=parents.get(r.sourceRecordId),x=expandOvercapSuccessor(p,r);if(jsonDigest(p.actions)!==r.sourceActionHash||jsonDigest(r.suffix)!==r.suffixHash||jsonDigest(x.actions)!==r.fullActionHash)throw Error('successor action hash mismatch');return x;});
+ if(results.length!==source.summary.uniqueActionWitnesses)throw Error('successor count mismatch');
+ life={...base,results,summary:{complete:results.length}};
+}
 const runtimeBytes=readBytes('public/data/soldiers-modern-index.json.gz'),data=JSON.parse(gunzipSync(runtimeBytes));
 const itemBytes=readBytes('public/data/items-v2-index.json'),items=JSON.parse(itemBytes);
 const rules=data.researchRules,supply=data.itemSupply||{},arr=x=>Array.isArray(x)?x:[];
@@ -135,6 +146,6 @@ for(const r of rows){
 }
 const finiteUsed=Object.values(usedCatalog).filter(c=>c.cap!=null).map(c=>({id:c.id,name:c.name,cap:c.cap,hardCap:c.hardCap,...itemTotals[c.id]}));
 const summary={routes:rows.length,distinctUsedItems:used.size,distinctExternalItems:new Set(completed.flatMap(r=>Object.keys(r.assumedItems||{}))).size,byStatus,byKind,byBody,finiteUsed,rowsWithUnresolvedSource:rows.filter(r=>r.flags.some(f=>f.kind==='ACQUISITION_SOURCE_UNRESOLVED')).length,rowsWithUnresolvedBirthOrTraining:rows.filter(r=>r.materials.some(m=>(m.birth>0||m.training>0)&&usedCatalog[m.id].kind==='SOURCE_UNRESOLVED')).length,rowsWithFiniteReview:rows.filter(r=>r.flags.some(f=>f.kind.includes('FINITE'))).length,hardLimitExceeded:byStatus.HARD_FINITE_CAP_EXCEEDED||0};
-const report={schema:'ATLAS_OVERCAP_MATERIAL_LEDGER_V1',sourceVersion:'v.o2',sourceMetadataSha256:metadata,sourceLedgerHash:life.sourceLedgerHash,inputs:{lifecycle:{path,canonicalJsonSha256:jsonDigest(life)},runtime:{path:'public/data/soldiers-modern-index.json.gz',sha256:digest(runtimeBytes)},labels:{path:'public/data/items-v2-index.json',canonicalJsonSha256:jsonDigest(items)}},scope:{eachRouteIndependent:true,ordinaryPhysicalAcquisitionAssumed:true,finiteEventPoolsIndexedOnly:true,consumption:'explicit gross recruitment, research destroyItem and transformation inputs; excludes armor refunds, implicit auto research and actual acquisition simulation',eventEvidence:'observed prior eventResearch or event recruit actions; not physical reward proof',notCampaignCertification:true,notFinalAdmission:true},summary,confirmedReferencePool:captain,catalog:usedCatalog,itemMaxPerRoute:sorted(itemTotals),rows};
+const report={schema:'ATLAS_OVERCAP_MATERIAL_LEDGER_V1',sourceVersion:'v.o2',sourceMetadataSha256:metadata,sourceLedgerHash:life.sourceLedgerHash,inputs:{lifecycle:{path,canonicalJsonSha256:jsonDigest(source)},...(base?{baseLifecycle:{path:basePath,canonicalJsonSha256:jsonDigest(base)}}:{}),runtime:{path:'public/data/soldiers-modern-index.json.gz',sha256:digest(runtimeBytes)},labels:{path:'public/data/items-v2-index.json',canonicalJsonSha256:jsonDigest(items)}},scope:{eachRouteIndependent:true,ordinaryPhysicalAcquisitionAssumed:true,finiteEventPoolsIndexedOnly:true,consumption:'explicit gross recruitment, research destroyItem and transformation inputs; excludes armor refunds, implicit auto research and actual acquisition simulation',eventEvidence:'observed prior eventResearch or event recruit actions; not physical reward proof',notCampaignCertification:true,notFinalAdmission:true},summary,confirmedReferencePool:captain,catalog:usedCatalog,itemMaxPerRoute:sorted(itemTotals),rows};
 fs.writeFileSync(output,JSON.stringify(report)+'\n');
 console.log(JSON.stringify({summary,bytes:fs.statSync(output).size}));
