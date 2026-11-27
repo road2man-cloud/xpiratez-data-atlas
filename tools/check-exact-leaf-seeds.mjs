@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {selectExactLeafSeeds} from './population-exact-leaf-seeds.mjs';
+const cap=Array(12).fill(10),raw=cap.map((v,i)=>i===0?5:v);
+const n=(parent,steps=[],v=cap,traits=[])=>({parent,steps,raw:v,capRaw:cap,traits,body:'A'});
+const act=transform=>({type:'transform',soldier:'origin',transform});
+const g={nodes:[n(null),n(0,[act('a')]),n(1,[act('b')],raw,['a','b']),n(1,[act('c')],cap,['a','c']),n(1,[act('c')],cap,['a','c']),n(0,[act('d')])]};
+const candidates=[0,1,2,3,4,5,999];
+assert.deepEqual(selectExactLeafSeeds(g,candidates),[4,2,5]);
+assert.deepEqual(selectExactLeafSeeds(g,candidates,{limit:1}),[4]);
+assert.deepEqual(selectExactLeafSeeds(g,candidates,{limit:2,turns:i=>i===4?2:0}),[3,2]);
+assert.deepEqual(selectExactLeafSeeds(g,candidates,{accept:(n,i)=>i===2}),[2]);
+assert.throws(()=>selectExactLeafSeeds({nodes:[n(0)]},[0]));
+assert.throws(()=>selectExactLeafSeeds(g,candidates,{limit:0}));
+assert.equal(g.nodes.length,6);
+console.log('Exact leaf scheduler: cap/growth balance, distinct histories, fairness, bounds, and parent validation passed.');

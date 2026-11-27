@@ -11,7 +11,7 @@ for(const a of process.argv.slice(2)){
  assert(m&&!options.has(m[1]),"Invalid or duplicate option: "+a);
  options.set(m[1],m[2]);
 }
-const allowed=new Set(["origins","bodies","goals","branches","births","birth-attempts","birth-seconds","rounds","wave","seconds","graph-limit","chain-quantum","root-attempts","rule-attempts","fragment-ms","graphs"]);
+const allowed=new Set(["origins","bodies","goals","branches","births","birth-attempts","birth-seconds","rounds","wave","seconds","graph-limit","chain-quantum","root-attempts","rule-attempts","fragment-ms","graphs","exact-leaves"]);
 for(const k of options.keys())assert(allowed.has(k),"Unknown option "+k);
 const csv=k=>[...new Set((options.get(k)||"").split(",").filter(Boolean))];
 const int=(k,d,min,max)=>{const n=Number(options.get(k)??d);assert(Number.isSafeInteger(n)&&n>=min&&n<=max,k);return n;};
@@ -36,7 +36,7 @@ function run(file,args){
 function build(overrides){
  // The builder uses first-occurrence arguments. Emit each key exactly once.
  const flags={...quiet,...overrides};
- run("tools/build-population-shared-career-v104-transitive.mjs",Object.entries(flags).map(([k,v])=>"--"+k+"="+v));
+ run("tools/build-population-shared-career-v105-exact-leaves.mjs",Object.entries(flags).map(([k,v])=>"--"+k+"="+v));
 }
 if(births)build({seconds:int("birth-seconds",65,20,300),"terminal-extension":births,"extension-scope":"pair","extension-origins":origins.join(","),"extension-goals":goals.join(","),"extension-goal-overlap":goals.length,"extension-branches":branches.join(","),"extension-attempts":int("birth-attempts",8,1,100),"extension-fragment-ms":int("fragment-ms",2000,0,20000)});
 const recruited=ledger();
@@ -46,7 +46,7 @@ console.log(JSON.stringify({freshGraphs:fresh,selectedGraphs:graphs,births:recru
 if(rounds&&!graphs.length)throw Error("No new or explicitly selected graphs; not falling back to global search.");
 for(let i=0;i<rounds;i++){
  const prior=ledger();
- build({seconds,"closure-seconds":Math.max(5,seconds-16),"closure-wave":int("wave",40,1,1000),"closure-chain-quantum":int("chain-quantum",10,1,100),"closure-root-attempts":int("root-attempts",12,1,100),"closure-rule-attempts":int("rule-attempts",3,1,100),"closure-body-scope":1,"closure-medal-preparation":1,"closure-preserve-body":1,"closure-exclude-chort":1,"closure-bodies":bodies.join(","),"closure-ready-graph":1,"closure-graphs":graphs.join(",")});
+ build({seconds,"closure-seconds":Math.max(5,seconds-16),"closure-wave":int("wave",40,1,1000),"closure-chain-quantum":int("chain-quantum",10,1,100),"closure-root-attempts":int("root-attempts",12,1,100),"closure-rule-attempts":int("rule-attempts",3,1,100),"closure-body-scope":1,"closure-medal-preparation":1,"closure-preserve-body":1,"closure-exclude-chort":1,"closure-bodies":bodies.join(","),"closure-ready-graph":1,"closure-exact-leaves":int("exact-leaves",3,0,12),"closure-graphs":graphs.join(",")});
  const l=ledger(),c=l.summary.closureWave;
  console.log(JSON.stringify({round:i+1,newRoutes:Object.keys(l.routes).length-Object.keys(prior.routes).length,attempts:c.attempts,transformed:c.transformed,addedResearch:c.addedResearch,candidates:c.outcomes}));
 }
