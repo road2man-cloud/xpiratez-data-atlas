@@ -1,0 +1,70 @@
+{
+  "format": "R36LD_MODEL_COMPARISON_V1",
+  "source": "actual GLB geometry, not render",
+  "timestamp": "2026-11-27T19:26:12.621Z",
+  "LA": {
+    "file": "R36LA_BALANCED_SKIN_2100TRI.glb",
+    "bytes": 3718864,
+    "sha256": "c60ec74452a55166f2cf81a9c49b4970a00b6236a4f15168cfccf786cdbd78e0",
+    "budget": {
+      "head": 968,
+      "body": 1132,
+      "total": 2100,
+      "limit": 2100
+    },
+    "mesh": "R36KP_CONTINUOUS_SKIN_WITH_POSTERIOR_SUPERIOR_CORE",
+    "bodyTriangles": 1132,
+    "bodyVertices": 3396,
+    "skins": [
+      63,
+      63
+    ],
+    "bodySkinned": true,
+    "source": "r36la-surface-flow-20261128 (R36LA stable-skin local build)"
+  },
+  "LC": {
+    "file": "R36LC_BALANCED_SKIN_2100TRI.glb",
+    "bytes": 3333456,
+    "sha256": "678c769ca35ae29ff8a440da88969213c923a5bf4d494e1f33696e01155fe3c1",
+    "budget": {
+      "head": 968,
+      "body": 1132,
+      "total": 2100,
+      "limit": 2100
+    },
+    "mesh": "R36KP_CONTINUOUS_SKIN_WITH_POSTERIOR_SUPERIOR_CORE",
+    "bodyTriangles": 1132,
+    "bodyVertices": 3396,
+    "skins": [
+      63,
+      63
+    ],
+    "bodySkinned": true,
+    "source": "r36lc-atlas-20261128 (ARTIFACTS.json SHA256 match)"
+  },
+  "alignedTopology": true,
+  "engineApplied": false,
+  "note": "Mesh-space comparison. No proof of runtime lighting, texture shading, deformation stability, or S2 engine correctness.",
+  "vertexDelta": {
+    "count": 3396,
+    "mean": 0.00007318590406506147,
+    "median": 0,
+    "p95": 0.0005075316876173019,
+    "max": 0.0013082921504974365
+  },
+  "normalAngleDeg": {
+    "count": 3396,
+    "mean": 0.07803379652985525,
+    "median": 0.0000012074182697257333,
+    "p95": 0.4773702965436585,
+    "max": 2.511395666559996
+  },
+  "uvDelta": {
+    "count": 3396,
+    "mean": 0,
+    "median": 0,
+    "p95": 0,
+    "max": 0
+  },
+  "comparisonNote": "Identical vertex/index order and UV arrays; small position/normal differences. This report does not measure material pixels or actual image quality."
+}
