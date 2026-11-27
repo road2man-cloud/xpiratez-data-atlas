@@ -1,15 +1,33 @@
-# R36LC - world-space UV gutter production
+# R36LC — UV 이음새 경계 개선 및 실제 GLB/텍스처 게시
+2026-11-28. R36LB에서 파생한 독립 개선판. 기존 R36LA/R36LB 파일은 덮어쓰지 않습니다.
 
-Based on real R36LB source and GLB from local pinned commit 42514903828cb464a67be0320187cf16c4e48c22.
-No change to triangle budget, source rig or inherited R36LB center sculpt.
-Changes: true closest-point projection of each gutter texel to triangle;
-evaluates same bind-space palette for baseColor and ORM around every UV island;
-preserves normal + relief from donor high-poly via nearest safe interior texel.
-R36LB source and output are retained. Node.js only (no Windows Python).
+## 실제 생산 완료
+- 몸체 1,132△ + 머리 968△ = **전체 2,100△**, 골격 63본.
+- GLB 3종 생성, 원본 SHA-256 기록, GitHub에서 바이너리 분할 보존(아래 명령으로 복원).
+- 2048×2048 Base Color / Normal / ORM / Relief **PNG 원본 4개 GitHub 게시**.
+- UV 각 섬의 바깥 여백을 고정 0.92 비율로 눌러 채우는 대신 삼각형 경계에 정사영하여 동일한 3D 위치의 피부색·ORM을 평가.
+- 기존 소스의 중심부 표면, 골격 스킨 웨이트 및 고밀도 참조 노멀은 유지.
+- Node.js만 사용. Windows Python 미실행.
 
-Source: source/bake_atlas.cjs and source/build_floor.cjs.
-Data: output/balanced/*.glb, output/stable/*.glb, output/balanced/textures/*.png.
-QA: output/R36LC_SEAM_METRICS.json compares edge discontinuities to R36LB.
-Limit: independent UV island tangent spaces and true geometric dark cavities remain.
-S2 game engine integration not verified.
+## 모델 복원
+저장소 체크아웃 후 해당 디렉터리에서 `node assemble_r36lc.cjs` 실행. `ARTIFACTS.json`에 포함된 SHA-256과 바이트 수를 검증한 다음 원본 GLB 3개를 `output/`에 복원합니다. 원본에 이상이 있으면 빌드를 중단하며 잘못된 파일을 덮어쓰지 않습니다.
 
+## 수치 비교 (동일 GLB UV 경계, 10,188 지점)
+| 지표 | R36LB | R36LC | 변화 |
+|---|---:|---:|---:|
+| Base Color 평균 RGB8 차이 | 0.0885 | 0.0491 | **44.52% 감소** |
+| ORM 평균 RGB8 차이 | 0.0253 | 0.0221 | **12.65% 감소** |
+| 총 경계 쌍 | 1,698 | 1,698 | 변화 없음 |
+
+주의: 위 지표는 UV 에지의 텍스처 샘플 차이이며, WebGL의 삼각형 경계 밝은 선과 S2 엔진 투영이 전부 해결되었다는 뜻이 아닙니다. 몸체 내부의 어두운 공간도 실제 형상 문제이므로 이번 텍스처 작업만으로 제거되지 않습니다.
+
+## 경로
+- `source/`: 완전한 Node.js 생산기
+- `build_r36lc.cjs`: 소스 생성 및 반복 빌드
+- `assemble_r36lc.cjs`: 게시된 GLB 바이너리 복원
+- `assets/parts/`: GLB 바이너리 조각 6개
+- `output/balanced/textures/`: 원본 PNG 4개
+- `output/R36LC_SEAM_METRICS.json`: 비교 수치와 제약
+- `output/balanced/GEOMETRY_REPORT.json`: 기하학 검사
+
+**검증 상태:** 모델 빌드/삼각형/골격/UV 에지 수치 확인. 실제 0°·35° 렌더 및 S2 게임 엔진 적용은 미완료.

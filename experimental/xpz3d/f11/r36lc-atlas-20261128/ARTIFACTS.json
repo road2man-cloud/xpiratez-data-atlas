@@ -1,0 +1,59 @@
+{
+  "format": "R36LC_BINARY_ARCHIVE_V1",
+  "version": "R36LC",
+  "source_commit": "42514903828cb464a67be0320187cf16c4e48c22",
+  "modelBudget": {
+    "head": 968,
+    "body": 1132,
+    "total": 2100,
+    "bones": 63
+  },
+  "texturesResolution": 2048,
+  "files": [
+    {
+      "output": "output/balanced/R36LC_BALANCED_2100_SURFACE_FLOW.glb",
+      "bytes": 3333188,
+      "sha256": "019445060e94d737d9e332929731a12ee434b775ba54e9c46b2170b4a84dca0e",
+      "parts": [
+        {
+          "path": "assets/parts/balanced__R36LC_BALANCED_2100_SURFACE_FLOW.glb.part00",
+          "git_blob_sha": "c92669f9b1a9c6aa5170bcc5d3c42cb1622acdcb"
+        },
+        {
+          "path": "assets/parts/balanced__R36LC_BALANCED_2100_SURFACE_FLOW.glb.part01",
+          "git_blob_sha": "755bad74a4e1cd465a8252b32f13ed45304abb36"
+        }
+      ]
+    },
+    {
+      "output": "output/stable/R36LC_BALANCED_SKIN_2100TRI.glb",
+      "bytes": 3333456,
+      "sha256": "678c769ca35ae29ff8a440da88969213c923a5bf4d494e1f33696e01155fe3c1",
+      "parts": [
+        {
+          "path": "assets/parts/stable__R36LC_BALANCED_SKIN_2100TRI.glb.part00",
+          "git_blob_sha": "5ca473e383ef7bb91f52ae34eb4d5a233da34439"
+        },
+        {
+          "path": "assets/parts/stable__R36LC_BALANCED_SKIN_2100TRI.glb.part01",
+          "git_blob_sha": "c437b3bb0114bd3718ac78c17e8a6bc12113bce8"
+        }
+      ]
+    },
+    {
+      "output": "output/stable/R36LC_SOFT_SKIN_2100TRI.glb",
+      "bytes": 3333456,
+      "sha256": "34e3367bc75e983a344cb48e612b4ed27b2958dc38112f6a3c6d19850397b1ae",
+      "parts": [
+        {
+          "path": "assets/parts/stable__R36LC_SOFT_SKIN_2100TRI.glb.part00",
+          "git_blob_sha": "7091d91acac6f23ce33ed8b7cd2d7fec1a89d3fa"
+        },
+        {
+          "path": "assets/parts/stable__R36LC_SOFT_SKIN_2100TRI.glb.part01",
+          "git_blob_sha": "21b8463f77fe1d09b587ad2e0a0ebd0d99f11200"
+        }
+      ]
+    }
+  ]
+}
