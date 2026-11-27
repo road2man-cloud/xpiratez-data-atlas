@@ -70,7 +70,7 @@
 <details id="branchCompare" class="route-branch-filter"><summary>두 분기 함께 보기</summary><div class="pair-controls"><label>A<select id="a"><option value="">선택</option></select></label><label>B<select id="b"><option value="">선택</option></select></label><label class="tick"><input id="sameChoices" type="checkbox"> 선장 외 동일 선택</label><button id="clearPair" type="button">해제</button></div></details></div>
 <p id="compareStatus" class="status" role="status" aria-live="polite">각 행의 '기준으로 비교' 버튼이나 위 선택 메뉴로 비교를 시작할 수 있습니다.</p>
 <p id="catalogStatus" class="status" role="status" aria-live="polite">연구 경로 자료 확인 중…</p>
-<p class="scope-note">기본 표는 후속 연구·시술 종결이 증명된 고유 최종 조합만 표시합니다. 모든 경로의 현재 능력치·성장캡·합계·파레토 비교에서 훈장 보너스를 제외합니다. 요구 훈장은 시술 조건 충족 가정으로만 표시합니다. 경로 상태를 최종·조건부 통합 비교로 변경하면 같은 표에서 성장캡 초과 훈련을 포함한 탐색 경로를 함께 비교할 수 있습니다. 조건부 경로는 최종 고유 조합 수에 합산하지 않습니다. 성장캡 초과 경로의 한정품 소비 열 및 원본 이력에는 재료별 소비량과 공급 근거를 연결하며, 실제 획득·예산은 미인증입니다.</p>
+<p class="scope-note">기본 표는 후속 연구·시술 종결이 증명된 고유 최종 조합만 표시합니다. 모든 경로의 현재 능력치·성장캡·합계·파레토 비교에서 훈장 보너스를 제외합니다. 요구 훈장은 시술 조건 충족 가정으로만 표시합니다. 경로 상태를 최종·조건부 통합 비교로 변경하면 같은 표에서 성장캡 초과 훈련을 포함한 탐색 경로를 함께 비교할 수 있습니다. 조건부 경로는 최종 고유 조합 수에 합산하지 않습니다. 성장캡 초과 기초·후속 육성 경로의 한정품 소비 열 및 원본 이력에는 재료별 소비량과 공급 근거를 연결하며, 실제 획득·예산은 미인증입니다.</p>
 <section class="card table-card" id="originMaxima" aria-label="획득처별 능력치와 연구 경로">
 <div class="table-head"><h2>전체 병종 최대값 <small>최종 병종 기준 · 12능력치</small></h2><span id="rowCount"></span></div>
 <div class="table-scroll-guide"><span>12종 능력치 비교표 · 모바일에서는 좌우로 밀어 모든 열을 확인하세요.</span><div class="table-scroll-actions"><button type="button" id="scrollStatsLeft" aria-label="표 이전 열 보기">← 이전</button><button type="button" id="scrollStatsRight" aria-label="표 다음 열 보기">다음 →</button></div></div>
@@ -131,7 +131,7 @@
   <p class="trace-dialog-instructions">노드를 선택하면 해당 선행 경로가 왼쪽으로 확장됩니다. 연결선의 실선은 필수 조건, 점선은 대체 방법입니다. 화면을 가로로 밀어 탐색하세요.</p>
   <div id="acquisitionTraceContent" aria-live="polite"></div>
 </dialog>
-<script type="module" src="app.js?v=20261128-overcap-material-110"></script>
+<script type="module" src="app.js?v=20261128-overcap-successors-111"></script>
 <script type="module" src="../../branch-soldier-results.js?v=20261128-economy-codec-108"></script>
 <script defer src="../../atlas-reader-guide.js?v=20261105-horizontal-flow-1"></script>
 <script type="module" src="../../all-origin-cap-frontier.js?v=20261124-population-baseline-1"></script>

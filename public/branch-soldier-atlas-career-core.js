@@ -1,6 +1,6 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
 import {CAREER_STAT_POLICY,comparisonStats} from "./branch-soldier-stat-comparison-policy.js?v=1";
-import {loadOvercapRows} from "./branch-soldier-overcap-unified.js?v=110";
+import {loadOvercapRows,loadOvercapSuccessorRows} from "./branch-soldier-overcap-unified.js?v=111";
 export const ledgers=[
  {key:'missingbirth',registryKey:'populationMissingOriginCareer',file:'soldier-population-missing-origin-career',label:'미연결 출생처 모집·육성',index:'soldier-population-missing-origin-career-index'},
  {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},
@@ -147,7 +147,7 @@ export async function loadExplorationRows(modern,registry){
   }catch(e){errors.push(source.label+' 미연결: '+e.message);}}
   // Browser exploration includes the other worker's conditional paths in this same table.
   // Offline canonical admission builders do not consume unadmitted projections.
-  if(typeof window!=='undefined'){try{rows.push(...await loadOvercapRows(modern));}catch(e){errors.push('성장캡 초과 육성 원장 미연결: '+e.message);}}
+  if(typeof window!=='undefined'){for(const [load,label] of [[loadOvercapRows,'성장캡 초과 기초 육성'],[loadOvercapSuccessorRows,'성장캡 초과 후속 육성']])try{rows.push(...await load(modern));}catch(e){errors.push(label+' 원장 미연결: '+e.message);}}
   return {rows,errors};
  })();
  explorationCache.set(modern,{registry,promise});return promise;
@@ -276,7 +276,7 @@ export async function loadResearchSearch(modern){
     sources.set(ledger.key,compileResearchSearch(ledger,raw,metadata));
    }catch(e){errors.push(ledger.label+' 연구 이력: '+e.message)}
   }
-  let overcap=[];if(typeof window!=='undefined')try{overcap=await loadOvercapRows(modern);}catch(e){errors.push('성장캡 연구 이력: '+e.message);}
+  const overcap=[];if(typeof window!=='undefined')for(const load of [loadOvercapRows,loadOvercapSuccessorRows])try{overcap.push(...await load(modern));}catch(e){errors.push('성장캡 연구 이력: '+e.message);}
   const direct=new Map(overcap.map(r=>[r.id,r])),actions=r=>{const v=direct.get(r.id);return r.overcapEvidence&&v?.hash===r.hash?v.researchActions:null;};
   const ids=[...new Set([...sources.values()].flatMap(s=>s.ids).concat(overcap.flatMap(r=>r.researchActions||[])))];
   return {ids,errors,sources:sources.size,hasWitness:r=>r.overcapEvidence?Array.isArray(actions(r)):sources.get(r.source)?.hasWitness(r)===true,matches:(r,requested)=>r.overcapEvidence?Array.isArray(actions(r))&&requested.every(k=>actions(r).includes(k)):sources.get(r.source)?.matches(r,requested)===true,matchesSequence:(r,requested)=>r.overcapEvidence?Array.isArray(actions(r))&&containsOrderedActions(actions(r),requested):sources.get(r.source)?.matchesSequence(r,requested)===true};
