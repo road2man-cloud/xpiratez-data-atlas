@@ -6,10 +6,11 @@ import fs from "node:fs";
 import {gunzipSync} from "node:zlib";
 import assert from "node:assert/strict";
 import {rankNearClosureGraphs} from "./atlas-near-closure-graph-priority.mjs";
+import {selectFixedBodyProducer} from "./atlas-fixed-body-producer-policy.mjs";
 const options=new Map(process.argv.slice(2).map(a=>{
  const m=/^--([a-z-]+)=(.+)$/.exec(a);assert(m,"Expected --key=value: "+a);return [m[1],m[2]];
 }));
-const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage","graphs","graph-limit","ready-graph","recruit-origins","recruit-goals","recruit-branches","recruit-limit","recruit-attempts","recruit-overlap","recruit-seconds","exact-leaves","reuse-final-from"]);
+const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage","graphs","graph-limit","ready-graph","recruit-origins","recruit-goals","recruit-branches","recruit-limit","recruit-attempts","recruit-overlap","recruit-seconds","exact-leaves","reuse-final-from","producer","supply-mode","game-root","overcap-queue","overcap-queue-body","overcap-source-id"]);
 for(const k of options.keys())assert(allowed.has(k),"Unknown option "+k);
 const phase=options.get("phase")||"all";
 assert(["all","produce","attach","complete","index","recruit","recruit-close"].includes(phase));
@@ -53,11 +54,13 @@ function run(file,args=[]){
 const quiet=["attempts","coverage-births","shared-scan","closed-recruit","repeat-compact","terminal-transfer","terminal-extension","terminal-event-recruit","trait-chain","terminal","supply-plans","supply-research","terminal-follow","end-stage","end-research","reset-recovery","follow","chain","nodes","research"].map(k=>"--"+k+"=0");
 if(["all","produce","index","recruit","recruit-close"].includes(phase)){
  const recruitment=recruitmentMode?["--terminal-extension="+int("recruit-limit",4,1,100),"--extension-attempts="+int("recruit-attempts",12,1,100),"--extension-scope=pair","--extension-origins="+recruitOrigins.join(","),"--extension-goals="+recruitGoals.join(","),"--extension-branches="+recruitBranches.join(","),"--extension-goal-overlap="+int("recruit-overlap",recruitGoals.length,0,recruitGoals.length),"--extension-fragment-ms="+int("fragment-ms",1500,0,20000)]:[];
- const producer="tools/build-population-shared-career-v106-passive-armor.mjs";
+ const selected=selectFixedBodyProducer({schema:initial.schema,producer:options.get("producer"),supplyMode:options.get("supply-mode"),gameRoot:options.get("game-root"),overcapQueue:options.get("overcap-queue"),overcapQueueBody:options.get("overcap-queue-body"),overcapSourceId:options.get("overcap-source-id")});
+ const producer=selected.file;
+ console.log(JSON.stringify({fixedBodyProducer:selected}));
  function closureArgs(ids,limit,budget){
   return ["--seconds="+budget,"--closure-wave="+limit,"--closure-body-scope=1","--closure-medal-preparation=1","--closure-preserve-body=1","--closure-bodies="+bodies.join(","),"--closure-graphs="+ids.join(","),"--closure-ready-graph="+int("ready-graph",1,0,1),"--closure-exact-leaves="+(ids.length?int("exact-leaves",3,0,12):0),"--closure-focus-actions="+focus.join(","),"--closure-chain-quantum="+int("chain-quantum",6,1,100),"--closure-root-attempts="+int("root-attempts",8,1,100),"--closure-rule-attempts="+int("rule-attempts",2,1,100),"--closure-fragment-ms="+int("fragment-ms",1500,0,20000)];
  }
- run(producer,[...recruitment,...quiet.filter(x=>!recruitmentMode||!x.startsWith("--terminal-extension=")),...closureArgs(graphs,phase==="index"||recruitmentMode?0:wave,recruitmentMode?int("recruit-seconds",seconds,1,600):seconds)]);
+ run(producer,[...selected.args,...recruitment,...quiet.filter(x=>!recruitmentMode||!x.startsWith("--terminal-extension=")),...closureArgs(graphs,phase==="index"||recruitmentMode?0:wave,recruitmentMode?int("recruit-seconds",seconds,1,600):seconds)]);
  let l=read(ledgerFile),i=read(indexFile);
  assert.equal(l.sourceGraphSha256,i.sourceGraphSha256);
  if(recruitmentMode){
@@ -67,7 +70,7 @@ if(["all","produce","index","recruit","recruit-close"].includes(phase)){
    // Recruitment already persisted an independently indexed ledger.
    // Do not run unrestricted closure when no new graph was produced.
    const before=l;
-   run(producer,[...quiet,...closureArgs(addedGraphs.map(x=>x.graph),wave,seconds)]);
+   run(producer,[...selected.args,...quiet,...closureArgs(addedGraphs.map(x=>x.graph),wave,seconds)]);
    l=read(ledgerFile);i=read(indexFile);
    assert.equal(l.sourceGraphSha256,i.sourceGraphSha256);
    for(const [id,r] of Object.entries(before.routes))assert.equal(l.routes[id]?.fullActionHash,r.fullActionHash,"Recruitment route changed");
