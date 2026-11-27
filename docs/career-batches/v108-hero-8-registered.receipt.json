@@ -1,0 +1,15 @@
+{
+  "schema": "XPZ_CAREER_BATCH_RECEIPT_V1",
+  "baseRef": "43a3e80f831e590e65d29e6fc8efffc671ae5113",
+  "packet": "v108-hero-8-registered.json.gz",
+  "bytes": 67072,
+  "sha256": "8d95286a3dfdb28e92b45e0fa8a704036fc82f3d076dcdc35c5583741a398492",
+  "gitBlobSha": "c212f4a00a7bbb0e6c83f58f4feb09aebe587b7d",
+  "registeredRoutes": 6939,
+  "replayed": 8,
+  "reused": 6931,
+  "hero": 153,
+  "graphSha": "91cfa73bbb139898ef32fe1b038be10c4509f48aa54ba64e19ca6086af3d7b52",
+  "finalAdmission": "pending; prior count 111 not recalculated",
+  "mainMerge": "not executed"
+}
