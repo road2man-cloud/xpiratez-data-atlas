@@ -25,4 +25,12 @@ assert.deepEqual(routeOnly(["A","B","C"],["A","C"]),["B"]);
 assert.equal(routeNumbers({displayBirth:null,candidates:[]}, "growth",null,KEYS),null);
 assert.equal(routeNumbers({displayBirth:{tu:1,firing:2},candidates:[]}, "birth",null,KEYS),null);
 assert.equal(routeNumbers({candidates:[{id:"unfinished",display:{stats:{tu:1,firing:2,mana:3}}}]}, "growth",null,KEYS),null);
-console.log("route-table comparison: 11 cases passed");
+// A partially generated or inconsistent candidate must not hide a valid route.
+const partial={...a,candidates:[{id:"missing",display:{stats:{tu:999,firing:999,mana:999}}},...a.candidates]};
+assert.equal(routeCandidate(partial,"provisional").id,"a2");
+const corrupt={...a,candidates:[{id:"corrupt",display:{total:99999,stats:{tu:1,firing:2,mana:3}}},...a.candidates]};
+assert.equal(routeNumbers(corrupt,"provisional",null,KEYS).candidate.id,"a2");
+assert.equal(routeNumbers(corrupt,"provisional","corrupt",KEYS).candidate.id,"a2");
+assert.equal(routeNumbers({...a,candidates:[corrupt.candidates[0]]},"provisional",null,KEYS),null);
+assert.equal(routeCandidate(a,"unknown"),null);
+console.log("route-table comparison: all cases passed");
