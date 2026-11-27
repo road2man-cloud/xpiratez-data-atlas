@@ -1,0 +1,174 @@
+{
+  "format": "R36KP_PELVIS_SKINLAB_20261128",
+  "source": "./r36ky_balanced_2048/R36KY_BALANCED_2088_CENTER_SCULPT.glb",
+  "sourceSHA256": "13f9817d218dd910143b3e0a4250220c30047fa2f6619de048c2b47f8159f392",
+  "triangleBudget": 2100,
+  "renderTriangles": 2088,
+  "bodyTriangles": 1120,
+  "geometryChanged": false,
+  "textureChanged": false,
+  "uvChanged": false,
+  "rigJointCount": 63,
+  "variants": [
+    {
+      "name": "R36KP_SOFT_SKIN_2088TRI.glb",
+      "file": "R36KP_SOFT_SKIN_2088TRI.glb",
+      "bytes": 3664040,
+      "sha256": "c8ea1188f7c1d5560aaeb519be0723b3c211f8242d7d8dfed73d02120fdd4746",
+      "strength": 0.5,
+      "stats": {
+        "uniqueSourcePositions": 562,
+        "changedPositions": 174,
+        "changedRenderVertices": 1038,
+        "maxHipBoost": 0.3859383089120423,
+        "meanHipBoost": 0.19754004736719577,
+        "byHeight": [
+          {
+            "z": "0.75",
+            "positions": 30,
+            "hipBefore": 0.019886505613639856,
+            "hipAfter": 0.08357777087394719,
+            "thighBefore": 0.9556128302996372,
+            "thighAfter": 0.893444080839654
+          },
+          {
+            "z": "0.80",
+            "positions": 54,
+            "hipBefore": 0.08861453852663664,
+            "hipAfter": 0.27731850866628055,
+            "thighBefore": 0.8988360638819383,
+            "thighAfter": 0.7129394626389606
+          },
+          {
+            "z": "0.85",
+            "positions": 50,
+            "hipBefore": 0.19261349703584782,
+            "hipAfter": 0.4937888835813931,
+            "thighBefore": 0.8049525836636772,
+            "thighAfter": 0.5047992997083722
+          },
+          {
+            "z": "0.90",
+            "positions": 20,
+            "hipBefore": 0.2724597635280183,
+            "hipAfter": 0.5670217824344248,
+            "thighBefore": 0.7275402364719815,
+            "thighAfter": 0.4329782175655752
+          },
+          {
+            "z": "0.95",
+            "positions": 8,
+            "hipBefore": 0.5382896316600472,
+            "hipAfter": 0.6742415317859742,
+            "thighBefore": 0.4617103683399528,
+            "thighAfter": 0.3257584682140258
+          },
+          {
+            "z": "1.00",
+            "positions": 7,
+            "hipBefore": 0.8319182766902953,
+            "hipAfter": 0.8601486603487117,
+            "thighBefore": 0.16801919848038302,
+            "thighAfter": 0.13981562044591966
+          },
+          {
+            "z": "1.05",
+            "positions": 2,
+            "hipBefore": 0.5489235772446008,
+            "hipAfter": 0.5649857014993505,
+            "thighBefore": 0.07759324345598752,
+            "thighAfter": 0.07749750167475167
+          },
+          {
+            "z": "1.10",
+            "positions": 3,
+            "hipBefore": 0.37048769631521816,
+            "hipAfter": 0.37177238165217436,
+            "thighBefore": 0,
+            "thighAfter": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "R36KP_BALANCED_SKIN_2088TRI.glb",
+      "file": "R36KP_BALANCED_SKIN_2088TRI.glb",
+      "bytes": 3664040,
+      "sha256": "3448b20346449b1ab0dbc494689234294faabdd69e063e5f5c4575ba17269e38",
+      "strength": 0.73,
+      "stats": {
+        "uniqueSourcePositions": 562,
+        "changedPositions": 174,
+        "changedRenderVertices": 1038,
+        "maxHipBoost": 0.5634699310115817,
+        "meanHipBoost": 0.28840846915610574,
+        "byHeight": [
+          {
+            "z": "0.75",
+            "positions": 30,
+            "hipBefore": 0.019886505613639856,
+            "hipAfter": 0.11287575289368856,
+            "thighBefore": 0.9556128302996372,
+            "thighAfter": 0.864846456088062
+          },
+          {
+            "z": "0.80",
+            "positions": 54,
+            "hipBefore": 0.08861453852663664,
+            "hipAfter": 0.3641223349305167,
+            "thighBefore": 0.8988360638819383,
+            "thighAfter": 0.6274270260671906
+          },
+          {
+            "z": "0.85",
+            "positions": 50,
+            "hipBefore": 0.19261349703584782,
+            "hipAfter": 0.6323295613923439,
+            "thighBefore": 0.8049525836636772,
+            "thighAfter": 0.36672878908893203
+          },
+          {
+            "z": "0.90",
+            "positions": 20,
+            "hipBefore": 0.2724597635280183,
+            "hipAfter": 0.7025203111313718,
+            "thighBefore": 0.7275402364719815,
+            "thighAfter": 0.29747968886862824
+          },
+          {
+            "z": "0.95",
+            "positions": 8,
+            "hipBefore": 0.5382896316600472,
+            "hipAfter": 0.7367794058439007,
+            "thighBefore": 0.4617103683399528,
+            "thighAfter": 0.26322059415609933
+          },
+          {
+            "z": "1.00",
+            "positions": 7,
+            "hipBefore": 0.8319182766902953,
+            "hipAfter": 0.8731346368315832,
+            "thighBefore": 0.16801919848038302,
+            "thighAfter": 0.1268419745500665
+          },
+          {
+            "z": "1.05",
+            "positions": 2,
+            "hipBefore": 0.5489235772446008,
+            "hipAfter": 0.5723742786565351,
+            "thighBefore": 0.07759324345598752,
+            "thighAfter": 0.07745346045538316
+          },
+          {
+            "z": "1.10",
+            "positions": 3,
+            "hipBefore": 0.37048769631521816,
+            "hipAfter": 0.3723633369071742,
+            "thighBefore": 0,
+            "thighAfter": 0
+          }
+        ]
+      }
+    }
+  ]
+}
