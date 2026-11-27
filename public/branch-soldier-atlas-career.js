@@ -1,4 +1,4 @@
-import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=87-successor-recipe';
+import {ledgers,statKeys,loadCareerRows,loadExplorationRows,routeUrl,branchUrl,readResearchWitness,completionSummaryText} from './branch-soldier-atlas-career-core.js?v=105-no-medal-bonus';
 import {mountMultiFilter,mountStatMinimums,mountResearchFilters,writeResearchFilters} from './branch-soldier-atlas-route-filter.js?v=49-economy';
 import {sameChoices} from './branch-soldier-atlas-branch-compare-core.js?v=30';
 import {statValue,filterTable,sortTable,writeStatMinimums} from './branch-soldier-atlas-table-core.js?v=49-economy';
@@ -34,7 +34,7 @@ const columns=[
  ['captain','선장','choice'],['branch','분기','choice'],['path','진로','choice'],['cause','대의','choice'],['queen','여왕','choice'],['codex','코덱스','choice'],
  ['depth','시술 횟수','num'],['order','시술 순서','text-list'],['traitCount','특성 수','num'],['traits','보유 특성','text-list'],
  ['research','연구 이력','research'],['blocked','차단 연구','research'],['acquisition','모집 조건','text-list'],['difficulty','난이도','choice'],
- ['rank','계급','choice'],['medals','요구 훈장','text-list'],['source','원장·상세','source']
+ ['rank','계급','choice'],['medals','요구 훈장 (능력치 제외)','text-list'],['source','원장·상세','source']
 ];
 const sortable=new Set(columns.map(x=>x[0]).filter(k=>!['select','status','order','traits','research','acquisition','medals','material'].includes(k)));
 let sort=sortable.has(params.get('sort'))?params.get('sort'):statKeys.includes(params.get('stat'))?params.get('stat'):'total';
@@ -228,7 +228,7 @@ function renderRow(r,f){
   }break;
   case 'difficulty':if(r.difficulties.length){td.textContent=r.difficulties.join(', ');filled=true}break;
   case 'rank':if(r.rank!=null){td.textContent=String(r.rank);if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.rankDefault){td.append(el('div','기본 계급 가정','small'));}filled=true}break;
-  case 'medals':if(r.medals){const ids=Object.keys(r.medals);appendList(td,ids,'bonus',' · ',r.medals);filled=true}break;
+  case 'medals':if(r.medals){const entries=Object.entries(r.medals);if(entries.length){for(const [id,level] of entries){const d=el('div');d.append(link(name(id)+' '+(Number.isInteger(level)?String(level+1)+'단계':'단계 미확인'),search('bonus',id)));td.append(d);}td.title='시술 조건 충족을 위해 가정한 훈장. 이 열의 보너스는 비교 능력치에 포함되지 않습니다.';}else td.textContent='—';filled=true}break;
   case 'status':td.textContent=r.complete?(r.globalOptimal?'전역 최고치 인증':r.modelComplete?'최종 육성 종결 (조건부)':'완결 조합'):r.birthOnly?'출생 기준값':r.legacy?'기존 조건부 수치':r.missing?'미연결':r.researchTraitPair?.goals.length?'최종 연구 도달 · 후속 탐색':r.researchTraitPair?'최종 연구 계통·결합 후보':r.fixedModelOptimum?'고정 연구 상계 도달':r.conditionalScopeComplete?'조건부 종결':'조건부 탐색';if(registry?.populationMissingOriginCareer?.routes?.[r.id]?.flatRoll)td.append(el('div','난수 결과 가정','small'));filled=true;break;
   case 'source':if(r.legacy||r.birthOnly){td.append(link(r.birthOnly?'출생 원본':'기존 출생 원장',r.detailUrl));filled=true;}else if(source){td.append(link(source.label,routeUrl(r)));if(r.rootRoute)td.append(el('span','출발 경로','small'));td.title=r.id;filled=true}break;
   }

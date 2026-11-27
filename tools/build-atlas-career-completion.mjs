@@ -3,6 +3,7 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,loadCareerRows} from "../public/branch-soldier-atlas-career-core.js";
+import {CAREER_STAT_POLICY} from "../public/branch-soldier-stat-comparison-policy.js";
 import {summarizeMaxComparison,summarizeOriginCoverage} from "../public/branch-soldier-max-frontier.js";
 import {summarizeCareerIncumbents} from "./population-career-incumbents.mjs";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
@@ -91,7 +92,7 @@ const summary={origins:modern.profiles.length,originsWithSeeds:origins.size,stat
  impossibleCertified:0,fullyEnumeratedBranches:0,globalOptimalCertified:rows.filter(r=>r.globalOptimal).length,
  exploredOriginBranchPairs:pairs.size,totalSearchSpace:null,completionRate:null,pendingBySource,missingProofs,assumptions};
 db.careerCompletion={schema:SCHEMA,sourceMetadataSha256:metadata,engineVersion:"8.7.1",sourceHashes,
- terminalRule,terminalResearch,terminalSupply,researchTreePolicy:RESEARCH_TREE_POLICY,
+ terminalRule,terminalResearch,terminalSupply,researchTreePolicy:RESEARCH_TREE_POLICY,statComparisonPolicy:CAREER_STAT_POLICY,
  ...(db.populationMissingOriginCareer?.endStage?.sourceFingerprint===terminalRule.fingerprint?{endStage:db.populationMissingOriginCareer.endStage}:{}),
  ...(db.populationMissingOriginCareer?.resetRecovery?.sourceFingerprint===terminalRule.fingerprint?{resetRecovery:db.populationMissingOriginCareer.resetRecovery}:{}),
  ...(db.populationMissingOriginCareer?.traitChain?.sourceFingerprint===terminalRule.fingerprint?{traitChain:db.populationMissingOriginCareer.traitChain}:{}),
@@ -182,17 +183,20 @@ summary.unresolvedEvidence=seenSize-new Set(Object.entries(final.witnesses).filt
 bySource.missingbirth.complete=final.rows.length;
 c.researchTraitSets.summary.complete=final.rows.length;
 const finalRows=comparisonRows.filter(r=>final.witnesses[r.id]?.status==="FINAL_CLOSED").map(r=>({...r,complete:true}));
+assert(finalRows.every(r=>r.statPolicy===CAREER_STAT_POLICY.id));
+summary.statComparison={policy:CAREER_STAT_POLICY.id,projectedRows:summary.candidateRows,rejectedRows:summary.invalidProjection,researchLineWitnesses:comparisonRows.length,finalWitnesses:finalRows.length,medalBearingFinalWitnesses:finalRows.filter(r=>Object.keys(r.medals||{}).length).length};
 const finalCoverage=summarizeOriginCoverage(modern.profiles,finalRows);
 Object.assign(summary,finalCoverage.summary);
 c.originCoverage=finalCoverage.origins;c.chortCoverage=finalCoverage.chort;
 c.observedIncumbents=summarizeCareerIncumbents(finalRows);summary.observedIncumbents=c.observedIncumbents.summary;
-c.maxComparison=summarizeMaxComparison(finalRows);c.maxComparison.scope="Successor-closed final career witnesses only.";
+c.maxComparison=summarizeMaxComparison(finalRows);c.maxComparison.scope="Successor-closed final career witnesses only; commendation bonuses excluded.";
 summary.maxComparison={...c.maxComparison};delete summary.maxComparison.routeIds;
-c.materialComparison=summarizeMaterialComparison(finalRows,createMaterialIndex(c.materialBudget));c.materialComparison.scope="Successor-closed final career witnesses only.";
+c.materialComparison=summarizeMaterialComparison(finalRows,createMaterialIndex(c.materialBudget));c.materialComparison.scope="Successor-closed final career witnesses only; commendation bonuses excluded.";
 summary.materialComparison={...c.materialComparison};delete summary.materialComparison.routeIds;
 c.repeatComparison=createRepeatComparison(db).summarize(finalRows);
 summary.repeatComparison={...c.repeatComparison};delete summary.repeatComparison.suppressedRouteIds;
 db.summary.careerCompletion=summary;
+db.policies.CAREER_STAT_COMPARISON=CAREER_STAT_POLICY.medals;
 db.policies.CAREER_COMPLETION="선택 연구 분기와 최종 병종을 유지하는 조건부 육성 종결 조합을 등록. 다른 병종 및 복제는 별도 목표로 분리. 반복 시술은 실제 재생 및 성장캡 복원 후 동일 상태일 때만 종결 의무에서 제외. 병종 순환과 실제 게임·전역 최적은 미인증.";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packResearchPaths(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,bySource},null,2));
