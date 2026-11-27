@@ -5,6 +5,7 @@ import {foundationWorld,applyOriginWitnessStep} from '../public/soldiers/modern/
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {STAT_KEYS,bonusStats} from '../public/soldiers/modern/eligibility.js';
 import {defaultRankData,RANK_POLICY} from './population-frontier-default-rank.mjs';
+import {createContextResearchPlanner} from '../public/soldiers/modern/foundation-research-planner-context-v2.js';
 
 const read=p=>JSON.parse(fs.existsSync(p)?fs.readFileSync(p,'utf8'):execFileSync('git',['-c','safe.directory='+process.cwd().replaceAll('\\','/'),'show','HEAD:'+p],{encoding:'utf8',maxBuffer:64*1024*1024}));
 const rankData=defaultRankData(JSON.parse(gunzipSync(fs.readFileSync('public/data/soldiers-modern-index.json.gz'))));
@@ -60,6 +61,32 @@ for(const entry of prep.entries){
        const ctx=auditOriginCampaignContext([...actions,a],data);if(ctx.kind!=='compatible'||!ctx.allowedDifficulties.includes(entry.difficulty)){reasons.push(alt.script+': context');continue;}
        const q=applyOriginWitnessStep(w,a,data);if(!q.ok){reasons.push(alt.script+': '+q.reason);continue;}
        append(a);selected=true;break;
+      }
+      if(!selected){
+       // Add real research actions before birth, not arbitrary research flags.
+       // Each alternative is a separate trial; failed branches never mutate the route.
+       const planner=createContextResearchPlanner(data,{difficulty:entry.difficulty,maxAttempts:300,maxDepth:55,maxSteps:1900,methodLimit:45,collectFailures:true});
+       const seed=planner.newNode();for(const a of actions.slice(1))planner.append(seed,a);
+       for(const alt of row?.prerequisites?.event?.alternatives||[]){
+        const a={type:'recruit',profile:p.id,soldier:'origin',band:'min',script:alt.script,assumeOutcome:true};
+        const cond=alt.otherConditions||{};if(entry.difficulty<(cond.minDifficulty??0)||entry.difficulty>(cond.maxDifficulty??4))continue;
+        const needs=(alt.positiveTriggers||[]).filter(t=>t.kind==='researchTriggers').map(t=>t.id),neg=(alt.negativeTriggers||[]).filter(t=>t.kind==='researchTriggers').map(t=>t.id);
+        if(neg.some(k=>active(seed.world,k)))continue;
+        const q=needs.every(k=>active(seed.world,k))?{ok:true,node:seed}:planner.ensure(needs,seed);
+        if(!q.ok){reasons.push(alt.script+': research search incomplete '+(q.unresolved||''));continue;}
+        const n=q.node;if(neg.some(k=>active(n.world,k)))continue;
+        const tail=n.steps.slice(actions.length);let trial=w;
+        try{for(const step of tail)trial=apply(trial,step);
+         const month=Math.max(trial.month,alt.firstMonth||0);if(alt.lastMonth!=null&&month>alt.lastMonth)continue;
+         if(month>trial.month){const step={type:'advanceMonth',month};trial=apply(trial,step);tail.push(step);}
+         const missing={};for(const t of alt.positiveTriggers||[])if(t.kind==='itemTriggers'&&!(trial.items[t.id]>0))missing[t.id]=1;
+         if(Object.keys(missing).length){const step={type:'externalInputs',items:missing,functions:[],funds:0,reason:'event birth trigger:'+alt.script,assumption:true};trial=apply(trial,step);tail.push(step);}
+         const ctx=auditOriginCampaignContext([...actions,...tail,a],data);if(ctx.kind!=='compatible'||!ctx.allowedDifficulties.includes(entry.difficulty))continue;
+         // Reject trials closing a gate that was active before birth and needed later.
+         if(entry.stages.slice(g).some(x=>x.requires.some(k=>active(w,k)&&!active(trial,k))))continue;
+         apply(trial,a);for(const step of tail)append(step);append(a);selected=true;break;
+        }catch(e){reasons.push(alt.script+': '+e.message);}
+       }
       }
       if(!selected)throw Error('event birth unresolved: '+reasons.join('; '));
      }else append({type:'recruit',profile:p.id,soldier:'origin',band:'min'});
