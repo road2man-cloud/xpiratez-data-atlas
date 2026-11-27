@@ -1,5 +1,6 @@
 // V54: finite-cash continuation of V53, published in the shared career ledger.
 import fs from "node:fs";
+import {packEconomyDetails,hydrateEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
@@ -16,7 +17,7 @@ import {storeFinancedDetail} from "./atlas-financed-career-detail-store.mjs";
 import {createExactPrefixReplay} from "./atlas-exact-prefix-replay.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)||d;
 const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez"),gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
-const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,codex=c.codexSourcePrefixes;
+const file="public/data/branch-soldier-results.json.gz",db=hydrateEconomyDetails(gz("branch-soldier-results")),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,codex=c.codexSourcePrefixes;
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));data.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;data.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
 const index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index),early=loadEarlyEconomyRules(root,index,economy),eventIndex=loadInitialEventRules(root,a.sourceMetadataSha256),replay=createSharedCareerReplay(data,a.summary);
 assert.equal(index.evidence.fingerprint,c.terminalSupply.sourceFingerprint);assert.equal(early.evidence.fingerprint,codex.sourceEvidence.fingerprint);
@@ -62,5 +63,5 @@ for(const [routeId,list] of ordered){
 const list=Object.values(records),full=list.filter(r=>r.status.startsWith("FULL_")),gate=list.flatMap(r=>r.financeGates.filter(g=>g.event==="STR_THE_GREAT_CAUSE")),met=gate.filter(g=>g.met);
 const summary={routes:new Set(list.map(r=>r.routeId)).size,scenarios:list.length,fullLogicalReplays:full.length,sameSoldierFullReplays:full.filter(r=>r.sameSoldierState&&!r.missingOriginalActiveResearchCount).length,partial:list.length-full.length,greatCauseAttempts:gate.length,greatCauseFundsMet:met.length,financeGatesMet:list.reduce((s,r)=>s+r.financeGates.filter(g=>g.met).length,0),prefixStockReuse:list.reduce((s,r)=>s+r.counts.prefixStockReuse,0),fixedRewardDeliveries:list.reduce((s,r)=>s+r.counts.fixedRewardDeliveries,0),deadlineEventsReordered:list.reduce((s,r)=>s+r.counts.deadlineResolved,0),detailShards:new Set(list.map(r=>r.detailHash)).size,detailUncompressedBytes:list.reduce((s,r)=>s+r.detailBytes,0),detailGzipBytes:list.reduce((s,r)=>s+r.detailGzipBytes,0),pendingRoutes:groups.size-new Set(list.map(r=>r.routeId)).size,completeCampaigns:0};
 c.financedCareerCalendar={schema:"ATLAS_FINANCED_CAREER_LEDGER_V2_SHARDED",coreFingerprint,sourceMetadataSha256:a.sourceMetadataSha256,sourceHashes:c.sourceHashes,sourceEvidence:early.evidence,eventSourceEvidence:eventIndex.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,codexFingerprint:codex.producerFingerprint,producerFingerprint,records,summary};
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packEconomyDetails(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,processed,produced,migrated,prefixReplay:prefixReplay.metrics}));

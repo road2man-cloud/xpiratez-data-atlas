@@ -36,7 +36,7 @@ function run(file,args){
 function build(overrides){
  // The builder uses first-occurrence arguments. Emit each key exactly once.
  const flags={...quiet,...overrides};
- run("tools/build-population-shared-career-v105-exact-leaves.mjs",Object.entries(flags).map(([k,v])=>"--"+k+"="+v));
+ run("tools/build-population-shared-career-v106-passive-armor.mjs",Object.entries(flags).map(([k,v])=>"--"+k+"="+v));
 }
 if(births)build({seconds:int("birth-seconds",65,20,300),"terminal-extension":births,"extension-scope":"pair","extension-origins":origins.join(","),"extension-goals":goals.join(","),"extension-goal-overlap":goals.length,"extension-branches":branches.join(","),"extension-attempts":int("birth-attempts",8,1,100),"extension-fragment-ms":int("fragment-ms",2000,0,20000)});
 const recruited=ledger();

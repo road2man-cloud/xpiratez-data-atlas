@@ -1,6 +1,7 @@
 // Fund the actual project schedule from a finite, explicitly conditional
 // opening seed. Preserve existing V49 capital-estimation schedules.
 import fs from "node:fs";
+import {packEconomyDetails,hydrateEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
@@ -12,7 +13,7 @@ import {key,sha} from "./population-research-career-core.mjs";
 const arg=(name,fallback)=>process.argv.find(x=>x.startsWith("--"+name+"="))?.slice(name.length+3)||fallback;
 const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez");
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
-const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,prior=c.terminalEconomy;
+const file="public/data/branch-soldier-results.json.gz",db=hydrateEconomyDetails(gz("branch-soldier-results")),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,prior=c.terminalEconomy;
 assert(prior&&prior.terminalSupplyFingerprint===c.terminalSupply.sourceFingerprint);
 const d=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 d.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;
@@ -49,5 +50,5 @@ for(const b of baseline){
 const all=Object.values(records),funded=all.filter(r=>r.scenario.capitalMode==="FINITE_CONDITIONAL_SEED"),estimated=all.filter(r=>r.scenario.capitalMode!=="FINITE_CONDITIONAL_SEED");
 const baseSummary={...prior.summary,scenarios:all.length+unresolved.length,produced:all.length,unresolved:unresolved.length,minimumCapital:Math.min(...all.map(r=>r.budget.requiredCapital)),fastestHours:Math.min(...all.map(r=>r.budget.elapsedHours)),estimatedCapitalSchedules:estimated.length,minimumEstimatedCapital:Math.min(...estimated.map(r=>r.budget.requiredCapital)),finiteSeedSchedules:funded.length,finiteSeedUnresolved:unresolved.filter(r=>r.options?.funding).length,minimumFiniteSeed:funded.length?Math.min(...funded.map(r=>r.budget.requiredCapital)):null,fastestFiniteSeedHours:funded.length?Math.min(...funded.map(r=>r.budget.elapsedHours)):null,completeCampaigns:0};
 c.terminalEconomy={...prior,records,unresolved,summary:baseSummary,bootstrap:{schema:"FINITE_CONDITIONAL_SEED_V1",producerFingerprint,scope:"Opening seed at terminal research, no game-start funding proof; no external cash injection during schedule",roundProduced:round.filter(r=>r.status==="CONDITIONAL_PROJECT_SCHEDULE").length,roundUnresolved:round.filter(r=>r.status!=="CONDITIONAL_PROJECT_SCHEDULE").length}};
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packEconomyDetails(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary:baseSummary,round:round.map(r=>({origin:r.origin,difficulty:r.difficulty,mode:r.mode,staff:r.staff,lotSize:r.lotSize,purchase:r.purchaseElerium,status:r.status,days:r.budget?.elapsedDays,cycles:r.financing?.cycles,recipe:r.financing?.recipe,cash:r.minimumActualBalance,closing:r.budget?.closingCash,months:r.budget?.monthlyPayments,reason:r.reason}))}));

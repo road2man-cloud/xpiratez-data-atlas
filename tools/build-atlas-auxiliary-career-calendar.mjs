@@ -1,6 +1,7 @@
 // V55: consume V54's exact funded route IDs and produce a supplemental
 // research + second-base construction continuation in the common ledger.
 import fs from "node:fs";
+import {packEconomyDetails,hydrateEconomyDetails} from "../public/branch-soldier-economy-detail-codec.js";
 import assert from "node:assert/strict";
 import {gzipSync,gunzipSync} from "node:zlib";
 import {ledgers,project,readResearchWitness} from "../public/branch-soldier-atlas-career-core.js";
@@ -17,7 +18,7 @@ import {key,sha} from "./population-research-career-core.mjs";
 import {storeFinancedDetail} from "./atlas-financed-career-detail-store.mjs";
 const arg=(k,d)=>process.argv.find(x=>x.startsWith("--"+k+"="))?.slice(k.length+3)||d;
 const root=arg("game-root","C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez"),gz=f=>JSON.parse(gunzipSync(fs.readFileSync("public/data/"+f+".json.gz")));
-const file="public/data/branch-soldier-results.json.gz",db=gz("branch-soldier-results"),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,codex=c.codexSourcePrefixes,prior=c.financedCareerCalendar;
+const file="public/data/branch-soldier-results.json.gz",db=hydrateEconomyDetails(gz("branch-soldier-results")),a=gz("soldier-population-missing-origin-career"),idx=gz("soldier-population-missing-origin-career-index"),c=db.careerCompletion,codex=c.codexSourcePrefixes,prior=c.financedCareerCalendar;
 assert(prior&&codex);
 const data=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));data.originRows=JSON.parse(fs.readFileSync("public/data/soldier-acquisition-progression-20261102.json")).rows;data.sourceItemIds=new Set(JSON.parse(fs.readFileSync("public/data/soldier-source-catalog.json")).itemIds);
 const index=loadSupplyRules(root,a.sourceMetadataSha256),economy=loadEconomyRules(root,index),early=loadEarlyEconomyRules(root,index,economy),eventIndex=loadInitialEventRules(root,a.sourceMetadataSha256),auxiliarySource=loadAuxiliaryFacilityRules(root,a.sourceMetadataSha256),replay=createSharedCareerReplay(data,a.summary);
@@ -57,5 +58,5 @@ for(const [routeId,list] of ordered){
 const list=Object.values(records),full=list.filter(r=>r.status.startsWith("FULL_")),gates=list.flatMap(r=>r.eventGates.filter(g=>g.event==="STR_THE_GREAT_CAUSE")),bridges=list.flatMap(r=>r.auxiliaryBridges),built=bridges.filter(b=>b.status==="CONDITIONAL_AUXILIARY_FACILITY_BUILT");
 const summary={routes:new Set(list.map(r=>r.routeId)).size,scenarios:list.length,fullLogicalReplays:full.length,sameSoldierFullReplays:full.filter(r=>r.sameSoldierState).length,sameSoldierAndResearch:full.filter(r=>r.sameSoldierState&&!r.missingOriginalActiveResearchCount).length,partial:list.length-full.length,greatCauseAttempts:gates.length,greatCauseFundsMet:gates.filter(g=>g.fundsMet).length,greatCauseFacilityMet:gates.filter(g=>g.auxiliaryFacilityMet).length,greatCauseBothMet:gates.filter(g=>g.fundsMet&&g.auxiliaryFacilityMet).length,scoreUnknown:gates.filter(g=>g.unknown.includes("평가 점수 미확인")).length,builtFacilities:built.length,supplementalResearch:bridges.reduce((s,b)=>s+b.research.length,0),purchasedMaterials:built.reduce((s,b)=>s+b.plan.purchases.reduce((n,p)=>n+p.count,0),0),detailShards:new Set(list.map(r=>r.detailHash)).size,detailUncompressedBytes:list.reduce((s,r)=>s+r.detailBytes,0),detailGzipBytes:list.reduce((s,r)=>s+r.detailGzipBytes,0),pendingRoutes:groups.size-new Set(list.map(r=>r.routeId)).size,pendingScenarios:[...groups.values()].reduce((s,g)=>s+g.length,0)-list.length,completeCampaigns:0};
 c.auxiliaryCareerCalendar={schema:"ATLAS_AUXILIARY_CAREER_LEDGER_V1",sourceMetadataSha256:a.sourceMetadataSha256,sourceHashes:c.sourceHashes,sourceEvidence:early.evidence,eventSourceEvidence:eventIndex.evidence,auxiliarySource:auxiliarySource.evidence,terminalSupplyFingerprint:index.evidence.fingerprint,codexFingerprint:codex.producerFingerprint,financedFingerprint:prior.producerFingerprint,producerFingerprint,records,summary};
-fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(db),{level:6}));fs.renameSync(file+".tmp",file);
+fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(packEconomyDetails(db)),{level:6}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({summary,processed,produced}));

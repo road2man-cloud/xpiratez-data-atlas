@@ -12,8 +12,9 @@ import {createSharedCareerReplay,flatRollEvidence,flatRollPolicy,lifecyclePolicy
 import {sharedRankData,createSharedRankEvidence} from './population-shared-default-rank.mjs';
 import {financedSoldierSignature} from './atlas-financed-career-calendar.mjs';
 import {hydrateResearchPaths} from '../public/branch-soldier-research-path-codec.js';
+import {hydrateEconomyDetails} from '../public/branch-soldier-economy-detail-codec.js';
 const gz=f=>JSON.parse(gunzipSync(fs.readFileSync('public/data/'+f+'.json.gz')));
-const modern=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json')),db=hydrateResearchPaths(gz('branch-soldier-results')),c=completionScope(modern,db);
+const modern=JSON.parse(fs.readFileSync('public/data/soldiers-modern-index.json')),db=hydrateEconomyDetails(hydrateResearchPaths(gz('branch-soldier-results'))),c=completionScope(modern,db);
 const all=ledgers.flatMap(l=>project(l,gz(l.file),db.sourceMetadataSha256).rows);
 assert.equal(all.length,c.summary.candidateRows);
 assert.equal(new Set(all.map(r=>key([r.origin,r.branch,r.hash]))).size,c.summary.uniqueEvidence);
