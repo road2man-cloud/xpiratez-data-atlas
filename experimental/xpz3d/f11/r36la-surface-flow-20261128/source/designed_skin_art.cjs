@@ -64,7 +64,9 @@ function palette(p,n,donorRGB,sourceCore=0,depth=0){
  let c=base.map((v,i)=>v*d[i]);
  const clay=fBm(x,y,z),marble=noise(x*5,y*5,z*5),fine=noise(x*185,y*185,z*185),pore=noise(x*415+17,y*415-8,z*415+7);
  const structure=.095*M.abdomen+.105*M.inside+.060*M.inguinal-.045*M.outside+.040*M.pelvis+.075*M.chestVolume-.034*M.chestSideShade;
- const depthShade=clamp(depth*24,-1,1)*(-.012);
+ // R36LB: donor depth changes abruptly across closest-triangle boundaries.
+ // Keep the high-poly relief in the dedicated normal/height channels only.
+ const depthShade=0;
  const ink=.092*M.contourShadow+.087*M.groinShadow+.048*M.chestFold;
  const edgeLight=.067*M.contourLip+.045*M.groinLip+.034*M.chestLowerLight;
  const highlight=.080*M.bellyHighlight+.072*M.hipHighlight+.055*M.floorHighlight+.095*M.chestUpperLight;
@@ -79,7 +81,8 @@ function palette(p,n,donorRGB,sourceCore=0,depth=0){
  c[1]=clamp(c[1]+pigmentWash*.012,.07,.65);
  c[2]=clamp(c[2]-pigmentWash*.018,.045,.52);
  const rough=clamp(.82+.040*M.pelvis-.032*highlight+.030*clay,.73,.92);
- const ao=clamp(.975-ink*.27-.035*M.groinShadow-.010*clamp(-depth*20,0,1),.90,1);
+ // World-position-defined occlusion avoids a second donor-nearest seam.
+ const ao=clamp(.975-ink*.27-.035*M.groinShadow,.90,1);
  const pores=[noise(x*230+9,y*230-6,z*230+7),noise(x*230-19,y*230+17,z*230+2)];
  return {linear:c,rough,ao,pores,coreMask:M.pelvis,paintedVolume:structure,artLayers:{ink,edgeLight,highlight,structure,pigmentWash,rough}};
 }
