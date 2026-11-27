@@ -1,0 +1,95 @@
+{
+  "version": "R36KY",
+  "sourceCommit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8",
+  "engineApplied": false,
+  "files": {
+    "README.md": {
+      "bytes": 2587,
+      "sha256": "e6712cddae6134e661a46aa5d49c558f4644e87d792ce561b3e188181f7b712d"
+    },
+    "prepare_r36ky.py": {
+      "bytes": 1319,
+      "sha256": "3480d36924e1e5bd07d1ab23bc6b830a855add79eb4d48c964ad067623adf121"
+    },
+    "build_r36ky.py": {
+      "bytes": 10787,
+      "sha256": "10d03f031263a1a215b767652b2de25c5e187a7bda9946112c59af9906e6ae62"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "requirements.txt": {
+      "bytes": 137,
+      "sha256": "9b951d4d58f991b9499543b4dbbf896d89d49c6c9fabd8098dbe79e5ee02064d"
+    },
+    "publish_r36ky.py": {
+      "bytes": 4660,
+      "sha256": "05b34d459fa80b8eb6dfe2f32b076fe11f04a130070a82e496d953b5f56d04f7"
+    },
+    "input/R36KX_1024_BUILD_REPORT.json": {
+      "bytes": 22638,
+      "sha256": "3eaec704e3d8d1676ac19c35294e101ecc8d59f3e78c0df1bb955f9aca674998"
+    },
+    "input/R36KX_512_BUILD_REPORT.json": {
+      "bytes": 22324,
+      "sha256": "54deb09c4be2ae6ab1a92301c8e65ad9fd5dc8e5729f66df14a152ddf3f95caf"
+    },
+    "input/R36KX_F11_COMPACT_NORMAL_1024_2100TRI.glb": {
+      "bytes": 920228,
+      "sha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab"
+    },
+    "input/R36KX_F11_COMPACT_NORMAL_512_2100TRI.glb": {
+      "bytes": 574660,
+      "sha256": "ed91f79bc1db9a40e60f375fd11c188d30b9bc7341ca92b0aff18d466159a33c"
+    },
+    "input/SOURCE_RECEIPT.json": {
+      "bytes": 903,
+      "sha256": "714ac305702d90fad31d93a483f9cff504e72c915550a74a3f683a92963abf9e"
+    },
+    "output/R36KY_1024_BUILD_REPORT.json": {
+      "bytes": 4131,
+      "sha256": "20b6bcb7f581129c244ee2c1247457c03daf17bc0c5783f35fc1deab60059cad"
+    },
+    "output/R36KY_512_BUILD_REPORT.json": {
+      "bytes": 4119,
+      "sha256": "22edf22e6553b70571a543cfba9e325a385ebd73fc8efcc9624498d84cad5060"
+    },
+    "output/R36KY_BODY_BASE_NORMAL_1024.png": {
+      "bytes": 114720,
+      "sha256": "9ae365b659d7c79fe0af13b6ae26337ab0caeb3e90139cc2209ad9c231ba6423"
+    },
+    "output/R36KY_BODY_BASE_NORMAL_512.png": {
+      "bytes": 74764,
+      "sha256": "91dc1dbda8357779ef472ae6bd734d283026cb7807b42c13a13bb503fed142d3"
+    },
+    "output/R36KY_BODY_PATCH_NORMAL_256.png": {
+      "bytes": 6344,
+      "sha256": "543bacd71a1d37e3bec7c9d57d1ba08b54d2918ff7777edfd7a08f10bf7e8888"
+    },
+    "output/R36KY_BODY_PATCH_NORMAL_512.png": {
+      "bytes": 13641,
+      "sha256": "4d8783abba6d9b37eb5ca5d4e2888ff02275e8749ef47f46905d68077d1333e1"
+    },
+    "output/R36KY_EYE_POT_256x128.png": {
+      "bytes": 12606,
+      "sha256": "37db7a3f01380e60304a6d657d28acf087864404de5389ad7d868c9ab39a6bb7"
+    },
+    "output/R36KY_F11_POT_COMPAT_1024_2100TRI.glb": {
+      "bytes": 923808,
+      "sha256": "004bd78095b9e8dd64a98646c6952d85067c3ec2b91f6f297d45377570c237cb"
+    },
+    "output/R36KY_F11_POT_COMPAT_512_2100TRI.glb": {
+      "bytes": 577956,
+      "sha256": "9c422442d6e39e3a55b1ea939ef0abbd82d538a07a2f859e0296791c912ba6f1"
+    },
+    "output/R36KY_HAIR_BASE_NORMAL_256.png": {
+      "bytes": 26213,
+      "sha256": "9d7a91536a7cc3a95e539f8e3a83c4c9ca5f60c88e8f95da21aab159ea265c5d"
+    },
+    "output/R36KY_HAIR_PATCH_NORMAL_128.png": {
+      "bytes": 6898,
+      "sha256": "c114e4bb52a46dcd1556e563c15b63466c498afa5d3d2c2c6f2d8fcd8fc82bb2"
+    }
+  }
+}

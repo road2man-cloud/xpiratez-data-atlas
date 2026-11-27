@@ -1,0 +1,6 @@
+# GLB production dependencies
+numpy==1.26.4
+Pillow==12.2.0
+scipy==1.17.0
+# Only for the optional Edge capture command
+playwright==1.62.0

@@ -1,0 +1,26 @@
+[
+  {
+    "path": "R36KX_F11_COMPACT_NORMAL_1024_2100TRI.glb",
+    "bytes": 920228,
+    "sha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab",
+    "commit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8"
+  },
+  {
+    "path": "R36KX_1024_BUILD_REPORT.json",
+    "bytes": 22638,
+    "sha256": "3eaec704e3d8d1676ac19c35294e101ecc8d59f3e78c0df1bb955f9aca674998",
+    "commit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8"
+  },
+  {
+    "path": "R36KX_F11_COMPACT_NORMAL_512_2100TRI.glb",
+    "bytes": 574660,
+    "sha256": "ed91f79bc1db9a40e60f375fd11c188d30b9bc7341ca92b0aff18d466159a33c",
+    "commit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8"
+  },
+  {
+    "path": "R36KX_512_BUILD_REPORT.json",
+    "bytes": 22324,
+    "sha256": "54deb09c4be2ae6ab1a92301c8e65ad9fd5dc8e5729f66df14a152ddf3f95caf",
+    "commit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8"
+  }
+]

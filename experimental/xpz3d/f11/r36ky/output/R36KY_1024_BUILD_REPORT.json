@@ -1,0 +1,191 @@
+{
+  "version": "R36KY",
+  "sourceCommit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8",
+  "sourceSha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab",
+  "output": "R36KY_F11_POT_COMPAT_1024_2100TRI.glb",
+  "sha256": "004bd78095b9e8dd64a98646c6952d85067c3ec2b91f6f297d45377570c237cb",
+  "bytesBefore": 920228,
+  "bytesAfter": 923808,
+  "triangles": 2100,
+  "bones": 63,
+  "verticesBefore": 2047,
+  "verticesAfter": 2047,
+  "primitivesBefore": 12,
+  "primitivesAfter": 15,
+  "materialsBefore": 10,
+  "materialsAfter": 12,
+  "imagesBefore": 9,
+  "imagesAfter": 11,
+  "imageDimensions": [
+    [
+      256,
+      256
+    ],
+    [
+      256,
+      128
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      1024,
+      1024
+    ],
+    [
+      256,
+      256
+    ],
+    [
+      256,
+      256
+    ],
+    [
+      512,
+      512
+    ],
+    [
+      128,
+      128
+    ]
+  ],
+  "allImagesPOT": true,
+  "basePatchTexelsRetained": 70,
+  "normalUVDegenerateFaces": 0,
+  "originalTriangleCornerAttributesPreservedExceptRemappedUVs": true,
+  "unchangedImageIndices": [
+    0,
+    2,
+    4,
+    5,
+    6,
+    8
+  ],
+  "eyeOriginalPixelsRetained": true,
+  "maxBaseSampleRGBByteError": 0.0003573516918891073,
+  "sampleComparisons": [
+    {
+      "primitive": 0,
+      "sourcePrimitive": 0,
+      "triangles": 644,
+      "samples": 0,
+      "maxBaseSampleRGBByteError": 0.0
+    },
+    {
+      "primitive": 1,
+      "sourcePrimitive": 1,
+      "triangles": 280,
+      "samples": 4200,
+      "maxBaseSampleRGBByteError": 7.830301183275878e-05
+    },
+    {
+      "primitive": 2,
+      "sourcePrimitive": 2,
+      "triangles": 48,
+      "samples": 0,
+      "maxBaseSampleRGBByteError": 0.0
+    },
+    {
+      "primitive": 3,
+      "sourcePrimitive": 3,
+      "triangles": 12,
+      "samples": 0,
+      "maxBaseSampleRGBByteError": 0.0
+    },
+    {
+      "primitive": 4,
+      "sourcePrimitive": 4,
+      "triangles": 428,
+      "samples": 0,
+      "maxBaseSampleRGBByteError": 0.0
+    },
+    {
+      "primitive": 5,
+      "sourcePrimitive": 5,
+      "triangles": 14,
+      "samples": 210,
+      "maxBaseSampleRGBByteError": 0.0002454635213950951
+    },
+    {
+      "primitive": 6,
+      "sourcePrimitive": 6,
+      "triangles": 4,
+      "samples": 60,
+      "maxBaseSampleRGBByteError": 0.0003573516918891073
+    },
+    {
+      "primitive": 7,
+      "sourcePrimitive": 7,
+      "triangles": 280,
+      "samples": 4200,
+      "maxBaseSampleRGBByteError": 4.6325731091201305e-05
+    },
+    {
+      "primitive": 8,
+      "sourcePrimitive": 8,
+      "triangles": 20,
+      "samples": 300,
+      "maxBaseSampleRGBByteError": 9.021362757266616e-05
+    },
+    {
+      "primitive": 9,
+      "sourcePrimitive": 9,
+      "triangles": 20,
+      "samples": 300,
+      "maxBaseSampleRGBByteError": 7.829999913155916e-05
+    },
+    {
+      "primitive": 10,
+      "sourcePrimitive": 10,
+      "triangles": 140,
+      "samples": 2100,
+      "maxBaseSampleRGBByteError": 0.0001208007501247721
+    },
+    {
+      "primitive": 11,
+      "sourcePrimitive": 11,
+      "triangles": 140,
+      "samples": 2100,
+      "maxBaseSampleRGBByteError": 0.00018310546875
+    },
+    {
+      "primitive": 12,
+      "sourcePrimitive": 1,
+      "triangles": 14,
+      "samples": 210,
+      "maxBaseSampleRGBByteError": 2.332798413817727e-05
+    },
+    {
+      "primitive": 13,
+      "sourcePrimitive": 10,
+      "triangles": 28,
+      "samples": 420,
+      "maxBaseSampleRGBByteError": 8.58306884765625e-06
+    },
+    {
+      "primitive": 14,
+      "sourcePrimitive": 11,
+      "triangles": 28,
+      "samples": 420,
+      "maxBaseSampleRGBByteError": 8.858127088728907e-06
+    }
+  ],
+  "textureRGBA8BytesNoMipsBefore": 22634496,
+  "textureRGBA8BytesNoMipsAfter": 23003136,
+  "mipmapsIdentical": false,
+  "engineApplied": false,
+  "actualGPUAllocationMeasured": false
+}
