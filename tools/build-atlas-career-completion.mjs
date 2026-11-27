@@ -12,7 +12,7 @@ import {createSharedCareerReplay} from "./population-shared-lifecycle-replay.mjs
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
-import {classifyFinalCareers} from "./atlas-final-career-admission-v5-baseline-checkpoint.mjs";
+import {classifyFinalCareers} from "./atlas-final-career-admission-v6-transitive.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
