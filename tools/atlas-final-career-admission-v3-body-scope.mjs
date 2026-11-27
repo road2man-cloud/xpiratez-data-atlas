@@ -8,6 +8,7 @@ import {packBodyScopeInventory} from "../public/branch-soldier-final-scope-codec
 import {createSharedPrefixReplay} from "./population-shared-prefix-replay-v3-benefit.mjs";
 import fs from "node:fs";
 import {exactWorld,member} from "./population-growth-replay-core.mjs";
+import {createFinalReplayCheckpoint,replayContext} from "./atlas-final-replay-checkpoint.mjs";
 export const FINAL_SCHEMA="ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3";
 const sort=x=>[...x].sort();
 const researchAction=a=>["research","repeatResearch","freeResearch","eventResearch","missionResearch"].includes(a.type);
@@ -17,7 +18,8 @@ export function finalIdentity(pair){return key([pair.origin,pair.branch,pair.bod
 export function classifyFinalCareers({db,ledger,data,replay,lines}){
  const c=db.careerCompletion,sets=c.researchTraitSets,budget=c.materialBudget,known=new Set(budget.checkedRouteIds||[]);
  const branches=new Map(db.branches.map(b=>[b.id,b])),first=createBodyCareerScope(data,db.branches,replay),prefix=createSharedPrefixReplay(replay,{limit:8,checkpointLimit:128});
- const sourceHashes=Object.fromEntries(["tools/atlas-final-career-admission-v3-body-scope.mjs","tools/atlas-body-career-scope.mjs","public/branch-soldier-final-scope-codec.js","tools/atlas-first-successor-obligations.mjs","tools/final-career-repeat-quotient.mjs","tools/atlas-research-material-policy.mjs","tools/population-scalar-upper-bound.mjs"].map(p=>[p,key(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
+ const sourceHashes=Object.fromEntries(["tools/atlas-final-career-admission-v3-body-scope.mjs","tools/atlas-final-replay-checkpoint.mjs","tools/atlas-body-career-scope.mjs","public/branch-soldier-final-scope-codec.js","tools/atlas-first-successor-obligations.mjs","tools/final-career-repeat-quotient.mjs","tools/atlas-research-material-policy.mjs","tools/population-scalar-upper-bound.mjs"].map(p=>[p,key(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n"))]));
+ const checkpoint=createFinalReplayCheckpoint(replayContext({db,ledger,sets,budget,sourceHashes}));
  const graphChildren=new Map(),nodeRecords=new Map(),projectedHistory=new Map();
  const profileById=new Map(data.profiles.map(p=>[p.id,p])),ruleById=new Map(data.transformations.map(r=>[r.id,r]));
  // This compact projection is a scheduling prefilter, NOT a closure proof.
@@ -102,7 +104,16 @@ export function classifyFinalCareers({db,ledger,data,replay,lines}){
       const inputs={body:p.body,history:h,historyKnown:!!h,active:new Set(path.active),raw:n.raw,capRaw:n.capRaw,finite:budget.finite,consumed};
       assert([...inputs.active].every(k=>typeof k==="string"),"Research path must be hydrated before assessment");
       let q=first.assess(inputs,b),independentReplay=false,terminalEffect=null;
-      if(q.possibleExact&&!unknownResearchFields.length){
+      const cacheable=q.possibleExact&&!unknownResearchFields.length;
+      const inputKey=cacheable?key([line.id,p.origin,p.branch,p.body,p.difficulties,p.pathId,p.traitId,s.goals,s.stateHash,s.actionHash,[...inputs.active].sort(),[...h].sort(),n.raw,n.capRaw,consumed,unknownResearchFields]):null;
+      let cached=inputKey?checkpoint.get(inputKey):null;
+      if(cached?.certificate){const v=cached.certificate;if(cached.proofHash!==key(v)||v.state!==s.stateHash||v.actions!==s.actionHash||v.pair!==line.id||v.schema!==FINAL_SCHEMA||!v.independentReplay)cached=null;}
+      if(cached&&!cached.certificate&&!cached.independentReplay)cached=null;
+      if(cached){
+       result=cached;
+       if(result.certificate){result.certificate.graph=ledger.sourceGraphSha256;result.proofHash=key(result.certificate);}
+      }else{
+      if(cacheable){
        const {w,state}=getHistory(raw.sourceGraph,raw.sourceNode);
        assert(state.soldierType===p.body&&!w.pendingFree);
        const active=new Set([...w.researched].filter(k=>!w.disabled.has(k)));
@@ -118,15 +129,17 @@ export function classifyFinalCareers({db,ledger,data,replay,lines}){
        independentReplay=true;
        terminalEffect=key([p.origin,p.branch,p.body,p.difficulties,p.pathId,s.goals,[...state.bonusIds].sort(),[...state.history.keys()].sort(),state.armorId,state.status,state.rank,state.initialStats,state.currentStats,f.permanentVector,f.permanentCapVector,f.medals,consumed]);
       }
-      scopeTotals.branchExcluded+=q.blocked.filter(x=>x.reason==="SELECTED_BRANCH_MODEL_EXCLUDES_RESEARCH").length;
-      scopeTotals.otherObjectives+=q.alternatives.length;scopeTotals.repeatFixed+=q.repeats.length;
       const evidence={firstRules:q.ruleCount,blocked:q.blocked,openRules:q.open,alternativeObjectives:q.alternatives,repeatProofs:q.repeats,...(q.cycleProof?{cycleProof:q.cycleProof}:{}),missingResearch:q.missingResearch.length,exampleResearch:q.missingResearch.slice(0,12),openGrowth:q.openGrowth,unknownRules:q.unknownRules,unknownResearchFields,independentReplay,allBodyFirstActionsClosed:q.allBodyClosed};
       if(q.closed&&independentReplay&&!unknownResearchFields.length){
        const certificate={schema:FINAL_SCHEMA,source:sets.sourceMetadataSha256,replay:sets.replayFingerprint,graph:ledger.sourceGraphSha256,state:s.stateHash,actions:s.actionHash,pair:line.id,terminalGoals:s.goals,sourceHashes,scope:SCOPE,...evidence,terminalEffect};
        result={status:"FINAL_CLOSED",certificate,proofHash:key(certificate)};
-       scopeTotals[q.allBodyClosed?"allBodyClosedWitnesses":"bodyScopedClosedWitnesses"]++;
-       approved.push({...ref,closureProofHash:result.proofHash});
       }else result={status:q.openGrowth||q.missingResearch.length?"OPEN_RESEARCH_OR_GROWTH":"OPEN_TRANSFORMATION",...evidence};
+      if(inputKey&&independentReplay)checkpoint.put(inputKey,result);
+      }
+      const ev=result.certificate||result;
+      scopeTotals.branchExcluded+=(ev.blocked||[]).filter(x=>x.reason==="SELECTED_BRANCH_MODEL_EXCLUDES_RESEARCH").length;
+      scopeTotals.otherObjectives+=(ev.alternativeObjectives||[]).length;scopeTotals.repeatFixed+=(ev.repeatProofs||[]).length;
+      if(result.status==="FINAL_CLOSED"){scopeTotals[ev.allBodyFirstActionsClosed?"allBodyClosedWitnesses":"bodyScopedClosedWitnesses"]++;approved.push({...ref,closureProofHash:result.proofHash});}
      }catch(e){result={status:"UNRESOLVED_CLOSURE_REPLAY",reason:String(e.message)};}
     }
    }
@@ -174,5 +187,5 @@ export function classifyFinalCareers({db,ledger,data,replay,lines}){
  assert(regressions.length>0,"Ogre 6 to 7 regression witness missing");
  for(const r of regressions)assert(witnesses[r.from].status!=="FINAL_CLOSED","Ogre intermediate admitted");
  const inventory=packBodyScopeInventory(witnesses);
- return {schema:FINAL_SCHEMA,inventory,sourceMetadataSha256:sets.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,scope:"Selected active victory research and fixed final soldier body, with cap growth restored after each repeat. Other bodies, clone offspring and item conversion are separate objectives; excluded research follows the explicit branch model. Exact same-body repeat fixed points use replay and conditional ordinary supplies only. Unknown actions fail open. No proof of return cycles, global optimum, actual gameplay or campaign-wide impossibility.",sourceHashes,rows,witnesses,equivalent,summary:{scope:SCOPE,scopeTotals,scopeReplay:first.stats,byFinalBody:Object.fromEntries([...new Set(rows.map(r=>sets.pairs[r.id].body))].sort().map(body=>[body,rows.filter(r=>sets.pairs[r.id].body===body).length])),reclassifiedCombinations:lines.length,classifiedWitnesses:Object.keys(witnesses).length,rawClosedCombinations,equivalentCombinations:equivalent.length,completeCombinations:rows.length,explorationCombinations:lines.length-rows.length-equivalent.length,completeWitnesses:counts.FINAL_CLOSED||0,counts,closureReplay:prefix.metrics,ogreRegression:regressions,ogreSeven}};
+ return {schema:FINAL_SCHEMA,inventory,sourceMetadataSha256:sets.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,scope:"Selected active victory research and fixed final soldier body, with cap growth restored after each repeat. Other bodies, clone offspring and item conversion are separate objectives; excluded research follows the explicit branch model. Exact same-body repeat fixed points use replay and conditional ordinary supplies only. Unknown actions fail open. No proof of return cycles, global optimum, actual gameplay or campaign-wide impossibility.",sourceHashes,rows,witnesses,equivalent,summary:{scope:SCOPE,scopeTotals,scopeReplay:first.stats,replayCheckpoint:checkpoint.metrics,byFinalBody:Object.fromEntries([...new Set(rows.map(r=>sets.pairs[r.id].body))].sort().map(body=>[body,rows.filter(r=>sets.pairs[r.id].body===body).length])),reclassifiedCombinations:lines.length,classifiedWitnesses:Object.keys(witnesses).length,rawClosedCombinations,equivalentCombinations:equivalent.length,completeCombinations:rows.length,explorationCombinations:lines.length-rows.length-equivalent.length,completeWitnesses:counts.FINAL_CLOSED||0,counts,closureReplay:prefix.metrics,ogreRegression:regressions,ogreSeven}};
 }
