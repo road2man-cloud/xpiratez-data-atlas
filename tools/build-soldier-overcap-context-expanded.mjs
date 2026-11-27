@@ -27,8 +27,10 @@ for(const p of out.prefixes){if(p.actions[0]?.difficulty!==lane||!p.researchOnly
 const root=cache(planner.newNode());
 const done=new Set(out.entries.filter(e=>e.status==='RESEARCH_ONLY_SEQUENCE_COMPLETE').flatMap(e=>e.groups));
 const order=['STR_SOLDIER_PEASANT','STR_SOLDIER_DAMSEL','STR_SOLDIER_SLAVE','STR_SOLDIER_PUREBLOOD','STR_SOLDIER_HERO','STR_SOLDIER_X','STR_SOLDIER_R','STR_SOLDIER_CHORT'];
-const targets=queue.jobs.filter(j=>!done.has(j.id)&&(!wanted||j.body===wanted)).map(j=>({j,stages:j.selectedRecipes[0].stages.filter(s=>s.type==='birth'||s.type==='ensureAndTransform').map(s=>({type:s.type,transform:s.transform??null,requires:[...new Set(s.requires||[])].sort()}))}));
-targets.sort((a,b)=>order.indexOf(a.j.body)-order.indexOf(b.j.body)||a.stages.length-b.stages.length||a.j.origin.localeCompare(b.j.origin)||a.j.id.localeCompare(b.j.id));
+const wantedOrigin=arg('origin',''),skipOrigins=new Set(process.argv.filter(a=>a.startsWith('--skip-origin=')).map(a=>a.slice(14)));
+const failedOriginCounts=new Map();for(const run of out.expansionRuns||[])if(run.difficulty===lane)for(const f of run.failures||[])if(f.reason!=='BUDGET_DEFERRED')failedOriginCounts.set(f.origin,(failedOriginCounts.get(f.origin)||0)+1);
+const targets=queue.jobs.filter(j=>!done.has(j.id)&&(!wanted||j.body===wanted)&&(!wantedOrigin||j.origin===wantedOrigin)&&!skipOrigins.has(j.origin)).map(j=>({j,stages:j.selectedRecipes[0].stages.filter(s=>s.type==='birth'||s.type==='ensureAndTransform').map(s=>({type:s.type,transform:s.transform??null,requires:[...new Set(s.requires||[])].sort()}))}));
+targets.sort((a,b)=>order.indexOf(a.j.body)-order.indexOf(b.j.body)||(failedOriginCounts.get(a.j.origin)||0)-(failedOriginCounts.get(b.j.origin)||0)||a.stages.length-b.stages.length||a.j.origin.localeCompare(b.j.origin)||a.j.id.localeCompare(b.j.id));
 for(const {j,stages} of targets){
  const goals=[...new Set(stages.flatMap(s=>s.requires))];
  const all=[...pool.values()].filter(n=>goals.every(k=>active(n.world,k))).sort((a,b)=>a.steps.length-b.steps.length);
@@ -45,7 +47,7 @@ for(const {j,stages} of targets){
  else if(failure)metrics.failures.push({id:j.id,body:j.body,origin:j.origin,...failure});
 }
 out.schema='ATLAS_OVERCAP_CONTEXT_EXPANDED_V1';out.scope='Research-only chronological paths; no final admission. Prior successful groups are retained unchanged.';
-out.expansionRuns=[...(out.expansionRuns||[]),{difficulty:lane,body:wanted||null,limit,maxAttempts,...metrics}];
+out.expansionRuns=[...(out.expansionRuns||[]),{difficulty:lane,body:wanted||null,origin:wantedOrigin||null,skipOrigins:[...skipOrigins],limit,maxAttempts,...metrics}];
 const entries=out.entries.filter(e=>e.status==='RESEARCH_ONLY_SEQUENCE_COMPLETE'),byBody={};for(const j of queue.jobs){const b=byBody[j.body]||{total:0,complete:0};b.total++;if(done.has(j.id))b.complete++;byBody[j.body]=b}
 out.summary={totalGroups:queue.jobs.length,completeGroups:done.size,remaining:queue.jobs.length-done.size,completeEntries:entries.length,uniquePrefixes:out.prefixes.length,uniqueActions:out.prefixes.reduce((s,p)=>s+p.actions.length,0),byBody};
 fs.writeFileSync(target,JSON.stringify(out)+'\n');
