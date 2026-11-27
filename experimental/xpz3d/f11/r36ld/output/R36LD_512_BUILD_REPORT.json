@@ -1,0 +1,184 @@
+{
+  "version": "R36LD",
+  "sourceCommit": "c1732932a860aabef305087722a877cdb6e519c8",
+  "sourceSha256": "f2f2dab1436256616123b0b499ce27fe313cbff9f30686efd8ac9b72a76d9002",
+  "output": "R36LD_F11_JOINT_WEIGHTS_POT_512_2100TRI.glb",
+  "sha256": "405ea5fbb0b743a945733fa000fa69c4dc27073c837f20f933bb1f2f8122cb9b",
+  "bytes": 770060,
+  "sourceBytes": 770064,
+  "triangles": 2100,
+  "vertices": 2047,
+  "bones": 63,
+  "clipsPreserved": 8,
+  "imagesUnchanged": 11,
+  "changedUniqueVertices": 106,
+  "changedVertexRecords": 152,
+  "regionalResults": [
+    {
+      "region": "R_shoulder",
+      "joint": "R_UArm",
+      "candidateVertices": 45,
+      "meshEdges": 131,
+      "nearSeamPairs": 4,
+      "poseCount": 22,
+      "before": {
+        "edgeRMSLogStrain": 0.13035753947519638,
+        "edgeMaxAbsLogStrain": 1.3769021266717996,
+        "edgeWorstPoseRMS": 0.18322716993555377,
+        "seamRMSGapChange": 0.0008350142520111848,
+        "seamMaxGapChange": 0.00254051575103215
+      },
+      "after": {
+        "edgeRMSLogStrain": 0.10462402472135623,
+        "edgeMaxAbsLogStrain": 0.5658773750619861,
+        "edgeWorstPoseRMS": 0.15322671160179294,
+        "seamRMSGapChange": 0.0007114588203129098,
+        "seamMaxGapChange": 0.0017286062767478405
+      },
+      "selected": {
+        "kind": "pair_profile_and_seam",
+        "width": 0.13,
+        "shift": 0.025,
+        "strength": 0.6,
+        "seamStrength": 0.5
+      },
+      "changedUniqueVertices": 45,
+      "changedVertexRecords": 62
+    },
+    {
+      "region": "L_shoulder",
+      "joint": "L_UArm",
+      "candidateVertices": 47,
+      "meshEdges": 138,
+      "nearSeamPairs": 4,
+      "poseCount": 22,
+      "before": {
+        "edgeRMSLogStrain": 0.13312964039499214,
+        "edgeMaxAbsLogStrain": 1.4141009006272551,
+        "edgeWorstPoseRMS": 0.18562673092349047,
+        "seamRMSGapChange": 0.0013053323098699003,
+        "seamMaxGapChange": 0.009052405821448176
+      },
+      "after": {
+        "edgeRMSLogStrain": 0.1014141224870438,
+        "edgeMaxAbsLogStrain": 0.5226820359678751,
+        "edgeWorstPoseRMS": 0.15288688686588944,
+        "seamRMSGapChange": 0.0009042799030574167,
+        "seamMaxGapChange": 0.0022830743973940824
+      },
+      "selected": {
+        "kind": "pair_profile_and_seam",
+        "width": 0.13,
+        "shift": 0.025,
+        "strength": 0.8,
+        "seamStrength": 0.5
+      },
+      "changedUniqueVertices": 47,
+      "changedVertexRecords": 68
+    },
+    {
+      "region": "R_elbow",
+      "joint": "R_LArm",
+      "candidateVertices": 7,
+      "meshEdges": 35,
+      "nearSeamPairs": 0,
+      "poseCount": 21,
+      "before": {
+        "edgeRMSLogStrain": 0.06050618934796828,
+        "edgeMaxAbsLogStrain": 0.45247505819215045,
+        "edgeWorstPoseRMS": 0.15248705360357917
+      },
+      "after": {
+        "edgeRMSLogStrain": 0.060053263335958354,
+        "edgeMaxAbsLogStrain": 0.26212463498637295,
+        "edgeWorstPoseRMS": 0.11875534751955008
+      },
+      "selected": {
+        "kind": "local_pair_weight_profile",
+        "width": 0.045,
+        "shift": -0.025,
+        "strength": 0.8
+      },
+      "changedUniqueVertices": 7,
+      "changedVertexRecords": 11
+    },
+    {
+      "region": "L_elbow",
+      "joint": "L_LArm",
+      "candidateVertices": 14,
+      "meshEdges": 59,
+      "nearSeamPairs": 0,
+      "poseCount": 21,
+      "before": {
+        "edgeRMSLogStrain": 0.046837771326348955,
+        "edgeMaxAbsLogStrain": 0.45247505819215045,
+        "edgeWorstPoseRMS": 0.11760488662238083
+      },
+      "after": {
+        "edgeRMSLogStrain": 0.04651803664184233,
+        "edgeMaxAbsLogStrain": 0.2634273146837426,
+        "edgeWorstPoseRMS": 0.09178066995850555
+      },
+      "selected": {
+        "kind": "local_pair_weight_profile",
+        "width": 0.045,
+        "shift": -0.025,
+        "strength": 0.8
+      },
+      "changedUniqueVertices": 7,
+      "changedVertexRecords": 11
+    },
+    {
+      "region": "L_knee",
+      "joint": "L_Leg",
+      "candidateVertices": 22,
+      "meshEdges": 97,
+      "nearSeamPairs": 0,
+      "poseCount": 20,
+      "before": {
+        "edgeRMSLogStrain": 0.06164009892030742,
+        "edgeMaxAbsLogStrain": 0.38410291801793034,
+        "edgeWorstPoseRMS": 0.14537367786571898
+      },
+      "after": {
+        "edgeRMSLogStrain": 0.06164009892030742,
+        "edgeMaxAbsLogStrain": 0.38410291801793034,
+        "edgeWorstPoseRMS": 0.14537367786571898
+      },
+      "selected": {
+        "kind": "unchanged_no_material_gain"
+      },
+      "changedUniqueVertices": 0,
+      "changedVertexRecords": 0
+    },
+    {
+      "region": "R_knee",
+      "joint": "R_Leg",
+      "candidateVertices": 22,
+      "meshEdges": 97,
+      "nearSeamPairs": 0,
+      "poseCount": 20,
+      "before": {
+        "edgeRMSLogStrain": 0.06249221453288522,
+        "edgeMaxAbsLogStrain": 0.38410291801793034,
+        "edgeWorstPoseRMS": 0.14483395376235417
+      },
+      "after": {
+        "edgeRMSLogStrain": 0.06249221453288522,
+        "edgeMaxAbsLogStrain": 0.38410291801793034,
+        "edgeWorstPoseRMS": 0.14483395376235417
+      },
+      "selected": {
+        "kind": "unchanged_no_material_gain"
+      },
+      "changedUniqueVertices": 0,
+      "changedVertexRecords": 0
+    }
+  ],
+  "engineApplied": false,
+  "limitations": [
+    "Pose-scored skin weights only, not topological mesh welding.",
+    "Metrics are local edge length and near-seam distance proxies, not visual quality or volume proof.",
+    "Synthetic stress poses and selected existing animation samples; no runtime or rendered comparison."
+  ]
+}

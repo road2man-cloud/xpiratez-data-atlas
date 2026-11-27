@@ -1,0 +1,51 @@
+{
+  "version": "R36LD",
+  "sourceCommit": "c1732932a860aabef305087722a877cdb6e519c8",
+  "engineApplied": false,
+  "files": {
+    "README.md": {
+      "bytes": 3584,
+      "sha256": "a5d30ce99cb4e26b49bdd07da1796d4d39a13da1cd25910de17f17035ec026d5"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "prepare_r36ld.py": {
+      "bytes": 810,
+      "sha256": "aab783aa0e07ce9e55ad2ca8403bc0c8f9dd7027149d129146ee5b42033ca853"
+    },
+    "build_r36ld.py": {
+      "bytes": 11541,
+      "sha256": "9a77c2aed4792e1cb696c778054db4dc38eb419eebc91a6dda377667056207fd"
+    },
+    "publish_r36ld.py": {
+      "bytes": 4940,
+      "sha256": "8749e81a0f00e329f60f74276515832c5b0058e9915154795ef76ed3de47532f"
+    },
+    "input/R36LC_F11_SOLE_MOTION_POT_1024_2100TRI.glb": {
+      "bytes": 1115948,
+      "sha256": "5a57a09f230036df17e55c5a8e18d5a31db9429d76f2a3dd59beac3d17967fa6"
+    },
+    "input/R36LC_F11_SOLE_MOTION_POT_512_2100TRI.glb": {
+      "bytes": 770064,
+      "sha256": "f2f2dab1436256616123b0b499ce27fe313cbff9f30686efd8ac9b72a76d9002"
+    },
+    "output/R36LD_F11_JOINT_WEIGHTS_POT_1024_2100TRI.glb": {
+      "bytes": 1115936,
+      "sha256": "fd6b1633c2e460f1098054a31fa393a8de92d1ce66d4d6cb83ed2933b43d8a70"
+    },
+    "output/R36LD_F11_JOINT_WEIGHTS_POT_512_2100TRI.glb": {
+      "bytes": 770060,
+      "sha256": "405ea5fbb0b743a945733fa000fa69c4dc27073c837f20f933bb1f2f8122cb9b"
+    },
+    "output/R36LD_1024_BUILD_REPORT.json": {
+      "bytes": 5767,
+      "sha256": "ac34b58f2ed738b320ecc2045ed902041493e5f1d1e93ecfdba5e6337d363aa0"
+    },
+    "output/R36LD_512_BUILD_REPORT.json": {
+      "bytes": 5764,
+      "sha256": "645685fc4d67d631c42d8e2ca73731aadd2bec9308fd076c5ba8d055a0c85ad0"
+    }
+  }
+}
