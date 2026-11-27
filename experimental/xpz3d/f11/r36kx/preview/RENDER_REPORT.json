@@ -1,0 +1,219 @@
+{
+  "renderer": "three.js r170 / headless Edge / WebGL2 / file://",
+  "actualGameEngineRun": false,
+  "captures": [
+    {
+      "resolution": 1024,
+      "preset": "head",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_1024_HEAD_MIP.png",
+      "meanAbsoluteRGB": 7.98212005108557e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 10,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "feet",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_1024_FEET_MIP.png",
+      "meanAbsoluteRGB": 1.5964240102171137e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 2,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "feet",
+      "mode": "pbr",
+      "sampling": "base",
+      "file": "R36KX_1024_FEET_BASE.png",
+      "meanAbsoluteRGB": 1.5964240102171137e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 2,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "full",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_1024_FULL_MIP.png",
+      "meanAbsoluteRGB": 7.982120051085569e-07,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 1,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "back",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_1024_BACK_MIP.png",
+      "meanAbsoluteRGB": 1.5964240102171137e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 2,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "far",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_1024_FAR_MIP.png",
+      "meanAbsoluteRGB": 3.4323116219667946e-05,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 41,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "far",
+      "mode": "pbr",
+      "sampling": "base",
+      "file": "R36KX_1024_FAR_BASE.png",
+      "meanAbsoluteRGB": 0.0,
+      "maxChannelDifference": 0,
+      "pixelsDifferent": 0,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 1024,
+      "preset": "full",
+      "mode": "albedo",
+      "sampling": "mip",
+      "file": "R36KX_1024_ALBEDO.png",
+      "meanAbsoluteRGB": 0.0,
+      "maxChannelDifference": 0,
+      "pixelsDifferent": 0,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "head",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_512_HEAD_MIP.png",
+      "meanAbsoluteRGB": 7.98212005108557e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 10,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "feet",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_512_FEET_MIP.png",
+      "meanAbsoluteRGB": 7.183908045977011e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 9,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "feet",
+      "mode": "pbr",
+      "sampling": "base",
+      "file": "R36KX_512_FEET_BASE.png",
+      "meanAbsoluteRGB": 3.991060025542785e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 5,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "full",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_512_FULL_MIP.png",
+      "meanAbsoluteRGB": 2.3946360153256704e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 3,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "back",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_512_BACK_MIP.png",
+      "meanAbsoluteRGB": 3.1928480204342275e-06,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 4,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "far",
+      "mode": "pbr",
+      "sampling": "mip",
+      "file": "R36KX_512_FAR_MIP.png",
+      "meanAbsoluteRGB": 7.982120051085569e-07,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 1,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "far",
+      "mode": "pbr",
+      "sampling": "base",
+      "file": "R36KX_512_FAR_BASE.png",
+      "meanAbsoluteRGB": 7.982120051085569e-07,
+      "maxChannelDifference": 1,
+      "pixelsDifferent": 1,
+      "totalPixels": 417600
+    },
+    {
+      "resolution": 512,
+      "preset": "full",
+      "mode": "albedo",
+      "sampling": "mip",
+      "file": "R36KX_512_ALBEDO.png",
+      "meanAbsoluteRGB": 0.0,
+      "maxChannelDifference": 0,
+      "pixelsDifferent": 0,
+      "totalPixels": 417600
+    }
+  ],
+  "models": {
+    "before": "R36KW",
+    "after": "R36KX",
+    "stats": {
+      "before512": {
+        "vertices": 2047,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63,
+        "textureObjects": 14
+      },
+      "before1024": {
+        "vertices": 2047,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63,
+        "textureObjects": 14
+      },
+      "after512": {
+        "vertices": 2047,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63,
+        "textureObjects": 14
+      },
+      "after1024": {
+        "vertices": 2047,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63,
+        "textureObjects": 14
+      }
+    },
+    "webgl2": true
+  },
+  "jsErrors": [],
+  "offlineGLBExportMatchesProduction": true
+}

@@ -1,0 +1,202 @@
+{
+  "version": "R36KX",
+  "sourceCommit": "89d802650301fbb27c05a46e534155fa476a2dab",
+  "engineApplied": false,
+  "pagesDeploymentVerified": false,
+  "environment": {
+    "numpy": "1.26.4",
+    "scipy": "1.17.0",
+    "Pillow": "12.2.0",
+    "playwright": "1.62.0"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 6784,
+      "sha256": "fc9a2b66761426b3b0c1584f4605060139564a49988aa79712de9d7f06cf20b8"
+    },
+    "HANDOFF_R36KX.md": {
+      "bytes": 3935,
+      "sha256": "e6b5fe49b5e6d5571611a835c4527a4f344e4558b5248eebb996b1bc62e7152d"
+    },
+    "requirements.txt": {
+      "bytes": 137,
+      "sha256": "9b951d4d58f991b9499543b4dbbf896d89d49c6c9fabd8098dbe79e5ee02064d"
+    },
+    "prepare_r36kx.py": {
+      "bytes": 1713,
+      "sha256": "2a47ddac51cfa96868cc5f10f676af0ac986cc74ebe074e1166b70dc5094a155"
+    },
+    "build_r36kx.py": {
+      "bytes": 11394,
+      "sha256": "2e3f01296c2d230ffbef9b5582c0ce37cac1fffdc3ee21fbbacc523b9ed4247e"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "viewer_r36kx.js": {
+      "bytes": 6988,
+      "sha256": "16e68aa08fc694e47d6437c0f31415862b976b350f38c1d16c850043e56d3425"
+    },
+    "build_preview.py": {
+      "bytes": 5245,
+      "sha256": "9b84e70bc6ce195415a860f28aa1c2f45746152dbfd7fecf9550699833e110b8"
+    },
+    "review_r36kx.py": {
+      "bytes": 4031,
+      "sha256": "c3bdb7675530ec56efea28d76f27919d40cae922f9d090f76e6bb883ff6d924b"
+    },
+    "validate_glb.cjs": {
+      "bytes": 787,
+      "sha256": "c3c6a02a54cffad34b3218e491f74a4cc1f8528964e511ecdca10498d3015c59"
+    },
+    "publish_r36kx.py": {
+      "bytes": 7413,
+      "sha256": "c91bf6bbf422a7c5e0e0a7ed74f94b1186060f28a68f4da1850738a8b8c1fe4a"
+    },
+    "viewer_deps/package.json": {
+      "bytes": 119,
+      "sha256": "1ea376a29e9fad199d262bb686bff11cd81acd4727c0e0d1602006ccd023ff39"
+    },
+    "viewer_deps/package-lock.json": {
+      "bytes": 13502,
+      "sha256": "06d3a210e5bb214a54558ab5147495f80ae2001374b9deb9ae9c8060e8f61fde"
+    },
+    "input/R36KW_1024_BUILD_REPORT.json": {
+      "bytes": 17981,
+      "sha256": "159b5e30951513643d664d629f86aae5e0e43fbfb7fabe68e0f151e38b92f634"
+    },
+    "input/R36KW_512_BUILD_REPORT.json": {
+      "bytes": 17850,
+      "sha256": "d92402c694e08d74cafb6ee4a02453eecded68fa729b4e871a68c0b0ffbd0ebc"
+    },
+    "input/R36KW_F11_NORMAL_UV_REPAIR_1024_2100TRI.glb": {
+      "bytes": 933040,
+      "sha256": "55f909dc9f2c3618be2ea325f773b76749e0fbfb37e025955b27f0c5dc1825a0"
+    },
+    "input/R36KW_F11_NORMAL_UV_REPAIR_512_2100TRI.glb": {
+      "bytes": 580476,
+      "sha256": "9be48c35c0f9c099ce86cf29ffc880df4ba204b9295eef708ca2f729503ed085"
+    },
+    "input/SOURCE_RECEIPT.json": {
+      "bytes": 1683,
+      "sha256": "e6bb0b8b3d44932f6c129659a908423a914fca00eb3dd7e7294e9bd569a7fac4"
+    },
+    "output/R36KX_1024_BUILD_REPORT.json": {
+      "bytes": 22638,
+      "sha256": "3eaec704e3d8d1676ac19c35294e101ecc8d59f3e78c0df1bb955f9aca674998"
+    },
+    "output/R36KX_1024_VALIDATOR.json": {
+      "bytes": 4605,
+      "sha256": "879b6b44d32e4ce901b55faa53aec9ee0d13503e7c359ae03e76053bc7a1f1af"
+    },
+    "output/R36KX_512_BUILD_REPORT.json": {
+      "bytes": 22324,
+      "sha256": "54deb09c4be2ae6ab1a92301c8e65ad9fd5dc8e5729f66df14a152ddf3f95caf"
+    },
+    "output/R36KX_512_VALIDATOR.json": {
+      "bytes": 4592,
+      "sha256": "65b471277fc413f833518640ca7c82a0da774081d8985650444d055bead5df25"
+    },
+    "output/R36KX_BODY_NORMAL_1024.png": {
+      "bytes": 130388,
+      "sha256": "885a5f0428b2c600d88bda03722d5363ed9ca1b844300539ed914776f268648a"
+    },
+    "output/R36KX_BODY_NORMAL_512.png": {
+      "bytes": 83413,
+      "sha256": "e35985166ad5ea184408899bf78dff0ce0078719e14f3daaf070689ff0a9bec6"
+    },
+    "output/R36KX_F11_COMPACT_NORMAL_1024_2100TRI.glb": {
+      "bytes": 920228,
+      "sha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab"
+    },
+    "output/R36KX_F11_COMPACT_NORMAL_512_2100TRI.glb": {
+      "bytes": 574660,
+      "sha256": "ed91f79bc1db9a40e60f375fd11c188d30b9bc7341ca92b0aff18d466159a33c"
+    },
+    "output/R36KX_HAIR_NORMAL_320.png": {
+      "bytes": 35692,
+      "sha256": "e03a5967bfcd7245bc0058816494210110cdcfddd7edf1dfde5eac3c3d753893"
+    },
+    "preview/index.html": {
+      "bytes": 4630552,
+      "sha256": "60635803c7fae6b94c7218cad143c1bac4ca0b132e4328279ed61113a029f0f7"
+    },
+    "preview/THIRD_PARTY_NOTICES.txt": {
+      "bytes": 1117,
+      "sha256": "970729236e39e576886239e79e200004003409a637849dc5bc0d962b71597f59"
+    },
+    "preview/RENDER_REPORT.json": {
+      "bytes": 5674,
+      "sha256": "abf2b998faa813107dbe1ba619fd69a7ce6bd5d17a23ddf3d99e1edc80759003"
+    },
+    "preview/R36KX_1024_ALBEDO.png": {
+      "bytes": 79792,
+      "sha256": "dc7cc23e0c9bf70d165c1cca65718d758a0b353ffd649c4c79ce39a887dc17b5"
+    },
+    "preview/R36KX_1024_BACK_MIP.png": {
+      "bytes": 85831,
+      "sha256": "8c778d148f35eb3726f208886a7985eff34b01ab6569bf048208d62638e00b43"
+    },
+    "preview/R36KX_1024_FAR_BASE.png": {
+      "bytes": 68495,
+      "sha256": "954487a12578714595cf83197960d50ff19e521935b007ace2af36500d7321a5"
+    },
+    "preview/R36KX_1024_FAR_MIP.png": {
+      "bytes": 68263,
+      "sha256": "fad2f1557578fc4836295cb86146d1c61156118cb1c88508cb15659baa9b4863"
+    },
+    "preview/R36KX_1024_FEET_BASE.png": {
+      "bytes": 93757,
+      "sha256": "9b66373167a6714fa00da88cff6bbacafa87e9a6d29c32b9d6ef10babf19bc62"
+    },
+    "preview/R36KX_1024_FEET_MIP.png": {
+      "bytes": 93445,
+      "sha256": "2395f1e7870dd4944e1b370ee9939de17b8940ec3d589edad497594742b9f13a"
+    },
+    "preview/R36KX_1024_FULL_MIP.png": {
+      "bytes": 96191,
+      "sha256": "f250c627fa2d1a60a716265c6990a7199efccb349489be073eac9d5f56b21ad3"
+    },
+    "preview/R36KX_1024_HEAD_MIP.png": {
+      "bytes": 192124,
+      "sha256": "eeb1f568c8a55d3bfb692f4f288b559638960c4d802a9121aebe494c6425cc9d"
+    },
+    "preview/R36KX_512_ALBEDO.png": {
+      "bytes": 79642,
+      "sha256": "32c30f53e0990d4e008facbec55a48437c2ce9f91dd0626678613d7bd3ce7175"
+    },
+    "preview/R36KX_512_BACK_MIP.png": {
+      "bytes": 85901,
+      "sha256": "efe98dcbad72887d9a83494405da292c5c92d759b758f1780f360c71d9e3fbd8"
+    },
+    "preview/R36KX_512_FAR_BASE.png": {
+      "bytes": 68298,
+      "sha256": "3aecb8bc1cfceac70eb463c86fa28bf6445431be3e7823308c3dcb8b828cebc4"
+    },
+    "preview/R36KX_512_FAR_MIP.png": {
+      "bytes": 67880,
+      "sha256": "7e3e81a0e61d0083774e65d39f95b2ae694ba458989796abe69603553af85b6b"
+    },
+    "preview/R36KX_512_FEET_BASE.png": {
+      "bytes": 92822,
+      "sha256": "8bff1d7837df823c7b93908bd65c88299a9a6cd3252e472b568427259273734c"
+    },
+    "preview/R36KX_512_FEET_MIP.png": {
+      "bytes": 92686,
+      "sha256": "858b67406326f22b0f43573c8de3fe01e1dac9912435a6de198bfdcd742aa5e3"
+    },
+    "preview/R36KX_512_FULL_MIP.png": {
+      "bytes": 95894,
+      "sha256": "0eaffc78fe87588df4c34b8aced7f7937a1dc2eec8ef719915917946a4d52f43"
+    },
+    "preview/R36KX_512_HEAD_MIP.png": {
+      "bytes": 190444,
+      "sha256": "1b837f8de8110dcdfb4e4b6196d94670b1758e5b4a6e829b3d729aeac15da915"
+    },
+    "preview/R36KX_POSE_70_32.png": {
+      "bytes": 100488,
+      "sha256": "a7c4f77cc0a6b0b1e6c25c67999021f8fd178803d611313a3e43882fddcfe652"
+    }
+  }
+}

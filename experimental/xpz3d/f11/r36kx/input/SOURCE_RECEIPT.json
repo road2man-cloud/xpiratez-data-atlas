@@ -1,0 +1,47 @@
+{
+  "commit": "89d802650301fbb27c05a46e534155fa476a2dab",
+  "files": [
+    {
+      "remote": "glb_tools.py",
+      "local": "glb_tools.py",
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    {
+      "remote": "viewer_deps/package.json",
+      "local": "viewer_deps/package.json",
+      "bytes": 119,
+      "sha256": "1ea376a29e9fad199d262bb686bff11cd81acd4727c0e0d1602006ccd023ff39"
+    },
+    {
+      "remote": "viewer_deps/package-lock.json",
+      "local": "viewer_deps/package-lock.json",
+      "bytes": 13502,
+      "sha256": "06d3a210e5bb214a54558ab5147495f80ae2001374b9deb9ae9c8060e8f61fde"
+    },
+    {
+      "remote": "output/R36KW_F11_NORMAL_UV_REPAIR_1024_2100TRI.glb",
+      "local": "input/R36KW_F11_NORMAL_UV_REPAIR_1024_2100TRI.glb",
+      "bytes": 933040,
+      "sha256": "55f909dc9f2c3618be2ea325f773b76749e0fbfb37e025955b27f0c5dc1825a0"
+    },
+    {
+      "remote": "output/R36KW_1024_BUILD_REPORT.json",
+      "local": "input/R36KW_1024_BUILD_REPORT.json",
+      "bytes": 17981,
+      "sha256": "159b5e30951513643d664d629f86aae5e0e43fbfb7fabe68e0f151e38b92f634"
+    },
+    {
+      "remote": "output/R36KW_F11_NORMAL_UV_REPAIR_512_2100TRI.glb",
+      "local": "input/R36KW_F11_NORMAL_UV_REPAIR_512_2100TRI.glb",
+      "bytes": 580476,
+      "sha256": "9be48c35c0f9c099ce86cf29ffc880df4ba204b9295eef708ca2f729503ed085"
+    },
+    {
+      "remote": "output/R36KW_512_BUILD_REPORT.json",
+      "local": "input/R36KW_512_BUILD_REPORT.json",
+      "bytes": 17850,
+      "sha256": "d92402c694e08d74cafb6ee4a02453eecded68fa729b4e871a68c0b0ffbd0ebc"
+    }
+  ]
+}
