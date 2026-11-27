@@ -7,7 +7,7 @@ import {RESEARCH_TREE_PRODUCER_ARGS} from "./atlas-research-tree-policy.mjs";
 const extra=process.argv.slice(2);
 if(extra.some(a=>/^--(?:supply-plans|supply-research|terminal-follow|attempts|shared-scan)(?:=|$)/.test(a)))throw Error("Use the research-tree producer's ordinary-effort defaults");
 function run(file,args=[]){return execFileSync(process.execPath,[file,...args],{encoding:"utf8",maxBuffer:64*1024*1024});}
-console.log(run("tools/build-population-shared-career-v91-resurrection-compaction.mjs",[...extra,...RESEARCH_TREE_PRODUCER_ARGS]));
+console.log(run("tools/build-population-shared-career-v93-compact-continuation.mjs",[...extra,...RESEARCH_TREE_PRODUCER_ARGS]));
 console.log(run("tools/attach-population-missing-origin-career.mjs"));
 const b=run("tools/export-atlas-career-branches.mjs").trim();JSON.parse(b);
 const file="public/data/soldier-atlas-career-branches.json";
