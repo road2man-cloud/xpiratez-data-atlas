@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import {createContextResearchPlanner} from '../public/soldiers/modern/foundation-research-planner-context-v2.js';
+import {foundationWorld,applyOriginWitnessStep} from '../public/soldiers/modern/origin-witness.js';
+import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
+import {recoverOvercapResearch} from '../public/branch-soldier-overcap-context-recovery.js';
+const read=p=>JSON.parse(fs.readFileSync(p));
+const data=JSON.parse(gunzipSync(fs.readFileSync('public/data/soldiers-modern-index.json.gz')));
+data.sourceItemIds=new Set(read('public/data/soldier-source-catalog.json').itemIds);
+const prior=read('public/data/soldier-overcap-context-research-v2.json');
+const output=recoverOvercapResearch(data,prior,{createContextResearchPlanner,foundationWorld,applyOriginWitnessStep,auditOriginCampaignContext});
+fs.writeFileSync('public/data/soldier-overcap-context-recovery.json',JSON.stringify(output)+'\n');
+console.log(JSON.stringify(output.summary));
