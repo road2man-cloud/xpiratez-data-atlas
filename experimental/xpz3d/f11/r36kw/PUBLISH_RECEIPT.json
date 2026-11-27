@@ -1,0 +1,31 @@
+{
+  "repository": "road2man-cloud/xpiratez-data-atlas",
+  "branch": "main",
+  "commit": "89d802650301fbb27c05a46e534155fa476a2dab",
+  "parent": "7962cf182e6bd278414ad9ff00e5b894fea01fe8",
+  "path": "experimental/xpz3d/f11/r36kw",
+  "filesPublished": 45,
+  "remoteGLBs": [
+    {
+      "path": "output/R36KW_F11_NORMAL_UV_REPAIR_1024_2100TRI.glb",
+      "bytes": 933040,
+      "gitBlobSha": "65cfbf966c7894efceca5d01a1ebc61597173069",
+      "sha256": "55f909dc9f2c3618be2ea325f773b76749e0fbfb37e025955b27f0c5dc1825a0",
+      "remoteBytesDecoded": true
+    },
+    {
+      "path": "output/R36KW_F11_NORMAL_UV_REPAIR_512_2100TRI.glb",
+      "bytes": 580476,
+      "gitBlobSha": "3480e63878d7e543324ce057ea77b62d8c7a06bf",
+      "sha256": "9be48c35c0f9c099ce86cf29ffc880df4ba204b9295eef708ca2f729503ed085",
+      "remoteBytesDecoded": true
+    }
+  ],
+  "bundle": {
+    "bytes": 6992304,
+    "sha256": "6706254a4e76a662b48d0330ee55f7516b227f88c58cb4ba8aaa79ec78fc3bb1"
+  },
+  "engineApplied": false,
+  "pagesDeploymentVerified": false,
+  "receiptNotPartOfInitialCommit": true
+}
