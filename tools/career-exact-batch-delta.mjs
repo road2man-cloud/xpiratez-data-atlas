@@ -34,7 +34,7 @@ function apply(root,ops){
 }
 const mode=process.argv[2];
 if(mode==="--apply"){
- const patch=JSON.parse(fs.readFileSync(process.argv[3],"utf8"));assert.equal(patch.schema,"ATLAS_CAREER_EXACT_BATCH_DELTA_V1");
+ const patch=JSON.parse(process.argv[3].endsWith(".gz")?gunzipSync(fs.readFileSync(process.argv[3])):fs.readFileSync(process.argv[3]));assert.equal(patch.schema,"ATLAS_CAREER_EXACT_BATCH_DELTA_V1");
  for(const asset of patch.assets){
   assert(assets.includes(asset.path));const base=read(patch.base,asset.path);assert.equal(key(base),asset.baseJsonSha256);
   const out=apply(base,asset.ops);assert.equal(key(out),asset.resultJsonSha256);
