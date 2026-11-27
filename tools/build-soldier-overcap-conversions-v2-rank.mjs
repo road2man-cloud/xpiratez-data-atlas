@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import {gunzipSync} from 'node:zlib';
+import * as engine from '../public/soldiers/modern/eligibility.js';
+import {defaultRankData,RANK_POLICY} from './population-frontier-default-rank.mjs';
+import {produceOvercapConversionPaths} from '../public/branch-soldier-overcap-conversions-v2-rank.js';
+const data=JSON.parse(gunzipSync(fs.readFileSync('public/data/soldiers-modern-index.json.gz')));
+const report=JSON.parse(fs.readFileSync('public/data/soldier-overcap-training-candidates.json'));
+const rank=defaultRankData(data);
+const output=produceOvercapConversionPaths(rank.data,report,engine,{sourceRuntimeBlob:process.argv[2]||null,rankPolicy:{policy:RANK_POLICY,indexed:rank.indexed}});
+const previous=JSON.parse(fs.readFileSync('public/data/soldier-overcap-conversions.json'));
+const key=r=>JSON.stringify([r.origin,r.body,r.researchGoals,r.traits,r.rank]),goalKey=r=>JSON.stringify([r.origin,r.body,r.researchGoals,r.traits]);
+const oldKeys=new Set(previous.rows.map(key)),newKeys=new Set(output.rows.map(key)),oldGoals=new Set(previous.rows.map(goalKey)),newGoals=new Set(output.rows.map(goalKey));
+output.summary.comparisonToV1={previousGroups:oldKeys.size,currentGroups:newKeys.size,newGroups:[...newKeys].filter(k=>!oldKeys.has(k)).length,previousGroupsNotRetained:[...oldKeys].filter(k=>!newKeys.has(k)).length,previousGoalTraitGroups:oldGoals.size,currentGoalTraitGroups:newGoals.size,newGoalTraitGroups:[...newGoals].filter(k=>!oldGoals.has(k)).length,previousGoalTraitGroupsNotRetained:[...oldGoals].filter(k=>!newGoals.has(k)).length};
+output.summary.promotionsBySourceBody=Object.fromEntries([...new Set(output.rows.filter(r=>r.promotionSteps).map(r=>r.sourceBody))].sort().map(id=>[id,output.rows.filter(r=>r.promotionSteps&&r.sourceBody===id).length]));
+fs.writeFileSync('public/data/soldier-overcap-conversions-v2-rank.json',JSON.stringify(output)+'\n');
+console.log(JSON.stringify(output.summary));

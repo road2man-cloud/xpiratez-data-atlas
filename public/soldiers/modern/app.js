@@ -1,7 +1,7 @@
 // Read-only, source-first Soldier DB. Local save comparison never modifies a save.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=105-no-medal-bonus';
-import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=105-no-medal-bonus';
+import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=109-unified-overcap';
+import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=109-unified-overcap';
 import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
 import {loadBranchSoldierResults,buildOriginGrowthIndex,buildBodyGrowthIndex,registryCoverage} from '../../branch-soldier-catalog.js?v=20261128-economy-codec-108';
 import {evidenceLabel} from '../../branch-soldier-maxima.js';

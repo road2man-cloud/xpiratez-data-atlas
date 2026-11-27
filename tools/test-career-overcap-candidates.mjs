@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {buildOverCapTrainingCandidates,scheduleOverCapCandidates} from '../public/branch-soldier-overcap-candidates.js';
+import {STAT_KEYS} from '../public/soldiers/modern/eligibility.js';
+const stats=n=>Object.fromEntries(STAT_KEYS.map(k=>[k,n]));
+const body=(id,max)=>({id,minStats:stats(20),statCaps:stats(100),maxStats:{...stats(100),health:max,firing:max}});
+const rule=(id,fields={})=>({id,allowedSoldierTypes:['hero','freak','other','ordinary'],upperBoundAtMaxStats:true,flatOverallStatChange:{health:15,firing:8},...fields});
+const data={soldiers:[body('hero',120),body('freak',110),body('other',105),body('ordinary',100)],transformations:[rule('fitness'),rule('blocked',{forbiddenSoldierTypes:['hero','freak','other']}),rule('capOnly',{upperBoundAtMaxStats:false,upperBoundAtStatCaps:true}),rule('conversion',{producedSoldierType:'ordinary'})]};
+const result=buildOverCapTrainingCandidates(data);
+assert.deepEqual(result.rows.map(r=>r.body),['hero','freak','other']);
+assert.deepEqual(result.rows.map(r=>r.extra),[23,18,10]);
+assert.ok(result.rows.every(r=>r.rule==='fitness'&&!r.campaignVerified));
+const queue=[];
+assert.equal(scheduleOverCapCandidates(result,[{soldierType:'other'}],x=>queue.push(x)),1);
+assert.equal(queue[0].priority,10);
+assert.equal(queue[0].requiresCanonicalReplay,true);
+assert.equal(queue[0].growBefore,true);
+console.log('7 assertions passed');
