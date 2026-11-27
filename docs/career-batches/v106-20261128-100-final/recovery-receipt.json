@@ -1,0 +1,43 @@
+{
+  "schema": "XPZ_CAREER_BATCH_RECOVERY_RECEIPT_V1",
+  "sourceCommit": "bc769613a38fd8e702822835927801a1e4c5f45c",
+  "packetBytes": 2741249,
+  "packetSha256": "ca97944c282941c443947ab90024ae8144d59c90d1ffb01b5dc729778b3c2dc0",
+  "downloadAndJoin": "passed",
+  "targetJsonCheck": "4/4 already at exact target",
+  "targetFiles": [
+    {
+      "path": "public/data/soldier-population-missing-origin-career.json.gz",
+      "targetHash": "17fc38859d0658c1875511a50396a0678a1780bd545b785a15d06a2655b41520"
+    },
+    {
+      "path": "public/data/soldier-population-missing-origin-career-index.json.gz",
+      "targetHash": "38de1b86e95fdbaeaef7385d2116ea6ef2052d8c932bb22349f472dd93567b3b"
+    },
+    {
+      "path": "public/branch-soldier-missing-origin-summary.js",
+      "targetHash": "266c4daf5254ef366e2dd39602356972b9403d1ad26c7da3262ca96be786b303"
+    },
+    {
+      "path": "public/data/branch-soldier-results.json.gz",
+      "targetHash": "599236786b9abfeeabf5f4c64341d413d3bef4aed6bb2dc0fd0c431ece10d81b"
+    }
+  ],
+  "mainComparison": {
+    "base": "a6614b705b45264ff863783834eb6ebc16696676",
+    "aheadBy": 17,
+    "behindBy": 0,
+    "note": "Commit ancestry alone does not establish preservation of all career witnesses."
+  },
+  "tests": {
+    "join": 12,
+    "resume": 6,
+    "runtime": "Node.js 22.16.0",
+    "testedSourceBlobs": [
+      "790f36893fdcde5c402496bc160c2748fbabd771",
+      "f35e01409560525e5e47889744d2055dc08c1a32"
+    ]
+  },
+  "mainMerge": "not executed",
+  "newRoutes": 0
+}

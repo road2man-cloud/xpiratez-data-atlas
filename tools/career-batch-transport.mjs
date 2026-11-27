@@ -82,7 +82,7 @@ if(mode==="create"){
  const pending=[];
  for(const f of packet.files){
   const a=decode(f.path,fs.readFileSync(f.path)),h=hash(a);
-  if(mode==="check"&&h===f.targetHash){console.log(f.path+" already at exact target");continue;}
+  if(h===f.targetHash){console.log(f.path+" already at exact target");continue;}
   assert.equal(h,f.baseHash,"Wrong base, refusing overwrite: "+f.path);
   const b=apply(a,f.patch);assert.equal(hash(b),f.targetHash,"Target hash mismatch: "+f.path);
   if(mode==="apply")pending.push([f.path,encode(f.path,b)]);
@@ -91,5 +91,6 @@ if(mode==="create"){
  if(mode==="apply"){
   for(const [p,b] of pending)fs.writeFileSync(p+".transport-tmp",b,{flag:"wx"});
   for(const [p] of pending)fs.renameSync(p+".transport-tmp",p);
+  console.log(JSON.stringify({applied:pending.length,alreadyAtTarget:FILES.length-pending.length}));
  }
 }
