@@ -1,0 +1,432 @@
+{
+  "budget": {
+    "head": 968,
+    "body": 1120,
+    "total": 2088,
+    "limit": 2100
+  },
+  "body": {
+    "method": "posterior-superior-embedded-continuous-surface",
+    "before": 880,
+    "after": 1120,
+    "extraTriangles": 240,
+    "edgeSplits": 120,
+    "chestSplits": 28,
+    "splitAllocation": {
+      "floor": 92,
+      "transition": 0,
+      "upper": 0,
+      "chest": 28
+    },
+    "boundaryEdges": 0,
+    "nonmanifoldEdges": 0,
+    "watertight": true,
+    "vertices": 562,
+    "posterior": 0.02,
+    "superior": 0.026,
+    "reliefMax": 0.008,
+    "reliefVertexCount": 22,
+    "minAppliedRelief": 0.00034038426798793165,
+    "maxAppliedRelief": 0.008,
+    "avgAppliedRelief": 0.006264629732989188,
+    "minArea": 0.000016535841478499172,
+    "limitation": "Topology continuous; not an exact reconstruction of the full 6044-triangle internal anatomy",
+    "floorRegularize": {
+      "version": "R36KX",
+      "before": {
+        "whole": {
+          "count": 1120,
+          "mean": 0.6960932381258523,
+          "min": 0.032127149387352,
+          "p05": 0.3233900857978375,
+          "p10": 0.400047121669424,
+          "p25": 0.547375708745308,
+          "below028": 40,
+          "below045": 160
+        },
+        "floor": {
+          "count": 333,
+          "mean": 0.6970043068534852,
+          "min": 0.032127149387352,
+          "p05": 0.2757013514551848,
+          "p10": 0.3829690869603293,
+          "p25": 0.5419092385250526,
+          "below028": 19,
+          "below045": 52
+        }
+      },
+      "after": {
+        "whole": {
+          "count": 1120,
+          "mean": 0.735077869311409,
+          "min": 0.1193235502728183,
+          "p05": 0.35746100363383965,
+          "p10": 0.4468045472867121,
+          "p25": 0.5974732427235888,
+          "below028": 21,
+          "below045": 114
+        },
+        "floor": {
+          "count": 333,
+          "mean": 0.8244558078981756,
+          "min": 0.1916012444652713,
+          "p05": 0.5201983298439973,
+          "p10": 0.6179429559471266,
+          "p25": 0.7430185995756968,
+          "below028": 1,
+          "below045": 8
+        }
+      },
+      "flips": 42,
+      "flipsLog": [
+        {
+          "edge": "171:208",
+          "qualityBefore": 0.3683425709154629,
+          "qualityAfter": 0.9642965354318868,
+          "gain": 0.5959539645164238,
+          "minDot": 0.9843836080349706
+        },
+        {
+          "edge": "455:519",
+          "qualityBefore": 0.27221324910630657,
+          "qualityAfter": 0.8249982016298494,
+          "gain": 0.5527849525235429,
+          "minDot": 0.9961478240977893
+        },
+        {
+          "edge": "458:510",
+          "qualityBefore": 0.3829690869603293,
+          "qualityAfter": 0.9117128290658891,
+          "gain": 0.5287437421055599,
+          "minDot": 1
+        },
+        {
+          "edge": "217:460",
+          "qualityBefore": 0.4236406723156338,
+          "qualityAfter": 0.9515610921309152,
+          "gain": 0.5279204198152814,
+          "minDot": 0.9978778213510053
+        },
+        {
+          "edge": "170:459",
+          "qualityBefore": 0.27688992415766933,
+          "qualityAfter": 0.7818701795599445,
+          "gain": 0.5049802554022752,
+          "minDot": 0.9998366140738546
+        },
+        {
+          "edge": "215:482",
+          "qualityBefore": 0.3068159713040461,
+          "qualityAfter": 0.8099739080481102,
+          "gain": 0.5031579367440642,
+          "minDot": 0.9893258577973517
+        },
+        {
+          "edge": "173:469",
+          "qualityBefore": 0.40376037347288746,
+          "qualityAfter": 0.875394217871231,
+          "gain": 0.4716338443983435,
+          "minDot": 0.9993825599415791
+        },
+        {
+          "edge": "473:476",
+          "qualityBefore": 0.36971253043477975,
+          "qualityAfter": 0.8198510104774474,
+          "gain": 0.4501384800426676,
+          "minDot": 0.9583904104921324
+        },
+        {
+          "edge": "462:478",
+          "qualityBefore": 0.09866740779745936,
+          "qualityAfter": 0.5598497476070738,
+          "gain": 0.4611823398096145,
+          "minDot": 0.9999999999999999
+        },
+        {
+          "edge": "478:517",
+          "qualityBefore": 0.24406830241896824,
+          "qualityAfter": 0.7198826233513237,
+          "gain": 0.47581432093235543,
+          "minDot": 1
+        },
+        {
+          "edge": "158:474",
+          "qualityBefore": 0.3208885168040603,
+          "qualityAfter": 0.7296903991337161,
+          "gain": 0.40880188232965586,
+          "minDot": 0.994586467878692
+        },
+        {
+          "edge": "195:490",
+          "qualityBefore": 0.2274270894584314,
+          "qualityAfter": 0.6690883819893853,
+          "gain": 0.4416612925309539,
+          "minDot": 1
+        },
+        {
+          "edge": "195:464",
+          "qualityBefore": 0.3537271157785918,
+          "qualityAfter": 0.747672164350336,
+          "gain": 0.3939450485717442,
+          "minDot": 0.9981558876040626
+        },
+        {
+          "edge": "193:465",
+          "qualityBefore": 0.10843695093477397,
+          "qualityAfter": 0.4957015889685474,
+          "gain": 0.3872646380337734,
+          "minDot": 0.9999976165110694
+        },
+        {
+          "edge": "171:503",
+          "qualityBefore": 0.3161922767796494,
+          "qualityAfter": 0.6911243803800928,
+          "gain": 0.37493210360044343,
+          "minDot": 0.9999999999999999
+        },
+        {
+          "edge": "462:473",
+          "qualityBefore": 0.38231281397743266,
+          "qualityAfter": 0.7507041330159899,
+          "gain": 0.36839131903855726,
+          "minDot": 0.9918017325477485
+        },
+        {
+          "edge": "170:442",
+          "qualityBefore": 0.4093767305757385,
+          "qualityAfter": 0.7688150003400377,
+          "gain": 0.3594382697642992,
+          "minDot": 1
+        },
+        {
+          "edge": "218:232",
+          "qualityBefore": 0.35435644179176795,
+          "qualityAfter": 0.6970689188636173,
+          "gain": 0.3427124770718494,
+          "minDot": 0.9558126359630001
+        },
+        {
+          "edge": "218:505",
+          "qualityBefore": 0.6673888627010246,
+          "qualityAfter": 0.9847920733719066,
+          "gain": 0.31740321067088195,
+          "minDot": 1.0000000000000002
+        },
+        {
+          "edge": "207:459",
+          "qualityBefore": 0.27688992415766916,
+          "qualityAfter": 0.5938958677046378,
+          "gain": 0.3170059435469686,
+          "minDot": 0.9998040360394558
+        },
+        {
+          "edge": "193:509",
+          "qualityBefore": 0.12579945139371213,
+          "qualityAfter": 0.4370109673291808,
+          "gain": 0.3112115159354687,
+          "minDot": 0.9999999999999997
+        },
+        {
+          "edge": "451:495",
+          "qualityBefore": 0.6525171790345892,
+          "qualityAfter": 0.9590036485467311,
+          "gain": 0.306486469512142,
+          "minDot": 0.9999999999999997
+        },
+        {
+          "edge": "448:456",
+          "qualityBefore": 0.6525171790345892,
+          "qualityAfter": 0.9590036485467311,
+          "gain": 0.306486469512142,
+          "minDot": 0.9999999999999999
+        },
+        {
+          "edge": "207:456",
+          "qualityBefore": 0.6525171790345892,
+          "qualityAfter": 0.9590036485467307,
+          "gain": 0.30648646951214153,
+          "minDot": 0.9999999999999999
+        },
+        {
+          "edge": "442:496",
+          "qualityBefore": 0.6525171790345932,
+          "qualityAfter": 0.9590036485467327,
+          "gain": 0.30648646951213954,
+          "minDot": 1
+        },
+        {
+          "edge": "449:497",
+          "qualityBefore": 0.6525171790345929,
+          "qualityAfter": 0.9590036485467324,
+          "gain": 0.3064864695121394,
+          "minDot": 1
+        },
+        {
+          "edge": "218:491",
+          "qualityBefore": 0.6735257486905135,
+          "qualityAfter": 0.9693512421350291,
+          "gain": 0.2958254934445156,
+          "minDot": 0.9869816856610748
+        },
+        {
+          "edge": "451:488",
+          "qualityBefore": 0.4789423302933795,
+          "qualityAfter": 0.7688150003400357,
+          "gain": 0.2898726700466562,
+          "minDot": 1
+        },
+        {
+          "edge": "158:476",
+          "qualityBefore": 0.27117317831170606,
+          "qualityAfter": 0.5450560708670432,
+          "gain": 0.27388289255533715,
+          "minDot": 0.9503606507383618
+        },
+        {
+          "edge": "252:255",
+          "qualityBefore": 0.45422874714600864,
+          "qualityAfter": 0.7252597863405842,
+          "gain": 0.27103103919457555,
+          "minDot": 0.9968367009463159
+        },
+        {
+          "edge": "203:220",
+          "qualityBefore": 0.39273577138902893,
+          "qualityAfter": 0.8668604097387133,
+          "gain": 0.4741246383496843,
+          "minDot": 0.9858047022565944
+        },
+        {
+          "edge": "196:463",
+          "qualityBefore": 0.621193867785182,
+          "qualityAfter": 0.896918073976627,
+          "gain": 0.275724206191445,
+          "minDot": 1
+        },
+        {
+          "edge": "169:206",
+          "qualityBefore": 0.42881425333060447,
+          "qualityAfter": 0.6760088960025268,
+          "gain": 0.24719464267192232,
+          "minDot": 0.998799257671218
+        },
+        {
+          "edge": "172:206",
+          "qualityBefore": 0.5043243564003875,
+          "qualityAfter": 0.7892262899697402,
+          "gain": 0.28490193356935267,
+          "minDot": 0.9917115421828417
+        },
+        {
+          "edge": "445:457",
+          "qualityBefore": 0.6036513145335516,
+          "qualityAfter": 0.826306345123247,
+          "gain": 0.22265503058969538,
+          "minDot": 1
+        },
+        {
+          "edge": "151:465",
+          "qualityBefore": 0.4575411671519284,
+          "qualityAfter": 0.6730054964897083,
+          "gain": 0.21546432933777993,
+          "minDot": 1
+        },
+        {
+          "edge": "177:199",
+          "qualityBefore": 0.2756841417481593,
+          "qualityAfter": 0.6019170699529098,
+          "gain": 0.3262329282047505,
+          "minDot": 0.9687649091182827
+        },
+        {
+          "edge": "158:462",
+          "qualityBefore": 0.6719321892172987,
+          "qualityAfter": 0.8795870121098733,
+          "gain": 0.20765482289257464,
+          "minDot": 0.9985523565035284
+        },
+        {
+          "edge": "178:200",
+          "qualityBefore": 0.253738438709782,
+          "qualityAfter": 0.5758703920214924,
+          "gain": 0.32213195331171035,
+          "minDot": 0.9880073354343054
+        },
+        {
+          "edge": "200:461",
+          "qualityBefore": 0.11690850697354373,
+          "qualityAfter": 0.5873148852293031,
+          "gain": 0.47040637825575937,
+          "minDot": 0.987671510972266
+        },
+        {
+          "edge": "200:472",
+          "qualityBefore": 0.2623538585003397,
+          "qualityAfter": 0.7162938650562009,
+          "gain": 0.45394000655586114,
+          "minDot": 0.9895359993069027
+        },
+        {
+          "edge": "232:481",
+          "qualityBefore": 0.4086032742941014,
+          "qualityAfter": 0.5886352936090052,
+          "gain": 0.1800320193149038,
+          "minDot": 0.9347689385613167
+        }
+      ],
+      "relaxed": {
+        "accepted": 1065,
+        "rejected": 133,
+        "changedUniqueVertices": 175,
+        "maxMoved": 0.005999999999645112
+      },
+      "originalTriangles": 1120,
+      "remainingTriangles": 1120,
+      "closedManifold": true,
+      "limitation": "Cannot fill pre-existing negative space between thighs"
+    },
+    "centerSculpt": {
+      "version": "R36KY",
+      "sourceTriangles": 1120,
+      "outputTriangles": 1120,
+      "eligibleVertices": 130,
+      "shiftedVertices": 130,
+      "rejectedVertices": 0,
+      "maxMove": 0.015788503123841557,
+      "blendStrength": 1.7,
+      "maxAcceptedLocalScale": 1,
+      "minFaceAreaRatio": 0.44087454215859095,
+      "minFaceNormalDot": 0.575422130123058,
+      "posterior": 0.02,
+      "superior": 0.026,
+      "maxRelief": 0.015,
+      "metrics": {
+        "minFaceArea": 0.00003266201762840643,
+        "maxFaceArea": 0.005411977472008256,
+        "degenerate": 0
+      },
+      "donorReferenceTriangles": 6044,
+      "continuousSkin": true,
+      "isolatedAdditionalMesh": false,
+      "note": "Reference-guided stylized relief. Source photograph does not define physical 3D dimensions."
+    },
+    "chestVolume": {
+      "version": "R36KZ",
+      "sourceTriangles": 1120,
+      "outputTriangles": 1120,
+      "eligibleVertices": 88,
+      "modifiedVertices": 88,
+      "rejectedVertices": 0,
+      "maxMove": 0.03521716978036056,
+      "minIncidentNormalDot": 0.6168488485106729,
+      "minIncidentAreaRatio": 0.4302076861989949,
+      "area": "front upper torso",
+      "method": "integrated chest mass and inferior transition",
+      "caveat": "Non-graphic exterior chest silhouette only; 3D reference is not metrically calibrated"
+    }
+  },
+  "sources": {
+    "head": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+    "donor": "f6b53320cc9eb43f870957a8d3db6b067a18aaa3a3feb2a85463cfc3e36c041d"
+  }
+}
