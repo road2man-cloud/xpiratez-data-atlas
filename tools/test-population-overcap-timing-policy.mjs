@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {createOvercapTimingPolicy} from './population-overcap-timing-policy.mjs';
+const report=JSON.parse(readFileSync(new URL('../public/data/soldier-overcap-training-candidates.json',import.meta.url),'utf8'));
+const p=createOvercapTimingPolicy(report),base={},grown={};
+assert.deepEqual(p.summary,{bodies:9,pairs:20});
+assert.equal(p.get('STR_SOLDIER_HERO','STR_BREAD_AND_FISHES_TRAINING').extra,55);
+assert.equal(p.get('STR_SOLDIER_X','STR_BASIC_FIREARMS_TRAINING').extra,3);
+assert.equal(p.priority('STR_SOLDIER_X','STR_BASIC_FIREARMS_TRAINING')>1,true);
+assert.deepEqual(p.variants('STR_SOLDIER_HERO','STR_BREAD_AND_FISHES_TRAINING',base,grown).map(x=>x.node),[grown,base]);
+assert.deepEqual(p.variants('UNKNOWN','UNKNOWN',base,grown).map(x=>x.node),[base,grown]);
+assert.equal(p.variants('STR_SOLDIER_HERO','STR_BREAD_AND_FISHES_TRAINING',base,base).length,1);
+const a={timing:'GROW_THEN_TRAIN',band:null,to:1,stateHash:'a',capRaw:[0,25,10,0,0,0,5,10,0,0,0,0]},b={timing:'TRAIN_WITHOUT_ADDED_GROWTH',band:null,to:2,stateHash:'b',capRaw:Array(12).fill(0)};
+assert.equal(p.compare([a,b]).total,50);
+assert.equal(p.compare([a,{...b,band:'different'}]),null);
+assert.equal(p.compare([a]),null);
+console.log('10 assertions passed');
