@@ -1,0 +1,82 @@
+{
+  "version": "R36KZ",
+  "sourceCommits": [
+    "545eebdf54aa1bb1fcf6a8320a289e3086090ae8",
+    "b0a2626acd479123a919ab5b2bfd8039098df5a2"
+  ],
+  "engineApplied": false,
+  "files": {
+    "README.md": {
+      "bytes": 3616,
+      "sha256": "8390d5bbdcb1c50d459a44ac70ff58b133becf82071d4f8f1105c2bb9c6933e3"
+    },
+    "profiles.json": {
+      "bytes": 2910,
+      "sha256": "ecfbd4bf47e3202288fdb05d615e83bad0edc839af5ffdc218279049883e4f30"
+    },
+    "f11_deploy.py": {
+      "bytes": 7648,
+      "sha256": "cee91fa5fdeda1e2dc44fd0ca7ddf1ef32b9dfbb0db312abe4f93a0c1aedb0de"
+    },
+    "produce_ready_profiles.py": {
+      "bytes": 2379,
+      "sha256": "5f30656719712c40e8526e78581808345902b86f12ae2da1368e91338b37ffbf"
+    },
+    "PRODUCTION_REPORT.json": {
+      "bytes": 1513,
+      "sha256": "8f8496ad05fde5f7b47034a7f5af2f791dc5188481c776f3de052ab099410d96"
+    },
+    "publish_r36kz.py": {
+      "bytes": 5819,
+      "sha256": "855fb7b5ec9614273f124fee0ad6dce1c2d9d4648b78538439f6f37a1cd6bc2f"
+    },
+    "models/R36KX_F11_COMPACT_NORMAL_1024_2100TRI.glb": {
+      "bytes": 920228,
+      "sha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab"
+    },
+    "ready/compact-1024/F11.glb": {
+      "bytes": 920228,
+      "sha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab"
+    },
+    "ready/compact-1024/F11.stage.json": {
+      "bytes": 368,
+      "sha256": "e75248da1d120ba8d5c36a53e544678c49ee1a1798e6fa671a16dc865313a01d"
+    },
+    "models/R36KX_F11_COMPACT_NORMAL_512_2100TRI.glb": {
+      "bytes": 574660,
+      "sha256": "ed91f79bc1db9a40e60f375fd11c188d30b9bc7341ca92b0aff18d466159a33c"
+    },
+    "ready/compact-512/F11.glb": {
+      "bytes": 574660,
+      "sha256": "ed91f79bc1db9a40e60f375fd11c188d30b9bc7341ca92b0aff18d466159a33c"
+    },
+    "ready/compact-512/F11.stage.json": {
+      "bytes": 367,
+      "sha256": "5dca5e850700ea628ee826eb5d820a034e5c009fd543174475c1ab3d87606ee7"
+    },
+    "models/R36KY_F11_POT_COMPAT_1024_2100TRI.glb": {
+      "bytes": 923808,
+      "sha256": "004bd78095b9e8dd64a98646c6952d85067c3ec2b91f6f297d45377570c237cb"
+    },
+    "ready/pot-1024/F11.glb": {
+      "bytes": 923808,
+      "sha256": "004bd78095b9e8dd64a98646c6952d85067c3ec2b91f6f297d45377570c237cb"
+    },
+    "ready/pot-1024/F11.stage.json": {
+      "bytes": 365,
+      "sha256": "8a8a673b255c0043682fb757d2dec4c4ebcede2fd134a4efee1559250ef8e659"
+    },
+    "models/R36KY_F11_POT_COMPAT_512_2100TRI.glb": {
+      "bytes": 577956,
+      "sha256": "9c422442d6e39e3a55b1ea939ef0abbd82d538a07a2f859e0296791c912ba6f1"
+    },
+    "ready/pot-512/F11.glb": {
+      "bytes": 577956,
+      "sha256": "9c422442d6e39e3a55b1ea939ef0abbd82d538a07a2f859e0296791c912ba6f1"
+    },
+    "ready/pot-512/F11.stage.json": {
+      "bytes": 364,
+      "sha256": "7089e55b87b34578ad4d347d0685d057465e5c760d9a134be50f997d7b66ac21"
+    }
+  }
+}

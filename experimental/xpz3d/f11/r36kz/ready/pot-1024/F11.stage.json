@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "kind": "stage",
+  "profile": "pot-1024",
+  "sha256": "004bd78095b9e8dd64a98646c6952d85067c3ec2b91f6f297d45377570c237cb",
+  "bytes": 923808,
+  "stats": {
+    "triangles": 2100,
+    "vertices": 2047,
+    "primitives": 15,
+    "bones": 63,
+    "images": 11
+  },
+  "file": "F11.glb",
+  "engineApplied": false,
+  "canonicalGamePathVerified": false
+}
