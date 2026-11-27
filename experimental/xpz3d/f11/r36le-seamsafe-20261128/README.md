@@ -36,7 +36,16 @@ node experimental/xpz3d/f11/r36le-seamsafe-20261128/build_r36le.cjs
 - ✅ GLB 2종 생성, 각 SHA-256 확보
 - ✅ 2100△ (머리 968 / 몸체 1132), 63본, 뼈·메시·BIN 바이트 유지
 - ✅ 텍스처 참조 4개만 새 sampler로 연결
-- ☐ 실제 브라우저 화면 샘플링 개선/거리별 깜빡임 확인
+- ✅ 실제 WebGL에서 R36LE와 R36LC 전체 캐릭터 0° 및 골반 35° 화면 캡처 완료 (4,200△ / 12 calls)
+- ☐ 샘플러의 화면상 경계 완화 및 먼 거리 깜빡임에 대한 정량 우열 판정
 - ☐ S2 게임 엔진 출력 검수
 
 R36LE는 R36LC의 메시 전체를 버리거나 중심부만 따로 다시 제작하지 않는다.
+
+## 실제 렌더 캡처 및 미해결 사항
+- `preview/captures/R36LE_VS_R36LC_WHOLE_0.png`: 왼쪽 R36LE / 오른쪽 R36LC 전신 비교
+- `preview/captures/R36LE_VS_R36LC_PELVIS_35.png`: 두 모델 골반부 35° 포즈 비교
+- `R36LE_BROWSER_CAPTURE_REPORT.json`: 실물 GLB SHA-256과 캡처 바이트/해시 및 관찰 기록
+- 보고서상 삼각형 경계 색상선과 어두운 기하학적 빈 공간은 여전히 보인다. 이 단계에서 R36LE 시각 품질이 무조건 더 좋다고 확정하지 않는다.
+- `pack_r36le.cjs`: 출판 가능한 GLB 분할 파일 생성(원본 SHA 보존)
+- `ARTIFACTS.json`, `assemble_r36le.cjs`: 완전 바이너리 아카이브 및 재조립
