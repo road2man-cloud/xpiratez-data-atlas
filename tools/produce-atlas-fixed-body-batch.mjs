@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 const options=new Map(process.argv.slice(2).map(a=>{
  const m=/^--([a-z-]+)=(.+)$/.exec(a);assert(m,"Expected --key=value: "+a);return [m[1],m[2]];
 }));
-const allowed=new Set(["phase","seconds","wave","bodies"]);
+const allowed=new Set(["phase","seconds","wave","bodies","focus","chain-quantum","root-attempts","rule-attempts","fragment-ms","append-base","completion-stage"]);
 for(const k of options.keys())assert(allowed.has(k),"Unknown option "+k);
 const phase=options.get("phase")||"all";
 assert(["all","produce","attach","complete","index"].includes(phase));
@@ -18,6 +18,9 @@ const bodies=(options.get("bodies")||"STR_SOLDIER_PEASANT,STR_SOLDIER_OGRE,STR_S
 const modern=JSON.parse(fs.readFileSync("public/data/soldiers-modern-index.json"));
 const known=new Set(modern.transformations.flatMap(r=>r.allowedSoldierTypes||[]));
 assert(bodies.length&&bodies.every(x=>known.has(x)),"Unknown soldier body");
+const focus=(options.get("focus")||"").split(",").filter(Boolean),rules=new Set(modern.transformations.map(r=>r.id));
+assert(focus.every(x=>x==="CAP_GROWTH"||rules.has(x)),"Unknown focused action");
+const completionStage=options.get("completion-stage")||"all";assert(["all","prepare","finalize"].includes(completionStage));
 const data="public/data/",ledgerFile=data+"soldier-population-missing-origin-career.json.gz",indexFile=data+"soldier-population-missing-origin-career-index.json.gz";
 const read=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const initial=read(ledgerFile);
@@ -29,16 +32,17 @@ function run(file,args=[]){
 }
 const quiet=["attempts","coverage-births","shared-scan","closed-recruit","repeat-compact","terminal-transfer","terminal-extension","terminal-event-recruit","trait-chain","terminal","supply-plans","supply-research","terminal-follow","end-stage","end-research","reset-recovery","follow","chain","nodes","research"].map(k=>"--"+k+"=0");
 if(["all","produce","index"].includes(phase)){
- run("tools/build-population-shared-career-v99-pair-goals.mjs",[...quiet,"--seconds="+seconds,"--closure-wave="+(phase==="index"?0:wave),"--closure-body-scope=1","--closure-medal-preparation=1","--closure-preserve-body=1","--closure-bodies="+bodies.join(",")]);
+ run("tools/build-population-shared-career-v100-codec-migration.mjs",[...quiet,"--seconds="+seconds,"--closure-wave="+(phase==="index"?0:wave),"--closure-body-scope=1","--closure-medal-preparation=1","--closure-preserve-body=1","--closure-bodies="+bodies.join(","),"--closure-focus-actions="+focus.join(","),"--closure-chain-quantum="+int("chain-quantum",6,1,100),"--closure-root-attempts="+int("root-attempts",8,1,100),"--closure-rule-attempts="+int("rule-attempts",2,1,100),"--closure-fragment-ms="+int("fragment-ms",1500,0,20000)]);
  const l=read(ledgerFile),i=read(indexFile);
  assert.equal(l.sourceGraphSha256,i.sourceGraphSha256);
  const fresh=Object.entries(l.routes).filter(([k])=>!initial.routes[k]);
  const byBody={};for(const [,r] of fresh)byBody[r.body]=(byBody[r.body]||0)+1;
  console.log(JSON.stringify({states:Object.values(l.graphs).reduce((s,g)=>s+g.nodes.length,0),routes:Object.keys(l.routes).length,newRoutes:fresh.length,byBody,closureCandidates:l.summary.closureWave?.scopeNewCandidates||0,closureAttempts:l.summary.closureWave?.attempts||0,closureMetrics:l.summary.closureWave?.byBody}));
 }
-if(["all","attach"].includes(phase))run("tools/attach-population-missing-origin-career.mjs");
+if(["all","attach"].includes(phase))run("tools/attach-population-missing-origin-career.mjs",options.has("append-base")?["--append-base="+options.get("append-base")]:[]);
 if(["all","complete"].includes(phase)){
- run("tools/build-atlas-career-completion.mjs");
+ run("tools/build-atlas-career-completion.mjs",["--completion-stage="+completionStage]);
+ if(completionStage==="prepare")process.exit(0);
  const c=read(data+"branch-soldier-results.json.gz").careerCompletion;
  console.log(JSON.stringify({finalCount:c.summary.completeCombinations,byFinalBody:c.summary.finalCareer.byFinalBody,researchCombinations:c.researchTraitSets.summary.pairs}));
 }
