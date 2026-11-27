@@ -1,0 +1,88 @@
+{
+  "format": "R36LE_MATERIAL_PRODUCTION_V1",
+  "date": "2026-11-28",
+  "sourceRepo": "road2man-cloud/xpiratez-data-atlas",
+  "baseline": "R36LC",
+  "purpose": "Prevent cross-island mipmap bleed on actual full-character GLBs",
+  "variants": [
+    {
+      "file": "output/R36LE_SEAMSAFE_SKIN_2100TRI.glb",
+      "bytes": 3334288,
+      "sha256": "29619c81e381ee6afe1fc7e3efd7a6d82e777ff9068c243910a32c7981683e37",
+      "sourceFile": "output/stable/R36LC_BALANCED_SKIN_2100TRI.glb",
+      "sourceSha256": "678c769ca35ae29ff8a440da88969213c923a5bf4d494e1f33696e01155fe3c1",
+      "originalBinSha256": "ddd33fbafeab480ea0a24c071c5562cd3faaea3c53f3ad6620394853eb6ba5e7",
+      "samplerId": 3,
+      "textureChanges": [
+        {
+          "oldIndex": 3,
+          "newIndex": 6,
+          "embeddedImage": 3
+        },
+        {
+          "oldIndex": 5,
+          "newIndex": 7,
+          "embeddedImage": 5
+        },
+        {
+          "oldIndex": 4,
+          "newIndex": 8,
+          "embeddedImage": 4
+        }
+      ],
+      "geometryAndEmbeddedTexturesIdentical": true,
+      "budget": {
+        "head": 968,
+        "body": 1132,
+        "total": 2100,
+        "limit": 2100
+      },
+      "rigJoints": 63,
+      "bodyTriangles": 1132,
+      "headTriangles": 968,
+      "bodyNodeName": "R36KP_GAME_SKIN_WITH_EMBEDDED_ANATOMY"
+    },
+    {
+      "file": "output/R36LE_SEAMSAFE_FLOW_2100TRI.glb",
+      "bytes": 3334000,
+      "sha256": "4ce9cbc71ae6d431354d7aa729ceba5d7018781c46917d6836500da892445630",
+      "sourceFile": "output/balanced/R36LC_BALANCED_2100_SURFACE_FLOW.glb",
+      "sourceSha256": "019445060e94d737d9e332929731a12ee434b775ba54e9c46b2170b4a84dca0e",
+      "originalBinSha256": "51596b5963560a27c696ca9541efc572a41b89233ce7fdf406174acef1c8b540",
+      "samplerId": 3,
+      "textureChanges": [
+        {
+          "oldIndex": 3,
+          "newIndex": 6,
+          "embeddedImage": 3
+        },
+        {
+          "oldIndex": 5,
+          "newIndex": 7,
+          "embeddedImage": 5
+        },
+        {
+          "oldIndex": 4,
+          "newIndex": 8,
+          "embeddedImage": 4
+        }
+      ],
+      "geometryAndEmbeddedTexturesIdentical": true,
+      "budget": {
+        "head": 968,
+        "body": 1132,
+        "total": 2100,
+        "limit": 2100
+      },
+      "rigJoints": 63,
+      "bodyTriangles": 1132,
+      "headTriangles": 968,
+      "bodyNodeName": "R36KP_GAME_SKIN_WITH_EMBEDDED_ANATOMY"
+    }
+  ],
+  "limitations": [
+    "Appearance requires side-by-side runtime visual inspection",
+    "No S2 engine test",
+    "No geometric gap is closed"
+  ]
+}
