@@ -1,0 +1,14 @@
+[
+  {
+    "name": "R36KV_F11_SHARED_UV_1024_2100TRI.glb",
+    "sha256": "b7a9deee15f043e0cf50ff97e1d8b2944b15edb0b8163548bdd569e20fca7a84",
+    "bytes": 870632,
+    "commit": "8fa18e9c436805b39b9638270fe35b855e5f5f85"
+  },
+  {
+    "name": "R36KV_F11_SHARED_UV_512_2100TRI.glb",
+    "sha256": "661e63962e9c0597188083f043ff1e303c2f2f6e6abd2fef4b547dde38b68548",
+    "bytes": 527200,
+    "commit": "8fa18e9c436805b39b9638270fe35b855e5f5f85"
+  }
+]

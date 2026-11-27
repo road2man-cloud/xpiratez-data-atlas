@@ -1,0 +1,934 @@
+{
+  "triangles": 2100,
+  "bones": 63,
+  "verticesBefore": 1837,
+  "verticesAfter": 2047,
+  "primitivesBefore": 12,
+  "primitivesAfter": 12,
+  "bytes": 933040,
+  "sourceBytes": 870632,
+  "sha256": "55f909dc9f2c3618be2ea325f773b76749e0fbfb37e025955b27f0c5dc1825a0",
+  "perPrimitive": [
+    {
+      "primitive": 0,
+      "verticesBefore": 593,
+      "verticesAfter": 593,
+      "triangles": 644
+    },
+    {
+      "primitive": 1,
+      "verticesBefore": 207,
+      "verticesAfter": 249,
+      "triangles": 294
+    },
+    {
+      "primitive": 2,
+      "verticesBefore": 68,
+      "verticesAfter": 68,
+      "triangles": 48
+    },
+    {
+      "primitive": 3,
+      "verticesBefore": 8,
+      "verticesAfter": 8,
+      "triangles": 12
+    },
+    {
+      "primitive": 4,
+      "verticesBefore": 504,
+      "verticesAfter": 504,
+      "triangles": 428
+    },
+    {
+      "primitive": 5,
+      "verticesBefore": 18,
+      "verticesAfter": 18,
+      "triangles": 14
+    },
+    {
+      "primitive": 6,
+      "verticesBefore": 8,
+      "verticesAfter": 8,
+      "triangles": 4
+    },
+    {
+      "primitive": 7,
+      "verticesBefore": 189,
+      "verticesAfter": 167,
+      "triangles": 280
+    },
+    {
+      "primitive": 8,
+      "verticesBefore": 22,
+      "verticesAfter": 22,
+      "triangles": 20
+    },
+    {
+      "primitive": 9,
+      "verticesBefore": 22,
+      "verticesAfter": 22,
+      "triangles": 20
+    },
+    {
+      "primitive": 10,
+      "verticesBefore": 99,
+      "verticesAfter": 194,
+      "triangles": 168
+    },
+    {
+      "primitive": 11,
+      "verticesBefore": 99,
+      "verticesAfter": 194,
+      "triangles": 168
+    }
+  ],
+  "normalUVBefore": [
+    {
+      "primitive": 0,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 1,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 14,
+      "hasTangent": true
+    },
+    {
+      "primitive": 2,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 4,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 7,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": false
+    },
+    {
+      "primitive": 8,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": false
+    },
+    {
+      "primitive": 9,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": false
+    },
+    {
+      "primitive": 10,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 28,
+      "hasTangent": false
+    },
+    {
+      "primitive": 11,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 28,
+      "hasTangent": false
+    }
+  ],
+  "normalUVAfter": [
+    {
+      "primitive": 0,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 1,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 2,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 4,
+      "normalUV": "TEXCOORD_0",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 7,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 8,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 9,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 10,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    },
+    {
+      "primitive": 11,
+      "normalUV": "TEXCOORD_1",
+      "degenerateFaces": 0,
+      "hasTangent": true
+    }
+  ],
+  "normalUVDegenerateBefore": 70,
+  "normalUVDegenerateAfter": 0,
+  "originalColorUVsUnchanged": true,
+  "originalColorsAndRoughnessUnchanged": true,
+  "originalTriangleCornerAttributesPreserved": true,
+  "unchangedImageIndices": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    8
+  ],
+  "originalNormalAtlasPixelsRetained": true,
+  "changedZeroWeightJointCornerSlots": 63,
+  "estimatedRGBA8TextureBytesNoMipsBefore": 21831680,
+  "estimatedRGBA8TextureBytesNoMipsAfter": 26288128,
+  "textureMemoryEstimateNotMeasuredGPUAllocation": true,
+  "engineApplied": false,
+  "highPolyRecoveryClaimed": false,
+  "version": "R36KW",
+  "output": "R36KW_F11_NORMAL_UV_REPAIR_1024_2100TRI.glb",
+  "sourceSha256": "b7a9deee15f043e0cf50ff97e1d8b2944b15edb0b8163548bdd569e20fca7a84",
+  "sourceCommit": "8fa18e9c436805b39b9638270fe35b855e5f5f85",
+  "hairFacesReprojected": 14,
+  "legFacesNewSupplementaryRelief": 56,
+  "zeroWeightJointSlotsCanonicalized": 24,
+  "tangentGenerator": "MikkTSpace from pinned three.js r170 with glTF W sign inversion; valid hair tangents retained",
+  "maxPatchNormalAngleDegrees": 7.9799040299309825,
+  "patches": [
+    {
+      "primitive": 1,
+      "face": 168,
+      "kind": "hair",
+      "x": 280,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 169,
+      "kind": "hair",
+      "x": 312,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 170,
+      "kind": "hair",
+      "x": 344,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 196,
+      "kind": "hair",
+      "x": 376,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 197,
+      "kind": "hair",
+      "x": 408,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 198,
+      "kind": "hair",
+      "x": 440,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 224,
+      "kind": "hair",
+      "x": 472,
+      "y": 8,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 225,
+      "kind": "hair",
+      "x": 280,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 226,
+      "kind": "hair",
+      "x": 312,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 252,
+      "kind": "hair",
+      "x": 344,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 253,
+      "kind": "hair",
+      "x": 376,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 254,
+      "kind": "hair",
+      "x": 408,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 280,
+      "kind": "hair",
+      "x": 440,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 1,
+      "face": 281,
+      "kind": "hair",
+      "x": 472,
+      "y": 40,
+      "tile": 32,
+      "width": 512,
+      "height": 256
+    },
+    {
+      "primitive": 10,
+      "face": 60,
+      "kind": "body",
+      "x": 1032,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 61,
+      "kind": "body",
+      "x": 1080,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 62,
+      "kind": "body",
+      "x": 1128,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 63,
+      "kind": "body",
+      "x": 1176,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 64,
+      "kind": "body",
+      "x": 1224,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 65,
+      "kind": "body",
+      "x": 1272,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 66,
+      "kind": "body",
+      "x": 1320,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 67,
+      "kind": "body",
+      "x": 1368,
+      "y": 8,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 68,
+      "kind": "body",
+      "x": 1032,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 69,
+      "kind": "body",
+      "x": 1080,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 70,
+      "kind": "body",
+      "x": 1128,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 71,
+      "kind": "body",
+      "x": 1176,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 72,
+      "kind": "body",
+      "x": 1224,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 73,
+      "kind": "body",
+      "x": 1272,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 74,
+      "kind": "body",
+      "x": 1320,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 75,
+      "kind": "body",
+      "x": 1368,
+      "y": 56,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 76,
+      "kind": "body",
+      "x": 1032,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 77,
+      "kind": "body",
+      "x": 1080,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 78,
+      "kind": "body",
+      "x": 1128,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 79,
+      "kind": "body",
+      "x": 1176,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 160,
+      "kind": "body",
+      "x": 1224,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 161,
+      "kind": "body",
+      "x": 1272,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 162,
+      "kind": "body",
+      "x": 1320,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 163,
+      "kind": "body",
+      "x": 1368,
+      "y": 104,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 164,
+      "kind": "body",
+      "x": 1032,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 165,
+      "kind": "body",
+      "x": 1080,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 166,
+      "kind": "body",
+      "x": 1128,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 10,
+      "face": 167,
+      "kind": "body",
+      "x": 1176,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 60,
+      "kind": "body",
+      "x": 1224,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 61,
+      "kind": "body",
+      "x": 1272,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 62,
+      "kind": "body",
+      "x": 1320,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 63,
+      "kind": "body",
+      "x": 1368,
+      "y": 152,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 64,
+      "kind": "body",
+      "x": 1032,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 65,
+      "kind": "body",
+      "x": 1080,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 66,
+      "kind": "body",
+      "x": 1128,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 67,
+      "kind": "body",
+      "x": 1176,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 68,
+      "kind": "body",
+      "x": 1224,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 69,
+      "kind": "body",
+      "x": 1272,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 70,
+      "kind": "body",
+      "x": 1320,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 71,
+      "kind": "body",
+      "x": 1368,
+      "y": 200,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 72,
+      "kind": "body",
+      "x": 1032,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 73,
+      "kind": "body",
+      "x": 1080,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 74,
+      "kind": "body",
+      "x": 1128,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 75,
+      "kind": "body",
+      "x": 1176,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 76,
+      "kind": "body",
+      "x": 1224,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 77,
+      "kind": "body",
+      "x": 1272,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 78,
+      "kind": "body",
+      "x": 1320,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 79,
+      "kind": "body",
+      "x": 1368,
+      "y": 248,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 160,
+      "kind": "body",
+      "x": 1032,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 161,
+      "kind": "body",
+      "x": 1080,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 162,
+      "kind": "body",
+      "x": 1128,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 163,
+      "kind": "body",
+      "x": 1176,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 164,
+      "kind": "body",
+      "x": 1224,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 165,
+      "kind": "body",
+      "x": 1272,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 166,
+      "kind": "body",
+      "x": 1320,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    },
+    {
+      "primitive": 11,
+      "face": 167,
+      "kind": "body",
+      "x": 1368,
+      "y": 296,
+      "tile": 48,
+      "width": 2048,
+      "height": 1024
+    }
+  ],
+  "limitations": [
+    "Original degenerate color UVs are intentionally retained; only normal UVs repaired.",
+    "Expanded body/hair normal atlases increase decoded texture memory.",
+    "No geometry repair, topology weld, engine installation, combat animation or FPS measurement."
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "renderer": "three.js r170 / headless Microsoft Edge / file://; NOT S2/S3",
+  "captures": [
+    {
+      "preset": "head",
+      "resolution": 1024,
+      "mode": "pbr",
+      "file": "R36KW_1024_HEAD_PBR.png",
+      "meanAbsoluteRGB": 2.3946360153256704e-06,
+      "maxChannelDifference": 1,
+      "differentPixels": 3,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "head",
+      "resolution": 1024,
+      "mode": "albedo",
+      "file": "R36KW_1024_HEAD_ALBEDO.png",
+      "meanAbsoluteRGB": 0.0,
+      "maxChannelDifference": 0,
+      "differentPixels": 0,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "feet",
+      "resolution": 1024,
+      "mode": "pbr",
+      "file": "R36KW_1024_FEET_PBR.png",
+      "meanAbsoluteRGB": 0.03239224137931034,
+      "maxChannelDifference": 2,
+      "differentPixels": 31455,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "feet",
+      "resolution": 1024,
+      "mode": "albedo",
+      "file": "R36KW_1024_FEET_ALBEDO.png",
+      "meanAbsoluteRGB": 0.0,
+      "maxChannelDifference": 0,
+      "differentPixels": 0,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "legs",
+      "resolution": 1024,
+      "mode": "pbr",
+      "file": "R36KW_1024_LEGS_PBR.png",
+      "meanAbsoluteRGB": 0.01310265006385696,
+      "maxChannelDifference": 2,
+      "differentPixels": 11656,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "full",
+      "resolution": 1024,
+      "mode": "pbr",
+      "file": "R36KW_1024_FULL_PBR.png",
+      "meanAbsoluteRGB": 0.006088761174968071,
+      "maxChannelDifference": 3,
+      "differentPixels": 5117,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "full",
+      "resolution": 1024,
+      "mode": "albedo",
+      "file": "R36KW_1024_FULL_ALBEDO.png",
+      "meanAbsoluteRGB": 0.0,
+      "maxChannelDifference": 0,
+      "differentPixels": 0,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "back",
+      "resolution": 1024,
+      "mode": "pbr",
+      "file": "R36KW_1024_BACK_PBR.png",
+      "meanAbsoluteRGB": 0.0055028735632183905,
+      "maxChannelDifference": 4,
+      "differentPixels": 4757,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "head",
+      "resolution": 512,
+      "mode": "pbr",
+      "file": "R36KW_512_HEAD_PBR.png",
+      "meanAbsoluteRGB": 2.3946360153256704e-06,
+      "maxChannelDifference": 1,
+      "differentPixels": 3,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "feet",
+      "resolution": 512,
+      "mode": "pbr",
+      "file": "R36KW_512_FEET_PBR.png",
+      "meanAbsoluteRGB": 0.05897669220945083,
+      "maxChannelDifference": 3,
+      "differentPixels": 47252,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "legs",
+      "resolution": 512,
+      "mode": "pbr",
+      "file": "R36KW_512_LEGS_PBR.png",
+      "meanAbsoluteRGB": 0.0244404533844189,
+      "maxChannelDifference": 4,
+      "differentPixels": 16807,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "full",
+      "resolution": 512,
+      "mode": "pbr",
+      "file": "R36KW_512_FULL_PBR.png",
+      "meanAbsoluteRGB": 0.01172493614303959,
+      "maxChannelDifference": 4,
+      "differentPixels": 7290,
+      "totalPixels": 417600
+    },
+    {
+      "preset": "back",
+      "resolution": 512,
+      "mode": "pbr",
+      "file": "R36KW_512_BACK_PBR.png",
+      "meanAbsoluteRGB": 0.010716794380587483,
+      "maxChannelDifference": 7,
+      "differentPixels": 7479,
+      "totalPixels": 417600
+    }
+  ],
+  "actualGameEngineRun": false,
+  "models": {
+    "before": "R36KV",
+    "after": "R36KW",
+    "stats": {
+      "before1024": {
+        "vertices": 1837,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63
+      },
+      "before512": {
+        "vertices": 1837,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63
+      },
+      "after512": {
+        "vertices": 2047,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63
+      },
+      "after1024": {
+        "vertices": 2047,
+        "triangles": 2100,
+        "primitives": 12,
+        "bones": 63
+      }
+    }
+  },
+  "jsErrors": []
+}

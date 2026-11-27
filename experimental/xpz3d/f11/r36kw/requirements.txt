@@ -1,0 +1,5 @@
+numpy==1.26.4
+Pillow==12.2.0
+scipy==1.17.0
+# Optional: only required by review_r36kw.py, together with Microsoft Edge.
+playwright==1.62.0

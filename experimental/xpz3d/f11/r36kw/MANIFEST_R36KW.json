@@ -1,0 +1,186 @@
+{
+  "version": "R36KW",
+  "sourceCommit": "8fa18e9c436805b39b9638270fe35b855e5f5f85",
+  "engineApplied": false,
+  "highPolyRecoveryClaimed": false,
+  "environment": {
+    "numpy": "1.26.4",
+    "Pillow": "12.2.0",
+    "scipy": "1.17.0",
+    "playwright": "1.62.0"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 7176,
+      "sha256": "8fdea725890d86b5003c2a677ead4a309abecc2340cb40e0c7b4fb1d2e2ce1cf"
+    },
+    "HANDOFF_R36KW.md": {
+      "bytes": 4266,
+      "sha256": "f595d332a4cf605effc2221f92782d62569c6b43b1e722e9cb2c1dbaa5340b14"
+    },
+    "requirements.txt": {
+      "bytes": 138,
+      "sha256": "371503daf813dcf8064c1ce11c0c27aac3c645db5f10f4a70588e7c53bc68559"
+    },
+    "prepare_r36kw.py": {
+      "bytes": 1156,
+      "sha256": "223486058b1c7fe09250327e2f9803167cc8930ff5153b8a95d3e2224290811a"
+    },
+    "build_r36kw.py": {
+      "bytes": 12612,
+      "sha256": "1dbfab710355da3c4e2df1115fac3e4f440829ec9971e038604343a808b5bc07"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "mikktspace_stage.mjs": {
+      "bytes": 788,
+      "sha256": "1c67ddb1278492ae6c72857ec47615936a29b6247d196b4d486e5c4cd4f66acd"
+    },
+    "viewer_r36kw.js": {
+      "bytes": 6063,
+      "sha256": "7a9354cd08ea62587495fd0afeb8780678dcf5a2ce3dfeea39d44e9a84a8d490"
+    },
+    "build_preview.py": {
+      "bytes": 4927,
+      "sha256": "fccf02bf00d5b2f4ea2b5550580e2a29024025171573ebb5cab5c7edd6f28d57"
+    },
+    "review_r36kw.py": {
+      "bytes": 3494,
+      "sha256": "989788d65cf845ecd584585eb9b067b5e0bd206e5df4b5818191e9ea9526d7f2"
+    },
+    "validate_glb.cjs": {
+      "bytes": 694,
+      "sha256": "c145d8ce9f3d261aca46edf56cf74736db2c40e60891ed618264c158bc1f2bef"
+    },
+    "publish_r36kw.py": {
+      "bytes": 7321,
+      "sha256": "aa5cbdb18cbd6632dd0a2874580874cdbc6e97138ef47687be4aa95e02c53022"
+    },
+    "viewer_deps/package.json": {
+      "bytes": 119,
+      "sha256": "1ea376a29e9fad199d262bb686bff11cd81acd4727c0e0d1602006ccd023ff39"
+    },
+    "viewer_deps/package-lock.json": {
+      "bytes": 13502,
+      "sha256": "06d3a210e5bb214a54558ab5147495f80ae2001374b9deb9ae9c8060e8f61fde"
+    },
+    "input/R36KV_F11_SHARED_UV_1024_2100TRI.glb": {
+      "bytes": 870632,
+      "sha256": "b7a9deee15f043e0cf50ff97e1d8b2944b15edb0b8163548bdd569e20fca7a84"
+    },
+    "input/R36KV_F11_SHARED_UV_512_2100TRI.glb": {
+      "bytes": 527200,
+      "sha256": "661e63962e9c0597188083f043ff1e303c2f2f6e6abd2fef4b547dde38b68548"
+    },
+    "input/SOURCE_RECEIPT.json": {
+      "bytes": 458,
+      "sha256": "b0ae2901cfec432eea1d12db2381bc59b7275a9c34d80db107de806e4257c299"
+    },
+    "output/R36KW_1024_BUILD_REPORT.json": {
+      "bytes": 17981,
+      "sha256": "159b5e30951513643d664d629f86aae5e0e43fbfb7fabe68e0f151e38b92f634"
+    },
+    "output/R36KW_1024_VALIDATOR.json": {
+      "bytes": 4267,
+      "sha256": "64c244c2f28c6c0f2963daf958dfd13981dac11bbecad46d753cd1a887dad609"
+    },
+    "output/R36KW_512_BUILD_REPORT.json": {
+      "bytes": 17850,
+      "sha256": "d92402c694e08d74cafb6ee4a02453eecded68fa729b4e871a68c0b0ffbd0ebc"
+    },
+    "output/R36KW_512_VALIDATOR.json": {
+      "bytes": 4257,
+      "sha256": "378ebfb0e3f681b94a60ab4bf7ace9e3e296dbac3915e5bd3e19129533d4bd04"
+    },
+    "output/R36KW_BODY_NORMAL_1024.png": {
+      "bytes": 142980,
+      "sha256": "de3e1d30f795cfdb1e87dee0f5daeb97865474e2828080e45412046327086667"
+    },
+    "output/R36KW_BODY_NORMAL_512.png": {
+      "bytes": 89005,
+      "sha256": "0adf6e6d10dfd114d235c1afd86c8b2abd4cc039919c5002765c774738c8abda"
+    },
+    "output/R36KW_F11_NORMAL_UV_REPAIR_1024_2100TRI.glb": {
+      "bytes": 933040,
+      "sha256": "55f909dc9f2c3618be2ea325f773b76749e0fbfb37e025955b27f0c5dc1825a0"
+    },
+    "output/R36KW_F11_NORMAL_UV_REPAIR_512_2100TRI.glb": {
+      "bytes": 580476,
+      "sha256": "9be48c35c0f9c099ce86cf29ffc880df4ba204b9295eef708ca2f729503ed085"
+    },
+    "output/R36KW_HAIR_NORMAL_512x256.png": {
+      "bytes": 36072,
+      "sha256": "403ea7bd745ac864d9062ea9c1d50b816d695203eaea8d3c6eeec3035e5b14cf"
+    },
+    "preview/index.html": {
+      "bytes": 4473911,
+      "sha256": "ac16cc6abc259934d56a0cf768929712bf99167f4ac6005e5bb548ec5d7175be"
+    },
+    "preview/THIRD_PARTY_NOTICES.txt": {
+      "bytes": 1155,
+      "sha256": "b55790698e7b2782d6434c78801a2c2ba423768bc87914cabd3e36c0975aad99"
+    },
+    "preview/RENDER_REPORT.json": {
+      "bytes": 4295,
+      "sha256": "6d179f0dfa03402be35d66a2b3170f4afb676d81fd8be4bb741017a3b3119292"
+    },
+    "preview/R36KW_1024_BACK_PBR.png": {
+      "bytes": 102472,
+      "sha256": "69bb7561dbde0425b37b92492ee940f8b4c6eac1a6180006f78608cd123cc95f"
+    },
+    "preview/R36KW_1024_FEET_ALBEDO.png": {
+      "bytes": 73521,
+      "sha256": "ae48cc0df1dcde68a3132d53125e4a086a88a370da29c47aade190866fc5aa82"
+    },
+    "preview/R36KW_1024_FEET_PBR.png": {
+      "bytes": 113905,
+      "sha256": "243783b8ddd8d06c5f2dd8e006e80602c846085ebc24990abe57bc6f8f8780a3"
+    },
+    "preview/R36KW_1024_FULL_ALBEDO.png": {
+      "bytes": 78683,
+      "sha256": "6bc8075b4d9d461f9d401f0b4ed01f56f22fb9d16882a819a3b1b1de992f2a61"
+    },
+    "preview/R36KW_1024_FULL_PBR.png": {
+      "bytes": 103054,
+      "sha256": "cf2dd8d9aaf72759a83764e196f61f7e5fd27cba912103a22f43f54361d2b67d"
+    },
+    "preview/R36KW_1024_HEAD_ALBEDO.png": {
+      "bytes": 182107,
+      "sha256": "8d052c7f776d00b3f1fb4faaea3cf3ffa6d2e976fb921fdc5f1545a8b3634e11"
+    },
+    "preview/R36KW_1024_HEAD_PBR.png": {
+      "bytes": 193533,
+      "sha256": "2a56d0ac264ef724a45a85cf0bdc80628c7bc83d483080ecf3b900882bfa7cb8"
+    },
+    "preview/R36KW_1024_LEGS_PBR.png": {
+      "bytes": 114946,
+      "sha256": "47cb9952a362f064e4cd9bed5c68e9aed7faf354658fc41dfbf4325b33a99271"
+    },
+    "preview/R36KW_512_BACK_PBR.png": {
+      "bytes": 103362,
+      "sha256": "ce0a32703b6a3d2f3000dd09d25a70ad97ebd70e11d159801c67e88e56a35540"
+    },
+    "preview/R36KW_512_FEET_PBR.png": {
+      "bytes": 115700,
+      "sha256": "cbe0219e8c3ebd46ed5d754e1b0f236ec73a9cbd4ab44ef3151717dd1f2b6725"
+    },
+    "preview/R36KW_512_FULL_PBR.png": {
+      "bytes": 104030,
+      "sha256": "a87d3078a26f77b9c80f0d84c8fb7fe43efdfd35904a9612b939dd7c9e203e1b"
+    },
+    "preview/R36KW_512_HEAD_PBR.png": {
+      "bytes": 191804,
+      "sha256": "028bc448ea97a76a0d2b731221a559a5ce9f416ce024988684831d08bfed5cf3"
+    },
+    "preview/R36KW_512_LEGS_PBR.png": {
+      "bytes": 114750,
+      "sha256": "6af427dd02069cbb2ef88146ca8b4653edd780e56b3fd00606c6f1fdb259745c"
+    },
+    "preview/R36KW_POSE_70_32.png": {
+      "bytes": 108876,
+      "sha256": "2534ec76f3e7c036f1890eb66c76a8a058b1bed954c3ace0f795ae4f8debbbbe"
+    }
+  }
+}
