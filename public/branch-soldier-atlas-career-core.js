@@ -1,4 +1,5 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
+import {CAREER_STAT_POLICY,comparisonStats} from "./branch-soldier-stat-comparison-policy.js?v=1";
 export const ledgers=[
  {key:'missingbirth',registryKey:'populationMissingOriginCareer',file:'soldier-population-missing-origin-career',label:'미연결 출생처 모집·육성',index:'soldier-population-missing-origin-career-index'},
  {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},
@@ -30,11 +31,10 @@ export function project(ledger,data,metadata){
  if(data.sourceMetadataSha256!==metadata||!data.routes||typeof data.routes!=='object')throw Error('원장 버전 또는 자료 불일치');
  const rows=[],rejected=[];
  for(const [id,r] of Object.entries(data.routes)){
-  // These ledgers explicitly exclude decoration from permanent vectors; growth-only has no medal actions.
-  const current=r.permanentVector??r.vector,cap=r.permanentCapVector??r.capVector;
+  const score=comparisonStats(ledger,data,r),current=score?.current,cap=score?.cap;
   if(!validVector(current)||!validVector(cap)||!r.origin||!r.body||!r.branch||!r.fullActionHash||!stringList(r.order)){rejected.push(id);continue;}
   rows.push({key:ledger.key+':'+id,id,source:ledger.key,origin:r.origin,body:r.body,branch:r.branch,
-   order:strings(r.order),current,cap,hash:r.fullActionHash,difficulties:Array.isArray(r.allowedDifficulties)?r.allowedDifficulties.filter(Number.isInteger):[],
+   order:strings(r.order),current,cap,statPolicy:score.statPolicy,hash:r.fullActionHash,difficulties:Array.isArray(r.allowedDifficulties)?r.allowedDifficulties.filter(Number.isInteger):[],
    traits:retainedTraitIds(r),
    traitCounts:r.traitEvidence?.counts??null,requiredResearch:Array.isArray(r.traitEvidence?.requiredResearch)?strings(r.traitEvidence.requiredResearch):null,rank:r.rank??null,medals:r.medals??null,
    rootRoute:r.rootRoute??null,sourceGraph:r.sourceGraph??null,sourceNode:r.sourceNode??null,researchSet:r.researchSet??null,graphSha:data.sourceGraphSha256??null,conditionalScopeComplete:r.conditionalScopeComplete===true,
@@ -111,7 +111,7 @@ export async function loadCareerRows(modern,registry,{includeWitnesses=false,sco
      if(!r||r.hash!==a.actionHash||!validBranches.has(r.branch)){errors.push('완결 경로 근거 불일치: '+a.routeId);continue;}
      if(a.proofKind==='REPLAYED_RESEARCH_LINE_V1'){
       const sets=completion.researchTraitSets,ref=sets?.records?.[a.routeId],pair=sets?.pairs?.[a.id],traits=sets?.traits?.[a.traitSetId],path=sets?.paths?.[a.researchPathId];
-      if(!ref||!pair||!traits||!path||sets.sourceMetadataSha256!==metadata||sets.sourceGraphSha256!==data.sourceGraphSha256||ref.pairId!==a.id||ref.pathId!==a.researchPathId||ref.traitId!==a.traitSetId||ref.actionHash!==r.hash||ref.stateHash!==data.routes[a.routeId].canonicalStateHash||!ref.goals?.length||!pair.routes.includes(r.id)||pair.origin!==r.origin||pair.branch!==r.branch||pair.body!==r.body){errors.push('연구경로 완결 근거 불일치: '+a.routeId);continue;}
+      if(!ref||!pair||!traits||!path||sets.sourceMetadataSha256!==metadata||sets.sourceGraphSha256!==data.sourceGraphSha256||ref.pairId!==a.id||ref.pathId!==a.researchPathId||ref.traitId!==a.traitSetId||ref.actionHash!==r.hash||ref.stateHash!==data.routes[a.routeId].canonicalStateHash||!validVector(ref.current)||!validVector(ref.cap)||!ref.current.every((v,i)=>v===r.current[i])||!ref.cap.every((v,i)=>v===r.cap[i])||!ref.goals?.length||!pair.routes.includes(r.id)||pair.origin!==r.origin||pair.branch!==r.branch||pair.body!==r.body){errors.push('연구경로 완결 근거 불일치: '+a.routeId);continue;}
       rows.push({...r,complete:strict,modelComplete:strict,researchLineWitness:true,finalCareerStatus:strict?'FINAL_CLOSED':completion.finalCareerAdmission?.witnesses?.[r.id]?.status||'RESEARCH_LINE_EXPLORATION',actualGameCertified:false,completionId:a.id,completionProofKind:a.proofKind,researchPathId:a.researchPathId,traitCounts:traits,researchTraitPair:ref,globalOptimal:false,alternatives:a.alternatives||[],terminalGoals:ref.goals});
       continue;
      }
@@ -153,7 +153,7 @@ export function completionSummaryText(completion){
  const f=n=>Number.isSafeInteger(n)?n.toLocaleString('ko-KR'):'미확정';
  const final=completion.finalCareerAdmission;
  if(!['ATLAS_CAREER_SUCCESSOR_CLOSURE_V2','ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'].includes(final?.schema))return '최종 육성 종결 판정 자료 미연결 · 이전 연구 도달 수치는 완결 조합 아님';
- return (final.schema==='ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'?'병종 유지·성장캡 복원 조건부 최종 완결 조합 ':'최종 완결 조합 ')+f(s.completeCombinations)+'개 · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · 전체 탐색 공간 미확정';
+ return (final.schema==='ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'?'병종 유지·성장캡 복원 조건부 최종 완결 조합 ':'최종 완결 조합 ')+f(s.completeCombinations)+'개 · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · '+CAREER_STAT_POLICY.label+' 기준 · 전체 탐색 공간 미확정';
 }
 export function exactCareerUrl(r){
  return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:r.complete?'complete':'all',maxView:'all',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
