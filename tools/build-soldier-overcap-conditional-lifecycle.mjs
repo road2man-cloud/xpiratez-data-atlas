@@ -4,9 +4,11 @@ import {execFileSync} from 'node:child_process';
 import {foundationWorld,applyOriginWitnessStep} from '../public/soldiers/modern/origin-witness.js';
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {STAT_KEYS,bonusStats} from '../public/soldiers/modern/eligibility.js';
+import {defaultRankData,RANK_POLICY} from './population-frontier-default-rank.mjs';
 
 const read=p=>JSON.parse(fs.existsSync(p)?fs.readFileSync(p,'utf8'):execFileSync('git',['-c','safe.directory='+process.cwd().replaceAll('\\','/'),'show','HEAD:'+p],{encoding:'utf8',maxBuffer:64*1024*1024}));
-const data=JSON.parse(gunzipSync(fs.readFileSync('public/data/soldiers-modern-index.json.gz')));
+const rankData=defaultRankData(JSON.parse(gunzipSync(fs.readFileSync('public/data/soldiers-modern-index.json.gz'))));
+const data=rankData.data;
 const catalog=read('public/data/soldier-source-catalog.json'), ledger=read('public/data/soldier-acquisition-progression-20261102.json');
 if(JSON.stringify(catalog.sourceHashes)!==JSON.stringify(data.meta.source.rules))throw Error('catalog source mismatch');
 data.sourceItemIds=new Set(catalog.itemIds);
@@ -18,6 +20,12 @@ const profiles=new Map(data.profiles.map(p=>[p.id,p])), rules=new Map(data.trans
 function member(w){const m=w.soldiers.find(s=>s.id==='origin');if(!m)throw Error('missing origin');return m}
 function snapshot(w){const s=member(w).state,b=bonusStats(s,data,{commendations:{}}),raw=vec(s.currentStats),effective=keys.map(k=>k==='psiSkill'&&s.currentStats[k]<=0&&(b[k]||0)>0?s.currentStats[k]:Math.max(k==='health'?1:0,s.currentStats[k]+(b[k]||0)));return {body:s.soldierType,raw,effective,rank:s.rank,traits:[...s.bonusCounts].sort(),history:[...s.history].sort()}}
 function apply(w,a){
+ if(a.type==='conditionalPromotion'){
+  if(a.assumption!==true||w.pendingFree)throw Error('invalid promotion assumption');
+  const v=structuredClone(w),s=member(v).state,b=bodies.get(s.soldierType),ranks=b?.raw?.rankStrings;
+  if(s.retired||s.status!=='healthy'||b?.allowPromotion!==true||!Array.isArray(ranks)||!Number.isSafeInteger(s.rank)||a.rank!==s.rank+1||a.rank>=ranks.length)throw Error('invalid sequential promotion: '+s.soldierType+' '+s.rank+' -> '+a.rank);
+  s.rank=a.rank;return v;
+ }
  if(a.type==='conditionalCapGrowth'){
   if(a.assumption!==true||w.pendingFree)throw Error('invalid growth assumption');
   const v=structuredClone(w),m=member(v),s=m.state,b=bodies.get(s.soldierType);
@@ -36,7 +44,7 @@ for(const entry of prep.entries){
  for(const id of entry.groups){
   const ix=ordinal++;if(ix<offset||ix>=offset+limit)continue;
   const j=jobs.get(id),r=j?.selectedRecipes[0],p=profiles.get(j?.origin);
-  const out={id,origin:j?.origin,body:j?.body,prefix:entry.prefix,difficulty:entry.difficulty,order:r?.order,scope:'CONDITIONAL_LIFECYCLE_REPLAY',actualGameCertified:false,finalAdmission:false,materialBudgetVerified:false,commendationStatsIncluded:false};
+  const out={id,origin:j?.origin,body:j?.body,prefix:entry.prefix,difficulty:entry.difficulty,order:r?.order,scope:'CONDITIONAL_LIFECYCLE_REPLAY',actualGameCertified:false,finalAdmission:false,materialBudgetVerified:false,commendationStatsIncluded:false,rankPolicy:RANK_POLICY.id,rankPolicyExactBuildVerified:false};
   let w=foundationWorld(),cursor=0,g=0,stageIndex=-1;const actions=[],milestones=[];
   function append(a){w=apply(w,a);actions.push(a)}
   function supply(items={},functions=[],funds=0,reason){const missing={};for(const [k,n] of Object.entries(items)){const m=Math.max(0,n-(w.items[k]||0));if(m)missing[k]=m}const funcs=functions.filter(k=>!w.baseFunctions.has(k)),money=Math.max(0,funds-w.funds);if(Object.keys(missing).length||funcs.length||money)append({type:'externalInputs',items:missing,functions:funcs,funds:money,reason,assumption:true})}
@@ -44,8 +52,20 @@ for(const entry of prep.entries){
   try{
    if(!r||!p||!prefix)throw Error('missing queue/prefix/profile');
    for(const s of r.stages){stageIndex++;
-    if(s.type==='birth'){gate(s);if(p.sourceType==='event')throw Error('event origin needs explicit event-specific proof');supply(p.acquisitionRequiredItems,p.requiresBaseFunc,p.cost||0,'recruit:'+p.id);append({type:'recruit',profile:p.id,soldier:'origin',band:'min'});milestones.push({type:'recruit',at:actions.length,...snapshot(w)});}
+    if(s.type==='birth'){gate(s);supply(p.acquisitionRequiredItems,p.requiresBaseFunc,p.cost||0,'recruit:'+p.id);
+     if(p.sourceType==='event'){
+      const row=data.originRows.find(r=>r.id===p.id&&r.kind==='SOURCE_SPAWN'), reasons=[];let selected=false;
+      for(const alt of row?.prerequisites?.event?.alternatives||[]){
+       const a={type:'recruit',profile:p.id,soldier:'origin',band:'min',script:alt.script,assumeOutcome:true};
+       const ctx=auditOriginCampaignContext([...actions,a],data);if(ctx.kind!=='compatible'||!ctx.allowedDifficulties.includes(entry.difficulty)){reasons.push(alt.script+': context');continue;}
+       const q=applyOriginWitnessStep(w,a,data);if(!q.ok){reasons.push(alt.script+': '+q.reason);continue;}
+       append(a);selected=true;break;
+      }
+      if(!selected)throw Error('event birth unresolved: '+reasons.join('; '));
+     }else append({type:'recruit',profile:p.id,soldier:'origin',band:'min'});
+     milestones.push({type:'recruit',at:actions.length,...snapshot(w)});}
     else if(s.type==='conditionalCapGrowth'){append({type:'conditionalCapGrowth',soldier:'origin',assumption:true});milestones.push({type:s.type,at:actions.length,...snapshot(w)});}
+    else if(s.type==='conditionalPromotion'){append({type:s.type,soldier:'origin',rank:s.rank,assumption:true});milestones.push({type:s.type,at:actions.length,...snapshot(w)});}
     else if(s.type==='ensureAndTransform'){gate(s);const t=rules.get(s.transform);if(!t)throw Error('unknown transform');if(Object.keys(t.requiredCommendations||{}).length)throw Error('medal prerequisites need dedicated proof');supply(t.requiredItems,t.requiresBaseFunc,t.cost||0,'transform:'+t.id);append({type:'transform',soldier:'origin',transform:t.id});if(!member(w).state.exactStats)throw Error('random outcome not deterministic');milestones.push({type:'transform',id:t.id,at:actions.length,...snapshot(w)});}
     else throw Error('unsupported stage:'+s.type);
    }

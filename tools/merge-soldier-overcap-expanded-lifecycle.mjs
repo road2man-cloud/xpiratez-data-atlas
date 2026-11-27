@@ -9,7 +9,7 @@ const expected=prep.entries.filter(e=>e.status==='RESEARCH_ONLY_SEQUENCE_COMPLET
 const map=new Map();
 for(const x of inputs){
  if(x.schema!==base.schema||x.sourceMetadataSha256!==prep.sourceMetadataSha256||x.sourceLedgerHash!==prep.sourceLedgerHash||JSON.stringify(x.statKeys)!==JSON.stringify(base.statKeys))throw Error('source or schema mismatch');
- for(const row of x.results){if(map.has(row.id))throw Error('duplicate '+row.id);map.set(row.id,row);}
+ for(const row of x.results){const old=map.get(row.id);if(old&&old.status==='CONDITIONAL_LIFECYCLE_COMPLETE')throw Error('cannot replace completed group '+row.id);if(old&&row.status!=='CONDITIONAL_LIFECYCLE_COMPLETE')throw Error('replacement must complete blocked group '+row.id);map.set(row.id,row);}
 }
 if(new Set(expected).size!==expected.length||expected.length!==map.size||expected.some(id=>!map.has(id)))throw Error('missing or unexpected groups');
 const results=expected.map(id=>map.get(id)), complete=results.filter(x=>x.status==='CONDITIONAL_LIFECYCLE_COMPLETE');
