@@ -1,0 +1,55 @@
+{
+  "version": "R36LF",
+  "sourceCommit": "56067e276ecaec1c03263c13755335e98dd36691",
+  "engineApplied": false,
+  "files": {
+    "README.md": {
+      "bytes": 4037,
+      "sha256": "8b5aa504fcd4168980f472bbcc384b924d55decac14b10759b3d0c4490060562"
+    },
+    "glb_tools.py": {
+      "bytes": 5350,
+      "sha256": "e79fd0d09ecf0427e1c2f1eab1acb91d29e12f76fc89bbb379dfd1d497791f43"
+    },
+    "prepare_r36lf.py": {
+      "bytes": 815,
+      "sha256": "9cd312b757db9987053f0d9c17449960c975481e4753397cf23d8c3058c8d3fd"
+    },
+    "build_r36lf.py": {
+      "bytes": 12939,
+      "sha256": "00143f9fe93deebce0a3c9b7dbb4a0bbb58c24ecb4dec66ff0e5783363e44e7b"
+    },
+    "publish_r36lf.py": {
+      "bytes": 4915,
+      "sha256": "4808d4cdd3296e9c33932ddd63412146d901e1d6a1be97808f91eaa52e075aed"
+    },
+    "input/R36LE_F11_KNEE_CORRECTIVES_POT_1024_2100TRI.glb": {
+      "bytes": 1242336,
+      "sha256": "a3dcd5522711f9bb4613c0fee241106cc00b7251133eddeb2987484ad8d440cd"
+    },
+    "input/R36LE_F11_KNEE_CORRECTIVES_POT_512_2100TRI.glb": {
+      "bytes": 896416,
+      "sha256": "52f2e762b22f113847d404554ba7a99ad7a4a64efe8eb8d8ed39046c6b0cd41c"
+    },
+    "output/R36LF_F11_KNEE_HELPER_POT_1024_2100TRI.glb": {
+      "bytes": 1238488,
+      "sha256": "39a24a221da4252eda87bba3ae7153e5687f59d62d37171272e09f0723f9e1a9"
+    },
+    "output/R36LF_F11_KNEE_HELPER_POT_512_2100TRI.glb": {
+      "bytes": 892524,
+      "sha256": "52ab16c84b28561773c47479ab60e7b3e93dab0e641998799dc979a31c36ca63"
+    },
+    "output/R36LF_1024_BUILD_REPORT.json": {
+      "bytes": 13333,
+      "sha256": "e88e70222edbd5f0ab4353b2233d8c3766d7cd6ceef98bf2a1b4fdba56a018cc"
+    },
+    "output/R36LF_512_BUILD_REPORT.json": {
+      "bytes": 13330,
+      "sha256": "fc7bdbe0fe35e180da8db01078e1697bc28f16d181bc90da30b2de234b687a08"
+    },
+    "output/R36LF_HELPER_MAP.json": {
+      "bytes": 4999,
+      "sha256": "d5ed71480374314d6abc7ddc6652f20f42c6be21e690d9b72ab44574df7a77c5"
+    }
+  }
+}
