@@ -1,0 +1,20 @@
+// Extract a small immutable terminal-rule/branch input from the committed registry.
+import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {gunzipSync} from 'node:zlib';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+const git=(...args)=>execFileSync('git',['-c','safe.directory='+process.cwd().replaceAll('\\','/'),...args],{maxBuffer:256*1024*1024});
+const ref=process.argv[2];assert(/^[a-f0-9]{7,40}$/.test(ref||''),'use committed registry SHA');
+const commit=git('rev-parse',ref+'^{commit}').toString().trim();
+const path='public/data/branch-soldier-results.json.gz',bytes=git('show',commit+':'+path);
+const db=JSON.parse(gunzipSync(bytes)),rule=db.careerCompletion.terminalRule;
+const next=JSON.parse(fs.readFileSync('public/data/soldier-overcap-direct-successors.json'));
+assert.equal(db.sourceMetadataSha256,next.sourceMetadataSha256);
+assert.equal(rule.status,'RULES_AND_PRESERVED_ENGINE_EXTRACTED');
+const branches=db.branches.filter(b=>!b.sourceRootConflict&&b.historyCount).map(b=>({id:b.id,captain:b.captain,choices:b.choices,blockedResearch:b.blockedResearch||[],historyCount:b.historyCount}));
+const ids=new Set(branches.map(b=>b.id));assert(next.terminalCandidates.every(x=>ids.has(x.branch)));
+const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+const out={schema:'ATLAS_OVERCAP_TERMINAL_SOURCE_V1',sourceMetadataSha256:db.sourceMetadataSha256,registryCommit:commit,registryPath:path,registrySha256:createHash('sha256').update(bytes).digest('hex'),terminalRuleHash:hash(rule),terminalRule:rule,branches};
+fs.writeFileSync('tools/data/overcap-terminal-source-v1.json',JSON.stringify(out)+'\n');
+console.log(JSON.stringify({commit,targets:rule.targets.map(x=>x.id),branches:branches.length,terminalRuleHash:out.terminalRuleHash}));
