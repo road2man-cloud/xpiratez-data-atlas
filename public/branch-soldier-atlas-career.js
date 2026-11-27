@@ -126,6 +126,12 @@ async function showResearch(r){
   if(rankDefault){
    content.append(el('h3','기본 계급 승급 가정'),el('p','원본 병종에 별도 계급 목록이 없고 승급이 허용된 경우, OXCE의 기본 계급 0~5를 조건부 적용한 경로입니다. 설치된 8.7.1 실행 파일의 동작 일치 및 실제 승급 달성은 미인증입니다.','note'),el('p',rankDefault.promotions.map(p=>name(p.body)+' '+p.rank+' ('+(p.index+1)+'번째 행동)').join(' · ')),link('OXCE 공개 엔진 승급 규칙','https://github.com/MeridianOXC/OpenXcom/blob/oxce-plus/src/Savegame/Soldier.cpp'));
   }
+  const lifecycle=registry?.populationMissingOriginCareer?.routes?.[r.id]?.lifecycle;
+  if(lifecycle){
+   content.append(el('h3','동일 대원 부활 및 회복 경로'),el('p','원본 OXCE 8.7.1 부활 처리에 근거한 조건부 재생입니다. 전투 사망, 필요한 시체 회수, 숙소 확보 및 이송·회복 완료는 가정하며 실제 게임 실행이나 정확한 달력 시점은 인증하지 않습니다.','note'));
+   for(const q of lifecycle.steps)content.append(el('p',name(q.transform)+' · '+(q.index+1)+'번째 행동 · '+(q.corpseRecovered?'시체 회수 필요·가정':'시체 회수 불필요')+' · 이송 '+q.transferHours+'시간 · 회복 '+q.recoveryDays+'일'));
+   content.append(el('p','복제가 아닌 동일 대원의 육성 이력입니다. 후속 종결 여부는 별도 판정합니다.','small'));
+  }
   const flatRoll=registry?.populationMissingOriginCareer?.routes?.[r.id]?.flatRoll;
   if(flatRoll){
    const samples={MIN:'최소',MID:'중간',MAX:'최대'};

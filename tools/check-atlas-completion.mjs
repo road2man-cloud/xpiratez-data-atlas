@@ -8,7 +8,7 @@ import {createRepeatComparison} from '../public/branch-soldier-repeat-comparison
 import {key} from './population-research-career-core.mjs';
 import {digest} from './final-combination-production.mjs';
 import {loadFinancedDetail} from './atlas-financed-career-detail-store.mjs';
-import {createSharedCareerReplay,flatRollEvidence,flatRollPolicy} from './population-shared-flat-roll.mjs';
+import {createSharedCareerReplay,flatRollEvidence,flatRollPolicy,lifecyclePolicy,lifecycleEvidence,verifyLifecycleEngineSource} from './population-shared-lifecycle-replay.mjs';
 import {sharedRankData,createSharedRankEvidence} from './population-shared-default-rank.mjs';
 import {financedSoldierSignature} from './atlas-financed-career-calendar.mjs';
 import {hydrateResearchPaths} from '../public/branch-soldier-research-path-codec.js';
@@ -67,6 +67,27 @@ if(a.summary.flatRollPolicy){
     assert(Number.isSafeInteger(v)&&v>=rule.flatMin[k]&&v<=rule.flatMax[k]);
     assert.equal(v,q.band==="MIN"?rule.flatMin[k]:q.band==="MAX"?rule.flatMax[k]:Math.floor((rule.flatMin[k]+rule.flatMax[k])/2));
    }
+  }
+ }
+}
+if(a.summary.lifecyclePolicy){
+ verifyLifecycleEngineSource();
+ const policy=lifecyclePolicy(modern);
+ assert.deepEqual(a.summary.lifecyclePolicy,policy);
+ const revived=Object.entries(a.routes).filter(([,r])=>r.lifecycle);
+ assert.equal(revived.length,a.summary.lifecycleRoutes);
+ const byRule=new Map(policy.rules.map(r=>[r.id,r]));
+ for(const [id,r] of revived){
+  const actions=readResearchWitness(idx,rows.get(id),db.sourceMetadataSha256).fullActions;
+  assert.deepEqual(lifecycleEvidence(actions,policy),r.lifecycle);
+  assert.equal(r.actualGameCertified,false);
+  for(const q of r.lifecycle.steps){
+   const rule=byRule.get(q.transform);assert(rule);
+   assert.equal(q.ruleHash,rule.ruleHash);
+   assert.equal(q.corpseRecovered,rule.needsCorpseRecovered);
+   assert.equal(q.transferHours,rule.transferHours);
+   assert.equal(q.recoveryDays,rule.recoveryDays);
+   assert(q.deathAssumed&&q.quartersAvailableAssumed&&q.recoveryCompletedAssumed);
   }
  }
 }

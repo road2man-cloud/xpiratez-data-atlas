@@ -8,7 +8,7 @@ import {summarizeCareerIncumbents} from "./population-career-incumbents.mjs";
 import {SCHEMA,REQUIRED_PROOFS,classifyCandidate,evidenceIdentity,admitVerified} from "./atlas-career-completion-core.mjs";
 import {key,sha} from "./population-research-career-core.mjs";
 import {RESEARCH_TREE_POLICY} from "./atlas-research-tree-policy.mjs";
-import {createSharedCareerReplay} from "./population-shared-flat-roll.mjs";
+import {createSharedCareerReplay} from "./population-shared-lifecycle-replay.mjs";
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
