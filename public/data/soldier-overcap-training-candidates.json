@@ -1,0 +1,1926 @@
+{
+  "schema": "ATLAS_OVERCAP_CANDIDATES_V2",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "modVersion": "v.o2",
+  "sourceRuntimeBlob": "256b053b36e95e8eb0c73038662e722bb8b6449a",
+  "statLabels": {
+    "tu": "TU",
+    "stamina": "기력",
+    "health": "체력",
+    "bravery": "용기",
+    "reactions": "반응",
+    "firing": "사격",
+    "throwing": "투척",
+    "strength": "근력",
+    "psiStrength": "Psi 강도",
+    "psiSkill": "Psi 기술",
+    "melee": "근접",
+    "mana": "Mana"
+  },
+  "summary": {
+    "scannedBodies": 29,
+    "scannedRules": 83,
+    "capGapBodies": 10,
+    "beneficiaryBodies": 9,
+    "candidates": 20,
+    "positiveRepresentative": 20,
+    "randomCandidates": 0,
+    "unknown": 0
+  },
+  "rows": [
+    {
+      "body": "STR_SOLDIER_HERO",
+      "bodyName": "영웅",
+      "rule": "STR_BREAD_AND_FISHES_TRAINING",
+      "ruleName": "건강미 훈련",
+      "gains": [
+        {
+          "stat": "stamina",
+          "battleCap": 120,
+          "maxStats": 150,
+          "baseline": 120,
+          "representative": 145,
+          "high": 145,
+          "beforeGrowth": 120,
+          "beforeGrowthHigh": 120,
+          "extra": 25,
+          "possibleExtra": 25,
+          "timingGain": 25
+        },
+        {
+          "stat": "health",
+          "battleCap": 60,
+          "maxStats": 90,
+          "baseline": 60,
+          "representative": 75,
+          "high": 75,
+          "beforeGrowth": 65,
+          "beforeGrowthHigh": 65,
+          "extra": 15,
+          "possibleExtra": 15,
+          "timingGain": 10
+        },
+        {
+          "stat": "throwing",
+          "battleCap": 90,
+          "maxStats": 120,
+          "baseline": 90,
+          "representative": 95,
+          "high": 95,
+          "beforeGrowth": 90,
+          "beforeGrowthHigh": 90,
+          "extra": 5,
+          "possibleExtra": 5,
+          "timingGain": 5
+        },
+        {
+          "stat": "strength",
+          "battleCap": 60,
+          "maxStats": 90,
+          "baseline": 60,
+          "representative": 70,
+          "high": 70,
+          "beforeGrowth": 60,
+          "beforeGrowthHigh": 60,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 55,
+      "possibleExtra": 55,
+      "uncertain": false,
+      "requires": [
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "STR_MUTANT_FISH": 5,
+        "STR_LEEK": 5,
+        "STR_CABBAGE": 5
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_WEIRDGAL_TRANSFORMATION",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_CENOBITE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_R",
+      "bodyName": "회개자",
+      "rule": "STR_BREAD_AND_FISHES_TRAINING",
+      "ruleName": "건강미 훈련",
+      "gains": [
+        {
+          "stat": "stamina",
+          "battleCap": 150,
+          "maxStats": 175,
+          "baseline": 150,
+          "representative": 175,
+          "high": 175,
+          "beforeGrowth": 150,
+          "beforeGrowthHigh": 150,
+          "extra": 25,
+          "possibleExtra": 25,
+          "timingGain": 25
+        },
+        {
+          "stat": "health",
+          "battleCap": 110,
+          "maxStats": 125,
+          "baseline": 110,
+          "representative": 125,
+          "high": 125,
+          "beforeGrowth": 110,
+          "beforeGrowthHigh": 110,
+          "extra": 15,
+          "possibleExtra": 15,
+          "timingGain": 15
+        },
+        {
+          "stat": "strength",
+          "battleCap": 80,
+          "maxStats": 100,
+          "baseline": 80,
+          "representative": 90,
+          "high": 90,
+          "beforeGrowth": 80,
+          "beforeGrowthHigh": 80,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 50,
+      "possibleExtra": 50,
+      "uncertain": false,
+      "requires": [
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "STR_MUTANT_FISH": 5,
+        "STR_LEEK": 5,
+        "STR_CABBAGE": 5
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_WEIRDGAL_TRANSFORMATION",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_CENOBITE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_X",
+      "bodyName": "괴짜",
+      "rule": "STR_BREAD_AND_FISHES_TRAINING",
+      "ruleName": "건강미 훈련",
+      "gains": [
+        {
+          "stat": "stamina",
+          "battleCap": 110,
+          "maxStats": 175,
+          "baseline": 110,
+          "representative": 135,
+          "high": 135,
+          "beforeGrowth": 110,
+          "beforeGrowthHigh": 110,
+          "extra": 25,
+          "possibleExtra": 25,
+          "timingGain": 25
+        },
+        {
+          "stat": "health",
+          "battleCap": 70,
+          "maxStats": 120,
+          "baseline": 70,
+          "representative": 85,
+          "high": 85,
+          "beforeGrowth": 70,
+          "beforeGrowthHigh": 70,
+          "extra": 15,
+          "possibleExtra": 15,
+          "timingGain": 15
+        },
+        {
+          "stat": "strength",
+          "battleCap": 65,
+          "maxStats": 100,
+          "baseline": 65,
+          "representative": 75,
+          "high": 75,
+          "beforeGrowth": 65,
+          "beforeGrowthHigh": 65,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 50,
+      "possibleExtra": 50,
+      "uncertain": false,
+      "requires": [
+        "STR_BREAD_AND_FISHES_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "STR_MUTANT_FISH": 5,
+        "STR_LEEK": 5,
+        "STR_CABBAGE": 5
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_WEIRDGAL_TRANSFORMATION",
+        "STR_MAGICIENNE_TRAINING",
+        "STR_CENOBITE_TRAINING",
+        "STR_GUN_KATA_TRAINING",
+        "STR_ARMS_AUTHORITY",
+        "STR_ZOMBIFICATION",
+        "STR_SHADE_EMBODIMENT",
+        "STR_THEBAN_ASSAULT_CLONE",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_HERO",
+      "bodyName": "영웅",
+      "rule": "STR_SCHOOL_OF_HARD_KNOCKS",
+      "ruleName": "하드 녹스 교실",
+      "gains": [
+        {
+          "stat": "health",
+          "battleCap": 60,
+          "maxStats": 90,
+          "baseline": 60,
+          "representative": 66,
+          "high": 66,
+          "beforeGrowth": 60,
+          "beforeGrowthHigh": 60,
+          "extra": 6,
+          "possibleExtra": 6,
+          "timingGain": 6
+        },
+        {
+          "stat": "reactions",
+          "battleCap": 80,
+          "maxStats": 120,
+          "baseline": 80,
+          "representative": 86,
+          "high": 86,
+          "beforeGrowth": 80,
+          "beforeGrowthHigh": 80,
+          "extra": 6,
+          "possibleExtra": 6,
+          "timingGain": 6
+        },
+        {
+          "stat": "melee",
+          "battleCap": 100,
+          "maxStats": 150,
+          "baseline": 100,
+          "representative": 106,
+          "high": 106,
+          "beforeGrowth": 100,
+          "beforeGrowthHigh": 100,
+          "extra": 6,
+          "possibleExtra": 6,
+          "timingGain": 6
+        }
+      ],
+      "extra": 18,
+      "possibleExtra": 18,
+      "uncertain": false,
+      "requires": [
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {},
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_HERO",
+      "bodyName": "영웅",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "firing",
+          "battleCap": 115,
+          "maxStats": 135,
+          "baseline": 115,
+          "representative": 117,
+          "high": 117,
+          "beforeGrowth": 115,
+          "beforeGrowthHigh": 115,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "psiStrength",
+          "battleCap": 75,
+          "maxStats": 80,
+          "baseline": 75,
+          "representative": 77,
+          "high": 77,
+          "beforeGrowth": 75,
+          "beforeGrowthHigh": 75,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "melee",
+          "battleCap": 100,
+          "maxStats": 150,
+          "baseline": 100,
+          "representative": 102,
+          "high": 102,
+          "beforeGrowth": 100,
+          "beforeGrowthHigh": 100,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "mana",
+          "battleCap": 150,
+          "maxStats": 200,
+          "baseline": 150,
+          "representative": 160,
+          "high": 160,
+          "beforeGrowth": 150,
+          "beforeGrowthHigh": 150,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 16,
+      "possibleExtra": 16,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_W",
+      "bodyName": "위어드갈",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "firing",
+          "battleCap": 120,
+          "maxStats": 123,
+          "baseline": 120,
+          "representative": 122,
+          "high": 122,
+          "beforeGrowth": 120,
+          "beforeGrowthHigh": 120,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "psiStrength",
+          "battleCap": 70,
+          "maxStats": 75,
+          "baseline": 70,
+          "representative": 72,
+          "high": 72,
+          "beforeGrowth": 70,
+          "beforeGrowthHigh": 70,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "melee",
+          "battleCap": 130,
+          "maxStats": 140,
+          "baseline": 130,
+          "representative": 132,
+          "high": 132,
+          "beforeGrowth": 130,
+          "beforeGrowthHigh": 130,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "mana",
+          "battleCap": 70,
+          "maxStats": 100,
+          "baseline": 70,
+          "representative": 80,
+          "high": 80,
+          "beforeGrowth": 70,
+          "beforeGrowthHigh": 70,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 16,
+      "possibleExtra": 16,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_X",
+      "bodyName": "괴짜",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 61,
+          "maxStats": 66,
+          "baseline": 61,
+          "representative": 63,
+          "high": 63,
+          "beforeGrowth": 61,
+          "beforeGrowthHigh": 61,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "melee",
+          "battleCap": 110,
+          "maxStats": 125,
+          "baseline": 110,
+          "representative": 112,
+          "high": 112,
+          "beforeGrowth": 110,
+          "beforeGrowthHigh": 110,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "mana",
+          "battleCap": 50,
+          "maxStats": 100,
+          "baseline": 50,
+          "representative": 60,
+          "high": 60,
+          "beforeGrowth": 50,
+          "beforeGrowthHigh": 50,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 14,
+      "possibleExtra": 14,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_HERO",
+      "bodyName": "영웅",
+      "rule": "STR_BASIC_FIREARMS_TRAINING",
+      "ruleName": "기본 총기 훈련",
+      "gains": [
+        {
+          "stat": "reactions",
+          "battleCap": 80,
+          "maxStats": 120,
+          "baseline": 80,
+          "representative": 83,
+          "high": 83,
+          "beforeGrowth": 80,
+          "beforeGrowthHigh": 80,
+          "extra": 3,
+          "possibleExtra": 3,
+          "timingGain": 3
+        },
+        {
+          "stat": "firing",
+          "battleCap": 115,
+          "maxStats": 135,
+          "baseline": 115,
+          "representative": 125,
+          "high": 125,
+          "beforeGrowth": 115,
+          "beforeGrowthHigh": 115,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 13,
+      "possibleExtra": 13,
+      "uncertain": false,
+      "requires": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {},
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAREER_SOLDIER"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_R",
+      "bodyName": "회개자",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "melee",
+          "battleCap": 130,
+          "maxStats": 155,
+          "baseline": 130,
+          "representative": 132,
+          "high": 132,
+          "beforeGrowth": 130,
+          "beforeGrowthHigh": 130,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        },
+        {
+          "stat": "mana",
+          "battleCap": 80,
+          "maxStats": 100,
+          "baseline": 80,
+          "representative": 90,
+          "high": 90,
+          "beforeGrowth": 80,
+          "beforeGrowthHigh": 80,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 12,
+      "possibleExtra": 12,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_CHORT",
+      "bodyName": "코르트",
+      "rule": "STR_BASIC_FIREARMS_TRAINING",
+      "ruleName": "기본 총기 훈련",
+      "gains": [
+        {
+          "stat": "firing",
+          "battleCap": 120,
+          "maxStats": 130,
+          "baseline": 120,
+          "representative": 130,
+          "high": 130,
+          "beforeGrowth": 120,
+          "beforeGrowthHigh": 120,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 10,
+      "possibleExtra": 10,
+      "uncertain": false,
+      "requires": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {},
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAREER_SOLDIER"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_HERO",
+      "bodyName": "영웅",
+      "rule": "STR_LONE_WOLF",
+      "ruleName": "외로운 늑대",
+      "gains": [
+        {
+          "stat": "mana",
+          "battleCap": 150,
+          "maxStats": 200,
+          "baseline": 150,
+          "representative": 160,
+          "high": 160,
+          "beforeGrowth": 150,
+          "beforeGrowthHigh": 150,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 10,
+      "possibleExtra": 10,
+      "uncertain": false,
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "TROLLIUM": 1
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_LONE_WOLF",
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_R",
+      "bodyName": "회개자",
+      "rule": "STR_LONE_WOLF",
+      "ruleName": "외로운 늑대",
+      "gains": [
+        {
+          "stat": "mana",
+          "battleCap": 80,
+          "maxStats": 100,
+          "baseline": 80,
+          "representative": 90,
+          "high": 90,
+          "beforeGrowth": 80,
+          "beforeGrowthHigh": 80,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 10,
+      "possibleExtra": 10,
+      "uncertain": false,
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "TROLLIUM": 1
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_LONE_WOLF",
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_W",
+      "bodyName": "위어드갈",
+      "rule": "STR_LONE_WOLF",
+      "ruleName": "외로운 늑대",
+      "gains": [
+        {
+          "stat": "mana",
+          "battleCap": 70,
+          "maxStats": 100,
+          "baseline": 70,
+          "representative": 80,
+          "high": 80,
+          "beforeGrowth": 70,
+          "beforeGrowthHigh": 70,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 10,
+      "possibleExtra": 10,
+      "uncertain": false,
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "TROLLIUM": 1
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_LONE_WOLF",
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_X",
+      "bodyName": "괴짜",
+      "rule": "STR_LONE_WOLF",
+      "ruleName": "외로운 늑대",
+      "gains": [
+        {
+          "stat": "mana",
+          "battleCap": 50,
+          "maxStats": 100,
+          "baseline": 50,
+          "representative": 60,
+          "high": 60,
+          "beforeGrowth": 50,
+          "beforeGrowthHigh": 50,
+          "extra": 10,
+          "possibleExtra": 10,
+          "timingGain": 10
+        }
+      ],
+      "extra": 10,
+      "possibleExtra": 10,
+      "uncertain": false,
+      "requires": [
+        "STR_UNAVAILABLE"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {
+        "TROLLIUM": 1
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_LONE_WOLF",
+        "STR_REVOLUTIONARY_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": true,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_W",
+      "bodyName": "위어드갈",
+      "rule": "STR_BASIC_FIREARMS_TRAINING",
+      "ruleName": "기본 총기 훈련",
+      "gains": [
+        {
+          "stat": "reactions",
+          "battleCap": 100,
+          "maxStats": 103,
+          "baseline": 100,
+          "representative": 103,
+          "high": 103,
+          "beforeGrowth": 100,
+          "beforeGrowthHigh": 100,
+          "extra": 3,
+          "possibleExtra": 3,
+          "timingGain": 3
+        },
+        {
+          "stat": "firing",
+          "battleCap": 120,
+          "maxStats": 123,
+          "baseline": 120,
+          "representative": 123,
+          "high": 123,
+          "beforeGrowth": 120,
+          "beforeGrowthHigh": 120,
+          "extra": 3,
+          "possibleExtra": 3,
+          "timingGain": 3
+        }
+      ],
+      "extra": 6,
+      "possibleExtra": 6,
+      "uncertain": false,
+      "requires": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {},
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAREER_SOLDIER"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_X",
+      "bodyName": "괴짜",
+      "rule": "STR_BASIC_FIREARMS_TRAINING",
+      "ruleName": "기본 총기 훈련",
+      "gains": [
+        {
+          "stat": "reactions",
+          "battleCap": 85,
+          "maxStats": 120,
+          "baseline": 85,
+          "representative": 88,
+          "high": 88,
+          "beforeGrowth": 85,
+          "beforeGrowthHigh": 85,
+          "extra": 3,
+          "possibleExtra": 3,
+          "timingGain": 3
+        }
+      ],
+      "extra": 3,
+      "possibleExtra": 3,
+      "uncertain": false,
+      "requires": [
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "requiresBaseFunc": [],
+      "requiredItems": {},
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_CAREER_SOLDIER"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 0,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_DAMSEL",
+      "bodyName": "영애",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 43,
+          "maxStats": 69,
+          "baseline": 43,
+          "representative": 45,
+          "high": 45,
+          "beforeGrowth": 43,
+          "beforeGrowthHigh": 43,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        }
+      ],
+      "extra": 2,
+      "possibleExtra": 2,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_PEASANT",
+      "bodyName": "농부",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 42,
+          "maxStats": 70,
+          "baseline": 42,
+          "representative": 44,
+          "high": 44,
+          "beforeGrowth": 42,
+          "beforeGrowthHigh": 42,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        }
+      ],
+      "extra": 2,
+      "possibleExtra": 2,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_PUREBLOOD",
+      "bodyName": "순수혈통 병사",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 66,
+          "maxStats": 75,
+          "baseline": 66,
+          "representative": 68,
+          "high": 68,
+          "beforeGrowth": 66,
+          "beforeGrowthHigh": 66,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        }
+      ],
+      "extra": 2,
+      "possibleExtra": 2,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    },
+    {
+      "body": "STR_SOLDIER_SLAVE",
+      "bodyName": "노예병",
+      "rule": "STR_PERSON_OF_CULTURE_TRAINING",
+      "ruleName": "문화 교육",
+      "gains": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 44,
+          "maxStats": 75,
+          "baseline": 44,
+          "representative": 46,
+          "high": 46,
+          "beforeGrowth": 44,
+          "beforeGrowthHigh": 44,
+          "extra": 2,
+          "possibleExtra": 2,
+          "timingGain": 2
+        }
+      ],
+      "extra": 2,
+      "possibleExtra": 2,
+      "uncertain": false,
+      "requires": [
+        "STR_PERSON_OF_CULTURE_TRAINING"
+      ],
+      "requiresBaseFunc": [
+        "LIB"
+      ],
+      "requiredItems": {
+        "STR_PORN": 25
+      },
+      "previous": [],
+      "forbiddenPrevious": [
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_NEPOTISM",
+        "STR_SIMPLETON_TRAINING",
+        "STR_MILITARY_DRILL_TRAINING"
+      ],
+      "requiredMinStats": {
+        "tu": 0,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 0,
+        "psiStrength": 45,
+        "psiSkill": 0,
+        "melee": 0,
+        "mana": 0
+      },
+      "requiredMaxStats": null,
+      "minRank": 0,
+      "requiredCommendations": {},
+      "upperBoundAtStatCaps": false,
+      "scope": "CONDITIONAL_CAP_FIRST_CANDIDATE",
+      "campaignVerified": false
+    }
+  ],
+  "unknown": [],
+  "bodies": [
+    {
+      "id": "STR_SOLDIER_X",
+      "name": "괴짜",
+      "axes": [
+        {
+          "stat": "tu",
+          "battleCap": 85,
+          "maxStats": 115
+        },
+        {
+          "stat": "stamina",
+          "battleCap": 110,
+          "maxStats": 175
+        },
+        {
+          "stat": "health",
+          "battleCap": 70,
+          "maxStats": 120
+        },
+        {
+          "stat": "bravery",
+          "battleCap": 100,
+          "maxStats": 110
+        },
+        {
+          "stat": "reactions",
+          "battleCap": 85,
+          "maxStats": 120
+        },
+        {
+          "stat": "strength",
+          "battleCap": 65,
+          "maxStats": 100
+        },
+        {
+          "stat": "psiStrength",
+          "battleCap": 61,
+          "maxStats": 66
+        },
+        {
+          "stat": "melee",
+          "battleCap": 110,
+          "maxStats": 125
+        },
+        {
+          "stat": "mana",
+          "battleCap": 50,
+          "maxStats": 100
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_SLAVE",
+      "name": "노예병",
+      "axes": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 44,
+          "maxStats": 75
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_GNOME",
+      "name": "노움",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_PEASANT",
+      "name": "농부",
+      "axes": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 42,
+          "maxStats": 70
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_KILLBOT",
+      "name": "데스트로이드",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_LAMIA",
+      "name": "라미아",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_LOKNAR",
+      "name": "로크'나르",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_O",
+      "name": "무법자 캣걸",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER",
+      "name": "미치광이",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_HYBRID",
+      "name": "버그아이",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_V",
+      "name": "숙련병",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_PUREBLOOD",
+      "name": "순수혈통 병사",
+      "axes": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 66,
+          "maxStats": 75
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_SYNTH",
+      "name": "신스",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_S",
+      "name": "싸움꾼",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_H",
+      "name": "약초사",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_DAMSEL",
+      "name": "영애",
+      "axes": [
+        {
+          "stat": "psiStrength",
+          "battleCap": 43,
+          "maxStats": 69
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_HERO",
+      "name": "영웅",
+      "axes": [
+        {
+          "stat": "tu",
+          "battleCap": 80,
+          "maxStats": 105
+        },
+        {
+          "stat": "stamina",
+          "battleCap": 120,
+          "maxStats": 150
+        },
+        {
+          "stat": "health",
+          "battleCap": 60,
+          "maxStats": 90
+        },
+        {
+          "stat": "reactions",
+          "battleCap": 80,
+          "maxStats": 120
+        },
+        {
+          "stat": "firing",
+          "battleCap": 115,
+          "maxStats": 135
+        },
+        {
+          "stat": "throwing",
+          "battleCap": 90,
+          "maxStats": 120
+        },
+        {
+          "stat": "strength",
+          "battleCap": 60,
+          "maxStats": 90
+        },
+        {
+          "stat": "psiStrength",
+          "battleCap": 75,
+          "maxStats": 80
+        },
+        {
+          "stat": "melee",
+          "battleCap": 100,
+          "maxStats": 150
+        },
+        {
+          "stat": "mana",
+          "battleCap": 150,
+          "maxStats": 200
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_DOLL",
+      "name": "영혼 인형",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_OGRE",
+      "name": "오우거",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_W",
+      "name": "위어드갈",
+      "axes": [
+        {
+          "stat": "tu",
+          "battleCap": 100,
+          "maxStats": 103
+        },
+        {
+          "stat": "stamina",
+          "battleCap": 150,
+          "maxStats": 175
+        },
+        {
+          "stat": "health",
+          "battleCap": 90,
+          "maxStats": 100
+        },
+        {
+          "stat": "bravery",
+          "battleCap": 100,
+          "maxStats": 110
+        },
+        {
+          "stat": "reactions",
+          "battleCap": 100,
+          "maxStats": 103
+        },
+        {
+          "stat": "firing",
+          "battleCap": 120,
+          "maxStats": 123
+        },
+        {
+          "stat": "throwing",
+          "battleCap": 90,
+          "maxStats": 92
+        },
+        {
+          "stat": "strength",
+          "battleCap": 80,
+          "maxStats": 82
+        },
+        {
+          "stat": "psiStrength",
+          "battleCap": 70,
+          "maxStats": 75
+        },
+        {
+          "stat": "melee",
+          "battleCap": 130,
+          "maxStats": 140
+        },
+        {
+          "stat": "mana",
+          "battleCap": 70,
+          "maxStats": 100
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_SPECTRE",
+      "name": "음영",
+      "axes": [
+        {
+          "stat": "tu",
+          "battleCap": 10,
+          "maxStats": 85
+        },
+        {
+          "stat": "stamina",
+          "battleCap": 10,
+          "maxStats": 80
+        },
+        {
+          "stat": "health",
+          "battleCap": 10,
+          "maxStats": 60
+        },
+        {
+          "stat": "bravery",
+          "battleCap": 10,
+          "maxStats": 90
+        },
+        {
+          "stat": "reactions",
+          "battleCap": 10,
+          "maxStats": 75
+        },
+        {
+          "stat": "firing",
+          "battleCap": 10,
+          "maxStats": 70
+        },
+        {
+          "stat": "throwing",
+          "battleCap": 10,
+          "maxStats": 65
+        },
+        {
+          "stat": "strength",
+          "battleCap": 10,
+          "maxStats": 55
+        },
+        {
+          "stat": "melee",
+          "battleCap": 10,
+          "maxStats": 100
+        },
+        {
+          "stat": "mana",
+          "battleCap": 10,
+          "maxStats": 999
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_M",
+      "name": "전사",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_XENFORCER",
+      "name": "젠포서",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI",
+      "name": "캣걸",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_NEKOMIMI_W",
+      "name": "캣전사",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_CHORT",
+      "name": "코르트",
+      "axes": [
+        {
+          "stat": "tu",
+          "battleCap": 100,
+          "maxStats": 110
+        },
+        {
+          "stat": "bravery",
+          "battleCap": 110,
+          "maxStats": 200
+        },
+        {
+          "stat": "firing",
+          "battleCap": 120,
+          "maxStats": 130
+        },
+        {
+          "stat": "throwing",
+          "battleCap": 90,
+          "maxStats": 95
+        },
+        {
+          "stat": "melee",
+          "battleCap": 150,
+          "maxStats": 160
+        }
+      ],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_BLOODOGE",
+      "name": "해적 블러드하운드",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_DOGE",
+      "name": "해적견",
+      "axes": [],
+      "complete": true
+    },
+    {
+      "id": "STR_SOLDIER_R",
+      "name": "회개자",
+      "axes": [
+        {
+          "stat": "tu",
+          "battleCap": 100,
+          "maxStats": 105
+        },
+        {
+          "stat": "stamina",
+          "battleCap": 150,
+          "maxStats": 175
+        },
+        {
+          "stat": "health",
+          "battleCap": 110,
+          "maxStats": 125
+        },
+        {
+          "stat": "strength",
+          "battleCap": 80,
+          "maxStats": 100
+        },
+        {
+          "stat": "melee",
+          "battleCap": 130,
+          "maxStats": 155
+        },
+        {
+          "stat": "mana",
+          "battleCap": 80,
+          "maxStats": 100
+        }
+      ],
+      "complete": true
+    }
+  ],
+  "scope": "ALL_BODY_SAME_BODY_MAX_STATS_CANDIDATES"
+}
