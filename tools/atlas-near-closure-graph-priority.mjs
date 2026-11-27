@@ -2,7 +2,8 @@
 // Select a small set of graphs with few unresolved obligations; prefer
 // concrete research-ready actions and avoid repeatedly choosing the same
 // graph on successive production passes.
-export function rankNearClosureGraphs({ledger,admission,bodies,focus=[],limit=3}){
+import {balanceClosureGraphs} from "./atlas-closure-body-balance.mjs";
+export function rankNearClosureGraphs({ledger,admission,bodies,focus=[],limit=3,balanceBodies=bodies.length>1}){
  const allowed=new Set(bodies),actions=new Set(focus),ranked=new Map();
  const priorTurns=new Map(),corridors=new Map();
  for(const r of Object.values(ledger.closureWave?.records||{})){
@@ -29,7 +30,8 @@ export function rankNearClosureGraphs({ledger,admission,bodies,focus=[],limit=3}
   candidate.contextConflicts=v.openRules.filter(x=>x.missingResearch?.length).map(x=>({action:x.id,...corridors.get(r.sourceGraph+"|"+x.id)})).filter(x=>x.contextConflicts>0&&!x.success);
   candidate.contextPenalty=candidate.contextConflicts.reduce((s,x)=>s+Math.min(4,x.contextConflicts)*2,0);
   candidate.priority=candidate.remaining+candidate.contextPenalty;
-  const old=ranked.get(candidate.graph);if(!old||compare(candidate,old)<0)ranked.set(candidate.graph,candidate);
+  const groupKey=balanceBodies?JSON.stringify([candidate.graph,candidate.body]):candidate.graph;
+  const old=ranked.get(groupKey);if(!old||compare(candidate,old)<0)ranked.set(groupKey,candidate);
  }
- return [...ranked.values()].sort(compare).slice(0,limit);
+ return balanceBodies?balanceClosureGraphs([...ranked.values()],{bodies,limit,compare}):[...ranked.values()].sort(compare).slice(0,limit);
 }
