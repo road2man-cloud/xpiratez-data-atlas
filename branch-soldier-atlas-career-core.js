@@ -1,5 +1,6 @@
 // All values are projections of canonical replay ledgers, never independent maxima.
 import {CAREER_STAT_POLICY,comparisonStats} from "./branch-soldier-stat-comparison-policy.js?v=1";
+import {loadOvercapRows} from "./branch-soldier-overcap-unified.js?v=109";
 export const ledgers=[
  {key:'missingbirth',registryKey:'populationMissingOriginCareer',file:'soldier-population-missing-origin-career',label:'미연결 출생처 모집·육성',index:'soldier-population-missing-origin-career-index'},
  {key:'alternating',file:'soldier-final-career-alternating-candidates',label:'연구·시술 교대 조건부 대표',index:'soldier-final-career-alternating-candidate-index'},
@@ -144,6 +145,9 @@ export async function loadExplorationRows(modern,registry){
    }
    rows.push(...p.rows);if(p.rejected.length)errors.push(source.label+' '+p.rejected.length+'행 제외');
   }catch(e){errors.push(source.label+' 미연결: '+e.message);}}
+  // Browser exploration includes the other worker's conditional paths in this same table.
+  // Offline canonical admission builders do not consume unadmitted projections.
+  if(typeof window!=='undefined'){try{rows.push(...await loadOvercapRows(modern));}catch(e){errors.push('성장캡 초과 육성 원장 미연결: '+e.message);}}
   return {rows,errors};
  })();
  explorationCache.set(modern,{registry,promise});return promise;
@@ -153,7 +157,7 @@ export function completionSummaryText(completion){
  const f=n=>Number.isSafeInteger(n)?n.toLocaleString('ko-KR'):'미확정';
  const final=completion.finalCareerAdmission;
  if(!['ATLAS_CAREER_SUCCESSOR_CLOSURE_V2','ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'].includes(final?.schema))return '최종 육성 종결 판정 자료 미연결 · 이전 연구 도달 수치는 완결 조합 아님';
- return (final.schema==='ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'?'병종 유지·성장캡 복원 조건부 최종 완결 조합 ':'최종 완결 조합 ')+f(s.completeCombinations)+'개 · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · '+CAREER_STAT_POLICY.label+' 기준 · 전체 탐색 공간 미확정';
+ return (final.schema==='ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'?'병종 유지·성장캡 복원 조건부 최종 완결 조합 ':'최종 완결 조합 ')+f(s.completeCombinations)+'개 (일반 '+f(s.completeCombinations-(s.finalCareer?.byFinalBody?.STR_SOLDIER_CHORT||0))+' / 코르트 '+f(s.finalCareer?.byFinalBody?.STR_SOLDIER_CHORT||0)+') · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · '+CAREER_STAT_POLICY.label+' 기준 · 전체 탐색 공간 미확정';
 }
 export function exactCareerUrl(r){
  return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:r.complete?'complete':'all',maxView:'all',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
@@ -292,7 +296,7 @@ export function rankRows(rows,metric='cap',stat='total'){
  const i=statKeys.indexOf(stat),value=r=>i<0?sum(r[metric]):r[metric][i];
  return rows.slice().sort((a,b)=>value(b)-value(a)||sum(b[metric])-sum(a[metric])||a.key.localeCompare(b.key));
 }
-export function routeUrl(r){if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:'all',maxView:'all',origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
+export function routeUrl(r){if(r.overcapEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:'conditional',careerClass:'all',origin:r.origin,body:r.body,q:r.id})+'#originMaxima';if(r.birthEvidence)return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:'all',maxView:'all',origin:r.origin,branch:r.branch,populationRoute:r.id})+'#originMaxima';return 'soldiers/modern/?'+new URLSearchParams({profile:r.origin,branch:r.branch,populationRoute:r.rootRoute||r.id})+'#originDetails';}
 export function branchUrl(id){return 'captains/?'+new URLSearchParams({branch:id})+'#integratedBranches';}
 export function readResearchWitness(index,r,metadata){
  if(index.sourceMetadataSha256!==metadata)throw Error('연구 인덱스 버전 불일치');

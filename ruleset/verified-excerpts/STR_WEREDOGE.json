@@ -1,0 +1,144 @@
+{
+  "schema": "xpiratez-verified-rule-excerpt/v1",
+  "version": "v.o2",
+  "coverage": "partial; explicitly selected fields, not merged effective rules",
+  "source": {
+    "file": "Ruleset/Piratez.rul",
+    "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6"
+  },
+  "translation": {
+    "file": "Language/ko.yml",
+    "sha256": "5de1e41ba9272d8ad468720abaf9d07462a38ed87ccfa7fc0601beeb620c3987",
+    "matchesPreviousManifest": false
+  },
+  "entries": [
+    {
+      "id": "STR_WEREDOGE",
+      "ko": "길들인 웨어울프",
+      "translationLine": 7815,
+      "definitions": [
+        {
+          "section": "items",
+          "startLine": 4479,
+          "endLine": 4509,
+          "fields": {
+            "categories": [
+              "STR_BAT_CAT_AUX",
+              "STR_BAT_CAT_LIABILITIES"
+            ],
+            "size": 6,
+            "costSell": 25000,
+            "monthlyMaintenance": 1000,
+            "power": 110,
+            "accuracyMelee": 85,
+            "battleType": 3,
+            "fixedWeapon": true,
+            "liveAlien": true,
+            "prisonType": 2
+          }
+        },
+        {
+          "section": "units",
+          "startLine": 129585,
+          "fields": {
+            "race": "STR_WEREWOLF",
+            "stats": {
+              "tu": 110,
+              "stamina": 120,
+              "health": 144,
+              "bravery": 100,
+              "reactions": 75,
+              "firing": 30,
+              "throwing": 35,
+              "strength": 110,
+              "psiStrength": 33,
+              "psiSkill": 0,
+              "melee": 95,
+              "mana": 125
+            },
+            "armor": "WEREWOLF_ARMOR",
+            "livingWeapon": true
+          }
+        },
+        {
+          "section": "research",
+          "startLine": 136944,
+          "fields": {
+            "cost": 10,
+            "points": 50,
+            "dependencies": [
+              "STR_WEREWOLF_WARRIOR",
+              "STR_BEASTMEN_TAMING"
+            ]
+          }
+        },
+        {
+          "section": "manufacture",
+          "startLine": 175757,
+          "fields": {
+            "category": "STR_COMBAT_UNIT",
+            "requires": [
+              "STR_WEREDOGE"
+            ],
+            "space": 0,
+            "time": 3600,
+            "cost": 1000,
+            "requiredItems": {
+              "STR_WEREWOLF_WARRIOR": 1,
+              "STR_MUTANT_MEAT": 12,
+              "STR_GUILD_CORPSE": 1,
+              "STR_RAIDER_CORPSE": 1,
+              "STR_SECTOWEED": 100
+            },
+            "refund": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "STR_BURROW",
+      "ko": "토굴",
+      "translationLine": 11825,
+      "definitions": [
+        {
+          "section": "facilities",
+          "startLine": 29,
+          "fields": {
+            "personnel": 15,
+            "aliens": 10,
+            "prisonType": 2,
+            "storage": 25,
+            "buildCost": 75000,
+            "buildTime": 14,
+            "monthlyCost": 1000
+          }
+        }
+      ]
+    },
+    {
+      "id": "STR_BEAST_DEN",
+      "ko": "야수 우리",
+      "translationLine": 11826,
+      "definitions": [
+        {
+          "section": "facilities",
+          "startLine": 54,
+          "fields": {
+            "aliens": 30,
+            "prisonType": 2,
+            "storage": 50,
+            "provideBaseFunc": [
+              "DEN"
+            ],
+            "requires": [
+              "STR_BEAST_DEN"
+            ],
+            "buildCost": 225000,
+            "buildTime": 14,
+            "monthlyCost": 5000
+          }
+        }
+      ]
+    }
+  ]
+}
