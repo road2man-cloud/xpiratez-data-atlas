@@ -1,0 +1,43 @@
+{
+  "format": "R36LE_BROWSER_CAPTURE_REPORT_V1",
+  "date": "2026-11-28",
+  "sourceCommit": "ea9a2352a8d931e14968df4d98e4ee0abe185267",
+  "viewer": "preview/index.html",
+  "platform": "Windows Edge headless WebGL, localhost, source models in local production workspace",
+  "actualModels": {
+    "left": "R36LE_SEAMSAFE_SKIN_2100TRI.glb",
+    "right": "R36LC_BALANCED_SKIN_2100TRI.glb",
+    "shaLeft": "29619c81e381ee6afe1fc7e3efd7a6d82e777ff9068c243910a32c7981683e37",
+    "shaRight": "678c769ca35ae29ff8a440da88969213c923a5bf4d494e1f33696e01155fe3c1"
+  },
+  "captures": [
+    {
+      "path": "preview/captures/R36LE_VS_R36LC_WHOLE_0.png",
+      "view": "whole",
+      "pose": 0,
+      "bytes": 219125,
+      "sha256": "ac132aa92648eb2d3df6da46c93969d1a7efc8d3d1228440b9d4a4ad8818c908"
+    },
+    {
+      "path": "preview/captures/R36LE_VS_R36LC_PELVIS_35.png",
+      "view": "pelvis",
+      "pose": 35,
+      "bytes": 411428,
+      "sha256": "c5f376094903d1fa7cd2d8738f5932b7233e0fec5d0cb7348d92ded847d61bf1"
+    }
+  ],
+  "renderedTrianglesBothModels": 4200,
+  "drawCallsBothModels": 12,
+  "observations": [
+    "Both entire character meshes load and render in the split viewer",
+    "Wide triangle-color boundaries remain perceptible at both whole and pelvis views",
+    "Dark center void persists and is likely geometry/occlusion; sampler changes alone do not fill it",
+    "No objective S2-engine photometric comparison performed"
+  ],
+  "status": {
+    "realWebGLCapture": true,
+    "s2EngineApplied": false,
+    "modelGeometryModified": false,
+    "glbProduction": true
+  }
+}
