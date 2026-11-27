@@ -1,0 +1,32 @@
+{
+  "repository": "road2man-cloud/xpiratez-data-atlas",
+  "branch": "main",
+  "commit": "545eebdf54aa1bb1fcf6a8320a289e3086090ae8",
+  "parent": "c694320de4289c4c9341c4eda005acdfd2906cdc",
+  "path": "experimental/xpz3d/f11/r36kx",
+  "filesPublished": 49,
+  "remoteGLBs": [
+    {
+      "path": "output/R36KX_F11_COMPACT_NORMAL_1024_2100TRI.glb",
+      "bytes": 920228,
+      "sha256": "17b55296868c966b9f9a04846ba3d0720fffbc7ad8408b3b0787dde0a581c4ab",
+      "gitBlobSha": "2d4aec0798fc47f8cf28d192301799be38a1bc6d",
+      "remoteBytesDecoded": true
+    },
+    {
+      "path": "output/R36KX_F11_COMPACT_NORMAL_512_2100TRI.glb",
+      "bytes": 574660,
+      "sha256": "ed91f79bc1db9a40e60f375fd11c188d30b9bc7341ca92b0aff18d466159a33c",
+      "gitBlobSha": "f8ec5826047b6b9324b9fa1b43c5f1c6a931bae7",
+      "remoteBytesDecoded": true
+    }
+  ],
+  "bundle": {
+    "bytes": 7041262,
+    "sha256": "7c938fbe899f863966e18dca43f18e67d3e5284281c5d95bf22d9591af9272af",
+    "gitBlobSha": "04089d84646c516873e1dae64a39345af32a8cb1"
+  },
+  "engineApplied": false,
+  "pagesDeploymentVerified": false,
+  "receiptNotInInitialCommit": true
+}
