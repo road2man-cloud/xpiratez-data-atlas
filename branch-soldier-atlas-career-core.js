@@ -72,7 +72,7 @@ export async function loadCareerRows(modern,registry,{includeWitnesses=false,sco
   const strict=scope==='final',final=completion.finalCareerAdmission;
   // Fail closed against old registries or a stale final index. The explicit
   // research-line mode is for offline scheduling only, never the final UI.
-  if(strict&&(final?.schema!=='ATLAS_CAREER_SUCCESSOR_CLOSURE_V2'||final.sourceMetadataSha256!==metadata||final.sourceGraphSha256!==completion.researchTraitSets?.sourceGraphSha256||!Array.isArray(final.rows)||final.rows.length!==completion.rows.length||!completion.rows.every((a,i)=>a.id===final.rows[i].id&&a.closureProofHash===final.rows[i].closureProofHash)))throw Error('최종 육성 종결 판정 자료 미연결');
+  if(strict&&(!['ATLAS_CAREER_SUCCESSOR_CLOSURE_V2','ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'].includes(final?.schema)||final.sourceMetadataSha256!==metadata||final.sourceGraphSha256!==completion.researchTraitSets?.sourceGraphSha256||!Array.isArray(final.rows)||final.rows.length!==completion.rows.length||!completion.rows.every((a,i)=>a.id===final.rows[i].id&&a.closureProofHash===final.rows[i].closureProofHash)))throw Error('최종 육성 종결 판정 자료 미연결');
   const admissions=strict?completion.rows:(completion.researchLineRows||completion.rows);
   const lineStatus=c=>['RESEARCH_LINE_COMPLETE','RESEARCH_LINE_EXPLORATION','FINAL_CAREER_COMPLETE'].includes(c?.status);
   const closed=(a,routeId=a.routeId)=>{const r=final?.witnesses?.[routeId];return r?.status==='FINAL_CLOSED'&&r.pairId===a.id&&r.proofHash===a.closureProofHash&&r.actionHash===a.actionHash&&r.certificate?.graph===final.sourceGraphSha256;};
@@ -152,8 +152,8 @@ export function completionSummaryText(completion){
  const s=completion?.summary;if(!s)return '완결 판정 자료 미연결';
  const f=n=>Number.isSafeInteger(n)?n.toLocaleString('ko-KR'):'미확정';
  const final=completion.finalCareerAdmission;
- if(final?.schema!=='ATLAS_CAREER_SUCCESSOR_CLOSURE_V2')return '최종 육성 종결 판정 자료 미연결 · 이전 연구 도달 수치는 완결 조합 아님';
- return '최종 완결 조합 '+f(s.completeCombinations)+'개 · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · 전체 탐색 공간 미확정';
+ if(!['ATLAS_CAREER_SUCCESSOR_CLOSURE_V2','ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'].includes(final?.schema))return '최종 육성 종결 판정 자료 미연결 · 이전 연구 도달 수치는 완결 조합 아님';
+ return (final.schema==='ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'?'병종 유지·성장캡 복원 조건부 최종 완결 조합 ':'최종 완결 조합 ')+f(s.completeCombinations)+'개 · 최종 연구 도달 탐색 조합 '+f(s.researchLineCombinations)+'개 (최종 행 제외) · 종결 증명된 출생처 '+f(s.completeOrigins)+'/'+f(s.origins)+' · 미완결 고유 탐색 근거 '+f(s.unresolvedEvidence)+'개 · 실제 게임 인증 '+f(s.actualGameCombinations??0)+'개 · 전체 탐색 공간 미확정';
 }
 export function exactCareerUrl(r){
  return 'soldiers/modern/?'+new URLSearchParams({group:'routes',routeStatus:r.complete?'complete':'all',maxView:'all',origin:r.origin,body:r.body,branch:r.branch,q:r.id})+'#originMaxima';
