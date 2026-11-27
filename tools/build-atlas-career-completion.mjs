@@ -12,7 +12,7 @@ import {createSharedCareerReplay} from "./population-shared-lifecycle-replay.mjs
 import {sharedRankData} from "./population-shared-default-rank.mjs";
 import {buildTerminalResearchTraitSets} from "./atlas-terminal-research-trait-sets.mjs";
 import {admitResearchLines,RESEARCH_LINE_PROOF} from "./atlas-research-line-admission.mjs";
-import {classifyFinalCareers} from "./atlas-final-career-admission-v3-body-scope.mjs";
+import {classifyFinalCareers} from "./atlas-final-career-admission-v5-baseline-checkpoint.mjs";
 import {createResearchMaterialPolicy} from "./atlas-research-material-policy.mjs";
 import {createMaterialIndex,summarizeMaterialComparison} from "../public/branch-soldier-material-frontier-v2.js";
 import {createRepeatComparison} from "../public/branch-soldier-repeat-comparison.js";
@@ -173,7 +173,7 @@ const c=db.careerCompletion,{summary,bySource,classifications}=c;
 summary.researchTraitSets=c.researchTraitSets.summary;
 const finalLedger=decode("public/data/soldier-population-missing-origin-career.json.gz");
 const finalData={...modern,originRows:read("public/data/soldier-acquisition-progression-20261102.json").rows,sourceItemIds:new Set(read("public/data/soldier-source-catalog.json").itemIds)};
-const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createSharedCareerReplay(finalData,finalLedger.summary),lines:c.researchLineRows});
+const final=classifyFinalCareers({db,ledger:finalLedger,data:finalData,replay:createSharedCareerReplay(finalData,finalLedger.summary),lines:c.researchLineRows,baselineRef:process.argv.find(x=>x.startsWith("--reuse-final-from="))?.slice("--reuse-final-from=".length)||null});
 c.finalCareerAdmission=final;
 c.rows=final.rows;
 summary.completeCombinations=final.rows.length;
