@@ -10,7 +10,7 @@ const arr=x=>Array.isArray(x)?x:[];
 const canon=x=>x instanceof Set?[...x].sort().map(canon):x instanceof Map?Object.fromEntries([...x.entries()].sort(([a],[b])=>String(a).localeCompare(String(b))).map(([k,v])=>[k,canon(v)])):Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>createHash('sha256').update(JSON.stringify(canon(x))).digest('hex');
 const diff=(a,b)=>[...a].filter(x=>!b.has(x)).sort();
-export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null,focusNodes=null,priorityResearch=[]}={}){
+export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null,focusNodes=null,priorityResearch=[],priorityOnly=false}={}){
  if(!Number.isSafeInteger(maxDepth)||maxDepth<1||maxDepth>50||!Number.isSafeInteger(maxNodes)||maxNodes<5||maxNodes>100000)throw Error('invalid-forward-bounds');
  const initial=campaignStartWorld(data,snapshot);
  if(initial.researched.size||initial.disabled.size||initial.pendingFree)throw Error('nonempty-forward-root');
@@ -93,10 +93,12 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  if(focusNodes!==null&&(!resume||!Array.isArray(focusNodes)||!focusNodes.length||focusNodes.some(id=>!Number.isSafeInteger(id)||id<0||id>=previousStates)))throw Error('invalid-forward-focus-nodes');
  if(!Array.isArray(priorityResearch)||priorityResearch.some(id=>!data.researchRules[id]))throw Error('invalid-forward-priority-research');
  const priority=new Set(priorityResearch);
+ if(priorityOnly&&(!focusNodes||!priority.size))throw Error('priority-only-requires-focused-research');
+ const preferred=a=>priority.has(a.id||a.research)||a.type==='freeResearch'&&priority.has(a.source);
  const queue=focusNodes===null?null:[...new Set(focusNodes)];
  const queued=new Set(queue||[]);
  const oldOutgoing=new Map();
- if(queue)for(const e of edges){if(!oldOutgoing.has(e.from))oldOutgoing.set(e.from,[]);oldOutgoing.get(e.from).push(e.to);}
+ if(queue)for(const e of edges){if(!oldOutgoing.has(e.from))oldOutgoing.set(e.from,[]);oldOutgoing.get(e.from).push(e);}
  const schedule=id=>{if(queue&&!queued.has(id)){queued.add(id);queue.push(id);}};
  let visitedThisRun=0;
  for(let cursor=0;cursor<(queue?queue.length:nodes.length);cursor++){
@@ -171,12 +173,15 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
   }
   const seen=processed.get(i)||new Set();
   const remaining=actions.filter(a=>!seen.has(edgeKey(a)));
-  if(priority.size)remaining.sort((a,b)=>Number(priority.has(b.id||b.research))-Number(priority.has(a.id||a.research)));
+  if(priority.size)remaining.sort((a,b)=>Number(preferred(b))-Number(preferred(a)));
+  const selected=priorityOnly?remaining.filter(preferred):remaining;
   n.candidateCount=actions.length;
   n.omitted=0;
   if(n.depth>=maxDepth){n.frontierReason=remaining.length?'depth-bound':null;n.omitted=remaining.length;n.expanded=!remaining.length;continue;}
-  if(queue)for(const id of oldOutgoing.get(i)||[])schedule(id);
-  for(const action of remaining){
+  const deferred=remaining.length-selected.length;
+  n.omitted=deferred;
+  if(queue)for(const e of oldOutgoing.get(i)||[])if(!priorityOnly||preferred(e.action))schedule(e.to);
+  for(const action of selected){
    const result=applyCampaignStartStep(w,action,data);
    if(!result.ok){n.blocked.push({action,reason:result.reason});blocked.add(action.id||action.research);continue;}
    const j=register(result.world,n.depth+1);
@@ -188,7 +193,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
    if(i===0)firstBranches[action.id]=j;
    for(const id of e.added)valid.add(id);
   }
-  n.expanded=n.omitted===0;n.frontierReason=n.omitted?'node-bound':null;
+  n.expanded=n.omitted===0;n.frontierReason=n.omitted>deferred?'node-bound':deferred?'priority-deferred':null;
  }
  const incomplete=nodes.filter(n=>!n.expanded).length;
  return {schema:'ATLAS_CAMPAIGN_FORWARD_TREE_V1',scope,
@@ -196,6 +201,6 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
   limits:{maxDepth,maxNodes,depthUnit:'actions',captainEvent:captainEvent??null,policy},
   excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants',construction?'alternative facility placements, replacements, funding and full calendar':'facility construction',fixedItems?'events outside selected fixed bundles and research routes':'events outside selected routes',missions?'missions outside indexed fixed loot; tactical victory, transport and recovery':'mission rewards',manufacturing?'repeat batches, special/random recipes and manufacturing workforce/calendar':'manufacturing','native research duration and event scheduler','economy and full base simulation',...(manufactureFocus==='research'?['manufacturing without a currently missing research sample; intermediate material chains not exhaustive']:[]),...(fixedEventFilter?['fixed events outside selected filter']:[])],
   initialMenu:nodes[0].availableResearch,firstBranches,nodes,edges,
-  continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume),focusNodes,priorityResearch,visitedThisRun,deferredPreviousStates:queue?previousStates-[...queued].filter(id=>id<previousStates).length:0}:null,
+  continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume),focusNodes,priorityResearch,priorityOnly,visitedThisRun,deferredPreviousStates:queue?previousStates-[...queued].filter(id=>id<previousStates).length:0}:null,
   summary:{manufactureResearchUnlockEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&e.newlyAvailable.length).length,indexedDeterministicRecipes:recipes.length,indexedMissionLootRoutes:lootRoutes.length,actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
 }
