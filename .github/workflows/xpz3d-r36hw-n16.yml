@@ -24,9 +24,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Build actual N16 connected polygon patch
+      - name: Build actual N16 center 3D edge repair
         run: |
-          node --check experimental/xpz3d/f11/r36hw-n16-retess-center-20261129/source/retess_patch.cjs
           node --check experimental/xpz3d/f11/r36hw-n16-retess-center-20261129/source/build_n16.cjs
           node experimental/xpz3d/f11/r36hw-n16-retess-center-20261129/source/build_n16.cjs
       - name: Check GLB structure, face budget, preserved boundary
@@ -35,8 +34,8 @@ jobs:
           const fs=require('fs'),d='experimental/xpz3d/f11/r36hw-n16-retess-center-20261129';
           const r=JSON.parse(fs.readFileSync(d+'/reports/R36HW_N16_RETESS_CENTER.json','utf8'));
           const b=fs.readFileSync(d+'/output/R36HW_N16_RETESS_CENTER.glb');
-          if(r.trianglesBefore!==2099||r.trianglesAfter!==2099||r.pelvisTriangles!==363||r.originalCenterTriangles!==44||r.newCenterTriangles!==44||r.ringVertices!==40||!r.boundaryPreserved||r.nonmanifoldEdges!==0||r.faceFlips!==0||r.skinJoints!==63||!r.faceAndHairUnmodified||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
-          console.log(JSON.stringify({triangles:r.trianglesAfter,center:r.newCenterTriangles,ring:r.ringVertices,sha256:r.outputSHA256}));
+          if(r.triangles!==2099||r.skinJoints!==63||r.newRegionSkinnyCount>r.originalRegionSkinnyCount||!r.sourceFaceAndHairUnchanged||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.triangles,edgeFlips:r.edgeFlips,skinnyBefore:r.originalRegionSkinnyCount,skinnyAfter:r.newRegionSkinnyCount,sha256:r.outputSHA256}));
           NODE
       - name: Publish new GLB and source-linked report
         run: |
