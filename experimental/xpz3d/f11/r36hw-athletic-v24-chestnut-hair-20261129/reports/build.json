@@ -1,0 +1,41 @@
+{
+  "schema": "r36hw-v24-chestnut-hair-v1",
+  "sourceBlob": "285a8539e2687d47f7ca65a034605b0eeec93ead",
+  "sourceVersion": "V21",
+  "sourceBytes": 254904,
+  "outputBytes": 307180,
+  "triangles": 2100,
+  "joints": 63,
+  "hairAtlas": {
+    "width": 256,
+    "height": 256,
+    "oldBytes": 39664,
+    "newBytes": 91942,
+    "changedPixels": 65536,
+    "totalPixels": 65536,
+    "oldAverageRgb": [
+      43.68,
+      83.78,
+      16.69
+    ],
+    "newAverageRgb": [
+      113.03,
+      76.94,
+      48.87
+    ],
+    "oldGreenDominantPixels": 65536,
+    "newGreenDominantPixels": 0,
+    "sourceLumaRange": [
+      37.651399999999995,
+      122.24019999999999
+    ],
+    "paletteMapping": "RGB = [1.52L+6, 1.05L+3, 0.68L+1], clamped; L = source Rec.709 weighted byte intensity",
+    "pngRoundtripExact": true
+  },
+  "preservedNonHairBufferViews": 45,
+  "geometryRigMaterialsUnchanged": true,
+  "faceAndSkinUnchanged": true,
+  "opaqueOutfitUnchanged": true,
+  "nativeRender": false,
+  "referenceColorCalibration": false
+}
