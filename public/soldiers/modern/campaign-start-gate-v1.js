@@ -198,9 +198,15 @@ function applyCampaignStartCore(input,step,data){
 // Apply indexed research item rewards once, only on newly completed research.
 // Timing relative to native auto queues remains conditional.
 export function applyCampaignStartStep(input,step,data){
- const result=applyCampaignStartCore(input,step,data);
- if(!result.ok)return result;
+ const unlimited=step.financeMode==='unlimited';
+ if(step.financeMode!==undefined&&(!unlimited||!['acquireFundedPurchase','manufactureBundle','buildFacility','recruit','transform'].includes(step.type)))return {ok:false,world:input,reason:'invalid-action-finance-policy'};
+ // The transient budget is an implementation detail, never a stored grant.
+ // All research, material, capacity, purchase and placement checks still run.
+ const source=unlimited?{...input,funds:Number.MAX_SAFE_INTEGER}:input;
+ const result=applyCampaignStartCore(source,step,data);
+ if(!result.ok)return {...result,world:input};
  const world=result.world;
+ if(unlimited){world.funds=input.funds;result.notes=[...(result.notes||[]),'monetary-cost-excluded'];result.assumed=true;}
  try{
   const paid=new Set(input.paidResearchGrants||input.researched);
   const notes=[...(result.notes||[])];
