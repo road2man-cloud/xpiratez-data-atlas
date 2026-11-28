@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36MA_SEAM_REBAKED_2100_FULL.glb",
+  "inputBytes": 9701396,
+  "output": "R36MA_SUBTLE_FLOW_2100_COMPACT_FULL.glb",
+  "outputBytes": 5905608,
+  "sourceSHA256": "ad4c71974c64905623526bea78fe6f8b236e64e9998b4273f8aed866c870bbe4",
+  "outputSHA256": "4ede1c65fdf3cbfdff82d6e0b6bd77dc6bcbfc0ab7bc5a86a76f5b795628ff72",
+  "reducedBytes": 3795788,
+  "ratio": 0.608738,
+  "textureObjectsBefore": 8,
+  "textureObjectsAfter": 6,
+  "imageObjectsBefore": 8,
+  "imageObjectsAfter": 6,
+  "bufferViewsBefore": 135,
+  "bufferViewsAfter": 133,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}

@@ -1,0 +1,48 @@
+{
+  "version": "R36MA",
+  "source": "R36LZ_ART_FLOW_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "73279d1893ca723c0d6cdf339e7dd4f73ea958a0f087d031d93a87b041951c0c",
+  "model": "R36MA_SEAM_REBAKED_2100_FULL.glb",
+  "modelSHA256": "9384cc1d5cb22c86b4eb9ead7604dad2140c4169467b0c9a8c7c725c304f9ebb",
+  "modelBytes": 10063352,
+  "triangles": 2100,
+  "bodyTriangles": 1132,
+  "faceHairTriangles": 968,
+  "joints": 63,
+  "geometryAndSkinUnchanged": true,
+  "normalMapAndColorUpdated": true,
+  "metrics": {
+    "seamsDetected": 244,
+    "usableSeams": 244,
+    "edgesRebaked": 244,
+    "skippedSharp": 22,
+    "skippedNonmanifold": 0,
+    "skippedIncompatibleNormal": 0,
+    "meanSourceEdgeRGBDifference": 0.35182939263625185,
+    "touchedUVTriangleCount": 197,
+    "affectedInteriorPixels": 150856,
+    "changedAlbedoPixels": 14944,
+    "changedNormalPixels": 78608,
+    "meanAbsoluteRGB8Delta": 0.0566080677378869,
+    "maxRGB8Delta": 7,
+    "paddedColorPixels": 994046,
+    "paddedNormalPixels": 994046,
+    "algorithm": "paired physical 3D edges -> dual UV seam pixel transforms, world-space normal transport",
+    "didNotTouchPositionsOrJointWeights": true
+  },
+  "images": {
+    "COLOR": {
+      "name": "R36MA_SEAM_COLOR_2048.png",
+      "sha256": "40da6d11f79563fab8cb44b1529d484d1e876723125ec01485d06019beafc243",
+      "bytes": 2071836
+    },
+    "NORMAL": {
+      "name": "R36MA_SEAM_NORMAL_2048.png",
+      "sha256": "5d173d13c27c210dd47b702d7491fb064ea9786c905759514fcccce36784d4f9",
+      "bytes": 1946326
+    }
+  },
+  "visualQA": "not run",
+  "engineQA": "not run",
+  "caveat": "Physical seam blending, not photographic depth recovery or visual approval"
+}
