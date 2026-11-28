@@ -138,7 +138,12 @@ if(fast||staticPass||closureFirst){
  indices=Array.from({length:Math.min(limit,Math.max(0,prep.plan.length-offset))},(_,i)=>offset+i);
  for(const i of indices)assert(!already.has(i),"Batch overlaps existing result "+i);
 }
-const lines=indices.map(i=>prep.researchLineRows[i]);assert(lines.length>0,"No eligible unprocessed pairs");
+const lines=indices.map(i=>prep.researchLineRows[i]);
+if(!lines.length){
+ assert(fast||staticPass||closureFirst||next||resumeFrom,"Explicit range has no pairs");
+ console.log(JSON.stringify({phase:"NO_ELIGIBLE_UNPROCESSED_PAIRS",body,selection:fast?"immediate-nonfinal":staticPass?"static-open":closureFirst?"closure-first-hint":resumeFrom?"reclassify-ancestor":"next-unprocessed",already:already.size,total:prep.plan.length,produced:0}));
+ process.exit(0);
+}
 assert.deepEqual(lines.map(x=>x.id),indices.map(i=>prep.plan[i].id));
 const ids=new Set(lines.flatMap(r=>[r,...r.alternatives].map(x=>x.routeId)));
 const graphs=new Set([...ids].map(id=>{const r=ledger.routes[id];assert(r);return r.sourceGraph;}));
