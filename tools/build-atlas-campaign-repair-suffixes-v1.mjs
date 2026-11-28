@@ -6,7 +6,7 @@ import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {gunzipSync,gzipSync} from 'node:zlib';
-import {campaignStartWorld,labVerdict} from '../public/soldiers/modern/campaign-start-gate-v1.js';
+import {campaignStartWorld,labVerdict,START_RESEARCH} from '../public/soldiers/modern/campaign-start-gate-v1.js';
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {createCampaignStartResearchPlanner} from '../public/soldiers/modern/campaign-start-research-planner-v1.js';
 import {careerStatVectors} from '../public/soldiers/modern/campaign-start-career-actions-v1.js';
@@ -189,7 +189,19 @@ function prefixNode(g){
   for(const step of g.replacement)p.append(n,step);
   const w=n.world,actual=hash({researched:[...w.researched].sort(),disabled:[...w.disabled].sort(),items:w.items,functions:[...w.baseFunctions].sort(),month:w.month});
   if(actual!==g.endStateHash)throw Error('prefix-end-state-mismatch');
-  prefixCache.set(g.id,n);
+  // The old receipt is evidence, not permission to start with a later
+  // captain branch. Move the first actual start-menu research and its
+  // immediate free award to the beginning, then replay every action.
+  // Reject changes in the full resulting state; never splice state.
+  const at=g.replacement.findIndex(s=>s.type==='research'&&Object.hasOwn(START_RESEARCH,s.id));
+  if(at<0)throw Error('prefix-no-start-menu-research');
+  let end=at+1;
+  while(g.replacement[end]?.type==='freeResearch')end++;
+  const ordered=[...g.replacement.slice(at,end),...g.replacement.slice(0,at),...g.replacement.slice(end)];
+  const normalized=p.newNode();
+  for(const step of ordered)p.append(normalized,step);
+  if(hash(canon(normalized.world))!==hash(canon(n.world)))throw Error('root-first-prefix-full-state-mismatch');
+  prefixCache.set(g.id,normalized);
  }
  return planner(g.difficulty).clone(prefixCache.get(g.id));
 }
@@ -336,6 +348,23 @@ function requirementsSafe(s){
  if(s.type==='transform')return arr(transforms.get(s.transform)?.requires);
  if(s.type==='recruit')return arr(profiles.get(s.profile)?.requires);
  return [];
+}
+// Produce root-first witnesses for all previously repaired prefix groups.
+// Retain the pinned old receipt identity so suffix worklists remain usable.
+if(args.rootPrefixOut){
+ const receipts=[];
+ for(const g of prefix.receipts){
+  if(g.status!=='prefix-replayed-conditional')continue;
+  try{
+   const n=prefixNode(g);
+   receipts.push({id:g.id,difficulty:g.difficulty,status:'root-first-prefix-replayed-conditional',originalReplacementHash:g.replacementHash,replacement:n.steps,replacementHash:hash(n.steps),fullStateHash:hash(canon(n.world)),firstResearch:n.steps[0].id,gameCertified:false});
+  }catch(e){receipts.push({id:g.id,difficulty:g.difficulty,status:'root-first-prefix-pending',reason:e.message,gameCertified:false});}
+ }
+ const summary={groups:receipts.length,completed:receipts.filter(x=>x.status==='root-first-prefix-replayed-conditional').length,gameCertified:0};
+ const content=JSON.stringify({schema:'ATLAS_CAMPAIGN_ROOT_FIRST_PREFIX_V1',sourceCommit:ref,sourceMetadataSha256:meta,prefixInputHash:hash(prefix),queueInputHash:hash(worklist),startRegion:scenarioRegion,startCountry:scenarioCountry,summary,receipts});
+ fs.writeFileSync(args.rootPrefixOut+'.tmp',content);fs.renameSync(args.rootPrefixOut+'.tmp',args.rootPrefixOut);
+ console.log(JSON.stringify(summary));
+ if(args.prefixOnly==='1')process.exit(0);
 }
 const limit=Number(args.limit||8),offset=Number(args.offset||0);
 if(!Number.isSafeInteger(limit)||limit<1||!Number.isSafeInteger(offset)||offset<0)throw Error('invalid-batch');
