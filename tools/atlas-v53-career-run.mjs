@@ -175,6 +175,9 @@ if(args.defaultRankEvidence==='1'){
  if(!raw||raw.refNode!=null||raw.rankStrings!=null||raw.allowPromotion===false||indexed?.allowPromotion!==true||indexed.raw?.rankStrings?.length||(standard.soldiers||[]).some(r=>r.type===id))throw Error('default-rank-body-source-mismatch:'+id);
  d.campaignAssets.defaultRankEvidence={[id]:{maxRank:5,archiveSha256,standardSoldiersSha256:createHash('sha256').update(standardBytes).digest('hex'),ruleSha256:files['Piratez.rul'],source:'OXCE 8.7.1 archived source: SoldierRank and SavedGame::handlePromotions; absent custom rankStrings'}};
 }
+const {buildBlessingsRoute}=await import('./atlas-v62-blessings-route.mjs');
+const blessingsRoute=buildBlessingsRoute(d,events,eventScripts,items,files);
+d.campaignAssets.mixedEventRoutes={[blessingsRoute.event]:blessingsRoute};
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 if(args.forwardRecruitment==='1'){

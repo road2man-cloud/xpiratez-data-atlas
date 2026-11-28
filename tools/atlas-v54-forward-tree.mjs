@@ -11,7 +11,7 @@ const arr=x=>Array.isArray(x)?x:[];
 const canon=x=>x instanceof Set?[...x].sort().map(canon):x instanceof Map?Object.fromEntries([...x.entries()].sort(([a],[b])=>String(a).localeCompare(String(b))).map(([k,v])=>[k,canon(v)])):Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>createHash('sha256').update(JSON.stringify(canon(x))).digest('hex');
 const diff=(a,b)=>[...a].filter(x=>!b.has(x)).sort();
-export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null,focusNodes=null,priorityResearch=[],priorityOnly=false,supplyTargets=[],financeMode='unlimited',allowSupplyExpansion=false}={}){
+export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null,focusNodes=null,priorityResearch=[],priorityOnly=false,supplyTargets=[],financeMode='unlimited',allowSupplyExpansion=false,allowEventExpansion=false}={}){
  if(!Number.isSafeInteger(maxDepth)||maxDepth<1||maxDepth>100||!Number.isSafeInteger(maxNodes)||maxNodes<5||maxNodes>100000)throw Error('invalid-forward-bounds');
  if(!['funded','unlimited'].includes(financeMode))throw Error('invalid-finance-mode');
  const unlimited=financeMode==='unlimited';
@@ -55,12 +55,16 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  const edgeKey=a=>digest(a);
  const processed=new Map();
  const valid=new Set(),blocked=new Set(),firstBranches={};
- let addedSupplyTargets=[];
+ let addedSupplyTargets=[],addedEventRoutes=[];
  if(resume){
   const previousPolicy={eventRoutes:[],samplePurchases:false,fixedItems:false,construction:false,manufacturing:false,missions:false,manufactureFocus:'all',fixedEventFilter:null,supplyTargets:[],...resume.limits?.policy,financeMode};
   if(allowSupplyExpansion&&previousPolicy.manufactureFocus==='supply'&&manufactureFocus==='supply'&&previousPolicy.supplyTargets.every(id=>supplyTargets.includes(id))){
    addedSupplyTargets=supplyTargets.filter(id=>!previousPolicy.supplyTargets.includes(id));
    previousPolicy.supplyTargets=supplyTargets;
+  }
+  if(allowEventExpansion&&previousPolicy.eventRoutes.every(r=>eventRoutes.some(x=>eq(x,r)))){
+   addedEventRoutes=eventRoutes.filter(r=>!previousPolicy.eventRoutes.some(x=>eq(x,r))).map(r=>r.event);
+   previousPolicy.eventRoutes=eventRoutes;
   }
   if(resume.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||resume.sourceMetadataSha256!==snapshot.sourceFingerprint||
    resume.difficulty!==snapshot.difficulty||!eq(resume.regions,snapshot.regions??null)||!eq(resume.countries,snapshot.countries??null)||
@@ -91,7 +95,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
    if(digest(world)!==n.stateHash||!eq(availableResearch(world,data),n.availableResearch)||!eq([...world.researched].sort(),n.completed)||!eq([...world.disabled].sort(),n.disabled))throw Error('forward-resume-state-mismatch:'+id);
    if(index.has(n.stateHash))throw Error('forward-resume-duplicate-state');
    nodes.push(structuredClone(n));worlds.push(world);index.set(n.stateHash,id);
-   if(addedSupplyTargets.length){nodes[id].expanded=false;nodes[id].frontierReason='supply-policy-expanded';nodes[id].candidateCount=null;}
+   if(addedSupplyTargets.length||addedEventRoutes.length){nodes[id].expanded=false;nodes[id].frontierReason='action-policy-expanded';nodes[id].candidateCount=null;}
    const seen=processed.get(id)||new Set();
    const retryFinance=b=>unlimited&&b.action?.financeMode==='unlimited'&&['funded-purchase-price-or-funds','manufacture-bundle-funds','facility-funds-unavailable'].includes(b.reason);
    nodes[id].blocked=(n.blocked||[]).filter(b=>!retryFinance(b));
@@ -217,6 +221,6 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
   limits:{maxDepth,maxNodes,depthUnit:'actions',captainEvent:captainEvent??null,policy},
   excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants',construction?'alternative facility placements, replacements, funding and full calendar':'facility construction',fixedItems?'events outside selected fixed bundles and research routes':'events outside selected routes',missions?'missions outside indexed fixed loot; tactical victory, transport and recovery':'mission rewards',manufacturing?'repeat batches, special/random recipes and manufacturing workforce/calendar':'manufacturing','native research duration and event scheduler','economy and full base simulation',...(unlimited?['affordability excluded on newly tagged paid actions; historical balances and event predicates preserved']:[]),...(manufactureFocus==='research'?['manufacturing without a currently missing research sample; intermediate material chains not exhaustive']:[]),...(fixedEventFilter?['fixed events outside selected filter']:[]),...(supplyPlanner?['supply exploration limited to declared targets and six intermediate recipe levels; one batch per recipe']:[])],
   initialMenu:nodes[0].availableResearch,firstBranches,nodes,edges,
-  continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume),addedSupplyTargets,focusNodes,priorityResearch,priorityOnly,visitedThisRun,deferredPreviousStates:queue?previousStates-[...queued].filter(id=>id<previousStates).length:0}:null,
+  continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume),addedSupplyTargets,addedEventRoutes,focusNodes,priorityResearch,priorityOnly,visitedThisRun,deferredPreviousStates:queue?previousStates-[...queued].filter(id=>id<previousStates).length:0}:null,
   summary:{supplyTargetRecipes:supplyTargets,supplyTargetManufactureEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&supplyTargets.includes(e.action.recipe)).length,fundedPurchaseEdges:edges.filter(e=>e.action.type==='acquireFundedPurchase'&&e.action.financeMode!=='unlimited').length,unlimitedFinanceEdges:edges.filter(e=>e.action.financeMode==='unlimited').length,manufactureResearchUnlockEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&e.newlyAvailable.length).length,indexedDeterministicRecipes:recipes.length,indexedMissionLootRoutes:lootRoutes.length,actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
 }

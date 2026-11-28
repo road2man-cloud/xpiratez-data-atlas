@@ -165,6 +165,9 @@ if(args.forwardManufacture==='1'){
  }
 }
 d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents,deterministicManufacture};
+const {buildBlessingsRoute}=await import('./atlas-v62-blessings-route.mjs');
+const blessingsRoute=buildBlessingsRoute(d,events,eventScripts,items,files);
+d.campaignAssets.mixedEventRoutes={[blessingsRoute.event]:blessingsRoute};
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 if(args.forwardRecruitment==='1'){
@@ -188,6 +191,7 @@ if(args.forwardOut){
  const resume=args.forwardResume?JSON.parse(fs.readFileSync(args.forwardResume)):null;
  if(resume&&(resume.sourceCommit!==ref||JSON.stringify(resume.sourceFiles)!==JSON.stringify(files)))throw Error('forward-resume-source-file-mismatch');
  const eventRoutes=[];
+ if(args.forwardBlessings==='1')eventRoutes.push(blessingsRoute);
  if(args.forwardEvents==='1'){
   const chosen=[['STR_CAPTAIN_PERSONALITY_TEST2','STR_CAPTAIN_PUSSY_UP'],['STR_CAPTAIN_PERSONALITY_TEST3','STR_CAPTAIN_UNCLASSED'],['STR_CAPTAIN_PERSONALITY_TEST4','STR_CAPTAIN_PURE']];
   if(scenarioCountry)chosen.push(['STR_START_COUNTRY_'+scenarioCountry.slice(4)+'_EVENT',scenarioCountry]);
@@ -207,7 +211,7 @@ if(args.forwardOut){
    eventRoutes.push({event,research:id,script:indexed,sourceSha256:files['Piratez_Events.rul'],timer:e.timer??null,timerRandom:e.timerRandom??null,points:e.points??0});
   }
  }
- const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,financeMode:args.forwardFinanceMode||'unlimited',allowSupplyExpansion:args.forwardAllowSupplyExpansion==='1',samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',manufacturing:args.forwardManufacture==='1',missions:args.forwardMissions==='1',manufactureFocus:args.forwardManufactureFocus||'all',supplyTargets:args.forwardSupplyTargets?args.forwardSupplyTargets.split(','):[],fixedEventFilter:args.forwardFixedEventFilter?args.forwardFixedEventFilter.split(','):null,focusNodes:args.forwardFocusNodes?args.forwardFocusNodes.split(',').map(Number):null,priorityResearch:args.forwardPriorityResearch?args.forwardPriorityResearch.split(','):[],priorityOnly:args.forwardPriorityOnly==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,financeMode:args.forwardFinanceMode||'unlimited',allowSupplyExpansion:args.forwardAllowSupplyExpansion==='1',allowEventExpansion:args.forwardAllowEventExpansion==='1',samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',manufacturing:args.forwardManufacture==='1',missions:args.forwardMissions==='1',manufactureFocus:args.forwardManufactureFocus||'all',supplyTargets:args.forwardSupplyTargets?args.forwardSupplyTargets.split(','):[],fixedEventFilter:args.forwardFixedEventFilter?args.forwardFixedEventFilter.split(','):null,focusNodes:args.forwardFocusNodes?args.forwardFocusNodes.split(',').map(Number):null,priorityResearch:args.forwardPriorityResearch?args.forwardPriorityResearch.split(','):[],priorityOnly:args.forwardPriorityOnly==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
  const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files,initialFundingEvidence:{raw:initialFundingRule,modeledOpeningFunds:snapshot.funds,reason:'engine-8.7.1-country-funding-initialization-unconfirmed'}});
  fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
  console.log(JSON.stringify(result.summary));process.exit(0);

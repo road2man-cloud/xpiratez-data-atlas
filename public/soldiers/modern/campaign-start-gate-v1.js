@@ -185,6 +185,26 @@ function applyCampaignStartCore(input,step,data){
    return {ok:true,world,assumed:true,notes:[...verdict.pending,'fixed-item-only-event:'+step.event,'fixed-event-funds:'+funds,'fixed-event-points:'+points,'event-scheduler-and-receipt-not-native-certified']};
   }catch(e){return {ok:false,world:input,reason:e.message};}
  }
+ const mixed=data.campaignAssets?.mixedEventRoutes?.[step.event];
+ if(step.type==='eventResearch'&&mixed){
+  try{
+   if(data.campaignAssets.sourceFingerprint!==input.sourceFingerprint||step.research!==mixed.research||step.script!==mixed.script.script||step.assumeOutcome!==true)throw Error('mixed-event-source-or-action-mismatch');
+   if(input.generatedEvents?.[step.event]||input.researched.has(mixed.interruptResearch)||input.disabled.has(mixed.research))throw Error('mixed-event-interrupted-or-repeated');
+   const triggerItems={...input.otherItems};
+   for(const [id,n] of Object.entries(input.items))triggerItems[id]=(triggerItems[id]||0)+n;
+   const verdict=eventScriptVerdict({...mixed.script,eventId:step.event},{...input,triggerItems,triggerFacilities:input.globalFacilities},{mode:'current'});
+   if(verdict.blocked.length||verdict.unknown.length)throw Error('mixed-event-trigger-unresolved:'+ [...verdict.blocked,...verdict.unknown].join('; '));
+   const result=applyOriginWitnessStep(input,step,data);
+   if(!result.ok)return result;
+   if(!result.world.researched.has(mixed.research)||result.world.generatedEvents?.[step.event]!==1)throw Error('mixed-event-research-or-marker-missing');
+   for(const [id,n] of Object.entries(mixed.items)){
+    if(!Number.isSafeInteger(n)||n<1)throw Error('mixed-event-invalid-item-count');
+    result.world.items[id]=(result.world.items[id]||0)+n;
+   }
+   if(Number.isFinite(result.world.score))result.world.score+=mixed.points;
+   return {...result,assumed:true,notes:[...(result.notes||[]),'mixed-event-item-and-research:'+step.event,'mixed-event-interrupt-research:'+mixed.interruptResearch,'event-delivery-and-scheduler-conditional']};
+  }catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  const e=START_EVENT_RULES[step.event];
  if(step.type!=='eventResearch'||!e){
   // Legacy actions still enforce items and research. Ignore monetary cost only
