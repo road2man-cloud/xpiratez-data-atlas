@@ -10,5 +10,5 @@ export function campaignAssetsFromSupply(index){
    row[asset.slice(5)]=g.count;
   }
  }
- return {sourceFingerprint:index.evidence.fingerprint,facilities:Object.fromEntries(index.facilities),researchGrants};
+ return {sourceFingerprint:index.evidence.fingerprint,facilities:Object.fromEntries(index.facilities),items:Object.fromEntries(index.items),researchGrants};
 }
