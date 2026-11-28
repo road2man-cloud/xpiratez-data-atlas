@@ -1,0 +1,873 @@
+{
+  "schema": "ATLAS_CAMPAIGN_RESEARCH_PREFIX_V1",
+  "scope": "RESEARCH_ONLY_NO_ECONOMY_NO_START_SOLDIER_RNG",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFiles": {
+    "vars.rul": "aba93297c5d2aa82da08f6fb2f9d4d2f98c5f435c308fbe0594a36c5b77e168c",
+    "startingBase.rul": "33a40741e6e900e02db03248be793b6f5db91e3e298d654964fa91ba5874dbab",
+    "facilities.rul": "74620b743ede27f27e2863d073ad989cb463c23e3e7fea6e0d5d40ad92b5f5ec",
+    "items.rul": "d1cdc6021ee5ad27033a3471de53ca1807b7bf8f992cd5f38f626eb640d016ec",
+    "research.rul": "99d57c91d7fa3146449680c1c5b1c54eba595b99df8286dfbff4f2d8c51def5e",
+    "HitFX-basic.rul": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+    "Piratez_Armors.rul": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+    "Piratez_BaseNames.rul": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+    "Piratez_Bonuses.rul": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23",
+    "Piratez_Events.rul": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+    "Piratez_Factions.rul": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "Piratez_Globals.rul": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+    "Piratez_Mapscripts.rul": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+    "Piratez_Planet.rul": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "Piratez_Resources.rul": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c",
+    "Piratez_Transformations.rul": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba",
+    "Piratez_Wardrobe.rul": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503",
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+    "Recolr.rul": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+    "Shotguns_Rebalance.rul": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+    "Yankes_Scripts.rul": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+  },
+  "snapshot": {
+    "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 5,
+      "STR_JUNK_PILE": 16,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 100,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1
+    },
+    "facilities": [
+      "STR_ACCESS_LIFT",
+      "STR_HANGAR",
+      "STR_HANGAR",
+      "STR_LIVING_QUARTERS",
+      "STR_BURROW",
+      "STR_CORRIDOR",
+      "STR_CORRIDOR",
+      "STR_WELL",
+      "STR_STILL",
+      "STR_GENERAL_STORES",
+      "STR_JAIL",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_LABORATORY",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_RUBBLE",
+      "STR_RUBBLE",
+      "STR_RUBBLE",
+      "STR_RUBBLE"
+    ],
+    "functions": [
+      "ALKO",
+      "CPU",
+      "LAB",
+      "SHOP",
+      "WELL"
+    ],
+    "baseLayout": [
+      {
+        "id": "STR_ACCESS_LIFT",
+        "x": 2,
+        "y": 2,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_HANGAR",
+        "x": 0,
+        "y": 0,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_HANGAR",
+        "x": 2,
+        "y": 0,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_LIVING_QUARTERS",
+        "x": 2,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_BURROW",
+        "x": 3,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_CORRIDOR",
+        "x": 3,
+        "y": 2,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_CORRIDOR",
+        "x": 2,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_WELL",
+        "x": 3,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_STILL",
+        "x": 0,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_GENERAL_STORES",
+        "x": 3,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_JAIL",
+        "x": 1,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_GENERAL_STORES_ARMORED",
+        "x": 1,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_LABORATORY",
+        "x": 2,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_SMALL_RADAR_SYSTEM",
+        "x": 4,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 0,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 0,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 1,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 4,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      }
+    ],
+    "funds": 0,
+    "difficulty": 1,
+    "researched": [],
+    "disabled": [],
+    "soldiers": [],
+    "startDate": {
+      "second": 0,
+      "minute": 0,
+      "hour": 12,
+      "weekday": 5,
+      "day": 1,
+      "month": 1,
+      "year": 2601
+    }
+  },
+  "initialResearch": [
+    "STR_INSPECT_MACHINERY",
+    "STR_JACKSTOWN_SCOUTING",
+    "STR_RECRUIT_PEASANTS",
+    "STR_WAT_DO"
+  ],
+  "records": [
+    {
+      "goal": "STR_QUESTION_OF_DRILL",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "added": [
+            "STR_QUESTION_OF_DRILL"
+          ],
+          "disabled": []
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_PIRATE_STYLE",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        }
+      ],
+      "attempts": 3,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "added": [
+            "STR_PIRATE_STYLE",
+            "STR_SAILOR_UNIFORM"
+          ],
+          "disabled": []
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_LOOT_DISTRIBUTION",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "added": [
+            "STR_LOOT_DISTRIBUTION"
+          ],
+          "disabled": []
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_EXPLORE_TUNNELS",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPLORE_TUNNELS"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_WELL",
+            "STR_INSPECT_MACHINERY",
+            "STR_GENERAL_STORES_ARMORED"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 2,
+          "action": {
+            "type": "research",
+            "id": "STR_EXPLORE_TUNNELS"
+          },
+          "added": [
+            "STR_EXPLORE_TUNNELS"
+          ],
+          "disabled": []
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_SMALL_RADAR_SYSTEM",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SMALL_RADAR_SYSTEM"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_WELL",
+            "STR_INSPECT_MACHINERY",
+            "STR_GENERAL_STORES_ARMORED"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 2,
+          "action": {
+            "type": "research",
+            "id": "STR_SMALL_RADAR_SYSTEM"
+          },
+          "added": [
+            "STR_SMALL_RADAR_SYSTEM"
+          ],
+          "disabled": []
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_UBER_WHEAT",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "research",
+          "id": "STR_UBER_WHEAT"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "added": [
+            "STR_RECRUIT_PEASANTS",
+            "STR_PEASANTS_ZZZ"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "added": [
+            "STR_UBER_WHEAT"
+          ],
+          "disabled": []
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_CAPTAIN_DUMBASS",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_DUMBASS"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_CAPTAIN_PERSONALITY_TEST",
+            "script": "STR_CAPTAIN_PERSONALITY_TEST",
+            "research": "STR_CAPTAIN_PERSONALITY_TEST",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_CAPTAIN_PERSONALITY_TEST"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_CAPTAIN_DUMBASS"
+          },
+          "added": [
+            "STR_CAPTAIN_DUMBASS",
+            "STR_CAPTAIN_DOUBLEGREEN",
+            "STR_CAPTAIN_DUMBLAZY",
+            "STR_CAPTAIN_GOLD",
+            "STR_CAPTAIN_GREEN",
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+            "STR_CAPTAIN_RED",
+            "STR_CAPTAIN_SOREDUMB",
+            "STR_CAPTAIN_YESGOLD_NOGRAY",
+            "STR_CAPTAIN_YESRED_NOGRAY",
+            "STR_REPROBATE",
+            "STR_WARRIOR_CULTURE_PREQ",
+            "STR_CREATIVITY",
+            "STR_HONOR",
+            "STR_JUSTICE",
+            "STR_SAVVYNESS",
+            "STR_CAPTAIN_PERSONALITY_TEST_FINISHED"
+          ],
+          "disabled": [
+            "STR_CAPTAIN_JACKASS",
+            "STR_CAPTAIN_LAZYASS",
+            "STR_CAPTAIN_SOREASS",
+            "STR_CAPTAIN_PUSSY",
+            "STR_BULK_EXCAVATION",
+            "STR_DUNGEON_MASTER",
+            "STR_HOTEL",
+            "STR_STUDY_ROOM",
+            "STR_JAIL_DOUBLE",
+            "STR_GENERAL_STORES_XLARGE",
+            "STR_CAPSULE_QUARTERS",
+            "STR_TACTICAL_CENTER",
+            "STR_NONPROFIT_LAB"
+          ]
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_CAPTAIN_JACKASS",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_JACKASS"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_CAPTAIN_PERSONALITY_TEST",
+            "script": "STR_CAPTAIN_PERSONALITY_TEST",
+            "research": "STR_CAPTAIN_PERSONALITY_TEST",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_CAPTAIN_PERSONALITY_TEST"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_CAPTAIN_JACKASS"
+          },
+          "added": [
+            "STR_CAPTAIN_JACKASS",
+            "STR_CAPTAIN_DOUBLEGRAY",
+            "STR_CAPTAIN_GOLD",
+            "STR_CAPTAIN_GRAY",
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_CAPTAIN_JACKLAZY",
+            "STR_CAPTAIN_JACKSORE",
+            "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+            "STR_CAPTAIN_RED",
+            "STR_CAPTAIN_YESGOLD_NOGREEN",
+            "STR_CAPTAIN_YESRED_NOGREEN",
+            "STR_REPROBATE",
+            "STR_WARRIOR_CULTURE_PREQ",
+            "STR_CREATIVITY",
+            "STR_HONOR",
+            "STR_JUSTICE",
+            "STR_SAVVYNESS",
+            "STR_CAPTAIN_PERSONALITY_TEST_FINISHED"
+          ],
+          "disabled": [
+            "STR_CAPTAIN_DUMBASS",
+            "STR_CAPTAIN_LAZYASS",
+            "STR_CAPTAIN_SOREASS",
+            "STR_CAPTAIN_PUSSY",
+            "STR_SCAMMING",
+            "STR_BULK_EXCAVATION",
+            "STR_HOTEL",
+            "STR_JAIL_DOUBLE",
+            "STR_GENERAL_STORES_XLARGE",
+            "STR_CAPSULE_QUARTERS",
+            "STR_TACTICAL_CENTER",
+            "STR_NONPROFIT_LAB"
+          ]
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_CAPTAIN_LAZYASS",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_LAZYASS"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_CAPTAIN_PERSONALITY_TEST",
+            "script": "STR_CAPTAIN_PERSONALITY_TEST",
+            "research": "STR_CAPTAIN_PERSONALITY_TEST",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_CAPTAIN_PERSONALITY_TEST"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_CAPTAIN_LAZYASS"
+          },
+          "added": [
+            "STR_CAPTAIN_LAZYASS",
+            "STR_CAPTAIN_DOUBLEGOLD",
+            "STR_CAPTAIN_DUMBLAZY",
+            "STR_CAPTAIN_GOLD",
+            "STR_CAPTAIN_GRAY",
+            "STR_CAPTAIN_GREEN",
+            "STR_CAPTAIN_JACKLAZY",
+            "STR_CAPTAIN_LAZYSORE",
+            "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+            "STR_CAPTAIN_YESGRAY_NORED",
+            "STR_CAPTAIN_YESGREEN_NORED",
+            "STR_REPROBATE",
+            "STR_CREATIVITY",
+            "STR_HONOR",
+            "STR_JUSTICE",
+            "STR_SAVVYNESS",
+            "STR_CAPTAIN_PERSONALITY_TEST_FINISHED"
+          ],
+          "disabled": [
+            "STR_CAPTAIN_JACKASS",
+            "STR_CAPTAIN_DUMBASS",
+            "STR_CAPTAIN_SOREASS",
+            "STR_CAPTAIN_PUSSY",
+            "STR_SCAMMING",
+            "STR_BULK_EXCAVATION",
+            "STR_DUNGEON_MASTER",
+            "STR_JAIL_DOUBLE",
+            "STR_GENERAL_STORES_XLARGE",
+            "STR_CAPSULE_QUARTERS",
+            "STR_TACTICAL_CENTER"
+          ]
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_CAPTAIN_PUSSY",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_CAPTAIN_PERSONALITY_TEST",
+            "script": "STR_CAPTAIN_PERSONALITY_TEST",
+            "research": "STR_CAPTAIN_PERSONALITY_TEST",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_CAPTAIN_PERSONALITY_TEST"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_CAPTAIN_PUSSY"
+          },
+          "added": [
+            "STR_CAPTAIN_PUSSY",
+            "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+            "STR_NONPROFIT_LAB_PREQ"
+          ],
+          "disabled": [
+            "STR_CAPTAIN_JACKASS",
+            "STR_CAPTAIN_DUMBASS",
+            "STR_CAPTAIN_LAZYASS",
+            "STR_CAPTAIN_SOREASS",
+            "STR_BULK_EXCAVATION",
+            "STR_DUNGEON_MASTER",
+            "STR_TACTICAL_CENTER",
+            "STR_HOTEL"
+          ]
+        }
+      ],
+      "gameCertified": false
+    },
+    {
+      "goal": "STR_CAPTAIN_SOREASS",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_SOREASS"
+        }
+      ],
+      "attempts": 2,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_CAPTAIN_PERSONALITY_TEST",
+            "script": "STR_CAPTAIN_PERSONALITY_TEST",
+            "research": "STR_CAPTAIN_PERSONALITY_TEST",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_CAPTAIN_PERSONALITY_TEST"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "research",
+            "id": "STR_CAPTAIN_SOREASS"
+          },
+          "added": [
+            "STR_CAPTAIN_SOREASS",
+            "STR_CAPTAIN_DOUBLERED",
+            "STR_CAPTAIN_GRAY",
+            "STR_CAPTAIN_GREEN",
+            "STR_CAPTAIN_JACKSORE",
+            "STR_CAPTAIN_LAZYSORE",
+            "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+            "STR_CAPTAIN_RED",
+            "STR_CAPTAIN_SOREDUMB",
+            "STR_CAPTAIN_YESGRAY_NOGOLD",
+            "STR_CAPTAIN_YESGREEN_NOGOLD",
+            "STR_REPROBATE",
+            "STR_CREATIVITY",
+            "STR_HONOR",
+            "STR_JUSTICE",
+            "STR_SAVVYNESS",
+            "STR_CAPTAIN_PERSONALITY_TEST_FINISHED"
+          ],
+          "disabled": [
+            "STR_CAPTAIN_JACKASS",
+            "STR_CAPTAIN_DUMBASS",
+            "STR_CAPTAIN_LAZYASS",
+            "STR_CAPTAIN_PUSSY",
+            "STR_SCAMMING",
+            "STR_DUNGEON_MASTER",
+            "STR_HOTEL",
+            "STR_JAIL_DOUBLE",
+            "STR_GENERAL_STORES_XLARGE",
+            "STR_CAPSULE_QUARTERS",
+            "STR_NONPROFIT_LAB"
+          ]
+        }
+      ],
+      "gameCertified": false
+    }
+  ],
+  "summary": {
+    "targets": 11,
+    "produced": 11
+  }
+}
