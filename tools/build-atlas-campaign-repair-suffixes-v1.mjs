@@ -15,10 +15,12 @@ import {decodeOriginReport} from './origin-report-codec.mjs';
 const args=Object.fromEntries(process.argv.slice(2).filter(s=>s.includes('=')).map(s=>s.replace(/^--/,'').split(/=(.*)/s).slice(0,2)));
 const repo=args.repo||process.cwd(),game=args.game||'C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez';
 const require=createRequire(path.join(repo,'package.json')),yaml=require('js-yaml');
-const prefix=JSON.parse(fs.readFileSync(args.prefix||'public/data/campaign-start-prefix-repair-v2.json'));
-const worklist=JSON.parse(gunzipSync(fs.readFileSync(args.queue||'public/data/campaign-start-repair-worklist-v2.json.gz')));
+const forwardMode=Boolean(args.forwardOut);
+if(forwardMode&&!args.ref)throw Error('forward-mode-requires-explicit-source-ref');
+const prefix=forwardMode?null:JSON.parse(fs.readFileSync(args.prefix||'public/data/campaign-start-prefix-repair-v2.json'));
+const worklist=forwardMode?null:JSON.parse(gunzipSync(fs.readFileSync(args.queue||'public/data/campaign-start-repair-worklist-v2.json.gz')));
 const ref=execFileSync('git',['-C',repo,'rev-parse',args.ref||worklist.sourceCommit],{encoding:'utf8'}).trim();
-if(ref!==worklist.sourceCommit||ref!==prefix.sourceCommit)throw Error('pinned-ledger-commit-mismatch');
+if(!forwardMode&&(ref!==worklist.sourceCommit||ref!==prefix.sourceCommit))throw Error('pinned-ledger-commit-mismatch');
 const bytes=p=>execFileSync('git',['-C',repo,'show',ref+':'+p],{maxBuffer:256*1024*1024});
 const read=p=>JSON.parse(bytes(p));const gz=f=>JSON.parse(gunzipSync(bytes('public/data/'+f+'.json.gz')));
 const d=read('public/data/soldiers-modern-index.json'),catalog=read('public/data/soldier-source-catalog.json');
@@ -144,11 +146,13 @@ const snapshot={sourceFingerprint:d.meta.source.metadataSha256,items:base.items,
 
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const meta=d.meta.source.metadataSha256;
-if(prefix.sourceMetadataSha256!==meta||worklist.sourceMetadataSha256!==meta)throw Error('queue/source mismatch');
+if(!forwardMode&&(prefix.sourceMetadataSha256!==meta||worklist.sourceMetadataSha256!==meta))throw Error('queue/source mismatch');
 // Shared source bootstrap only: no legacy action is read in forward mode.
 if(args.forwardOut){
  const {buildCampaignForwardTree}=await import('./build-atlas-campaign-forward-tree-v1.mjs');
- const result=buildCampaignForwardTree(d,snapshot,{maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const resume=args.forwardResume?JSON.parse(fs.readFileSync(args.forwardResume)):null;
+ if(resume&&(resume.sourceCommit!==ref||JSON.stringify(resume.sourceFiles)!==JSON.stringify(files)))throw Error('forward-resume-source-file-mismatch');
+ const result=buildCampaignForwardTree(d,snapshot,{resume,maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
  const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files});
  fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
  console.log(JSON.stringify(result.summary));process.exit(0);
