@@ -1,0 +1,60 @@
+name: XPZ3D R138K native S2 static N5 packet
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r138k-hw-n5-native-20261128/source/**'
+      - '.github/workflows/xpz3d-r138k-hw-n5.yml'
+permissions:
+  contents: write
+jobs:
+  packet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36hw-n5-skin-seams-20261128/output/R36HW_N5_SEAM_LINK.glb
+            experimental/xpz3d/f11/r138k-hw-n5-native-20261128/
+            .github/workflows/xpz3d-r138k-hw-n5.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Export native N5 S2 XPZC packet
+        run: |
+          node --check experimental/xpz3d/f11/r138k-hw-n5-native-20261128/source/build_native_packet.cjs
+          node experimental/xpz3d/f11/r138k-hw-n5-native-20261128/source/build_native_packet.cjs
+      - name: Check packet
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const b=fs.readFileSync('experimental/xpz3d/f11/r138k-hw-n5-native-20261128/output/R36HW_N5_STATIC_XPZC.bin');
+          const r=JSON.parse(fs.readFileSync('experimental/xpz3d/f11/r138k-hw-n5-native-20261128/reports/R36HW_N5_STATIC_XPZC.json','utf8'));
+          if(b.toString('ascii',0,4)!=='XPZC'||b.readUInt32LE(8)!==10||b.readUInt32LE(12)!==2080||r.triangles!==2080||r.modelOriginalJoints!==63)throw Error('Native packet failure');
+          console.log(JSON.stringify({bytes:b.length,triangles:r.triangles,groups:r.parts,sha256:r.packetSha256}));
+          NODE
+      - name: Publish native S2 packet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r138k-hw-n5-native-20261128/output/R36HW_N5_STATIC_XPZC.bin experimental/xpz3d/f11/r138k-hw-n5-native-20261128/reports/R36HW_N5_STATIC_XPZC.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): publish N5 2080-triangle S2 geometry packet"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N5-native-S2
+          path: |
+            experimental/xpz3d/f11/r138k-hw-n5-native-20261128/output/R36HW_N5_STATIC_XPZC.bin
+            experimental/xpz3d/f11/r138k-hw-n5-native-20261128/reports/R36HW_N5_STATIC_XPZC.json
