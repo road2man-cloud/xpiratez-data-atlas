@@ -232,6 +232,10 @@ async function openDetail(id,bucket){
 
   html+='<details><summary>원본 Armor 룰 · 별도 저장</summary><div class="raw-load"><button id="loadRawRule" type="button">원본 룰 불러오기</button><div id="rawRuleBody" class="muted">화면/음향 리소스와 분리된 핵심 룰을 필요할 때만 불러옵니다.</div></div></details>';
   $("#detailBody").innerHTML=html;
+  const forwardHost=document.createElement('div');$("#detailBody").append(forwardHost);
+  const forwardSpecs=d.storeItemId?[{kind:'item',id:d.storeItemId,label:'방어구 보관 아이템'}]:[];
+  if(!forwardSpecs.length)forwardHost.textContent='2.1 정방향 획득 근거: 대응 보관 아이템 ID 없음. 장착·변환 경로 미확인.';
+  else import('../campaign-forward-evidence-v1.js').then(m=>{if(forwardHost.isConnected)m.mountForwardAssetEvidence(forwardHost,forwardSpecs,{legacy:true});}).catch(e=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 근거 로드 실패: '+e.message;});
   [["detailScientists","scientists"],["detailEngineers","engineers"]].forEach(([detailId,toolbarId])=>{
     const input=$("#"+detailId);
     if(!input)return;
