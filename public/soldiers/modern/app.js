@@ -1293,16 +1293,31 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRou
   }
   showBirthTech(profile);
 }
+let atlasForwardEvidencePromise;
+function mountAtlasForwardEvidence(host,ids,extra=''){
+  const section=document.createElement('section');
+  section.className='scope-note';
+  section.textContent='정방향 연구 자료 불러오는 중…';
+  host.append(section);
+  atlasForwardEvidencePromise??=import('../../campaign-forward-evidence-v1.js').then(m=>m.loadForwardEvidence().then(e=>({m,e})));
+  atlasForwardEvidencePromise.then(({m,e})=>{
+    if(!section.isConnected)return;
+    m.renderForwardEvidence(section,e,ids);
+    if(extra){const p=document.createElement('p');p.textContent=extra;section.append(p);}
+  }).catch(err=>{if(section.isConnected)section.textContent='정방향 자료 오류: '+err.message;});
+}
 function showResearch(id){
   const dialog=$('#researchDialog');$('#researchDetail').innerHTML='<p class="eyebrow">X-PIRATEZ 2.1 연구 원본</p><h2>'+esc(name(id))+'</h2><p class="id">'+esc(id)+'</p>'+
     '<button type="button" class="research-trace-launch" data-trace-research-root="'+esc(id)+'">게임 시작부터 이 연구의 획득 경로 보기</button>'+
     renderResearchRelations(id,DATA.researchRules,CATALOG.names);
+  mountAtlasForwardEvidence($('#researchDetail'),[id]);
   if(!dialog.open)dialog.showModal();
 }
 function showTraining(id){
   const t=DATA.transformations.find(t=>t.id===id);if(!t)return;
   $('#researchDetail').innerHTML='<p class="eyebrow">병종 DB · 훈련 원본 근거</p><h2>'+esc(t.koName)+'</h2><p>'+esc(id)+'</p><h3>무조건 필요</h3><p>'+t.requires.map(node).join(' ')+'</p><h3>필수 이전 훈련</h3><p>'+t.requiredPreviousTransformations.map(esc).join(' · ')+'</p><h3>금지 이전 훈련</h3><p>'+t.forbiddenPreviousTransformations.map(esc).join(' · ')+'</p><p>이 정보는 병종 경로의 근거입니다. 별도 훈련 조합기나 저장 파일 입력 화면은 없습니다.</p><h3>직접 변화 / 영구 특성</h3><div class="stat-grid">'+DISPLAY_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(t.flatOverallStatChange?.[k])+' / '+fmt(t.traitStats?.[k])+'</strong></div>').join('')+'</div>';
-  $('#researchDialog').showModal();
+  mountAtlasForwardEvidence($('#researchDetail'),t.requires,'연구 공동 도달만 판정합니다. 병종·이전 훈련·능력치·재료 등 시술 조건은 별도입니다.');
+  if(!$('#researchDialog').open)$('#researchDialog').showModal();
 }
 async function init(){try{
   const json=async path=>{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(path+' HTTP '+r.status);return r.json()};
