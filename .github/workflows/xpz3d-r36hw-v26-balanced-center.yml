@@ -28,7 +28,7 @@ jobs:
           node experimental/xpz3d/f11/r36hw-athletic-v26-balanced-center-20261129/source/build.cjs \
             experimental/xpz3d/f11/r36hw-athletic-v14-shoulder-20261129/output/R36HW_F11_ATHLETIC_SUIT_V14_SHOULDER.glb \
             experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/output/R36HW_N20_V10_BODY_N19_CENTER.glb \
-            experimental/xpz3d/f11/r36hw-athletic-v26-balanced-center-20261129/output/R36HW_F11_ATHLETIC_SUIT_V26_SMOOTH_CENTER.glb
+            experimental/xpz3d/f11/r36hw-athletic-v26-balanced-center-20261129/output/R36HW_F11_ATHLETIC_SUIT_V26_BALANCED_CENTER.glb
       - uses: actions/upload-artifact@v4
         with:
           name: r36hw-v26-balanced-center
