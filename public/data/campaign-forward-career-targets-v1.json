@@ -36,6 +36,12 @@
       "states": 1400,
       "edges": 2599,
       "sha256": "c729fde1a4bab10ed79b7983a21089665bf5a69db6c6609d89bd828378a910b2"
+    },
+    {
+      "file": "campaign-forward-tree-v10-firearms-d24.json",
+      "states": 1409,
+      "edges": 2609,
+      "sha256": "070266b42f42579995c4aa83a018c42b1126504c2245cea224093da960f5b8f3"
     }
   ],
   "summary": {
@@ -49,14 +55,14 @@
     },
     "trainings": {
       "total": 83,
-      "jointResearch": 1,
+      "jointResearch": 2,
       "noExplicitResearch": 0,
-      "notObservedJointly": 82,
+      "notObservedJointly": 81,
       "manufactureActions": 0,
       "careerCertified": 0
     },
-    "missingResearchTopics": 140,
-    "ordinaryExpansionTopics": 139,
+    "missingResearchTopics": 139,
+    "ordinaryExpansionTopics": 138,
     "specialGateTopics": 1,
     "gameCertified": 0
   },
@@ -2249,12 +2255,111 @@
       ],
       "output": null,
       "kind": "training",
-      "researchStatus": "not-observed-jointly",
-      "researchWitness": null,
+      "researchStatus": "joint-model-reached",
+      "researchWitness": {
+        "file": "campaign-forward-tree-v10-firearms-d24.json",
+        "state": 1408,
+        "stateHash": "1a0afde0b91a0f5a061da0af42277217764325b5f5cc46888c0f443d8d59b9f0",
+        "scenario": {
+          "difficulty": 1,
+          "regions": [
+            "STR_SIBERIA"
+          ],
+          "countries": null
+        },
+        "conditional": true,
+        "steps": [
+          {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_THE_PHARMACIST"
+          },
+          {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          {
+            "type": "research",
+            "id": "STR_GUNS_N_AMMO"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_GUNS_N_AMMO",
+            "research": "STR_RIFLE_AK",
+            "assumeOutcome": true
+          },
+          {
+            "type": "research",
+            "id": "STR_PISTOLS_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_RIFLES_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          {
+            "type": "research",
+            "id": "STR_CONTACT_GENERAL_SUPPLIES"
+          },
+          {
+            "type": "research",
+            "id": "STR_SMGS_SUMMARY"
+          },
+          {
+            "type": "research",
+            "id": "STR_BASIC_FIREARMS_TRAINING"
+          },
+          {
+            "type": "freeResearch",
+            "source": "STR_BASIC_FIREARMS_TRAINING",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          }
+        ],
+        "gameCertified": false
+      },
       "topicStatus": [
         {
           "id": "STR_BASIC_FIREARMS_TRAINING",
-          "observed": false
+          "observed": true
         }
       ],
       "manufactureWitness": null,
@@ -4560,13 +4665,6 @@
       "profiles": [],
       "trainings": [
         "STR_ART_OF_TROUNCING"
-      ]
-    },
-    {
-      "id": "STR_BASIC_FIREARMS_TRAINING",
-      "profiles": [],
-      "trainings": [
-        "STR_BASIC_FIREARMS_TRAINING"
       ]
     },
     {
