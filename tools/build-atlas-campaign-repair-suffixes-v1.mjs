@@ -145,6 +145,14 @@ const snapshot={sourceFingerprint:d.meta.source.metadataSha256,items:base.items,
 const hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const meta=d.meta.source.metadataSha256;
 if(prefix.sourceMetadataSha256!==meta||worklist.sourceMetadataSha256!==meta)throw Error('queue/source mismatch');
+// Shared source bootstrap only: no legacy action is read in forward mode.
+if(args.forwardOut){
+ const {buildCampaignForwardTree}=await import('./build-atlas-campaign-forward-tree-v1.mjs');
+ const result=buildCampaignForwardTree(d,snapshot,{maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files});
+ fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
+ console.log(JSON.stringify(result.summary));process.exit(0);
+}
 const report=decodeOriginReport(bytes('public/data/soldier-origin-candidates.json'));
 if(report.sourceVersion!=='v.o2'||d.meta.source.rules.some(r=>!report.sourceHashes?.some(s=>s.file===r.file&&s.sha256===r.sha256)))throw Error('birth/source mismatch');
 d.originRows=report.records.map(r=>r.sourceProof).filter(Boolean);
