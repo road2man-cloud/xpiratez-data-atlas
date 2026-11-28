@@ -171,14 +171,26 @@ const faceNormal=face=>{const [a,b,c]=face.map(i=>positions[i]);return cross(sub
 let minArea=Infinity;
 for(const f of triangles){const area=len(faceNormal(f))*.5;minArea=Math.min(minArea,area);if(area<1e-10)throw Error('N14 created a zero-area triangle');}
 const originalChangedFaces=[...zoneForFace.keys()];
-const rotatedNormalAgreement=originalChangedFaces.map(i=>{
- const old=beforeFaces[i],newFace=triangles[i];
- const A=old.map(k=>k===targetHub?origCenter:oldPositions[k]);
- const origN=cross(sub(A[1],A[0]),sub(A[2],A[0])),newN=faceNormal(newFace);
- return dot(unit(origN),unit(newN));
-});
-const inverseFaces=rotatedNormalAgreement.filter(q=>q<0).length;
-if(inverseFaces>0)throw Error('Local center face(s) inverted '+inverseFaces);
+function invertedCount(){
+ return originalChangedFaces.reduce((n,i)=>{
+  const old=beforeFaces[i],newFace=triangles[i];
+  const A=old.map(k=>k===targetHub?origCenter:oldPositions[k]);
+  const oldN=cross(sub(A[1],A[0]),sub(A[2],A[0])),newN=faceNormal(newFace);
+  return n+(dot(unit(oldN),unit(newN))<=.02?1:0);
+ },0);
+}
+// Keep the center patch connected, but adapt all three offsets if this
+// particular N13 surface would invert or nearly collapse an old face.
+let displacementScale=1,initialInversions=invertedCount(),inverseFaces=initialInversions;
+for(let attempt=0;inverseFaces>0&&attempt<14;attempt++){
+ displacementScale*=.5;
+ for(let zone=0;zone<3;zone++){
+  const q=origCenter.map((x,j)=>x+offsets[zone][j]*displacementScale);
+  positions[centers[zone]]=q;
+ }
+ inverseFaces=invertedCount();
+}
+if(inverseFaces>0)throw Error('No non-inverting sewn patch at 14 scaled positions: '+inverseFaces);
 const editedVertices=new Set([...ring,...centers]);
 const sums=positions.map(()=>[0,0,0]);
 for(const f of triangles){const n=faceNormal(f);for(const i of f)for(let k=0;k<3;k++)sums[i][k]+=n[k];}
@@ -241,7 +253,7 @@ const report={
  relocatedExistingVertices:1,appendedNewVertices:2,
  changedOriginalVertexMovementMeters:len(sub(positions[targetHub],origCenter)),
  originalBoundaryEdgeCount:oldBoundary.length,boundaryEdgesPreserved:true,
- manifoldInternalEdges:true,faceOrientationFlips:inverseFaces,
+ manifoldInternalEdges:true,faceOrientationFlips:inverseFaces,initialInversions,displacementScale,
  skinJoints:63,sourceFaceHairUnmodified:true,
  originalBINbytes:origBin.length,newBINbytes:finalBin.length,
  minimumTriangleAreaSqMeters:minArea,
