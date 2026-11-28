@@ -8,6 +8,9 @@ import {readTrainingLedger,hashLedger,assertAppendOnly} from './overcap-training
 const read=p=>JSON.parse(p.endsWith('.gz')?gunzipSync(fs.readFileSync(p)):fs.readFileSync(p));
 const arg=(k,d)=>process.argv.find(a=>a.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const int=(k,d,lo,hi)=>{const n=Number(arg(k,d));assert(Number.isSafeInteger(n)&&n>=lo&&n<=hi,k);return n;};
+// Retained solely for reproducibility of the quarantined conditional ledger.
+// Do not silently append legacy planner paths after the campaign gate change.
+assert.equal(arg('legacy-conditional-only','0'),'1','Legacy conditional production suspended. Use build-overcap-forward-career-intake.mjs; --legacy-conditional-only=1 is for explicit archival reproduction only.');
 const path=arg('queue','');assert(path,'--queue required');
 const q=read(path);assert.equal(q.schema,'ATLAS_OVERCAP_CONTINUATION_QUEUE_V1');
 assert.equal(q.summary.finalAdmission,0);
