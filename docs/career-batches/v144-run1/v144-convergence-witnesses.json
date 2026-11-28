@@ -1,0 +1,832 @@
+{
+  "version": 144,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "5674ad288ea7a2f294f1ae74dc007093674e331d3d7e94d40d8c0c21f2f3b764",
+  "convergence": {
+    "policy": "branch-local-occult-prerequisites-v144",
+    "lanes": [
+      {
+        "lane": "gold-occult",
+        "start": "944b021b8b4f394384555e85fa66ec36cedd0881ea57026ae5c7cf79d968d1fa",
+        "end": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+        "initialVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 176
+        },
+        "finalVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 176
+        },
+        "initialSum": 1277,
+        "finalSum": 1277,
+        "accepted": 26,
+        "completed": [
+          "STR_WASTELAND_PRIESTESS",
+          "STR_WASTELAND_SORCERESS",
+          "STR_GODS_E2",
+          "STR_SHADOWS",
+          "STR_CLOAKING_DEVICE",
+          "STR_SHADOWTECH",
+          "STR_SHADOW_CHASING",
+          "STR_BIKES",
+          "STR_CHRONICLES_001",
+          "STR_COMMUNICATIONS",
+          "STR_MOST_COMMON_POWER",
+          "STR_WENCH_OUTFIT",
+          "STR_PERSUASION",
+          "STR_GLAMOUR_RECRUITMENT"
+        ],
+        "missing": [
+          "STR_SIVALINGA"
+        ],
+        "stock": {
+          "STR_SIVALINGA": 0,
+          "STR_MUTANT_BLESSINGS": 5,
+          "STR_GNOME": 1,
+          "STR_GLAMOUR": 0,
+          "STR_ESOTERICA": 1
+        },
+        "occultAwards": [
+          {
+            "event": "STR_BLESSINGS",
+            "script": "STR_BLESSINGS",
+            "month": 26,
+            "research": "STR_WASTELAND_PRIESTESS",
+            "eligibleResearch": [
+              "STR_WASTELAND_PRIESTESS"
+            ],
+            "reward": {
+              "STR_MUTANT_BLESSINGS": 1
+            },
+            "executionOdds": 23,
+            "interruptResearch": "STR_WASTELAND_PRIESTESS"
+          },
+          {
+            "event": "STR_WASTELAND_SORCERESS",
+            "script": "STR_WASTELAND_SORCERESS_ACCEL",
+            "month": 27,
+            "research": "STR_WASTELAND_SORCERESS",
+            "eligibleResearch": [
+              "STR_WASTELAND_SORCERESS"
+            ],
+            "reward": {
+              "STR_QUARTERSTAFF": 1,
+              "STR_MONEY_PURSE": 1,
+              "STR_ESOTERICA": 1,
+              "STR_MEDALLION": 1,
+              "STR_MAGE_ROBE": 1,
+              "STR_LINGERIE": 1
+            },
+            "executionOdds": 33,
+            "interruptResearch": "STR_WASTELAND_SORCERESS"
+          },
+          {
+            "event": "STR_GREEN_PRAYERS",
+            "script": "STR_CAPTAIN_GREEN_EVENTS_1",
+            "month": 28,
+            "research": "STR_GODS_E2",
+            "eligibleResearch": [
+              "STR_GODS_E2",
+              "STR_MYTH_003",
+              "STR_MYTH_011",
+              "STR_PINUP_131"
+            ],
+            "reward": {
+              "STR_MUTANT_BLESSINGS": 3
+            },
+            "executionOdds": 18,
+            "interruptResearch": null
+          }
+        ],
+        "history": [
+          [
+            "STR_NEPOTISM",
+            1
+          ],
+          [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            1
+          ],
+          [
+            "STR_BASIC_FIREARMS_TRAINING",
+            1
+          ],
+          [
+            "STR_BREAD_AND_FISHES_TRAINING",
+            1
+          ],
+          [
+            "STR_OFFICER_TRAINING",
+            1
+          ],
+          [
+            "STR_PERSONAL_ATTENTION",
+            1
+          ]
+        ],
+        "gameCertified": false,
+        "registered": false
+      },
+      {
+        "lane": "reject-power-priestess",
+        "start": "e442ab0c0ec83d230171a7b33b00ba690ddd0cfd7c6a9ea4fefa9ee3f965b76b",
+        "end": "4e5d6dd8fb2073bfd707aa9263d894ff5f8780f0245dd14a368303e6087a9146",
+        "initialVector": null,
+        "finalVector": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "initialSum": null,
+        "finalSum": 1130,
+        "accepted": 15,
+        "completed": [
+          "STR_REJECT_THE_POWER",
+          "STR_WASTELAND_PRIESTESS",
+          "STR_RECRUIT_PEASANTS",
+          "STR_CAPTAIN_PRIEST",
+          "STR_HERO"
+        ],
+        "missing": [],
+        "stock": {
+          "STR_SIVALINGA": 0,
+          "STR_MUTANT_BLESSINGS": 1,
+          "STR_GNOME": 0,
+          "STR_GLAMOUR": 0,
+          "STR_ESOTERICA": 0
+        },
+        "occultAwards": [
+          {
+            "event": "STR_BLESSINGS",
+            "script": "STR_BLESSINGS",
+            "month": 1,
+            "research": "STR_WASTELAND_PRIESTESS",
+            "eligibleResearch": [
+              "STR_WASTELAND_PRIESTESS"
+            ],
+            "reward": {
+              "STR_MUTANT_BLESSINGS": 1
+            },
+            "executionOdds": 23,
+            "interruptResearch": "STR_WASTELAND_PRIESTESS"
+          }
+        ],
+        "history": [],
+        "gameCertified": false,
+        "registered": false
+      }
+    ],
+    "traces": [
+      {
+        "lane": "gold-occult",
+        "from": "944b021b8b4f394384555e85fa66ec36cedd0881ea57026ae5c7cf79d968d1fa",
+        "to": "0cccdaa259aeeeadfbedcdd69ff9306493cb59e12dcc524decf570847a3b209d",
+        "action": {
+          "type": "conditionalOccultAward",
+          "event": "STR_BLESSINGS",
+          "script": "STR_BLESSINGS",
+          "research": "STR_WASTELAND_PRIESTESS",
+          "month": 26,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "assumeResearchSelection": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": [
+          "STR_WASTELAND_PRIESTESS"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "0cccdaa259aeeeadfbedcdd69ff9306493cb59e12dcc524decf570847a3b209d",
+        "to": "a7e5f493ab6a94243d07323a38ab0795c7974b1e7c5c770a02b43690a75cbfa7",
+        "action": {
+          "type": "conditionalOccultAward",
+          "event": "STR_WASTELAND_SORCERESS",
+          "script": "STR_WASTELAND_SORCERESS_ACCEL",
+          "research": "STR_WASTELAND_SORCERESS",
+          "month": 27,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "assumeResearchSelection": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": [
+          "STR_WASTELAND_SORCERESS"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "a7e5f493ab6a94243d07323a38ab0795c7974b1e7c5c770a02b43690a75cbfa7",
+        "to": "de48f177379f4d6bcb4b0b73f2832b8281051c2b404d7b6af60d66a15818e6b8",
+        "action": {
+          "type": "conditionalOccultAward",
+          "event": "STR_GREEN_PRAYERS",
+          "script": "STR_CAPTAIN_GREEN_EVENTS_1",
+          "research": "STR_GODS_E2",
+          "month": 28,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "assumeResearchSelection": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": [
+          "STR_GODS_E2"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "de48f177379f4d6bcb4b0b73f2832b8281051c2b404d7b6af60d66a15818e6b8",
+        "to": "9a21d21b9f6e7e216b8bb01c41b1a9f553ab0772ece106f86897eb8da733996d",
+        "action": {
+          "type": "repeatResearch",
+          "id": "STR_GNOME",
+          "assumeAvailability": true
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "9a21d21b9f6e7e216b8bb01c41b1a9f553ab0772ece106f86897eb8da733996d",
+        "to": "5bb9ad862d7946f832928185aa4a196241f6c9d7212072c6a85c6d2a129c7bf5",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_SHADOWS",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_SHADOWS"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "5bb9ad862d7946f832928185aa4a196241f6c9d7212072c6a85c6d2a129c7bf5",
+        "to": "62bd4b2ffce4703aab04091808d9ea9d520194dcb55e02b4cc0bf6b34fc05ced",
+        "action": {
+          "type": "research",
+          "id": "STR_CLOAKING_DEVICE"
+        },
+        "added": [
+          "STR_CLOAKING_DEVICE"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "62bd4b2ffce4703aab04091808d9ea9d520194dcb55e02b4cc0bf6b34fc05ced",
+        "to": "285bd78addcb24b4b765ffc16f24a02437ee28c0090b9b828858e514351abe58",
+        "action": {
+          "type": "repeatResearch",
+          "id": "STR_GNOME",
+          "assumeAvailability": true
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "285bd78addcb24b4b765ffc16f24a02437ee28c0090b9b828858e514351abe58",
+        "to": "56ea6959a7f6c324a1db8983ff4970557ca68b12f60bdc2ef4105ae74194bd8f",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_SHADOWTECH",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_SHADOWTECH"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "56ea6959a7f6c324a1db8983ff4970557ca68b12f60bdc2ef4105ae74194bd8f",
+        "to": "e81e6ad6755ea86e404a8427a4bd39d3990ba48a9f393d88d5ba515c9d62d1ce",
+        "action": {
+          "type": "research",
+          "id": "STR_SHADOW_CHASING"
+        },
+        "added": [
+          "STR_SHADOW_CHASING",
+          "STR_SHADOW_CHASING_DEP"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "e81e6ad6755ea86e404a8427a4bd39d3990ba48a9f393d88d5ba515c9d62d1ce",
+        "to": "ebcd4441b83078845a1aac897c052cf7bb09bc28cfeb8bb01aa8b5d3d426ece6",
+        "action": {
+          "type": "research",
+          "id": "STR_BIKES"
+        },
+        "added": [
+          "STR_BIKES"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "ebcd4441b83078845a1aac897c052cf7bb09bc28cfeb8bb01aa8b5d3d426ece6",
+        "to": "4a2d6fea377094ffe51557f33942a3b2204426bd76bf73ccd0da4759f40c8378",
+        "action": {
+          "type": "research",
+          "id": "STR_CHRONICLES_001"
+        },
+        "added": [
+          "STR_CHRONICLES_001"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "4a2d6fea377094ffe51557f33942a3b2204426bd76bf73ccd0da4759f40c8378",
+        "to": "a28f945a805d959675c5ee9584f2fa2a2eae08b52f72cc73f073f35aa6e1eae8",
+        "action": {
+          "type": "research",
+          "id": "STR_SMALL_RADAR_SYSTEM"
+        },
+        "added": [
+          "STR_SMALL_RADAR_SYSTEM"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "a28f945a805d959675c5ee9584f2fa2a2eae08b52f72cc73f073f35aa6e1eae8",
+        "to": "c76042e156c49990c76b9f2284aa46d993cf945d96c7f9eafcd17335c3786143",
+        "action": {
+          "type": "research",
+          "id": "STR_COMMUNICATIONS"
+        },
+        "added": [
+          "STR_COMMUNICATIONS"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "c76042e156c49990c76b9f2284aa46d993cf945d96c7f9eafcd17335c3786143",
+        "to": "0980d632e7ae00c2aa224acac84720bf65e3071925bbea8d44b239b269f707e4",
+        "action": {
+          "type": "research",
+          "id": "STR_HUMANS"
+        },
+        "added": [
+          "STR_HUMANS"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "0980d632e7ae00c2aa224acac84720bf65e3071925bbea8d44b239b269f707e4",
+        "to": "84605d6e98e1853c4f6fd5238b196de0902345dd5f11a624b88ac98ebb179b94",
+        "action": {
+          "type": "research",
+          "id": "STR_RIBBON"
+        },
+        "added": [
+          "STR_RIBBON"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "84605d6e98e1853c4f6fd5238b196de0902345dd5f11a624b88ac98ebb179b94",
+        "to": "38825944228828d7753da8a406d60ddd94d555c6aa7dfe91340a4e14f6cc3826",
+        "action": {
+          "type": "research",
+          "id": "STR_OLD_EARTH_VOODOO"
+        },
+        "added": [
+          "STR_OLD_EARTH_VOODOO"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "38825944228828d7753da8a406d60ddd94d555c6aa7dfe91340a4e14f6cc3826",
+        "to": "a4b53b98b702bf3ccfb7c1ea6083c033ad58562ef299b249f2a186ab7282a892",
+        "action": {
+          "type": "research",
+          "id": "STR_CADILLAC"
+        },
+        "added": [
+          "STR_CADILLAC"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "a4b53b98b702bf3ccfb7c1ea6083c033ad58562ef299b249f2a186ab7282a892",
+        "to": "07bea754c9e8966ca3cff0305212622786f7e19c565aeeb9f66d5dde3e4c6d58",
+        "action": {
+          "type": "research",
+          "id": "STR_MEDALLION"
+        },
+        "added": [
+          "STR_MEDALLION"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "07bea754c9e8966ca3cff0305212622786f7e19c565aeeb9f66d5dde3e4c6d58",
+        "to": "a0c8dbd27d3d480476e4bb5946bee6b46b88ebaa4780f57fdde0da40645cb7bd",
+        "action": {
+          "type": "research",
+          "id": "STR_SALVAGE"
+        },
+        "added": [
+          "STR_SALVAGE"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "a0c8dbd27d3d480476e4bb5946bee6b46b88ebaa4780f57fdde0da40645cb7bd",
+        "to": "84476058202ae427a948104242f4fe105a180803a338c0cd2eaa028c6b157bf3",
+        "action": {
+          "type": "repeatResearch",
+          "id": "STR_SOCIALIZING",
+          "assumeAvailability": true
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "84476058202ae427a948104242f4fe105a180803a338c0cd2eaa028c6b157bf3",
+        "to": "dba47d8c7d04e06d2152ec567ad07edff7f598849ec219484ab9e3a7883c2f6a",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_SOCIALIZING",
+          "research": "CIVILIAN_YOUNG_UBER",
+          "assumeOutcome": true
+        },
+        "added": [
+          "CIVILIAN_YOUNG_UBER",
+          "STR_YOUNG_UBER_RECRUITMENT"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "dba47d8c7d04e06d2152ec567ad07edff7f598849ec219484ab9e3a7883c2f6a",
+        "to": "6e85f108eec30c3324cd71f5dbb1a38e2f5d1e438540c2fcd4dba27559cf090a",
+        "action": {
+          "type": "research",
+          "id": "STR_MOST_COMMON_POWER"
+        },
+        "added": [
+          "STR_MOST_COMMON_POWER"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "6e85f108eec30c3324cd71f5dbb1a38e2f5d1e438540c2fcd4dba27559cf090a",
+        "to": "d05309b542e9302a659264d598a4df50464e228b79dff539e3fdbcacfee323c0",
+        "action": {
+          "type": "research",
+          "id": "STR_WENCH_OUTFIT"
+        },
+        "added": [
+          "AUX_BAD_TOUCH",
+          "AUX_GOOD_TOUCH",
+          "STR_WENCH_OUTFIT"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "d05309b542e9302a659264d598a4df50464e228b79dff539e3fdbcacfee323c0",
+        "to": "7327b3b08b99ebfa4f5c9daa1ca7438376026d74380f797faba2ba4c0fc58bed",
+        "action": {
+          "type": "research",
+          "id": "STR_PERSUASION"
+        },
+        "added": [
+          "STR_PERSUASION"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "7327b3b08b99ebfa4f5c9daa1ca7438376026d74380f797faba2ba4c0fc58bed",
+        "to": "ee6231b6bfc18a8eb94f652e25f4ab6ae49159b6bc24500bc7f32f9e351a831c",
+        "action": {
+          "type": "research",
+          "id": "STR_GLAMOUR_RECRUITMENT"
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "ee6231b6bfc18a8eb94f652e25f4ab6ae49159b6bc24500bc7f32f9e351a831c",
+        "to": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GLAMOUR_RECRUITMENT",
+          "research": "STR_RAIDER_BOSS_ARMOR",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_GLAMOUROUS_TRAIT",
+          "STR_GLAMOUR_RECRUITMENT",
+          "STR_RAIDER_BOSS_ARMOR"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e442ab0c0ec83d230171a7b33b00ba690ddd0cfd7c6a9ea4fefa9ee3f965b76b",
+        "to": "ebe9ccaece64086b05694fef393cbb06dcf8f2ce60ce32ce644b489f5e7f877e",
+        "action": {
+          "type": "research",
+          "id": "STR_REJECT_THE_POWER"
+        },
+        "added": [
+          "STR_CINDERELLA_PROJECT_PREQ",
+          "STR_REJECT_THE_POWER"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ebe9ccaece64086b05694fef393cbb06dcf8f2ce60ce32ce644b489f5e7f877e",
+        "to": "7633d7df50c60f7304f60c12ac1b422052e09c104b1f15cadf3d57d04ff4b709",
+        "action": {
+          "type": "conditionalOccultAward",
+          "event": "STR_BLESSINGS",
+          "script": "STR_BLESSINGS",
+          "research": "STR_WASTELAND_PRIESTESS",
+          "month": 1,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "assumeResearchSelection": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": [
+          "STR_WASTELAND_PRIESTESS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7633d7df50c60f7304f60c12ac1b422052e09c104b1f15cadf3d57d04ff4b709",
+        "to": "92b9dae340bc47bd2b61003a12c42d3085856711f786c9e13dbcc35334d6d26f",
+        "action": {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        "added": [
+          "STR_PEASANTS_ZZZ",
+          "STR_RECRUIT_PEASANTS",
+          "STR_TAC_VEST_PEASANT_UC"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "92b9dae340bc47bd2b61003a12c42d3085856711f786c9e13dbcc35334d6d26f",
+        "to": "602cfb37c4b2f2954871b8ea1d207e90f46a88501bd0ae2d13af6f5bccdc65ac",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_CAPTAIN_PERSONALITY_TEST"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "602cfb37c4b2f2954871b8ea1d207e90f46a88501bd0ae2d13af6f5bccdc65ac",
+        "to": "a1bfa7531231de60d4c92929aa189cd1cdbd458f9231bfb0c29f822a8df99392",
+        "action": {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        "added": [
+          "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+          "STR_CAPTAIN_PUSSY",
+          "STR_NONPROFIT_LAB_PREQ"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a1bfa7531231de60d4c92929aa189cd1cdbd458f9231bfb0c29f822a8df99392",
+        "to": "eaefd3f4ef26ce72de6d193f7760f720614d324809814453d0559fab9023148d",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_CAPTAIN_PUSSY_UP"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "eaefd3f4ef26ce72de6d193f7760f720614d324809814453d0559fab9023148d",
+        "to": "8bdbdb110177fea6660948ea93f2678429e5d6b06b0dec9156f985b89151da14",
+        "action": {
+          "type": "research",
+          "id": "STR_CAPTAIN_PRIEST"
+        },
+        "added": [
+          "STR_CAPTAIN_DOUBLEGREEN",
+          "STR_CAPTAIN_DUMBLAZY",
+          "STR_CAPTAIN_GOLD",
+          "STR_CAPTAIN_GREEN",
+          "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+          "STR_CAPTAIN_PRIEST",
+          "STR_CAPTAIN_RED",
+          "STR_CAPTAIN_SOREDUMB",
+          "STR_CAPTAIN_YESGREEN_NOGOLD",
+          "STR_CAPTAIN_YESGREEN_NORED",
+          "STR_CREATIVITY",
+          "STR_HONOR",
+          "STR_JUSTICE"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8bdbdb110177fea6660948ea93f2678429e5d6b06b0dec9156f985b89151da14",
+        "to": "b9c39ac7662f9aea5ce29d8ea3162451cb162d761323d01295d544421e693e1c",
+        "action": {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        "added": [
+          "STR_LOOT_DISTRIBUTION"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b9c39ac7662f9aea5ce29d8ea3162451cb162d761323d01295d544421e693e1c",
+        "to": "b7c1676a66106a70e222cce0203cac21b0355a852a3ed64c39dbc462d5d68768",
+        "action": {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b7c1676a66106a70e222cce0203cac21b0355a852a3ed64c39dbc462d5d68768",
+        "to": "289eaafa9dd583182299cc972f20e79f6e72e4b76662016038b0ca4abaa4bb8a",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_DIVERGING_PATHS",
+          "STR_RECRUITMENT"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "289eaafa9dd583182299cc972f20e79f6e72e4b76662016038b0ca4abaa4bb8a",
+        "to": "4ab5028f38ba5da75d7aa5f6db2bb31d3eea0b5bf845378989201531a035b54c",
+        "action": {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4ab5028f38ba5da75d7aa5f6db2bb31d3eea0b5bf845378989201531a035b54c",
+        "to": "9075344b44883e9310c5cf5e4fb9fa7a49c965d0918dd6fdc6f40838359a80b8",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_LAMIA_RECRUITMENT_PREQ",
+          "STR_SLAVE_ARMOR_PIRATE_UC",
+          "STR_SLAVE_ARMOR_TAC_VEST_UC",
+          "STR_SLAVE_ARMOR_TUNIC_UC",
+          "STR_SLAVE_SOLDIERS",
+          "STR_SLAVE_SOLDIERS_ZZZ",
+          "STR_WE_NEED_MALE_TOUCH",
+          "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "STR_WORLDLY_MORALITY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "9075344b44883e9310c5cf5e4fb9fa7a49c965d0918dd6fdc6f40838359a80b8",
+        "to": "546a0f87b24acedfe53e6bad00351195b74f5563931b4d733c5384918f30feee",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        "added": [
+          "STR_HERO",
+          "STR_HEROIC",
+          "STR_HERO_RECRUITMENT"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "546a0f87b24acedfe53e6bad00351195b74f5563931b4d733c5384918f30feee",
+        "to": "583dcbd7131263e43f918906e8a7a08e577dad3533dcf556e63fdddb4e1cf15c",
+        "action": {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "583dcbd7131263e43f918906e8a7a08e577dad3533dcf556e63fdddb4e1cf15c",
+        "to": "4e5d6dd8fb2073bfd707aa9263d894ff5f8780f0245dd14a368303e6087a9146",
+        "action": {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        "added": []
+      }
+    ],
+    "rejected": [
+      {
+        "lane": "gold-occult",
+        "from": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+        "action": {
+          "type": "acquireEventItems",
+          "item": "STR_SIVALINGA",
+          "event": "STR_SAKURA_SIVALINGA_EVENT",
+          "script": "STR_SAKURA_SIVALINGA_EVENT",
+          "count": 1,
+          "assumeOutcome": true
+        },
+        "reason": "fixed-event-source-mismatch"
+      },
+      {
+        "lane": "gold-occult",
+        "from": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+        "action": {
+          "type": "research",
+          "id": "STR_SIVALINGA"
+        },
+        "reason": "sample-missing"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7633d7df50c60f7304f60c12ac1b422052e09c104b1f15cadf3d57d04ff4b709",
+        "action": {
+          "type": "acquireEventItems",
+          "item": "STR_GNOME",
+          "event": "STR_SCHOOLBUS_EVENT",
+          "script": "STR_SCHOOLBUS_EVENT",
+          "count": 7,
+          "assumeOutcome": true
+        },
+        "reason": "fixed-event-source-mismatch"
+      }
+    ],
+    "accepted": 41,
+    "gameCertified": false,
+    "registered": false
+  },
+  "gameCertified": false,
+  "registered": false
+}
