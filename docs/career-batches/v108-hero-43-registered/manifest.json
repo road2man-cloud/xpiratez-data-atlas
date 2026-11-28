@@ -1,0 +1,41 @@
+{
+  "schema": "XPZ_CAREER_BATCH_CHUNKS_V1",
+  "baseRef": "43a3e80f831e590e65d29e6fc8efffc671ae5113",
+  "bytes": 646884,
+  "sha256": "cbba65ff3717dd617ea796df3e69b3cfe7e34c074ce65f94f0d8dd1bf8fa192c",
+  "chunks": [
+    {
+      "file": "part-00.bin",
+      "bytes": 240000,
+      "gitBlobSha": "6befa6546ac845c4fc64d9ab1571b1dfddb5079d"
+    },
+    {
+      "file": "part-01.bin",
+      "bytes": 240000,
+      "gitBlobSha": "64d7311ecd7cfc59452aafbcbd8654eeac40b77f"
+    },
+    {
+      "file": "part-02.bin",
+      "bytes": 166884,
+      "gitBlobSha": "2a9d97ca0cb9cc5728cf643168ccf06f5d809ab5"
+    }
+  ],
+  "registeredRoutes": 6974,
+  "heroRoutes": 188,
+  "independentlyReplayedThisBatch": 16,
+  "cumulativeNewRoutes": 43,
+  "newRoutesLastExplicitProduction": 10,
+  "additionalNewRoutesObservedBeforeLastProduction": 6,
+  "states": 9408,
+  "originBranchPairs": 272,
+  "graphSha": "43d17c8034d8850511a8d35466d670fbbc88d1cac5371b3085b1e3d1ad257d73",
+  "finalAdmission": "not recalculated",
+  "priorFinalCount": 111,
+  "mainMerge": "not executed",
+  "researchFocus": [
+    "STR_HERO_GREEN_TRAINING",
+    "STR_HERO_GOLD_TRAINING",
+    "STR_HERO_RED_TRAINING"
+  ],
+  "newPartialResearchHistories": 11
+}
