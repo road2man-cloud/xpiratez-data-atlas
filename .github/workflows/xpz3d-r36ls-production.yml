@@ -3,7 +3,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/source/**'
+      - 'experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/source/build_r36ls.cjs'
+      - 'experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/source/paint_detail.cjs'
       - '.github/workflows/xpz3d-r36ls-production.yml'
   workflow_dispatch:
 permissions:
@@ -37,6 +38,7 @@ jobs:
           INPUT=experimental/xpz3d/f11/r36lr-authored-paint-20261128/output/art/R36LR_ART_2100_FULL.glb
           node --check "$ROOT/source/paint_detail.cjs"
           node --check "$ROOT/source/build_r36ls.cjs"
+          rm -rf "$ROOT/output/art" "$ROOT/output/subtle"
           node --max-old-space-size=4096 "$ROOT/source/build_r36ls.cjs" "$INPUT" "$ROOT/output/art" art
           node --max-old-space-size=4096 "$ROOT/source/build_r36ls.cjs" "$INPUT" "$ROOT/output/subtle" subtle
           node - "$ROOT/output" <<'NODE'
