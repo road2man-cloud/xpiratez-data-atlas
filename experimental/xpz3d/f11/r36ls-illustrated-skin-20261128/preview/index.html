@@ -186,7 +186,7 @@ function focus(name){currentView=name;const root=active();if(!root)return;
  ctl.target.copy(c);ctl.update();
  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===name));
 }
-const names={low:'R36LS · 정밀 회화',soft:'R36LS · 저강도 회화',legacy:'R36LQ · 비교 기준',high:'고밀도 편집 원본',original:'R36HW 의복 원본'};
+const names={low:'R36LS · ART 2차 회화',soft:'R36LS · SUBTLE 2차 회화',legacy:'R36LR · 1차 회화 기준',high:'고밀도 편집 원본',original:'R36HW 의복 원본'};
 function updateMode(){
  mode=$('modelMode').value;
  for(const obj of Object.values(assets))if(obj)obj.visible=false;
