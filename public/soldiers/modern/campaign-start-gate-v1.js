@@ -1,6 +1,7 @@
 // Campaign-start gate. Legacy hypothetical witnesses remain unchanged.
 import {foundationWorld,applyOriginWitnessStep} from './origin-witness.js';
 import {researchStep,eventScriptVerdict} from './event-chronology.js';
+import {applyReachabilityAction} from './campaign-start-reachability-v1.js';
 import {applyFacilityAction} from './campaign-start-construction-v1.js';
 import {START_EVENT_RULES} from './campaign-start-event-rules-v1.js';
 export const START_RESEARCH=Object.freeze({
@@ -34,6 +35,9 @@ export function campaignStartWorld(data,snapshot){
   researched:new Set(snapshot.researched),disabled:new Set(snapshot.disabled),
   soldiers:structuredClone(snapshot.soldiers),startDate:structuredClone(snapshot.startDate),
   baseLayout:structuredClone(snapshot.baseLayout),elapsedBuildDays:0,
+  countries:snapshot.countries?new Set(snapshot.countries):undefined,
+  regions:snapshot.regions?new Set(snapshot.regions):undefined,
+  researchOnly:true,
   autoZeroScenario:false,autoZeroEvidence:true,sourceFingerprint:snapshot.sourceFingerprint};
  for(const [id,n] of Object.entries(world.items))if(!Number.isSafeInteger(n)||n<0)throw Error('invalid-start-item:'+id);
  for(const [id,cost] of Object.entries(START_RESEARCH))if(data.researchRules[id]?.cost!==cost)throw Error('start-cost-mismatch:'+id);
@@ -45,11 +49,22 @@ export function campaignStartWorld(data,snapshot){
 function applyCampaignStartCore(input,step,data){
  if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
  if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
+ if(['acquirePurchase','acquireFacility'].includes(step.type)){
+  try{return applyReachabilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  if(['buildFacility','finishFacility'].includes(step.type)){
   try{return applyFacilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
  }
  const e=START_EVENT_RULES[step.event];
- if(step.type!=='eventResearch'||!e)return applyOriginWitnessStep(input,step,data);
+ if(step.type!=='eventResearch'||!e){
+  // Legacy actions still enforce items and research. Ignore monetary cost only
+  // for manufacturing/recruitment/transformation, not event predicates.
+  const noEconomy=['manufacture','recruit','transform'].includes(step.type)&&input.researchOnly;
+  const source=noEconomy?{...input,funds:Number.MAX_SAFE_INTEGER}:input;
+  const result=applyOriginWitnessStep(source,step,data);
+  if(noEconomy&&result.ok){result.world.funds=input.funds;result.assumed=true;result.notes=[...(result.notes||[]),'monetary-cost-excluded'];}
+  return result;
+ }
  try{
   if(step.research!==e.research||step.assumeOutcome!==true)throw Error('event-outcome-not-explicit');
   if(input.generatedEvents?.[step.event])throw Error('repeat-event-not-modeled');
