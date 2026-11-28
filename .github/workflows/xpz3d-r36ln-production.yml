@@ -10,7 +10,7 @@ permissions:
   contents: write
 concurrency:
   group: xpz3d-r36ln-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
