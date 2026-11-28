@@ -44,14 +44,14 @@
       "nondegenerateTriangles": 2020,
       "projectedDegenerate": 78,
       "fragmentWrites": 169835,
-      "meanDirectionalTerm": 0.3183492769287987,
+      "meanDirectionalTerm": 0.3218561227354445,
       "imageDimensions": [
         900,
         1120
       ],
       "file": "R36HW_N7B_CLAY_FRONT_FULL.png",
-      "bytes": 22865,
-      "sha256": "1023bce948ca4e64b22b3f0fff0d2a2f3b64efb505426b4eb41b749f83248842"
+      "bytes": 108557,
+      "sha256": "e06763d30cc02dee150c631e36a230911f1919e4b662fb1db0034765c3841321"
     },
     {
       "view": "front",
@@ -61,14 +61,14 @@
       "nondegenerateTriangles": 2020,
       "projectedDegenerate": 78,
       "fragmentWrites": 755385,
-      "meanDirectionalTerm": 0.2755657850814307,
+      "meanDirectionalTerm": 0.28810436692860797,
       "imageDimensions": [
         900,
         1120
       ],
       "file": "R36HW_N7B_CLAY_FRONT_DETAIL.png",
-      "bytes": 28874,
-      "sha256": "32e826d19fa95b191704ff05d073ccd7f6ae6fb3d49887b120b156b6d00703b5"
+      "bytes": 162305,
+      "sha256": "42ec222b82b794e5457c888bef28d9308c4b97cdfeb13e7d80489bc5a7207ce9"
     },
     {
       "view": "oblique",
@@ -78,14 +78,14 @@
       "nondegenerateTriangles": 2098,
       "projectedDegenerate": 0,
       "fragmentWrites": 161418,
-      "meanDirectionalTerm": 0.28335071369128195,
+      "meanDirectionalTerm": 0.2900533569076207,
       "imageDimensions": [
         900,
         1120
       ],
       "file": "R36HW_N7B_CLAY_OBLIQUE_FULL.png",
-      "bytes": 21965,
-      "sha256": "9b6979f553d086a2cb32ee41635b8e1b3a6941e3f2f6dcd39a65c41b711a6a31"
+      "bytes": 100907,
+      "sha256": "5a635d410089af377c27c776f6fc24a2cb9d89d0e21cb09d90a1817e717a62d5"
     },
     {
       "view": "oblique",
@@ -95,14 +95,14 @@
       "nondegenerateTriangles": 2098,
       "projectedDegenerate": 0,
       "fragmentWrites": 696833,
-      "meanDirectionalTerm": 0.24999574186998663,
+      "meanDirectionalTerm": 0.2642865055491992,
       "imageDimensions": [
         900,
         1120
       ],
       "file": "R36HW_N7B_CLAY_OBLIQUE_DETAIL.png",
-      "bytes": 27300,
-      "sha256": "dc74c88369513f837cf425e57be0aea7d47698228e04be041d13ec8f46079fcb"
+      "bytes": 147295,
+      "sha256": "b22cdd9f1c7eae490c382dcc75b7721eb6d98b0a4ca0597616b631dee845c845"
     },
     {
       "view": "side",
@@ -112,14 +112,14 @@
       "nondegenerateTriangles": 2098,
       "projectedDegenerate": 0,
       "fragmentWrites": 103261,
-      "meanDirectionalTerm": 0.2624912282700219,
+      "meanDirectionalTerm": 0.26393756114507355,
       "imageDimensions": [
         900,
         1120
       ],
       "file": "R36HW_N7B_CLAY_SIDE_FULL.png",
-      "bytes": 15012,
-      "sha256": "d74c591babf18c53676e9eb42954be341f4ab0f7f446d310eded74b852a1130e"
+      "bytes": 55148,
+      "sha256": "6195c8b4b97e4514ee3a8381212f1163889a9c801098ebeeb097b834b82a4442"
     },
     {
       "view": "side",
@@ -129,14 +129,14 @@
       "nondegenerateTriangles": 2098,
       "projectedDegenerate": 0,
       "fragmentWrites": 461914,
-      "meanDirectionalTerm": 0.2387297349330161,
+      "meanDirectionalTerm": 0.2394475333344789,
       "imageDimensions": [
         900,
         1120
       ],
       "file": "R36HW_N7B_CLAY_SIDE_DETAIL.png",
-      "bytes": 17913,
-      "sha256": "15aa6a9b8cefe8cfa7cafd0431ac5ab62857b6c4c6fe6c086b97665cebf71d5a"
+      "bytes": 97008,
+      "sha256": "2255aaa9051a83cddfea055aa4bf680708c90b4b9e4b6602caf9375ce8645ac1"
     },
     {
       "view": "front",
