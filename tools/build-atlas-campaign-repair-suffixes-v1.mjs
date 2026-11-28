@@ -9,7 +9,7 @@ import {gunzipSync,gzipSync} from 'node:zlib';
 import {campaignStartWorld,labVerdict} from '../public/soldiers/modern/campaign-start-gate-v1.js';
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {createCampaignStartResearchPlanner} from '../public/soldiers/modern/campaign-start-research-planner-v1.js';
-import {STAT_KEYS,bonusStats} from '../public/soldiers/modern/eligibility.js';
+import {careerStatVectors} from '../public/soldiers/modern/campaign-start-career-actions-v1.js';
 import {WITNESS_STATS,originEventScript} from '../public/soldiers/modern/origin-witness.js';
 import {decodeOriginReport} from './origin-report-codec.mjs';
 const args=Object.fromEntries(process.argv.slice(2).filter(s=>s.includes('=')).map(s=>s.replace(/^--/,'').split(/=(.*)/s).slice(0,2)));
@@ -71,26 +71,51 @@ if(deployment?.unlockedResearch==='STR_TEC_040'&&deployment.terrains?.length===1
   sourceFiles:Object.fromEntries(['Piratez_Factions.rul','Piratez_Planet.rul','Piratez_Mapscripts.rul','Piratez_Globals.rul','Piratez.rul'].map(k=>[k,files[k]]))}];
 }
 if(!missionLoot.STR_TEC_001)throw Error('comms-disruption-map-loot-source-mismatch');
-// Fixed item-only event: refuse additional unsupported rewards/conditions.
-// Retain the original month limits, region and negative inventory/research gates.
+// Fixed event bundles, derived from hashed v.o2 rules. A selected event pays
+// its whole bundle exactly once; a requested item is not an isolated grant.
+// Unsupported reward or trigger fields cause a route to be excluded.
 const fixedItemEvents={};
-const event=events.STR_SIBERIA_DAMSEL_EVENT;
-const allowedEventKeys=new Set(['name','type','description','background','music','everyItemList','timer','timerRandom']);
+const selectedEvents={
+ STR_SIBERIA_DAMSEL_EVENT:['STR_SIBERIA_DAMSEL_EVENT1','STR_SIBERIA_DAMSEL_EVENT2'],
+ STR_SLAVE_CAUGHT_EVENT:['STR_SLAVE_CAUGHT_EVENT'],
+ STR_KNOCK_KNOCK_CASTAWAYS:['STR_KNOCK_KNOCK_0','STR_KNOCK_KNOCK_1','STR_KNOCK_KNOCK_2','STR_KNOCK_KNOCK_GOLD'],
+ STR_POLYMAKH_SHAPKA_EVENT_RECRUIT:['STR_POLYMAKH_SHAPKA_EVENT'],
+ STR_HYBRID_OF_TWILIGHT_EVENT:['STR_HYBRID_OF_TWILIGHT_EVENT','STR_CAPTAIN_JACKDUMB_EVENTS_1','STR_CAPTAIN_JACKSORE_EVENTS_PUSSY','STR_CAPTAIN_GOLD_EVENTS_1','STR_CAPTAIN_RED_EVENTS_1'],
+ STR_KNOCK_KNOCK_HYBRID_OF_TWILIGHT:['STR_KNOCK_KNOCK_0','STR_KNOCK_KNOCK_GOLD'],
+ STR_KNOCK_KNOCK_WILLING_SLAVE:['STR_KNOCK_KNOCK_0','STR_KNOCK_KNOCK_GOLD','STR_KNOCK_KNOCK_DUMBLAZY_1','STR_CBT_CHAMP_CHAMP']
+};
+const allowedEventKeys=new Set(['name','type','description','background','music','everyItemList','timer','timerRandom','points','funds']);
 const allowedScriptKeys=new Set(['type','eventWeights','firstMonth','lastMonth','xcomBaseInRegionTriggers','researchTriggers','itemTriggers','executionOdds']);
-if(event&&Object.keys(event).every(k=>allowedEventKeys.has(k))&&JSON.stringify(event.everyItemList)===JSON.stringify(['STR_SPY_DAMSEL'])){
- for(const id of ['STR_SIBERIA_DAMSEL_EVENT1','STR_SIBERIA_DAMSEL_EVENT2']){
+const triggers=(x,v)=>Object.keys(x||{}).filter(k=>x[k]===v);
+for(const [eventId,scriptIds] of Object.entries(selectedEvents)){
+ const e=events[eventId];
+ if(!e||Object.keys(e).some(k=>!allowedEventKeys.has(k))||!Array.isArray(e.everyItemList)||!e.everyItemList.length)throw Error('fixed-event-source-mismatch:'+eventId);
+ const grants={};
+ for(const id of e.everyItemList){
+  if(!items[id])throw Error('fixed-event-item-unindexed:'+id);
+  grants[id]=(grants[id]||0)+1;
+ }
+ const funds=e.funds??0,points=e.points??0;
+ if(!Number.isSafeInteger(funds)||!Number.isSafeInteger(points))throw Error('fixed-event-economic-rule-invalid:'+eventId);
+ for(const id of scriptIds){
   const s=eventScripts[id];
-  if(!s||Object.keys(s).some(k=>!allowedScriptKeys.has(k))||s.eventWeights?.[0]?.[event.name]!==100||Object.keys(s.eventWeights).length!==1||Object.keys(s.eventWeights[0]).length!==1)continue;
-  const triggers=(x,v)=>Object.keys(x||{}).filter(k=>x[k]===v);
-  fixedItemEvents.STR_SPY_DAMSEL??=[];
-  fixedItemEvents.STR_SPY_DAMSEL.push({event:event.name,items:{STR_SPY_DAMSEL:1},script:{
-   script:id,mode:'weighted',monthWeights:[{month:0,weight:100,totalWeight:100}],firstMonth:s.firstMonth??0,lastMonth:s.lastMonth??null,
+  if(!s||Object.keys(s).some(k=>!allowedScriptKeys.has(k))||!s.eventWeights)throw Error('fixed-event-script-unsupported:'+id);
+  for(const k of ['researchTriggers','itemTriggers','xcomBaseInRegionTriggers'])
+   if(Object.values(s[k]||{}).some(v=>typeof v!=='boolean'))throw Error('fixed-event-trigger-invalid:'+id);
+  const monthWeights=Object.entries(s.eventWeights).map(([month,weights])=>{
+   const ns=Object.values(weights);
+   if(!Number.isSafeInteger(Number(month))||Number(month)<0||ns.some(v=>!Number.isSafeInteger(v)||v<0))throw Error('event-weight-invalid:'+id);
+   return {month:Number(month),weight:weights[eventId]??0,totalWeight:ns.reduce((a,b)=>a+b,0)};
+  }).sort((a,b)=>a.month-b.month);
+  if(!monthWeights.some(x=>x.weight>0)||!Number.isFinite(s.executionOdds)||s.executionOdds<=0||s.executionOdds>100)throw Error('fixed-event-no-positive-route:'+id);
+  const route={event:eventId,items:grants,funds,points,script:{
+   script:id,mode:'weighted',monthWeights,firstMonth:s.firstMonth??0,lastMonth:s.lastMonth??null,
    executionOdds:s.executionOdds,researchPositive:triggers(s.researchTriggers,true),researchNegative:triggers(s.researchTriggers,false),
    itemPositive:triggers(s.itemTriggers,true),itemNegative:triggers(s.itemTriggers,false),
-   regionPositive:triggers(s.xcomBaseInRegionTriggers,true),regionNegative:triggers(s.xcomBaseInRegionTriggers,false)},sourceSha256:files['Piratez_Events.rul']});
+   regionPositive:triggers(s.xcomBaseInRegionTriggers,true),regionNegative:triggers(s.xcomBaseInRegionTriggers,false)},sourceSha256:files['Piratez_Events.rul']};
+  for(const item of Object.keys(grants))(fixedItemEvents[item]??=[]).push(route);
  }
 }
-if(fixedItemEvents.STR_SPY_DAMSEL?.length!==2)throw Error('siberia-fixed-item-event-source-mismatch');
 const scenarioRegion=args.region||null;
 if(scenarioRegion&&(scenarioRegion!=='STR_SIBERIA'||!regions[scenarioRegion]?.areas?.length||base.lon!=null||base.lat!=null))throw Error('unsupported-start-region-scenario');
 d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents};
@@ -212,13 +237,10 @@ function supplied(p,n,step,future){
 }
 function resultState(w){
  const m=w.soldiers.find(s=>s.id==='origin');if(!m)throw Error('missing-origin-soldier');
- const s=m.state,raw=Object.fromEntries(STAT_KEYS.map(k=>[k,s.currentStats[k]]));
- if(STAT_KEYS.some(k=>!Number.isFinite(raw[k])))throw Error('unresolved-stat-vector');
- const bonus=bonusStats(s,d,{commendations:m.commendations});
- const stats=Object.fromEntries(STAT_KEYS.map(k=>[k,Math.max(k==='health'?1:0,raw[k]+(bonus[k]||0))]));
+ const s=m.state,{raw,bonus,stats,permanentBonus,permanentStats}=careerStatVectors(m,d);
  const body=d.soldiers.find(x=>x.id===s.soldierType);
  return {originProfile:s.sourceId,body:s.soldierType,retired:s.retired,rank:s.rank,exactStats:s.exactStats===true,
-  raw,bonus,stats,total:WITNESS_STATS.reduce((n,k)=>n+stats[k],0),totalStatKeys:WITNESS_STATS,
+  raw,bonus,stats,permanentBonus,permanentStats,commendations:canon(m.commendations||{}),total:WITNESS_STATS.reduce((n,k)=>n+stats[k],0),totalStatKeys:WITNESS_STATS,
   initialStats:s.initialStats,traitCounts:canon(s.bonusCounts),traitIds:canon(s.bonusIds),history:canon(s.history),
   caps:body?Object.fromEntries(Object.entries(body).filter(([k])=>/cap|maxStats/i.test(k))):null,
   researched:canon(w.researched),disabled:canon(w.disabled),items:canon(w.items),functions:canon(w.baseFunctions),month:w.month};
