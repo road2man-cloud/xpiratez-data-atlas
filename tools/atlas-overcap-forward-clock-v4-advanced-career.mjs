@@ -6,7 +6,7 @@ import {createTimedCareerClock} from "./atlas-overcap-forward-clock-v4-career.mj
 export const ADVANCED_RECIPES=["STR_TROPHY_TARGET_50_JACK_DA","STR_SPIN_THE_WHEEL","STR_CASINO_KUPON_1_RECLAIM"];
 export function createAdvancedCareerClock(data,config){
  const fields={...config.manufactureFields};
- const recipes=ADVANCED_RECIPES.map(id=>{
+ const recipes=[...new Set([...ADVANCED_RECIPES,...(config.additionalRecipes||[])])].map(id=>{
   const f=fields[id];assert(f&&f.time>0&&!f.spawnedPersonType&&!f.producedCraft&&!f.transferTimes&&!f.requiredCrafts);
   const deterministic=!f.randomProducedItems?.length;
   const outcomes=(deterministic?[[1,{}]]:f.randomProducedItems).map(([weight,items])=>({weight,items}));

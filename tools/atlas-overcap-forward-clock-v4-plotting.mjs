@@ -11,7 +11,7 @@ import {applyOriginWitnessStep} from "../public/soldiers/modern/origin-witness.j
 import {exactStateHash} from "./origin-pair-exact-prefix-checkpoint.mjs";
 const rootsStart=Date.UTC(2601,0,1,12);
 const qty=(w,id)=>Number(w.items[id]||0);
-export function createPlottingClock(data,{labCapacity=12,quarters=50,budget=325000,facilityFields,itemFields,manufactureFields,sellCoefficient=100,economy,monthlyInput,eventScenario=false,missionSource,missionTiming,missionMode='none',bridgeSource,bridgeTiming,nurseEvent,bridgeMode='none',captainSource,orderMode='strict',persuasionSource,prisonSource,prisonMode='recover',hierarchyMode='control',maxMonth=24}={}){
+export function createPlottingClock(data,{labCapacity=12,quarters=50,budget=325000,facilityFields,itemFields,manufactureFields,sellCoefficient=100,economy,monthlyInput,eventScenario=false,missionSource,missionTiming,missionMode='none',bridgeSource,bridgeTiming,nurseEvent,bridgeMode='none',captainSource,orderMode='strict',persuasionSource,prisonSource,prisonMode='recover',hierarchyMode='control',maxMonth=24,extraMonthlySelections={}}={}){
  assert(Number.isSafeInteger(maxMonth)&&maxMonth>=24&&maxMonth<=120,"CAMPAIGN_HORIZON_RANGE");
  const limitHours=(Date.UTC(2601,maxMonth,1)-rootsStart)/3600000;
  const engine=createForwardResearch(data,{maxMonth}),rules=data.researchRules,recipe=data.forwardJunk.recipe;
@@ -404,6 +404,7 @@ export function createPlottingClock(data,{labCapacity=12,quarters=50,budget=3250
    ["STR_NOGREEN_YESGOLD_EVENTS",null,null],
    ["STR_CAPTAINS_RANK_01", "STR_CAPTAINS_RANK_01",null]
   ]:month===12?[["STR_CAPTAINS_RANK_02","STR_CAPTAINS_RANK_02",null]]:[];
+  selected.push(...(extraMonthlySelections[month]||[]));
   for(const [id,research,item] of selected){
    const sc=persuasionSource.scripts.find(x=>x.id===id),e=persuasionSource.events.find(x=>x.id===sc.event);assert(sc&&e);
    const missing=sc.positive.filter(k=>!s.world.researched.has(k)||s.world.disabled.has(k));
