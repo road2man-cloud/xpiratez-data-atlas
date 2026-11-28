@@ -1,0 +1,55 @@
+name: XPZ3D R36HW N8 real mesh CLAY views
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/source/**'
+      - '.github/workflows/xpz3d-r36hw-n8-render.yml'
+permissions:
+  contents: write
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128/source/glb_io.cjs
+            experimental/xpz3d/f11/r36hw-n8-soft-legfit-20261128/output/R36HW_N8_SOFT_LEGFIT.glb
+            experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/
+            .github/workflows/xpz3d-r36hw-n8-render.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Render diagnostic real mesh frames
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/source/render_n8.cjs
+          rm -rf experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/output
+          node experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/source/render_n8.cjs experimental/xpz3d/f11/r36hw-n8-soft-legfit-20261128/output/R36HW_N8_SOFT_LEGFIT.glb experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/output
+      - name: Verify actual rendered triangles and views
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path'),root='experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/output';
+          const r=JSON.parse(fs.readFileSync(path.join(root,'R36HW_N8_RENDER.report.json'),'utf8'));
+          if(r.totalTriangles!==2098||r.images.length!==12||r.images.some(x=>x.bytes<6000))throw Error(JSON.stringify({triangles:r.totalTriangles,images:r.images}));
+          console.log(JSON.stringify({frames:r.images.length,triangles:r.totalTriangles,sha:r.sourceSHA256}));
+          NODE
+      - name: Publish actual renders
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n8-actual-mesh-render-20261128/output
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N8 actual mesh diagnostic PNG captures"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
