@@ -1,0 +1,141 @@
+{
+  "version": "R36ML",
+  "renderer": "pure Node CPU rasterizer of actual input GLB (S2-source-inspired illumination; NOT native S2)",
+  "sourceFile": "R36MK_ART_DENSE_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "f587771e1998810e59ce23f6a4aca04173f31da7216bdee97221e09c9e5b5bf3",
+  "totalTriangles": 2100,
+  "bodyTriangles": 1132,
+  "otherTriangles": 968,
+  "bodyMeshCount": 6,
+  "bounds": {
+    "min": [
+      -0.7137420773506165,
+      -0.20468394458293915,
+      0.013121914118528366
+    ],
+    "max": [
+      0.7030143737792969,
+      0.1605721265077591,
+      1.9795557260513306
+    ],
+    "center": [
+      -0.00536385178565979,
+      -0.022055909037590027,
+      0.9963388200849295
+    ],
+    "size": [
+      1.4167564511299133,
+      0.36525607109069824,
+      1.9664338119328022
+    ]
+  },
+  "sourceShaderMath": [
+    "CalcNormal packed normalization approximation",
+    "CalcDirAmbLightDO direct + ambient"
+  ],
+  "syntheticCamera": true,
+  "syntheticLighting": true,
+  "images": [
+    {
+      "view": "front",
+      "mode": "clay",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2098,
+      "projectedDegenerate": 2,
+      "fragmentWrites": 202068,
+      "meanDirectionalTerm": 0.3490806371689857,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36ML_CLAY_FRONT.png",
+      "bytes": 32686,
+      "sha256": "7808a2ac444ff09ef880b7a4e10b40d3f0cdf5e2c752e79d27a46d117c6d3d1e"
+    },
+    {
+      "view": "oblique",
+      "mode": "clay",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 211381,
+      "meanDirectionalTerm": 0.26031729380151075,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36ML_CLAY_OBLIQUE.png",
+      "bytes": 29122,
+      "sha256": "9e89660e10818d1d08be7ccdd401469eea71dda7fab234b432f140ff71b07308"
+    },
+    {
+      "view": "side",
+      "mode": "clay",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 179022,
+      "meanDirectionalTerm": 0.2213004404538793,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36ML_CLAY_SIDE.png",
+      "bytes": 17635,
+      "sha256": "a4c80c21294df097734e618a77fcb525a4dca0646a596ab432f16155553b3647"
+    },
+    {
+      "view": "front",
+      "mode": "shaded",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2098,
+      "projectedDegenerate": 2,
+      "fragmentWrites": 202068,
+      "meanDirectionalTerm": 0.3346711561103512,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36ML_SHADED_FRONT.png",
+      "bytes": 107879,
+      "sha256": "f9d7e74bd4e28f79679b484a325d0d7c1027b22b7b65f9d259d1869c6bcaf324"
+    },
+    {
+      "view": "oblique",
+      "mode": "shaded",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 211381,
+      "meanDirectionalTerm": 0.297081898569441,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36ML_SHADED_OBLIQUE.png",
+      "bytes": 97645,
+      "sha256": "ca29c3bb408dc998e99ae321767a38f042f91dab75d907189889ed12d408be8f"
+    },
+    {
+      "view": "side",
+      "mode": "shaded",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 179022,
+      "meanDirectionalTerm": 0.25897914598617044,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36ML_SHADED_SIDE.png",
+      "bytes": 56014,
+      "sha256": "d4d8a389e92d43e5e3e55b92d961c7486a39601fe001872d8a3100bc39c5b648"
+    }
+  ],
+  "limitations": [
+    "static glTF bind-pose positions; no animated skinning",
+    "does not sample baseColor PNG, ORM, normal atlas, or original S2 bump shader",
+    "not Direct3D 9 execution or screenshot"
+  ]
+}
