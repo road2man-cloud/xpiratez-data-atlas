@@ -1,0 +1,340 @@
+{
+  "schema": "ATLAS_FORWARD_JUNK_EXTRACTION_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "source": {
+    "file": "Piratez.rul",
+    "lineStart": 191974,
+    "lineEnd": 192036,
+    "sectionSha256": "1d7a93dfc1b687c10f60ecd3531a6a88a010f632c367090968c3976ff1743fd9"
+  },
+  "ruleFiles": {
+    "HitFX-basic.rul": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+    "Piratez_Armors.rul": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+    "Piratez_BaseNames.rul": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+    "Piratez_Bonuses.rul": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23",
+    "Piratez_Events.rul": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+    "Piratez_Factions.rul": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "Piratez_Globals.rul": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+    "Piratez_Mapscripts.rul": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+    "Piratez_Planet.rul": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "Piratez_Resources.rul": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c",
+    "Piratez_Transformations.rul": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba",
+    "Piratez_Wardrobe.rul": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503",
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+    "Recolr.rul": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+    "Shotguns_Rebalance.rul": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+    "Yankes_Scripts.rul": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+  },
+  "recipe": {
+    "id": "STR_JUNK_PILE_EX",
+    "requires": [
+      "STR_SCHOOLING_1"
+    ],
+    "functions": [],
+    "inputs": {
+      "STR_JUNK_PILE": 1
+    },
+    "fixed": {
+      "STR_SCRAP_METAL": 15,
+      "STR_CHEMICALS": 10,
+      "STR_SC_WIRE": 2
+    },
+    "outcomes": [
+      {
+        "weight": 75,
+        "items": {
+          "STR_SCRAP_METAL": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SCRAP_METAL": 5
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_SCRAP_METAL": 10
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_BOOT": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_CHEMICALS": 2
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_CHEMICALS": 5
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_CHEMICALS": 10
+        }
+      },
+      {
+        "weight": 20,
+        "items": {
+          "STR_SC_WIRE": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_SC_WIRE": 2
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_SC_WIRE": 3
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_SECURITY_CORPSE": 3
+        }
+      },
+      {
+        "weight": 35,
+        "items": {
+          "STR_ALIEN_ALLOYS": 3
+        }
+      },
+      {
+        "weight": 20,
+        "items": {
+          "STR_ELERIUM_115": 3
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_WRENCH": 1
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_OLD_PISTOL": 1
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_HAMMER": 1
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_CROWBAR": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SHIV": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_CAR_CORPSE": 1
+        }
+      },
+      {
+        "weight": 30,
+        "items": {
+          "STR_MUTANT_MEAT": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_MOONSHINE": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_RAIDER_CORPSE": 1
+        }
+      },
+      {
+        "weight": 20,
+        "items": {
+          "STR_RAIDER_CORPSE": 2
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_RAIDER_CORPSE": 3
+        }
+      },
+      {
+        "weight": 20,
+        "items": {
+          "STR_GUILD_CORPSE": 3
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_ART_PIECE": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_COINS": 6
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_DOLLAR_BRIEFCASE": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_OLD_BOOKS": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_SWORD_MDV": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_SKULL": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_RING": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_LONG_KNIFE": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_MISFORTUNE_ARMOR_PARTS": 1
+        }
+      },
+      {
+        "weight": 3,
+        "items": {
+          "STR_UFO_NAVIGATION": 1
+        }
+      },
+      {
+        "weight": 3,
+        "items": {
+          "STR_RUSTY_BLADE": 1
+        }
+      },
+      {
+        "weight": 2,
+        "items": {
+          "STR_LOOTBOX_OLD_EARTH_WEAPONS": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_UFO_POWER_SOURCE": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_ALIEN_ENTERTAINMENT": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_RED_GEM": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_BLUE_GEM": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_GREEN_GEM": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_YELLOW_GEM": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_DIAMOND": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_SIVALINGA": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_NUCLEAR_MATERIALS": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_NUCLEAR_BATT": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_SYNTH_CORPSE": 1
+        }
+      }
+    ],
+    "category": "STR_EXTRACTION",
+    "space": 0,
+    "time": 360,
+    "cost": 0,
+    "refund": true,
+    "totalWeight": 609
+  },
+  "scope": "All fixed outputs plus exactly one weighted random outcome; input consumed at production start. Work time and outcome remain conditional."
+}

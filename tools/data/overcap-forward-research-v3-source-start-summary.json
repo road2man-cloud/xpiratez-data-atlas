@@ -1,0 +1,145 @@
+{
+  "schema": "ATLAS_FORWARD_CAMPAIGN_RESEARCH_V3",
+  "artifact": "tools/data/overcap-forward-research-v3-source-start.json.gz",
+  "artifactSha256": "bafd6d15c067cf0385b7ed2978bc16635d809591502257479d60765181f764c1",
+  "inputs": {
+    "files": {
+      "public/data/soldiers-modern-index.json": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+      "tools/data/overcap-forward-supply-catalog-v2.json": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+      "tools/data/overcap-forward-starting-base-v3.json": "92dc15da2a3fdab42414da9d292ba5bb3fc48e29e79b0b9f52adc2e443c9d689",
+      "tools/data/overcap-forward-junk-extraction-v3.json": "23c1723fd7f228f682aa152f64b2ebe831ed62e14de4dfaeb16ace4a58f852e3"
+    },
+    "engineFiles": {
+      "tools/build-overcap-forward-source-start-v3.mjs": "dfc2fcb217c47354afe3281b8753da034c9b71ccabcdb94f3c9fc99aebdd99f2",
+      "tools/atlas-overcap-forward-research-v3.mjs": "2df4179439c00d70007c46f90b246075fcea0a49272d602f69fbf418aa80c8dd",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/atlas-overcap-forward-purchase-gate-v3.mjs": "b0eaa9f060bfb71eca20e06e60bc35ca01060c3903b3a9bfb1baecf802e6fe68",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "roots": {
+    "근처 마을 방문": "STR_JACKSTOWN_SCOUTING",
+    "회의 소집": "STR_WAT_DO",
+    "지역 농부 고용": "STR_RECRUIT_PEASANTS",
+    "기계류 조사": "STR_INSPECT_MACHINERY"
+  },
+  "nodes": 3786,
+  "edges": 6819,
+  "expanded": 49,
+  "openUnexpanded": 3737,
+  "distinctResearch": 706,
+  "maxLabDepth": 38,
+  "byAction": {
+    "research": 717,
+    "freeResearch": 536,
+    "sourceResearchDelivery": 2,
+    "sourceEventItems": 1428,
+    "eventResearch": 3124,
+    "missionResearch": 184,
+    "advanceMonth": 41,
+    "sourceBuySample": 7,
+    "sourceManufactureItem": 10,
+    "sourceRandomManufacture": 768,
+    "sourceBuildFacility": 2
+  },
+  "failed": 0,
+  "goals": [
+    {
+      "kind": "facility",
+      "id": "STR_PERSONAL_LABS"
+    },
+    {
+      "kind": "research",
+      "id": "STR_ELERIUM_115"
+    },
+    {
+      "kind": "facility",
+      "id": "STR_WORKSHOP"
+    }
+  ],
+  "rootCursors": [
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "seed": 2775,
+      "final": 3693,
+      "finalStateHash": "b4ccb851179d45ef763ba0fcd3e5fe25c42625bfae6605bdaead1d886a8bf4f3",
+      "selected": [
+        5953,
+        6081,
+        6261,
+        6449,
+        6652
+      ],
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED",
+      "reason": null,
+      "missing": [],
+      "milestones": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true
+        }
+      ],
+      "labDepth": 37,
+      "completedResearch": 73,
+      "baseFunctions": [
+        "ALKO",
+        "CPU",
+        "LAB",
+        "SHOP",
+        "STUDY",
+        "WELL",
+        "WORKS"
+      ],
+      "items": {
+        "STR_RAYGUN": 1,
+        "STR_RAYGUN_CLIP": 3,
+        "STR_SHIV": 5,
+        "STR_NOOSE": 3,
+        "STR_FLINTLOCK_BALLS": 30,
+        "STR_SHOTGUN_G_SHELLS": 5,
+        "STR_PIR_CANNONBALL": 20,
+        "STR_MOLOTOV": 4,
+        "STR_ANARCHY_BOMB": 2,
+        "STR_TINY_DRILL": 1,
+        "STR_ELERIUM_115": 4,
+        "STR_JUNK_PILE": 14,
+        "STR_BIG_ROCK": 169,
+        "STR_SCRAP_METAL": 130,
+        "STR_MENACING_HULL": 1,
+        "STR_RAIDER_CORPSE": 6,
+        "STR_MUTANT_MEAT": 6,
+        "STR_LAND_DEED": 1,
+        "STR_CIGS": 1,
+        "STR_DATA_DISK": 0,
+        "STR_CHEMICALS": 20,
+        "STR_SC_WIRE": 3,
+        "STR_WRENCH": 0,
+        "STR_DATA_DISK_B": 0,
+        "STR_GUILD_CORPSE": 2
+      }
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "firstFailures": []
+}

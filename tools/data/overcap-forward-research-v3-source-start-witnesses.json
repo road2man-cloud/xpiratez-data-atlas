@@ -1,0 +1,2271 @@
+{
+  "schema": "ATLAS_FORWARD_SOURCE_START_WITNESSES_V3",
+  "graphSha256": "bafd6d15c067cf0385b7ed2978bc16635d809591502257479d60765181f764c1",
+  "initialAction": {
+    "type": "sourceStartingBase",
+    "source": {
+      "file": "Piratez.rul",
+      "lineStart": 206482,
+      "lineEnd": 206597,
+      "sectionSha256": "da0aa161affbcccc9e17059540108d676ec8dce41e8f73ca30df3fc44de5bb3f"
+    },
+    "facilities": [
+      {
+        "id": "STR_ACCESS_LIFT",
+        "x": 2,
+        "y": 2
+      },
+      {
+        "id": "STR_HANGAR",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": "STR_HANGAR",
+        "x": 2,
+        "y": 0
+      },
+      {
+        "id": "STR_LIVING_QUARTERS",
+        "x": 2,
+        "y": 3
+      },
+      {
+        "id": "STR_BURROW",
+        "x": 3,
+        "y": 5
+      },
+      {
+        "id": "STR_CORRIDOR",
+        "x": 3,
+        "y": 2
+      },
+      {
+        "id": "STR_CORRIDOR",
+        "x": 2,
+        "y": 5
+      },
+      {
+        "id": "STR_WELL",
+        "x": 3,
+        "y": 3
+      },
+      {
+        "id": "STR_STILL",
+        "x": 0,
+        "y": 5
+      },
+      {
+        "id": "STR_GENERAL_STORES",
+        "x": 3,
+        "y": 4
+      },
+      {
+        "id": "STR_JAIL",
+        "x": 1,
+        "y": 5
+      },
+      {
+        "id": "STR_GENERAL_STORES_ARMORED",
+        "x": 1,
+        "y": 4
+      },
+      {
+        "id": "STR_LABORATORY",
+        "x": 2,
+        "y": 4
+      },
+      {
+        "id": "STR_SMALL_RADAR_SYSTEM",
+        "x": 4,
+        "y": 5
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 0,
+        "y": 3
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 0,
+        "y": 4
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 1,
+        "y": 3
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 5,
+      "STR_JUNK_PILE": 16,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 100,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1
+    },
+    "functions": [
+      "ALKO",
+      "CPU",
+      "LAB",
+      "SHOP",
+      "WELL"
+    ],
+    "crafts": [
+      {
+        "type": "STR_AIRBUS",
+        "items": {
+          "STR_HANDLE": 4,
+          "STR_KNUCKLES": 2,
+          "STR_KNOIF": 3,
+          "STR_PIPE": 2,
+          "STR_BATTO": 2,
+          "STR_SHORT_SWORD": 2,
+          "STR_AX": 2,
+          "STR_CHAINSAW": 1,
+          "STR_FLINTLOCK_PISTOL": 2,
+          "STR_FLINTLOCK_MUSKET": 2,
+          "STR_HARQUEBUS": 1,
+          "STR_FLINTLOCK_BALLS": 20,
+          "STR_SHOTGUN_G": 1,
+          "STR_SHOTGUN_G_SHELLS": 5,
+          "STR_MINI_CANNON": 1,
+          "STR_SL_HE": 6,
+          "STR_PIR_CANNON": 1,
+          "STR_PIR_CANNONBALL": 5,
+          "STR_ANARCHY_BOMB": 4,
+          "STR_MOLOTOV": 6,
+          "STR_BANDAGE": 10,
+          "STR_CANTEEN": 2,
+          "STR_MOONSHINE": 4
+        },
+        "id": 1,
+        "fuel": 800,
+        "damage": 0,
+        "status": "STR_READY"
+      }
+    ],
+    "scientists": 3,
+    "engineers": 10,
+    "randomSoldiers": 6,
+    "assumption": false
+  },
+  "witnesses": [
+    {
+      "label": "근처 마을 방문",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "status": "OPEN_ROOT_NOT_YET_EXPANDED"
+    },
+    {
+      "label": "회의 소집",
+      "root": "STR_WAT_DO",
+      "status": "OPEN_ROOT_NOT_YET_EXPANDED"
+    },
+    {
+      "label": "지역 농부 고용",
+      "root": "STR_RECRUIT_PEASANTS",
+      "status": "OPEN_ROOT_NOT_YET_EXPANDED"
+    },
+    {
+      "label": "기계류 조사",
+      "root": "STR_INSPECT_MACHINERY",
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED",
+      "reason": null,
+      "finalNode": 3693,
+      "stateHash": "b4ccb851179d45ef763ba0fcd3e5fe25c42625bfae6605bdaead1d886a8bf4f3",
+      "labDepth": 37,
+      "researchCount": 73,
+      "baseFunctions": [
+        "ALKO",
+        "CPU",
+        "LAB",
+        "SHOP",
+        "STUDY",
+        "WELL",
+        "WORKS"
+      ],
+      "milestones": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true
+        }
+      ],
+      "steps": [
+        {
+          "edge": 3,
+          "from": 0,
+          "to": 4,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_WELL"
+          ]
+        },
+        {
+          "edge": 4,
+          "from": 4,
+          "to": 5,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_INSPECT_MACHINERY",
+            "choices": [
+              "STR_WELL"
+            ],
+            "phase": "before-source"
+          },
+          "added": [
+            "STR_GENERAL_STORES_ARMORED",
+            "STR_INSPECT_MACHINERY",
+            "STR_WELL"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_GENERAL_STORES_ARMORED ← STR_INSPECT_MACHINERY"
+          ]
+        },
+        {
+          "edge": 5,
+          "from": 5,
+          "to": 6,
+          "action": {
+            "type": "sourceResearchDelivery",
+            "index": 0,
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "assumption": true
+          },
+          "evidence": {
+            "kind": "DIRECT_LAB_SPAWNED_ITEM_TRANSFER",
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "transferHours": 1
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {
+            "STR_CIGS": {
+              "before": 0,
+              "after": 1,
+              "delta": 1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "OXCE direct lab spawned item; one-hour transfer completion assumed."
+          ]
+        },
+        {
+          "edge": 7,
+          "from": 6,
+          "to": 8,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          },
+          "added": [
+            "STR_PIRATE_LIFE",
+            "STR_WAT_DO"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": [
+            "OXCE lookup 후속 연구: STR_WAT_DO → STR_PIRATE_LIFE"
+          ]
+        },
+        {
+          "edge": 127,
+          "from": 8,
+          "to": 54,
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_PIRATE_LIFE"
+            ]
+          },
+          "added": [
+            "STR_PIRATE_STYLE",
+            "STR_SAILOR_UNIFORM"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_SAILOR_UNIFORM ← STR_PIRATE_STYLE"
+          ]
+        },
+        {
+          "edge": 249,
+          "from": 54,
+          "to": 102,
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          },
+          "added": [
+            "STR_PEASANTS_ZZZ",
+            "STR_RECRUIT_PEASANTS"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANTS_ZZZ ← STR_RECRUIT_PEASANTS"
+          ]
+        },
+        {
+          "edge": 370,
+          "from": 102,
+          "to": 149,
+          "action": {
+            "type": "research",
+            "id": "STR_EXPLORE_TUNNELS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_INSPECT_MACHINERY"
+            ]
+          },
+          "added": [
+            "STR_EXPLORE_TUNNELS"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 494,
+          "from": 149,
+          "to": 199,
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_RECRUIT_PEASANTS"
+            ]
+          },
+          "added": [
+            "STR_UBER_WHEAT"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 610,
+          "from": 199,
+          "to": 241,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 CIV_ARMOR_LOKNAR_1"
+          ]
+        },
+        {
+          "edge": 730,
+          "from": 241,
+          "to": 287,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "choices": [
+              "CIV_ARMOR_LOKNAR_1"
+            ],
+            "phase": "before-source"
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ",
+            "STR_TAC_VEST_PEASANT_UC"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_JACKSTOWN_ZZZ ← STR_JACKSTOWN_SCOUTING",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_TAC_VEST_PEASANT_UC ← STR_JACKSTOWN_SCOUTING"
+          ]
+        },
+        {
+          "edge": 732,
+          "from": 287,
+          "to": 289,
+          "action": {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_PIRATE_STYLE"
+            ]
+          },
+          "added": [
+            "STR_CLOTHING_UC",
+            "STR_KULTUR",
+            "STR_PIRATE_FLAG"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_CLOTHING_UC ← STR_KULTUR",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PIRATE_FLAG ← STR_KULTUR"
+          ]
+        },
+        {
+          "edge": 861,
+          "from": 289,
+          "to": 344,
+          "action": {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          },
+          "added": [
+            "STR_VIOLENCE",
+            "STR_VIOLENCE_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_VIOLENCE_ZZZ ← STR_VIOLENCE"
+          ]
+        },
+        {
+          "edge": 992,
+          "from": 344,
+          "to": 401,
+          "action": {
+            "type": "research",
+            "id": "STR_MELEE_SUMMARY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE"
+            ]
+          },
+          "added": [
+            "STR_KNUCKLES_SPIKED",
+            "STR_MELEE_SUMMARY",
+            "STR_UNARMED_GAUNTLET",
+            "STR_UNARMED_WRESTLING"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_KNUCKLES_SPIKED ← STR_MELEE_SUMMARY",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_UNARMED_GAUNTLET ← STR_MELEE_SUMMARY",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_UNARMED_WRESTLING ← STR_MELEE_SUMMARY"
+          ]
+        },
+        {
+          "edge": 1125,
+          "from": 401,
+          "to": 460,
+          "action": {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          },
+          "added": [
+            "STR_FIRST_AID_KIT",
+            "STR_SURVIVAL",
+            "STR_SURVIVAL_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_FIRST_AID_KIT ← STR_SURVIVAL",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_SURVIVAL_ZZZ ← STR_SURVIVAL"
+          ]
+        },
+        {
+          "edge": 1259,
+          "from": 460,
+          "to": 520,
+          "action": {
+            "type": "research",
+            "id": "STR_BASIC_INCENDIARIES"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_INSPECT_MACHINERY",
+              "STR_VIOLENCE"
+            ]
+          },
+          "added": [
+            "STR_BASIC_INCENDIARIES",
+            "STR_BASIC_INCENDIARIES_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_BASIC_INCENDIARIES_ZZZ ← STR_BASIC_INCENDIARIES"
+          ]
+        },
+        {
+          "edge": 1394,
+          "from": 520,
+          "to": 581,
+          "action": {
+            "type": "research",
+            "id": "STR_THE_PHARMACIST"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          },
+          "added": [
+            "STR_THE_PHARMACIST"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 1527,
+          "from": 581,
+          "to": 640,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 1659,
+          "from": 640,
+          "to": 698,
+          "action": {
+            "type": "research",
+            "id": "STR_SMITHING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_HARDWARE_SHOPPING",
+              "STR_SURVIVAL",
+              "STR_VIOLENCE"
+            ]
+          },
+          "added": [
+            "STR_SMITHING",
+            "STR_SMITHING_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_SMITHING_ZZZ ← STR_SMITHING"
+          ]
+        },
+        {
+          "edge": 1793,
+          "from": 698,
+          "to": 758,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 1932,
+          "from": 758,
+          "to": 823,
+          "action": {
+            "type": "research",
+            "id": "STR_FLINTLOCKS_PRODUCTION"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_BASIC_INCENDIARIES",
+              "STR_SMITHING",
+              "STR_UBER_WHEAT"
+            ]
+          },
+          "added": [
+            "STR_FLINTLOCKS_PRODUCTION",
+            "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+            "STR_PEPPER_PISTOL"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_FLINTLOCKS_PRODUCTION_ZZZ ← STR_FLINTLOCKS_PRODUCTION",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEPPER_PISTOL ← STR_FLINTLOCKS_PRODUCTION"
+          ]
+        },
+        {
+          "edge": 2065,
+          "from": 823,
+          "to": 882,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 2188,
+          "from": 882,
+          "to": 931,
+          "action": {
+            "type": "research",
+            "id": "STR_BOWS_SUMMARY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_BOW_H",
+              "STR_SURVIVAL"
+            ]
+          },
+          "added": [
+            "STR_BOWS_SUMMARY"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 2329,
+          "from": 931,
+          "to": 998,
+          "action": {
+            "type": "research",
+            "id": "STR_PRIMITIVE_WEAPONS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_BOWS_SUMMARY",
+              "STR_MELEE_SUMMARY"
+            ]
+          },
+          "added": [
+            "STR_PRIMITIVE_WEAPONS",
+            "STR_PRIMITIVE_WEAPONS_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PRIMITIVE_WEAPONS_ZZZ ← STR_PRIMITIVE_WEAPONS"
+          ]
+        },
+        {
+          "edge": 2452,
+          "from": 998,
+          "to": 1047,
+          "action": {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_GROG_BARREL"
+          ]
+        },
+        {
+          "edge": 2578,
+          "from": 1047,
+          "to": 1099,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CUNNING",
+            "choices": [
+              "STR_GROG_BARREL"
+            ],
+            "phase": "before-source"
+          },
+          "added": [
+            "STR_CUNNING",
+            "STR_GROG_BARREL"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 2588,
+          "from": 1099,
+          "to": 1109,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_GENERAL_SUPPLIES"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CUNNING",
+              "STR_GUN_SHOPPING",
+              "STR_HARDWARE_SHOPPING",
+              "STR_THE_PHARMACIST"
+            ]
+          },
+          "added": [
+            "STR_CONTACT_GENERAL_SUPPLIES",
+            "STR_CONTACT_GENERAL_SUPPLIES_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_CONTACT_GENERAL_SUPPLIES_ZZZ ← STR_CONTACT_GENERAL_SUPPLIES"
+          ]
+        },
+        {
+          "edge": 2722,
+          "from": 1109,
+          "to": 1169,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_BUILDERS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CUNNING",
+              "STR_INSPECT_MACHINERY"
+            ]
+          },
+          "added": [
+            "STR_CONTACT_BUILDERS"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 2865,
+          "from": 1169,
+          "to": 1238,
+          "action": {
+            "type": "research",
+            "id": "STR_PRIMITIVE_WEAPONS_2"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_GENERAL_SUPPLIES",
+              "STR_PRIMITIVE_WEAPONS",
+              "STR_SMITHING"
+            ]
+          },
+          "added": [
+            "STR_PRIMITIVE_WEAPONS_2",
+            "STR_PRIMITIVE_WEAPONS_2_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PRIMITIVE_WEAPONS_2_ZZZ ← STR_PRIMITIVE_WEAPONS_2"
+          ]
+        },
+        {
+          "edge": 2994,
+          "from": 1238,
+          "to": 1293,
+          "action": {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_LABORATORY"
+          ]
+        },
+        {
+          "edge": 3123,
+          "from": 1293,
+          "to": 1348,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_WEIRDNESS",
+            "choices": [
+              "STR_LABORATORY"
+            ],
+            "phase": "before-source"
+          },
+          "added": [
+            "STR_LABORATORY",
+            "STR_WEIRDNESS",
+            "STR_WEIRDNESS_ZZZ"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_WEIRDNESS_ZZZ ← STR_WEIRDNESS"
+          ]
+        },
+        {
+          "edge": 3138,
+          "from": 1348,
+          "to": 1363,
+          "action": {
+            "type": "research",
+            "id": "STR_SCHOOLING_1"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_HARDWARE_SHOPPING",
+              "STR_WEIRDNESS"
+            ]
+          },
+          "added": [
+            "STR_JUNK_PILE",
+            "STR_PINUP_001",
+            "STR_SCHOOLING_1"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_JUNK_PILE ← STR_SCHOOLING_1",
+            "OXCE lookup 후속 연구: STR_SCHOOLING_1 → STR_PINUP_001"
+          ]
+        },
+        {
+          "edge": 3263,
+          "from": 1363,
+          "to": 1414,
+          "action": {
+            "type": "sourceResearchDelivery",
+            "index": 0,
+            "source": "STR_SCHOOLING_1",
+            "item": "STR_DATA_DISK",
+            "count": 1,
+            "assumption": true
+          },
+          "evidence": {
+            "kind": "DIRECT_LAB_SPAWNED_ITEM_TRANSFER",
+            "source": "STR_SCHOOLING_1",
+            "item": "STR_DATA_DISK",
+            "count": 1,
+            "transferHours": 1
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {
+            "STR_DATA_DISK": {
+              "before": 0,
+              "after": 1,
+              "delta": 1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "OXCE direct lab spawned item; one-hour transfer completion assumed."
+          ]
+        },
+        {
+          "edge": 3273,
+          "from": 1414,
+          "to": 1424,
+          "action": {
+            "type": "research",
+            "id": "STR_SCI_REP"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_INSPECT_MACHINERY",
+              "STR_WEIRDNESS"
+            ]
+          },
+          "added": [
+            "STR_SCI_REP"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 3465,
+          "from": 1424,
+          "to": 1542,
+          "action": {
+            "type": "research",
+            "id": "STR_EXCAVATION"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_EXPLORE_TUNNELS",
+              "STR_SCHOOLING_1",
+              "STR_SMITHING"
+            ]
+          },
+          "added": [
+            "STR_EXCAVATION",
+            "STR_PICKAXE"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PICKAXE ← STR_EXCAVATION"
+          ]
+        },
+        {
+          "edge": 3710,
+          "from": 1542,
+          "to": 1691,
+          "action": {
+            "type": "sourceRandomManufacture",
+            "id": "STR_JUNK_PILE_EX",
+            "outcome": 13,
+            "assumeOutcome": true
+          },
+          "evidence": {
+            "kind": "SOURCE_WEIGHTED_MANUFACTURE_OUTCOME",
+            "requires": [
+              "STR_SCHOOLING_1"
+            ],
+            "functions": [],
+            "inputs": {
+              "STR_JUNK_PILE": 1
+            },
+            "fixed": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2
+            },
+            "random": {
+              "STR_WRENCH": 1
+            },
+            "weight": 15,
+            "totalWeight": 609,
+            "time": 360,
+            "cost": 0,
+            "space": 0
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {
+            "STR_JUNK_PILE": {
+              "before": 16,
+              "after": 15,
+              "delta": -1
+            },
+            "STR_SCRAP_METAL": {
+              "before": 100,
+              "after": 115,
+              "delta": 15
+            },
+            "STR_CHEMICALS": {
+              "before": 0,
+              "after": 10,
+              "delta": 10
+            },
+            "STR_SC_WIRE": {
+              "before": 0,
+              "after": 2,
+              "delta": 2
+            },
+            "STR_WRENCH": {
+              "before": 0,
+              "after": 1,
+              "delta": 1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "Exact source recipe inputs consumed; fixed outputs plus one weighted RNG outcome. Labor/time and RNG conditional."
+          ]
+        },
+        {
+          "edge": 3832,
+          "from": 1691,
+          "to": 1761,
+          "action": {
+            "type": "research",
+            "id": "STR_WRENCH"
+          },
+          "evidence": {
+            "kind": "SOURCE_BACKED_SAMPLE",
+            "item": "STR_WRENCH"
+          },
+          "added": [
+            "STR_WRENCH"
+          ],
+          "closed": [],
+          "itemChanges": {
+            "STR_WRENCH": {
+              "before": 1,
+              "after": 0,
+              "delta": -1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 4034,
+          "from": 1761,
+          "to": 1889,
+          "action": {
+            "type": "research",
+            "id": "STR_STEAM_POWER"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_BASIC_INCENDIARIES",
+              "STR_EXCAVATION",
+              "STR_PRIMITIVE_WEAPONS_2",
+              "STR_WRENCH"
+            ]
+          },
+          "added": [
+            "STR_STEAM_POWER"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 4217,
+          "from": 1889,
+          "to": 1998,
+          "action": {
+            "type": "research",
+            "id": "STR_SC_WIRE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SCHOOLING_1",
+              "STR_SCI_REP"
+            ]
+          },
+          "added": [
+            "STR_SC_WIRE"
+          ],
+          "closed": [],
+          "itemChanges": {
+            "STR_SC_WIRE": {
+              "before": 2,
+              "after": 1,
+              "delta": -1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 4404,
+          "from": 1998,
+          "to": 2111,
+          "action": {
+            "type": "research",
+            "id": "STR_PERSONAL_LABS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SCHOOLING_1",
+              "STR_SCI_REP",
+              "STR_SC_WIRE"
+            ]
+          },
+          "added": [
+            "STR_PERSONAL_LABS"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 4605,
+          "from": 2111,
+          "to": 2238,
+          "action": {
+            "type": "sourceBuildFacility",
+            "id": "STR_PERSONAL_LABS",
+            "assumption": true
+          },
+          "evidence": {
+            "kind": "INDEXED_FACILITY_CONSTRUCTION",
+            "requires": [
+              "STR_PERSONAL_LABS"
+            ],
+            "functions": [
+              "CPU"
+            ],
+            "provides": [
+              "STUDY",
+              "LAB"
+            ],
+            "cost": 950000,
+            "days": 28,
+            "size": 1
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [
+            "STUDY"
+          ],
+          "newFacilities": [
+            "STR_PERSONAL_LABS"
+          ],
+          "conditional": true,
+          "notes": [
+            "Indexed construction unlock; build time, available base space and financing remain conditional."
+          ]
+        },
+        {
+          "edge": 4772,
+          "from": 2238,
+          "to": 2331,
+          "action": {
+            "type": "research",
+            "id": "STR_ELERIUM_115"
+          },
+          "evidence": {
+            "kind": "SOURCE_BACKED_SAMPLE",
+            "item": "STR_ELERIUM_115"
+          },
+          "added": [
+            "STR_ELERIUM_115",
+            "STR_PERSONAL_LABS_EXIST"
+          ],
+          "closed": [],
+          "itemChanges": {
+            "STR_ELERIUM_115": {
+              "before": 5,
+              "after": 4,
+              "delta": -1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PERSONAL_LABS_EXIST ← STR_ELERIUM_115"
+          ]
+        },
+        {
+          "edge": 4984,
+          "from": 2331,
+          "to": 2469,
+          "action": {
+            "type": "sourceManufactureItem",
+            "id": "STR_DATA_DISK_B",
+            "assumption": true
+          },
+          "evidence": {
+            "kind": "INDEXED_DETERMINISTIC_MANUFACTURE",
+            "requires": [
+              "STR_SCHOOLING_1"
+            ],
+            "functions": [
+              "CPU"
+            ],
+            "inputs": {
+              "STR_DATA_DISK": 1
+            },
+            "outputs": {
+              "STR_DATA_DISK_B": 1
+            },
+            "cost": 0,
+            "time": 20
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {
+            "STR_DATA_DISK": {
+              "before": 1,
+              "after": 0,
+              "delta": -1
+            },
+            "STR_DATA_DISK_B": {
+              "before": 0,
+              "after": 1,
+              "delta": 1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "All indexed inputs consumed and all deterministic outputs produced; labor/time/funds conditional."
+          ]
+        },
+        {
+          "edge": 5173,
+          "from": 2469,
+          "to": 2584,
+          "action": {
+            "type": "research",
+            "id": "STR_DATA_DISK_B"
+          },
+          "evidence": {
+            "kind": "SOURCE_BACKED_SAMPLE",
+            "item": "STR_DATA_DISK_B"
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {
+            "STR_DATA_DISK_B": {
+              "before": 1,
+              "after": 0,
+              "delta": -1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_SMALL_SCOUT_BLUEPRINT, STR_MEDIUM_SCOUT_BLUEPRINT, STR_LARGE_SCOUT_BLUEPRINT, STR_HARVESTER_BLUEPRINT, STR_SUPPLY_SHIP_BLUEPRINT, STR_ABDUCTOR_BLUEPRINT, STR_TERROR_SHIP_BLUEPRINT, STR_BATTLESHIP_BLUEPRINT, STR_VESSEL_BOARDING_TORPEDO_BLUEPRINT, STR_VESSEL_BREAKER_BLUEPRINT, STR_VESSEL_ASSAULT_TRANSPORT_BLUEPRINT, STR_FRIGATE_BLUEPRINT, STR_VESSEL_HOPPER_BLUEPRINT, STR_VESSEL_EXCAVATOR_BLUEPRINT, STR_VESSEL_COURIER_BLUEPRINT, STR_VESSEL_MESSENGER, STR_VESSEL_FREIGHTER_BLUEPRINT, STR_VESSEL_GUNBOAT_BLUEPRINT, STR_VESSEL_LIGHT_GUNBOAT_BLUEPRINT, STR_VESSEL_MILITARY_TRANSPORT_BLUEPRINT, STR_VESSEL_ESCORT_BLUEPRINT, STR_VESSEL_GUNSHIP_BLUEPRINT, STR_VESSEL_HEAVY_GUNSHIP_BLUEPRINT, STR_VESSEL_CORVETTE_BLUEPRINT, STR_VESSEL_DESTROYER_BLUEPRINT, STR_VESSEL_SOTL_BLUEPRINT, STR_VESSEL_BOMBER_BLUEPRINT, STR_VESSEL_GOVSHIP, STR_VESSEL_RAIDER, STR_VESSEL_RAIDER_GUNSHIP, STR_VESSEL_RAIDER_FIGHTER, STR_VESSEL_SENTRY_BLUEPRINT, STR_VESSEL_FIGHTER_BLUEPRINT, STR_VESSEL_VIPER_FIGHTER_BLUEPRINT, STR_VESSEL_SNAKEBOAT, STR_VESSEL_HOTROD, STR_VESSEL_PROBE, STR_VESSEL_FOOT_PATROL, STR_VESSEL_POL_PATROL, STR_VESSEL_POL_CRUISER, STR_VESSEL_POL_INTERCEPTOR, STR_VESSEL_POL_DROPSHIP, STR_ALIEN_RESEARCH, STR_ALIEN_HARVEST, STR_ALIEN_ABDUCTION, STR_MISSION_SWAY_GOVT, STR_ALIEN_BASE, STR_ALIEN_TERROR, STR_ALIEN_RETALIATION, STR_ALIEN_SUPPLY, STR_MISSION_FREIGHT, STR_MISSION_GOLD_TRANSPORT, STR_MISSION_MINING, STR_MISSION_MILITARY_SUPPLY, STR_MISSION_COURIER, STR_MISSION_PASSENGER, STR_ALIEN_INFILTRATION, STR_MISSION_SURVEY, STR_MISSION_DIPLOMACY, STR_MISSION_CONVERSION, STR_MISSION_SUPERVISION, STR_MISSION_MERCENARY_ASSIGNMENT, STR_MISSION_RAID, STR_MISSION_SMUGGLING, STR_HELLERIUM_ECONOMY, STR_PARADISE_WORLDS, STR_MARS_BACKGROUND, STR_STARGOD_TIME, STR_FROG_INTERCEPTOR, STR_ECLIPSE_INTERCEPTOR, STR_X35_INTERCEPTOR, STR_MIG_INTERCEPTOR, STR_RED_BARON_INTERCEPTOR, STR_HURICANE_INTERCEPTOR, PILLBOX_ARMOR, FIELD_GUN_ARMOR, TRUCK_TURRET_14MM_ARMOR, STR_TURRET_MINIGUN_ARMOR, MANHACK_ARMOR, STR_CYBERDOG_TERRORIST, STR_GECKO_SAM, STR_VIPER_LAUNCHER_DAMAGED, STR_CANNON_PARTS, STR_MED_CANNON_PARTS, STR_RPC_PARTS, STR_GAUSS_CANNON_PARTS, STR_GAT_LASCANNON_PARTS, STR_PBA_CORPSE, STR_HUMAN_CARAPACE_ARMOR, STR_PEASANT_BONDAGE_GEAR_UC, STR_STUN_BATON, STR_CATTLE_PROD, STR_WAKIZASHI, STR_SLICER, STR_KATANA, STR_TECH_CLEAVER, STR_CAT_PAWS, STR_SWORD_MDV, STR_SUPER_STAPLER, STR_FLINTLOCK_BALLS_G, STR_REVOLVER_POLICE, STR_OLD_MAGNUM, STR_GOVT_MAGNUM, STR_MAGNUM, STR_PISTOL, STR_HEAVY_PISTOL, STR_COMMANDO_PISTOL, STR_MAUSER, STR_SKORPION, STR_SHOTGUN, STR_SHOTGUN_POLICE, STR_MINI_SMG, STR_ASMG, STR_MP, STR_SMG_10MM, STR_TOMMYGUN, STR_RUGER, STR_OLD_RIFLE, STR_OLD_SNIPER_RIFLE, STR_AUTO_RIFLE, STR_RIFLE, STR_RIFLE_ADV, STR_BATTLE_RIFLE, STR_INFANTRY_RIFLE, STR_OMEGA_RIFLE, STR_UAC_CARBINE, STR_UAC_RIFLE, STR_UAC_SHOTGUN, STR_SAW, STR_LMG, STR_MACHINEGUN_LIGHT, STR_SPARTAN_MG, STR_HUNTING_RIFLE, STR_SCOUT_RIFLE, STR_DRAGOON_RIFLE, STR_NITRO_EXPRESS, STR_SNIPER_RIFLE, STR_CAWS, STR_LACC, STR_MUTANT_MG, STR_GRENADE_LAUNCHER, STR_HEAVY_CANNON, STR_AUTO_CANNON, STR_MINIGUN, STR_CHAINGUN, STR_ATG_RIFLE, STR_RECOILLESS_RIFLE, STR_ROCKET_LAUNCHER, STR_TOXIGUN, STR_FLAMETHROWER_LR, STR_HAND_FLAMER, STR_LASER_PISTOL_MINI, STR_LASER_PISTOL_LT, STR_KRUGER, STR_MPG, STR_INFANTRY_LASER, STR_HUNTING_LASER, STR_HYDRA_LASER, STR_WYVERN_PLASMA_GUN, STR_RETICULAN_ELECTROGUN, STR_RETICULAN_LASER_PISTOL, STR_RETICULAN_LASER_GUN, STR_RETICULAN_PLASMA_GUN, STR_DURANDAL_CANNON, STR_SSRL, STR_SL_ACID, STR_SL_EMP, STR_SL_HELL, STR_DYNAMITE, STR_GAS_GRENADE, STR_CRY_GRENADE, STR_ACID_GRENADE, STR_RIOT_GRENADE, STR_PIR_ALIEN_GRENADE, STR_GRENADE_BLOWFISHE, STR_UAC_SPACE_SUIT, STR_VODKA, STR_BEER, STR_APPLE, STR_ORANGE, STR_BOOM_FRUIT, STR_SECFLOWER, STR_SECTOWEED, STR_SMALL_MEDIPACK, STR_EVIL_GRASS, STR_PINK_DESERTS, STR_UNDERGROUND_ANOMALY, STR_CYBERHEADS, STR_GARLIC, STR_SHROOM_BROWN, STR_SHROOM_RED, STR_SHROOM_WHITE, STR_COMBAT_DRUGS, STR_GOVT_CORPSE, STR_RAIDER_CORPSE, STR_GUILD_CORPSE, STR_CHURCH_CORPSE, STR_ACADEMY_CORPSE, STR_SECURITY_CORPSE, STR_CAR_CORPSE, STR_TANK_CORPSE, SECTOID_ARMOR_P9, STR_MEGASCORPION_POISON, STR_SPIDER_SILK, STR_MONSTER_TEETH, STR_MONSTER_EYE, STR_LUXURY_FUR, STR_MEIDO_OUTFIT, STR_LINGERIE, STR_SWIMSUIT, STR_BIKINI, STR_LAMIA_ENCLAVES, REBEL_ARMOR_1, REBEL_ARMOR_2, REBEL_ARMOR_3, REBEL_ARMOR_4, REBEL_ARMOR_5, STR_ALIEN_ALLOYS, STR_LIFTER, STR_UFO_NAVIGATION, STR_UFO_POWER_SOURCE, STR_UFO_POWER_SOURCE_SMALL, STR_ALIEN_FOOD, STR_ALIEN_ENTERTAINMENT, STR_ALIEN_HABITAT, STR_ALIEN_REPRODUCTION, STR_LIQUID_METALS, STR_ADVANCED_WEAPONS, STR_MUTANT_ORIGINS, STR_ELECTRONIC_PIECES, STR_MEDICAL_SUPPLIES, STR_LONGEVITY_SERUM, STR_SENSOSPHERE, STR_CRACK, STR_MEDALLION, STR_RING, STR_GOLDEN_HELM, STR_YELLOW_GEM, STR_BLUE_GEM, STR_GREEN_GEM, STR_RED_GEM, STR_DIAMOND, STR_SILVER_BAR, STR_TREASURE_BAG, STR_TREASURE_CHEST, STR_NUCLEAR_MATERIALS, STR_CASH_BAG, STR_MONEY_PURSE, STR_CONSUMER_GOODS, STR_COINS, STR_DOLLAR_BRIEFCASE, STR_MERC_BIZCARD, STR_UAC_BLUEPRINTS, STR_BABY_NUKE_BLUEPRINTS, STR_ARC_WELDER, STR_PARTS_WEAPON_ADV, STR_PARTS_WEAPON_MC, STR_PARTS_HEAVY_COUPLINGS, STR_PARTS_LASER_LENS, STR_PARTS_LASER_CRYSTAL, STR_PARTS_GAUSS_CAPACITOR, STR_PARTS_GAUSS_COIL, STR_PARTS_PLASMA_CHAMBER, STR_PARTS_PLASMA_ACCELERATOR, STR_PARTS_WEAPON_PSI, STR_SMUGGLED_ELECTRONICS, STR_ALIEN_ABDUCTION_PIR, STR_INTERSTELLAR_TRAVEL_SUMMARY, STR_ROBOT_MAID, STR_LAPUTA, STR_JILLSVILLE, STR_GERMANY, STR_NCR, STR_CHINA, STR_USA, STR_BRAZIL, STR_AUSTRALIA, STR_RUSSIA, STR_FRANCE, STR_JAPAN, STR_INDIA, STR_NIGERIA, STR_INDONESIA, STR_UK, STR_CANADA, STR_LATIN_EMPIRE, STR_SPAIN, STR_VENEZUELA, STR_SOUTH_AFRICA, STR_ITALY, STR_CHILE, STR_TECHNOCRACY, STR_EGYPT, STR_TURAN, STR_HUMANS, STR_BEASTMEN, STR_SHADOWS, STR_DEEP_ONE, STR_AQUATOID, STR_DOOM_HUMAN_AUTOPSY, STR_NEKOMIMI, STR_ASTRONAUGHTS, STR_BLOBBERS, STR_CLICKORS, STR_QUIRIANS, STR_RODELHIA, STR_RIMRIDERS, STR_CEREBRALA, STR_TOGUA, STR_SHADOWSYNS, STR_CHAOS_SYNS, STR_PEREGRINES, STR_ANIMATRONS, STR_ERIDIAN, STR_NUBIRAN, STR_THE_SILENCE, STR_SLAVE, STR_SLAVE_MAID, STR_SLAVE_BRUTE, STR_ROBOTIC_SPIDERS, STR_TROLLETARIAT, STR_NUNITY, STR_POSTRAPTURE, STR_KOSCHEY_LEGENDS, STR_MARS_TUNNELS, STR_MARSEC_HYPERCUTTER, STR_MARSEC_HYPERCORVETTE, STR_STAR_GOD_MOTHERSHIP, STR_REPORT_001, STR_REPORT_002, STR_REPORT_003, STR_REPORT_005, STR_REPORT_006, STR_REPORT_007, STR_REPORT_008, STR_HISTORY_001, STR_HISTORY_002, STR_HISTORY_003, STR_HISTORY_004, STR_HISTORY_005, STR_HISTORY_006, STR_HISTORY_007, STR_HISTORY_008, STR_HISTORY_009, STR_HISTORY_010, STR_HISTORY_011, STR_HISTORY_016, STR_HISTORY_100, STR_MISCLOG_001, STR_SENSOVISION, STR_GRAVBALL_LEAGUE, STR_PINUP_002, STR_PINUP_003, STR_PINUP_004, STR_PINUP_005, STR_PINUP_006, STR_PINUP_008, STR_PINUP_009, STR_PINUP_010, STR_PINUP_011, STR_PINUP_012, STR_PINUP_013, STR_PINUP_014, STR_PINUP_015, STR_PINUP_016, STR_PINUP_018, STR_PINUP_019, STR_PINUP_020, STR_PINUP_021, STR_PINUP_023, STR_PINUP_024, STR_PINUP_025, STR_PINUP_026, STR_PINUP_027, STR_PINUP_028, STR_PINUP_029, STR_PINUP_030, STR_PINUP_031, STR_PINUP_032, STR_PINUP_033, STR_PINUP_036, STR_PINUP_037, STR_PINUP_038, STR_PINUP_039, STR_PINUP_040, STR_PINUP_041, STR_PINUP_043, STR_PINUP_044, STR_PINUP_045, STR_PINUP_046, STR_PINUP_047, STR_PINUP_048, STR_PINUP_049, STR_PINUP_050, STR_PINUP_051, STR_PINUP_052, STR_PINUP_053, STR_PINUP_054, STR_PINUP_055, STR_PINUP_056, STR_PINUP_057, STR_PINUP_059, STR_PINUP_060, STR_PINUP_063, STR_PINUP_061, STR_PINUP_062, STR_PINUP_065, STR_PINUP_066, STR_PINUP_067, STR_PINUP_068, STR_PINUP_070, STR_PINUP_071, STR_PINUP_072, STR_PINUP_073, STR_PINUP_074, STR_PINUP_075, STR_PINUP_076, STR_PINUP_077, STR_PINUP_078, STR_PINUP_079, STR_PINUP_080, STR_PINUP_081, STR_PINUP_082, STR_PINUP_083, STR_PINUP_084, STR_PINUP_085, STR_PINUP_086, STR_PINUP_087, STR_PINUP_088, STR_PINUP_089, STR_PINUP_090, STR_PINUP_091, STR_PINUP_092, STR_PINUP_093, STR_PINUP_094, STR_PINUP_095, STR_PINUP_096, STR_PINUP_097, STR_PINUP_098, STR_PINUP_099, STR_PINUP_100, STR_PINUP_101, STR_PINUP_102, STR_PINUP_103, STR_PINUP_104, STR_PINUP_105, STR_PINUP_106, STR_PINUP_107, STR_PINUP_108, STR_PINUP_109, STR_PINUP_110, STR_PINUP_111, STR_PINUP_112, STR_PINUP_113, STR_PINUP_114, STR_PINUP_115, STR_PINUP_116, STR_PINUP_117, STR_PINUP_118, STR_PINUP_119, STR_PINUP_120, STR_PINUP_121, STR_PINUP_122, STR_PINUP_123, STR_PINUP_124, STR_PINUP_125, STR_PINUP_126, STR_PINUP_127, STR_PINUP_128, STR_PINUP_129, STR_PINUP_130, STR_PINUP_131, STR_PINUP_132, STR_PINUP_133, STR_PINUP_134, STR_PINUP_135, STR_PINUP_136, STR_PINUP_137, STR_PINUP_138, STR_PINUP_139, STR_PINUP_140, STR_PINUP_141, STR_PINUP_142, STR_PINUP_143, STR_PINUP_144, STR_PINUP_145, STR_PINUP_146, STR_PINUP_147, STR_PINUP_148, STR_PINUP_149, STR_PINUP_151, STR_PINUP_152, STR_PINUP_153, STR_PINUP_154, STR_PINUP_155, STR_PINUP_156, STR_PINUP_157, STR_PINUP_158, STR_PINUP_159, STR_PINUP_160, STR_PINUP_161, STR_PINUP_162, STR_PINUP_163, STR_PINUP_164, STR_PINUP_165, STR_GODS_G1, STR_GODS_G2, STR_GODS_G3, STR_GODS_G4, STR_GODS_G5, STR_GODS_G6, STR_GODS_G7, STR_GODS_G8, STR_GODS_E1, STR_GODS_E2, STR_GODS_E3, STR_GODS_E4, STR_GODS_E5, STR_GODS_E6, STR_GODS_E7, STR_GODS_E8, STR_VIP_001, STR_VIP_002, STR_VIP_003, STR_VIP_004, STR_VIP_005, STR_VIP_006, STR_VIP_007, STR_VIP_008, STR_VIP_009, STR_VIP_010, STR_VIP_020"
+          ]
+        },
+        {
+          "edge": 5438,
+          "from": 2584,
+          "to": 2775,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_DATA_DISK_B",
+            "research": "STR_SUPER_STAPLER",
+            "assumeOutcome": true
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_DATA_DISK_B",
+            "choices": [
+              "STR_SMALL_SCOUT_BLUEPRINT",
+              "STR_MEDIUM_SCOUT_BLUEPRINT",
+              "STR_LARGE_SCOUT_BLUEPRINT",
+              "STR_HARVESTER_BLUEPRINT",
+              "STR_SUPPLY_SHIP_BLUEPRINT",
+              "STR_ABDUCTOR_BLUEPRINT",
+              "STR_TERROR_SHIP_BLUEPRINT",
+              "STR_BATTLESHIP_BLUEPRINT",
+              "STR_VESSEL_BOARDING_TORPEDO_BLUEPRINT",
+              "STR_VESSEL_BREAKER_BLUEPRINT",
+              "STR_VESSEL_ASSAULT_TRANSPORT_BLUEPRINT",
+              "STR_FRIGATE_BLUEPRINT",
+              "STR_VESSEL_HOPPER_BLUEPRINT",
+              "STR_VESSEL_EXCAVATOR_BLUEPRINT",
+              "STR_VESSEL_COURIER_BLUEPRINT",
+              "STR_VESSEL_MESSENGER",
+              "STR_VESSEL_FREIGHTER_BLUEPRINT",
+              "STR_VESSEL_GUNBOAT_BLUEPRINT",
+              "STR_VESSEL_LIGHT_GUNBOAT_BLUEPRINT",
+              "STR_VESSEL_MILITARY_TRANSPORT_BLUEPRINT",
+              "STR_VESSEL_ESCORT_BLUEPRINT",
+              "STR_VESSEL_GUNSHIP_BLUEPRINT",
+              "STR_VESSEL_HEAVY_GUNSHIP_BLUEPRINT",
+              "STR_VESSEL_CORVETTE_BLUEPRINT",
+              "STR_VESSEL_DESTROYER_BLUEPRINT",
+              "STR_VESSEL_SOTL_BLUEPRINT",
+              "STR_VESSEL_BOMBER_BLUEPRINT",
+              "STR_VESSEL_GOVSHIP",
+              "STR_VESSEL_RAIDER",
+              "STR_VESSEL_RAIDER_GUNSHIP",
+              "STR_VESSEL_RAIDER_FIGHTER",
+              "STR_VESSEL_SENTRY_BLUEPRINT",
+              "STR_VESSEL_FIGHTER_BLUEPRINT",
+              "STR_VESSEL_VIPER_FIGHTER_BLUEPRINT",
+              "STR_VESSEL_SNAKEBOAT",
+              "STR_VESSEL_HOTROD",
+              "STR_VESSEL_PROBE",
+              "STR_VESSEL_FOOT_PATROL",
+              "STR_VESSEL_POL_PATROL",
+              "STR_VESSEL_POL_CRUISER",
+              "STR_VESSEL_POL_INTERCEPTOR",
+              "STR_VESSEL_POL_DROPSHIP",
+              "STR_ALIEN_RESEARCH",
+              "STR_ALIEN_HARVEST",
+              "STR_ALIEN_ABDUCTION",
+              "STR_MISSION_SWAY_GOVT",
+              "STR_ALIEN_BASE",
+              "STR_ALIEN_TERROR",
+              "STR_ALIEN_RETALIATION",
+              "STR_ALIEN_SUPPLY",
+              "STR_MISSION_FREIGHT",
+              "STR_MISSION_GOLD_TRANSPORT",
+              "STR_MISSION_MINING",
+              "STR_MISSION_MILITARY_SUPPLY",
+              "STR_MISSION_COURIER",
+              "STR_MISSION_PASSENGER",
+              "STR_ALIEN_INFILTRATION",
+              "STR_MISSION_SURVEY",
+              "STR_MISSION_DIPLOMACY",
+              "STR_MISSION_CONVERSION",
+              "STR_MISSION_SUPERVISION",
+              "STR_MISSION_MERCENARY_ASSIGNMENT",
+              "STR_MISSION_RAID",
+              "STR_MISSION_SMUGGLING",
+              "STR_HELLERIUM_ECONOMY",
+              "STR_PARADISE_WORLDS",
+              "STR_MARS_BACKGROUND",
+              "STR_STARGOD_TIME",
+              "STR_FROG_INTERCEPTOR",
+              "STR_ECLIPSE_INTERCEPTOR",
+              "STR_X35_INTERCEPTOR",
+              "STR_MIG_INTERCEPTOR",
+              "STR_RED_BARON_INTERCEPTOR",
+              "STR_HURICANE_INTERCEPTOR",
+              "PILLBOX_ARMOR",
+              "FIELD_GUN_ARMOR",
+              "TRUCK_TURRET_14MM_ARMOR",
+              "STR_TURRET_MINIGUN_ARMOR",
+              "MANHACK_ARMOR",
+              "STR_CYBERDOG_TERRORIST",
+              "STR_GECKO_SAM",
+              "STR_VIPER_LAUNCHER_DAMAGED",
+              "STR_CANNON_PARTS",
+              "STR_MED_CANNON_PARTS",
+              "STR_RPC_PARTS",
+              "STR_GAUSS_CANNON_PARTS",
+              "STR_GAT_LASCANNON_PARTS",
+              "STR_PBA_CORPSE",
+              "STR_HUMAN_CARAPACE_ARMOR",
+              "STR_PEASANT_BONDAGE_GEAR_UC",
+              "STR_STUN_BATON",
+              "STR_CATTLE_PROD",
+              "STR_WAKIZASHI",
+              "STR_SLICER",
+              "STR_KATANA",
+              "STR_TECH_CLEAVER",
+              "STR_CAT_PAWS",
+              "STR_SWORD_MDV",
+              "STR_SUPER_STAPLER",
+              "STR_FLINTLOCK_BALLS_G",
+              "STR_REVOLVER_POLICE",
+              "STR_OLD_MAGNUM",
+              "STR_GOVT_MAGNUM",
+              "STR_MAGNUM",
+              "STR_PISTOL",
+              "STR_HEAVY_PISTOL",
+              "STR_COMMANDO_PISTOL",
+              "STR_MAUSER",
+              "STR_SKORPION",
+              "STR_SHOTGUN",
+              "STR_SHOTGUN_POLICE",
+              "STR_MINI_SMG",
+              "STR_ASMG",
+              "STR_MP",
+              "STR_SMG_10MM",
+              "STR_TOMMYGUN",
+              "STR_RUGER",
+              "STR_OLD_RIFLE",
+              "STR_OLD_SNIPER_RIFLE",
+              "STR_AUTO_RIFLE",
+              "STR_RIFLE",
+              "STR_RIFLE_ADV",
+              "STR_BATTLE_RIFLE",
+              "STR_INFANTRY_RIFLE",
+              "STR_OMEGA_RIFLE",
+              "STR_UAC_CARBINE",
+              "STR_UAC_RIFLE",
+              "STR_UAC_SHOTGUN",
+              "STR_SAW",
+              "STR_LMG",
+              "STR_MACHINEGUN_LIGHT",
+              "STR_SPARTAN_MG",
+              "STR_HUNTING_RIFLE",
+              "STR_SCOUT_RIFLE",
+              "STR_DRAGOON_RIFLE",
+              "STR_NITRO_EXPRESS",
+              "STR_SNIPER_RIFLE",
+              "STR_CAWS",
+              "STR_LACC",
+              "STR_MUTANT_MG",
+              "STR_GRENADE_LAUNCHER",
+              "STR_HEAVY_CANNON",
+              "STR_AUTO_CANNON",
+              "STR_MINIGUN",
+              "STR_CHAINGUN",
+              "STR_ATG_RIFLE",
+              "STR_RECOILLESS_RIFLE",
+              "STR_ROCKET_LAUNCHER",
+              "STR_TOXIGUN",
+              "STR_FLAMETHROWER_LR",
+              "STR_HAND_FLAMER",
+              "STR_LASER_PISTOL_MINI",
+              "STR_LASER_PISTOL_LT",
+              "STR_KRUGER",
+              "STR_MPG",
+              "STR_INFANTRY_LASER",
+              "STR_HUNTING_LASER",
+              "STR_HYDRA_LASER",
+              "STR_WYVERN_PLASMA_GUN",
+              "STR_RETICULAN_ELECTROGUN",
+              "STR_RETICULAN_LASER_PISTOL",
+              "STR_RETICULAN_LASER_GUN",
+              "STR_RETICULAN_PLASMA_GUN",
+              "STR_DURANDAL_CANNON",
+              "STR_SSRL",
+              "STR_SL_ACID",
+              "STR_SL_EMP",
+              "STR_SL_HELL",
+              "STR_DYNAMITE",
+              "STR_GAS_GRENADE",
+              "STR_CRY_GRENADE",
+              "STR_ACID_GRENADE",
+              "STR_RIOT_GRENADE",
+              "STR_PIR_ALIEN_GRENADE",
+              "STR_GRENADE_BLOWFISHE",
+              "STR_UAC_SPACE_SUIT",
+              "STR_VODKA",
+              "STR_BEER",
+              "STR_APPLE",
+              "STR_ORANGE",
+              "STR_BOOM_FRUIT",
+              "STR_SECFLOWER",
+              "STR_SECTOWEED",
+              "STR_SMALL_MEDIPACK",
+              "STR_EVIL_GRASS",
+              "STR_PINK_DESERTS",
+              "STR_UNDERGROUND_ANOMALY",
+              "STR_CYBERHEADS",
+              "STR_GARLIC",
+              "STR_SHROOM_BROWN",
+              "STR_SHROOM_RED",
+              "STR_SHROOM_WHITE",
+              "STR_COMBAT_DRUGS",
+              "STR_GOVT_CORPSE",
+              "STR_RAIDER_CORPSE",
+              "STR_GUILD_CORPSE",
+              "STR_CHURCH_CORPSE",
+              "STR_ACADEMY_CORPSE",
+              "STR_SECURITY_CORPSE",
+              "STR_CAR_CORPSE",
+              "STR_TANK_CORPSE",
+              "SECTOID_ARMOR_P9",
+              "STR_MEGASCORPION_POISON",
+              "STR_SPIDER_SILK",
+              "STR_MONSTER_TEETH",
+              "STR_MONSTER_EYE",
+              "STR_LUXURY_FUR",
+              "STR_MEIDO_OUTFIT",
+              "STR_LINGERIE",
+              "STR_SWIMSUIT",
+              "STR_BIKINI",
+              "STR_LAMIA_ENCLAVES",
+              "REBEL_ARMOR_1",
+              "REBEL_ARMOR_2",
+              "REBEL_ARMOR_3",
+              "REBEL_ARMOR_4",
+              "REBEL_ARMOR_5",
+              "STR_ALIEN_ALLOYS",
+              "STR_LIFTER",
+              "STR_UFO_NAVIGATION",
+              "STR_UFO_POWER_SOURCE",
+              "STR_UFO_POWER_SOURCE_SMALL",
+              "STR_ALIEN_FOOD",
+              "STR_ALIEN_ENTERTAINMENT",
+              "STR_ALIEN_HABITAT",
+              "STR_ALIEN_REPRODUCTION",
+              "STR_LIQUID_METALS",
+              "STR_ADVANCED_WEAPONS",
+              "STR_MUTANT_ORIGINS",
+              "STR_ELECTRONIC_PIECES",
+              "STR_MEDICAL_SUPPLIES",
+              "STR_LONGEVITY_SERUM",
+              "STR_SENSOSPHERE",
+              "STR_CRACK",
+              "STR_MEDALLION",
+              "STR_RING",
+              "STR_GOLDEN_HELM",
+              "STR_YELLOW_GEM",
+              "STR_BLUE_GEM",
+              "STR_GREEN_GEM",
+              "STR_RED_GEM",
+              "STR_DIAMOND",
+              "STR_SILVER_BAR",
+              "STR_TREASURE_BAG",
+              "STR_TREASURE_CHEST",
+              "STR_NUCLEAR_MATERIALS",
+              "STR_CASH_BAG",
+              "STR_MONEY_PURSE",
+              "STR_CONSUMER_GOODS",
+              "STR_COINS",
+              "STR_DOLLAR_BRIEFCASE",
+              "STR_MERC_BIZCARD",
+              "STR_UAC_BLUEPRINTS",
+              "STR_BABY_NUKE_BLUEPRINTS",
+              "STR_ARC_WELDER",
+              "STR_PARTS_WEAPON_ADV",
+              "STR_PARTS_WEAPON_MC",
+              "STR_PARTS_HEAVY_COUPLINGS",
+              "STR_PARTS_LASER_LENS",
+              "STR_PARTS_LASER_CRYSTAL",
+              "STR_PARTS_GAUSS_CAPACITOR",
+              "STR_PARTS_GAUSS_COIL",
+              "STR_PARTS_PLASMA_CHAMBER",
+              "STR_PARTS_PLASMA_ACCELERATOR",
+              "STR_PARTS_WEAPON_PSI",
+              "STR_SMUGGLED_ELECTRONICS",
+              "STR_ALIEN_ABDUCTION_PIR",
+              "STR_INTERSTELLAR_TRAVEL_SUMMARY",
+              "STR_ROBOT_MAID",
+              "STR_LAPUTA",
+              "STR_JILLSVILLE",
+              "STR_GERMANY",
+              "STR_NCR",
+              "STR_CHINA",
+              "STR_USA",
+              "STR_BRAZIL",
+              "STR_AUSTRALIA",
+              "STR_RUSSIA",
+              "STR_FRANCE",
+              "STR_JAPAN",
+              "STR_INDIA",
+              "STR_NIGERIA",
+              "STR_INDONESIA",
+              "STR_UK",
+              "STR_CANADA",
+              "STR_LATIN_EMPIRE",
+              "STR_SPAIN",
+              "STR_VENEZUELA",
+              "STR_SOUTH_AFRICA",
+              "STR_ITALY",
+              "STR_CHILE",
+              "STR_TECHNOCRACY",
+              "STR_EGYPT",
+              "STR_TURAN",
+              "STR_HUMANS",
+              "STR_BEASTMEN",
+              "STR_SHADOWS",
+              "STR_DEEP_ONE",
+              "STR_AQUATOID",
+              "STR_DOOM_HUMAN_AUTOPSY",
+              "STR_NEKOMIMI",
+              "STR_ASTRONAUGHTS",
+              "STR_BLOBBERS",
+              "STR_CLICKORS",
+              "STR_QUIRIANS",
+              "STR_RODELHIA",
+              "STR_RIMRIDERS",
+              "STR_CEREBRALA",
+              "STR_TOGUA",
+              "STR_SHADOWSYNS",
+              "STR_CHAOS_SYNS",
+              "STR_PEREGRINES",
+              "STR_ANIMATRONS",
+              "STR_ERIDIAN",
+              "STR_NUBIRAN",
+              "STR_THE_SILENCE",
+              "STR_SLAVE",
+              "STR_SLAVE_MAID",
+              "STR_SLAVE_BRUTE",
+              "STR_ROBOTIC_SPIDERS",
+              "STR_TROLLETARIAT",
+              "STR_NUNITY",
+              "STR_POSTRAPTURE",
+              "STR_KOSCHEY_LEGENDS",
+              "STR_MARS_TUNNELS",
+              "STR_MARSEC_HYPERCUTTER",
+              "STR_MARSEC_HYPERCORVETTE",
+              "STR_STAR_GOD_MOTHERSHIP",
+              "STR_REPORT_001",
+              "STR_REPORT_002",
+              "STR_REPORT_003",
+              "STR_REPORT_005",
+              "STR_REPORT_006",
+              "STR_REPORT_007",
+              "STR_REPORT_008",
+              "STR_HISTORY_001",
+              "STR_HISTORY_002",
+              "STR_HISTORY_003",
+              "STR_HISTORY_004",
+              "STR_HISTORY_005",
+              "STR_HISTORY_006",
+              "STR_HISTORY_007",
+              "STR_HISTORY_008",
+              "STR_HISTORY_009",
+              "STR_HISTORY_010",
+              "STR_HISTORY_011",
+              "STR_HISTORY_016",
+              "STR_HISTORY_100",
+              "STR_MISCLOG_001",
+              "STR_SENSOVISION",
+              "STR_GRAVBALL_LEAGUE",
+              "STR_PINUP_002",
+              "STR_PINUP_003",
+              "STR_PINUP_004",
+              "STR_PINUP_005",
+              "STR_PINUP_006",
+              "STR_PINUP_008",
+              "STR_PINUP_009",
+              "STR_PINUP_010",
+              "STR_PINUP_011",
+              "STR_PINUP_012",
+              "STR_PINUP_013",
+              "STR_PINUP_014",
+              "STR_PINUP_015",
+              "STR_PINUP_016",
+              "STR_PINUP_018",
+              "STR_PINUP_019",
+              "STR_PINUP_020",
+              "STR_PINUP_021",
+              "STR_PINUP_023",
+              "STR_PINUP_024",
+              "STR_PINUP_025",
+              "STR_PINUP_026",
+              "STR_PINUP_027",
+              "STR_PINUP_028",
+              "STR_PINUP_029",
+              "STR_PINUP_030",
+              "STR_PINUP_031",
+              "STR_PINUP_032",
+              "STR_PINUP_033",
+              "STR_PINUP_036",
+              "STR_PINUP_037",
+              "STR_PINUP_038",
+              "STR_PINUP_039",
+              "STR_PINUP_040",
+              "STR_PINUP_041",
+              "STR_PINUP_043",
+              "STR_PINUP_044",
+              "STR_PINUP_045",
+              "STR_PINUP_046",
+              "STR_PINUP_047",
+              "STR_PINUP_048",
+              "STR_PINUP_049",
+              "STR_PINUP_050",
+              "STR_PINUP_051",
+              "STR_PINUP_052",
+              "STR_PINUP_053",
+              "STR_PINUP_054",
+              "STR_PINUP_055",
+              "STR_PINUP_056",
+              "STR_PINUP_057",
+              "STR_PINUP_059",
+              "STR_PINUP_060",
+              "STR_PINUP_063",
+              "STR_PINUP_061",
+              "STR_PINUP_062",
+              "STR_PINUP_065",
+              "STR_PINUP_066",
+              "STR_PINUP_067",
+              "STR_PINUP_068",
+              "STR_PINUP_070",
+              "STR_PINUP_071",
+              "STR_PINUP_072",
+              "STR_PINUP_073",
+              "STR_PINUP_074",
+              "STR_PINUP_075",
+              "STR_PINUP_076",
+              "STR_PINUP_077",
+              "STR_PINUP_078",
+              "STR_PINUP_079",
+              "STR_PINUP_080",
+              "STR_PINUP_081",
+              "STR_PINUP_082",
+              "STR_PINUP_083",
+              "STR_PINUP_084",
+              "STR_PINUP_085",
+              "STR_PINUP_086",
+              "STR_PINUP_087",
+              "STR_PINUP_088",
+              "STR_PINUP_089",
+              "STR_PINUP_090",
+              "STR_PINUP_091",
+              "STR_PINUP_092",
+              "STR_PINUP_093",
+              "STR_PINUP_094",
+              "STR_PINUP_095",
+              "STR_PINUP_096",
+              "STR_PINUP_097",
+              "STR_PINUP_098",
+              "STR_PINUP_099",
+              "STR_PINUP_100",
+              "STR_PINUP_101",
+              "STR_PINUP_102",
+              "STR_PINUP_103",
+              "STR_PINUP_104",
+              "STR_PINUP_105",
+              "STR_PINUP_106",
+              "STR_PINUP_107",
+              "STR_PINUP_108",
+              "STR_PINUP_109",
+              "STR_PINUP_110",
+              "STR_PINUP_111",
+              "STR_PINUP_112",
+              "STR_PINUP_113",
+              "STR_PINUP_114",
+              "STR_PINUP_115",
+              "STR_PINUP_116",
+              "STR_PINUP_117",
+              "STR_PINUP_118",
+              "STR_PINUP_119",
+              "STR_PINUP_120",
+              "STR_PINUP_121",
+              "STR_PINUP_122",
+              "STR_PINUP_123",
+              "STR_PINUP_124",
+              "STR_PINUP_125",
+              "STR_PINUP_126",
+              "STR_PINUP_127",
+              "STR_PINUP_128",
+              "STR_PINUP_129",
+              "STR_PINUP_130",
+              "STR_PINUP_131",
+              "STR_PINUP_132",
+              "STR_PINUP_133",
+              "STR_PINUP_134",
+              "STR_PINUP_135",
+              "STR_PINUP_136",
+              "STR_PINUP_137",
+              "STR_PINUP_138",
+              "STR_PINUP_139",
+              "STR_PINUP_140",
+              "STR_PINUP_141",
+              "STR_PINUP_142",
+              "STR_PINUP_143",
+              "STR_PINUP_144",
+              "STR_PINUP_145",
+              "STR_PINUP_146",
+              "STR_PINUP_147",
+              "STR_PINUP_148",
+              "STR_PINUP_149",
+              "STR_PINUP_151",
+              "STR_PINUP_152",
+              "STR_PINUP_153",
+              "STR_PINUP_154",
+              "STR_PINUP_155",
+              "STR_PINUP_156",
+              "STR_PINUP_157",
+              "STR_PINUP_158",
+              "STR_PINUP_159",
+              "STR_PINUP_160",
+              "STR_PINUP_161",
+              "STR_PINUP_162",
+              "STR_PINUP_163",
+              "STR_PINUP_164",
+              "STR_PINUP_165",
+              "STR_GODS_G1",
+              "STR_GODS_G2",
+              "STR_GODS_G3",
+              "STR_GODS_G4",
+              "STR_GODS_G5",
+              "STR_GODS_G6",
+              "STR_GODS_G7",
+              "STR_GODS_G8",
+              "STR_GODS_E1",
+              "STR_GODS_E2",
+              "STR_GODS_E3",
+              "STR_GODS_E4",
+              "STR_GODS_E5",
+              "STR_GODS_E6",
+              "STR_GODS_E7",
+              "STR_GODS_E8",
+              "STR_VIP_001",
+              "STR_VIP_002",
+              "STR_VIP_003",
+              "STR_VIP_004",
+              "STR_VIP_005",
+              "STR_VIP_006",
+              "STR_VIP_007",
+              "STR_VIP_008",
+              "STR_VIP_009",
+              "STR_VIP_010",
+              "STR_VIP_020"
+            ],
+            "phase": "before-source"
+          },
+          "added": [
+            "STR_DATA_DISK_B",
+            "STR_SUPER_STAPLER"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "무료 연구 무작위 선택 STR_SUPER_STAPLER을 가정"
+          ]
+        },
+        {
+          "edge": 5953,
+          "from": 2775,
+          "to": 3268,
+          "action": {
+            "type": "sourceRandomManufacture",
+            "id": "STR_JUNK_PILE_EX",
+            "outcome": 24,
+            "assumeOutcome": true
+          },
+          "evidence": {
+            "kind": "SOURCE_WEIGHTED_MANUFACTURE_OUTCOME",
+            "requires": [
+              "STR_SCHOOLING_1"
+            ],
+            "functions": [],
+            "inputs": {
+              "STR_JUNK_PILE": 1
+            },
+            "fixed": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2
+            },
+            "random": {
+              "STR_GUILD_CORPSE": 3
+            },
+            "weight": 20,
+            "totalWeight": 609,
+            "time": 360,
+            "cost": 0,
+            "space": 0
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {
+            "STR_JUNK_PILE": {
+              "before": 15,
+              "after": 14,
+              "delta": -1
+            },
+            "STR_SCRAP_METAL": {
+              "before": 115,
+              "after": 130,
+              "delta": 15
+            },
+            "STR_CHEMICALS": {
+              "before": 10,
+              "after": 20,
+              "delta": 10
+            },
+            "STR_SC_WIRE": {
+              "before": 1,
+              "after": 3,
+              "delta": 2
+            },
+            "STR_GUILD_CORPSE": {
+              "before": 0,
+              "after": 3,
+              "delta": 3
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "Exact source recipe inputs consumed; fixed outputs plus one weighted RNG outcome. Labor/time and RNG conditional."
+          ]
+        },
+        {
+          "edge": 6081,
+          "from": 3268,
+          "to": 3344,
+          "action": {
+            "type": "research",
+            "id": "STR_GUILD_CORPSE"
+          },
+          "evidence": {
+            "kind": "SOURCE_BACKED_SAMPLE",
+            "item": "STR_GUILD_CORPSE"
+          },
+          "added": [
+            "STR_GUILD_AUTOPSY",
+            "STR_GUILD_CORPSE"
+          ],
+          "closed": [],
+          "itemChanges": {
+            "STR_GUILD_CORPSE": {
+              "before": 3,
+              "after": 2,
+              "delta": -1
+            }
+          },
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": [
+            "OXCE lookup 후속 연구: STR_GUILD_CORPSE → STR_GUILD_AUTOPSY"
+          ]
+        },
+        {
+          "edge": 6261,
+          "from": 3344,
+          "to": 3450,
+          "action": {
+            "type": "research",
+            "id": "STR_DURATHREAD_WORKING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_GUILD_CORPSE",
+              "STR_PRIMITIVE_WEAPONS_2",
+              "STR_SUPER_STAPLER"
+            ]
+          },
+          "added": [
+            "STR_BURA",
+            "STR_DURATHREAD_WORKING",
+            "STR_GENTLE_PUSH",
+            "STR_PEASANT_ARMOR_JUMPSUIT_UC",
+            "STR_RUNT_OUTFIT"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": true,
+          "notes": [
+            "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_BURA ← STR_DURATHREAD_WORKING",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_GENTLE_PUSH ← STR_DURATHREAD_WORKING",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_RUNT_OUTFIT ← STR_DURATHREAD_WORKING",
+            "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANT_ARMOR_JUMPSUIT_UC ← STR_RUNT_OUTFIT"
+          ]
+        },
+        {
+          "edge": 6449,
+          "from": 3450,
+          "to": 3564,
+          "action": {
+            "type": "research",
+            "id": "STR_WORKSHOP"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_BUILDERS",
+              "STR_DURATHREAD_WORKING",
+              "STR_FLINTLOCKS_PRODUCTION",
+              "STR_SCI_REP",
+              "STR_STEAM_POWER"
+            ]
+          },
+          "added": [
+            "STR_WORKSHOP"
+          ],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [],
+          "newFacilities": [],
+          "conditional": false,
+          "notes": []
+        },
+        {
+          "edge": 6652,
+          "from": 3564,
+          "to": 3693,
+          "action": {
+            "type": "sourceBuildFacility",
+            "id": "STR_WORKSHOP",
+            "assumption": true
+          },
+          "evidence": {
+            "kind": "INDEXED_FACILITY_CONSTRUCTION",
+            "requires": [
+              "STR_WORKSHOP"
+            ],
+            "functions": [],
+            "provides": [
+              "WORKS",
+              "SHOP"
+            ],
+            "cost": 800000,
+            "days": 32,
+            "size": 1
+          },
+          "added": [],
+          "closed": [],
+          "itemChanges": {},
+          "newFunctions": [
+            "WORKS"
+          ],
+          "newFacilities": [
+            "STR_WORKSHOP"
+          ],
+          "conditional": true,
+          "notes": [
+            "Indexed construction unlock; build time, available base space and financing remain conditional."
+          ]
+        }
+      ],
+      "normalizationComplete": false,
+      "actualGameCertified": false
+    }
+  ],
+  "scope": "Selected generated paths from source-matched base. Conditional RNG, construction, timing and economy; not an all-path normalization certificate."
+}

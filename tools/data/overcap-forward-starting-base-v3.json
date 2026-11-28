@@ -1,0 +1,185 @@
+{
+  "schema": "ATLAS_FORWARD_STARTING_BASE_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "source": {
+    "file": "Piratez.rul",
+    "lineStart": 206482,
+    "lineEnd": 206597,
+    "sectionSha256": "da0aa161affbcccc9e17059540108d676ec8dce41e8f73ca30df3fc44de5bb3f"
+  },
+  "ruleFiles": {
+    "HitFX-basic.rul": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+    "Piratez_Armors.rul": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+    "Piratez_BaseNames.rul": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+    "Piratez_Bonuses.rul": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23",
+    "Piratez_Events.rul": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+    "Piratez_Factions.rul": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "Piratez_Globals.rul": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+    "Piratez_Mapscripts.rul": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+    "Piratez_Planet.rul": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "Piratez_Resources.rul": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c",
+    "Piratez_Transformations.rul": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba",
+    "Piratez_Wardrobe.rul": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503",
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+    "Recolr.rul": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+    "Shotguns_Rebalance.rul": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+    "Yankes_Scripts.rul": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+  },
+  "facilities": [
+    {
+      "id": "STR_ACCESS_LIFT",
+      "x": 2,
+      "y": 2
+    },
+    {
+      "id": "STR_HANGAR",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "STR_HANGAR",
+      "x": 2,
+      "y": 0
+    },
+    {
+      "id": "STR_LIVING_QUARTERS",
+      "x": 2,
+      "y": 3
+    },
+    {
+      "id": "STR_BURROW",
+      "x": 3,
+      "y": 5
+    },
+    {
+      "id": "STR_CORRIDOR",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "id": "STR_CORRIDOR",
+      "x": 2,
+      "y": 5
+    },
+    {
+      "id": "STR_WELL",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "id": "STR_STILL",
+      "x": 0,
+      "y": 5
+    },
+    {
+      "id": "STR_GENERAL_STORES",
+      "x": 3,
+      "y": 4
+    },
+    {
+      "id": "STR_JAIL",
+      "x": 1,
+      "y": 5
+    },
+    {
+      "id": "STR_GENERAL_STORES_ARMORED",
+      "x": 1,
+      "y": 4
+    },
+    {
+      "id": "STR_LABORATORY",
+      "x": 2,
+      "y": 4
+    },
+    {
+      "id": "STR_SMALL_RADAR_SYSTEM",
+      "x": 4,
+      "y": 5
+    },
+    {
+      "id": "STR_RUBBLE",
+      "x": 0,
+      "y": 3
+    },
+    {
+      "id": "STR_RUBBLE",
+      "x": 0,
+      "y": 4
+    },
+    {
+      "id": "STR_RUBBLE",
+      "x": 1,
+      "y": 3
+    },
+    {
+      "id": "STR_RUBBLE",
+      "x": 4,
+      "y": 4
+    }
+  ],
+  "baseFunctions": [
+    "ALKO",
+    "CPU",
+    "LAB",
+    "SHOP",
+    "WELL"
+  ],
+  "items": {
+    "STR_RAYGUN": 1,
+    "STR_RAYGUN_CLIP": 3,
+    "STR_SHIV": 5,
+    "STR_NOOSE": 3,
+    "STR_FLINTLOCK_BALLS": 30,
+    "STR_SHOTGUN_G_SHELLS": 5,
+    "STR_PIR_CANNONBALL": 20,
+    "STR_MOLOTOV": 4,
+    "STR_ANARCHY_BOMB": 2,
+    "STR_TINY_DRILL": 1,
+    "STR_ELERIUM_115": 5,
+    "STR_JUNK_PILE": 16,
+    "STR_BIG_ROCK": 169,
+    "STR_SCRAP_METAL": 100,
+    "STR_MENACING_HULL": 1,
+    "STR_RAIDER_CORPSE": 6,
+    "STR_MUTANT_MEAT": 6,
+    "STR_LAND_DEED": 1
+  },
+  "crafts": [
+    {
+      "type": "STR_AIRBUS",
+      "items": {
+        "STR_HANDLE": 4,
+        "STR_KNUCKLES": 2,
+        "STR_KNOIF": 3,
+        "STR_PIPE": 2,
+        "STR_BATTO": 2,
+        "STR_SHORT_SWORD": 2,
+        "STR_AX": 2,
+        "STR_CHAINSAW": 1,
+        "STR_FLINTLOCK_PISTOL": 2,
+        "STR_FLINTLOCK_MUSKET": 2,
+        "STR_HARQUEBUS": 1,
+        "STR_FLINTLOCK_BALLS": 20,
+        "STR_SHOTGUN_G": 1,
+        "STR_SHOTGUN_G_SHELLS": 5,
+        "STR_MINI_CANNON": 1,
+        "STR_SL_HE": 6,
+        "STR_PIR_CANNON": 1,
+        "STR_PIR_CANNONBALL": 5,
+        "STR_ANARCHY_BOMB": 4,
+        "STR_MOLOTOV": 6,
+        "STR_BANDAGE": 10,
+        "STR_CANTEEN": 2,
+        "STR_MOONSHINE": 4
+      },
+      "id": 1,
+      "fuel": 800,
+      "damage": 0,
+      "status": "STR_READY"
+    }
+  ],
+  "scientists": 3,
+  "engineers": 10,
+  "randomSoldiers": 6,
+  "scope": "Explicit installed v.o2 startingBase. Craft cargo preserved separately, not usable as lab stock. No inferred global funds, geography, soldier types or event outcome."
+}
