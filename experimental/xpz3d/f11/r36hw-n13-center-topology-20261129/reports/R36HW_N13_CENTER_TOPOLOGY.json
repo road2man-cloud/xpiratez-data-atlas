@@ -1,0 +1,456 @@
+{
+  "stage": "N13 local attached mesh topology improvement without added polygons",
+  "inputSHA256": "9dbc2e9ee158276d7080f12ae3f7a5b97298da149886d834d6609c94550536fe",
+  "outputSHA256": "1bef905242461912a91853b6802ab8564ce6ad0f19e549754035a4d7314f7f19",
+  "triangles": 2095,
+  "regionFaces": 149,
+  "edgeFlips": 48,
+  "changedNormals": 76,
+  "sourcePositionAccessorUnchanged": true,
+  "originalSkinWeightsUnchanged": true,
+  "sourceFaceAndHairUnchanged": true,
+  "skinJoints": 63,
+  "originalRegionQualityMin": 0.05171321571304598,
+  "newRegionQualityMin": 0.05171321571304598,
+  "originalRegionSkinnyCount": 57,
+  "newRegionSkinnyCount": 23,
+  "history": [
+    {
+      "triangles": [
+        132,
+        278
+      ],
+      "oldEdge": "46,47",
+      "qualityBefore": 0.3767270885633989,
+      "qualityAfter": 0.8770521200329084
+    },
+    {
+      "triangles": [
+        151,
+        159
+      ],
+      "oldEdge": "32,119",
+      "qualityBefore": 0.3591887073623184,
+      "qualityAfter": 0.8411524877001612
+    },
+    {
+      "triangles": [
+        127,
+        129
+      ],
+      "oldEdge": "31,46",
+      "qualityBefore": 0.12515086773981687,
+      "qualityAfter": 0.5978481198077579
+    },
+    {
+      "triangles": [
+        85,
+        87
+      ],
+      "oldEdge": "18,33",
+      "qualityBefore": 0.3185132691389173,
+      "qualityAfter": 0.7734503390588061
+    },
+    {
+      "triangles": [
+        88,
+        182
+      ],
+      "oldEdge": "33,34",
+      "qualityBefore": 0.3641451382127771,
+      "qualityAfter": 0.8092927760252898
+    },
+    {
+      "triangles": [
+        181,
+        185
+      ],
+      "oldEdge": "34,51",
+      "qualityBefore": 0.3763426777300999,
+      "qualityAfter": 0.8212755208354419
+    },
+    {
+      "triangles": [
+        60,
+        144
+      ],
+      "oldEdge": "16,31",
+      "qualityBefore": 0.3337384909220933,
+      "qualityAfter": 0.7754328585285234
+    },
+    {
+      "triangles": [
+        162,
+        239
+      ],
+      "oldEdge": "32,50",
+      "qualityBefore": 0.12179155443452154,
+      "qualityAfter": 0.5591888566636692
+    },
+    {
+      "triangles": [
+        4,
+        70
+      ],
+      "oldEdge": "16,17",
+      "qualityBefore": 0.33312653487757315,
+      "qualityAfter": 0.7678192475320202
+    },
+    {
+      "triangles": [
+        277,
+        279
+      ],
+      "oldEdge": "47,77",
+      "qualityBefore": 0.3994381989513946,
+      "qualityAfter": 0.8182264602224846
+    },
+    {
+      "triangles": [
+        277,
+        282
+      ],
+      "oldEdge": "47,152",
+      "qualityBefore": 0.28237079118988206,
+      "qualityAfter": 0.7717903934333088
+    },
+    {
+      "triangles": [
+        285,
+        293
+      ],
+      "oldEdge": "78,153",
+      "qualityBefore": 0.15296231039392627,
+      "qualityAfter": 0.5592029826552274
+    },
+    {
+      "triangles": [
+        83,
+        87
+      ],
+      "oldEdge": "33,108",
+      "qualityBefore": 0.29874119757385575,
+      "qualityAfter": 0.6980729509111924
+    },
+    {
+      "triangles": [
+        310,
+        314
+      ],
+      "oldEdge": "32,180",
+      "qualityBefore": 0.16992033990196914,
+      "qualityAfter": 0.5542006944071536
+    },
+    {
+      "triangles": [
+        324,
+        331
+      ],
+      "oldEdge": "32,155",
+      "qualityBefore": 0.07276256887841048,
+      "qualityAfter": 0.4260929470197355
+    },
+    {
+      "triangles": [
+        163,
+        167
+      ],
+      "oldEdge": "50,120",
+      "qualityBefore": 0.4358839273450025,
+      "qualityAfter": 0.7887363828367392
+    },
+    {
+      "triangles": [
+        173,
+        176
+      ],
+      "oldEdge": "33,121",
+      "qualityBefore": 0.3516665292447061,
+      "qualityAfter": 0.7036801477710033
+    },
+    {
+      "triangles": [
+        281,
+        284
+      ],
+      "oldEdge": "47,78",
+      "qualityBefore": 0.2451477219530835,
+      "qualityAfter": 0.5862194397832797
+    },
+    {
+      "triangles": [
+        135,
+        138
+      ],
+      "oldEdge": "31,47",
+      "qualityBefore": 0.1628321873067072,
+      "qualityAfter": 0.4959749613463291
+    },
+    {
+      "triangles": [
+        139,
+        143
+      ],
+      "oldEdge": "47,118",
+      "qualityBefore": 0.32161930806579353,
+      "qualityAfter": 0.6389803544066998
+    },
+    {
+      "triangles": [
+        79,
+        82
+      ],
+      "oldEdge": "17,33",
+      "qualityBefore": 0.16899764851921445,
+      "qualityAfter": 0.4862934799667773
+    },
+    {
+      "triangles": [
+        290,
+        298
+      ],
+      "oldEdge": "32,153",
+      "qualityBefore": 0.2066343397161192,
+      "qualityAfter": 0.5220310825816904
+    },
+    {
+      "triangles": [
+        165,
+        171
+      ],
+      "oldEdge": "33,50",
+      "qualityBefore": 0.21462718318458984,
+      "qualityAfter": 0.5282237635885614
+    },
+    {
+      "triangles": [
+        175,
+        178
+      ],
+      "oldEdge": "33,51",
+      "qualityBefore": 0.1818575221502338,
+      "qualityAfter": 0.48210973382106803
+    },
+    {
+      "triangles": [
+        65,
+        69
+      ],
+      "oldEdge": "32,106",
+      "qualityBefore": 0.3011745579940012,
+      "qualityAfter": 0.5919817895092884
+    },
+    {
+      "triangles": [
+        64,
+        153
+      ],
+      "oldEdge": "16,32",
+      "qualityBefore": 0.06110245660908927,
+      "qualityAfter": 0.3436724694948974
+    },
+    {
+      "triangles": [
+        305,
+        312
+      ],
+      "oldEdge": "32,154",
+      "qualityBefore": 0.07852802931182051,
+      "qualityAfter": 0.3607066318225395
+    },
+    {
+      "triangles": [
+        312,
+        313
+      ],
+      "oldEdge": "154,230",
+      "qualityBefore": 0.5004396812456342,
+      "qualityAfter": 0.8413299219256675
+    },
+    {
+      "triangles": [
+        235,
+        240
+      ],
+      "oldEdge": "32,129",
+      "qualityBefore": 0.2957728878603377,
+      "qualityAfter": 0.5755556986142768
+    },
+    {
+      "triangles": [
+        75,
+        80
+      ],
+      "oldEdge": "17,107",
+      "qualityBefore": 0.3175243664440936,
+      "qualityAfter": 0.5920964023133213
+    },
+    {
+      "triangles": [
+        131,
+        136
+      ],
+      "oldEdge": "31,117",
+      "qualityBefore": 0.2952681382947733,
+      "qualityAfter": 0.5693320472803662
+    },
+    {
+      "triangles": [
+        149,
+        156
+      ],
+      "oldEdge": "16,119",
+      "qualityBefore": 0.2649440324358959,
+      "qualityAfter": 0.5268462031365293
+    },
+    {
+      "triangles": [
+        329,
+        333
+      ],
+      "oldEdge": "32,182",
+      "qualityBefore": 0.13882602306360803,
+      "qualityAfter": 0.3834901359208601
+    },
+    {
+      "triangles": [
+        288,
+        292
+      ],
+      "oldEdge": "32,178",
+      "qualityBefore": 0.21113419396106387,
+      "qualityAfter": 0.44684025746280015
+    },
+    {
+      "triangles": [
+        141,
+        147
+      ],
+      "oldEdge": "16,47",
+      "qualityBefore": 0.1580093987288911,
+      "qualityAfter": 0.3800374733526834
+    },
+    {
+      "triangles": [
+        141,
+        149
+      ],
+      "oldEdge": "16,198",
+      "qualityBefore": 0.3801841247471388,
+      "qualityAfter": 0.6305889627940144
+    },
+    {
+      "triangles": [
+        74,
+        78
+      ],
+      "oldEdge": "32,107",
+      "qualityBefore": 0.3668984098095704,
+      "qualityAfter": 0.5667381262154135
+    },
+    {
+      "triangles": [
+        148,
+        152
+      ],
+      "oldEdge": "47,119",
+      "qualityBefore": 0.4281322422242405,
+      "qualityAfter": 0.6273075552321874
+    },
+    {
+      "triangles": [
+        155,
+        160
+      ],
+      "oldEdge": "32,174",
+      "qualityBefore": 0.2700643704961847,
+      "qualityAfter": 0.46117320481193586
+    },
+    {
+      "triangles": [
+        154,
+        158
+      ],
+      "oldEdge": "16,174",
+      "qualityBefore": 0.16407271278658253,
+      "qualityAfter": 0.3550521946369206
+    },
+    {
+      "triangles": [
+        153,
+        158
+      ],
+      "oldEdge": "16,200",
+      "qualityBefore": 0.3550521946369206,
+      "qualityAfter": 0.6645371365510275
+    },
+    {
+      "triangles": [
+        68,
+        72
+      ],
+      "oldEdge": "17,106",
+      "qualityBefore": 0.4089548647654302,
+      "qualityAfter": 0.5928720164220772
+    },
+    {
+      "triangles": [
+        142,
+        146
+      ],
+      "oldEdge": "16,118",
+      "qualityBefore": 0.38929533713663644,
+      "qualityAfter": 0.5337066497782895
+    },
+    {
+      "triangles": [
+        141,
+        146
+      ],
+      "oldEdge": "16,196",
+      "qualityBefore": 0.7303370819754031,
+      "qualityAfter": 0.9198952849501647
+    },
+    {
+      "triangles": [
+        235,
+        239
+      ],
+      "oldEdge": "32,219",
+      "qualityBefore": 0.5755556986142768,
+      "qualityAfter": 0.7005257773973387
+    },
+    {
+      "triangles": [
+        143,
+        147
+      ],
+      "oldEdge": "47,196",
+      "qualityBefore": 0.3800374733526834,
+      "qualityAfter": 0.46408245830204536
+    },
+    {
+      "triangles": [
+        130,
+        134
+      ],
+      "oldEdge": "46,117",
+      "qualityBefore": 0.4140532929749988,
+      "qualityAfter": 0.48261699667903885
+    },
+    {
+      "triangles": [
+        237,
+        240
+      ],
+      "oldEdge": "129,218",
+      "qualityBefore": 0.6995163589810077,
+      "qualityAfter": 0.7642431258325728
+    }
+  ],
+  "limitations": [
+    "No native S2 rendering",
+    "N11-derived clothing-origin pelvic shell still present",
+    "Reoriented topology helps some face quality but does not reconstruct all anatomical creases"
+  ]
+}
