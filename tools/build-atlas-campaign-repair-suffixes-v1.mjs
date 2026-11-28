@@ -332,11 +332,26 @@ const limit=Number(args.limit||8),offset=Number(args.offset||0);
 if(!Number.isSafeInteger(limit)||limit<1||!Number.isSafeInteger(offset)||offset<0)throw Error('invalid-batch');
 const eligible=worklist.queue.filter(q=>q.status==='suffix-repair-pending'&&(args.priority==null||q.priority===Number(args.priority))&&(!args.source||q.source===args.source));
 eligible.sort((a,b)=>a.priority-b.priority||a.actionCount-b.actionCount||a.id.localeCompare(b.id));
-const selected=eligible.slice(offset,offset+limit),records=[];
+// Target the immutable sorted queue by absolute offset or legacy ID.
+const offsets=args.offsets==null?null:args.offsets.split(',').map(x=>{
+ if(!/^\d+$/.test(x)||!Number.isSafeInteger(Number(x)))throw Error('invalid-target-offset:'+x);
+ return Number(x);
+});
+const ids=args.ids==null?null:new Set(args.ids.split(',').filter(Boolean));
+if(offsets&&ids)throw Error('choose-offsets-or-ids');
+if(offsets&&(new Set(offsets).size!==offsets.length||offsets.some(i=>i>=eligible.length)))throw Error('duplicate-or-out-of-range-target-offset');
+if(ids&&(!ids.size||[...ids].some(id=>!eligible.some(q=>q.id===id))))throw Error('unknown-target-legacy-id');
+if((offsets||ids)&&args.offset!=null)throw Error('target-selection-conflicts-with-offset');
+const candidates=offsets?offsets.map(i=>eligible[i]):ids?eligible.filter(q=>ids.has(q.id)):eligible.slice(offset,offset+limit);
+// Exclude only successful jobs in the same pinned input and geographic scenario.
+const prior=args.resumeLedger?JSON.parse(fs.readFileSync(args.resumeLedger)):null;
+if(prior&&(prior.schema!=='ATLAS_CAMPAIGN_REPAIR_LEDGER_V1'||prior.sourceCommit!==ref||prior.sourceMetadataSha256!==meta||prior.prefixInputHash!==hash(prefix)||prior.queueInputHash!==hash(worklist)))throw Error('resume-ledger-source-mismatch');
+const completed=new Set((prior?.jobs||[]).filter(j=>j.status==='conditional-career-replayed'&&j.routeIds?.length&&j.scenario?.startRegion===scenarioRegion&&j.scenario?.startCountry===scenarioCountry).map(j=>JSON.stringify([j.source,j.legacyId,j.legacyActionHash,j.scenario.difficulty])));
+const selected=candidates.filter(q=>!completed.has(JSON.stringify([q.source,q.id,q.actionHash,groups.get(q.prefixGroup)?.difficulty]))),records=[];
 const output=args.out||'campaign-suffix-repair-v1.json';
 const head={schema:'ATLAS_CAMPAIGN_SUFFIX_REPAIR_V1',sourceCommit:ref,sourceMetadataSha256:meta,sourceFiles:files,
  prefixInputHash:hash(prefix),queueInputHash:hash(worklist),scope:'CONDITIONAL_FULL_CAREER_REPLAY_ONLY; NO_TERMINAL_OR_NATIVE_CERTIFICATION',
- selection:{offset,limit,priority:args.priority??null,source:args.source??null,eligible:eligible.length},originRows:d.originRows.length,startRegion:scenarioRegion,startCountry:scenarioCountry,regionAssumption:scenarioRegion?'conditional start base placement; country and native land placement not certified':null,countryAssumption:scenarioCountry?'conditional start country; no concurrent region assumption; native base placement not certified':null};
+ selection:{offset,limit,offsets,ids:ids?[...ids]:null,resumeLedger:args.resumeLedger??null,skippedPreviouslyCompleted:candidates.length-selected.length,priority:args.priority??null,source:args.source??null,eligible:eligible.length},originRows:d.originRows.length,startRegion:scenarioRegion,startCountry:scenarioCountry,regionAssumption:scenarioRegion?'conditional start base placement; country and native land placement not certified':null,countryAssumption:scenarioCountry?'conditional start country; no concurrent region assumption; native base placement not certified':null};
 function save(){
  const summary={selected:selected.length,processed:records.length,completed:records.filter(r=>r.status==='conditional-career-replayed').length,
  failed:records.filter(r=>r.status!=='conditional-career-replayed').length,normalizedTerminal:0,gameCertified:0};
