@@ -457,10 +457,10 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
     }
     return null;
   }
-  function ensure(goals,start=newNode()){
+  function ensure(goals,start=newNode(),preferredAwards={}){
     const budget={attempts:0,last:null,failures:[],deadEnds:[]},targets=uniq(goals),goalSet=new Set(targets);let node=clone(start);
     for(const id of targets){
-      const next=solve(id,node,new Set(),0,budget,goalSet);
+      const next=solve(id,node,new Set(),0,budget,goalSet,preferredAwards[id]??null);
       if(!next)return {ok:false,node:start,unresolved:id,attempts:budget.attempts,
         ...(collectFailures?{failures:budget.failures,deadEnds:budget.deadEnds}:{}),
         reason:budget.last||'연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료'};
