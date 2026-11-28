@@ -1,0 +1,23 @@
+{
+  "schema": "r36hw-v20-motion-build-v1",
+  "sourceBlob": "189f94cedaaf751ba1379af550eacc9bed579a6b",
+  "sourceBytes": 254884,
+  "outputBytes": 286932,
+  "triangles": 2100,
+  "joints": 63,
+  "animationClips": 4,
+  "channels": 88,
+  "keyframesPerTrack": 9,
+  "totalKeyedValues": 792,
+  "nonconstantRotationTracks": 33,
+  "appendedAnimationBytes": 12564,
+  "originalBinaryBytesPreserved": 234208,
+  "originalViewsPreserved": 46,
+  "newViews": 89,
+  "maxFloat32QuaternionNormError": 3.016465610627961e-8,
+  "geometryRigMaterialsUnchanged": true,
+  "opaque": true,
+  "nativeS2": false,
+  "actualRender": false,
+  "actualGameAnimation": false
+}
