@@ -1,0 +1,400 @@
+{
+  "schema": "ATLAS_FORWARD_ACTIVE_CHECKPOINT_V2",
+  "graph": {
+    "baseArg": "chain-foundation-d",
+    "path": "tools/data/overcap-forward-research-v2-chain-foundation-d.json.gz",
+    "summaryPath": "tools/data/overcap-forward-research-v2-chain-foundation-d-summary.json",
+    "sha256": "bfc251e0984906484292da12becd9d32558ab1acf5577ff6487c37e27a481d0c"
+  },
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "inputs": {
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+    "supplySha256": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+    "engineFiles": {
+      "tools/atlas-overcap-forward-research-v2.mjs": "533dfbc273ae31b46115257fe2fa5ea149a63b93da47602652760400ecc0bc58",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/build-overcap-forward-supply-catalog-v2.mjs": "9798cdbaa7b637e16a60faafb810dcf2fd3a05423d4bbc205c2bfc6d802d67ca",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "itemIndexSha256": "667be887c0c2117b3f8b9c7b8479971720c7e66195082a31e39cad20d0e7eb0b",
+  "counts": {
+    "nodes": 11126,
+    "edges": 24797,
+    "expanded": 414,
+    "openUnexpanded": 10712,
+    "openNoSupportedSuccessor": 0,
+    "distinctResearch": 167,
+    "byRoot": {
+      "STR_JACKSTOWN_SCOUTING": {
+        "states": 2677,
+        "expanded": 104,
+        "open": 2573,
+        "maxLabDepth": 36,
+        "distinctResearch": 138
+      },
+      "STR_WAT_DO": {
+        "states": 2567,
+        "expanded": 104,
+        "open": 2463,
+        "maxLabDepth": 34,
+        "distinctResearch": 134
+      },
+      "STR_RECRUIT_PEASANTS": {
+        "states": 2793,
+        "expanded": 104,
+        "open": 2689,
+        "maxLabDepth": 36,
+        "distinctResearch": 134
+      },
+      "STR_INSPECT_MACHINERY": {
+        "states": 3088,
+        "expanded": 101,
+        "open": 2987,
+        "maxLabDepth": 43,
+        "distinctResearch": 167
+      }
+    },
+    "byAction": {
+      "research": 2973,
+      "freeResearch": 101,
+      "sourceEventItems": 6403,
+      "eventResearch": 14138,
+      "missionResearch": 734,
+      "advanceMonth": 186,
+      "sourceResearchDelivery": 126,
+      "sourceBuildFacility": 123,
+      "sourceManufactureItem": 5,
+      "sourceBuySample": 8
+    },
+    "failed": 0,
+    "sampleResearchEdges": 35,
+    "sampleResearchIds": [
+      "STR_SCAVENGER_OUTFIT",
+      "STR_SC_WIRE",
+      "STR_SLAVE"
+    ]
+  },
+  "rootCursors": [
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "finalNode": 9378,
+      "stateHash": "87e71069c7f3be216d50ca991fcaecdb9b1b9173d798806729d593d337b40173",
+      "labDepth": 35,
+      "completedResearch": 76,
+      "month": 0,
+      "facilities": [
+        "STR_HYDROPONICS"
+      ],
+      "baseFunctions": [
+        "FARM",
+        "SHOP"
+      ],
+      "pendingFree": false,
+      "pendingDeliveries": 0,
+      "status": "CONDITIONAL_CURSOR",
+      "lastRun": "foundation-b",
+      "label": "근처 마을 방문",
+      "milestones": [
+        {
+          "kind": "research",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_HYDROPONICS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_EXCAVATION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_PRIMITIVE_WEAPONS_2",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_FLINTLOCKS_PRODUCTION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_STEAM_POWER",
+          "reached": false
+        }
+      ]
+    },
+    {
+      "root": "STR_WAT_DO",
+      "finalNode": 10208,
+      "stateHash": "f88917de7e9f205b97485fb762295d8676a659c902cc8353db71410c8d98790f",
+      "labDepth": 33,
+      "completedResearch": 72,
+      "month": 0,
+      "facilities": [
+        "STR_HYDROPONICS"
+      ],
+      "baseFunctions": [
+        "FARM",
+        "SHOP"
+      ],
+      "pendingFree": false,
+      "pendingDeliveries": 0,
+      "status": "CONDITIONAL_CURSOR",
+      "lastRun": "foundation-c",
+      "label": "회의 소집",
+      "milestones": [
+        {
+          "kind": "research",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_HYDROPONICS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_EXCAVATION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_PRIMITIVE_WEAPONS_2",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_FLINTLOCKS_PRODUCTION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_STEAM_POWER",
+          "reached": false
+        }
+      ]
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "finalNode": 11016,
+      "stateHash": "38cdfcb914fd059d5a1052d694a7d224e39e4a022fa5514ac239ceecc63e71e6",
+      "labDepth": 35,
+      "completedResearch": 76,
+      "month": 0,
+      "facilities": [
+        "STR_HYDROPONICS"
+      ],
+      "baseFunctions": [
+        "FARM",
+        "SHOP"
+      ],
+      "pendingFree": false,
+      "pendingDeliveries": 0,
+      "status": "CONDITIONAL_CURSOR",
+      "lastRun": "foundation-d",
+      "label": "지역 농부 고용",
+      "milestones": [
+        {
+          "kind": "research",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_HYDROPONICS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_EXCAVATION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_PRIMITIVE_WEAPONS_2",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_FLINTLOCKS_PRODUCTION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_STEAM_POWER",
+          "reached": false
+        }
+      ]
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "finalNode": 8573,
+      "stateHash": "f1142993530893090b5e9d84e436eb4083a1898b4251e69486332a4761c48593",
+      "labDepth": 42,
+      "completedResearch": 98,
+      "month": 0,
+      "facilities": [
+        "STR_HYDROPONICS"
+      ],
+      "baseFunctions": [
+        "FARM",
+        "SHOP"
+      ],
+      "pendingFree": false,
+      "pendingDeliveries": 0,
+      "status": "CONDITIONAL_CURSOR",
+      "lastRun": "foundation-a",
+      "label": "기계류 조사",
+      "milestones": [
+        {
+          "kind": "research",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_HYDROPONICS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_EXCAVATION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_PRIMITIVE_WEAPONS_2",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_FLINTLOCKS_PRODUCTION",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_STEAM_POWER",
+          "reached": false
+        }
+      ]
+    }
+  ],
+  "runHistory": [
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "run": "STR_PERSONAL_LABS",
+      "seed": 5407,
+      "finalNode": 6542,
+      "selectedEdges": 10,
+      "status": "CONDITIONAL_GOAL_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_WAT_DO",
+      "run": "STR_PERSONAL_LABS",
+      "seed": 4818,
+      "finalNode": 7050,
+      "selectedEdges": 10,
+      "status": "CONDITIONAL_GOAL_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "run": "STR_PERSONAL_LABS",
+      "seed": 5112,
+      "finalNode": 7544,
+      "selectedEdges": 10,
+      "status": "CONDITIONAL_GOAL_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "run": "STR_PERSONAL_LABS",
+      "seed": 5350,
+      "finalNode": 7958,
+      "selectedEdges": 9,
+      "status": "CONDITIONAL_GOAL_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "run": "foundation-a",
+      "seed": 7958,
+      "finalNode": 8573,
+      "selectedEdges": 10,
+      "status": "OPEN",
+      "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT"
+    },
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "run": "foundation-b",
+      "seed": 6542,
+      "finalNode": 9378,
+      "selectedEdges": 12,
+      "status": "OPEN",
+      "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT"
+    },
+    {
+      "root": "STR_WAT_DO",
+      "run": "foundation-c",
+      "seed": 7050,
+      "finalNode": 10208,
+      "selectedEdges": 12,
+      "status": "OPEN",
+      "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT"
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "run": "foundation-d",
+      "seed": 7544,
+      "finalNode": 11016,
+      "selectedEdges": 12,
+      "status": "OPEN",
+      "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT"
+    }
+  ],
+  "openSampleSources": [
+    {
+      "item": "STR_WRENCH",
+      "research": "STR_WRENCH",
+      "koName": "렌치",
+      "roots": [
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_WAT_DO",
+        "STR_RECRUIT_PEASANTS",
+        "STR_INSPECT_MACHINERY"
+      ],
+      "itemIndexPresent": true,
+      "itemSupplyPresent": false,
+      "indexedPurchase": null,
+      "indexedRecipes": [],
+      "indexedFixedEvents": [],
+      "itemFields": {
+        "costBuy": 1500,
+        "requires": [
+          "STR_WRENCH"
+        ],
+        "requiresBuy": []
+      },
+      "sourceStatus": "OPEN_NOT_ACQUIRED"
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "scope": "Development-only cumulative conditional graph. Not a final career admission receipt. Research and actual facility construction remain distinct."
+}
