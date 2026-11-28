@@ -299,6 +299,13 @@ function produce(q){
    if(s.type==='advanceMonth'&&s.month<=before.month){
     rec.skipped.push({index,type:s.type,reason:'already-at-or-after-month'});continue;
    }
+   // Resolve research through the planner BEFORE requiring a laboratory sample.
+   // A legitimate free/event award can complete a topic without its physical
+   // sample; forcing supply first creates circular purchase dependencies.
+   if(s.type==='research'&&!labVerdict(n.world,s.id,d).ok){
+    n=ensure(p,n,[s.id],future);
+    continue;
+   }
    let trial=supplied(p,n,s,future);
    if(s.type==='research'&&active(trial.world,s.id)){
     rec.skipped.push({index,type:s.type,id:s.id,reason:'supplied-via-real-research'});n=trial;continue;
