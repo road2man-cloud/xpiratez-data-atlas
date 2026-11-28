@@ -3,8 +3,8 @@
   "source": "R36MF_SUBTLE_GUARDED_2100_COMPACT_FULL.glb",
   "shaSource": "ec2cc78164ecf45049f76b93d835225adc81aa47ff5f43c2bc17a2e320da73d9",
   "output": "R36MG_TOPOLOGY_2100_FULL.glb",
-  "modelSHA256": "d0477076567bd6ac74727ddcd84154f72cec64027b5df8c0cd3d450db7d97ba1",
-  "modelBytes": 13144460,
+  "modelSHA256": "074d7dcb424aa36b89244eff60698b88548c045dac8890eb63ad6ec0ccebe126",
+  "modelBytes": 13148356,
   "bodyTriangles": 1132,
   "faceHairTriangles": 968,
   "totalTriangles": 2100,
@@ -24,8 +24,8 @@
     },
     "normal": {
       "file": "R36MG_REMESH_NORMAL_2048.png",
-      "bytes": 3337953,
-      "sha256": "32a1b56160cdf2f049d801670b7e359741be887e0e3e73a4b80f3a208e68dd00"
+      "bytes": 3341852,
+      "sha256": "9208589abf0b91be8d36adfc292fec9473fe0e30eafcc516af11f79ab78317af"
     }
   },
   "flips": [
