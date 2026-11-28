@@ -1,0 +1,155 @@
+{
+  "schema": "r36hw-v28-warm-palette-v1",
+  "sourceBlob": "20c969915e7f62b2591711045a8699f48016ae66",
+  "reference": {
+    "file": "body500_F11_pir.gif",
+    "warmPixels": 2353,
+    "medianRgb": [
+      112,
+      68,
+      28
+    ],
+    "q25": [
+      92,
+      44,
+      16
+    ],
+    "q75": [
+      136,
+      96,
+      44
+    ],
+    "note": "Uncalibrated sprite RGB; not a physically based albedo target"
+  },
+  "sourceBytes": 307976,
+  "materials": [
+    {
+      "id": 0,
+      "name": "face",
+      "before": [
+        0.56,
+        0.37,
+        0.19,
+        1
+      ],
+      "after": [
+        0.48,
+        0.25,
+        0.085,
+        1
+      ]
+    },
+    {
+      "id": 8,
+      "name": "skin",
+      "before": [
+        0.56,
+        0.37,
+        0.19,
+        1
+      ],
+      "after": [
+        0.48,
+        0.25,
+        0.085,
+        1
+      ]
+    },
+    {
+      "id": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "before": [
+        0.32,
+        0.23,
+        0.105,
+        1
+      ],
+      "after": [
+        0.28,
+        0.15,
+        0.055,
+        1
+      ]
+    }
+  ],
+  "zones": [
+    {
+      "material": 0,
+      "zone": "face lower edge",
+      "selected": 76,
+      "changed": 49,
+      "oldMeanRgb": [
+        254.355,
+        254.342,
+        254.342
+      ],
+      "newMeanRgb": [
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "material": 8,
+      "zone": "exposed wrist skin",
+      "selected": 16,
+      "changed": 16,
+      "oldMeanRgb": [
+        230,
+        230,
+        230
+      ],
+      "newMeanRgb": [
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "material": 18,
+      "zone": "fabric collar trim",
+      "selected": 17,
+      "changed": 17,
+      "oldMeanRgb": [
+        51,
+        57,
+        61
+      ],
+      "newMeanRgb": [
+        185,
+        159,
+        125
+      ]
+    },
+    {
+      "material": 18,
+      "zone": "fabric cuff trim",
+      "selected": 51,
+      "changed": 51,
+      "oldMeanRgb": [
+        77.51,
+        88.608,
+        98.216
+      ],
+      "newMeanRgb": [
+        185,
+        159,
+        125
+      ]
+    }
+  ],
+  "outputBytes": 307980,
+  "triangles": 2100,
+  "joints": 63,
+  "changedViews": [
+    4,
+    26,
+    42
+  ],
+  "unchangedViews": 43,
+  "poseGeometryWeightsNormalsTexturesUnchanged": true,
+  "garmentOpaque": true,
+  "garmentSeparatePalette": true,
+  "renderPerformed": false,
+  "referenceColorCalibrated": false
+}
