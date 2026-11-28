@@ -24,7 +24,7 @@ const read=p=>JSON.parse(bytes(p));const gz=f=>JSON.parse(gunzipSync(bytes('publ
 const d=read('public/data/soldiers-modern-index.json'),catalog=read('public/data/soldier-source-catalog.json');
 if(d.meta.mod.version!=='v.o2')throw Error('wrong-game-version');
 d.sourceItemIds=new Set(catalog.itemIds);
-const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={};
+const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={};
 let base,date;
 function load(p,expected){
  const bytes=fs.readFileSync(p),h=createHash('sha256').update(bytes).digest('hex');
@@ -33,7 +33,7 @@ function load(p,expected){
  const doc=yaml.load(bytes.toString('utf8'),{json:true})||{};
  if(doc.startingBase)base=doc.startingBase;
  if(doc.startingTime)date=doc.startingTime;
- for(const [key,target] of Object.entries({facilities,items,research}))for(const row of doc[key]||[]){
+ for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts}))for(const row of doc[key]||[]){
   if(row.delete){delete target[row.delete];continue;}
   const id=row.type||row.name;if(id)target[id]={...target[id],...row};
  }
@@ -47,7 +47,31 @@ for(const [id,r] of Object.entries(research)){
  for(const k of r.spawnedItemList||[])if(items[k])grants[k]=(grants[k]||0)+1;
  if(Object.keys(grants).length)researchGrants[id]=grants;
 }
-d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants};
+// Only the specific verified fixed block is supported. No random block/item
+// recovery, inferred encounter, or arbitrary loot quantity enters the model.
+const missionLoot={};
+const deployment=alienDeployments.STR_LOC_COMMS_DISRUPTION,terrain=terrains.ORBIT_COMMS_DISRUPTION;
+const block=terrain?.mapBlocks?.find(b=>b.name==='STATION_06');
+const script=missionScripts.technocracySat, map=mapScripts[terrain?.script];
+const craft=crafts.STR_CHARIOT,cond=startingConditions[deployment?.startingCondition];
+const source=d.missionResearchSources?.STR_TEC_040?.find(r=>r.deployment===deployment?.type&&r.reward==='mission-success');
+const indexed=source?.scripts?.find(s=>s.script===script?.type);
+if(deployment?.unlockedResearch==='STR_TEC_040'&&deployment.terrains?.length===1&&deployment.terrains[0]===terrain?.name&&
+ terrain?.mapBlocks?.filter(b=>b.groups?.includes(9)).length===1&&block?.groups?.includes(9)&&
+ map?.commands?.some(c=>c.type==='addBlock'&&c.groups===9&&c.executions===1&&c.size===2)&&
+ block?.items?.STR_TEC_001?.length===1&&
+ script?.missionWeights?.[0]?.STR_LOC_COMMS_DISRUPTION===100&&script?.regionWeights?.[0]?.REGION_ORBITAL_1===100&&
+ indexed?.executionOdds===script.executionOdds&&
+ JSON.stringify([...indexed.researchPositive].sort())===JSON.stringify(Object.keys(script.researchTriggers).filter(k=>script.researchTriggers[k]).sort())&&
+ JSON.stringify([...indexed.researchNegative].sort())===JSON.stringify(Object.keys(script.researchTriggers).filter(k=>!script.researchTriggers[k]).sort())&&
+ cond?.allowedCraft?.includes(craft?.type)&&craft?.costBuy>0&&craft?.soldiers>0&&craft?.requires?.length){
+ missionLoot.STR_TEC_001=[{deployment:deployment.type,research:deployment.unlockedResearch,script:indexed,
+  terrain:terrain.name,block:block.name,count:block.items.STR_TEC_001.length,
+  craft:craft.type,craftResearch:craft.requires,startingCondition:deployment.startingCondition,
+  sourceFiles:Object.fromEntries(['Piratez_Factions.rul','Piratez_Planet.rul','Piratez_Mapscripts.rul','Piratez_Globals.rul','Piratez.rul'].map(k=>[k,files[k]]))}];
+}
+if(!missionLoot.STR_TEC_001)throw Error('comms-disruption-map-loot-source-mismatch');
+d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot};
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 const snapshot={sourceFingerprint:d.meta.source.metadataSha256,items:base.items,facilities:complete.map(f=>f.id),functions,baseLayout:layout,
