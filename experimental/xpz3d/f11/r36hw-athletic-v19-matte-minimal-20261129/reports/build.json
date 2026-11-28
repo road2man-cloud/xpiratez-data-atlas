@@ -1,0 +1,67 @@
+{
+  "schema": "r36hw-v19-matte-v1",
+  "sourceVersion": "V17",
+  "sourceBlob": "c1aef49ea29fd67e2c34a841aaf2f9d147c72b1f",
+  "sourceBytes": 254884,
+  "outputBytes": 254884,
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "weldedGroups": 527,
+  "lockedGroups": 146,
+  "lockedVertices": 198,
+  "modifiedColorVertices": 388,
+  "maxRgbChannelDelta": 34,
+  "neighborRgbRmsBefore": 15.426141675562802,
+  "neighborRgbRmsAfter": 7.889823631735421,
+  "neighborRgbRmsReductionPercent": 48.85419959396573,
+  "changedViews": [
+    42
+  ],
+  "unchangedViews": 45,
+  "materialBefore": {
+    "name": "R36HW_V16_OPAQUE_OCHRE_SPORTSWEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.51,
+        0.29,
+        0.11,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.88
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.35
+    }
+  },
+  "materialAfter": {
+    "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.32,
+        0.23,
+        0.105,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.96
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.25
+    }
+  },
+  "printAtlasUsed": false,
+  "geometryAndRigUnchanged": true,
+  "opaque": true,
+  "nativeS2": false,
+  "nativeRender": false
+}
