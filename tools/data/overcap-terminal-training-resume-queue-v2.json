@@ -1,0 +1,3241 @@
+{
+  "schema": "ATLAS_OVERCAP_TRAINING_RESUME_QUEUE_V1",
+  "sourceHash": "603898ebfc06e46304dee8ecc492ef444fd80d83c9819917f0a5ccc4a49316c5",
+  "sourceLedgerHash": "5d467f9eeeed61c799e80be8141d73284550524bf1e4dedfbddd1cf261cca427",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "terminalSourceHash": "5606faaf12f23befba522848c2f19e9c574d78515055931613e41970ac0e20fd",
+  "scope": "Existing conditional same-body action witnesses; leaf-first scheduling only, deferred ancestors remain valid, no new replay or final admission.",
+  "waves": [
+    "public/data/soldier-overcap-terminal-training-CHORT-0.json",
+    "public/data/soldier-overcap-terminal-training-R-0.json",
+    "public/data/soldier-overcap-terminal-training-R-7.json",
+    "public/data/soldier-overcap-terminal-training-R-14.json",
+    "public/data/soldier-overcap-terminal-training-X-0.json",
+    "public/data/soldier-overcap-terminal-training-X-6.json"
+  ],
+  "summary": {
+    "sourceWaves": 6,
+    "sourceRows": 114,
+    "sourceSeeds": 37,
+    "alreadyFirstInventoryClosed": 0,
+    "deferredAncestorRows": 40,
+    "otherOrNonLiveOnly": 0,
+    "checkpoints": 74,
+    "byBody": {
+      "STR_SOLDIER_CHORT": 3,
+      "STR_SOLDIER_R": 30,
+      "STR_SOLDIER_X": 41
+    },
+    "resumeSeeds": 37
+  },
+  "checkpoints": [
+    {
+      "checkpointId": "OVERCAP-END-NEXT:cc54ddbf52ae294b351117a3bc28513f316127b302a6f57777cf638e352091f5",
+      "sourceTerminalId": "OVERCAP-TERMINAL:257abd3197a70bb2fc7d097d46388486301fee514441b618062251bdfa6a2cd2",
+      "wavePath": "public/data/soldier-overcap-terminal-training-CHORT-0.json",
+      "fullActionHash": "13a3719724fd736e16fb9e15b124f45e805bd20eea52abc17a538ec554576923",
+      "suffixHash": "ba1c2aa9266d8efda11c9352d22a618f866fe65430529904ae8e1a787a5511c8",
+      "body": "STR_SOLDIER_CHORT",
+      "branch": "branch-3f47bfff0ab551d49dbd0355",
+      "target": "CRAFT:STR_CAPSULE",
+      "capGain": 1,
+      "readyActions": 1,
+      "missingResearchCount": 1,
+      "actions": [
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:d2ed3fab5672695114fc5b985e2134f6b5d99fa6222e5645c1dd7d2ca34087ea",
+      "sourceTerminalId": "OVERCAP-TERMINAL:2f2a4d708686bf9a1f4ad3e036e4f75e9588483de99d00311990102d971ca792",
+      "wavePath": "public/data/soldier-overcap-terminal-training-CHORT-0.json",
+      "fullActionHash": "44ad845a1e7127eb5a44cacc8b5c6bdf43298e0d99fcbfb095d85615158e32c3",
+      "suffixHash": "ba1c2aa9266d8efda11c9352d22a618f866fe65430529904ae8e1a787a5511c8",
+      "body": "STR_SOLDIER_CHORT",
+      "branch": "branch-3f47bfff0ab551d49dbd0355",
+      "target": "CRAFT:STR_CAPSULE",
+      "capGain": 1,
+      "readyActions": 1,
+      "missingResearchCount": 1,
+      "actions": [
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:154428ae31da13800a5918e2e949ae47e89438c25c49ec638e3fbea55f31ef4a",
+      "sourceTerminalId": "OVERCAP-TERMINAL:73d37a925954c5df6314ced93740756decb71790eb4842f477faa2538754a43a",
+      "wavePath": "public/data/soldier-overcap-terminal-training-CHORT-0.json",
+      "fullActionHash": "a9fc04a16b45e517ddb535eb71ea668393b7e4a2a867e9eb4a39fbe96f226e47",
+      "suffixHash": "3a66c3268637214c89b3f34bc6a8b65df5ee6b8029b5271e3e699bb70f207d8b",
+      "body": "STR_SOLDIER_CHORT",
+      "branch": "branch-3f47bfff0ab551d49dbd0355",
+      "target": "CRAFT:STR_CAPSULE",
+      "capGain": 15,
+      "readyActions": 1,
+      "missingResearchCount": 1,
+      "actions": [
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:5a4d7a3976176d301d828ab8e97d6d6cdf6436a8e9dc9ce3ef80b719a0fc294c",
+      "sourceTerminalId": "OVERCAP-TERMINAL:073505b6973c8fc9de45389a43aa1c58427e88b352ce43fd3b01eb3279add747",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "63f405ce22da9c65283de0d12cacd237cff997488ee9dd1154065add4f7d10c9",
+      "suffixHash": "9e71a75d35394c18cfd4510f2fb1e949a93a6aa67296400d60d5fe3ed3a32785",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:6339d6edde3bcd37cdf8b7172cc228394a7e496adaca2f9659af9b06bf03ccfe",
+      "sourceTerminalId": "OVERCAP-TERMINAL:073505b6973c8fc9de45389a43aa1c58427e88b352ce43fd3b01eb3279add747",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "2ee4501e72ee42ec967e45ea7817eb2934d580836fc645d0d2e02588fa60c933",
+      "suffixHash": "d5ff4ed391e8c8c4da7ece74078c20a985271852f3a2a4af468e81eb41cd8101",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:2f3a87ba0eb7e4a4c0d562f9570f5c5739d10ab907e986ab3cdcff56baf057e8",
+      "sourceTerminalId": "OVERCAP-TERMINAL:420bb5946d17f32d283de9d2613006855a118f5bbb313b0052c58169d2cd50af",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "79ea55e3e90e8ac034a3991f142502580191b4676e84cba84281668919bfad86",
+      "suffixHash": "0a49c74c629d8657b7af81f8838466337834c8df6e77fcb1e177cc8cca26e92d",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 22,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:999b407e565a69391499d146d03cea23018b82810ca8137fdf8fdd59974feaea",
+      "sourceTerminalId": "OVERCAP-TERMINAL:420bb5946d17f32d283de9d2613006855a118f5bbb313b0052c58169d2cd50af",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "a2d7664d684e5008938b2042941044d831fe6942f1c8ac9e1af45973c97e8b9c",
+      "suffixHash": "22f7738eb2b64e2367a2aaead057d4d76e76e7942d94eabc36d06672e679d80b",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 22,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:86dd3220dc3f09c291f9f088a1ab12a88f9d238b5c1d77bd15243722febb472b",
+      "sourceTerminalId": "OVERCAP-TERMINAL:42257408cd0ca3607c57df749df0c6108747abf5a83ae48b50c0ff56dd4c841e",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "78d0ee07af82a62491900a3addc00def805a44a581da35f804de49e236dd861b",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:1a8c576428dc6f9469eaafa70980da122ef78d68a534df13bf9ab22b01e34fb9",
+      "sourceTerminalId": "OVERCAP-TERMINAL:4675f1e8dfbaca762913c71d7244006b2bab188cda904023eabb204861af018e",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "93e15ebff91f396a4101a27127463fa6eaffb89b2bfc8deec64a556840b406d0",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:9d906d6e348e49862b90f0f418388aaae0acb0118ed3e4f7aca1d9a3121478d8",
+      "sourceTerminalId": "OVERCAP-TERMINAL:519fbf7cd52e2186a33d37d4c18f5b60066fb7b12bf6ea7cbb79c736c463955c",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "a6db61f0ce7b4b71429bd90e981b112a584c215d59201d50d528cdc992e2207a",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:77f4b1296504bb7e58aeba6e9140a4c6ee5fa80d334da107e7dc9049dd7df6c9",
+      "sourceTerminalId": "OVERCAP-TERMINAL:55dcb084a5818712ab6b2bd02931822acf291f9179be8d5f0049181b4b8f0308",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "7793bb9642cadccf57e77fc8bc80989018abda9df1f2c853d9a822e1628c0e1d",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:694d4f944ae04499321165028cd2e47b03b94c6c528cd8c233f58c6ab19f54db",
+      "sourceTerminalId": "OVERCAP-TERMINAL:5932c4cf080ce9e372dce5537bc0b7ad16c1f8029ed8c4bc26def4e9ae186fe0",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "934ec59eba52de4633167962e3c445d789078353235ec2c09c8cb3300bd89bba",
+      "suffixHash": "d860ca5aced52688f9695e9b396655b3618090dfd565c6cf5d30497d1be608e3",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:c16620f23c73d307553469d911ce2614724976eee030a32f5e1286a2926cd97a",
+      "sourceTerminalId": "OVERCAP-TERMINAL:657acbb9186b710e53ff73959cd875839bb5eaed935e5ac63514a3cde9090ce0",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "62973a52b2574bd26d032bed7befcc408c2bcbe2edf90c33a7980aa8c9d1ba41",
+      "suffixHash": "22f7738eb2b64e2367a2aaead057d4d76e76e7942d94eabc36d06672e679d80b",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 22,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:dacf0b82a6f9ec9006856c5aae5a30f5ab80fdbef86a66f339dcbfacdc554a27",
+      "sourceTerminalId": "OVERCAP-TERMINAL:657acbb9186b710e53ff73959cd875839bb5eaed935e5ac63514a3cde9090ce0",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "6c13a988278d0932026057090c6384edc7e0fed7e275be15eaeee9757a70345e",
+      "suffixHash": "0a49c74c629d8657b7af81f8838466337834c8df6e77fcb1e177cc8cca26e92d",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 22,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:361b162e52d05a38832ca02df18d382123522ce58040ac603d84566474c923f5",
+      "sourceTerminalId": "OVERCAP-TERMINAL:69e07ded0cea59cf5fce43274581244db3e67e0f13153f42b6e3357a53520177",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "d0f9cf708e9b2de9540f4f0907a7f2ac60b8cd9000d72a0d195181a2418062e6",
+      "suffixHash": "d860ca5aced52688f9695e9b396655b3618090dfd565c6cf5d30497d1be608e3",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:3e6bfc52abd5603401abeee64a165efcad378e6e72973540d1fb1711c9be31ea",
+      "sourceTerminalId": "OVERCAP-TERMINAL:713cb9af0a09aa021b2f525ef6ecc11b5780881ad743c04c681439c248ad6244",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "ea8c3483b6b42455c85e43b56019ce701b74ab4b3a84527b4166088302a37421",
+      "suffixHash": "80d28808980dd4773254a86d40b20d8b4e7660b20a9af87b149ed052c7abef00",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:ac9cd68ff2e02335322c2ad622160bd422fb87f8affe1bfcae58e47f7150718c",
+      "sourceTerminalId": "OVERCAP-TERMINAL:713cb9af0a09aa021b2f525ef6ecc11b5780881ad743c04c681439c248ad6244",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "f44411c85730e90cb04bfb2688cd9965f28ccbf529e8b1a646d2285dbefd41ad",
+      "suffixHash": "6a542f47296d0685d99736389ec880d3441cb93ebe59f2bb2b299305b07c2b2f",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:3180758486484a42ea50fef5588f44d07548d62e7fbe62e6285b2a099632036f",
+      "sourceTerminalId": "OVERCAP-TERMINAL:8ae052e9518c30994ec0ae0d069ca01d557cd55062e9cfbedf46617434fbaf87",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "99a9fb87f283093c576c6775654345cde1c918d55cd593aa509a45fd7c562a8f",
+      "suffixHash": "6a542f47296d0685d99736389ec880d3441cb93ebe59f2bb2b299305b07c2b2f",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:5a20884d888d03bfceed7347dd0e7dd7488d79a0ebc465b1ad587bb4f30ae8fe",
+      "sourceTerminalId": "OVERCAP-TERMINAL:8ae052e9518c30994ec0ae0d069ca01d557cd55062e9cfbedf46617434fbaf87",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "8cdea40c6fbcb9b8ba73b56f9c357c4f1622e5df5cda0d6bcec7664e92d3d1e6",
+      "suffixHash": "80d28808980dd4773254a86d40b20d8b4e7660b20a9af87b149ed052c7abef00",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:01fbc28b573823ec62e5b8cbf95b2d88474fdfea58815242992befcf214e96ba",
+      "sourceTerminalId": "OVERCAP-TERMINAL:8d1861c9f30d149b9cf55a7b8c1a718673bb3d8b3442c2182d2166c7801b53cf",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "cfed6b79cf69d4b818b2364cc55d839de2e7bbc958e21af8f68aad1610a9b22c",
+      "suffixHash": "9e71a75d35394c18cfd4510f2fb1e949a93a6aa67296400d60d5fe3ed3a32785",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:c83346b17fe543c2b2f7b8aa70a9fc6610cd4b66e1abc9e8722e98cf3d6144f2",
+      "sourceTerminalId": "OVERCAP-TERMINAL:8d1861c9f30d149b9cf55a7b8c1a718673bb3d8b3442c2182d2166c7801b53cf",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "93be621a3bc0ec41e9bcbaa1b650f623da10df1340f2bd5f97977795590a59dc",
+      "suffixHash": "d5ff4ed391e8c8c4da7ece74078c20a985271852f3a2a4af468e81eb41cd8101",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:2b949fdb3d87146be017395155b79366060341816963416855c5b6a9cc499833",
+      "sourceTerminalId": "OVERCAP-TERMINAL:9841f6968d4f44fa59c7946dfb60ec1f064b619bdd0004ed940423d36ccf49ba",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-0.json",
+      "fullActionHash": "276a177dcf971aafd6eb5e802ee0376c8e7f98107d3c1efc202219f4ae45e2ee",
+      "suffixHash": "d860ca5aced52688f9695e9b396655b3618090dfd565c6cf5d30497d1be608e3",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:0743e04f13fb4000c1270ec01862625866dbca575913f399c4287278ba6e871c",
+      "sourceTerminalId": "OVERCAP-TERMINAL:987e929ecf3e182a347bd3cdaf0263551a1ebadbe500378aee395d978df044d1",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "23cbc99ac49481b23c7f620b78323eb4f83b7dadddd2e6168897b842ee384177",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:15b5a63b1db80d8278e7f4469ae824eb56728b22f4c43c110d9a50c0226c4d19",
+      "sourceTerminalId": "OVERCAP-TERMINAL:ae31730ac4cd4f22796aafb54cff206c8783755d0cd9abd18975cedf3002e082",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "84d2053a12f23a50c0d881bb1021f220062d17375bfb7333e814864ef1ab827f",
+      "suffixHash": "d5ff4ed391e8c8c4da7ece74078c20a985271852f3a2a4af468e81eb41cd8101",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:2f1dcc261babc8ef10ba35e333e6a21b2a2edf0c7e193efe774a7bbb59d91c85",
+      "sourceTerminalId": "OVERCAP-TERMINAL:ae31730ac4cd4f22796aafb54cff206c8783755d0cd9abd18975cedf3002e082",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "0b5dff99c980e5ecc4b1d3bc2484717ab78131ae52bcfc240612602c65151d88",
+      "suffixHash": "9e71a75d35394c18cfd4510f2fb1e949a93a6aa67296400d60d5fe3ed3a32785",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:08e32111bd19d9fc366f0a719f7760b792709cc8fb7650e0f56cde94e9b20c66",
+      "sourceTerminalId": "OVERCAP-TERMINAL:da84707b26d28b515b75d42b03d605f0c58741e4dc79846e3b8df0c851c25722",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "e6934e8ff07037e5de7132157599801a17ecede45bb879b76f9f35b4927c1200",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:2e37ee5d5fc3622fcef8c709ef6d6696d7ef2f7f991647c64b1ed4e0faa7aca0",
+      "sourceTerminalId": "OVERCAP-TERMINAL:dbcc98a73323ffd6a8ac592a5203ca7e9f5cec3607ef0d66989ff9e7e6eadfe3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "c2cef1f7d645969ec2f92d23d5f9181bf0b3ce45dc3c1dd065f0178b3f346657",
+      "suffixHash": "d5ff4ed391e8c8c4da7ece74078c20a985271852f3a2a4af468e81eb41cd8101",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:c6eb109216c0b2236f3cc2b072454026def729a36897432baa6ff17d458623ce",
+      "sourceTerminalId": "OVERCAP-TERMINAL:dbcc98a73323ffd6a8ac592a5203ca7e9f5cec3607ef0d66989ff9e7e6eadfe3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "818d87d3165d778af2f190a9ed1e2a8c2e45bcf9be794debff91a9b84fa13f47",
+      "suffixHash": "9e71a75d35394c18cfd4510f2fb1e949a93a6aa67296400d60d5fe3ed3a32785",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:bcad7964f0e9be4d2bd1dbcae5becc6fc9c5c6c833afb05e7f68babba1ff650a",
+      "sourceTerminalId": "OVERCAP-TERMINAL:e2d3ca12df19d97fa93dc2a83995d231fac170852e3a9dc03b04a2a7260ee9fc",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "7c488dfbd54a0d0ea11eaa175a2804fcf37af1353e03904e7afd88241a23b386",
+      "suffixHash": "d860ca5aced52688f9695e9b396655b3618090dfd565c6cf5d30497d1be608e3",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:30f63878846de9fb6dd7165998549bf6511c72cd553b260cc37112b4e0fd9998",
+      "sourceTerminalId": "OVERCAP-TERMINAL:e359198bfa1fe638426e54d14622b2d1da9150f7b6a20901952cc091b5ed33f7",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "86cd862e1483d7d548dfbc83e1680d018d0bdab9d4db6613f5ab3749fcc65079",
+      "suffixHash": "b5b63142ae756bb45e198d64c500d65fab4d62d3aeea4e49c044604dd84d42a6",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 22,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:886762ba5e2c9f194cbe202c19d1d9d621bb721306f5132222f7946c3efcbfa2",
+      "sourceTerminalId": "OVERCAP-TERMINAL:e359198bfa1fe638426e54d14622b2d1da9150f7b6a20901952cc091b5ed33f7",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-14.json",
+      "fullActionHash": "26f95619337849759c918e17321c0d1605c51be676468de0d0f7d76c6ddf4734",
+      "suffixHash": "d189cf025beaf4ddefdd28a498b4e121bfaea328b4af07722a22552ecec783d3",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 22,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:0a146253d8ae9f63ba44d27e32a09b8b873d3490aa685d8c4143b992af4c0214",
+      "sourceTerminalId": "OVERCAP-TERMINAL:e5b82fede1878f3cb91bf9ddb9692634d968d989782f3fa3460c16749b3128a7",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "a0b440e0bea08334e1ce664362d6044b0852615ee2530f26efe77fc5d942f619",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:0b26c85e58e50f8bcc78d38615f9bed4f83c42b9bea1658502e40c75a166edfb",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f5e7b909d8ca3e145336f7a4b2a5746806fb30a27dc3b210e64fde9aab8b5c7b",
+      "wavePath": "public/data/soldier-overcap-terminal-training-R-7.json",
+      "fullActionHash": "9182936c66217a765df24f69df0d93ffc09875b6fd30027c91053cdc0b48c366",
+      "suffixHash": "e627483088c14e864ec3f04f15e4a2403afd35c7230012df6cd44b62b1b450fb",
+      "body": "STR_SOLDIER_R",
+      "branch": "branch-6d2f70f7eb7e47a5b0dd8879",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 3,
+      "actions": [
+        {
+          "id": "STR_BATTLE_FORM_GAL_AUGMENTATION",
+          "missingResearch": [
+            "STR_BATTLE_FORM_GAL_AUGMENTATION"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GLADIATOR_TRAINING",
+          "missingResearch": [
+            "STR_GLADIATOR_TRAINING"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:ad8e9075c884619066ebdebdba01dad2d412f4f939c9f17613175eaa74b4cec6",
+      "sourceTerminalId": "OVERCAP-TERMINAL:0fa5804fb4545db8a30a45567f5600b32d46d5eb6859e1c29d95dac88bfbd38f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "6d12531138e2c5949d6cb5354c12fec768df9f9589e1c3c3386a2f7b97ceab7b",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 3,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:6628e799d9552555d28c5a286e13fa0e91385c4c8ec65885489e74b71b680292",
+      "sourceTerminalId": "OVERCAP-TERMINAL:0fa5804fb4545db8a30a45567f5600b32d46d5eb6859e1c29d95dac88bfbd38f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "1aedb9af508cff49d9bea9f5209e50bab3ba1985d74e75137c70cbd41b57b2ac",
+      "suffixHash": "b421fac869de1a12d915b68bb6365fd270d9aa8f97d2e3d8ef1fe7f1133e8194",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 16,
+      "readyActions": 2,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:89acaae95a2616c4f0e2d86c4551ddbd62854094c27082c13e7e6c8762cbb693",
+      "sourceTerminalId": "OVERCAP-TERMINAL:0fa5804fb4545db8a30a45567f5600b32d46d5eb6859e1c29d95dac88bfbd38f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "a78ec85c26070bbd901e27fe2e8cbcecd6feeb50a83af1d77161320dfe579a8a",
+      "suffixHash": "35a0ec39373b68aa922843ce56aefcab323de1885955a4cef92b02f2b2ec9499",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 2,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:68ba1b378dd84d534f2fc0ed8e5949a7c9584bbf31bb7c2be3c9c9c76817a68c",
+      "sourceTerminalId": "OVERCAP-TERMINAL:0fa5804fb4545db8a30a45567f5600b32d46d5eb6859e1c29d95dac88bfbd38f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "03eec3bb01cde9016cc15accf97d1fd2dba6a0f63379503686a9204281ee177f",
+      "suffixHash": "f6311916f8f8c64117f90a7aea79c7eb473f860dec55cfd4044beddfd8d75523",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 24,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:13ac04e01d6857e1e4a813a827e1965f569a84cc9635e489c12fe605e09edb68",
+      "sourceTerminalId": "OVERCAP-TERMINAL:0fa5804fb4545db8a30a45567f5600b32d46d5eb6859e1c29d95dac88bfbd38f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "490d783b47750ecae5796a06ccefa49fd7d57de98b0c0fc9d655787837514328",
+      "suffixHash": "c035c8d1dc22a65fd05ca60ef40a9335d59c39d9a1772696526fb7eb4dba19c0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 16,
+      "readyActions": 1,
+      "missingResearchCount": 7,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:35b7534a04bb3a3c8f906b296989029565a1972ff49661fef0df9bd6d1391f25",
+      "sourceTerminalId": "OVERCAP-TERMINAL:0fa5804fb4545db8a30a45567f5600b32d46d5eb6859e1c29d95dac88bfbd38f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "c3be102859547e8914a15dd3b9b3755c94ed696b692cf897ae9beb726aa6bef1",
+      "suffixHash": "9f131b1089614871f9f8eaa9e3eb14dd372f2183866902294dba935bfab61b6b",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 24,
+      "readyActions": 0,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:0851d60ea81803c9a502a0779ca29ce243b930721927af7afe31bf46bf339ec8",
+      "sourceTerminalId": "OVERCAP-TERMINAL:728b7fa2807b7705f4bc34bf60145b18b813be3a2ce94d80d6535cbfc856319d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "eb66c7c41df1f692c0436f664eda02def78b7db03b504adb7101dc5a34ad3400",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:29ce80f390b3f01613275278a9a47eeb24675c01d7d2b2e876c0350a78d700e0",
+      "sourceTerminalId": "OVERCAP-TERMINAL:73bea3e0e9324701251610dc190aa73cea5408c8f7d93447a830a916325e4bf6",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "0dd38c75f92295d5b3ec25016b4843d4b6f51dd0f388096ddcb58f5159a74093",
+      "suffixHash": "5bbda8652f9073962fda5a48c3329d9a683035f68c63840c79e6a4c0d078e565",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:a2e39779bb444a6dd14592244e0b0bb9f7701cabf3cf7b75e45a3b405591f1f8",
+      "sourceTerminalId": "OVERCAP-TERMINAL:73bea3e0e9324701251610dc190aa73cea5408c8f7d93447a830a916325e4bf6",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "aa4cce33f2771167d5897c4b4abecaba73460f744860a7d0b4fd4b3dd199412f",
+      "suffixHash": "e4b973ea8eac511b1d24f2ca31196588065b4ea1c8d6961340345977b7e0312b",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:e06b882ee487d262555f329cb3229850a8be9cccb9c71e9fe106b8d01f277d1b",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "6c7aba2ca54da5798be96551921615ea88063f58ab81092392b66b53be467ff1",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 4,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:12fc9e11be51bd8a86da1c075af84c14ce87d8661b214f1bbdb8a3376c2d95c6",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "e38961e57c5d6ba093cbe385bb89579cc56a343775da97c40a5d13219f6d5be0",
+      "suffixHash": "74a4a0469ae91ef4b2895089ad36be0cbdc737d4f4e4d8fb86c75241f6fcb1f7",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 0,
+      "readyActions": 4,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:33e4e57b156e1855296a4261fd61fb48143bb9440c612d3a74faaaf9b8cad3ed",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "92eebc24a5248e50a5daab9b3226fdd3eb214fbb18ab3e809a53fafbd7d2cb2e",
+      "suffixHash": "b421fac869de1a12d915b68bb6365fd270d9aa8f97d2e3d8ef1fe7f1133e8194",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 16,
+      "readyActions": 3,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:fc3f573905962d440b430bf0e80c05e22b450ccdd0a4b587ce486cebe0907b23",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "e74aba8447a5b2386e21ff2cd4b6a84b1da72ccc2cf65a190d3d2abd2c847f69",
+      "suffixHash": "cd0b1941d3e166a8f7a2b3a40c55783bafb6f638d2230fbc53a87311df2c663e",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 15,
+      "readyActions": 3,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:c1a0689a22003c9dd4d258b81732e134592d8217a95c01ab5a1de459a02125fa",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "15a62eb3f53f7733ef6441d7111b82959ed4a5bf9f987f7f3ec0614bb8f4fb0c",
+      "suffixHash": "35a0ec39373b68aa922843ce56aefcab323de1885955a4cef92b02f2b2ec9499",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 3,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:8ef45fedac8f59d99f5fa9dfd79a4e2f0f92e3097d5aa7ecd6a305c18e4c56c8",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "06b8f1de51e83080cba2981d49c0f4a649acb5089f5670d6d7b3d4502b1fbb60",
+      "suffixHash": "f6311916f8f8c64117f90a7aea79c7eb473f860dec55cfd4044beddfd8d75523",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 24,
+      "readyActions": 2,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:cae7427308dd4065f1abec2f293ff1ece3416cfc8dd63515f9ef04c4c100d15c",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "ca660df065edcc4e4fc59e7dac6d28cc287edf8020d8c5fbb6ed157290694c11",
+      "suffixHash": "c035c8d1dc22a65fd05ca60ef40a9335d59c39d9a1772696526fb7eb4dba19c0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 16,
+      "readyActions": 2,
+      "missingResearchCount": 7,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:8238d5365708a905d950ca697f2a07db56ff8942a5d3b7a60b54adf8eed75aff",
+      "sourceTerminalId": "OVERCAP-TERMINAL:785251afeec8cf1f14ec1b50baba00e6a6d635ba0bb5a4bfb8652eb00eee2f0d",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "eb4fdd977c19c319519c1226163a0ae64368934e3d741a02c1111ffe8545a463",
+      "suffixHash": "9f131b1089614871f9f8eaa9e3eb14dd372f2183866902294dba935bfab61b6b",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 24,
+      "readyActions": 1,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:2d6b6d0148ae52c96d217ed48c370167b4b386ac867704da639ace9608c8d7c7",
+      "sourceTerminalId": "OVERCAP-TERMINAL:91af4734ae7b423da41fab8bb28e872a3352066937d5a45ed4474827f1ab9452",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "2fb05bf02e57f808cbbfd26d099739c70aef527c24cc2c0713893e7382557d4c",
+      "suffixHash": "9d2bc370584fc11e29b5956f1a91f23a1f00569955998a0fba976aa08e6515f0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:6fad28c51bd3e5ca1d499341d229ce7eca90231033cefabdf5fae18596237d2b",
+      "sourceTerminalId": "OVERCAP-TERMINAL:91af4734ae7b423da41fab8bb28e872a3352066937d5a45ed4474827f1ab9452",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "cf5431530e54a4d5af767609ebdb9df2a05ff0b3584351261d7ede1bcb1c16d1",
+      "suffixHash": "491890b474ff47caa751cefd375cba8fc8acc0b3cd4c94bbe82dd60629a33946",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:ead99fd23e2a06a5e3519a7ab3395ad445c795e653c934a43018567102828e65",
+      "sourceTerminalId": "OVERCAP-TERMINAL:ab15a458396db228b045bcdb546f08855671d05ba3bbd410212d9696c23c91b3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "dd23b0cae5a8e637cc09a671e6a6a4d5cefddc09de8397cf608743a5c46c15d3",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 2,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PERSON_OF_CULTURE_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:40f8900ad9c501467df887307231eeb075d751441c0f6e0d5c013a9ef9b5a3a1",
+      "sourceTerminalId": "OVERCAP-TERMINAL:ab15a458396db228b045bcdb546f08855671d05ba3bbd410212d9696c23c91b3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "ab9eefe60c77b178bf264c11a14edbeb35fe2b6ae67e580c6fb78d81bd6e147a",
+      "suffixHash": "b421fac869de1a12d915b68bb6365fd270d9aa8f97d2e3d8ef1fe7f1133e8194",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 16,
+      "readyActions": 1,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:42cf154946c5dc6206975500e35e1bcdb63ea0fa2e67377467729cbef04673d0",
+      "sourceTerminalId": "OVERCAP-TERMINAL:ab15a458396db228b045bcdb546f08855671d05ba3bbd410212d9696c23c91b3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "a5461994e10e8e644722a844651b1919561d75a12d8549d4ae296dee3becd25e",
+      "suffixHash": "f6311916f8f8c64117f90a7aea79c7eb473f860dec55cfd4044beddfd8d75523",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 24,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:3d53812215c933c9319c9bf6411165e66c482cadbd94e2d5a79035421dac037e",
+      "sourceTerminalId": "OVERCAP-TERMINAL:d065771a3545ba934d428e60d9f41b51ac4ea5331b766420bb5811c7e4f4b289",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "973d44668e9cba4bb8a31b4b12b60e02d70219018e11e7c06bf0126c82bcb00e",
+      "suffixHash": "9d2bc370584fc11e29b5956f1a91f23a1f00569955998a0fba976aa08e6515f0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:4b3b25a1b41edea5869d91eab46cc161ab37a5be7274687bc10ba5e3c2ca0fa0",
+      "sourceTerminalId": "OVERCAP-TERMINAL:d065771a3545ba934d428e60d9f41b51ac4ea5331b766420bb5811c7e4f4b289",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "19cbfa6c0e93292c8b9add153bbcc07fbf1737d84bd4b61f20c5555eee2d9cd6",
+      "suffixHash": "491890b474ff47caa751cefd375cba8fc8acc0b3cd4c94bbe82dd60629a33946",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:63715a2883b55b6003a7d39cc0d8aabc925bb5dad3a7444763912975b5850067",
+      "sourceTerminalId": "OVERCAP-TERMINAL:d1f06534182bde48dfcda4acb03e96ddb03f57e0bde59613d86533c892775750",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "5490c44661b2651fffd2d982295415e19dd1cb15108f7ba62b7e96741de82b34",
+      "suffixHash": "4da66fa81d885037d6bdf197dec7244ad133be9f5f625542657c378dfe456034",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:7c6a58e95d97872c040ca2e88b100784b6772913158b9e6797cd286b565349d6",
+      "sourceTerminalId": "OVERCAP-TERMINAL:d1f06534182bde48dfcda4acb03e96ddb03f57e0bde59613d86533c892775750",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "1d26eb11fb8dd025a2c4295891dfa0c59503cad26048301c4e91e366009ff16a",
+      "suffixHash": "1d600e480205bbc344134877cc76c965ffd46073461870542c3a112dd1fd67cb",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:36d2da971650a7a74f9a9bcdd52ddb28b9e4a4cbaea6e306b1982a386fdaaae9",
+      "sourceTerminalId": "OVERCAP-TERMINAL:d5a83e55224c47296e091916b1b360d53360f542a8161769f38e2a9dfdef545f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "7eb2f53b8a5364e6403dcd0853bfe796ee840638c99eee052b19b06be34cac89",
+      "suffixHash": "9d2bc370584fc11e29b5956f1a91f23a1f00569955998a0fba976aa08e6515f0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:5169eaac950526a06c8202455722b9e3fe9094995973e3052e3c669f7a88dd65",
+      "sourceTerminalId": "OVERCAP-TERMINAL:d5a83e55224c47296e091916b1b360d53360f542a8161769f38e2a9dfdef545f",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "c4f7dd0905fca4479bad88d59c789c29a67b2eb4f34c09bdf172e6162508f78a",
+      "suffixHash": "491890b474ff47caa751cefd375cba8fc8acc0b3cd4c94bbe82dd60629a33946",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:a889a5827ad7be3544cd7399420f3a828d84f5f8dacc39021c59276088f58660",
+      "sourceTerminalId": "OVERCAP-TERMINAL:db3c1948cfefc7b04a2e76bb9eda9467099bf214624ea39f1f64f6cdcf9bec19",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "3ba2dec8603a7ac65aac1cfdea59370441e2399d9584c964e3cbde570aeedf56",
+      "suffixHash": "5bbda8652f9073962fda5a48c3329d9a683035f68c63840c79e6a4c0d078e565",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 2,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:90618c8c5fffdba5700577722e57b643c8160a1ea2d1fd567a54e548f1418d56",
+      "sourceTerminalId": "OVERCAP-TERMINAL:db3c1948cfefc7b04a2e76bb9eda9467099bf214624ea39f1f64f6cdcf9bec19",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "0a82edbd05cc2523a39087b7eb55e4373e74ccd4d02f31b6cc3a245ac538da5e",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 2,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_BASIC_FIREARMS_TRAINING",
+          "missingResearch": [
+            "STR_BASIC_FIREARMS_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:506716777e77410b81d49eb9197aa9f5005a46c286f3596d54e7e57ac6096d3e",
+      "sourceTerminalId": "OVERCAP-TERMINAL:db3c1948cfefc7b04a2e76bb9eda9467099bf214624ea39f1f64f6cdcf9bec19",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "d71e8e9e3f143a39bc2c7359bea27277f131efde676f88ebfb2cf6676b03b199",
+      "suffixHash": "9d2bc370584fc11e29b5956f1a91f23a1f00569955998a0fba976aa08e6515f0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_BASIC_FIREARMS_TRAINING",
+          "missingResearch": [
+            "STR_BASIC_FIREARMS_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:3376bd9e620edc41a62a37de76c3f29bbb8262b9ea3757a2c4522af8ac8f0a6f",
+      "sourceTerminalId": "OVERCAP-TERMINAL:db3c1948cfefc7b04a2e76bb9eda9467099bf214624ea39f1f64f6cdcf9bec19",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "39ade9e3204f70adb7d4a0fbc4c5e362f09301f855735d979c565ea1a32d2341",
+      "suffixHash": "89d4182aa0d46ec0b6e6ee25ca5e59fd2486808a71b644f8b311531daa17eb32",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 1,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:e6ef6b2e9285b07ab3af1b68ac8feae3e2628946c4bfe10e8e0df5a9cdea3bee",
+      "sourceTerminalId": "OVERCAP-TERMINAL:db3c1948cfefc7b04a2e76bb9eda9467099bf214624ea39f1f64f6cdcf9bec19",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "6bf27e0123a077eb7d4c5f56b19e91e897e2183a21405b4b0cca0e4d06c8581b",
+      "suffixHash": "db9221af00f94005831619d269159c1c1f48cdbf9a9fbc55efd3fa479be0f52c",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-f83a9447853c835d318d0c9e",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 1,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GREEN_BEAUTY",
+          "missingResearch": [
+            "STR_GREEN_BEAUTY"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:18e42a17a0f9828c3ea8bfb575b29f90e3b54b05699f43265e5f17dd7989ed12",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f1aa68c547453b219d5c74788231cdc9f03ae09e2ba342eae9126c7ffcd547a3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "ed849a8705c1a4e99f9b70e4f8b870d6b968e8c62940a57f7ef05ac0fb919c3f",
+      "suffixHash": "491890b474ff47caa751cefd375cba8fc8acc0b3cd4c94bbe82dd60629a33946",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 1,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:ea4e7dc6d45608fd61eb7271d0fab892a5696cec2f0cef80a9aada090ee4d7ec",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f1aa68c547453b219d5c74788231cdc9f03ae09e2ba342eae9126c7ffcd547a3",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "250faf0cd269091a6cb26809f6c0ab9a067317e5942ee9f08c701a05955a5703",
+      "suffixHash": "9d2bc370584fc11e29b5956f1a91f23a1f00569955998a0fba976aa08e6515f0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 1,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_BRIDES_TO_THE_QUEEN",
+          "missingResearch": [
+            "STR_BRIDES_TO_THE_QUEEN"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_NEPOTISM",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:3e69cee3ee1557d72b5ea8d5ca3507ba2c2345c8fa69fe1945ab3e04c87246e8",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f3dbcefead66b2798ec25b1cb98b06b362e09e81d50551c7fcbb378b809929ec",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "07ed5909e66d8595b4f04a2bb15261ce846aa5c387d9ecf3b6d7cec57a1b8329",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 2,
+      "missingResearchCount": 4,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_BASIC_FIREARMS_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:10eb384edbb9690685607cc5971faa3796cd9713a91c72522b5d0ffec5b41c80",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f3dbcefead66b2798ec25b1cb98b06b362e09e81d50551c7fcbb378b809929ec",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "3b066ae9d0caf818c7c82017d335b6b0fb9862076831d9265a9c0240436bba56",
+      "suffixHash": "9d2bc370584fc11e29b5956f1a91f23a1f00569955998a0fba976aa08e6515f0",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 2,
+      "readyActions": 1,
+      "missingResearchCount": 4,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_BASIC_FIREARMS_TRAINING",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:d77082e878e1217010908e39e859a7d95e9a1346100cc56ca03653152e02d2e1",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f3dbcefead66b2798ec25b1cb98b06b362e09e81d50551c7fcbb378b809929ec",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "45c45ca2b4d43af4942d4b6c15638016ca643bdbd76806c7f57d71b40792f14c",
+      "suffixHash": "4da66fa81d885037d6bdf197dec7244ad133be9f5f625542657c378dfe456034",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 1,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PERSONAL_ATTENTION",
+          "missingResearch": []
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:4554e2b47b92248fc38718b0d1b9f67d10dc551978c8010ba9437e559cc5a2a1",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f3dbcefead66b2798ec25b1cb98b06b362e09e81d50551c7fcbb378b809929ec",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "d8900100612e41c9c23f861d45f30f0d91d0939e4651cdbdc221501b527be466",
+      "suffixHash": "18d175be341eb8c0ac29a5ea9f3904705c7f5751f13caf1453259a20e8e387c1",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 0,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:7d5d34830c3ac48508609cce3c5d3ef4b3e56667a84c9c82c21e381964615dbd",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f3dbcefead66b2798ec25b1cb98b06b362e09e81d50551c7fcbb378b809929ec",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-6.json",
+      "fullActionHash": "28564fe1cd7eb291f1f02f1aae22b29f8b75c6db54b5bdc25cde2f1e2f37b1a1",
+      "suffixHash": "52fe77a33909379674a01971974af19664a7ed7971c13a66d65eb41ca7e67266",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 5,
+      "readyActions": 0,
+      "missingResearchCount": 6,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_MMA_TRAINING",
+          "missingResearch": [
+            "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    },
+    {
+      "checkpointId": "OVERCAP-END-NEXT:4c0149623147ec00f43593f9a32af9e8dcacc85e06e25395ecddeca4ae2adbf2",
+      "sourceTerminalId": "OVERCAP-TERMINAL:f491518267d76aa49c68daf8eb95b5fce7bf6e0752412a6bf5497d8036117057",
+      "wavePath": "public/data/soldier-overcap-terminal-training-X-0.json",
+      "fullActionHash": "f88f72cb7facf103c4562e2c582ee9d0c9d8e8e2e5d7d8e42f4fc3b2a5ae4951",
+      "suffixHash": "f33abee6e55610b209807f6e06fa5b4ec50ace42d2c306d9796d316915511995",
+      "body": "STR_SOLDIER_X",
+      "branch": "branch-b7f237281c6a756149db8d25",
+      "target": "SCRIPT:CyberhiveCydonia:STR_MARS_CYDONIA_LANDING_OLD",
+      "capGain": 1,
+      "readyActions": 0,
+      "missingResearchCount": 5,
+      "actions": [
+        {
+          "id": "STR_ASSIGN_STASIS_POD",
+          "missingResearch": [
+            "STR_SLEEPING_BEAUTY_PROJECT"
+          ]
+        },
+        {
+          "id": "STR_DREAMLINK_TRAINING",
+          "missingResearch": [
+            "STR_DREAMLINK_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_FUSION_TRAINING",
+          "missingResearch": [
+            "STR_FUSION_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_GUN_KATA_TRAINING",
+          "missingResearch": [
+            "STR_GUN_KATA_TRAINING"
+          ]
+        },
+        {
+          "id": "STR_PROUD_WARRIOR",
+          "missingResearch": [
+            "STR_PROUD_WARRIOR"
+          ]
+        }
+      ]
+    }
+  ]
+}
