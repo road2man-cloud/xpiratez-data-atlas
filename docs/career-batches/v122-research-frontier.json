@@ -1,0 +1,906 @@
+{
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "c21363aad1a773354085c2d47e24f782c084129b31ba1969b1d017b875daf841",
+  "frontier": [
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_SCRIPTURES_002",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_SCRIPTURES_002",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_SCRIPTURES_002",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_MYTH_015",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_MYTH_015",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_MYTH_015",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_MYTH_020",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_MYTH_020",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_MYTH_020",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_MYTH_100",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_MYTH_100",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_MYTH_100",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_HISTORY_002",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_HISTORY_002",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_HISTORY_002",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_HISTORY_003",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_HISTORY_003",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_HISTORY_003",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_HISTORY_008",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_HISTORY_008",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_HISTORY_008",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_HISTORY_009",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_HISTORY_009",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_HISTORY_009",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_HISTORY_016",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_HISTORY_016",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_STORYTELLER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_HISTORY_016",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_OGRE_WORKERS",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+        "script": "STR_KNOCK_KNOCK_1",
+        "research": "STR_OGRE_WORKERS",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    },
+    {
+      "from": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "action": {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+        "script": "STR_KNOCK_KNOCK_2",
+        "research": "STR_OGRE_WORKERS",
+        "assumeOutcome": true
+      },
+      "reason": "state-budget"
+    }
+  ],
+  "unexpanded": [
+    {
+      "state": "41f98408cc45543348e647ca851163ab811d6585cbfd7052804376a88fc2e547",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "0889782432133a093dc9b6ea1a8d7a23f375a38c6398bc2cd79974935c55d809",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "77a73e3f0c4a7f702711758a450a741dc0ae7ae564285b96139428273705f8cb",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1445fdb0a104541a7ed24b778e178a8af802cad04795af7b0e192385d2a9b37f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ea048435ad736ac97d8413282c934e909a2d331991e10f2f180f7b1e24b0c2e5",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9be631ea6b37cfb3bbd3c3430c01dfb5825b325eaaea306a27d7a3c1efe69958",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "884a7370e4395d466fa352510b4cbaa6cbb1a3eaa9b3098500a67eeee5287968",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c840a86d9e820536937170abdbacd5ad0b859d51dac848644e313075f639c59c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b3e8dedfa71725693215a513593ef7cca33462220e75d59e6e4b8ba8031dfd22",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "3008c364656e6e4b048361b55f97c35626f7bac5aa55a347d909bafbf0d17269",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "7097809282ee16cd61228b7247a1e8bddae7b5609d6542b7f3d1a6fafef3be4d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e442ab0c0ec83d230171a7b33b00ba690ddd0cfd7c6a9ea4fefa9ee3f965b76b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1e24d70bd899cbd1878ad49870b9db001de1502c26ebee6d2ceb768640ccc8c4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1a9fb5d7627f2182ee9b0b433b3b73e36e7a6fa53f3fdbf3131f29b6a817beda",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "24de04ee3baa1c568c2c0cd4850b452a3bdeb4bc8674041ac91fc93de63b232d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9b5739ed95e541e54cf3dea4e0063b08d9fe0b13ce8fea2e08ca43eddb2dde41",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "de778ecbb041160890e318779e855f006311d9c8700fd1392e527037f0802454",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "688a4ce5e61655d8297f33cc49b8ac50e6f50d5f9c4952cf44b1904065b01265",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "191bc9273e8963f36d7677387d3864f143f5d899ff4a641e58361e27ffd3bf74",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "5c951d86dc5572e113007e02c38295152519a932e7c914c4a56276c25b98d2b2",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "8af4caa905f1f5d8969833563224895a3f00269662e0dba45b56bd3b91edd34f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "bed25b84250685ee28662e42e024d96f25665c08803f02890f7f615e0e9a539c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "30b38341b49c3044d84752670eeaebffcef6dd6bd0435b405a7a9994e7026ae3",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "223e70921aa5b62048fb76cbb32c4d30f7ec7aae09a94c7544638eb9e334cf08",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "028ad69e9838b423f6c061654b5c2bbb3dd480486f4562762149d5e82e4fbdd0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2d53efa5182610be6bf738ebed81fb0a835dfcf9787c3fc2e0dcba16c2f103d4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "92142762bea8032bd7648463d0565e15f37cc1ee95c702c7403a46b225227507",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ccf57e387ac49e3e8276195b7a1af03499841c69f6c1e829ec346c0f7773ba6f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "d302efe16d032a5eac223ed10df00fc91237029a71695036dd390967e4c945a6",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "fe990de24afdab72a341b33ca91d1c92d8a67c2370947e0c968006537f8eaa34",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "80e7534f220610496d7f8a8f013f4ef3fa7a61079478518d944012dd9a689a00",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "8a2293af9087521aa33bcedc8e79dbcb095d041c0a2a6a03ccfeda2e15f93aa4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "631cc037cece64aad170c828cab31a3b3c112e31fb1eba856733071952721e30",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "939975902aa2d627476e3e84c3706137f29373e194af5b82bf594cc97bffbc0e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "3ccb77fd9ad1993c85ac3b076041b527a5bc1e0664efee8d7bf8898dff1cc91e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "cda5721fe30d15cb28d665cf0fa630a22dacd06a1147f93caaffd29bdda391be",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "657ced44eec5491768df102dcfa2c65aff65491bfe720dc836552eee99fd0c63",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "8d660364aedf86c170fca4462cb4b62a7a23948a73406320f2c22eb36bcec539",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b0beb0ed1330512e6237d78a9a9d90d3db7ec4bf5d48c348cd4c2f875b75b802",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1524b0b3862cda3c62e48a2f886406ef699b62f7bb717d6b2aed0d1cd9612229",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "007d9e2ad99838fe32b170216cd3b4c172f4a587a6e4eebb8b5998bd53ef5dcf",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4c45f525e4b3c767c7cc7c7a3ad2d33c5c1f6b98073c49aa6179350c5948c2c6",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "f0ed2c6bd019485c99a2eb05baa95a8cd409d8c9d4ec3c0be85de8a98ea3dcc1",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "103ee625b5736c4a543cb5b1a54635511d7c946b819d76a104979e6c5d3c07ad",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6033cb6de8232b45566ced802e78f29cfc0102819ef08e16cc0a4da07678a40e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b8736d2ccc2856564b00994decd35fabc871877354ec8981fcee09b8e9e9a0e7",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b8073ece8fd2468f0b340658023f1d6f9bf2df8f549a5e05a8d690b5747fb175",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "a062a1b68e3823059cc4209735c8f38bd02835ea07438cb7ff96f9bb6af1f5de",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "d492b4f8fae57a06a0dea4e304b1c84d6c57f384bc477c24fe87e2936b0004b1",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "7b2efc0d37a82a354fedc42e072457ef827d12e58e83f812d0dcaca94fd4519d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "edfc1b2af5b616ce7920519632ab6c83741c41c48bb19ac33a960d3472e28ac9",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "df7475658a4319aa7cbf0eacefca0a8e538b9106ce9026b069554c2e94dd5c21",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ded27753bf3c1c0fef2bd76ce34ce9a158e58e5fc51692aed17f584b3ca4f1b0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b99ce1509604e085376e1916a7c5b781b3178124acca75599821cbd804b7187e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "3a13f49e63bcfc54c5864aa2c3ccb9762f54233c4d30252c6af876b85ff72a5b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c2e6747d925ec6724b85f8f3be10865a9b188f8f5278e03089fee92afc24a823",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "0da4e61433e96d82879d026c5f3bf0db96a35f2f49e73adf01770fb14209e80b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "32a9505a2f99dc5b44e7b1e1350f468f7f5a48e4fea7f666763dae4eb9062774",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6fcf5301f5c1475d90f80d3cd1670b89839f5df527b0e592b2d6a90fd9faf2f5",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "31a0b2ab6504cab629e42851ce113584da9695c3ce211d3009f4fd1f1ce19a7e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "5ac342a430fbe4ef7eb7ad2010b8fe24f0015365cc60a100ff5613c5c22a427f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e6cc28b38530eb492f03831f29ee0436f9ec31638d892526108e6d42f9e55411",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ca9ce1c5181e3df0684388f233dff934cc061def3b09810df7971d2d5a4603b1",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e82a5e5c1e9a26ea0114a4b409523fd9a11f0d01eedf558cbd9c428d65f9a078",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "243997b03f1927e3526cc24c11b1dc4bf4a55f45994219c50baffeb1a51a9c1e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4cef49cdcc069ed33094dba4d6b6064b8738e146d0021fe5badcc550dd9d058f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "7c5d1fc87b29a0b957db44fa5a2f945b576132c7e6b856738f7d88ab5c142d5c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "f9d1143f39d0ab007a670f538126143f96911388e594b60af3307cf294d09ffe",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "127699b6d505503bc34d8330cf95f6f1e6fbde7eff2a32fa9c4927c641174a3b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "756fe7a3eb5c7d5bd8285e7b4b48c831c747a9d54aa213fc22d501019aa7b24a",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "41ff268728fb278a1d43e5d95437378b2eb2ee01d34a19f3e0a4a9b61c0c9905",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "d2827028682e27a57e60f2019fe5e18dcee50b21ffc99e398de75fab351477f1",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1d4614d82cbc8bab016f0490c38e364d96d7956f020bb59ef222c7a2fea10e45",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2db422b577afa4595cee92d4b7c8bae1e99a780107cc51f959615c0cd59e4001",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4160af54aecf3588d993898c16bec5ef391e1712ccbed83fb6a50ecc40b0cd0d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "43cadca27099f4e33929289138256c95c9f9e74c1f271e266ed1ae325ad2918b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1c3d5d9575d1272cce1f27cf3456351f7f7b957828b5e4f0820c78d790df9336",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6ba855efc0bf91abadcb4b0d383dd8c7b7ccfa7f004a4fe03c28c3cceb35f0e0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9f4a6ad82cee72156b9b87b32448e192b17ba12fc9a038ca68f5b753c425680e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2e06d9e2e8a9489e56f72131d9ead85f779b89eddcf2e64ce3953bb6929bf6d2",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "79dae0942feed97f1afc857552f804d6e60e3291acf7a14c908b3daab89be1a0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9404daacff03d7e047cea806c625ff738ae9e7c89ef7c363d7bff23ebd91caae",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "97823b776bdfcf1c3da41883d0f08eb75f3ebe0348e2965c507ee88fe5ccc266",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1b733fe3018fb0e6bfea36758b1101ea38e300b05040945d9b66afe6df6ff931",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "15023d2aa28047fa92e0a41cbc268140d54eb7657cd36391761435504b937ff2",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "10443e00aef243cb12e275f1474e3056932dc9babbc31a5f6c951966c4f1c002",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1577d4d8ae5ef916f834dbc2e57b9d07be8e2d53a674f0588898e3532266d6f8",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b5898da2e3dfd6f556b670338a5564da1e2a105289be81984abc00fb4e271fae",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "75e51537c0fc23eee359d3cacfae5be319e6f2552e7be2ca4e5d6b353c279ba3",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2c888c155b374c449724c2517fb5e38f508d155d2db5bfa5c56e4edeb8b46697",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b2721a8f431cbadbcda1fd4ca43cfcc0e1ed18f30d21324e22ed434b490579ab",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "fb2a193ea27f213975002dcd34bcb38574c1d306b5a5b41b0395f0f8fc8c22cf",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "d5ed8d84c1343cade58f9ef65367ff52ba7e3f6250e8f5aa79820787091c947c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "798ffc5e3041b1e8f9662c6610da20993c92196b444be0daa8ef7c1eec4b6845",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4228ff2002728d02697ccca6875f0a8a7792737b764118e785c8d304d47ba0bd",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "83c690ae943e6c7bf802ce9c9e873d860bd385fa5b35374a2de0736b5354db92",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "8ad5d9450bc3a3223f1203cc964082018f072e8610cccd3f8dcf29fd5b2f532f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "92a13eee2b5b10d20d3c01b59b757466d5d1088edccb9c6663c5e8cf506f1ff0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6581d4823ca4a7b3038768cbf1bc4c33827ab67f270a5be5f01905fad98880f0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "146b37c85553e0e972bbc6ede96dcd166f56526638ecfb983bfa6733ffdc962c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "40209d9d87eee042c905ca1af9c1685fbfdec8e7c2c76389bbb7510352b898b5",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e378df1f4080bea4cad6c500d6a876c1213d3c27b095bd7e5b2ddf242d62e219",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4da7dc02056f757a63cff4e3214304e64915d8e9760d7a99ee33c417f0b1a5d2",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ac56b4dbe93c32c9946ef9288ca8f16f0d4851082e82891627444f56ecaaca75",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "499b19a0d9edd93e0116621e36d76b74ea884db4358cae727eb9ece71e073f7a",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b72b083b545838193c23248e1d68f3c3442154ce0440ab5c7852ec4cec0c80f8",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "bca4119b43d4089207279e36884554cc8c83389dff0e73f312a8466e4620ee35",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "340ee5cc6822d9c29dc04da9b408e60f851ea81aa960f58d3d2fa7a844810d64",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "51f0ebd3cfdbaca6b873062f657aedf59dbec144097164f0e48bd4f41dc0128a",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "d8edb280f1416bec17b37390337c0553b0701f0719e4af112837879e28f20127",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9012a681e65f7cd3005a6c7850ab3423e70f9d2565a5f6123d15ee9ae287c39c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "a0ef61bd1e651ee27591c36f1362d8161e0cda22ccce927254979266bf45d10d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6e4846728ea5226d288372310ead2dd1b71b53750e7c6d5a3be1098f7a7f82a7",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c1bb98db00fe0f708db2c3facaba8ebe0d08f55e39a80dfd9467902b7aea346b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b3a6863c4cbc0f3652b98aee65accbf0b394f9682655570f3f82ad1007eb05dd",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b6bb81d917d2929a08f4c4331d1696af72bc919a64fdcdaacd718f4e7f98675c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2493bb75f868631e9f5b70cacdd6bb7b17b0d0737e475f640537492ad4e4a798",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2832b1a7efc493ec6eae034d8efbeb6dadc76db0c1ac6622a0e7ceb6dd6b06e1",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1910d3245b674abc4886ba2121057829b41394a5583c2c7a3fc40711b4ec4b86",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "52e6a13fbf1ca0653d0057894183059458451bc1ac49dfccc76b733c82f06a7e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "18e06a2d8b1497a497bae48984634268d6096c4e5c58db711cbaa1f8a167f21e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "35c47218964afeb750744237ffef34b9dd237c1ccda8326930b0227cc7df4aa6",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "61740c8c7188fe4819078e8d4b38a14fbdb347d1ee4ccf7cfeebfc656ad86e54",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "db877dbe599d18092ed39f94fa1a890588ee9cce5d26f89ef0ea35e56604b474",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "dafaef909e12cb9c97908d2ce38c94097e5c7c352cde8ae3ae88aa7739e95bc7",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "395fec36f6db9977058b0b81ec329a0fb7b54aa60983e018baac4948ed899a52",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "f4b6b18773cba671f41a32445480ac1398b4f627317be3d56368cbca9f8e2437",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "10be20b610231713203d3de8aeea9939fa117415839dfd9c124ed0c05f6fdc89",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "7305a7b02e6621e013c8d8f0e269c432db5c5ce44d952270b029484e48e496a4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e99a867152544c150c3c5f87bdc69734375bed8a0eee1b101a0880669442466e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "a23030ed3deb85dbcb00f481cac691e85e856d4d1aca43576026cc3a70523b30",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "19a040f5310a518192d3d2ab58fa549b11a17c8f25ed66eedf12e84ffeaedfda",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4927573a56b1110f267a2d9da72338f51660b79a1c0591df273aec54499eb522",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "391490e80122e8fc3fe306b3219c1cabd226124fcbfe7e3323c3dc610a914903",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "a8a47d73bc53651efc2bd1070748847d59310fc17a76def5acac4581056b3e43",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "258432ed2d4e31a7df4412f846803063bec81be68eb42a9dc3504d3d468ef072",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2166f81a1ea7d8acddc3570a9dd5bbb2435b0e070c0b7282fd440f2fb6c22aa9",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "8f4f8cc4e32f2db68f6d1526e9708a5c0973def517ce154e99d08c1a42d2bac2",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4f7989658f6ed1af73ca691059872959664c2fdaaf65f9ff16f0eb25ae2e8568",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "21fc52faf85729d0b86d64618e1672ca9a5598f41adeba5b73849300fdfcf8c5",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "78f0f4523aa3684b0416013d7f9e102326dcc21f4c0aed4df86b0833e5737cac",
+      "reason": "expansion-budget"
+    }
+  ]
+}
