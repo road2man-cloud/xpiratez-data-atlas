@@ -106,8 +106,8 @@ function prepare(mesh,candidate){
  const [a,b,c,d]=candidate.quad,L=candidate.L,R=candidate.R;
  // Each triangle receives its own old UV tile and a new diagonal.
  const choices=[
-  [ [[c,a,d],[c,d,b]], [[c,d,a],[c,b,d]] ],
-  [ [[c,d,a],[c,b,d]], [[c,a,d],[c,d,b]] ]
+  [[c,a,d],[c,d,b]],
+  [[c,d,a],[c,b,d]]
  ];
  let best=null;
  for(const option of choices){
