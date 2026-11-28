@@ -1,14 +1,75 @@
-name: XPZ3D R36MM
+name: XPZ3D R36MM actual GLB texture-and-normal renderer
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36mm-texture-render-20261128/source/**'
+      - '.github/workflows/xpz3d-r36mm-20261128.yml'
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: xpz3d-r36mm-real-render
+  cancel-in-progress: true
 jobs:
   render:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36mk-recess-budget-20261128
+            experimental/xpz3d/f11/r36mm-texture-render-20261128
+          sparse-checkout-cone-mode: true
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: echo hello
+      - name: Decode embedded GLB color, normal and roughness and render
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          SRC="$BASE/r36mm-texture-render-20261128/source/render_r36mm.cjs"
+          node --check "$SRC"
+          npm install --no-save --no-package-lock --prefix "$BASE/r36mm-texture-render-20261128/source" sharp@0.33.5
+          for V in ART_DENSE ART_GUARDED SUBTLE_DENSE SUBTLE_GUARDED; do
+            node "$SRC" "$BASE/r36mk-recess-budget-20261128/output/compact/R36MK_${V}_2100_COMPACT_FULL.glb" "$BASE/r36mm-texture-render-20261128/output/$V"
+          done
+          node - <<'NODE'
+          const fs=require('node:fs'),path=require('node:path');
+          for(const v of ['ART_DENSE','ART_GUARDED','SUBTLE_DENSE','SUBTLE_GUARDED']){
+            const d='experimental/xpz3d/f11/r36mm-texture-render-20261128/output/'+v;
+            const j=JSON.parse(fs.readFileSync(path.join(d,'R36MM_RENDER.report.json')));
+            const textured=j.images.filter(i=>i.mode==='textured_normal');
+            if(j.totalTriangles!==2100||j.images.length!==9||j.decodedImages<2||
+              textured.length!==3||textured.some(i=>i.colorMapPixels<1000||i.normalMapPixels<1000))
+              throw Error('Real texture/normal map sampling not proven for '+v);
+            for(const im of j.images)if(fs.statSync(path.join(d,im.file)).size<5000)throw Error('Invalid PNG '+im.file);
+            console.log(v, 'images',j.images.length,'decoded',j.decodedImages, 'normal pixels',textured.map(i=>i.normalMapPixels));
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36MM-real-GLB-embedded-texture-and-normal-views
+          path: experimental/xpz3d/f11/r36mm-texture-render-20261128/output/
+          retention-days: 90
+      - name: Publish nine PNG per variant and report
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36mm-texture-render-20261128/output
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36MM actual GLB texture and normal renders"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
