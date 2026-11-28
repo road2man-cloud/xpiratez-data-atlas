@@ -1,0 +1,31 @@
+{
+  "profile": "R36HW V13 BODY + N21 CENTRAL ANATOMY",
+  "version": 1,
+  "bodySourceCommit": "8c68b4ddde2696674a533216c20bbb62d46242d3",
+  "v13SourceSha256": "f1bcf8d28f53eb6c43035717125882a1f0eedca00d3776ef3119cfb6a938a3b5",
+  "n21SourceSha256": "b91082912fc1e5554b48f7db1cd2ecd777c9366f63bc25dbbd2a5251a7562229",
+  "outputSha256": "694c5384e71cc8dfaee09f1bf983b2eb494372064c23e69e37b9c2024cdd7185",
+  "outputBytes": 430268,
+  "bodyPrimitive5PositionsExactlyPreserved": true,
+  "bodyPrimitive5NormalsExactlyPreserved": true,
+  "bodyPrimitive5RigExactlyPreserved": true,
+  "nonBodyHeadHairExactlyPreserved": true,
+  "NSeriesBodyCopied": false,
+  "centralPatchFromN21": true,
+  "rigJoints": 63,
+  "trianglesBefore": 2100,
+  "trianglesAfter": 2100,
+  "V13RemovedFrontCenterTriangles": 29,
+  "N21CenterPatchTriangles": 29,
+  "N21EligibleTriangles": 222,
+  "N21PatchVertices": 31,
+  "patchOpenEdges": 31,
+  "V13SkinMaterialApplied": true,
+  "V13SkinVertexColorsFromV13ExposedSkin": true,
+  "limitations": [
+    "V13 is an outfit-derived silhouette: skin material conversion alone does not guarantee anatomical body topology",
+    "Central-patch perimeter is not welded into V13 base; N21 geometry may produce boundary discontinuities",
+    "Patch currently uses extracted N21 triangles within a budget, not a seamless body retopology",
+    "Normals and UV bake not reauthored; native S2 posed render and artistic acceptance pending"
+  ]
+}

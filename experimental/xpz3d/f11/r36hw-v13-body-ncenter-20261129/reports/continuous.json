@@ -1,0 +1,31 @@
+{
+  "modelBaseGitCommit": "8c68b4ddde2696674a533216c20bbb62d46242d3",
+  "NCenterSource": "N21 primitive 3 only",
+  "V13ClothColorRemoved": true,
+  "V13SkinMaterialApplied": true,
+  "name": "V13_NCENTER_CONTINUOUS",
+  "sourceV13GitBlob": "b48db6db2cdf0bdc40ba684550125a339167a2c6",
+  "V13SHA256": "f1bcf8d28f53eb6c43035717125882a1f0eedca00d3776ef3119cfb6a938a3b5",
+  "N21SHA256": "b91082912fc1e5554b48f7db1cd2ecd777c9366f63bc25dbbd2a5251a7562229",
+  "outputSHA256": "bc5c4d87f0d98b7983d72dfbebd1decef1bdd5b111e2b25e5f3a68f41b1ce04e",
+  "outputBytes": 431996,
+  "triangles": 2100,
+  "rigJoints": 63,
+  "bodySource": "V13 warm-ochre",
+  "NSeriesBodyCopied": false,
+  "centerPrimitive": "N21 3 reference field only",
+  "centerMatchedVertices": 34,
+  "displacedVertices": 34,
+  "protectedUnchangedVertices": 672,
+  "guardRejectedVertices": 0,
+  "maxDisplacementMeters": 0.013999999999999999,
+  "meanDisplacementMeters": 0.003223034022457645,
+  "topologyCut": false,
+  "openPatchCreated": false,
+  "originalV13BodyIndicesExactlyPreserved": true,
+  "limitations": [
+    "V13 garment-derived silhouette not a complete anatomical retopology",
+    "N center relief sampled to existing V13 vertices; limited by local mesh resolution",
+    "S2 renderer and posed anatomy not verified"
+  ]
+}
