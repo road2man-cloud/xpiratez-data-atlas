@@ -44,7 +44,7 @@ function paintPixels(mesh,maps,variant){
      const p=[0,1,2].map(k=>P[0][k]*u+P[1][k]*v+P[2][k]*t);
      const paint=art.details(p,{strength:type});
      if(!paint.strokeHits&&paint.layers.grain<.001)continue;
-     const i=ix*4,mask=art.frontGate(p[1],p[2]);
+     const i=ix*4,mask=art.regionGate(p[1],p[2]);
      if(mask<.001)continue;
      strokeCount+=paint.strokeHits;
      const mt=paint.layers;
