@@ -98,6 +98,25 @@ const vec=(a,b)=>a.map((x,k)=>x-b[k]);
 const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const dot=(a,b)=>a.reduce((s,x,k)=>s+x*b[k],0),length=a=>Math.hypot(...a);
 const unit=a=>a.map(v=>v/(length(a)||1));
+// Prevent inverted skinny faces by adaptively damping all local motion.
+function measureInversions(){
+ let count=0;
+ for(const face of faces){
+  const [a,b,c]=face.map(i=>pos[i]),[aa,bb,cc]=face.map(i=>orig[i]);
+  const n=cross(vec(b,a),vec(c,a)),o=cross(vec(bb,aa),vec(cc,aa));
+  if(length(n)<2e-10||dot(unit(n),unit(o))<.05)count++;
+ }
+ return count;
+}
+const initialInversions=measureInversions();
+let dampingFactor=1;
+for(let attempt=0;measureInversions()>0&&attempt<14;attempt++){
+ dampingFactor*=.5;
+ for(const i of targeted){
+  for(let k=0;k<3;k++)pos[i][k]=orig[i][k]+(pos[i][k]-orig[i][k])*.5;
+ }
+}
+if(measureInversions()>0)throw Error('Local geometry still inverts after adaptive damping');
 const sums=pos.map(()=>[0,0,0]);
 let smallest=Infinity,negative=0,refSides=0;
 for(const face of faces){
@@ -142,6 +161,6 @@ glb.writeUInt32LE(jpad.length,12);glb.write('JSON',16);jpad.copy(glb,20);glb.wri
 fs.mkdirSync(path.dirname(output),{recursive:true});fs.mkdirSync(path.dirname(reportPath),{recursive:true});
 fs.writeFileSync(output,glb);
 const displacement=pos.map((v,i)=>length(vec(v,orig[i])));
-const report={stage:'N15 regional curvature smoothing of connected N14 center only',inputSHA256:sha(src),outputSHA256:sha(glb),triangles:before,skinJoints:63,pelvisVertices:pos.length,pelvisTriangles:faces.length,editedVertices:targeted.length,boundaryProtected:protectedBoundary.size,maximumDisplacementMeters:Math.max(...displacement),minimumTriangleAreaSqMeters:smallest,faceInversions:negative,faceHairUntouched:true,sourceUVSkinWeightsUntouched:true,fullBodyUntouched:true,referenceImageProjected:false,visualApproval:false,nativeS2Rendered:false,limitations:['No rendered review yet','N14 clothing-derived side and lower silhouette remains','Existing external skin seams are not welded']};
+const report={stage:'N15 regional curvature smoothing of connected N14 center only',inputSHA256:sha(src),outputSHA256:sha(glb),triangles:before,skinJoints:63,pelvisVertices:pos.length,pelvisTriangles:faces.length,editedVertices:targeted.length,boundaryProtected:protectedBoundary.size,maximumDisplacementMeters:Math.max(...displacement),minimumTriangleAreaSqMeters:smallest,faceInversions:negative,initialInversions,dampingFactor,faceHairUntouched:true,sourceUVSkinWeightsUntouched:true,fullBodyUntouched:true,referenceImageProjected:false,visualApproval:false,nativeS2Rendered:false,limitations:['No rendered review yet','N14 clothing-derived side and lower silhouette remains','Existing external skin seams are not welded']};
 fs.writeFileSync(reportPath,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({output,triangles:before,modified:targeted.length,boundary:protectedBoundary.size,maxShift:report.maximumDisplacementMeters,sha:report.outputSHA256}));
