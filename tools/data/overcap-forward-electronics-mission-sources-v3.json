@@ -1,0 +1,1799 @@
+{
+  "schema": "ATLAS_FORWARD_ELECTRONICS_MISSION_SOURCES_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "mapSourceSha256": "cc892d726fc52593c0a693b0a306a29c184a36d026bc6669497b4c14b793b5f3",
+  "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "recoverable": {
+    "STR_PADD": {
+      "anchors": [
+        {
+          "file": "Piratez.rul",
+          "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "startLine": 63696,
+          "endLine": 63734,
+          "blockSha256": "3be81094fa0131c3b2438998bc6a7cf1313463319a311130cce341c67e03cfe8"
+        }
+      ],
+      "nativeDefaultRecover": true,
+      "nativeDefaultFixed": false,
+      "scope": "Ordinary recoverable item, not a BT_CORPSE unit body."
+    },
+    "STR_WASTELANDER_BACKPACK": {
+      "anchors": [
+        {
+          "file": "Piratez.rul",
+          "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "startLine": 62877,
+          "endLine": 62892,
+          "blockSha256": "31a5e740c97d5ddb45f0648a58024d29f4a913533343b61f434c8d0d3294640a"
+        },
+        {
+          "file": "Yankes_Scripts.rul",
+          "sha256": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f",
+          "startLine": 720,
+          "endLine": 722,
+          "blockSha256": "fd07e9b0721e63c2348945968348c755f4528be22f95c0f9228342269cbbf638"
+        }
+      ],
+      "nativeDefaultRecover": true,
+      "nativeDefaultFixed": false,
+      "scope": "Ordinary recoverable item, not a BT_CORPSE unit body."
+    },
+    "STR_ACADEMY_CORPSE": {
+      "anchors": [
+        {
+          "file": "Piratez_Factions.rul",
+          "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "startLine": 117,
+          "endLine": 129,
+          "blockSha256": "def9a7e50f0a632ca673625691ba4b68a9707b4476ad7dac6d46d98c086883b8"
+        }
+      ],
+      "nativeDefaultRecover": true,
+      "nativeDefaultFixed": false,
+      "scope": "Ordinary recoverable item, not a BT_CORPSE unit body."
+    },
+    "STR_GOVT_CORPSE": {
+      "anchors": [
+        {
+          "file": "Piratez_Factions.rul",
+          "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "startLine": 92,
+          "endLine": 103,
+          "blockSha256": "3a9575dcbff0c30ecc1d3171be0ce51e4e8f76b061296304309e61c64247a9ba"
+        }
+      ],
+      "nativeDefaultRecover": true,
+      "nativeDefaultFixed": false,
+      "scope": "Ordinary recoverable item, not a BT_CORPSE unit body."
+    },
+    "STR_STUN_BATON": {
+      "anchors": [
+        {
+          "file": "Piratez.rul",
+          "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "startLine": 15299,
+          "endLine": 15346,
+          "blockSha256": "3a5300fabfb74621edd37c099753f3a36484bed53e8d485de386feb6981d9a99"
+        }
+      ],
+      "nativeDefaultRecover": true,
+      "nativeDefaultFixed": false,
+      "scope": "Ordinary recoverable item, not a BT_CORPSE unit body."
+    }
+  },
+  "missions": [
+    {
+      "id": "neophytes-electronics",
+      "route": {
+        "item": "STR_PADD",
+        "placement": "fixedOnBlock",
+        "count": 1,
+        "draws": null,
+        "terrain": "URBANJUNKUFO",
+        "block": "URBANJUNK31",
+        "terrainScript": "STANDARDROADS6",
+        "actualScript": "STANDARDROADS6",
+        "scriptOverridden": false,
+        "mission": "STR_LOC_NEOPHYTES",
+        "deployment": "STR_LOC_NEOPHYTES",
+        "missionScript": "NeophytesMission1",
+        "missionConditions": {
+          "deployment": "STR_LOC_NEOPHYTES",
+          "mission": "STR_LOC_NEOPHYTES",
+          "script": "NeophytesMission1",
+          "executionOdds": 28,
+          "firstMonth": 0,
+          "lastMonth": 6,
+          "researchPositive": [],
+          "researchNegative": [],
+          "itemPositive": [],
+          "itemNegative": [],
+          "monthWeights": [
+            {
+              "month": 0,
+              "weight": 100
+            }
+          ]
+        },
+        "extraTriggerFields": [],
+        "startingCondition": null,
+        "successResearch": null,
+        "commandMatches": [
+          {
+            "type": "addBlock",
+            "fields": {
+              "size": "2",
+              "executions": "4"
+            },
+            "step": 6
+          },
+          {
+            "type": "addBlock",
+            "fields": {
+              "conditionals": "[-3]",
+              "size": "2",
+              "executions": "1"
+            },
+            "step": 7
+          }
+        ],
+        "anchors": {
+          "terrain": {
+            "file": "Piratez_Planet.rul",
+            "startLine": 23171,
+            "endLine": 23787,
+            "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "blockSha256": "5e8dbf820933ee6a8b7b083eaf969a070a7a7021b2a12fa46324a54804db7762"
+          },
+          "block": {
+            "file": "Piratez_Planet.rul",
+            "startLine": 23490,
+            "endLine": 23510,
+            "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "blockSha256": "53d16616d4a6c250dedc852961279369b8c028ac1a4be0db74bce0337beed35c"
+          },
+          "mapScript": {
+            "file": "Piratez_Mapscripts.rul",
+            "startLine": 121,
+            "endLine": 151,
+            "sha256": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+            "blockSha256": "7f86e2c65e9b1ae557da28da5d0375f8ccf0507898e083f6c1f4a8774d91c395"
+          },
+          "mission": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 35622,
+            "endLine": 35633,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "6b552c6df6c30677779ae4730e7a7004c3601dde13883c0b340ffd0eed8dab4a"
+          },
+          "deployment": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 80505,
+            "endLine": 80581,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "e56fd826edcfb766deae877b47bca5ee202bde12df5d35862a3ab735b3d0fe9a"
+          },
+          "missionScript": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 30527,
+            "endLine": 30536,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "5f0fb1c0b0277383ac1593ed40b6cdc1b0393da7ed6ce2a2a94974d4d476d19b"
+          }
+        },
+        "status": "FIXED_SOURCE_CANDIDATE",
+        "reasons": [],
+        "admitted": false,
+        "recoveryRequirements": [
+          "Actual mission appearance within source window",
+          "Compatible craft and roster",
+          "Selected terrain and actual map block placement",
+          "Item survival and recovery",
+          "Apply mission victory reward once if present"
+        ]
+      },
+      "loot": {
+        "STR_PADD": 1,
+        "STR_WASTELANDER_BACKPACK": 2
+      },
+      "fixedItem": {
+        "id": "STR_PADD",
+        "count": 1
+      },
+      "enemyEquipment": {
+        "deploymentAnchor": {
+          "file": "Piratez_Factions.rul",
+          "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "startLine": 80505,
+          "endLine": 80581,
+          "blockSha256": "e56fd826edcfb766deae877b47bca5ee202bde12df5d35862a3ab735b3d0fe9a"
+        },
+        "rank": 8,
+        "minimumQuantity": 3,
+        "itemSetIndex": 0,
+        "itemSet": [
+          "STR_MACHETE",
+          "STR_MOLOTOV",
+          "STR_GRENADE",
+          "STR_CREDIT_CHIP_M",
+          "STR_CREDIT_CHIP_00",
+          "STR_WASTELANDER_BACKPACK"
+        ],
+        "selectedDistinctUnits": 2,
+        "alienItemLevels": [
+          [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            2,
+            2,
+            3,
+            4
+          ]
+        ],
+        "alienItemLevelsAnchor": {
+          "file": "Piratez_Factions.rul",
+          "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "startLine": 116886,
+          "endLine": 116887,
+          "blockSha256": "b3c73681d2fa33c848b29d998cf8a94427dda57c90efb5a71a8fdf5a9829d208"
+        }
+      },
+      "assumptions": [
+        "Mission appears and is reachable by compatible surviving roster/craft",
+        "URBANJUNKUFO terrain and URBANJUNK31 block actually placed",
+        "Two distinct rank-8 units spawn with level-0 equipment and both backpacks survive",
+        "Non-aborted successful mission and actual recovery into base stores; only tracked loot retained as lower-bound"
+      ]
+    },
+    {
+      "id": "tavern-electronics",
+      "route": {
+        "item": "STR_ACADEMY_CORPSE",
+        "placement": "randomOnBlock",
+        "count": null,
+        "draws": [
+          {
+            "positions": [
+              11,
+              6,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              5,
+              6,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              8,
+              10,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              11,
+              10,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              8,
+              13,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              11,
+              13,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          }
+        ],
+        "terrain": "CATACOMBS",
+        "block": "CATACOMBS_15",
+        "terrainScript": "CATACOMBS",
+        "actualScript": "CATACOMBS_TAVERN_CELLAR",
+        "scriptOverridden": true,
+        "mission": "STR_LOC_TAVERN_CELLAR",
+        "deployment": "STR_LOC_TAVERN_CELLAR",
+        "missionScript": "TavernCellar",
+        "missionConditions": {
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "mission": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "executionOdds": 32,
+          "firstMonth": 0,
+          "lastMonth": null,
+          "researchPositive": [
+            "STR_CONTACT_GENERAL_SUPPLIES"
+          ],
+          "researchNegative": [
+            "STR_LOC_TAVERN_CELLAR_DONE"
+          ],
+          "itemPositive": [],
+          "itemNegative": [],
+          "monthWeights": [
+            {
+              "month": 0,
+              "weight": 100
+            }
+          ]
+        },
+        "extraTriggerFields": [],
+        "startingCondition": "STR_STARCON_UNDERGROUND",
+        "successResearch": "STR_LOC_TAVERN_CELLAR_DONE",
+        "commandMatches": [
+          {
+            "type": "addBlock",
+            "fields": {
+              "size": "2",
+              "groups": "5"
+            },
+            "step": 3
+          }
+        ],
+        "anchors": {
+          "terrain": {
+            "file": "Piratez_Planet.rul",
+            "startLine": 10343,
+            "endLine": 10718,
+            "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "blockSha256": "ab928067791354fed57d798efe755fc96fbe667f1f1eb79f20914726f6c28c5a"
+          },
+          "block": {
+            "file": "Piratez_Planet.rul",
+            "startLine": 10453,
+            "endLine": 10538,
+            "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "blockSha256": "100a7e7e8c775fc8e818bb3dbee0cac9600ae325efbd970ea0cc4c333127bc59"
+          },
+          "mapScript": {
+            "file": "Piratez_Mapscripts.rul",
+            "startLine": 607,
+            "endLine": 616,
+            "sha256": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+            "blockSha256": "5553c44833f3506b34cd6dc64bb36d799d5bc37e3a97ffb185fa3f372db73e78"
+          },
+          "mission": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 35029,
+            "endLine": 35035,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "04ee388508b262e5dfe5d10a51679ddb04502bebba1975854d18e6b2f2528f72"
+          },
+          "deployment": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 59653,
+            "endLine": 59682,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "30bbbeabd1372b4788e2268a8f5eff493fb771394fa2f60e1ce612d5f96809ab"
+          },
+          "missionScript": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 31295,
+            "endLine": 31309,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "4c39563e0619058977b8c0e053e1f1d44331c175b44412a4ccb91028e1d67d0a"
+          }
+        },
+        "status": "OPEN_SOURCE_TASK",
+        "reasons": [
+          "RANDOM_MAP_POOL_REQUIRES_EXPLICIT_OUTCOME"
+        ],
+        "admitted": false,
+        "recoveryRequirements": [
+          "Actual mission appearance within source window",
+          "Compatible craft and roster",
+          "Selected terrain and actual map block placement",
+          "Item survival and recovery",
+          "Apply mission victory reward once if present"
+        ]
+      },
+      "otherRoute": {
+        "item": "STR_GOVT_CORPSE",
+        "placement": "randomOnBlock",
+        "count": null,
+        "draws": [
+          {
+            "positions": [
+              11,
+              6,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              5,
+              6,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              8,
+              10,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              11,
+              10,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              8,
+              13,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          },
+          {
+            "positions": [
+              11,
+              13,
+              0
+            ],
+            "itemDraws": 2,
+            "occurrences": 1,
+            "poolLength": 57,
+            "mixed": true
+          }
+        ],
+        "terrain": "CATACOMBS",
+        "block": "CATACOMBS_15",
+        "terrainScript": "CATACOMBS",
+        "actualScript": "CATACOMBS_TAVERN_CELLAR",
+        "scriptOverridden": true,
+        "mission": "STR_LOC_TAVERN_CELLAR",
+        "deployment": "STR_LOC_TAVERN_CELLAR",
+        "missionScript": "TavernCellar",
+        "missionConditions": {
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "mission": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "executionOdds": 32,
+          "firstMonth": 0,
+          "lastMonth": null,
+          "researchPositive": [
+            "STR_CONTACT_GENERAL_SUPPLIES"
+          ],
+          "researchNegative": [
+            "STR_LOC_TAVERN_CELLAR_DONE"
+          ],
+          "itemPositive": [],
+          "itemNegative": [],
+          "monthWeights": [
+            {
+              "month": 0,
+              "weight": 100
+            }
+          ]
+        },
+        "extraTriggerFields": [],
+        "startingCondition": "STR_STARCON_UNDERGROUND",
+        "successResearch": "STR_LOC_TAVERN_CELLAR_DONE",
+        "commandMatches": [
+          {
+            "type": "addBlock",
+            "fields": {
+              "size": "2",
+              "groups": "5"
+            },
+            "step": 3
+          }
+        ],
+        "anchors": {
+          "terrain": {
+            "file": "Piratez_Planet.rul",
+            "startLine": 10343,
+            "endLine": 10718,
+            "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "blockSha256": "ab928067791354fed57d798efe755fc96fbe667f1f1eb79f20914726f6c28c5a"
+          },
+          "block": {
+            "file": "Piratez_Planet.rul",
+            "startLine": 10453,
+            "endLine": 10538,
+            "sha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "blockSha256": "100a7e7e8c775fc8e818bb3dbee0cac9600ae325efbd970ea0cc4c333127bc59"
+          },
+          "mapScript": {
+            "file": "Piratez_Mapscripts.rul",
+            "startLine": 607,
+            "endLine": 616,
+            "sha256": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+            "blockSha256": "5553c44833f3506b34cd6dc64bb36d799d5bc37e3a97ffb185fa3f372db73e78"
+          },
+          "mission": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 35029,
+            "endLine": 35035,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "04ee388508b262e5dfe5d10a51679ddb04502bebba1975854d18e6b2f2528f72"
+          },
+          "deployment": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 59653,
+            "endLine": 59682,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "30bbbeabd1372b4788e2268a8f5eff493fb771394fa2f60e1ce612d5f96809ab"
+          },
+          "missionScript": {
+            "file": "Piratez_Factions.rul",
+            "startLine": 31295,
+            "endLine": 31309,
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "blockSha256": "4c39563e0619058977b8c0e053e1f1d44331c175b44412a4ccb91028e1d67d0a"
+          }
+        },
+        "status": "OPEN_SOURCE_TASK",
+        "reasons": [
+          "RANDOM_MAP_POOL_REQUIRES_EXPLICIT_OUTCOME"
+        ],
+        "admitted": false,
+        "recoveryRequirements": [
+          "Actual mission appearance within source window",
+          "Compatible craft and roster",
+          "Selected terrain and actual map block placement",
+          "Item survival and recovery",
+          "Apply mission victory reward once if present"
+        ]
+      },
+      "loot": {
+        "STR_ACADEMY_CORPSE": 1,
+        "STR_GOVT_CORPSE": 1
+      },
+      "pool": {
+        "position": [
+          11,
+          6,
+          0
+        ],
+        "amount": 2,
+        "mixed": true,
+        "items": [
+          "STR_BOOT",
+          "STR_BOOT",
+          "STR_GUILD_CORPSE",
+          "STR_GOVT_CORPSE",
+          "STR_RAIDER_CORPSE",
+          "STR_ACADEMY_CORPSE",
+          "STR_CHURCH_CORPSE",
+          "STR_SCRAP_METAL",
+          "STR_SCRAP_METAL",
+          "STR_SCRAP_METAL",
+          "STR_JUNK_PILE",
+          "STR_COINS",
+          "STR_COINS",
+          "STR_COINS",
+          "STR_COINS",
+          "STR_COINS",
+          "STR_MEDALLION",
+          "STR_RING",
+          "STR_RING",
+          "STR_ANKH",
+          "STR_AMPHORE",
+          "STR_AMPHORE",
+          "STR_AMPHORE",
+          "STR_BONE_CLUB",
+          "STR_BONE_CLUB",
+          "STR_BONE_CLUB",
+          "STR_SKULL",
+          "STR_SKULL",
+          "STR_SKULL",
+          "STR_SKULL",
+          "STR_SPIDER_SILK",
+          "STR_MONSTER_TEETH",
+          "STR_LOBSTERMAN_HIDE",
+          "STR_MANACLES",
+          "STR_NOOSE",
+          "STR_NOOSE",
+          "STR_BATTO",
+          "STR_CROWBAR",
+          "STR_LINGERIE",
+          "STR_HANDLE",
+          "STR_AX",
+          "STR_BATTLE_AX",
+          "STR_STONE_AX",
+          "STR_SHOVEL",
+          "STR_SHOVEL",
+          "STR_SHIV",
+          "STR_KNOIF",
+          "STR_MACHETE",
+          "STR_BILLHOOK",
+          "STR_OLD_BOOKS",
+          "STR_PORN",
+          "STR_RUSTY_BLADE",
+          "STR_RUSTY_BLADE",
+          "STR_XBOW",
+          "STR_XBOW_QUIVER",
+          "STR_YELLOW_GEM",
+          "STR_TREASURE_BAG"
+        ],
+        "selected": [
+          "STR_ACADEMY_CORPSE",
+          "STR_GOVT_CORPSE"
+        ]
+      },
+      "assumptions": [
+        "Mission appears; compatible foot roster satisfies underground starting condition",
+        "CATACOMBS_15 block actually placed by deployment-specific map script",
+        "Two mixed independent draws select the two ordinary component items",
+        "Non-aborted victory and actual recovery into base stores; other loot omitted"
+      ]
+    }
+  ],
+  "recipe": {
+    "id": "STR_WASTELANDER_BACKPACK_EX",
+    "requires": [
+      "STR_WASTELANDER_BACKPACK"
+    ],
+    "functions": [],
+    "inputs": {
+      "STR_WASTELANDER_BACKPACK": 1
+    },
+    "fixed": {
+      "STR_BANDAGE": 1,
+      "STR_KNOIF_BANDIT": 1
+    },
+    "outcomes": [
+      {
+        "weight": 1000,
+        "items": {
+          "STR_BANDAGE": 5
+        }
+      },
+      {
+        "weight": 1000,
+        "items": {
+          "STR_BANDAGE": 10
+        }
+      },
+      {
+        "weight": 1000,
+        "items": {
+          "STR_FOOD_BAG": 5
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_HEALING_GEL": 3
+        }
+      },
+      {
+        "weight": 1000,
+        "items": {
+          "STR_CANTEEN": 4
+        }
+      },
+      {
+        "weight": 500,
+        "items": {
+          "STR_BEER": 5
+        }
+      },
+      {
+        "weight": 500,
+        "items": {
+          "STR_MOONSHINE": 3
+        }
+      },
+      {
+        "weight": 500,
+        "items": {
+          "STR_CIGS": 10
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_SECTOWEED": 7
+        }
+      },
+      {
+        "weight": 500,
+        "items": {
+          "STR_MUTANT_MEAT": 5
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_VODKA": 3,
+          "STR_PAINKILLERS": 3
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_SHAWL": 1,
+          "STR_FUR_HAT": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_FAN": 1,
+          "STR_CANTEEN": 2
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_CRACK": 5,
+          "STR_COMBAT_DRUGS": 1,
+          "STR_PAINKILLERS": 5
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_AX": 1,
+          "STR_SHOVEL": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_WRENCH": 1,
+          "STR_LIGHTER": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_KNOIF": 1,
+          "STR_NOOSE": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_BOW_H_QUIVER": 2,
+          "STR_BOW_H_QUIVER_POISON": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_HANDLE": 1,
+          "STR_CREDIT_CHIP_D": 3,
+          "STR_MANACLES": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_STUN_BATON": 1,
+          "STR_CS_GAS": 1,
+          "STR_CREDIT_CHIP_M": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_MACHETE": 1,
+          "STR_CANTEEN": 2
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_KITCHEN_KNIFE": 3,
+          "STR_MUTANT_FISH": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_CHITIN_KNIFE": 1,
+          "STR_LOBSTERMAN_HIDE": 5
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_SHARK_GARLAND": 3,
+          "STR_LOBSTERMAN_MEAT": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_STONE_AX": 1,
+          "STR_LUXURY_FUR": 2
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_SICKLE": 1,
+          "STR_UBER_WHEAT": 10
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_RAZOR": 1,
+          "STR_WHIP_LEATHER": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_TASER": 1,
+          "STR_KNUCKLES": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_BILLHOOK": 1,
+          "STR_REAPER_HIDE": 1,
+          "STR_REAPER_MEAT": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_BLOWPIPE": 1,
+          "STR_BLOWPIPE_DARTS_ACID": 8
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_FLINTLOCK_PISTOL": 1,
+          "STR_FLINTLOCK_BALLS": 8
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_JEZZAIL": 1,
+          "STR_FLINTLOCK_BALLS": 8
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_PEPPER_PISTOL": 2
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_CS_GAS": 8
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_REVOLVER_LT": 1,
+          "STR_REVOLVER_LT_DRUM": 5
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_OLD_PISTOL": 1,
+          "STR_OLD_PISTOL_CLIP": 4
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_OLD_REVOLVER": 1,
+          "STR_REVOLVER_DRUM": 5
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_REVOLVER": 1,
+          "STR_REVOLVER_DRUM": 5
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_REVOLVER_POLICE": 1,
+          "STR_REVOLVER_DRUM": 5
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_MAUSER": 1,
+          "STR_MAUSER_CLIP": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_PISTOL_BM": 1,
+          "STR_PISTOL_BM_CLIP": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_PISTOL": 1,
+          "STR_PISTOL_CLIP": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_COLT45": 1,
+          "STR_COLT45_CLIP": 4
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_SNUBBY": 1,
+          "STR_SNUBBY_DRUM": 5
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_OLD_MAGNUM": 1,
+          "STR_OLD_MAGNUM_ROUNDS": 5
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_GOVT_MAGNUM": 1,
+          "STR_OLD_MAGNUM_ROUNDS": 5
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_UAC_PISTOL": 1,
+          "STR_UAC_PISTOL_CLIP": 6
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_TEC9": 1,
+          "STR_TEC9_CLIP": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_SMG": 1,
+          "STR_SMG_CLIP": 2,
+          "STR_SMG_CLIP_INCENDIARY": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_LYNX": 1,
+          "STR_SMG_CLIP": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_SAWED_OFF": 1,
+          "STR_BUCKSHOT": 10
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_SMALL_SHOTGUN": 1,
+          "STR_SHOTGUN_G_SHELLS": 6
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_COACH_GUN": 1,
+          "STR_SHOTGUN_G_SHELLS": 6
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SHOTGUN_POLICE": 1,
+          "STR_SHOTGUN_SHELLS_RUBBER": 5
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_MINI_SMG": 1,
+          "STR_MINI_SMG_CLIP": 3
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_RETICULAN_LASER_PISTOL": 1,
+          "STR_RETICULAN_LASER_GUN_CLIP": 4
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_RETICULAN_LASER_GUN": 1,
+          "STR_RETICULAN_LASER_GUN_CLIP": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_WINCHESTER": 1,
+          "STR_WINCHESTER_AMMO": 5
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_VARMINT_RIFLE": 1,
+          "STR_VARMINT_RIFLE_CLIP": 6
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SPORTS_RIFLE": 1,
+          "STR_VARMINT_RIFLE_CLIP": 6
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_HUNTING_RIFLE": 1,
+          "STR_HUNTING_RIFLE_CLIP": 8
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_OLD_RIFLE": 1,
+          "STR_OLD_RIFLE_CLIP": 7
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_OLD_SNIPER_RIFLE": 1,
+          "STR_OLD_RIFLE_CLIP": 6
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_DRAGOON_RIFLE": 1,
+          "STR_DRAGOON_RIFLE_CLIP": 8
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_NITRO_EXPRESS": 1,
+          "STR_NITRO_EXPRESS_CLIP": 6
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_FLINTLOCK_RIFLE": 1,
+          "STR_MINNIE_BULLET": 10
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_MAG_LITE": 1,
+          "STR_RANGEFINDER": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_FUSO_KNIVES": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_THROWING_STARS": 3
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_KNOIF_BARB": 1,
+          "STR_LIZARD_HIDE": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_TECH_KNIFE": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_AQUA_HATCHET": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_RIPPER": 1
+        }
+      },
+      {
+        "weight": 500,
+        "items": {
+          "STR_PICKAXE": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_CELATID_ESSENCE": 3
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_OLD_PISTOL_CLIP": 9,
+          "STR_REVOLVER_LT_DRUM": 10
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_SHOTGUN_SHELLS": 8,
+          "STR_SHOTGUN_G_SHELLS": 15
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_BUCKSHOT": 15,
+          "STR_BUCKSHOT_HV": 5
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_MP_CLIP": 4,
+          "STR_PISTOL_BM_CLIP": 6
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_TOMMYGUN_DRUM": 4,
+          "STR_COLT45_CLIP": 8
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_RIFLE_AK_CLIP": 4,
+          "STR_GRENADE": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_RIFLE_M16_CLIP": 4,
+          "STR_GRENADE_FRAG": 2
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_UAC_CLIP": 4,
+          "STR_UAC_PISTOL_CLIP": 4
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_HUNTING_RIFLE_CLIP": 10,
+          "STR_VARMINT_RIFLE_CLIP": 10
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_OLD_RIFLE_CLIP": 9,
+          "STR_BATTLE_RIFLE_CLIP": 3
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_AT_RIFLE_ROUND": 20
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_MACHINEGUN_BELT": 3
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_IGUN_CLIP": 5
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_HUNTING_LASER_CLIP": 4
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_LASER_PISTOL_CLIP_LO": 4
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_HYDRA_LASER_CLIP": 3
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_RAYGUN_CLIP": 3
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_HC_HE_AMMO": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_GL_HE": 5
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_SONIC_PISTOL_CLIP": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_BABY_NUKE": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SMALL_ROCKET_ADV": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_SL_HE": 6
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_FLAMETHROWER_CLIP": 3
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_MOLOTOV": 10
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_NAPALM_NADES": 3
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_ANARCHY_BOMB": 6
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_BOOM_FRUIT": 8
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_GRENADE": 6
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_GRENADE_FRAG": 5
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_INCENDIARY_GRENADE": 6
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_SONIC_PULSER": 1
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_DYNAMITE": 3
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_EMP_GRENADE": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_MINE": 3
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_MINE_EMP": 3
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_SMOKE_GRENADE": 6
+        }
+      },
+      {
+        "weight": 500,
+        "items": {
+          "STR_TORCH": 6
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_ELECTRO_FLARE": 6
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_MOTION_SCANNER": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_FIRE_EXT": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_FUSION_TORCH_CLIP": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_DEMONIC_ESSENCE": 3
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_HOLY_HANDGRENADE": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SC_WIRE": 3
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_ELERIUM_115": 3
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_PARTS_LASER_LENS": 3,
+          "STR_PARTS_LASER_CRYSTAL": 1,
+          "STR_PARTS_WEAPON_ADV": 3
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_PARTS_HEAVY_COUPLINGS": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_ALIEN_ENTERTAINMENT": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_CONSUMER_GOODS": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_MEDICAL_SUPPLIES": 3
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_RING": 3,
+          "STR_MEDALLION": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_COINS": 10
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_DOLLAR_BRIEFCASE": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_GOLD_BAR": 3
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_MONEY_PURSE": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_CASH_BAG": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_TREASURE_BAG": 2
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_NUCLEAR_BATT": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_OLD_BOOKS": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_ESOTERICA": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_PORN": 5
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_DATA_DISK": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_PADD": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_CRAZY_HASSAN_LEAFLET": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_GUNS_N_AMMO": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_PINUP_MAGAZINE": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_ILLEGAL_DATA": 1
+        }
+      },
+      {
+        "weight": 10,
+        "items": {
+          "STR_UAC_PLASMAGUN_BATTERY_BROKEN": 1
+        }
+      },
+      {
+        "weight": 5,
+        "items": {
+          "STR_BFG_BATTERY_BROKEN": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_CHOCOLATE": 6
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_POTATO": 25,
+          "STR_GARLIC": 5
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_APPLE": 5,
+          "STR_ORANGE": 5
+        }
+      },
+      {
+        "weight": 75,
+        "items": {
+          "STR_SKULL": 1
+        }
+      },
+      {
+        "weight": 15,
+        "items": {
+          "STR_JUNK_PILE": 1
+        }
+      },
+      {
+        "weight": 1,
+        "items": {
+          "STR_DESTROPORTAL": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_MEGASCORPION_POISON": 5
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_ACADEMY_CORPSE": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_SMALL_MEDIPACK": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_CASINO_KUPON_1": 5
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_CASINO_KUPON_2": 3
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_CASINO_KUPON_3": 2
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_CASINO_KUPON_4": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_CHEM_COAT": 1,
+          "STR_GAS_MASK": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_SWIMSUIT": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_BIKINI": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_DURASUIT": 1
+        }
+      },
+      {
+        "weight": 100,
+        "items": {
+          "STR_DIVER_OUTFIT": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_SCAVENGER_OUTFIT": 1
+        }
+      },
+      {
+        "weight": 50,
+        "items": {
+          "STR_STALKER_OUTFIT": 1
+        }
+      },
+      {
+        "weight": 250,
+        "items": {
+          "STR_ORANGE_ROBE": 1,
+          "STR_SHIV": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_MISFORTUNE_ARMOR_PARTS": 1
+        }
+      },
+      {
+        "weight": 25,
+        "items": {
+          "STR_GECKO_SAM": 1
+        }
+      }
+    ],
+    "category": "STR_EXTRACTION",
+    "space": 0,
+    "time": 5,
+    "cost": 0,
+    "totalWeight": 19338,
+    "anchor": {
+      "file": "Piratez.rul",
+      "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+      "startLine": 190302,
+      "endLine": 190482,
+      "blockSha256": "485d8aa77906b3d05a0aa168163a5861c9b5c223f5a07a6384838d29e151b98d"
+    },
+    "stunOutcome": 19
+  },
+  "scope": "Source-bounded hypothetical combat/recovery scenarios. No actual game run, map generation, battle outcome or save certified. Inventory is a conservative tracked subset, not full debriefing."
+}

@@ -1,0 +1,1275 @@
+{
+  "schema": "ATLAS_FORWARD_ELECTRONICS_SCENARIO_V3",
+  "scenario": "baseline",
+  "root": "STR_INSPECT_MACHINERY",
+  "prefix": {
+    "path": "tools/data/overcap-forward-shipyard-v3-baseline-str_inspect_machinery.json.gz",
+    "sha256": "8c46476c29f29dd757c0688f5afda45f58e190015308d592e86a6150107ca0a1",
+    "stateHash": "ee0bf6c5c0c0cfab3aa6b2054c66b76773b47d605509326b7767bcb7f37af042",
+    "steps": 135
+  },
+  "registrySha256": "2dfbf3177167e940a0d229b66f76cac9f066b476a3e95ed8adde06d03e5cc808",
+  "sourceSha256": "a95744bbdd8b2df14e69a1c375ee7c8c851eb2fc148b387ba46d042f20394ecf",
+  "producerHashes": {
+    "tools/build-overcap-forward-electronics-v3.mjs": "9f7ce1d5749dbf31a9e35b98760ee8919d8437a90d87f2c9a2ef0b3aafd189f7",
+    "tools/atlas-overcap-forward-electronics-mission-v3.mjs": "55bd8ea53095f1f577d24cf507ba7bc06a86acb7dc35646af5edce82b3f8ed6c",
+    "tools/build-overcap-forward-electronics-mission-sources-v3.mjs": "b0c5d83bf06b4d909312be0e239e2c57fcec9532752d72cad63755e3486595fc"
+  },
+  "inputs": {
+    "files": {
+      "public/data/soldiers-modern-index.json": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+      "tools/data/overcap-forward-supply-catalog-v2.json": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+      "tools/data/overcap-forward-starting-base-v3.json": "92dc15da2a3fdab42414da9d292ba5bb3fc48e29e79b0b9f52adc2e443c9d689",
+      "tools/data/overcap-forward-junk-extraction-v3.json": "23c1723fd7f228f682aa152f64b2ebe831ed62e14de4dfaeb16ace4a58f852e3"
+    },
+    "engineFiles": {
+      "tools/build-overcap-forward-source-start-v3.mjs": "dfc2fcb217c47354afe3281b8753da034c9b71ccabcdb94f3c9fc99aebdd99f2",
+      "tools/atlas-overcap-forward-research-v3.mjs": "2df4179439c00d70007c46f90b246075fcea0a49272d602f69fbf418aa80c8dd",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/atlas-overcap-forward-purchase-gate-v3.mjs": "b0eaa9f060bfb71eca20e06e60bc35ca01060c3903b3a9bfb1baecf802e6fe68",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "steps": [
+    {
+      "index": 136,
+      "action": {
+        "type": "sourceMissionRecovery",
+        "source": "neophytes-electronics",
+        "assumeMissionOutcome": true,
+        "assumeRecovered": true
+      },
+      "evidence": {
+        "kind": "SOURCE_CONDITIONAL_MISSION_RECOVERY",
+        "deployment": "STR_LOC_NEOPHYTES",
+        "missionScript": "NeophytesMission1",
+        "terrain": "URBANJUNKUFO",
+        "mapScript": "STANDARDROADS6",
+        "block": "URBANJUNK31",
+        "executionOdds": 28,
+        "month": 2,
+        "loot": {
+          "STR_PADD": 1,
+          "STR_WASTELANDER_BACKPACK": 2
+        },
+        "pool": null,
+        "enemyEquipment": {
+          "deploymentAnchor": {
+            "file": "Piratez_Factions.rul",
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "startLine": 80505,
+            "endLine": 80581,
+            "blockSha256": "e56fd826edcfb766deae877b47bca5ee202bde12df5d35862a3ab735b3d0fe9a"
+          },
+          "rank": 8,
+          "minimumQuantity": 3,
+          "itemSetIndex": 0,
+          "itemSet": [
+            "STR_MACHETE",
+            "STR_MOLOTOV",
+            "STR_GRENADE",
+            "STR_CREDIT_CHIP_M",
+            "STR_CREDIT_CHIP_00",
+            "STR_WASTELANDER_BACKPACK"
+          ],
+          "selectedDistinctUnits": 2,
+          "alienItemLevels": [
+            [
+              0,
+              0,
+              0,
+              1,
+              1,
+              1,
+              2,
+              2,
+              3,
+              4
+            ]
+          ],
+          "alienItemLevelsAnchor": {
+            "file": "Piratez_Factions.rul",
+            "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "startLine": 116886,
+            "endLine": 116887,
+            "blockSha256": "b3c73681d2fa33c848b29d998cf8a94427dda57c90efb5a71a8fdf5a9829d208"
+          }
+        },
+        "startingCondition": null,
+        "successResearch": null,
+        "successReward": null,
+        "assumptions": [
+          "Mission appears and is reachable by compatible surviving roster/craft",
+          "URBANJUNKUFO terrain and URBANJUNK31 block actually placed",
+          "Two distinct rank-8 units spawn with level-0 equipment and both backpacks survive",
+          "Non-aborted successful mission and actual recovery into base stores; only tracked loot retained as lower-bound"
+        ],
+        "partialInventory": true
+      },
+      "beforeHash": "ee0bf6c5c0c0cfab3aa6b2054c66b76773b47d605509326b7767bcb7f37af042",
+      "afterHash": "e4fffa3c6b21db3ece2ed7bbafc92ab2df2df73e69c528fac47e45307f7db1e9",
+      "month": 2,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_PADD": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_WASTELANDER_BACKPACK": {
+          "before": 0,
+          "after": 2,
+          "delta": 2
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Source-bounded conditional mission appearance, placement, victory, recovery. Tracked loot only; no actual game evidence.",
+        "Mission appears and is reachable by compatible surviving roster/craft",
+        "URBANJUNKUFO terrain and URBANJUNK31 block actually placed",
+        "Two distinct rank-8 units spawn with level-0 equipment and both backpacks survive",
+        "Non-aborted successful mission and actual recovery into base stores; only tracked loot retained as lower-bound"
+      ]
+    },
+    {
+      "index": 137,
+      "action": {
+        "type": "sourceMissionRecovery",
+        "source": "tavern-electronics",
+        "assumeMissionOutcome": true,
+        "assumeRecovered": true
+      },
+      "evidence": {
+        "kind": "SOURCE_CONDITIONAL_MISSION_RECOVERY",
+        "deployment": "STR_LOC_TAVERN_CELLAR",
+        "missionScript": "TavernCellar",
+        "terrain": "CATACOMBS",
+        "mapScript": "CATACOMBS_TAVERN_CELLAR",
+        "block": "CATACOMBS_15",
+        "executionOdds": 32,
+        "month": 2,
+        "loot": {
+          "STR_ACADEMY_CORPSE": 1,
+          "STR_GOVT_CORPSE": 1
+        },
+        "pool": {
+          "position": [
+            11,
+            6,
+            0
+          ],
+          "amount": 2,
+          "mixed": true,
+          "items": [
+            "STR_BOOT",
+            "STR_BOOT",
+            "STR_GUILD_CORPSE",
+            "STR_GOVT_CORPSE",
+            "STR_RAIDER_CORPSE",
+            "STR_ACADEMY_CORPSE",
+            "STR_CHURCH_CORPSE",
+            "STR_SCRAP_METAL",
+            "STR_SCRAP_METAL",
+            "STR_SCRAP_METAL",
+            "STR_JUNK_PILE",
+            "STR_COINS",
+            "STR_COINS",
+            "STR_COINS",
+            "STR_COINS",
+            "STR_COINS",
+            "STR_MEDALLION",
+            "STR_RING",
+            "STR_RING",
+            "STR_ANKH",
+            "STR_AMPHORE",
+            "STR_AMPHORE",
+            "STR_AMPHORE",
+            "STR_BONE_CLUB",
+            "STR_BONE_CLUB",
+            "STR_BONE_CLUB",
+            "STR_SKULL",
+            "STR_SKULL",
+            "STR_SKULL",
+            "STR_SKULL",
+            "STR_SPIDER_SILK",
+            "STR_MONSTER_TEETH",
+            "STR_LOBSTERMAN_HIDE",
+            "STR_MANACLES",
+            "STR_NOOSE",
+            "STR_NOOSE",
+            "STR_BATTO",
+            "STR_CROWBAR",
+            "STR_LINGERIE",
+            "STR_HANDLE",
+            "STR_AX",
+            "STR_BATTLE_AX",
+            "STR_STONE_AX",
+            "STR_SHOVEL",
+            "STR_SHOVEL",
+            "STR_SHIV",
+            "STR_KNOIF",
+            "STR_MACHETE",
+            "STR_BILLHOOK",
+            "STR_OLD_BOOKS",
+            "STR_PORN",
+            "STR_RUSTY_BLADE",
+            "STR_RUSTY_BLADE",
+            "STR_XBOW",
+            "STR_XBOW_QUIVER",
+            "STR_YELLOW_GEM",
+            "STR_TREASURE_BAG"
+          ],
+          "selected": [
+            "STR_ACADEMY_CORPSE",
+            "STR_GOVT_CORPSE"
+          ]
+        },
+        "enemyEquipment": null,
+        "startingCondition": "STR_STARCON_UNDERGROUND",
+        "successResearch": "STR_LOC_TAVERN_CELLAR_DONE",
+        "successReward": {
+          "type": "missionResearch",
+          "research": "STR_LOC_TAVERN_CELLAR_DONE",
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "assumeOutcome": true
+        },
+        "assumptions": [
+          "Mission appears; compatible foot roster satisfies underground starting condition",
+          "CATACOMBS_15 block actually placed by deployment-specific map script",
+          "Two mixed independent draws select the two ordinary component items",
+          "Non-aborted victory and actual recovery into base stores; other loot omitted"
+        ],
+        "partialInventory": true
+      },
+      "beforeHash": "e4fffa3c6b21db3ece2ed7bbafc92ab2df2df73e69c528fac47e45307f7db1e9",
+      "afterHash": "993006c3381953add5b7118ba64b0a62b8eced12831a586850cd298d3485f974",
+      "month": 2,
+      "added": [
+        "STR_LOC_TAVERN_CELLAR_DONE"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_ACADEMY_CORPSE": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_GOVT_CORPSE": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Source-bounded conditional mission appearance, placement, victory, recovery. Tracked loot only; no actual game evidence.",
+        "Mission appears; compatible foot roster satisfies underground starting condition",
+        "CATACOMBS_15 block actually placed by deployment-specific map script",
+        "Two mixed independent draws select the two ordinary component items",
+        "Non-aborted victory and actual recovery into base stores; other loot omitted"
+      ]
+    },
+    {
+      "index": 138,
+      "action": {
+        "type": "research",
+        "id": "STR_ACADEMY_CORPSE"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_ACADEMY_CORPSE"
+      },
+      "beforeHash": "993006c3381953add5b7118ba64b0a62b8eced12831a586850cd298d3485f974",
+      "afterHash": "744a3200ce8d9145f29419d5eb57169726c171fdc2b28bab1b1ae6a6bce449a6",
+      "month": 2,
+      "added": [
+        "STR_ACADEMY_CORPSE",
+        "STR_SECTOID_AUTOPSY"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_ACADEMY_CORPSE": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": [
+        "OXCE lookup 후속 연구: STR_ACADEMY_CORPSE → STR_SECTOID_AUTOPSY"
+      ]
+    },
+    {
+      "index": 139,
+      "action": {
+        "type": "research",
+        "id": "STR_GOVT_CORPSE"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_GOVT_CORPSE"
+      },
+      "beforeHash": "744a3200ce8d9145f29419d5eb57169726c171fdc2b28bab1b1ae6a6bce449a6",
+      "afterHash": "fa9d2427e94177b5bac7aa16b6af235ad1caa813e4febac319268b32d42f3b36",
+      "month": 2,
+      "added": [
+        "STR_GOVT_CORPSE",
+        "STR_GOVT_AUTOPSY"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_GOVT_CORPSE": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": [
+        "OXCE lookup 후속 연구: STR_GOVT_CORPSE → STR_GOVT_AUTOPSY"
+      ]
+    },
+    {
+      "index": 140,
+      "action": {
+        "type": "research",
+        "id": "STR_PADD"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_PADD"
+      },
+      "beforeHash": "fa9d2427e94177b5bac7aa16b6af235ad1caa813e4febac319268b32d42f3b36",
+      "afterHash": "469ddf37eb36da4f1384179a84ddf162f56309aba1c25b705dfd113c15703a2a",
+      "month": 2,
+      "added": [
+        "STR_PADD"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_PADD": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 141,
+      "action": {
+        "type": "research",
+        "id": "STR_WASTELANDER_BACKPACK"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_WASTELANDER_BACKPACK"
+      },
+      "beforeHash": "469ddf37eb36da4f1384179a84ddf162f56309aba1c25b705dfd113c15703a2a",
+      "afterHash": "da287004ab8b9658a1a6eb98cebc50487ae54221da1ff5c261e1bbc76ee6614e",
+      "month": 2,
+      "added": [
+        "STR_WASTELANDER_BACKPACK"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_WASTELANDER_BACKPACK": {
+          "before": 2,
+          "after": 1,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 142,
+      "action": {
+        "type": "sourceMissionSampleExtraction",
+        "id": "STR_WASTELANDER_BACKPACK_EX",
+        "outcome": 19,
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "SOURCE_WEIGHTED_MANUFACTURE_OUTCOME",
+        "requires": [
+          "STR_WASTELANDER_BACKPACK"
+        ],
+        "functions": [],
+        "inputs": {
+          "STR_WASTELANDER_BACKPACK": 1
+        },
+        "fixed": {
+          "STR_BANDAGE": 1,
+          "STR_KNOIF_BANDIT": 1
+        },
+        "random": {
+          "STR_STUN_BATON": 1,
+          "STR_CS_GAS": 1,
+          "STR_CREDIT_CHIP_M": 1
+        },
+        "weight": 100,
+        "totalWeight": 19338,
+        "time": 5,
+        "cost": 0,
+        "space": 0
+      },
+      "beforeHash": "da287004ab8b9658a1a6eb98cebc50487ae54221da1ff5c261e1bbc76ee6614e",
+      "afterHash": "449269e425b5bc02f9f315f725f84e275718fe475bd2eff17917bb7b7ba4ac58",
+      "month": 2,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_WASTELANDER_BACKPACK": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        },
+        "STR_BANDAGE": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_KNOIF_BANDIT": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_STUN_BATON": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_CS_GAS": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_CREDIT_CHIP_M": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Original recipe: inputs consumed, fixed outputs plus one weighted random outcome. Labor and elapsed time conditional."
+      ]
+    },
+    {
+      "index": 143,
+      "action": {
+        "type": "research",
+        "id": "STR_STUN_BATON"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_STUN_BATON"
+      },
+      "beforeHash": "449269e425b5bc02f9f315f725f84e275718fe475bd2eff17917bb7b7ba4ac58",
+      "afterHash": "cb7e2f6a9ae6125d25302105551764e2553e7e5b7c82d1dc8e58b40e400336bc",
+      "month": 2,
+      "added": [
+        "STR_STUN_BATON"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_STUN_BATON": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 144,
+      "action": {
+        "type": "research",
+        "id": "STR_BASIC_ELECTRONICS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ACADEMY_CORPSE",
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_GOVT_CORPSE",
+          "STR_PADD",
+          "STR_SCI_REP",
+          "STR_STUN_BATON"
+        ]
+      },
+      "beforeHash": "cb7e2f6a9ae6125d25302105551764e2553e7e5b7c82d1dc8e58b40e400336bc",
+      "afterHash": "fc0b9321fce336cfa1fe2effbdee6a6057c062d018e46cb0b43d4a8c16d81d52",
+      "month": 2,
+      "added": [
+        "STR_BASIC_ELECTRONICS",
+        "AUX_IDENT",
+        "STR_BRAINER_OUTFIT"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): AUX_IDENT ← STR_BASIC_ELECTRONICS",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_BRAINER_OUTFIT ← STR_BASIC_ELECTRONICS"
+      ]
+    },
+    {
+      "index": 145,
+      "action": {
+        "type": "research",
+        "id": "STR_LARGE_RADAR_SYSTEM"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_BASIC_ELECTRONICS",
+          "STR_COMMUNICATIONS",
+          "STR_SCHOOLING_1"
+        ]
+      },
+      "beforeHash": "fc0b9321fce336cfa1fe2effbdee6a6057c062d018e46cb0b43d4a8c16d81d52",
+      "afterHash": "628c455dc34a3f0be80d1a2333d1fbf6d9ed61723f7fc7d303b5582c1e887cf1",
+      "month": 2,
+      "added": [
+        "STR_LARGE_RADAR_SYSTEM"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 146,
+      "action": {
+        "type": "research",
+        "id": "STR_DATA_MINING"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ALIEN_ORIGINS",
+          "STR_BASIC_ELECTRONICS",
+          "STR_COMMUNICATIONS",
+          "STR_SCHOOLING_1"
+        ]
+      },
+      "beforeHash": "628c455dc34a3f0be80d1a2333d1fbf6d9ed61723f7fc7d303b5582c1e887cf1",
+      "afterHash": "8a79be24334e402d25112a743cbe28b22c0c3d9ebb562cb6ab128053216da84a",
+      "month": 2,
+      "added": [
+        "STR_DATA_MINING"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 147,
+      "action": {
+        "type": "research",
+        "id": "STR_HIDEOUT_DETECTOR"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_BASIC_ELECTRONICS",
+          "STR_COMMUNICATIONS",
+          "STR_CRAFT_AUXILARY_SYSTEMS"
+        ]
+      },
+      "beforeHash": "8a79be24334e402d25112a743cbe28b22c0c3d9ebb562cb6ab128053216da84a",
+      "afterHash": "31dda84d6a344c645f4e74a3264cf66d58ca38dfdca2c349f15279eeec3bb37e",
+      "month": 2,
+      "added": [
+        "STR_HIDEOUT_DETECTOR"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    }
+  ],
+  "failures": [],
+  "targets": [
+    {
+      "id": "STR_PADD",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_ACADEMY_CORPSE",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_GOVT_CORPSE",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_WASTELANDER_BACKPACK",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_STUN_BATON",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_BASIC_ELECTRONICS",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_LARGE_RADAR_SYSTEM",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_HIDEOUT_DETECTOR",
+      "reached": true,
+      "missingDependencies": []
+    },
+    {
+      "id": "STR_DATA_MINING",
+      "reached": true,
+      "missingDependencies": []
+    }
+  ],
+  "status": "CONDITIONAL_ELECTRONICS_MILESTONES_REACHED",
+  "coreCheckpoint": {
+    "step": 147,
+    "stateHash": "31dda84d6a344c645f4e74a3264cf66d58ca38dfdca2c349f15279eeec3bb37e",
+    "researchCount": 194,
+    "researched": [
+      "AUX_HYBRID_PSI_WEAPON",
+      "AUX_HYBRID_PSI_WEAPON_THINMAN",
+      "AUX_IDENT",
+      "CIVILIAN_YOUNG_UBER",
+      "CIV_ARMOR_LOKNAR_1",
+      "HUMAN_ARMOR_F12",
+      "HUMAN_ARMOR_M9",
+      "SECTOID_ARMOR_P12",
+      "STR_ACADEMY_CORPSE",
+      "STR_ACADEMY_STUDENT",
+      "STR_ALIEN_ALLOYS",
+      "STR_ALIEN_ORIGINS",
+      "STR_ANCHOR",
+      "STR_ART_PIECE",
+      "STR_BALLISTICS",
+      "STR_BALLISTICS_ZZZ",
+      "STR_BASIC_ELECTRONICS",
+      "STR_BASIC_INCENDIARIES",
+      "STR_BASIC_INCENDIARIES_ZZZ",
+      "STR_BIG_BIRD",
+      "STR_BIKES",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_BRAINER_OUTFIT",
+      "STR_BURA",
+      "STR_CADILLAC",
+      "STR_CAMOUFLAGE",
+      "STR_CAMO_PAINT",
+      "STR_CEREMONY_DEP",
+      "STR_CINDERELLA_PROJECT_PREQ",
+      "STR_CLOTHING_UC",
+      "STR_COMMUNICATIONS",
+      "STR_CONTACT_BUILDERS",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_CONTACT_GENERAL_SUPPLIES_ZZZ",
+      "STR_CONTACT_TIGER_TRANSPORT",
+      "STR_CRAFT_AUXILARY_SYSTEMS",
+      "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+      "STR_CRAFT_BATTERY_PACK",
+      "STR_CRAFT_PIR_CANNON_UC",
+      "STR_CRAFT_WEAPONS_SUMMARY",
+      "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+      "STR_CUNNING",
+      "STR_DATA_DISK_B",
+      "STR_DATA_MINING",
+      "STR_DIVERGING_PATHS",
+      "STR_DURATHREAD_WORKING",
+      "STR_EGYPT",
+      "STR_ELERIUM_115",
+      "STR_EXCAVATION",
+      "STR_EXPEDITION",
+      "STR_EXPEDITIONS",
+      "STR_EXPEDITION_RESEARCH",
+      "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+      "STR_EXPLORE_TUNNELS",
+      "STR_FARMING",
+      "STR_FIREARMS_SUMMARY",
+      "STR_FIRST_AID_KIT",
+      "STR_FLINTLOCKS_PRODUCTION",
+      "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+      "STR_GALS_ARE_SUPERIOR",
+      "STR_GALS_ARE_SUPERIOR_PREQ",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_GENTLE_PUSH",
+      "STR_GL_VV_UC",
+      "STR_GNOME_TOME_3",
+      "STR_GOVT_AUTOPSY",
+      "STR_GOVT_CORPSE",
+      "STR_GROG_BARREL",
+      "STR_GUILD_AUTOPSY",
+      "STR_GUILD_CORPSE",
+      "STR_GUN_SHOPPING",
+      "STR_GYMNASTICS",
+      "STR_GYM_ADVANCE_PREQ",
+      "STR_GYM_OUTFIT",
+      "STR_HARDWARE_SHOPPING",
+      "STR_HIDEOUT_DETECTOR",
+      "STR_HMG_VV_UC",
+      "STR_HUEY",
+      "STR_HUMANS",
+      "STR_HUMAN_SHARP_GIRL",
+      "STR_HUMAN_SHARP_GUY",
+      "STR_HUMVEE",
+      "STR_HYBRID_ARMOR_JUMPSUIT_UC",
+      "STR_HYBRID_ARMOR_THINMAN_UC",
+      "STR_HYBRID_HUMAN_LEGACY",
+      "STR_HYBRID_OF_TWILIGHT",
+      "STR_HYBRID_RECRUITMENT_ZZZ",
+      "STR_HYBRID_TAC_VEST_UC",
+      "STR_HYBRID_VOODOO",
+      "STR_HYDROPONICS",
+      "STR_INSPECT_MACHINERY",
+      "STR_ITALY",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_JACKSTOWN_ZZZ",
+      "STR_JUNK_PILE",
+      "STR_KNUCKLES_SPIKED",
+      "STR_KULTUR",
+      "STR_KUNG_FU",
+      "STR_LABORATORY",
+      "STR_LAMIA_RECRUITMENT_PREQ",
+      "STR_LAPUTA",
+      "STR_LARGE_RADAR_SYSTEM",
+      "STR_LEATHER_ARMOR",
+      "STR_LMG_VV_UC",
+      "STR_LOC_TAVERN_CELLAR_DONE",
+      "STR_LOGISTICS",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_MELEE_SUMMARY",
+      "STR_MESS_HALL",
+      "STR_METAL_ARMOR",
+      "STR_MINIGUN_VV_UC",
+      "STR_MISSION_FREIGHT",
+      "STR_MUTANT_ABILITIES",
+      "STR_NEPOTISM",
+      "STR_OLD_BOOKS",
+      "STR_ONSEN_PREQ",
+      "STR_PADD",
+      "STR_PARTY",
+      "STR_PARTY_DEP",
+      "STR_PEASANTS_ZZZ",
+      "STR_PEASANT_ARMOR_JUMPSUIT_UC",
+      "STR_PEASANT_CAMO_UC",
+      "STR_PEPPER_PISTOL",
+      "STR_PERSONAL_LABS",
+      "STR_PERSONAL_LABS_EXIST",
+      "STR_PICKAXE",
+      "STR_PINUP_001",
+      "STR_PIRATE_FLAG",
+      "STR_PIRATE_LIFE",
+      "STR_PIRATE_STYLE",
+      "STR_PORN",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_PRIMITIVE_WEAPONS_2",
+      "STR_PRIMITIVE_WEAPONS_2_ZZZ",
+      "STR_PRIMITIVE_WEAPONS_ZZZ",
+      "STR_PSI_LAB",
+      "STR_PSI_LAB_PREQ",
+      "STR_QUESTION_OF_DRILL",
+      "STR_RAIDER_CORPSE",
+      "STR_RECRUITMENT",
+      "STR_RECRUIT_PEASANTS",
+      "STR_REJECT_THE_POWER",
+      "STR_ROTOGUN",
+      "STR_ROTOGUN_VV_UC",
+      "STR_RPG_VV_UC",
+      "STR_RUNT_OUTFIT",
+      "STR_SAILOR_UNIFORM",
+      "STR_SCHOOLING_1",
+      "STR_SCI_REP",
+      "STR_SC_WIRE",
+      "STR_SEA_TRANSPORT",
+      "STR_SECTOID",
+      "STR_SECTOID_AUTOPSY",
+      "STR_SHAKEUP_CEREMONY",
+      "STR_SKINNING",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_SMGS_SUMMARY",
+      "STR_SMITHING",
+      "STR_SMITHING_ZZZ",
+      "STR_SOLDIER_TYPE_HYBRID",
+      "STR_STEAM_POWER",
+      "STR_STUN_BATON",
+      "STR_SUPER_STAPLER",
+      "STR_SURVIVAL",
+      "STR_SURVIVAL_ZZZ",
+      "STR_SWIMSUIT",
+      "STR_SWIMSUIT_PEASANT_UC",
+      "STR_SWIMSUIT_PRODUCTION",
+      "STR_TACTICS",
+      "STR_TACTICS_ZZZ",
+      "STR_TAC_VEST_PEASANT_UC",
+      "STR_TANKP_PREQ",
+      "STR_THE_PHARMACIST",
+      "STR_TRAININGS",
+      "STR_UBER_WHEAT",
+      "STR_UFO_NAVIGATION",
+      "STR_UFO_POWER_SOURCE_SMALL",
+      "STR_UNARMED_GAUNTLET",
+      "STR_UNARMED_WRESTLING",
+      "STR_VESSEL_RUSTFIGHTER3",
+      "STR_VIOLENCE",
+      "STR_VIOLENCE_ZZZ",
+      "STR_WANDERER_VICTIM",
+      "STR_WASTELANDER_BACKPACK",
+      "STR_WAT_DO",
+      "STR_WEIRDNESS",
+      "STR_WEIRDNESS_ZZZ",
+      "STR_WELL",
+      "STR_WE_NEED_CRAFT_WEAPONS",
+      "STR_WORKSHOP",
+      "STR_WORLDLY_MORALITY",
+      "STR_WRENCH",
+      "STR_YOUNG_UBER_RECRUITMENT"
+    ],
+    "disabled": [
+      "STR_CAT_PATH",
+      "STR_CAT_PATH_PREQ",
+      "STR_EMBRACE_THE_POWER",
+      "STR_HYBRID_PATH",
+      "STR_HYBRID_PATH_PREQ",
+      "STR_NEKOMIMI_NETWORK",
+      "STR_PEASANT_REVOLUTION",
+      "STR_PEASANT_REVOLUTION_PREQ",
+      "STR_TINY_DRILL_INVESTIGATION",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ"
+    ],
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 4,
+      "STR_JUNK_PILE": 10,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 190,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1,
+      "STR_CIGS": 1,
+      "STR_DATA_DISK": 0,
+      "STR_CHEMICALS": 60,
+      "STR_SC_WIRE": 11,
+      "STR_WRENCH": 0,
+      "STR_DATA_DISK_B": 0,
+      "STR_GUILD_CORPSE": 2,
+      "STR_HUMAN_SHARP_GUY": 0,
+      "STR_HUMAN_SHARP_GIRL": 0,
+      "STR_UFO_POWER_SOURCE_SMALL": 0,
+      "STR_SCAVENGER_OUTFIT": 1,
+      "STR_PORN": 2,
+      "STR_GLAMOUR": 3,
+      "STR_ALIEN_ALLOYS": 2,
+      "STR_ART_PIECE": 0,
+      "STR_OLD_BOOKS": 0,
+      "STR_UFO_NAVIGATION": 1,
+      "STR_SWIMSUIT": 0,
+      "STR_ACADEMY_STUDENT": 0,
+      "STR_HYBRID_OF_TWILIGHT": 1,
+      "STR_WANDERER_VICTIM": 0,
+      "STR_PADD": 0,
+      "STR_WASTELANDER_BACKPACK": 0,
+      "STR_ACADEMY_CORPSE": 0,
+      "STR_GOVT_CORPSE": 0,
+      "STR_BANDAGE": 1,
+      "STR_KNOIF_BANDIT": 1,
+      "STR_STUN_BATON": 0,
+      "STR_CS_GAS": 1,
+      "STR_CREDIT_CHIP_M": 1
+    },
+    "baseFunctions": [
+      "ALKO",
+      "CPU",
+      "LAB",
+      "SHOP",
+      "STUDY",
+      "WELL",
+      "WORKS"
+    ],
+    "facilities": [
+      "STR_ACCESS_LIFT",
+      "STR_BURROW",
+      "STR_CORRIDOR",
+      "STR_GENERAL_STORES",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_HANGAR",
+      "STR_JAIL",
+      "STR_LABORATORY",
+      "STR_LIVING_QUARTERS",
+      "STR_PERSONAL_LABS",
+      "STR_RUBBLE",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_STILL",
+      "STR_WELL",
+      "STR_WORKSHOP"
+    ],
+    "partialInventory": true
+  },
+  "final": {
+    "stateHash": "31dda84d6a344c645f4e74a3264cf66d58ca38dfdca2c349f15279eeec3bb37e",
+    "month": 2,
+    "researched": [
+      "AUX_HYBRID_PSI_WEAPON",
+      "AUX_HYBRID_PSI_WEAPON_THINMAN",
+      "AUX_IDENT",
+      "CIVILIAN_YOUNG_UBER",
+      "CIV_ARMOR_LOKNAR_1",
+      "HUMAN_ARMOR_F12",
+      "HUMAN_ARMOR_M9",
+      "SECTOID_ARMOR_P12",
+      "STR_ACADEMY_CORPSE",
+      "STR_ACADEMY_STUDENT",
+      "STR_ALIEN_ALLOYS",
+      "STR_ALIEN_ORIGINS",
+      "STR_ANCHOR",
+      "STR_ART_PIECE",
+      "STR_BALLISTICS",
+      "STR_BALLISTICS_ZZZ",
+      "STR_BASIC_ELECTRONICS",
+      "STR_BASIC_INCENDIARIES",
+      "STR_BASIC_INCENDIARIES_ZZZ",
+      "STR_BIG_BIRD",
+      "STR_BIKES",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_BRAINER_OUTFIT",
+      "STR_BURA",
+      "STR_CADILLAC",
+      "STR_CAMOUFLAGE",
+      "STR_CAMO_PAINT",
+      "STR_CEREMONY_DEP",
+      "STR_CINDERELLA_PROJECT_PREQ",
+      "STR_CLOTHING_UC",
+      "STR_COMMUNICATIONS",
+      "STR_CONTACT_BUILDERS",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_CONTACT_GENERAL_SUPPLIES_ZZZ",
+      "STR_CONTACT_TIGER_TRANSPORT",
+      "STR_CRAFT_AUXILARY_SYSTEMS",
+      "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+      "STR_CRAFT_BATTERY_PACK",
+      "STR_CRAFT_PIR_CANNON_UC",
+      "STR_CRAFT_WEAPONS_SUMMARY",
+      "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+      "STR_CUNNING",
+      "STR_DATA_DISK_B",
+      "STR_DATA_MINING",
+      "STR_DIVERGING_PATHS",
+      "STR_DURATHREAD_WORKING",
+      "STR_EGYPT",
+      "STR_ELERIUM_115",
+      "STR_EXCAVATION",
+      "STR_EXPEDITION",
+      "STR_EXPEDITIONS",
+      "STR_EXPEDITION_RESEARCH",
+      "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+      "STR_EXPLORE_TUNNELS",
+      "STR_FARMING",
+      "STR_FIREARMS_SUMMARY",
+      "STR_FIRST_AID_KIT",
+      "STR_FLINTLOCKS_PRODUCTION",
+      "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+      "STR_GALS_ARE_SUPERIOR",
+      "STR_GALS_ARE_SUPERIOR_PREQ",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_GENTLE_PUSH",
+      "STR_GL_VV_UC",
+      "STR_GNOME_TOME_3",
+      "STR_GOVT_AUTOPSY",
+      "STR_GOVT_CORPSE",
+      "STR_GROG_BARREL",
+      "STR_GUILD_AUTOPSY",
+      "STR_GUILD_CORPSE",
+      "STR_GUN_SHOPPING",
+      "STR_GYMNASTICS",
+      "STR_GYM_ADVANCE_PREQ",
+      "STR_GYM_OUTFIT",
+      "STR_HARDWARE_SHOPPING",
+      "STR_HIDEOUT_DETECTOR",
+      "STR_HMG_VV_UC",
+      "STR_HUEY",
+      "STR_HUMANS",
+      "STR_HUMAN_SHARP_GIRL",
+      "STR_HUMAN_SHARP_GUY",
+      "STR_HUMVEE",
+      "STR_HYBRID_ARMOR_JUMPSUIT_UC",
+      "STR_HYBRID_ARMOR_THINMAN_UC",
+      "STR_HYBRID_HUMAN_LEGACY",
+      "STR_HYBRID_OF_TWILIGHT",
+      "STR_HYBRID_RECRUITMENT_ZZZ",
+      "STR_HYBRID_TAC_VEST_UC",
+      "STR_HYBRID_VOODOO",
+      "STR_HYDROPONICS",
+      "STR_INSPECT_MACHINERY",
+      "STR_ITALY",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_JACKSTOWN_ZZZ",
+      "STR_JUNK_PILE",
+      "STR_KNUCKLES_SPIKED",
+      "STR_KULTUR",
+      "STR_KUNG_FU",
+      "STR_LABORATORY",
+      "STR_LAMIA_RECRUITMENT_PREQ",
+      "STR_LAPUTA",
+      "STR_LARGE_RADAR_SYSTEM",
+      "STR_LEATHER_ARMOR",
+      "STR_LMG_VV_UC",
+      "STR_LOC_TAVERN_CELLAR_DONE",
+      "STR_LOGISTICS",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_MELEE_SUMMARY",
+      "STR_MESS_HALL",
+      "STR_METAL_ARMOR",
+      "STR_MINIGUN_VV_UC",
+      "STR_MISSION_FREIGHT",
+      "STR_MUTANT_ABILITIES",
+      "STR_NEPOTISM",
+      "STR_OLD_BOOKS",
+      "STR_ONSEN_PREQ",
+      "STR_PADD",
+      "STR_PARTY",
+      "STR_PARTY_DEP",
+      "STR_PEASANTS_ZZZ",
+      "STR_PEASANT_ARMOR_JUMPSUIT_UC",
+      "STR_PEASANT_CAMO_UC",
+      "STR_PEPPER_PISTOL",
+      "STR_PERSONAL_LABS",
+      "STR_PERSONAL_LABS_EXIST",
+      "STR_PICKAXE",
+      "STR_PINUP_001",
+      "STR_PIRATE_FLAG",
+      "STR_PIRATE_LIFE",
+      "STR_PIRATE_STYLE",
+      "STR_PORN",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_PRIMITIVE_WEAPONS_2",
+      "STR_PRIMITIVE_WEAPONS_2_ZZZ",
+      "STR_PRIMITIVE_WEAPONS_ZZZ",
+      "STR_PSI_LAB",
+      "STR_PSI_LAB_PREQ",
+      "STR_QUESTION_OF_DRILL",
+      "STR_RAIDER_CORPSE",
+      "STR_RECRUITMENT",
+      "STR_RECRUIT_PEASANTS",
+      "STR_REJECT_THE_POWER",
+      "STR_ROTOGUN",
+      "STR_ROTOGUN_VV_UC",
+      "STR_RPG_VV_UC",
+      "STR_RUNT_OUTFIT",
+      "STR_SAILOR_UNIFORM",
+      "STR_SCHOOLING_1",
+      "STR_SCI_REP",
+      "STR_SC_WIRE",
+      "STR_SEA_TRANSPORT",
+      "STR_SECTOID",
+      "STR_SECTOID_AUTOPSY",
+      "STR_SHAKEUP_CEREMONY",
+      "STR_SKINNING",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_SMGS_SUMMARY",
+      "STR_SMITHING",
+      "STR_SMITHING_ZZZ",
+      "STR_SOLDIER_TYPE_HYBRID",
+      "STR_STEAM_POWER",
+      "STR_STUN_BATON",
+      "STR_SUPER_STAPLER",
+      "STR_SURVIVAL",
+      "STR_SURVIVAL_ZZZ",
+      "STR_SWIMSUIT",
+      "STR_SWIMSUIT_PEASANT_UC",
+      "STR_SWIMSUIT_PRODUCTION",
+      "STR_TACTICS",
+      "STR_TACTICS_ZZZ",
+      "STR_TAC_VEST_PEASANT_UC",
+      "STR_TANKP_PREQ",
+      "STR_THE_PHARMACIST",
+      "STR_TRAININGS",
+      "STR_UBER_WHEAT",
+      "STR_UFO_NAVIGATION",
+      "STR_UFO_POWER_SOURCE_SMALL",
+      "STR_UNARMED_GAUNTLET",
+      "STR_UNARMED_WRESTLING",
+      "STR_VESSEL_RUSTFIGHTER3",
+      "STR_VIOLENCE",
+      "STR_VIOLENCE_ZZZ",
+      "STR_WANDERER_VICTIM",
+      "STR_WASTELANDER_BACKPACK",
+      "STR_WAT_DO",
+      "STR_WEIRDNESS",
+      "STR_WEIRDNESS_ZZZ",
+      "STR_WELL",
+      "STR_WE_NEED_CRAFT_WEAPONS",
+      "STR_WORKSHOP",
+      "STR_WORLDLY_MORALITY",
+      "STR_WRENCH",
+      "STR_YOUNG_UBER_RECRUITMENT"
+    ],
+    "disabled": [
+      "STR_CAT_PATH",
+      "STR_CAT_PATH_PREQ",
+      "STR_EMBRACE_THE_POWER",
+      "STR_HYBRID_PATH",
+      "STR_HYBRID_PATH_PREQ",
+      "STR_NEKOMIMI_NETWORK",
+      "STR_PEASANT_REVOLUTION",
+      "STR_PEASANT_REVOLUTION_PREQ",
+      "STR_TINY_DRILL_INVESTIGATION",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ"
+    ],
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 4,
+      "STR_JUNK_PILE": 10,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 190,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1,
+      "STR_CIGS": 1,
+      "STR_DATA_DISK": 0,
+      "STR_CHEMICALS": 60,
+      "STR_SC_WIRE": 11,
+      "STR_WRENCH": 0,
+      "STR_DATA_DISK_B": 0,
+      "STR_GUILD_CORPSE": 2,
+      "STR_HUMAN_SHARP_GUY": 0,
+      "STR_HUMAN_SHARP_GIRL": 0,
+      "STR_UFO_POWER_SOURCE_SMALL": 0,
+      "STR_SCAVENGER_OUTFIT": 1,
+      "STR_PORN": 2,
+      "STR_GLAMOUR": 3,
+      "STR_ALIEN_ALLOYS": 2,
+      "STR_ART_PIECE": 0,
+      "STR_OLD_BOOKS": 0,
+      "STR_UFO_NAVIGATION": 1,
+      "STR_SWIMSUIT": 0,
+      "STR_ACADEMY_STUDENT": 0,
+      "STR_HYBRID_OF_TWILIGHT": 1,
+      "STR_WANDERER_VICTIM": 0,
+      "STR_PADD": 0,
+      "STR_WASTELANDER_BACKPACK": 0,
+      "STR_ACADEMY_CORPSE": 0,
+      "STR_GOVT_CORPSE": 0,
+      "STR_BANDAGE": 1,
+      "STR_KNOIF_BANDIT": 1,
+      "STR_STUN_BATON": 0,
+      "STR_CS_GAS": 1,
+      "STR_CREDIT_CHIP_M": 1
+    },
+    "baseFunctions": [
+      "ALKO",
+      "CPU",
+      "LAB",
+      "SHOP",
+      "STUDY",
+      "WELL",
+      "WORKS"
+    ],
+    "facilities": [
+      "STR_ACCESS_LIFT",
+      "STR_BURROW",
+      "STR_CORRIDOR",
+      "STR_GENERAL_STORES",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_HANGAR",
+      "STR_JAIL",
+      "STR_LABORATORY",
+      "STR_LIVING_QUARTERS",
+      "STR_PERSONAL_LABS",
+      "STR_RUBBLE",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_STILL",
+      "STR_WELL",
+      "STR_WORKSHOP"
+    ],
+    "completedMissions": [
+      "STR_LOC_NEOPHYTES",
+      "STR_LOC_TAVERN_CELLAR"
+    ],
+    "missionReceipts": [
+      {
+        "source": "neophytes-electronics",
+        "deployment": "STR_LOC_NEOPHYTES",
+        "script": "NeophytesMission1",
+        "month": 2,
+        "loot": {
+          "STR_PADD": 1,
+          "STR_WASTELANDER_BACKPACK": 2
+        }
+      },
+      {
+        "source": "tavern-electronics",
+        "deployment": "STR_LOC_TAVERN_CELLAR",
+        "script": "TavernCellar",
+        "month": 2,
+        "loot": {
+          "STR_ACADEMY_CORPSE": 1,
+          "STR_GOVT_CORPSE": 1
+        }
+      }
+    ],
+    "partialInventory": true
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "scope": "Continuation of exact existing scenario prefix. Mission outcomes and recovered samples assumed from source-bounded cases; inventory is a tracked subset, not a full live game state. No other event/mission consequences inferred.",
+  "artifact": "tools/data/overcap-forward-electronics-v3-baseline-str_inspect_machinery.json.gz",
+  "artifactSha256": "0eaa1b7dd12d89b6add42cd47eb76c5755eb9b25ced561a42d2ec04c286737ed",
+  "newSteps": 12,
+  "totalSteps": 147,
+  "labDepth": 97,
+  "researchCount": 194,
+  "deferredOptions": 1107
+}

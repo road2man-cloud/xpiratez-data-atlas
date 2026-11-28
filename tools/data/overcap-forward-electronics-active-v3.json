@@ -1,0 +1,467 @@
+{
+  "schema": "ATLAS_FORWARD_ELECTRONICS_ACTIVE_V3",
+  "baseRegistrySha256": "2dfbf3177167e940a0d229b66f76cac9f066b476a3e95ed8adde06d03e5cc808",
+  "sourceSha256": "a95744bbdd8b2df14e69a1c375ee7c8c851eb2fc148b387ba46d042f20394ecf",
+  "producerHashes": {
+    "tools/build-overcap-forward-electronics-v3.mjs": "9f7ce1d5749dbf31a9e35b98760ee8919d8437a90d87f2c9a2ef0b3aafd189f7",
+    "tools/atlas-overcap-forward-electronics-mission-v3.mjs": "55bd8ea53095f1f577d24cf507ba7bc06a86acb7dc35646af5edce82b3f8ed6c",
+    "tools/build-overcap-forward-electronics-mission-sources-v3.mjs": "b0c5d83bf06b4d909312be0e239e2c57fcec9532752d72cad63755e3486595fc"
+  },
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-electronics-v3-baseline-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-electronics-v3-baseline-str_inspect_machinery-summary.json",
+      "sha256": "0eaa1b7dd12d89b6add42cd47eb76c5755eb9b25ced561a42d2ec04c286737ed",
+      "stateHash": "31dda84d6a344c645f4e74a3264cf66d58ca38dfdca2c349f15279eeec3bb37e",
+      "status": "CONDITIONAL_ELECTRONICS_MILESTONES_REACHED",
+      "newSteps": 12,
+      "totalSteps": 147,
+      "labDepth": 97,
+      "researchCount": 194,
+      "deferredOptions": 1107,
+      "targets": [
+        {
+          "id": "STR_PADD",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_ACADEMY_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_GOVT_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_WASTELANDER_BACKPACK",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_STUN_BATON",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_BASIC_ELECTRONICS",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_LARGE_RADAR_SYSTEM",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_HIDEOUT_DETECTOR",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_DATA_MINING",
+          "reached": true,
+          "missingDependencies": []
+        }
+      ],
+      "coreCheckpoint": {
+        "step": 147,
+        "stateHash": "31dda84d6a344c645f4e74a3264cf66d58ca38dfdca2c349f15279eeec3bb37e",
+        "researchCount": 194
+      },
+      "missionReceipts": [
+        {
+          "source": "neophytes-electronics",
+          "deployment": "STR_LOC_NEOPHYTES",
+          "script": "NeophytesMission1",
+          "month": 2,
+          "loot": {
+            "STR_PADD": 1,
+            "STR_WASTELANDER_BACKPACK": 2
+          }
+        },
+        {
+          "source": "tavern-electronics",
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "month": 2,
+          "loot": {
+            "STR_ACADEMY_CORPSE": 1,
+            "STR_GOVT_CORPSE": 1
+          }
+        }
+      ],
+      "partialInventory": true
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-electronics-v3-uk-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-electronics-v3-uk-str_inspect_machinery-summary.json",
+      "sha256": "e1b46e8906038533a18f7705d97b8ccebc3d20bfc2aeca0d133019553a1dbd07",
+      "stateHash": "ab1a872e793e403aae983350efc2e88ee4250cc941a1c3f9c037abf9ba9950c7",
+      "status": "CONDITIONAL_ELECTRONICS_MILESTONES_REACHED",
+      "newSteps": 39,
+      "totalSteps": 111,
+      "labDepth": 80,
+      "researchCount": 157,
+      "deferredOptions": 2868,
+      "targets": [
+        {
+          "id": "STR_PADD",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_ACADEMY_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_GOVT_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_WASTELANDER_BACKPACK",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_STUN_BATON",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_BASIC_ELECTRONICS",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_LARGE_RADAR_SYSTEM",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_HIDEOUT_DETECTOR",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_DATA_MINING",
+          "reached": false,
+          "missingDependencies": [
+            "STR_ALIEN_ORIGINS"
+          ]
+        }
+      ],
+      "coreCheckpoint": {
+        "step": 83,
+        "stateHash": "a346ab4c1633e397e9626c10c9ff18ed8905d2f98c3d218dfcf1e22fc4121cc1",
+        "researchCount": 113
+      },
+      "missionReceipts": [
+        {
+          "source": "neophytes-electronics",
+          "deployment": "STR_LOC_NEOPHYTES",
+          "script": "NeophytesMission1",
+          "month": 2,
+          "loot": {
+            "STR_PADD": 1,
+            "STR_WASTELANDER_BACKPACK": 2
+          }
+        },
+        {
+          "source": "tavern-electronics",
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "month": 2,
+          "loot": {
+            "STR_ACADEMY_CORPSE": 1,
+            "STR_GOVT_CORPSE": 1
+          }
+        }
+      ],
+      "partialInventory": true
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "path": "tools/data/overcap-forward-electronics-v3-uk-str_jackstown_scouting.json.gz",
+      "summary": "tools/data/overcap-forward-electronics-v3-uk-str_jackstown_scouting-summary.json",
+      "sha256": "09829fb35f582c6bee7d637f0000e20f2753abd822e2e280dea061037c828d0b",
+      "stateHash": "e74cae1e4aa9491ee9865c465f5150a2f7040dc035ec5c9ca7c60731e4322289",
+      "status": "CONDITIONAL_ELECTRONICS_MILESTONES_REACHED",
+      "newSteps": 39,
+      "totalSteps": 111,
+      "labDepth": 80,
+      "researchCount": 157,
+      "deferredOptions": 2868,
+      "targets": [
+        {
+          "id": "STR_PADD",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_ACADEMY_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_GOVT_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_WASTELANDER_BACKPACK",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_STUN_BATON",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_BASIC_ELECTRONICS",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_LARGE_RADAR_SYSTEM",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_HIDEOUT_DETECTOR",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_DATA_MINING",
+          "reached": false,
+          "missingDependencies": [
+            "STR_ALIEN_ORIGINS"
+          ]
+        }
+      ],
+      "coreCheckpoint": {
+        "step": 83,
+        "stateHash": "6785010fb2484333639029c7d5187ec51edf5a322f0b45488555277cbfc37eb8",
+        "researchCount": 113
+      },
+      "missionReceipts": [
+        {
+          "source": "neophytes-electronics",
+          "deployment": "STR_LOC_NEOPHYTES",
+          "script": "NeophytesMission1",
+          "month": 2,
+          "loot": {
+            "STR_PADD": 1,
+            "STR_WASTELANDER_BACKPACK": 2
+          }
+        },
+        {
+          "source": "tavern-electronics",
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "month": 2,
+          "loot": {
+            "STR_ACADEMY_CORPSE": 1,
+            "STR_GOVT_CORPSE": 1
+          }
+        }
+      ],
+      "partialInventory": true
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_RECRUIT_PEASANTS",
+      "path": "tools/data/overcap-forward-electronics-v3-uk-str_recruit_peasants.json.gz",
+      "summary": "tools/data/overcap-forward-electronics-v3-uk-str_recruit_peasants-summary.json",
+      "sha256": "f9c695240773b91abf90d9d8a9a607876bf42de83a45890cf759edb2fe4e9cc6",
+      "stateHash": "293d607696b4f9cace692768d9fd43460f0e3e3344e037381a54174d09cb97c0",
+      "status": "CONDITIONAL_ELECTRONICS_MILESTONES_REACHED",
+      "newSteps": 39,
+      "totalSteps": 111,
+      "labDepth": 80,
+      "researchCount": 157,
+      "deferredOptions": 2868,
+      "targets": [
+        {
+          "id": "STR_PADD",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_ACADEMY_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_GOVT_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_WASTELANDER_BACKPACK",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_STUN_BATON",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_BASIC_ELECTRONICS",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_LARGE_RADAR_SYSTEM",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_HIDEOUT_DETECTOR",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_DATA_MINING",
+          "reached": false,
+          "missingDependencies": [
+            "STR_ALIEN_ORIGINS"
+          ]
+        }
+      ],
+      "coreCheckpoint": {
+        "step": 83,
+        "stateHash": "15c8c48f697301776608d6d4d7f1d067b531ac9f45456d9c842a188fe30a4d70",
+        "researchCount": 113
+      },
+      "missionReceipts": [
+        {
+          "source": "neophytes-electronics",
+          "deployment": "STR_LOC_NEOPHYTES",
+          "script": "NeophytesMission1",
+          "month": 2,
+          "loot": {
+            "STR_PADD": 1,
+            "STR_WASTELANDER_BACKPACK": 2
+          }
+        },
+        {
+          "source": "tavern-electronics",
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "month": 2,
+          "loot": {
+            "STR_ACADEMY_CORPSE": 1,
+            "STR_GOVT_CORPSE": 1
+          }
+        }
+      ],
+      "partialInventory": true
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_WAT_DO",
+      "path": "tools/data/overcap-forward-electronics-v3-uk-str_wat_do.json.gz",
+      "summary": "tools/data/overcap-forward-electronics-v3-uk-str_wat_do-summary.json",
+      "sha256": "bf65a5252b956344cb5bbb916e2e9c56054e71777466ff99b115f210074602e8",
+      "stateHash": "0b2757b5a43212a69527497578137e227d1b615a9c1113715a03f9f28f18ce99",
+      "status": "CONDITIONAL_ELECTRONICS_MILESTONES_REACHED",
+      "newSteps": 39,
+      "totalSteps": 111,
+      "labDepth": 80,
+      "researchCount": 157,
+      "deferredOptions": 2868,
+      "targets": [
+        {
+          "id": "STR_PADD",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_ACADEMY_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_GOVT_CORPSE",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_WASTELANDER_BACKPACK",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_STUN_BATON",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_BASIC_ELECTRONICS",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_LARGE_RADAR_SYSTEM",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_HIDEOUT_DETECTOR",
+          "reached": true,
+          "missingDependencies": []
+        },
+        {
+          "id": "STR_DATA_MINING",
+          "reached": false,
+          "missingDependencies": [
+            "STR_ALIEN_ORIGINS"
+          ]
+        }
+      ],
+      "coreCheckpoint": {
+        "step": 83,
+        "stateHash": "5008469ede3f3042ba554d6f421f08b2a7f9a562a7c35de5f41054430c71ce30",
+        "researchCount": 113
+      },
+      "missionReceipts": [
+        {
+          "source": "neophytes-electronics",
+          "deployment": "STR_LOC_NEOPHYTES",
+          "script": "NeophytesMission1",
+          "month": 2,
+          "loot": {
+            "STR_PADD": 1,
+            "STR_WASTELANDER_BACKPACK": 2
+          }
+        },
+        {
+          "source": "tavern-electronics",
+          "deployment": "STR_LOC_TAVERN_CELLAR",
+          "script": "TavernCellar",
+          "month": 2,
+          "loot": {
+            "STR_ACADEMY_CORPSE": 1,
+            "STR_GOVT_CORPSE": 1
+          }
+        }
+      ],
+      "partialInventory": true
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}
