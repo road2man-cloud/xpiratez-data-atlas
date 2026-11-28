@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36MC_SCULPT_CLAY_2100_FULL.glb",
+  "inputBytes": 6063996,
+  "output": "R36MC_SUBTLE_SCULPT_CLAY_2100_COMPACT_FULL.glb",
+  "outputBytes": 6064036,
+  "sourceSHA256": "be55d618d824dc96c493320a7f70cb8ea02efc21e5cb741dcf371e4e65c4b531",
+  "outputSHA256": "b27cd25997750c8a307c195368bbc6c980dd374b2d4fbc3551faa9339dcf8a1a",
+  "reducedBytes": -40,
+  "ratio": 1.000007,
+  "textureObjectsBefore": 6,
+  "textureObjectsAfter": 6,
+  "imageObjectsBefore": 6,
+  "imageObjectsAfter": 6,
+  "bufferViewsBefore": 136,
+  "bufferViewsAfter": 136,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}

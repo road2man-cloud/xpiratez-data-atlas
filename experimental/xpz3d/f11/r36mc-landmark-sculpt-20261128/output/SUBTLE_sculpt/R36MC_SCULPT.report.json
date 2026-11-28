@@ -1,0 +1,31 @@
+{
+  "version": "R36MC",
+  "mode": "sculpt",
+  "source": "R36MB_SUBTLE_FLOW_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "b57f7f03045c9b34a6dc39b72cca0a6b0b3d2d4b662744c17f2c436066d795d3",
+  "triangles": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "bones": 63,
+  "featureCount": 8,
+  "topologyRetained": true,
+  "UVAndSkinRetained": true,
+  "physicalVertexGroups": 568,
+  "movedGroups": 91,
+  "movedUV": 518,
+  "maxMove": 0.01617008328654614,
+  "shapeStats": {
+    "worstFaceDot": 0.7072241246872507,
+    "minimumAreaRatio": 0.6926055443457335,
+    "changedFaces": 211,
+    "folds": 0
+  },
+  "model": "R36MC_SCULPT_2100_FULL.glb",
+  "modelSHA256": "75b6b3dfdb1484d3b1eb2704d9bdc1158188a95575a210c125ebde9f1de9902a",
+  "modelBytes": 6063788,
+  "clayModel": "R36MC_SCULPT_CLAY_2100_FULL.glb",
+  "claySHA256": "be55d618d824dc96c493320a7f70cb8ea02efc21e5cb741dcf371e4e65c4b531",
+  "clayBytes": 6063996,
+  "note": "This does not claim precise measured anatomy; 2D hand-set contour model hypothesis.",
+  "qualityApproved": false
+}
