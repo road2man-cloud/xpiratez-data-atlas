@@ -61,11 +61,12 @@ const lightGrid=[
  [89,64,65,100,76,41,58,73,73],[78,50,68,100,73,40,50,71,73],
  [69,45,72,102,70,42,47,70,75],[63,44,66,97,70,45,45,67,77],
  [58,47,53,79,73,49,43,60,76],[45,50,53,63,80,56,43,53,73],
- [35,53,65,56,78,70,48,53,68],[34,55,66,58,65,78,63,59],
+ [35,53,65,56,78,70,48,53,68],[34,55,66,58,65,78,63,59,68],
  [35,56,62,57,54,64,70,64,69],[39,50,61,51,47,44,56,61,67],
  [51,42,56,57,46,42,49,54,62],[63,48,51,68,63,52,52,55,59],
  [66,65,54,63,72,58,53,55,58]
 ];
+if(lightGrid.length!==15||lightGrid.some(row=>row.length!==9||row.some(x=>!Number.isFinite(x))))throw Error('Invalid guide luminance dimensions');
 function light(x,z){
  const xx=clamp((x+.15)/.3,0,1)*8,yy=clamp((1.04-z)/.24,0,1)*14,i=Math.min(7,Math.floor(xx)),j=Math.min(13,Math.floor(yy)),u=xx-i,v=yy-j;
  return ((1-u)*(1-v)*lightGrid[j][i]+u*(1-v)*lightGrid[j][i+1]+(1-u)*v*lightGrid[j+1][i]+u*v*lightGrid[j+1][i+1])/255;
@@ -91,6 +92,7 @@ function retouch(v){
  return p;
 }
 const positions=bases.map(retouch);
+if(positions.some((p,i)=>p.length!==3||p.some(v=>!Number.isFinite(v))))throw Error('Nonfinite vertex in rebase; refusing invalid GLB');
 function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
 const normalSums=Array.from({length:positions.length},()=>[0,0,0]);
 for(let k=0;k<inIdx.length;k+=3){
@@ -133,6 +135,7 @@ out.write('glTF',0,'ascii');out.writeUInt32LE(2,4);out.writeUInt32LE(out.length,
 const off=20+jpad.length;out.writeUInt32LE(bin.length,off);out.write('BIN\0',off+4,'ascii');bin.copy(out,off+8);
 const differences=positions.map((p,i)=>Math.hypot(...p.map((x,k)=>x-inPos[i][k])));
 const origDifferences=positions.map((p,i)=>Math.hypot(...p.map((x,k)=>x-bases[i][k])));
+if(differences.some(x=>!Number.isFinite(x))||origDifferences.some(x=>!Number.isFinite(x)))throw Error('Nonfinite movement statistics');
 const result={stage:'R36HW-N6 source-surface rebase and shorts edge relaxation, does not complete concealed skin reconstruction',inputSha256:sha(inModel.b),hwSourceSha256:sha(hw.b),outputSha256:sha(out),triangles:beforeTriangles,originalSourcePantsVertices:srcPos.length,centroidVerticesReconstructed:82,totalPantsVertices:positions.length,unchangedSourceSkeletonJoints:inModel.g.skins[0].joints.length,faceAndHairGeometryUnchanged:true,edgeShrinkMaxMeters:Math.max(...origDifferences),deltaFromN5MaxMeters:Math.max(...differences),modifiedVertices:origDifferences.filter(d=>d>1e-6).length,originalBinaryPreservedBytes:inModel.bin.length,limitations:['Triangles remain 2080; not an added level of topology','Closed shorts, boots and gloves are not completely removed','Depth derived from guide features is not photogrammetry','Neither native S2 UV/normal nor dynamic skinning applied']};
 fs.mkdirSync(path.dirname(outFile),{recursive:true});fs.mkdirSync(path.dirname(reportFile),{recursive:true});
 fs.writeFileSync(outFile,out);fs.writeFileSync(reportFile,JSON.stringify(result,null,2)+'\n');
