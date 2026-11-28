@@ -1,27 +1,47 @@
-# R36MM — 실제 R36MK GLB 원본 텍스처 및 노멀맵 렌더링
+# R36MM — 실제 R36MK GLB 텍스처·노멀 렌더링
 
-## 실제 결과
+## 실제 완성한 결과
 
-R36ML에서는 실제 GLB의 물리 삼각형을 투영했지만 피부·머리카락 원본 텍스처와 2048 노멀맵을 샘플링하지 않았다. R36MM은 실제 GLB에 내장된 이미지와 UV를 샘플링하여 **CLAY / TEXTURED / TEXTURED_NORMAL** 세 모드, 정면·사선·측면 총 **9장/모델**을 생산한다.
+기존 R36ML은 원본 GLB의 이미지 텍스처와 노멀맵을 전혀 샘플링하지 않았다. R36MM은 Node.js 22 CPU 래스터라이저에 실제 GLB의 glTF 내장 이미지를 연결했다.
 
-GitHub Actions [#46150197500](https://github.com/road2man-cloud/xpiratez-data-atlas/actions/runs/46150197500) **성공**. ART/SUBTLE × DENSE/GUARDED 4종, 총 36장 PNG와 각 보고서를 `main`에 게시했다. 선행 단일 모델 테스트 [#46150189939](https://github.com/road2man-cloud/xpiratez-data-atlas/actions/runs/46150189939)도 성공했다.
+- 생산기: `source/render_r36mm.cjs`
+- 실제 자동 실행: [GitHub Actions #46150197500](https://github.com/road2man-cloud/xpiratez-data-atlas/actions/runs/46150197500)
+- 모델 입력: R36MK의 ART DENSE, ART GUARDED, SUBTLE DENSE, SUBTLE GUARDED
+- 출력: `output/<변형>/`에 동일한 모델의 **CLAY / TEXTURED / TEXTURED_NORMAL** × **FRONT / OBLIQUE / SIDE**, 변형당 PNG 9개, 총 PNG 36개
+- 선택식 비교 갤러리: `preview/index.html`
+- 해상도: 900×1120 px, 실제 2,100삼각형 (몸체 1,132 + 기타 968)
+- 분석: `output/<변형>/R36MM_RENDER.report.json`에 원본 모델 SHA, 임베디드 이미지 해독 수, 적용 픽셀 수, PNG SHA가 기록된다.
 
-| 모델 | 임베드 이미지 디코딩 | 정면 컬러 텍스처 픽셀 | 정면 노멀맵 픽셀 | PNG |
-|---|---:|---:|---:|---:|
-| ART DENSE | 10 | 191,078 | 169,468 | 9 |
-| ART GUARDED | 10 | 191,123 | 169,513 | 9 |
-| SUBTLE DENSE | 10 | 191,078 | 169,468 | 9 |
-| SUBTLE GUARDED | 10 | 191,123 | 169,513 | 9 |
+### 실제 모델에 적용된 이미지
 
-## 구현
+ART DENSE 기준 10개의 이미지 텍스처가 실제로 디코딩됐다. 내장 2048×2048 피부 컬러와 노멀맵을 포함하고, PBR 컬러, AO/ORM을 픽셀 샘플링한다.
 
-- `source/render_r36mm.cjs`: 실제 GLB의 2,100삼각형 위치·UV·정점 법선·접선 및 임베드 PNG와 Material PBR 필드를 읽는 Node.js CPU rasterizer. PNG 디코딩만 `sharp@0.33.5`를 사용한다.
-- 모델의 baseColor, normal, occlusion, metallic-roughness, emissive, alphaCutoff를 가능한 범위에서 샘플링한다. 조명 계산은 S2 원본 `CalcDirAmbLightDO`에 기초한 고전 방향광·앰비언트 구조이고, 거칠기 하이라이트·반사율에는 간략화된 계산을 사용한다.
-- `output/<VARIANT>/R36MM_TEXTURED_NORMAL_FRONT.png` 등이 렌더 파일이며, `R36MM_RENDER.report.json`에 GLB 입력 SHA와 실제 픽셀 샘플 횟수가 기록된다.
-- `.github/workflows/xpz3d-r36mm-20261128.yml`: Node.js 22 GitHub Actions 생산기.
+| 렌더 시점 | 컬러 텍스처 샘플링 픽셀 | 노멀맵 적용 픽셀 |
+|---|---:|---:|
+| FRONT | 191,078 | 169,468 |
+| OBLIQUE | 200,493 | 179,724 |
+| SIDE | 169,328 | 150,542 |
 
-## 정확한 제한 사항
+실제 전신 GLB의 기하 및 이미지 데이터를 읽은 출력으로, 생성형 이미지는 아니다.
 
-**이것은 네이티브 S2 Direct3D 9 엔진 캡처가 아니다.** 원본 S2의 실제 GPU 셰이더·조명 장면·그림자·스키닝 애니메이션을 실행하지 않았다. glTF PBR를 S2 유사 고전 조명으로 투영한 중간 비교 결과다.
+## 직접 이미지 확인으로 드러난 부족함
 
-같은 카메라 기준 CLAY/색상/노멀 적용 차이를 볼 수 있지만, 이 PNG의 외관이 곧 실제 게임 렌더 품질이나 목표 이미지의 유사도를 뜻하지 않는다. 실제 사진의 구조적 깊이 문제는 계속 모델 메시 자체에서 수정해야 한다.
+2026-11-28 생성된 `R36MM_CLAY_FRONT.png`와 `R36MM_TEXTURED_NORMAL_FRONT.png`를 비교했다. CLAY에서 삼각형의 면 경계와 팔·가슴·허벅지의 딱딱한 실루엣이 눈에 띈다. 컬러·노멀 적용 모델에서도 피부 영역의 큰 각진 명암·색상 조각이 관찰된다.
+
+이는 R36ML의 텍스처 누락 문제를 제거했지만, 네이티브 S2 수준의 외형이 달성됐다는 의미는 아니다. 현재 이 조각들이 어느 정도 **원본 컬러/AO 텍스처의 섬 간 불연속**, **정점 노멀/탄젠트 공간**, **실제 폴리곤 기하** 각각에서 발생했는지는 별도 분리가 필요하다.
+
+### 아직 네이티브와 다른 점
+
+- 원본 S2 D3D9 게임 실행이 아니라 **glTF의 재질을 CPU에서 근사한 독립 렌더링**이다.
+- 네이티브 카메라/그림자/스킨/범프셰이더와 원래 광원값을 그대로 실행하지 않았다.
+- 일부 재질 알파 BLEND는 임계값 기반 근사이며 원래 투과 혼합과 다르다.
+- 실제 물리 메시의 저폴리곤 윤곽, 표면 UV/텍스처 섬 문제는 조명만으로 해결되지 않는다.
+
+## 후속 실제 수정의 기준
+
+1. 색상 얼룩이 원본 베이스컬러, AO, 노멀맵 중 어느 데이터에서 발생했는지 모드별 캡처로 분리하고 직접 해당 자산을 수정한다.
+2. UV 경계의 물리 정점이 가지는 법선/탄젠트를 재계산해 인접 면에서 균열이 생기지 않도록 한다.
+3. 필요한 곳은 삼각형 예산 내에서 형상을 다시 배분한다.
+4. 네이티브 S2 원본 실행이 가능한 대화형 데스크톱 세션의 게임 렌더와 동일 카메라로 직접 비교한다.
+
+**현재 확인 상태: 실제 GLB 텍스처 렌더링 생성·게시 완료. 미술 품질 승인 및 네이티브 S2 동등 렌더 미완료.**
