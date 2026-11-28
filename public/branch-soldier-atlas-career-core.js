@@ -75,7 +75,7 @@ export async function loadCareerRows(modern,registry,{includeWitnesses=false,sco
   // research-line mode is for offline scheduling only, never the final UI.
   if(strict&&(!['ATLAS_CAREER_SUCCESSOR_CLOSURE_V2','ATLAS_CAREER_BODY_SCOPE_CLOSURE_V3'].includes(final?.schema)||final.sourceMetadataSha256!==metadata||final.sourceGraphSha256!==completion.researchTraitSets?.sourceGraphSha256||!Array.isArray(final.rows)||final.rows.length!==completion.rows.length||!completion.rows.every((a,i)=>a.id===final.rows[i].id&&a.closureProofHash===final.rows[i].closureProofHash)))throw Error('최종 육성 종결 판정 자료 미연결');
   const admissions=strict?completion.rows:(completion.researchLineRows||completion.rows);
-  const lineStatus=c=>['RESEARCH_LINE_COMPLETE','RESEARCH_LINE_EXPLORATION','FINAL_CAREER_COMPLETE'].includes(c?.status);
+  const lineStatus=c=>['RESEARCH_LINE_COMPLETE','RESEARCH_LINE_EXPLORATION','FINAL_CAREER_COMPLETE'].includes(c?.status)||!strict&&c?.status==='FINAL_EQUIVALENT';
   const closed=(a,routeId=a.routeId)=>{const r=final?.witnesses?.[routeId];return r?.status==='FINAL_CLOSED'&&r.pairId===a.id&&r.proofHash===a.closureProofHash&&r.actionHash===a.actionHash&&r.certificate?.graph===final.sourceGraphSha256;};
   const seen=new Set(),validBranches=new Set(registry.branches.map(b=>b.id));
   // Empty final admission index needs NO raw career ledger download/replay.
