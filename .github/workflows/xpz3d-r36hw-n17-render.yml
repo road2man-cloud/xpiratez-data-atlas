@@ -34,8 +34,8 @@ jobs:
         run: |
           node - <<'NODE'
           const fs=require('fs'),root='experimental/xpz3d/f11/r36hw-n17-center-render-20261129',r=JSON.parse(fs.readFileSync(root+'/output/R36HW_N17_RENDER.report.json','utf8'));
-          if(r.totalTriangles!==2099||r.images.length!==6||r.images.some(x=>x.bytes<4000))throw Error(JSON.stringify({triangles:r.totalTriangles,images:r.images}));
-          console.log(JSON.stringify({totalTriangles:r.totalTriangles,views:r.images.length,sha:r.sourceSHA256}));
+          if(r.totalTriangles!==2099||r.images.length!==12||r.images.some(x=>x.bytes<4000))throw Error(JSON.stringify({triangles:r.totalTriangles,images:r.images}));
+          console.log(JSON.stringify({totalTriangles:r.totalTriangles,views:r.images.length,pelvisOnly:r.images.filter(x=>x.layer).length,sha:r.sourceSHA256}));
           NODE
       - name: Publish actual close-up PNGs and render report
         run: |
