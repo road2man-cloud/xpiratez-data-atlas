@@ -1,0 +1,786 @@
+{
+  "version": 144,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFiles": {
+    "vars.rul": "aba93297c5d2aa82da08f6fb2f9d4d2f98c5f435c308fbe0594a36c5b77e168c",
+    "startingBase.rul": "33a40741e6e900e02db03248be793b6f5db91e3e298d654964fa91ba5874dbab",
+    "facilities.rul": "74620b743ede27f27e2863d073ad989cb463c23e3e7fea6e0d5d40ad92b5f5ec",
+    "items.rul": "d1cdc6021ee5ad27033a3471de53ca1807b7bf8f992cd5f38f626eb640d016ec",
+    "research.rul": "99d57c91d7fa3146449680c1c5b1c54eba595b99df8286dfbff4f2d8c51def5e",
+    "HitFX-basic.rul": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+    "Piratez_Armors.rul": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+    "Piratez_BaseNames.rul": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+    "Piratez_Bonuses.rul": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23",
+    "Piratez_Events.rul": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+    "Piratez_Factions.rul": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "Piratez_Globals.rul": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+    "Piratez_Mapscripts.rul": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+    "Piratez_Planet.rul": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "Piratez_Resources.rul": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c",
+    "Piratez_Transformations.rul": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba",
+    "Piratez_Wardrobe.rul": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503",
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+    "Recolr.rul": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+    "Shotguns_Rebalance.rul": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+    "Yankes_Scripts.rul": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+  },
+  "graphSha256": "5674ad288ea7a2f294f1ae74dc007093674e331d3d7e94d40d8c0c21f2f3b764",
+  "budget": {
+    "maxStates": 3500,
+    "maxDepth": 290,
+    "maxExpanded": 0,
+    "maxMillis": 10000,
+    "deepExpanded": 4,
+    "maxActionsPerState": 4
+  },
+  "summary": {
+    "parentCounts": {
+      "primaryStates": 2218,
+      "primaryEdges": 2226,
+      "unionResearch": 391
+    },
+    "plans": [],
+    "variantResults": [
+      {
+        "id": "hero-v144:priest",
+        "applied": 153,
+        "total": 153,
+        "reason": null,
+        "finalState": "0cfbea8a7827286930edb0aad7615a2a249c12a38591e5138608024e51003dc4",
+        "gameCertified": false,
+        "ok": true,
+        "unresolvedFree": false,
+        "stats": {
+          "tu": 80,
+          "stamina": 154,
+          "health": 89,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 175
+        },
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": null,
+        "stock": null,
+        "officerMissing": null,
+        "chaplainMissing": null,
+        "funds": null,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": null,
+        "study": null,
+        "schoolMissing": null
+      },
+      {
+        "id": "hero-v144:officer",
+        "applied": 175,
+        "total": 175,
+        "reason": null,
+        "finalState": "3f452d020689eabc9a3834dfbf9bf8e1d1c4d0603bd7d054b1dee624ea6a0cc6",
+        "gameCertified": false,
+        "ok": true,
+        "unresolvedFree": false,
+        "stats": {
+          "tu": 84,
+          "stamina": 123,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 169
+        },
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": null,
+        "stock": null,
+        "officerMissing": null,
+        "chaplainMissing": null,
+        "funds": null,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": null,
+        "study": null,
+        "schoolMissing": null
+      }
+    ],
+    "convergence": {
+      "policy": "branch-local-occult-prerequisites-v144",
+      "lanes": [
+        {
+          "lane": "gold-occult",
+          "start": "944b021b8b4f394384555e85fa66ec36cedd0881ea57026ae5c7cf79d968d1fa",
+          "end": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+          "initialVector": {
+            "tu": 84,
+            "stamina": 154,
+            "health": 91,
+            "bravery": 150,
+            "reactions": 91,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 74,
+            "psiStrength": 78,
+            "psiSkill": 50,
+            "melee": 109,
+            "mana": 176
+          },
+          "finalVector": {
+            "tu": 84,
+            "stamina": 154,
+            "health": 91,
+            "bravery": 150,
+            "reactions": 91,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 74,
+            "psiStrength": 78,
+            "psiSkill": 50,
+            "melee": 109,
+            "mana": 176
+          },
+          "initialSum": 1277,
+          "finalSum": 1277,
+          "accepted": 26,
+          "completed": [
+            "STR_WASTELAND_PRIESTESS",
+            "STR_WASTELAND_SORCERESS",
+            "STR_GODS_E2",
+            "STR_SHADOWS",
+            "STR_CLOAKING_DEVICE",
+            "STR_SHADOWTECH",
+            "STR_SHADOW_CHASING",
+            "STR_BIKES",
+            "STR_CHRONICLES_001",
+            "STR_COMMUNICATIONS",
+            "STR_MOST_COMMON_POWER",
+            "STR_WENCH_OUTFIT",
+            "STR_PERSUASION",
+            "STR_GLAMOUR_RECRUITMENT"
+          ],
+          "missing": [
+            "STR_SIVALINGA"
+          ],
+          "stock": {
+            "STR_SIVALINGA": 0,
+            "STR_MUTANT_BLESSINGS": 5,
+            "STR_GNOME": 1,
+            "STR_GLAMOUR": 0,
+            "STR_ESOTERICA": 1
+          },
+          "occultAwards": [
+            {
+              "event": "STR_BLESSINGS",
+              "script": "STR_BLESSINGS",
+              "month": 26,
+              "research": "STR_WASTELAND_PRIESTESS",
+              "eligibleResearch": [
+                "STR_WASTELAND_PRIESTESS"
+              ],
+              "reward": {
+                "STR_MUTANT_BLESSINGS": 1
+              },
+              "executionOdds": 23,
+              "interruptResearch": "STR_WASTELAND_PRIESTESS"
+            },
+            {
+              "event": "STR_WASTELAND_SORCERESS",
+              "script": "STR_WASTELAND_SORCERESS_ACCEL",
+              "month": 27,
+              "research": "STR_WASTELAND_SORCERESS",
+              "eligibleResearch": [
+                "STR_WASTELAND_SORCERESS"
+              ],
+              "reward": {
+                "STR_QUARTERSTAFF": 1,
+                "STR_MONEY_PURSE": 1,
+                "STR_ESOTERICA": 1,
+                "STR_MEDALLION": 1,
+                "STR_MAGE_ROBE": 1,
+                "STR_LINGERIE": 1
+              },
+              "executionOdds": 33,
+              "interruptResearch": "STR_WASTELAND_SORCERESS"
+            },
+            {
+              "event": "STR_GREEN_PRAYERS",
+              "script": "STR_CAPTAIN_GREEN_EVENTS_1",
+              "month": 28,
+              "research": "STR_GODS_E2",
+              "eligibleResearch": [
+                "STR_GODS_E2",
+                "STR_MYTH_003",
+                "STR_MYTH_011",
+                "STR_PINUP_131"
+              ],
+              "reward": {
+                "STR_MUTANT_BLESSINGS": 3
+              },
+              "executionOdds": 18,
+              "interruptResearch": null
+            }
+          ],
+          "history": [
+            [
+              "STR_NEPOTISM",
+              1
+            ],
+            [
+              "STR_SCHOOL_OF_HARD_KNOCKS",
+              1
+            ],
+            [
+              "STR_BASIC_FIREARMS_TRAINING",
+              1
+            ],
+            [
+              "STR_BREAD_AND_FISHES_TRAINING",
+              1
+            ],
+            [
+              "STR_OFFICER_TRAINING",
+              1
+            ],
+            [
+              "STR_PERSONAL_ATTENTION",
+              1
+            ]
+          ],
+          "gameCertified": false,
+          "registered": false
+        },
+        {
+          "lane": "reject-power-priestess",
+          "start": "e442ab0c0ec83d230171a7b33b00ba690ddd0cfd7c6a9ea4fefa9ee3f965b76b",
+          "end": "4e5d6dd8fb2073bfd707aa9263d894ff5f8780f0245dd14a368303e6087a9146",
+          "initialVector": null,
+          "finalVector": {
+            "tu": 80,
+            "stamina": 120,
+            "health": 60,
+            "bravery": 150,
+            "reactions": 80,
+            "firing": 115,
+            "throwing": 90,
+            "strength": 60,
+            "psiStrength": 75,
+            "psiSkill": 50,
+            "melee": 100,
+            "mana": 150
+          },
+          "initialSum": null,
+          "finalSum": 1130,
+          "accepted": 15,
+          "completed": [
+            "STR_REJECT_THE_POWER",
+            "STR_WASTELAND_PRIESTESS",
+            "STR_RECRUIT_PEASANTS",
+            "STR_CAPTAIN_PRIEST",
+            "STR_HERO"
+          ],
+          "missing": [],
+          "stock": {
+            "STR_SIVALINGA": 0,
+            "STR_MUTANT_BLESSINGS": 1,
+            "STR_GNOME": 0,
+            "STR_GLAMOUR": 0,
+            "STR_ESOTERICA": 0
+          },
+          "occultAwards": [
+            {
+              "event": "STR_BLESSINGS",
+              "script": "STR_BLESSINGS",
+              "month": 1,
+              "research": "STR_WASTELAND_PRIESTESS",
+              "eligibleResearch": [
+                "STR_WASTELAND_PRIESTESS"
+              ],
+              "reward": {
+                "STR_MUTANT_BLESSINGS": 1
+              },
+              "executionOdds": 23,
+              "interruptResearch": "STR_WASTELAND_PRIESTESS"
+            }
+          ],
+          "history": [],
+          "gameCertified": false,
+          "registered": false
+        }
+      ],
+      "accepted": 41,
+      "gameCertified": false,
+      "registered": false
+    },
+    "ledger": {
+      "witnesses": 62,
+      "previousWitnesses": 62,
+      "newWitnesses": 0,
+      "uniqueVectors": 8,
+      "newVectors": [],
+      "bestPermanentSum": 1277,
+      "bestTU": 84,
+      "registered": 0,
+      "gameCertified": 0
+    },
+    "lanes": [
+      "STR_OFFICER_TRAINING",
+      "STR_CHAPLAIN_TRAINING",
+      "STR_SCHOOLING_2",
+      "STR_BREAD_AND_FISHES_TRAINING"
+    ],
+    "expansionRecords": [],
+    "targets": [
+      "STR_MEDICINE",
+      "STR_SOLDIER_TYPE_SS",
+      "STR_SOLDIER_TYPE_PEA",
+      "STR_SOLDIER_TYPE_BASIC",
+      "STR_GYM_ADVANCE",
+      "STR_BOOT_CAMP_TRAINING",
+      "STR_GYMNASTICS",
+      "STR_CUISINE"
+    ],
+    "targetsReached": [
+      "STR_MEDICINE",
+      "STR_SOLDIER_TYPE_SS",
+      "STR_SOLDIER_TYPE_PEA",
+      "STR_SOLDIER_TYPE_BASIC",
+      "STR_GYM_ADVANCE",
+      "STR_BOOT_CAMP_TRAINING",
+      "STR_GYMNASTICS",
+      "STR_CUISINE"
+    ],
+    "careerProduced": 0,
+    "careerRejected": 0,
+    "careerUniqueVectors": 0,
+    "careerDeltas": [],
+    "priorStates": 2218,
+    "priorTransitions": 2226,
+    "newStates": 41,
+    "newTransitions": 41,
+    "newResearch": [
+      "AUX_BAD_TOUCH",
+      "AUX_GOOD_TOUCH",
+      "CIVILIAN_YOUNG_UBER",
+      "STR_BIKES",
+      "STR_CHRONICLES_001",
+      "STR_CINDERELLA_PROJECT_PREQ",
+      "STR_GLAMOUROUS_TRAIT",
+      "STR_GLAMOUR_RECRUITMENT",
+      "STR_MEDALLION",
+      "STR_MOST_COMMON_POWER",
+      "STR_OLD_EARTH_VOODOO",
+      "STR_PERSUASION",
+      "STR_RAIDER_BOSS_ARMOR",
+      "STR_REJECT_THE_POWER",
+      "STR_RIBBON",
+      "STR_SALVAGE",
+      "STR_SHADOWTECH",
+      "STR_SHADOW_CHASING",
+      "STR_SHADOW_CHASING_DEP",
+      "STR_WASTELAND_PRIESTESS",
+      "STR_WASTELAND_SORCERESS",
+      "STR_WENCH_OUTFIT",
+      "STR_YOUNG_UBER_RECRUITMENT"
+    ],
+    "focusReached": [
+      "STR_MEDICINE",
+      "STR_SCHOOLING_1",
+      "STR_WEIRDNESS",
+      "STR_KULTUR",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_PIRATE_STYLE",
+      "STR_PIRATE_LIFE",
+      "STR_HARDWARE_SHOPPING",
+      "STR_MEDICAL_SUPPLIES",
+      "STR_SURVIVAL",
+      "STR_SECTOWEED",
+      "STR_CRACK",
+      "STR_THE_PHARMACIST",
+      "STR_SOLDIER_TYPE_SS",
+      "STR_SLAVE_SOLDIERS",
+      "STR_SALVAGE",
+      "STR_ALIEN_ORIGINS",
+      "STR_PERSUASION",
+      "STR_HUMAN_MALE_3",
+      "STR_HUMAN_SHARP_GUY",
+      "STR_NAZI_LEADER",
+      "STR_FARMING",
+      "STR_UBER_WHEAT",
+      "STR_RECRUIT_PEASANTS",
+      "STR_INSPECT_MACHINERY",
+      "STR_CUNNING",
+      "STR_GLAMOUR",
+      "STR_MELEE_SUMMARY",
+      "STR_VIOLENCE",
+      "STR_SOLDIER_TYPE_PEA",
+      "STR_SOLDIER_TYPE_BASIC",
+      "STR_SOLDIER_TYPE_BASIC_PREQ_A",
+      "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+      "STR_SOLDIER_TYPE_BASIC_PREQ_B",
+      "STR_MUTANT_ABILITIES",
+      "STR_MUTANT_ORIGINS",
+      "STR_RECRUITMENT",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_WAT_DO",
+      "STR_GYM_ADVANCE",
+      "STR_GYMNASTICS",
+      "STR_CUISINE",
+      "STR_SKINNING",
+      "STR_PARTY_DEP",
+      "STR_BONDING_CEREMONY",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ",
+      "STR_SCI_REP",
+      "STR_DIVERGING_PATHS",
+      "STR_COMMUNICATIONS",
+      "STR_BEER",
+      "STR_MUTANT_EGG",
+      "STR_GYM_ADVANCE_PREQ",
+      "STR_OLD_BOOKS",
+      "STR_BOOT_CAMP_TRAINING",
+      "STR_CAPTAIN_JACKSORE",
+      "STR_CAPTAIN_PERSONALITY_TEST",
+      "STR_CAPTAIN_MAGE",
+      "STR_CAPTAIN_PUSSY_UP",
+      "STR_CAPTAIN_RULER",
+      "STR_CAPTAIN_UNCLASSED",
+      "STR_CAPTAIN_SOREDUMB",
+      "STR_CAPTAIN_PRIEST",
+      "STR_BASIC_FIREARMS_TRAINING",
+      "STR_PISTOLS_SUMMARY",
+      "STR_COLT45",
+      "STR_COMMANDO_PISTOL",
+      "STR_GUNS_N_AMMO",
+      "STR_SMGS_SUMMARY",
+      "STR_ASMG",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_GUN_SHOPPING",
+      "STR_RIFLES_SUMMARY",
+      "STR_DRAGOON_RIFLE",
+      "STR_AUTO_RIFLE",
+      "STR_BATTLE_RIFLE",
+      "STR_SHOTGUNS_SUMMARY",
+      "STR_COMBAT_SHOTGUN",
+      "STR_CAWS",
+      "STR_SNIPER_SUMMARY",
+      "STR_CLOCKWORK_GUN_PRODUCTION",
+      "STR_FLINTLOCKS_PRODUCTION",
+      "STR_BASIC_INCENDIARIES",
+      "STR_SMITHING",
+      "STR_BALLISTICS",
+      "STR_SPORTS_RIFLE",
+      "STR_EXPLOSIVES_SUMMARY",
+      "STR_ACID_GRENADE",
+      "STR_GAS_GRENADE",
+      "STR_FLAMETHROWER_LR",
+      "STR_GRENADE_LAUNCHER",
+      "STR_ROCKET_LAUNCHER",
+      "STR_HEAVY_WEAPONS_SUMMARY",
+      "STR_AUTO_CANNON",
+      "STR_CHAINGUN",
+      "STR_ATG_RIFLE",
+      "STR_TACTICS",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_FIREARMS_SUMMARY",
+      "STR_SMALL_RADAR_SYSTEM"
+    ],
+    "seedInputs": 23,
+    "seedTips": 19,
+    "cacheHits": 1586,
+    "successfulSeeds": 23,
+    "heroSuccessful": 22,
+    "deferredEvents": 0,
+    "expanded": 0,
+    "unexpanded": 2242,
+    "stopReason": "expansion-budget",
+    "actionsByType": {
+      "research": 1209,
+      "freeResearch": 345,
+      "manufacture": 44,
+      "eventResearch": 63,
+      "recruit": 6,
+      "conditionalCapGrowth": 20,
+      "conditionalPromotion": 39,
+      "transform": 95,
+      "repeatResearch": 40,
+      "conditionalDistressWithCaptive": 12,
+      "advanceMonth": 60,
+      "conditionalBountyWithCaptives": 12,
+      "conditionalMedicalEventBundle": 36,
+      "acquireFacility": 27,
+      "conditionalMonthlyHarvest": 156,
+      "conditionalBountyExchange": 24,
+      "conditionalMonthlyDiskSupply": 20,
+      "conditionalGoldSale": 6,
+      "conditionalBookEvent": 13,
+      "acquirePurchase": 24,
+      "sourceBoundBaseFunctions": 3,
+      "conditionalCostedGym": 2,
+      "conditionalTrainingEventReward": 2,
+      "conditionalExpeditionManufacture": 2,
+      "conditionalGnomeEvent": 1,
+      "conditionalPriestSupply": 2,
+      "conditionalOccultAward": 4
+    },
+    "researchByAction": {
+      "research": 231,
+      "freeResearch": 175,
+      "eventResearch": 14,
+      "conditionalOccultAward": 3
+    },
+    "seeds": [
+      {
+        "id": "gold-v3:STR_CODEX_GOLD",
+        "ok": true,
+        "applied": 25,
+        "total": 25,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:4a26d6f9e65bfe802f0b27512b4b5df2810ca848551a4ebcee92dd9fced110af",
+        "ok": true,
+        "applied": 88,
+        "total": 88,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:f06b19db7ac679d6981e824cfcc0dd1f43b1421a3014cde829c8d2aa68944eb7",
+        "ok": true,
+        "applied": 88,
+        "total": 88,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:049065f32f51c58e91dd43307dc37c7b2b29fc80f5df6986624131d57622dbc7",
+        "ok": true,
+        "applied": 79,
+        "total": 79,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:7ee3c14250481a3dfd7846da9a480ec561f9f8fea68583d11f7c6f15ab2d5cb0",
+        "ok": true,
+        "applied": 79,
+        "total": 79,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:4a69e61531698bb53c86dfc1006ef4b5861ee4e8213b37ec2aca9158cc32edce",
+        "ok": true,
+        "applied": 78,
+        "total": 78,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:bc9a593d79bbc45188052cb8de595b0837d0c219a3d9058df30d51469dd0f74f",
+        "ok": true,
+        "applied": 78,
+        "total": 78,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:e45a134f4962faa109d992db8cda154671d3504d5bffa5041a5cdd31a1024fd0",
+        "ok": true,
+        "applied": 78,
+        "total": 78,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:4265d53571ef55f35d2fc44ec11edce463d2b87607ad7a10a95b5c36fbec5b13",
+        "ok": true,
+        "applied": 74,
+        "total": 74,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:5a2078717f75a170e5fecc9bd97cd23b8b0c24ed8c5509dc8c6498e5c03c2a28",
+        "ok": true,
+        "applied": 52,
+        "total": 52,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:ce9147eee8fdf72630e13ca1c2bfcb079f5efd936f8b3ba670a54e3bcd8945a7",
+        "ok": true,
+        "applied": 52,
+        "total": 52,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:0443307279d169619f12a3723cc13dfb9568ec5091c71f2ac7df898c3dc98e7a",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:1cd1d7603c01121b899e7d5be20d82bffccfbb89fe4e3453563e344bca960022",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:406cefe8dc7e8e9983ace9dafbb71c62e8309572ee958c337ef478f2f8cac0b4",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:de320589dbd7cb8b734fb73d4ae0ff7b013dce74e15d457aa7a22eefc52a96e1",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+        "ok": true,
+        "applied": 48,
+        "total": 48,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+        "ok": true,
+        "applied": 46,
+        "total": 46,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+        "ok": true,
+        "applied": 42,
+        "total": 42,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:a4a3c2e0f21404e4b9dcb2fc2e17a4b42c98a6aab5f5ed2f7d8feb61d9bbd815",
+        "ok": true,
+        "applied": 41,
+        "total": 41,
+        "reason": null
+      },
+      {
+        "id": "hero-v144:priest",
+        "ok": true,
+        "applied": 153,
+        "total": 153,
+        "reason": null
+      },
+      {
+        "id": "hero-v144:officer",
+        "ok": true,
+        "applied": 175,
+        "total": 175,
+        "reason": null
+      }
+    ],
+    "states": 2259,
+    "transitions": 2267,
+    "frontier": 4261,
+    "rejected": 0,
+    "distinctCompleted": 414,
+    "maxDepth": 222,
+    "rootActions": [
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        "added": [],
+        "availableAfter": [],
+        "pendingFree": {
+          "source": "STR_INSPECT_MACHINERY",
+          "choices": [
+            "STR_WELL"
+          ],
+          "sequential": false,
+          "phase": "before-source"
+        }
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        "added": [],
+        "availableAfter": [],
+        "pendingFree": {
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "choices": [
+            "CIV_ARMOR_LOKNAR_1"
+          ],
+          "sequential": false,
+          "phase": "before-source"
+        }
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        "added": [
+          "STR_PEASANTS_ZZZ",
+          "STR_RECRUIT_PEASANTS"
+        ],
+        "availableAfter": [
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_UBER_WHEAT",
+          "STR_WAT_DO"
+        ],
+        "pendingFree": null
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        "added": [
+          "STR_PIRATE_LIFE",
+          "STR_WAT_DO"
+        ],
+        "availableAfter": [
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_LOOT_DISTRIBUTION",
+          "STR_PIRATE_STYLE",
+          "STR_QUESTION_OF_DRILL",
+          "STR_RECRUIT_PEASANTS"
+        ],
+        "pendingFree": null
+      }
+    ],
+    "gameCertified": 0,
+    "complete": false,
+    "scope": "conditional lab, free awards, source-gated supplies and events; conditional encounter and rank witnesses; no native economy, calendar or combat certification"
+  }
+}
