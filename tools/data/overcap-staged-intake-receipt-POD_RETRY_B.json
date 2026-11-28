@@ -1,0 +1,41 @@
+{
+  "schema": "ATLAS_OVERCAP_STAGED_GRAPH_INTAKE_V1",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "baseGraphHash": "290e9be3bd39a51c973ad183e1b2a86331c1bba936910b27f32cf56154bacc92",
+  "baseStage": "POD_RETRY_A",
+  "sourceGraphSha256": "ca1007dfc5bddb9465b9555e6bb9dc36349ae307b08578e39a998b3324aa7bdd",
+  "patchHash": "9d2c01efe6ab8c8d3e5e79f33ed98604d9731372c3315990a413d45c1994cc46",
+  "before": {
+    "graphs": 342,
+    "routes": 7433,
+    "states": 9866,
+    "researchNodes": 123782,
+    "actionNodes": 231212
+  },
+  "after": {
+    "graphs": 343,
+    "routes": 7457,
+    "states": 9890,
+    "researchNodes": 123789,
+    "actionNodes": 231881
+  },
+  "added": {
+    "graphs": 1,
+    "routes": 24,
+    "states": 24,
+    "researchNodes": 7,
+    "actionNodes": 669
+  },
+  "replayedEndpoints": [
+    "MISSCAR:391d06ced6c87380727a51a74261261be2e6f285cdc541ae92c7c09847217da0:125",
+    "MISSCAR:c20ef1e53da0b42ddd8503e18f4ae80dc8b4c1ab072c6bdbf3abe5ea50ffe6e7:23"
+  ],
+  "publicRegistryChanged": false,
+  "officialFinal": 0,
+  "materialPolicy": "V.O2_INDEXED_FINITE_POOLS",
+  "stagedFiles": [
+    "soldier-population-missing-origin-career.json.gz",
+    "soldier-population-missing-origin-career-index.json.gz"
+  ],
+  "blocker": "Official publication must use a current v.o2 material policy and successor-closure gate; do not publish these staged files alone."
+}

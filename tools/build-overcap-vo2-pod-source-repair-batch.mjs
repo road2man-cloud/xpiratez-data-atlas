@@ -43,7 +43,10 @@ const rows=db.careerCompletion.rows.filter(r=>prior.priorMaterialIssues.some(x=>
 const offset=Number(process.argv.find(x=>x.startsWith("--offset="))?.slice(9)||0),limit=Number(process.argv.find(x=>x.startsWith("--limit="))?.slice(8)||1);
 assert(Number.isSafeInteger(offset)&&offset>=0&&Number.isSafeInteger(limit)&&limit>0);
 const jobs=rows.flatMap(row=>[row,...(row.alternatives||[])].map(ref=>({row,ref})));
-const file="tools/data/overcap-vo2-pod-source-repair-"+offset+"-"+limit+".json";
+const retry=Number(process.argv.find(x=>x.startsWith("--retry="))?.slice(8)||(process.argv.includes("--retry")?1:0));
+assert(Number.isSafeInteger(retry)&&retry>=0);
+const file="tools/data/overcap-vo2-pod-source-repair-"+offset+"-"+limit+(retry?"-retry-v"+retry:"")+".json";
+if(fs.existsSync(file))throw Error("Refusing to overwrite an existing repair batch: "+file);
 for(const {row,ref} of jobs.slice(offset,offset+limit)){
  const id=ref.routeId,r=ledger.routes[id],b=branches.get(r.branch),old=sequence(r),receipt={priorPair:row.id,priorRoute:id,origin:r.origin,body:r.body,branch:r.branch};
  try{
@@ -108,17 +111,30 @@ for(const {row,ref} of jobs.slice(offset,offset+limit)){
   for(const k of ["body","raw","capRaw","permanentVector","permanentCapVector","rank","medals"])assert.deepEqual(f[k],oldFinish[k],"Changed endpoint "+k);
   assert.deepEqual([...s.bonusCounts].sort(),[...o.bonusCounts].sort());
   assert.deepEqual([...s.history].sort(),[...o.history].sort());
-  assert([...original.researched].every(k=>w.researched.has(k)),"Old research removed");
+  const missingOld=sort([...original.researched].filter(k=>!w.researched.has(k)));
+  // A replacement path may consume the temporary green-drill recipe gate
+  // through its actual successor research. No other lost topic is allowed.
+  // Keep the explicit research/disable chronology in the new pair identity.
+  const retiredResearch=[];
+  for(const k of missingOld){
+   const rule=data.researchRules[k],retire=data.researchRules[VENT];
+   const i=inserted.findIndex(a=>a.type==="research"&&a.id===VENT);
+   assert(k===DEP&&active(original,k)&&w.disabled.has(k)&&active(w,VENT)&&i>=0&&retire.disables.includes(k)&&rule.cost===0&&!rule.requires.length&&recipe.requires.includes(k)&&manufacture?.activePrerequisites.includes(k),"Old research removed: "+JSON.stringify({id:k,disabled:w.disabled.has(k),rule,oldActions:old.filter(a=>a.id===k||a.research===k||a.source===k)}));
+   const pre=old.slice(0,at).concat(inserted.slice(0,i)),before=replay.replay(pre);
+   assert(active(before,k)&&active(before,GREEN)&&before.items[VENT]>0);
+   const after=replay.apply(before,inserted[i]);assert(after.disabled.has(k)&&!after.researched.has(k)&&active(after,VENT));
+   retiredResearch.push({id:k,retiredBy:VENT,ruleHash:key(retire),temporaryRuleHash:key(rule),recipe:recipe.id,recipeHash:key(recipe),before:exactWorld(before),after:exactWorld(after),oldState:"ACTIVE",newState:"DISABLED",scope:"RECIPE_GATE_CONSUMED_BY_ACTUAL_SOURCE_RESEARCH"});
+  }
   const m=policy.extend(policy.empty(),actions),issues=policy.issues(m);assert.deepEqual(issues,{hard:[],uncertain:[]});
   assert.equal(exactWorld(replay.replay(actions)),exactWorld(w));
   const q=scope.assess({body:f.body,history:new Set(s.history.keys()),historyKnown:s.historyKnown===true,active:new Set([...w.researched].filter(k=>active(w,k))),raw:f.raw,capRaw:f.capRaw,finite:policy.describe().finite,consumed:m.consumed},b,w);
   const path=actions.filter(a=>["research","repeatResearch","freeResearch","eventResearch","missionResearch"].includes(a.type));
   const pathId=key([path,sort(w.researched),sort(w.disabled)]),traitId=key(Object.fromEntries([...s.bonusCounts].sort(([a],[b])=>a.localeCompare(b))));
   const pairId=key([r.origin,r.branch,r.body,r.allowedDifficulties,pathId,traitId]);
-  records.push({...receipt,id:"VO2-POD-REPAIR:"+key(actions),actions,actionHash:key(actions),stateHash:exactWorld(w),pairId,pathId,traitId,oldPairId:row.id,addedResearch:sort([...w.researched].filter(k=>!original.researched.has(k))),addedDisabled:sort([...w.disabled].filter(k=>!original.disabled.has(k))),inserted,skipped,manufacture,sourceAssumptions,material:{...m,issues},endpoint:{raw:f.raw,cap:f.permanentCapVector,permanent:f.permanentVector,traits:[...s.bonusCounts].sort(),rank:f.rank,medals:f.medals},scope:{closed:q.closed,open:q.open,missingResearch:q.missingResearch,unknownRules:q.unknownRules,openGrowth:q.openGrowth},targetGoals:originalGoals,status:"REPLAYED_REPLACEMENT_CANDIDATE",finalAdmission:false,actualGameCertified:false});
+  records.push({...receipt,id:"VO2-POD-REPAIR:"+key(actions),actions,actionHash:key(actions),stateHash:exactWorld(w),pairId,pathId,traitId,oldPairId:row.id,addedResearch:sort([...w.researched].filter(k=>!original.researched.has(k))),addedDisabled:sort([...w.disabled].filter(k=>!original.disabled.has(k))),retiredResearch,inserted,skipped,manufacture,sourceAssumptions,material:{...m,issues},endpoint:{raw:f.raw,cap:f.permanentCapVector,permanent:f.permanentVector,traits:[...s.bonusCounts].sort(),rank:f.rank,medals:f.medals},scope:{closed:q.closed,open:q.open,missingResearch:q.missingResearch,unknownRules:q.unknownRules,openGrowth:q.openGrowth},targetGoals:originalGoals,status:"REPLAYED_REPLACEMENT_CANDIDATE",finalAdmission:false,actualGameCertified:false});
  }catch(e){errors.push({...receipt,reason:String(e.message)});}
 }
 const summary={priorPairs:rows.length,attempted:records.length+errors.length,replayed:records.length,recoveredPriorPairs:new Set(records.map(r=>r.priorPair)).size,newChronologicalPairs:new Set(records.map(r=>r.pairId)).size,closureCandidates:records.filter(r=>r.scope.closed).length,errors:errors.length,officialFinalAdded:0};
 const out={schema:"ATLAS_VO2_POD_SOURCE_REPAIR_V1",sourceMetadataSha256:ledger.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,materialBudgetHash:policy.describe().sha256,sourceRuleHashes:{recipe:key(recipe),tension:key(e1),reward:key(e2),sample:key(data.researchRules[POD])},scope:"Conditional replacement paths; explicit event replay and conditional manufacture inputs. No actual-game acquisition, full economy, official final admission, or identical old research path claimed.",summary,records,errors};
-out.batch={offset,limit,total:jobs.length};fs.writeFileSync(file,JSON.stringify(out)+"\n");
+out.batch={offset,limit,total:jobs.length,...(retry?{retry}:{})};fs.writeFileSync(file,JSON.stringify(out)+"\n");
 console.log(JSON.stringify({file,summary,errors,records:records.map(r=>({prior:r.priorPair,body:r.body,pair:r.pairId,closed:r.scope.closed,added:r.addedResearch,open:r.scope.open.map(x=>x.id)}))},null,2));

@@ -21,7 +21,9 @@ const read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=p=>fs.existsSync(p)?fs.readFileSync(p):execFileSync("git",["show","HEAD:"+p],{maxBuffer:256*1024*1024});
 const decode=p=>JSON.parse(gunzipSync(bytes(p)));
 const sort=x=>[...x].sort(), researchKinds=new Set(["research","repeatResearch","freeResearch","eventResearch","missionResearch"]);
-const cycleMode=process.argv.includes("--cycle");
+const cycleMode=process.argv.includes("--cycle"),includeDirect=process.argv.includes("--include-direct");
+const intakeVersion=Number(process.argv.find(a=>a.startsWith("--intake="))?.slice(9)||(cycleMode?2:1));
+assert(Number.isSafeInteger(intakeVersion)&&intakeVersion>=1&&(!includeDirect||cycleMode));
 const baseStage=process.argv.find(a=>a.startsWith("--base-stage="))?.slice(13)||(cycleMode?"POD_REPAIR":"CHORT");
 const body=process.argv.find(a=>a.startsWith("--body="))?.slice(7)||(cycleMode?"POD_CYCLE":"POD_REPAIR");
 assert(/^[A-Z0-9_]+$/.test(body)&&/^[A-Z0-9_]+$/.test(baseStage)&&body!==baseStage);
@@ -32,13 +34,14 @@ const db=hydrateSharedCareerSections(hydrateResearchPaths(decode("public/data/br
 const data=read("public/data/soldiers-modern-index.json"),catalog=read("public/data/soldier-source-catalog.json");
 data.originRows=read("public/data/soldier-acquisition-progression-20261102.json").rows;
 data.sourceItemIds=new Set(catalog.itemIds);
-const intake=read("tools/data/overcap-vo2-pod-repair-intake"+(cycleMode?"-v2":"")+".json");
+const intake=read("tools/data/overcap-vo2-pod-repair-intake"+(intakeVersion===1?"":"-v"+intakeVersion)+".json");
 const metadata=data.meta.source.metadataSha256;
 assert.equal(data.meta.mod.version,"v.o2");assert.equal(catalog.sourceVersion,"v.o2");
 assert.deepEqual(catalog.sourceHashes,data.meta.source.rules);
 for(const x of [ledger,index,db,intake])assert.equal(x.sourceMetadataSha256,metadata);
 assert.equal(key(ledger.graphs),ledger.sourceGraphSha256);
 assert.equal(index.sourceGraphSha256,ledger.sourceGraphSha256);
+const alreadyIntaken=new Set();
 if(cycleMode){
  const root=read("tools/data/overcap-staged-intake-receipt-CHORT.json");
  assert.equal(intake.sourceGraphSha256,root.sourceGraphSha256);
@@ -48,6 +51,7 @@ if(cycleMode){
   assert(!seen.has(stageName)&&/^[A-Z0-9_]+$/.test(stageName));seen.add(stageName);
   const r=read("tools/data/overcap-staged-intake-receipt-"+stageName+".json");
   assert.equal(r.sourceGraphSha256,expected);assert.equal(r.sourceMetadataSha256,metadata);
+  const pp=read("tools/data/overcap-canonical-graph-patch-"+stageName+".json");assert.equal(key(pp),r.patchHash);for(const rr of pp.receipts)alreadyIntaken.add(rr.candidate);
   expected=r.baseGraphHash;stageName=r.baseStage;
  }
  assert.equal(expected,root.sourceGraphSha256);
@@ -61,8 +65,8 @@ const targets=new Map(db.careerCompletion.terminalRule.targets.map(t=>[t.id,t]))
 const cycleProofs=new Map(),cycleSources=[];
 let candidateRows=intake.closedCandidates.flatMap(g=>g.witnesses);
 if(cycleMode){
- const rootSeeds=new Map(intake.openSuccessorQueue.map(r=>[r.id,r])),all=[];
- const names=fs.readdirSync("tools/data").filter(n=>/^overcap-vo2-pod-cycle-v2-\d+-\d+\.json$/.test(n)).sort((a,b)=>Number(a.split("-").at(-2))-Number(b.split("-").at(-2)));
+ const rootSeeds=new Map(intake.openSuccessorQueue.map(r=>[r.id,r])),all=includeDirect?candidateRows.filter(r=>!alreadyIntaken.has(r.id)):[];
+ const names=fs.readdirSync("tools/data").filter(n=>new RegExp("^overcap-vo2-pod-cycle-v"+intakeVersion+"-\\d+-\\d+\\.json$").test(n)).sort((a,b)=>Number(a.split("-").at(-2))-Number(b.split("-").at(-2)));
  for(const name of names){
   const d=read("tools/data/"+name);
   assert.equal(d.schema,"ATLAS_VO2_POD_CYCLE_PRODUCTION_V1");assert.equal(d.sourceQueueHash,key(intake));assert.equal(d.sourceGraphSha256,intake.sourceGraphSha256);assert.equal(d.sourceMetadataSha256,metadata);assert.equal(d.materialBudgetHash,budget.sha256);
@@ -70,7 +74,7 @@ if(cycleMode){
   for(const r of d.records.filter(r=>r.closureReady&&r.cycleProof)){
    const seed=rootSeeds.get(r.parentId);assert(seed&&key(seed)===key(r.seed));
    assert.equal(seed.actionHash,r.actionHash);assert.equal(seed.stateHash,r.stateHash);assert.equal(seed.pairId,r.pairId);assert.equal(key(r.cycleProof),r.cycleProofHash);assert(r.cycleProof.allSuccessorsCovered);
-   assert(!cycleProofs.has(seed.id));cycleProofs.set(seed.id,r);all.push(seed);
+   assert(!cycleProofs.has(seed.id));cycleProofs.set(seed.id,r);if(!alreadyIntaken.has(seed.id))all.push(seed);
   }
   cycleSources.push({name,hash:key(d)});
  }
@@ -132,6 +136,14 @@ for(const r of candidateRows){
   for(const x of r.skipped)assert.deepEqual(old[x.index],x.action);
   const rebuilt=[...old.slice(0,insertion),...r.inserted,...old.slice(insertion).filter((_,i)=>!skipped.has(i+insertion))];
   assert.deepEqual(rebuilt,r.actions);
+  for(const t of r.retiredResearch||[]){
+   assert(t.id==="STR_TINY_DRILL_INVESTIGATION_DEP"&&t.retiredBy==="STR_VENTURA_ANOMALY");
+   const rule=data.researchRules[t.retiredBy],temporary=data.researchRules[t.id],recipe=data.itemSupply[t.retiredBy].manufacture.find(x=>x.id===t.recipe);
+   assert.equal(key(rule),t.ruleHash);assert.equal(key(temporary),t.temporaryRuleHash);assert.equal(key(recipe),t.recipeHash);assert(rule.disables.includes(t.id)&&temporary.cost===0&&recipe.requires.includes(t.id));
+   const j=r.inserted.findIndex(x=>x.type==="research"&&x.id===t.retiredBy);assert(j>=0);
+   const before=replay.replay(old.slice(0,insertion).concat(r.inserted.slice(0,j)));assert.equal(exactWorld(before),t.before);assert(active(before,t.id)&&before.items[t.retiredBy]>0);
+   const after=replay.apply(before,r.inserted[j]);assert.equal(exactWorld(after),t.after);assert(after.disabled.has(t.id)&&!after.researched.has(t.id)&&active(after,t.retiredBy));
+  }
   const a=r.actions,ctx=auditOriginCampaignContext(a,data);
   assert.equal(ctx.kind,"compatible");assert.deepEqual(ctx.allowedDifficulties,prior.allowedDifficulties);
   const shift=k=>k+(insertion<k?r.inserted.length:0)-[...skipped].filter(i=>i<k).length;
@@ -166,7 +178,7 @@ for(const r of candidateRows){
   assert.deepEqual(f.permanentVector,r.endpoint.permanent);assert.deepEqual([...s.bonusCounts].sort(),r.endpoint.traits);assert.deepEqual(f.medals,r.endpoint.medals);
   const m=materialState(a),inputs={body:r.body,history:new Set(s.history.keys()),historyKnown:s.historyKnown===true,active:new Set(ac),raw:f.raw,capRaw:f.capRaw,finite:budget.finite,consumed:m.consumed},q=scope.assess(inputs,b,w);
   let cycle=null;
-  if(cycleMode){
+  if(cycleProofs.has(r.id)){
    const proof=cycleProofs.get(r.id);assert(proof&&q.possibleExact&&!q.openGrowth);
    cycle=scope.proveCapCycle(inputs,b,w);
    assert(cycle&&cycle.allSuccessorsCovered&&key(cycle)===proof.cycleProofHash,"Cycle did not independently reproduce");
@@ -184,11 +196,11 @@ for(const r of candidateRows){
    const tr={graph:gid,origin:g.origin,branch:g.branch,target:k,node:z.node,to:z.node,attempt:1,roundToken:key([ledger.sourceGraphSha256,key(intake)]),status:"CONDITIONAL_TARGET_RESEARCH_READY",added:[],missingItems:z.missingItems,inactiveGoals:[]};
    if(!ledger.terminalResearch.records[tk])terminalRecords[tk]=tr;
   }
-  receipts.push({candidate:r.id,priorPair:r.priorPair,priorRoute:r.priorRoute,expectedPair:r.pairId,routeId:endRid,rootRouteId:rootRid,graph:gid,node:parent,actionHash:r.actionHash,stateHash:exactWorld(w),sourceAssumptions:r.sourceAssumptions,manufacture:r.manufacture,material:m,replayedScope:{closed:q.closed||!!cycle,openRules:cycle?[]:q.open.map(x=>x.id),missingResearch:cycle?[]:q.missingResearch,unknownRules:q.unknownRules,openGrowth:q.openGrowth,blocked:q.blocked,repeats:q.repeats,...(cycle?{cycleProofHash:key(cycle),cycleStates:cycle.states.length,cycleEdges:cycle.edges.length,cycleProof:cycle}:{})},status:"CANONICAL_GRAPH_PATCH_READY",officialFinal:false});
+  receipts.push({candidate:r.id,priorPair:r.priorPair,priorRoute:r.priorRoute,expectedPair:r.pairId,routeId:endRid,rootRouteId:rootRid,graph:gid,node:parent,actionHash:r.actionHash,stateHash:exactWorld(w),sourceAssumptions:r.sourceAssumptions,manufacture:r.manufacture,...(r.retiredResearch?.length?{retiredResearch:r.retiredResearch}:{}),material:m,replayedScope:{closed:q.closed||!!cycle,openRules:cycle?[]:q.open.map(x=>x.id),missingResearch:cycle?[]:q.missingResearch,unknownRules:q.unknownRules,openGrowth:q.openGrowth,blocked:q.blocked,repeats:q.repeats,...(cycle?{cycleProofHash:key(cycle),cycleStates:cycle.states.length,cycleEdges:cycle.edges.length,cycleProof:cycle}:{})},status:"CANONICAL_GRAPH_PATCH_READY",officialFinal:false});
  }catch(e){errors.push({candidate:r.id,priorPair:r.priorPair,reason:String(e.message)});}
 }
 const summary={inputs:candidateRows.length,replayed:receipts.length,uniqueEndpointRoutes:new Set(receipts.map(r=>r.routeId)).size,newGraphs:Object.values(graphChanges).filter(x=>x.priorGraphHash===null).length,changedGraphs:Object.keys(graphChanges).length,newRoutes:Object.keys(routes).length,newResearchTrieNodes:nodes.length-index.nodes.length,newActionTrieNodes:actionNodes.length-index.actionNodes.length,candidateClosure:receipts.filter(r=>r.replayedScope.closed).length,errors:errors.length,officialFinal:0};
-const out={schema:"ATLAS_OVERCAP_CANONICAL_GRAPH_PATCH_V1",sourceMetadataSha256:metadata,baseGraphHash:ledger.sourceGraphSha256,baseLedgerSchema:ledger.schema,baseCommit:execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),sourceIntakeHash:key(intake),...(cycleMode?{cycleSources,baseStage}:{}),sourceMaterialHash:budget.sha256,sourceCatalogHash:key(catalog),projectionMaterialPolicy:"V.O2_INDEXED_FINITE_POOLS",baseTrie:{researchCount:index.nodes.length,researchHash:key(index.nodes),actionCount:index.actionNodes.length,actionHash:key(index.actionNodes)},summary,graphChanges,routes,indexRoutes,terminalRecords,researchNodes:nodes.slice(index.nodes.length),actionNodes:actionNodes.slice(index.actionNodes.length),receipts,errors};
+const out={schema:"ATLAS_OVERCAP_CANONICAL_GRAPH_PATCH_V1",sourceMetadataSha256:metadata,baseGraphHash:ledger.sourceGraphSha256,baseLedgerSchema:ledger.schema,baseCommit:execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),sourceIntakeHash:key(intake),...(cycleMode?{cycleSources,baseStage,intakeVersion,includeDirect}:{}),sourceMaterialHash:budget.sha256,sourceCatalogHash:key(catalog),projectionMaterialPolicy:"V.O2_INDEXED_FINITE_POOLS",baseTrie:{researchCount:index.nodes.length,researchHash:key(index.nodes),actionCount:index.actionNodes.length,actionHash:key(index.actionNodes)},summary,graphChanges,routes,indexRoutes,terminalRecords,researchNodes:nodes.slice(index.nodes.length),actionNodes:actionNodes.slice(index.actionNodes.length),receipts,errors};
 const file="tools/data/overcap-canonical-graph-patch-"+body+".json";
 fs.writeFileSync(file,JSON.stringify(out)+"\n");
 console.log(JSON.stringify({file,summary,receipts:receipts.map(r=>({candidate:r.candidate,routeId:r.routeId,closed:r.replayedScope.closed,open:r.replayedScope.openRules})),errors},null,2));
