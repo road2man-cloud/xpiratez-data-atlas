@@ -10,20 +10,23 @@ const arr=x=>Array.isArray(x)?x:[];
 const canon=x=>x instanceof Set?[...x].sort().map(canon):x instanceof Map?Object.fromEntries([...x.entries()].sort(([a],[b])=>String(a).localeCompare(String(b))).map(([k,v])=>[k,canon(v)])):Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>createHash('sha256').update(JSON.stringify(canon(x))).digest('hex');
 const diff=(a,b)=>[...a].filter(x=>!b.has(x)).sort();
-export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false}={}){
+export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null}={}){
  if(!Number.isSafeInteger(maxDepth)||maxDepth<1||maxDepth>50||!Number.isSafeInteger(maxNodes)||maxNodes<5||maxNodes>100000)throw Error('invalid-forward-bounds');
  const initial=campaignStartWorld(data,snapshot);
  if(initial.researched.size||initial.disabled.size||initial.pendingFree)throw Error('nonempty-forward-root');
  const nodes=[],worlds=[],edges=[],index=new Map();
  const sampleRules=samplePurchases?Object.entries(data.researchRules).filter(([,r])=>r.needItem&&r.cost>0&&!arr(r.requires).length):[];
- const policy={eventRoutes,samplePurchases,fixedItems,construction,manufacturing,missions};
+ if(!['all','research'].includes(manufactureFocus))throw Error('unknown-manufacture-focus');
+ const policy={eventRoutes,samplePurchases,fixedItems,construction,manufacturing,missions,manufactureFocus,fixedEventFilter};
+ const sampleTargets=Object.entries(data.researchRules).filter(([,r])=>r.needItem&&r.cost>0&&!arr(r.requires).length);
+ const sampleIds=new Set(sampleTargets.map(([id,r])=>r.neededItem||id));
  const recipes=manufacturing?Object.entries(data.campaignAssets?.deterministicManufacture||{}).sort(([a],[b])=>a.localeCompare(b)):[];
  const lootRoutes=missions?Object.entries(data.campaignAssets?.missionLoot||{}).flatMap(([item,routes])=>routes.map(route=>({item,route}))):[];
  // Deduplicate bundle routes: one event pays the entire bundle once.
  const bundles=new Map();
  if(fixedItems)for(const routes of Object.values(data.campaignAssets?.fixedItemEvents||{}))for(const route of routes){
   const key=JSON.stringify([route.event,route.script.script]);
-  if(!bundles.has(key))bundles.set(key,route);
+  if((!fixedEventFilter||fixedEventFilter.includes(route.event))&&!bundles.has(key))bundles.set(key,route);
  }
  const buildings=construction?Object.entries(facilityRules(data)).filter(([,r])=>arr(r.provideBaseFunc).length):[];
  const active=(w,id)=>w.researched.has(id)&&!w.disabled.has(id);
@@ -50,7 +53,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  if(resume){
   if(resume.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||resume.sourceMetadataSha256!==snapshot.sourceFingerprint||
    resume.difficulty!==snapshot.difficulty||!eq(resume.regions,snapshot.regions??null)||!eq(resume.countries,snapshot.countries??null)||
-   !eq(resume.limits?.captainEvent??null,captainEvent)||!eq({eventRoutes:[],samplePurchases:false,fixedItems:false,construction:false,manufacturing:false,missions:false,...resume.limits?.policy},policy)||maxDepth<resume.limits.maxDepth||maxNodes<resume.nodes.length)
+   !eq(resume.limits?.captainEvent??null,captainEvent)||!eq({eventRoutes:[],samplePurchases:false,fixedItems:false,construction:false,manufacturing:false,missions:false,manufactureFocus:'all',fixedEventFilter:null,...resume.limits?.policy},policy)||maxDepth<resume.limits.maxDepth||maxNodes<resume.nodes.length)
    throw Error('forward-resume-identity-mismatch');
   if(!Array.isArray(resume.nodes)||!Array.isArray(resume.edges)||!resume.nodes.length)throw Error('forward-resume-invalid');
   const parents=new Map();
@@ -129,6 +132,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
    if(manufacturing)for(const [recipe,r] of recipes){
     if(w.forwardManufactureCounts?.[recipe]||!r.requires.every(k=>active(w,k))||!r.functions.every(k=>w.baseFunctions.has(k))||w.funds<r.cost)continue;
     if(Object.entries(r.materials).some(([k,v])=>(w.items[k]||0)<v))continue;
+    if(manufactureFocus==='research'&&!Object.keys(r.outputs).some(item=>sampleIds.has(item)&&!(w.items[item]>0)))continue;
     actions.push({type:'manufactureBundle',recipe,count:1});
    }
    if(missions)for(const {item,route} of lootRoutes){
@@ -174,8 +178,8 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  return {schema:'ATLAS_CAMPAIGN_FORWARD_TREE_V1',scope,
   difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null,sourceMetadataSha256:snapshot.sourceFingerprint,
   limits:{maxDepth,maxNodes,depthUnit:'actions',captainEvent:captainEvent??null,policy},
-  excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants',construction?'alternative facility placements, replacements, funding and full calendar':'facility construction',fixedItems?'events outside selected fixed bundles and research routes':'events outside selected routes',missions?'missions outside indexed fixed loot; tactical victory, transport and recovery':'mission rewards',manufacturing?'repeat batches, special/random recipes and manufacturing workforce/calendar':'manufacturing','native research duration and event scheduler','economy and full base simulation'],
+  excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants',construction?'alternative facility placements, replacements, funding and full calendar':'facility construction',fixedItems?'events outside selected fixed bundles and research routes':'events outside selected routes',missions?'missions outside indexed fixed loot; tactical victory, transport and recovery':'mission rewards',manufacturing?'repeat batches, special/random recipes and manufacturing workforce/calendar':'manufacturing','native research duration and event scheduler','economy and full base simulation',...(manufactureFocus==='research'?['manufacturing without a currently missing research sample; intermediate material chains not exhaustive']:[]),...(fixedEventFilter?['fixed events outside selected filter']:[])],
   initialMenu:nodes[0].availableResearch,firstBranches,nodes,edges,
   continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume)}:null,
-  summary:{indexedDeterministicRecipes:recipes.length,indexedMissionLootRoutes:lootRoutes.length,actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
+  summary:{manufactureResearchUnlockEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&e.newlyAvailable.length).length,indexedDeterministicRecipes:recipes.length,indexedMissionLootRoutes:lootRoutes.length,actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
 }
