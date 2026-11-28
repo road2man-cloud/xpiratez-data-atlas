@@ -1,0 +1,358 @@
+{
+  "schema": "xpz3d.r138g.native_s2_palette/v2",
+  "sourceGLBSHA256": "9b8e98cc88ee4cd78ec1394674c8fdd96efaad4d362b1588a9c4ba8bf11ef524",
+  "packetSHA256": "cef088fa3a8e81a3722f1a0988df5158c8a5c216c310674e420ee9b4f2cc344f",
+  "packetBytes": 76016,
+  "triangles": 2100,
+  "groups": 24,
+  "imagesDecoded": 3,
+  "materialAudit": [
+    {
+      "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+      "material": "face",
+      "kind": 2,
+      "triangles": 644,
+      "texture": false,
+      "paletteGroups": 4,
+      "meanColor": [
+        139,
+        90,
+        47
+      ]
+    },
+    {
+      "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+      "material": "hair",
+      "kind": 1,
+      "triangles": 294,
+      "texture": true,
+      "paletteGroups": 4,
+      "meanColor": [
+        135,
+        92,
+        62
+      ]
+    },
+    {
+      "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+      "material": "hardware",
+      "kind": 5,
+      "triangles": 12,
+      "texture": false,
+      "paletteGroups": 4,
+      "meanColor": [
+        242,
+        168,
+        23
+      ]
+    },
+    {
+      "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+      "material": "eye_white",
+      "kind": 2,
+      "triangles": 14,
+      "texture": true,
+      "paletteGroups": 4,
+      "meanColor": [
+        115,
+        99,
+        77
+      ]
+    },
+    {
+      "mesh": "R36KP_R36HW_FACE_HAIR_UNALTERED",
+      "material": "eye",
+      "kind": 2,
+      "triangles": 4,
+      "texture": true,
+      "paletteGroups": 4,
+      "meanColor": [
+        66,
+        59,
+        49
+      ]
+    },
+    {
+      "mesh": "R36KP_CONTINUOUS_SKIN_WITH_POSTERIOR_SUPERIOR_CORE",
+      "material": "R36MK_BUDGET_TRANSFER_STRONG",
+      "kind": 0,
+      "triangles": 1132,
+      "texture": true,
+      "paletteGroups": 4,
+      "meanColor": [
+        187,
+        149,
+        110
+      ]
+    }
+  ],
+  "palette": [
+    {
+      "kind": 2,
+      "material": 0,
+      "quantile": 0,
+      "color": [
+        133,
+        83,
+        43
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "quantile": 1,
+      "color": [
+        140,
+        91,
+        47
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "quantile": 2,
+      "color": [
+        142,
+        94,
+        48
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "quantile": 3,
+      "color": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "quantile": 0,
+      "color": [
+        120,
+        80,
+        53
+      ],
+      "triangles": 73
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "quantile": 1,
+      "color": [
+        126,
+        85,
+        57
+      ],
+      "triangles": 74
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "quantile": 2,
+      "color": [
+        136,
+        93,
+        63
+      ],
+      "triangles": 73
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "quantile": 3,
+      "color": [
+        157,
+        109,
+        75
+      ],
+      "triangles": 74
+    },
+    {
+      "kind": 5,
+      "material": 7,
+      "quantile": 0,
+      "color": [
+        242,
+        168,
+        23
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 5,
+      "material": 7,
+      "quantile": 1,
+      "color": [
+        242,
+        168,
+        23
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 5,
+      "material": 7,
+      "quantile": 2,
+      "color": [
+        242,
+        168,
+        23
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 5,
+      "material": 7,
+      "quantile": 3,
+      "color": [
+        242,
+        168,
+        23
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "quantile": 0,
+      "color": [
+        81,
+        66,
+        40
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "quantile": 1,
+      "color": [
+        92,
+        72,
+        50
+      ],
+      "triangles": 4
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "quantile": 2,
+      "color": [
+        114,
+        97,
+        72
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "quantile": 3,
+      "color": [
+        163,
+        153,
+        136
+      ],
+      "triangles": 4
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "quantile": 0,
+      "color": [
+        20,
+        16,
+        8
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "quantile": 1,
+      "color": [
+        20,
+        16,
+        8
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "quantile": 2,
+      "color": [
+        113,
+        102,
+        89
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "quantile": 3,
+      "color": [
+        113,
+        102,
+        89
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 0,
+      "material": 19,
+      "quantile": 0,
+      "color": [
+        174,
+        138,
+        99
+      ],
+      "triangles": 283
+    },
+    {
+      "kind": 0,
+      "material": 19,
+      "quantile": 1,
+      "color": [
+        177,
+        140,
+        102
+      ],
+      "triangles": 283
+    },
+    {
+      "kind": 0,
+      "material": 19,
+      "quantile": 2,
+      "color": [
+        188,
+        149,
+        109
+      ],
+      "triangles": 283
+    },
+    {
+      "kind": 0,
+      "material": 19,
+      "quantile": 3,
+      "color": [
+        210,
+        169,
+        128
+      ],
+      "triangles": 283
+    }
+  ],
+  "pose": "static weighted arms-down, preserved 2100 original triangles",
+  "nativeRenderer": "Nival S2 IGScene CreateMesh; textures sampled offline into 4 material palettes, NOT native UV texture mapping",
+  "engineVerified": false
+}
