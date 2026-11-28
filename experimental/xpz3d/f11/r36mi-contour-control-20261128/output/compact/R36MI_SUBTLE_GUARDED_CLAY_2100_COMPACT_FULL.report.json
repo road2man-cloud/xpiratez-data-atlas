@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36MI_CLAY_2100_FULL.glb",
+  "inputBytes": 14956184,
+  "output": "R36MI_SUBTLE_GUARDED_CLAY_2100_COMPACT_FULL.glb",
+  "outputBytes": 1914440,
+  "sourceSHA256": "889b319f489af314c346e7cfd00e5d921cc09da5ed8ca85c0639a4010b00f087",
+  "outputSHA256": "a13f86f68faba91c0f8f98598effd2b07c6a71026b71e6be973bf696a282e7e2",
+  "reducedBytes": 13041744,
+  "ratio": 0.128003,
+  "textureObjectsBefore": 8,
+  "textureObjectsAfter": 0,
+  "imageObjectsBefore": 8,
+  "imageObjectsAfter": 0,
+  "bufferViewsBefore": 156,
+  "bufferViewsAfter": 148,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}

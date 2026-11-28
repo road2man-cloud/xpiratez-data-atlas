@@ -1,0 +1,262 @@
+{
+  "version": "R36MI",
+  "source": "R36MG_SUBTLE_GUARDED_2100_COMPACT_FULL.glb",
+  "sourceSha256": "d7c249fbaf9942d611511d7107d302fbb78b582929c44f2aa2052d3da0d89602",
+  "baseline": "R36MH_SUBTLE_GUARDED_2100_COMPACT_FULL.glb",
+  "baselineSha256": "4d5034889a156189c52fa8fd7ca18d6091a72a8ad96cfcca015fb32f0a5ac505",
+  "output": "R36MI_CONTOUR_2100_FULL.glb",
+  "outputSha256": "f7a8380a8ebb63fe3a4ec91ca5beb0e2a5ce0c7d18524092575c3b46170bedd7",
+  "outputBytes": 14959312,
+  "bodyTriangles": 1132,
+  "faceHairTriangles": 968,
+  "totalTriangles": 2100,
+  "bones": 63,
+  "UVUnchanged": true,
+  "skinWeightsUnchanged": true,
+  "materialColorPreserved": true,
+  "topologyUnchangedFromR36MH": true,
+  "clayVisualApproved": false,
+  "S2EngineApproved": false,
+  "strength": 0.62,
+  "geometry": {
+    "eligibleControlVertices": 9,
+    "acceptedControlVertices": 9,
+    "rejectedControlVertices": 0,
+    "UVSeamVertexEntriesMoved": 27,
+    "updatedNormalVertexEntries": 183,
+    "affectedTriangles": 27,
+    "minTriangleAreaRatio": 0.5976193310295472,
+    "minTriangleNormalDot": 0.9402924986633366,
+    "meanBeforeContourDistance": 0.0033878881239104916,
+    "meanAfterContourDistance": 0.0019215352965263586,
+    "maxPhysicalDisplacement": 0.004500808499761864
+  },
+  "controls": [
+    {
+      "oldPhysicalKey": "-6970:-10814:81013",
+      "source": [
+        -0.06970299035310745,
+        -0.10814431309700012,
+        0.8101280331611633
+      ],
+      "sculpted": [
+        -0.06638868485293324,
+        -0.11000176188788255,
+        0.8113061289587062
+      ],
+      "curve": "outer-left",
+      "oldContourDistance": 0.008206056779204048,
+      "newContourDistance": 0.004688595954024427,
+      "displacement": [
+        0.0033143055001742176,
+        -0.0018574487908824286,
+        0.0011780957975429578
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.690728351781077,
+      "minFaceDot": 0.9869830019877215
+    },
+    {
+      "oldPhysicalKey": "7835:-10715:82015",
+      "source": [
+        0.07835198193788528,
+        -0.10715242475271225,
+        0.8201485276222229
+      ],
+      "sculpted": [
+        0.07777888155686709,
+        -0.1083600465346254,
+        0.8203670453570936
+      ],
+      "curve": "outer-right",
+      "oldContourDistance": 0.0013755523927181784,
+      "newContourDistance": 0.0007622057964316905,
+      "displacement": [
+        -0.0005731003810181902,
+        -0.0012076217819131459,
+        0.00021851773487068776
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.8861367424634752,
+      "minFaceDot": 0.9957806221494887
+    },
+    {
+      "oldPhysicalKey": "532:-11883:94769",
+      "source": [
+        0.005318025127053261,
+        -0.11883045732975006,
+        0.9476861357688904
+      ],
+      "sculpted": [
+        0.00560664725285733,
+        -0.12027537301924904,
+        0.9467684638015081
+      ],
+      "curve": "upper-bridge",
+      "oldContourDistance": 0.0021637713561208725,
+      "newContourDistance": 0.001201781454290896,
+      "displacement": [
+        0.00028862212580406935,
+        -0.0014449156894989809,
+        -0.0009176719673822743
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.9642226204354262,
+      "minFaceDot": 0.9730819023075421
+    },
+    {
+      "oldPhysicalKey": "1312:-11347:93603",
+      "source": [
+        0.013118649832904339,
+        -0.11347240954637527,
+        0.9360308647155762
+      ],
+      "sculpted": [
+        0.012888803679433132,
+        -0.11492272646594695,
+        0.9358773356489918
+      ],
+      "curve": "upper-bridge",
+      "oldContourDistance": 0.0006193959263792452,
+      "newContourDistance": 0.00034298965193565805,
+      "displacement": [
+        -0.00022984615347120633,
+        -0.0014503169195716765,
+        -0.00015352906658435396
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.9737475498988997,
+      "minFaceDot": 0.9795571828329701
+    },
+    {
+      "oldPhysicalKey": "5337:-10207:81293",
+      "source": [
+        0.05337078124284744,
+        -0.1020733118057251,
+        0.8129284977912903
+      ],
+      "sculpted": [
+        0.0517851846887627,
+        -0.10420356075336826,
+        0.8136287438601335
+      ],
+      "curve": "inner-right",
+      "oldContourDistance": 0.003966683459910961,
+      "newContourDistance": 0.002233345354042459,
+      "displacement": [
+        -0.0015855965540847467,
+        -0.0021302489476431653,
+        0.0007002460688431834
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.9337693688019224,
+      "minFaceDot": 0.9615426543303719
+    },
+    {
+      "oldPhysicalKey": "4459:-8928:78436",
+      "source": [
+        0.044592760503292084,
+        -0.08928482234477997,
+        0.7843638062477112
+      ],
+      "sculpted": [
+        0.04691313800667622,
+        -0.09203333185254649,
+        0.7816584743126181
+      ],
+      "curve": "lower-asymmetric-fold",
+      "oldContourDistance": 0.008428859104687792,
+      "newContourDistance": 0.004864736121786466,
+      "displacement": [
+        0.0023203775033841393,
+        -0.002748509507766524,
+        -0.0027053319350930777
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.5976193310295472,
+      "minFaceDot": 0.9402924986633366
+    },
+    {
+      "oldPhysicalKey": "2895:-6974:78502",
+      "source": [
+        0.0289502814412117,
+        -0.06973666697740555,
+        0.7850227952003479
+      ],
+      "sculpted": [
+        0.02890821464317743,
+        -0.06804443333462802,
+        0.7847737347572731
+      ],
+      "curve": "lower-recess",
+      "oldContourDistance": 0.000565955930283646,
+      "newContourDistance": 0.000313367886620683,
+      "displacement": [
+        -0.000042066798034271654,
+        0.0016922336427775317,
+        -0.0002490604430748327
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.8433135130022845,
+      "minFaceDot": 0.998617915417201
+    },
+    {
+      "oldPhysicalKey": "2320:-4721:77046",
+      "source": [
+        0.02319524995982647,
+        -0.04720637947320938,
+        0.7704631686210632
+      ],
+      "sculpted": [
+        0.02357942713680135,
+        -0.05006677075617607,
+        0.768596865285923
+      ],
+      "curve": "lower-asymmetric-fold",
+      "oldContourDistance": 0.004329940332151917,
+      "newContourDistance": 0.0024245059349437483,
+      "displacement": [
+        0.0003841771769748809,
+        -0.0028603912829666908,
+        -0.001866303335140285
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 0.7461420975967742,
+      "minFaceDot": 0.9949353992756627
+    },
+    {
+      "oldPhysicalKey": "-5913:-10659:86730",
+      "source": [
+        -0.059127431362867355,
+        -0.10659419745206833,
+        0.8673000931739807
+      ],
+      "sculpted": [
+        -0.05947040957950917,
+        -0.10852778502962115,
+        0.8674453979941268
+      ],
+      "curve": "outer-left",
+      "oldContourDistance": 0.0008347778337377623,
+      "newContourDistance": 0.00046228951466119854,
+      "displacement": [
+        -0.00034297821664181735,
+        -0.0019335875775528231,
+        0.00014530482014608257
+      ],
+      "UVSeamCopies": 3,
+      "minAreaRatio": 1.022227404837242,
+      "minFaceDot": 0.9721133691715421
+    }
+  ],
+  "normalTexture": {
+    "file": "R36MI_CONTOUR_NORMAL_2048.png",
+    "sha256": "34af05fd398751b8c257437eed0049fe28a6ce37314186d243e01ab64bd7f817",
+    "bytes": 3365641,
+    "changedNormalPixels": 12606,
+    "affectedUVTriangleCount": 27,
+    "meanRGBChannelChange": 2.1704479348458405,
+    "maxRGBChannelChange": 5
+  },
+  "note": "Only genuinely new R36MH physical control vertices move. Curves/depths are hand-estimated, not measured by photogrammetry"
+}
