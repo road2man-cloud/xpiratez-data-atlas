@@ -1,0 +1,205 @@
+{
+  "version": "R36MD",
+  "source": "R36MB_ART_FLOW_2100_COMPACT_FULL.glb",
+  "target": "R36MC_ART_SCULPT_2100_COMPACT_FULL.glb",
+  "output": "R36MD_SEMANTIC_2100_FULL.glb",
+  "outputSHA256": "910c663341b975580470b365873fd61cfa1a342a2729e3593e5bac7cfb202366",
+  "outputBytes": 10419716,
+  "triangles": 2100,
+  "joints": 63,
+  "semanticImageRegions": 8,
+  "regions": [
+    {
+      "id": "outer-left",
+      "kind": "raised_ridge",
+      "pixels": 51081,
+      "triangles": 58,
+      "atlasBounds": {
+        "x": 0,
+        "y": 539,
+        "width": 2018,
+        "height": 1322
+      },
+      "files": [
+        "R36MD_OUTER_LEFT_COLOR.png",
+        "R36MD_OUTER_LEFT_NORMAL.png",
+        "R36MD_OUTER_LEFT_MASK.png"
+      ]
+    },
+    {
+      "id": "inner-left",
+      "kind": "raised_ridge",
+      "pixels": 43057,
+      "triangles": 53,
+      "atlasBounds": {
+        "x": 119,
+        "y": 539,
+        "width": 1919,
+        "height": 1322
+      },
+      "files": [
+        "R36MD_INNER_LEFT_COLOR.png",
+        "R36MD_INNER_LEFT_NORMAL.png",
+        "R36MD_INNER_LEFT_MASK.png"
+      ]
+    },
+    {
+      "id": "inner-right",
+      "kind": "raised_ridge",
+      "pixels": 35105,
+      "triangles": 49,
+      "atlasBounds": {
+        "x": 0,
+        "y": 604,
+        "width": 2003,
+        "height": 1317
+      },
+      "files": [
+        "R36MD_INNER_RIGHT_COLOR.png",
+        "R36MD_INNER_RIGHT_NORMAL.png",
+        "R36MD_INNER_RIGHT_MASK.png"
+      ]
+    },
+    {
+      "id": "outer-right",
+      "kind": "raised_ridge",
+      "pixels": 34524,
+      "triangles": 39,
+      "atlasBounds": {
+        "x": 0,
+        "y": 539,
+        "width": 1945,
+        "height": 1382
+      },
+      "files": [
+        "R36MD_OUTER_RIGHT_COLOR.png",
+        "R36MD_OUTER_RIGHT_NORMAL.png",
+        "R36MD_OUTER_RIGHT_MASK.png"
+      ]
+    },
+    {
+      "id": "upper-bridge",
+      "kind": "transition_ridge",
+      "pixels": 9600,
+      "triangles": 25,
+      "atlasBounds": {
+        "x": 359,
+        "y": 719,
+        "width": 1682,
+        "height": 1118
+      },
+      "files": [
+        "R36MD_UPPER_BRIDGE_COLOR.png",
+        "R36MD_UPPER_BRIDGE_NORMAL.png",
+        "R36MD_UPPER_BRIDGE_MASK.png"
+      ]
+    },
+    {
+      "id": "lower-asymmetric-fold",
+      "kind": "transverse_ridge",
+      "pixels": 11784,
+      "triangles": 21,
+      "atlasBounds": {
+        "x": 137,
+        "y": 539,
+        "width": 1844,
+        "height": 1364
+      },
+      "files": [
+        "R36MD_LOWER_ASYMMETRIC_FOLD_COLOR.png",
+        "R36MD_LOWER_ASYMMETRIC_FOLD_NORMAL.png",
+        "R36MD_LOWER_ASYMMETRIC_FOLD_MASK.png"
+      ]
+    },
+    {
+      "id": "central-recess",
+      "kind": "recess",
+      "pixels": 63370,
+      "triangles": 83,
+      "atlasBounds": {
+        "x": 0,
+        "y": 599,
+        "width": 2041,
+        "height": 1322
+      },
+      "files": [
+        "R36MD_CENTRAL_RECESS_COLOR.png",
+        "R36MD_CENTRAL_RECESS_NORMAL.png",
+        "R36MD_CENTRAL_RECESS_MASK.png"
+      ]
+    },
+    {
+      "id": "lower-recess",
+      "kind": "recess",
+      "pixels": 9351,
+      "triangles": 21,
+      "atlasBounds": {
+        "x": 119,
+        "y": 599,
+        "width": 1922,
+        "height": 1315
+      },
+      "files": [
+        "R36MD_LOWER_RECESS_COLOR.png",
+        "R36MD_LOWER_RECESS_NORMAL.png",
+        "R36MD_LOWER_RECESS_MASK.png"
+      ]
+    }
+  ],
+  "nonUniformGrid": true,
+  "sourceTexturePreserved": true,
+  "modelPositionUnchangedFromR36MC": true,
+  "transport": {
+    "trianglesConsidered": 382,
+    "trianglesWithPixels": 382,
+    "activePixels": 539740,
+    "changedPixels": 329126,
+    "skippedNearFlat": 9710,
+    "overlapPixels": 27,
+    "meanSourceToTargetNormalRotationDegrees": 2.898469326180878,
+    "maxSourceToTargetNormalRotationDegrees": 24.331993347544202,
+    "meanAbsoluteRGB8Change": 2.0255573671273823,
+    "strength": 0.72,
+    "orientationPreservation": "source image normal -> old TBN -> 3D -> new TBN"
+  },
+  "seams": {
+    "seamsDetected": 234,
+    "usableSeams": 234,
+    "edgesRebaked": 234,
+    "skippedSharp": 32,
+    "skippedNonmanifold": 0,
+    "skippedIncompatibleNormal": 0,
+    "meanSourceEdgeRGBDifference": 0.23461339846991497,
+    "touchedUVTriangleCount": 193,
+    "affectedInteriorPixels": 145970,
+    "changedAlbedoPixels": 812,
+    "changedNormalPixels": 20958,
+    "meanAbsoluteRGB8Delta": 0.002237902765408417,
+    "maxRGB8Delta": 1,
+    "paddedColorPixels": 994046,
+    "paddedNormalPixels": 994046,
+    "algorithm": "paired physical 3D edges -> dual UV seam pixel transforms, world-space normal transport",
+    "didNotTouchPositionsOrJointWeights": true
+  },
+  "sourceVsTarget": {
+    "changedPositionVertices": 518,
+    "changedNormalVertices": 979,
+    "maxPositionDelta": 0.01617008508444017,
+    "maxTangentRotationDegrees": 21.827014871257212
+  },
+  "images": {
+    "COLOR": {
+      "name": "R36MD_SEMANTIC_COLOR_2048.png",
+      "sha256": "53b3a1537fbeebf0e91f99c390a6489eb682458af49b09f2fb1fecfe56199a62",
+      "bytes": 2072830
+    },
+    "NORMAL": {
+      "name": "R36MD_SEMANTIC_NORMAL_2048.png",
+      "sha256": "3cdf3d17869f3aa5169dbc091581cf81abcf8818426834edcadff895dbde29bb",
+      "bytes": 2048817
+    }
+  },
+  "visualQA": "not run",
+  "S2EngineQA": "not run",
+  "limitation": "Meaningful UV image layers extracted, but photograph colors are not directly projected; camera-depth still uncalibrated"
+}

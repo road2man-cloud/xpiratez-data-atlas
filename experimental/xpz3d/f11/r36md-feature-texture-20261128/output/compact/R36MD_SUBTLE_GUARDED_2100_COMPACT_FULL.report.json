@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36MD_SEMANTIC_2100_FULL.glb",
+  "inputBytes": 10025976,
+  "output": "R36MD_SUBTLE_GUARDED_2100_COMPACT_FULL.glb",
+  "outputBytes": 6118244,
+  "sourceSHA256": "82974426296f3cd7ad29dafc89ecc0fde00c6c50a54592155873b07dbbc783c2",
+  "outputSHA256": "bedb2957c949dfa4611c3a94d45be12be373f099320d5cc70087c4ba7dd43452",
+  "reducedBytes": 3907732,
+  "ratio": 0.610239,
+  "textureObjectsBefore": 8,
+  "textureObjectsAfter": 6,
+  "imageObjectsBefore": 8,
+  "imageObjectsAfter": 6,
+  "bufferViewsBefore": 138,
+  "bufferViewsAfter": 136,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}
