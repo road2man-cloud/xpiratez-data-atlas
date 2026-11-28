@@ -70,6 +70,31 @@ function applyCampaignStartCore(input,step,data){
  if(['acquirePurchase','acquireFacility'].includes(step.type)){
   try{return applyReachabilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
  }
+ // Forward-only deterministic manufacturing. The raw, hashed source bundle
+ // owns every output; the legacy single-item projection must not double-pay.
+ if(step.type==='manufactureBundle'){
+  try{
+   const r=data.campaignAssets?.deterministicManufacture?.[step.recipe];
+   if(!r||data.campaignAssets.sourceFingerprint!==input.sourceFingerprint)throw Error('manufacture-bundle-source-mismatch');
+   if(step.count!==1||input.forwardManufactureCounts?.[step.recipe])throw Error('bounded-one-batch-per-recipe');
+   if(!r.requires.every(k=>input.researched.has(k)&&!input.disabled.has(k))||!r.functions.every(k=>input.baseFunctions.has(k)))throw Error('manufacture-bundle-prerequisite');
+   if(!Number.isSafeInteger(r.cost)||r.cost<0||input.funds<r.cost)throw Error('manufacture-bundle-funds');
+   if(!Number.isSafeInteger(r.time)||r.time<0||!Number.isSafeInteger(r.space)||r.space<0)throw Error('manufacture-bundle-work-rule');
+   const w=structuredClone(input);
+   for(const [id,n] of Object.entries(r.materials)){
+    if(!Number.isSafeInteger(n)||n<1||(w.items[id]||0)<n)throw Error('manufacture-bundle-material:'+id);
+    w.items[id]-=n;
+   }
+   for(const [id,n] of Object.entries(r.outputs)){
+    if(!Number.isSafeInteger(n)||n<1||!Number.isSafeInteger((w.items[id]||0)+n))throw Error('manufacture-bundle-output:'+id);
+    w.items[id]=(w.items[id]||0)+n;
+   }
+   w.funds-=r.cost;
+   (w.forwardManufactureCounts??={})[step.recipe]=1;
+   w.forwardManufactureHours=(w.forwardManufactureHours||0)+r.time;
+   return {ok:true,world:w,assumed:true,notes:['deterministic-manufacture:'+step.recipe,'source-work-hours:'+r.time,'engineer-space-and-calendar-not-native-certified','one-batch-bound-not-a-game-limit']};
+  }catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  if(['buildFacility','finishFacility'].includes(step.type)){
   try{return applyFacilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
  }
