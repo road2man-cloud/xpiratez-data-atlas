@@ -1,0 +1,53 @@
+name: XPZ3D R36HW N17 central harmonic skin relief
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-n17.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36hw-n16-retess-center-20261129/output/R36HW_N16_RETESS_CENTER.glb
+            experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/
+            .github/workflows/xpz3d-r36hw-n17.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce N17 center mesh from original HW body
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/source/build_r36hw_n17.cjs
+          node experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/source/build_r36hw_n17.cjs
+      - name: Validate mesh and non-regression
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),root='experimental/xpz3d/f11/r36hw-n17-skin-field-20261129',r=JSON.parse(fs.readFileSync(root+'/reports/R36HW_N17_CENTER_DEPTH.json','utf8'));
+          const b=fs.readFileSync(root+'/output/R36HW_N17_CENTER_DEPTH.glb');
+          if(r.triangles!==2099||r.pelvisTriangles!==363||r.skinJoints!==63||r.boundaryProtected!==45||r.editedVertices<40||r.faceInversions!==0||r.maximumDisplacementMeters>.021||!r.faceHairUntouched||!r.fullBodyUntouched||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.triangles,modified:r.editedVertices,scale:r.reliefScale,shift:r.maximumDisplacementMeters,sha:r.outputSHA256}));
+          NODE
+      - name: Publish actual N17 GLB and audit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/output/R36HW_N17_CENTER_DEPTH.glb experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/reports/R36HW_N17_CENTER_DEPTH.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N17 attached center-depth GLB"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
