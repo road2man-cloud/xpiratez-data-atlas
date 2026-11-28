@@ -1,0 +1,48 @@
+{
+  "sourceBlob": "3272096962f52e95d1ad7946c37b953c2f5d8c5d",
+  "trianglesBefore": 2036,
+  "trianglesAfter": 2100,
+  "addedTriangles": 64,
+  "addedVertices": 32,
+  "garmentVertices": 706,
+  "changedOriginalVertices": 416,
+  "splitRegions": {
+    "upperBack": 4,
+    "upperFront": 4,
+    "abdomen": 4,
+    "armL": 4,
+    "armR": 4,
+    "thighL": 3,
+    "thighR": 3,
+    "calfL": 3,
+    "calfR": 3
+  },
+  "curvatureCorrectionRange": [
+    -0.002275,
+    0.003575
+  ],
+  "contourGain": 1,
+  "minOriginalFaceNormalCos": 0.997246180655562,
+  "protectedSeamVertices": 172,
+  "geometricEdgeIncidenceBefore": {
+    "1": 24,
+    "2": 1440
+  },
+  "geometricEdgeIncidenceAfter": {
+    "1": 24,
+    "2": 1536
+  },
+  "existingWeightsPreserved": true,
+  "addedWeightsNormalized": true,
+  "rigJoints": 63,
+  "opaqueMaterialPreserved": true,
+  "normalTexturePreserved": true,
+  "outputBytes": 680908,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Broad athletic cloth contour parameters are artistic estimates, not a measured physical textile simulation.",
+    "Existing normal texture reused; no new high-resolution sculpt bake.",
+    "No S2 rendering, posed clipping, or complete self-intersection check."
+  ]
+}

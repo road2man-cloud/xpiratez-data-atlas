@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+'use strict';
+function build(src){
+ const ck=(v,m)=>{if(!v)throw Error(m)},h=new DataView(src.buffer,src.byteOffset,src.length),l=h.getUint32(12,true);ck(h.getUint32(0,true)===0x46546c67&&h.getUint32(4,true)===2&&h.getUint32(8,true)===src.length&&h.getUint32(16,true)===0x4e4f534a&&h.getUint32(24+l,true)===0x004e4942,"GLB");
+ const j=JSON.parse(String.fromCharCode(...src.slice(20,20+l))),bin=src.slice(28+l,28+l+h.getUint32(20+l,true)),d=new DataView(bin.buffer,bin.byteOffset,bin.length),m=j.meshes[0],g=m.primitives.find(p=>p.material===18),rig=JSON.stringify([j.nodes,j.skins,j.animations,m.primitives.filter(p=>p!==g)]),material=JSON.stringify(j.materials[18]);ck(g.attributes.POSITION===146&&g.indices===153&&j.skins[0].joints.length===63,"V9 required");
+ const dim={SCALAR:1,VEC2:2,VEC3:3,VEC4:4},size={5121:1,5123:2,5125:4,5126:4},get={5121:"getUint8",5123:"getUint16",5125:"getUint32",5126:"getFloat32"},set={5121:"setUint8",5123:"setUint16",5125:"setUint32",5126:"setFloat32"};
+ function read(id){let a=j.accessors[id],b=j.bufferViews[a.bufferView],n=dim[a.type],s=size[a.componentType],o=(b.byteOffset||0)+(a.byteOffset||0),st=b.byteStride||n*s;ck(!a.sparse&&b.buffer===0&&o+(a.count-1)*st+n*s<=bin.length,"accessor");return Array.from({length:a.count},(_,i)=>Array.from({length:n},(_,k)=>d[get[a.componentType]](o+i*st+k*s,true)))}
+ const A=Object.fromEntries(Object.entries(g.attributes).map(([k,id])=>[k,read(id)])),O=A.POSITION.map(p=>p.slice()),ON=A.NORMAL.map(p=>p.slice()),I=read(g.indices).flat(),F=Array.from({length:I.length/3},(_,i)=>I.slice(i*3,i*3+3));ck(O.length===674&&F.length===968,"V9 geometry");
+ const add=(a,b)=>a.map((x,k)=>x+b[k]),sub=(a,b)=>a.map((x,k)=>x-b[k]),mul=(a,s)=>a.map(x=>x*s),dot=(a,b)=>a.reduce((s,x,k)=>s+x*b[k],0),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],norm=a=>Math.hypot(...a),unit=a=>mul(a,1/norm(a)),avg=(a,b)=>mul(add(a,b),.5),clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),sm=(a,b,x)=>{let t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)},gauss=(x,c,w)=>Math.exp(-Math.pow((x-c)/w,2)),tn=(p,[a,b,c])=>cross(sub(p[b],p[a]),sub(p[c],p[a])),key=p=>p.map(x=>Math.round(x*1e6)).join(",");
+ const fixed=([x,y,z])=>(Math.abs(x)>.66&&z>1.30)||(z>1.515&&Math.abs(x)<.09)||z<.14;
+ const welded=new Map();for(let i=0;i<O.length;i++){let k=key(O[i]);if(!welded.has(k))welded.set(k,{p:O[i],n:[0,0,0],ids:[]});let w=welded.get(k);w.n=add(w.n,ON[i]);w.ids.push(i)}for(let w of welded.values())w.n=unit(w.n);
+ function shape(p,n,gain){
+  let [x,y,z]=p,a=Math.abs(x),side=Math.sign(x);if(fixed(p))return p.slice();
+  let delta=0;
+  if(z>1.09&&z<1.515&&a<.23){
+   const front=sm(.015,.08,-y),rear=sm(.015,.08,y),fade=(1-sm(1.44,1.515,z))*sm(1.09,1.15,z);
+   // Broad fabric drape over upper torso and abdominal/side musculature. No intimate detail.
+   const upper=.0055*gauss(z,1.35,.095)*gauss(a,.09,.14);
+   const abdomen=.0035*gauss(z,1.19,.065)*gauss(a,.06,.055)-.0012*gauss(z,1.21,.08)*gauss(a,.12,.035);
+   const back=.0055*gauss(z,1.36,.10)*gauss(a,.105,.065)+.003*gauss(z,1.46,.045)*gauss(a,.075,.055);
+   delta=fade*(front*(upper+abdomen)+rear*back);
+  }else if(a>.225&&a<.66&&z>1.27){
+   let taper=(1-sm(.59,.66,a))*sm(.225,.25,a),front=sm(0,.06,-y),rear=sm(0,.06,y),high=sm(1.414,1.49,z);
+   delta=taper*(.0045*gauss(a,.26,.045)*high+.0040*gauss(a,.35,.075)*front+.0035*gauss(a,.36,.075)*rear+.003*gauss(a,.54,.055)*(front+rear)-.002*gauss(a,.445,.033));
+  }else if(z>.14&&z<.98){
+   let taper=sm(.14,.21,z)*(1-sm(.91,.98,z)),front=sm(.0,.09,-y),rear=sm(-.04,.03,y),outer=sm(.10,.18,a);
+   delta=taper*(.0045*gauss(z,.77,.13)*(front+.5*outer)+.0038*gauss(z,.43,.12)*rear-.0016*gauss(z,.55,.045));
+  }
+  return add(p,mul(n,gain*delta))
+ }
+ let gain=1,P,minCos;for(let k=0;k<9;k++){P=O.map(p=>p.slice());for(let w of welded.values()){let p=shape(w.p,w.n,gain);for(let i of w.ids)P[i]=p.slice()}minCos=1;for(let f of F){let a=tn(O,f),b=tn(P,f);minCos=Math.min(minCos,dot(a,b)/(norm(a)*norm(b)))}if(minCos>.92)break;gain*=.7}ck(minCos>.92,"contour guard");
+ const indexEdges=new Map(),geoEdges=new Map();for(let t=0;t<F.length;t++){let f=F[t];for(let k=0;k<3;k++){let a=f[k],b=f[(k+1)%3],lo=Math.min(a,b),hi=Math.max(a,b),id=lo+":"+hi,ka=key(O[a]),kb=key(O[b]),geo=ka<kb?ka+"|"+kb:kb+"|"+ka;if(!indexEdges.has(id))indexEdges.set(id,{a:lo,b:hi,fs:[],geo});indexEdges.get(id).fs.push(t);geoEdges.set(geo,(geoEdges.get(geo)||0)+1)}}
+ function region([x,y,z]){let a=Math.abs(x),s=x>=0?"L":"R";if(a<.21&&z>1.29&&z<1.48)return y>=0?"upperBack":"upperFront";if(a<.17&&z>1.10&&z<1.28)return y<-.015?"abdomen":null;if(a>.24&&a<.64&&z>1.28)return "arm"+s;if(z>.60&&z<.91&&a>.035)return "thigh"+s;if(z>.23&&z<.52&&a>.035)return "calf"+s;return null}
+ const candidates=[];for(let e of indexEdges.values()){if(e.fs.length!==2||geoEdges.get(e.geo)!==2||fixed(O[e.a])||fixed(O[e.b]))continue;let a=O[e.a],b=O[e.b],c=avg(a,b),r=region(c),len=norm(sub(a,b));if(!r||len<.018||len>.16)continue;let angle=1-clamp(dot(ON[e.a],ON[e.b]),-1,1),uv=norm(sub(A.TEXCOORD_0[e.a],A.TEXCOORD_0[e.b]));if(uv>.18)continue;candidates.push({...e,region:r,score:len*(.20+angle),len})}
+ candidates.sort((a,b)=>b.score-a.score||a.a-b.a||a.b-b.b);
+ const quotas={upperBack:4,upperFront:4,abdomen:4,armL:4,armR:4,thighL:3,thighR:3,calfL:3,calfR:3},picked=[],usedFaces=new Set(),counts={};
+ function choose(e){if(e.fs.some(i=>usedFaces.has(i)))return false;picked.push(e);e.fs.forEach(i=>usedFaces.add(i));counts[e.region]=(counts[e.region]||0)+1;return true}
+ for(let [r,q] of Object.entries(quotas)){for(let e of candidates){if((counts[r]||0)>=q)break;if(e.region===r)choose(e)}}
+ for(let e of candidates){if(picked.length===32)break;if(!picked.includes(e))choose(e)}ck(picked.length===32,"insufficient safe split edges "+picked.length);
+ A.POSITION=P;const splitByFace=new Map(),curvature=[];
+ function pack(js,ws){let map=new Map();for(let t=0;t<js.length;t++)map.set(js[t],(map.get(js[t])||0)+ws[t]);let e=[...map].filter(x=>x[1]>1e-8).sort((a,b)=>b[1]-a[1]||a[0]-b[0]).slice(0,4),sum=e.reduce((s,v)=>s+v[1],0);while(e.length<4)e.push([0,0]);return [e.map(x=>x[0]),e.map(x=>x[1]/sum)]}
+ for(let e of picked){let {a,b}=e,p=P[a],q=P[b],mid=avg(p,q),na=unit(ON[a]),nb=unit(ON[b]),n=unit(add(na,nb)),da=dot(n,na),db=dot(n,nb),height=clamp(-.5*(dot(sub(mid,p),na)/Math.max(.25,da)+dot(sub(mid,q),nb)/Math.max(.25,db)),-.0035,.0055)*.65;
+  let test=height,newId=P.length,valid=false;
+  for(let k=0;k<10;k++){P.push(add(mid,mul(n,test)));valid=true;for(let t of e.fs){let f=F[t],idx=f.findIndex((v,k)=>(v===a&&f[(k+1)%3]===b)||(v===b&&f[(k+1)%3]===a));ck(idx>=0,"edge incidence");let x=f[idx],y=f[(idx+1)%3],z=f[(idx+2)%3],old=tn(P,f);for(let s of [[x,newId,z],[newId,y,z]]){let v=tn(P,s);if(norm(v)<1e-9||dot(old,v)/(norm(old)*norm(v))<.92)valid=false}}if(valid)break;P.pop();test*=.5}
+  ck(valid,"midpoint orientation");curvature.push(test);
+  A.NORMAL.push(n);A.COLOR_0.push(avg(A.COLOR_0[a],A.COLOR_0[b]).map(Math.round));A.TEXCOORD_0.push(avg(A.TEXCOORD_0[a],A.TEXCOORD_0[b]));A.TANGENT.push(A.TANGENT[a].slice());let [js,ws]=pack([...A.JOINTS_0[a],...A.JOINTS_0[b]],[...A.WEIGHTS_0[a].map(x=>x*.5),...A.WEIGHTS_0[b].map(x=>x*.5)]);A.JOINTS_0.push(js);A.WEIGHTS_0.push(ws);for(let t of e.fs)splitByFace.set(t,{a,b,newId})
+ }
+ const G=[];for(let t=0;t<F.length;t++){let f=F[t],e=splitByFace.get(t);if(!e){G.push(f);continue}let k=f.findIndex((x,k)=>(x===e.a&&f[(k+1)%3]===e.b)||(x===e.b&&f[(k+1)%3]===e.a));G.push([f[k],e.newId,f[(k+2)%3]],[e.newId,f[(k+1)%3],f[(k+2)%3]])}
+ ck(G.length===1032&&P.length===706,"triangle budget");
+ const edgeUse=fs=>{let map=new Map();for(let f of fs)for(let k=0;k<3;k++){let a=key((fs===F?O:P)[f[k]]),b=key((fs===F?O:P)[f[(k+1)%3]]),id=a<b?a+"|"+b:b+"|"+a;map.set(id,(map.get(id)||0)+1)}return [...map.values()].reduce((s,x)=>(s[x]=(s[x]||0)+1,s),{})};
+ const beforeEdge=edgeUse(F),afterEdge=edgeUse(G);ck((afterEdge[1]||0)===(beforeEdge[1]||0)&&(afterEdge[3]||0)===(beforeEdge[3]||0),"boundary changed");
+ const normalSums=new Map(),T=P.map(()=>[0,0,0]),B=P.map(()=>[0,0,0]),UV=A.TEXCOORD_0;
+ for(let f of G){let [a,b,c]=f,raw=tn(P,f),n=unit(raw);ck(norm(raw)>1e-9,"degenerate geometry");for(let k=0;k<3;k++){let i=f[k],u=sub(P[f[(k+1)%3]],P[i]),v=sub(P[f[(k+2)%3]],P[i]),ang=Math.acos(clamp(dot(u,v)/(norm(u)*norm(v)),-1,1)),id=key(P[i]);normalSums.set(id,add(normalSums.get(id)||[0,0,0],mul(n,ang)))}let p=sub(P[b],P[a]),q=sub(P[c],P[a]),u=sub(UV[b],UV[a]),v=sub(UV[c],UV[a]),det=u[0]*v[1]-u[1]*v[0];ck(Math.abs(det)>1e-12,"UV degenerate");let t=mul(sub(mul(p,v[1]),mul(q,u[1])),1/det),bt=mul(sub(mul(q,u[0]),mul(p,v[0])),1/det);for(let i of f){T[i]=add(T[i],t);B[i]=add(B[i],bt)}}
+ for(let i=0;i<P.length;i++){let n=i<O.length&&fixed(O[i])?ON[i]:unit(normalSums.get(key(P[i]))),t=sub(T[i],mul(n,dot(n,T[i])));if(norm(t)<1e-9){let v=A.TANGENT[i].slice(0,3);t=sub(v,mul(n,dot(n,v)))}ck(norm(t)>1e-9,"tangent");t=unit(t);A.NORMAL[i]=n;A.TANGENT[i]=[...t,dot(cross(n,t),B[i])<0?-1:1]}
+ ck(O.every((p,i)=>!fixed(p)||norm(sub(p,P[i]))<1e-10)&&A.WEIGHTS_0.every(w=>Math.abs(w.reduce((a,b)=>a+b,0)-1)<1e-5),"fixed seam or weights");
+ let chunks=[],off=bin.length;function align(){let n=(4-off%4)%4;if(n){chunks.push(new Uint8Array(n));off+=n}}
+ function append(arr,tpl){align();let a={...tpl},n=dim[a.type],s=size[a.componentType],bytes=new Uint8Array(arr.length*n*s),v=new DataView(bytes.buffer);delete a.min;delete a.max;delete a.sparse;arr.forEach((row,i)=>row.forEach((x,k)=>{ck(Number.isFinite(x),"nonfinite");v[set[a.componentType]]((i*n+k)*s,x,true)}));a.bufferView=j.bufferViews.length;a.byteOffset=0;a.count=arr.length;if(a.type==="SCALAR"||tpl.min){a.min=Array.from({length:n},(_,k)=>Math.min(...arr.map(r=>r[k])));a.max=Array.from({length:n},(_,k)=>Math.max(...arr.map(r=>r[k])))}j.bufferViews.push({buffer:0,byteOffset:off,byteLength:bytes.length,target:a.type==="SCALAR"?34963:34962});chunks.push(bytes);off+=bytes.length;let id=j.accessors.length;j.accessors.push(a);return id}
+ for(let k of Object.keys(A))g.attributes[k]=append(A[k],j.accessors[g.attributes[k]]);g.indices=append(G.flat().map(i=>[i]),j.accessors[g.indices]);ck(JSON.stringify([j.nodes,j.skins,j.animations,m.primitives.filter(p=>p!==g)])===rig&&JSON.stringify(j.materials[18])===material,"protected");let total=m.primitives.reduce((s,p)=>s+j.accessors[p.indices].count/3,0);ck(total===2100&&j.materials[18].alphaMode==="OPAQUE","total/material");
+ m.name="R36HW_F11_V10_NATURAL_ATHLETIC_CONTOURS";j.asset.generator="R36HW V10 broad natural cloth contours and curvature subdivision";j.extras={...(j.extras||{}),athleticSuitV10:{source:"V9",opaqueTextile:true,curvedEdgeSplits:32}};
+ align();let newBin=new Uint8Array(off);newBin.set(bin);let o=bin.length;for(let b of chunks){newBin.set(b,o);o+=b.length}j.buffers[0].byteLength=newBin.length;
+ let js=[];for(let c of JSON.stringify(j)){let n=c.codePointAt(0);if(n<128)js.push(n);else if(n<2048)js.push(192|(n>>6),128|(n&63));else if(n<65536)js.push(224|(n>>12),128|((n>>6)&63),128|(n&63));else js.push(240|(n>>18),128|((n>>12)&63),128|((n>>6)&63),128|(n&63))}while(js.length%4)js.push(32);let out=new Uint8Array(28+js.length+newBin.length),v=new DataView(out.buffer);v.setUint32(0,0x46546c67,true);v.setUint32(4,2,true);v.setUint32(8,out.length,true);v.setUint32(12,js.length,true);v.setUint32(16,0x4e4f534a,true);out.set(js,20);v.setUint32(20+js.length,newBin.length,true);v.setUint32(24+js.length,0x004e4942,true);out.set(newBin,28+js.length);
+ return {out,report:{sourceBlob:"3272096962f52e95d1ad7946c37b953c2f5d8c5d",trianglesBefore:2036,trianglesAfter:total,addedTriangles:64,addedVertices:32,garmentVertices:P.length,changedOriginalVertices:O.filter((p,i)=>norm(sub(p,P[i]))>1e-6).length,splitRegions:counts,curvatureCorrectionRange:[Math.min(...curvature),Math.max(...curvature)],contourGain:gain,minOriginalFaceNormalCos:minCos,protectedSeamVertices:O.filter(fixed).length,geometricEdgeIncidenceBefore:beforeEdge,geometricEdgeIncidenceAfter:afterEdge,existingWeightsPreserved:true,addedWeightsNormalized:true,rigJoints:63,opaqueMaterialPreserved:true,normalTexturePreserved:true,outputBytes:out.length,nativeS2Rendered:false,visualAcceptance:false,limitations:["Broad athletic cloth contour parameters are artistic estimates, not a measured physical textile simulation.","Existing normal texture reused; no new high-resolution sculpt bake.","No S2 rendering, posed clipping, or complete self-intersection check."]}}
+}
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const input=process.argv[2]||path.resolve(__dirname,'../../r36hw-athletic-v9-close-fit-20261129/output/R36HW_F11_ATHLETIC_SUIT_V9_CLOSE_FIT.glb'),output=process.argv[3]||path.resolve(__dirname,'../output/R36HW_F11_ATHLETIC_SUIT_V10_CONTOURS.glb');
+const src=fs.readFileSync(input),hash=crypto.createHash('sha1').update('blob '+src.length+'\0').update(src).digest('hex');if(hash!=='3272096962f52e95d1ad7946c37b953c2f5d8c5d')throw Error('V9 blob mismatch');const r=build(src);fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,r.out);const report=path.resolve(path.dirname(output),'../reports/build.json');fs.mkdirSync(path.dirname(report),{recursive:true});fs.writeFileSync(report,JSON.stringify(r.report,null,2)+'\n');console.log(JSON.stringify(r.report,null,2));
