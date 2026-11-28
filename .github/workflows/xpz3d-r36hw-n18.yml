@@ -1,0 +1,54 @@
+name: XPZ3D R36HW N18 actual central skin resurfacing
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/source/build_r36hw_n18.cjs'
+      - '.github/workflows/xpz3d-r36hw-n18.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128/source/glb_io.cjs
+            experimental/xpz3d/f11/r36hw-n17-skin-field-20261129/output/R36HW_N17_CENTER_DEPTH.glb
+            experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/
+            .github/workflows/xpz3d-r36hw-n18.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce N18 actual connected skin GLB
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/source/build_r36hw_n18.cjs
+          node experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/source/build_r36hw_n18.cjs
+      - name: Ensure real source geometry changed and boundaries held
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),root='experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129',r=JSON.parse(fs.readFileSync(root+'/reports/R36HW_N18_FRONT_SKIN_RESTORED.json','utf8'));
+          const b=fs.readFileSync(root+'/output/R36HW_N18_FRONT_SKIN_RESTORED.glb');
+          if(r.trianglesAfter!==2099||r.boundaryLocked!==45||r.changedVertices<20||r.rigJoints!==63||r.maxVertexMoveMeters>.052||!r.sourceFaceHairUnmodified||r.minFaceAreaSqMeters<1e-10||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.trianglesAfter,moved:r.changedVertices,maxMovement:r.maxVertexMoveMeters,sha:r.outputSHA256}));
+          NODE
+      - name: Publish real N18 GLB and audit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/output/R36HW_N18_FRONT_SKIN_RESTORED.glb experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/reports/R36HW_N18_FRONT_SKIN_RESTORED.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N18 attached central skin resurfacing GLB"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
