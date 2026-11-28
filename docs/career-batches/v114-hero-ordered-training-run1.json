@@ -1,0 +1,5641 @@
+{
+  "schema": "V114_HERO_ORDERED_TRAINING_LANES",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFilesHash": "e1871394e488e3e174172db5edc384571f6558563b335aa66382c56585ddb1ed",
+  "snapshotHash": "046ee4b3759ea356a9c631ad847b455c195485496c359312f79e5259991a058f",
+  "initialResearch": [
+    "STR_INSPECT_MACHINERY",
+    "STR_JACKSTOWN_SCOUTING",
+    "STR_RECRUIT_PEASANTS",
+    "STR_WAT_DO"
+  ],
+  "eventSource": {
+    "event": "STR_KNOCK_KNOCK_PENITENT",
+    "script": "STR_KNOCK_KNOCK_0",
+    "weights": [
+      {
+        "month": 0,
+        "weight": 50,
+        "totalWeight": 1580
+      },
+      {
+        "month": 4,
+        "weight": 50,
+        "totalWeight": 1665
+      },
+      {
+        "month": 12,
+        "weight": 50,
+        "totalWeight": 1618
+      }
+    ],
+    "executionOdds": 23,
+    "bundle": {
+      "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+      "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+      "item": "STR_HERO",
+      "count": 1
+    }
+  },
+  "legacyBranchHint": "branch-d71ceae0871151ca775d049a",
+  "scope": "CONDITIONAL_ORDERED_CAREER_NOT_FINAL_ADMISSION",
+  "routes": [
+    {
+      "mode": "gold",
+      "stage": "HERO_RECRUITED",
+      "actionHash": "a4a3c2e0f21404e4b9dcb2fc2e17a4b42c98a6aab5f5ed2f7d8feb61d9bbd815",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MENACING_HULL",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 70,
+          "stamina": 90,
+          "health": 50,
+          "bravery": 150,
+          "reactions": 60,
+          "firing": 80,
+          "throwing": 60,
+          "strength": 40,
+          "psiStrength": 60,
+          "psiSkill": 0,
+          "melee": 80,
+          "mana": 15
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "stats": {
+          "tu": 70,
+          "stamina": 90,
+          "health": 50,
+          "bravery": 150,
+          "reactions": 60,
+          "firing": 80,
+          "throwing": 60,
+          "strength": 40,
+          "psiStrength": 60,
+          "psiSkill": 0,
+          "melee": 80,
+          "mana": 15
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "permanentStats": {
+          "tu": 70,
+          "stamina": 90,
+          "health": 50,
+          "bravery": 150,
+          "reactions": 60,
+          "firing": 80,
+          "throwing": 60,
+          "strength": 40,
+          "psiStrength": 60,
+          "psiSkill": 0,
+          "melee": 80,
+          "mana": 15
+        }
+      },
+      "history": [],
+      "rank": 0,
+      "total": 755,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH",
+      "actionHash": "68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MENACING_HULL",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        }
+      },
+      "history": [],
+      "rank": 0,
+      "total": 1130,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH>STR_NEPOTISM",
+      "actionHash": "2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 15
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 165
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 15
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 165
+        }
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1145,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH",
+        "STR_NEPOTISM"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH>STR_SCHOOL_OF_HARD_KNOCKS",
+      "actionHash": "b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SCHOOL_OF_HARD_KNOCKS",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 3
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 153
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 3
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 153
+        }
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "rank": 0,
+      "total": 1156,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH>STR_NEPOTISM>STR_SCHOOL_OF_HARD_KNOCKS",
+      "actionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ],
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1171,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH>STR_SCHOOL_OF_HARD_KNOCKS>STR_NEPOTISM",
+      "actionHash": "de320589dbd7cb8b734fb73d4ae0ff7b013dce74e15d457aa7a22eefc52a96e1",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SCHOOL_OF_HARD_KNOCKS",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ],
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1171,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_NEPOTISM"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:STR_NEPOTISM>GROWTH>STR_SCHOOL_OF_HARD_KNOCKS",
+      "actionHash": "1cd1d7603c01121b899e7d5be20d82bffccfbb89fe4e3453563e344bca960022",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ],
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1171,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "STR_NEPOTISM",
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:STR_SCHOOL_OF_HARD_KNOCKS>GROWTH>STR_NEPOTISM",
+      "actionHash": "3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SCHOOL_OF_HARD_KNOCKS",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ],
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1153,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "GROWTH",
+        "STR_NEPOTISM"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:STR_NEPOTISM>STR_SCHOOL_OF_HARD_KNOCKS>GROWTH",
+      "actionHash": "0443307279d169619f12a3723cc13dfb9568ec5091c71f2ac7df898c3dc98e7a",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ],
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1153,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "GROWTH"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:STR_SCHOOL_OF_HARD_KNOCKS>STR_NEPOTISM>GROWTH",
+      "actionHash": "406cefe8dc7e8e9983ace9dafbb71c62e8309572ee958c337ef478f2f8cac0b4",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SCHOOL_OF_HARD_KNOCKS",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ],
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1153,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_NEPOTISM",
+        "GROWTH"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH>STR_NEPOTISM>STR_SCHOOL_OF_HARD_KNOCKS>GROWTH",
+      "actionHash": "5a2078717f75a170e5fecc9bd97cd23b8b0c24ed8c5509dc8c6498e5c03c2a28",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ],
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1171,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "GROWTH"
+      ]
+    },
+    {
+      "mode": "gold",
+      "stage": "ORDER:GROWTH>STR_SCHOOL_OF_HARD_KNOCKS>STR_NEPOTISM>GROWTH",
+      "actionHash": "ce9147eee8fdf72630e13ca1c2bfcb079f5efd936f8b3ba670a54e3bcd8945a7",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_UNCLASSED_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST3",
+          "research": "STR_CAPTAIN_UNCLASSED",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PURE_UP"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST4",
+          "research": "STR_CAPTAIN_PURE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_GRAY_UP"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SCHOOL_OF_HARD_KNOCKS",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        }
+      ],
+      "activeResearch": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_ANOMALY_DEP",
+        "STR_ANOMALY_DEP2",
+        "STR_CAPTAIN_DOUBLEGRAY",
+        "STR_CAPTAIN_GRAY",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PURE",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_UNCLASSED",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CHOOSE_GOLD_QUERY",
+        "STR_CLOTHING_UC",
+        "STR_CODEX_CHOICE",
+        "STR_CODEX_GOLD",
+        "STR_CODEX_GOLD_EXP",
+        "STR_CODEX_GRAY_EXP",
+        "STR_CODEX_GREEN_EXP",
+        "STR_CODEX_GR_GD",
+        "STR_CODEX_GY_GD",
+        "STR_CODEX_REDGOLD",
+        "STR_CROWNING_UC",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_EMBRACE_THE_POWER",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAME_CANNON_REPORT",
+        "STR_FUEGO_ANOMALY",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_MENACING_HULL",
+        "STR_NEPOTISM",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_OFFICERS_BATON",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUEEN_GOLD",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RECRUITMENT",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SHADOW_PLOT",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TINY_DRILL_INVESTIGATION",
+        "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "confirmedCommitments": [
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_UNCLASSED_UP",
+        "STR_CAPTAIN_PURE_UP",
+        "STR_CAPTAIN_GRAY_UP",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_QUEEN_GOLD",
+        "STR_CODEX_GOLD"
+      ],
+      "missingCommitments": [],
+      "branchCommitmentsComplete": true,
+      "canonicalBranchCertified": false,
+      "origin": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ],
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "rank": 3,
+      "total": 1171,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "sequence": [
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_NEPOTISM",
+        "GROWTH"
+      ]
+    }
+  ],
+  "blockers": [],
+  "registered": false,
+  "finalAdmission": false,
+  "gameCertified": false,
+  "stateGroups": [
+    {
+      "stateHash": "8c1344b5cd498660b9390f4097a7a9342e11eefc1aa953532de371e987aded69",
+      "total": 1171,
+      "stats": {
+        "tu": 80,
+        "stamina": 123,
+        "health": 66,
+        "bravery": 150,
+        "reactions": 86,
+        "firing": 115,
+        "throwing": 90,
+        "strength": 60,
+        "psiStrength": 76,
+        "psiSkill": 50,
+        "melee": 107,
+        "mana": 168
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ],
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "witnesses": [
+        {
+          "sequence": [
+            "GROWTH",
+            "STR_NEPOTISM",
+            "STR_SCHOOL_OF_HARD_KNOCKS"
+          ],
+          "actionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+          "actions": 51
+        },
+        {
+          "sequence": [
+            "GROWTH",
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            "STR_NEPOTISM"
+          ],
+          "actionHash": "de320589dbd7cb8b734fb73d4ae0ff7b013dce74e15d457aa7a22eefc52a96e1",
+          "actions": 51
+        },
+        {
+          "sequence": [
+            "STR_NEPOTISM",
+            "GROWTH",
+            "STR_SCHOOL_OF_HARD_KNOCKS"
+          ],
+          "actionHash": "1cd1d7603c01121b899e7d5be20d82bffccfbb89fe4e3453563e344bca960022",
+          "actions": 51
+        },
+        {
+          "sequence": [
+            "GROWTH",
+            "STR_NEPOTISM",
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            "GROWTH"
+          ],
+          "actionHash": "5a2078717f75a170e5fecc9bd97cd23b8b0c24ed8c5509dc8c6498e5c03c2a28",
+          "actions": 52
+        },
+        {
+          "sequence": [
+            "GROWTH",
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            "STR_NEPOTISM",
+            "GROWTH"
+          ],
+          "actionHash": "ce9147eee8fdf72630e13ca1c2bfcb079f5efd936f8b3ba670a54e3bcd8945a7",
+          "actions": 52
+        }
+      ]
+    },
+    {
+      "stateHash": "d35744750bfce089ea2e2896f5624e4a88374dc3728972e2f6af41011dd4e12d",
+      "total": 1156,
+      "stats": {
+        "tu": 80,
+        "stamina": 123,
+        "health": 66,
+        "bravery": 150,
+        "reactions": 86,
+        "firing": 115,
+        "throwing": 90,
+        "strength": 60,
+        "psiStrength": 76,
+        "psiSkill": 50,
+        "melee": 107,
+        "mana": 153
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ]
+      ],
+      "witnesses": [
+        {
+          "sequence": [
+            "GROWTH",
+            "STR_SCHOOL_OF_HARD_KNOCKS"
+          ],
+          "actionHash": "b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+          "actions": 46
+        }
+      ]
+    },
+    {
+      "stateHash": "641d29a95d8bf34615339cc4e36892740a369521222fbe00325d1672bdae01f5",
+      "total": 1153,
+      "stats": {
+        "tu": 80,
+        "stamina": 123,
+        "health": 60,
+        "bravery": 150,
+        "reactions": 80,
+        "firing": 115,
+        "throwing": 90,
+        "strength": 60,
+        "psiStrength": 76,
+        "psiSkill": 50,
+        "melee": 101,
+        "mana": 168
+      },
+      "history": [
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ],
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "witnesses": [
+        {
+          "sequence": [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            "GROWTH",
+            "STR_NEPOTISM"
+          ],
+          "actionHash": "3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+          "actions": 51
+        },
+        {
+          "sequence": [
+            "STR_NEPOTISM",
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            "GROWTH"
+          ],
+          "actionHash": "0443307279d169619f12a3723cc13dfb9568ec5091c71f2ac7df898c3dc98e7a",
+          "actions": 51
+        },
+        {
+          "sequence": [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            "STR_NEPOTISM",
+            "GROWTH"
+          ],
+          "actionHash": "406cefe8dc7e8e9983ace9dafbb71c62e8309572ee958c337ef478f2f8cac0b4",
+          "actions": 51
+        }
+      ]
+    },
+    {
+      "stateHash": "bb444bf6e5f0e27973e74be2c8860cd7b5db3f484260fe8603eb29c68a9e65de",
+      "total": 1145,
+      "stats": {
+        "tu": 80,
+        "stamina": 120,
+        "health": 60,
+        "bravery": 150,
+        "reactions": 80,
+        "firing": 115,
+        "throwing": 90,
+        "strength": 60,
+        "psiStrength": 75,
+        "psiSkill": 50,
+        "melee": 100,
+        "mana": 165
+      },
+      "history": [
+        [
+          "STR_NEPOTISM",
+          1
+        ]
+      ],
+      "witnesses": [
+        {
+          "sequence": [
+            "GROWTH",
+            "STR_NEPOTISM"
+          ],
+          "actionHash": "2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+          "actions": 48
+        }
+      ]
+    },
+    {
+      "stateHash": "ce303271b0ab714b70e0ccb7e4e788e90843e5e6b05194de05e51218eb3e8e36",
+      "total": 1130,
+      "stats": {
+        "tu": 80,
+        "stamina": 120,
+        "health": 60,
+        "bravery": 150,
+        "reactions": 80,
+        "firing": 115,
+        "throwing": 90,
+        "strength": 60,
+        "psiStrength": 75,
+        "psiSkill": 50,
+        "melee": 100,
+        "mana": 150
+      },
+      "history": [],
+      "witnesses": [
+        {
+          "sequence": [
+            "GROWTH"
+          ],
+          "actionHash": "68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+          "actions": 42
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "stageWitnesses": 12,
+    "recruited": 1,
+    "orderedWitnesses": 11,
+    "distinctObservedCareerStates": 5,
+    "completeCommitmentWitnesses": 12,
+    "bestTotal": 1171,
+    "blockers": 0
+  }
+}
