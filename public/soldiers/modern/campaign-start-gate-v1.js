@@ -4,6 +4,7 @@ import {researchStep,eventScriptVerdict} from './event-chronology.js';
 import {applyReachabilityAction} from './campaign-start-reachability-v1.js';
 import {applyFacilityAction} from './campaign-start-construction-v1.js';
 import {START_EVENT_RULES} from './campaign-start-event-rules-v1.js';
+import {CAREER_ACTIONS,applyConditionalCareerAction} from './campaign-start-career-actions-v1.js';
 export const START_RESEARCH=Object.freeze({
  STR_JACKSTOWN_SCOUTING:3,STR_WAT_DO:3,STR_RECRUIT_PEASANTS:3,STR_INSPECT_MACHINERY:6
 });
@@ -65,6 +66,7 @@ export function campaignStartWorld(data,snapshot){
 function applyCampaignStartCore(input,step,data){
  if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
  if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
+ if(CAREER_ACTIONS.has(step.type))return applyConditionalCareerAction(input,step,data);
  if(['acquirePurchase','acquireFacility'].includes(step.type)){
   try{return applyReachabilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
  }
