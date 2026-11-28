@@ -1,0 +1,11 @@
+import fs from "node:fs";
+import {createHash} from "node:crypto";
+import {produceEarlyPrefixes} from "./atlas-overcap-rooted-early-research.mjs";
+const dataPath="public/data/soldiers-modern-index.json",dataBytes=fs.readFileSync(dataPath),data=JSON.parse(dataBytes);
+const maxLabDepth=Number(process.argv.find(x=>x.startsWith("--depth="))?.slice(8)||2);
+const maxPrefixes=Number(process.argv.find(x=>x.startsWith("--limit="))?.slice(8)||1000);
+const result=produceEarlyPrefixes(data,{maxLabDepth,maxPrefixes});
+result.rulesBytesSha256=createHash("sha256").update(dataBytes).digest("hex");
+const out="tools/data/overcap-rooted-early-prefixes-v1.json";
+fs.writeFileSync(out,JSON.stringify(result,null,2)+"\n");
+console.log(JSON.stringify({out,byRoot:result.byRoot,prefixes:result.prefixes.length,failures:result.failures.length,frontier:result.frontier.length,truncated:result.truncated},null,2));

@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 export const SCHEMA='ATLAS_CAMPAIGN_RESEARCH_NORMALIZATION_RECEIPT_V1';
-export const ROOT_LABELS=['근처 마을 방문','회의 소집','지역 농부 고용','기계류 조사'];
+import {START_RESEARCH} from './atlas-overcap-rooted-early-research.mjs';
+export const ROOT_LABELS=Object.keys(START_RESEARCH);
 const hash=p=>createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 // Consumer contract only: upstream chronological replay must issue the receipt.
 export function requireNormalizedResearch({stage,ledger,read=fs.readFileSync,digest=hash}){
@@ -11,8 +12,7 @@ export function requireNormalizedResearch({stage,ledger,read=fs.readFileSync,dig
  try{receipt=JSON.parse(read(path,'utf8'));}catch(e){throw new Error('P0 research normalization receipt missing or unreadable: '+path,{cause:e});}
  assert.equal(receipt.schema,SCHEMA);
  assert.equal(receipt.status,'COMPLETE');
- assert.deepEqual(Object.keys(receipt.roots||{}).sort(),[...ROOT_LABELS].sort());
- const ids=Object.values(receipt.roots);assert(ids.every(x=>typeof x==='string'&&/^STR_/.test(x))&&new Set(ids).size===4);
+ assert.deepEqual(receipt.roots,START_RESEARCH,'Campaign start research IDs must match the observed four choices');
  assert.equal(receipt.sourceMetadataSha256,ledger.sourceMetadataSha256);
  assert.equal(receipt.sourceGraphSha256,ledger.sourceGraphSha256);
  assert.equal(receipt.ledgerBytesSha256,digest(stage+'soldier-population-missing-origin-career.json.gz'));
