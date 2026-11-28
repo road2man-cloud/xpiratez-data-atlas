@@ -1,0 +1,883 @@
+{
+  "schema": "ATLAS_FORWARD_GDX_BRIDGE_ACTIVE_V3",
+  "inputs": {
+    "electronicsIndexSha256": "01a9e0bc65427a9b775f00df61aabc9ee0978509caa18deaa0015b1fba0509bd",
+    "sourceSha256": "cd68d35cde57bb28e4a9c17768430f276898db4141f5d7bd362cd026ae04e02f",
+    "producerFiles": {
+      "tools/build-overcap-forward-gdx-bridge-v3.mjs": "f4ce29bb3a822b6f623c2bfd68dbdce0e6d6ee39fd6db465c60991882db53bba",
+      "tools/atlas-overcap-forward-gdx-bridge-v3.mjs": "e7a3ceaae86ec7980c1a1e69c4f1c5b80477571bc47c2b24cb04dd07723138b4",
+      "tools/build-overcap-forward-gdx-sources-v3.mjs": "202efa1a36a8f0f91f99ab0dc8e05853f531c4365ac00f5ea70c966b5db82d0c",
+      "tools/replay-overcap-forward-electronics-v3.mjs": "cc195ab47b7ba0ffba1578364bfaa2d14e0d39fed94dfc82b1a9e417a4c201d1"
+    }
+  },
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-gdx-bridge-v3-baseline-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-gdx-bridge-v3-baseline-str_inspect_machinery-summary.json",
+      "sha256": "97487cc9db336fd5431489a9ad7b43677e521bb467fde7f2732c645272d6ea6a",
+      "prefix": {
+        "path": "tools/data/overcap-forward-electronics-v3-baseline-str_inspect_machinery.json.gz",
+        "sha256": "0eaa1b7dd12d89b6add42cd47eb76c5755eb9b25ced561a42d2ec04c286737ed",
+        "cursor": "core",
+        "step": 147,
+        "stateHash": "31dda84d6a344c645f4e74a3264cf66d58ca38dfdca2c349f15279eeec3bb37e"
+      },
+      "forkHash": "124d85b7a9a2cbbd1945b6e91dcc6600659d95a64d575cbd61d7307fca893ad2",
+      "sharedSteps": 2,
+      "branches": [
+        {
+          "award": "STR_ALIEN_TERROR",
+          "stateHash": "9574a79479add2f88f6f902b114018acab79a0e643520561e3eba7864e7b7dd0",
+          "steps": 5,
+          "researchCount": 200,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_ALIEN_TERROR",
+            "STR_DATA_MINING",
+            "STR_GLAMOUR",
+            "STR_SALVAGE"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 445
+        },
+        {
+          "award": "STR_VODKA",
+          "stateHash": "cf9cac9718ec9ef35f1707dfc2e4d119b66de350c590057c22ab60ebe6a4f1e4",
+          "steps": 5,
+          "researchCount": 200,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING",
+            "STR_GLAMOUR",
+            "STR_SALVAGE"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 445
+        },
+        {
+          "award": "STR_ELECTRONIC_PIECES",
+          "stateHash": "deb3504a5ada99c73b7c13d973d841bb34bf6b6bc95366114c4f1b40496cb7f3",
+          "steps": 5,
+          "researchCount": 200,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING",
+            "STR_GLAMOUR",
+            "STR_SALVAGE"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 445
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_inspect_machinery-summary.json",
+      "sha256": "ae091eb5c2fc720b92c3c7923586ce9b7a4d5595aefdb18ff5445473850797e4",
+      "prefix": {
+        "path": "tools/data/overcap-forward-electronics-v3-uk-str_inspect_machinery.json.gz",
+        "sha256": "e1b46e8906038533a18f7705d97b8ccebc3d20bfc2aeca0d133019553a1dbd07",
+        "cursor": "core",
+        "step": 83,
+        "stateHash": "a346ab4c1633e397e9626c10c9ff18ed8905d2f98c3d218dfcf1e22fc4121cc1"
+      },
+      "forkHash": "a47507fc02a2595e1980d62aac7a5c51a131339cf15ab7e90c2fda35ee93f16c",
+      "sharedSteps": 2,
+      "branches": [
+        {
+          "award": "STR_ALIEN_TERROR",
+          "stateHash": "020bfc705fcc00bfef8c5f1d9403e07fb3b91c8f5d5347240792e3524bb70cfe",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_ALIEN_TERROR",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_VODKA",
+          "stateHash": "983f5c8dc26b99c0446a8265cc9fd5f49200878added60c890d4bf65cf231b12",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_ELECTRONIC_PIECES",
+          "stateHash": "d023b900cf330988456662c19454d5f7798bc1946dfebaa32277ad622f62356d",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "path": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_jackstown_scouting.json.gz",
+      "summary": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_jackstown_scouting-summary.json",
+      "sha256": "8dc7908bd7a8da279ec64ea90690dc1ea9977baf031feb591ff91cc56b70bd68",
+      "prefix": {
+        "path": "tools/data/overcap-forward-electronics-v3-uk-str_jackstown_scouting.json.gz",
+        "sha256": "09829fb35f582c6bee7d637f0000e20f2753abd822e2e280dea061037c828d0b",
+        "cursor": "core",
+        "step": 83,
+        "stateHash": "6785010fb2484333639029c7d5187ec51edf5a322f0b45488555277cbfc37eb8"
+      },
+      "forkHash": "9341f9c8f08232f9f6545afd66599891aecfc142412c0efc2477d9ef3d5dfb76",
+      "sharedSteps": 2,
+      "branches": [
+        {
+          "award": "STR_ALIEN_TERROR",
+          "stateHash": "d603a77cc6909ec72248ebd629a42561aafdccaac7bb930a020f7801a3e3696a",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_ALIEN_TERROR",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_VODKA",
+          "stateHash": "9d4f1f6def736fad64cc518026f314161bef350a64c7048de9c85a7d7327ad4c",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_ELECTRONIC_PIECES",
+          "stateHash": "2ac3836c731f47c3f6806a9e2a2ae36781baa472e4fa62a32c99c84023e06999",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_RECRUIT_PEASANTS",
+      "path": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_recruit_peasants.json.gz",
+      "summary": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_recruit_peasants-summary.json",
+      "sha256": "5eaeacae46b1927a7290a1b60915d526bcf018ca3831be8ee1456ea610fcbfa8",
+      "prefix": {
+        "path": "tools/data/overcap-forward-electronics-v3-uk-str_recruit_peasants.json.gz",
+        "sha256": "f9c695240773b91abf90d9d8a9a607876bf42de83a45890cf759edb2fe4e9cc6",
+        "cursor": "core",
+        "step": 83,
+        "stateHash": "15c8c48f697301776608d6d4d7f1d067b531ac9f45456d9c842a188fe30a4d70"
+      },
+      "forkHash": "d6ca9442dfde53a2660605b46bfb3d69c26d34c7e429ad66f8e7d2e473587396",
+      "sharedSteps": 2,
+      "branches": [
+        {
+          "award": "STR_ALIEN_TERROR",
+          "stateHash": "72109274af22f30b77baf762a963066bf81117fb3811270cc68f9bd11525911d",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_ALIEN_TERROR",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_VODKA",
+          "stateHash": "c1f0b21867e7d2a15911e3bc29ab423238e2cc68294f6f4028cb0493b5799218",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_ELECTRONIC_PIECES",
+          "stateHash": "16232913321148dba362f2366dded7667f895b626c863ff46ef4688f2bf9f886",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_WAT_DO",
+      "path": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_wat_do.json.gz",
+      "summary": "tools/data/overcap-forward-gdx-bridge-v3-uk-str_wat_do-summary.json",
+      "sha256": "aa8a03453aae43a35444b140ea7e789f348e2e07c6fc54130b80c6b8fa7d5b10",
+      "prefix": {
+        "path": "tools/data/overcap-forward-electronics-v3-uk-str_wat_do.json.gz",
+        "sha256": "bf65a5252b956344cb5bbb916e2e9c56054e71777466ff99b115f210074602e8",
+        "cursor": "core",
+        "step": 83,
+        "stateHash": "5008469ede3f3042ba554d6f421f08b2a7f9a562a7c35de5f41054430c71ce30"
+      },
+      "forkHash": "faa4142c9a36a25136c367f9113c8dade8aa426dde78aa6ed67ea234129716a6",
+      "sharedSteps": 2,
+      "branches": [
+        {
+          "award": "STR_ALIEN_TERROR",
+          "stateHash": "367f40d4b01a1e497d465569806e5aaafe369ff2091c4b70cd667236a407e455",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_ALIEN_TERROR",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_VODKA",
+          "stateHash": "266ef1a9f1d15b737efe412d799ab41d6477da0d8691ec84d6f615280d582654",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        },
+        {
+          "award": "STR_ELECTRONIC_PIECES",
+          "stateHash": "4fd325d6bd97b6da173c1de91b092de6a8e27722bacf9510554d559f7611e927",
+          "steps": 7,
+          "researchCount": 123,
+          "milestones": [
+            "STR_SECTOID_SOLDIER",
+            "STR_ALIEN_ORIGINS",
+            "STR_BEER",
+            "STR_DATA_MINING"
+          ],
+          "baseFunctions": [
+            "ALKO",
+            "CPU",
+            "CULT",
+            "GAMB",
+            "LAB",
+            "SHOP",
+            "STUDY",
+            "WELL",
+            "WORKS"
+          ],
+          "orderBlockers": [
+            {
+              "event": "STR_GDX_EVENT_ORDERS_1",
+              "research": "STR_GDX_001",
+              "firstMonth": 4,
+              "missing": [
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            },
+            {
+              "event": "STR_GDX_EVENT_ORDERS_2",
+              "research": "STR_GDX_002",
+              "firstMonth": 9,
+              "missing": [
+                "STR_GDX_001",
+                "STR_SECTOID_MEDIC",
+                "STR_ACADEMY_NURSE"
+              ],
+              "alreadyResearched": false,
+              "tooEarly": true,
+              "available": false
+            }
+          ],
+          "deferredOptions": 628
+        }
+      ]
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}

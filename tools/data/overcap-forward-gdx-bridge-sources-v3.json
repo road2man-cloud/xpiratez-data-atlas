@@ -1,0 +1,282 @@
+{
+  "schema": "ATLAS_FORWARD_GDX_BRIDGE_SOURCES_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "capture": {
+    "id": "watchtower-sectoid-capture",
+    "deployment": "STR_LOC_HT_HOUSE",
+    "missionScript": "watchTower",
+    "race": "STR_SECTOID_NONCOM",
+    "rank": 5,
+    "availableUnits": 4,
+    "selectedUnitCount": 1,
+    "loot": {
+      "STR_SECTOID_SOLDIER": 1,
+      "STR_BEER": 1
+    },
+    "beerItemSetIndex": 2,
+    "beerItemSet": [
+      "STR_PISTOL_LT",
+      "STR_PISTOL_LT_CLIP",
+      "STR_PISTOL_LT_CLIP",
+      "STR_PISTOL_LT_CLIP",
+      "STR_CREDIT_CHIP_D",
+      "STR_CREDIT_CHIP_M",
+      "STR_CREDIT_CHIP_00",
+      "STR_BEER"
+    ],
+    "raceWeights": [
+      {
+        "month": 0,
+        "weights": {
+          "STR_SECTOID_NONCOM": 25,
+          "STR_SNAKEMAN": 25,
+          "STR_FLOATER_NONCOM": 50
+        }
+      },
+      {
+        "month": 1,
+        "weights": {
+          "STR_SECTOID_NONCOM": 40,
+          "STR_SNAKEMAN": 30,
+          "STR_FLOATER_NONCOM": 25,
+          "STR_ZOMBIE": 5
+        }
+      }
+    ],
+    "itemLevels": [
+      [
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        4
+      ]
+    ],
+    "firstMonth": 0,
+    "lastMonth": 16,
+    "executionOdds": 16,
+    "prisonType": 0,
+    "requiredFacility": "STR_JAIL",
+    "nominalCapacity": 15,
+    "anchors": {
+      "mission": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 35608,
+        "endLine": 35621,
+        "blockSha256": "991ad783fce58deae1705c29c3444aa010fcaaa9c95271b655ce4172fab26ebd"
+      },
+      "deployment": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 75136,
+        "endLine": 75208,
+        "blockSha256": "d7a31668f12cce109b3c47631944200341df2527ac04a312726f9431e29880ee"
+      },
+      "script": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 29792,
+        "endLine": 29805,
+        "blockSha256": "a65505889e0f9b92dca170fd631349637bac86f1e6385a652d36f415fd068ee8"
+      },
+      "race": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 25270,
+        "endLine": 25287,
+        "blockSha256": "6a3eae9cc79d1261de176c7a3c7e6ae1d85e4b054c99f6b2c3b068ca7e6d53ca"
+      },
+      "unit": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 17609,
+        "endLine": 17635,
+        "blockSha256": "62eed17c51783c934ffeefc4a903437a4d5e5d4c51bb691fdf2b95a1845e9ecd"
+      },
+      "armor": {
+        "file": "Piratez_Armors.rul",
+        "sha256": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+        "startLine": 33464,
+        "endLine": 33510,
+        "blockSha256": "b3f0401380f3cfb195c2bb7fc9bec02504e1e9b1669272d7cfc2d2e635e9d433"
+      },
+      "corpse": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 1166,
+        "endLine": 1179,
+        "blockSha256": "24d2052a9808b8ad171e15d756a587d97a87dae05fda820a2a62deef1ba152b5"
+      },
+      "item": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 6011,
+        "endLine": 6014,
+        "blockSha256": "35f03b01d3501ee0e5ba7148bc5228546de52c9d0830304d15671b6fb6bdb08e"
+      },
+      "beer": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 59634,
+        "endLine": 59664,
+        "blockSha256": "2993858e1b64cf973cc1744f20f1b021ab35a16eb1bbc14df2d5cc0729aae1d9"
+      },
+      "jail": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 1086,
+        "endLine": 1101,
+        "blockSha256": "8b3f826bb2640284b6bdaa738339c3ee494f43317bcbaccebf0dde17dc37da6c"
+      },
+      "itemLevels": {
+        "file": "Piratez_Factions.rul",
+        "sha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startLine": 116886,
+        "endLine": 116887,
+        "blockSha256": "b3c73681d2fa33c848b29d998cf8a94427dda57c90efb5a71a8fdf5a9829d208"
+      }
+    },
+    "assumptions": [
+      "Mission generates in its specified region and is reachable by a compatible roster/craft",
+      "Selected race outcome and one enemy successfully spawns and is captured alive",
+      "Distinct enemy has level-2 equipment; one unused and unprimed beer survives and is recovered",
+      "At least one suitable free containment slot is actually available; no inferred occupancy from partial inventory",
+      "Victory, non-aborted recovery, score and full inventory remain unobserved"
+    ]
+  },
+  "orders": [
+    {
+      "id": "STR_GDX_EVENT_ORDERS_1",
+      "research": "STR_GDX_001",
+      "script": {
+        "script": "STR_GDX_EVENT_ORDERS_1",
+        "mode": "weighted",
+        "monthWeights": [
+          {
+            "month": 0,
+            "weight": 100,
+            "totalWeight": 100
+          }
+        ],
+        "oneTimeEarlier": [],
+        "oneTimeWeight": null,
+        "oneTimeTotal": null,
+        "firstMonth": 4,
+        "lastMonth": null,
+        "executionOdds": 50,
+        "researchPositive": [
+          "STR_SECTOID_MEDIC",
+          "STR_SECTOID_SOLDIER",
+          "STR_ACADEMY_NURSE",
+          "STR_SCHOOLING_1",
+          "STR_GOVT_CORPSE"
+        ],
+        "researchNegative": [
+          "STR_GDX_001"
+        ],
+        "itemPositive": [],
+        "itemNegative": [],
+        "facilityPositive": [],
+        "facilityNegative": [],
+        "soldierTypePositive": [],
+        "soldierTypeNegative": [],
+        "regionPositive": [],
+        "regionNegative": [],
+        "countryPositive": [],
+        "countryNegative": [],
+        "pactPositive": [],
+        "pactNegative": [],
+        "otherConditions": {}
+      },
+      "interruptResearch": "STR_GDX_001",
+      "points": -100,
+      "timer": 60,
+      "timerRandom": 43400,
+      "eventAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 4017,
+        "endLine": 4024,
+        "blockSha256": "bd6564636c9e1c791c77afc2f89314165976d512c18800efa9b81801fc1a6c57"
+      },
+      "scriptAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7963,
+        "endLine": 7975,
+        "blockSha256": "f30cdb11fe748b3acccf006910a45b01ebaabf28062ffff6b01882e8a29e2941"
+      }
+    },
+    {
+      "id": "STR_GDX_EVENT_ORDERS_2",
+      "research": "STR_GDX_002",
+      "script": {
+        "script": "STR_GDX_EVENT_ORDERS_2",
+        "mode": "weighted",
+        "monthWeights": [
+          {
+            "month": 0,
+            "weight": 100,
+            "totalWeight": 100
+          }
+        ],
+        "oneTimeEarlier": [],
+        "oneTimeWeight": null,
+        "oneTimeTotal": null,
+        "firstMonth": 9,
+        "lastMonth": null,
+        "executionOdds": 50,
+        "researchPositive": [
+          "STR_GDX_001",
+          "STR_SECTOID_MEDIC",
+          "STR_SECTOID_SOLDIER",
+          "STR_ACADEMY_NURSE",
+          "STR_SCHOOLING_1",
+          "STR_GOVT_CORPSE"
+        ],
+        "researchNegative": [
+          "STR_GDX_002"
+        ],
+        "itemPositive": [],
+        "itemNegative": [],
+        "facilityPositive": [],
+        "facilityNegative": [],
+        "soldierTypePositive": [],
+        "soldierTypeNegative": [],
+        "regionPositive": [],
+        "regionNegative": [],
+        "countryPositive": [],
+        "countryNegative": [],
+        "pactPositive": [],
+        "pactNegative": [],
+        "otherConditions": {}
+      },
+      "interruptResearch": "STR_GDX_002",
+      "points": -100,
+      "timer": 60,
+      "timerRandom": 43400,
+      "eventAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 4025,
+        "endLine": 4032,
+        "blockSha256": "59a4158c0f807b6468773fab5278305e449f9cccec10bdae1305ccc40d0e1f2e"
+      },
+      "scriptAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7976,
+        "endLine": 7989,
+        "blockSha256": "3c647c19fe33c07c7697f903baee0ba73400fe9e9e3ecb1d53db91ef3b2cc7bd"
+      }
+    }
+  ],
+  "scope": "Source-bounded conditional capture and GDX timed research events. No actual battles, elapsed days, complete containment occupancy or score certified."
+}
