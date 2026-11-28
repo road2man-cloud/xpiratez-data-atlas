@@ -28,6 +28,7 @@ jobs:
       - name: Render diagnostic real mesh frames
         run: |
           node --check experimental/xpz3d/f11/r36hw-n7b-mesh-render-20261129/source/render_n7b.cjs
+          rm -rf experimental/xpz3d/f11/r36hw-n7b-mesh-render-20261129/output
           node experimental/xpz3d/f11/r36hw-n7b-mesh-render-20261129/source/render_n7b.cjs experimental/xpz3d/f11/r36hw-n7-hem-continuity-20261129/output/R36HW_N7_HEM_CONTINUITY.glb experimental/xpz3d/f11/r36hw-n7b-mesh-render-20261129/output
       - name: Verify actual rendered triangles and views
         run: |
