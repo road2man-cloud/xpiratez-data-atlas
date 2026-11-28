@@ -1,0 +1,53 @@
+name: XPZ3D R138M corrected N7B native S2 packet
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r138m-hw-n7b-native-20261129/source/**'
+      - '.github/workflows/xpz3d-r138m-hw-n7b.yml'
+permissions:
+  contents: write
+jobs:
+  packet:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36hw-n7-hem-continuity-20261129/output/R36HW_N7_HEM_CONTINUITY.glb
+            experimental/xpz3d/f11/r138m-hw-n7b-native-20261129/
+            .github/workflows/xpz3d-r138m-hw-n7b.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node --check experimental/xpz3d/f11/r138m-hw-n7b-native-20261129/source/build_packet_n7b.cjs
+          node experimental/xpz3d/f11/r138m-hw-n7b-native-20261129/source/build_packet_n7b.cjs
+      - name: Check actual source mesh packet
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),dir='experimental/xpz3d/f11/r138m-hw-n7b-native-20261129';
+          const r=JSON.parse(fs.readFileSync(dir+'/reports/R36HW_N7B_STATIC_XPZC.json','utf8'));
+          const b=fs.readFileSync(dir+'/output/R36HW_N7B_STATIC_XPZC.bin');
+          if(r.triangles!==2098||r.parts!==10||r.modelOriginalJoints!==63||b.readUInt32LE(12)!==2098||b.readUInt32LE(8)!==10||b.toString('ascii',0,4)!=='XPZC')throw Error('Native geometry packet mismatch');
+          console.log(JSON.stringify({triangles:r.triangles,bytes:b.length,sha256:r.packetSha256}));
+          NODE
+      - name: Publish actual S2 packet and report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r138m-hw-n7b-native-20261129/output/R36HW_N7B_STATIC_XPZC.bin experimental/xpz3d/f11/r138m-hw-n7b-native-20261129/reports/R36HW_N7B_STATIC_XPZC.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N7B 2098 triangle static native S2 packet"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
