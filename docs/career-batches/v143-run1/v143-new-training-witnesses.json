@@ -1,0 +1,1682 @@
+{
+  "version": 143,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "d7e435ca848810438c9f9fa172e9a1e5d5bd24ba9576c337e0beb1f362adf98a",
+  "witnesses": [
+    {
+      "from": "071f653b1ba90f222f9f6b1d0b9ab4bf3d560dcf98ab59132c6df4b802580e52",
+      "to": "944b021b8b4f394384555e85fa66ec36cedd0881ea57026ae5c7cf79d968d1fa",
+      "action": {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_PERSONAL_ATTENTION"
+      },
+      "evidence": {
+        "originProfile": "manufacture:STR_HERO_RECRUITMENT",
+        "body": "STR_SOLDIER_HERO",
+        "transformation": "STR_PERSONAL_ATTENTION",
+        "before": {
+          "raw": {
+            "tu": 80,
+            "stamina": 145,
+            "health": 81,
+            "bravery": 150,
+            "reactions": 89,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 70,
+            "psiStrength": 75,
+            "psiSkill": 50,
+            "melee": 106,
+            "mana": 150
+          },
+          "bonus": {
+            "tu": 4,
+            "stamina": 9,
+            "health": 10,
+            "bravery": 0,
+            "reactions": 2,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 4,
+            "psiStrength": 3,
+            "psiSkill": 0,
+            "melee": 3,
+            "mana": 25
+          },
+          "stats": {
+            "tu": 84,
+            "stamina": 154,
+            "health": 91,
+            "bravery": 150,
+            "reactions": 91,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 74,
+            "psiStrength": 78,
+            "psiSkill": 50,
+            "melee": 109,
+            "mana": 175
+          },
+          "permanentBonus": {
+            "tu": 4,
+            "stamina": 9,
+            "health": 10,
+            "bravery": 0,
+            "reactions": 2,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 4,
+            "psiStrength": 3,
+            "psiSkill": 0,
+            "melee": 3,
+            "mana": 25
+          },
+          "permanentStats": {
+            "tu": 84,
+            "stamina": 154,
+            "health": 91,
+            "bravery": 150,
+            "reactions": 91,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 74,
+            "psiStrength": 78,
+            "psiSkill": 50,
+            "melee": 109,
+            "mana": 175
+          }
+        },
+        "after": {
+          "raw": {
+            "tu": 80,
+            "stamina": 145,
+            "health": 81,
+            "bravery": 150,
+            "reactions": 89,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 70,
+            "psiStrength": 75,
+            "psiSkill": 50,
+            "melee": 106,
+            "mana": 150
+          },
+          "bonus": {
+            "tu": 4,
+            "stamina": 9,
+            "health": 10,
+            "bravery": 0,
+            "reactions": 2,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 4,
+            "psiStrength": 3,
+            "psiSkill": 0,
+            "melee": 3,
+            "mana": 26
+          },
+          "stats": {
+            "tu": 84,
+            "stamina": 154,
+            "health": 91,
+            "bravery": 150,
+            "reactions": 91,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 74,
+            "psiStrength": 78,
+            "psiSkill": 50,
+            "melee": 109,
+            "mana": 176
+          },
+          "permanentBonus": {
+            "tu": 4,
+            "stamina": 9,
+            "health": 10,
+            "bravery": 0,
+            "reactions": 2,
+            "firing": 0,
+            "throwing": 0,
+            "strength": 4,
+            "psiStrength": 3,
+            "psiSkill": 0,
+            "melee": 3,
+            "mana": 26
+          },
+          "permanentStats": {
+            "tu": 84,
+            "stamina": 154,
+            "health": 91,
+            "bravery": 150,
+            "reactions": 91,
+            "firing": 125,
+            "throwing": 95,
+            "strength": 74,
+            "psiStrength": 78,
+            "psiSkill": 50,
+            "melee": 109,
+            "mana": 176
+          }
+        },
+        "delta": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "history": [
+          [
+            "STR_BASIC_FIREARMS_TRAINING",
+            1
+          ],
+          [
+            "STR_BREAD_AND_FISHES_TRAINING",
+            1
+          ],
+          [
+            "STR_NEPOTISM",
+            1
+          ],
+          [
+            "STR_OFFICER_TRAINING",
+            1
+          ],
+          [
+            "STR_PERSONAL_ATTENTION",
+            1
+          ],
+          [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            1
+          ]
+        ],
+        "rank": 3,
+        "activeResearch": [
+          "CIV_ARMOR_LOKNAR_1",
+          "HUMAN_ARMOR_M3",
+          "HUMAN_ARMOR_M9",
+          "NAZI_ARMOR_P4",
+          "STR_ALIEN_ORIGINS",
+          "STR_AMMO_MANUFACTURING_2_PREQ",
+          "STR_ANOMALY_DEP",
+          "STR_ANOMALY_DEP2",
+          "STR_ANY_BASIC_TROPHY_UNLOCKED",
+          "STR_AUTO_RIFLE",
+          "STR_BALLISTICS",
+          "STR_BALLISTICS_ZZZ",
+          "STR_BASIC_FIREARMS_TRAINING",
+          "STR_BASIC_INCENDIARIES",
+          "STR_BASIC_INCENDIARIES_ZZZ",
+          "STR_BEER",
+          "STR_BONDING_CEREMONY",
+          "STR_BOOK_OF_SERMONS",
+          "STR_BOUNTY_HUNTING",
+          "STR_BOUNTY_HUNTING_PRIZE_ALLIANCE_FAVORS_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_BLACK_ADDER_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_DURATHREAD_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_EAGLE_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_HARPOON_CARBINE_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+          "STR_BOUNTY_HUNTING_PRIZE_MINI_SHOTGUN_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_PEACEMAKER_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_PIRANHA_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_SILENCED_PISTOL_PREQ",
+          "STR_BOWS_SUMMARY",
+          "STR_BOW_H",
+          "STR_BREAD_AND_FISHES_TRAINING",
+          "STR_BUCKSHOT_HV",
+          "STR_CAMOUFLAGE",
+          "STR_CAMO_PAINT",
+          "STR_CAPTAINS_LOG_01",
+          "STR_CAPTAINS_RANK_01",
+          "STR_CAPTAINS_RANK_02",
+          "STR_CAPTAINS_RANK_03",
+          "STR_CAPTAINS_RANK_04",
+          "STR_CAPTAIN_DOUBLEGREEN",
+          "STR_CAPTAIN_DUMBLAZY",
+          "STR_CAPTAIN_GOLD",
+          "STR_CAPTAIN_GREEN",
+          "STR_CAPTAIN_PERSONALITY_TEST",
+          "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+          "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+          "STR_CAPTAIN_PRIEST",
+          "STR_CAPTAIN_PUSSY",
+          "STR_CAPTAIN_PUSSY_UP",
+          "STR_CAPTAIN_RED",
+          "STR_CAPTAIN_SOREDUMB",
+          "STR_CAPTAIN_YESGREEN_NOGOLD",
+          "STR_CAPTAIN_YESGREEN_NORED",
+          "STR_CEREMONY_DEP",
+          "STR_CHAPLAIN_TRAINING",
+          "STR_CHOOSE_GOLD_QUERY",
+          "STR_CLOCKWORK_GUN_PRODUCTION",
+          "STR_CLOTHING_UC",
+          "STR_CODEX_CHOICE",
+          "STR_CODEX_GOLD",
+          "STR_CODEX_GOLD_EXP",
+          "STR_CODEX_GRAY_EXP",
+          "STR_CODEX_GREEN_EXP",
+          "STR_CODEX_GR_GD",
+          "STR_CODEX_GY_GD",
+          "STR_CODEX_REDGOLD",
+          "STR_COLT45",
+          "STR_CONTACT_BUILDERS",
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_CONTACT_GENERAL_SUPPLIES_ZZZ",
+          "STR_CONTACT_TIGER_TRANSPORT",
+          "STR_CRACK",
+          "STR_CREATIVITY",
+          "STR_CROWNING_UC",
+          "STR_CS_GAS",
+          "STR_CUISINE",
+          "STR_CUNNING",
+          "STR_DATA_DISK_B",
+          "STR_DIVERGING_PATHS",
+          "STR_EMBRACE_THE_POWER",
+          "STR_EXCAVATION",
+          "STR_EXPEDITION",
+          "STR_EXPEDITIONS",
+          "STR_EXPEDITION_RESEARCH",
+          "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+          "STR_EXPLORE_TUNNELS",
+          "STR_EXPLOSIVES_SUMMARY",
+          "STR_FARMING",
+          "STR_FIREARMS_SUMMARY",
+          "STR_FIRST_AID_KIT",
+          "STR_FLAME_CANNON_REPORT",
+          "STR_FLINTLOCKS_PRODUCTION",
+          "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+          "STR_FUEGO_ANOMALY",
+          "STR_GENERAL_STORES_ARMORED",
+          "STR_GLAMOUR",
+          "STR_GNOME",
+          "STR_GODS_E1",
+          "STR_GODS_SUMMARY_PREQ2",
+          "STR_GOVT_AUTOPSY",
+          "STR_GOVT_CORPSE",
+          "STR_GROG_BARREL",
+          "STR_GUNS_N_AMMO",
+          "STR_GUN_SCOPE",
+          "STR_GUN_SHOPPING",
+          "STR_GYMNASTICS",
+          "STR_GYM_ADVANCE",
+          "STR_GYM_ADVANCE_PREQ",
+          "STR_GYM_OUTFIT",
+          "STR_HARDWARE_SHOPPING",
+          "STR_HEAVY_WEAPONS_SUMMARY",
+          "STR_HERO",
+          "STR_HEROIC",
+          "STR_HERO_RECRUITMENT",
+          "STR_HONOR",
+          "STR_HUMAN_MALE_3",
+          "STR_HUMAN_SHARP_GUY",
+          "STR_HYDROPONICS",
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_JACKSTOWN_ZZZ",
+          "STR_JUNK_PILE",
+          "STR_JUSTICE",
+          "STR_KNUCKLES_SPIKED",
+          "STR_KULTUR",
+          "STR_KUNG_FU",
+          "STR_LABORATORY",
+          "STR_LAMIA_RECRUITMENT_PREQ",
+          "STR_LIBRARY",
+          "STR_LINGERIE",
+          "STR_LINGERIE_DEP",
+          "STR_LOKNAR_ORIGINS",
+          "STR_LOKNAR_RECRUITMENT",
+          "STR_LOKNAR_RECRUITMENT_ZZZ",
+          "STR_LOOTBOX_PREPPER",
+          "STR_LOOT_DISTRIBUTION",
+          "STR_MEDICAL_SUPPLIES",
+          "STR_MEDICINE",
+          "STR_MELEE_SUMMARY",
+          "STR_MENACING_HULL",
+          "STR_MESS_HALL",
+          "STR_MILITARY_DRILL_TRAINING_PREQ",
+          "STR_MUTANT_ABILITIES",
+          "STR_MUTANT_BLESSINGS",
+          "STR_MUTANT_EGG",
+          "STR_MUTANT_ORIGINS",
+          "STR_MUTANT_SAUSAGE",
+          "STR_NAZIS",
+          "STR_NAZI_LEADER",
+          "STR_NEPOTISM",
+          "STR_NEWSPAPER",
+          "STR_NONPROFIT_LAB_PREQ",
+          "STR_OFFERING_TO_PURPLE_BLOOM",
+          "STR_OFFICERS_BATON",
+          "STR_OFFICER_TRAINING",
+          "STR_OFFICER_TRAINING_PREQ",
+          "STR_OLD_BOOKS",
+          "STR_ONE_TROPHY_MA",
+          "STR_OPERATOR_ARMOR_BUY_PREQ1",
+          "STR_PARTY_DEP",
+          "STR_PEASANTS_ZZZ",
+          "STR_PEASANT_ARMOR_MILITIA",
+          "STR_PEASANT_CAMO_UC",
+          "STR_PEASANT_MILITIA",
+          "STR_PEPPER_PISTOL",
+          "STR_PERSONAL_ATTENTION",
+          "STR_PERSONAL_LABS",
+          "STR_PERSONAL_LABS_EXIST",
+          "STR_PICKAXE",
+          "STR_PINUP_001",
+          "STR_PIRATE_FLAG",
+          "STR_PIRATE_LIFE",
+          "STR_PIRATE_STYLE",
+          "STR_PISTOLS_SUMMARY",
+          "STR_PORN",
+          "STR_PRIMITIVE_WEAPONS",
+          "STR_PRIMITIVE_WEAPONS_2",
+          "STR_PRIMITIVE_WEAPONS_2_ZZZ",
+          "STR_PRIMITIVE_WEAPONS_ZZZ",
+          "STR_QUARTERSTAFF",
+          "STR_QUEEN_GOLD",
+          "STR_QUESTION_OF_DRILL",
+          "STR_RAIDER_CORPSE",
+          "STR_RECRUITMENT",
+          "STR_RECRUITMENT_DEP",
+          "STR_RECRUIT_PEASANTS",
+          "STR_RIFLES_SUMMARY",
+          "STR_RIFLE_CLIP",
+          "STR_ROCKET_LAUNCHER",
+          "STR_SAILOR_UNIFORM",
+          "STR_SARGEANT_TRAINING",
+          "STR_SCHOOLING_1",
+          "STR_SCHOOLING_2",
+          "STR_SCHOOL_BOOKS",
+          "STR_SCHOOL_BOOKS_ITEM",
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          "STR_SCI_REP",
+          "STR_SC_WIRE",
+          "STR_SECTOWEED",
+          "STR_SHADOW_PLOT",
+          "STR_SHOTGUNS_SUMMARY",
+          "STR_SISTER_VICTIM",
+          "STR_SISTER_VICTIM_RECRUITMENT",
+          "STR_SISTER_VICTIM_RECRUITMENT_BRAINER",
+          "STR_SKINNING",
+          "STR_SLAVE_ARMOR_PIRATE_UC",
+          "STR_SLAVE_ARMOR_TAC_VEST_UC",
+          "STR_SLAVE_ARMOR_TUNIC_UC",
+          "STR_SLAVE_SOLDIERS",
+          "STR_SLAVE_SOLDIERS_ZZZ",
+          "STR_SMGS_SUMMARY",
+          "STR_SMITHING",
+          "STR_SMITHING_ZZZ",
+          "STR_SNIPER_SUMMARY",
+          "STR_SOCIALIZING",
+          "STR_SOLDIER_TYPE_BASIC",
+          "STR_SOLDIER_TYPE_BASIC_PREQ_A",
+          "STR_SOLDIER_TYPE_BASIC_PREQ_B",
+          "STR_SOLDIER_TYPE_PEA",
+          "STR_SOLDIER_TYPE_SS",
+          "STR_SPORTS_RIFLE",
+          "STR_SS_OPERATIONS",
+          "STR_SURVIVAL",
+          "STR_SURVIVAL_ZZZ",
+          "STR_SWIMSUIT",
+          "STR_SWIMSUIT_PEASANT_UC",
+          "STR_TACTICS",
+          "STR_TACTICS_ZZZ",
+          "STR_TAC_VEST_PEASANT_UC",
+          "STR_TANKP_PREQ",
+          "STR_THE_PHARMACIST",
+          "STR_TINY_DRILL_INVESTIGATION",
+          "STR_TINY_DRILL_INVESTIGATION_ZZZ",
+          "STR_TRAININGS",
+          "STR_TROPHIES",
+          "STR_TROPHY_TARGET_200_JACK",
+          "STR_UBER_WHEAT",
+          "STR_UNARMED_GAUNTLET",
+          "STR_UNARMED_WRESTLING",
+          "STR_VIOLENCE",
+          "STR_VIOLENCE_ZZZ",
+          "STR_VODKA",
+          "STR_WAT_DO",
+          "STR_WEIRDNESS",
+          "STR_WEIRDNESS_ZZZ",
+          "STR_WELL",
+          "STR_WE_NEED_MALE_TOUCH",
+          "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "STR_WORLDLY_MORALITY"
+        ],
+        "evidenceTier": "conditional-model-replay",
+        "registered": false
+      },
+      "gameCertified": false,
+      "registered": false,
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST",
+          "research": "STR_CAPTAIN_PERSONALITY_TEST",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PUSSY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+          "research": "STR_CAPTAIN_PUSSY_UP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CAPTAIN_PRIEST"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_KNOCK_KNOCK_PENITENT",
+          "script": "STR_KNOCK_KNOCK_0",
+          "research": "STR_HERO",
+          "assumeOutcome": true,
+          "fixedEventBundle": {
+            "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "item": "STR_HERO",
+            "count": 1
+          }
+        },
+        {
+          "type": "recruit",
+          "soldier": "origin",
+          "profile": "manufacture:STR_HERO_RECRUITMENT",
+          "band": "min"
+        },
+        {
+          "type": "conditionalCapGrowth",
+          "soldier": "origin",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyWithCaptives",
+          "encounter": {
+            "type": "conditionalBountyRecovery",
+            "script": "CrackHouse",
+            "mission": "STR_LOC_CRACKHOUSE",
+            "region": "REGION_CRACKHOUSE",
+            "texture": -122,
+            "race": "STR_BANDIT_TOWN",
+            "rowIndex": 3,
+            "item": "STR_TROPHY_TARGET_200_JACK",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+            "assumeMissionGeneration": true,
+            "assumeTransport": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "captives": [
+            {
+              "rowIndex": 2,
+              "item": "STR_HUMAN_MALE_3",
+              "count": 1,
+              "armor": "HUMAN_ARMOR_M3",
+              "prisonType": 0
+            },
+            {
+              "rowIndex": 3,
+              "item": "STR_HUMAN_SHARP_GUY",
+              "count": 1,
+              "armor": "HUMAN_ARMOR_M9",
+              "prisonType": 0
+            }
+          ],
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 3,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_03",
+          "script": "STR_CAPTAINS_RANK_03",
+          "research": "STR_CAPTAINS_RANK_03",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 4000,
+            "firstMonth": 3,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 4,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_04",
+          "script": "STR_CAPTAINS_RANK_04",
+          "research": "STR_CAPTAINS_RANK_04",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 5000,
+            "firstMonth": 4,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_HUMAN_MALE_3"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_HUMAN_MALE_3",
+          "research": "STR_COLT45",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_HUMAN_SHARP_GUY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_HUMAN_SHARP_GUY",
+          "research": "STR_SPORTS_RIFLE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_PISTOLS_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_HARDWARE_SHOPPING"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOLING_1"
+        },
+        {
+          "type": "research",
+          "id": "STR_THE_PHARMACIST"
+        },
+        {
+          "type": "research",
+          "id": "STR_GUN_SHOPPING"
+        },
+        {
+          "type": "research",
+          "id": "STR_CONTACT_GENERAL_SUPPLIES"
+        },
+        {
+          "type": "research",
+          "id": "STR_BOW_H"
+        },
+        {
+          "type": "research",
+          "id": "STR_BOWS_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_PRIMITIVE_WEAPONS"
+        },
+        {
+          "type": "research",
+          "id": "STR_TACTICS"
+        },
+        {
+          "type": "research",
+          "id": "STR_SMGS_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCI_REP"
+        },
+        {
+          "type": "research",
+          "id": "STR_GUNS_N_AMMO"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_GUNS_N_AMMO",
+          "research": "STR_AUTO_RIFLE",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_RIFLES_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_BASIC_FIREARMS_TRAINING"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_BASIC_FIREARMS_TRAINING"
+        },
+        {
+          "type": "research",
+          "id": "STR_SNIPER_SUMMARY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_DATA_DISK_B",
+          "recipe": "STR_DATA_DISK_B",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_DATA_DISK_B"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_DATA_DISK_B",
+          "research": "STR_MUTANT_ORIGINS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPLORE_TUNNELS"
+        },
+        {
+          "type": "conditionalMedicalEventBundle",
+          "event": "STR_SECRET_DOOR_MEDICAL_SUPPLIES",
+          "script": "STR_SECRET_DOOR_VERY_EARLY",
+          "bundleIndex": null,
+          "scoreRange": null,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": false,
+          "assumeDelivery": true,
+          "assumeMonthlyScore": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_MEDICAL_SUPPLIES"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 5,
+          "assumeContinuity": true
+        },
+        {
+          "type": "conditionalMedicalEventBundle",
+          "event": "STR_DELINQUENT_SPORTS_BAD",
+          "script": "STR_DELINQUENT_SCORE",
+          "bundleIndex": 3,
+          "scoreRange": {
+            "min": -300,
+            "max": 999
+          },
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "assumeMonthlyScore": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_SECTOWEED"
+        },
+        {
+          "type": "research",
+          "id": "STR_CRACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_MEDICINE"
+        },
+        {
+          "type": "research",
+          "id": "STR_SOLDIER_TYPE_SS"
+        },
+        {
+          "type": "research",
+          "id": "STR_SOLDIER_TYPE_PEA"
+        },
+        {
+          "type": "research",
+          "id": "STR_SHOTGUNS_SUMMARY"
+        },
+        {
+          "type": "conditionalMedicalEventBundle",
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "scoreRange": null,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "assumeMonthlyScore": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_BEER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MUTANT_EGG"
+        },
+        {
+          "type": "research",
+          "id": "STR_SKINNING"
+        },
+        {
+          "type": "research",
+          "id": "STR_UBER_WHEAT"
+        },
+        {
+          "type": "research",
+          "id": "STR_FARMING"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUISINE"
+        },
+        {
+          "type": "research",
+          "id": "STR_MUTANT_ABILITIES"
+        },
+        {
+          "type": "research",
+          "id": "STR_GYMNASTICS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_GYMNASTICS",
+          "research": "STR_GYM_OUTFIT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_MUTANT_BLESSINGS"
+        },
+        {
+          "type": "research",
+          "id": "STR_MESS_HALL"
+        },
+        {
+          "type": "acquireFacility",
+          "id": "STR_MESS_HALL"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 6,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 7,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 8,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 9,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 10,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 11,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 12,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 13,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 14,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 15,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 16,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 17,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalMonthlyHarvest",
+          "month": 18,
+          "event": "STR_SACRIFICES",
+          "script": "STR_SACRIFICES",
+          "bundleIndex": 0,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalBountyExchange",
+          "recipe": "STR_OFFERING_TO_PURPLE_BLOOM",
+          "count": 1,
+          "assumeProductionTime": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_OFFERING_TO_PURPLE_BLOOM"
+        },
+        {
+          "type": "conditionalBountyExchange",
+          "recipe": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+          "count": 1,
+          "assumeProductionTime": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+        },
+        {
+          "type": "research",
+          "id": "STR_SOLDIER_TYPE_BASIC"
+        },
+        {
+          "type": "research",
+          "id": "STR_GYM_ADVANCE"
+        },
+        {
+          "type": "conditionalMonthlyDiskSupply",
+          "event": "STR_KNOCK_KNOCK_CASTAWAYS",
+          "script": "STR_KNOCK_KNOCK_0",
+          "month": 19,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_SISTER_VICTIM"
+        },
+        {
+          "type": "research",
+          "id": "STR_CONTACT_TIGER_TRANSPORT"
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPEDITIONS"
+        },
+        {
+          "type": "research",
+          "id": "STR_RAIDER_CORPSE"
+        },
+        {
+          "type": "research",
+          "id": "STR_SISTER_VICTIM_RECRUITMENT_BRAINER"
+        },
+        {
+          "type": "conditionalMonthlyDiskSupply",
+          "event": "STR_INTREPID_BRAINERS",
+          "script": "STR_INTREPID_BRAINERS",
+          "month": 20,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "repeatResearch",
+          "id": "STR_DATA_DISK_B",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_DATA_DISK_B",
+          "research": "STR_ROCKET_LAUNCHER",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPLOSIVES_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_HEAVY_WEAPONS_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_BREAD_AND_FISHES_TRAINING"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_LEEK",
+          "recipe": "STR_LEEK_SACK_XXX",
+          "count": 1
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_CABBAGE",
+          "recipe": "STR_CABBAGE_SACK_XXX",
+          "count": 1
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_BREAD_AND_FISHES_TRAINING"
+        },
+        {
+          "type": "research",
+          "id": "STR_SMITHING"
+        },
+        {
+          "type": "research",
+          "id": "STR_SS_OPERATIONS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SS_OPERATIONS",
+          "research": "STR_LOOTBOX_PREPPER",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_PEASANT_MILITIA"
+        },
+        {
+          "type": "research",
+          "id": "STR_SARGEANT_TRAINING"
+        },
+        {
+          "type": "conditionalBookEvent",
+          "event": "STR_VOLLEYBALL_MATCH",
+          "script": "STR_VOLLEYBALL_MATCH",
+          "month": 21,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_GLAMOUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_PORN"
+        },
+        {
+          "type": "conditionalBookEvent",
+          "event": "STR_VOLLEYBALL_MATCH",
+          "script": "STR_VOLLEYBALL_MATCH",
+          "month": 22,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "acquirePurchase",
+          "item": "STR_EXPEDITION_RESEARCH",
+          "count": 1
+        },
+        {
+          "type": "conditionalExpeditionManufacture",
+          "recipe": "STR_EXPEDITION_DEBRIEF",
+          "bundleIndex": 0,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "conditionalExpeditionManufacture",
+          "recipe": "STR_LOOTBOX_EXPEDITION_EX",
+          "bundleIndex": 6,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_BOOK_OF_SERMONS"
+        },
+        {
+          "type": "research",
+          "id": "STR_CHAPLAIN_TRAINING"
+        },
+        {
+          "type": "acquirePurchase",
+          "item": "STR_SC_WIRE",
+          "count": 26
+        },
+        {
+          "type": "research",
+          "id": "STR_SC_WIRE"
+        },
+        {
+          "type": "sourceBoundBaseFunctions",
+          "assumeSameBase": true,
+          "assumeCompleteFacilityState": true,
+          "geographyProvides": [],
+          "geographyForbids": [],
+          "sourceSetSha256": "66fd2e55611ef8c81268793425ce4d5b2ed6bc01a504e991788688758b49f1fe",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_PERSONAL_LABS"
+        },
+        {
+          "type": "acquireFacility",
+          "id": "STR_PERSONAL_LABS"
+        },
+        {
+          "type": "conditionalGnomeEvent",
+          "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+          "script": "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+          "month": 23,
+          "item": "STR_GNOME",
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_GNOME"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_SCHOOL_BOOKS_ITEM",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_LIBRARY"
+        },
+        {
+          "type": "acquireFacility",
+          "id": "STR_LIBRARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SCHOOLING_2"
+        },
+        {
+          "type": "research",
+          "id": "STR_OFFICER_TRAINING"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_OFFICER_TRAINING"
+        },
+        {
+          "type": "conditionalPriestSupply",
+          "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+          "script": "STR_NORED_YESGREEN_EVENTS_PRIEST",
+          "month": 24,
+          "item": "STR_GUILD_SOLDIER",
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_GOVT_CORPSE"
+        },
+        {
+          "type": "conditionalPriestSupply",
+          "event": "STR_KNOCK_KNOCK_ATTACKED_IN_BED",
+          "script": "STR_NOGOLD_YESGREEN_EVENTS_PRIEST",
+          "month": 25,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        {
+          "type": "research",
+          "id": "STR_LINGERIE"
+        },
+        {
+          "type": "research",
+          "id": "STR_VODKA"
+        },
+        {
+          "type": "research",
+          "id": "STR_SOCIALIZING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SOCIALIZING",
+          "research": "STR_SWIMSUIT",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CONTACT_BUILDERS"
+        },
+        {
+          "type": "research",
+          "id": "STR_EXCAVATION"
+        },
+        {
+          "type": "research",
+          "id": "STR_PRIMITIVE_WEAPONS_2"
+        },
+        {
+          "type": "research",
+          "id": "STR_BASIC_INCENDIARIES"
+        },
+        {
+          "type": "research",
+          "id": "STR_FLINTLOCKS_PRODUCTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_CLOCKWORK_GUN_PRODUCTION"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAP_LOG_1_AWFUL",
+          "script": "STR_CAP_LOG_1_AWFUL",
+          "research": "STR_CAPTAINS_LOG_01",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_PERSONAL_ATTENTION"
+        },
+        {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_PERSONAL_ATTENTION"
+        }
+      ],
+      "actionHash": "14f7d8b827c3eac3dd07f29094145f6fb5917e26b49fcc53c0df988b8d10efca",
+      "actionCount": 196
+    }
+  ],
+  "rejected": [],
+  "gameCertified": false,
+  "registered": false
+}
