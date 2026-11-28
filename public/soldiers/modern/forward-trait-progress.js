@@ -1,19 +1,19 @@
-// V173: supplemental branch-local forward production panel in the existing soldier DB.
+// V174: supplemental branch-local forward production panel in the existing soldier DB.
 // Never changes the certified/conditional route table or its ranking.
 const BRANCH_LABELS={existing:'기존 남성 병종',hybrid:'혼종',priest:'성직자'};
 const list=x=>Array.isArray(x)?x:[];
 export function validateProgress(d){
  if(d?.schema!=='ATLAS_FORWARD_TRAIT_GOAL_PROGRESS_V1'||d.finalAdmission!==0||d.actualGameCertified!==0)throw Error('지원 자료 스키마 또는 인증 상태 불일치');
  const map=(rows,k)=>{const m=new Map(rows.map(x=>[x[k],x]));if(m.size!==rows.length)throw Error('중복 ID');return m;};
- const groups=map(d.groups,'id'),goals=map(d.goals,'id'),branches=map(d.branches,'id'),acquisitions=map(d.acquisitions,'id'),partials=map(d.partialRoutes,'id');
+ const groups=map(d.groups,'id'),goals=map(d.goals,'id'),branches=map(d.branches,'id'),acquisitions=map(d.acquisitions,'id'),partials=map(d.partialRoutes,'id'),hybridPartials=map(d.hybridPartialRoutes||[],'id');
  if(goals.size!==d.preservedGoals||branches.size!==3)throw Error('목표 또는 분기 누락');
  for(const g of groups.values()){
   if(!acquisitions.has(g.acquisition)||g.branches.length!==branches.size||new Set(g.branches.map(x=>x.id)).size!==branches.size)throw Error('그룹 연결 누락');
   for(const b of g.branches)if(!branches.has(b.id)||b.missing.some(x=>!g.required.includes(x))||b.disabled.some(x=>!b.missing.includes(x)))throw Error('연구 조건 연결 불일치');
  }
- for(const g of goals.values())if(!groups.has(g.group)||g.finalAdmission!==false||(g.partialRoute&&!partials.has(g.partialRoute)))throw Error('목표 연결 누락');
- for(const p of partials.values())if(p.finalAdmission!==false||p.statKeys.length!==12||p.effective.length!==12)throw Error('부분 능력치 연결 불일치');
- return {groups,goals,branches,acquisitions,partials};
+ for(const g of goals.values())if(!groups.has(g.group)||g.finalAdmission!==false||(g.partialRoute&&!partials.has(g.partialRoute))||(g.hybridPartialRoute&&!hybridPartials.has(g.hybridPartialRoute)))throw Error('목표 연결 누락');
+ for(const p of [...partials.values(),...hybridPartials.values()])if(p.finalAdmission!==false||p.statKeys.length!==12||p.effective.length!==12)throw Error('부분 능력치 연결 불일치');
+ return {groups,goals,branches,acquisitions,partials,hybridPartials};
 }
 export function rowsFor(d,filter={},index=validateProgress(d)){
  const name=id=>d.names?.[id]||id;
@@ -22,11 +22,13 @@ export function rowsFor(d,filter={},index=validateProgress(d)){
  return d.goals.flatMap(goal=>{
   const group=index.groups.get(goal.group),b=group.branches.find(x=>x.id===branch),acq=index.acquisitions.get(group.acquisition).branches.find(x=>x.id===branch);
   if(!b||!acq)throw Error('분기 연결 누락');
-  if(filter.origin&&group.origin!==filter.origin||filter.partialOnly&&!goal.partialRoute)return [];
+  const partialId=branch==='existing'?goal.partialRoute:branch==='hybrid'?goal.hybridPartialRoute:null;
+  const applied=partialId?(branch==='hybrid'?index.hybridPartials:index.partials).get(partialId):null;
+  if(filter.origin&&group.origin!==filter.origin||filter.partialOnly&&!applied)return [];
   if(filter.difficultyMatch&&goal.difficulty!==index.branches.get(branch).difficulty)return [];
   const search=[goal.id,goal.body,name(goal.body),group.origin,name(group.origin),...goal.traits.flatMap(x=>[x.id,name(x.id)]),...group.transformations.flatMap(x=>[x,name(x)])].join(' ').toLowerCase();
   if(q&&!search.includes(q))return [];
-  return [{goal,group,branch:b,acq,met:group.required.length-b.missing.length,total:group.required.length,partial:goal.partialRoute?index.partials.get(goal.partialRoute):null,difficultyMatch:goal.difficulty===index.branches.get(branch).difficulty}];
+  return [{goal,group,branch:b,acq,met:group.required.length-b.missing.length,total:group.required.length,partial:applied,difficultyMatch:goal.difficulty===index.branches.get(branch).difficulty}];
  }).sort((a,b)=>a.branch.missing.length-b.branch.missing.length||a.goal.id.localeCompare(b.goal.id));
 }
 function node(tag,text,attrs={}){
@@ -41,7 +43,7 @@ function loadPanel(panel){
  async function load(){
   if(loading||loaded)return;loading=true;status.textContent='순방향 연구 연결 자료를 불러오는 중…';
   try{
-   const response=await fetch(new URL('../../data/soldier-forward-trait-progress-v173.json',import.meta.url));
+   const response=await fetch(new URL('../../data/soldier-forward-trait-progress-v174.json',import.meta.url));
    if(!response.ok)throw Error('HTTP '+response.status);
    const d=await response.json(),index=validateProgress(d);
    render(d,index,body,status);loaded=true;
@@ -64,12 +66,12 @@ function render(d,index,root,status){
  for(const id of [...new Set(d.groups.map(x=>x.origin))])opt(origin,id,name(id));
  const checkbox=(label)=>{const wrap=node('label',null,{class:'tick'}),input=node('input',null,{type:'checkbox'});wrap.append(input,document.createTextNode(' '+label));fields.append(wrap);return input;};
  fields.append(branch,origin,query);
- const partial=checkbox('V167 부분 적용 이력만'),same=checkbox('목표 난이도 일치만');
+ const partial=checkbox('선택 분기 부분 적용 이력만'),same=checkbox('목표 난이도 일치만');
  const counter=node('p',null,{role:'status','aria-live':'polite'});
  const note=node('p','정렬 기준은 선택한 한 캠페인의 미충족 연구 수입니다. 실제 시술 가능 여부와 최종 능력치 순위가 아닙니다.',{class:'scope-note'});
  const checkpoint=node('p',null,{class:'scope-note','aria-live':'polite'});
  const shell=node('div',null,{class:'table-shell',role:'region',tabindex:'0','aria-label':'순방향 목표 연결 비교'}),table=node('table'),head=node('thead'),tbody=node('tbody'),tr=node('tr');
- for(const h of ['기존 목표 / 출생처','목표 특성 (미인증)','연구 충족 / 미충족','신규 획득 조건','별도 V167 부분 적용 이력'])tr.append(node('th',h,{scope:'col'}));
+ for(const h of ['기존 목표 / 출생처','목표 특성 (미인증)','연구 충족 / 미충족','신규 획득 조건','선택 분기의 부분 적용 이력'])tr.append(node('th',h,{scope:'col'}));
  head.append(tr);table.append(head,tbody);shell.append(table);
  const controls=node('div',null,{class:'route-toolbar'}),prev=node('button','이전',{type:'button'}),next=node('button','다음',{type:'button'}),pageLabel=node('span');
  controls.append(prev,pageLabel,next);root.append(fields,counter,checkpoint,note,controls,shell);
@@ -79,7 +81,7 @@ function render(d,index,root,status){
   const rows=rowsFor(d,{branch:branch.value,origin:origin.value,query:query.value,partialOnly:partial.checked,difficultyMatch:same.checked},index);
   const pages=Math.max(1,Math.ceil(rows.length/size));page=Math.min(page,pages-1);
   const b=index.branches.get(branch.value),cp=b.checkpoint;
-  checkpoint.textContent=cp?'V'+cp.version+' · 신규 행동 '+cp.newActions+'개 · 신규 활성 연구 '+cp.newResearch+'개 · GDX '+cp.gdx.length+'/6 · 도서관 '+(cp.library?'건설':'미건설')+' · 마법기술 개론 '+(cp.magitech?'완료':'미완료')+' · 사이오닉 교감 '+cp.psiDone+'/'+cp.psiTotal+' · 섹토위드 '+cp.weed+'개 · 조건부 재생 결과':'선택한 분기의 독립 체크포인트 · '+b.actionCount+'개 누적 행동';
+  checkpoint.textContent=cp?'V'+cp.version+' · 신규 행동 '+cp.newActions+'개 · 신규 활성 연구 '+cp.newResearch+'개 · GDX '+cp.gdx.length+'/6 · 도서관 '+(cp.library?'건설':'미건설')+' · 마법기술 개론 '+(cp.magitech?'완료':'미완료')+' · 사이오닉 교감 '+cp.psiDone+'/'+cp.psiTotal+' · 섹토위드 재고 '+cp.weed+'개'+(cp.version>=174?' · 신규 시설 '+names(cp.facilities)+' · 부분 경로 '+cp.partialRoutes+'개':'')+' · 조건부 재생 결과':'선택한 분기의 독립 체크포인트 · '+b.actionCount+'개 누적 행동';
   counter.textContent=rows.length+'개 목표 · '+(BRANCH_LABELS[branch.value]||branch.value)+' 단독 · 최종 인증 0건';
   pageLabel.textContent=(page+1)+' / '+pages;prev.disabled=page===0;next.disabled=page+1>=pages;tbody.replaceChildren();
   for(const r of rows.slice(page*size,(page+1)*size)){
@@ -92,7 +94,7 @@ function render(d,index,root,status){
    const shortage=[...(m.research||[]).map(x=>'연구 '+name(x)),...(m.functions||[]).map(x=>'시설 '+x),...Object.entries(m.items||{}).map(([k,v])=>name(k)+' '+v+'개'),...(m.funds?['자금 $'+m.funds.toLocaleString('en-US')]:[])];
    c4.append(node('p','현재 신규 획득 부족: '+(shortage.join(' · ')||'기록된 부족 없음')));
    const c5=node('td');
-   if(r.partial){const p=r.partial,det=node('details');det.append(node('summary','조건부 적용 '+p.applied.length+'회 · '+name(p.body)),node('p','시술: '+names(p.applied)),node('p','실제 모델 특성: '+traits(p.traits)),node('p','조건부 성장 수치: '+p.statKeys.map((k,i)=>(d.statLabels?.[k]||k)+' '+p.effective[i]).join(' · ')),node('p','V167 기존 분기의 별도 이력. 현재 선택 분기와 결합되지 않습니다.'));c5.append(det);}
+   if(r.partial){const p=r.partial,det=node('details');det.append(node('summary','조건부 적용 '+p.applied.length+'회 · '+name(p.body)),node('p','시술: '+names(p.applied)),node('p','실제 모델 특성: '+traits(p.traits)),node('p','조건부 성장 수치: '+p.statKeys.map((k,i)=>(d.statLabels?.[k]||k)+' '+p.effective[i]).join(' · ')),node('p','선택한 분기에서 별도 재생한 부분 경로입니다. 최종 육성 목표를 달성했다는 뜻이 아닙니다.'));c5.append(det);}
    else c5.textContent='부분 적용 이력 없음';
    row.append(c1,c2,c3,c4,c5);tbody.append(row);
   }
@@ -100,7 +102,7 @@ function render(d,index,root,status){
  }
  for(const x of [branch,origin,partial,same])x.addEventListener('change',()=>refresh(true));
  query.addEventListener('input',()=>refresh(true));prev.addEventListener('click',()=>{page--;refresh();});next.addEventListener('click',()=>{page++;refresh();});
- status.textContent=d.preservedGoals+'개 기존 목표 · '+d.groups.length+'개 육성 그룹 · '+d.branches.length+'개 독립 분기 · '+d.goals.filter(g=>g.partialRoute).length+'개 목표의 별도 부분 적용 이력 · 최종 인증 0건';
+ status.textContent=d.preservedGoals+'개 기존 목표 · '+d.groups.length+'개 육성 그룹 · '+d.branches.length+'개 독립 분기 · '+d.goals.filter(g=>g.partialRoute||g.hybridPartialRoute).length+'개 고유 목표의 부분 적용 이력 · 최종 인증 0건';
  refresh(true);
 }
 if(typeof document!=='undefined'){
