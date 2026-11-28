@@ -1,0 +1,81 @@
+{
+  "inputBytes": 273004,
+  "outputBytes": 315828,
+  "inputTriangles": 1936,
+  "outputTriangles": 2100,
+  "budget": 2100,
+  "newVertices": 82,
+  "curvedMidpoints": 80,
+  "averageOffset": 0.005038,
+  "zoneCounts": {
+    "ankle": 6,
+    "lowerLeg": 24,
+    "shoulder": 20,
+    "arm": 24,
+    "thigh": 8
+  },
+  "joints": 63,
+  "sourceBinaryPrefixPreserved": true,
+  "sourceVertexPositionsPreserved": true,
+  "faceHairEyesNeckHandsPreserved": true,
+  "rigPreserved": true,
+  "existingGeometricBoundaryEdgesUnsplit": true,
+  "newTriangleOrientationChecksPassed": true,
+  "newSkinWeightsNormalized": true,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "report": [
+    {
+      "positionAccessor": 101,
+      "splitEdges": 20,
+      "newVertices": 20,
+      "addedTriangles": 40,
+      "zoneCounts": {
+        "shoulder": 20
+      },
+      "maxCurveOffset": 0.006,
+      "linearFallbacks": 0
+    },
+    {
+      "positionAccessor": 0,
+      "splitEdges": 8,
+      "newVertices": 8,
+      "addedTriangles": 16,
+      "zoneCounts": {
+        "thigh": 8
+      },
+      "maxCurveOffset": 0.005653,
+      "linearFallbacks": 0
+    },
+    {
+      "positionAccessor": 7,
+      "splitEdges": 6,
+      "newVertices": 6,
+      "addedTriangles": 12,
+      "zoneCounts": {
+        "ankle": 6
+      },
+      "maxCurveOffset": 0.003528,
+      "linearFallbacks": 0
+    },
+    {
+      "positionAccessor": 34,
+      "splitEdges": 48,
+      "newVertices": 48,
+      "addedTriangles": 96,
+      "zoneCounts": {
+        "lowerLeg": 24,
+        "arm": 24
+      },
+      "maxCurveOffset": 0.006,
+      "linearFallbacks": 0
+    }
+  ],
+  "limitations": [
+    "No seam welding or replacement of disconnected topology; existing seams preserved and seam material tuned.",
+    "Local interpolation of surface curvature, not an anatomical reconstruction.",
+    "No native S2 or animated visual acceptance."
+  ],
+  "sourceBlob": "eb46f2b210b9d14115a8473aecb7fa630a8b334a",
+  "parentCommit": "3a0977421f1134eca52a377df08b9a701cc02c20"
+}
