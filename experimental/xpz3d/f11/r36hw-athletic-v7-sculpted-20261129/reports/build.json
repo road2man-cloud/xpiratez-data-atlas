@@ -1,0 +1,42 @@
+{
+  "sourceBlob": "06eeb61c968283c29f48432a676da1f347c3192f",
+  "triangles": 2096,
+  "garmentVertices": 514,
+  "changedPositionVertices": 306,
+  "changedNormalVertices": 509,
+  "changedColorVertices": 178,
+  "regionDisplacement": {
+    "backTorso": {
+      "vertices": 42,
+      "maxDisplacement": 0.01430914038564948,
+      "meanDisplacement": 0.004637770091741831
+    },
+    "arms": {
+      "vertices": 120,
+      "maxDisplacement": 0.012500372687489582,
+      "meanDisplacement": 0.0049324079942428215
+    },
+    "legs": {
+      "vertices": 144,
+      "maxDisplacement": 0.011184260049943525,
+      "meanDisplacement": 0.004476856890875586
+    }
+  },
+  "shapeGain": 1,
+  "minOriginalFaceNormalCos": 0.9839580858171333,
+  "minTriangleArea": 0.00020924961067783632,
+  "invertedFaces": 0,
+  "joints": 63,
+  "skinWeightsPreserved": true,
+  "topologyPreserved": true,
+  "nonGarmentBinaryPreserved": true,
+  "opaqueMaterial": true,
+  "outputBytes": 389812,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Directional profile and contour values are artistic estimates.",
+    "Angle-weighted normals are a glTF shading improvement; native S2 behavior not verified.",
+    "No posed clipping or full self-intersection test. No new texture map."
+  ]
+}
