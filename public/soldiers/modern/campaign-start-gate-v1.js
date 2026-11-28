@@ -71,6 +71,29 @@ function applyCampaignStartCore(input,step,data){
  if(['buildFacility','finishFacility'].includes(step.type)){
   try{return applyFacilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
  }
+ // Loot is part of the same mission victory, not a second independent grant.
+ if(step.type==='missionResearch'&&step.recoverFixedItem){
+  try{
+   const loot=step.recoverFixedItem;
+   const routes=data.campaignAssets?.missionLoot?.[loot.item]||[];
+   const route=routes.find(r=>r.deployment===step.deployment&&r.research===step.research&&r.script.script===step.script&&r.terrain===loot.terrain&&r.block===loot.block&&r.craft===loot.craft);
+   if(!route||data.campaignAssets.sourceFingerprint!==input.sourceFingerprint)throw Error('fixed-loot-source-mismatch');
+   if(!Number.isSafeInteger(route.count)||route.count<1||loot.count!==route.count)throw Error('fixed-loot-count-mismatch');
+   if(step.assumeOutcome!==true||loot.assumeTransport!==true||loot.assumeRecovery!==true)throw Error('mission-transport-recovery-assumptions-required');
+   if(input.completedMissions?.has(step.deployment))throw Error('mission-loot-already-consumed');
+   if(route.craftResearch.some(id=>!input.researched.has(id)||input.disabled.has(id)))throw Error('mission-transport-research-unmet');
+   const judgment=eventScriptVerdict({...route.script,mode:'fixed',eventId:'MISSION:'+step.deployment},input,{mode:'current'});
+   if(judgment.blocked.length||judgment.unknown.length)throw Error('mission-trigger-unresolved:'+ [...judgment.blocked,...judgment.unknown].join('; '));
+   // Existing mission verifier owns the unlocked research, free reward token,
+   // and one-use victory marker. Transport purchase affordability and tactical
+   // deployment, victory, loot extraction remain explicitly conditional.
+   const result=applyOriginWitnessStep(input,step,data);
+   if(!result.ok)return result;
+   if(!result.world.completedMissions?.has(step.deployment))throw Error('mission-victory-marker-missing');
+   result.world.items[loot.item]=(result.world.items[loot.item]||0)+route.count;
+   return {...result,assumed:true,notes:[...(result.notes||[]),'fixed-map-recovery:'+route.terrain+'/'+route.block+' '+loot.item+' x'+route.count,'conditional-purchased-transport:'+route.craft,'tactical-arrival-victory-and-recovery-not-native-certified','other-map-loot-not-credited']};
+  }catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  const e=START_EVENT_RULES[step.event];
  if(step.type!=='eventResearch'||!e){
   // Legacy actions still enforce items and research. Ignore monetary cost only
