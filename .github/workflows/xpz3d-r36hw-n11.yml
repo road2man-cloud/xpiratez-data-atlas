@@ -1,0 +1,59 @@
+name: XPZ3D R36HW N11 surface relax
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-n11.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/output/R36HW_N10_SKIN_BRIDGE.glb
+            experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/
+            .github/workflows/xpz3d-r36hw-n11.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node --check experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/source/build_r36hw_n11.cjs
+          node experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/source/build_r36hw_n11.cjs
+      - name: Audit original-HW preservation and altered geometry
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const root='experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129',r=JSON.parse(fs.readFileSync(root+'/reports/R36HW_N11_SKIN_RELAX.json','utf8'));
+          const b=fs.readFileSync(root+'/output/R36HW_N11_SKIN_RELAX.glb');
+          if(r.totalTriangles!==1985||r.pelvisTriangles!==249||r.rigJoints!==63||r.faceTriangles!==644||r.hairTriangles!==294||r.editedVertices<25||r.maxMovementMeters>.026||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.totalTriangles,modified:r.editedVertices,maxShift:r.maxMovementMeters,sha256:r.outputSHA256}));
+          NODE
+      - name: Publish N11 actual GLB
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/output/R36HW_N11_SKIN_RELAX.glb experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/reports/R36HW_N11_SKIN_RELAX.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): publish N11 open-skin shape-relaxed GLB"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N11-geometry
+          path: |
+            experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/output/R36HW_N11_SKIN_RELAX.glb
+            experimental/xpz3d/f11/r36hw-n11-surface-relax-20261129/reports/R36HW_N11_SKIN_RELAX.json
