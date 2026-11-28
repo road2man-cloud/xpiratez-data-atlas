@@ -1,0 +1,48 @@
+name: XPZ3D R36MM real GLB color normal render
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36mm-texture-render-20261128/source/**'
+      - '.github/workflows/xpz3d-r36mm-textured.yml'
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36mk-recess-budget-20261128
+            experimental/xpz3d/f11/r36mm-texture-render-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Render actual R36MK with source material
+        shell: bash
+        run: |
+          set -euo pipefail
+          B=experimental/xpz3d/f11
+          npm install --no-save --no-package-lock --prefix "$B/r36mm-texture-render-20261128/source" sharp@0.33.5
+          node "$B/r36mm-texture-render-20261128/source/render_r36mm.cjs" "$B/r36mk-recess-budget-20261128/output/compact/R36MK_ART_DENSE_2100_COMPACT_FULL.glb" "$B/r36mm-texture-render-20261128/output/ART_DENSE"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36MM-real-texture-render
+          path: experimental/xpz3d/f11/r36mm-texture-render-20261128/output
+      - name: Commit PNG results
+        shell: bash
+        run: |
+          set -e
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experimental/xpz3d/f11/r36mm-texture-render-20261128/output
+          if ! git diff --cached --quiet; then
+            git commit -m "xpz3d: actual R36MM color and normal maps"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
