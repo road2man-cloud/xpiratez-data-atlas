@@ -1,0 +1,25 @@
+{
+  "stage": "N11 original HW boundary-locked smoothing of former garment facets",
+  "inputSHA256": "af56ea15d8eb9de728926c6d7c002bfd5c2825b08d9ac71b066ac0f74edfd028",
+  "outputSHA256": "9f99e92f93bdc5f74b0d1df1d66b3f34cbf3cb188c19537faeb51c3cdf6fe2ba",
+  "totalTriangles": 1985,
+  "rigJoints": 63,
+  "faceTriangles": 644,
+  "hairTriangles": 294,
+  "pelvisTriangles": 249,
+  "pelvisVertices": 183,
+  "lockedOpenBoundaryVertices": 45,
+  "editedVertices": 72,
+  "frontEdited": 72,
+  "sideEdited": 33,
+  "foldVertices": 16,
+  "maxMovementMeters": 0.015,
+  "minimumTriangleArea": 0.000001907918186257542,
+  "fullUndress": false,
+  "nativeS2Rendered": false,
+  "limitations": [
+    "Source clothing-derived primitive topology still partly present",
+    "Unwelded midriff/leg boundaries inherited from N10",
+    "Static bind pose; no native UV/normal-map rendering or live 63-bone animation"
+  ]
+}
