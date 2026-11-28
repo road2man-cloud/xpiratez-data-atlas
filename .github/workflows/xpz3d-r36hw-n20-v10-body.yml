@@ -1,0 +1,49 @@
+name: XPZ3D R36HW N20 V10 body profile
+on:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/source/**'
+      - 'experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/README.md'
+      - '.github/workflows/xpz3d-r36hw-n20-v10-body.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36hw-n20-v10
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Check input assets
+        run: |
+          test -s experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/output/R36HW_N19_LOWER_SKIN_BRIDGE.glb
+          test -s experimental/xpz3d/f11/r36hw-athletic-v9-close-fit-20261129/output/R36HW_F11_ATHLETIC_SUIT_V9_CLOSE_FIT.glb
+          test -s experimental/xpz3d/f11/r36hw-athletic-v10-contours-20261129/output/R36HW_F11_ATHLETIC_SUIT_V10_CONTOURS.glb
+      - name: Build GLB with Node.js
+        run: |
+          node experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/source/build.cjs \
+            experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/output/R36HW_N19_LOWER_SKIN_BRIDGE.glb \
+            experimental/xpz3d/f11/r36hw-athletic-v9-close-fit-20261129/output/R36HW_F11_ATHLETIC_SUIT_V9_CLOSE_FIT.glb \
+            experimental/xpz3d/f11/r36hw-athletic-v10-contours-20261129/output/R36HW_F11_ATHLETIC_SUIT_V10_CONTOURS.glb \
+            experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/output/R36HW_N20_V10_BODY_N19_CENTER.glb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r36hw-n20-v10-body-profile
+          path: |
+            experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/output/*.glb
+            experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/reports/*.json
+      - name: Publish generated source artifacts to main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/output experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/reports
+          if ! git diff --cached --quiet; then
+            git commit -m "build(xpz3d): publish R36HW N20 V10 body profile GLB"
+            git push origin HEAD:main
+          fi
