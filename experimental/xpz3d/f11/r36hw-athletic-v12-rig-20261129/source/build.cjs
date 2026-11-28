@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+'use strict';
+function build(src){
+ const ck=(v,m)=>{if(!v)throw Error(m)},h=new DataView(src.buffer,src.byteOffset,src.length),l=h.getUint32(12,true);
+ ck(h.getUint32(0,true)===0x46546c67&&h.getUint32(4,true)===2&&h.getUint32(8,true)===src.length&&h.getUint32(16,true)===0x4e4f534a&&h.getUint32(24+l,true)===0x004e4942,"GLB format");
+ const j=JSON.parse(String.fromCharCode(...src.slice(20,20+l))),bin=src.slice(28+l,28+l+h.getUint32(20+l,true)),origBin=bin.slice(),d=new DataView(bin.buffer,bin.byteOffset,bin.length),m=j.meshes[0],g=m.primitives.find(p=>p.material===18),skin=j.skins[0];
+ const protectedJSON=JSON.stringify([j.nodes,j.skins,j.materials,j.images,j.textures,j.samplers,j.meshes,j.accessors,j.bufferViews]);
+ ck(g.attributes.POSITION===34&&g.attributes.JOINTS_0===36&&g.attributes.WEIGHTS_0===37&&skin.joints.length===63,"V11 required");
+ const dim={SCALAR:1,VEC2:2,VEC3:3,VEC4:4,MAT4:16},size={5121:1,5123:2,5125:4,5126:4},get={5121:"getUint8",5123:"getUint16",5125:"getUint32",5126:"getFloat32"};
+ function layout(id){let a=j.accessors[id],b=j.bufferViews[a.bufferView],n=dim[a.type],s=size[a.componentType],o=(b.byteOffset||0)+(a.byteOffset||0),st=b.byteStride||n*s;ck(!a.sparse&&b.buffer===0&&o+(a.count-1)*st+n*s<=bin.length,"accessor");return {a,n,s,o,st}}
+ function read(id){let {a,n,s,o,st}=layout(id);return Array.from({length:a.count},(_,i)=>Array.from({length:n},(_,k)=>d[get[a.componentType]](o+i*st+k*s,true)))}
+ const P=read(g.attributes.POSITION),J=read(g.attributes.JOINTS_0),W=read(g.attributes.WEIGHTS_0),I=read(g.indices).flat(),F=Array.from({length:I.length/3},(_,i)=>I.slice(i*3,i*3+3)),ib=read(skin.inverseBindMatrices),N=skin.joints.length;
+ ck(P.length===706&&F.length===1032&&ib.length===N,"geometry");
+ const add=(a,b)=>a.map((x,k)=>x+b[k]),sub=(a,b)=>a.map((x,k)=>x-b[k]),mul=(a,s)=>a.map(x=>x*s),norm=a=>Math.hypot(...a),dot=(a,b)=>a.reduce((s,x,k)=>s+x*b[k],0),clamp=x=>Math.max(0,Math.min(1,x)),sm=x=>{let t=clamp(x);return t*t*(3-2*t)},key=p=>p.map(x=>Math.round(x*1e6)).join(",");
+ const names=skin.joints.map(i=>j.nodes[i].name),ids=Object.fromEntries(names.map((n,i)=>[n,i])),parents=Array(N).fill(-1);
+ for(let k=0;k<N;k++)for(let n of j.nodes[skin.joints[k]].children||[]){let a=skin.joints.indexOf(n);if(a>=0)parents[a]=k}
+ const piv=ib.map(a=>[-(a[0]*a[12]+a[1]*a[13]+a[2]*a[14]),-(a[4]*a[12]+a[5]*a[13]+a[6]*a[14]),-(a[8]*a[12]+a[9]*a[13]+a[10]*a[14])]);
+ const dense=(js,ws)=>{let a=Array(N).fill(0);for(let k=0;k<4;k++)a[js[k]]+=ws[k];return a};
+ const old=J.map((js,i)=>dense(js,W[i]));
+ function pack(a){let e=a.map((w,i)=>[i,w]).filter(x=>x[1]>1e-8).sort((a,b)=>b[1]-a[1]||a[0]-b[0]).slice(0,4),s=e.reduce((a,b)=>a+b[1],0);ck(s>0,"empty skin");while(e.length<4)e.push([0,0]);return [e.map(x=>x[0]),e.map(x=>x[1]/s)]}
+ const fixed=([x,y,z])=>(Math.abs(x)>.66&&z>1.30)||(z>1.50&&Math.abs(x)<.10)||z<.09;
+ const groups=[],lookup=new Map(),vertexGroup=[];
+ for(let i=0;i<P.length;i++){let k=key(P[i]),id=lookup.get(k);if(id===undefined){id=groups.length;lookup.set(k,id);groups.push({p:P[i],ids:[],w:old[i].slice(),fixed:fixed(P[i])})}let q=groups[id];ck(norm(sub(q.w,old[i]))<1e-5,"source UV seam weight mismatch");q.ids.push(i);vertexGroup.push(id)}
+ const edges=new Map();for(let f of F)for(let k=0;k<3;k++){let a=vertexGroup[f[k]],b=vertexGroup[f[(k+1)%3]];if(a===b)continue;let id=Math.min(a,b)+":"+Math.max(a,b);edges.set(id,[Math.min(a,b),Math.max(a,b)])}
+ const E=[...edges.values()].map(([a,b])=>({a,b,len:norm(sub(groups[a].p,groups[b].p))})).filter(e=>e.len>1e-7);
+ const p0=groups.map(g=>g.p),w0=groups.map(g=>g.w),desc=(k,a)=>{while(k>=0){if(k===a)return true;k=parents[k]}return false};
+ const pairs=[];for(let s of ["L_","R_"]){let side=s==="L_"?1:-1;for(let [name,pa,ch,axis,sign,radius,band] of [["shoulder","Clavicle","UArm",0,side,.20,.19],["elbow","UArm","LArm",0,side,.125,.14],["knee","Thigh","Leg",2,-1,.145,.17],["ankle","Leg","Foot",2,-1,.15,.17]]){let a=ids[s+pa],b=ids[s+ch],center=piv[b][axis]*sign;const list=[];for(let i=0;i<groups.length;i++){let {p,w,fixed:f}=groups[i],x=Math.abs(p[0]),z=p[2],coord=p[axis]*sign,amount=w[a]+w[b];if(f||Math.sign(p[0])!==side||amount<.4||Math.abs(coord-center)>band)continue;if(axis===0&&(x<.12||z<1.25)||axis===2&&z>1.0)continue;list.push(i)}pairs.push({name:s+name,a,b,axis,sign,center,radius,band,list})}}
+ const poses=[];for(let pair of pairs){let axis=pair.axis===0?(pair.name.endsWith("shoulder")?1:2):0,angles=pair.name.endsWith("shoulder")?[35,65,-30]:pair.name.endsWith("elbow")?[55,90,-45]:pair.name.endsWith("knee")?[-55,-90,35]:[25,-35];for(let angle of angles){if(pair.axis===0)angle*=pair.sign;let q=angle*Math.PI/180,c=Math.cos(q),s=Math.sin(q),center=piv[pair.b],mask=Array.from({length:N},(_,i)=>desc(i,pair.b)),rot=p0.map(p=>{let v=sub(p,center),u=(axis+1)%3,w=(axis+2)%3,r=v.slice();r[u]=v[u]*c-v[w]*s;r[w]=v[u]*s+v[w]*c;return sub(add(center,r),p)});
+  // Fixed evaluation edge set, independent of candidate weights.
+  let scope=E.filter(e=>{let a=p0[e.a],b=p0[e.b],mid=mul(add(a,b),.5),x=Math.abs(mid[0]),z=mid[2];return Math.abs(mid[pair.axis]*pair.sign-pair.center)<pair.band+.065&&(pair.axis===0?x>.12&&z>1.25:z<1.0&&Math.sign(mid[0])===-pair.sign||z<1.0&&Math.sign(mid[0])===(pair.name.startsWith("L_")?1:-1))});
+  // Leg scopes must stay on their own anatomical side; arm scopes already use signed x.
+  if(pair.axis===2)scope=scope.filter(e=>Math.sign(p0[e.a][0]+p0[e.b][0])===(pair.name.startsWith("L_")?1:-1));
+  ck(scope.length>0,"pose scope");poses.push({name:pair.name,angle,mask,rot,scope})}}
+ function evaluate(ws,subset=poses){let sum=0,count=0,peak=0,by={};for(let t of subset){let p=p0.map((p,i)=>{let a=ws[i],w=0;for(let k=0;k<N;k++)if(t.mask[k])w+=a[k];return add(p,mul(t.rot[i],w))});let s=0,m=0;for(let e of t.scope){let v=Math.log(Math.max(1e-7,norm(sub(p[e.a],p[e.b]))/e.len));s+=v*v;m=Math.max(m,Math.abs(v))}sum+=s;count+=t.scope.length;peak=Math.max(peak,m);let r=by[t.name]??={sum:0,n:0,peak:0};r.sum+=s;r.n+=t.scope.length;r.peak=Math.max(r.peak,m)}for(let r of Object.values(by)){r.rms=Math.sqrt(r.sum/r.n);delete r.sum}return {rms:Math.sqrt(sum/count),peak,by,edgeSamples:count}}
+ const before=evaluate(w0),loss=m=>m.rms+.035*m.peak,options=[];
+ function change(ws,pair,blend,width,shift){let out=ws.slice();for(let i of pair.list){let a=ws[i],mass=a[pair.a]+a[pair.b],x=p0[i][pair.axis]*pair.sign-pair.center,fade=1-sm((Math.abs(x)-pair.band*.65)/(pair.band*.35));let t=sm((x-shift+pair.radius*width)/(2*pair.radius*width)),b=a.slice(),v=a[pair.b]*(1-blend*fade)+mass*t*blend*fade;b[pair.b]=v;b[pair.a]=mass-v;let [js,ww]=pack(b);out[i]=dense(js,ww)}return out}
+ // Coordinate descent with anatomically bounded pair transfers; accept only lower global strain.
+ let best=w0.slice(),bestM=before;
+ for(let pair of pairs){let relevant=poses.filter(t=>t.name===pair.name),baseM=evaluate(best,relevant),trialBest=null;for(let width of [.65,1,1.35])for(let shift of [-.035,0,.035])for(let blend of [.35,.7,1]){let w=change(best,pair,blend,width,shift),m=evaluate(w,relevant);if(loss(m)<loss(baseM)-1e-6&&(!trialBest||loss(m)<loss(trialBest.m)))trialBest={w,m,width,shift,blend}}
+  if(trialBest){let all=evaluate(trialBest.w);if(loss(all)<loss(bestM)-1e-6){best=trialBest.w;bestM=all;options.push({region:pair.name,eligiblePoints:pair.list.length,width:trialBest.width,shift:trialBest.shift,blend:trialBest.blend,localRmsBefore:baseM.rms,localRmsAfter:trialBest.m.rms,accepted:true});continue}}
+  options.push({region:pair.name,eligiblePoints:pair.list.length,accepted:false})
+ }
+ ck(loss(bestM)<loss(before)-1e-6,"no lower strain candidate");
+ const outJ=J.map(a=>a.slice()),outW=W.map(a=>a.slice()),changed=[];for(let i=0;i<P.length;i++){let q=groups[vertexGroup[i]],v=best[vertexGroup[i]];if(norm(sub(v,old[i]))<1e-7)continue;ck(!q.fixed,"fixed seam");let [js,w]=pack(v);outJ[i]=js;outW[i]=w;changed.push(i)}
+ ck(changed.length>0&&outW.every(w=>Math.abs(w.reduce((s,v)=>s+v,0)-1)<1e-5&&w.every(x=>x>=0)),"weights");
+ const ranges=[];for(let [k,arr,ct] of [["JOINTS_0",outJ,5123],["WEIGHTS_0",outW,5126]]){let {a,n,s,o,st}=layout(g.attributes[k]);ck(a.componentType===ct&&n===4&&st===n*s,"skin layout");for(let i of changed)for(let t=0;t<4;t++)d[ct===5123?"setUint16":"setFloat32"](o+i*st+t*s,arr[i][t],true);ranges.push([o,o+a.count*st])}
+ for(let i=0;i<bin.length;i++)if(bin[i]!==origBin[i])ck(ranges.some(([a,b])=>i>=a&&i<b),"unexpected data change");
+ ck(JSON.stringify([j.nodes,j.skins,j.materials,j.images,j.textures,j.samplers,j.meshes,j.accessors,j.bufferViews])===protectedJSON,"protected JSON");
+ const finalWeights=read(g.attributes.JOINTS_0).map((js,i)=>dense(js,read(g.attributes.WEIGHTS_0)[i]));for(let group of groups){let a=finalWeights[group.ids[0]];for(let i of group.ids)ck(norm(sub(a,finalWeights[i]))<1e-5,"output seam");if(group.fixed)for(let i of group.ids)ck(norm(sub(finalWeights[i],old[i]))<1e-8,"fixed seam bytes")}
+ const after=evaluate(groups.map(g=>finalWeights[g.ids[0]]));ck(loss(after)<loss(before),"stored weights");
+ const tri=m.primitives.reduce((s,p)=>s+j.accessors[p.indices].count/3,0);ck(tri===2100&&j.materials[18].alphaMode==="OPAQUE","budget/material");
+ j.asset.generator="R36HW V12 bind-pivot skin pair refinement";j.extras={...(j.extras||{}),athleticSuitV12:{source:"V11",skinWeightsOnly:true,syntheticPoseProxy:true}};
+ let js=[];for(let c of JSON.stringify(j)){let n=c.codePointAt(0);if(n<128)js.push(n);else if(n<2048)js.push(192|(n>>6),128|(n&63));else if(n<65536)js.push(224|(n>>12),128|((n>>6)&63),128|(n&63));else js.push(240|(n>>18),128|((n>>12)&63),128|((n>>6)&63),128|(n&63))}while(js.length%4)js.push(32);
+ let out=new Uint8Array(28+js.length+bin.length),v=new DataView(out.buffer);v.setUint32(0,0x46546c67,true);v.setUint32(4,2,true);v.setUint32(8,out.length,true);v.setUint32(12,js.length,true);v.setUint32(16,0x4e4f534a,true);out.set(js,20);v.setUint32(20+js.length,bin.length,true);v.setUint32(24+js.length,0x004e4942,true);out.set(bin,28+js.length);
+ return {out,report:{sourceBlob:"dc0579cd8691234a06daadbd2593d1dd9166e514",triangles:tri,joints:N,garmentVertices:P.length,weldedPoints:groups.length,changedSkinVertices:changed.length,changedWeldedPoints:groups.filter(q=>q.ids.some(i=>changed.includes(i))).length,fixedVertices:groups.filter(q=>q.fixed).reduce((s,q)=>s+q.ids.length,0),poses:poses.length,proxyBefore:before,proxyAfter:after,rmsReductionPercent:100*(before.rms-after.rms)/before.rms,regions:options,geometryBytePreserved:true,nonWeightBytesPreserved:true,texturePreserved:true,rigPreserved:true,uvSeamWeightsMatched:true,outputBytes:out.length,nativeS2Rendered:false,visualAcceptance:false,limitations:["Single-joint synthetic rotations in mesh bind space, not actual S2 animations.","Edge-length strain is a proxy, not complete clipping, volume or silhouette verification.","Pairwise optimization preserves geometry and fixed seam weights; not a physical cloth simulation."]}}
+}
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+const input=process.argv[2]||path.resolve(__dirname,'../../r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb'),output=process.argv[3]||path.resolve(__dirname,'../output/R36HW_F11_ATHLETIC_SUIT_V12_RIG.glb');
+const src=fs.readFileSync(input),hash=crypto.createHash('sha1').update('blob '+src.length+'\0').update(src).digest('hex');if(hash!=='dc0579cd8691234a06daadbd2593d1dd9166e514')throw Error('V11 blob mismatch');const r=build(src);fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,r.out);const report=path.resolve(path.dirname(output),'../reports/build.json');fs.mkdirSync(path.dirname(report),{recursive:true});fs.writeFileSync(report,JSON.stringify(r.report,null,2)+'\n');console.log(JSON.stringify(r.report,null,2));

@@ -1,0 +1,191 @@
+{
+  "sourceBlob": "dc0579cd8691234a06daadbd2593d1dd9166e514",
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "weldedPoints": 527,
+  "changedSkinVertices": 197,
+  "changedWeldedPoints": 183,
+  "fixedVertices": 146,
+  "poses": 22,
+  "proxyBefore": {
+    "rms": 0.11079048430714097,
+    "peak": 1.0772653593436858,
+    "by": {
+      "L_shoulder": {
+        "n": 441,
+        "peak": 1.0672374159692295,
+        "rms": 0.1467144550606618
+      },
+      "L_elbow": {
+        "n": 504,
+        "peak": 0.9487513947526103,
+        "rms": 0.11923919032546659
+      },
+      "L_knee": {
+        "n": 450,
+        "peak": 0.4622179303429941,
+        "rms": 0.09412759219372055
+      },
+      "L_ankle": {
+        "n": 312,
+        "peak": 0.34225632968613195,
+        "rms": 0.06179602001100882
+      },
+      "R_shoulder": {
+        "n": 423,
+        "peak": 1.0772653593436858,
+        "rms": 0.14747937331267363
+      },
+      "R_elbow": {
+        "n": 504,
+        "peak": 0.5016108111580956,
+        "rms": 0.09540729515828983
+      },
+      "R_knee": {
+        "n": 441,
+        "peak": 0.40068925374599307,
+        "rms": 0.10437860201288776
+      },
+      "R_ankle": {
+        "n": 312,
+        "peak": 0.3398050599258319,
+        "rms": 0.060560573630432615
+      }
+    },
+    "edgeSamples": 3387
+  },
+  "proxyAfter": {
+    "rms": 0.09877186460040818,
+    "peak": 1.0772653593436858,
+    "by": {
+      "L_shoulder": {
+        "n": 441,
+        "peak": 1.0672374159692295,
+        "rms": 0.1467144556193852
+      },
+      "L_elbow": {
+        "n": 504,
+        "peak": 0.3315959658305094,
+        "rms": 0.07414855173629979
+      },
+      "L_knee": {
+        "n": 450,
+        "peak": 0.34885747249902294,
+        "rms": 0.08935880249871589
+      },
+      "L_ankle": {
+        "n": 312,
+        "peak": 0.21041184345628125,
+        "rms": 0.04752211707090538
+      },
+      "R_shoulder": {
+        "n": 423,
+        "peak": 1.0772653593436858,
+        "rms": 0.1474793739944528
+      },
+      "R_elbow": {
+        "n": 504,
+        "peak": 0.33170482626630465,
+        "rms": 0.07452171648271919
+      },
+      "R_knee": {
+        "n": 441,
+        "peak": 0.31948203581401624,
+        "rms": 0.09268551814003392
+      },
+      "R_ankle": {
+        "n": 312,
+        "peak": 0.21038942168947875,
+        "rms": 0.04716321415155931
+      }
+    },
+    "edgeSamples": 3387
+  },
+  "rmsReductionPercent": 10.848061349216554,
+  "regions": [
+    {
+      "region": "L_shoulder",
+      "eligiblePoints": 32,
+      "accepted": false
+    },
+    {
+      "region": "L_elbow",
+      "eligiblePoints": 40,
+      "width": 0.65,
+      "shift": 0.035,
+      "blend": 1,
+      "localRmsBefore": 0.11923919032546659,
+      "localRmsAfter": 0.07414855199206616,
+      "accepted": true
+    },
+    {
+      "region": "L_knee",
+      "eligiblePoints": 39,
+      "width": 1,
+      "shift": 0.035,
+      "blend": 0.35,
+      "localRmsBefore": 0.09412759219372055,
+      "localRmsAfter": 0.08935880193847277,
+      "accepted": true
+    },
+    {
+      "region": "L_ankle",
+      "eligiblePoints": 24,
+      "width": 1.35,
+      "shift": -0.035,
+      "blend": 0.7,
+      "localRmsBefore": 0.06179602001100882,
+      "localRmsAfter": 0.04752211693611579,
+      "accepted": true
+    },
+    {
+      "region": "R_shoulder",
+      "eligiblePoints": 29,
+      "accepted": false
+    },
+    {
+      "region": "R_elbow",
+      "eligiblePoints": 40,
+      "width": 0.65,
+      "shift": 0.035,
+      "blend": 1,
+      "localRmsBefore": 0.09540729515828983,
+      "localRmsAfter": 0.07452171501027383,
+      "accepted": true
+    },
+    {
+      "region": "R_knee",
+      "eligiblePoints": 41,
+      "width": 1,
+      "shift": 0.035,
+      "blend": 0.7,
+      "localRmsBefore": 0.10437860201288776,
+      "localRmsAfter": 0.09268551648567679,
+      "accepted": true
+    },
+    {
+      "region": "R_ankle",
+      "eligiblePoints": 24,
+      "width": 1.35,
+      "shift": -0.035,
+      "blend": 0.7,
+      "localRmsBefore": 0.060560573630432615,
+      "localRmsAfter": 0.04716321422150244,
+      "accepted": true
+    }
+  ],
+  "geometryBytePreserved": true,
+  "nonWeightBytesPreserved": true,
+  "texturePreserved": true,
+  "rigPreserved": true,
+  "uvSeamWeightsMatched": true,
+  "outputBytes": 402756,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Single-joint synthetic rotations in mesh bind space, not actual S2 animations.",
+    "Edge-length strain is a proxy, not complete clipping, volume or silhouette verification.",
+    "Pairwise optimization preserves geometry and fixed seam weights; not a physical cloth simulation."
+  ]
+}
