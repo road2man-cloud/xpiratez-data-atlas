@@ -1,0 +1,4521 @@
+{
+  "schema": "V118_HERO_CAPTIVE_RANK_REPAIR",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFilesHash": "e1871394e488e3e174172db5edc384571f6558563b335aa66382c56585ddb1ed",
+  "snapshotHash": "046ee4b3759ea356a9c631ad847b455c195485496c359312f79e5259991a058f",
+  "initialResearch": [
+    "STR_INSPECT_MACHINERY",
+    "STR_JACKSTOWN_SCOUTING",
+    "STR_RECRUIT_PEASANTS",
+    "STR_WAT_DO"
+  ],
+  "eventSource": {
+    "event": "STR_KNOCK_KNOCK_PENITENT",
+    "script": "STR_KNOCK_KNOCK_0",
+    "weights": [
+      {
+        "month": 0,
+        "weight": 50,
+        "totalWeight": 1580
+      },
+      {
+        "month": 4,
+        "weight": 50,
+        "totalWeight": 1665
+      },
+      {
+        "month": 12,
+        "weight": 50,
+        "totalWeight": 1618
+      }
+    ],
+    "executionOdds": 23,
+    "bundle": {
+      "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+      "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+      "item": "STR_HERO",
+      "count": 1
+    }
+  },
+  "legacyBranchHint": "branch-d71ceae0871151ca775d049a",
+  "scope": "CONDITIONAL_CAPTIVE_AND_RANK_REPLAY_NOT_NATIVE_GAME_CERTIFICATION",
+  "captureAction": {
+    "type": "conditionalDistressWithCaptive",
+    "encounter": {
+      "type": "conditionalDistressRecovery",
+      "script": "recurringTerrorNoPenalty",
+      "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+      "race": "STR_NAZIS",
+      "ufo": "STR_VESSEL_PROBE_DISTRESS",
+      "deployment": "STR_ATTACK_NAZI_RAID",
+      "rowIndex": 2,
+      "item": "STR_NEWSPAPER",
+      "count": 1,
+      "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+      "assumeMissionGeneration": true,
+      "assumeEncounterAndVictory": true,
+      "assumePhysicalRecovery": true
+    },
+    "unit": "STR_NAZI_LEADER",
+    "item": "STR_NAZI_LEADER",
+    "armor": "NAZI_ARMOR_P4",
+    "prisonType": 0,
+    "count": 1,
+    "assumeSurrenderOrNonlethalCapture": true,
+    "assumeLiveRecovery": true,
+    "assumeNativeUnitItemMapping": true,
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+    "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+  },
+  "trophyAction": {
+    "type": "conditionalBountyRecovery",
+    "script": "CrackHouse",
+    "mission": "STR_LOC_CRACKHOUSE",
+    "region": "REGION_CRACKHOUSE",
+    "texture": -122,
+    "race": "STR_BANDIT_TOWN",
+    "rowIndex": 3,
+    "item": "STR_TROPHY_TARGET_200_JACK",
+    "count": 1,
+    "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+    "assumeMissionGeneration": true,
+    "assumeTransport": true,
+    "assumeEncounterAndVictory": true,
+    "assumePhysicalRecovery": true
+  },
+  "scorePolicy": "event-scoped assumption only; no persistent score credit",
+  "engineArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "seedHash": "ddc7302b3b2aa561a03035ea51581a89dff2a64f1cc7026e4f7fb675c0d16620",
+  "seedSchema": "V114_HERO_ORDERED_TRAINING_LANES",
+  "target": "STR_HERO_GOLD_TRAINING",
+  "targetMinStats": {
+    "tu": 90,
+    "stamina": 0,
+    "health": 0,
+    "bravery": 0,
+    "reactions": 0,
+    "firing": 0,
+    "throwing": 0,
+    "strength": 0,
+    "psiStrength": 0,
+    "psiSkill": 0,
+    "melee": 0,
+    "mana": 0
+  },
+  "medalPolicy": "OXCE_871_STAT_GAIN_DEBRIEF_GATE_V1",
+  "researchResults": [
+    {
+      "id": "STR_KULTUR",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "1d93190672654b7b8bb5c1f286d8dc7233ea1daeb8ecac8d764b4eec8ceaf3e4"
+    },
+    {
+      "id": "STR_ALIEN_ORIGINS",
+      "status": "CONDITIONAL_RESEARCH_PRODUCED",
+      "addedActions": [
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        }
+      ],
+      "actionHash": "13b0a99eca14a62983b45295a2db5fe5490b54d8444b3089cbcf942bb6d75293"
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_01",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "13b0a99eca14a62983b45295a2db5fe5490b54d8444b3089cbcf942bb6d75293"
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_02",
+      "status": "CONDITIONAL_RANK_PRODUCED",
+      "minScore": 3000,
+      "firstMonth": 2,
+      "scoreAchievementProven": false,
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_ANY_BASIC_TROPHY_UNLOCKED",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_SURVIVAL",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_VIOLENCE",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_WEIRDNESS",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_CUNNING",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_02",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc"
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_03",
+      "status": "CONDITIONAL_RANK_PRODUCED",
+      "minScore": 4000,
+      "firstMonth": 3,
+      "scoreAchievementProven": false,
+      "actionHash": "7c5f4f9c3e58dd5a5907a4322580cb0fe5b51987fb00d5e5e09ad3039a515475"
+    },
+    {
+      "id": "STR_NEWSPAPER",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7c5f4f9c3e58dd5a5907a4322580cb0fe5b51987fb00d5e5e09ad3039a515475"
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_03",
+      "status": "ALREADY_ACTIVE",
+      "addedActions": [],
+      "actionHash": "7c5f4f9c3e58dd5a5907a4322580cb0fe5b51987fb00d5e5e09ad3039a515475"
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_04",
+      "status": "CONDITIONAL_RANK_PRODUCED",
+      "minScore": 5000,
+      "firstMonth": 4,
+      "scoreAchievementProven": false,
+      "actionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_SCHOOL_BOOKS",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_ITEM: STR_GNOME x1 (���� ǥ�������� ���: STR_GNOME) / MANUFACTURE_RESEARCH_UNRESOLVED: STR_GNOME_MAD",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_LIBRARY",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_ITEM: STR_COLT45 x1 (���� ǥ�������� ���: STR_COLT45) / PURCHASE_RESEARCH_UNRESOLVED:STR_COLT45",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_GODS_SUMMARY",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_FUNCTION:LIB / FACILITY_RESEARCH_UNRESOLVED:STR_LIBRARY",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_SHADOW_CHASING",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_ITEM: STR_GNOME x1 (���� ǥ�������� ���: STR_GNOME) / MANUFACTURE_RESEARCH_UNRESOLVED: STR_GNOME_MAD",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_DARK_STAR",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_ITEM: STR_GNOME x1 (���� ǥ�������� ���: STR_GNOME) / MANUFACTURE_RESEARCH_UNRESOLVED: STR_GNOME_MAD",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_PSI_LAB",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_ITEM: STR_HUMAN_MASTER x1 (���� ǥ�������� ���: STR_HUMAN_MASTER) / PURCHASE_RESEARCH_UNRESOLVED:STR_CONTACT_MERCENARIES",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    },
+    {
+      "id": "STR_GLAMOUR_USE",
+      "status": "REPAIR_PENDING",
+      "reason": "UNRESOLVED_ITEM: STR_LINGERIE x1 (���� ǥ�������� ���: STR_LINGERIE) / MANUFACTURE_RESEARCH_UNRESOLVED: STR_PIRATEY_LINGERIE",
+      "prefixActionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9"
+    }
+  ],
+  "routes": [
+    {
+      "stage": "CONDITIONAL_CAPTIVE_RECOVERY",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "109a6ada756d174837ef13b91c2b38c25773c7ad83fb6d6960bea4031a6db812",
+      "actionCount": 65,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "capture": [
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "month": 0,
+          "capacity": 15,
+          "usedBefore": 0
+        }
+      ]
+    },
+    {
+      "stage": "CAPTIVE_INTERROGATED",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "1d93190672654b7b8bb5c1f286d8dc7233ea1daeb8ecac8d764b4eec8ceaf3e4",
+      "actionCount": 67,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false
+    },
+    {
+      "stage": "RESEARCH:STR_KULTUR",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "1d93190672654b7b8bb5c1f286d8dc7233ea1daeb8ecac8d764b4eec8ceaf3e4",
+      "actionCount": 67,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_ALIEN_ORIGINS",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "13b0a99eca14a62983b45295a2db5fe5490b54d8444b3089cbcf942bb6d75293",
+      "actionCount": 68,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_CAPTAINS_RANK_01",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "13b0a99eca14a62983b45295a2db5fe5490b54d8444b3089cbcf942bb6d75293",
+      "actionCount": 68,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RANK:STR_CAPTAINS_RANK_02",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_ANY_BASIC_TROPHY_UNLOCKED",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_SURVIVAL",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_VIOLENCE",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_WEIRDNESS",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_CUNNING",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_CAPTAINS_RANK_02",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7ea118d1506a3d06e64baff100c4da2592d51c124b5f86151caab1c771d7d9bc",
+      "actionCount": 70,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RANK:STR_CAPTAINS_RANK_03",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7c5f4f9c3e58dd5a5907a4322580cb0fe5b51987fb00d5e5e09ad3039a515475",
+      "actionCount": 72,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 3,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_03",
+          "script": "STR_CAPTAINS_RANK_03",
+          "research": "STR_CAPTAINS_RANK_03",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 4000,
+            "firstMonth": 3,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_03",
+          "month": 3,
+          "minScore": 4000,
+          "firstMonth": 3,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_NEWSPAPER",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7c5f4f9c3e58dd5a5907a4322580cb0fe5b51987fb00d5e5e09ad3039a515475",
+      "actionCount": 72,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 3,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_03",
+          "script": "STR_CAPTAINS_RANK_03",
+          "research": "STR_CAPTAINS_RANK_03",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 4000,
+            "firstMonth": 3,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_03",
+          "month": 3,
+          "minScore": 4000,
+          "firstMonth": 3,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RESEARCH:STR_CAPTAINS_RANK_03",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "7c5f4f9c3e58dd5a5907a4322580cb0fe5b51987fb00d5e5e09ad3039a515475",
+      "actionCount": 72,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 3,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_03",
+          "script": "STR_CAPTAINS_RANK_03",
+          "research": "STR_CAPTAINS_RANK_03",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 4000,
+            "firstMonth": 3,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptionClass": "CONDITIONAL_CAPTIVE_AND_SCORE_PREDICATES",
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_03",
+          "month": 3,
+          "minScore": 4000,
+          "firstMonth": 3,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    },
+    {
+      "stage": "RANK:STR_CAPTAINS_RANK_04",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "f25a4bfb6fee54ebb648658d0ba55fcfce176bbb8b282d9d8b101a2b752fd4f9",
+      "actionCount": 74,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        },
+        {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 1,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        {
+          "type": "advanceMonth",
+          "month": 2,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 3,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_03",
+          "script": "STR_CAPTAINS_RANK_03",
+          "research": "STR_CAPTAINS_RANK_03",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 4000,
+            "firstMonth": 3,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        {
+          "type": "advanceMonth",
+          "month": 4,
+          "assumeContinuity": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_04",
+          "script": "STR_CAPTAINS_RANK_04",
+          "research": "STR_CAPTAINS_RANK_04",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 5000,
+            "firstMonth": 4,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "rankScoreChecks": [
+        {
+          "research": "STR_CAPTAINS_RANK_01",
+          "month": 1,
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_02",
+          "month": 2,
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_03",
+          "month": 3,
+          "minScore": 4000,
+          "firstMonth": 3,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        },
+        {
+          "research": "STR_CAPTAINS_RANK_04",
+          "month": 4,
+          "minScore": 5000,
+          "firstMonth": 4,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      ]
+    }
+  ],
+  "blockers": [],
+  "registered": false,
+  "finalAdmission": false,
+  "gameCertified": false,
+  "replacedLegacyAction": {
+    "sourceActionHash": "3e6a8392a5bed048c6b49e886eee3b09f049cc82be5803808562ad9bd0ecdb6e",
+    "sourceStage": "RESEARCH:STR_LOKNAR_ORIGINS",
+    "oldAction": {
+      "type": "conditionalDistressRecovery",
+      "script": "recurringTerrorNoPenalty",
+      "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+      "race": "STR_NAZIS",
+      "ufo": "STR_VESSEL_PROBE_DISTRESS",
+      "deployment": "STR_ATTACK_NAZI_RAID",
+      "rowIndex": 2,
+      "item": "STR_NEWSPAPER",
+      "count": 1,
+      "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+      "assumeMissionGeneration": true,
+      "assumeEncounterAndVictory": true,
+      "assumePhysicalRecovery": true
+    },
+    "newAction": {
+      "type": "conditionalDistressWithCaptive",
+      "encounter": {
+        "type": "conditionalDistressRecovery",
+        "script": "recurringTerrorNoPenalty",
+        "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+        "race": "STR_NAZIS",
+        "ufo": "STR_VESSEL_PROBE_DISTRESS",
+        "deployment": "STR_ATTACK_NAZI_RAID",
+        "rowIndex": 2,
+        "item": "STR_NEWSPAPER",
+        "count": 1,
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "assumeMissionGeneration": true,
+        "assumeEncounterAndVictory": true,
+        "assumePhysicalRecovery": true
+      },
+      "unit": "STR_NAZI_LEADER",
+      "item": "STR_NAZI_LEADER",
+      "armor": "NAZI_ARMOR_P4",
+      "prisonType": 0,
+      "count": 1,
+      "assumeSurrenderOrNonlethalCapture": true,
+      "assumeLiveRecovery": true,
+      "assumeNativeUnitItemMapping": true,
+      "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+      "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+    }
+  },
+  "summary": {
+    "newRankWitnesses": 3,
+    "highestRank": 4,
+    "captiveRecoveryWitnesses": 1,
+    "interrogated": true,
+    "oldBooks": true,
+    "alienOrigins": true,
+    "researchWitnesses": 1,
+    "alreadyActive": 10,
+    "researchBlockers": 7,
+    "blockers": 0,
+    "ascensionCompleted": 0
+  }
+}
