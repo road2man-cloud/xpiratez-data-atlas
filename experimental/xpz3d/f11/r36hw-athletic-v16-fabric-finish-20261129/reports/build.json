@@ -1,0 +1,120 @@
+{
+  "schema": "r36hw-v16-build-v1",
+  "sourceBlob": "b824e5ec3d9564950909037a5f0ba2533593b8d3",
+  "sourceBytes": 402980,
+  "outputBytes": 254884,
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "changedColorVertices": 255,
+  "trimAffectedCounts": {
+    "sleeveCuff": 59,
+    "ankleCuff": 111,
+    "collar": 17,
+    "lowerLegSide": 26
+  },
+  "texture": {
+    "width": 512,
+    "height": 512,
+    "bytes": 19635,
+    "oldBytes": 167703,
+    "kind": "procedural periodic microfinish RGB normal; no anatomy bake",
+    "decodedPixelRoundtrip": true
+  },
+  "materialBefore": {
+    "name": "R36HW_V13_OPAQUE_WARM_OCHRE_ATHLETIC_WEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.63,
+        0.45,
+        0.255,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.93
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.22
+    }
+  },
+  "materialAfter": {
+    "name": "R36HW_V16_OPAQUE_OCHRE_SPORTSWEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.51,
+        0.29,
+        0.11,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.88
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.35
+    }
+  },
+  "preservedBufferViews": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    38,
+    39,
+    40,
+    41,
+    43,
+    44,
+    45
+  ],
+  "modifiedBufferViews": [
+    37,
+    42
+  ],
+  "geometryRigAccessorsUnchanged": true,
+  "opaque": true,
+  "nativeS2": false,
+  "nativeRender": false,
+  "sourceSpriteCalibrated": false,
+  "visualApproval": false
+}
