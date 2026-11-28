@@ -1,0 +1,37 @@
+{
+  "schema": "ATLAS_FORWARD_GRAPH_RUNTIME_PROVENANCE_V1",
+  "graph": "public/data/campaign-forward-tree-v6-hybrid-synced-d7.json",
+  "graphCommit": "8c0a27cf359f3188a410c1170c06efaec86c8d8f",
+  "graphSha256": "ea92a958de4896375b42f3f6c3f5a2c0625400d197e99a7c7b063d5dd04b9ee5",
+  "supersedes": "public/data/campaign-forward-tree-v6-hybrid-d7.json",
+  "sourceCommit": "a7e64ad8b071c557a0194f26e811dcfc460a1b50",
+  "runtimeGitBlobHashes": {
+    "tools/build-atlas-campaign-repair-suffixes-v1.mjs": "9c4190d6a63dc49e2f133e0363f47211cbe55d6b",
+    "tools/build-atlas-campaign-forward-tree-v1.mjs": "b07a127da96c7ca552cc49fde74ee62a9a6401fd",
+    "public/soldiers/modern/campaign-start-gate-v1.js": "23162fc4f2e8a77f66ffafe41bc42a07891da975",
+    "public/soldiers/modern/campaign-proof.js": "1ace7c77e824a3948750482db27b85f1bbd7f2ea",
+    "public/soldiers/modern/origin-witness.js": "757f5930502ab0cce3bda001619eb9cd0327afd4",
+    "public/soldiers/modern/event-chronology.js": "78da0ec71f558bd4d5290ffd1ee61323a2e6f31a",
+    "public/soldiers/modern/eligibility.js": "833877020cc75cc2e5643b373a1047026af9635c",
+    "public/soldiers/modern/origin-campaign-context.js": "fa1fb2fd0bbb8b03c4212322c7b291951d218b6e",
+    "public/soldiers/modern/campaign-start-reachability-v1.js": "6044323b20b7b1693fc91ff63a66050b3c9941db",
+    "public/soldiers/modern/campaign-start-construction-v1.js": "a639f5f582fdb4813d2109bea264db6375d976c9",
+    "public/soldiers/modern/campaign-start-event-rules-v1.js": "ca867cb6bc4b9f289b343bbc776aa37fb825f6e4",
+    "public/soldiers/modern/campaign-start-career-actions-v1.js": "bd57f6b319f666e6a5bda2617293f63fdca1e453"
+  },
+  "scope": "Explicit runtime files, not full transitive dependency closure",
+  "reason": "Local campaign-proof.js and origin-witness.js were older than branch; synchronized from branch and regenerated D3 then D7 from root.",
+  "summary": {
+    "states": 343,
+    "edges": 496,
+    "distinctCompletedResearch": 65,
+    "repeatResearchEdges": 5,
+    "rejectedActions": 0,
+    "manufactureResearchUnlockEdges": 5,
+    "gameCertified": 0
+  },
+  "commands": [
+    "node tools/build-atlas-campaign-repair-suffixes-v1.mjs --repo=D:/xpiratez-data-atlas --ref=a7e64ad8b071c557a0194f26e811dcfc460a1b50 --region=STR_SIBERIA --forwardOut=campaign-forward-tree-v6-hybrid-synced-d3.json --forwardDepth=3 --forwardNodes=400 --forwardCaptain=0 --forwardEvents=0 --forwardPurchases=0 --forwardFixedItems=1 --forwardFixedEventFilter=STR_KNOCK_KNOCK_HYBRID_OF_TWILIGHT,STR_KNOCK_KNOCK_WILLING_SLAVE --forwardManufacture=1 --forwardRecruitment=1 --forwardManufactureFocus=research",
+    "node tools/build-atlas-campaign-repair-suffixes-v1.mjs --repo=D:/xpiratez-data-atlas --ref=a7e64ad8b071c557a0194f26e811dcfc460a1b50 --region=STR_SIBERIA --forwardResume=campaign-forward-tree-v6-hybrid-synced-d3.json --forwardOut=campaign-forward-tree-v6-hybrid-synced-d7.json --forwardDepth=7 --forwardNodes=450 --forwardCaptain=0 --forwardEvents=0 --forwardPurchases=0 --forwardFixedItems=1 --forwardFixedEventFilter=STR_KNOCK_KNOCK_HYBRID_OF_TWILIGHT,STR_KNOCK_KNOCK_WILLING_SLAVE --forwardManufacture=1 --forwardRecruitment=1 --forwardManufactureFocus=research --forwardFocusNodes=53 --forwardPriorityResearch=STR_HYBRID_OF_TWILIGHT,STR_HYBRID_HUMAN_LEGACY,STR_LOOTBOX_PREPPER"
+  ]
+}
