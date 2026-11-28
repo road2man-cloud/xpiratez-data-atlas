@@ -1,0 +1,408 @@
+{
+  "version": 142,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "62e508dbd0de160301a3717f1dedcb96500750419eee18528245f10cfaa6b93d",
+  "convergence": {
+    "policy": "branch-local-alternative-book-v142",
+    "lanes": [
+      {
+        "lane": "priest",
+        "start": "5c03873794ad55c95d501e75d8310c38a1c365ee7d71950d39348d27a3ca6755",
+        "end": "1701696472e28dd2dc037bf5c1de1f7044b2e2453f5b927c535b8b5255cc57f9",
+        "initialVector": {
+          "tu": 80,
+          "stamina": 154,
+          "health": 89,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 175
+        },
+        "finalVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 175
+        },
+        "initialSum": 1264,
+        "finalSum": 1276,
+        "accepted": 18,
+        "completed": [
+          "STR_BOOK_OF_SERMONS",
+          "STR_CHAPLAIN_TRAINING",
+          "STR_GNOME",
+          "STR_SCHOOL_BOOKS",
+          "STR_LIBRARY",
+          "STR_SCHOOLING_2",
+          "STR_OFFICER_TRAINING"
+        ],
+        "missing": [],
+        "stock": {
+          "STR_GLAMOUR": 6,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0,
+          "STR_GNOME": 1,
+          "STR_EXPEDITION_REPORTS": 1
+        },
+        "manufacture": [
+          {
+            "recipe": "STR_EXPEDITION_DEBRIEF",
+            "bundleIndex": 0,
+            "weight": 20,
+            "totalWeight": 58,
+            "required": {
+              "STR_EXPEDITION_RESEARCH": 1
+            },
+            "produced": {
+              "STR_EXPEDITION_REPORTS": 1,
+              "STR_LOOTBOX_EXPEDITION": 1
+            },
+            "hours": 20,
+            "month": 22
+          },
+          {
+            "recipe": "STR_LOOTBOX_EXPEDITION_EX",
+            "bundleIndex": 6,
+            "weight": 1,
+            "totalWeight": 21,
+            "required": {
+              "STR_LOOTBOX_EXPEDITION": 1
+            },
+            "produced": {
+              "STR_SCRAP_METAL": 1,
+              "STR_MEDALLION": 3,
+              "STR_COINS": 3,
+              "STR_BOOK_OF_SERMONS": 1
+            },
+            "hours": 5,
+            "month": 22
+          }
+        ],
+        "gnomeEvents": [
+          {
+            "month": 23,
+            "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+            "script": "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+            "executionOdds": 20,
+            "eventWeight": 150,
+            "totalWeight": 1300,
+            "randomItemCount": 21,
+            "capacity": 15,
+            "used": 2
+          }
+        ],
+        "gameCertified": false,
+        "registered": false
+      },
+      {
+        "lane": "officer",
+        "start": "80b2f6a6e5f8e0894a24f1be2859a6bd1b0d30a8c6a0a8220a05838f44236c90",
+        "end": "80b2f6a6e5f8e0894a24f1be2859a6bd1b0d30a8c6a0a8220a05838f44236c90",
+        "initialVector": {
+          "tu": 84,
+          "stamina": 123,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 169
+        },
+        "finalVector": {
+          "tu": 84,
+          "stamina": 123,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 169
+        },
+        "initialSum": 1197,
+        "finalSum": 1197,
+        "accepted": 0,
+        "completed": [
+          "STR_BOOK_OF_SERMONS",
+          "STR_CHAPLAIN_TRAINING",
+          "STR_SCHOOL_BOOKS",
+          "STR_LIBRARY",
+          "STR_SCHOOLING_2",
+          "STR_OFFICER_TRAINING"
+        ],
+        "missing": [
+          "STR_GNOME"
+        ],
+        "stock": {
+          "STR_GLAMOUR": 6,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0,
+          "STR_GNOME": 0,
+          "STR_EXPEDITION_REPORTS": 0
+        },
+        "manufacture": [],
+        "gnomeEvents": [],
+        "gameCertified": false,
+        "registered": false
+      }
+    ],
+    "traces": [
+      {
+        "lane": "priest",
+        "from": "5c03873794ad55c95d501e75d8310c38a1c365ee7d71950d39348d27a3ca6755",
+        "to": "8f666f24734f67b83d4c718777e506d0806125fed28c9d282d035c1b27172cb0",
+        "action": {
+          "type": "acquirePurchase",
+          "item": "STR_EXPEDITION_RESEARCH",
+          "count": 1
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "8f666f24734f67b83d4c718777e506d0806125fed28c9d282d035c1b27172cb0",
+        "to": "85584dcc543c2fa2bafd8ffe11d95fdb8c1fdc8c4934276daf5cf21746a1d393",
+        "action": {
+          "type": "conditionalExpeditionManufacture",
+          "recipe": "STR_EXPEDITION_DEBRIEF",
+          "bundleIndex": 0,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "85584dcc543c2fa2bafd8ffe11d95fdb8c1fdc8c4934276daf5cf21746a1d393",
+        "to": "622b4f214828185f26d36d06caf3223aa45522bfa106d9ebd68dade226afc553",
+        "action": {
+          "type": "conditionalExpeditionManufacture",
+          "recipe": "STR_LOOTBOX_EXPEDITION_EX",
+          "bundleIndex": 6,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "622b4f214828185f26d36d06caf3223aa45522bfa106d9ebd68dade226afc553",
+        "to": "629b0a8a2fa03f6f313375db505dea0066e80ef0ec766be9fff1ced836f1e401",
+        "action": {
+          "type": "research",
+          "id": "STR_BOOK_OF_SERMONS"
+        },
+        "added": [
+          "STR_BOOK_OF_SERMONS"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "629b0a8a2fa03f6f313375db505dea0066e80ef0ec766be9fff1ced836f1e401",
+        "to": "307276e039f7f767e1ebdc2c14dd88ede32e73a51a46455c4fb3470be4a6c1d0",
+        "action": {
+          "type": "research",
+          "id": "STR_CHAPLAIN_TRAINING"
+        },
+        "added": [
+          "STR_CHAPLAIN_TRAINING"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "307276e039f7f767e1ebdc2c14dd88ede32e73a51a46455c4fb3470be4a6c1d0",
+        "to": "324a44c20183fb7cd2cba241ea665ec0b68a252828764166b9fcfba3b49b2f5e",
+        "action": {
+          "type": "acquirePurchase",
+          "item": "STR_SC_WIRE",
+          "count": 26
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "324a44c20183fb7cd2cba241ea665ec0b68a252828764166b9fcfba3b49b2f5e",
+        "to": "cecf4b6c399ca01ce7a532d00aafa5c3600006cdfca082bb978c33fddb7a5e78",
+        "action": {
+          "type": "research",
+          "id": "STR_SC_WIRE"
+        },
+        "added": [
+          "STR_SC_WIRE"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "cecf4b6c399ca01ce7a532d00aafa5c3600006cdfca082bb978c33fddb7a5e78",
+        "to": "6882aeb7f16571522dcf5f6e9f4b4907a298f011ba3570e49863ab3ff8f4c5d1",
+        "action": {
+          "type": "sourceBoundBaseFunctions",
+          "assumeSameBase": true,
+          "assumeCompleteFacilityState": true,
+          "geographyProvides": [],
+          "geographyForbids": [],
+          "sourceSetSha256": "66fd2e55611ef8c81268793425ce4d5b2ed6bc01a504e991788688758b49f1fe",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "6882aeb7f16571522dcf5f6e9f4b4907a298f011ba3570e49863ab3ff8f4c5d1",
+        "to": "906e18e292a383dc185cb57338021e535d017500561efa6110c56ef1bef6254f",
+        "action": {
+          "type": "research",
+          "id": "STR_PERSONAL_LABS"
+        },
+        "added": [
+          "STR_PERSONAL_LABS"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "906e18e292a383dc185cb57338021e535d017500561efa6110c56ef1bef6254f",
+        "to": "76cd31c10aa91b30e722ed7e0ef5498856a2ddac59c39e42f5116c91c41e711f",
+        "action": {
+          "type": "acquireFacility",
+          "id": "STR_PERSONAL_LABS"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "76cd31c10aa91b30e722ed7e0ef5498856a2ddac59c39e42f5116c91c41e711f",
+        "to": "3ab2b076e2e46149aea12edc43b5d5be86100068ea4410b748f213aa37a27d59",
+        "action": {
+          "type": "conditionalGnomeEvent",
+          "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+          "script": "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+          "month": 23,
+          "item": "STR_GNOME",
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "3ab2b076e2e46149aea12edc43b5d5be86100068ea4410b748f213aa37a27d59",
+        "to": "1226f88085a413314bfbd6ab6068fc619d8cd10c571e6878ba7347517c8abb46",
+        "action": {
+          "type": "research",
+          "id": "STR_GNOME"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "1226f88085a413314bfbd6ab6068fc619d8cd10c571e6878ba7347517c8abb46",
+        "to": "5fedd85c9df7dd021a64440e0f0e98d9672b9cb0e4cec03ef3c6698be5e1b874",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_SCHOOL_BOOKS_ITEM",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_GNOME",
+          "STR_PERSONAL_LABS_EXIST",
+          "STR_SCHOOL_BOOKS",
+          "STR_SCHOOL_BOOKS_ITEM"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "5fedd85c9df7dd021a64440e0f0e98d9672b9cb0e4cec03ef3c6698be5e1b874",
+        "to": "e3b5af0cdf1b10eaa72dfdb3eb55d8a4a9b9581d68eb374cad0cc521659599c2",
+        "action": {
+          "type": "research",
+          "id": "STR_LIBRARY"
+        },
+        "added": [
+          "STR_LIBRARY"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "e3b5af0cdf1b10eaa72dfdb3eb55d8a4a9b9581d68eb374cad0cc521659599c2",
+        "to": "c4a8a1d700c1312579780d7b12fd1f69ccda37d8b0fccc8994453186dc28c935",
+        "action": {
+          "type": "acquireFacility",
+          "id": "STR_LIBRARY"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "c4a8a1d700c1312579780d7b12fd1f69ccda37d8b0fccc8994453186dc28c935",
+        "to": "334ca0ac036df6f74ab9e1b77542390c480c59fdc21ebc04660ead7b0a74827b",
+        "action": {
+          "type": "research",
+          "id": "STR_SCHOOLING_2"
+        },
+        "added": [
+          "STR_SCHOOLING_2"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "334ca0ac036df6f74ab9e1b77542390c480c59fdc21ebc04660ead7b0a74827b",
+        "to": "b898219c653127cbce9f5b081beaaeaa46e52576373f13064ba9308d1bac7f29",
+        "action": {
+          "type": "research",
+          "id": "STR_OFFICER_TRAINING"
+        },
+        "added": [
+          "STR_OFFICER_TRAINING"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "b898219c653127cbce9f5b081beaaeaa46e52576373f13064ba9308d1bac7f29",
+        "to": "1701696472e28dd2dc037bf5c1de1f7044b2e2453f5b927c535b8b5255cc57f9",
+        "action": {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_OFFICER_TRAINING"
+        },
+        "added": []
+      }
+    ],
+    "rejected": [],
+    "accepted": 18,
+    "gameCertified": false,
+    "registered": false
+  },
+  "gameCertified": false,
+  "registered": false
+}
