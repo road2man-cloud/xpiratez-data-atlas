@@ -1,0 +1,26 @@
+{
+  "schema": "ATLAS_ROOTED_CAREER_CANDIDATES_V1",
+  "artifact": "tools/data/overcap-rooted-career-POD_RETRY_B-8-2.json.gz",
+  "artifactSha256": "a024f3c7265587600a86c2bbbd03d35f466a8d10cd0f989d43acf8b23fb60d0d",
+  "inputs": {
+    "ledgerSha256": "20176a069f2e284b0d4271236166806ff265c8816021d1f16ed76fba492bbacf",
+    "bankSha256": "d68fca85472d6e0dc36abcf1760d46d5d843a47b47b28b7da9a60c7b6bd06d5f",
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971"
+  },
+  "offset": 8,
+  "nextOffset": 9,
+  "attemptedGraphs": 1,
+  "totalLegacyGraphs": 343,
+  "rebasedBirths": 1,
+  "replayedNodes": 1,
+  "processedNodes": 1,
+  "routes": 1,
+  "matchedLegacyStats": 1,
+  "failures": 0,
+  "coverage": {
+    "manufacture:STR_HYBRID_HIVER_RECRUITMENT": 1
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "firstFailures": []
+}

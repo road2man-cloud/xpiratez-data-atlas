@@ -1,0 +1,33 @@
+{
+  "schema": "ATLAS_ROOTED_CAREER_CANDIDATES_V1",
+  "artifact": "tools/data/overcap-rooted-career-POD_RETRY_B-0-8.json.gz",
+  "artifactSha256": "9a2fba79f0b40b29ce0d8ebd9e59b093b55ec9e204f413a7b15a2eb9520c5b92",
+  "inputs": {
+    "ledgerSha256": "20176a069f2e284b0d4271236166806ff265c8816021d1f16ed76fba492bbacf",
+    "bankSha256": "d68fca85472d6e0dc36abcf1760d46d5d843a47b47b28b7da9a60c7b6bd06d5f",
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971"
+  },
+  "offset": 0,
+  "nextOffset": 8,
+  "attemptedGraphs": 8,
+  "totalLegacyGraphs": 343,
+  "rebasedBirths": 8,
+  "replayedNodes": 154,
+  "processedNodes": 154,
+  "routes": 49,
+  "matchedLegacyStats": 49,
+  "failures": 0,
+  "coverage": {
+    "manufacture:STR_DAMSEL_RECRUITMENT": 76,
+    "manufacture:STR_SPY_DAMSEL_RECRUITMENT": 7,
+    "manufacture:STR_THEBAN_ASSAULT_CLONE": 7,
+    "direct:STR_SOLDIER_S": 3,
+    "manufacture:STR_SISTER_VICTIM_RECRUITMENT": 51,
+    "direct:STR_SOLDIER_PEASANT": 2,
+    "manufacture:STR_HYBRID_LONER_RECRUITMENT": 2,
+    "manufacture:STR_SOLDIER_SLAVE_RECRUITMENT": 6
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "firstFailures": []
+}
