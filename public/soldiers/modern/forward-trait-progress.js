@@ -1,4 +1,4 @@
-// V174: supplemental branch-local forward production panel in the existing soldier DB.
+// V175: supplemental branch-local forward production panel in the existing soldier DB.
 // Never changes the certified/conditional route table or its ranking.
 const BRANCH_LABELS={existing:'기존 남성 병종',hybrid:'혼종',priest:'성직자'};
 const list=x=>Array.isArray(x)?x:[];
@@ -43,7 +43,7 @@ function loadPanel(panel){
  async function load(){
   if(loading||loaded)return;loading=true;status.textContent='순방향 연구 연결 자료를 불러오는 중…';
   try{
-   const response=await fetch(new URL('../../data/soldier-forward-trait-progress-v174.json',import.meta.url));
+   const response=await fetch(new URL('../../data/soldier-forward-trait-progress-v175.json',import.meta.url));
    if(!response.ok)throw Error('HTTP '+response.status);
    const d=await response.json(),index=validateProgress(d);
    render(d,index,body,status);loaded=true;
@@ -81,7 +81,7 @@ function render(d,index,root,status){
   const rows=rowsFor(d,{branch:branch.value,origin:origin.value,query:query.value,partialOnly:partial.checked,difficultyMatch:same.checked},index);
   const pages=Math.max(1,Math.ceil(rows.length/size));page=Math.min(page,pages-1);
   const b=index.branches.get(branch.value),cp=b.checkpoint;
-  checkpoint.textContent=cp?'V'+cp.version+' · 신규 행동 '+cp.newActions+'개 · 신규 활성 연구 '+cp.newResearch+'개 · GDX '+cp.gdx.length+'/6 · 도서관 '+(cp.library?'건설':'미건설')+' · 마법기술 개론 '+(cp.magitech?'완료':'미완료')+' · 사이오닉 교감 '+cp.psiDone+'/'+cp.psiTotal+' · 섹토위드 재고 '+cp.weed+'개'+(cp.version>=174?' · 신규 시설 '+names(cp.facilities)+' · 부분 경로 '+cp.partialRoutes+'개':'')+' · 조건부 재생 결과':'선택한 분기의 독립 체크포인트 · '+b.actionCount+'개 누적 행동';
+  checkpoint.textContent=cp?'V'+cp.version+' · 신규 행동 '+cp.newActions+'개 · 신규 활성 연구 '+cp.newResearch+'개 · GDX '+cp.gdx.length+'/6 · 도서관 '+(cp.library?'건설':'미건설')+' · 마법기술 개론 '+(cp.magitech?'완료':'미완료')+' · 사이오닉 교감 '+cp.psiDone+'/'+cp.psiTotal+' · 섹토위드 재고 '+cp.weed+'개'+(cp.version>=174?' · 신규 시설 '+names(cp.facilities)+' · 부분 경로 '+cp.partialRoutes+'개'+(cp.version>=175?' · 검투사 적용 목표 '+cp.gladiatorGoals+'개':''):'')+' · 조건부 재생 결과':'선택한 분기의 독립 체크포인트 · '+b.actionCount+'개 누적 행동';
   counter.textContent=rows.length+'개 목표 · '+(BRANCH_LABELS[branch.value]||branch.value)+' 단독 · 최종 인증 0건';
   pageLabel.textContent=(page+1)+' / '+pages;prev.disabled=page===0;next.disabled=page+1>=pages;tbody.replaceChildren();
   for(const r of rows.slice(page*size,(page+1)*size)){
