@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'experimental/xpz3d/f11/r36lt-texture-projection-20261128/source/export_uv_template.cjs'
+      - 'experimental/xpz3d/f11/r36lt-texture-projection-20261128/source/split_uv_islands.cjs'
       - 'experimental/xpz3d/f11/r36lt-texture-projection-20261128/config.example.json'
       - '.github/workflows/xpz3d-r36lt-uv-template.yml'
   workflow_dispatch:
@@ -40,6 +41,8 @@ jobs:
           node --check "$ROOT/source/export_uv_template.cjs"
           rm -rf "$ROOT/output/uv-template"
           node --max-old-space-size=4096 "$ROOT/source/export_uv_template.cjs" "$MODEL" "$ROOT/config.example.json" "$ROOT/output/uv-template"
+          node --check "$ROOT/source/split_uv_islands.cjs"
+          node --max-old-space-size=4096 "$ROOT/source/split_uv_islands.cjs" "$ROOT/output/uv-template"
           node - "$ROOT/output/uv-template/R36LT_UV_TEMPLATE.report.json" <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
