@@ -1,6 +1,6 @@
 {
   "version": "R36HW-N8-CPU",
-  "renderer": "pure Node CPU diagnostic rasterizer of actual N7B GLB triangles (S2-source-inspired illumination; NOT native S2)",
+  "renderer": "pure Node CPU diagnostic rasterizer of actual N8 GLB triangles (S2-source-inspired illumination; NOT native S2)",
   "sourceFile": "R36HW_N8_SOFT_LEGFIT.glb",
   "sourceSHA256": "6b2ec60c3f14332ee5242644871e22c1598c91c5807c9fbfc0d2b552ac5b1a60",
   "totalTriangles": 2098,
