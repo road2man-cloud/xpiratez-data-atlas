@@ -152,7 +152,27 @@ if(args.forwardOut){
  const {buildCampaignForwardTree}=await import('./build-atlas-campaign-forward-tree-v1.mjs');
  const resume=args.forwardResume?JSON.parse(fs.readFileSync(args.forwardResume)):null;
  if(resume&&(resume.sourceCommit!==ref||JSON.stringify(resume.sourceFiles)!==JSON.stringify(files)))throw Error('forward-resume-source-file-mismatch');
- const result=buildCampaignForwardTree(d,snapshot,{resume,maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const eventRoutes=[];
+ if(args.forwardEvents==='1'){
+  const chosen=[['STR_CAPTAIN_PERSONALITY_TEST2','STR_CAPTAIN_PUSSY_UP'],['STR_CAPTAIN_PERSONALITY_TEST3','STR_CAPTAIN_UNCLASSED'],['STR_CAPTAIN_PERSONALITY_TEST4','STR_CAPTAIN_PURE']];
+  if(scenarioCountry)chosen.push(['STR_START_COUNTRY_'+scenarioCountry.slice(4)+'_EVENT',scenarioCountry]);
+  for(const [event,id] of chosen){
+   const e=events[event],s=eventScripts[event];
+   const entry=d.eventResearchSources?.[id]?.find(x=>x.event===event&&x.choiceCount===1);
+   const indexed=entry?.scripts?.find(x=>x.script===event);
+   if(!e||!s||!indexed||JSON.stringify(e.researchList)!==JSON.stringify([id]))throw Error('forward-event-source-mismatch:'+event);
+   const isCountry=event.startsWith('STR_START_COUNTRY_');
+   const keys=new Set(['type','firstMonth','lastMonth','executionOdds','researchTriggers',isCountry?'eventWeights':'oneTimeRandomEvents',...(isCountry?['xcomBaseInCountryTriggers']:[])]);
+   if(Object.keys(s).some(k=>!keys.has(k))||
+    JSON.stringify([...indexed.researchPositive].sort())!==JSON.stringify(triggers(s.researchTriggers,true).sort())||
+    JSON.stringify([...indexed.researchNegative].sort())!==JSON.stringify(triggers(s.researchTriggers,false).sort())||
+    (s.firstMonth??0)!==indexed.firstMonth||(s.lastMonth??null)!==indexed.lastMonth||(s.executionOdds??100)!==indexed.executionOdds||
+    (!isCountry&&(indexed.mode!=='oneTimeRandom'||s.oneTimeRandomEvents?.[event]!==indexed.oneTimeWeight||Object.values(s.oneTimeRandomEvents).reduce((a,b)=>a+b,0)!==indexed.oneTimeTotal)))throw Error('forward-event-trigger-mismatch:'+event);
+   if(!isCountry&&Object.keys(e).some(k=>!['name','type','description','background','music','researchList','timer','timerRandom','points'].includes(k)))throw Error('forward-event-rewards-unsupported:'+event);
+   eventRoutes.push({event,research:id,script:indexed,sourceSha256:files['Piratez_Events.rul'],timer:e.timer??null,timerRandom:e.timerRandom??null,points:e.points??0});
+  }
+ }
+ const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
  const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files});
  fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
  console.log(JSON.stringify(result.summary));process.exit(0);
