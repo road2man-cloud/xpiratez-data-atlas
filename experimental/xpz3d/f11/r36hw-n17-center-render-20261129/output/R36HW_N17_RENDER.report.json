@@ -1,6 +1,6 @@
 {
   "version": "R36HW-N17-CPU",
-  "renderer": "pure Node CPU diagnostic rasterizer of actual N11 GLB triangles (S2-source-inspired illumination; NOT native S2)",
+  "renderer": "pure Node CPU diagnostic rasterizer of actual N17 GLB triangles (S2-source-inspired illumination; NOT native S2)",
   "framing": "pelvic-center ROI only; no full-body preview",
   "sourceFile": "R36HW_N17_CENTER_DEPTH.glb",
   "sourceSHA256": "56af097238c2b562f98330648b2e8a9782c64b3cef4e7320f2c9a03e38029e6f",
@@ -138,6 +138,114 @@
       "file": "R36HW_N17_SHADED_SIDE_DETAIL.png",
       "bytes": 126881,
       "sha256": "3a298d454a256c5db3eea385529063602a9f0848ae13b3fb5157fbe863e88ad2"
+    },
+    {
+      "view": "front",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 363,
+      "nondegenerateTriangles": 363,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 870466,
+      "meanDirectionalTerm": 0.41349542345212487,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "layer": "pelvis primitive 3 isolated",
+      "file": "R36HW_N17_PELVIS_ONLY_CLAY_FRONT_DETAIL.png",
+      "bytes": 141140,
+      "sha256": "8381517de5fc08281106bb04aa096928546ad1410a78ffe0a08483566cf127d3"
+    },
+    {
+      "view": "oblique",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 363,
+      "nondegenerateTriangles": 363,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 782944,
+      "meanDirectionalTerm": 0.42664439094686185,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "layer": "pelvis primitive 3 isolated",
+      "file": "R36HW_N17_PELVIS_ONLY_CLAY_OBLIQUE_DETAIL.png",
+      "bytes": 138335,
+      "sha256": "f05c132fd0a621c6d5b6279545b0ee4d7fc6e78f91958882a33c29d6a94d7117"
+    },
+    {
+      "view": "side",
+      "mode": "clay",
+      "focus": "detail",
+      "triangles": 363,
+      "nondegenerateTriangles": 363,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 466258,
+      "meanDirectionalTerm": 0.2906961059298015,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "layer": "pelvis primitive 3 isolated",
+      "file": "R36HW_N17_PELVIS_ONLY_CLAY_SIDE_DETAIL.png",
+      "bytes": 86674,
+      "sha256": "4f13f3eab07b4c82469422123e293ab87675501b27040bc9d132abb352702914"
+    },
+    {
+      "view": "front",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 363,
+      "nondegenerateTriangles": 363,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 870466,
+      "meanDirectionalTerm": 0.41349542345212487,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "layer": "pelvis primitive 3 isolated",
+      "file": "R36HW_N17_PELVIS_ONLY_SHADED_FRONT_DETAIL.png",
+      "bytes": 187680,
+      "sha256": "cdc9f1814e0de1ac457d1c76289d0c54205443cf31636456bcbbfac8a74f4a67"
+    },
+    {
+      "view": "oblique",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 363,
+      "nondegenerateTriangles": 363,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 782944,
+      "meanDirectionalTerm": 0.42664439094686185,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "layer": "pelvis primitive 3 isolated",
+      "file": "R36HW_N17_PELVIS_ONLY_SHADED_OBLIQUE_DETAIL.png",
+      "bytes": 174220,
+      "sha256": "7c5c2d53f1b4ac5023c31dbf0e31be6193cd240b9530da32599b531b28828c1b"
+    },
+    {
+      "view": "side",
+      "mode": "shaded",
+      "focus": "detail",
+      "triangles": 363,
+      "nondegenerateTriangles": 363,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 466258,
+      "meanDirectionalTerm": 0.2906961059298015,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "layer": "pelvis primitive 3 isolated",
+      "file": "R36HW_N17_PELVIS_ONLY_SHADED_SIDE_DETAIL.png",
+      "bytes": 104918,
+      "sha256": "fd465967a39c481e30f443bbdba8d06360c377a82351c05f25a3ea2e18c6d7a4"
     }
   ],
   "limitations": [
