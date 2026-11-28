@@ -1,0 +1,32 @@
+{
+  "stage": "N17 centered constrained-harmonic base and asymmetric 3D relief on N16 GLB",
+  "inputSHA256": "a5d4aaf2cf8912de2ee3339cbd6e20df9cae15250a09ac76ce0b96bc0d5410d3",
+  "outputSHA256": "56af097238c2b562f98330648b2e8a9782c64b3cef4e7320f2c9a03e38029e6f",
+  "triangles": 2099,
+  "skinJoints": 63,
+  "pelvisVertices": 240,
+  "pelvisTriangles": 363,
+  "editedVertices": 94,
+  "boundaryProtected": 45,
+  "maximumDisplacementMeters": 0.018863001633825774,
+  "minimumTriangleAreaSqMeters": 0.000001907918186257542,
+  "faceInversions": 0,
+  "initialInversions": 0,
+  "dampingSteps": 0,
+  "reliefScale": 1,
+  "strength": 1,
+  "meanHarmonicCorrectionMeters": 0.004274357419646351,
+  "faceHairUntouched": true,
+  "sourceUVSkinWeightsUntouched": true,
+  "fullBodyUntouched": true,
+  "referenceImageProjected": false,
+  "visualApproval": false,
+  "nativeS2Rendered": false,
+  "regionModified": 94,
+  "meanAbsMovementMeters": 0.002795504133956296,
+  "limitations": [
+    "No rendered review yet",
+    "N16 clothing-derived side and lower silhouette remains",
+    "Existing external skin seams are not welded"
+  ]
+}
