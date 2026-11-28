@@ -1,0 +1,57 @@
+name: XPZ3D V13 body and N21 center
+on:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/source/**'
+      - '.github/workflows/xpz3d-v13-body-ncenter.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-v13-body-ncenter
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Restore user-selected immutable V13 GLB
+        run: |
+          git fetch --no-tags --depth=1 origin 8c68b4ddde2696674a533216c20bbb62d46242d3
+          mkdir -p experimental/xpz3d/f11/r36hw-athletic-v13-warm-ochre-20261129/output
+          git show 8c68b4ddde2696674a533216c20bbb62d46242d3:experimental/xpz3d/f11/r36hw-athletic-v13-warm-ochre-20261129/output/R36HW_F11_ATHLETIC_SUIT_V13_WARM_OCHRE.glb > experimental/xpz3d/f11/r36hw-athletic-v13-warm-ochre-20261129/output/R36HW_F11_ATHLETIC_SUIT_V13_WARM_OCHRE.glb
+      - name: Produce continuous V13 body N-center
+        run: |
+          node experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/source/build_continuous.cjs \
+            experimental/xpz3d/f11/r36hw-athletic-v13-warm-ochre-20261129/output/R36HW_F11_ATHLETIC_SUIT_V13_WARM_OCHRE.glb \
+            experimental/xpz3d/f11/r36hw-n21-center-surface-20261129/output/R36HW_N21_V10_BODY_LOCAL_CENTER.glb \
+            experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/output/R36HW_V13_BODY_NCENTER_CONTINUOUS.glb
+      - name: Produce N21 central-patch variant
+        run: |
+          node experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/source/build_patch.cjs \
+            experimental/xpz3d/f11/r36hw-athletic-v13-warm-ochre-20261129/output/R36HW_F11_ATHLETIC_SUIT_V13_WARM_OCHRE.glb \
+            experimental/xpz3d/f11/r36hw-n21-center-surface-20261129/output/R36HW_N21_V10_BODY_LOCAL_CENTER.glb \
+            experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/output/R36HW_V13_BODY_NCENTER_PATCH.glb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r36hw-v13-body-ncenter
+          path: |
+            experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/output/*.glb
+            experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/reports/*.json
+      - name: Safely publish actual GLBs
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/output experimental/xpz3d/f11/r36hw-v13-body-ncenter-20261129/reports
+          if ! git diff --cached --quiet; then
+            git commit -m "build(xpz3d): publish V13 full-body plus N-only center GLBs"
+            for attempt in 1 2 3 4 5; do
+              git fetch --no-tags origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then exit 0; fi
+            done
+            exit 1
+          fi
