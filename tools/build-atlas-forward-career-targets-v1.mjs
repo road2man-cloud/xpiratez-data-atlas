@@ -51,9 +51,13 @@ export function buildTargets(runtime,graphs){
  });
  const profiles=make(runtime.profiles,'profile'),trainings=make(runtime.trainings,'training'),missing=new Map();
  for(const row of [...profiles,...trainings])for(const t of row.topicStatus)if(!t.observed){if(!missing.has(t.id))missing.set(t.id,{id:t.id,profiles:[],trainings:[]});missing.get(t.id)[row.kind==='profile'?'profiles':'trainings'].push(row.id);}
- const priorities=[...missing.values()].sort((a,b)=>b.profiles.length+b.trainings.length-a.profiles.length-a.trainings.length||a.id.localeCompare(b.id));
+ // STR_UNAVAILABLE is a zero-cost, self-sample gate; do not schedule it as ordinary lab research.
+ // Keep the affected targets visible; this does not certify permanent impossibility.
+ const unresolved=[...missing.values()].sort((a,b)=>b.profiles.length+b.trainings.length-a.profiles.length-a.trainings.length||a.id.localeCompare(b.id));
+ const specialGates=unresolved.filter(x=>x.id==='STR_UNAVAILABLE').map(x=>({...x,reason:'zero-cost self-sample gate; ordinary expansion excluded'}));
+ const priorities=unresolved.filter(x=>x.id!=='STR_UNAVAILABLE');
  const summary=rows=>({total:rows.length,jointResearch:rows.filter(r=>r.researchStatus==='joint-model-reached').length,noExplicitResearch:rows.filter(r=>r.researchStatus==='no-explicit-research').length,notObservedJointly:rows.filter(r=>r.researchStatus==='not-observed-jointly').length,manufactureActions:rows.filter(r=>r.manufactureWitness).length,careerCertified:0});
- return {schema:'ATLAS_FORWARD_CAREER_TARGETS_V1',sourceMetadataSha256:runtime.source,scope:'BOUNDED_RESEARCH_TARGETS_ONLY; NO_LEGACY_ACTIONS; NO_CAREER_REPLAY',graphs:graphs.map(({file,states,edges})=>({file,states,edges})),profiles,trainings,priorities,summary:{profiles:summary(profiles),trainings:summary(trainings),missingResearchTopics:priorities.length,gameCertified:0}};
+ return {schema:'ATLAS_FORWARD_CAREER_TARGETS_V1',sourceMetadataSha256:runtime.source,scope:'BOUNDED_RESEARCH_TARGETS_ONLY; NO_LEGACY_ACTIONS; NO_CAREER_REPLAY',graphs:graphs.map(({file,states,edges})=>({file,states,edges})),profiles,trainings,priorities,specialGates,summary:{profiles:summary(profiles),trainings:summary(trainings),missingResearchTopics:unresolved.length,ordinaryExpansionTopics:priorities.length,specialGateTopics:specialGates.length,gameCertified:0}};
 }
 export function produce(repo,files=GRAPH_FILES){
  const hash=b=>createHash('sha256').update(b).digest('hex');
