@@ -1,0 +1,4599 @@
+{
+  "schema": "ATLAS_FORWARD_TIMED_RESEARCH_V4",
+  "actualGameCertified": false,
+  "normalizationComplete": false,
+  "scope": "January only; serial sample-free labs; fixed conditional cost bands; deterministic free choice; no monthly events, hiring, construction or combat.",
+  "inputs": {
+    "public/data/soldiers-modern-index.json": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+    "tools/data/overcap-forward-supply-catalog-v2.json": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+    "tools/data/overcap-forward-starting-base-v3.json": "92dc15da2a3fdab42414da9d292ba5bb3fc48e29e79b0b9f52adc2e443c9d689",
+    "tools/data/overcap-forward-junk-extraction-v3.json": "23c1723fd7f228f682aa152f64b2ebe831ed62e14de4dfaeb16ace4a58f852e3"
+  },
+  "initial": {
+    "date": "2601-01-01T12:00:00Z",
+    "weekday": 5,
+    "scientists": 3,
+    "labCapacity": 12
+  },
+  "runs": [
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "roll": 50,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CADILLAC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_CRAFT_AUXILARY_SYSTEMS",
+        "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+        "STR_CRAFT_BATTERY_PACK",
+        "STR_CRAFT_PIR_CANNON_UC",
+        "STR_CRAFT_WEAPONS_SUMMARY",
+        "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+        "STR_GL_VV_UC",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_HMG_VV_UC",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_LMG_VV_UC",
+        "STR_MINIGUN_VV_UC",
+        "STR_ROTOGUN_VV_UC",
+        "STR_RPG_VV_UC"
+      ],
+      "fixedCosts": {
+        "STR_JACKSTOWN_SCOUTING": 1,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 1,
+        "STR_BOW_H": 1,
+        "STR_CONTACT_TIGER_TRANSPORT": 1,
+        "STR_CADILLAC": 1,
+        "STR_CRAFT_WEAPONS_SUMMARY": 1,
+        "STR_CRAFT_AUXILARY_SYSTEMS": 1
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "0c43fcd782c8b99efb14268eae0725960620d61a1722ac93e7ddc9983c1823c0"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "843dae142b4f0b6219907b67904d45a377d288194ca6886b99dc2af4e8a52e5d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "53f24fa960f291c16d22315794922066bbbb05e919926f19e9a4a6db7d50960f"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "6429364257ae9a07b3474a758dcec73117be946e22edca4f564587e076254568"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "ae44b6900a5b1dd5b2b012497b71c51a82dc9baa58764413858f34256bc89616"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "f6a60c8cc4ed7aaa26dad8b1e5962d4374873fcbe7e76af4c3121fa9da1a675f"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_CADILLAC",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "added": [
+            "STR_CADILLAC"
+          ],
+          "stateHash": "6603a75de11bc24ce8636e76b563a5767be42d00292a4d018ab076c03c4113a7"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_CRAFT_WEAPONS_SUMMARY",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_CRAFT_WEAPONS_SUMMARY",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_CRAFT_WEAPONS_SUMMARY"
+          },
+          "added": [],
+          "stateHash": "d8368fab2fa929f98976f269c534ffbf2712271898b912490d29598de5b30005"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CRAFT_WEAPONS_SUMMARY",
+            "research": "STR_CRAFT_PIR_CANNON_UC",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CRAFT_PIR_CANNON_UC",
+            "STR_CRAFT_WEAPONS_SUMMARY",
+            "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+            "STR_GL_VV_UC",
+            "STR_HMG_VV_UC",
+            "STR_LMG_VV_UC",
+            "STR_MINIGUN_VV_UC",
+            "STR_ROTOGUN_VV_UC",
+            "STR_RPG_VV_UC"
+          ],
+          "stateHash": "3aedfd5131de44e961abeb054649687e93c47e2804be19ab50eefd2829f061a2"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_CRAFT_AUXILARY_SYSTEMS"
+          },
+          "added": [],
+          "stateHash": "bfb40b3493f875ee9085c34eac125151887136793fb00f35773ed2db7f7bd39c"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CRAFT_AUXILARY_SYSTEMS",
+            "research": "STR_CRAFT_BATTERY_PACK",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CRAFT_BATTERY_PACK",
+            "STR_CRAFT_AUXILARY_SYSTEMS",
+            "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE"
+          ],
+          "stateHash": "d40884d7c01d28f3784e5dcf2041299302d8d3a7fb58efedb2df8b5aa6a7f546"
+        }
+      ]
+    },
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "roll": 100,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CADILLAC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_CRAFT_AUXILARY_SYSTEMS",
+        "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+        "STR_CRAFT_BATTERY_PACK",
+        "STR_CRAFT_PIR_CANNON_UC",
+        "STR_CRAFT_WEAPONS_SUMMARY",
+        "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+        "STR_GL_VV_UC",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_HMG_VV_UC",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_LMG_VV_UC",
+        "STR_MINIGUN_VV_UC",
+        "STR_ROTOGUN_VV_UC",
+        "STR_RPG_VV_UC"
+      ],
+      "fixedCosts": {
+        "STR_JACKSTOWN_SCOUTING": 3,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 2,
+        "STR_BOW_H": 3,
+        "STR_CONTACT_TIGER_TRANSPORT": 3,
+        "STR_CADILLAC": 3,
+        "STR_CRAFT_WEAPONS_SUMMARY": 3,
+        "STR_CRAFT_AUXILARY_SYSTEMS": 3
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "0c43fcd782c8b99efb14268eae0725960620d61a1722ac93e7ddc9983c1823c0"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "843dae142b4f0b6219907b67904d45a377d288194ca6886b99dc2af4e8a52e5d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "53f24fa960f291c16d22315794922066bbbb05e919926f19e9a4a6db7d50960f"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 2,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 2,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "6429364257ae9a07b3474a758dcec73117be946e22edca4f564587e076254568"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "ae44b6900a5b1dd5b2b012497b71c51a82dc9baa58764413858f34256bc89616"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "f6a60c8cc4ed7aaa26dad8b1e5962d4374873fcbe7e76af4c3121fa9da1a675f"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_CADILLAC",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "added": [
+            "STR_CADILLAC"
+          ],
+          "stateHash": "6603a75de11bc24ce8636e76b563a5767be42d00292a4d018ab076c03c4113a7"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_CRAFT_WEAPONS_SUMMARY",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_CRAFT_WEAPONS_SUMMARY",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_CRAFT_WEAPONS_SUMMARY"
+          },
+          "added": [],
+          "stateHash": "d8368fab2fa929f98976f269c534ffbf2712271898b912490d29598de5b30005"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CRAFT_WEAPONS_SUMMARY",
+            "research": "STR_CRAFT_PIR_CANNON_UC",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CRAFT_PIR_CANNON_UC",
+            "STR_CRAFT_WEAPONS_SUMMARY",
+            "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+            "STR_GL_VV_UC",
+            "STR_HMG_VV_UC",
+            "STR_LMG_VV_UC",
+            "STR_MINIGUN_VV_UC",
+            "STR_ROTOGUN_VV_UC",
+            "STR_RPG_VV_UC"
+          ],
+          "stateHash": "3aedfd5131de44e961abeb054649687e93c47e2804be19ab50eefd2829f061a2"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_CRAFT_AUXILARY_SYSTEMS"
+          },
+          "added": [],
+          "stateHash": "bfb40b3493f875ee9085c34eac125151887136793fb00f35773ed2db7f7bd39c"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CRAFT_AUXILARY_SYSTEMS",
+            "research": "STR_CRAFT_BATTERY_PACK",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CRAFT_BATTERY_PACK",
+            "STR_CRAFT_AUXILARY_SYSTEMS",
+            "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE"
+          ],
+          "stateHash": "d40884d7c01d28f3784e5dcf2041299302d8d3a7fb58efedb2df8b5aa6a7f546"
+        }
+      ]
+    },
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "roll": 150,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-15T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CADILLAC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_CRAFT_AUXILARY_SYSTEMS",
+        "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+        "STR_CRAFT_BATTERY_PACK",
+        "STR_CRAFT_PIR_CANNON_UC",
+        "STR_CRAFT_WEAPONS_SUMMARY",
+        "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+        "STR_GL_VV_UC",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_HMG_VV_UC",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_LMG_VV_UC",
+        "STR_MINIGUN_VV_UC",
+        "STR_ROTOGUN_VV_UC",
+        "STR_RPG_VV_UC"
+      ],
+      "fixedCosts": {
+        "STR_JACKSTOWN_SCOUTING": 4,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 3,
+        "STR_BOW_H": 4,
+        "STR_CONTACT_TIGER_TRANSPORT": 4,
+        "STR_CADILLAC": 4,
+        "STR_CRAFT_WEAPONS_SUMMARY": 4,
+        "STR_CRAFT_AUXILARY_SYSTEMS": 4
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "0c43fcd782c8b99efb14268eae0725960620d61a1722ac93e7ddc9983c1823c0"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "843dae142b4f0b6219907b67904d45a377d288194ca6886b99dc2af4e8a52e5d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "53f24fa960f291c16d22315794922066bbbb05e919926f19e9a4a6db7d50960f"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "6429364257ae9a07b3474a758dcec73117be946e22edca4f564587e076254568"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "ae44b6900a5b1dd5b2b012497b71c51a82dc9baa58764413858f34256bc89616"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "f6a60c8cc4ed7aaa26dad8b1e5962d4374873fcbe7e76af4c3121fa9da1a675f"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "id": "STR_CADILLAC",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "added": [
+            "STR_CADILLAC"
+          ],
+          "stateHash": "6603a75de11bc24ce8636e76b563a5767be42d00292a4d018ab076c03c4113a7"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "id": "STR_CRAFT_WEAPONS_SUMMARY",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "projects": [
+            {
+              "id": "STR_CRAFT_WEAPONS_SUMMARY",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "projects": [
+            {
+              "id": "STR_CRAFT_WEAPONS_SUMMARY",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "action": {
+            "type": "research",
+            "id": "STR_CRAFT_WEAPONS_SUMMARY"
+          },
+          "added": [],
+          "stateHash": "d8368fab2fa929f98976f269c534ffbf2712271898b912490d29598de5b30005"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CRAFT_WEAPONS_SUMMARY",
+            "research": "STR_CRAFT_PIR_CANNON_UC",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CRAFT_PIR_CANNON_UC",
+            "STR_CRAFT_WEAPONS_SUMMARY",
+            "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+            "STR_GL_VV_UC",
+            "STR_HMG_VV_UC",
+            "STR_LMG_VV_UC",
+            "STR_MINIGUN_VV_UC",
+            "STR_ROTOGUN_VV_UC",
+            "STR_RPG_VV_UC"
+          ],
+          "stateHash": "3aedfd5131de44e961abeb054649687e93c47e2804be19ab50eefd2829f061a2"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-14T00:00:00.000Z",
+          "elapsedHours": 300,
+          "projects": [
+            {
+              "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-15T00:00:00.000Z",
+          "elapsedHours": 324,
+          "projects": [
+            {
+              "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-15T00:00:00.000Z",
+          "elapsedHours": 324,
+          "action": {
+            "type": "research",
+            "id": "STR_CRAFT_AUXILARY_SYSTEMS"
+          },
+          "added": [],
+          "stateHash": "bfb40b3493f875ee9085c34eac125151887136793fb00f35773ed2db7f7bd39c"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-15T00:00:00.000Z",
+          "elapsedHours": 324,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CRAFT_AUXILARY_SYSTEMS",
+            "research": "STR_CRAFT_BATTERY_PACK",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CRAFT_BATTERY_PACK",
+            "STR_CRAFT_AUXILARY_SYSTEMS",
+            "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE"
+          ],
+          "stateHash": "d40884d7c01d28f3784e5dcf2041299302d8d3a7fb58efedb2df8b5aa6a7f546"
+        }
+      ]
+    },
+    {
+      "root": "STR_WAT_DO",
+      "roll": 50,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_EMBRACE_THE_POWER",
+        "STR_GUN_SHOPPING",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_NEPOTISM",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUESTION_OF_DRILL",
+        "STR_SAILOR_UNIFORM",
+        "STR_TRAININGS",
+        "STR_WAT_DO"
+      ],
+      "fixedCosts": {
+        "STR_WAT_DO": 1,
+        "STR_PIRATE_STYLE": 1,
+        "STR_QUESTION_OF_DRILL": 1,
+        "STR_EMBRACE_THE_POWER": 1,
+        "STR_LOOT_DISTRIBUTION": 1,
+        "STR_NEPOTISM": 1,
+        "STR_JACKSTOWN_SCOUTING": 1,
+        "STR_GUN_SHOPPING": 1
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_WAT_DO",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_WAT_DO",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "stateHash": "d5feaf48a62d2e7ee81951aa998cf290c55c5f3eea3504f5d01155d5fb464c0e"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "id": "STR_PIRATE_STYLE",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_PIRATE_STYLE",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "added": [
+            "STR_PIRATE_STYLE",
+            "STR_SAILOR_UNIFORM"
+          ],
+          "stateHash": "6f349ece9c373a08d1da5f038b9dd1f89a0b01956839e5fbcecda965bf4356ae"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_QUESTION_OF_DRILL",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_QUESTION_OF_DRILL",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "added": [
+            "STR_QUESTION_OF_DRILL"
+          ],
+          "stateHash": "b6b4ea133985e046d52abf52f7bee7ea2cee53fc165aa2b96149bb9e85a3d775"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_EMBRACE_THE_POWER",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_EMBRACE_THE_POWER",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_EMBRACE_THE_POWER"
+          },
+          "added": [
+            "STR_EMBRACE_THE_POWER"
+          ],
+          "stateHash": "b9e81d735eea6285f1dc601cfc81b4a889f7458613f4c5549225b878426b783b"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_LOOT_DISTRIBUTION",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_LOOT_DISTRIBUTION",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "added": [
+            "STR_LOOT_DISTRIBUTION"
+          ],
+          "stateHash": "4b3fff1b7b5736b35230bb9a1ab11477400930708e90b300ea38a5240939e10b"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_NEPOTISM",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_NEPOTISM",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          "added": [],
+          "stateHash": "c56656029b4f4d41aad868a0fa41557c94f391b66a83245d8d7a23119ec94570"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_NEPOTISM",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_TRAININGS",
+            "STR_NEPOTISM"
+          ],
+          "stateHash": "766d5add81ab35aa6200d050cff60cfb078d52d09342fc275d2835f1bb53c782"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "85e9c55e95250f048568a2bf6f4c5f0fcc1eccf04b6739f1960a9bd6b047a7d3"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "a95115a200bb08180fe4768bc4aad86092bc9534537a756d5eab942ea75fd4ab"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "cb993b0741359d96905701fe8a82a69c3a34ea30f1fc78f2970a7d023b19c03b"
+        }
+      ]
+    },
+    {
+      "root": "STR_WAT_DO",
+      "roll": 100,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_EMBRACE_THE_POWER",
+        "STR_GUN_SHOPPING",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_NEPOTISM",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUESTION_OF_DRILL",
+        "STR_SAILOR_UNIFORM",
+        "STR_TRAININGS",
+        "STR_WAT_DO"
+      ],
+      "fixedCosts": {
+        "STR_WAT_DO": 3,
+        "STR_PIRATE_STYLE": 1,
+        "STR_QUESTION_OF_DRILL": 1,
+        "STR_EMBRACE_THE_POWER": 1,
+        "STR_LOOT_DISTRIBUTION": 3,
+        "STR_NEPOTISM": 3,
+        "STR_JACKSTOWN_SCOUTING": 3,
+        "STR_GUN_SHOPPING": 1
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_WAT_DO",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_WAT_DO",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "stateHash": "d5feaf48a62d2e7ee81951aa998cf290c55c5f3eea3504f5d01155d5fb464c0e"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "id": "STR_PIRATE_STYLE",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_PIRATE_STYLE",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "added": [
+            "STR_PIRATE_STYLE",
+            "STR_SAILOR_UNIFORM"
+          ],
+          "stateHash": "6f349ece9c373a08d1da5f038b9dd1f89a0b01956839e5fbcecda965bf4356ae"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_QUESTION_OF_DRILL",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_QUESTION_OF_DRILL",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "added": [
+            "STR_QUESTION_OF_DRILL"
+          ],
+          "stateHash": "b6b4ea133985e046d52abf52f7bee7ea2cee53fc165aa2b96149bb9e85a3d775"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_EMBRACE_THE_POWER",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_EMBRACE_THE_POWER",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_EMBRACE_THE_POWER"
+          },
+          "added": [
+            "STR_EMBRACE_THE_POWER"
+          ],
+          "stateHash": "b9e81d735eea6285f1dc601cfc81b4a889f7458613f4c5549225b878426b783b"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_LOOT_DISTRIBUTION",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_LOOT_DISTRIBUTION",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "added": [
+            "STR_LOOT_DISTRIBUTION"
+          ],
+          "stateHash": "4b3fff1b7b5736b35230bb9a1ab11477400930708e90b300ea38a5240939e10b"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_NEPOTISM",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_NEPOTISM",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          "added": [],
+          "stateHash": "c56656029b4f4d41aad868a0fa41557c94f391b66a83245d8d7a23119ec94570"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_NEPOTISM",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_TRAININGS",
+            "STR_NEPOTISM"
+          ],
+          "stateHash": "766d5add81ab35aa6200d050cff60cfb078d52d09342fc275d2835f1bb53c782"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "85e9c55e95250f048568a2bf6f4c5f0fcc1eccf04b6739f1960a9bd6b047a7d3"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "a95115a200bb08180fe4768bc4aad86092bc9534537a756d5eab942ea75fd4ab"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "cb993b0741359d96905701fe8a82a69c3a34ea30f1fc78f2970a7d023b19c03b"
+        }
+      ]
+    },
+    {
+      "root": "STR_WAT_DO",
+      "roll": 150,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-13T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_EMBRACE_THE_POWER",
+        "STR_GUN_SHOPPING",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_NEPOTISM",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_QUESTION_OF_DRILL",
+        "STR_SAILOR_UNIFORM",
+        "STR_TRAININGS",
+        "STR_WAT_DO"
+      ],
+      "fixedCosts": {
+        "STR_WAT_DO": 4,
+        "STR_PIRATE_STYLE": 1,
+        "STR_QUESTION_OF_DRILL": 1,
+        "STR_EMBRACE_THE_POWER": 1,
+        "STR_LOOT_DISTRIBUTION": 4,
+        "STR_NEPOTISM": 4,
+        "STR_JACKSTOWN_SCOUTING": 4,
+        "STR_GUN_SHOPPING": 1
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_WAT_DO",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_WAT_DO",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_WAT_DO",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "stateHash": "d5feaf48a62d2e7ee81951aa998cf290c55c5f3eea3504f5d01155d5fb464c0e"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_PIRATE_STYLE",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_PIRATE_STYLE",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "added": [
+            "STR_PIRATE_STYLE",
+            "STR_SAILOR_UNIFORM"
+          ],
+          "stateHash": "6f349ece9c373a08d1da5f038b9dd1f89a0b01956839e5fbcecda965bf4356ae"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_QUESTION_OF_DRILL",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_QUESTION_OF_DRILL",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "added": [
+            "STR_QUESTION_OF_DRILL"
+          ],
+          "stateHash": "b6b4ea133985e046d52abf52f7bee7ea2cee53fc165aa2b96149bb9e85a3d775"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_EMBRACE_THE_POWER",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_EMBRACE_THE_POWER",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_EMBRACE_THE_POWER"
+          },
+          "added": [
+            "STR_EMBRACE_THE_POWER"
+          ],
+          "stateHash": "b9e81d735eea6285f1dc601cfc81b4a889f7458613f4c5549225b878426b783b"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_LOOT_DISTRIBUTION",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_LOOT_DISTRIBUTION",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_LOOT_DISTRIBUTION",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "added": [
+            "STR_LOOT_DISTRIBUTION"
+          ],
+          "stateHash": "4b3fff1b7b5736b35230bb9a1ab11477400930708e90b300ea38a5240939e10b"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_NEPOTISM",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_NEPOTISM",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "projects": [
+            {
+              "id": "STR_NEPOTISM",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "action": {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          "added": [],
+          "stateHash": "c56656029b4f4d41aad868a0fa41557c94f391b66a83245d8d7a23119ec94570"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_NEPOTISM",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_TRAININGS",
+            "STR_NEPOTISM"
+          ],
+          "stateHash": "766d5add81ab35aa6200d050cff60cfb078d52d09342fc275d2835f1bb53c782"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "85e9c55e95250f048568a2bf6f4c5f0fcc1eccf04b6739f1960a9bd6b047a7d3"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "a95115a200bb08180fe4768bc4aad86092bc9534537a756d5eab942ea75fd4ab"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "cb993b0741359d96905701fe8a82a69c3a34ea30f1fc78f2970a7d023b19c03b"
+        }
+      ]
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "roll": 50,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CADILLAC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_PEASANTS_ZZZ",
+        "STR_RECRUIT_PEASANTS",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_UBER_WHEAT"
+      ],
+      "fixedCosts": {
+        "STR_RECRUIT_PEASANTS": 1,
+        "STR_UBER_WHEAT": 1,
+        "STR_JACKSTOWN_SCOUTING": 1,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 1,
+        "STR_BOW_H": 1,
+        "STR_CONTACT_TIGER_TRANSPORT": 1,
+        "STR_CADILLAC": 1
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_RECRUIT_PEASANTS",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_RECRUIT_PEASANTS",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "added": [
+            "STR_RECRUIT_PEASANTS",
+            "STR_PEASANTS_ZZZ"
+          ],
+          "stateHash": "5efc08743f4e1fb5878600c6bc3a9d7c8bc15e89637d78ad9940452431c154f5"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "id": "STR_UBER_WHEAT",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_UBER_WHEAT",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "added": [
+            "STR_UBER_WHEAT"
+          ],
+          "stateHash": "ec40012c43365aba0b038db5fed231b6f6affb62840efafa815a90506fd66d4a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "22117dbe1d3150d26a26021e4470869548c8d87cd7ccc77e2cec90776b537f72"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ",
+            "STR_TAC_VEST_PEASANT_UC"
+          ],
+          "stateHash": "2157e567b91d2d9e73d055b97d99ea952ff3d35a5da987fe23bf196327a74ee3"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "fa0891a264737570444fcba32938d85a89af395322ce97740e8d54709f74cb9d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "a35a3ac12c9a0835ed8f876d5afc39e5154f546daaa2ffde598d9a1876535970"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "51d082211455c8260cdeadb4f078801cd272f4fd60baefd10f1a7e270c74bf3c"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "11ea4a089e9a382e7184933d307448025584516e382d3389c352e039f2a44e4c"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_CADILLAC",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "added": [
+            "STR_CADILLAC"
+          ],
+          "stateHash": "4d54ee5b8029d142ef135d3d6dc0959f2ef41cdc912ddd319b6d7f818cdac5a3"
+        }
+      ]
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "roll": 100,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CADILLAC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_PEASANTS_ZZZ",
+        "STR_RECRUIT_PEASANTS",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_UBER_WHEAT"
+      ],
+      "fixedCosts": {
+        "STR_RECRUIT_PEASANTS": 3,
+        "STR_UBER_WHEAT": 3,
+        "STR_JACKSTOWN_SCOUTING": 3,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 2,
+        "STR_BOW_H": 3,
+        "STR_CONTACT_TIGER_TRANSPORT": 3,
+        "STR_CADILLAC": 3
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_RECRUIT_PEASANTS",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_RECRUIT_PEASANTS",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "added": [
+            "STR_RECRUIT_PEASANTS",
+            "STR_PEASANTS_ZZZ"
+          ],
+          "stateHash": "5efc08743f4e1fb5878600c6bc3a9d7c8bc15e89637d78ad9940452431c154f5"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "id": "STR_UBER_WHEAT",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_UBER_WHEAT",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "added": [
+            "STR_UBER_WHEAT"
+          ],
+          "stateHash": "ec40012c43365aba0b038db5fed231b6f6affb62840efafa815a90506fd66d4a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "22117dbe1d3150d26a26021e4470869548c8d87cd7ccc77e2cec90776b537f72"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ",
+            "STR_TAC_VEST_PEASANT_UC"
+          ],
+          "stateHash": "2157e567b91d2d9e73d055b97d99ea952ff3d35a5da987fe23bf196327a74ee3"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "fa0891a264737570444fcba32938d85a89af395322ce97740e8d54709f74cb9d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 2,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 2,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "a35a3ac12c9a0835ed8f876d5afc39e5154f546daaa2ffde598d9a1876535970"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "51d082211455c8260cdeadb4f078801cd272f4fd60baefd10f1a7e270c74bf3c"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "11ea4a089e9a382e7184933d307448025584516e382d3389c352e039f2a44e4c"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_CADILLAC",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "added": [
+            "STR_CADILLAC"
+          ],
+          "stateHash": "4d54ee5b8029d142ef135d3d6dc0959f2ef41cdc912ddd319b6d7f818cdac5a3"
+        }
+      ]
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "roll": 150,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-15T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CADILLAC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_PEASANTS_ZZZ",
+        "STR_RECRUIT_PEASANTS",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_UBER_WHEAT"
+      ],
+      "fixedCosts": {
+        "STR_RECRUIT_PEASANTS": 4,
+        "STR_UBER_WHEAT": 4,
+        "STR_JACKSTOWN_SCOUTING": 4,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 3,
+        "STR_BOW_H": 4,
+        "STR_CONTACT_TIGER_TRANSPORT": 4,
+        "STR_CADILLAC": 4
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_RECRUIT_PEASANTS",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_RECRUIT_PEASANTS",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_RECRUIT_PEASANTS",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "added": [
+            "STR_RECRUIT_PEASANTS",
+            "STR_PEASANTS_ZZZ"
+          ],
+          "stateHash": "5efc08743f4e1fb5878600c6bc3a9d7c8bc15e89637d78ad9940452431c154f5"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_UBER_WHEAT",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_UBER_WHEAT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_UBER_WHEAT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "added": [
+            "STR_UBER_WHEAT"
+          ],
+          "stateHash": "ec40012c43365aba0b038db5fed231b6f6affb62840efafa815a90506fd66d4a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "22117dbe1d3150d26a26021e4470869548c8d87cd7ccc77e2cec90776b537f72"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ",
+            "STR_TAC_VEST_PEASANT_UC"
+          ],
+          "stateHash": "2157e567b91d2d9e73d055b97d99ea952ff3d35a5da987fe23bf196327a74ee3"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "fa0891a264737570444fcba32938d85a89af395322ce97740e8d54709f74cb9d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "a35a3ac12c9a0835ed8f876d5afc39e5154f546daaa2ffde598d9a1876535970"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "51d082211455c8260cdeadb4f078801cd272f4fd60baefd10f1a7e270c74bf3c"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "11ea4a089e9a382e7184933d307448025584516e382d3389c352e039f2a44e4c"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "id": "STR_CADILLAC",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-14T00:00:00.000Z",
+          "elapsedHours": 300,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-15T00:00:00.000Z",
+          "elapsedHours": 324,
+          "projects": [
+            {
+              "id": "STR_CADILLAC",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-15T00:00:00.000Z",
+          "elapsedHours": 324,
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "added": [
+            "STR_CADILLAC"
+          ],
+          "stateHash": "4d54ee5b8029d142ef135d3d6dc0959f2ef41cdc912ddd319b6d7f818cdac5a3"
+        }
+      ]
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "roll": 50,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-09T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_EXPLORE_TUNNELS",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_SMALL_RADAR_SYSTEM",
+        "STR_WELL"
+      ],
+      "fixedCosts": {
+        "STR_INSPECT_MACHINERY": 3,
+        "STR_EXPLORE_TUNNELS": 2,
+        "STR_SMALL_RADAR_SYSTEM": 2,
+        "STR_JACKSTOWN_SCOUTING": 1,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 1,
+        "STR_BOW_H": 1,
+        "STR_CONTACT_TIGER_TRANSPORT": 1
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_INSPECT_MACHINERY",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_INSPECT_MACHINERY",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "added": [],
+          "stateHash": "cb1557b8ab55baa5465216f785b12961b150b485bae3c67971a34306c2ce1d09"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_WELL",
+            "STR_INSPECT_MACHINERY",
+            "STR_GENERAL_STORES_ARMORED"
+          ],
+          "stateHash": "bff4d4dd5f20ec107d82feb9308415be93971c5c8243d03f941e108cb0ddd51f"
+        },
+        {
+          "type": "sourceResearchDelivery",
+          "date": "2601-01-02T01:00:00.000Z",
+          "elapsedHours": 13,
+          "action": {
+            "type": "sourceResearchDelivery",
+            "index": 0,
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "assumption": true
+          },
+          "added": [],
+          "stateHash": "b7cd9c3d0149b0a7c76f0833e4919b90652a7d1680333e97ade1f9bdf9f2d237"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-02T01:00:00.000Z",
+          "elapsedHours": 13,
+          "id": "STR_EXPLORE_TUNNELS",
+          "assigned": 3,
+          "cost": 2,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_EXPLORE_TUNNELS",
+              "assigned": 3,
+              "cost": 2,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_EXPLORE_TUNNELS"
+          },
+          "added": [
+            "STR_EXPLORE_TUNNELS"
+          ],
+          "stateHash": "5a587a0e4d491107ea177bbec5ae09426f57f255c123db95373b0d2be7428f6a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "id": "STR_SMALL_RADAR_SYSTEM",
+          "assigned": 3,
+          "cost": 2,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_SMALL_RADAR_SYSTEM",
+              "assigned": 3,
+              "cost": 2,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_SMALL_RADAR_SYSTEM"
+          },
+          "added": [
+            "STR_SMALL_RADAR_SYSTEM"
+          ],
+          "stateHash": "5f0e2e6e205375c555b656a638488c2c44284149b13c8fb953a6707dd27aa3ba"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "d10bb753803ec357af2f83bb8abba1b4ab5049299d59d4f06911f13c4046aa36"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "afd0a5c548c5012840a848a672c7765ae0ae327b4d54909bd90f927a9d4b204d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "5e80f5418ddbf370f69f86410a2e3d3afe41a0778fd418da2cc3769879589185"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "74e30362a5674f50b0e92fb2ec9904bc06f2e9bbe59ba8b652c12a490f16900e"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "6bc621b25b116bd2d15a9f02036a7a38cc924f59630697e79136362dd9345e8a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 50
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "e6cc3cfabc37ea8fa830a60cb4ba3dcea99da575b95f4e5d38351630cc2fb4c8"
+        }
+      ]
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "roll": 100,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-12T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_EXPLORE_TUNNELS",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_SMALL_RADAR_SYSTEM",
+        "STR_WELL"
+      ],
+      "fixedCosts": {
+        "STR_INSPECT_MACHINERY": 6,
+        "STR_EXPLORE_TUNNELS": 5,
+        "STR_SMALL_RADAR_SYSTEM": 5,
+        "STR_JACKSTOWN_SCOUTING": 3,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 2,
+        "STR_BOW_H": 3,
+        "STR_CONTACT_TIGER_TRANSPORT": 3
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_INSPECT_MACHINERY",
+          "assigned": 3,
+          "cost": 6,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_INSPECT_MACHINERY",
+              "assigned": 3,
+              "cost": 6,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_INSPECT_MACHINERY",
+              "assigned": 3,
+              "cost": 6,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "added": [],
+          "stateHash": "cb1557b8ab55baa5465216f785b12961b150b485bae3c67971a34306c2ce1d09"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_WELL",
+            "STR_INSPECT_MACHINERY",
+            "STR_GENERAL_STORES_ARMORED"
+          ],
+          "stateHash": "bff4d4dd5f20ec107d82feb9308415be93971c5c8243d03f941e108cb0ddd51f"
+        },
+        {
+          "type": "sourceResearchDelivery",
+          "date": "2601-01-03T01:00:00.000Z",
+          "elapsedHours": 37,
+          "action": {
+            "type": "sourceResearchDelivery",
+            "index": 0,
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "assumption": true
+          },
+          "added": [],
+          "stateHash": "b7cd9c3d0149b0a7c76f0833e4919b90652a7d1680333e97ade1f9bdf9f2d237"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-03T01:00:00.000Z",
+          "elapsedHours": 37,
+          "id": "STR_EXPLORE_TUNNELS",
+          "assigned": 3,
+          "cost": 5,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_EXPLORE_TUNNELS",
+              "assigned": 3,
+              "cost": 5,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_EXPLORE_TUNNELS",
+              "assigned": 3,
+              "cost": 5,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "action": {
+            "type": "research",
+            "id": "STR_EXPLORE_TUNNELS"
+          },
+          "added": [
+            "STR_EXPLORE_TUNNELS"
+          ],
+          "stateHash": "5a587a0e4d491107ea177bbec5ae09426f57f255c123db95373b0d2be7428f6a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "id": "STR_SMALL_RADAR_SYSTEM",
+          "assigned": 3,
+          "cost": 5,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_SMALL_RADAR_SYSTEM",
+              "assigned": 3,
+              "cost": 5,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_SMALL_RADAR_SYSTEM",
+              "assigned": 3,
+              "cost": 5,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_SMALL_RADAR_SYSTEM"
+          },
+          "added": [
+            "STR_SMALL_RADAR_SYSTEM"
+          ],
+          "stateHash": "5f0e2e6e205375c555b656a638488c2c44284149b13c8fb953a6707dd27aa3ba"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "d10bb753803ec357af2f83bb8abba1b4ab5049299d59d4f06911f13c4046aa36"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "afd0a5c548c5012840a848a672c7765ae0ae327b4d54909bd90f927a9d4b204d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "5e80f5418ddbf370f69f86410a2e3d3afe41a0778fd418da2cc3769879589185"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 2,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 2,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "74e30362a5674f50b0e92fb2ec9904bc06f2e9bbe59ba8b652c12a490f16900e"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "6bc621b25b116bd2d15a9f02036a7a38cc924f59630697e79136362dd9345e8a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 100
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "e6cc3cfabc37ea8fa830a60cb4ba3dcea99da575b95f4e5d38351630cc2fb4c8"
+        }
+      ]
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "roll": 150,
+      "reason": "STEP_LIMIT",
+      "date": "2601-01-18T00:00:00.000Z",
+      "completed": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BOW_H",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_EXPLORE_TUNNELS",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GUN_SHOPPING",
+        "STR_HARDWARE_SHOPPING",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_SMALL_RADAR_SYSTEM",
+        "STR_WELL"
+      ],
+      "fixedCosts": {
+        "STR_INSPECT_MACHINERY": 9,
+        "STR_EXPLORE_TUNNELS": 7,
+        "STR_SMALL_RADAR_SYSTEM": 7,
+        "STR_JACKSTOWN_SCOUTING": 4,
+        "STR_GUN_SHOPPING": 1,
+        "STR_HARDWARE_SHOPPING": 3,
+        "STR_BOW_H": 4,
+        "STR_CONTACT_TIGER_TRANSPORT": 4
+      },
+      "unfinished": [],
+      "trace": [
+        {
+          "type": "researchStart",
+          "date": "2601-01-01T12:00:00.000Z",
+          "elapsedHours": 0,
+          "id": "STR_INSPECT_MACHINERY",
+          "assigned": 3,
+          "cost": 9,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-02T00:00:00.000Z",
+          "elapsedHours": 12,
+          "projects": [
+            {
+              "id": "STR_INSPECT_MACHINERY",
+              "assigned": 3,
+              "cost": 9,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-03T00:00:00.000Z",
+          "elapsedHours": 36,
+          "projects": [
+            {
+              "id": "STR_INSPECT_MACHINERY",
+              "assigned": 3,
+              "cost": 9,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "projects": [
+            {
+              "id": "STR_INSPECT_MACHINERY",
+              "assigned": 3,
+              "cost": 9,
+              "spent": 9
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "added": [],
+          "stateHash": "cb1557b8ab55baa5465216f785b12961b150b485bae3c67971a34306c2ce1d09"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-04T00:00:00.000Z",
+          "elapsedHours": 60,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_WELL",
+            "STR_INSPECT_MACHINERY",
+            "STR_GENERAL_STORES_ARMORED"
+          ],
+          "stateHash": "bff4d4dd5f20ec107d82feb9308415be93971c5c8243d03f941e108cb0ddd51f"
+        },
+        {
+          "type": "sourceResearchDelivery",
+          "date": "2601-01-04T01:00:00.000Z",
+          "elapsedHours": 61,
+          "action": {
+            "type": "sourceResearchDelivery",
+            "index": 0,
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "assumption": true
+          },
+          "added": [],
+          "stateHash": "b7cd9c3d0149b0a7c76f0833e4919b90652a7d1680333e97ade1f9bdf9f2d237"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-04T01:00:00.000Z",
+          "elapsedHours": 61,
+          "id": "STR_EXPLORE_TUNNELS",
+          "assigned": 3,
+          "cost": 7,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-05T00:00:00.000Z",
+          "elapsedHours": 84,
+          "projects": [
+            {
+              "id": "STR_EXPLORE_TUNNELS",
+              "assigned": 3,
+              "cost": 7,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-06T00:00:00.000Z",
+          "elapsedHours": 108,
+          "projects": [
+            {
+              "id": "STR_EXPLORE_TUNNELS",
+              "assigned": 3,
+              "cost": 7,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "projects": [
+            {
+              "id": "STR_EXPLORE_TUNNELS",
+              "assigned": 3,
+              "cost": 7,
+              "spent": 9
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "action": {
+            "type": "research",
+            "id": "STR_EXPLORE_TUNNELS"
+          },
+          "added": [
+            "STR_EXPLORE_TUNNELS"
+          ],
+          "stateHash": "5a587a0e4d491107ea177bbec5ae09426f57f255c123db95373b0d2be7428f6a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-07T00:00:00.000Z",
+          "elapsedHours": 132,
+          "id": "STR_SMALL_RADAR_SYSTEM",
+          "assigned": 3,
+          "cost": 7,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-08T00:00:00.000Z",
+          "elapsedHours": 156,
+          "projects": [
+            {
+              "id": "STR_SMALL_RADAR_SYSTEM",
+              "assigned": 3,
+              "cost": 7,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-09T00:00:00.000Z",
+          "elapsedHours": 180,
+          "projects": [
+            {
+              "id": "STR_SMALL_RADAR_SYSTEM",
+              "assigned": 3,
+              "cost": 7,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "projects": [
+            {
+              "id": "STR_SMALL_RADAR_SYSTEM",
+              "assigned": 3,
+              "cost": 7,
+              "spent": 9
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "action": {
+            "type": "research",
+            "id": "STR_SMALL_RADAR_SYSTEM"
+          },
+          "added": [
+            "STR_SMALL_RADAR_SYSTEM"
+          ],
+          "stateHash": "5f0e2e6e205375c555b656a638488c2c44284149b13c8fb953a6707dd27aa3ba"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-10T00:00:00.000Z",
+          "elapsedHours": 204,
+          "id": "STR_JACKSTOWN_SCOUTING",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-11T00:00:00.000Z",
+          "elapsedHours": 228,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "projects": [
+            {
+              "id": "STR_JACKSTOWN_SCOUTING",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "stateHash": "d10bb753803ec357af2f83bb8abba1b4ab5049299d59d4f06911f13c4046aa36"
+        },
+        {
+          "type": "freeResearch",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "stateHash": "afd0a5c548c5012840a848a672c7765ae0ae327b4d54909bd90f927a9d4b204d"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-12T00:00:00.000Z",
+          "elapsedHours": 252,
+          "id": "STR_GUN_SHOPPING",
+          "assigned": 3,
+          "cost": 1,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "projects": [
+            {
+              "id": "STR_GUN_SHOPPING",
+              "assigned": 3,
+              "cost": 1,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "added": [
+            "STR_GUN_SHOPPING"
+          ],
+          "stateHash": "5e80f5418ddbf370f69f86410a2e3d3afe41a0778fd418da2cc3769879589185"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-13T00:00:00.000Z",
+          "elapsedHours": 276,
+          "id": "STR_HARDWARE_SHOPPING",
+          "assigned": 3,
+          "cost": 3,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-14T00:00:00.000Z",
+          "elapsedHours": 300,
+          "projects": [
+            {
+              "id": "STR_HARDWARE_SHOPPING",
+              "assigned": 3,
+              "cost": 3,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-14T00:00:00.000Z",
+          "elapsedHours": 300,
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "added": [
+            "STR_HARDWARE_SHOPPING"
+          ],
+          "stateHash": "74e30362a5674f50b0e92fb2ec9904bc06f2e9bbe59ba8b652c12a490f16900e"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-14T00:00:00.000Z",
+          "elapsedHours": 300,
+          "id": "STR_BOW_H",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-15T00:00:00.000Z",
+          "elapsedHours": 324,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-16T00:00:00.000Z",
+          "elapsedHours": 348,
+          "projects": [
+            {
+              "id": "STR_BOW_H",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-16T00:00:00.000Z",
+          "elapsedHours": 348,
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "added": [
+            "STR_BOW_H"
+          ],
+          "stateHash": "6bc621b25b116bd2d15a9f02036a7a38cc924f59630697e79136362dd9345e8a"
+        },
+        {
+          "type": "researchStart",
+          "date": "2601-01-16T00:00:00.000Z",
+          "elapsedHours": 348,
+          "id": "STR_CONTACT_TIGER_TRANSPORT",
+          "assigned": 3,
+          "cost": 4,
+          "roll": 150
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-17T00:00:00.000Z",
+          "elapsedHours": 372,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 3
+            }
+          ]
+        },
+        {
+          "type": "researchDay",
+          "date": "2601-01-18T00:00:00.000Z",
+          "elapsedHours": 396,
+          "projects": [
+            {
+              "id": "STR_CONTACT_TIGER_TRANSPORT",
+              "assigned": 3,
+              "cost": 4,
+              "spent": 6
+            }
+          ]
+        },
+        {
+          "type": "research",
+          "date": "2601-01-18T00:00:00.000Z",
+          "elapsedHours": 396,
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "added": [
+            "STR_CONTACT_TIGER_TRANSPORT"
+          ],
+          "stateHash": "e6cc3cfabc37ea8fa830a60cb4ba3dcea99da575b95f4e5d38351630cc2fb4c8"
+        }
+      ]
+    }
+  ]
+}
