@@ -67,6 +67,19 @@ function applyCampaignStartCore(input,step,data){
  if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
  if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
  if(CAREER_ACTIONS.has(step.type))return applyConditionalCareerAction(input,step,data);
+ // Supply-chain purchases debit the raw list price. Discounts, faction
+ // adjustments and delivery time remain conditional, not native certified.
+ if(step.type==='acquireFundedPurchase'){
+  try{
+   const raw=data.campaignAssets?.items?.[step.item];
+   const cost=raw?.costBuy*step.count;
+   if(!raw||!Number.isSafeInteger(raw.costBuy)||raw.costBuy<=0||!Number.isSafeInteger(step.count)||step.count<1||!Number.isSafeInteger(cost)||cost>input.funds)throw Error('funded-purchase-price-or-funds');
+   const result=applyReachabilityAction(input,{type:'acquirePurchase',item:step.item,count:step.count},data);
+   if(!result.ok)return result;
+   result.world.funds-=cost;
+   return {...result,assumed:true,notes:['raw-list-price-purchase:'+step.item+' x'+step.count,'raw-cost:'+cost,'price-modifiers-and-delivery-not-native-certified']};
+  }catch(e){return {ok:false,world:input,reason:e.message};}
+ }
  if(['acquirePurchase','acquireFacility'].includes(step.type)){
   try{return applyReachabilityAction(input,step,data);}catch(e){return {ok:false,world:input,reason:e.message};}
  }
