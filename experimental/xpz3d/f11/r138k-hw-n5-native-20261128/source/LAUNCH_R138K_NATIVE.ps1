@@ -47,7 +47,7 @@ $receipt=[ordered]@{
   realS2FrameObserved=$false
 }
 $receiptPath=Join-Path $stage 'R138K_NATIVE_LAUNCH_RECEIPT.json'
-if(-not$Launch){
+if(-not $Launch){
  $receipt|ConvertTo-Json -Depth 5|Set-Content -LiteralPath $receiptPath -Encoding UTF8
  Write-Output ($receipt|ConvertTo-Json -Compress)
  return
