@@ -180,6 +180,26 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
             solved=trial;break;
           }catch(e){budget.last=e.message;}
         }
+        // Item-only events have no research reward to fake as a completion.
+        for(const route of solved?[]:arr(data.campaignAssets?.fixedItemEvents?.[id])){
+          if(++budget.attempts>maxAttempts)break;
+          if(n.world.generatedEvents?.[route.event]||!fits(route.script))continue;
+          let trial=clone(n);
+          try{
+            if(Number(trial.world.items[id]||0)+(route.items[id]||0)<qty)throw Error('FIXED_EVENT_OUTPUT_SHORTFALL:'+id);
+            for(const dep of arr(route.script.researchPositive)){
+              const next=solve(dep,trial,new Set(),depth+1,budget,goalSet);
+              if(!next)throw Error('FIXED_EVENT_RESEARCH_UNRESOLVED:'+dep);
+              trial=next;
+            }
+            supply(trial,{items:Object.fromEntries(arr(route.script.itemPositive).map(k=>[k,1]))},'fixed event '+route.event,budget,goalSet,depth+1);
+            const first=Math.max(0,Number(route.script.firstMonth)||0);
+            if(trial.world.month<first)append(trial,{type:'advanceMonth',month:first,assumeContinuity:true});
+            append(trial,{type:'acquireEventItems',event:route.event,script:route.script.script,item:id,count:route.items[id],assumeOutcome:true});
+            if(Number(trial.world.items[id]||0)<qty)throw Error('FIXED_EVENT_OUTPUT_SHORTFALL:'+id);
+            solved=trial;break;
+          }catch(e){budget.last=e.message;}
+        }
         // A fixed map item requires an actual indexed mission victory. The
         // research award and item recovery are recorded as one action.
         for(const route of solved?[]:arr(data.campaignAssets?.missionLoot?.[id])){
