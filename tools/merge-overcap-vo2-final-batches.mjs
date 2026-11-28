@@ -14,7 +14,7 @@ const prep=decode(stage+"vo2-full-prepared.json.gz"),manifest=read("tools/data/o
 assert.equal(key(prep),manifest.preparedHash);assert.equal(key(prep.plan),manifest.planHash);
 const ledger=decode(stage+"soldier-population-missing-origin-career.json.gz");
 assert.equal(key(ledger.graphs),prep.sourceGraphSha256);
-const files=fs.readdirSync(stage).filter(n=>/^vo2-final-batch-\d+-\d+\.json\.gz$/.test(n)).sort((a,b)=>Number(a.split("-").at(-2))-Number(b.split("-").at(-2)));
+const files=fs.readdirSync(stage).filter(n=>/^vo2-final-(?:batch-\d+-\d+|fast-batch-[a-f0-9]+)\.json\.gz$/.test(n)).sort();
 assert(files.length,"No completed batches");
 const witnesses={},seen=new Set(),sourceBatches=[],regressions=new Map(),rows=[];
 let sourceHashes=null;
@@ -23,7 +23,10 @@ for(const name of files){
  for(const k of ["sourceMetadataSha256","sourceGraphSha256","planHash"])assert.equal(d[k],prep[k]);
  assert.equal(d.preparedHash,manifest.preparedHash);assert.equal(d.materialBudgetHash,prep.materialBudget.sha256);
  assert.equal(d.batch.total,prep.plan.length);const {offset,limit}=d.batch;
- const expected=prep.plan.slice(offset,offset+limit);assert.deepEqual(d.pairIds,expected.map(x=>x.id));assert(expected.length);
+ const indices=d.batch.indices||Array.from({length:Math.min(limit,prep.plan.length-offset)},(_,i)=>offset+i);
+ assert(indices.length&&indices.every(i=>Number.isSafeInteger(i)&&i>=0&&i<prep.plan.length));assert.equal(new Set(indices).size,indices.length);
+ const expected=indices.map(i=>prep.plan[i]);assert.deepEqual(d.pairIds,expected.map(x=>x.id));assert(expected.length);
+ if(d.batch.indices)assert(Object.values(d.witnesses).every(v=>["KNOWN_CONTINUATION","UNRESOLVED_FINITE_MATERIAL"].includes(v.status)));
  for(const p of expected){assert(!seen.has(p.id),"Overlapping batch pair "+p.id);seen.add(p.id);}
  const refs=expected.flatMap(x=>x.routes);assert.deepEqual(Object.keys(d.witnesses).sort(),refs.slice().sort());
  if(sourceHashes)assert.deepEqual(d.sourceHashes,sourceHashes);else sourceHashes=d.sourceHashes;
@@ -39,7 +42,7 @@ for(const name of files){
   }else witnesses[id]=v;
  }
  for(const r of d.ogreRegression||[])regressions.set(key(r),r);
- sourceBatches.push({name,hash:key(d),offset,limit,pairs:expected.length,witnesses:refs.length});
+ sourceBatches.push({name,hash:key(d),offset,limit,...(d.batch.indices?{indicesHash:key(indices)}:{}),pairs:expected.length,witnesses:refs.length});
 }
 for(const line of prep.researchLineRows){
  if(!seen.has(line.id))continue;
