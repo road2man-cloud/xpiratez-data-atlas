@@ -1,0 +1,374 @@
+{
+  "format": "XPZC v2",
+  "sourceBlob": "285a8539e2687d47f7ca65a034605b0eeec93ead",
+  "sourceBytes": 254904,
+  "bytes": 76016,
+  "triangles": 2100,
+  "groups": 24,
+  "sourceJoints": 63,
+  "packetJoints": 0,
+  "exactCoordinates": 18900,
+  "bounds": {
+    "min": [
+      -0.8640000224113464,
+      -0.14854860305786133,
+      0.04482201486825943
+    ],
+    "max": [
+      0.8640000224113464,
+      0.1605721265077591,
+      1.9795557260513306
+    ]
+  },
+  "materialAudit": [
+    {
+      "material": 0,
+      "name": "face",
+      "triangles": 644,
+      "groups": 4,
+      "vertexColors": true,
+      "baseColorTextureOmitted": false
+    },
+    {
+      "material": 1,
+      "name": "hair",
+      "triangles": 294,
+      "groups": 4,
+      "vertexColors": true,
+      "baseColorTextureOmitted": true
+    },
+    {
+      "material": 8,
+      "name": "skin",
+      "triangles": 112,
+      "groups": 4,
+      "vertexColors": true,
+      "baseColorTextureOmitted": false
+    },
+    {
+      "material": 11,
+      "name": "eye_white",
+      "triangles": 14,
+      "groups": 4,
+      "vertexColors": true,
+      "baseColorTextureOmitted": true
+    },
+    {
+      "material": 12,
+      "name": "eye",
+      "triangles": 4,
+      "groups": 4,
+      "vertexColors": true,
+      "baseColorTextureOmitted": true
+    },
+    {
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "triangles": 1032,
+      "groups": 4,
+      "vertexColors": true,
+      "baseColorTextureOmitted": false
+    }
+  ],
+  "palette": [
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 0,
+      "rgb": [
+        133,
+        83,
+        43
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 1,
+      "rgb": [
+        140,
+        91,
+        47
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 2,
+      "rgb": [
+        142,
+        94,
+        48
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 2,
+      "material": 0,
+      "name": "face",
+      "q": 3,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 161
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 0,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 73
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 1,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 74
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 2,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 73
+    },
+    {
+      "kind": 1,
+      "material": 1,
+      "name": "hair",
+      "q": 3,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 74
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 0,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 1,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 2,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 0,
+      "material": 8,
+      "name": "skin",
+      "q": 3,
+      "rgb": [
+        143,
+        94,
+        48
+      ],
+      "triangles": 28
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 0,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 1,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 4
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 2,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 3
+    },
+    {
+      "kind": 2,
+      "material": 11,
+      "name": "eye_white",
+      "q": 3,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 4
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 0,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 1,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 2,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 2,
+      "material": 12,
+      "name": "eye",
+      "q": 3,
+      "rgb": [
+        255,
+        255,
+        255
+      ],
+      "triangles": 1
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 0,
+      "rgb": [
+        31,
+        24,
+        12
+      ],
+      "triangles": 258
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 1,
+      "rgb": [
+        70,
+        48,
+        21
+      ],
+      "triangles": 258
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 2,
+      "rgb": [
+        75,
+        52,
+        22
+      ],
+      "triangles": 258
+    },
+    {
+      "kind": 5,
+      "material": 18,
+      "name": "R36HW_V19_OPAQUE_MATTE_BRONZE_SPORTSWEAR",
+      "q": 3,
+      "rgb": [
+        76,
+        53,
+        23
+      ],
+      "triangles": 258
+    }
+  ],
+  "oneColorRms": 0.039613042907760014,
+  "fourStrataRms": 0.015597565329184123,
+  "formatReference": "31ce14586b53a7fb1c9893de70b412f34298b1f1",
+  "priorRuntimeEvidence": "8ccffa792576cc921841e00af7aef648dbf28209",
+  "limitations": [
+    "Static bind pose",
+    "Vertex RGB and material factors only; embedded image textures not sampled",
+    "No UV, normal map, alpha blending or skeleton",
+    "Native runtime not executed"
+  ],
+  "nativeRun": false
+}
