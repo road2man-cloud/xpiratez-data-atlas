@@ -1,0 +1,939 @@
+{
+  "version": 139,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFiles": {
+    "vars.rul": "aba93297c5d2aa82da08f6fb2f9d4d2f98c5f435c308fbe0594a36c5b77e168c",
+    "startingBase.rul": "33a40741e6e900e02db03248be793b6f5db91e3e298d654964fa91ba5874dbab",
+    "facilities.rul": "74620b743ede27f27e2863d073ad989cb463c23e3e7fea6e0d5d40ad92b5f5ec",
+    "items.rul": "d1cdc6021ee5ad27033a3471de53ca1807b7bf8f992cd5f38f626eb640d016ec",
+    "research.rul": "99d57c91d7fa3146449680c1c5b1c54eba595b99df8286dfbff4f2d8c51def5e",
+    "HitFX-basic.rul": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+    "Piratez_Armors.rul": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+    "Piratez_BaseNames.rul": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+    "Piratez_Bonuses.rul": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23",
+    "Piratez_Events.rul": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+    "Piratez_Factions.rul": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "Piratez_Globals.rul": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+    "Piratez_Mapscripts.rul": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+    "Piratez_Planet.rul": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "Piratez_Resources.rul": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c",
+    "Piratez_Transformations.rul": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba",
+    "Piratez_Wardrobe.rul": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503",
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+    "Recolr.rul": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+    "Shotguns_Rebalance.rul": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+    "Yankes_Scripts.rul": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+  },
+  "graphSha256": "21cae910bfb0dcd5c2de4293f17460207afa4d1e89b506cdd672245e88aa58dc",
+  "budget": {
+    "maxStates": 3000,
+    "maxDepth": 220,
+    "maxExpanded": 0,
+    "maxMillis": 10000,
+    "deepExpanded": 4,
+    "maxActionsPerState": 4
+  },
+  "summary": {
+    "parentCounts": {
+      "primaryStates": 1643,
+      "primaryEdges": 1649,
+      "unionResearch": 360
+    },
+    "plans": [
+      {
+        "id": "v139-officer:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "ok": false,
+        "reason": "base-seed-unavailable",
+        "applied": 0,
+        "total": 1,
+        "stats": null,
+        "delta": null,
+        "funds": null
+      },
+      {
+        "id": "v139-officer:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "ok": false,
+        "reason": "base-seed-unavailable",
+        "applied": 0,
+        "total": 1,
+        "stats": null,
+        "delta": null,
+        "funds": null
+      }
+    ],
+    "variantResults": [
+      {
+        "id": "hero-v139:mage:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "applied": 159,
+        "total": 159,
+        "reason": null,
+        "finalState": "388ae53d84ae5cd5d86be1a975703046eff30704df0de1e7c70482469a97d9a7",
+        "gameCertified": false,
+        "ok": true,
+        "unresolvedFree": false,
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 169
+        },
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": 22,
+        "stock": {
+          "STR_GOLD_BAR": 36,
+          "STR_GLAMOUR": 3,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0
+        },
+        "officerMissing": [
+          "STR_SCHOOLING_2"
+        ],
+        "chaplainMissing": [],
+        "funds": 1000,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": [
+          {
+            "event": "STR_VOLLEYBALL_MATCH",
+            "script": "STR_VOLLEYBALL_MATCH",
+            "month": 21,
+            "reward": {
+              "STR_PORN": 3,
+              "STR_GLAMOUR": 3
+            },
+            "funds": 0,
+            "executionOdds": 23,
+            "selectionWeight": 100,
+            "totalWeight": 100,
+            "randomItemMatches": 0,
+            "randomItemCount": 0
+          },
+          {
+            "event": "STR_JACKLAZY_PUSSY_BOOK_THIEF",
+            "script": "STR_CAPTAIN_JACKLAZY_EVENTS_PUSSY",
+            "month": 22,
+            "reward": {
+              "STR_BOOK_OF_SERMONS": 1
+            },
+            "funds": 0,
+            "executionOdds": 35,
+            "selectionWeight": 75,
+            "totalWeight": 495,
+            "randomItemMatches": 2,
+            "randomItemCount": 12
+          }
+        ],
+        "study": false,
+        "schoolMissing": [
+          "STR_GDX_005",
+          "STR_CONTACT_MUTANT_ALLIANCE"
+        ]
+      },
+      {
+        "id": "hero-v139:lazy:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "applied": 163,
+        "total": 163,
+        "reason": null,
+        "finalState": "73c2a18f427516ed3e95e19f8ad194acfaf10b4205019aa97b94808a2b1e592b",
+        "gameCertified": false,
+        "ok": true,
+        "unresolvedFree": false,
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 169
+        },
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": 23,
+        "stock": {
+          "STR_GOLD_BAR": 32,
+          "STR_GLAMOUR": 3,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 1
+        },
+        "officerMissing": [
+          "STR_SCHOOLING_2"
+        ],
+        "chaplainMissing": [],
+        "funds": 11000,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": [
+          {
+            "event": "STR_VOLLEYBALL_MATCH",
+            "script": "STR_VOLLEYBALL_MATCH",
+            "month": 21,
+            "reward": {
+              "STR_PORN": 3,
+              "STR_GLAMOUR": 3
+            },
+            "funds": 0,
+            "executionOdds": 23,
+            "selectionWeight": 100,
+            "totalWeight": 100,
+            "randomItemMatches": 0,
+            "randomItemCount": 0
+          },
+          {
+            "event": "STR_BOOKWORM_BUY_BOOKS",
+            "script": "STR_CAPTAIN_LAZYSORE_EVENTS_1",
+            "month": 22,
+            "reward": {
+              "STR_BOOK_OF_SERMONS": 1
+            },
+            "funds": -75000,
+            "executionOdds": 20,
+            "selectionWeight": 75,
+            "totalWeight": 775,
+            "randomItemMatches": 3,
+            "randomItemCount": 24
+          },
+          {
+            "event": "STR_BOOKWORM_BUY_BOOKS",
+            "script": "STR_CAPTAIN_LAZYSORE_EVENTS_1",
+            "month": 23,
+            "reward": {
+              "STR_SCHOOL_BOOKS_ITEM": 1
+            },
+            "funds": -75000,
+            "executionOdds": 20,
+            "selectionWeight": 75,
+            "totalWeight": 775,
+            "randomItemMatches": 1,
+            "randomItemCount": 24
+          }
+        ],
+        "study": false,
+        "schoolMissing": [
+          "STR_GDX_005",
+          "STR_CONTACT_MUTANT_ALLIANCE"
+        ]
+      },
+      {
+        "id": "hero-v139:school:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "applied": 163,
+        "total": 167,
+        "reason": "facility-function-missing",
+        "finalState": "73c2a18f427516ed3e95e19f8ad194acfaf10b4205019aa97b94808a2b1e592b",
+        "gameCertified": false,
+        "ok": false,
+        "unresolvedFree": false,
+        "stats": null,
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": null,
+        "stock": null,
+        "officerMissing": null,
+        "chaplainMissing": null,
+        "funds": null,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": null,
+        "study": null,
+        "schoolMissing": null
+      },
+      {
+        "id": "hero-v139:mage:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "applied": 159,
+        "total": 159,
+        "reason": null,
+        "finalState": "8a02154b9eeaf3e169024a13694fd77c3e0df5612778e559c74cd04d46e9879f",
+        "gameCertified": false,
+        "ok": true,
+        "unresolvedFree": false,
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 169
+        },
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": 22,
+        "stock": {
+          "STR_GOLD_BAR": 36,
+          "STR_GLAMOUR": 3,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0
+        },
+        "officerMissing": [
+          "STR_SCHOOLING_2"
+        ],
+        "chaplainMissing": [],
+        "funds": 1000,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": [
+          {
+            "event": "STR_VOLLEYBALL_MATCH",
+            "script": "STR_VOLLEYBALL_MATCH",
+            "month": 21,
+            "reward": {
+              "STR_PORN": 3,
+              "STR_GLAMOUR": 3
+            },
+            "funds": 0,
+            "executionOdds": 23,
+            "selectionWeight": 100,
+            "totalWeight": 100,
+            "randomItemMatches": 0,
+            "randomItemCount": 0
+          },
+          {
+            "event": "STR_JACKLAZY_PUSSY_BOOK_THIEF",
+            "script": "STR_CAPTAIN_JACKLAZY_EVENTS_PUSSY",
+            "month": 22,
+            "reward": {
+              "STR_BOOK_OF_SERMONS": 1
+            },
+            "funds": 0,
+            "executionOdds": 35,
+            "selectionWeight": 75,
+            "totalWeight": 495,
+            "randomItemMatches": 2,
+            "randomItemCount": 12
+          }
+        ],
+        "study": false,
+        "schoolMissing": [
+          "STR_GDX_005",
+          "STR_CONTACT_MUTANT_ALLIANCE"
+        ]
+      },
+      {
+        "id": "hero-v139:lazy:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "applied": 163,
+        "total": 163,
+        "reason": null,
+        "finalState": "2c55246771c4af04a6aee90df664bf8bc09a83cd0611bbeec9d9873886ab756b",
+        "gameCertified": false,
+        "ok": true,
+        "unresolvedFree": false,
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 169
+        },
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": 23,
+        "stock": {
+          "STR_GOLD_BAR": 32,
+          "STR_GLAMOUR": 3,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 1
+        },
+        "officerMissing": [
+          "STR_SCHOOLING_2"
+        ],
+        "chaplainMissing": [],
+        "funds": 11000,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": [
+          {
+            "event": "STR_VOLLEYBALL_MATCH",
+            "script": "STR_VOLLEYBALL_MATCH",
+            "month": 21,
+            "reward": {
+              "STR_PORN": 3,
+              "STR_GLAMOUR": 3
+            },
+            "funds": 0,
+            "executionOdds": 23,
+            "selectionWeight": 100,
+            "totalWeight": 100,
+            "randomItemMatches": 0,
+            "randomItemCount": 0
+          },
+          {
+            "event": "STR_BOOKWORM_BUY_BOOKS",
+            "script": "STR_CAPTAIN_LAZYSORE_EVENTS_1",
+            "month": 22,
+            "reward": {
+              "STR_BOOK_OF_SERMONS": 1
+            },
+            "funds": -75000,
+            "executionOdds": 20,
+            "selectionWeight": 75,
+            "totalWeight": 775,
+            "randomItemMatches": 3,
+            "randomItemCount": 24
+          },
+          {
+            "event": "STR_BOOKWORM_BUY_BOOKS",
+            "script": "STR_CAPTAIN_LAZYSORE_EVENTS_1",
+            "month": 23,
+            "reward": {
+              "STR_SCHOOL_BOOKS_ITEM": 1
+            },
+            "funds": -75000,
+            "executionOdds": 20,
+            "selectionWeight": 75,
+            "totalWeight": 775,
+            "randomItemMatches": 1,
+            "randomItemCount": 24
+          }
+        ],
+        "study": false,
+        "schoolMissing": [
+          "STR_GDX_005",
+          "STR_CONTACT_MUTANT_ALLIANCE"
+        ]
+      },
+      {
+        "id": "hero-v139:school:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "applied": 163,
+        "total": 167,
+        "reason": "facility-function-missing",
+        "finalState": "2c55246771c4af04a6aee90df664bf8bc09a83cd0611bbeec9d9873886ab756b",
+        "gameCertified": false,
+        "ok": false,
+        "unresolvedFree": false,
+        "stats": null,
+        "bootCampMissing": null,
+        "advancedGymMissing": null,
+        "month": null,
+        "stock": null,
+        "officerMissing": null,
+        "chaplainMissing": null,
+        "funds": null,
+        "sales": null,
+        "costedFacilities": null,
+        "bookEvents": null,
+        "study": null,
+        "schoolMissing": null
+      }
+    ],
+    "convergence": {
+      "goals": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_EXPLOSIVES_SUMMARY",
+        "STR_HEAVY_WEAPONS_SUMMARY",
+        "STR_SNIPER_SUMMARY"
+      ],
+      "baseline": 4,
+      "maximum": 4,
+      "bestState": "0cfbea8a7827286930edb0aad7615a2a249c12a38591e5138608024e51003dc4",
+      "completed": [
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_EXPLOSIVES_SUMMARY",
+        "STR_HEAVY_WEAPONS_SUMMARY",
+        "STR_SNIPER_SUMMARY"
+      ],
+      "bestCareerValue": 1264,
+      "starts": [
+        "0cfbea8a7827286930edb0aad7615a2a249c12a38591e5138608024e51003dc4",
+        "5319a42575f934bf984db5d9fa17a35774a714b03d242c0ffe24d6cbf13bd4e7"
+      ],
+      "rounds": 0,
+      "attempts": 0,
+      "accepted": 0,
+      "stop": "all-goals",
+      "gameCertified": false,
+      "registered": false
+    },
+    "ledger": {
+      "witnesses": 58,
+      "previousWitnesses": 58,
+      "newWitnesses": 0,
+      "uniqueVectors": 5,
+      "newVectors": [],
+      "bestPermanentSum": 1264,
+      "bestTU": 80,
+      "registered": 0,
+      "gameCertified": 0
+    },
+    "lanes": [
+      "STR_OFFICER_TRAINING",
+      "STR_CHAPLAIN_TRAINING",
+      "STR_SCHOOLING_2",
+      "STR_BREAD_AND_FISHES_TRAINING"
+    ],
+    "expansionRecords": [],
+    "targets": [
+      "STR_MEDICINE",
+      "STR_SOLDIER_TYPE_SS",
+      "STR_SOLDIER_TYPE_PEA",
+      "STR_SOLDIER_TYPE_BASIC",
+      "STR_GYM_ADVANCE",
+      "STR_BOOT_CAMP_TRAINING",
+      "STR_GYMNASTICS",
+      "STR_CUISINE"
+    ],
+    "targetsReached": [
+      "STR_MEDICINE",
+      "STR_SOLDIER_TYPE_SS",
+      "STR_SOLDIER_TYPE_PEA",
+      "STR_SOLDIER_TYPE_BASIC",
+      "STR_GYM_ADVANCE",
+      "STR_BOOT_CAMP_TRAINING",
+      "STR_GYMNASTICS",
+      "STR_CUISINE"
+    ],
+    "careerProduced": 0,
+    "careerRejected": 0,
+    "careerUniqueVectors": 0,
+    "careerDeltas": [],
+    "priorStates": 1643,
+    "priorTransitions": 1649,
+    "newStates": 506,
+    "newTransitions": 506,
+    "newResearch": [
+      "STR_BOOK_OF_SERMONS",
+      "STR_CAPTAIN_JACKLAZY",
+      "STR_CAPTAIN_LAZYSORE",
+      "STR_CAPTAIN_LAZYSORE_UP",
+      "STR_CAPTAIN_MAGE",
+      "STR_CAPTAIN_YESGOLD_NOGRAY",
+      "STR_CAPTAIN_YESGRAY_NOGOLD",
+      "STR_CAPTAIN_YESGRAY_NORED",
+      "STR_CHAPLAIN_TRAINING"
+    ],
+    "focusReached": [
+      "STR_MEDICINE",
+      "STR_SCHOOLING_1",
+      "STR_WEIRDNESS",
+      "STR_KULTUR",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_PIRATE_STYLE",
+      "STR_PIRATE_LIFE",
+      "STR_HARDWARE_SHOPPING",
+      "STR_MEDICAL_SUPPLIES",
+      "STR_SURVIVAL",
+      "STR_SECTOWEED",
+      "STR_CRACK",
+      "STR_THE_PHARMACIST",
+      "STR_SOLDIER_TYPE_SS",
+      "STR_SLAVE_SOLDIERS",
+      "STR_ALIEN_ORIGINS",
+      "STR_HUMAN_MALE_3",
+      "STR_HUMAN_SHARP_GUY",
+      "STR_NAZI_LEADER",
+      "STR_FARMING",
+      "STR_UBER_WHEAT",
+      "STR_RECRUIT_PEASANTS",
+      "STR_INSPECT_MACHINERY",
+      "STR_CUNNING",
+      "STR_GLAMOUR",
+      "STR_MELEE_SUMMARY",
+      "STR_VIOLENCE",
+      "STR_SOLDIER_TYPE_PEA",
+      "STR_SOLDIER_TYPE_BASIC",
+      "STR_SOLDIER_TYPE_BASIC_PREQ_A",
+      "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+      "STR_SOLDIER_TYPE_BASIC_PREQ_B",
+      "STR_MUTANT_ABILITIES",
+      "STR_MUTANT_ORIGINS",
+      "STR_RECRUITMENT",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_WAT_DO",
+      "STR_GYM_ADVANCE",
+      "STR_GYMNASTICS",
+      "STR_CUISINE",
+      "STR_SKINNING",
+      "STR_PARTY_DEP",
+      "STR_BONDING_CEREMONY",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ",
+      "STR_SCI_REP",
+      "STR_DIVERGING_PATHS",
+      "STR_COMMUNICATIONS",
+      "STR_BEER",
+      "STR_MUTANT_EGG",
+      "STR_GYM_ADVANCE_PREQ",
+      "STR_OLD_BOOKS",
+      "STR_BOOT_CAMP_TRAINING",
+      "STR_CAPTAIN_JACKSORE",
+      "STR_CAPTAIN_PERSONALITY_TEST",
+      "STR_CAPTAIN_MAGE",
+      "STR_CAPTAIN_PUSSY_UP",
+      "STR_CAPTAIN_RULER",
+      "STR_CAPTAIN_UNCLASSED",
+      "STR_CAPTAIN_SOREDUMB",
+      "STR_CAPTAIN_PRIEST",
+      "STR_BASIC_FIREARMS_TRAINING",
+      "STR_PISTOLS_SUMMARY",
+      "STR_COLT45",
+      "STR_COMMANDO_PISTOL",
+      "STR_GUNS_N_AMMO",
+      "STR_SMGS_SUMMARY",
+      "STR_ASMG",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_GUN_SHOPPING",
+      "STR_RIFLES_SUMMARY",
+      "STR_DRAGOON_RIFLE",
+      "STR_AUTO_RIFLE",
+      "STR_BATTLE_RIFLE",
+      "STR_SHOTGUNS_SUMMARY",
+      "STR_COMBAT_SHOTGUN",
+      "STR_CAWS",
+      "STR_SNIPER_SUMMARY",
+      "STR_FLINTLOCKS_PRODUCTION",
+      "STR_BASIC_INCENDIARIES",
+      "STR_SMITHING",
+      "STR_BALLISTICS",
+      "STR_SPORTS_RIFLE",
+      "STR_EXPLOSIVES_SUMMARY",
+      "STR_ACID_GRENADE",
+      "STR_GAS_GRENADE",
+      "STR_FLAMETHROWER_LR",
+      "STR_GRENADE_LAUNCHER",
+      "STR_ROCKET_LAUNCHER",
+      "STR_HEAVY_WEAPONS_SUMMARY",
+      "STR_AUTO_CANNON",
+      "STR_CHAINGUN",
+      "STR_ATG_RIFLE",
+      "STR_TACTICS",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_FIREARMS_SUMMARY",
+      "STR_SMALL_RADAR_SYSTEM"
+    ],
+    "seedInputs": 27,
+    "seedTips": 21,
+    "cacheHits": 1722,
+    "successfulSeeds": 25,
+    "heroSuccessful": 24,
+    "deferredEvents": 0,
+    "expanded": 0,
+    "unexpanded": 2132,
+    "stopReason": "expansion-budget",
+    "actionsByType": {
+      "research": 1148,
+      "freeResearch": 336,
+      "manufacture": 44,
+      "eventResearch": 59,
+      "recruit": 5,
+      "conditionalCapGrowth": 17,
+      "conditionalPromotion": 39,
+      "transform": 91,
+      "repeatResearch": 37,
+      "conditionalDistressWithCaptive": 12,
+      "advanceMonth": 60,
+      "conditionalBountyWithCaptives": 12,
+      "conditionalMedicalEventBundle": 36,
+      "acquireFacility": 21,
+      "conditionalMonthlyHarvest": 156,
+      "conditionalBountyExchange": 24,
+      "conditionalMonthlyDiskSupply": 20,
+      "conditionalBookEvent": 10,
+      "conditionalGoldSale": 4,
+      "conditionalCostedGym": 2,
+      "conditionalTrainingEventReward": 2,
+      "acquirePurchase": 20
+    },
+    "researchByAction": {
+      "research": 197,
+      "freeResearch": 162,
+      "eventResearch": 13
+    },
+    "seeds": [
+      {
+        "id": "gold-v3:STR_CODEX_GOLD",
+        "ok": true,
+        "applied": 25,
+        "total": 25,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:4a26d6f9e65bfe802f0b27512b4b5df2810ca848551a4ebcee92dd9fced110af",
+        "ok": true,
+        "applied": 88,
+        "total": 88,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:f06b19db7ac679d6981e824cfcc0dd1f43b1421a3014cde829c8d2aa68944eb7",
+        "ok": true,
+        "applied": 88,
+        "total": 88,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:049065f32f51c58e91dd43307dc37c7b2b29fc80f5df6986624131d57622dbc7",
+        "ok": true,
+        "applied": 79,
+        "total": 79,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:7ee3c14250481a3dfd7846da9a480ec561f9f8fea68583d11f7c6f15ab2d5cb0",
+        "ok": true,
+        "applied": 79,
+        "total": 79,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:4a69e61531698bb53c86dfc1006ef4b5861ee4e8213b37ec2aca9158cc32edce",
+        "ok": true,
+        "applied": 78,
+        "total": 78,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:bc9a593d79bbc45188052cb8de595b0837d0c219a3d9058df30d51469dd0f74f",
+        "ok": true,
+        "applied": 78,
+        "total": 78,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:e45a134f4962faa109d992db8cda154671d3504d5bffa5041a5cdd31a1024fd0",
+        "ok": true,
+        "applied": 78,
+        "total": 78,
+        "reason": null
+      },
+      {
+        "id": "hero-v119:4265d53571ef55f35d2fc44ec11edce463d2b87607ad7a10a95b5c36fbec5b13",
+        "ok": true,
+        "applied": 74,
+        "total": 74,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:5a2078717f75a170e5fecc9bd97cd23b8b0c24ed8c5509dc8c6498e5c03c2a28",
+        "ok": true,
+        "applied": 52,
+        "total": 52,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:ce9147eee8fdf72630e13ca1c2bfcb079f5efd936f8b3ba670a54e3bcd8945a7",
+        "ok": true,
+        "applied": 52,
+        "total": 52,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:0443307279d169619f12a3723cc13dfb9568ec5091c71f2ac7df898c3dc98e7a",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:1cd1d7603c01121b899e7d5be20d82bffccfbb89fe4e3453563e344bca960022",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:406cefe8dc7e8e9983ace9dafbb71c62e8309572ee958c337ef478f2f8cac0b4",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:de320589dbd7cb8b734fb73d4ae0ff7b013dce74e15d457aa7a22eefc52a96e1",
+        "ok": true,
+        "applied": 51,
+        "total": 51,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+        "ok": true,
+        "applied": 48,
+        "total": 48,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+        "ok": true,
+        "applied": 46,
+        "total": 46,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+        "ok": true,
+        "applied": 42,
+        "total": 42,
+        "reason": null
+      },
+      {
+        "id": "hero-v114:a4a3c2e0f21404e4b9dcb2fc2e17a4b42c98a6aab5f5ed2f7d8feb61d9bbd815",
+        "ok": true,
+        "applied": 41,
+        "total": 41,
+        "reason": null
+      },
+      {
+        "id": "hero-v139:mage:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "ok": true,
+        "applied": 159,
+        "total": 159,
+        "reason": null
+      },
+      {
+        "id": "hero-v139:lazy:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "ok": true,
+        "applied": 163,
+        "total": 163,
+        "reason": null
+      },
+      {
+        "id": "hero-v139:school:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:3e8981e83e4786c85f3fa226d7a91fc544c1eb4e2dd7d42da48bdb29d01347b9",
+        "ok": false,
+        "applied": 163,
+        "total": 167,
+        "reason": "facility-function-missing"
+      },
+      {
+        "id": "hero-v139:mage:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "ok": true,
+        "applied": 159,
+        "total": 159,
+        "reason": null
+      },
+      {
+        "id": "hero-v139:lazy:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "ok": true,
+        "applied": 163,
+        "total": 163,
+        "reason": null
+      },
+      {
+        "id": "hero-v139:school:hero-v138:officer-preq:hero-v137:ruler:hero-v136:converged:hero-v135:gym:hero-v134:food:hero-v133:medical:hero-v132:shared-unlock:c1ed20d96a1042fbd6f72971a969d6acd5669978e62355de5cf3bdcdb45c9ddb",
+        "ok": false,
+        "applied": 163,
+        "total": 167,
+        "reason": "facility-function-missing"
+      }
+    ],
+    "states": 2149,
+    "transitions": 2155,
+    "frontier": 4261,
+    "rejected": 0,
+    "distinctCompleted": 369,
+    "maxDepth": 163,
+    "rootActions": [
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        "added": [],
+        "availableAfter": [],
+        "pendingFree": {
+          "source": "STR_INSPECT_MACHINERY",
+          "choices": [
+            "STR_WELL"
+          ],
+          "sequential": false,
+          "phase": "before-source"
+        }
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        "added": [],
+        "availableAfter": [],
+        "pendingFree": {
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "choices": [
+            "CIV_ARMOR_LOKNAR_1"
+          ],
+          "sequential": false,
+          "phase": "before-source"
+        }
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        "added": [
+          "STR_PEASANTS_ZZZ",
+          "STR_RECRUIT_PEASANTS"
+        ],
+        "availableAfter": [
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_UBER_WHEAT",
+          "STR_WAT_DO"
+        ],
+        "pendingFree": null
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        "added": [
+          "STR_PIRATE_LIFE",
+          "STR_WAT_DO"
+        ],
+        "availableAfter": [
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_LOOT_DISTRIBUTION",
+          "STR_PIRATE_STYLE",
+          "STR_QUESTION_OF_DRILL",
+          "STR_RECRUIT_PEASANTS"
+        ],
+        "pendingFree": null
+      }
+    ],
+    "gameCertified": 0,
+    "complete": false,
+    "scope": "conditional lab, free awards, source-gated supplies and events; conditional encounter and rank witnesses; no native economy, calendar or combat certification"
+  }
+}
