@@ -23,6 +23,12 @@ jobs:
           git fetch --no-tags --depth=1 origin bde014a9f29ab4751bbe63394164b5d633c9af3b
           mkdir -p experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output
           git show bde014a9f29ab4751bbe63394164b5d633c9af3b:experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb > experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb
+      - name: Build continuous V11 silhouette with N21 center relief
+        run: |
+          node experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/source/build_continuous.cjs \
+            experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb \
+            experimental/xpz3d/f11/r36hw-n21-center-surface-20261129/output/R36HW_N21_V10_BODY_LOCAL_CENTER.glb \
+            experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/output/R36HW_V11_BODY_NCENTER_CONTINUOUS.glb
       - name: Build V11 full-body source plus N21 center
         run: |
           test -s experimental/xpz3d/f11/r36hw-n21-center-surface-20261129/output/R36HW_N21_V10_BODY_LOCAL_CENTER.glb
