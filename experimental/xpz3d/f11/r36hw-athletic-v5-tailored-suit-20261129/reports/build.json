@@ -1,0 +1,30 @@
+{
+  "sourceBlob": "898f57fe6b422e34f494230af77d532a56674e2b",
+  "inputTriangles": 2064,
+  "outputTriangles": 2096,
+  "triangleBudget": 2100,
+  "addedTriangles": 32,
+  "addedVertices": 16,
+  "garmentVertices": 514,
+  "garmentTriangles": 1024,
+  "changedOriginalVertices": 54,
+  "shapeGain": 1,
+  "minOriginalFaceNormalCos": 0.9698708992614241,
+  "minTriangleArea": 0.00020924961067783632,
+  "signedVolume": 0.06742514064392738,
+  "manifoldOrOrientationErrors": 0,
+  "skinJoints": 63,
+  "existingSkinWeightsPreserved": true,
+  "addedSkinWeightsNormalized": true,
+  "protectedPrimitivesPreserved": true,
+  "materialPreserved": true,
+  "originalBinaryPreserved": true,
+  "outputBytes": 389596,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Artistic tailoring estimates, not verified against native S2 or sprite.",
+    "No posed clipping or self-intersection test.",
+    "Old garment accessors and buffers retained."
+  ]
+}
