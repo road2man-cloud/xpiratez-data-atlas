@@ -1,0 +1,24 @@
+{
+  "profile": "R36HW N21",
+  "inputSHA256": "ad4b40635460f2be7df0596a865bb867a28d4a648101f02289c65779a3b950e7",
+  "outputSHA256": "b91082912fc1e5554b48f7db1cd2ecd777c9366f63bc25dbbd2a5251a7562229",
+  "outputBytes": 1095728,
+  "triangles": 2099,
+  "rigJoints": 63,
+  "centerPrimitive": 3,
+  "centerTriangles": 363,
+  "boundaryLocked": 45,
+  "candidates": 70,
+  "changedVertices": 66,
+  "maxDisplacementMeters": 0.022500000000000006,
+  "accumulatedIterationMovementMeters": 0.17749255841712638,
+  "safetyAttempts": 594,
+  "bodyPrimitive6Unmodified": true,
+  "UVAndBoneWeightsUnmodified": true,
+  "sourceFaceHairUnmodified": true,
+  "limitations": [
+    "Not a welded pelvis-to-leg topology",
+    "Inherited long-triangle garment silhouette may still be present",
+    "Requires native S2 render and posed visual review"
+  ]
+}
