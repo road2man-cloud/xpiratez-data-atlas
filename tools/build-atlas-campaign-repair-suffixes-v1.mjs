@@ -15,7 +15,7 @@ import {decodeOriginReport} from './origin-report-codec.mjs';
 const args=Object.fromEntries(process.argv.slice(2).filter(s=>s.includes('=')).map(s=>s.replace(/^--/,'').split(/=(.*)/s).slice(0,2)));
 const repo=args.repo||process.cwd(),game=args.game||'C:/Dioxine_XPiratez_o2.1/Dioxine_XPiratez';
 const require=createRequire(path.join(repo,'package.json')),yaml=require('js-yaml');
-const forwardMode=Boolean(args.forwardOut);
+const forwardMode=Boolean(args.forwardOut||args.careerOut);
 if(forwardMode&&!args.ref)throw Error('forward-mode-requires-explicit-source-ref');
 const prefix=forwardMode?null:JSON.parse(fs.readFileSync(args.prefix||'public/data/campaign-start-prefix-repair-v2.json'));
 const worklist=forwardMode?null:JSON.parse(gunzipSync(fs.readFileSync(args.queue||'public/data/campaign-start-repair-worklist-v2.json.gz')));
@@ -215,6 +215,16 @@ if(args.forwardOut){
 const report=decodeOriginReport(bytes('public/data/soldier-origin-candidates.json'));
 if(report.sourceVersion!=='v.o2'||d.meta.source.rules.some(r=>!report.sourceHashes?.some(s=>s.file===r.file&&s.sha256===r.sha256)))throw Error('birth/source mismatch');
 d.originRows=report.records.map(r=>r.sourceProof).filter(Boolean);
+if(args.careerOut){
+ const {produceCareerPermutations}=await import('./build-atlas-forward-career-permutations-v1.mjs');
+ if(!args.graph)throw Error('--graph required');
+ const b=fs.readFileSync(args.graph),graph=JSON.parse(b);
+ if(graph.sourceCommit!==ref||JSON.stringify(graph.sourceFiles)!==JSON.stringify(files))throw Error('graph/bootstrap source mismatch');
+ const result=produceCareerPermutations({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256:createHash('sha256').update(b).digest('hex'),profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??1000),financeMode:args.financeMode||'unlimited'});
+ fs.writeFileSync(args.careerOut+'.tmp',JSON.stringify(result,null,2)+'\n');fs.renameSync(args.careerOut+'.tmp',args.careerOut);
+ console.log(JSON.stringify(result.summary));process.exit(0);
+}
+
 const profiles=new Map(d.profiles.map(p=>[p.id,p])),transforms=new Map(d.transformations.map(t=>[t.id,t]));
 const specs=[['missingbirth','soldier-population-missing-origin-career','soldier-population-missing-origin-career-index'],['alternating','soldier-final-career-alternating-candidates','soldier-final-career-alternating-candidate-index'],['frontier','soldier-population-frontier-chronology'],['newpair','soldier-population-new-pair-career'],['research','soldier-population-research-career'],['chronological','soldier-population-chronological-career'],['growth','soldier-population-growth-replay']];
 function unpack(idx,id,r){
