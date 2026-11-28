@@ -1,0 +1,1109 @@
+{
+  "schema": "ATLAS_FORWARD_CAREER_REPLAY_V1",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphFile": "campaign-forward-tree-v11-militia-d40.json",
+  "graphSha256": "a374203533397dd1c7cfa65fe939294361b14c10297b94817c86901c08bdf150",
+  "targetState": 1436,
+  "scenario": {
+    "difficulty": 1,
+    "regions": [
+      "STR_SIBERIA"
+    ],
+    "countries": null
+  },
+  "profileId": "direct:STR_SOLDIER_PEASANT",
+  "trainingId": null,
+  "trainingIds": [
+    "STR_BASIC_FIREARMS_TRAINING",
+    "STR_MILITIA_TRAINING"
+  ],
+  "trainingResults": [
+    {
+      "id": "STR_BASIC_FIREARMS_TRAINING",
+      "before": {
+        "raw": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 40,
+          "firing": 30,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 65
+        },
+        "bonus": {},
+        "stats": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 40,
+          "firing": 30,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 65
+        },
+        "permanentBonus": {},
+        "permanentStats": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 40,
+          "firing": 30,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 65
+        }
+      },
+      "after": {
+        "raw": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 43,
+          "firing": 36,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 65
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "stats": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 43,
+          "firing": 36,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 66
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "permanentStats": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 43,
+          "firing": 36,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 66
+        }
+      },
+      "cost": 5000,
+      "recoveryTime": 7,
+      "fundsAfter": 40000
+    },
+    {
+      "id": "STR_MILITIA_TRAINING",
+      "before": {
+        "raw": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 43,
+          "firing": 36,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 65
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "stats": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 43,
+          "firing": 36,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 66
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "permanentStats": {
+          "tu": 50,
+          "stamina": 60,
+          "health": 35,
+          "bravery": 40,
+          "reactions": 43,
+          "firing": 36,
+          "throwing": 30,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 30,
+          "mana": 66
+        }
+      },
+      "after": {
+        "raw": {
+          "tu": 55,
+          "stamina": 65,
+          "health": 35,
+          "bravery": 50,
+          "reactions": 48,
+          "firing": 46,
+          "throwing": 40,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 40,
+          "mana": 65
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 1,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "stats": {
+          "tu": 55,
+          "stamina": 66,
+          "health": 35,
+          "bravery": 50,
+          "reactions": 48,
+          "firing": 46,
+          "throwing": 40,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 40,
+          "mana": 66
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 1,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 1
+        },
+        "permanentStats": {
+          "tu": 55,
+          "stamina": 66,
+          "health": 35,
+          "bravery": 50,
+          "reactions": 48,
+          "firing": 46,
+          "throwing": 40,
+          "strength": 15,
+          "psiStrength": 20,
+          "psiSkill": 0,
+          "melee": 40,
+          "mana": 66
+        }
+      },
+      "cost": 7500,
+      "recoveryTime": 14,
+      "fundsAfter": 32500
+    }
+  ],
+  "body": "STR_SOLDIER_PEASANT",
+  "birthBand": "min",
+  "prefixLength": 35,
+  "trace": [
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_JACKSTOWN_SCOUTING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [],
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 CIV_ARMOR_LOKNAR_1"
+      ]
+    },
+    {
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_JACKSTOWN_SCOUTING",
+        "research": "CIV_ARMOR_LOKNAR_1",
+        "assumeOutcome": false
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_JACKSTOWN_ZZZ ← STR_JACKSTOWN_SCOUTING"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_THE_PHARMACIST"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_THE_PHARMACIST",
+        "STR_FIRST_AID_KIT"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_FIRST_AID_KIT ← STR_THE_PHARMACIST",
+        "research-grant:STR_THE_PHARMACIST -> STR_FIRST_AID_KIT x1"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_GUN_SHOPPING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_GUN_SHOPPING"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "research-grant:STR_GUN_SHOPPING -> STR_GUNS_N_AMMO x1"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_GUNS_N_AMMO"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [],
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_CANNON_PARTS, STR_MED_CANNON_PARTS, STR_VIPER_LAUNCHER_DAMAGED, STR_GECKO_SAM, STR_REVOLVER_POLICE, STR_MAGNUM, STR_TEC9, STR_SMG, STR_SMG_RAMSH, STR_PISTOL, STR_COLT45, STR_SNUBBY, STR_HEAVY_PISTOL, STR_COMMANDO_PISTOL, STR_OLD_MAGNUM, STR_GOVT_MAGNUM, STR_MAUSER, STR_SKORPION, STR_MINI_SMG, STR_ASMG, STR_MP, STR_SMG_10MM, STR_TOMMYGUN, STR_SHOTGUN, STR_SHOTGUN_POLICE, STR_COMBAT_SHOTGUN, STR_RUGER, STR_RIFLE_AK, STR_RIFLE_M16, STR_RIFLE_SA80, STR_AUTO_RIFLE, STR_RIFLE, STR_UAC_CARBINE, STR_UAC_RIFLE, STR_UAC_SHOTGUN, STR_BATTLE_RIFLE, STR_INFANTRY_RIFLE, STR_OMEGA_RIFLE, STR_SAW, STR_LMG, STR_VARMINT_RIFLE, STR_SPORTS_RIFLE, STR_WINCHESTER, STR_SPARTAN_MG, STR_HUNTING_RIFLE, STR_SCOUT_RIFLE, STR_OLD_RIFLE, STR_OLD_SNIPER_RIFLE, STR_DRAGOON_RIFLE, STR_NITRO_EXPRESS, STR_SNIPER_RIFLE, STR_MACHINEGUN_LIGHT, STR_HMG, STR_GRENADE_LAUNCHER, STR_CAWS, STR_LACC, STR_HEAVY_CANNON, STR_AUTO_CANNON, STR_MINIGUN, STR_CHAINGUN, STR_AT_RIFLE, STR_ATG_RIFLE, STR_RECOILLESS_RIFLE, STR_ROCKET_LAUNCHER, STR_FLAMETHROWER_LR, STR_INFANTRY_LASER, STR_HUNTING_LASER, STR_HYDRA_LASER, STR_SSRL, STR_ACID_GRENADE, STR_GAS_GRENADE, PILLBOX_ARMOR, FIELD_GUN_ARMOR, TRUCK_TURRET_14MM_ARMOR, STR_PINUP_104, STR_PINUP_126, STR_PINUP_138, STR_PINUP_142, STR_VIP_009"
+      ]
+    },
+    {
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_GUNS_N_AMMO",
+        "research": "STR_RIFLE_AK",
+        "assumeOutcome": true
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_RIFLE_AK",
+        "STR_GUNS_N_AMMO"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "무료 연구 무작위 선택 STR_RIFLE_AK을 가정",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_PISTOLS_SUMMARY"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_PISTOLS_SUMMARY",
+        "STR_FIREARMS_SUMMARY"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_FIREARMS_SUMMARY ← STR_PISTOLS_SUMMARY"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_RIFLES_SUMMARY"
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_RIFLES_SUMMARY"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_WAT_DO"
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_WAT_DO",
+        "STR_PIRATE_LIFE"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "OXCE lookup 후속 연구: STR_WAT_DO → STR_PIRATE_LIFE",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_PIRATE_STYLE"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_PIRATE_STYLE",
+        "STR_SAILOR_UNIFORM"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_SAILOR_UNIFORM ← STR_PIRATE_STYLE"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_KULTUR"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_KULTUR",
+        "STR_CLOTHING_UC",
+        "STR_PIRATE_FLAG"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_CLOTHING_UC ← STR_KULTUR",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PIRATE_FLAG ← STR_KULTUR"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_SURVIVAL"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_SURVIVAL_ZZZ ← STR_SURVIVAL"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_CUNNING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [],
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_GROG_BARREL"
+      ]
+    },
+    {
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_CUNNING",
+        "research": "STR_GROG_BARREL",
+        "assumeOutcome": false
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_GROG_BARREL",
+        "STR_CUNNING"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_HARDWARE_SHOPPING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_HARDWARE_SHOPPING"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "research-grant:STR_HARDWARE_SHOPPING -> STR_HAMMER x1"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_CONTACT_GENERAL_SUPPLIES"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_CONTACT_GENERAL_SUPPLIES",
+        "STR_CONTACT_GENERAL_SUPPLIES_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_CONTACT_GENERAL_SUPPLIES_ZZZ ← STR_CONTACT_GENERAL_SUPPLIES"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_SMGS_SUMMARY"
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_SMGS_SUMMARY"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_BASIC_FIREARMS_TRAINING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [],
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_TRAININGS"
+      ]
+    },
+    {
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_BASIC_FIREARMS_TRAINING",
+        "research": "STR_TRAININGS",
+        "assumeOutcome": false
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_TRAININGS",
+        "STR_BASIC_FIREARMS_TRAINING"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_INSPECT_MACHINERY"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [],
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_WELL"
+      ]
+    },
+    {
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_INSPECT_MACHINERY",
+        "research": "STR_WELL",
+        "assumeOutcome": false
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_WELL",
+        "STR_INSPECT_MACHINERY",
+        "STR_GENERAL_STORES_ARMORED"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_GENERAL_STORES_ARMORED ← STR_INSPECT_MACHINERY",
+        "research-grant:STR_INSPECT_MACHINERY -> STR_CIGS x1"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_RECRUIT_PEASANTS"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_RECRUIT_PEASANTS",
+        "STR_PEASANTS_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANTS_ZZZ ← STR_RECRUIT_PEASANTS",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_TAC_VEST_PEASANT_UC ← STR_RECRUIT_PEASANTS"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_UBER_WHEAT"
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_UBER_WHEAT"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_FARMING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_FARMING",
+        "STR_HYDROPONICS"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_HYDROPONICS ← STR_FARMING"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_VIOLENCE"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_VIOLENCE_ZZZ ← STR_VIOLENCE"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_SMITHING"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_SMITHING",
+        "STR_SMITHING_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_SMITHING_ZZZ ← STR_SMITHING"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_WEIRDNESS"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [],
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_LABORATORY"
+      ]
+    },
+    {
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_WEIRDNESS",
+        "research": "STR_LABORATORY",
+        "assumeOutcome": false
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_LABORATORY",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_WEIRDNESS_ZZZ ← STR_WEIRDNESS"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_SCHOOLING_1"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_SCHOOLING_1",
+        "STR_JUNK_PILE",
+        "STR_PINUP_001"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_JUNK_PILE ← STR_SCHOOLING_1",
+        "OXCE lookup 후속 연구: STR_SCHOOLING_1 → STR_PINUP_001",
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "research-grant:STR_SCHOOLING_1 -> STR_DATA_DISK x1"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_BOW_H"
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_BOW_H"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_BOWS_SUMMARY"
+      },
+      "conditional": false,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_BOWS_SUMMARY"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_MELEE_SUMMARY"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_MELEE_SUMMARY",
+        "STR_KNUCKLES_SPIKED",
+        "STR_RIFLE_AK_B",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_KNUCKLES_SPIKED ← STR_MELEE_SUMMARY",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_RIFLE_AK_B ← STR_MELEE_SUMMARY",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_UNARMED_GAUNTLET ← STR_MELEE_SUMMARY",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_UNARMED_WRESTLING ← STR_MELEE_SUMMARY"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_PRIMITIVE_WEAPONS"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_PRIMITIVE_WEAPONS",
+        "STR_PRIMITIVE_WEAPONS_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PRIMITIVE_WEAPONS_ZZZ ← STR_PRIMITIVE_WEAPONS"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_TACTICS"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_TACTICS",
+        "STR_TACTICS_ZZZ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_TACTICS_ZZZ ← STR_TACTICS"
+      ]
+    },
+    {
+      "action": {
+        "type": "research",
+        "id": "STR_PEASANT_MILITIA"
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 0,
+      "added": [
+        "STR_PEASANT_MILITIA",
+        "STR_PEASANT_ARMOR_MILITIA",
+        "STR_QUARTERSTAFF",
+        "STR_TANKP_PREQ"
+      ],
+      "notes": [
+        "미확인 기지 기능 CULT, STUDY, WORKS의 8개 대입에서 최종 연구·폐쇄 상태 일치",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PEASANT_ARMOR_MILITIA ← STR_PEASANT_MILITIA",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_QUARTERSTAFF ← STR_PEASANT_MILITIA",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_TANKP_PREQ ← STR_PEASANT_MILITIA"
+      ]
+    },
+    {
+      "action": {
+        "type": "acquireEventItems",
+        "event": "STR_KNOCK_KNOCK_WILLING_SLAVE",
+        "script": "STR_KNOCK_KNOCK_0",
+        "item": "STR_SLAVE",
+        "count": 1,
+        "assumeOutcome": true
+      },
+      "conditional": true,
+      "fundsBefore": 0,
+      "fundsAfter": 50000,
+      "added": [],
+      "notes": [
+        "실행 확률 23%의 무작위 통과 필요",
+        "월간 이벤트 가중치 추첨에서 선택되어야 함",
+        "fixed-item-only-event:STR_KNOCK_KNOCK_WILLING_SLAVE",
+        "fixed-event-funds:50000",
+        "fixed-event-points:0",
+        "event-scheduler-and-receipt-not-native-certified"
+      ]
+    },
+    {
+      "action": {
+        "type": "recruit",
+        "profile": "direct:STR_SOLDIER_PEASANT",
+        "soldier": "origin",
+        "band": "min"
+      },
+      "conditional": true,
+      "fundsBefore": 50000,
+      "fundsAfter": 45000,
+      "added": [],
+      "notes": [
+        "출생 수치: 원본 최솟값 벡터를 지정한 시나리오. 실제 출생 RNG·인수 시점은 미실측."
+      ]
+    },
+    {
+      "action": {
+        "type": "transform",
+        "transform": "STR_BASIC_FIREARMS_TRAINING",
+        "soldier": "origin"
+      },
+      "conditional": false,
+      "fundsBefore": 45000,
+      "fundsAfter": 40000,
+      "added": [],
+      "notes": []
+    },
+    {
+      "action": {
+        "type": "transform",
+        "transform": "STR_MILITIA_TRAINING",
+        "soldier": "origin"
+      },
+      "conditional": false,
+      "fundsBefore": 40000,
+      "fundsAfter": 32500,
+      "added": [],
+      "notes": []
+    }
+  ],
+  "blocked": [],
+  "finalStateHash": "a2ca13924fc94d9b5003d2f95741fe08a22b6ed20ba8a0b711409062ee660193",
+  "before": {
+    "raw": {
+      "tu": 50,
+      "stamina": 60,
+      "health": 35,
+      "bravery": 40,
+      "reactions": 40,
+      "firing": 30,
+      "throwing": 30,
+      "strength": 15,
+      "psiStrength": 20,
+      "psiSkill": 0,
+      "melee": 30,
+      "mana": 65
+    },
+    "bonus": {},
+    "stats": {
+      "tu": 50,
+      "stamina": 60,
+      "health": 35,
+      "bravery": 40,
+      "reactions": 40,
+      "firing": 30,
+      "throwing": 30,
+      "strength": 15,
+      "psiStrength": 20,
+      "psiSkill": 0,
+      "melee": 30,
+      "mana": 65
+    },
+    "permanentBonus": {},
+    "permanentStats": {
+      "tu": 50,
+      "stamina": 60,
+      "health": 35,
+      "bravery": 40,
+      "reactions": 40,
+      "firing": 30,
+      "throwing": 30,
+      "strength": 15,
+      "psiStrength": 20,
+      "psiSkill": 0,
+      "melee": 30,
+      "mana": 65
+    }
+  },
+  "after": {
+    "raw": {
+      "tu": 55,
+      "stamina": 65,
+      "health": 35,
+      "bravery": 50,
+      "reactions": 48,
+      "firing": 46,
+      "throwing": 40,
+      "strength": 15,
+      "psiStrength": 20,
+      "psiSkill": 0,
+      "melee": 40,
+      "mana": 65
+    },
+    "bonus": {
+      "tu": 0,
+      "stamina": 1,
+      "health": 0,
+      "bravery": 0,
+      "reactions": 0,
+      "firing": 0,
+      "throwing": 0,
+      "strength": 0,
+      "psiStrength": 0,
+      "psiSkill": 0,
+      "melee": 0,
+      "mana": 1
+    },
+    "stats": {
+      "tu": 55,
+      "stamina": 66,
+      "health": 35,
+      "bravery": 50,
+      "reactions": 48,
+      "firing": 46,
+      "throwing": 40,
+      "strength": 15,
+      "psiStrength": 20,
+      "psiSkill": 0,
+      "melee": 40,
+      "mana": 66
+    },
+    "permanentBonus": {
+      "tu": 0,
+      "stamina": 1,
+      "health": 0,
+      "bravery": 0,
+      "reactions": 0,
+      "firing": 0,
+      "throwing": 0,
+      "strength": 0,
+      "psiStrength": 0,
+      "psiSkill": 0,
+      "melee": 0,
+      "mana": 1
+    },
+    "permanentStats": {
+      "tu": 55,
+      "stamina": 66,
+      "health": 35,
+      "bravery": 50,
+      "reactions": 48,
+      "firing": 46,
+      "throwing": 40,
+      "strength": 15,
+      "psiStrength": 20,
+      "psiSkill": 0,
+      "melee": 40,
+      "mana": 66
+    }
+  },
+  "delta": {
+    "tu": 5,
+    "stamina": 6,
+    "health": 0,
+    "bravery": 10,
+    "reactions": 8,
+    "firing": 16,
+    "throwing": 10,
+    "strength": 0,
+    "psiStrength": 0,
+    "psiSkill": 0,
+    "melee": 10,
+    "mana": 1
+  },
+  "finalFunds": 32500,
+  "history": {
+    "STR_BASIC_FIREARMS_TRAINING": 1,
+    "STR_MILITIA_TRAINING": 1
+  },
+  "status": "conditional-funded-career-model",
+  "gameCertified": false,
+  "globalMaximum": false,
+  "limitations": [
+    "initial funding model zero; event outcome and scheduling conditional",
+    "birth minimum vector, not sampled native RNG",
+    "transfer and recovery calendar not advanced; salaries and upkeep not modeled",
+    "no native engine replay or complete career certification"
+  ]
+}
