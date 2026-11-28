@@ -41,6 +41,16 @@ assert.equal(db.careerCompletion.researchTraitSets.sourceGraphSha256,baseGraphHa
 const candidateReceipts=chain.flatMap(x=>x.patch.receipts);
 for(const r of candidateReceipts){assert.equal(ledger.routes[r.routeId]?.fullActionHash,r.actionHash);assert.equal(ledger.routes[r.routeId]?.canonicalStateHash,r.stateHash);}
 const c=db.careerCompletion,priorRows=c.rows.slice(),priorSets=c.researchTraitSets,priorLines=c.researchLineRows;
+const reuseStage=process.argv.find(x=>x.startsWith("--reuse-stage="))?.slice(14)||null;
+let previous=null;
+if(reuseStage){
+ assert(/^[A-Z0-9_]+$/.test(reuseStage)&&reuseStage!==body);
+ const prev=chain.find(x=>x.body===reuseStage);assert(prev,"Snapshot reuse must follow the verified append chain");
+ const old=decode("tools/data/overcap-intake-stage-"+reuseStage+"/vo2-full-prepared.json.gz"),m=read("tools/data/overcap-vo2-full-prepared-manifest-"+reuseStage+".json");
+ assert.equal(key(old),m.preparedHash);assert.equal(old.sourceGraphSha256,prev.receipt.sourceGraphSha256);assert.equal(old.sourceMetadataSha256,ledger.sourceMetadataSha256);
+ assert.equal(old.baseGraphHash,baseGraphHash);assert.equal(key(old.plan),m.planHash);
+ previous={old,manifest:m};
+}
 const replay=createSharedCareerReplay(data,ledger.summary);
 const budget=buildCareerMaterialBudget(data,ledger);
 const ids=new Set(candidateReceipts.map(r=>r.routeId));
@@ -77,19 +87,20 @@ for(const row of p.rows){
 assert.equal(reused,Object.keys(base.routes).length);
 console.log(JSON.stringify({phase:"classification prepared",reused,fresh}));
 c.classifications={...c.classifications,missingbirth:classes};c.materialBudget=budget;
-const sets=buildTerminalResearchTraitSets({db,ledger:selected,index,replay,prior:priorSets});c.researchTraitSets=sets;
+const sets=buildTerminalResearchTraitSets({db,ledger:selected,index,replay,prior:previous?.old.researchTraitSets||priorSets});c.researchTraitSets=sets;
 const lines=admitResearchLines({db,sets,ledger:selected,classifications:c.classifications,prior:{rows:priorLines}});
 console.log(JSON.stringify({phase:"research/trait snapshots",summary:sets.summary,lines:lines.rows.length,rejected:lines.rejected.length}));
 const seen=new Set(lines.rows.map(r=>r.id));for(const r of priorLines)assert(seen.has(r.id),"Lost prior research line "+r.id);
+if(previous)for(const r of previous.old.researchLineRows)assert(seen.has(r.id),"Lost earlier staged research line "+r.id);
 const priorIds=new Set(priorRows.map(r=>r.id)),candidatePairs=new Set(candidateReceipts.map(r=>sets.records[r.routeId]?.pairId));assert(!candidatePairs.has(undefined));
 for(const r of candidateReceipts)if(r.expectedPair)assert.equal(sets.records[r.routeId].pairId,r.expectedPair);
 const priority=line=>candidatePairs.has(line.id)?0:priorIds.has(line.id)?1:2;
 const ordered=lines.rows.slice().sort((a,b)=>priority(a)-priority(b)||sets.pairs[a.id].body.localeCompare(sets.pairs[b.id].body)||a.id.localeCompare(b.id));
 const plan=ordered.map(r=>({id:r.id,priority:priority(r),body:sets.pairs[r.id].body,routes:[r,...r.alternatives].map(x=>x.routeId)}));
-const summary={previousPublicPairs:priorRows.length,researchLines:lines.rows.length,researchLineWitnesses:lines.covered.size,reusedClassifications:reused,newClassifications:fresh,priorPairsWithNoPassingMaterialWitness:priorMaterialIssues.length,priorityNewPairs:plan.filter(r=>r.priority===0).length,priorityPriorPairs:plan.filter(r=>r.priority===1).length,otherPairs:plan.filter(r=>r.priority===2).length,officialFinalAdded:0};
-const out={schema:"ATLAS_VO2_FULL_PREPARED_V1",sourceMetadataSha256:ledger.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,baseGraphHash,stageChain:chain.map(x=>({body:x.body,patchHash:x.receipt.patchHash,sourceGraphSha256:x.receipt.sourceGraphSha256})),summary,priorMaterialIssues,previousPublicPairIds:[...priorIds].sort(),candidateReceipts,materialBudget:budget,researchTraitSets:sets,researchLineRows:ordered,researchLineRejected:lines.rejected,classifications:classes,plan,planHash:key(plan)};
+const summary={previousPublicPairs:priorRows.length,researchLines:lines.rows.length,researchLineWitnesses:lines.covered.size,reusedClassifications:reused,newClassifications:fresh,priorPairsWithNoPassingMaterialWitness:priorMaterialIssues.length,priorityNewPairs:plan.filter(r=>r.priority===0).length,priorityPriorPairs:plan.filter(r=>r.priority===1).length,otherPairs:plan.filter(r=>r.priority===2).length,officialFinalAdded:0,...(previous?{reusedStagedSnapshots:sets.summary.metrics.reusedRecords,newStagedSnapshots:sets.summary.metrics.freshRecords}:{} )};
+const out={schema:"ATLAS_VO2_FULL_PREPARED_V1",sourceMetadataSha256:ledger.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,baseGraphHash,...(previous?{previousPreparation:{stage:reuseStage,preparedHash:previous.manifest.preparedHash,graph:previous.old.sourceGraphSha256}}:{}),stageChain:chain.map(x=>({body:x.body,patchHash:x.receipt.patchHash,sourceGraphSha256:x.receipt.sourceGraphSha256})),summary,priorMaterialIssues,previousPublicPairIds:[...priorIds].sort(),candidateReceipts,materialBudget:budget,researchTraitSets:sets,researchLineRows:ordered,researchLineRejected:lines.rejected,classifications:classes,plan,planHash:key(plan)};
 const file=stage+"vo2-full-prepared.json.gz";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(out),{level:4}));fs.renameSync(file+".tmp",file);
-const manifest={schema:out.schema,sourceMetadataSha256:out.sourceMetadataSha256,sourceGraphSha256:out.sourceGraphSha256,baseGraphHash,stageChain:out.stageChain,summary,planHash:out.planHash,preparedHash:key(out),replayFingerprint:sets.replayFingerprint,materialBudgetHash:budget.sha256,plan:plan.map(({id,priority,body,routes})=>({id,priority,body,witnesses:routes.length})),priorMaterialIssues,candidateReceipts:candidateReceipts.map(({candidate,priorPair,expectedPair,routeId})=>({candidate,priorPair:priorPair||null,expectedPair:expectedPair||null,routeId}))};
+const manifest={schema:out.schema,sourceMetadataSha256:out.sourceMetadataSha256,sourceGraphSha256:out.sourceGraphSha256,baseGraphHash,...(out.previousPreparation?{previousPreparation:out.previousPreparation}:{}),stageChain:out.stageChain,summary,planHash:out.planHash,preparedHash:key(out),replayFingerprint:sets.replayFingerprint,materialBudgetHash:budget.sha256,plan:plan.map(({id,priority,body,routes})=>({id,priority,body,witnesses:routes.length})),priorMaterialIssues,candidateReceipts:candidateReceipts.map(({candidate,priorPair,expectedPair,routeId})=>({candidate,priorPair:priorPair||null,expectedPair:expectedPair||null,routeId}))};
 fs.writeFileSync("tools/data/overcap-vo2-full-prepared-manifest-"+body+".json",JSON.stringify(manifest)+"\n");
 console.log(JSON.stringify({file,summary,metrics:sets.summary.metrics,planHash:out.planHash,preparedHash:manifest.preparedHash}));
