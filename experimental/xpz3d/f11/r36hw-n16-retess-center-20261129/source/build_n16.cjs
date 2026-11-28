@@ -1,63 +1,126 @@
 #!/usr/bin/env node
 'use strict';
-/* R36HW N16 local connected patch retopology. No full-body remodelling. */
+/*
+ * R36HW N16: reorient existing edges in the connected N12 pelvic center.
+ * No additional polygons, no overlay mesh, no full-body editing.
+ * Remove severe radial skinny fans via conservative manifold edge flips.
+ * All 63 skin joints, original vertex indices, UV, textures remain in place.
+ */
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const input=process.argv[2]||path.resolve(__dirname,'../../r36hw-n15-center-continuity-20261129/output/R36HW_N15_CENTER_CONTINUITY.glb');
-const output=process.argv[3]||path.resolve(__dirname,'../output/R36HW_N16_RETESS_CENTER.glb');
-const reportFile=process.argv[4]||path.resolve(__dirname,'../reports/R36HW_N16_RETESS_CENTER.json');
-const HASH='7e151c13a8011c334c1b22f73dcccaba3420098bef7812417b9b4e564a0cd05b';
+const SRC=process.argv[2]||path.resolve(__dirname,'../../r36hw-n15-center-continuity-20261129/output/R36HW_N15_CENTER_CONTINUITY.glb');
+const OUTPUT=process.argv[3]||path.resolve(__dirname,'../output/R36HW_N16_RETESS_CENTER.glb');
+const REPORT=process.argv[4]||path.resolve(__dirname,'../reports/R36HW_N16_RETESS_CENTER.json');
+const EXPECTED='7e151c13a8011c334c1b22f73dcccaba3420098bef7812417b9b4e564a0cd05b';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
-const inputBin=fs.readFileSync(input);
-if(sha(inputBin)!==HASH)throw Error('Unexpected original-HW lineage '+sha(inputBin));
-if(inputBin.toString('ascii',0,4)!=='glTF'||inputBin.readUInt32LE(4)!==2||inputBin.readUInt32LE(8)!==inputBin.length)throw Error('Invalid GLB');
-const jl=inputBin.readUInt32LE(12),g=JSON.parse(inputBin.toString('utf8',20,20+jl)),binAt=20+jl;
-if(inputBin.toString('ascii',binAt+4,binAt+8)!=='BIN\0')throw Error('Missing BIN');
-const bin=inputBin.subarray(binAt+8,binAt+8+inputBin.readUInt32LE(binAt));
-const dim={SCALAR:1,VEC2:2,VEC3:3,VEC4:4},bs={5121:1,5123:2,5125:4,5126:4};
+const src=fs.readFileSync(SRC);
+if(sha(src)!==EXPECTED)throw Error('N12 base hash mismatch '+sha(src));
+if(src.toString('ascii',0,4)!=='glTF'||src.readUInt32LE(4)!==2)throw Error('Not GLB2');
+const jl=src.readUInt32LE(12),j=JSON.parse(src.toString('utf8',20,20+jl)),off=20+jl;
+if(src.toString('ascii',off+4,off+8)!=='BIN\0')throw Error('GLB BIN missing');
+const oldBin=src.subarray(off+8,off+8+src.readUInt32LE(off));
+const comps={SCALAR:1,VEC2:2,VEC3:3,VEC4:4},bytes={5121:1,5123:2,5125:4,5126:4};
 function read(id){
- const a=g.accessors[id],view=g.bufferViews[a.bufferView];
- if(!a||!view||a.sparse)throw Error('Sparse or absent GLB accessor '+id);
- const n=dim[a.type],w=bs[a.componentType],offset=(view.byteOffset||0)+(a.byteOffset||0),stride=view.byteStride||n*w,rows=[];
- for(let i=0;i<a.count;i++){const row=[];for(let k=0;k<n;k++){
- const at=offset+i*stride+k*w;if(at+w>bin.length)throw Error('GLB buffer overrun');
- row.push(a.componentType===5126?bin.readFloatLE(at):a.componentType===5125?bin.readUInt32LE(at):a.componentType===5123?bin.readUInt16LE(at):bin.readUInt8(at))
- }rows.push(row)}return rows;
+ const a=j.accessors[id],b=j.bufferViews[a.bufferView],n=comps[a.type],w=bytes[a.componentType],stride=b.byteStride||n*w,base=(b.byteOffset||0)+(a.byteOffset||0);
+ const ret=[];for(let i=0;i<a.count;i++){const row=[];for(let k=0;k<n;k++){
+  const p=base+i*stride+k*w;row.push(a.componentType===5126?oldBin.readFloatLE(p):a.componentType===5123?oldBin.readUInt16LE(p):a.componentType===5125?oldBin.readUInt32LE(p):oldBin.readUInt8(p));
+ }ret.push(row)}return ret;
 }
-const parts=g.meshes[0].primitives,prim=parts[3],A=prim.attributes;
-if(g.meshes.length!==1||parts.length!==10||g.skins[0].joints.length!==63)throw Error('N15 model layout changed');
-const totalBefore=parts.reduce((sum,p)=>sum+g.accessors[p.indices].count/3,0);
-const pos=read(A.POSITION),norm=read(A.NORMAL),idx=read(prim.indices).map(v=>v[0]);
-if(totalBefore!==2099||pos.length!==240||idx.length!==363*3)throw Error('N15 model triangles changed');
-const faces=Array.from({length:idx.length/3},(_,i)=>idx.slice(i*3,i*3+3));
-const patched=require('./retess_patch.cjs')({positions:pos,triangles:faces,innerIds:[32,238,239],oldNormals:norm});
-if(patched.faces.length!==faces.length)throw Error('New connected patch changed budget');
-const nextIndex=patched.faces.flat(),newPos=patched.positions,nextNormal=patched.newNormals;
-const chunks=[Buffer.from(bin)];
-function size(){return chunks.reduce((s,v)=>s+v.length,0)}
-function append(rows,id,target){
- if(size()%4)chunks.push(Buffer.alloc(4-size()%4));
- const a=g.accessors[id],n=dim[a.type],w=bs[a.componentType],offset=size(),data=Buffer.alloc(rows.length*n*w);
- for(let i=0;i<rows.length;i++)for(let k=0;k<n;k++){const q=(i*n+k)*w,v=rows[i][k];if(!Number.isFinite(v))throw Error('Nonfinite output attribute');
- if(a.componentType===5126)data.writeFloatLE(v,q);else if(a.componentType===5123)data.writeUInt16LE(Math.round(v),q);else if(a.componentType===5125)data.writeUInt32LE(Math.round(v),q);else data.writeUInt8(Math.max(0,Math.min(255,Math.round(v))),q);}
- chunks.push(data);const view=g.bufferViews.push({buffer:0,byteOffset:offset,byteLength:data.length,target})-1;
- const na={bufferView:view,componentType:a.componentType,count:rows.length,type:a.type};
- if(a.normalized)na.normalized=true;
- if(a.type==='VEC3'&&a.componentType===5126){na.min=[0,1,2].map(k=>Math.min(...rows.map(v=>v[k])));na.max=[0,1,2].map(k=>Math.max(...rows.map(v=>v[k])))}
- if(a.type==='SCALAR'){na.min=[Math.min(...rows.map(v=>v[0]))];na.max=[Math.max(...rows.map(v=>v[0]))]}
- return g.accessors.push(na)-1;
+const prim=j.meshes[0].primitives[3],pos=read(prim.attributes.POSITION),norm=read(prim.attributes.NORMAL),indices=read(prim.indices).map(v=>v[0]),triangles=[];
+for(let i=0;i<indices.length;i+=3)triangles.push(indices.slice(i,i+3));
+const total=j.meshes[0].primitives.reduce((s,p)=>s+j.accessors[p.indices].count/3,0);
+if(total!==2099||j.skins[0].joints.length!==63||pos.length!==240)throw Error('Unexpected base properties');
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const sub=(a,b)=>a.map((v,k)=>v-b[k]);
+const dot=(a,b)=>a.reduce((s,v,k)=>s+v*b[k],0),len=a=>Math.hypot(...a);
+function quality(face){
+ const [a,b,c]=face.map(i=>pos[i]),ab=len(sub(a,b)),bc=len(sub(b,c)),ca=len(sub(c,a)),area=len(cross(sub(b,a),sub(c,a)))/2;
+ return 4*Math.sqrt(3)*area/(ab*ab+bc*bc+ca*ca||1);
 }
-A.POSITION=append(newPos,A.POSITION,34962);
-A.NORMAL=append(nextNormal,A.NORMAL,34962);
-prim.indices=append(nextIndex.map(i=>[i]),prim.indices,34963);
-prim.extras={...prim.extras,stage:'N16_ACTUAL_CENTER_POLYGON_RETESSELLATION',singleOriginalPelvisPrimitive:true,otherAreasProtected:true};
-if(size()%4)chunks.push(Buffer.alloc(4-size()%4));
-const nextBin=Buffer.concat(chunks);g.buffers[0].byteLength=nextBin.length;
-const json=Buffer.from(JSON.stringify(g)),padded=Buffer.alloc(Math.ceil(json.length/4)*4,0x20);json.copy(padded);
-const result=Buffer.alloc(20+padded.length+8+nextBin.length),at=20+padded.length;
-result.write('glTF',0,'ascii');result.writeUInt32LE(2,4);result.writeUInt32LE(result.length,8);
-result.writeUInt32LE(padded.length,12);result.write('JSON',16,'ascii');padded.copy(result,20);
-result.writeUInt32LE(nextBin.length,at);result.write('BIN\0',at+4,'ascii');nextBin.copy(result,at+8);
-fs.mkdirSync(path.dirname(output),{recursive:true});fs.mkdirSync(path.dirname(reportFile),{recursive:true});fs.writeFileSync(output,result);
-const proof={stage:'R36HW N16 actual retessellation of 44-face joined center only',inputSHA256:sha(inputBin),outputSHA256:sha(result),trianglesBefore:totalBefore,trianglesAfter:parts.reduce((n,p)=>n+g.accessors[p.indices].count/3,0),pelvisTriangles:nextIndex.length/3,originalPelvisVertices:pos.length,outputPelvisVertices:newPos.length,...patched.metrics,skinJoints:g.skins[0].joints.length,faceAndHairUnmodified:true,externalBodyPrimitivesUnmodified:true,sourceUVAndSkinWeightAccessorsUnchanged:true,imageEmbedded:false,visualApproval:false,nativeS2Rendered:false,limitations:['Inherited shorts-like outer surface remains','Waist/leg edges not yet welded','Single photograph cannot determine 3D depth','3D target likeness not verified']};
-fs.writeFileSync(reportFile,JSON.stringify(proof,null,2)+'\n');
-console.log(JSON.stringify({output,triangles:proof.trianglesAfter,metrics:patched.metrics,sha:proof.outputSHA256}));
+function normal(face){const [a,b,c]=face.map(i=>pos[i]);return cross(sub(b,a),sub(c,a))}
+function orient2(a,b,c){const pa=pos[a],pb=pos[b],pc=pos[c];return (pb[0]-pa[0])*(pc[2]-pa[2])-(pb[2]-pa[2])*(pc[0]-pa[0])}
+function local(face){const c=[0,1,2].map(k=>face.reduce((s,i)=>s+pos[i][k],0)/3);
+ return Math.abs(c[0])<.099&&c[2]>.837&&c[2]<.969&&c[1]<-.038;
+}
+function links(){
+ const m=new Map();
+ for(let t=0;t<triangles.length;t++){
+  const f=triangles[t];
+  for(let i=0;i<3;i++){
+   const a=f[i],b=f[(i+1)%3],c=f[(i+2)%3],key=a<b?a+','+b:b+','+a;
+   if(!m.has(key))m.set(key,[]);
+   m.get(key).push({t,a,b,c});
+  }
+ }return m;
+}
+let history=[],passes=0;let originalQuality=triangles.filter(local).map(quality);
+const count=(arr,limit)=>arr.filter(v=>v<limit).length;
+for(let pass=0;pass<80;pass++){
+ const edges=links();let best=null;
+ for(const [key,list] of edges){
+  if(list.length!==2)continue;
+  const [x,y]=list;
+  if(x.a!==y.b||x.b!==y.a||x.c===y.c)continue;
+  const F=triangles[x.t],G=triangles[y.t];
+  if(!local(F)||!local(G))continue;
+  const [a,b,c,d]=[x.a,x.b,x.c,y.c];
+  if(Math.max(Math.abs(pos[c][0]),Math.abs(pos[d][0]))>.122)continue;
+  const s1=orient2(a,b,c),s2=orient2(a,b,d),s3=orient2(c,d,a),s4=orient2(c,d,b);
+  if(s1*s2>=0||s3*s4>=0)continue; // convex quadrilateral in the screen-projected ROI
+  const before=Math.min(quality(F),quality(G));
+  const attempts=[
+   [[c,d,b],[d,c,a]],
+   [[d,c,b],[c,d,a]]
+  ];
+  for(const t of attempts){
+   const [fn,gn]=t;
+   const n0=normal(F),n1=normal(G),nn0=normal(fn),nn1=normal(gn);
+   if(dot(n0,nn0)<=.72*len(n0)*len(nn0)||dot(n1,nn1)<=.72*len(n1)*len(nn1))continue;
+   const q0=quality(fn),q1=quality(gn),after=Math.min(q0,q1);
+   if(after<before+.018||after<.09)continue;
+   const gain=after-before;
+   if(!best||gain>best.gain)best={F:x.t,G:y.t,old:[F,G],new:[fn,gn],gain,before,after,edge:key};
+  }
+ }
+ if(!best)break;
+ triangles[best.F]=best.new[0];triangles[best.G]=best.new[1];
+ history.push({triangles:[best.F,best.G],oldEdge:best.edge,qualityBefore:best.before,qualityAfter:best.after});
+ passes++;
+}
+// Recompute vertex normals only in touched area; preserve front/back orientation.
+// Unmodified regions retain their original normals.
+const changed=new Set(history.flatMap(h=>h.triangles));
+const normalSum=pos.map(()=>[0,0,0]);
+for(const face of triangles){const n=normal(face);for(const i of face)for(let k=0;k<3;k++)normalSum[i][k]+=n[k]}
+const updatedVertices=new Set(history.flatMap(h=>h.triangles.flatMap(t=>triangles[t])));
+const unit=a=>{const s=len(a)||1;return a.map(v=>v/s)};
+let alteredNormalCount=0;
+const newNormals=norm.map((v,i)=>{
+ if(!updatedVertices.has(i))return v;
+ let n=unit(normalSum[i]),ref=unit(v);if(dot(n,ref)<0)n=n.map(x=>-x);
+ alteredNormalCount++;return unit(n.map((x,k)=>x*.89+ref[k]*.11));
+});
+const outIndex=triangles.flat();
+const indexBytes=Buffer.alloc(outIndex.length*2);for(let i=0;i<outIndex.length;i++)indexBytes.writeUInt16LE(outIndex[i],i*2);
+const normalsBytes=Buffer.alloc(newNormals.length*12);for(let i=0;i<newNormals.length;i++)for(let k=0;k<3;k++)normalsBytes.writeFloatLE(newNormals[i][k],i*12+k*4);
+let extra=[Buffer.from(oldBin)];function size(){return extra.reduce((s,b)=>s+b.length,0)}
+function append(b,type,component,count,target){
+ if(size()%4)extra.push(Buffer.alloc(4-size()%4));
+ const begin=size();extra.push(b);
+ const view=j.bufferViews.push({buffer:0,byteOffset:begin,byteLength:b.length,target})-1;
+ const a={bufferView:view,componentType:component,count,type};if(type==='SCALAR'){a.min=[0];a.max=[Math.max(...outIndex)]}
+ return j.accessors.push(a)-1;
+}
+prim.indices=append(indexBytes,'SCALAR',5123,outIndex.length,34963);
+prim.attributes.NORMAL=append(normalsBytes,'VEC3',5126,newNormals.length,34962);
+prim.extras={...prim.extras,stage:'N16_CENTRAL_EDGE_REPAIR_KEEPING_ORIGINAL_3D_RIM',edgeFlips:history.length};
+if(size()%4)extra.push(Buffer.alloc(4-size()%4));
+const bin=Buffer.concat(extra);j.buffers[0].byteLength=bin.length;
+const json=Buffer.from(JSON.stringify(j)),pad=Buffer.alloc(Math.ceil(json.length/4)*4,32);json.copy(pad);
+const out=Buffer.alloc(20+pad.length+8+bin.length),bh=20+pad.length;out.write('glTF',0);
+out.writeUInt32LE(2,4);out.writeUInt32LE(out.length,8);out.writeUInt32LE(pad.length,12);
+out.write('JSON',16);pad.copy(out,20);out.writeUInt32LE(bin.length,bh);out.write('BIN\0',bh+4,'ascii');bin.copy(out,bh+8);
+fs.mkdirSync(path.dirname(OUTPUT),{recursive:true});fs.mkdirSync(path.dirname(REPORT),{recursive:true});fs.writeFileSync(OUTPUT,out);
+const newQuality=triangles.filter(local).map(quality);
+const result={stage:'N16 original-3D-constrained edge optimization; preserve N15 boundary and attributes',inputSHA256:sha(src),outputSHA256:sha(out),triangles:total,regionFaces:originalQuality.length,edgeFlips:history.length,changedNormals:alteredNormalCount,sourcePositionAccessorUnchanged:true,originalSkinWeightsUnchanged:true,sourceFaceAndHairUnchanged:true,skinJoints:63,centerTopologyMode:'edge flips on source N15 3D mesh; not planar polygon replacement',originalRegionQualityMin:Math.min(...originalQuality),newRegionQualityMin:Math.min(...newQuality),originalRegionSkinnyCount:count(originalQuality,.3),newRegionSkinnyCount:count(newQuality,.3),history,limitations:['No native S2 rendering','N11-derived clothing-origin pelvic shell still present','Reoriented topology helps some face quality but does not reconstruct all anatomical creases']};
+fs.writeFileSync(REPORT,JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify({file:OUTPUT,triangles:total,edgeFlips:history.length,oldLowQuality:result.originalRegionSkinnyCount,newLowQuality:result.newRegionSkinnyCount,sha256:result.outputSHA256}));
