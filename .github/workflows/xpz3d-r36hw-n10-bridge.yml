@@ -1,0 +1,60 @@
+name: XPZ3D R36HW N10 skin bridge
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-n10-bridge.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36hw-n9-direct-skin-front-20261128/output/R36HW_N9_DIRECT_SKIN_FRONT.glb
+            experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/
+            .github/workflows/xpz3d-r36hw-n10-bridge.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce N10 open-skin bridge model
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/source/build_r36hw_n10.cjs
+          node experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/source/build_r36hw_n10.cjs
+      - name: Confirm actual geometry and budget
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),root='experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129';
+          const r=JSON.parse(fs.readFileSync(root+'/reports/R36HW_N10_SKIN_BRIDGE.json','utf8'));
+          const b=fs.readFileSync(root+'/output/R36HW_N10_SKIN_BRIDGE.glb');
+          if(r.trianglesBefore!==2098||r.trianglesAfter>2100||r.trianglesAfter<1900||r.sourceJointCount!==63||r.faceTrianglesUnchanged!==644||r.hairTrianglesUnchanged!==294||r.removedUpperCapTriangles!==16||r.removedLegUndercapTriangles<70||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.trianglesAfter,waist:r.boundaryWaistMatched,legs:r.modifiedLegBoundaryVertices,sha:r.outputSha256}));
+          NODE
+      - name: Publish GLB and production report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/output/R36HW_N10_SKIN_BRIDGE.glb experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/reports/R36HW_N10_SKIN_BRIDGE.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): R36HW N10 skin bridge and open pelvic cap model"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N10-skin-bridge
+          path: |
+            experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/output/R36HW_N10_SKIN_BRIDGE.glb
+            experimental/xpz3d/f11/r36hw-n10-skin-bridge-20261129/reports/R36HW_N10_SKIN_BRIDGE.json
