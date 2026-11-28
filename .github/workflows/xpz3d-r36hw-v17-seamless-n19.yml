@@ -1,0 +1,46 @@
+name: XPZ3D V17 integrated N19 fabric
+on:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-v17-seamless-n19.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-v17-n19-seamless
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Restore pinned V14 GLB
+        run: |
+          git fetch --no-tags --depth=1 origin ae22741b095601ce6a6cfe42e12815d7d3fc3453
+          file=experimental/xpz3d/f11/r36hw-athletic-v14-shoulder-20261129/output/R36HW_F11_ATHLETIC_SUIT_V14_SHOULDER.glb
+          mkdir -p "$(dirname "$file")"
+          git show ae22741b095601ce6a6cfe42e12815d7d3fc3453:"$file" > "$file"
+      - name: Build V17 integrated fabric GLB
+        run: |
+          node experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/source/build.cjs \
+            experimental/xpz3d/f11/r36hw-athletic-v14-shoulder-20261129/output/R36HW_F11_ATHLETIC_SUIT_V14_SHOULDER.glb \
+            experimental/xpz3d/f11/r36hw-n20-v10-nude-profile-20261129/output/R36HW_N20_V10_BODY_N19_CENTER.glb \
+            experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/output/R36HW_F11_ATHLETIC_SUIT_V17_SEAMLESS_N19.glb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r36hw-v17-seamless-n19
+          path: |
+            experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/output/*.glb
+            experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/reports/*.json
+      - name: Publish GLB and report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/output experimental/xpz3d/f11/r36hw-athletic-v17-seamless-n19-20261129/reports
+          if ! git diff --cached --quiet; then
+            git commit -m "build(xpz3d): publish integrated V17 N19 fabric"
+            git push origin HEAD:main
+          fi
