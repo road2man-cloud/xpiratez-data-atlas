@@ -50,5 +50,13 @@ jobs:
           git add experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/output experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/reports
           if ! git diff --cached --quiet; then
             git commit -m "build(xpz3d): publish V11 body with N-series center"
-            git push origin HEAD:main
+            for attempt in 1 2 3 4 5; do
+              git fetch --no-tags origin main
+              git rebase origin/main
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+            done
+            echo "Failed to publish without overwriting main after 5 attempts"
+            exit 1
           fi
