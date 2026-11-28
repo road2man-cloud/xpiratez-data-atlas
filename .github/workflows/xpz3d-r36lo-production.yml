@@ -1,0 +1,78 @@
+name: XPZ3D R36LO adaptive full-body production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36lo-adaptive-curvature-20261128/source/**'
+      - '.github/workflows/xpz3d-r36lo-production.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36lo-production
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36ln-reference-contour-20261128
+            experimental/xpz3d/f11/r36lo-adaptive-curvature-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build R36LO integrated full body (2 variants)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          IN="$BASE/r36ln-reference-contour-20261128/output/R36LN_BALANCED_2088_FULL.glb"
+          ROOT="$BASE/r36lo-adaptive-curvature-20261128"
+          mkdir -p "$ROOT/output"
+          node --check "$ROOT/source/build_r36lo.cjs"
+          node "$ROOT/source/build_r36lo.cjs" "$IN" "$ROOT/output/R36LO_DEFINED_2100_FULL.glb" defined
+          node "$ROOT/source/build_r36lo.cjs" "$IN" "$ROOT/output/R36LO_SOFT_2100_FULL.glb" soft
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          for(const mode of ['DEFINED','SOFT']){
+            const root=process.argv[2],base=path.join(root,'R36LO_'+mode+'_2100_FULL');
+            const b=fs.readFileSync(base+'.glb'),r=JSON.parse(fs.readFileSync(base+'.report.json'));
+            if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length||
+               r.totalTriangles!==2100||r.outputTopology.boundary!==0||
+               r.outputTopology.nonManifold!==0||r.skeletonJoints!==63)throw Error('R36LO invalid '+mode);
+            console.log(mode,b.length,r.outputSHA256);
+          }
+          NODE
+      - name: Preserve independent full GLBs
+        uses: actions/upload-artifact@v4
+        with:
+          name: R36LO-2100-integrated
+          path: experimental/xpz3d/f11/r36lo-adaptive-curvature-20261128/output/
+          retention-days: 90
+      - name: Publish GLBs to main without force
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experimental/xpz3d/f11/r36lo-adaptive-curvature-20261128/output
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DIR"
+          if git diff --cached --quiet; then echo "Artifacts unchanged"; exit 0; fi
+          git commit -m "xpz3d: publish R36LO 2100-triangle full character variants"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then
+              echo "R36LO models published"
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
