@@ -12,6 +12,7 @@ main{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 83px)}asid
 <label for="shader">명암 격리 모드</label><select id="shader">
 <option value="pbr">PBR + 노멀맵 (기준)</option>
 <option value="pbr-flat">PBR · 노멀맵 해제</option>
+<option value="neutral">중성 재질 · 컬러/노멀맵 해제</option>
 <option value="classic">Classic · 약한 노멀</option>
 <option value="classic-flat">Classic · 노멀맵 해제</option>
 <option value="albedo">Albedo · 무조명 피부색</option>
@@ -21,7 +22,7 @@ main{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 83px)}asid
 <label for="normalScale">노멀 강도 <span id="normalLabel">0.22</span></label><input id="normalScale" type="range" min="0" max="100" value="22">
 <label for="angle">모델 회전 <span id="angleLabel">0°</span></label><input id="angle" type="range" min="-90" max="90" value="0">
 <button id="reset">정면 카메라 복원</button><button id="capture">현재 실물 화면 PNG 캡처</button>
-<p>비교 규칙: 모델·카메라·조명·노출을 고정하고 모드만 바꿉니다. 무조명에서도 보이는 색 블록은 컬러맵 후보, 무노멀에서 사라지는 경계는 노멀맵 후보입니다. 무노멀에서도 조명에 따라 드러나는 경계는 형상/정점 법선 후보입니다.</p>
+<p>비교 규칙: 모델·카메라·조명·노출을 고정하고 모드만 바꿉니다. 무조명에서도 보이는 색 블록은 컬러맵 후보, 무노멀에서 사라지는 경계는 노멀맵 후보입니다. 무노멀에서도 조명에 따라 드러나는 경계는 형상/정점 법선 후보입니다. 중성 재질에서 사라지면 컬러/재질 원인, 계속 남으면 형상/정점 법선/조명 원인을 의심합니다.</p>
 <p>주의: 이 페이지는 R36LG 원본 복원물이 아닙니다. 저장소에 보존된 R36LE 바이너리를 이용한 독립 진단 도구입니다.</p>
 <div id="status">GLB 다운로드 준비 중</div></aside>
 <div class="view"><canvas id="c"></canvas><div class="chip" id="metric">로딩 중</div></div></main>
@@ -61,6 +62,7 @@ function cloneMat(m,mode){
  if(Array.isArray(m))return m.map(x=>cloneMat(x,mode));
  if(mode==='normal')return new THREE.MeshNormalMaterial({skinning:!!m.skinning,side:m.side});
  if(mode==='wire')return new THREE.MeshBasicMaterial({color:0x77c6d1,wireframe:true,side:THREE.DoubleSide,skinning:!!m.skinning});
+ if(mode==='neutral')return new THREE.MeshPhongMaterial({color:0xb99583,shininess:4,specular:0x080808,side:m.side,transparent:m.transparent,opacity:m.opacity,alphaTest:m.alphaTest||0});
  if(mode==='albedo')return new THREE.MeshBasicMaterial({map:m.map||null,color:m.color?m.color.clone():0xffffff,transparent:m.transparent,opacity:m.opacity,alphaTest:m.alphaTest||0,side:m.side,skinning:!!m.skinning});
  let result;
  if(mode.startsWith('classic'))result=new THREE.MeshPhongMaterial({color:m.color?m.color.clone():0xffffff,map:m.map||null,normalMap:m.normalMap||null,shininess:12,specular:0x171717,side:m.side,transparent:m.transparent,opacity:m.opacity,skinning:!!m.skinning});
