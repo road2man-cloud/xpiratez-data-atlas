@@ -38,7 +38,7 @@ function run(dir){
   need(src.w===sourceRect.width&&src.h===sourceRect.height,'source crop mismatch');
   const pieces=components(alpha.pix,alpha.w,alpha.h);
   const list=[];
-  for(let i=0;i<pieces.length;i++){
+  for(let i=0;i<Math.min(pieces.length,12);i++){
    const c=pieces[i],pad=6;
    const bx=Math.max(0,c.bbox.x-pad),by=Math.max(0,c.bbox.y-pad);
    const bw=Math.min(alpha.w,c.bbox.x+c.bbox.w+pad)-bx;
@@ -61,7 +61,7 @@ function run(dir){
   result.push({side:region.direction,selectedPixels:region.selectedPixels,islandCount:pieces.length,islands:list});
  }
  const output={version:'R36LT-UV-ISLANDS',source:report.source,sourceSHA256:report.sourceSHA256,
-  rule:'4-connected pixel UV mask, minimum 256 pixels',result};
+  rule:'4-connected pixel UV mask, minimum 256 pixels, export 12 largest islands per side',result};
  fs.writeFileSync(path.join(dir,'R36LT_UV_ISLANDS.report.json'),JSON.stringify(output,null,2)+'\n');
  console.log(JSON.stringify(result.map(x=>({side:x.side,islands:x.islandCount,pixels:x.selectedPixels}))));
  return output;
