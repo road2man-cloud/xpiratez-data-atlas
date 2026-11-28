@@ -8,7 +8,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: xpz3d-r36hw-n2
+  group: xpz3d-r36hw-n2-sparse
   cancel-in-progress: false
 jobs:
   build:
