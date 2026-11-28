@@ -7,16 +7,19 @@ export function buildCampaignStartSnapshot({early,facilityRules,difficulty,initi
  if(!base.items||!Array.isArray(base.facilities))throw Error('missing-start-base-stock-or-layout');
  const count=typeof base.randomSoldiers==='number'?base.randomSoldiers:Object.values(base.randomSoldiers||{}).reduce((a,b)=>a+b,0);
  if(count>initialSoldiers.length)throw Error('starting-soldier-realization-unresolved');
- const functions=new Set(),facilities=[];
+ const functions=new Set(),facilities=[],baseLayout=[];
  for(const f of base.facilities){
   const rule=facilityRules.get(f.type);
   if(!rule)throw Error('missing-start-facility-rule:'+f.type);
-  if(Number(f.buildTime||0)>0)continue;
+  const remaining=Number(f.buildTime||0);
+  if(!Number.isSafeInteger(remaining)||remaining<0)throw Error('invalid-start-construction');
+  baseLayout.push({id:f.type,x:f.x,y:f.y,complete:remaining===0,readyDay:remaining});
+  if(remaining>0)continue;
   facilities.push(f.type);
   for(const k of rule.provideBaseFunc||[])functions.add(k);
  }
  for(const k of ['WELL','SHOP','ALKO','LAB','CPU'])if(!functions.has(k))throw Error('missing-expected-start-function:'+k);
  return {sourceFingerprint:early.evidence.fingerprint,items:{...base.items},facilities,
-  functions:[...functions],funds:early.openingCash,difficulty,researched:[...researched],disabled:[...disabled],
+  baseLayout,functions:[...functions],funds:early.openingCash,difficulty,researched:[...researched],disabled:[...disabled],
   soldiers:structuredClone(initialSoldiers),startDate:structuredClone(early.startDate)};
 }
