@@ -89,6 +89,13 @@ function applyCampaignStartCore(input,step,data){
     if(!Number.isSafeInteger(n)||n<1||!Number.isSafeInteger((w.items[id]||0)+n))throw Error('manufacture-bundle-output:'+id);
     w.items[id]=(w.items[id]||0)+n;
    }
+   if(r.recruitment){
+    const limit=data.campaignAssets.forwardRecruitmentLimit;
+    if(!limit)throw Error('recruitment-quarters-unresolved');
+    const hires=w.forwardRecruitments??=[];
+    if(limit.initialPersonnel+hires.length>=limit.initialCapacity)throw Error('recruitment-quarters-full');
+    hires.push({recipe:step.recipe,profile:r.recruitment.profile,soldierType:r.recruitment.soldierType,status:'conditional-transfer-not-simulated'});
+   }
    w.funds-=r.cost;
    (w.forwardManufactureCounts??={})[step.recipe]=1;
    w.forwardManufactureHours=(w.forwardManufactureHours||0)+r.time;
