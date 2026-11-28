@@ -100,6 +100,10 @@ async function openDetail(id,bucket){
  '<h3 class="section-title">장착 가능한 기체 · 슬롯</h3>'+craftsBlock(d.compatibleCrafts)+
  (d.stats?'<h3 class="section-title">지원 스탯</h3><pre class="raw">'+esc(JSON.stringify(d.stats,null,2))+'</pre>':'')+
  '<details><summary>원본 effective craftWeapon 룰 보기</summary><pre class="raw">'+esc(JSON.stringify(d.raw,null,2))+'</pre></details>';
+ const forwardHost=document.createElement('div');$("#detailBody").append(forwardHost);
+ const forwardSpecs=[...new Set([d.launcher?.id,d.clip?.id].filter(Boolean))].map(id=>({kind:'item',id,label:'기체무장 연결 아이템'}));
+ if(!forwardSpecs.length)forwardHost.textContent='2.1 정방향 근거: 대응 아이템 ID 없음. 기체무장 장착 가능성 미확인.';
+ else import('../campaign-forward-evidence-v1.js').then(m=>{if(forwardHost.isConnected)m.mountForwardAssetEvidence(forwardHost,forwardSpecs,{legacy:true});}).catch(e=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 근거 로드 실패: '+e.message;});
  $("#detailDialog").showModal();
 }
 let searchTimer=null;
