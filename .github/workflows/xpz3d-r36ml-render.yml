@@ -26,6 +26,7 @@ jobs:
       - run: |
           set -e
           B=experimental/xpz3d/f11
+          rm -rf "$B/r36ml-s2-cpu-render-20261128/output/ART_DENSE"
           node "$B/r36ml-s2-cpu-render-20261128/source/render_r36ml.cjs" "$B/r36mk-recess-budget-20261128/output/compact/R36MK_ART_DENSE_2100_COMPACT_FULL.glb" "$B/r36ml-s2-cpu-render-20261128/output/ART_DENSE"
       - uses: actions/upload-artifact@v4
         with:
