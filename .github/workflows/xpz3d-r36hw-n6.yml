@@ -1,0 +1,64 @@
+name: XPZ3D R36HW N6 pristine-surface rebase
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/source/**'
+      - '.github/workflows/xpz3d-r36hw-n6.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kp/reference/R36HW_F11_CLOTHED.glb
+            experimental/xpz3d/f11/r36hw-n3-curvature-20261128/reports/R36HW_N3_CURVATURE.json
+            experimental/xpz3d/f11/r36hw-n5-skin-seams-20261128/output/R36HW_N5_SEAM_LINK.glb
+            experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/
+            .github/workflows/xpz3d-r36hw-n6.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate N6 from HW original topology
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/source/build_r36hw_n6.cjs
+          node experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/source/build_r36hw_n6.cjs
+      - name: Confirm original preservation and changed coordinates
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128';
+          const r=JSON.parse(fs.readFileSync(p+'/reports/R36HW_N6_REBASED_SURFACE.json','utf8'));
+          if(r.triangles!==2080||r.originalSourcePantsVertices!==92||r.centroidVerticesReconstructed!==82||r.totalPantsVertices!==174||r.unchangedSourceSkeletonJoints!==63||!r.faceAndHairGeometryUnchanged||r.modifiedVertices<80)throw Error(JSON.stringify(r));
+          const b=fs.readFileSync(p+'/output/R36HW_N6_REBASED_SURFACE.glb');
+          if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('Invalid N6');
+          console.log(JSON.stringify({triangles:r.triangles,reconstructed:r.centroidVerticesReconstructed,shift:r.deltaFromN5MaxMeters,sha256:r.outputSha256}));
+          NODE
+      - name: Publish N6 model and report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/output/R36HW_N6_REBASED_SURFACE.glb experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/reports/R36HW_N6_REBASED_SURFACE.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): publish N6 original-surface rebase GLB"
+            for attempt in 1 2 3 4; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N6-surface-rebase
+          path: |
+            experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/output/R36HW_N6_REBASED_SURFACE.glb
+            experimental/xpz3d/f11/r36hw-n6-surface-rebase-20261128/reports/R36HW_N6_REBASED_SURFACE.json
