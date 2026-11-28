@@ -32,11 +32,35 @@ assert.equal(exactStateHash(worlds.get(0)),nodes[0].stateHash);
 for(const [i,n] of nodes.entries()){assert.equal(n.id,i);const k=key([n.firstRoot,n.stateHash]);assert(!seen.has(k));seen.set(k,i);}
 for(const [i,e] of edges.entries()){assert.equal(e.id,i);if(!outgoing.has(e.from))outgoing.set(e.from,[]);outgoing.get(e.from).push(e);}
 const before={nodes:nodes.length,edges:edges.length,expanded:g.summary.expanded};
-const wanted=new Set(),samples=new Set(),purchaseTargets=new Set();
+const wanted=new Set(),samples=new Set(),purchaseTargets=new Set(),awardHints=new Map(),awardByTarget=new Map();
+// Include free-research and lookup sources as alternatives, not prerequisites.
+// Limit scheduler hints to accessible, no-sample lab sources; the full
+// forward engine still determines whether each actual action is legal.
+for(const [source,r] of pairs(rules)){
+ if(!(r.cost>0)||r.needItem||arr(r.requires).length)continue;
+ for(const [target,kind,guard] of [
+  ...arr(r.getOneFree).map(id=>[id,"FREE_RESEARCH",null]),
+  ...(r.lookup?[[r.lookup,"LOOKUP",null]]:[]),
+  ...pairs(r.getOneFreeProtected).flatMap(([k,v])=>arr(v).map(id=>[id,"PROTECTED_FREE",k]))
+ ]){
+  if(!awardByTarget.has(target))awardByTarget.set(target,[]);
+  awardByTarget.get(target).push({source,kind,guard});
+ }
+}
 function hint(id){
  if(wanted.has(id)||!rules[id])return;wanted.add(id);const r=rules[id];
  for(const k of [...arr(r.dependencies),...arr(r.requires)])hint(k);
- if(r.needItem){const item=r.neededItem||id;samples.add(item);const b=catalog.buys[item];if(b){purchaseTargets.add(item);for(const k of arr(b.requires))hint(k);}}
+ if(r.needItem){
+  const item=r.neededItem||id;samples.add(item);
+  const b=catalog.buys[item];
+  // An item that can only be bought after its own research is not a
+  // first-acquisition source. Never turn a cycle into a fabricated purchase.
+  if(b&&!arr(b.requires).includes(id)){purchaseTargets.add(item);for(const k of arr(b.requires))hint(k);}
+  const choices=(awardByTarget.get(id)||[]).filter(x=>x.source!==id&&x.guard!==id).sort((a,b)=>Number(!!a.guard)-Number(!!b.guard)||arr(rules[a.source].requiresBaseFunc).length-arr(rules[b.source].requiresBaseFunc).length||arr(rules[a.source].dependencies).length-arr(rules[b.source].dependencies).length||rules[a.source].cost-rules[b.source].cost||a.source.localeCompare(b.source));
+  // Bounded hint, not an exclusion of other free sources.
+  const selected=choices.slice(0,2);
+  if(selected.length){awardHints.set(id,selected);for(const x of selected){hint(x.source);if(x.guard)hint(x.guard);}}
+ }
 }
 for(const x of goals){
  if(x.kind==="research")hint(x.id);
@@ -90,7 +114,11 @@ function nextPriority(n,e){
  const dest=nodes[e.to],a=e.action;
  if(allGoals(dest))return 1000000;
  let p=progress(dest)-progress(n);
- if(n.pendingFree&&a.type==="freeResearch")return 10000+p;
+ // A before-source free reward delays the parent research completion.
+ // Its laboratory action must remain selectable even though it has not
+ // yet added a completed research flag.
+ if(!n.pendingFree&&dest.pendingFree&&wanted.has(dest.pendingFree.source))return 5000+p;
+ if(n.pendingFree&&a.type==="freeResearch")return 10000+p*100;
  if(n.pendingDeliveries.length&&a.type==="sourceResearchDelivery")return 10000+p;
  if(p<=0)return -Infinity;
  // Prefer actual laboratory completions, then source-backed item actions.
@@ -131,7 +159,7 @@ g.summary={nodes:nodes.length,edges:edges.length,expanded:nodes.filter(n=>n.stat
 g.budget={...g.budget,maxExpanded:g.summary.expanded,maxNodes:Math.max(g.budget.maxNodes,nodes.length)};
 const previousRun=g.chainRun||g.goalRun||null;
 g.chainHistory=[...(g.chainHistory||[]),...(g.chainRun?[g.chainRun]:[])];
-g.chainRun={schema:"ATLAS_FORWARD_CHAIN_RUN_V1",label,goals,base:baseName,baseSha256:sha(bytes),previousRun:previousRun?{schema:previousRun.schema,label:previousRun.label||null,goal:previousRun.goal||null}:null,schedulerSha256:sha(fs.readFileSync("tools/build-overcap-forward-chain-v2.mjs","utf8").replace(/\r\n/g,"\n")),maxSteps,hintResearch:sort(wanted),hintSamples:sort(samples),results,normalizationComplete:false,actualGameCertified:false};
+g.chainRun={schema:"ATLAS_FORWARD_CHAIN_RUN_V1",label,goals,base:baseName,baseSha256:sha(bytes),previousRun:previousRun?{schema:previousRun.schema,label:previousRun.label||null,goal:previousRun.goal||null}:null,schedulerSha256:sha(fs.readFileSync("tools/build-overcap-forward-chain-v2.mjs","utf8").replace(/\r\n/g,"\n")),maxSteps,hintResearch:sort(wanted),hintSamples:sort(samples),hintAwardSources:Object.fromEntries(awardHints),results,normalizationComplete:false,actualGameCertified:false};
 const out=gzipSync(JSON.stringify(g),{level:9});
 const report={schema:g.schema,artifact:stem+".json.gz",artifactSha256:sha(out),inputs:g.inputs,previous:before,...g.summary,chainRun:g.chainRun,normalizationComplete:false,actualGameCertified:false};
 fs.writeFileSync(stem+".json.gz.tmp",out);fs.writeFileSync(stem+"-summary.json.tmp",JSON.stringify(report,null,2)+"\n");

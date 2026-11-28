@@ -1,0 +1,201 @@
+{
+  "schema": "ATLAS_FORWARD_CAMPAIGN_RESEARCH_V2",
+  "artifact": "tools/data/overcap-forward-research-v2-chain-steam-a.json.gz",
+  "artifactSha256": "5552e049863f50647f9892626a01f42a32e3710ed20b5a8c8ed59ccb1e475699",
+  "inputs": {
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+    "supplySha256": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+    "engineFiles": {
+      "tools/atlas-overcap-forward-research-v2.mjs": "533dfbc273ae31b46115257fe2fa5ea149a63b93da47602652760400ecc0bc58",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/build-overcap-forward-supply-catalog-v2.mjs": "9798cdbaa7b637e16a60faafb810dcf2fd3a05423d4bbc205c2bfc6d802d67ca",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "previous": {
+    "nodes": 11126,
+    "edges": 24797,
+    "expanded": 414
+  },
+  "nodes": 11189,
+  "edges": 24931,
+  "expanded": 415,
+  "openUnexpanded": 10774,
+  "openNoSupportedSuccessor": 0,
+  "distinctResearch": 167,
+  "byRoot": {
+    "STR_JACKSTOWN_SCOUTING": {
+      "states": 2677,
+      "expanded": 104,
+      "open": 2573,
+      "maxLabDepth": 36,
+      "distinctResearch": 138
+    },
+    "STR_WAT_DO": {
+      "states": 2567,
+      "expanded": 104,
+      "open": 2463,
+      "maxLabDepth": 34,
+      "distinctResearch": 134
+    },
+    "STR_RECRUIT_PEASANTS": {
+      "states": 2793,
+      "expanded": 104,
+      "open": 2689,
+      "maxLabDepth": 36,
+      "distinctResearch": 134
+    },
+    "STR_INSPECT_MACHINERY": {
+      "states": 3151,
+      "expanded": 102,
+      "open": 3049,
+      "maxLabDepth": 44,
+      "distinctResearch": 167
+    }
+  },
+  "byAction": {
+    "research": 2994,
+    "freeResearch": 101,
+    "sourceEventItems": 6435,
+    "eventResearch": 14214,
+    "missionResearch": 737,
+    "advanceMonth": 187,
+    "sourceResearchDelivery": 126,
+    "sourceBuildFacility": 124,
+    "sourceManufactureItem": 5,
+    "sourceBuySample": 8
+  },
+  "failed": 0,
+  "sampleResearchEdges": 36,
+  "sampleResearchIds": [
+    "STR_SCAVENGER_OUTFIT",
+    "STR_SC_WIRE",
+    "STR_SLAVE"
+  ],
+  "chainRun": {
+    "schema": "ATLAS_FORWARD_CHAIN_RUN_V1",
+    "label": "steam-a",
+    "goals": [
+      {
+        "kind": "research",
+        "id": "STR_STEAM_POWER"
+      }
+    ],
+    "base": "chain-foundation-d",
+    "baseSha256": "bfc251e0984906484292da12becd9d32558ab1acf5577ff6487c37e27a481d0c",
+    "previousRun": {
+      "schema": "ATLAS_FORWARD_CHAIN_RUN_V1",
+      "label": "foundation-d",
+      "goal": null
+    },
+    "schedulerSha256": "3705f8393a4205b8a7d20a6327e029c1c53a2ee8f1e4470f920c01fcd00d1a2d",
+    "maxSteps": 12,
+    "hintResearch": [
+      "STR_BASIC_INCENDIARIES",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_CONTACT_TIGER_TRANSPORT",
+      "STR_CUNNING",
+      "STR_DIVERGING_PATHS",
+      "STR_EXCAVATION",
+      "STR_EXPLORE_TUNNELS",
+      "STR_GUN_SHOPPING",
+      "STR_HARDWARE_SHOPPING",
+      "STR_INSPECT_MACHINERY",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_KULTUR",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_MELEE_SUMMARY",
+      "STR_PIRATE_LIFE",
+      "STR_PIRATE_STYLE",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_PRIMITIVE_WEAPONS_2",
+      "STR_RECRUITMENT",
+      "STR_SCHOOLING_1",
+      "STR_SMITHING",
+      "STR_SS_OPERATIONS",
+      "STR_STEAM_POWER",
+      "STR_SURVIVAL",
+      "STR_THE_PHARMACIST",
+      "STR_TRUCKS",
+      "STR_VIOLENCE",
+      "STR_WAT_DO",
+      "STR_WEIRDNESS",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ",
+      "STR_WRENCH"
+    ],
+    "hintSamples": [
+      "STR_PIRATE_LIFE",
+      "STR_WRENCH"
+    ],
+    "hintAwardSources": {
+      "STR_PIRATE_LIFE": [
+        {
+          "source": "STR_WAT_DO",
+          "kind": "LOOKUP",
+          "guard": null
+        }
+      ],
+      "STR_WRENCH": [
+        {
+          "source": "STR_TRUCKS",
+          "kind": "FREE_RESEARCH",
+          "guard": null
+        }
+      ]
+    },
+    "results": [
+      {
+        "root": "STR_INSPECT_MACHINERY",
+        "seed": 8573,
+        "final": 8626,
+        "status": "OPEN",
+        "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT",
+        "selected": [
+          19340
+        ],
+        "missing": [
+          "STR_STEAM_POWER",
+          "STR_WRENCH",
+          "STR_TRUCKS",
+          "STR_SS_OPERATIONS"
+        ],
+        "milestones": [
+          {
+            "kind": "research",
+            "id": "STR_STEAM_POWER",
+            "status": "OPEN",
+            "missingDependencies": [
+              "STR_WRENCH"
+            ],
+            "missingFunctions": [],
+            "missingSample": null
+          }
+        ],
+        "baseFunctions": [
+          "FARM",
+          "SHOP"
+        ],
+        "facilities": [
+          "STR_HYDROPONICS"
+        ],
+        "finalStateHash": "3267afc27fd26d52e22da0e1814696781225fc8e6bc3f15e1448c7e50cce6178"
+      }
+    ],
+    "normalizationComplete": false,
+    "actualGameCertified": false
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}

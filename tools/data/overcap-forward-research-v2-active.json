@@ -1,10 +1,10 @@
 {
   "schema": "ATLAS_FORWARD_ACTIVE_CHECKPOINT_V2",
   "graph": {
-    "baseArg": "chain-foundation-d",
-    "path": "tools/data/overcap-forward-research-v2-chain-foundation-d.json.gz",
-    "summaryPath": "tools/data/overcap-forward-research-v2-chain-foundation-d-summary.json",
-    "sha256": "bfc251e0984906484292da12becd9d32558ab1acf5577ff6487c37e27a481d0c"
+    "baseArg": "chain-steam-e",
+    "path": "tools/data/overcap-forward-research-v2-chain-steam-e.json.gz",
+    "summaryPath": "tools/data/overcap-forward-research-v2-chain-steam-e-summary.json",
+    "sha256": "f33b18af6dbe6786addff8547193ee4659262d1e848e15e0f719772c7abbed22"
   },
   "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
   "inputs": {
@@ -28,56 +28,56 @@
   },
   "itemIndexSha256": "667be887c0c2117b3f8b9c7b8479971720c7e66195082a31e39cad20d0e7eb0b",
   "counts": {
-    "nodes": 11126,
-    "edges": 24797,
-    "expanded": 414,
-    "openUnexpanded": 10712,
+    "nodes": 12546,
+    "edges": 27762,
+    "expanded": 453,
+    "openUnexpanded": 12093,
     "openNoSupportedSuccessor": 0,
-    "distinctResearch": 167,
+    "distinctResearch": 173,
     "byRoot": {
       "STR_JACKSTOWN_SCOUTING": {
-        "states": 2677,
-        "expanded": 104,
-        "open": 2573,
-        "maxLabDepth": 36,
-        "distinctResearch": 138
+        "states": 3081,
+        "expanded": 115,
+        "open": 2966,
+        "maxLabDepth": 42,
+        "distinctResearch": 161
       },
       "STR_WAT_DO": {
-        "states": 2567,
-        "expanded": 104,
-        "open": 2463,
-        "maxLabDepth": 34,
-        "distinctResearch": 134
+        "states": 2983,
+        "expanded": 115,
+        "open": 2868,
+        "maxLabDepth": 40,
+        "distinctResearch": 159
       },
       "STR_RECRUIT_PEASANTS": {
-        "states": 2793,
-        "expanded": 104,
-        "open": 2689,
-        "maxLabDepth": 36,
-        "distinctResearch": 134
+        "states": 3197,
+        "expanded": 115,
+        "open": 3082,
+        "maxLabDepth": 42,
+        "distinctResearch": 159
       },
       "STR_INSPECT_MACHINERY": {
-        "states": 3088,
-        "expanded": 101,
-        "open": 2987,
-        "maxLabDepth": 43,
-        "distinctResearch": 167
+        "states": 3284,
+        "expanded": 107,
+        "open": 3177,
+        "maxLabDepth": 46,
+        "distinctResearch": 173
       }
     },
     "byAction": {
-      "research": 2973,
-      "freeResearch": 101,
-      "sourceEventItems": 6403,
-      "eventResearch": 14138,
-      "missionResearch": 734,
-      "advanceMonth": 186,
-      "sourceResearchDelivery": 126,
-      "sourceBuildFacility": 123,
+      "research": 3457,
+      "freeResearch": 115,
+      "sourceEventItems": 7129,
+      "eventResearch": 15734,
+      "missionResearch": 833,
+      "advanceMonth": 207,
+      "sourceResearchDelivery": 130,
+      "sourceBuildFacility": 144,
       "sourceManufactureItem": 5,
       "sourceBuySample": 8
     },
     "failed": 0,
-    "sampleResearchEdges": 35,
+    "sampleResearchEdges": 38,
     "sampleResearchIds": [
       "STR_SCAVENGER_OUTFIT",
       "STR_SC_WIRE",
@@ -87,10 +87,10 @@
   "rootCursors": [
     {
       "root": "STR_JACKSTOWN_SCOUTING",
-      "finalNode": 9378,
-      "stateHash": "87e71069c7f3be216d50ca991fcaecdb9b1b9173d798806729d593d337b40173",
-      "labDepth": 35,
-      "completedResearch": 76,
+      "finalNode": 11675,
+      "stateHash": "c739362ed2ea346ac83cb0f32d1c88b0e837b68663d0b2b0e4940fa480c8eb0a",
+      "labDepth": 42,
+      "completedResearch": 97,
       "month": 0,
       "facilities": [
         "STR_HYDROPONICS"
@@ -102,7 +102,7 @@
       "pendingFree": false,
       "pendingDeliveries": 0,
       "status": "CONDITIONAL_CURSOR",
-      "lastRun": "foundation-b",
+      "lastRun": "steam-c",
       "label": "근처 마을 방문",
       "milestones": [
         {
@@ -133,16 +133,16 @@
         {
           "kind": "research",
           "id": "STR_STEAM_POWER",
-          "reached": false
+          "reached": true
         }
       ]
     },
     {
       "root": "STR_WAT_DO",
-      "finalNode": 10208,
-      "stateHash": "f88917de7e9f205b97485fb762295d8676a659c902cc8353db71410c8d98790f",
-      "labDepth": 33,
-      "completedResearch": 72,
+      "finalNode": 12091,
+      "stateHash": "3d16696cafaae532f38bb5061b75f071aff53fda5edcaaf04c6df35a6846dcf0",
+      "labDepth": 40,
+      "completedResearch": 93,
       "month": 0,
       "facilities": [
         "STR_HYDROPONICS"
@@ -154,7 +154,7 @@
       "pendingFree": false,
       "pendingDeliveries": 0,
       "status": "CONDITIONAL_CURSOR",
-      "lastRun": "foundation-c",
+      "lastRun": "steam-d",
       "label": "회의 소집",
       "milestones": [
         {
@@ -185,16 +185,16 @@
         {
           "kind": "research",
           "id": "STR_STEAM_POWER",
-          "reached": false
+          "reached": true
         }
       ]
     },
     {
       "root": "STR_RECRUIT_PEASANTS",
-      "finalNode": 11016,
-      "stateHash": "38cdfcb914fd059d5a1052d694a7d224e39e4a022fa5514ac239ceecc63e71e6",
-      "labDepth": 35,
-      "completedResearch": 76,
+      "finalNode": 12495,
+      "stateHash": "b2edbcb8a37e19f43651ecfb0cfa79e5b9f522841658b3949b6e0fa8d70ae77a",
+      "labDepth": 42,
+      "completedResearch": 97,
       "month": 0,
       "facilities": [
         "STR_HYDROPONICS"
@@ -206,7 +206,7 @@
       "pendingFree": false,
       "pendingDeliveries": 0,
       "status": "CONDITIONAL_CURSOR",
-      "lastRun": "foundation-d",
+      "lastRun": "steam-e",
       "label": "지역 농부 고용",
       "milestones": [
         {
@@ -237,16 +237,16 @@
         {
           "kind": "research",
           "id": "STR_STEAM_POWER",
-          "reached": false
+          "reached": true
         }
       ]
     },
     {
       "root": "STR_INSPECT_MACHINERY",
-      "finalNode": 8573,
-      "stateHash": "f1142993530893090b5e9d84e436eb4083a1898b4251e69486332a4761c48593",
-      "labDepth": 42,
-      "completedResearch": 98,
+      "finalNode": 11272,
+      "stateHash": "7759512906cee73e594bf163a87862bb9d5c2a25010ab8eb4a729d6c99ef7138",
+      "labDepth": 46,
+      "completedResearch": 107,
       "month": 0,
       "facilities": [
         "STR_HYDROPONICS"
@@ -258,7 +258,7 @@
       "pendingFree": false,
       "pendingDeliveries": 0,
       "status": "CONDITIONAL_CURSOR",
-      "lastRun": "foundation-a",
+      "lastRun": "steam-b",
       "label": "기계류 조사",
       "milestones": [
         {
@@ -289,7 +289,7 @@
         {
           "kind": "research",
           "id": "STR_STEAM_POWER",
-          "reached": false
+          "reached": true
         }
       ]
     }
@@ -366,34 +366,54 @@
       "selectedEdges": 12,
       "status": "OPEN",
       "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT"
-    }
-  ],
-  "openSampleSources": [
+    },
     {
-      "item": "STR_WRENCH",
-      "research": "STR_WRENCH",
-      "koName": "렌치",
-      "roots": [
-        "STR_JACKSTOWN_SCOUTING",
-        "STR_WAT_DO",
-        "STR_RECRUIT_PEASANTS",
-        "STR_INSPECT_MACHINERY"
-      ],
-      "itemIndexPresent": true,
-      "itemSupplyPresent": false,
-      "indexedPurchase": null,
-      "indexedRecipes": [],
-      "indexedFixedEvents": [],
-      "itemFields": {
-        "costBuy": 1500,
-        "requires": [
-          "STR_WRENCH"
-        ],
-        "requiresBuy": []
-      },
-      "sourceStatus": "OPEN_NOT_ACQUIRED"
+      "root": "STR_INSPECT_MACHINERY",
+      "run": "steam-a",
+      "seed": 8573,
+      "finalNode": 8626,
+      "selectedEdges": 1,
+      "status": "OPEN",
+      "reason": "NO_PROGRESS_EDGE_WITHIN_MILESTONE_HINT"
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "run": "steam-b",
+      "seed": 8626,
+      "finalNode": 11272,
+      "selectedEdges": 6,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "run": "steam-c",
+      "seed": 9378,
+      "finalNode": 11675,
+      "selectedEdges": 12,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_WAT_DO",
+      "run": "steam-d",
+      "seed": 10208,
+      "finalNode": 12091,
+      "selectedEdges": 12,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED",
+      "reason": null
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "run": "steam-e",
+      "seed": 11016,
+      "finalNode": 12495,
+      "selectedEdges": 12,
+      "status": "CONDITIONAL_ALL_MILESTONES_REACHED",
+      "reason": null
     }
   ],
+  "openSampleSources": [],
   "normalizationComplete": false,
   "actualGameCertified": false,
   "scope": "Development-only cumulative conditional graph. Not a final career admission receipt. Research and actual facility construction remain distinct."
