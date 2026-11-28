@@ -88,7 +88,8 @@ function applyCampaignStartCore(input,step,data){
   if(!script)throw Error('event-script-not-indexed');
   const verdict=eventScriptVerdict({...script,eventId:step.event},input,{mode:'current'});
   if(verdict.blocked.length||verdict.unknown.length)throw Error([...verdict.blocked,...verdict.unknown].join('; '));
-  // Existing event verifier must see the pre-event inventory. Reward-dependent\n  // automatic research ordering remains unresolved and never certified.\n  const result=applyOriginWitnessStep(input,step,data);
+  // Existing event verifier must see the pre-event inventory.
+  const result=applyOriginWitnessStep(input,step,data);
   if(!result.ok)throw Error(result.reason);
   // Existing verifier does not apply event inventory. Do not rerun a grant
   // or allow newly received items to satisfy that event's own trigger.
