@@ -1,0 +1,54 @@
+name: XPZ3D R36HW N19 actual lower pelvic bridge
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/source/build_r36hw_n19.cjs'
+      - '.github/workflows/xpz3d-r36hw-n19.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128/source/glb_io.cjs
+            experimental/xpz3d/f11/r36hw-n18-visible-resurface-20261129/output/R36HW_N18_FRONT_SKIN_RESTORED.glb
+            experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/
+            .github/workflows/xpz3d-r36hw-n19.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce N19 lower pelvic surface geometry
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/source/build_r36hw_n19.cjs
+          node experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/source/build_r36hw_n19.cjs
+      - name: Check actual bound fit and GLB structure
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),p='experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/reports/R36HW_N19_LOWER_SKIN_BRIDGE.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8')),b=fs.readFileSync('experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/output/R36HW_N19_LOWER_SKIN_BRIDGE.glb');
+          if(r.trianglesAfter!==2099||r.rigJoints!==63||r.lowerBoundaryCandidates<23||r.lowerBoundaryMoved<5||r.meanLegGapAfterMeters>r.meanLegGapBeforeMeters||!r.sourceFaceHairUnmodified||!r.sourceUVAndBoneWeightsUnmodified||r.minFaceAreaSqMeters<1e-10||b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({tris:r.trianglesAfter,lowerMoved:r.lowerBoundaryMoved,gapBefore:r.meanLegGapBeforeMeters,gapAfter:r.meanLegGapAfterMeters,sha:r.outputSHA256}));
+          NODE
+      - name: Publish real N19 geometry
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/output/R36HW_N19_LOWER_SKIN_BRIDGE.glb experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/reports/R36HW_N19_LOWER_SKIN_BRIDGE.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N19 local skin-to-leg seam aligned GLB"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
