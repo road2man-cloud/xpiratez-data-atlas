@@ -117,6 +117,9 @@
       tr.appendChild(td);
       controls.detailFields.appendChild(tr);
     }
+    const fHost=document.createElement('div');fHost.id='forwardItemEvidence';
+    controls.detail.querySelector('#forwardItemEvidence')?.remove();controls.detail.append(fHost);
+    import('../campaign-forward-evidence-v1.js').then(m=>{if(fHost.isConnected)m.mountForwardAssetEvidence(fHost,[{kind:'item',id:item.id,label:'아이템',research:Array.isArray(item.fields.requires)?item.fields.requires:[]}]);}).catch(e=>{if(fHost.isConnected)fHost.textContent='정방향 근거 로드 실패: '+e.message;});
     controls.detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   function renderCompare() {
