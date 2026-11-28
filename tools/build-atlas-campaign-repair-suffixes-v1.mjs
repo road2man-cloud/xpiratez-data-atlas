@@ -139,22 +139,41 @@ if(scenarioCountry){
  Object.keys(s.eventWeights||{}).length!==1||!equal(s.eventWeights[0],{[eventId]:100}))throw Error('start-country-reward-source-mismatch:'+scenarioCountry);
 }
 const deterministicManufacture={};
+const recruitmentManufactureIds=new Set(['STR_SPY_DAMSEL_RECRUITMENT','STR_HYBRID_OF_TWILIGHT_RECRUITMENT']);
 if(args.forwardManufacture==='1'){
  const allowed=new Set(['name','type','category','requires','requiresBaseFunc','space','time','cost','requiredItems','producedItems','listOrder']);
  for(const [id,r] of Object.entries(manufacture)){
-  if(Object.keys(r).some(k=>!allowed.has(k)))continue;
+  const isRecruitment=args.forwardRecruitment==='1'&&recruitmentManufactureIds.has(id);
+  const recruitKeys=new Set(['spawnedPersonType','spawnedSoldier','refund']);
+  if(Object.keys(r).some(k=>!allowed.has(k)&&!(isRecruitment&&recruitKeys.has(k))))continue;
+  if(isRecruitment&&(!r.spawnedPersonType||!r.spawnedSoldier||r.refund!==true))throw Error('recruitment-manufacture-source-mismatch:'+id);
   const outputs=r.producedItems??{[id]:1},materials=r.requiredItems??{};
   const cost=r.cost??0,time=r.time??0,space=r.space??0;
   if(![cost,time,space].every(v=>Number.isSafeInteger(v)&&v>=0)||!Object.keys(outputs).length)continue;
   if(![...Object.entries(outputs),...Object.entries(materials)].every(([k,v])=>items[k]&&Number.isSafeInteger(v)&&v>0))continue;
   const requires=r.requires??[],functions=r.requiresBaseFunc??[];
   if(!Array.isArray(requires)||!Array.isArray(functions)||requires.some(k=>!d.researchRules[k]))continue;
-  deterministicManufacture[id]={requires,functions,cost,time,space,materials,outputs};
+  let recruitment=null;
+  if(isRecruitment){
+   const profile=d.profiles.find(p=>p.sourceType==='manufacture'&&p.sourceId===id&&p.soldierType===r.spawnedPersonType);
+   const ordered=o=>JSON.stringify(Object.entries(o||{}).sort(([a],[b])=>a.localeCompare(b)));
+   if(!profile||ordered(profile.acquisitionRequiredItems)!==ordered(materials)||Number(profile.cost||0)!==cost||
+      JSON.stringify([...(profile.requires||[])].sort())!==JSON.stringify([...requires].sort()))throw Error('recruitment-manufacture-profile-mismatch:'+id);
+   recruitment={profile:profile.id,soldierType:r.spawnedPersonType,refundOnCancellation:r.refund};
+  }
+  deterministicManufacture[id]={requires,functions,cost,time,space,materials,outputs,...(recruitment?{recruitment}:{})};
  }
 }
 d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents,deterministicManufacture};
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
+if(args.forwardRecruitment==='1'){
+ const personnel=[base.randomSoldiers,base.scientists,base.engineers];
+ if(!personnel.every(n=>Number.isSafeInteger(n)&&n>=0)||base.soldiers?.length||base.transfers?.length)throw Error('recruitment-opening-personnel-unmodeled');
+ const capacities=complete.map(f=>facilities[f.id]?.personnel??0);
+ if(!capacities.every(n=>Number.isSafeInteger(n)&&n>=0))throw Error('recruitment-quarters-invalid');
+ d.campaignAssets.forwardRecruitmentLimit={initialPersonnel:personnel.reduce((a,b)=>a+b,0),initialCapacity:capacities.reduce((a,b)=>a+b,0)};
+}
 const snapshot={sourceFingerprint:d.meta.source.metadataSha256,items:base.items,facilities:complete.map(f=>f.id),functions,baseLayout:layout,
  funds:0,difficulty:Number(args.difficulty??1),researched:[],disabled:[],soldiers:[],startDate:date,
  ...(scenarioRegion?{regions:[scenarioRegion]}:{}),...(scenarioCountry?{countries:[scenarioCountry]}:{}),
@@ -188,7 +207,7 @@ if(args.forwardOut){
    eventRoutes.push({event,research:id,script:indexed,sourceSha256:files['Piratez_Events.rul'],timer:e.timer??null,timerRandom:e.timerRandom??null,points:e.points??0});
   }
  }
- const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',manufacturing:args.forwardManufacture==='1',missions:args.forwardMissions==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',manufacturing:args.forwardManufacture==='1',missions:args.forwardMissions==='1',manufactureFocus:args.forwardManufactureFocus||'all',fixedEventFilter:args.forwardFixedEventFilter?args.forwardFixedEventFilter.split(','):null,maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
  const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files,initialFundingEvidence:{raw:initialFundingRule,modeledOpeningFunds:snapshot.funds,reason:'engine-8.7.1-country-funding-initialization-unconfirmed'}});
  fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
  console.log(JSON.stringify(result.summary));process.exit(0);
