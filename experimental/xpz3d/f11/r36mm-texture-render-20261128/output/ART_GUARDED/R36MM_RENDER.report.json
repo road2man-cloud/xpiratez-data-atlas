@@ -1,0 +1,483 @@
+{
+  "version": "R36MM",
+  "renderer": "Node CPU actual GLB with embedded glTF color/normal/ORM textures and S2-inspired illumination (NOT native S2)",
+  "sourceFile": "R36MK_ART_GUARDED_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "1baf05b78cd655fd4ea4dbd0258591f1e40d2f96b4eb774c15c4287c9e32dfd3",
+  "totalTriangles": 2100,
+  "bodyTriangles": 1132,
+  "otherTriangles": 968,
+  "meshCount": 6,
+  "bounds": {
+    "min": [
+      -0.7137420773506165,
+      -0.20468394458293915,
+      0.013121914118528366
+    ],
+    "max": [
+      0.7030143737792969,
+      0.1605721265077591,
+      1.9795557260513306
+    ],
+    "center": [
+      -0.00536385178565979,
+      -0.022055909037590027,
+      0.9963388200849295
+    ],
+    "size": [
+      1.4167564511299133,
+      0.36525607109069824,
+      1.9664338119328022
+    ]
+  },
+  "decodedImages": 10,
+  "materials": [
+    {
+      "name": "face",
+      "base": false,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": null,
+      "normalResolution": null
+    },
+    {
+      "name": "hair",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        256,
+        256
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "jacket",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "pants",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "boots",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "gloves",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "trim",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "hardware",
+      "base": false,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": null,
+      "normalResolution": null
+    },
+    {
+      "name": "skin",
+      "base": false,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": null,
+      "normalResolution": null
+    },
+    {
+      "name": "webbing",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "gear",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "eye_white",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        192,
+        96
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "eye",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        192,
+        96
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "skull",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "thigh_strap",
+      "base": true,
+      "normal": false,
+      "roughness": false,
+      "occlusion": false,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        384,
+        288
+      ],
+      "normalResolution": null
+    },
+    {
+      "name": "R36KP_BAKED_SKIN_2048",
+      "base": true,
+      "normal": true,
+      "roughness": true,
+      "occlusion": true,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        2048,
+        2048
+      ],
+      "normalResolution": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "R36MH_BUDGET_TRANSFER_GUARDED",
+      "base": true,
+      "normal": true,
+      "roughness": true,
+      "occlusion": true,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        2048,
+        2048
+      ],
+      "normalResolution": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "R36MI_CONTROL_CURVES_SCULPT",
+      "base": true,
+      "normal": true,
+      "roughness": true,
+      "occlusion": true,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        2048,
+        2048
+      ],
+      "normalResolution": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "R36MJ_PHYSICAL_DEPTH_LAYER_SCULPT",
+      "base": true,
+      "normal": true,
+      "roughness": true,
+      "occlusion": true,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        2048,
+        2048
+      ],
+      "normalResolution": [
+        2048,
+        2048
+      ]
+    },
+    {
+      "name": "R36MK_BUDGET_TRANSFER_GUARDED",
+      "base": true,
+      "normal": true,
+      "roughness": true,
+      "occlusion": true,
+      "alphaMode": "OPAQUE",
+      "baseResolution": [
+        2048,
+        2048
+      ],
+      "normalResolution": [
+        2048,
+        2048
+      ]
+    }
+  ],
+  "syntheticCamera": true,
+  "syntheticLighting": true,
+  "images": [
+    {
+      "view": "front",
+      "mode": "clay",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2098,
+      "projectedDegenerate": 2,
+      "fragmentWrites": 202113,
+      "colorMapPixels": 0,
+      "normalMapPixels": 0,
+      "aoPixels": 0,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_CLAY_FRONT.png",
+      "bytes": 34077,
+      "sha256": "771de378142bb8fb919662bfbf00a1df8e821839e49ee5f97ee962a67be4f548"
+    },
+    {
+      "view": "oblique",
+      "mode": "clay",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 211376,
+      "colorMapPixels": 0,
+      "normalMapPixels": 0,
+      "aoPixels": 0,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_CLAY_OBLIQUE.png",
+      "bytes": 31916,
+      "sha256": "512765401fb7b919f177578e74cbf39a50cbee6427c79980f5d002559b51e29b"
+    },
+    {
+      "view": "side",
+      "mode": "clay",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 178941,
+      "colorMapPixels": 0,
+      "normalMapPixels": 0,
+      "aoPixels": 0,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_CLAY_SIDE.png",
+      "bytes": 21640,
+      "sha256": "8f81dd95e5cd79340bd4a80057e5afa7c5bf2abbf117dce34dab77601e93edff"
+    },
+    {
+      "view": "front",
+      "mode": "textured",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2098,
+      "projectedDegenerate": 2,
+      "fragmentWrites": 202113,
+      "colorMapPixels": 191123,
+      "normalMapPixels": 0,
+      "aoPixels": 169513,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_TEXTURED_FRONT.png",
+      "bytes": 214254,
+      "sha256": "89910b5569b6df261b4fa8f4a6f97992cc8063b28ed442ef34453a6a568fb40b"
+    },
+    {
+      "view": "oblique",
+      "mode": "textured",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 211376,
+      "colorMapPixels": 200488,
+      "normalMapPixels": 0,
+      "aoPixels": 179719,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_TEXTURED_OBLIQUE.png",
+      "bytes": 207265,
+      "sha256": "c58ac3b570c2cff10a12b91b7ba7cead5c513d32fe3b8df4ffdc916cdca62a25"
+    },
+    {
+      "view": "side",
+      "mode": "textured",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 178941,
+      "colorMapPixels": 169247,
+      "normalMapPixels": 0,
+      "aoPixels": 150461,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_TEXTURED_SIDE.png",
+      "bytes": 134698,
+      "sha256": "20c908f97b2eefb8dbeb789cc903669b1663bc488435a3479f00b4765bb280b5"
+    },
+    {
+      "view": "front",
+      "mode": "textured_normal",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2098,
+      "projectedDegenerate": 2,
+      "fragmentWrites": 202113,
+      "colorMapPixels": 191123,
+      "normalMapPixels": 169513,
+      "aoPixels": 169513,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_TEXTURED_NORMAL_FRONT.png",
+      "bytes": 218667,
+      "sha256": "c0384b61d187677aae9c108f62c97574fd7a5fd87f071ce9bda08fc3edff0f71"
+    },
+    {
+      "view": "oblique",
+      "mode": "textured_normal",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 211376,
+      "colorMapPixels": 200488,
+      "normalMapPixels": 179719,
+      "aoPixels": 179719,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_TEXTURED_NORMAL_OBLIQUE.png",
+      "bytes": 211240,
+      "sha256": "ca1da66ead549b17663e10c0452e40f2505219324cbd7f7e7fb8ebe8bb30f2f9"
+    },
+    {
+      "view": "side",
+      "mode": "textured_normal",
+      "triangles": 2100,
+      "nondegenerateTriangles": 2100,
+      "projectedDegenerate": 0,
+      "fragmentWrites": 178941,
+      "colorMapPixels": 169247,
+      "normalMapPixels": 150461,
+      "aoPixels": 150461,
+      "alphaDiscard": 0,
+      "imageDimensions": [
+        900,
+        1120
+      ],
+      "file": "R36MM_TEXTURED_NORMAL_SIDE.png",
+      "bytes": 138015,
+      "sha256": "e7f82498244e3977be01e067310056bcd76467f7dba4ef33ff3d43a29761a470"
+    }
+  ],
+  "limitations": [
+    "no native Direct3D9",
+    "static glTF bind pose; skin animation not executed",
+    "alpha BLEND approximated by clip",
+    "no cast shadows or exact S2 game parameters",
+    "glTF PBR adapted to classic forward-light approximation; not exact native S2 shader"
+  ]
+}
