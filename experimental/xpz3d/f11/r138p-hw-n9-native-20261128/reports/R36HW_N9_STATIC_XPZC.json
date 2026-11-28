@@ -1,0 +1,100 @@
+{
+  "format": "XPZC native S2 static geometry",
+  "inputSha256": "402bc489d3696518f81adc996d3f755b4a71bfd0582fc956668d0fef7a9d98d7",
+  "packetSha256": "729e88d0e68778a70933d0dc74fb75cd22330c13338f14f4951de4e7e1241a58",
+  "triangles": 2098,
+  "parts": 10,
+  "groups": [
+    {
+      "index": 0,
+      "triangles": 644,
+      "kind": 2,
+      "material": 0,
+      "vertices": 1932
+    },
+    {
+      "index": 1,
+      "triangles": 294,
+      "kind": 1,
+      "material": 1,
+      "vertices": 882
+    },
+    {
+      "index": 2,
+      "triangles": 160,
+      "kind": 0,
+      "material": 15,
+      "vertices": 480
+    },
+    {
+      "index": 3,
+      "triangles": 362,
+      "kind": 0,
+      "material": 15,
+      "vertices": 1086
+    },
+    {
+      "index": 4,
+      "triangles": 140,
+      "kind": 0,
+      "material": 15,
+      "vertices": 420
+    },
+    {
+      "index": 5,
+      "triangles": 48,
+      "kind": 0,
+      "material": 15,
+      "vertices": 144
+    },
+    {
+      "index": 6,
+      "triangles": 428,
+      "kind": 0,
+      "material": 15,
+      "vertices": 1284
+    },
+    {
+      "index": 7,
+      "triangles": 14,
+      "kind": 2,
+      "material": 11,
+      "vertices": 42
+    },
+    {
+      "index": 8,
+      "triangles": 4,
+      "kind": 2,
+      "material": 12,
+      "vertices": 12
+    },
+    {
+      "index": 9,
+      "triangles": 4,
+      "kind": 0,
+      "material": 16,
+      "vertices": 12
+    }
+  ],
+  "modelOriginalJoints": 63,
+  "bounds": {
+    "min": [
+      -0.8640000224113464,
+      -0.18165811896324158,
+      0.036500003188848495
+    ],
+    "max": [
+      0.8640000224113464,
+      0.1605721265077591,
+      1.9795557260513306
+    ]
+  },
+  "packetBytes": 75720,
+  "limitations": [
+    "No original UV/color atlas",
+    "No original normals/tangent space",
+    "No runtime bone animation",
+    "Requires isolated native S2 loader accepting 2098 triangles (original R138E hardcodes 2100)",
+    "No native capture in this build"
+  ]
+}
