@@ -10,6 +10,7 @@ import {createFirstSuccessorIndex} from './atlas-first-successor-obligations.mjs
 import {createBranchResearchExclusion} from './atlas-branch-research-exclusion.mjs';
 import {createBranchContextResearchPlanner} from '../public/soldiers/modern/foundation-research-planner-context-v3-branch.js';
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
+import {buildTrainingResumeQueue} from './overcap-training-resume-core.mjs';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const arg=(k,d)=>process.argv.find(x=>x.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const num=(k,d,min,max)=>{const n=Number(arg(k,d));assert(Number.isSafeInteger(n)&&n>=min&&n<=max,k);return n;};
@@ -22,9 +23,17 @@ const parents=new Map(life.results.map(r=>[r.id,r])),children=new Map(next.rows.
 const commit=b=>[...new Set([...b.captain,...Object.values(b.choices||{})].filter(Boolean))],allChoice=new Set(source.branches.flatMap(commit));
 const replay=createCareerReplay(data),first=createFirstSuccessorIndex(data),exclusion=createBranchResearchExclusion(data),bonuses=new Map(data.bonuses.map(x=>[x.id,x]));
 const finite=new Map(Object.values(material.catalog).filter(c=>c.cap!=null).map(c=>[c.id,c]));finite.set(material.confirmedReferencePool.id,material.confirmedReferencePool);
-const bodyFilter=arg('body',''),jobs=terminal.rows.filter(r=>r.status==='CONDITIONAL_TERMINAL_RESEARCH_READY'&&(!bodyFilter||r.body===bodyFilter)).sort((a,b)=>a.branch.localeCompare(b.branch)||b.traits.length-a.traits.length||b.capTotal-a.capTotal||a.id.localeCompare(b.id));
+const resumeFile=arg('resume-queue',''),resumeQueue=resumeFile?read(resumeFile):null,resumeByJob=new Map(),checkpointRows=new Map(),knownRows=new Set();
+if(resumeQueue){
+ const waves=resumeQueue.waves.map(path=>({path,report:read(path)}));
+ assert.deepEqual(buildTrainingResumeQueue(waves),resumeQueue,'resume queue differs from source waves');
+ assert.equal(resumeQueue.sourceHash,hash(terminal));assert.equal(resumeQueue.terminalSourceHash,hash(source));assert.equal(resumeQueue.sourceLedgerHash,terminal.sourceLedgerHash);assert.equal(resumeQueue.sourceMetadataSha256,terminal.sourceMetadataSha256);
+ for(const {report} of waves)for(const row of report.rows){checkpointRows.set(row.id,row);knownRows.add(row.id);}
+ for(const c of resumeQueue.checkpoints){const list=resumeByJob.get(c.sourceTerminalId)||[];list.push(c);resumeByJob.set(c.sourceTerminalId,list);}
+}
+const bodyFilter=arg('body',''),jobs=terminal.rows.filter(r=>r.status==='CONDITIONAL_TERMINAL_RESEARCH_READY'&&(!bodyFilter||r.body===bodyFilter)&&(!resumeQueue||resumeByJob.has(r.id))).sort((a,b)=>a.branch.localeCompare(b.branch)||b.traits.length-a.traits.length||b.capTotal-a.capTotal||a.id.localeCompare(b.id));
 const offset=num('offset',0,0,jobs.length),limit=num('limit',5,1,100),attempts=num('attempts',180,1,1000),calls=num('calls',3,0,20),depth=num('depth',3,1,6),width=num('width',2,1,5);
-const rows=[],coverage=[],planners=new Map(),donors=new Map(),metrics={seeds:0,seedErrors:0,plannerCalls:0,researchAttempts:0,donorTrials:0,donorReplays:0,transforms:0,productive:0,firstInventoryClosed:0};
+const rows=[],coverage=[],planners=new Map(),donors=new Map(),metrics={seeds:0,seedErrors:0,plannerCalls:0,researchAttempts:0,donorTrials:0,donorReplays:0,transforms:0,productive:0,firstInventoryClosed:0,resumedCheckpoints:0,resumeErrors:0,existingWitnesses:0};
 const prev=arg('donor','');if(prev){const d=read(prev);assert.equal(d.sourceHash,hash(terminal));for(const x of d.researchDonors||[])donors.set(x.key,x.actions);}
 function allowed(w,b,t){const keep=commit(b);return keep.every(k=>active(w,k))&&b.blockedResearch.every(k=>!active(w,k))&&[...allChoice].every(k=>!active(w,k)||keep.includes(k))&&t.researchGoals.every(k=>active(w,k))&&!(t.inactiveResearch||[]).some(k=>active(w,k));}
 function applyTail(w,tail,b,t){let v=w;for(const a of tail){const before=v;v=replay.apply(v,a);if(!allowed(v,b,t)||[...v.researched].some(k=>!before.researched.has(k)&&b.blockedResearch.includes(k)))throw Error('branch or terminal goals lost');}assert(!v.pendingFree);return v;}
@@ -65,6 +74,22 @@ for(const job of jobs.slice(offset,offset+limit)){
   const w=replay.replay(full),s=snap(w);assert(allowed(w,b,t));for(const k of ['raw','effective','traits','history','activeResearch','disabledResearch'])assert.deepEqual(s[k],job[k]);
   receipt.seedReplayVerified=true;metrics.seeds++;
   const seen=new Set([exactWorld(w)]),p=planner(job.difficulty,b,t);let remaining=calls,frontier=[{world:w,steps:[]}];
+  if(resumeQueue){
+   frontier=[];receipt.resumeCheckpoints=[];
+   for(const c of resumeByJob.get(job.id)||[])try{
+    const row=checkpointRows.get(c.checkpointId);
+    assert(row&&row.sourceTerminalId===job.id&&row.sourceRecordId===child.id&&row.parentRecordId===parent.id&&row.branch===b.id&&row.target===t.id&&row.difficulty===job.difficulty);
+    assert.equal(row.sourceActionHash,job.fullActionHash);assert.equal(row.suffixHash,hash(row.suffix));assert.equal(row.fullActionHash,hash([...full,...row.suffix]));assert.equal(row.id,'OVERCAP-END-NEXT:'+hash([job.id,row.suffix]));
+    assert.equal(c.fullActionHash,row.fullActionHash);assert.equal(c.suffixHash,row.suffixHash);
+    const v=applyTail(w,row.suffix,b,t),end=snap(v),fp=exactWorld(v);
+    for(const k of ['body','rank','raw','effective','capRaw','cap','traits','history','activeResearch','disabledResearch'])assert.deepEqual(end[k],row[k],k);
+    const ctx=auditOriginCampaignContext([...full,...row.suffix],data);
+    assert(ctx.kind==='compatible'&&ctx.allowedDifficulties.includes(job.difficulty));assert(budget(base,[...job.suffix,...row.suffix]).ok);
+    if(seen.has(fp))continue;seen.add(fp);frontier.push({world:v,steps:row.suffix});
+    receipt.resumeCheckpoints.push(row.id);metrics.resumedCheckpoints++;
+   }catch(e){metrics.resumeErrors++;receipt.attempted.push({id:c.checkpointId,reason:'RESUME_CHECKPOINT_REPLAY_FAILED',detail:e.message});}
+   assert(frontier.length,'no eligible resume checkpoint independently replayed');
+  }
   for(let turn=0;turn<depth;turn++){
    const found=[];
    for(const n of frontier){
@@ -93,7 +118,8 @@ for(const job of jobs.slice(offset,offset+limit)){
      const verified=applyTail(w,result.steps,b,t);assert.equal(exactWorld(verified),fp);
      const inv=inventory(verified,b),id='OVERCAP-END-NEXT:'+hash([job.id,result.steps]),prior=new Map(s.traits);
      const item={id,sourceTerminalId:job.id,sourceRecordId:child.id,parentRecordId:parent.id,origin:job.origin,body:job.body,branch:b.id,difficulty:job.difficulty,target:t.id,sourceActionHash:job.fullActionHash,suffix:result.steps,suffixHash:hash(result.steps),fullActionHash:hash(actions),order:actions.filter(a=>a.type==='transform').map(a=>a.transform),...end,total:sum(end.effective),capTotal:sum(end.cap),capGain:sum(end.cap)-sum(s.cap),addedTraits:end.traits.filter(([k,n])=>n>(prior.get(k)||0)),firstSuccessorInventory:inv,material:m,conditionalReplayVerified:true,actualGameCertified:false,materialBudgetVerified:false,finalAdmission:false,commendationStatsIncluded:false,status:'TERMINAL_RESEARCH_RETAINED_PRODUCTIVE_SUCCESSOR'};
-     rows.push(item);receipt.produced.push(id);metrics.productive++;metrics.firstInventoryClosed+=Number(inv.firstInventoryClosed);found.push({world:result.world,steps:result.steps,item});
+     if(knownRows.has(id)){metrics.existingWitnesses++;found.push({world:result.world,steps:result.steps,item});continue;}
+     knownRows.add(id);rows.push(item);receipt.produced.push(id);metrics.productive++;metrics.firstInventoryClosed+=Number(inv.firstInventoryClosed);found.push({world:result.world,steps:result.steps,item});
     }
    }
    frontier=found.sort((a,b)=>Number(b.item.firstSuccessorInventory.firstInventoryClosed)-Number(a.item.firstSuccessorInventory.firstInventoryClosed)||b.item.capGain-a.item.capGain||b.item.addedTraits.length-a.item.addedTraits.length||a.steps.length-b.steps.length).slice(0,width);
@@ -102,6 +128,6 @@ for(const job of jobs.slice(offset,offset+limit)){
  }catch(e){receipt.status='SEED_OR_WAVE_ERROR';receipt.error=e.message;metrics.seedErrors++;}
  coverage.push(receipt);
 }
-const name=bodyFilter?bodyFilter.replace('STR_SOLDIER_',''):'all',file='public/data/soldier-overcap-terminal-training-'+name+'-'+offset+'.json';
-const report={schema:'ATLAS_OVERCAP_TERMINAL_TRAINING_WAVE_V1',sourceMetadataSha256:terminal.sourceMetadataSha256,sourceLedgerHash:terminal.sourceLedgerHash,sourceHash:hash(terminal),terminalSourceHash:hash(source),scope:'Bounded live deterministic same-body followthrough with terminal goals preserved; first-action inventory is not a final certificate.',batch:{body:bodyFilter,offset,limit,depth,width,attempts,calls,total:jobs.length},summary:{...metrics,finalAdmission:0},coverage,researchDonors:[...donors].map(([key,actions])=>({key,actions})),rows};
+const name=bodyFilter?bodyFilter.replace('STR_SOLDIER_',''):'all',resumeTag=resumeQueue?'-resume-'+hash([resumeQueue,bodyFilter,offset,limit,depth,width,attempts,calls,prev]).slice(0,16):'',file='public/data/soldier-overcap-terminal-training-'+name+'-'+offset+resumeTag+'.json';
+const report={schema:'ATLAS_OVERCAP_TERMINAL_TRAINING_WAVE_V1',sourceMetadataSha256:terminal.sourceMetadataSha256,sourceLedgerHash:terminal.sourceLedgerHash,sourceHash:hash(terminal),terminalSourceHash:hash(source),scope:'Bounded live deterministic same-body followthrough with terminal goals preserved; first-action inventory is not a final certificate.',batch:{body:bodyFilter,offset,limit,depth,width,attempts,calls,total:jobs.length,...(resumeQueue?{resumeQueue:resumeFile,resumeQueueHash:hash(resumeQueue)}:{})},summary:{...metrics,finalAdmission:0},coverage,researchDonors:[...donors].map(([key,actions])=>({key,actions})),rows};
 fs.writeFileSync(file,JSON.stringify(report)+'\n');console.log(JSON.stringify({file,summary:report.summary,top:rows.slice().sort((a,b)=>Number(b.firstSuccessorInventory.firstInventoryClosed)-Number(a.firstSuccessorInventory.firstInventoryClosed)||b.capGain-a.capGain).slice(0,8).map(r=>({body:r.body,capGain:r.capGain,added:r.addedTraits,open:r.firstSuccessorInventory.open.map(x=>x.id),firstClosed:r.firstSuccessorInventory.firstInventoryClosed})),errors:coverage.filter(r=>r.error).map(r=>({id:r.id,error:r.error}))}));
