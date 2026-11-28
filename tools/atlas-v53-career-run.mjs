@@ -220,7 +220,13 @@ if(args.careerOut){
  if(!args.graph)throw Error('--graph required');
  const b=fs.readFileSync(args.graph),graph=JSON.parse(b);
  if(graph.sourceCommit!==ref||JSON.stringify(graph.sourceFiles)!==JSON.stringify(files))throw Error('graph/bootstrap source mismatch');
- const result=produceCareerPermutations({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256:createHash('sha256').update(b).digest('hex'),profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??1000),financeMode:args.financeMode||'unlimited',conditionalPromotion:args.conditionalPromotion==='1'});
+ const graphSha256=createHash('sha256').update(b).digest('hex');
+ let result;
+ if(args.growthSeed){
+  const {produceCareerGrowth}=await import('./atlas-v58-career-growth.mjs');
+  const seedBytes=fs.readFileSync(args.growthSeed);
+  result=produceCareerGrowth({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256,seed:JSON.parse(seedBytes),seedSha256:createHash('sha256').update(seedBytes).digest('hex'),maxAttempts:Number(args.maxAttempts??1000)});
+ }else result=produceCareerPermutations({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256,profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??1000),financeMode:args.financeMode||'unlimited',conditionalPromotion:args.conditionalPromotion==='1'});
  fs.writeFileSync(args.careerOut+'.tmp',JSON.stringify(result,null,2)+'\n');fs.renameSync(args.careerOut+'.tmp',args.careerOut);
  console.log(JSON.stringify(result.summary));process.exit(0);
 }

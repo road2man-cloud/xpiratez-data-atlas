@@ -13,13 +13,14 @@ function apply(w,a,data,{funded=false}={}){
  if(!r.ok)throw Error(r.reason);
  return r;
 }
-export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min',financeMode='unlimited',conditionalPromotion=false}){
+export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min',financeMode='unlimited',conditionalPromotion=false,growthSlots=[],prefixCache=null}){
  if(graph.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||graph.sourceMetadataSha256!==snapshot.sourceFingerprint||graph.difficulty!==snapshot.difficulty||JSON.stringify(graph.regions)!==JSON.stringify(snapshot.regions??null)||JSON.stringify(graph.countries)!==JSON.stringify(snapshot.countries??null))throw Error('graph-source-mismatch');
  if(!['unlimited','funded'].includes(financeMode))throw Error('invalid-finance-mode');
  const funded=financeMode==='funded';
  if(funded&&graph.financeMode==='unlimited')throw Error('funded-career-requires-funded-graph');
  const profile=data.profiles.find(x=>x.id===profileId);
  if(birthBand!=='min'||!Array.isArray(trainingIds)||!trainingIds.length||trainingIds.some(k=>typeof k!=='string'))throw Error('unsupported-birth-or-training-sequence');
+ if(!Array.isArray(growthSlots)||growthSlots.some((n,i)=>!Number.isSafeInteger(n)||n<0||n>trainingIds.length||(i>0&&n<=growthSlots[i-1])))throw Error('invalid-growth-slots');
  const trainings=trainingIds.map(id=>data.transformations.find(x=>x.id===id));
  if(!profile||profile.sourceType!=='direct'||trainings.some(t=>!t))throw Error('unsupported-profile-or-training');
  const costs=[profile.cost,...trainings.map(t=>t.cost)];
@@ -35,8 +36,16 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
   const before=world, result=apply(before,a,data,opts);world=result.world;
   trace.push({action:a,conditional:!!result.assumed,fundsBefore:before.funds,fundsAfter:world.funds,added:[...world.researched].filter(k=>!before.researched.has(k)),notes:result.notes||[]});
  }
- if(digest(world)!==graph.nodes[0].stateHash)throw Error('root-hash-mismatch');
- for(const e of chain){step(e.action);if(digest(world)!==graph.nodes[e.to].stateHash)throw Error('prefix-replay-hash-mismatch:'+e.to);}
+ const cacheKey=JSON.stringify([graphSha256,targetState]);
+ const cached=prefixCache?.get(cacheKey);
+ if(cached){
+  if(digest(cached.world)!==graph.nodes[targetState].stateHash)throw Error('cached-prefix-state-mismatch');
+  world=structuredClone(cached.world);trace=structuredClone(cached.trace);
+ }else{
+  if(digest(world)!==graph.nodes[0].stateHash)throw Error('root-hash-mismatch');
+  for(const e of chain){step(e.action);if(digest(world)!==graph.nodes[e.to].stateHash)throw Error('prefix-replay-hash-mismatch:'+e.to);}
+  prefixCache?.set(cacheKey,{world:structuredClone(world),trace:structuredClone(trace)});
+ }
  const prefixLength=trace.length;
  const blocked=[];
  // Select only legal next research actions and resolve awards before anything else.
@@ -70,8 +79,16 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
  step({type:'recruit',profile:profileId,soldier:'origin',band:'min'},{funded});
  if(funded&&world.funds!==fundsBeforeRecruit-profile.cost)throw Error('recruitment-cost-not-debited');
  const member=()=>world.soldiers.find(s=>s.id==='origin');
- const before=careerStatVectors(member(),data),trainingResults=[];
- for(const training of trainings){
+ const before=careerStatVectors(member(),data),trainingResults=[],growthResults=[];
+ const growAt=slot=>{
+  if(!growthSlots.includes(slot))return;
+  const prior=careerStatVectors(member(),data);
+  const body=member().state.soldierType;
+  step({type:'conditionalCapGrowth',soldier:'origin',assumption:true},{funded});
+  growthResults.push({slot,body,before:prior,after:careerStatVectors(member(),data)});
+ };
+ for(const [slot,training] of trainings.entries()){
+  growAt(slot);
   if(!training.allowedSoldierTypes.includes(member().state.soldierType))throw Error('training-body-not-allowed:'+training.id);
   if(!training.requires.every(k=>active(world,k)))throw Error('training-research-missing:'+training.id);
   const promotions=[];
@@ -87,7 +104,8 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
   const afterStep=careerStatVectors(member(),data);
   trainingResults.push({id:training.id,promotions,before:beforeStep,after:afterStep,cost:training.cost,recoveryTime:training.recoveryTime??null,fundsAfter:funded?world.funds:null});
  }
+ growAt(trainings.length);
  const after=careerStatVectors(member(),data);
  const delta=Object.fromEntries(Object.keys(after.stats).map(k=>[k,after.stats[k]-before.stats[k]]));
- return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,body:member().state.soldierType,finalRank:member().state.rank,conditionalPromotion,birthBand,prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,financeMode,totalCost,finalFunds:funded?world.funds:null,history:canon(member().state.history),status:funded?'conditional-funded-career-model':'conditional-unlimited-finance-career-model',gameCertified:false,globalMaximum:false,limitations:[funded?'initial funding model zero; event outcome and scheduling conditional':'funds excluded for career actions; historical graph prefix replay unchanged','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification',...(conditionalPromotion?['promotion achievements and timing are conditional, not native verified']:[])]};
+ return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,growthSlots:[...growthSlots],growthResults,body:member().state.soldierType,finalRank:member().state.rank,conditionalPromotion,birthBand,prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,financeMode,totalCost,finalFunds:funded?world.funds:null,history:canon(member().state.history),status:funded?'conditional-funded-career-model':'conditional-unlimited-finance-career-model',gameCertified:false,globalMaximum:false,limitations:[funded?'initial funding model zero; event outcome and scheduling conditional':'funds excluded for career actions; historical graph prefix replay unchanged','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification',...(conditionalPromotion?['promotion achievements and timing are conditional, not native verified']:[]),...(growthSlots.length?['selected battle growth checkpoints assume reachable raw caps; actual opportunities, RNG and duration not simulated']:[])]};
 }
