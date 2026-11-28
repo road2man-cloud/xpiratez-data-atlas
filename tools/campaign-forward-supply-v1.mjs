@@ -1,7 +1,9 @@
 // Bounded recursive supply candidates. Only emit currently executable single
 // actions; no hypothetical stock, funds, or research is injected into the graph.
 import {purchaseVerdict} from '../public/soldiers/modern/campaign-start-reachability-v1.js';
-export function createSupplyPlanner(recipes,data,targets,{maxMaterialDepth=6}={}){
+export function createSupplyPlanner(recipes,data,targets,{maxMaterialDepth=6,financeMode='funded'}={}){
+ if(!['funded','unlimited'].includes(financeMode))throw Error('invalid-finance-mode');
+ const unlimited=financeMode==='unlimited';
  const byId=new Map(recipes),byOutput=new Map();
  if(!Number.isInteger(maxMaterialDepth)||maxMaterialDepth<1||maxMaterialDepth>12)throw Error('invalid-supply-depth');
  for(const [id,r] of recipes)for(const item of Object.keys(r.outputs)){
@@ -12,7 +14,7 @@ export function createSupplyPlanner(recipes,data,targets,{maxMaterialDepth=6}={}
  return function candidates(w){
   const actions=new Map();
   const add=a=>actions.set(JSON.stringify(a),a);
-  const eligible=r=>r.requires.every(k=>w.researched.has(k)&&!w.disabled.has(k))&&r.functions.every(k=>w.baseFunctions.has(k))&&w.funds>=r.cost;
+  const eligible=r=>r.requires.every(k=>w.researched.has(k)&&!w.disabled.has(k))&&r.functions.every(k=>w.baseFunctions.has(k))&&(unlimited||w.funds>=r.cost);
   function recipe(id,path,depth){
    if(depth>maxMaterialDepth||path.has(id)||w.forwardManufactureCounts?.[id])return;
    const r=byId.get(id);
@@ -23,7 +25,7 @@ export function createSupplyPlanner(recipes,data,targets,{maxMaterialDepth=6}={}
    for(const [item,qty] of missing){
     const count=qty-(w.items[item]||0);
     const raw=data.campaignAssets?.items?.[item];
-    if(Number.isSafeInteger(raw?.costBuy)&&raw.costBuy>0&&Number.isSafeInteger(raw.costBuy*count)&&raw.costBuy*count<=w.funds){
+    if(Number.isSafeInteger(raw?.costBuy)&&raw.costBuy>0&&Number.isSafeInteger(raw.costBuy*count)&&(unlimited||raw.costBuy*count<=w.funds)){
      try{purchaseVerdict(w,item,count,data);add({type:'acquireFundedPurchase',item,count});}catch{}
     }
     for(const producer of byOutput.get(item)||[])recipe(producer,next,depth+1);
