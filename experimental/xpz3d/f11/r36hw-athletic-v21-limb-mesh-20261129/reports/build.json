@@ -1,0 +1,49 @@
+{
+  "schema": "r36hw-v21-limb-mesh-v1",
+  "sourceBlob": "189f94cedaaf751ba1379af550eacc9bed579a6b",
+  "sourceVersion": "V19 static",
+  "sourceBytes": 254884,
+  "outputBytes": 254904,
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "weldedGroups": 527,
+  "eligibleGroups": 144,
+  "blocked": {
+    "outside": 372,
+    "edge": 0,
+    "contact": 11,
+    "crease": 0
+  },
+  "acceptedRelaxationSteps": 454,
+  "changedGroups": 143,
+  "changedVertices": 152,
+  "changedVerticesByRegion": {
+    "leftSleeve": 34,
+    "rightSleeve": 37,
+    "leftShin": 41,
+    "rightShin": 40
+  },
+  "normalsUpdated": 153,
+  "affectedFaces": 413,
+  "maxDisplacementModelUnits": 0.003999999999569498,
+  "meanTriangleQualityBefore": 0.4634442440567293,
+  "meanTriangleQualityAfter": 0.4666317676426451,
+  "meanQualityIncreasePercent": 0.6877900905649437,
+  "minTriangleQualityBefore": 0.13715986064076877,
+  "minTriangleQualityAfter": 0.14168426910851972,
+  "minFaceOrientationCosine": 0.9934950504690694,
+  "minFaceAreaRatio": 0.75008134495053,
+  "maxTangentDot": 5.438835976034895e-8,
+  "changedViews": [
+    38,
+    39,
+    44
+  ],
+  "unchangedViews": 43,
+  "materialsAndRigUnchanged": true,
+  "torsoPelvisPositionsUnchanged": true,
+  "opaque": true,
+  "nativeRender": false,
+  "nativeS2": false
+}
