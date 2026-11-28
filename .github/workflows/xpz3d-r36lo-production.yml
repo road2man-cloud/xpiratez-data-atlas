@@ -37,12 +37,12 @@ jobs:
           ROOT="$BASE/r36lo-adaptive-curvature-20261128"
           mkdir -p "$ROOT/output"
           node --check "$ROOT/source/build_r36lo.cjs"
-          node "$ROOT/source/build_r36lo.cjs" "$IN" "$ROOT/output/R36LO_DEFINED_2100_FULL.glb" defined
-          node "$ROOT/source/build_r36lo.cjs" "$IN" "$ROOT/output/R36LO_SOFT_2100_FULL.glb" soft
+          node "$ROOT/source/build_r36lo.cjs" "$IN" "$ROOT/output/R36LO_FRONT_DEFINED_2100_FULL.glb" defined
+          node "$ROOT/source/build_r36lo.cjs" "$IN" "$ROOT/output/R36LO_FRONT_SOFT_2100_FULL.glb" soft
           node - "$ROOT/output" <<'NODE'
           const fs=require('fs'),path=require('path');
           for(const mode of ['DEFINED','SOFT']){
-            const root=process.argv[2],base=path.join(root,'R36LO_'+mode+'_2100_FULL');
+            const root=process.argv[2],base=path.join(root,'R36LO_FRONT_'+mode+'_2100_FULL');
             const b=fs.readFileSync(base+'.glb'),r=JSON.parse(fs.readFileSync(base+'.report.json'));
             if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length||
                r.totalTriangles!==2100||r.outputTopology.boundary!==0||
@@ -65,7 +65,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$DIR"
           if git diff --cached --quiet; then echo "Artifacts unchanged"; exit 0; fi
-          git commit -m "xpz3d: publish R36LO 2100-triangle full character variants"
+          git commit -m "xpz3d: publish R36LO front-shell refinement full character variants"
           for attempt in 1 2 3; do
             git fetch origin main
             if git rebase origin/main && git push origin HEAD:main; then
