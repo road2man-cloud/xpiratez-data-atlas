@@ -1,0 +1,38 @@
+{
+  "inputTriangles": 2100,
+  "outputTriangles": 2064,
+  "triangleBudget": 2100,
+  "preservedTriangles": 1072,
+  "newGarmentTriangles": 992,
+  "newGarmentVertices": 498,
+  "inputGarmentPrimitives": 6,
+  "outputGarmentPrimitives": 1,
+  "garmentConnectedComponents": 1,
+  "garmentBoundaryOrNonmanifoldEdges": 0,
+  "garmentMinTriangleArea": 0.000209,
+  "garmentSignedVolume": 0.066235,
+  "zones": {
+    "torso": 160,
+    "collar": 16,
+    "arm": 336,
+    "cuff": 24,
+    "leg": 336,
+    "foot": 120
+  },
+  "sourceBinaryPreserved": true,
+  "headHairEyesNeckHandsOriginalPrimitives": true,
+  "rigPreserved": true,
+  "joints": 63,
+  "newGarmentSkinWeightsNormalized": true,
+  "newGarmentWeightMethod": "regional analytic blend on original joint indices; not original weights",
+  "outputBytes": 351324,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Single connected garment is a new lofted topology; original garment meshes remain only as unreferenced source buffers, not drawn.",
+    "Original neck/hands overlap the garment caps; posed clipping/self-intersection and silhouette quality not visually checked.",
+    "Profile dimensions are artistic estimates informed by V3 and sprite; native S2 rendering unperformed."
+  ],
+  "sourceBlob": "5b1abc425d37dc42e40ae8549c0746d8c35a6b9e",
+  "parentCommit": "68070acbdd36605b16a9387b99d8b50748eff756"
+}
