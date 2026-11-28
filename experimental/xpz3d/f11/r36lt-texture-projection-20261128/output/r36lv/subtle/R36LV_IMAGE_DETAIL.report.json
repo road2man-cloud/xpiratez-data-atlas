@@ -1,0 +1,42 @@
+{
+  "version": "R36LV",
+  "input": "R36LU_SUBTLE_UVGUTTER_2100_COMPACT_FULL.glb",
+  "inputSHA256": "b64f8b5e99660156693d3a921be9299d3b18207a022e0e365bc05956c75ec037",
+  "output": "R36LV_IMAGE_DETAIL_2100_FULL.glb",
+  "outputSHA256": "9dc3698189f9769448518b145cf524bfa9eecdba699572afd255766006597b60",
+  "bytes": 8697164,
+  "bodyTriangles": 1132,
+  "faceHairTriangles": 968,
+  "totalTriangles": 2100,
+  "joints": 63,
+  "meshPositionsUntouched": true,
+  "uvUntouched": true,
+  "skinWeightsUntouched": true,
+  "roughnessMapPreserved": true,
+  "detailMetrics": {
+    "validSourceUVPixels": 1663200,
+    "changedAlbedoPixels": 1222,
+    "changedNormalPixels": 235560,
+    "averageAbsoluteRGB8Delta": 0.0007377344877344878,
+    "maxRGB8Delta": 2,
+    "imageLuminanceHighPass": true,
+    "artificialLightStrokes": false,
+    "strength": 0.38,
+    "normalStrength": 0.22
+  },
+  "maps": {
+    "COLOR": {
+      "file": "R36LV_IMAGE_DETAIL_COLOR_2048.png",
+      "sha256": "6c068deb0381e4f2316c148aba9a4db8d0650238387c6f7167a43f55f33f32d7",
+      "bytes": 1857772
+    },
+    "NORMAL": {
+      "file": "R36LV_IMAGE_DETAIL_NORMAL_2048.png",
+      "sha256": "62ba7c81c3a4c406fba6be5d4009f938cebb2c8be0188ba91e140db92070d6ac",
+      "bytes": 1735177
+    }
+  },
+  "note": "Texture detail from source albedo frequencies; not reference image anatomical reconstruction",
+  "visualQA": "not run",
+  "S2QA": "not run"
+}
