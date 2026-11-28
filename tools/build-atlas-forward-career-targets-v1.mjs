@@ -8,7 +8,7 @@ export const GRAPH_FILES=[
  'campaign-forward-tree-v2-japan-d4.json',
  'campaign-forward-tree-v6-hybrid-synced-d7.json',
  'campaign-forward-tree-v7-hybrid-awards-d20.json',
- 'campaign-forward-tree-v8-supply-d9.json','campaign-forward-tree-v9-career-focus-d20.json','campaign-forward-tree-v10-firearms-d24.json'
+ 'campaign-forward-tree-v8-supply-d9.json','campaign-forward-tree-v9-career-focus-d20.json','campaign-forward-tree-v10-firearms-d24.json','campaign-forward-tree-v11-militia-d40.json'
 ];
 const ROOT=['STR_INSPECT_MACHINERY','STR_JACKSTOWN_SCOUTING','STR_RECRUIT_PEASANTS','STR_WAT_DO'];
 const unique=xs=>[...new Set(xs)];
