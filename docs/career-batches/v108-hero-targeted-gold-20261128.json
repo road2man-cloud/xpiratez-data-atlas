@@ -1,0 +1,264 @@
+{
+  "schema": "TARGETED_CONDITIONAL_TRANSFORMATION_CONTINUATIONS_V1",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceGraphSha256": "43d17c8034d8850511a8d35466d670fbbc88d1cac5371b3085b1e3d1ad257d73",
+  "sourceLedgerFingerprint": "0276bc79ebb3654fa7468d3b512317cb6d79b622db43b41c02ab8f8b555d8b7c",
+  "body": "STR_SOLDIER_HERO",
+  "targets": [
+    "STR_HERO_GOLD_TRAINING"
+  ],
+  "helpers": [
+    "STR_BRIDES_TO_THE_QUEEN",
+    "STR_OFFICER_TRAINING",
+    "STR_HOLY_WARRIOR_TRAINING",
+    "STR_SUN_WARRIORS_TRAINING",
+    "STR_PERSONAL_ATTENTION"
+  ],
+  "sourceRoutes": 188,
+  "candidateJobs": 188,
+  "selectedSeeds": 12,
+  "attempts": [
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:15",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "UNRESOLVED",
+      "trials": [
+        {
+          "helper": "STR_HOLY_WARRIOR_TRAINING",
+          "remaining": [
+            "STR_HOLY_WARRIORS"
+          ],
+          "failures": [
+            {
+              "goal": "STR_HOLY_WARRIORS",
+              "reason": "연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료",
+              "deadEnds": [
+                {
+                  "goal": "STR_HOLY_WARRIORS",
+                  "parent": null,
+                  "chain": [],
+                  "reason": "no-usable-method",
+                  "knownMethods": 0,
+                  "blockedDependencies": []
+                }
+              ],
+              "failures": []
+            }
+          ]
+        }
+      ],
+      "active": true,
+      "gap": 6
+    },
+    {
+      "route": "MISSCAR:83ea84aed068cc2de7317d0a6c3fd9cbcc30519696ccc37900ed7dab15b533d7:34",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 1,
+      "hintGap": 0,
+      "status": "UNRESOLVED",
+      "trials": [
+        {
+          "target": "STR_HERO_GOLD_TRAINING",
+          "remaining": [
+            "STR_HERO_GOLD_TRAINING"
+          ],
+          "failures": [
+            {
+              "goal": "STR_WASTELAND_PRIESTESS_4",
+              "reason": "CAMPAIGN_CONTEXT_CONFLICT",
+              "deadEnds": [],
+              "failures": [
+                {
+                  "goal": "STR_WASTELAND_PRIESTESS",
+                  "method": "event",
+                  "event": "STR_BLESSINGS",
+                  "source": null,
+                  "script": "STR_BLESSINGS_ACCEL",
+                  "month": 24,
+                  "reason": "CAMPAIGN_CONTEXT_CONFLICT"
+                },
+                {
+                  "goal": "STR_WASTELAND_PRIESTESS",
+                  "method": "event",
+                  "event": "STR_BLESSINGS",
+                  "source": null,
+                  "script": "STR_BLESSINGS",
+                  "month": 24,
+                  "reason": "CAMPAIGN_CONTEXT_CONFLICT"
+                }
+              ]
+            },
+            {
+              "goal": "STR_WASTELAND_PRIESTESS_3",
+              "reason": "CAMPAIGN_CONTEXT_CONFLICT",
+              "deadEnds": [],
+              "failures": [
+                {
+                  "goal": "STR_WASTELAND_PRIESTESS",
+                  "method": "event",
+                  "event": "STR_BLESSINGS",
+                  "source": null,
+                  "script": "STR_BLESSINGS_ACCEL",
+                  "month": 24,
+                  "reason": "CAMPAIGN_CONTEXT_CONFLICT"
+                },
+                {
+                  "goal": "STR_WASTELAND_PRIESTESS",
+                  "method": "event",
+                  "event": "STR_BLESSINGS",
+                  "source": null,
+                  "script": "STR_BLESSINGS",
+                  "month": 24,
+                  "reason": "CAMPAIGN_CONTEXT_CONFLICT"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "active": false,
+      "gap": 0
+    },
+    {
+      "route": "MISSCAR:4fcaa320aa8e5dc157e591a833a9e641d0abc810898df7b9dd11fa9f67316d37:21",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 1,
+      "hintGap": 10,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": false,
+      "gap": 10
+    },
+    {
+      "route": "MISSCAR:122bd822140048f32fd1085081f5328e33dc4dd5ec6c9beff29aad429c5ae06a:7",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 1,
+      "hintGap": 10,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": false,
+      "gap": 10
+    },
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:16",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "UNRESOLVED",
+      "trials": [
+        {
+          "helper": "STR_HOLY_WARRIOR_TRAINING",
+          "remaining": [
+            "STR_HOLY_WARRIORS"
+          ],
+          "failures": [
+            {
+              "goal": "STR_HOLY_WARRIORS",
+              "reason": "연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료",
+              "deadEnds": [
+                {
+                  "goal": "STR_HOLY_WARRIORS",
+                  "parent": null,
+                  "chain": [],
+                  "reason": "no-usable-method",
+                  "knownMethods": 0,
+                  "blockedDependencies": []
+                }
+              ],
+              "failures": []
+            }
+          ]
+        }
+      ],
+      "active": true,
+      "gap": 6
+    },
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:17",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "UNRESOLVED",
+      "trials": [
+        {
+          "helper": "STR_HOLY_WARRIOR_TRAINING",
+          "remaining": [
+            "STR_HOLY_WARRIORS"
+          ],
+          "failures": [
+            {
+              "goal": "STR_HOLY_WARRIORS",
+              "reason": "연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료",
+              "deadEnds": [
+                {
+                  "goal": "STR_HOLY_WARRIORS",
+                  "parent": null,
+                  "chain": [],
+                  "reason": "no-usable-method",
+                  "knownMethods": 0,
+                  "blockedDependencies": []
+                }
+              ],
+              "failures": []
+            }
+          ]
+        }
+      ],
+      "active": true,
+      "gap": 6
+    },
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:18",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "UNRESOLVED",
+      "trials": [
+        {
+          "helper": "STR_HOLY_WARRIOR_TRAINING",
+          "remaining": [
+            "STR_HOLY_WARRIORS"
+          ],
+          "failures": [
+            {
+              "goal": "STR_HOLY_WARRIORS",
+              "reason": "연구실·직접 해금·무료 지급·자동 큐·이벤트 경로의 제한 탐색 미완료",
+              "deadEnds": [
+                {
+                  "goal": "STR_HOLY_WARRIORS",
+                  "parent": null,
+                  "chain": [],
+                  "reason": "no-usable-method",
+                  "knownMethods": 0,
+                  "blockedDependencies": []
+                }
+              ],
+              "failures": []
+            }
+          ]
+        }
+      ],
+      "active": true,
+      "gap": 6
+    },
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:19",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 6
+    }
+  ],
+  "produced": [],
+  "partial": [],
+  "actualGameCertified": false,
+  "registered": false,
+  "finalAdmission": false,
+  "planCalls": 5,
+  "elapsedMs": 46873
+}

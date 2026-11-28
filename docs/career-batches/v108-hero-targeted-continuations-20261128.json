@@ -1,0 +1,106 @@
+{
+  "schema": "TARGETED_CONDITIONAL_TRANSFORMATION_CONTINUATIONS_V1",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceGraphSha256": "43d17c8034d8850511a8d35466d670fbbc88d1cac5371b3085b1e3d1ad257d73",
+  "sourceLedgerFingerprint": "0276bc79ebb3654fa7468d3b512317cb6d79b622db43b41c02ab8f8b555d8b7c",
+  "body": "STR_SOLDIER_HERO",
+  "targets": [
+    "STR_HERO_RED_TRAINING",
+    "STR_HERO_GREEN_TRAINING",
+    "STR_HERO_GOLD_TRAINING",
+    "STR_PARIAH_TRAINING"
+  ],
+  "helpers": [
+    "STR_PROUD_WARRIOR",
+    "STR_PARIAH_TRAINING",
+    "STR_HOLY_WARRIOR_TRAINING",
+    "STR_BREAD_AND_FISHES_TRAINING",
+    "STR_GREEN_BEAUTY",
+    "STR_UBERIZATION",
+    "STR_JUDICAL_EDUCATION",
+    "STR_CAPTAINS_11",
+    "STR_OFFICER_TRAINING"
+  ],
+  "sourceRoutes": 188,
+  "candidateJobs": 564,
+  "selectedSeeds": 20,
+  "attempts": [
+    {
+      "route": "MISSCAR:e1fb7d885a5bd829436f3429e4f2fe8e57eaf3ea1abd2f69a761011cc86129cf:15",
+      "target": "STR_HERO_RED_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 1,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 1
+    },
+    {
+      "route": "MISSCAR:e1fb7d885a5bd829436f3429e4f2fe8e57eaf3ea1abd2f69a761011cc86129cf:16",
+      "target": "STR_HERO_RED_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 1,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 1
+    },
+    {
+      "route": "MISSCAR:e1fb7d885a5bd829436f3429e4f2fe8e57eaf3ea1abd2f69a761011cc86129cf:17",
+      "target": "STR_HERO_RED_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 1,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 1
+    },
+    {
+      "route": "MISSCAR:e1fb7d885a5bd829436f3429e4f2fe8e57eaf3ea1abd2f69a761011cc86129cf:18",
+      "target": "STR_HERO_RED_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 1,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 1
+    },
+    {
+      "route": "MISSCAR:e1fb7d885a5bd829436f3429e4f2fe8e57eaf3ea1abd2f69a761011cc86129cf:13",
+      "target": "STR_HERO_RED_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 1,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 1
+    },
+    {
+      "route": "MISSCAR:e1fb7d885a5bd829436f3429e4f2fe8e57eaf3ea1abd2f69a761011cc86129cf:14",
+      "target": "STR_HERO_RED_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 1,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 1
+    },
+    {
+      "route": "MISSCAR:056e63d4fefda88cbc018c503cd5a13210413626610cdcd888d4cd273b80b5be:15",
+      "target": "STR_HERO_GOLD_TRAINING",
+      "hintMissing": 0,
+      "hintGap": 6,
+      "status": "UNRESOLVED",
+      "trials": [],
+      "active": true,
+      "gap": 6
+    }
+  ],
+  "produced": [],
+  "partial": [],
+  "actualGameCertified": false,
+  "registered": false,
+  "finalAdmission": false,
+  "planCalls": 6,
+  "elapsedMs": 48718
+}
