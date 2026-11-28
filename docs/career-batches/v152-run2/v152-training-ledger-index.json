@@ -1,0 +1,17 @@
+{
+  "version": 152,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "ledgerSha256": "3d27473cedf3dfb0ed9c19d7fec0f8c6f42734d87c5a32f4e9683348b18b668c",
+  "graphSha256": "e8533ecd806da575b96a3c9a2fe38a968cc7b90fe1f7e4aa1c85a6af40b3eeed",
+  "summary": {
+    "witnesses": 182,
+    "previousWitnesses": 170,
+    "newWitnesses": 12,
+    "uniqueVectors": 39,
+    "newVectors": [],
+    "bestPermanentSum": 1395,
+    "bestTU": 99,
+    "registered": 0,
+    "gameCertified": 0
+  }
+}
