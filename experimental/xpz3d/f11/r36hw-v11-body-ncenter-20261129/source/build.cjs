@@ -41,8 +41,7 @@ const rawColors=base.colors;
 if(!rawColors||!model.colors)throw Error('missing skin colors');
 const meanSkin=Array.from({length:4},(_,k)=>model.colors.reduce((s,c)=>s+c[k],0)/model.colors.length);
 const colorRows=rawColors.map((c)=>c.map((v,k)=>k===3?1:clamp(meanSkin[k],0,1)));
-body.attributes.COLOR_0=builder.addAccessor(colorRows.map(row=>row.map(v=>Math.round(v*255))),'VEC4',5121,34962);
-builder.g.accessors[body.attributes.COLOR_0].normalized=true;
+body.attributes.COLOR_0=builder.addAccessor(colorRows,'VEC4',5126,34962);
 // Remove textile-only normal mapping via skin material. The V11 geometry is unmodified here.
 // Isolate an N-series center patch (pelvic front), avoiding N-series torso/leg surfaces.
 // The patch lies in front of V11, using N21 actual positions, UV, rig weights and normals.
@@ -89,13 +88,13 @@ const patch={
   NORMAL:builder.addAccessor(copy(center.normals),'VEC3',5126,34962),
   JOINTS_0:builder.addAccessor(copy(center.joints),'VEC4',5123,34962),
   WEIGHTS_0:builder.addAccessor(copy(center.weights),'VEC4',5126,34962),
-  COLOR_0:builder.addAccessor(copy(center.colors||center.positions.map(()=>meanSkin)).map(c=>c.map(v=>Math.round(clamp(v,0,1)*255))),'VEC4',5121,34962)
+  COLOR_0:builder.addAccessor(copy(center.colors||center.positions.map(()=>meanSkin)).map(c=>c.map(v=>clamp(v,0,1))),'VEC4',5126,34962)
  },
  indices:builder.addAccessor(retained.flatMap(f=>f.map(i=>[remap.get(i)])),'SCALAR',5125,34963),
  material:8,mode:4,
  extras:{origin:'R36HW N21 center only',sourcePrimitive:3,fullBodySource:'V11 COMPACT immutable bde014a9',visibleTopologyMayBeOpen:true}
 };
-builder.g.accessors[patch.attributes.COLOR_0].normalized=true;
+
 pr.push(patch);
 builder.g.asset.generator='R36HW V11 BODY + N21 LOCAL CENTER v1';
 builder.g.extras={...builder.g.extras,r36hwV11NCenter:{bodySource:'V11 compact @bde014a9',anatomySource:'N21 primitive 3 only',nBodyPrimitivesCopied:0,visualAcceptance:false}};
