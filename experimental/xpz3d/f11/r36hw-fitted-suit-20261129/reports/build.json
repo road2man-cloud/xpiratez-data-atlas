@@ -1,0 +1,228 @@
+{
+  "sourceBytes": 270068,
+  "outputBytes": 272868,
+  "sourceTriangles": 2098,
+  "outputTriangles": 1936,
+  "sourceJoints": 63,
+  "outputJoints": 63,
+  "sourcePrimitives": 15,
+  "outputPrimitives": 11,
+  "removed": [
+    {
+      "name": "hardware",
+      "triangles": 12
+    },
+    {
+      "name": "webbing",
+      "triangles": 32
+    },
+    {
+      "name": "gear",
+      "triangles": 36
+    },
+    {
+      "name": "skull",
+      "triangles": 64
+    },
+    {
+      "name": "thigh_strap",
+      "triangles": 18
+    }
+  ],
+  "metrics": [
+    {
+      "name": "jacket",
+      "triangles": 160,
+      "vertices": 96,
+      "changedPositions": 96,
+      "maxDisplacement": 0.026145,
+      "before": {
+        "min": [
+          -0.220329,
+          -0.159986,
+          1.205
+        ],
+        "max": [
+          0.223458,
+          0.121,
+          1.526
+        ]
+      },
+      "after": {
+        "min": [
+          -0.220329,
+          -0.135238,
+          1.205
+        ],
+        "max": [
+          0.223458,
+          0.1084,
+          1.526
+        ]
+      },
+      "degenerateBefore": 0,
+      "degenerateAfter": 0
+    },
+    {
+      "name": "pants",
+      "triangles": 180,
+      "vertices": 92,
+      "changedPositions": 92,
+      "maxDisplacement": 0.013508,
+      "before": {
+        "min": [
+          -0.181162,
+          -0.118914,
+          0.803
+        ],
+        "max": [
+          0.181162,
+          0.12,
+          1.045
+        ]
+      },
+      "after": {
+        "min": [
+          -0.168386,
+          -0.106522,
+          0.803
+        ],
+        "max": [
+          0.168386,
+          0.10868,
+          1.045
+        ]
+      },
+      "degenerateBefore": 0,
+      "degenerateAfter": 0
+    },
+    {
+      "name": "boots",
+      "triangles": 140,
+      "vertices": 74,
+      "changedPositions": 44,
+      "maxDisplacement": 0.013157,
+      "before": {
+        "min": [
+          -0.151166,
+          -0.186891,
+          0.034
+        ],
+        "max": [
+          0.1579,
+          0.060217,
+          0.443
+        ]
+      },
+      "after": {
+        "min": [
+          -0.151166,
+          -0.186891,
+          0.034
+        ],
+        "max": [
+          0.1579,
+          0.060217,
+          0.443
+        ]
+      },
+      "degenerateBefore": 0,
+      "degenerateAfter": 0
+    },
+    {
+      "name": "gloves",
+      "triangles": 48,
+      "vertices": 28,
+      "changedPositions": 28,
+      "maxDisplacement": 0.00341,
+      "before": {
+        "min": [
+          -0.769947,
+          -0.039661,
+          1.371599
+        ],
+        "max": [
+          0.769947,
+          0.057243,
+          1.451048
+        ]
+      },
+      "after": {
+        "min": [
+          -0.769947,
+          -0.036255,
+          1.374143
+        ],
+        "max": [
+          0.769947,
+          0.053866,
+          1.448825
+        ]
+      },
+      "degenerateBefore": 0,
+      "degenerateAfter": 0
+    },
+    {
+      "name": "trim",
+      "triangles": 24,
+      "vertices": 24,
+      "changedPositions": 24,
+      "maxDisplacement": 0.016054,
+      "before": {
+        "min": [
+          -0.151,
+          -0.103,
+          1.007
+        ],
+        "max": [
+          0.151,
+          0.119,
+          1.049
+        ]
+      },
+      "after": {
+        "min": [
+          -0.146923,
+          -0.098782,
+          1.02249
+        ],
+        "max": [
+          0.146923,
+          0.114782,
+          1.03551
+        ]
+      },
+      "degenerateBefore": 0,
+      "degenerateAfter": 0
+    },
+    {
+      "name": "existing skin panels assigned opaque cloth; neck and hands unchanged",
+      "garmentTriangles": 312,
+      "exposedTriangles": 116,
+      "garmentVertices": 166,
+      "exposedVertices": 64,
+      "positionChanges": 0
+    }
+  ],
+  "unchanged": {
+    "protectedFaceHairEyeAccessors": 27,
+    "nodeHierarchy": true,
+    "skinDefinition": true,
+    "animations": true
+  },
+  "validation": {
+    "glbHeader": true,
+    "indexRanges": true,
+    "skinAttributeCounts": true,
+    "bufferBounds": true,
+    "noNewDegenerateTriangles": true,
+    "nativeS2Rendering": false,
+    "visualInspection": false
+  },
+  "limitations": [
+    "No global remesh; garment intersection and skinning in poses need visual inspection.",
+    "No native S2 rendering performed."
+  ],
+  "sourceGitBlob": "6bb853074804086a73bc82d81950f3614b954e72",
+  "baseCommit": "28da5dd08d27d227b857758d1c2d638521e4de1a"
+}
