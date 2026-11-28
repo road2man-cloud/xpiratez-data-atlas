@@ -5,6 +5,7 @@ on:
     paths:
       - experimental/xpz3d/f11/r36ml-s2-cpu-render-20261128/source/**
       - .github/workflows/xpz3d-r36ml-render.yml
+      - experimental/xpz3d/f11/r36mm-texture-render-20261128/source/**
 permissions:
   contents: write
 jobs:
@@ -35,3 +36,48 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add experimental/xpz3d/f11/r36ml-s2-cpu-render-20261128/output
           git diff --cached --quiet || (git commit -m 'xpz3d R36ML model renders' && git pull --rebase && git push)
+
+  textured:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36mk-recess-budget-20261128
+            experimental/xpz3d/f11/r36mm-texture-render-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          set -e
+          B=experimental/xpz3d/f11
+          npm install --no-save --no-package-lock --prefix "$B/r36mm-texture-render-20261128/source" sharp@0.33.5
+          for V in ART_DENSE ART_GUARDED SUBTLE_DENSE SUBTLE_GUARDED; do
+            node "$B/r36mm-texture-render-20261128/source/render_r36mm.cjs" "$B/r36mk-recess-budget-20261128/output/compact/R36MK_${V}_2100_COMPACT_FULL.glb" "$B/r36mm-texture-render-20261128/output/$V"
+          done
+          node - <<'NODE'
+          const fs=require('fs');
+          for(const v of ['ART_DENSE','ART_GUARDED','SUBTLE_DENSE','SUBTLE_GUARDED']){
+            const dir='experimental/xpz3d/f11/r36mm-texture-render-20261128/output/'+v;
+            const r=JSON.parse(fs.readFileSync(dir+'/R36MM_RENDER.report.json'));
+            const a=r.images.filter(x=>x.mode==='textured_normal');
+            if(r.images.length!==9||a.length!==3||a.some(x=>x.colorMapPixels<1000||x.normalMapPixels<1000))throw Error('no texture/normal '+v);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36MM-actual-texture-normal-renders
+          path: experimental/xpz3d/f11/r36mm-texture-render-20261128/output/
+      - run: |
+          set -e
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experimental/xpz3d/f11/r36mm-texture-render-20261128/output
+          if ! git diff --cached --quiet; then
+            git commit -m 'xpz3d publish R36MM texture and normal images'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
