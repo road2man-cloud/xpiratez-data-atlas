@@ -26,11 +26,23 @@ const catalog=read("public/data/soldier-source-catalog.json");data.sourceItemIds
 assert.equal(db.sourceMetadataSha256,ledger.sourceMetadataSha256);assert.equal(data.meta.source.metadataSha256,db.sourceMetadataSha256);
 assert.equal(key(ledger.graphs),ledger.sourceGraphSha256);assert.equal(index.sourceGraphSha256,ledger.sourceGraphSha256);
 assert.equal(receipt.sourceGraphSha256,ledger.sourceGraphSha256);assert.equal(receipt.patchHash,key(patch));
-assert.equal(db.careerCompletion.researchTraitSets.sourceGraphSha256,patch.baseGraphHash);
+// Follow the staged append receipts back to the actual published graph.
+const chain=[{body,patch,receipt}],seenStages=new Set([body]);let cursor=receipt;
+while(cursor.baseStage){
+ const prev=cursor.baseStage;assert(/^[A-Z0-9_]+$/.test(prev)&&!seenStages.has(prev));seenStages.add(prev);
+ const pp=read("tools/data/overcap-canonical-graph-patch-"+prev+".json"),pr=read("tools/data/overcap-staged-intake-receipt-"+prev+".json");
+ assert.equal(pr.patchHash,key(pp));assert.equal(pr.sourceGraphSha256,cursor.baseGraphHash);assert.equal(pr.baseGraphHash,pp.baseGraphHash);
+ assert.equal(pr.sourceMetadataSha256,ledger.sourceMetadataSha256);
+ chain.unshift({body:prev,patch:pp,receipt:pr});cursor=pr;
+}
+const baseGraphHash=chain[0].patch.baseGraphHash;
+assert.equal(db.careerCompletion.researchTraitSets.sourceGraphSha256,baseGraphHash);
+const candidateReceipts=chain.flatMap(x=>x.patch.receipts);
+for(const r of candidateReceipts){assert.equal(ledger.routes[r.routeId]?.fullActionHash,r.actionHash);assert.equal(ledger.routes[r.routeId]?.canonicalStateHash,r.stateHash);}
 const c=db.careerCompletion,priorRows=c.rows.slice(),priorSets=c.researchTraitSets,priorLines=c.researchLineRows;
 const replay=createSharedCareerReplay(data,ledger.summary);
 const budget=buildCareerMaterialBudget(data,ledger);
-const ids=new Set(patch.receipts.map(r=>r.routeId));
+const ids=new Set(candidateReceipts.map(r=>r.routeId));
 const priorMaterialIssues=priorRows.map(row=>{
  const all=[row,...(row.alternatives||[])],passing=all.filter(r=>!budget.records[r.routeId]?.hard?.length&&!budget.records[r.routeId]?.uncertain?.length&&budget.checkedRouteIds.includes(r.routeId));
  return {id:row.id,witnesses:all.length,passing:passing.length};
@@ -50,9 +62,11 @@ const lines=admitResearchLines({db,sets,ledger:selected,classifications:c.classi
 console.log(JSON.stringify({phase:"research/trait snapshots",summary:sets.summary,lines:lines.rows.length,rejected:lines.rejected.length}));
 const final=classifyFinalCareers({db,ledger:selected,data,replay,lines:lines.rows,sourceCatalog:catalog,requireFullRegression:full});
 const previous=new Set(priorRows.map(r=>r.id)),next=new Set(final.rows.map(r=>r.id));
-const candidates=patch.receipts.map(r=>({candidate:r.candidate,routeId:r.routeId,pairId:sets.records[r.routeId]?.pairId??null,status:final.witnesses[r.routeId]?.status??"NOT_ADMITTED",proofHash:final.witnesses[r.routeId]?.proofHash??null,reason:final.witnesses[r.routeId]?.reason??null,material:budget.records[r.routeId]||{use:{},hard:[],uncertain:[]}}));
-const summary={mode:full?"FULL_STAGED_V10":"FOCUSED_INTAKE_V10",previousPublicPairs:previous.size,classifiedPairs:lines.rows.length,passingPairs:next.size,candidatePassingWitnesses:candidates.filter(x=>x.status==="FINAL_CLOSED").length,candidateUniquePassingPairs:new Set(candidates.filter(x=>x.status==="FINAL_CLOSED").map(x=>x.pairId)).size,newPairIdsComparedToPublic:[...next].filter(id=>!previous.has(id)),missingPriorPairIds:full?[...previous].filter(id=>!next.has(id)):null,priorPairsWithNoPassingMaterialWitness:priorMaterialIssues.length,officialFinalAdded:0};
-const out={schema:"ATLAS_VO2_STAGED_FINAL_ADMISSION_V1",scope:"Staged conditional closure only; not a public registry replacement.",sourceMetadataSha256:ledger.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,baseGraphHash:patch.baseGraphHash,materialBudgetHash:budget.sha256,summary,candidates,priorMaterialIssues,materialBudget:budget,admission:final,researchTraitSets:sets,researchLineRows:lines.rows,classifications:classes};
+const candidates=candidateReceipts.map(r=>({candidate:r.candidate,priorPair:r.priorPair??null,expectedPair:r.expectedPair??null,routeId:r.routeId,pairId:sets.records[r.routeId]?.pairId??null,status:final.witnesses[r.routeId]?.status??"NOT_ADMITTED",proofHash:final.witnesses[r.routeId]?.proofHash??null,reason:final.witnesses[r.routeId]?.reason??null,material:budget.records[r.routeId]||{use:{},hard:[],uncertain:[]}}));
+for(const r of candidates)if(r.expectedPair)assert.equal(r.pairId,r.expectedPair,"Repaired pair identity mismatch");
+const repairedPriorPairs=[...new Set(candidates.filter(r=>r.priorPair&&["FINAL_CLOSED","FINAL_EQUIVALENT"].includes(r.status)).map(r=>r.priorPair))];
+const summary={repairedPriorPairs:repairedPriorPairs.length,mode:full?"FULL_STAGED_V10":"FOCUSED_INTAKE_V10",previousPublicPairs:previous.size,classifiedPairs:lines.rows.length,passingPairs:next.size,candidatePassingWitnesses:candidates.filter(x=>x.status==="FINAL_CLOSED").length,candidateUniquePassingPairs:new Set(candidates.filter(x=>x.status==="FINAL_CLOSED").map(x=>x.pairId)).size,newPairIdsComparedToPublic:[...next].filter(id=>!previous.has(id)),missingPriorPairIds:full?[...previous].filter(id=>!next.has(id)):null,priorPairsWithNoPassingMaterialWitness:priorMaterialIssues.length,officialFinalAdded:0};
+const out={schema:"ATLAS_VO2_STAGED_FINAL_ADMISSION_V1",scope:"Staged conditional closure only; not a public registry replacement.",sourceMetadataSha256:ledger.sourceMetadataSha256,sourceGraphSha256:ledger.sourceGraphSha256,baseGraphHash,stageChain:chain.map(x=>({body:x.body,patchHash:x.receipt.patchHash,sourceGraphSha256:x.receipt.sourceGraphSha256})),repairedPriorPairs,materialBudgetHash:budget.sha256,summary,candidates,priorMaterialIssues,materialBudget:budget,admission:final,researchTraitSets:sets,researchLineRows:lines.rows,classifications:classes};
 const file=stage+"vo2-"+(full?"full":"focused")+"-admission.json";
 fs.writeFileSync(file,JSON.stringify(out)+"\n");
 console.log(JSON.stringify({file,summary,candidates,finalSummary:final.summary},null,2));

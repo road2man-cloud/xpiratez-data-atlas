@@ -13,7 +13,10 @@ const read=p=>JSON.parse(fs.readFileSync(p));
 const bytes=p=>fs.existsSync(p)?fs.readFileSync(p):execFileSync("git",["show","HEAD:"+p],{maxBuffer:256*1024*1024});
 const decode=p=>JSON.parse(gunzipSync(bytes(p)));
 const name="soldier-population-missing-origin-career";
-const ledger=decode("public/data/"+name+".json.gz"),index=decode("public/data/"+name+"-index.json.gz");
+const baseStage=process.argv.find(a=>a.startsWith("--base-stage="))?.slice(13)||null;
+assert(baseStage===null||/^[A-Z0-9_]+$/.test(baseStage)&&baseStage!==body);
+const base=baseStage?"tools/data/overcap-intake-stage-"+baseStage+"/":"public/data/";
+const ledger=decode(base+name+".json.gz"),index=decode(base+name+"-index.json.gz");
 const patch=read("tools/data/overcap-canonical-graph-patch-"+body+".json");
 assert.equal(patch.schema,"ATLAS_OVERCAP_CANONICAL_GRAPH_PATCH_V1");
 assert.equal(ledger.sourceMetadataSha256,patch.sourceMetadataSha256);
@@ -91,6 +94,6 @@ fs.mkdirSync(stage,{recursive:true});
 for(const [file,value] of [[name+".json.gz",out],[name+"-index.json.gz",ix]]){
  const p=path.join(stage,file);fs.writeFileSync(p+".tmp",gzipSync(JSON.stringify(value)));fs.renameSync(p+".tmp",p);
 }
-const receipt={schema:"ATLAS_OVERCAP_STAGED_GRAPH_INTAKE_V1",sourceMetadataSha256:patch.sourceMetadataSha256,baseGraphHash:patch.baseGraphHash,sourceGraphSha256,patchHash:key(patch),before,after,added:Object.fromEntries(Object.keys(after).map(k=>[k,after[k]-before[k]])),replayedEndpoints:patch.receipts.map(r=>r.routeId),publicRegistryChanged:false,officialFinal:0,materialPolicy:"V.O2_INDEXED_FINITE_POOLS",stagedFiles:[name+".json.gz",name+"-index.json.gz"],blocker:"Official publication must use a current v.o2 material policy and successor-closure gate; do not publish these staged files alone."};
+const receipt={schema:"ATLAS_OVERCAP_STAGED_GRAPH_INTAKE_V1",sourceMetadataSha256:patch.sourceMetadataSha256,baseGraphHash:patch.baseGraphHash,baseStage,sourceGraphSha256,patchHash:key(patch),before,after,added:Object.fromEntries(Object.keys(after).map(k=>[k,after[k]-before[k]])),replayedEndpoints:patch.receipts.map(r=>r.routeId),publicRegistryChanged:false,officialFinal:0,materialPolicy:"V.O2_INDEXED_FINITE_POOLS",stagedFiles:[name+".json.gz",name+"-index.json.gz"],blocker:"Official publication must use a current v.o2 material policy and successor-closure gate; do not publish these staged files alone."};
 fs.writeFileSync("tools/data/overcap-staged-intake-receipt-"+body+".json",JSON.stringify(receipt,null,2)+"\n");
 console.log(JSON.stringify(receipt,null,2));
