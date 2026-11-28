@@ -1,6 +1,6 @@
 // Read-only, source-first Soldier DB. Local save comparison never modifies a save.
 import {loadRuntime} from '../../db-runtime.js';
-import {mountCareerLedger} from './forward-career-ledger.js?v=40';
+import {mountCareerLedger} from './forward-career-ledger.js?v=50';
 import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=111-overcap-successors';
 import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=111-overcap-successors';
 import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
