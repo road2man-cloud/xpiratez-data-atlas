@@ -1,0 +1,23 @@
+{
+  "stage": "N9 regional replacement of clothing-origin front by modeled skin-like curvature",
+  "inputSHA256": "6b2ec60c3f14332ee5242644871e22c1598c91c5807c9fbfc0d2b552ac5b1a60",
+  "outputSHA256": "402bc489d3696518f81adc996d3f755b4a71bfd0582fc956668d0fef7a9d98d7",
+  "triangles": 2098,
+  "sourceJointCount": 63,
+  "faceAndHairOriginal": true,
+  "pelvisVertexCount": 183,
+  "pelvisTriangleCount": 362,
+  "hemVerticesAdjusted": 66,
+  "frontVerticesAdjusted": 85,
+  "centroidVerticesRelaxed": 91,
+  "maxMovementMeters": 0.033089111602628826,
+  "minTriangleArea": 1.1292264681712561e-7,
+  "originalBinBytes": 961528,
+  "outputBinBytes": 965920,
+  "limitations": [
+    "Closed clothing-origin shell topology still remains, especially side/back and hem",
+    "UV and skinning weights inherited from garment, not retopologized all around",
+    "Image is NOT a pasted texture; single-photo depth not recovered",
+    "N9 not yet native S2 rendered or artist approved"
+  ]
+}
