@@ -1,0 +1,49 @@
+name: XPZ3D R36HW N2 local sculpt
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/source/**'
+      - '.github/workflows/xpz3d-r36hw-n2.yml'
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36hw-n2
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce N2 from original HW mesh
+        run: node experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/source/build_r36hw_n2.cjs
+      - name: Check geometry and rig budget
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),p='experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/reports/R36HW_N2_REGION_SCULPT.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.originalTriangles!==2098||r.resultTriangles>2100||r.resultTriangles<1950||r.selectedTriangles<32||r.retainedSkinJoints!==63||r.unchangedFaceTriangles!==644||r.unchangedHairTriangles!==294)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.resultTriangles,modified:r.selectedTriangles,rig:r.retainedSkinJoints,sha256:r.outputSha256}));
+          NODE
+      - name: Publish new GLB and report on main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/output/R36HW_N2_REGION_SCULPT.glb experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/reports/R36HW_N2_REGION_SCULPT.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): generate R36HW N2 local sculpt mesh"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N2-local-sculpt
+          path: |
+            experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/output/R36HW_N2_REGION_SCULPT.glb
+            experimental/xpz3d/f11/r36hw-n2-local-sculpt-20261128/reports/R36HW_N2_REGION_SCULPT.json
