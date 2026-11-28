@@ -96,8 +96,8 @@ function raster(meshes,view,mode,bbox,focus='full'){
 }
 function main(file,out){
  assert(fs.existsSync(file),'R36HW-N8 GLB must exist in Actions checkout');
- const expected='4964f36cf81f6fba4009b75a4813cb08e18469988475301aadccecb089be4ceb';
- assert(sha(fs.readFileSync(file))===expected,'N7B corrected hem geometry SHA required (not the 72mm prototype)');
+ const expected='6b2ec60c3f14332ee5242644871e22c1598c91c5807c9fbfc0d2b552ac5b1a60';
+ assert(sha(fs.readFileSync(file))===expected,'N8 geometry SHA must match the bounded 22mm source edit');
  assert(!fs.existsSync(out),'Output directory exists; refusing overwrite');
  const q=load(file),meshes=[];
  let body=0,other=0;
@@ -125,5 +125,5 @@ function main(file,out){
  fs.writeFileSync(path.join(out,'R36HW_N8_RENDER.report.json'),JSON.stringify(result,null,2)+'\n');
  console.log(JSON.stringify({sourceSHA256:q.sha,body,other,rendered:images.length,files:images.map(x=>({name:x.file,bytes:x.bytes}))}));
 }
-if(require.main===module)try{assert(process.argv.length===4,'usage: node render_n6.cjs input-glb outdir');main(process.argv[2],process.argv[3]);}catch(e){console.error(e.stack||e);process.exitCode=1}
+if(require.main===module)try{assert(process.argv.length===4,'usage: node render_n8.cjs input-glb outdir');main(process.argv[2],process.argv[3]);}catch(e){console.error(e.stack||e);process.exitCode=1}
 module.exports={main};
