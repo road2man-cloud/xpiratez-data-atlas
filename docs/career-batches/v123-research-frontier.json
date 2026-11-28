@@ -1,0 +1,465 @@
+{
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "b8c1f76c6dbf796d4f41d3ee5660929762d7466bd08fea469331dec01da11c55",
+  "frontier": [],
+  "unexpanded": [
+    {
+      "state": "41f98408cc45543348e647ca851163ab811d6585cbfd7052804376a88fc2e547",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "0889782432133a093dc9b6ea1a8d7a23f375a38c6398bc2cd79974935c55d809",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "77a73e3f0c4a7f702711758a450a741dc0ae7ae564285b96139428273705f8cb",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1445fdb0a104541a7ed24b778e178a8af802cad04795af7b0e192385d2a9b37f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ea048435ad736ac97d8413282c934e909a2d331991e10f2f180f7b1e24b0c2e5",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9be631ea6b37cfb3bbd3c3430c01dfb5825b325eaaea306a27d7a3c1efe69958",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "884a7370e4395d466fa352510b4cbaa6cbb1a3eaa9b3098500a67eeee5287968",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c840a86d9e820536937170abdbacd5ad0b859d51dac848644e313075f639c59c",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b3e8dedfa71725693215a513593ef7cca33462220e75d59e6e4b8ba8031dfd22",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "3008c364656e6e4b048361b55f97c35626f7bac5aa55a347d909bafbf0d17269",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "7097809282ee16cd61228b7247a1e8bddae7b5609d6542b7f3d1a6fafef3be4d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e442ab0c0ec83d230171a7b33b00ba690ddd0cfd7c6a9ea4fefa9ee3f965b76b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1e24d70bd899cbd1878ad49870b9db001de1502c26ebee6d2ceb768640ccc8c4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1a9fb5d7627f2182ee9b0b433b3b73e36e7a6fa53f3fdbf3131f29b6a817beda",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "24de04ee3baa1c568c2c0cd4850b452a3bdeb4bc8674041ac91fc93de63b232d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9b5739ed95e541e54cf3dea4e0063b08d9fe0b13ce8fea2e08ca43eddb2dde41",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "de778ecbb041160890e318779e855f006311d9c8700fd1392e527037f0802454",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "688a4ce5e61655d8297f33cc49b8ac50e6f50d5f9c4952cf44b1904065b01265",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "191bc9273e8963f36d7677387d3864f143f5d899ff4a641e58361e27ffd3bf74",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "4b7e7f9af5c87dfa20760fc60d81175a9d23d3c280a1e71629f0025a4b05d6c8",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "f74838fe85b3c455b53e81ce454d3f0fc1f40e3772bd4682d08915bec8f21fce",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b78154315be7bf48da10d31e8e87ec939475049198b90a81feb8116a3be06e8d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "fea1db67cb9ce2d39b3a5d4b75bf95149cbf92a65f43f28a00a510fe68da3d07",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "8e28c882b181cb105f134d528ae5380c09b863b0fd06ccd400f45959ccf6464a",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "764cce2f0ec494c55ef4e23b7958d0c92a983ef0a1b674cca5c45130123153e3",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "dad253e062868411354a91071fdaafd9660b83380fd103681b072ccfe542b240",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "dcca171e0d69b1fc22eac142c0759beece13fd799418285e0b2b8eed5861e9aa",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b6c2b71b5339e5fca6741b3a3ec5d3799c7d4e455559c6684c20367a044f5bc5",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "9ba6070c2354dcc7f65548411a4811949be63e216ecf56261e96c9f8f62ff2cd",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "aada80c543bbc42dfed1ce93d7157e193ce10ce67b79a443f1f0ac40fd511325",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c584c8a208c556fb70473e74b7c8506207571be5de49469f67379bdcf1dba0ff",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "abf01db09a72b347859b7ee846653806a0aac18461859539f383c996cffae0b9",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "66b642f17504aa796fe869eed792ed23c05a718e428541e62928fa5620eb1e4f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "d1b7ebd452358bee1a6f5598b48e8d0445d7446dc8a4ef04512bde4fb999d37f",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6cefb3c59a07d3ea59c4219ae228021088e575698ec005a22bec8d317bd99200",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1a6c2c52f212835fdcc44bf05e731674bc3525f504f2f2ff7c56357dc0ac188d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "e0669cd19ed964a7cd7a0746e18e9f02cee1fd2bd8ca2865accabdddb80272a1",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "6aa68f3124ccfefa3b5558d04bb8ab7de775d9de33dac945cb4e29d3de0fba12",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "be7b9ebaec703cbc3ad5fb89d892f8b656d34c6cbbe34f9fe2ec4443d21a15f2",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c0027c2a449954fd91ba8dd103804c93898b54417c1f0701174f52c8f4158643",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "dfa300994303e28f54a3cde69e9350b8ec3e368d9a1f0e65e164823c085ec600",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "381409b8d0064a46e26556a8d8aca3629e9b12387b1fccef7dd062f2e42b0f86",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "95dad56131c014b6c904499eb5d13c6151245528e01d1049fd417b99dde6aed4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "708ee570eb1358c3383acee90f9bb9d71fb1efb6843aa3bfab12a0b297225410",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ddd34489896dba0b3af75238c81f474e39b6a1229625b1dc04ec8c2e72407d25",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2fb028b659cfeda4cb7590170c1c17a476f08886a4342d0997cdaba52623a360",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "018e7c3423d96258b87252ff1bd6857360b205021853422fd6f399eace7fbfc0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1560f0d29adf9173f34e1a469926469b718beee016826ed2f4130f13dc204e75",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2f192bf7aec3635ad705ae1473bb0a8012a5099a4e06566c61ef14aea286282b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c1d19c61eab6e6e3a7dd0a5b1e4b81bf298db15fa900f930d016eba1eb6fb634",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "a8ba91e22195002b6905c3e5fc74fb0f8e7fd570ae061b96b6e2f2abfd30880d",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "223e70921aa5b62048fb76cbb32c4d30f7ec7aae09a94c7544638eb9e334cf08",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "028ad69e9838b423f6c061654b5c2bbb3dd480486f4562762149d5e82e4fbdd0",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2d53efa5182610be6bf738ebed81fb0a835dfcf9787c3fc2e0dcba16c2f103d4",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b99ce1509604e085376e1916a7c5b781b3178124acca75599821cbd804b7187e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "3a13f49e63bcfc54c5864aa2c3ccb9762f54233c4d30252c6af876b85ff72a5b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "c2e6747d925ec6724b85f8f3be10865a9b188f8f5278e03089fee92afc24a823",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "0da4e61433e96d82879d026c5f3bf0db96a35f2f49e73adf01770fb14209e80b",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "32a9505a2f99dc5b44e7b1e1350f468f7f5a48e4fea7f666763dae4eb9062774",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "10443e00aef243cb12e275f1474e3056932dc9babbc31a5f6c951966c4f1c002",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "1577d4d8ae5ef916f834dbc2e57b9d07be8e2d53a674f0588898e3532266d6f8",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b5898da2e3dfd6f556b670338a5564da1e2a105289be81984abc00fb4e271fae",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "75e51537c0fc23eee359d3cacfae5be319e6f2552e7be2ca4e5d6b353c279ba3",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "2c888c155b374c449724c2517fb5e38f508d155d2db5bfa5c56e4edeb8b46697",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "b2721a8f431cbadbcda1fd4ca43cfcc0e1ed18f30d21324e22ed434b490579ab",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "fb2a193ea27f213975002dcd34bcb38574c1d306b5a5b41b0395f0f8fc8c22cf",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "52e6a13fbf1ca0653d0057894183059458451bc1ac49dfccc76b733c82f06a7e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "18e06a2d8b1497a497bae48984634268d6096c4e5c58db711cbaa1f8a167f21e",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "35c47218964afeb750744237ffef34b9dd237c1ccda8326930b0227cc7df4aa6",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "61740c8c7188fe4819078e8d4b38a14fbdb347d1ee4ccf7cfeebfc656ad86e54",
+      "reason": "expansion-budget"
+    },
+    {
+      "state": "db877dbe599d18092ed39f94fa1a890588ee9cce5d26f89ef0ea35e56604b474",
+      "reason": "expansion-budget"
+    }
+  ],
+  "deferredEvents": [
+    {
+      "event": "STR_CAPTAIN_PERSONALITY_TEST",
+      "script": "STR_CAPTAIN_PERSONALITY_TEST",
+      "research": "STR_CAPTAIN_PERSONALITY_TEST",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_CAPTAIN_PERSONALITY_TEST",
+      "script": "STR_CAPTAIN_PERSONALITY_TEST",
+      "research": "STR_CAPTAIN_PERSONALITY_TEST",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_CAPTAIN_PERSONALITY_TEST",
+      "script": "STR_CAPTAIN_PERSONALITY_TEST",
+      "research": "STR_CAPTAIN_PERSONALITY_TEST",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_CAPTAIN_PERSONALITY_TEST",
+      "script": "STR_CAPTAIN_PERSONALITY_TEST",
+      "research": "STR_CAPTAIN_PERSONALITY_TEST",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_PENITENT",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_HERO",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_0",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_1",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    },
+    {
+      "event": "STR_KNOCK_KNOCK_OGRE_WORKER",
+      "script": "STR_KNOCK_KNOCK_2",
+      "research": "STR_OGRE_WORKERS",
+      "reason": "no-positive-research-trigger; explicit seed required"
+    }
+  ]
+}
