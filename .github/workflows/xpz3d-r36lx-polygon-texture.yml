@@ -1,0 +1,84 @@
+name: XPZ3D R36LX segmented polygon image texture production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36lx-polygon-texture-20261128/source/**'
+      - '.github/workflows/xpz3d-r36lx-polygon-texture.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36lx-polygon-texture
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+            experimental/xpz3d/f11/r36lt-texture-projection-20261128
+            experimental/xpz3d/f11/r36lx-polygon-texture-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce segmented image details on actual body triangles
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36lx-polygon-texture-20261128
+          SCRIPT=$ROOT/source/build_r36lx.cjs
+          COMPACT=$BASE/r36ls-illustrated-skin-20261128/source/compact_glb.cjs
+          node --check "$SCRIPT"
+          rm -rf "$ROOT/output"
+          mkdir -p "$ROOT/output/compact"
+          for V in ART SUBTLE; do
+            MODE=$(echo "$V" | tr '[:upper:]' '[:lower:]')
+            SOURCE="$BASE/r36lt-texture-projection-20261128/output/r36lv/compact/R36LV_${V}_IMAGE_DETAIL_2100_COMPACT_FULL.glb"
+            OUT="$ROOT/output/$MODE"
+            node --max-old-space-size=4096 "$SCRIPT" "$SOURCE" "$OUT"
+            node "$COMPACT" "$OUT/R36LX_POLYGON_DETAIL_2100_FULL.glb" "$ROOT/output/compact/R36LX_${V}_POLYGON_DETAIL_2100_COMPACT_FULL.glb"
+          done
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const folder=process.argv[2];
+          for(const v of ['art','subtle']){
+            const j=JSON.parse(fs.readFileSync(path.join(folder,v,'R36LX_POLYGON_DETAIL.report.json')));
+            const b=fs.readFileSync(path.join(folder,'compact','R36LX_'+v.toUpperCase()+'_POLYGON_DETAIL_2100_COMPACT_FULL.glb'));
+            if(j.totalTriangles!==2100||j.joints!==63||j.touchedTriangles<40||j.coveragePixels<500||b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('invalid polygon GLB '+v);
+            console.log(v,j.touchedTriangles,j.imageSections.nonEmpty.length,j.coveragePixels,b.length);
+          }
+          NODE
+      - name: Upload produced full variants
+        uses: actions/upload-artifact@v4
+        with:
+          name: R36LX-polygon-UV-image-detail-art-and-subtle
+          path: experimental/xpz3d/f11/r36lx-polygon-texture-20261128/output/
+          retention-days: 90
+      - name: Publish compact GLBs and PNG maps
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experimental/xpz3d/f11/r36lx-polygon-texture-20261128/output
+          rm -f "$DIR"/art/*.glb "$DIR"/subtle/*.glb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DIR"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36LX segmented polygon image GLBs"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1

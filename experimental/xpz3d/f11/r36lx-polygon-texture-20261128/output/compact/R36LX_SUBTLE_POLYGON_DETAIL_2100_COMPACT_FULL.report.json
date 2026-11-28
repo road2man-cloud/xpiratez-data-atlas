@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36LX_POLYGON_DETAIL_2100_FULL.glb",
+  "inputBytes": 9138432,
+  "output": "R36LX_SUBTLE_POLYGON_DETAIL_2100_COMPACT_FULL.glb",
+  "outputBytes": 5545104,
+  "sourceSHA256": "f7b0654e4535237afb5fa3a8aec8b774a8a9338d38b558c9c85098c18a4b7463",
+  "outputSHA256": "b014a3f22d88efde9c7956ef6127751e5b8405992c1ceed47a26cfe666e4fd7a",
+  "reducedBytes": 3593328,
+  "ratio": 0.606789,
+  "textureObjectsBefore": 8,
+  "textureObjectsAfter": 6,
+  "imageObjectsBefore": 8,
+  "imageObjectsAfter": 6,
+  "bufferViewsBefore": 129,
+  "bufferViewsAfter": 127,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}

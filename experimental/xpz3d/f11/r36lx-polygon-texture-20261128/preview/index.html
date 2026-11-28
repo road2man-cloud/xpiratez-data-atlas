@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R36LX | 분할 이미지 텍스처 전신 GLB 비교</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0e1923;color:#e9f5fa;font:14px system-ui,sans-serif}
+header{padding:16px 22px;border-bottom:1px solid #355264;background:#162c3a}h1{font-size:18px;margin:0 0 4px}header p{margin:0;color:#a8c3ce}
+main{display:grid;grid-template-columns:290px 1fr;height:calc(100vh - 83px)}
+aside{padding:20px;overflow:auto;border-right:1px solid #355264}
+label{display:block;margin:16px 0 7px;color:#a9d9e1}
+select,input,button{width:100%;padding:9px;background:#203c50;color:white;border:1px solid #45677b;border-radius:6px}
+input[type=checkbox]{width:auto}.check{display:flex;gap:9px;align-items:center;margin-top:14px}
+.viewer{position:relative;min-height:420px}canvas{display:block;width:100%;height:100%;touch-action:none}
+#status{white-space:pre-wrap;font-size:12px;line-height:1.6;color:#a2ced3}
+small{color:#97b4c1}.links a{display:block;color:#89ddc7;margin:10px 0}
+@media(max-width:850px){main{display:block;height:auto}aside{border-right:0}.viewer{height:65vh}}
+</style>
+<script type="importmap">{"imports":{"three":"../../r36kp/preview/vendor/three.module.js","three/addons/":"../../r36kp/preview/vendor/"}}</script>
+</head><body><header><h1>R36LX · 실제 폴리곤 분할 이미지 텍스처</h1><p>R36LV 원본 ↔ R36LX 4×8 구역 분산 투영 | 동일 카메라·광원·전신 GLB</p></header>
+<main><aside>
+<label for="variant">텍스처 버전</label>
+<select id="variant"><option value="R36LX_ART">R36LX ART · 분산 텍스처</option>
+<option value="R36LV_ART">R36LV ART · 이전 기준</option>
+<option value="R36LX_SUBTLE">R36LX SUBTLE · 분산 텍스처</option>
+<option value="R36LV_SUBTLE">R36LV SUBTLE · 이전 기준</option></select>
+<label for="view">카메라</label>
+<select id="view"><option value="front">정면</option><option value="oblique">사선</option>
+<option value="side">측면</option><option value="back">후면</option><option value="full">전신</option></select>
+<label for="exposure">노출</label><input id="exposure" type="range" min="65" max="145" value="100">
+<label class="check"><input id="albedo" type="checkbox"> 조명 없는 컬러맵 비교</label>
+<label class="check"><input id="normal" type="checkbox" checked> 노멀맵</label>
+<label class="check"><input id="wire" type="checkbox"> 메시 삼각형 표시</label>
+<p style="line-height:1.55;color:#b4c7cf">모델 2,100△ / 63본 보존 기준. 색상 보정만으로 실제 메시 곡면이나 촬영 참조의 구조가 만들어졌다고 주장하지 않습니다.</p>
+<div class="links"><a href="../output/compact/">게시된 경량 GLB</a><a href="../output/art/R36LX_POLYGON_DETAIL.report.json">ART 실제 생산 보고서</a><a href="../output/subtle/R36LX_POLYGON_DETAIL.report.json">SUBTLE 실제 생산 보고서</a></div>
+<p id="status">로딩 준비</p></aside>
+<div class="viewer"><canvas id="canvas"></canvas></div>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const el=id=>document.getElementById(id),canvas=el('canvas');
+const r=new THREE.WebGLRenderer({canvas,antialias:true});r.setPixelRatio(Math.min(devicePixelRatio||1,2));r.outputColorSpace=THREE.SRGBColorSpace;
+r.toneMapping=THREE.ACESFilmicToneMapping;r.toneMappingExposure=1;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x101b25);
+scene.add(new THREE.HemisphereLight(0xffffff,0x446477,2));
+const key=new THREE.DirectionalLight(0xffffff,2.2);key.position.set(3,5,4);scene.add(key);
+const rim=new THREE.DirectionalLight(0xa4c5f1,.9);rim.position.set(-3,2,-4);scene.add(rim);
+const camera=new THREE.PerspectiveCamera(35,1,.01,60),ctrl=new OrbitControls(camera,canvas);
+ctrl.enableDamping=true;ctrl.minDistance=.13;ctrl.maxDistance=12;
+const urls={
+R36LX_ART:'../output/compact/R36LX_ART_POLYGON_DETAIL_2100_COMPACT_FULL.glb',
+R36LX_SUBTLE:'../output/compact/R36LX_SUBTLE_POLYGON_DETAIL_2100_COMPACT_FULL.glb',
+R36LV_ART:'../../r36lt-texture-projection-20261128/output/r36lv/compact/R36LV_ART_IMAGE_DETAIL_2100_COMPACT_FULL.glb',
+R36LV_SUBTLE:'../../r36lt-texture-projection-20261128/output/r36lv/compact/R36LV_SUBTLE_IMAGE_DETAIL_2100_COMPACT_FULL.glb'};
+const loaded={},mats=new WeakMap();let selected='R36LX_ART';
+function details(root){root.traverse(m=>{if(!m.isMesh)return;m.frustumCulled=false;
+ const original=Array.isArray(m.material)?m.material:[m.material];
+ m.userData.baseMaterials=original.map(x=>x.clone());m.material=original.map(x=>x.clone());
+ if(!Array.isArray(m.userData.baseMaterials))m.userData.baseMaterials=[m.userData.baseMaterials];
+ });}
+function updateMaterial(){
+ for(const root of Object.values(loaded))root.traverse(o=>{if(!o.isMesh)return;
+ const src=o.userData.baseMaterials;if(!src)return;
+ const dst=src.map(m=>{
+  const n=m.clone();n.side=THREE.DoubleSide;
+  if(el('albedo').checked)return new THREE.MeshBasicMaterial({map:n.map,color:0xffffff,wireframe:el('wire').checked,side:THREE.DoubleSide});
+  n.wireframe=el('wire').checked;if(!el('normal').checked)n.normalMap=null;return n;
+ });o.material=dst.length===1?dst[0]:dst;
+ });}
+function loadAsset(name){
+ if(loaded[name]){show();return}
+ el('status').textContent='모델 로딩: '+name;
+ new GLTFLoader().load(urls[name],g=>{
+  const root=g.scene;loaded[name]=root;details(root);scene.add(root);
+  updateMaterial();show();focus();
+ },undefined,e=>el('status').textContent='로드 오류: '+e.message);
+}
+function show(){
+ for(const [name,root] of Object.entries(loaded))root.visible=name===selected;
+ const root=loaded[selected];if(!root)return;
+ let count=0;root.traverse(o=>{if(o.isMesh){const ix=o.geometry.index;count+=(ix?ix.count:o.geometry.attributes.position.count)/3}});
+ el('status').textContent=selected+' | '+count+'△';
+}
+function focus(){
+ const root=loaded[selected];if(!root)return;
+ const b=new THREE.Box3().setFromObject(root),c=b.getCenter(new THREE.Vector3()),size=b.getSize(new THREE.Vector3()),v=el('view').value;
+ const full=v==='full';
+ if(!full)c.y=b.min.y+size.y*.46;
+ const dist=full?Math.max(.9,size.y*1.3):Math.max(.48,size.y*.42);
+ const unit=v==='side'?[1,.05,0]:v==='back'?[0,.1,-1]:v==='oblique'?[.65,.12,1]:[0,.06,1];
+ camera.position.copy(c).add(new THREE.Vector3(...unit).normalize().multiplyScalar(dist));
+ ctrl.target.copy(c);camera.lookAt(c);ctrl.update();
+}
+el('variant').addEventListener('change',()=>{selected=el('variant').value;loadAsset(selected)});
+el('view').addEventListener('change',focus);
+el('exposure').addEventListener('input',()=>r.toneMappingExposure=Number(el('exposure').value)/100);
+for(const name of ['albedo','normal','wire'])el(name).addEventListener('change',updateMaterial);
+function frame(){
+ requestAnimationFrame(frame);const w=canvas.clientWidth,h=canvas.clientHeight;
+ if(w>0&&h>0){r.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();ctrl.update();r.render(scene,camera);}
+}loadAsset(selected);frame();
+</script></body></html>

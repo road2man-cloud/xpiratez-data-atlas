@@ -8,7 +8,8 @@
  */
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const {load,extract,Builder}=require('../../r36kz-chest-center-shape-20261128/source/glb_io.cjs');
-const {decodePNG,encodePNG}=require('../../r36lp-skin-rebake-20261128/source/build_r36lp.cjs');
+const {decodePNG}=require('./png_rgba.cjs');
+const {encodePNG}=require('../../r36lp-skin-rebake-20261128/source/build_r36lp.cjs');
 const assert=(v,s)=>{if(!v)throw Error(s)};
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const smooth=t=>{t=clamp(t);return t*t*(3-2*t)};
