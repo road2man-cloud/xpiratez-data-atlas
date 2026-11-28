@@ -19,6 +19,15 @@ jobs:
         with:
           persist-credentials: true
           fetch-depth: 1
+      - name: Restore immutable V9 and V10 reference GLBs
+        run: |
+          git fetch --no-tags --depth=1 origin a7f16d91f4631ea43c5318a4f890c01d26f8a48e
+          for ref in \
+            experimental/xpz3d/f11/r36hw-athletic-v9-close-fit-20261129/output/R36HW_F11_ATHLETIC_SUIT_V9_CLOSE_FIT.glb \
+            experimental/xpz3d/f11/r36hw-athletic-v10-contours-20261129/output/R36HW_F11_ATHLETIC_SUIT_V10_CONTOURS.glb; do
+            mkdir -p "$(dirname "$ref")"
+            git show a7f16d91f4631ea43c5318a4f890c01d26f8a48e:"$ref" > "$ref"
+          done
       - name: Check input assets
         run: |
           test -s experimental/xpz3d/f11/r36hw-n19-lower-skin-bridge-20261129/output/R36HW_N19_LOWER_SKIN_BRIDGE.glb
