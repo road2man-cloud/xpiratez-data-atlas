@@ -1,0 +1,30 @@
+name: XPZ3D R36ML render
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - experimental/xpz3d/f11/r36ml-s2-cpu-render-20261128/source/**
+      - .github/workflows/xpz3d-r36ml-render.yml
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          set -e
+          B=experimental/xpz3d/f11
+          node "$B/r36ml-s2-cpu-render-20261128/source/render_r36ml.cjs" "$B/r36mk-recess-budget-20261128/output/compact/R36MK_ART_DENSE_2100_COMPACT_FULL.glb" "$B/r36ml-s2-cpu-render-20261128/output/ART_DENSE"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r36ml-real-mesh-png
+          path: experimental/xpz3d/f11/r36ml-s2-cpu-render-20261128/output
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add experimental/xpz3d/f11/r36ml-s2-cpu-render-20261128/output
+          git diff --cached --quiet || (git commit -m 'xpz3d R36ML model renders' && git pull --rebase && git push)
