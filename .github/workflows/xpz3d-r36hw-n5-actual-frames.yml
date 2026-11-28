@@ -1,0 +1,58 @@
+name: XPZ3D R36HW N5 actual mesh diagnostic frames
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/source/**'
+      - '.github/workflows/xpz3d-r36hw-n5-actual-frames.yml'
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: true
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36hw-n5-skin-seams-20261128
+            experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Render 12 actual N5 GLB mesh frames (not native S2)
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/source/render_n5.cjs
+          node experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/source/render_n5.cjs experimental/xpz3d/f11/r36hw-n5-skin-seams-20261128/output/R36HW_N5_SEAM_LINK.glb experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/output
+      - name: Require detail/full views from actual 2080-triangle GLB
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),p='experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/output';
+          const r=JSON.parse(fs.readFileSync(p+'/R36HW_N5_RENDER.report.json','utf8'));
+          if(r.totalTriangles!==2080||r.images.length!==12||r.images.filter(x=>x.focus==='detail').length!==6||r.images.filter(x=>x.mode==='clay').length!==6)throw Error(JSON.stringify(r));
+          for(const item of r.images)if(fs.statSync(p+'/'+item.file).size<3000)throw Error('Missing or invalid PNG '+item.file);
+          console.log(JSON.stringify({triangles:r.totalTriangles,frames:r.images.length,images:r.images.map(x=>x.file)}));
+          NODE
+      - name: Publish PNGs and source-mesh renderer report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/output
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): publish 12 R36HW N5 actual-mesh diagnostic PNGs"
+            for attempt in 1 2 3 4; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36HW-N5-actual-mesh-renders
+          path: experimental/xpz3d/f11/r36hw-n5-actual-mesh-render-20261128/output
