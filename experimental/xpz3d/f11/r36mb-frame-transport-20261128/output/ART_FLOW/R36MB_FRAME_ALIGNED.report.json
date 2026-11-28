@@ -1,0 +1,75 @@
+{
+  "version": "R36MB",
+  "source": "R36LX_ART_POLYGON_DETAIL_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "a23b1abceb1291ff9633ee626b6b0df646ccfe8acd93fe50f4873e98d739bed0",
+  "target": "R36MA_ART_FLOW_2100_COMPACT_FULL.glb",
+  "targetSHA256": "132dc9272962acbcbe4cb405b39b8acfc8645bff6723bf0d7a36588e71274d80",
+  "output": "R36MB_FRAME_ALIGNED_2100_FULL.glb",
+  "outputSHA256": "1929f31ddda28f55ed774a388f84c6901c0fa68d0920215250f8a7b4a8e2e67a",
+  "outputBytes": 10180708,
+  "triangles": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "joints": 63,
+  "physicallySculptedGeometryPreserved": true,
+  "UVAndSkinWeightsPreserved": true,
+  "allImagePixelsFromExistingXpiratezAtlas": true,
+  "sourceVsTarget": {
+    "changedPositionVertices": 521,
+    "changedNormalVertices": 732,
+    "maxPositionDelta": 0.0031315088272094727,
+    "maxTangentRotationDegrees": 7.879245836211526
+  },
+  "transport": {
+    "trianglesConsidered": 292,
+    "trianglesWithPixels": 292,
+    "activePixels": 412434,
+    "changedPixels": 280426,
+    "skippedNearFlat": 3366,
+    "overlapPixels": 27,
+    "meanSourceToTargetNormalRotationDegrees": 1.0056509310561808,
+    "maxSourceToTargetNormalRotationDegrees": 8.4421240520214,
+    "meanAbsoluteRGB8Change": 0.6799496000168108,
+    "strength": 0.72,
+    "orientationPreservation": "source image normal -> old TBN -> 3D -> new TBN"
+  },
+  "seams": {
+    "seamsDetected": 244,
+    "usableSeams": 244,
+    "edgesRebaked": 244,
+    "skippedSharp": 22,
+    "skippedNonmanifold": 0,
+    "skippedIncompatibleNormal": 0,
+    "meanSourceEdgeRGBDifference": 0.2326218662721508,
+    "touchedUVTriangleCount": 197,
+    "affectedInteriorPixels": 150856,
+    "changedAlbedoPixels": 977,
+    "changedNormalPixels": 79162,
+    "meanAbsoluteRGB8Delta": 0.003031588623146135,
+    "maxRGB8Delta": 2,
+    "paddedColorPixels": 994046,
+    "paddedNormalPixels": 994046,
+    "algorithm": "paired physical 3D edges -> dual UV seam pixel transforms, world-space normal transport",
+    "didNotTouchPositionsOrJointWeights": true
+  },
+  "images": {
+    "COLOR": {
+      "file": "R36MB_COLOR_2048.png",
+      "bytes": 2072388,
+      "sha256": "94e68e09fbb6e62fab3711e6f0e7b9e65ed8189aa6db06ee577c59b6ef3c240d"
+    },
+    "NORMAL": {
+      "file": "R36MB_NORMAL_2048.png",
+      "bytes": 1967112,
+      "sha256": "6531cf40b5a3e236c904c8d865a28100dd991b776815af94e87827a177f335c5"
+    },
+    "FRAME_ROTATION_HEAT": {
+      "file": "R36MB_FRAME_ROTATION_HEAT_2048.png",
+      "bytes": 162862,
+      "sha256": "0dde3aefe2ee078c294875ff342f570deb8ea3eda2137f73ba95c67bcfefa349"
+    }
+  },
+  "visualQA": "not run",
+  "S2EngineQA": "not run",
+  "limitation": "Transport of image-space surface normals; no new source photograph or photo-measured geometric depth"
+}

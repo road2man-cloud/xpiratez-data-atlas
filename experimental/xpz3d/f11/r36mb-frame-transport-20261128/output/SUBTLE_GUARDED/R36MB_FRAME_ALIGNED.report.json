@@ -1,0 +1,75 @@
+{
+  "version": "R36MB",
+  "source": "R36LX_SUBTLE_POLYGON_DETAIL_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "b014a3f22d88efde9c7956ef6127751e5b8405992c1ceed47a26cfe666e4fd7a",
+  "target": "R36MA_SUBTLE_GUARDED_2100_COMPACT_FULL.glb",
+  "targetSHA256": "9280690a316d6adc2db8eb13098e90538563b7281058abbc25d349da81753ee3",
+  "output": "R36MB_FRAME_ALIGNED_2100_FULL.glb",
+  "outputSHA256": "22c1722e4cd901534b089a95f6c7fa23df937404c4ff5d80369ed01e8d2f7812",
+  "outputBytes": 9805420,
+  "triangles": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "joints": 63,
+  "physicallySculptedGeometryPreserved": true,
+  "UVAndSkinWeightsPreserved": true,
+  "allImagePixelsFromExistingXpiratezAtlas": true,
+  "sourceVsTarget": {
+    "changedPositionVertices": 521,
+    "changedNormalVertices": 732,
+    "maxPositionDelta": 0.0017760246992111206,
+    "maxTangentRotationDegrees": 4.87799630798314
+  },
+  "transport": {
+    "trianglesConsidered": 292,
+    "trianglesWithPixels": 292,
+    "activePixels": 411162,
+    "changedPixels": 259219,
+    "skippedNearFlat": 4638,
+    "overlapPixels": 27,
+    "meanSourceToTargetNormalRotationDegrees": 0.6083481765835753,
+    "maxSourceToTargetNormalRotationDegrees": 6.478259342891679,
+    "meanAbsoluteRGB8Change": 0.4262083234021302,
+    "strength": 0.72,
+    "orientationPreservation": "source image normal -> old TBN -> 3D -> new TBN"
+  },
+  "seams": {
+    "seamsDetected": 245,
+    "usableSeams": 245,
+    "edgesRebaked": 245,
+    "skippedSharp": 21,
+    "skippedNonmanifold": 0,
+    "skippedIncompatibleNormal": 0,
+    "meanSourceEdgeRGBDifference": 0.23229630892404463,
+    "touchedUVTriangleCount": 197,
+    "affectedInteriorPixels": 151294,
+    "changedAlbedoPixels": 876,
+    "changedNormalPixels": 79643,
+    "meanAbsoluteRGB8Delta": 0.0027936776519007145,
+    "maxRGB8Delta": 2,
+    "paddedColorPixels": 994046,
+    "paddedNormalPixels": 994046,
+    "algorithm": "paired physical 3D edges -> dual UV seam pixel transforms, world-space normal transport",
+    "didNotTouchPositionsOrJointWeights": true
+  },
+  "images": {
+    "COLOR": {
+      "file": "R36MB_COLOR_2048.png",
+      "bytes": 1982047,
+      "sha256": "9f3c6f069509b2bfdbfeff440b9b11cc9f5ea0b539b06faebdfb861c1dc8d481"
+    },
+    "NORMAL": {
+      "file": "R36MB_NORMAL_2048.png",
+      "bytes": 1917427,
+      "sha256": "48fb731fdccd10c058dd133da9e6d47d1b9a22136445cedf66891b2a7f8c1457"
+    },
+    "FRAME_ROTATION_HEAT": {
+      "file": "R36MB_FRAME_ROTATION_HEAT_2048.png",
+      "bytes": 136343,
+      "sha256": "13c4c87840124e6fb2a2b5160b2971b091a2e929b182650e56caffdafcc4328d"
+    }
+  },
+  "visualQA": "not run",
+  "S2EngineQA": "not run",
+  "limitation": "Transport of image-space surface normals; no new source photograph or photo-measured geometric depth"
+}
