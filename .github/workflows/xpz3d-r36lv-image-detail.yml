@@ -1,0 +1,83 @@
+name: XPZ3D R36LV original-image microdetail production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36lt-texture-projection-20261128/source/build_r36lv_image_detail.cjs'
+      - '.github/workflows/xpz3d-r36lv-image-detail.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36lv-image-detail
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+            experimental/xpz3d/f11/r36lt-texture-projection-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate image-derived albedo and tangent normal candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36lt-texture-projection-20261128
+          SCRIPT=$ROOT/source/build_r36lv_image_detail.cjs
+          COMPACT=$BASE/r36ls-illustrated-skin-20261128/source/compact_glb.cjs
+          node --check "$SCRIPT"
+          rm -rf "$ROOT/output/r36lv"
+          mkdir -p "$ROOT/output/r36lv/compact"
+          for V in ART SUBTLE; do
+            MODE=$(echo "$V" | tr '[:upper:]' '[:lower:]')
+            SOURCE="$ROOT/output/r36lu/compact/R36LU_${V}_UVGUTTER_2100_COMPACT_FULL.glb"
+            OUT="$ROOT/output/r36lv/$MODE"
+            node --max-old-space-size=4096 "$SCRIPT" "$SOURCE" "$OUT" 0.38 0.22
+            node "$COMPACT" "$OUT/R36LV_IMAGE_DETAIL_2100_FULL.glb" "$ROOT/output/r36lv/compact/R36LV_${V}_IMAGE_DETAIL_2100_COMPACT_FULL.glb"
+          done
+          node - "$ROOT/output/r36lv" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.argv[2];
+          for(const v of ['art','subtle']){
+            const r=JSON.parse(fs.readFileSync(path.join(root,v,'R36LV_IMAGE_DETAIL.report.json')));
+            const p=path.join(root,'compact','R36LV_'+v.toUpperCase()+'_IMAGE_DETAIL_2100_COMPACT_FULL.glb');
+            const b=fs.readFileSync(p);
+            if(r.totalTriangles!==2100||r.joints!==63||r.detailMetrics.changedAlbedoPixels<1000||b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('R36LV invalid '+v);
+            console.log(v,r.detailMetrics.changedAlbedoPixels,r.detailMetrics.changedNormalPixels,b.length);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36LV-image-detail-art-subtle
+          path: experimental/xpz3d/f11/r36lt-texture-projection-20261128/output/r36lv/
+          retention-days: 90
+      - name: Publish compact GLBs and image-map results without force
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36lt-texture-projection-20261128/output/r36lv
+          rm -f "$ROOT"/art/*.glb "$ROOT"/subtle/*.glb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36LV image-based microdetail compact GLBs"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
