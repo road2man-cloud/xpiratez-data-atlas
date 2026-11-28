@@ -1,0 +1,33 @@
+{
+  "version": "R36LN",
+  "variant": "soft",
+  "input": "R36KZ_STABLE_2088_TORSO_CENTER.glb",
+  "sourceSHA256": "a310fb7300323ee05146552d9640b788cc5306ba1bcca1e0c3ae822110019ace",
+  "output": "R36LN_SOFT_2088_FULL.glb",
+  "outputSHA256": "72ef669bd719d961e15f8228d967f8d3caca1ba9076a80e9d9a7fbca5b6cf5a1",
+  "bytes": 3872712,
+  "bodyTriangles": 1120,
+  "headAndHairTriangles": 968,
+  "totalTriangles": 2088,
+  "skeletonJoints": 63,
+  "changedRenderVertices": 811,
+  "contour": {
+    "changedUniquePositions": 136,
+    "rejected": 0,
+    "maxMove": 0.00723215077846985,
+    "minDot": 0.6808056645498289,
+    "minRatio": 0.5802809416996453,
+    "trianglesBefore": 1120,
+    "trianglesAfter": 1120,
+    "addedMeshes": 0,
+    "uvPreserved": true,
+    "skinPreserved": true,
+    "referenceIsMetric": false
+  },
+  "normalTextureScale": 0.18,
+  "sourceMaterialsPreservedExceptSkinLighting": true,
+  "skinWeightsPreserved": true,
+  "UVPreserved": true,
+  "headHairPreserved": true,
+  "renderQA": "not run; requires reference-matched 0 and 35 degree images"
+}
