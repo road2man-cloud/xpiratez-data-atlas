@@ -132,6 +132,26 @@ function select(mesh,maxFlips=18){
  }
  return {selected,candidateCount:cands.length};
 }
+function weightedFrame(normals,tangents,weights){
+ let n=[0,0,0],t=[0,0,0],hand=0;
+ for(let i=0;i<3;i++){
+  n=add(n,mul(normals[i],weights[i]));
+  t=add(t,mul(tangents[i].slice(0,3),weights[i]));
+  hand+=tangents[i][3]*weights[i];
+ }
+ n=unit(n);t=vec(t,mul(n,dot(t,n)));
+ if(len(t)<1e-8)t=cross(n,[0,0,1]);
+ t=unit(t);
+ return {n,t,b:mul(unit(cross(n,t)),hand<0?-1:1)};
+}
+function normalToWorld(rgb,frame){
+ const v=unit(rgb.slice(0,3).map(x=>x/127.5-1));
+ return unit(add(add(mul(frame.t,v[0]),mul(frame.b,v[1])),mul(frame.n,v[2])));
+}
+function normalFromWorld(world,frame){
+ const v=unit([dot(world,frame.t),dot(world,frame.b),dot(world,frame.n)]);
+ return [...v.map(x=>Math.round(clamp((x*.5+.5)*255,0,255))),255];
+}
 function transfer(mesh,selections,images){
  const n=mesh.positions.length;
  const result={
@@ -183,11 +203,18 @@ function transfer(mesh,selections,images){
     const originalUV=source.reduce((a,v,i)=>add(a,mul(v.uv,bary[i])),[0,0]);
     const oldC=sample(images.color,originalUV[0]-.5,originalUV[1]-.5);
     const oldN=sample(images.normal,originalUV[0]-.5,originalUV[1]-.5);
+    const oldFrame=weightedFrame(source.map(x=>x.normal),source.map(x=>x.tangent),bary);
+    const newFrame=weightedFrame(dest.slots.map(i=>result.normals[i]),
+       dest.slots.map(i=>result.tangents[i]),weights);
+    const sourceWorld=normalToWorld(oldN,oldFrame);
+    // Preserve the source photo-derived small normal variation relative to
+    // the physical surface, but express it in the newly connected face frame.
+    const residual=vec(sourceWorld,oldFrame.n);
+    const transportedWorld=unit(add(newFrame.n,mul(residual,.94)));
+    const newN=normalFromWorld(transportedWorld,newFrame);
     const destIndex=index*4;
     for(let ch=0;ch<4;ch++)maps.color[destIndex+ch]=Math.round(oldC[ch]);
-    // Geometry normal is recomputed downstream; preserve reference detailed
-    // tangent-space map as locally sampled (avoid introducing fake shadows).
-    for(let ch=0;ch<4;ch++)maps.normal[destIndex+ch]=Math.round(oldN[ch]);
+    for(let ch=0;ch<4;ch++)maps.normal[destIndex+ch]=newN[ch];
     processed[index]=1;changedPixels++;normalPixels++;covered++;
    }
    if(covered)paintedFaces++;
