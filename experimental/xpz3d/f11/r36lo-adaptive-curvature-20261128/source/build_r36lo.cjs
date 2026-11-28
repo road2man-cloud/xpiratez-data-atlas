@@ -10,6 +10,7 @@
 const fs=require('fs'),path=require('path');
 const {load,extract,Builder,values}=require('../../r36kz-chest-center-shape-20261128/source/glb_io.cjs');
 const {contourField}=require('../../r36ln-reference-contour-20261128/source/center_contour.cjs');
+const {projector}=require('../../r36kz-chest-center-shape-20261128/source/surface_patch.cjs');
 const EPS=1e-9;
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
@@ -37,6 +38,7 @@ function topology(p,ix){
 }
 function edgeCandidates(mesh){
  const edges=new Map(),faces=[],p=mesh.positions,ix=mesh.indices;
+ const front=projector(mesh);
  for(let i=0;i<ix.length;i+=3){
   const ids=ix.slice(i,i+3),fid=faces.length;faces.push(ids);
   for(let j=0;j<3;j++){
@@ -51,7 +53,9 @@ function edgeCandidates(mesh){
   if(inc.length!==2)continue;
   const A=p[inc[0].a],B=p[inc[0].b],M=lerp(A,B);
   const x=Math.abs(M[0]),y=M[1],z=M[2],dist=norm(sub(B,A));
-  if(x>.118||z<.785||z>1.025||y>.065||dist<.005||dist>.15)continue;
+  if(x>.118||z<.785||z>1.025||y>.035||dist<.005||dist>.15)continue;
+  const shell=front.sample(M[0],M[2]);
+  if(!shell||y-shell.y>.031||y-shell.y<-.012)continue; // never spend subdivision on hidden rear/inner wall
   const fade=(1-smooth(.105,.14,x))*smooth(.78,.824,z)*(1-smooth(.988,1.042,z));
   if(fade<.12)continue;
   const cm=contourField(M[0],z),ca=contourField(A[0],A[2]),cb=contourField(B[0],B[2]);
