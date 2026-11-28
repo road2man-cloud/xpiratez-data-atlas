@@ -45,9 +45,8 @@ const torsoUnique=[...new Set(skinIds.slice(midrange.startTriangle*3,(midrange.s
 const waistSkin=torsoUnique.map(i=>skinPos[i]).filter(v=>Math.abs(v[2]-1.015)<.002&&Math.hypot(v[0],v[1]-.009)>.08);
 if(waistSkin.length!==10)throw Error('Original midriff ring changed '+waistSkin.length);
 const torsoCenter=[0,.009],torsoAngles=waistSkin.map(v=>({angle:Math.atan2(v[1]-torsoCenter[1],v[0]),p:v})).sort((a,b)=>a.angle-b.angle);
-function contour(target,origin){
- const [cx,cy]=origin;let ang=Math.atan2(target[1]-cy,target[0]-cx);
- if(ang<target.length-1e9){} // intentional no-op removed in later authoring
+function contour(target,point,origin){
+ const [cx,cy]=origin;let ang=Math.atan2(point[1]-cy,point[0]-cx);
  let a=target[0].angle;while(ang<a)ang+=2*Math.PI;
  for(let i=0;i<target.length;i++){
   const l=target[i],r=i+1<target.length?target[i+1]:{angle:target[0].angle+2*Math.PI,p:target[0].p};
