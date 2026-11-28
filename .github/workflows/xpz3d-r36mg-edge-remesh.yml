@@ -1,0 +1,89 @@
+name: XPZ3D R36MG actual local edge-flip retopology and rebake
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36mg-edge-remesh-20261128/source/**'
+      - '.github/workflows/xpz3d-r36mg-edge-remesh.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36mg-edge-remesh
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+            experimental/xpz3d/f11/r36mf-integrated-20261128
+            experimental/xpz3d/f11/r36mg-edge-remesh-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce real edge-flipped R36MG full and clay models
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36mg-edge-remesh-20261128
+          SRC=$ROOT/source/build_r36mg.cjs
+          CLAY=$BASE/r36mf-integrated-20261128/source/create_clay.cjs
+          COMPACT=$BASE/r36ls-illustrated-skin-20261128/source/compact_glb.cjs
+          node --check "$SRC"
+          rm -rf "$ROOT/output"
+          mkdir -p "$ROOT/output/compact"
+          for V in ART SUBTLE; do
+            for STYLE in DENSE GUARDED; do
+              NAME="${V}_${STYLE}"
+              INPUT="$BASE/r36mf-integrated-20261128/output/compact/R36MF_${NAME}_2100_COMPACT_FULL.glb"
+              OUT="$ROOT/output/$NAME"
+              node --max-old-space-size=4096 "$SRC" "$INPUT" "$OUT" 18
+              node "$CLAY" "$OUT/R36MG_TOPOLOGY_2100_FULL.glb" "$OUT/R36MG_CLAY_2100_FULL.glb"
+              node "$COMPACT" "$OUT/R36MG_TOPOLOGY_2100_FULL.glb" "$ROOT/output/compact/R36MG_${NAME}_2100_COMPACT_FULL.glb"
+              node "$COMPACT" "$OUT/R36MG_CLAY_2100_FULL.glb" "$ROOT/output/compact/R36MG_${NAME}_CLAY_2100_COMPACT_FULL.glb"
+            done
+          done
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          for(const v of ['ART','SUBTLE'])for(const s of ['DENSE','GUARDED']){
+            const k=v+'_'+s,dir=process.argv[2],report=JSON.parse(fs.readFileSync(path.join(dir,k,'R36MG_TOPOLOGY.report.json')));
+            if(report.totalTriangles!==2100||report.bones!==63||report.physicalEdgeFlips<2||report.imagePixelsReprojected<300)throw Error('not actually remeshed '+k);
+            for(const suffix of ['','_CLAY']){
+              const file=path.join(dir,'compact','R36MG_'+k+suffix+'_2100_COMPACT_FULL.glb'),b=fs.readFileSync(file);
+              if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('Invalid GLB '+file);
+            }
+            console.log(k,'flips',report.physicalEdgeFlips,'pixels',report.imagePixelsReprojected);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36MG-actual-edge-flip-full-and-clay
+          path: experimental/xpz3d/f11/r36mg-edge-remesh-20261128/output/
+          retention-days: 90
+      - name: Publish models, texture PNG and measurements to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36mg-edge-remesh-20261128/output
+          for V in ART SUBTLE; do for S in DENSE GUARDED; do rm -f "$ROOT/${V}_${S}"/*.glb; done; done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36MG actual connectivity remesh models"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
