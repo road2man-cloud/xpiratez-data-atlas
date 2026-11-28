@@ -71,7 +71,13 @@ for(let i=0;i<p.length;i++){
  if(f<=0)continue;
  const target=targetRing(v);
  // Original lower edge is z=.803 while the actual visible-leg rim starts at z=.815.
- const orig=v.slice();for(let a=0;a<3;a++)v[a]+=f*(target[a]-v[a]);
+ const orig=v.slice();
+ // Original-HW silhouette lock: a per-vertex displacement cannot exceed 11.5mm.
+ // Wider 72mm corrections observed in the first prototype destroy thigh proportions.
+ const delta=target.map((t,a)=>f*(t-v[a]));
+ const magnitude=Math.hypot(...delta),limit=.0115;
+ const bounded=magnitude>limit?limit/magnitude:1;
+ for(let a=0;a<3;a++)v[a]+=delta[a]*bounded;
  const d=Math.hypot(...v.map((k,a)=>k-orig[a]));
  if(d>1e-8){hemMoves.push({i,delta:d,zOriginal:z});if(z<=.806)seamIds.push(i)}
 }
