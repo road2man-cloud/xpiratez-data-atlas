@@ -42,7 +42,7 @@ const gauss=(x,c,s)=>Math.exp(-.5*((x-c)/s)**2);
 const midrange=skin.extras?.ranges?.find(r=>r.name==='Visible midriff');
 if(!midrange)throw Error('No original skin midriff range');
 const torsoUnique=[...new Set(skinIds.slice(midrange.startTriangle*3,(midrange.startTriangle+midrange.triangles)*3))];
-const waistSkin=torsoUnique.map(i=>skinPos[i]).filter(v=>Math.abs(v[2]-1.015)<.002);
+const waistSkin=torsoUnique.map(i=>skinPos[i]).filter(v=>Math.abs(v[2]-1.015)<.002&&Math.hypot(v[0],v[1]-.009)>.08);
 if(waistSkin.length!==10)throw Error('Original midriff ring changed '+waistSkin.length);
 const torsoCenter=[0,.009],torsoAngles=waistSkin.map(v=>({angle:Math.atan2(v[1]-torsoCenter[1],v[0]),p:v})).sort((a,b)=>a.angle-b.angle);
 function contour(target,origin){
