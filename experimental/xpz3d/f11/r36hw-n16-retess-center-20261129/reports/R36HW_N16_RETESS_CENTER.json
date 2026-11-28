@@ -1,0 +1,142 @@
+{
+  "stage": "N16 original-3D-constrained edge optimization; preserve N15 boundary and attributes",
+  "inputSHA256": "7e151c13a8011c334c1b22f73dcccaba3420098bef7812417b9b4e564a0cd05b",
+  "outputSHA256": "a5d4aaf2cf8912de2ee3339cbd6e20df9cae15250a09ac76ce0b96bc0d5410d3",
+  "triangles": 2099,
+  "regionFaces": 148,
+  "edgeFlips": 13,
+  "changedNormals": 34,
+  "sourcePositionAccessorUnchanged": true,
+  "originalSkinWeightsUnchanged": true,
+  "sourceFaceAndHairUnchanged": true,
+  "skinJoints": 63,
+  "centerTopologyMode": "edge flips on source N15 3D mesh; not planar polygon replacement",
+  "originalRegionQualityMin": 0.056779313398173485,
+  "newRegionQualityMin": 0.056779313398173485,
+  "originalRegionSkinnyCount": 20,
+  "newRegionSkinnyCount": 19,
+  "history": [
+    {
+      "triangles": [
+        76,
+        168
+      ],
+      "oldEdge": "33,239",
+      "qualityBefore": 0.3622154483602558,
+      "qualityAfter": 0.7178630479067517
+    },
+    {
+      "triangles": [
+        231,
+        236
+      ],
+      "oldEdge": "177,238",
+      "qualityBefore": 0.35576881719680875,
+      "qualityAfter": 0.706328728102323
+    },
+    {
+      "triangles": [
+        150,
+        296
+      ],
+      "oldEdge": "32,47",
+      "qualityBefore": 0.37383061750862884,
+      "qualityAfter": 0.6703583395144875
+    },
+    {
+      "triangles": [
+        222,
+        227
+      ],
+      "oldEdge": "176,238",
+      "qualityBefore": 0.12540403226891628,
+      "qualityAfter": 0.3594495510444557
+    },
+    {
+      "triangles": [
+        314,
+        360
+      ],
+      "oldEdge": "32,229",
+      "qualityBefore": 0.4033907017330888,
+      "qualityAfter": 0.616107391503033
+    },
+    {
+      "triangles": [
+        150,
+        298
+      ],
+      "oldEdge": "32,225",
+      "qualityBefore": 0.6381754727965689,
+      "qualityAfter": 0.7198281670314474
+    },
+    {
+      "triangles": [
+        235,
+        361
+      ],
+      "oldEdge": "218,239",
+      "qualityBefore": 0.6786198514730001,
+      "qualityAfter": 0.7366948147650746
+    },
+    {
+      "triangles": [
+        64,
+        359
+      ],
+      "oldEdge": "32,185",
+      "qualityBefore": 0.3319795257278899,
+      "qualityAfter": 0.38978689155732554
+    },
+    {
+      "triangles": [
+        155,
+        359
+      ],
+      "oldEdge": "32,200",
+      "qualityBefore": 0.3602657921046526,
+      "qualityAfter": 0.5505968125223735
+    },
+    {
+      "triangles": [
+        156,
+        157
+      ],
+      "oldEdge": "119,201",
+      "qualityBefore": 0.6801950089214543,
+      "qualityAfter": 0.7370232401437503
+    },
+    {
+      "triangles": [
+        277,
+        281
+      ],
+      "oldEdge": "47,220",
+      "qualityBefore": 0.584709158288854,
+      "qualityAfter": 0.6230398789423631
+    },
+    {
+      "triangles": [
+        82,
+        87
+      ],
+      "oldEdge": "33,191",
+      "qualityBefore": 0.49383531576378714,
+      "qualityAfter": 0.5290231548958836
+    },
+    {
+      "triangles": [
+        237,
+        240
+      ],
+      "oldEdge": "177,219",
+      "qualityBefore": 0.7572080948902193,
+      "qualityAfter": 0.7867932069835897
+    }
+  ],
+  "limitations": [
+    "No native S2 rendering",
+    "N11-derived clothing-origin pelvic shell still present",
+    "Reoriented topology helps some face quality but does not reconstruct all anatomical creases"
+  ]
+}
