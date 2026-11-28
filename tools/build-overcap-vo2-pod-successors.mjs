@@ -31,7 +31,18 @@ const mode=process.argv.find(a=>a.startsWith("--rule="))?.slice(7)||"STR_DREAMLI
 assert(/^[A-Z0-9_]+$/.test(mode));
 const offset=Number(process.argv.find(a=>a.startsWith("--offset="))?.slice(9)||0),limit=Number(process.argv.find(a=>a.startsWith("--limit="))?.slice(8)||1);
 assert(Number.isSafeInteger(offset)&&offset>=0&&Number.isSafeInteger(limit)&&limit>0);
-const jobs=queue.openSuccessorQueue.filter(r=>r.scope.open.some(x=>x.id===mode));
+// A previously generated successor is also a real chronological seed.
+// Keep its parent/action hashes and original repaired prior pair unchanged.
+const from=process.argv.find(a=>a.startsWith("--from="))?.slice(7)||null;
+let seed=queue.openSuccessorQueue,sourceBatchHash=null;
+if(from){
+ assert(/^[A-Z0-9_]+-\d+-\d+(?:-from-[a-f0-9]{16})?$/.test(from));
+ const batch=read("tools/data/overcap-vo2-pod-successor-"+from+".json");
+ assert.equal(batch.schema,"ATLAS_VO2_POD_SUCCESSOR_BATCH_V1");assert.equal(batch.sourceMetadataSha256,queue.sourceMetadataSha256);assert.equal(batch.sourceGraphSha256,queue.sourceGraphSha256);assert.equal(batch.sourceQueueHash,key(queue));assert.equal(batch.materialBudgetHash,budget.sha256);
+ seed=batch.records.filter(r=>!r.scope.closed);sourceBatchHash=key(batch);
+ for(const r of seed){assert.equal(r.actionHash,key(r.actions));assert.equal(r.suffixHash,key(r.suffix));assert.equal(r.finalAdmission,false);}
+}
+const jobs=seed.filter(r=>r.scope.open.some(x=>x.id===mode));
 const records=[],errors=[];
 for(const r of jobs.slice(offset,offset+limit)){
  const receipt={parentId:r.id,priorPair:r.priorPair,priorRoute:r.priorRoute,body:r.body,branch:r.branch,origin:r.origin,action:mode};
@@ -58,7 +69,7 @@ for(const r of jobs.slice(offset,offset+limit)){
  }catch(e){errors.push({...receipt,reason:String(e.message)});}
 }
 const summary={eligible:jobs.length,attempted:Math.min(limit,Math.max(0,jobs.length-offset)),produced:records.length,closed:records.filter(r=>r.scope.closed).length,open:records.filter(r=>!r.scope.closed).length,errors:errors.length,officialFinalAdded:0};
-const out={schema:"ATLAS_VO2_POD_SUCCESSOR_BATCH_V1",sourceMetadataSha256:queue.sourceMetadataSha256,sourceGraphSha256:queue.sourceGraphSha256,sourceQueueHash:key(queue),materialBudgetHash:budget.sha256,rule:mode,batch:{offset,limit},summary,records,errors,scope:"Bounded same-body conditional continuation, not official admission or exhaustive gameplay."};
-const file="tools/data/overcap-vo2-pod-successor-"+mode+"-"+offset+"-"+limit+".json";
+const out={schema:"ATLAS_VO2_POD_SUCCESSOR_BATCH_V1",sourceMetadataSha256:queue.sourceMetadataSha256,sourceGraphSha256:queue.sourceGraphSha256,sourceQueueHash:key(queue),materialBudgetHash:budget.sha256,rule:mode,batch:{offset,limit,...(from?{from,sourceBatchHash}:{})},summary,records,errors,scope:"Bounded same-body conditional continuation, not official admission or exhaustive gameplay."};
+const file="tools/data/overcap-vo2-pod-successor-"+mode+"-"+offset+"-"+limit+(from?"-from-"+sourceBatchHash.slice(0,16):"")+".json";
 fs.writeFileSync(file,JSON.stringify(out)+"\n");
 console.log(JSON.stringify({file,summary,records:records.map(r=>({body:r.body,pairId:r.pairId,statDelta:r.statDelta,closed:r.scope.closed,open:r.scope.open.map(x=>x.id)})),errors},null,2));
