@@ -13,6 +13,20 @@ const data=defaultRankData(read('public/data/soldiers-modern-index.json')).data;
 assert.equal(data.meta.source.metadataSha256,ledger.sourceMetadataSha256);
 const rules=new Map(data.transformations.map(r=>[r.id,r])),bodies=new Map(data.soldiers.map(r=>[r.id,r]));
 const witnesses=new Set(ledger.rows.map(r=>r.fullActionHash));
+// A registered descendant with an exact prefix and the goal as the first
+// subsequent transform is sufficient to skip duplicate scheduling, not closure.
+const descendants=new Map();
+for(const r of ledger.rows){const list=descendants.get(r.sourceTerminalId)||[];list.push(r);descendants.set(r.sourceTerminalId,list);}
+const existingNext=new Map();
+for(const r of ledger.rows){
+ const prefix=r.suffix.map(a=>JSON.stringify(a));
+ for(const child of descendants.get(r.sourceTerminalId)||[]){
+  if(child.id===r.id||child.suffix.length<=prefix.length||!prefix.every((a,i)=>a===JSON.stringify(child.suffix[i])))continue;
+  const goal=child.suffix.slice(prefix.length).find(a=>a.type==='transform')?.transform;
+  if(!goal)continue;
+  const k=r.id+'|'+goal,list=existingNext.get(k)||[];list.push(child.id);existingNext.set(k,list);
+ }
+}
 const prior=new Map(),issues=[],sources=new Map();
 const key=(a,b)=>a+'|'+b;
 for(const b of ledger.batches)for(const s of b.batch?.sources||[])sources.set(s.path,s);
@@ -38,7 +52,7 @@ for(const row of ledger.rows){
  for(const ob of row.firstSuccessorInventory.open){
   const k=key(row.id,ob.id);assert(!seen.has(k),'duplicate obligation '+k);seen.add(k);
   const r=rules.get(ob.id),body=bodies.get(row.body),history=new Map(row.history);
-  const attempts=prior.get(k)||[],registered=attempts.some(a=>a.registered);
+  const attempts=prior.get(k)||[],existingSuccessorIds=(existingNext.get(k)||[]).sort(),registered=attempts.some(a=>a.registered)||existingSuccessorIds.length>0;
   const prepared=attempts.filter(a=>a.sourceActionHash===row.fullActionHash&&!a.applied).sort((a,b)=>a.remaining.length-b.remaining.length||b.addedResearch-a.addedResearch||a.path.localeCompare(b.path))[0]||null;
   let lane;
   if(!r||!body)lane='UNINDEXED';
@@ -51,7 +65,7 @@ for(const row of ledger.rows){
   else if(prepared&&!prepared.remaining.length)lane='READY_BUT_TRANSFORM_UNRESOLVED';
   else if(prepared)lane='RESUME_PARTIAL_RESEARCH';
   else lane=ob.missingResearch.length?'NEW_LIVE_RESEARCH':'NEW_LIVE_READY';
-  entries.push({seedId:row.id,sourceActionHash:row.fullActionHash,body:row.body,origin:row.origin,branch:row.branch,difficulty:row.difficulty,goal:ob.id,lane,capTotal:row.capTotal,missingResearch:ob.missingResearch,historyCount:history.get(ob.id)||0,requirements:r?{live:r.allowsLiveSoldiers,dead:r.allowsDeadSoldiers,wounded:r.allowsWoundedSoldiers,corpseRecovered:r.needsCorpseRecovered,requiredHistory:r.requiredPreviousTransformations,forbiddenHistory:r.forbiddenPreviousTransformations,medals:r.requiredCommendations}:null,...(prepared?{prepared}:{}),priorCount:attempts.length});
+  entries.push({seedId:row.id,sourceActionHash:row.fullActionHash,body:row.body,origin:row.origin,branch:row.branch,difficulty:row.difficulty,goal:ob.id,lane,capTotal:row.capTotal,missingResearch:ob.missingResearch,historyCount:history.get(ob.id)||0,requirements:r?{live:r.allowsLiveSoldiers,dead:r.allowsDeadSoldiers,wounded:r.allowsWoundedSoldiers,corpseRecovered:r.needsCorpseRecovered,requiredHistory:r.requiredPreviousTransformations,forbiddenHistory:r.forbiddenPreviousTransformations,medals:r.requiredCommendations}:null,...(prepared?{prepared}:{}),...(existingSuccessorIds.length?{existingSuccessorIds}:{}),priorCount:attempts.length});
  }
 }
 const counts={},groups=new Map();

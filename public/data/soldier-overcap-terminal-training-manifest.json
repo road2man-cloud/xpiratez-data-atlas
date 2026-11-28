@@ -1,6 +1,6 @@
 {
   "schema": "ATLAS_OVERCAP_TRAINING_SNAPSHOT_INDEX_V1",
-  "current": "6c599db083f5215aa1f57ae825e4cd752619f6e2471ad6165358a2555f8dab73",
+  "current": "ac73f923e0018be7214d3e7c2f70d29a8a7ac15123c5b3687f66412dec1d28c0",
   "snapshots": {
     "0eba91e4612baf84468a161c81db7943fe42dcc2898047625db9878b8d924cc9": "public/data/soldier-overcap-terminal-training.json",
     "0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e": "public/data/soldier-overcap-terminal-training-merged-0105859fb924cd551c4d416517edda66df1b9e8b307fcc0fda75851d917fd28e.json.gz",
@@ -10,6 +10,8 @@
     "62036c41a73f77628e34c9873f097d7713a77ab461a6782c4054c5c0cf7ed53d": "public/data/soldier-overcap-terminal-training-merged-62036c41a73f77628e34c9873f097d7713a77ab461a6782c4054c5c0cf7ed53d.json.gz",
     "54b02d0d14a167876945db6ac6bb0b0edce884fa6220edfee37268456611bc7e": "public/data/soldier-overcap-terminal-training-merged-54b02d0d14a167876945db6ac6bb0b0edce884fa6220edfee37268456611bc7e.json.gz",
     "1f202f3abd250e711838f12319bcdd3752d90f204ed74fa25d7d61afc09eb327": "public/data/soldier-overcap-terminal-training-merged-1f202f3abd250e711838f12319bcdd3752d90f204ed74fa25d7d61afc09eb327.json.gz",
-    "6c599db083f5215aa1f57ae825e4cd752619f6e2471ad6165358a2555f8dab73": "public/data/soldier-overcap-terminal-training-merged-6c599db083f5215aa1f57ae825e4cd752619f6e2471ad6165358a2555f8dab73.json.gz"
+    "6c599db083f5215aa1f57ae825e4cd752619f6e2471ad6165358a2555f8dab73": "public/data/soldier-overcap-terminal-training-merged-6c599db083f5215aa1f57ae825e4cd752619f6e2471ad6165358a2555f8dab73.json.gz",
+    "07f93e85f2d98de37e21f70852e8b7c419aa6b9c50fd6f49b95ba9ade63befce": "public/data/soldier-overcap-terminal-training-merged-07f93e85f2d98de37e21f70852e8b7c419aa6b9c50fd6f49b95ba9ade63befce.json.gz",
+    "ac73f923e0018be7214d3e7c2f70d29a8a7ac15123c5b3687f66412dec1d28c0": "public/data/soldier-overcap-terminal-training-merged-ac73f923e0018be7214d3e7c2f70d29a8a7ac15123c5b3687f66412dec1d28c0.json.gz"
   }
 }
