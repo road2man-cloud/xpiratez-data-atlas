@@ -1,0 +1,13 @@
+{
+  "bounds": {
+    "xMin": -0.12,
+    "xMax": 0.12,
+    "zMin": 0.76,
+    "zMax": 1.01
+  },
+  "frontY": 0,
+  "frontDirection": "negative",
+  "frontFeather": 0.055,
+  "edgeFeather": 0.1,
+  "opacity": 1
+}

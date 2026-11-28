@@ -1,0 +1,51 @@
+{
+  "version": "R36LT-UV-TEMPLATE",
+  "source": "R36LS_ART_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "c899da4b31d6a560ef03e2b67b1e6e6325d9228651ebfdd5edd12ec5163f64d1",
+  "bodyTriangles": 1132,
+  "otherTriangles": 968,
+  "totalTriangles": 2100,
+  "skinJoints": 63,
+  "sourceAtlas": [
+    2048,
+    2048
+  ],
+  "selection": {
+    "xMin": -0.12,
+    "xMax": 0.12,
+    "zMin": 0.76,
+    "zMax": 1.01
+  },
+  "frontPlane": 0,
+  "regions": [
+    {
+      "direction": "negative",
+      "selectedPixels": 323145,
+      "crop": {
+        "x": 0,
+        "y": 471,
+        "width": 2048,
+        "height": 1458
+      },
+      "intersectedTriangleCount": 272,
+      "maskFile": "R36LT_NEGATIVE_CENTER_MASK_2048.png",
+      "sourceCropFile": "R36LT_NEGATIVE_CENTER_SOURCE_CROP.png",
+      "wireCropFile": "R36LT_NEGATIVE_CENTER_UV_WIRE_CROP.png"
+    },
+    {
+      "direction": "positive",
+      "selectedPixels": 120865,
+      "crop": {
+        "x": 0,
+        "y": 531,
+        "width": 2048,
+        "height": 1338
+      },
+      "intersectedTriangleCount": 112,
+      "maskFile": "R36LT_POSITIVE_CENTER_MASK_2048.png",
+      "sourceCropFile": "R36LT_POSITIVE_CENTER_SOURCE_CROP.png",
+      "wireCropFile": "R36LT_POSITIVE_CENTER_UV_WIRE_CROP.png"
+    }
+  ],
+  "note": "Actual image template output, not finished appearance or renderer quality"
+}

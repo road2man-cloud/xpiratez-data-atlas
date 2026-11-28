@@ -1,0 +1,46 @@
+{
+  "version": "R36LU-UVGUTTER",
+  "input": "R36LS_ART_2100_COMPACT_FULL.glb",
+  "inputSHA256": "c899da4b31d6a560ef03e2b67b1e6e6325d9228651ebfdd5edd12ec5163f64d1",
+  "glb": "R36LU_UVGUTTER_2100_FULL.glb",
+  "glbSHA256": "d2a9a8230adcedb5e826729469f4087d326b9db2f2b882f4d592792d9d3d6f06",
+  "glbBytes": 9972124,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "totalTriangles": 2100,
+  "rigJoints": 63,
+  "padRadius": 8,
+  "selectedOriginalUVPixels": 1663200,
+  "paddedUVPixels": 1734610,
+  "insideUVBytesBitExact": true,
+  "geometryAndSkinUnmodified": true,
+  "maps": {
+    "color": {
+      "file": "R36LU_UVGUTTER_COLOR_2048.png",
+      "pngSHA256": "c637e74ddd73f5eb66d14f74c94f0aaf4b646092847066e4fc991ed20ad1f319",
+      "bytes": 1946337,
+      "filledPixels": 1734610,
+      "changedPixels": 1611509,
+      "originalUVPixelsPreserved": 1663200
+    },
+    "normal": {
+      "file": "R36LU_UVGUTTER_NORMAL_2048.png",
+      "pngSHA256": "029408c666faf4648d504bfce31b2acc00f387276cad20961d69c33afc558005",
+      "bytes": 1498276,
+      "filledPixels": 1734610,
+      "changedPixels": 1317052,
+      "originalUVPixelsPreserved": 1663200
+    },
+    "orm": {
+      "file": "R36LU_UVGUTTER_ORM_2048.png",
+      "pngSHA256": "c107317e22af09b5c7f5e9e22b77aca11401d923a75974d73a1b6ab7405d1912",
+      "bytes": 979480,
+      "filledPixels": 1734610,
+      "changedPixels": 1395263,
+      "originalUVPixelsPreserved": 1663200
+    }
+  },
+  "visualQA": "not run",
+  "S2EngineQA": "not run",
+  "limitation": "Image seam padding only; no new anatomical shape or painted reference added"
+}
