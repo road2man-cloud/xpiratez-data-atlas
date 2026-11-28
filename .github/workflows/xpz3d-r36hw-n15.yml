@@ -1,0 +1,53 @@
+name: XPZ3D R36HW N15 center-only continuity
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-n15.yml'
+permissions:
+  contents: write
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36hw-n14-three-pole-center-20261129/output/R36HW_N14_THREE_POLE_CENTER.glb
+            experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/
+            .github/workflows/xpz3d-r36hw-n15.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build local curvature model from original HW lineage
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/source/build_r36hw_n15.cjs
+          node experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/source/build_r36hw_n15.cjs
+      - name: Check changed vertices and source rig
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),p='experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/reports/R36HW_N15_CENTER_CONTINUITY.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8')),b=fs.readFileSync('experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/output/R36HW_N15_CENTER_CONTINUITY.glb');
+          if(r.triangles!==2099||r.pelvisTriangles!==363||r.skinJoints!==63||r.editedVertices<25||r.boundaryProtected!==45||r.maximumDisplacementMeters>.0081||r.faceInversions!==0||!r.faceHairUntouched||b.readUInt32LE(8)!==b.length)throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({triangles:r.triangles,edited:r.editedVertices,shift:r.maximumDisplacementMeters,sha:r.outputSHA256}));
+          NODE
+      - name: Publish generated GLB and report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/output/R36HW_N15_CENTER_CONTINUITY.glb experimental/xpz3d/f11/r36hw-n15-center-continuity-20261129/reports/R36HW_N15_CENTER_CONTINUITY.json
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N15 smooth attached pelvis center geometry"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
