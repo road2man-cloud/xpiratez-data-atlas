@@ -1,0 +1,215 @@
+{
+  "schema": "ATLAS_FORWARD_ACTIVE_CHECKPOINT_V3",
+  "graph": {
+    "path": "tools/data/overcap-forward-research-v3-frontier.json.gz",
+    "summary": "tools/data/overcap-forward-research-v3-frontier-summary.json",
+    "witnesses": "tools/data/overcap-forward-research-v3-frontier-witnesses.json",
+    "sha256": "0fbda103b9d524143d3c9195bae49aa3fd19deef0e95bbdda3b75f2fafbdab98"
+  },
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "inputs": {
+    "files": {
+      "public/data/soldiers-modern-index.json": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+      "tools/data/overcap-forward-supply-catalog-v2.json": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+      "tools/data/overcap-forward-starting-base-v3.json": "92dc15da2a3fdab42414da9d292ba5bb3fc48e29e79b0b9f52adc2e443c9d689",
+      "tools/data/overcap-forward-junk-extraction-v3.json": "23c1723fd7f228f682aa152f64b2ebe831ed62e14de4dfaeb16ace4a58f852e3"
+    },
+    "engineFiles": {
+      "tools/build-overcap-forward-source-start-v3.mjs": "dfc2fcb217c47354afe3281b8753da034c9b71ccabcdb94f3c9fc99aebdd99f2",
+      "tools/atlas-overcap-forward-research-v3.mjs": "2df4179439c00d70007c46f90b246075fcea0a49272d602f69fbf418aa80c8dd",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/atlas-overcap-forward-purchase-gate-v3.mjs": "b0eaa9f060bfb71eca20e06e60bc35ca01060c3903b3a9bfb1baecf802e6fe68",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "schedulerSha256": "21af24271235ccb87152ff57b8fc83b046802426a3bc52d91bd0baa882c1c529",
+  "counts": {
+    "nodes": 4013,
+    "edges": 7046,
+    "expanded": 84,
+    "openPartial": 193,
+    "openUnexpanded": 3736,
+    "distinctResearch": 786,
+    "maxLabDepth": 88,
+    "byAction": {
+      "research": 876,
+      "freeResearch": 564,
+      "sourceResearchDelivery": 17,
+      "sourceEventItems": 1433,
+      "eventResearch": 3124,
+      "missionResearch": 184,
+      "advanceMonth": 41,
+      "sourceBuySample": 7,
+      "sourceManufactureItem": 14,
+      "sourceRandomManufacture": 778,
+      "sourceBuildFacility": 8
+    },
+    "failed": 0,
+    "deferredOptions": 33210
+  },
+  "rootCursors": [
+    {
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "label": "근처 마을 방문",
+      "finalNode": 3833,
+      "stateHash": "362f3dd9f50b3caa69dc597034f018fffcbbee58ff2d7adea1abf8ae234d7def",
+      "labDepth": 37,
+      "researchCount": 73,
+      "remainingJunk": 14,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true
+        }
+      ],
+      "nextFrontier": null
+    },
+    {
+      "root": "STR_WAT_DO",
+      "label": "회의 소집",
+      "finalNode": 3881,
+      "stateHash": "d3ad109d3d63280571a5d621819c32d0b85128aa1d2039f02e084a4b709f10a3",
+      "labDepth": 37,
+      "researchCount": 73,
+      "remainingJunk": 14,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true
+        }
+      ],
+      "nextFrontier": null
+    },
+    {
+      "root": "STR_RECRUIT_PEASANTS",
+      "label": "지역 농부 고용",
+      "finalNode": 3929,
+      "stateHash": "557df2ef33a785c4f7964d30331abbe6c7007dbbf722d06333ea55b86c182a4b",
+      "labDepth": 37,
+      "researchCount": 73,
+      "remainingJunk": 14,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true
+        }
+      ],
+      "nextFrontier": null
+    },
+    {
+      "root": "STR_INSPECT_MACHINERY",
+      "label": "기계류 조사",
+      "finalNode": 4012,
+      "stateHash": "6bd21283af4559efa4b054223dce5f337cc3de07a3635ebbe2aa05d46557f2b1",
+      "labDepth": 88,
+      "researchCount": 179,
+      "remainingJunk": 10,
+      "targets": [
+        {
+          "kind": "facility",
+          "id": "STR_PERSONAL_LABS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ELERIUM_115",
+          "reached": true
+        },
+        {
+          "kind": "facility",
+          "id": "STR_WORKSHOP",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_ALIEN_ALLOYS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_COMMUNICATIONS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_CRAFT_AUXILARY_SYSTEMS",
+          "reached": true
+        },
+        {
+          "kind": "research",
+          "id": "STR_NECROPLANE_PARTS_RECYCLING",
+          "reached": false
+        },
+        {
+          "kind": "research",
+          "id": "STR_CONTACT_SHIP_JUNKYARD",
+          "reached": false
+        },
+        {
+          "kind": "facility",
+          "id": "STR_POWER_PLANT",
+          "reached": false
+        },
+        {
+          "kind": "facility",
+          "id": "STR_LIBRARY",
+          "reached": false
+        },
+        {
+          "kind": "research",
+          "id": "STR_SCHOOLING_2",
+          "reached": false
+        }
+      ],
+      "nextFrontier": {
+        "offered": 180,
+        "materialized": 0,
+        "deferred": 180
+      }
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}
