@@ -24,4 +24,13 @@ const eligible=records.filter(r=>r.scope.closed),pending=records.filter(r=>!r.sc
 for(const r of eligible){if(!grouped.has(r.pairId))grouped.set(r.pairId,[]);grouped.get(r.pairId).push(r);}
 const summary={priorPairs:first.summary.priorPairs,totalJobs:total,attempted:seenJobs.size,unattempted:total-seenJobs.size,replayed:records.length,sourceRepairedPriorPairs:new Set(records.map(r=>r.priorPair)).size,closureReadyPriorPairs:new Set(eligible.map(r=>r.priorPair)).size,closureReadyWitnesses:eligible.length,closureReadyPairCandidates:grouped.size,openSuccessorWitnesses:pending.length,failed:errors.length,officialFinalAdded:0};
 const out={schema:"ATLAS_VO2_POD_REPAIR_INTAKE_V1",sourceMetadataSha256:first.sourceMetadataSha256,sourceGraphSha256:first.sourceGraphSha256,materialBudgetHash:first.materialBudgetHash,sourceRuleHashes:first.sourceRuleHashes,sourceBatches:files.map(({name,data})=>({name,hash:key(data)})),summary,unattemptedOffsets:Array.from({length:total},(_,i)=>i).filter(i=>!seenJobs.has(i)),closedCandidates:[...grouped].map(([pairId,rows])=>({pairId,priorPairs:[...new Set(rows.map(r=>r.priorPair))],witnesses:rows})),openSuccessorQueue:pending,failedQueue:errors,scope:"Conditional source repair and fixed-body closure candidates. Research chronology changes; old IDs cannot be relabeled. No official admission, actual manufacture or physical campaign acquisition certified."};
-const file=dir+"/overcap-vo2-pod-repair-intake.json";fs.writeFileSync(file,JSON.stringify(out)+"\n");console.log(JSON.stringify({file,summary,unattemptedOffsets:out.unattemptedOffsets}));
+// Keep the original queue immutable when a staged canonical graph already
+// references its exact hash. Additional repairs use a versioned queue.
+const version=Number(process.argv.find(x=>x.startsWith("--version="))?.slice(10)||1);
+assert(Number.isSafeInteger(version)&&version>=1);
+const file=dir+"/overcap-vo2-pod-repair-intake"+(version===1?"":"-v"+version)+".json";
+if(fs.existsSync(file)){
+ const prior=read(file);
+ assert.equal(key(prior),key(out),"Existing intake is immutable; use a new --version");
+}
+fs.writeFileSync(file,JSON.stringify(out)+"\n");console.log(JSON.stringify({file,summary,unattemptedOffsets:out.unattemptedOffsets}));
