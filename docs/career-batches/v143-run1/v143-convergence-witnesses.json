@@ -1,0 +1,455 @@
+{
+  "version": 143,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "d7e435ca848810438c9f9fa172e9a1e5d5bd24ba9576c337e0beb1f362adf98a",
+  "convergence": {
+    "policy": "branch-local-personal-attention-v143",
+    "lanes": [
+      {
+        "lane": "priest-officer",
+        "start": "1701696472e28dd2dc037bf5c1de1f7044b2e2453f5b927c535b8b5255cc57f9",
+        "end": "944b021b8b4f394384555e85fa66ec36cedd0881ea57026ae5c7cf79d968d1fa",
+        "initialVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 175
+        },
+        "finalVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 176
+        },
+        "initialSum": 1276,
+        "finalSum": 1277,
+        "accepted": 16,
+        "completed": [
+          "STR_GOVT_CORPSE",
+          "STR_LINGERIE",
+          "STR_LINGERIE_DEP",
+          "STR_VODKA",
+          "STR_SOCIALIZING",
+          "STR_CONTACT_BUILDERS",
+          "STR_EXCAVATION",
+          "STR_PRIMITIVE_WEAPONS_2",
+          "STR_CLOCKWORK_GUN_PRODUCTION",
+          "STR_CAPTAINS_LOG_01",
+          "STR_PERSONAL_ATTENTION"
+        ],
+        "missing": [],
+        "stock": {
+          "STR_GLAMOUR": 0,
+          "STR_GOVT_CORPSE": 2,
+          "STR_LINGERIE": 0,
+          "STR_PORN": 5
+        },
+        "supplies": [
+          {
+            "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+            "script": "STR_NORED_YESGREEN_EVENTS_PRIEST",
+            "month": 24,
+            "reward": {
+              "STR_CREDIT_CHIP_01": 3,
+              "STR_GOVT_CORPSE": 3,
+              "STR_GUILD_SOLDIER": 1
+            },
+            "odds": 25,
+            "weight": 50,
+            "totalWeight": 400,
+            "randomItemCount": 6
+          },
+          {
+            "event": "STR_KNOCK_KNOCK_ATTACKED_IN_BED",
+            "script": "STR_NOGOLD_YESGREEN_EVENTS_PRIEST",
+            "month": 25,
+            "reward": {
+              "STR_DAMSEL_SACRIFICE": 1,
+              "STR_KNOIF": 1,
+              "STR_LINGERIE": 1
+            },
+            "odds": 25,
+            "weight": 50,
+            "totalWeight": 275,
+            "randomItemCount": 0
+          }
+        ],
+        "history": [
+          [
+            "STR_NEPOTISM",
+            1
+          ],
+          [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            1
+          ],
+          [
+            "STR_BASIC_FIREARMS_TRAINING",
+            1
+          ],
+          [
+            "STR_BREAD_AND_FISHES_TRAINING",
+            1
+          ],
+          [
+            "STR_OFFICER_TRAINING",
+            1
+          ],
+          [
+            "STR_PERSONAL_ATTENTION",
+            1
+          ]
+        ],
+        "future": [
+          {
+            "id": "STR_CAPTAINS_11",
+            "nominalTU": 10,
+            "statCap": false,
+            "missingResearch": [
+              "STR_CAPTAINS_11"
+            ],
+            "missingItems": {
+              "STR_CAPTAINS_11_TOKEN": 1,
+              "STR_GLAMOUR": 21
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [],
+            "minTU": 0
+          },
+          {
+            "id": "STR_GREEN_BEAUTY",
+            "nominalTU": 5,
+            "statCap": false,
+            "missingResearch": [
+              "STR_GREEN_BEAUTY"
+            ],
+            "missingItems": {
+              "STR_VAMPIRE_ESSENCE": 7,
+              "STR_PORN": 25,
+              "STR_GLAMOUR": 30
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [
+              "BDSWAP"
+            ],
+            "minTU": 0
+          },
+          {
+            "id": "STR_HOLY_WARRIOR_TRAINING",
+            "nominalTU": 15,
+            "statCap": true,
+            "missingResearch": [
+              "STR_HOLY_WARRIORS"
+            ],
+            "missingItems": {
+              "STR_PORN": 1
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [],
+            "minTU": 0
+          },
+          {
+            "id": "STR_UBERIZATION",
+            "nominalTU": 5,
+            "statCap": true,
+            "missingResearch": [
+              "STR_UBERIZATION"
+            ],
+            "missingItems": {
+              "STR_VAMPIRE_ESSENCE": 1
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [
+              "MED"
+            ],
+            "minTU": 0
+          },
+          {
+            "id": "STR_BRIDES_TO_THE_QUEEN",
+            "nominalTU": 6,
+            "statCap": true,
+            "missingResearch": [
+              "STR_BRIDES_TO_THE_QUEEN"
+            ],
+            "missingItems": {
+              "STR_HAREM_COLLAR": 1
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [],
+            "minTU": 0
+          },
+          {
+            "id": "STR_HERO_GOLD_TRAINING",
+            "nominalTU": 30,
+            "statCap": false,
+            "missingResearch": [
+              "STR_HERO_GOLD_TRAINING"
+            ],
+            "missingItems": {
+              "STR_CRACK": 36,
+              "STR_GLAMOUR": 36
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [],
+            "minTU": 90
+          },
+          {
+            "id": "STR_PARIAH_TRAINING",
+            "nominalTU": 10,
+            "statCap": false,
+            "missingResearch": [
+              "STR_PARIAH_TRAINING"
+            ],
+            "missingItems": {
+              "STR_SKULL": 8
+            },
+            "forbiddenHistory": [],
+            "missingFunctions": [],
+            "minTU": 0
+          },
+          {
+            "id": "STR_SUN_WARRIORS_TRAINING",
+            "nominalTU": 5,
+            "statCap": true,
+            "missingResearch": [
+              "STR_SUN_WARRIORS_TRAINING"
+            ],
+            "missingItems": {},
+            "forbiddenHistory": [
+              "STR_NEPOTISM"
+            ],
+            "missingFunctions": [],
+            "minTU": 0
+          }
+        ],
+        "gameCertified": false,
+        "registered": false
+      }
+    ],
+    "traces": [
+      {
+        "from": "1701696472e28dd2dc037bf5c1de1f7044b2e2453f5b927c535b8b5255cc57f9",
+        "to": "a3cc79f7c364eafcc3da6a639f72f33445ac0dc7e60fd060a2854257d94ec95e",
+        "action": {
+          "type": "conditionalPriestSupply",
+          "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+          "script": "STR_NORED_YESGREEN_EVENTS_PRIEST",
+          "month": 24,
+          "item": "STR_GUILD_SOLDIER",
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "from": "a3cc79f7c364eafcc3da6a639f72f33445ac0dc7e60fd060a2854257d94ec95e",
+        "to": "b8460d9f46b91293e91073e1eb0a0b592f957c4a0917c37960e01a7e86e49dd8",
+        "action": {
+          "type": "research",
+          "id": "STR_GOVT_CORPSE"
+        },
+        "added": [
+          "STR_GOVT_AUTOPSY",
+          "STR_GOVT_CORPSE"
+        ]
+      },
+      {
+        "from": "b8460d9f46b91293e91073e1eb0a0b592f957c4a0917c37960e01a7e86e49dd8",
+        "to": "2787a784aa5d71a60359791579a3b2badc66d218abff3d338b1c3bb953e7d3e6",
+        "action": {
+          "type": "conditionalPriestSupply",
+          "event": "STR_KNOCK_KNOCK_ATTACKED_IN_BED",
+          "script": "STR_NOGOLD_YESGREEN_EVENTS_PRIEST",
+          "month": 25,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "from": "2787a784aa5d71a60359791579a3b2badc66d218abff3d338b1c3bb953e7d3e6",
+        "to": "3c726d863861e8b4b7dc0b418536b6cce06bbf3a95f21aa98e0939429071e156",
+        "action": {
+          "type": "research",
+          "id": "STR_LINGERIE"
+        },
+        "added": [
+          "STR_LINGERIE",
+          "STR_LINGERIE_DEP"
+        ]
+      },
+      {
+        "from": "3c726d863861e8b4b7dc0b418536b6cce06bbf3a95f21aa98e0939429071e156",
+        "to": "2384ba4a990ec569f25f60142e051376a26c69c2d0c112034a18624c4c137533",
+        "action": {
+          "type": "research",
+          "id": "STR_VODKA"
+        },
+        "added": [
+          "STR_VODKA"
+        ]
+      },
+      {
+        "from": "2384ba4a990ec569f25f60142e051376a26c69c2d0c112034a18624c4c137533",
+        "to": "3f1eb992d4d56930699c43778eac91ce40bab6f94c773580c729aac476102ed7",
+        "action": {
+          "type": "research",
+          "id": "STR_SOCIALIZING"
+        },
+        "added": []
+      },
+      {
+        "from": "3f1eb992d4d56930699c43778eac91ce40bab6f94c773580c729aac476102ed7",
+        "to": "be30b9fae124b23095de21416f3e035035bac53a291ca25e47afafd38038ab12",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_SOCIALIZING",
+          "research": "STR_SWIMSUIT",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_SOCIALIZING",
+          "STR_SWIMSUIT",
+          "STR_SWIMSUIT_PEASANT_UC"
+        ]
+      },
+      {
+        "from": "be30b9fae124b23095de21416f3e035035bac53a291ca25e47afafd38038ab12",
+        "to": "83e72ade6a40de77427f17b58af0f7b77205d5d85ef7d15d86e09936c4998efa",
+        "action": {
+          "type": "research",
+          "id": "STR_CONTACT_BUILDERS"
+        },
+        "added": [
+          "STR_CONTACT_BUILDERS"
+        ]
+      },
+      {
+        "from": "83e72ade6a40de77427f17b58af0f7b77205d5d85ef7d15d86e09936c4998efa",
+        "to": "a5d3406fc36908231caedd62a46e36532a652a62798f918a22af9513a615b438",
+        "action": {
+          "type": "research",
+          "id": "STR_EXCAVATION"
+        },
+        "added": [
+          "STR_EXCAVATION",
+          "STR_PICKAXE"
+        ]
+      },
+      {
+        "from": "a5d3406fc36908231caedd62a46e36532a652a62798f918a22af9513a615b438",
+        "to": "a9b3d591ee51b76990df1c591600c38a2c9db2c746c8feb7877ea7f16c963af6",
+        "action": {
+          "type": "research",
+          "id": "STR_PRIMITIVE_WEAPONS_2"
+        },
+        "added": [
+          "STR_PRIMITIVE_WEAPONS_2",
+          "STR_PRIMITIVE_WEAPONS_2_ZZZ"
+        ]
+      },
+      {
+        "from": "a9b3d591ee51b76990df1c591600c38a2c9db2c746c8feb7877ea7f16c963af6",
+        "to": "783356850a681b49d34871dc8f33807b303fa6d77cecad4178681e71308cf5dd",
+        "action": {
+          "type": "research",
+          "id": "STR_BASIC_INCENDIARIES"
+        },
+        "added": [
+          "STR_BASIC_INCENDIARIES",
+          "STR_BASIC_INCENDIARIES_ZZZ"
+        ]
+      },
+      {
+        "from": "783356850a681b49d34871dc8f33807b303fa6d77cecad4178681e71308cf5dd",
+        "to": "b4227fce8b43be646c27eaad50c4068c075da3f17ce56040a4d2acbf1eabfd4f",
+        "action": {
+          "type": "research",
+          "id": "STR_FLINTLOCKS_PRODUCTION"
+        },
+        "added": [
+          "STR_FLINTLOCKS_PRODUCTION",
+          "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+          "STR_PEPPER_PISTOL"
+        ]
+      },
+      {
+        "from": "b4227fce8b43be646c27eaad50c4068c075da3f17ce56040a4d2acbf1eabfd4f",
+        "to": "752b9b9c0e475cbc6ed519e09ab45754568f9b789dc3cf73f968d3e60b3e6570",
+        "action": {
+          "type": "research",
+          "id": "STR_CLOCKWORK_GUN_PRODUCTION"
+        },
+        "added": [
+          "STR_CLOCKWORK_GUN_PRODUCTION"
+        ]
+      },
+      {
+        "from": "752b9b9c0e475cbc6ed519e09ab45754568f9b789dc3cf73f968d3e60b3e6570",
+        "to": "92127c13d545aba8433388d06c03d4ae6cb7183e2eee553de4d5c5aa2668c4d3",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAP_LOG_1_AWFUL",
+          "script": "STR_CAP_LOG_1_AWFUL",
+          "research": "STR_CAPTAINS_LOG_01",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_CAPTAINS_LOG_01"
+        ]
+      },
+      {
+        "from": "92127c13d545aba8433388d06c03d4ae6cb7183e2eee553de4d5c5aa2668c4d3",
+        "to": "071f653b1ba90f222f9f6b1d0b9ab4bf3d560dcf98ab59132c6df4b802580e52",
+        "action": {
+          "type": "research",
+          "id": "STR_PERSONAL_ATTENTION"
+        },
+        "added": [
+          "STR_PERSONAL_ATTENTION"
+        ]
+      },
+      {
+        "from": "071f653b1ba90f222f9f6b1d0b9ab4bf3d560dcf98ab59132c6df4b802580e52",
+        "to": "944b021b8b4f394384555e85fa66ec36cedd0881ea57026ae5c7cf79d968d1fa",
+        "action": {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_PERSONAL_ATTENTION"
+        },
+        "added": []
+      }
+    ],
+    "rejected": [],
+    "accepted": 16,
+    "gameCertified": false,
+    "registered": false
+  },
+  "gameCertified": false,
+  "registered": false
+}
