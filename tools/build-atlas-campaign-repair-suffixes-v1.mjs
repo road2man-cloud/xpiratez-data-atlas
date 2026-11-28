@@ -26,8 +26,8 @@ const read=p=>JSON.parse(bytes(p));const gz=f=>JSON.parse(gunzipSync(bytes('publ
 const d=read('public/data/soldiers-modern-index.json'),catalog=read('public/data/soldier-source-catalog.json');
 if(d.meta.mod.version!=='v.o2')throw Error('wrong-game-version');
 d.sourceItemIds=new Set(catalog.itemIds);
-const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={},events={},eventScripts={},regions={},countries={};
-let base,date;
+const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={},events={},eventScripts={},regions={},countries={},manufacture={};
+let base,date,initialFundingRule=null;
 function load(p,expected){
  const bytes=fs.readFileSync(p),h=createHash('sha256').update(bytes).digest('hex');
  if(expected&&expected!==h)throw Error('source-hash-mismatch:'+p);
@@ -35,12 +35,14 @@ function load(p,expected){
  const doc=yaml.load(bytes.toString('utf8'),{json:true})||{};
  if(doc.startingBase)base=doc.startingBase;
  if(doc.startingTime)date=doc.startingTime;
- for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts,events,eventScripts,regions,countries}))for(const row of doc[key]||[]){
+ if(doc.initialFunding!==undefined)initialFundingRule=doc.initialFunding;
+ for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts,events,eventScripts,regions,countries,manufacture}))for(const row of doc[key]||[]){
   if(row.delete){delete target[row.delete];continue;}
   const id=row.type||row.name;if(id)target[id]={...target[id],...row};
  }
 }
 for(const name of ['vars','startingBase','facilities','items','research'])load(path.join(game,'standard/xcom1',name+'.rul'));
+if(args.forwardManufacture==='1')load(path.join(game,'standard/xcom1/manufacture.rul'));
 for(const e of [...d.meta.source.rules].sort((a,b)=>a.file.localeCompare(b.file,'en')))load(path.join(rules,e.file),e.sha256);
 const researchGrants={};
 for(const [id,r] of Object.entries(research)){
@@ -136,7 +138,21 @@ if(scenarioCountry){
  s.firstMonth!==0||s.lastMonth!==0||s.executionOdds!==100||!equal(s.xcomBaseInCountryTriggers,{[scenarioCountry]:true})||
  Object.keys(s.eventWeights||{}).length!==1||!equal(s.eventWeights[0],{[eventId]:100}))throw Error('start-country-reward-source-mismatch:'+scenarioCountry);
 }
-d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents};
+const deterministicManufacture={};
+if(args.forwardManufacture==='1'){
+ const allowed=new Set(['name','type','category','requires','requiresBaseFunc','space','time','cost','requiredItems','producedItems','listOrder']);
+ for(const [id,r] of Object.entries(manufacture)){
+  if(Object.keys(r).some(k=>!allowed.has(k)))continue;
+  const outputs=r.producedItems??{[id]:1},materials=r.requiredItems??{};
+  const cost=r.cost??0,time=r.time??0,space=r.space??0;
+  if(![cost,time,space].every(v=>Number.isSafeInteger(v)&&v>=0)||!Object.keys(outputs).length)continue;
+  if(![...Object.entries(outputs),...Object.entries(materials)].every(([k,v])=>items[k]&&Number.isSafeInteger(v)&&v>0))continue;
+  const requires=r.requires??[],functions=r.requiresBaseFunc??[];
+  if(!Array.isArray(requires)||!Array.isArray(functions)||requires.some(k=>!d.researchRules[k]))continue;
+  deterministicManufacture[id]={requires,functions,cost,time,space,materials,outputs};
+ }
+}
+d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents,deterministicManufacture};
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 const snapshot={sourceFingerprint:d.meta.source.metadataSha256,items:base.items,facilities:complete.map(f=>f.id),functions,baseLayout:layout,
@@ -172,8 +188,8 @@ if(args.forwardOut){
    eventRoutes.push({event,research:id,script:indexed,sourceSha256:files['Piratez_Events.rul'],timer:e.timer??null,timerRandom:e.timerRandom??null,points:e.points??0});
   }
  }
- const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
- const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files});
+ const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',manufacturing:args.forwardManufacture==='1',missions:args.forwardMissions==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files,initialFundingEvidence:{raw:initialFundingRule,modeledOpeningFunds:snapshot.funds,reason:'engine-8.7.1-country-funding-initialization-unconfirmed'}});
  fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
  console.log(JSON.stringify(result.summary));process.exit(0);
 }
