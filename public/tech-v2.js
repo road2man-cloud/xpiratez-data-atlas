@@ -95,11 +95,13 @@
     }
     const forwardHost=elt($('detail-links'),'section','정방향 연구 자료 불러오는 중…','relation');
     const targets=kind==='research'?[row.id]:Array.isArray(row.fields.requires)?row.fields.requires:null;
-    if(targets===null){forwardHost.textContent='제조 선행 연구 필드 미확인: 정방향 판정 보류.';}
-    else forwardEvidence().then(({m,e})=>{
-      if(forwardHost.isConnected){
-        m.renderForwardEvidence(forwardHost,e,targets);
-        if(kind==='manufacture')elt(forwardHost,'p','연구 도달만 표시합니다. 제조 재료·시설·비용 및 실제 생산은 별도 조건입니다.');
+    forwardEvidence().then(({m,e})=>{
+      if(!forwardHost.isConnected)return;
+      if(kind==='research')m.renderForwardEvidence(forwardHost,e,targets);
+      else {
+        m.renderForwardAssetEvidence(forwardHost,e,[{kind:'recipe',id:row.id,label:'제조법',research:targets||[]}]);
+        if(targets===null)elt(forwardHost,'p','원본 선행 연구 필드 미확인: 연구 조건 판정 보류.');
+        elt(forwardHost,'p','제조 실행 기록은 제한된 모델의 생산 증거이며 현재 캠페인의 제조 가능성을 보장하지 않습니다.');
       }
     }).catch(err=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 자료 오류: '+err.message;});
     $('detail').scrollIntoView({behavior:'smooth',block:'start'});
