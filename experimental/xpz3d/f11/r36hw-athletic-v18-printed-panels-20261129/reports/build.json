@@ -1,0 +1,146 @@
+{
+  "schema": "r36hw-v18-print-v1",
+  "sourceBlob": "c1aef49ea29fd67e2c34a841aaf2f9d147c72b1f",
+  "sourceBytes": 254884,
+  "outputBytes": 319228,
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "uvTriangles": 1032,
+  "degenerateUvTriangles": 0,
+  "coveredTexels": 201735,
+  "overlapSamples": 20,
+  "paddingTexels": 25592,
+  "features": {
+    "chestChevron": 1603,
+    "waistSeam": 2831,
+    "diamondEmblem": 118,
+    "sidePanel": 46942
+  },
+  "texture": {
+    "width": 512,
+    "height": 512,
+    "channels": 3,
+    "bytes": 64145,
+    "imageIndex": 4,
+    "textureIndex": 4,
+    "imageView": 46,
+    "decodedPixelRoundtrip": true
+  },
+  "sourcePalette": {
+    "file": "body500_F11_pir.gif",
+    "size": [
+      320,
+      200
+    ],
+    "background": [
+      0,
+      255,
+      0
+    ],
+    "nonBackgroundPixels": 2650,
+    "frequentColors": [
+      {
+        "rgb": [
+          124,
+          80,
+          36
+        ],
+        "count": 339
+      },
+      {
+        "rgb": [
+          136,
+          96,
+          44
+        ],
+        "count": 328
+      },
+      {
+        "rgb": [
+          112,
+          68,
+          28
+        ],
+        "count": 291
+      },
+      {
+        "rgb": [
+          104,
+          56,
+          24
+        ],
+        "count": 256
+      },
+      {
+        "rgb": [
+          92,
+          44,
+          16
+        ],
+        "count": 244
+      },
+      {
+        "rgb": [
+          148,
+          112,
+          56
+        ],
+        "count": 200
+      }
+    ],
+    "usage": "visual hue reference only; not photometric calibration"
+  },
+  "materialBefore": {
+    "name": "R36HW_V16_OPAQUE_OCHRE_SPORTSWEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.51,
+        0.29,
+        0.11,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.88
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.35
+    }
+  },
+  "materialAfter": {
+    "name": "R36HW_V18_OPAQUE_PRINTED_OCHRE_SPORTSWEAR",
+    "alphaMode": "OPAQUE",
+    "doubleSided": false,
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        0.56,
+        0.34,
+        0.14,
+        1
+      ],
+      "metallicFactor": 0,
+      "roughnessFactor": 0.88,
+      "baseColorTexture": {
+        "index": 4,
+        "texCoord": 0
+      }
+    },
+    "normalTexture": {
+      "index": 3,
+      "texCoord": 0,
+      "scale": 0.35
+    }
+  },
+  "allOriginalBinaryBytesPreserved": true,
+  "originalViewsPreserved": 46,
+  "newViews": 1,
+  "meshRigUvUnchanged": true,
+  "opaque": true,
+  "nativeS2": false,
+  "nativeRender": false,
+  "visualApproval": false
+}
