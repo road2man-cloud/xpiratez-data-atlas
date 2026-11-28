@@ -1,0 +1,116 @@
+{
+  "version": "R36MG",
+  "source": "R36MF_SUBTLE_DENSE_2100_COMPACT_FULL.glb",
+  "shaSource": "cd3aec4c72b4acfa0197485a3b209467f7727fd7e6ebf8c4a83037864bbcce21",
+  "output": "R36MG_TOPOLOGY_2100_FULL.glb",
+  "modelSHA256": "57fd76e55ef21b0b5db9b669c07f71ace5d9f0f4268b1ada07b4521e29e29649",
+  "modelBytes": 13144496,
+  "bodyTriangles": 1132,
+  "faceHairTriangles": 968,
+  "totalTriangles": 2100,
+  "bones": 63,
+  "physicalEdgeFlips": 8,
+  "changedPhysicalTriangles": 16,
+  "candidateCount": 15,
+  "originalUVTilesPreserved": true,
+  "imagePixelsReprojected": 21519,
+  "modifiedNormalVertices": 186,
+  "actualPhysicalTopologyChanged": true,
+  "textureMaps": {
+    "color": {
+      "file": "R36MG_REMESH_COLOR_2048.png",
+      "bytes": 1986712,
+      "sha256": "6f0cf0fffc750fbbe90c9ac885d04c8d50bf403e445649fd591efa3883138860"
+    },
+    "normal": {
+      "file": "R36MG_REMESH_NORMAL_2048.png",
+      "bytes": 3338111,
+      "sha256": "6a246a81ef17d853485f846ca210867ab296b1af45a60eb2c6e7e17f7518b532"
+    }
+  },
+  "flips": [
+    {
+      "oldPhysicalEdge": "-2674/-8913/86903|-2725/-8356/89638",
+      "originalFaces": [
+        941,
+        986
+      ],
+      "oldQuality": 0.15029511174471696,
+      "newQuality": 0.2774986541083541,
+      "score": 0.8463584802391851
+    },
+    {
+      "oldPhysicalEdge": "2146/-4976/81989|2224/-5150/84796",
+      "originalFaces": [
+        913,
+        994
+      ],
+      "oldQuality": 0.15359069071540543,
+      "newQuality": 0.2569988390939476,
+      "score": 0.6732709378210391
+    },
+    {
+      "oldPhysicalEdge": "-548/-5811/89435|974/-8000/90618",
+      "originalFaces": [
+        904,
+        1031
+      ],
+      "oldQuality": 0.1428792949308945,
+      "newQuality": 0.2323338040074713,
+      "score": 0.6260844800490001
+    },
+    {
+      "oldPhysicalEdge": "-4017/-9599/85394|-4068/-9255/83785",
+      "originalFaces": [
+        1022,
+        1063
+      ],
+      "oldQuality": 0.14920263279430152,
+      "newQuality": 0.23919171833048397,
+      "score": 0.6031333619980156
+    },
+    {
+      "oldPhysicalEdge": "-5562/-10424/89307|-5852/-11034/84194",
+      "originalFaces": [
+        936,
+        1055
+      ],
+      "oldQuality": 0.16608146857590644,
+      "newQuality": 0.23736466974947593,
+      "score": 0.4292062310431098
+    },
+    {
+      "oldPhysicalEdge": "1920/-3496/79788|2168/-4346/78314",
+      "originalFaces": [
+        952,
+        1021
+      ],
+      "oldQuality": 0.17665017864277954,
+      "newQuality": 0.25022098284097094,
+      "score": 0.4164773835126747
+    },
+    {
+      "oldPhysicalEdge": "-3718/-9866/79381|-4228/-10793/82068",
+      "originalFaces": [
+        353,
+        939
+      ],
+      "oldQuality": 0.12489173045723775,
+      "newQuality": 0.17183672496682875,
+      "score": 0.37588553171392486
+    },
+    {
+      "oldPhysicalEdge": "12/-10194/92926|3176/-10875/92880",
+      "originalFaces": [
+        465,
+        903
+      ],
+      "oldQuality": 0.1697477797689381,
+      "newQuality": 0.22080314649826377,
+      "score": 0.30077192643593104
+    }
+  ],
+  "visualQA": "not run",
+  "S2EngineQA": "not run",
+  "caveat": "Quad flips on already independent triangle UV tiles. Image is rebaked from old mapped surface, not directly new photographic source."
+}
