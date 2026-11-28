@@ -121,7 +121,7 @@ function main(file,out){
   fs.writeFileSync(path.join(out,name),png);
   images.push({...report,file:name,bytes:png.length,sha256:sha(png)});
  }
- const result={version:'R36HW-N8-CPU',renderer:'pure Node CPU diagnostic rasterizer of actual N7B GLB triangles (S2-source-inspired illumination; NOT native S2)',sourceFile:path.basename(file),sourceSHA256:q.sha,totalTriangles:body+other,bodyTriangles:body,otherTriangles:other,bodyMeshCount:meshes.length,bounds:box,sourceShaderMath:['CalcNormal packed normalization approximation','CalcDirAmbLightDO direct + ambient'],syntheticCamera:true,syntheticLighting:true,images,limitations:['static glTF bind-pose positions; no animated skinning','does not sample embedded N4 baseColor PNG, micro-normal atlas, ORM, or native S2 bump shader','not Direct3D 9 execution or screenshot']};
+ const result={version:'R36HW-N8-CPU',renderer:'pure Node CPU diagnostic rasterizer of actual N8 GLB triangles (S2-source-inspired illumination; NOT native S2)',sourceFile:path.basename(file),sourceSHA256:q.sha,totalTriangles:body+other,bodyTriangles:body,otherTriangles:other,bodyMeshCount:meshes.length,bounds:box,sourceShaderMath:['CalcNormal packed normalization approximation','CalcDirAmbLightDO direct + ambient'],syntheticCamera:true,syntheticLighting:true,images,limitations:['static glTF bind-pose positions; no animated skinning','does not sample embedded N4 baseColor PNG, micro-normal atlas, ORM, or native S2 bump shader','not Direct3D 9 execution or screenshot']};
  fs.writeFileSync(path.join(out,'R36HW_N8_RENDER.report.json'),JSON.stringify(result,null,2)+'\n');
  console.log(JSON.stringify({sourceSHA256:q.sha,body,other,rendered:images.length,files:images.map(x=>({name:x.file,bytes:x.bytes}))}));
 }
