@@ -1,0 +1,80 @@
+name: XPZ3D R36LN full character build
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36ln-reference-contour-20261128/source/**'
+      - '.github/workflows/xpz3d-r36ln-production.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36ln-production
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check Node syntax and input
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check experimental/xpz3d/f11/r36ln-reference-contour-20261128/source/center_contour.cjs
+          node --check experimental/xpz3d/f11/r36ln-reference-contour-20261128/source/build_r36ln.cjs
+          test -s experimental/xpz3d/f11/r36kz-chest-center-shape-20261128/output/R36KZ_STABLE_2088_TORSO_CENTER.glb
+      - name: Produce and stage two complete full-character GLBs
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT="$BASE/r36ln-reference-contour-20261128"
+          INPUT="$BASE/r36kz-chest-center-shape-20261128/output/R36KZ_STABLE_2088_TORSO_CENTER.glb"
+          mkdir -p "$ROOT/output"
+          rm -f "$ROOT/output/R36LN_BALANCED_2088_FULL.glb" "$ROOT/output/R36LN_SOFT_2088_FULL.glb"
+          rm -f "$ROOT/output/R36LN_BALANCED_2088_FULL.report.json" "$ROOT/output/R36LN_SOFT_2088_FULL.report.json"
+          node "$ROOT/source/build_r36ln.cjs" "$INPUT" "$ROOT/output/R36LN_BALANCED_2088_FULL.glb" --variant=balanced
+          node "$ROOT/source/build_r36ln.cjs" "$INPUT" "$ROOT/output/R36LN_SOFT_2088_FULL.glb" --variant=soft
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const dir=process.argv[2],names=['R36LN_BALANCED_2088_FULL','R36LN_SOFT_2088_FULL'];
+          for(const n of names){
+            const glb=fs.readFileSync(path.join(dir,n+'.glb')),r=JSON.parse(fs.readFileSync(path.join(dir,n+'.report.json')));
+            if(glb.toString('ascii',0,4)!=='glTF'||glb.readUInt32LE(8)!==glb.length||r.totalTriangles!==2088||r.skeletonJoints!==63||r.changedRenderVertices<8)throw Error('invalid built artifact '+n);
+            console.log(n,glb.length,r.changedRenderVertices,r.outputSHA256);
+          }
+          NODE
+      - name: Preserve builds as GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: R36LN-full-character
+          path: experimental/xpz3d/f11/r36ln-reference-contour-20261128/output/
+          retention-days: 90
+      - name: Publish new full GLBs on main without force push
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          ROOT=experimental/xpz3d/f11/r36ln-reference-contour-20261128/output
+          git add "$ROOT"
+          if git diff --cached --quiet; then echo "No new artifacts to publish"; exit 0; fi
+          git commit -m "xpz3d: publish R36LN balanced and soft full GLBs"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then
+              echo "Published R36LN on main"
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep 2
+          done
+          echo "Non-force main push was not possible; Actions artifact retained" >&2
+          exit 1
