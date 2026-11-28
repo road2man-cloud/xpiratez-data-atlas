@@ -178,6 +178,8 @@ if(args.defaultRankEvidence==='1'){
 const {buildBlessingsRoute}=await import('./atlas-v62-blessings-route.mjs');
 const blessingsRoute=buildBlessingsRoute(d,events,eventScripts,items,files);
 d.campaignAssets.mixedEventRoutes={[blessingsRoute.event]:blessingsRoute};
+const {buildMonthlyRoutes}=await import('./atlas-v63-monthly-routes.mjs');
+for(const route of buildMonthlyRoutes(d,events,eventScripts,items,files))for(const item of Object.keys(route.items))(fixedItemEvents[item]??=[]).push(route);
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 if(args.forwardRecruitment==='1'){

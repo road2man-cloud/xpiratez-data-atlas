@@ -67,6 +67,11 @@ export function campaignStartWorld(data,snapshot){
 function applyCampaignStartCore(input,step,data){
  if(step.type==='externalInputs'||step.type==='campaignContext')return {ok:false,world:input,reason:'external-state-forbidden'};
  if(input.pendingFree&&step.type!=='freeResearch')return {ok:false,world:input,reason:'pending-free-award'};
+ if(step.type==='conditionalMonth'){
+  if(step.assumeOutcome!==true||input.month!==0||step.month!==1||step.score!==0||input.score!=null||data.campaignAssets?.sourceFingerprint!==input.sourceFingerprint)return {ok:false,world:input,reason:'month-scenario-invalid'};
+  const world=structuredClone(input);world.month=1;world.score=0;world.conditionalMonthScenario={month:1,rating:0};
+  return {ok:true,world,assumed:true,notes:['conditional-month-one-rating-zero','monthly-rating-is-assumed-not-achieved','calendar-economy-and-intervening-events-not-simulated']};
+ }
  if(CAREER_ACTIONS.has(step.type))return applyConditionalCareerAction(input,step,data);
  if(step.type==='conditionalTransformRoll'){
   try{
@@ -163,7 +168,7 @@ function applyCampaignStartCore(input,step,data){
   try{
    const route=(data.campaignAssets?.fixedItemEvents?.[step.item]||[]).find(r=>r.event===step.event&&r.script.script===step.script);
    if(!route||data.campaignAssets.sourceFingerprint!==input.sourceFingerprint)throw Error('fixed-event-source-mismatch');
-   if(step.assumeOutcome!==true||step.count!==route.items[step.item])throw Error('fixed-event-outcome-or-count-mismatch');
+   if(step.assumeOutcome!==true||step.count!==route.items[step.item]||(route.outcome??null)!==(step.outcome??null))throw Error('fixed-event-outcome-or-count-mismatch');
    // Conservative one use per event; even repeatable event paths cannot
    // manufacture unbounded grants without an explicit repeat scheduler.
    if(input.generatedEvents?.[step.event])throw Error('fixed-event-repeat-unmodeled');
@@ -182,7 +187,7 @@ function applyCampaignStartCore(input,step,data){
    world.funds+=funds;
    if(Number.isFinite(world.score))world.score+=points;
    world.generatedEvents[step.event]=(world.generatedEvents[step.event]||0)+1;
-   return {ok:true,world,assumed:true,notes:[...verdict.pending,'fixed-item-only-event:'+step.event,'fixed-event-funds:'+funds,'fixed-event-points:'+points,'event-scheduler-and-receipt-not-native-certified']};
+   return {ok:true,world,assumed:true,notes:[...verdict.pending,...(route.outcome==null?['fixed-item-only-event:'+step.event]:['conditional-random-bundle-event:'+step.event,'selected-native-list-index:'+route.outcome,'random-list-choice-not-native-certified']),'fixed-event-funds:'+funds,'fixed-event-points:'+points,'event-scheduler-and-receipt-not-native-certified']};
   }catch(e){return {ok:false,world:input,reason:e.message};}
  }
  const mixed=data.campaignAssets?.mixedEventRoutes?.[step.event];
