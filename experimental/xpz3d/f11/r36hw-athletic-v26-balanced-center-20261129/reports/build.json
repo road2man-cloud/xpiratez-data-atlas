@@ -1,0 +1,58 @@
+{
+  "version": "V26",
+  "parameters": {
+    "grooveDepthMeters": -0.0048,
+    "grooveSigmaU": 0.235,
+    "shoulderHeightMeters": 0.0021,
+    "shoulderCentersU": [
+      -0.43,
+      0.43
+    ],
+    "shiftClampMeters": [
+      -0.0046,
+      0.0024
+    ]
+  },
+  "baseSha256": "b774b264dfef15c88fb919dff936dcfcec87320385203dd74864f3a8b2b19121",
+  "donorSha256": "ad4b40635460f2be7df0596a865bb867a28d4a648101f02289c65779a3b950e7",
+  "originalTotalTriangles": 2100,
+  "totalTriangles": 3214,
+  "addedTriangles": 1114,
+  "firstPassGarmentTriangles": 1412,
+  "adaptiveFaces": 274,
+  "adaptiveMarkedEdges": 367,
+  "outputGarmentVertices": 1343,
+  "originalGarmentVertices": 706,
+  "donorCenterVertices": 240,
+  "donorCenterXZ": [
+    -0.0025432256516069174,
+    0.8547425270080566
+  ],
+  "sculptRadiusXZ": [
+    0.145,
+    0.12601317286491395
+  ],
+  "sculpt": "analytic smooth tapered fabric center contour",
+  "affectedPositions": 410,
+  "meanMoveMeters": 0.0006552589788444571,
+  "maxMoveMeters": 0.001649909843915288,
+  "modifiedColorVertices": 0,
+  "uvWeldGroups": 231,
+  "uvWeldedVertices": 490,
+  "uvSeamMaxError": 0,
+  "seamNormalUpdates": 382,
+  "distortedFaces": 0,
+  "minNormalAlignment": 0.9953041724522156,
+  "originalV14GarmentMaterialPreserved": true,
+  "originalVertexColorsPreserved": true,
+  "originalV14NormalAtlasPreserved": true,
+  "noAddedClothingPanel": true,
+  "originalOtherPrimitivesPreserved": true,
+  "originalRigJoints": 63,
+  "donorMeshCopied": false,
+  "opaque": true,
+  "outputSHA256": "d7921b9f7e32cb1ae0bfd7a995e3cd7a46f3450e0a71460193e1c9dd6a80ddc8",
+  "outputBytes": 535604,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false
+}
