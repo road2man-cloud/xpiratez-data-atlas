@@ -1,0 +1,138 @@
+{
+  "sourceBlob": "b48db6db2cdf0bdc40ba684550125a339167a2c6",
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "changedSkinVertices": 125,
+  "changedWeldedPoints": 77,
+  "protectedVertices": 581,
+  "eligibleBySide": [
+    {
+      "side": "L",
+      "points": 40,
+      "changed": 40
+    },
+    {
+      "side": "R",
+      "points": 37,
+      "changed": 37
+    }
+  ],
+  "changedBinaryBytes": 1393,
+  "acceptedTransfers": 333,
+  "blend": 1,
+  "passes": [
+    {
+      "step": 0.075,
+      "pass": 0,
+      "updates": 37
+    },
+    {
+      "step": 0.075,
+      "pass": 1,
+      "updates": 25
+    },
+    {
+      "step": 0.075,
+      "pass": 2,
+      "updates": 17
+    },
+    {
+      "step": 0.045,
+      "pass": 0,
+      "updates": 42
+    },
+    {
+      "step": 0.045,
+      "pass": 1,
+      "updates": 16
+    },
+    {
+      "step": 0.045,
+      "pass": 2,
+      "updates": 0
+    },
+    {
+      "step": 0.025,
+      "pass": 0,
+      "updates": 57
+    },
+    {
+      "step": 0.025,
+      "pass": 1,
+      "updates": 18
+    },
+    {
+      "step": 0.025,
+      "pass": 2,
+      "updates": 12
+    },
+    {
+      "step": 0.0125,
+      "pass": 0,
+      "updates": 56
+    },
+    {
+      "step": 0.0125,
+      "pass": 1,
+      "updates": 34
+    },
+    {
+      "step": 0.0125,
+      "pass": 2,
+      "updates": 19
+    }
+  ],
+  "syntheticPoses": 20,
+  "proxyBefore": {
+    "rms": 0.11120031407062897,
+    "peak": 1.0772653593436858,
+    "edgeSamples": 2900,
+    "weightedLoss": 32.5262692328677,
+    "by": {
+      "L": {
+        "n": 1490,
+        "peak": 1.0672374159692295,
+        "rms": 0.11077366591417509
+      },
+      "R": {
+        "n": 1410,
+        "peak": 1.0772653593436858,
+        "rms": 0.1116493974911141
+      }
+    }
+  },
+  "proxyAfter": {
+    "rms": 0.08644584719966925,
+    "peak": 0.36948073186914454,
+    "edgeSamples": 2900,
+    "weightedLoss": 19.46099180860225,
+    "by": {
+      "L": {
+        "n": 1490,
+        "peak": 0.36948073186914454,
+        "rms": 0.08689432894443175
+      },
+      "R": {
+        "n": 1410,
+        "peak": 0.35190426370541755,
+        "rms": 0.08596937721481394
+      }
+    }
+  },
+  "rmsReductionPercent": 22.261148341035174,
+  "peakReductionPercent": 65.70197596493334,
+  "allNonWeightBytesPreserved": true,
+  "geometryPreserved": true,
+  "materialPreserved": true,
+  "rigPreserved": true,
+  "uvSeamWeightsMatched": true,
+  "outputBytes": 402980,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Synthetic single-joint rotations and fixed edge-strain proxy, not native S2 animations.",
+    "No claim of actual posed clipping or volume preservation.",
+    "Only existing mesh skin weights within a bounded shoulder region were optimized."
+  ]
+}
