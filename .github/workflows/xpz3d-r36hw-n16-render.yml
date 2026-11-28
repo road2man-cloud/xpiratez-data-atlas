@@ -1,0 +1,54 @@
+name: XPZ3D R36HW N16 local center captures
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-n16-center-render-20261129/source/**'
+      - '.github/workflows/xpz3d-r36hw-n16-render.yml'
+permissions:
+  contents: write
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128/source/glb_io.cjs
+            experimental/xpz3d/f11/r36hw-n16-retess-center-20261129/output/R36HW_N16_RETESS_CENTER.glb
+            experimental/xpz3d/f11/r36hw-n16-center-render-20261129/
+            .github/workflows/xpz3d-r36hw-n16-render.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Render six only actual pelvis-center views
+        run: |
+          node --check experimental/xpz3d/f11/r36hw-n16-center-render-20261129/source/render_n16.cjs
+          rm -rf experimental/xpz3d/f11/r36hw-n16-center-render-20261129/output
+          node experimental/xpz3d/f11/r36hw-n16-center-render-20261129/source/render_n16.cjs experimental/xpz3d/f11/r36hw-n16-retess-center-20261129/output/R36HW_N16_RETESS_CENTER.glb experimental/xpz3d/f11/r36hw-n16-center-render-20261129/output
+      - name: Validate images are genuine N16 mesh
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),r=JSON.parse(fs.readFileSync('experimental/xpz3d/f11/r36hw-n16-center-render-20261129/output/R36HW_N16_RENDER.report.json','utf8'));
+          if(r.totalTriangles!==2099||r.images.length!==6||r.images.some(x=>x.bytes<4000))throw Error(JSON.stringify(r));
+          console.log(JSON.stringify({totalTriangles:r.totalTriangles,closeUps:r.images.length,sha:r.sourceSHA256}));
+          NODE
+      - name: Publish N16 local only captures
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-n16-center-render-20261129/output
+          if ! git diff --cached --quiet; then
+            git commit -m "build(f11): N16 actual GLB pelvis-only captures"
+            for attempt in 1 2 3; do
+              git fetch origin main
+              if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+              git rebase --abort || true
+              sleep 2
+            done
+            exit 1
+          fi
