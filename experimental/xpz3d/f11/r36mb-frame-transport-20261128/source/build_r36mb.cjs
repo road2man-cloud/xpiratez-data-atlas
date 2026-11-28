@@ -13,7 +13,7 @@
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const {load,extract,Builder,values}=require('../../r36kz-chest-center-shape-20261128/source/glb_io.cjs');
 const {decodePNG,encodePNG}=require('../../r36lp-skin-rebake-20261128/source/build_r36lp.cjs');
-const {triangleFrame,texToWorld,worldToTex,rebake}=require('../../r36ma-seam-rebake-20261128/source/build_r36ma.cjs');
+const {triangleFrame,rebake}=require('../../r36ma-seam-rebake-20261128/source/build_r36ma.cjs');
 const ensure=(v,s)=>{if(!v)throw Error(s)};
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
 const length=p=>Math.hypot(...p);
@@ -21,6 +21,19 @@ const dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0);
 const sub=(a,b)=>a.map((v,i)=>v-b[i]);
 const norm=a=>{const l=length(a);return l>1e-9?a.map(x=>x/l):[0,0,1]};
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
+function texToWorld(rgb,frame){
+ const v=norm(rgb.slice(0,3).map(c=>c/127.5-1));
+ return norm([
+  frame.t[0]*v[0]+frame.b[0]*v[1]+frame.n[0]*v[2],
+  frame.t[1]*v[0]+frame.b[1]*v[1]+frame.n[1]*v[2],
+  frame.t[2]*v[0]+frame.b[2]*v[1]+frame.n[2]*v[2]
+ ]);
+}
+function worldToTex(w,frame){
+ const v=norm([dot(w,frame.t),dot(w,frame.b),dot(w,frame.n)]);
+ return v.map(a=>Math.round(clamp((a*.5+.5)*255,0,255)));
+}
+
 function embedded(q,i){
  const tex=q.g.textures[i],im=q.g.images[tex.source];
  ensure(im.mimeType==='image/png'&&Number.isInteger(im.bufferView),'PNG material image required');
