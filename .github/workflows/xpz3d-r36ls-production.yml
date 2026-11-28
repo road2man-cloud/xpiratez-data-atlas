@@ -1,0 +1,77 @@
+name: XPZ3D R36LS illustrated secondary body painting
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/source/build_r36ls.cjs'
+      - 'experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/source/paint_detail.cjs'
+      - '.github/workflows/xpz3d-r36ls-production.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36ls-production
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+            experimental/xpz3d/f11/r36lr-authored-paint-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Paint authored directional brushes and produce full GLBs
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+          INPUT=experimental/xpz3d/f11/r36lr-authored-paint-20261128/output/art/R36LR_ART_2100_FULL.glb
+          node --check "$ROOT/source/paint_detail.cjs"
+          node --check "$ROOT/source/build_r36ls.cjs"
+          rm -rf "$ROOT/output/art" "$ROOT/output/subtle"
+          node --max-old-space-size=4096 "$ROOT/source/build_r36ls.cjs" "$INPUT" "$ROOT/output/art" art
+          node --max-old-space-size=4096 "$ROOT/source/build_r36ls.cjs" "$INPUT" "$ROOT/output/subtle" subtle
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          for(const mode of ['art','subtle']){
+            const stem='R36LS_'+mode.toUpperCase()+'_2100_FULL',dir=path.join(process.argv[2],mode);
+            const b=fs.readFileSync(path.join(dir,stem+'.glb'));
+            const r=JSON.parse(fs.readFileSync(path.join(dir,stem+'.report.json')));
+            if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length||
+               r.wholeTriangleCount!==2100||r.joints!==63||r.painting.paintedPixels<20000)throw Error('invalid R36LS '+mode);
+            console.log(mode,b.length,r.glbSHA256,r.painting.paintedPixels);
+          }
+          NODE
+      - name: Preserve full GLB art candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: R36LS-painted-full-character
+          path: experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/output/
+          retention-days: 90
+      - name: Publish art GLBs and brush-painted 2048 atlas PNGs
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/output
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DIR"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36LS authored skin painting and complete GLBs"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1

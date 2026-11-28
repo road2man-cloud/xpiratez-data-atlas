@@ -1,0 +1,50 @@
+{
+  "version": "R36LS",
+  "variant": "art",
+  "input": "R36LR_ART_2100_FULL.glb",
+  "inputSHA256": "752a4c6b2432f3b37fbe3dea32d995903c17d10219e2308592b6ac1f5467dc0d",
+  "glb": "R36LS_ART_2100_FULL.glb",
+  "glbBytes": 18518060,
+  "glbSHA256": "be062bd32b86b7ca555993bfe498ca3cda479e68da5905f573d45c75b1110079",
+  "wholeTriangleCount": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "joints": 63,
+  "maps": {
+    "color": {
+      "file": "R36LS_ART_2100_FULL_COLOR_2048.png",
+      "bytes": 2090338,
+      "sha256": "f06b84dc219e979b18dafc723995799a6bbc41a623d95e414ea389e17ab7fb16"
+    },
+    "normal": {
+      "file": "R36LS_ART_2100_FULL_NORMAL_2048.png",
+      "bytes": 1730277,
+      "sha256": "6f9545bf866aca0e2b3f3e40c029c4a780b8bde0d2c8be5681a46c6eaf92ac67"
+    },
+    "orm": {
+      "file": "R36LS_ART_2100_FULL_ORM_2048.png",
+      "bytes": 854812,
+      "sha256": "415cbca49619b77b4ef461e87b20592a531c359bf73560ab6bdc186be74468d5"
+    }
+  },
+  "painting": {
+    "version": "R36LS",
+    "variant": "art",
+    "paintedPixels": 1241497,
+    "normalEditedPixels": 3476,
+    "roughnessEditedPixels": 595394,
+    "meanAbsoluteColorChangeRGB8": 1.9698697083708887,
+    "maxColorDeltaRGB8": 16,
+    "artStrokeHits": 1701854,
+    "layerCoverage": {
+      "ink": 117961,
+      "light": 490337,
+      "warm": 166063,
+      "grain": 1468813
+    },
+    "sourceTriangleCount": 1132,
+    "degenerateUVFaces": 0
+  },
+  "rendererQA": "not run",
+  "S2EngineQA": "not run"
+}
