@@ -1,0 +1,540 @@
+{
+  "schema": "ATLAS_FORWARD_PERSUASION_SOURCES_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "events": [
+    {
+      "id": "STR_JACKLAZY_BEST_BARGAIN",
+      "fixed": {},
+      "pool": [
+        "STR_BEER",
+        "STR_VODKA",
+        "STR_MOONSHINE"
+      ],
+      "research": [
+        "STR_BEER",
+        "STR_VODKA"
+      ],
+      "interrupt": null,
+      "points": 10,
+      "funds": 500,
+      "timer": 60,
+      "timerRandom": 43400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 1415,
+        "endLine": 1423,
+        "blockSha256": "8484c263a95b43d116d1c02e92190a9529f184767335d8c8b62e06505eefd31d"
+      }
+    },
+    {
+      "id": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+      "fixed": {
+        "STR_MEDALLION": 1,
+        "STR_MUTANT_BLESSINGS": 1
+      },
+      "pool": [],
+      "research": [],
+      "interrupt": null,
+      "points": 75,
+      "funds": 0,
+      "timer": 60,
+      "timerRandom": 43400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 1472,
+        "endLine": 1478,
+        "blockSha256": "f86ae7fcec8d2a3b4469e9779b049d2273b20020623460f463334f18620ec805"
+      }
+    },
+    {
+      "id": "STR_GAMBLING_NIGHT_WIN",
+      "fixed": {
+        "STR_CREDIT_CHIP_D": 75,
+        "STR_MEDALLION": 1,
+        "STR_RING": 1,
+        "STR_LINGERIE": 3,
+        "STR_GLAMOUR": 3
+      },
+      "pool": [],
+      "research": [],
+      "interrupt": null,
+      "points": 0,
+      "funds": 0,
+      "timer": 60,
+      "timerRandom": 43400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 5515,
+        "endLine": 5525,
+        "blockSha256": "951f08c657cc04979d88844fe2e27339d93100c83f5a92d50d37cbc3dd94f784"
+      }
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_01",
+      "fixed": {},
+      "pool": [],
+      "research": [
+        "STR_CAPTAINS_RANK_01"
+      ],
+      "interrupt": null,
+      "points": 0,
+      "funds": 0,
+      "timer": 60,
+      "timerRandom": 1300,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 2601,
+        "endLine": 2607,
+        "blockSha256": "14b961725e9c6b3a8695c953638f8886723f31f9c7759697125f8546e0f027d1"
+      }
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_02",
+      "fixed": {},
+      "pool": [],
+      "research": [
+        "STR_CAPTAINS_RANK_02"
+      ],
+      "interrupt": null,
+      "points": 0,
+      "funds": 0,
+      "timer": 60,
+      "timerRandom": 1300,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 2608,
+        "endLine": 2614,
+        "blockSha256": "4746da63ba06e19801b7a5b6a696b485c6abaeee74590dcc8c513f167850df40"
+      }
+    }
+  ],
+  "scripts": [
+    {
+      "id": "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+      "event": "STR_JACKLAZY_BEST_BARGAIN",
+      "positive": [
+        "STR_CAPTAIN_JACKLAZY"
+      ],
+      "negative": [],
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 20,
+      "minScore": null,
+      "weight": 100,
+      "totalWeight": 1490,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9703,
+        "endLine": 9725,
+        "blockSha256": "8fc6491b7f6182eca16dba761c50f54b9768211a70a8026f4504a474c312f956"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9703,
+        "endLine": 9725,
+        "blockSha256": "8fc6491b7f6182eca16dba761c50f54b9768211a70a8026f4504a474c312f956"
+      }
+    },
+    {
+      "id": "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+      "event": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+      "positive": [
+        "STR_CAPTAIN_JACKLAZY"
+      ],
+      "negative": [],
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 20,
+      "minScore": null,
+      "weight": 100,
+      "totalWeight": 1490,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9726,
+        "endLine": 9730,
+        "blockSha256": "2f847c8fe3a3e299125175ad3ae0394ab12662e3867f4c60fe8d54d7a8367e83"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9703,
+        "endLine": 9725,
+        "blockSha256": "8fc6491b7f6182eca16dba761c50f54b9768211a70a8026f4504a474c312f956"
+      }
+    },
+    {
+      "id": "STR_NOGREEN_YESGOLD_EVENTS",
+      "event": "STR_GAMBLING_NIGHT_WIN",
+      "positive": [
+        "STR_CAPTAIN_YESGOLD_NOGREEN"
+      ],
+      "negative": [],
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 25,
+      "minScore": null,
+      "weight": 100,
+      "totalWeight": 400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 10093,
+        "endLine": 10102,
+        "blockSha256": "628d0802415f5daf008a11713ba8973bb35ab48b02215248d85d712974879a99"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 10093,
+        "endLine": 10102,
+        "blockSha256": "628d0802415f5daf008a11713ba8973bb35ab48b02215248d85d712974879a99"
+      }
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_01",
+      "event": "STR_CAPTAINS_RANK_01",
+      "positive": [],
+      "negative": [
+        "STR_CAPTAINS_RANK_01"
+      ],
+      "firstMonth": 1,
+      "lastMonth": -1,
+      "executionOdds": 100,
+      "minScore": 2000,
+      "weight": 100,
+      "totalWeight": 100,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7637,
+        "endLine": 7645,
+        "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7637,
+        "endLine": 7645,
+        "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+      }
+    },
+    {
+      "id": "STR_CAPTAINS_RANK_02",
+      "event": "STR_CAPTAINS_RANK_02",
+      "positive": [
+        "STR_KULTUR",
+        "STR_ALIEN_ORIGINS",
+        "STR_CAPTAINS_RANK_01"
+      ],
+      "negative": [
+        "STR_CAPTAINS_RANK_02"
+      ],
+      "firstMonth": 2,
+      "lastMonth": -1,
+      "executionOdds": 100,
+      "minScore": 3000,
+      "weight": 100,
+      "totalWeight": 100,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7646,
+        "endLine": 7657,
+        "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7646,
+        "endLine": 7657,
+        "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+      }
+    }
+  ],
+  "purchase": {
+    "id": "STR_EXPEDITION_RESEARCH",
+    "cost": 50000,
+    "requires": [
+      "STR_EXPEDITION_RESEARCH_INCOMPLETE"
+    ],
+    "transferHours": 960,
+    "size": 75,
+    "anchor": {
+      "file": "Piratez.rul",
+      "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+      "startLine": 4352,
+      "endLine": 4360,
+      "blockSha256": "19c52087eab0101ac87113f7beb581bdd4d1d0435b74e8c02d1015421f52de4e"
+    }
+  },
+  "recipes": [
+    {
+      "id": "STR_EXPEDITION_DEBRIEF",
+      "requires": [
+        "STR_EXPEDITIONS"
+      ],
+      "functions": [],
+      "inputs": {
+        "STR_EXPEDITION_RESEARCH": 1
+      },
+      "fixed": {
+        "STR_EXPEDITION_REPORTS": 1,
+        "STR_LOOTBOX_EXPEDITION": 1
+      },
+      "outcomes": [
+        {
+          "weight": 20,
+          "items": {}
+        },
+        {
+          "weight": 12,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 1
+          }
+        },
+        {
+          "weight": 6,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 2
+          }
+        },
+        {
+          "weight": 2,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 3
+          }
+        },
+        {
+          "weight": 3,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 1,
+            "STR_WANDERER_VICTIM": 1
+          }
+        },
+        {
+          "weight": 2,
+          "items": {
+            "STR_WANDERER_VICTIM": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 3,
+            "STR_WANDERER_VICTIM": 1
+          }
+        },
+        {
+          "weight": 3,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 1,
+            "STR_DAMSEL_VICTIM": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_DAMSEL_VICTIM": 1
+          }
+        },
+        {
+          "weight": 2,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 2,
+            "STR_BUGEYE_VICTIM": 1
+          }
+        },
+        {
+          "weight": 3,
+          "items": {
+            "STR_LOOTBOX_EXPEDITION": 1,
+            "CIVILIAN_YOUNG_UBER": 1
+          }
+        },
+        {
+          "weight": 2,
+          "items": {
+            "CIVILIAN_YOUNG_UBER": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_GNOME_MAD": 1
+          }
+        }
+      ],
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 175692,
+        "endLine": 175719,
+        "blockSha256": "ca7206516899bd6dd252dcf6b7ba1451584aa50a63d04ba128b4a7491114bc70"
+      },
+      "category": "STR_DISASSEMBLY",
+      "space": 0,
+      "time": 20,
+      "cost": 0,
+      "refundOnCancellation": true,
+      "listOrder": 998,
+      "totalWeight": 58
+    },
+    {
+      "id": "STR_LOOTBOX_EXPEDITION_EX",
+      "requires": [
+        "STR_EXPEDITIONS"
+      ],
+      "functions": [],
+      "inputs": {
+        "STR_LOOTBOX_EXPEDITION": 1
+      },
+      "fixed": {
+        "STR_SCRAP_METAL": 1
+      },
+      "outcomes": [
+        {
+          "weight": 3,
+          "items": {
+            "STR_APPLE": 10,
+            "STR_POTATO": 25,
+            "STR_LEEK": 15
+          }
+        },
+        {
+          "weight": 2,
+          "items": {
+            "STR_ORANGE": 15,
+            "STR_BANANAS": 15,
+            "STR_RED_PEPPER": 15,
+            "STR_BIG_BONE": 1
+          }
+        },
+        {
+          "weight": 2,
+          "items": {
+            "STR_SHROOM_BROWN": 15,
+            "STR_SHROOM_RED": 15,
+            "STR_SHROOM_WHITE": 15
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_SECTOWEED": 20,
+            "STR_MELON": 20
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_SECFLOWER": 1,
+            "STR_PEAR": 20,
+            "STR_PUMPKIN": 20
+          }
+        },
+        {
+          "weight": 3,
+          "items": {
+            "STR_RUSTY_BLADE": 1,
+            "STR_AMPHORE": 3,
+            "STR_ANKH": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_MEDALLION": 3,
+            "STR_COINS": 3,
+            "STR_BOOK_OF_SERMONS": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_RAIDER_CORPSE": 3,
+            "STR_ELERIUM_115": 1,
+            "STR_ORE": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_DOLLAR_BRIEFCASE": 1,
+            "STR_BOOT": 1,
+            "STR_PORN": 3
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_OLD_BOOKS": 1,
+            "STR_DOLLAR_BRIEFCASE": 1,
+            "STR_BOOT": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_GOLD_BAR": 1,
+            "STR_SILVER_BAR": 1,
+            "STR_MEDALLION": 1
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_MEGASCORPION_CORPSE": 10
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_GIANTSPIDER_CORPSE": 5
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_GIANT_BEETLE_CORPSE": 10
+          }
+        },
+        {
+          "weight": 1,
+          "items": {
+            "STR_PARROT": 1,
+            "STR_CUTLASS": 1
+          }
+        }
+      ],
+      "anchor": {
+        "file": "Piratez.rul",
+        "sha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "startLine": 175720,
+        "endLine": 175748,
+        "blockSha256": "e4d60cfd165acb1940eae360c82f24a334fffef61a5fa44d529f26941bdab0b6"
+      },
+      "category": "STR_EXTRACTION",
+      "space": 0,
+      "time": 5,
+      "cost": 0,
+      "refundOnCancellation": true,
+      "listOrder": 999,
+      "totalWeight": 21
+    }
+  ],
+  "rankPolicy": {
+    "formula": "SavedGame::getCurrentScore: previous/current indexed research score + 400 if monthsPassed > 1 + region XCOM activity - alien activity",
+    "context": "Absolute score unobserved; no rank grant is admitted.",
+    "source": "src/Savegame/SavedGame.cpp:3130-3140"
+  },
+  "scope": "Source-backed conditional event, purchase and manufacture choices. Cost, stock, timing and monthly eligibility recorded; no inferred score or rank. Actual funds, storage, labor and full calendar remain unobserved."
+}

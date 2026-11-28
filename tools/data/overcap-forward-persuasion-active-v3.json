@@ -1,0 +1,757 @@
+{
+  "schema": "ATLAS_FORWARD_PERSUASION_UNIFIED_V3",
+  "inputs": {
+    "baseSha256": "7932ef700674aff8e04c231ff595d8bc754e006c6a8a6245f3e708dc8521246a",
+    "sourceSha256": "e110a54c0649d40f5545e3209bf109bf4c97f59f18a31fe23c9430be3e21ec0c",
+    "producers": {
+      "tools/build-overcap-forward-persuasion-v3.mjs": "dcc4e7c7d5b8f5042eb527fc0866077f1698230f56803fafc3c29d754ff8328d",
+      "tools/build-overcap-forward-persuasion-sources-v3.mjs": "c58945840db9d662250fc52d2dfc7805f27c772bd3c949aa125779d3c8b69c88",
+      "tools/atlas-overcap-forward-persuasion-v3.mjs": "e3caa1e2cd4d9561a9cc0027aa021ec70c3ecee430120623803ac0240ff04dcc",
+      "tools/replay-overcap-forward-captain-gdx-v3.mjs": "a62e4839229a569d92dde4b917b53c896aa9c92a6ac41ece3e7a02c067c9f270"
+    }
+  },
+  "counts": {
+    "expected": 10,
+    "produced": 10,
+    "coreReached": 10,
+    "newSteps": 418,
+    "deferredOptions": 29549,
+    "maxResearchCount": 252
+  },
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "award": "STR_GDX_001",
+      "path": "tools/data/overcap-forward-persuasion-v3-baseline-str_inspect_machinery-str_gdx_001.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-baseline-str_inspect_machinery-str_gdx_001-summary.json",
+      "sha256": "e189ca557ee9ddda10891a005bdc98323ff31e23d6cdc492004b1168e08f55e4",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-baseline-str_inspect_machinery.json.gz",
+        "sha256": "5e833962dc544a417a64ff9134b4d33e3953b3aa058ade77ab0d869f45be11d7",
+        "stateHash": "288d801adf5ee2903fa502ef454c7515210f4b57e0694f7fdad3d6aa895941d3",
+        "steps": 178
+      },
+      "newSteps": 29,
+      "month": 11,
+      "researchCount": 250,
+      "stateHash": "d38e448c1077e9f780a68c02486c6e2bade307a2b6b699b36971dc287076d6e8",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 1785,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "award": "STR_BEASTMEN",
+      "path": "tools/data/overcap-forward-persuasion-v3-baseline-str_inspect_machinery-str_beastmen.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-baseline-str_inspect_machinery-str_beastmen-summary.json",
+      "sha256": "eef6972530697b9bbf6544530d7b111174564c4ba64b9bcd095f45b051d1e050",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-baseline-str_inspect_machinery.json.gz",
+        "sha256": "5e833962dc544a417a64ff9134b4d33e3953b3aa058ade77ab0d869f45be11d7",
+        "stateHash": "71ff703d3deb364ade98c6b84b79321d4609b687e741b682edac39f890443d01",
+        "steps": 179
+      },
+      "newSteps": 29,
+      "month": 11,
+      "researchCount": 252,
+      "stateHash": "009a6c27129dca41f8258652efbfadf4348e327a96d029af840290c511d406d8",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 1784,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_INSPECT_MACHINERY",
+      "award": "STR_GDX_001",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_inspect_machinery-str_gdx_001.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_inspect_machinery-str_gdx_001-summary.json",
+      "sha256": "c3e4b4c90cfc573a86a9ec48a857d0c032308ac50c263a7d9909c33cb534815f",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_inspect_machinery.json.gz",
+        "sha256": "1300d5cf0168818cecd1c6effee57788b771ac76051ed9a4ec5374ee3ef03506",
+        "stateHash": "a689edea9ab10abbe1f3606eebc31ba85c194726f1b1be2e23b1796aa843df55",
+        "steps": 119
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 201,
+      "stateHash": "4d375260c8506e03859b10017ee0acc657e933095aa0c2ec0bb03d1b2b6d4b8d",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3248,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_INSPECT_MACHINERY",
+      "award": "STR_BEASTMEN",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_inspect_machinery-str_beastmen.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_inspect_machinery-str_beastmen-summary.json",
+      "sha256": "1b58fba40a8683136ce75bc0b55bde9276b78ca5a6499cbb0be84a82943c7018",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_inspect_machinery.json.gz",
+        "sha256": "1300d5cf0168818cecd1c6effee57788b771ac76051ed9a4ec5374ee3ef03506",
+        "stateHash": "4b8d2b6be3b077025036060d2f25e8c02c3296a30a1bf4fc850ec8a34cdbf488",
+        "steps": 120
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 203,
+      "stateHash": "790012605b9d509e4270cc1456c1cb489bbd5182ced55d6916691a71ad1022bb",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3247,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "award": "STR_GDX_001",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_jackstown_scouting-str_gdx_001.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_jackstown_scouting-str_gdx_001-summary.json",
+      "sha256": "2cf9939529088f265c5453b0face7b0306eb7813b48429d15eb43966497c2f62",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_jackstown_scouting.json.gz",
+        "sha256": "38d601629e6ac8d06c041d4bdcd09e1bb4f9e09643572df183323ec927347768",
+        "stateHash": "7bda37d326b27a2f7aa269f2ed45c9fa4dca16ef897bccaa0b0fcefc9ffd906a",
+        "steps": 119
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 201,
+      "stateHash": "c97de145bc321896d4cf3fe6ef411217e177ad67f02bf815c4535b3f29650e66",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3248,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "award": "STR_BEASTMEN",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_jackstown_scouting-str_beastmen.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_jackstown_scouting-str_beastmen-summary.json",
+      "sha256": "5415879974ae4557f33cf7edc0e9f4a214c671441b989fc3af9d93afe6bcf333",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_jackstown_scouting.json.gz",
+        "sha256": "38d601629e6ac8d06c041d4bdcd09e1bb4f9e09643572df183323ec927347768",
+        "stateHash": "099d1cf46aefd3ca2114b5b18c3fc77064710f6f3fca61eab1ff08facb578401",
+        "steps": 120
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 203,
+      "stateHash": "2ce783ddff58e43e55de9804cded9e0e5b22792153e40f1488c9d14c2275ab05",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3247,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_RECRUIT_PEASANTS",
+      "award": "STR_GDX_001",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_recruit_peasants-str_gdx_001.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_recruit_peasants-str_gdx_001-summary.json",
+      "sha256": "af813877fb39501b9a43e082caf49fee4227256e9b763f21046a9bc5a5269265",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_recruit_peasants.json.gz",
+        "sha256": "5b6b5a56dd3a3a1f4f41531eebed8e0a61766843a2f2e640275ee16f9dcd826f",
+        "stateHash": "16427df9b9b67e48de2b539edae651a7dd82e0bb0359651d84cb7e8972de1ff5",
+        "steps": 119
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 201,
+      "stateHash": "40bf2fb57ee36fbd5b0511dba135232c4dea94ed8f466b1cab77c1ac087061b9",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3248,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_RECRUIT_PEASANTS",
+      "award": "STR_BEASTMEN",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_recruit_peasants-str_beastmen.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_recruit_peasants-str_beastmen-summary.json",
+      "sha256": "a7d2dd39f8724796cac6ab8d149b9ac2d02f62a80f7b30906d9eec6cfaae27d6",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_recruit_peasants.json.gz",
+        "sha256": "5b6b5a56dd3a3a1f4f41531eebed8e0a61766843a2f2e640275ee16f9dcd826f",
+        "stateHash": "3d3a5f42950a0bcd6dd13eb36555f370ffda8ab7297d36a8c5d7ce73bd58991c",
+        "steps": 120
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 203,
+      "stateHash": "f4da46f97f66b569dbbb79861c6a3653634fde4a4c174a7433361bd62f571748",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3247,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_WAT_DO",
+      "award": "STR_GDX_001",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_wat_do-str_gdx_001.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_wat_do-str_gdx_001-summary.json",
+      "sha256": "e59713d062eea0e98f6c05aabbf98486a72d9ef5df9baac2b27f81b8a0c2955d",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_wat_do.json.gz",
+        "sha256": "d8944c50ce0e8169948954ce931bea9f38171b339166f04d81e305757efcba69",
+        "stateHash": "7f169ec00dde0550139b558fea05e719297aee19f5e2f7d8f4b95f80590d9753",
+        "steps": 119
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 201,
+      "stateHash": "7cc44e3750fd8c5c17ddf6ea831ef3419cb98c084f4f0e5bb5a11668b5053c3c",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3248,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_WAT_DO",
+      "award": "STR_BEASTMEN",
+      "path": "tools/data/overcap-forward-persuasion-v3-uk-str_wat_do-str_beastmen.json.gz",
+      "summary": "tools/data/overcap-forward-persuasion-v3-uk-str_wat_do-str_beastmen-summary.json",
+      "sha256": "57b1f7725f930dd09d99103f43bd180d89d3f8d9803df8cf13c15832e351879a",
+      "prefix": {
+        "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_wat_do.json.gz",
+        "sha256": "d8944c50ce0e8169948954ce931bea9f38171b339166f04d81e305757efcba69",
+        "stateHash": "2cef175aebc34bb190f510f624aeac9051dc3e251d853f308c9cef9a914457b2",
+        "steps": 120
+      },
+      "newSteps": 45,
+      "month": 11,
+      "researchCount": 203,
+      "stateHash": "4e1c0da6a852da7484971ca99e6376483dc5ab9d8cc483f576433ea234239cbe",
+      "reached": [
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_VODKA",
+        "STR_LINGERIE",
+        "STR_MUTANT_BLESSINGS",
+        "STR_RIBBON",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_MOST_COMMON_POWER",
+        "STR_WENCH_OUTFIT",
+        "STR_SOCIALIZING",
+        "STR_BOOK_OF_SERMONS",
+        "STR_PERSUASION",
+        "STR_SECTOID_LEADER"
+      ],
+      "rankBlockers": [
+        {
+          "id": "STR_CAPTAINS_RANK_01",
+          "earliestMonth": 1,
+          "minimumScore": 2000,
+          "missingResearch": [],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7637,
+            "endLine": 7645,
+            "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+          }
+        },
+        {
+          "id": "STR_CAPTAINS_RANK_02",
+          "earliestMonth": 2,
+          "minimumScore": 3000,
+          "missingResearch": [
+            "STR_CAPTAINS_RANK_01"
+          ],
+          "alreadyCompleted": false,
+          "currentScore": null,
+          "status": "OPEN_NATIVE_SCORE_REQUIRED",
+          "source": {
+            "file": "Piratez_Events.rul",
+            "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+            "startLine": 7646,
+            "endLine": 7657,
+            "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+          }
+        }
+      ],
+      "deferredOptions": 3247,
+      "failures": [],
+      "status": "CONDITIONAL_PERSUASION_AND_LEADER_REACHED",
+      "actualGameCertified": false
+    }
+  ],
+  "missing": [],
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "scope": "Exact source-bound conditional continuations. Rank score, funds, complete mission and calendar state remain unverified; this registry is not a campaign normalization receipt."
+}

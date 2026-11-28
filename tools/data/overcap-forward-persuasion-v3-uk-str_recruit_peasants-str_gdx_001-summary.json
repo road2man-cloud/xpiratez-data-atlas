@@ -1,0 +1,2414 @@
+{
+  "schema": "ATLAS_FORWARD_PERSUASION_SCENARIO_V3",
+  "scenario": "uk",
+  "root": "STR_RECRUIT_PEASANTS",
+  "award": "STR_GDX_001",
+  "inputs": {
+    "baseSha256": "7932ef700674aff8e04c231ff595d8bc754e006c6a8a6245f3e708dc8521246a",
+    "sourceSha256": "e110a54c0649d40f5545e3209bf109bf4c97f59f18a31fe23c9430be3e21ec0c",
+    "producers": {
+      "tools/build-overcap-forward-persuasion-v3.mjs": "dcc4e7c7d5b8f5042eb527fc0866077f1698230f56803fafc3c29d754ff8328d",
+      "tools/build-overcap-forward-persuasion-sources-v3.mjs": "c58945840db9d662250fc52d2dfc7805f27c772bd3c949aa125779d3c8b69c88",
+      "tools/atlas-overcap-forward-persuasion-v3.mjs": "e3caa1e2cd4d9561a9cc0027aa021ec70c3ecee430120623803ac0240ff04dcc",
+      "tools/replay-overcap-forward-captain-gdx-v3.mjs": "a62e4839229a569d92dde4b917b53c896aa9c92a6ac41ece3e7a02c067c9f270"
+    }
+  },
+  "prefix": {
+    "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_recruit_peasants.json.gz",
+    "sha256": "5b6b5a56dd3a3a1f4f41531eebed8e0a61766843a2f2e640275ee16f9dcd826f",
+    "stateHash": "16427df9b9b67e48de2b539edae651a7dd82e0bb0359651d84cb7e8972de1ff5",
+    "steps": 119
+  },
+  "steps": [
+    {
+      "index": 120,
+      "phase": "EXPEDITION_ACCESS",
+      "action": {
+        "type": "research",
+        "id": "STR_EXPEDITIONS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CONTACT_TIGER_TRANSPORT",
+          "STR_RECRUIT_PEASANTS",
+          "STR_WAT_DO"
+        ]
+      },
+      "beforeHash": "16427df9b9b67e48de2b539edae651a7dd82e0bb0359651d84cb7e8972de1ff5",
+      "afterHash": "d7f10fa481abd138e00f1ecf3143b06a6245a71ce80193961a56cf6aa127a29b",
+      "monthBefore": 9,
+      "monthAfter": 9,
+      "added": [
+        "STR_EXPEDITION",
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_EXPEDITION ← STR_EXPEDITIONS",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_EXPEDITION_RESEARCH ← STR_EXPEDITIONS",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_EXPEDITION_RESEARCH_INCOMPLETE ← STR_EXPEDITIONS",
+        "이미 완료된 lookup STR_EXPEDITION_RESEARCH의 재실행·보호 해금은 미검증"
+      ]
+    },
+    {
+      "index": 121,
+      "phase": "EXPEDITION_ORDER",
+      "action": {
+        "type": "sourceExpeditionOrder",
+        "id": "STR_EXPEDITION_RESEARCH",
+        "assumeFundsAndStorage": true
+      },
+      "evidence": {
+        "kind": "SOURCE_PURCHASE_ORDER",
+        "gate": {
+          "id": "STR_EXPEDITION_RESEARCH",
+          "status": "SOURCE_COMPLETE_CONDITIONAL",
+          "cost": 50000,
+          "generalRequires": [],
+          "buyRequires": [
+            "STR_EXPEDITION_RESEARCH_INCOMPLETE"
+          ],
+          "extraRequirements": [],
+          "research": [
+            "STR_EXPEDITION_RESEARCH_INCOMPLETE"
+          ],
+          "functions": [],
+          "country": null,
+          "missingResearch": [],
+          "missingFunctions": [],
+          "ok": true
+        },
+        "price": 50000,
+        "storage": 75,
+        "transferHours": 960,
+        "conditional": "Available funds and 75 storage capacity at order are assumed, not proved."
+      },
+      "beforeHash": "d7f10fa481abd138e00f1ecf3143b06a6245a71ce80193961a56cf6aa127a29b",
+      "afterHash": "443a19f3e9b4b08edf051b88d4adb22ed3d572bc92ca48becfa332a98451c5af",
+      "monthBefore": 9,
+      "monthAfter": 9,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "Order only: no item in base storage before delivery. Funds and capacity assumed."
+      ]
+    },
+    {
+      "index": 122,
+      "phase": "MONTHLY_SOURCE_EVENTS",
+      "action": {
+        "type": "sourcePersuasionMonth",
+        "month": 10,
+        "scripts": [
+          "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+          "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+          "STR_NOGREEN_YESGOLD_EVENTS"
+        ],
+        "assumeSelectedOutcomes": true
+      },
+      "evidence": {
+        "kind": "MONTH_BOUNDARY_SELECTED_SUBSET",
+        "candidates": [
+          "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+          "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+          "STR_NOGREEN_YESGOLD_EVENTS"
+        ],
+        "selected": [
+          {
+            "script": "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+            "event": "STR_JACKLAZY_BEST_BARGAIN",
+            "positive": [
+              "STR_CAPTAIN_JACKLAZY"
+            ],
+            "negative": [],
+            "executionOdds": 20,
+            "weight": 100,
+            "totalWeight": 1490
+          },
+          {
+            "script": "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+            "event": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+            "positive": [
+              "STR_CAPTAIN_JACKLAZY"
+            ],
+            "negative": [],
+            "executionOdds": 20,
+            "weight": 100,
+            "totalWeight": 1490
+          },
+          {
+            "script": "STR_NOGREEN_YESGOLD_EVENTS",
+            "event": "STR_GAMBLING_NIGHT_WIN",
+            "positive": [
+              "STR_CAPTAIN_YESGOLD_NOGREEN"
+            ],
+            "negative": [],
+            "executionOdds": 25,
+            "weight": 100,
+            "totalWeight": 400
+          }
+        ],
+        "otherGameEventsUntracked": true
+      },
+      "beforeHash": "443a19f3e9b4b08edf051b88d4adb22ed3d572bc92ca48becfa332a98451c5af",
+      "afterHash": "450548ef109430f0ff835f2259cc5cca2dc292f63a46f6c82119e3539175865c",
+      "monthBefore": 9,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "Eligibility evaluated simultaneously at the next monthly boundary; each selected script used once. Other events and actual timing untracked."
+      ]
+    },
+    {
+      "index": 123,
+      "phase": "EVENT_EXPIRY",
+      "action": {
+        "type": "sourcePersuasionExpire",
+        "script": "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+        "event": "STR_JACKLAZY_BEST_BARGAIN",
+        "research": "STR_VODKA",
+        "item": "STR_VODKA",
+        "assumeTimerElapsed": true
+      },
+      "evidence": {
+        "kind": "SOURCE_SELECTED_EVENT_EXPIRY",
+        "month": 10,
+        "researchCandidates": [
+          "STR_VODKA"
+        ],
+        "randomItemPool": [
+          "STR_BEER",
+          "STR_VODKA",
+          "STR_MOONSHINE"
+        ],
+        "items": {
+          "STR_VODKA": 1
+        },
+        "points": 10,
+        "fundsDelta": 500,
+        "minimumTimerMinutes": 60,
+        "timerRandom": 43400,
+        "conditional": true
+      },
+      "beforeHash": "450548ef109430f0ff835f2259cc5cca2dc292f63a46f6c82119e3539175865c",
+      "afterHash": "89fb2181ae75d99747165abeef9e0938737990628232325ad1f6b80d43d5ef17",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_VODKA"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "Event reward and selected random outcomes; countdown expiry and one-hour transfer conditional. Score/funds delta recorded, not absolute score/funds."
+      ]
+    },
+    {
+      "index": 124,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_JACKLAZY_BEST_BARGAIN",
+        "item": "STR_VODKA",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_JACKLAZY_BEST_BARGAIN",
+        "item": "STR_VODKA",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "89fb2181ae75d99747165abeef9e0938737990628232325ad1f6b80d43d5ef17",
+      "afterHash": "04bd9fb60411aa4cca28963de547668911079d7f62507bdc1965513346ed411b",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_VODKA": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 125,
+      "phase": "EVENT_EXPIRY",
+      "action": {
+        "type": "sourcePersuasionExpire",
+        "script": "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+        "event": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+        "research": null,
+        "item": null,
+        "assumeTimerElapsed": true
+      },
+      "evidence": {
+        "kind": "SOURCE_SELECTED_EVENT_EXPIRY",
+        "month": 10,
+        "researchCandidates": [],
+        "randomItemPool": [],
+        "items": {
+          "STR_MEDALLION": 1,
+          "STR_MUTANT_BLESSINGS": 1
+        },
+        "points": 75,
+        "fundsDelta": 0,
+        "minimumTimerMinutes": 60,
+        "timerRandom": 43400,
+        "conditional": true
+      },
+      "beforeHash": "04bd9fb60411aa4cca28963de547668911079d7f62507bdc1965513346ed411b",
+      "afterHash": "1344f9baf65a31dc7409248d78fbd59d3459d29b9921d7c3dd212f63c92984bb",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "Event reward and selected random outcomes; countdown expiry and one-hour transfer conditional. Score/funds delta recorded, not absolute score/funds."
+      ]
+    },
+    {
+      "index": 126,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+        "item": "STR_MEDALLION",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+        "item": "STR_MEDALLION",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "1344f9baf65a31dc7409248d78fbd59d3459d29b9921d7c3dd212f63c92984bb",
+      "afterHash": "284ccc5f349270027c7990c985b61eece25153bdae315a18c116427e40d77c13",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_MEDALLION": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 127,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+        "item": "STR_MUTANT_BLESSINGS",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+        "item": "STR_MUTANT_BLESSINGS",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "284ccc5f349270027c7990c985b61eece25153bdae315a18c116427e40d77c13",
+      "afterHash": "f2783426c2ab40633754de475e1c79d5430c3b55718b8f2f3121727103379c60",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_MUTANT_BLESSINGS": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 128,
+      "phase": "EVENT_EXPIRY",
+      "action": {
+        "type": "sourcePersuasionExpire",
+        "script": "STR_NOGREEN_YESGOLD_EVENTS",
+        "event": "STR_GAMBLING_NIGHT_WIN",
+        "research": null,
+        "item": null,
+        "assumeTimerElapsed": true
+      },
+      "evidence": {
+        "kind": "SOURCE_SELECTED_EVENT_EXPIRY",
+        "month": 10,
+        "researchCandidates": [],
+        "randomItemPool": [],
+        "items": {
+          "STR_CREDIT_CHIP_D": 75,
+          "STR_MEDALLION": 1,
+          "STR_RING": 1,
+          "STR_LINGERIE": 3,
+          "STR_GLAMOUR": 3
+        },
+        "points": 0,
+        "fundsDelta": 0,
+        "minimumTimerMinutes": 60,
+        "timerRandom": 43400,
+        "conditional": true
+      },
+      "beforeHash": "f2783426c2ab40633754de475e1c79d5430c3b55718b8f2f3121727103379c60",
+      "afterHash": "84dd7304868c37a9b46ffde45ff48257547969e4a1f2358a4c8a9eb3ad3a5e5e",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "Event reward and selected random outcomes; countdown expiry and one-hour transfer conditional. Score/funds delta recorded, not absolute score/funds."
+      ]
+    },
+    {
+      "index": 129,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_CREDIT_CHIP_D",
+        "count": 75,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_CREDIT_CHIP_D",
+        "count": 75,
+        "transferHours": 1
+      },
+      "beforeHash": "84dd7304868c37a9b46ffde45ff48257547969e4a1f2358a4c8a9eb3ad3a5e5e",
+      "afterHash": "f2532cdf6143bb12ece41e5e9803452111c28804949fbf11b2431280111a79ef",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_CREDIT_CHIP_D": {
+          "before": 0,
+          "after": 75,
+          "delta": 75
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 130,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_MEDALLION",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_MEDALLION",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "f2532cdf6143bb12ece41e5e9803452111c28804949fbf11b2431280111a79ef",
+      "afterHash": "fd924da7cfd26994a8f36e62432c1c56c9a90880ad249d03e655d9e899446b8f",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_MEDALLION": {
+          "before": 1,
+          "after": 2,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 131,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_RING",
+        "count": 1,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_RING",
+        "count": 1,
+        "transferHours": 1
+      },
+      "beforeHash": "fd924da7cfd26994a8f36e62432c1c56c9a90880ad249d03e655d9e899446b8f",
+      "afterHash": "20afbeb5fab0e87a0bb4ee87c2195a673c4fe82d1181227ae2898b20d6101c65",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_RING": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 132,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_LINGERIE",
+        "count": 3,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_LINGERIE",
+        "count": 3,
+        "transferHours": 1
+      },
+      "beforeHash": "20afbeb5fab0e87a0bb4ee87c2195a673c4fe82d1181227ae2898b20d6101c65",
+      "afterHash": "43053c2c2a5496b66896cd3e53a2314e4d18492d601dc1baff1c517c9812e337",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_LINGERIE": {
+          "before": 0,
+          "after": 3,
+          "delta": 3
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 133,
+      "phase": "EVENT_DELIVERY",
+      "action": {
+        "type": "sourceResearchDelivery",
+        "index": 0,
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_GLAMOUR",
+        "count": 3,
+        "assumption": true
+      },
+      "evidence": {
+        "kind": "FIXED_EVENT_ITEM_TRANSFER",
+        "source": "STR_GAMBLING_NIGHT_WIN",
+        "item": "STR_GLAMOUR",
+        "count": 3,
+        "transferHours": 1
+      },
+      "beforeHash": "43053c2c2a5496b66896cd3e53a2314e4d18492d601dc1baff1c517c9812e337",
+      "afterHash": "f48ebde1ce67a43037dbde63d6feeebe843ad5ae903c6f0598f28e4b97e766b7",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_GLAMOUR": {
+          "before": 0,
+          "after": 3,
+          "delta": 3
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Fixed event reward delivered; delivery timing conditional."
+      ]
+    },
+    {
+      "index": 134,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_LINGERIE"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_LINGERIE"
+      },
+      "beforeHash": "f48ebde1ce67a43037dbde63d6feeebe843ad5ae903c6f0598f28e4b97e766b7",
+      "afterHash": "d298f540cebf8966c55d5dde01b2a65c7760d3ca4189b3a085daa87fc3fc8fb7",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_LINGERIE",
+        "STR_LINGERIE_DEP"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_LINGERIE": {
+          "before": 3,
+          "after": 2,
+          "delta": -1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_LINGERIE_DEP ← STR_LINGERIE"
+      ]
+    },
+    {
+      "index": 135,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_MUTANT_BLESSINGS"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_MUTANT_BLESSINGS"
+      },
+      "beforeHash": "d298f540cebf8966c55d5dde01b2a65c7760d3ca4189b3a085daa87fc3fc8fb7",
+      "afterHash": "30dbfaf564778082fc0de00d98066a65f00e2a8042cdec24dc63c81a4567cd3b",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_MUTANT_BLESSINGS"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 136,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_GLAMOUR"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_GLAMOUR"
+      },
+      "beforeHash": "30dbfaf564778082fc0de00d98066a65f00e2a8042cdec24dc63c81a4567cd3b",
+      "afterHash": "2bd463fed2a630a444d3969f456d2f308d52d3577aafad30e4a29d996dacc309",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_GLAMOUR"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 137,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_RIBBON"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_GLAMOUR",
+          "STR_MUTANT_BLESSINGS",
+          "STR_SURVIVAL"
+        ]
+      },
+      "beforeHash": "2bd463fed2a630a444d3969f456d2f308d52d3577aafad30e4a29d996dacc309",
+      "afterHash": "214800d47d0df07f16e4074d09fe724ad4760579e04220e6edd064af790912bc",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_RIBBON"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 138,
+      "phase": "SOCIAL_PREREQUISITES_JUNK_SAMPLE",
+      "action": {
+        "type": "sourceRandomManufacture",
+        "id": "STR_JUNK_PILE_EX",
+        "outcome": 28,
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "SOURCE_WEIGHTED_MANUFACTURE_OUTCOME",
+        "requires": [
+          "STR_SCHOOLING_1"
+        ],
+        "functions": [],
+        "inputs": {
+          "STR_JUNK_PILE": 1
+        },
+        "fixed": {
+          "STR_SCRAP_METAL": 15,
+          "STR_CHEMICALS": 10,
+          "STR_SC_WIRE": 2
+        },
+        "random": {
+          "STR_OLD_BOOKS": 1
+        },
+        "weight": 5,
+        "totalWeight": 609,
+        "time": 360,
+        "cost": 0,
+        "space": 0
+      },
+      "beforeHash": "214800d47d0df07f16e4074d09fe724ad4760579e04220e6edd064af790912bc",
+      "afterHash": "ea7857e342a5f7a1b40d5c89fdf7c0b917aedba93bb14f047066b311a279cdcf",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_JUNK_PILE": {
+          "before": 22,
+          "after": 21,
+          "delta": -1
+        },
+        "STR_SCRAP_METAL": {
+          "before": 180,
+          "after": 195,
+          "delta": 15
+        },
+        "STR_CHEMICALS": {
+          "before": 70,
+          "after": 80,
+          "delta": 10
+        },
+        "STR_SC_WIRE": {
+          "before": 3,
+          "after": 5,
+          "delta": 2
+        },
+        "STR_OLD_BOOKS": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Exact source recipe inputs consumed; fixed outputs plus one weighted RNG outcome. Labor/time and RNG conditional."
+      ]
+    },
+    {
+      "index": 139,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_OLD_BOOKS"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_OLD_BOOKS"
+      },
+      "beforeHash": "ea7857e342a5f7a1b40d5c89fdf7c0b917aedba93bb14f047066b311a279cdcf",
+      "afterHash": "3ac262b374e02b360841cdfbaf95be449448d964c80d245ce825feace0299148",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_OLD_BOOKS": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_HISTORY_001, STR_HISTORY_002, STR_HISTORY_003, STR_HISTORY_004, STR_HISTORY_005, STR_HISTORY_006, STR_HISTORY_007, STR_HISTORY_008, STR_HISTORY_009, STR_HISTORY_010, STR_HISTORY_011, STR_HISTORY_016, STR_HISTORY_019, STR_GNOME_TOME_3, STR_GNOME_TOME_5, STR_GNOME_TOME_6, STR_GNOME_TOME_13, STR_SCRIPTURES_001, STR_SCRIPTURES_002, STR_KATANA, STR_SWORD_MDV, STR_GOTHIC_HAMMER, STR_CAT_PAWS, STR_TOMMYGUN, STR_RUGER, STR_MAGNUM, STR_CONCEALABLE_RR, STR_ACID_GRENADE, STR_BABY_NUKE_BLUEPRINTS, STR_UAC_SPACE_SUIT, STR_MEIDO_OUTFIT, STR_YELLOW_GEM, STR_BLUE_GEM, STR_GREEN_GEM, STR_RED_GEM, STR_DIAMOND, STR_SILVER_BAR, STR_COINS, STR_DOLLAR_BRIEFCASE, STR_MYTH_008, STR_MYTH_015, STR_MYTH_100, STR_PINUP_127, STR_VIP_008"
+      ]
+    },
+    {
+      "index": 140,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_OLD_BOOKS",
+        "research": "STR_HISTORY_001",
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_OLD_BOOKS",
+        "choices": [
+          "STR_HISTORY_001",
+          "STR_HISTORY_002",
+          "STR_HISTORY_003",
+          "STR_HISTORY_004",
+          "STR_HISTORY_005",
+          "STR_HISTORY_006",
+          "STR_HISTORY_007",
+          "STR_HISTORY_008",
+          "STR_HISTORY_009",
+          "STR_HISTORY_010",
+          "STR_HISTORY_011",
+          "STR_HISTORY_016",
+          "STR_HISTORY_019",
+          "STR_GNOME_TOME_3",
+          "STR_GNOME_TOME_5",
+          "STR_GNOME_TOME_6",
+          "STR_GNOME_TOME_13",
+          "STR_SCRIPTURES_001",
+          "STR_SCRIPTURES_002",
+          "STR_KATANA",
+          "STR_SWORD_MDV",
+          "STR_GOTHIC_HAMMER",
+          "STR_CAT_PAWS",
+          "STR_TOMMYGUN",
+          "STR_RUGER",
+          "STR_MAGNUM",
+          "STR_CONCEALABLE_RR",
+          "STR_ACID_GRENADE",
+          "STR_BABY_NUKE_BLUEPRINTS",
+          "STR_UAC_SPACE_SUIT",
+          "STR_MEIDO_OUTFIT",
+          "STR_YELLOW_GEM",
+          "STR_BLUE_GEM",
+          "STR_GREEN_GEM",
+          "STR_RED_GEM",
+          "STR_DIAMOND",
+          "STR_SILVER_BAR",
+          "STR_COINS",
+          "STR_DOLLAR_BRIEFCASE",
+          "STR_MYTH_008",
+          "STR_MYTH_015",
+          "STR_MYTH_100",
+          "STR_PINUP_127",
+          "STR_VIP_008"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "3ac262b374e02b360841cdfbaf95be449448d964c80d245ce825feace0299148",
+      "afterHash": "8df54b404d71a2082d6cf9b71738e164f79ecc064310babc63f1ed8fedcd2ade",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_GYM_ADVANCE_PREQ",
+        "STR_HISTORY_001",
+        "STR_OLD_BOOKS"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "무료 연구 무작위 선택 STR_HISTORY_001을 가정",
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_GYM_ADVANCE_PREQ ← STR_OLD_BOOKS"
+      ]
+    },
+    {
+      "index": 141,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_MUTANT_ABILITIES"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_SURVIVAL",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "8df54b404d71a2082d6cf9b71738e164f79ecc064310babc63f1ed8fedcd2ade",
+      "afterHash": "95b31e3039d1593dfddc4e9f3ec80b57798197f8c2b76fe34fc2cab1e411df17",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_MUTANT_ABILITIES"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 142,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_HUMANS"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ALIEN_ORIGINS"
+        ]
+      },
+      "beforeHash": "95b31e3039d1593dfddc4e9f3ec80b57798197f8c2b76fe34fc2cab1e411df17",
+      "afterHash": "8dfe294385d8c9da147dcddf128774a5da4a07602d39b7ea1fc6d715ebd09dd5",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_HUMANS"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 143,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_GALS_ARE_SUPERIOR_PREQ"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_DIVERGING_PATHS"
+        ]
+      },
+      "beforeHash": "8dfe294385d8c9da147dcddf128774a5da4a07602d39b7ea1fc6d715ebd09dd5",
+      "afterHash": "fdcb5adb14e35151a73220f48acbfbe3876f33bcaeecce878905e150d2ed8633",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_GALS_ARE_SUPERIOR",
+        "STR_GALS_ARE_SUPERIOR_PREQ",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "closed": [
+        "STR_CAT_PATH",
+        "STR_CAT_PATH_PREQ",
+        "STR_HYBRID_PATH",
+        "STR_HYBRID_PATH_PREQ",
+        "STR_NEKOMIMI_NETWORK",
+        "STR_PEASANT_REVOLUTION",
+        "STR_PEASANT_REVOLUTION_PREQ",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ"
+      ],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_GALS_ARE_SUPERIOR ← STR_GALS_ARE_SUPERIOR_PREQ",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_LAMIA_RECRUITMENT_PREQ ← STR_GALS_ARE_SUPERIOR",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_WORLDLY_MORALITY ← STR_GALS_ARE_SUPERIOR",
+        "이미 완료된 lookup STR_GALS_ARE_SUPERIOR의 재실행·보호 해금은 미검증"
+      ]
+    },
+    {
+      "index": 144,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_PARTY"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_GALS_ARE_SUPERIOR"
+        ]
+      },
+      "beforeHash": "fdcb5adb14e35151a73220f48acbfbe3876f33bcaeecce878905e150d2ed8633",
+      "afterHash": "eb6dce4af8bb31b0f86c6a990be801ff65e80a3a4f384de8b6f3a1e01853593a",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 CIVILIAN_YOUNG_UBER"
+      ]
+    },
+    {
+      "index": 145,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_PARTY",
+        "research": "CIVILIAN_YOUNG_UBER",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_PARTY",
+        "choices": [
+          "CIVILIAN_YOUNG_UBER"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "eb6dce4af8bb31b0f86c6a990be801ff65e80a3a4f384de8b6f3a1e01853593a",
+      "afterHash": "f58013ca227196a64a3b51c60060d7786e7e6a894c4c3ee2980a0f00354aef3d",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "CIVILIAN_YOUNG_UBER",
+        "STR_PARTY",
+        "STR_PARTY_DEP",
+        "STR_YOUNG_UBER_RECRUITMENT"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_YOUNG_UBER_RECRUITMENT ← CIVILIAN_YOUNG_UBER",
+        "이미 완료된 lookup STR_YOUNG_UBER_RECRUITMENT의 재실행·보호 해금은 미검증",
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PARTY_DEP ← STR_PARTY"
+      ]
+    },
+    {
+      "index": 146,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_NEPOTISM"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_LOOT_DISTRIBUTION"
+        ]
+      },
+      "beforeHash": "f58013ca227196a64a3b51c60060d7786e7e6a894c4c3ee2980a0f00354aef3d",
+      "afterHash": "2ca491888e000d850ab5c07740f04ce2c606fbc390f3ab37fcbe85ea62f52aac",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_TRAININGS"
+      ]
+    },
+    {
+      "index": 147,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_NEPOTISM",
+        "research": "STR_TRAININGS",
+        "assumeOutcome": false
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_NEPOTISM",
+        "choices": [
+          "STR_TRAININGS"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "2ca491888e000d850ab5c07740f04ce2c606fbc390f3ab37fcbe85ea62f52aac",
+      "afterHash": "05d5997b10ae7b8bef9d1b887a2c8f4c070563ff1e6e651ebc69c34c5c195ed1",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_NEPOTISM",
+        "STR_TRAININGS"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 148,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_SALVAGE"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ALIEN_ORIGINS",
+          "STR_CUNNING",
+          "STR_FARMING",
+          "STR_GLAMOUR"
+        ]
+      },
+      "beforeHash": "05d5997b10ae7b8bef9d1b887a2c8f4c070563ff1e6e651ebc69c34c5c195ed1",
+      "afterHash": "cf8fb584b2e8c8becec7b8515c1d35692e111463e72804f486d6b84e363f905f",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_SALVAGE"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 149,
+      "phase": "SOCIAL_PREREQUISITES",
+      "action": {
+        "type": "research",
+        "id": "STR_SHAKEUP_CEREMONY"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_CUNNING",
+          "STR_PARTY",
+          "STR_SURVIVAL",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "cf8fb584b2e8c8becec7b8515c1d35692e111463e72804f486d6b84e363f905f",
+      "afterHash": "c2ee7e30854a8b0f27125101255e07b46e9563a3b447833f62481edca54c2987",
+      "monthBefore": 10,
+      "monthAfter": 10,
+      "added": [
+        "STR_CEREMONY_DEP",
+        "STR_SHAKEUP_CEREMONY"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_CEREMONY_DEP ← STR_SHAKEUP_CEREMONY"
+      ]
+    },
+    {
+      "index": 150,
+      "phase": "EXPEDITION_TRANSFER_WAIT",
+      "action": {
+        "type": "sourcePersuasionMonth",
+        "month": 11,
+        "scripts": [],
+        "assumeSelectedOutcomes": true
+      },
+      "evidence": {
+        "kind": "MONTH_BOUNDARY_SELECTED_SUBSET",
+        "candidates": [
+          "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+          "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+          "STR_NOGREEN_YESGOLD_EVENTS"
+        ],
+        "selected": [],
+        "otherGameEventsUntracked": true
+      },
+      "beforeHash": "c2ee7e30854a8b0f27125101255e07b46e9563a3b447833f62481edca54c2987",
+      "afterHash": "8601d39ef88bf59333b16fddebc46542e5f47283a2213464b109d1a147f42d2d",
+      "monthBefore": 10,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "Eligibility evaluated simultaneously at the next monthly boundary; each selected script used once. Other events and actual timing untracked."
+      ]
+    },
+    {
+      "index": 151,
+      "phase": "EXPEDITION_DELIVERY",
+      "action": {
+        "type": "sourceExpeditionDelivery",
+        "id": "STR_EXPEDITION_RESEARCH",
+        "assumeElapsedHours": 960
+      },
+      "evidence": {
+        "kind": "SOURCE_PURCHASE_DELIVERY",
+        "orderMonth": 9,
+        "deliveryMonth": 11,
+        "transferHours": 960,
+        "conditional": "A compatible calendar placement with at least 960 hours elapsed is assumed; no exact date asserted."
+      },
+      "beforeHash": "8601d39ef88bf59333b16fddebc46542e5f47283a2213464b109d1a147f42d2d",
+      "afterHash": "e002c65c8f1cc33fea53f1e9a080b4cd4537d0ca5cf510c99b601a21a691ad9f",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_EXPEDITION_RESEARCH": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Explicit 960-hour transfer elapsed assumption after two month boundaries."
+      ]
+    },
+    {
+      "index": 152,
+      "phase": "EXPEDITION_DEBRIEF",
+      "action": {
+        "type": "sourceExpeditionManufacture",
+        "id": "STR_EXPEDITION_DEBRIEF",
+        "outcome": 1,
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "SOURCE_WEIGHTED_MANUFACTURE",
+        "requires": [
+          "STR_EXPEDITIONS"
+        ],
+        "inputs": {
+          "STR_EXPEDITION_RESEARCH": 1
+        },
+        "fixed": {
+          "STR_EXPEDITION_REPORTS": 1,
+          "STR_LOOTBOX_EXPEDITION": 1
+        },
+        "random": {
+          "STR_LOOTBOX_EXPEDITION": 1
+        },
+        "weight": 12,
+        "totalWeight": 58,
+        "time": 20,
+        "cost": 0,
+        "space": 0
+      },
+      "beforeHash": "e002c65c8f1cc33fea53f1e9a080b4cd4537d0ca5cf510c99b601a21a691ad9f",
+      "afterHash": "26b00cadda188680b1669e9a2f8b4977ec599095640cfeeb72b0fc9c239ac05c",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_EXPEDITION_RESEARCH": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        },
+        "STR_EXPEDITION_REPORTS": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_LOOTBOX_EXPEDITION": {
+          "before": 0,
+          "after": 2,
+          "delta": 2
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Completed manufacture consumes inputs. refund:true applies to cancelled projects, not successful output. Labor/time conditional."
+      ]
+    },
+    {
+      "index": 153,
+      "phase": "SERMON_BOOK_EXTRACTION",
+      "action": {
+        "type": "sourceExpeditionManufacture",
+        "id": "STR_LOOTBOX_EXPEDITION_EX",
+        "outcome": 6,
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "SOURCE_WEIGHTED_MANUFACTURE",
+        "requires": [
+          "STR_EXPEDITIONS"
+        ],
+        "inputs": {
+          "STR_LOOTBOX_EXPEDITION": 1
+        },
+        "fixed": {
+          "STR_SCRAP_METAL": 1
+        },
+        "random": {
+          "STR_MEDALLION": 3,
+          "STR_COINS": 3,
+          "STR_BOOK_OF_SERMONS": 1
+        },
+        "weight": 1,
+        "totalWeight": 21,
+        "time": 5,
+        "cost": 0,
+        "space": 0
+      },
+      "beforeHash": "26b00cadda188680b1669e9a2f8b4977ec599095640cfeeb72b0fc9c239ac05c",
+      "afterHash": "467edb34d3cc4325c1ff01b50abe2341d70d2875c0c83a82923c41da16c77569",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_SCRAP_METAL": {
+          "before": 195,
+          "after": 196,
+          "delta": 1
+        },
+        "STR_MEDALLION": {
+          "before": 2,
+          "after": 5,
+          "delta": 3
+        },
+        "STR_LOOTBOX_EXPEDITION": {
+          "before": 2,
+          "after": 1,
+          "delta": -1
+        },
+        "STR_COINS": {
+          "before": 0,
+          "after": 3,
+          "delta": 3
+        },
+        "STR_BOOK_OF_SERMONS": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Completed manufacture consumes inputs. refund:true applies to cancelled projects, not successful output. Labor/time conditional."
+      ]
+    },
+    {
+      "index": 154,
+      "phase": "SECOND_EXPEDITION_BOX_EXTRACTION",
+      "action": {
+        "type": "sourceExpeditionManufacture",
+        "id": "STR_LOOTBOX_EXPEDITION_EX",
+        "outcome": 8,
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "SOURCE_WEIGHTED_MANUFACTURE",
+        "requires": [
+          "STR_EXPEDITIONS"
+        ],
+        "inputs": {
+          "STR_LOOTBOX_EXPEDITION": 1
+        },
+        "fixed": {
+          "STR_SCRAP_METAL": 1
+        },
+        "random": {
+          "STR_DOLLAR_BRIEFCASE": 1,
+          "STR_BOOT": 1,
+          "STR_PORN": 3
+        },
+        "weight": 1,
+        "totalWeight": 21,
+        "time": 5,
+        "cost": 0,
+        "space": 0
+      },
+      "beforeHash": "467edb34d3cc4325c1ff01b50abe2341d70d2875c0c83a82923c41da16c77569",
+      "afterHash": "0b645aa67c3105731e75e15ee68a205d4024a4c4c0c2e00ee0dc31de040e80cb",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_SCRAP_METAL": {
+          "before": 196,
+          "after": 197,
+          "delta": 1
+        },
+        "STR_LOOTBOX_EXPEDITION": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        },
+        "STR_DOLLAR_BRIEFCASE": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_BOOT": {
+          "before": 0,
+          "after": 1,
+          "delta": 1
+        },
+        "STR_PORN": {
+          "before": 0,
+          "after": 3,
+          "delta": 3
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "Completed manufacture consumes inputs. refund:true applies to cancelled projects, not successful output. Labor/time conditional."
+      ]
+    },
+    {
+      "index": 155,
+      "phase": "SECOND_BOX_SAMPLE_RESEARCH",
+      "action": {
+        "type": "research",
+        "id": "STR_PORN"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_PORN"
+      },
+      "beforeHash": "0b645aa67c3105731e75e15ee68a205d4024a4c4c0c2e00ee0dc31de040e80cb",
+      "afterHash": "125e53ecdbbdeca46f4328db1ad3fc2b75150f7d5c29b9cf1ebc21c71d553e5e",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_PORN"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_PORN": {
+          "before": 3,
+          "after": 2,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 156,
+      "phase": "SOCIAL_PREREQUISITES_AFTER_SECOND_BOX",
+      "action": {
+        "type": "research",
+        "id": "STR_OLD_EARTH_VOODOO"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_OLD_BOOKS",
+          "STR_PORN",
+          "STR_SECTOWEED",
+          "STR_WEIRDNESS"
+        ]
+      },
+      "beforeHash": "125e53ecdbbdeca46f4328db1ad3fc2b75150f7d5c29b9cf1ebc21c71d553e5e",
+      "afterHash": "d5c93d66e35876aaf02c4674835231a1c5c5aad5ae25c23a97de553ba5f1e533",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_OLD_EARTH_VOODOO"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 157,
+      "phase": "SOCIAL_PREREQUISITES_AFTER_SECOND_BOX",
+      "action": {
+        "type": "research",
+        "id": "STR_MOST_COMMON_POWER"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_HUMANS",
+          "STR_MUTANT_ABILITIES",
+          "STR_OLD_EARTH_VOODOO",
+          "STR_PARTY_DEP",
+          "STR_RIBBON",
+          "STR_YOUNG_UBER_RECRUITMENT"
+        ]
+      },
+      "beforeHash": "d5c93d66e35876aaf02c4674835231a1c5c5aad5ae25c23a97de553ba5f1e533",
+      "afterHash": "626fe5863bfdd409b7a6d9ca1187d474604a93ee1077f0ce1004671d0652f71e",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_MOST_COMMON_POWER"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 158,
+      "phase": "SOCIAL_PREREQUISITES_AFTER_SECOND_BOX",
+      "action": {
+        "type": "research",
+        "id": "STR_WENCH_OUTFIT"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_LINGERIE",
+          "STR_PARTY_DEP",
+          "STR_PORN",
+          "STR_WEIRDNESS",
+          "STR_YOUNG_UBER_RECRUITMENT"
+        ]
+      },
+      "beforeHash": "626fe5863bfdd409b7a6d9ca1187d474604a93ee1077f0ce1004671d0652f71e",
+      "afterHash": "3e40d433debdf720906adea91da1fbbd7d9ac5d85330c13760d6c3d987f51a47",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "AUX_BAD_TOUCH",
+        "AUX_GOOD_TOUCH",
+        "STR_WENCH_OUTFIT"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): AUX_BAD_TOUCH ← STR_WENCH_OUTFIT",
+        "조건부 자동 연구 큐(엔진 실행 미검증): AUX_GOOD_TOUCH ← STR_WENCH_OUTFIT"
+      ]
+    },
+    {
+      "index": 159,
+      "phase": "SOCIAL_PREREQUISITES_AFTER_SECOND_BOX",
+      "action": {
+        "type": "research",
+        "id": "STR_SOCIALIZING"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_ALIEN_ORIGINS",
+          "STR_BEER",
+          "STR_CUNNING",
+          "STR_GOVT_CORPSE",
+          "STR_LINGERIE_DEP",
+          "STR_PARTY_DEP",
+          "STR_PORN",
+          "STR_VODKA"
+        ]
+      },
+      "beforeHash": "3e40d433debdf720906adea91da1fbbd7d9ac5d85330c13760d6c3d987f51a47",
+      "afterHash": "ec4ea43014dad68af5ffa65589a362b97d5026527191e12630a8986526247455",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_BEASTMEN, STR_NUNITY, STR_TROLLETARIAT, STR_POSTRAPTURE, STR_ARISTOCRACY, STR_GOVT_AGENT, STR_HUMAN_MALE_3, STR_HUMAN_FEMALE_4, STR_HUMAN_FATMAN, STR_HUMAN_CITY_GIRL, STR_HUMAN_HOE, STR_HUMAN_LABOURER, STR_HUMAN_LABOURER_FEM, STR_HUMAN_SHARP_GUY, STR_HUMAN_GOLDEN_BOY, STR_BANDIT_BOY, STR_BANDIT_DRIFTER, STR_RET_HYBRID, STR_GUILD_ATTENDANT, STR_GUILD_SOLDIER, STR_ACADEMY_STUDENT, STR_CHURCH_BOY, STR_CHURCH_HANDMAID, STR_GOVT_MP, STR_GOVT_DETECTIVE, STR_GOVT_ENFORCER, STR_GOVT_PILOT, STR_ROYAL_GUARD, STR_MEGAPOL_WOLFMAN, STR_SMUGGLER_GOON, MALE_CIVILIAN, FEMALE_CIVILIAN, CIVILIAN_MUT_3, CIVILIAN_MUT_4, CIVILIAN_MUT_5, CIVILIAN_MUT_7, CIVILIAN_DORF, STR_SWIMSUIT, STR_BIKINI, STR_MEIDO_OUTFIT, STR_PARTY_DRESS, STR_CRACK, STR_FAN, STR_STOP_SIGN, STR_FROG_INTERCEPTOR, STR_ECLIPSE_INTERCEPTOR, STR_X35_INTERCEPTOR, STR_MIG_INTERCEPTOR, STR_RED_BARON_INTERCEPTOR, STR_HURICANE_INTERCEPTOR, STR_CIVILIAN_UBER_COWBOY, STR_REDCOAT"
+      ]
+    },
+    {
+      "index": 160,
+      "phase": "SOCIAL_PREREQUISITES_AFTER_SECOND_BOX",
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_SOCIALIZING",
+        "research": "STR_BEASTMEN",
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_SOCIALIZING",
+        "choices": [
+          "STR_BEASTMEN",
+          "STR_NUNITY",
+          "STR_TROLLETARIAT",
+          "STR_POSTRAPTURE",
+          "STR_ARISTOCRACY",
+          "STR_GOVT_AGENT",
+          "STR_HUMAN_MALE_3",
+          "STR_HUMAN_FEMALE_4",
+          "STR_HUMAN_FATMAN",
+          "STR_HUMAN_CITY_GIRL",
+          "STR_HUMAN_HOE",
+          "STR_HUMAN_LABOURER",
+          "STR_HUMAN_LABOURER_FEM",
+          "STR_HUMAN_SHARP_GUY",
+          "STR_HUMAN_GOLDEN_BOY",
+          "STR_BANDIT_BOY",
+          "STR_BANDIT_DRIFTER",
+          "STR_RET_HYBRID",
+          "STR_GUILD_ATTENDANT",
+          "STR_GUILD_SOLDIER",
+          "STR_ACADEMY_STUDENT",
+          "STR_CHURCH_BOY",
+          "STR_CHURCH_HANDMAID",
+          "STR_GOVT_MP",
+          "STR_GOVT_DETECTIVE",
+          "STR_GOVT_ENFORCER",
+          "STR_GOVT_PILOT",
+          "STR_ROYAL_GUARD",
+          "STR_MEGAPOL_WOLFMAN",
+          "STR_SMUGGLER_GOON",
+          "MALE_CIVILIAN",
+          "FEMALE_CIVILIAN",
+          "CIVILIAN_MUT_3",
+          "CIVILIAN_MUT_4",
+          "CIVILIAN_MUT_5",
+          "CIVILIAN_MUT_7",
+          "CIVILIAN_DORF",
+          "STR_SWIMSUIT",
+          "STR_BIKINI",
+          "STR_MEIDO_OUTFIT",
+          "STR_PARTY_DRESS",
+          "STR_CRACK",
+          "STR_FAN",
+          "STR_STOP_SIGN",
+          "STR_FROG_INTERCEPTOR",
+          "STR_ECLIPSE_INTERCEPTOR",
+          "STR_X35_INTERCEPTOR",
+          "STR_MIG_INTERCEPTOR",
+          "STR_RED_BARON_INTERCEPTOR",
+          "STR_HURICANE_INTERCEPTOR",
+          "STR_CIVILIAN_UBER_COWBOY",
+          "STR_REDCOAT"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "ec4ea43014dad68af5ffa65589a362b97d5026527191e12630a8986526247455",
+      "afterHash": "1d7057c3b828b446350e530d21010ed9c4889d2d5cfacc2e67cb565ab72162c5",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BEASTMEN",
+        "STR_SOCIALIZING"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "무료 연구 무작위 선택 STR_BEASTMEN을 가정"
+      ]
+    },
+    {
+      "index": 161,
+      "phase": "PERSUASION_AND_LEADER",
+      "action": {
+        "type": "research",
+        "id": "STR_BOOK_OF_SERMONS"
+      },
+      "evidence": {
+        "kind": "SOURCE_BACKED_SAMPLE",
+        "item": "STR_BOOK_OF_SERMONS"
+      },
+      "beforeHash": "1d7057c3b828b446350e530d21010ed9c4889d2d5cfacc2e67cb565ab72162c5",
+      "afterHash": "5c866ad0961a98f6b90a21023727e817d4e5a5908bd6782c9b385a13a3599110",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_BOOK_OF_SERMONS"
+      ],
+      "closed": [],
+      "itemChanges": {
+        "STR_BOOK_OF_SERMONS": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 162,
+      "phase": "PERSUASION_AND_LEADER",
+      "action": {
+        "type": "research",
+        "id": "STR_PERSUASION"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_BOOK_OF_SERMONS",
+          "STR_CEREMONY_DEP",
+          "STR_COMMUNICATIONS",
+          "STR_MOST_COMMON_POWER",
+          "STR_NEPOTISM",
+          "STR_SALVAGE",
+          "STR_SOCIALIZING",
+          "STR_WENCH_OUTFIT"
+        ]
+      },
+      "beforeHash": "5c866ad0961a98f6b90a21023727e817d4e5a5908bd6782c9b385a13a3599110",
+      "afterHash": "df31cb65f0cdb115e3644b828afa2a5b7cf3a43517895227e10c8da3669a3b75",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "STR_PERSUASION"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": false,
+      "notes": []
+    },
+    {
+      "index": 163,
+      "phase": "PERSUASION_AND_LEADER",
+      "action": {
+        "type": "research",
+        "id": "STR_SECTOID_LEADER"
+      },
+      "evidence": {
+        "kind": "DEPENDENCIES",
+        "requires": [
+          "STR_PERSUASION"
+        ]
+      },
+      "beforeHash": "df31cb65f0cdb115e3644b828afa2a5b7cf3a43517895227e10c8da3669a3b75",
+      "afterHash": "8b5e0c24739bce5aa17a62f3b9dfdf6b4a96ac8279271a6c61e7d5fe638becc1",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [],
+      "closed": [],
+      "itemChanges": {
+        "STR_SECTOID_LEADER": {
+          "before": 1,
+          "after": 0,
+          "delta": -1
+        }
+      },
+      "conditional": true,
+      "notes": [
+        "일반 연구실 완료: 원천 연구 전에 지급할 무료 연구 후보 STR_MIND_PROBE, STR_ALIEN_SURGERY, STR_ALIEN_REPRODUCTION, STR_ALIEN_HABITAT, STR_PARTS_WEAPON_PSI, STR_SLAVE_BRUTE, STR_SLAVE_SKILLED, STR_LONGEVITY_SERUM, STR_SENSOSPHERE, STR_RETEGES, STR_BRIEFCASE, STR_SMALL_MEDIPACK, STR_ANIMATRONS, STR_RODELHIA, STR_BLOBBERS, STR_CEREBRALA, STR_ERIDIAN, STR_NUBIRAN, STR_DEEP_ONE, STR_PINK_DESERTS, STR_ALIEN_ABDUCTION_PIR, STR_MARS_BACKGROUND, STR_PARADISE_WORLDS, STR_RAIDER_SUBCONTRACTING, STR_AQUATOID, STR_ACADEMY_LEGACY, STR_SLICER, STR_STAR_GOD_MOTHERSHIP, STR_STARGOD_TIME, STR_PINUP_041, STR_PINUP_069, STR_PINUP_081, STR_PINUP_084, STR_PINUP_089, STR_PINUP_097, STR_PINUP_100, STR_PINUP_101, STR_PINUP_108, STR_PINUP_116, STR_PINUP_117, STR_PINUP_130, STR_PINUP_157, STR_VIP_020"
+      ]
+    },
+    {
+      "index": 164,
+      "phase": "PERSUASION_AND_LEADER",
+      "action": {
+        "type": "freeResearch",
+        "source": "STR_SECTOID_LEADER",
+        "research": "STR_MIND_PROBE",
+        "assumeOutcome": true
+      },
+      "evidence": {
+        "kind": "PENDING_FREE",
+        "source": "STR_SECTOID_LEADER",
+        "choices": [
+          "STR_MIND_PROBE",
+          "STR_ALIEN_SURGERY",
+          "STR_ALIEN_REPRODUCTION",
+          "STR_ALIEN_HABITAT",
+          "STR_PARTS_WEAPON_PSI",
+          "STR_SLAVE_BRUTE",
+          "STR_SLAVE_SKILLED",
+          "STR_LONGEVITY_SERUM",
+          "STR_SENSOSPHERE",
+          "STR_RETEGES",
+          "STR_BRIEFCASE",
+          "STR_SMALL_MEDIPACK",
+          "STR_ANIMATRONS",
+          "STR_RODELHIA",
+          "STR_BLOBBERS",
+          "STR_CEREBRALA",
+          "STR_ERIDIAN",
+          "STR_NUBIRAN",
+          "STR_DEEP_ONE",
+          "STR_PINK_DESERTS",
+          "STR_ALIEN_ABDUCTION_PIR",
+          "STR_MARS_BACKGROUND",
+          "STR_PARADISE_WORLDS",
+          "STR_RAIDER_SUBCONTRACTING",
+          "STR_AQUATOID",
+          "STR_ACADEMY_LEGACY",
+          "STR_SLICER",
+          "STR_STAR_GOD_MOTHERSHIP",
+          "STR_STARGOD_TIME",
+          "STR_PINUP_041",
+          "STR_PINUP_069",
+          "STR_PINUP_081",
+          "STR_PINUP_084",
+          "STR_PINUP_089",
+          "STR_PINUP_097",
+          "STR_PINUP_100",
+          "STR_PINUP_101",
+          "STR_PINUP_108",
+          "STR_PINUP_116",
+          "STR_PINUP_117",
+          "STR_PINUP_130",
+          "STR_PINUP_157",
+          "STR_VIP_020"
+        ],
+        "phase": "before-source"
+      },
+      "beforeHash": "8b5e0c24739bce5aa17a62f3b9dfdf6b4a96ac8279271a6c61e7d5fe638becc1",
+      "afterHash": "40bf2fb57ee36fbd5b0511dba135232c4dea94ed8f466b1cab77c1ac087061b9",
+      "monthBefore": 11,
+      "monthAfter": 11,
+      "added": [
+        "SECTOID_ARMOR_P4",
+        "STR_LEADER_PLUS",
+        "STR_MIND_PROBE",
+        "STR_OFFICER_PLUS",
+        "STR_PSI_LAB_PREQ",
+        "STR_SECTOID_LEADER"
+      ],
+      "closed": [],
+      "itemChanges": {},
+      "conditional": true,
+      "notes": [
+        "무료 연구 무작위 선택 STR_MIND_PROBE을 가정",
+        "가상 비용 0 연구 연쇄: 엔진 실행 미증명 · 원천 연구의 실제 완료와 완료 순서 · 다른 연구·이벤트의 동시 완료",
+        "조건부 자동 연구 큐(엔진 실행 미검증): SECTOID_ARMOR_P4 ← STR_SECTOID_LEADER",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_LEADER_PLUS ← STR_SECTOID_LEADER",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_PSI_LAB_PREQ ← STR_SECTOID_LEADER",
+        "조건부 자동 연구 큐(엔진 실행 미검증): STR_OFFICER_PLUS ← STR_LEADER_PLUS",
+        "이미 완료된 lookup STR_SECTOID_LEADER의 재실행·보호 해금은 미검증"
+      ]
+    }
+  ],
+  "failures": [],
+  "final": {
+    "stateHash": "40bf2fb57ee36fbd5b0511dba135232c4dea94ed8f466b1cab77c1ac087061b9",
+    "month": 11,
+    "researchCount": 201,
+    "researched": [
+      "AUX_BAD_TOUCH",
+      "AUX_GOOD_TOUCH",
+      "AUX_IDENT",
+      "CIVILIAN_YOUNG_UBER",
+      "CIV_ARMOR_LOKNAR_1",
+      "SECTOID_ARMOR_P1",
+      "SECTOID_ARMOR_P11",
+      "SECTOID_ARMOR_P3",
+      "SECTOID_ARMOR_P4",
+      "STR_ACADEMY_CORPSE",
+      "STR_ACADEMY_NURSE",
+      "STR_ALIEN_ORIGINS",
+      "STR_ALIEN_TERROR",
+      "STR_BASIC_ELECTRONICS",
+      "STR_BASIC_INCENDIARIES",
+      "STR_BASIC_INCENDIARIES_ZZZ",
+      "STR_BEASTMEN",
+      "STR_BEER",
+      "STR_BIG_BIRD",
+      "STR_BOOK_OF_SERMONS",
+      "STR_BOWS_SUMMARY",
+      "STR_BOW_H",
+      "STR_BRAINER_OUTFIT",
+      "STR_BURA",
+      "STR_CADILLAC",
+      "STR_CAPTAIN_DOUBLEGRAY",
+      "STR_CAPTAIN_GOLD",
+      "STR_CAPTAIN_GRAY",
+      "STR_CAPTAIN_JACKASS",
+      "STR_CAPTAIN_JACKDUMB",
+      "STR_CAPTAIN_JACKLAZY",
+      "STR_CAPTAIN_JACKSORE",
+      "STR_CAPTAIN_PERSONALITY_TEST",
+      "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+      "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+      "STR_CAPTAIN_RED",
+      "STR_CAPTAIN_YESGOLD_NOGREEN",
+      "STR_CAPTAIN_YESRED_NOGREEN",
+      "STR_CEREMONY_DEP",
+      "STR_CLOTHING_UC",
+      "STR_COMMUNICATIONS",
+      "STR_CONTACT_BUILDERS",
+      "STR_CONTACT_GENERAL_SUPPLIES",
+      "STR_CONTACT_GENERAL_SUPPLIES_ZZZ",
+      "STR_CONTACT_SHIP_JUNKYARD",
+      "STR_CONTACT_SHIP_JUNKYARD_ZZZ",
+      "STR_CONTACT_TIGER_TRANSPORT",
+      "STR_CRAFT_AUXILARY_SYSTEMS",
+      "STR_CRAFT_AUXILARY_SYSTEMS_REFERENCE",
+      "STR_CRAFT_BATTERY_PACK",
+      "STR_CRAFT_PIR_CANNON_UC",
+      "STR_CRAFT_WEAPONS_SUMMARY",
+      "STR_CRAFT_WEAPONS_SUMMARY_ZZZ",
+      "STR_CREATIVITY",
+      "STR_CUNNING",
+      "STR_DATA_DISK_B",
+      "STR_DATA_MINING",
+      "STR_DIVERGING_PATHS",
+      "STR_DURATHREAD_WORKING",
+      "STR_ELERIUM_115",
+      "STR_EXCAVATION",
+      "STR_EXPEDITION",
+      "STR_EXPEDITIONS",
+      "STR_EXPEDITION_RESEARCH",
+      "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+      "STR_EXPLORE_TUNNELS",
+      "STR_FARMING",
+      "STR_FIRST_AID_KIT",
+      "STR_FLINTLOCKS_PRODUCTION",
+      "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+      "STR_GALS_ARE_SUPERIOR",
+      "STR_GALS_ARE_SUPERIOR_PREQ",
+      "STR_GDX_000",
+      "STR_GDX_001",
+      "STR_GDX_002",
+      "STR_GDX_190_PREQ",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_GENTLE_PUSH",
+      "STR_GLAMOUR",
+      "STR_GL_VV_UC",
+      "STR_GOVT_AUTOPSY",
+      "STR_GOVT_CORPSE",
+      "STR_GROG_BARREL",
+      "STR_GUILD_AUTOPSY",
+      "STR_GUILD_CORPSE",
+      "STR_GUN_SHOPPING",
+      "STR_GYM_ADVANCE_PREQ",
+      "STR_HARDWARE_SHOPPING",
+      "STR_HEALER_PLUS",
+      "STR_HIDEOUT_DETECTOR",
+      "STR_HISTORY_001",
+      "STR_HMG_VV_UC",
+      "STR_HONOR",
+      "STR_HUEY",
+      "STR_HUMANS",
+      "STR_HUMVEE",
+      "STR_HYDROPONICS",
+      "STR_INSPECT_MACHINERY",
+      "STR_JACKSTOWN_SCOUTING",
+      "STR_JACKSTOWN_ZZZ",
+      "STR_JUNK_PILE",
+      "STR_JUSTICE",
+      "STR_KNUCKLES_SPIKED",
+      "STR_KULTUR",
+      "STR_LABORATORY",
+      "STR_LAMIA_RECRUITMENT_PREQ",
+      "STR_LARGE_RADAR_SYSTEM",
+      "STR_LEADER_PLUS",
+      "STR_LINGERIE",
+      "STR_LINGERIE_DEP",
+      "STR_LMG_VV_UC",
+      "STR_LOC_TAVERN_CELLAR_DONE",
+      "STR_LOOT_DISTRIBUTION",
+      "STR_MELEE_SUMMARY",
+      "STR_MESS_HALL",
+      "STR_MIND_PROBE",
+      "STR_MINIGUN_VV_UC",
+      "STR_MOST_COMMON_POWER",
+      "STR_MUTANT_ABILITIES",
+      "STR_MUTANT_BLESSINGS",
+      "STR_MUTANT_ORIGINS",
+      "STR_NECROPLANE_PARTS",
+      "STR_NECROPLANE_PARTS_RECYCLING",
+      "STR_NEPOTISM",
+      "STR_OFFICER_PLUS",
+      "STR_OLD_BOOKS",
+      "STR_OLD_EARTH_VOODOO",
+      "STR_PADD",
+      "STR_PARTY",
+      "STR_PARTY_DEP",
+      "STR_PEASANTS_ZZZ",
+      "STR_PEASANT_ARMOR_JUMPSUIT_UC",
+      "STR_PEPPER_PISTOL",
+      "STR_PERSONAL_LABS",
+      "STR_PERSONAL_LABS_EXIST",
+      "STR_PERSUASION",
+      "STR_PICKAXE",
+      "STR_PINUP_001",
+      "STR_PIRATE_FLAG",
+      "STR_PIRATE_LIFE",
+      "STR_PIRATE_STYLE",
+      "STR_PORN",
+      "STR_PRIMITIVE_WEAPONS",
+      "STR_PRIMITIVE_WEAPONS_2",
+      "STR_PRIMITIVE_WEAPONS_2_ZZZ",
+      "STR_PRIMITIVE_WEAPONS_ZZZ",
+      "STR_PSI_LAB_PREQ",
+      "STR_RECRUITMENT",
+      "STR_RECRUIT_PEASANTS",
+      "STR_REPROBATE",
+      "STR_RIBBON",
+      "STR_ROTOGUN_VV_UC",
+      "STR_RPG_VV_UC",
+      "STR_RUNT_OUTFIT",
+      "STR_SAILOR_UNIFORM",
+      "STR_SALVAGE",
+      "STR_SAVVYNESS",
+      "STR_SCHOOLING_1",
+      "STR_SCI_REP",
+      "STR_SC_WIRE",
+      "STR_SECTOID",
+      "STR_SECTOID_AUTOPSY",
+      "STR_SECTOID_LEADER",
+      "STR_SECTOID_MEDIC",
+      "STR_SECTOID_SOLDIER",
+      "STR_SECTOWEED",
+      "STR_SHAKEUP_CEREMONY",
+      "STR_SIDEWINDER_REPORT",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_SMITHING",
+      "STR_SMITHING_ZZZ",
+      "STR_SOCIALIZING",
+      "STR_STEAM_POWER",
+      "STR_STUN_BATON",
+      "STR_SUPER_STAPLER",
+      "STR_SURVIVAL",
+      "STR_SURVIVAL_ZZZ",
+      "STR_TAC_VEST_PEASANT_UC",
+      "STR_THE_PHARMACIST",
+      "STR_TRAININGS",
+      "STR_UBER_WHEAT",
+      "STR_UK",
+      "STR_UNARMED_GAUNTLET",
+      "STR_UNARMED_WRESTLING",
+      "STR_VESSEL_AMBULANCE",
+      "STR_VESSEL_CRASHPLANE",
+      "STR_VESSEL_RUSTFIGHTER3",
+      "STR_VIOLENCE",
+      "STR_VIOLENCE_ZZZ",
+      "STR_VODKA",
+      "STR_WARRIOR_CULTURE_PREQ",
+      "STR_WASTELANDER_BACKPACK",
+      "STR_WAT_DO",
+      "STR_WEIRDNESS",
+      "STR_WEIRDNESS_ZZZ",
+      "STR_WELL",
+      "STR_WENCH_OUTFIT",
+      "STR_WORKSHOP",
+      "STR_WORLDLY_MORALITY",
+      "STR_WRENCH",
+      "STR_YOUNG_UBER_RECRUITMENT"
+    ],
+    "disabled": [
+      "STR_BULK_EXCAVATION",
+      "STR_CAPSULE_QUARTERS",
+      "STR_CAPTAIN_DUMBASS",
+      "STR_CAPTAIN_LAZYASS",
+      "STR_CAPTAIN_PUSSY",
+      "STR_CAPTAIN_SOREASS",
+      "STR_CAT_PATH",
+      "STR_CAT_PATH_PREQ",
+      "STR_GENERAL_STORES_XLARGE",
+      "STR_HOTEL",
+      "STR_HYBRID_PATH",
+      "STR_HYBRID_PATH_PREQ",
+      "STR_JAIL_DOUBLE",
+      "STR_NEKOMIMI_NETWORK",
+      "STR_NONPROFIT_LAB",
+      "STR_PEASANT_REVOLUTION",
+      "STR_PEASANT_REVOLUTION_PREQ",
+      "STR_SCAMMING",
+      "STR_TACTICAL_CENTER",
+      "STR_WE_NEED_MALE_TOUCH",
+      "STR_WE_NEED_MALE_TOUCH_PREQ"
+    ],
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 4,
+      "STR_JUNK_PILE": 21,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 197,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1,
+      "STR_NECROPLANE_PARTS": 29,
+      "STR_CHEMICALS": 80,
+      "STR_CIGS": 1,
+      "STR_DATA_DISK": 0,
+      "STR_DATA_DISK_B": 0,
+      "STR_SC_WIRE": 5,
+      "STR_WRENCH": 0,
+      "STR_GUILD_CORPSE": 2,
+      "STR_PADD": 0,
+      "STR_WASTELANDER_BACKPACK": 0,
+      "STR_ACADEMY_CORPSE": 0,
+      "STR_GOVT_CORPSE": 0,
+      "STR_BANDAGE": 1,
+      "STR_KNOIF_BANDIT": 1,
+      "STR_STUN_BATON": 0,
+      "STR_CS_GAS": 1,
+      "STR_CREDIT_CHIP_M": 1,
+      "STR_SECTOID_SOLDIER": 0,
+      "STR_BEER": 0,
+      "STR_SECTOID_MEDIC": 0,
+      "STR_ACADEMY_NURSE": 0,
+      "STR_SECTOID_LEADER": 0,
+      "STR_VODKA": 1,
+      "STR_MEDALLION": 5,
+      "STR_MUTANT_BLESSINGS": 1,
+      "STR_CREDIT_CHIP_D": 75,
+      "STR_RING": 1,
+      "STR_LINGERIE": 2,
+      "STR_GLAMOUR": 3,
+      "STR_OLD_BOOKS": 0,
+      "STR_EXPEDITION_RESEARCH": 0,
+      "STR_EXPEDITION_REPORTS": 1,
+      "STR_LOOTBOX_EXPEDITION": 0,
+      "STR_COINS": 3,
+      "STR_BOOK_OF_SERMONS": 0,
+      "STR_DOLLAR_BRIEFCASE": 1,
+      "STR_BOOT": 1,
+      "STR_PORN": 2
+    },
+    "baseFunctions": [
+      "ALKO",
+      "CPU",
+      "CULT",
+      "GAMB",
+      "LAB",
+      "SHOP",
+      "STUDY",
+      "WELL",
+      "WORKS"
+    ],
+    "receipts": [
+      {
+        "purchase": "STR_EXPEDITION_RESEARCH",
+        "month": 9,
+        "fundsDelta": -50000,
+        "storageAssumption": 75
+      },
+      {
+        "event": "STR_JACKLAZY_BEST_BARGAIN",
+        "script": "STR_CAPTAIN_JACKLAZY_EVENTS_1",
+        "month": 10,
+        "research": "STR_VODKA",
+        "item": "STR_VODKA",
+        "items": {
+          "STR_VODKA": 1
+        },
+        "points": 10,
+        "fundsDelta": 500
+      },
+      {
+        "event": "STR_JACKLAZY_MAN_OF_THE_CLOTH",
+        "script": "STR_CAPTAIN_JACKLAZY_EVENTS_2",
+        "month": 10,
+        "research": null,
+        "item": null,
+        "items": {
+          "STR_MEDALLION": 1,
+          "STR_MUTANT_BLESSINGS": 1
+        },
+        "points": 75,
+        "fundsDelta": 0
+      },
+      {
+        "event": "STR_GAMBLING_NIGHT_WIN",
+        "script": "STR_NOGREEN_YESGOLD_EVENTS",
+        "month": 10,
+        "research": null,
+        "item": null,
+        "items": {
+          "STR_CREDIT_CHIP_D": 75,
+          "STR_MEDALLION": 1,
+          "STR_RING": 1,
+          "STR_LINGERIE": 3,
+          "STR_GLAMOUR": 3
+        },
+        "points": 0,
+        "fundsDelta": 0
+      }
+    ],
+    "rankBlockers": [
+      {
+        "id": "STR_CAPTAINS_RANK_01",
+        "earliestMonth": 1,
+        "minimumScore": 2000,
+        "missingResearch": [],
+        "alreadyCompleted": false,
+        "currentScore": null,
+        "status": "OPEN_NATIVE_SCORE_REQUIRED",
+        "source": {
+          "file": "Piratez_Events.rul",
+          "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "startLine": 7637,
+          "endLine": 7645,
+          "blockSha256": "6ee3b80c3da6a9dba9edf76b1d7620ad14c7b73167708b5758098fedca7447b0"
+        }
+      },
+      {
+        "id": "STR_CAPTAINS_RANK_02",
+        "earliestMonth": 2,
+        "minimumScore": 3000,
+        "missingResearch": [
+          "STR_CAPTAINS_RANK_01"
+        ],
+        "alreadyCompleted": false,
+        "currentScore": null,
+        "status": "OPEN_NATIVE_SCORE_REQUIRED",
+        "source": {
+          "file": "Piratez_Events.rul",
+          "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "startLine": 7646,
+          "endLine": 7657,
+          "blockSha256": "be5e071bea7a4b52937a7b538708486691475de8825e64ba4bb99e038a414644"
+        }
+      }
+    ],
+    "targets": [
+      {
+        "id": "STR_EXPEDITIONS",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_VODKA",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 1
+      },
+      {
+        "id": "STR_LINGERIE",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 2
+      },
+      {
+        "id": "STR_MUTANT_BLESSINGS",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 1
+      },
+      {
+        "id": "STR_RIBBON",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_OLD_EARTH_VOODOO",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_MOST_COMMON_POWER",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_WENCH_OUTFIT",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_SOCIALIZING",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_BOOK_OF_SERMONS",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 0
+      },
+      {
+        "id": "STR_PERSUASION",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_SECTOID_LEADER",
+        "reached": true,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 0
+      },
+      {
+        "id": "STR_CAPTAINS_RANK_01",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 0
+      },
+      {
+        "id": "STR_CAPTAINS_RANK_02",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 0
+      },
+      {
+        "id": "STR_PIRATEZ_HIERARCHY",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_CAPTAINS_RANK_02"
+        ],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_GDX_003",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_PIRATEZ_HIERARCHY"
+        ],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_GDX_004",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_GDX_003"
+        ],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_GDX_005",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [],
+        "missingFunctions": [],
+        "held": 0
+      },
+      {
+        "id": "STR_CONTACT_MUTANT_ALLIANCE",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_LOGISTICS",
+          "STR_TROPHY_TARGET_75_MUTANT_ALLIANCE",
+          "STR_BOUNTY_HUNTING_PRIZE_ALLIANCE_FAVORS",
+          "STR_CAPTAINS_RANK_05"
+        ],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_SCHOOL_BOOKS",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_GDX_005",
+          "STR_CONTACT_MUTANT_ALLIANCE"
+        ],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_LIBRARY",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_TACTICS",
+          "STR_SCHOOL_BOOKS"
+        ],
+        "missingFunctions": [],
+        "held": null
+      },
+      {
+        "id": "STR_SCHOOLING_2",
+        "reached": false,
+        "disabled": false,
+        "missingDependencies": [
+          "STR_LIBRARY"
+        ],
+        "missingFunctions": [
+          "LIB"
+        ],
+        "held": null
+      }
+    ]
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "scope": "Conditional source choices, exact prior hash replay, no invented rank or absolute score. Funds/storage/calendar/labor and other campaign events remain assumed/untracked.",
+  "artifact": "tools/data/overcap-forward-persuasion-v3-uk-str_recruit_peasants-str_gdx_001.json.gz",
+  "artifactSha256": "af813877fb39501b9a43e082caf49fee4227256e9b763f21046a9bc5a5269265",
+  "deferredOptions": 3248
+}
