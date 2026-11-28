@@ -11,6 +11,7 @@ import {createBranchResearchExclusion} from './atlas-branch-research-exclusion.m
 import {createBranchContextResearchPlanner} from '../public/soldiers/modern/foundation-research-planner-context-v3-branch.js';
 import {auditOriginCampaignContext} from '../public/soldiers/modern/origin-campaign-context.js';
 import {buildTrainingResumeQueue} from './overcap-training-resume-core.mjs';
+import {readTrainingLedger} from './overcap-training-ledger-store.mjs';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const arg=(k,d)=>process.argv.find(x=>x.startsWith('--'+k+'='))?.slice(k.length+3)??d;
 const num=(k,d,min,max)=>{const n=Number(arg(k,d));assert(Number.isSafeInteger(n)&&n>=min&&n<=max,k);return n;};
@@ -66,6 +67,66 @@ function options(w,inv){
   return {x,r,score};
  }).sort((a,b)=>b.score-a.score||Number(!!a.x.missingResearch.length)-Number(!!b.x.missingResearch.length)||a.r.id.localeCompare(b.r.id));
 }
+// Import only applied staged transformations, using the same replay and row
+// contract as normal terminal training. Research-only witnesses stay staged.
+function importStagedWaves(paths){
+ const ledger=readTrainingLedger(),indexed=new Map(ledger.rows.map(r=>[r.id,r])),terms=new Map(terminal.rows.map(r=>[r.id,r]));
+ const imported=[],receipts=new Map(),sources=[],seen=new Map(indexed),counts={examined:0,applied:0,retainedResearchOnly:0,duplicates:0,errors:0};
+ for(const path of paths){
+  const report=read(path);assert.equal(report.schema,'ATLAS_OVERCAP_STAGED_OBSTACLE_V1');
+  assert.equal(report.sourceMetadataSha256,terminal.sourceMetadataSha256);assert.equal(report.sourceLedgerHash,terminal.sourceLedgerHash);assert.equal(report.terminalSourceHash,hash(terminal));
+  const historical=readTrainingLedger(report.trainingSourceHash),historicalRows=new Map(historical.rows.map(r=>[r.id,r]));
+  sources.push({path,hash:hash(report),trainingSourceHash:report.trainingSourceHash});
+  for(const r of report.rows){
+   counts.examined++;
+   if(r.applied!==true){counts.retainedResearchOnly++;continue;}
+   counts.applied++;
+   const seed=r.seedKind==='terminalTraining'?historicalRows.get(r.seedId):r.seedKind==='terminalResearch'?terms.get(r.seedId):null;
+   assert(seed,'staged seed missing');if(r.seedKind==='terminalTraining')assert.deepEqual(indexed.get(seed.id),seed);
+   const job=seed.sourceTerminalId?terms.get(seed.sourceTerminalId):seed;
+   assert(job&&job.status==='CONDITIONAL_TERMINAL_RESEARCH_READY');
+   const child=children.get(job.sourceRecordId),parent=parents.get(job.parentRecordId),base=mat.get(child.id),b=branches.get(job.branch),t=targets.get(job.target);
+   const receipt=receipts.get(job.id)||{id:job.id,body:job.body,origin:job.origin,branch:job.branch,seedReplayVerified:false,produced:[],attempted:[],status:'OPEN_NOT_EXHAUSTED',finalAdmission:false};
+   receipts.set(job.id,receipt);
+   try{
+    assert.equal(r.conditionalReplayVerified,true);assert.equal(r.finalAdmission,false);assert.equal(r.actualGameCertified,false);assert.equal(r.materialBudgetVerified,false);
+    assert.equal(r.goal,report.goal);assert.equal(r.body,report.body);assert.deepEqual(r.remaining,[]);
+    for(const k of ['origin','body','branch','difficulty','target'])assert.equal(r[k],job[k],k);
+    assert.equal(r.sourceActionHash,seed.fullActionHash);assert.equal(r.suffixHash,hash(r.suffix));
+    assert.equal(r.id,'OVERCAP-STAGED:'+hash([seed.id,r.goal,r.suffix]));
+    assert(r.suffix.some(a=>a.type==='transform'&&a.transform===r.goal),'claimed training action missing');
+    const full=[...parent.actions,...child.suffix,...job.suffix];assert.equal(hash(full),job.fullActionHash);
+    const priorTail=seed.sourceTerminalId?seed.suffix:[],seedFull=[...full,...priorTail];assert.equal(hash(seedFull),seed.fullActionHash);
+    const w=replay.replay(full),s=snap(w);assert(allowed(w,b,t));
+    for(const k of ['body','rank','raw','effective','capRaw','cap','traits','history','activeResearch','disabledResearch'])assert.deepEqual(s[k],job[k],k);
+    receipt.seedReplayVerified=true;
+    const initial=applyTail(w,priorTail,b,t),before=snap(initial);
+    for(const k of ['body','rank','raw','effective','capRaw','cap','traits','history','activeResearch','disabledResearch'])assert.deepEqual(before[k],seed[k],k);
+    const tail=[...priorTail,...r.suffix],actions=[...full,...tail];assert.equal(hash(actions),r.fullActionHash);
+    const v=applyTail(initial,r.suffix,b,t),end=snap(v);
+    assert.equal(exactWorld(applyTail(w,tail,b,t)),exactWorld(v));
+    for(const k of ['body','rank','raw','effective','capRaw','cap','traits','history','activeResearch','disabledResearch'])assert.deepEqual(end[k],r[k],k);
+    assert.equal(r.capGain,sum(end.cap)-sum(before.cap));assert(end.body===before.body);
+    const afterTraits=new Map(end.traits),afterHistory=new Map(end.history),beforeHistory=new Map(before.history);
+    assert(before.traits.every(([k,n])=>(afterTraits.get(k)||0)>=n));assert(end.cap.every((n,i)=>n>=before.cap[i]));
+    assert((afterHistory.get(r.goal)||0)>(beforeHistory.get(r.goal)||0),'training history not increased');
+    const ctx=auditOriginCampaignContext(actions,data),m=budget(base,[...job.suffix,...tail]);assert(ctx.kind==='compatible'&&ctx.allowedDifficulties.includes(job.difficulty)&&m.ok);
+    const id='OVERCAP-END-NEXT:'+hash([job.id,tail]),prior=new Map(s.traits),inv=inventory(v,b);
+    const item={id,sourceTerminalId:job.id,sourceRecordId:child.id,parentRecordId:parent.id,origin:job.origin,body:job.body,branch:b.id,difficulty:job.difficulty,target:t.id,sourceActionHash:job.fullActionHash,suffix:tail,suffixHash:hash(tail),fullActionHash:hash(actions),order:actions.filter(a=>a.type==='transform').map(a=>a.transform),...end,total:sum(end.effective),capTotal:sum(end.cap),capGain:sum(end.cap)-sum(s.cap),addedTraits:end.traits.filter(([k,n])=>n>(prior.get(k)||0)),firstSuccessorInventory:inv,material:m,conditionalReplayVerified:true,actualGameCertified:false,materialBudgetVerified:false,finalAdmission:false,commendationStatsIncluded:false,status:'TERMINAL_RESEARCH_RETAINED_PRODUCTIVE_SUCCESSOR'};
+    if(seen.has(id)){assert.deepEqual(seen.get(id),item);counts.duplicates++;continue;}
+    seen.set(id,item);imported.push(item);receipt.produced.push(id);receipt.attempted.push({id:r.goal,sourceStagedId:r.id,result:'STAGED_TRANSFORMATION_IMPORTED'});
+   }catch(e){counts.errors++;receipt.attempted.push({id:r.id,reason:'STAGED_INTAKE_BLOCKED',detail:e.message});}
+  }
+ }
+ const wave={schema:'ATLAS_OVERCAP_TERMINAL_TRAINING_WAVE_V1',sourceMetadataSha256:terminal.sourceMetadataSha256,sourceLedgerHash:terminal.sourceLedgerHash,sourceHash:hash(terminal),terminalSourceHash:hash(source),scope:'Independently replayed staged transformations normalized to standard training witnesses; research-only rows retained in source; no final admission.',batch:{mode:'STAGED_APPLIED_INTAKE_V1',sources},summary:{...counts,seeds:receipts.size,seedErrors:counts.errors,productive:imported.length,firstInventoryClosed:imported.filter(r=>r.firstSuccessorInventory.firstInventoryClosed).length,finalAdmission:0},coverage:[...receipts.values()],researchDonors:[],rows:imported};
+ const file='public/data/soldier-overcap-terminal-training-staged-intake-'+hash(sources).slice(0,16)+'.json';
+ if(fs.existsSync(file))assert.deepEqual(read(file),wave,'existing intake differs');else fs.writeFileSync(file,JSON.stringify(wave)+'\n');
+ console.log(JSON.stringify({file,summary:wave.summary,blocked:wave.coverage.flatMap(c=>c.attempted.filter(x=>x.reason))}));
+ if(counts.errors)process.exitCode=1;
+}
+const stagedFiles=process.argv.filter(a=>a.startsWith('--staged-wave=')).map(a=>a.slice('--staged-wave='.length));
+if(stagedFiles.length){assert(!resumeQueue,'staged intake and resume queue are mutually exclusive');importStagedWaves(stagedFiles);process.exit(process.exitCode||0);}
+
 for(const job of jobs.slice(offset,offset+limit)){
  const child=children.get(job.sourceRecordId),parent=parents.get(job.parentRecordId),base=mat.get(child.id),b=branches.get(job.branch),t=targets.get(job.target);
  const receipt={id:job.id,body:job.body,origin:job.origin,branch:job.branch,seedReplayVerified:false,produced:[],attempted:[],status:'OPEN_NOT_EXHAUSTED',finalAdmission:false};
