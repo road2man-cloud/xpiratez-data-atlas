@@ -197,7 +197,7 @@ function transfer(mesh,selections,images){
  const editedKeys=new Set(selections.flatMap(s=>s.quad.map(i=>poskey(mesh.positions[i]))));
  const accum=new Map();
  for(let f=0;f<mesh.indices.length;f+=3){
-  const tri=mesh.indices.slice(f*3,f*3+3),P=tri.map(i=>result.positions[i]);
+  const tri=mesh.indices.slice(f,f+3),P=tri.map(i=>result.positions[i]);
   const face=cross(vec(P[1],P[0]),vec(P[2],P[0]));
   for(const i of tri){const k=poskey(result.positions[i]);accum.set(k,add(accum.get(k)||[0,0,0],face));}
  }
