@@ -1,0 +1,344 @@
+{
+  "stage": "HW original local edit (sculpt geometry; clothing topology remains outside ROI)",
+  "inputSha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "outputSha256": "cfd72fb610dc0f32d72fb70f6a5221569f2a9a258e1f555610cea4905eb3316c",
+  "originalTriangles": 2098,
+  "removedTriangles": 186,
+  "selectedTriangles": 52,
+  "addedTriangles": 104,
+  "resultTriangles": 2016,
+  "originalPantsVertices": 92,
+  "editedPantsVertices": 144,
+  "selectedTriangleIDs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    80,
+    81,
+    82,
+    83,
+    84,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    118,
+    119,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    166
+  ],
+  "offsetSummary": {
+    "min": -0.00308,
+    "max": 0.005668
+  },
+  "retainedSkinJoints": 63,
+  "unchangedFaceTriangles": 644,
+  "unchangedHairTriangles": 294,
+  "originalBINbytes": 239648,
+  "retainedOriginalBinaryBytes": 239648,
+  "limitations": [
+    "No full clothing silhouette removal",
+    "Not a photogrammetric depth reconstruction",
+    "Image reference is a relative shape hint only",
+    "No native S2 run",
+    "Visual aesthetics unapproved"
+  ],
+  "triangles": [
+    {
+      "originalTriangle": 0,
+      "centroidIndex": 92,
+      "offsetY": 0.000083
+    },
+    {
+      "originalTriangle": 1,
+      "centroidIndex": 93,
+      "offsetY": -0.000272
+    },
+    {
+      "originalTriangle": 2,
+      "centroidIndex": 94,
+      "offsetY": 0.000011
+    },
+    {
+      "originalTriangle": 3,
+      "centroidIndex": 95,
+      "offsetY": 0.00003
+    },
+    {
+      "originalTriangle": 4,
+      "centroidIndex": 96,
+      "offsetY": -0.000004
+    },
+    {
+      "originalTriangle": 5,
+      "centroidIndex": 97,
+      "offsetY": -0.000001
+    },
+    {
+      "originalTriangle": 26,
+      "centroidIndex": 98,
+      "offsetY": -0.000004
+    },
+    {
+      "originalTriangle": 27,
+      "centroidIndex": 99,
+      "offsetY": 0.000007
+    },
+    {
+      "originalTriangle": 28,
+      "centroidIndex": 100,
+      "offsetY": -0.000006
+    },
+    {
+      "originalTriangle": 29,
+      "centroidIndex": 101,
+      "offsetY": 0.000025
+    },
+    {
+      "originalTriangle": 30,
+      "centroidIndex": 102,
+      "offsetY": -0.000236
+    },
+    {
+      "originalTriangle": 31,
+      "centroidIndex": 103,
+      "offsetY": 0.000121
+    },
+    {
+      "originalTriangle": 32,
+      "centroidIndex": 104,
+      "offsetY": -0.002017
+    },
+    {
+      "originalTriangle": 33,
+      "centroidIndex": 105,
+      "offsetY": -0.001658
+    },
+    {
+      "originalTriangle": 34,
+      "centroidIndex": 106,
+      "offsetY": 0.000145
+    },
+    {
+      "originalTriangle": 35,
+      "centroidIndex": 107,
+      "offsetY": 0.000078
+    },
+    {
+      "originalTriangle": 36,
+      "centroidIndex": 108,
+      "offsetY": 0.000001
+    },
+    {
+      "originalTriangle": 37,
+      "centroidIndex": 109,
+      "offsetY": 0
+    },
+    {
+      "originalTriangle": 58,
+      "centroidIndex": 110,
+      "offsetY": 0.000001
+    },
+    {
+      "originalTriangle": 59,
+      "centroidIndex": 111,
+      "offsetY": 0.00002
+    },
+    {
+      "originalTriangle": 60,
+      "centroidIndex": 112,
+      "offsetY": 0.000084
+    },
+    {
+      "originalTriangle": 61,
+      "centroidIndex": 113,
+      "offsetY": 0.000048
+    },
+    {
+      "originalTriangle": 62,
+      "centroidIndex": 114,
+      "offsetY": -0.00098
+    },
+    {
+      "originalTriangle": 63,
+      "centroidIndex": 115,
+      "offsetY": 0.004574
+    },
+    {
+      "originalTriangle": 80,
+      "centroidIndex": 116,
+      "offsetY": -0.00308
+    },
+    {
+      "originalTriangle": 81,
+      "centroidIndex": 117,
+      "offsetY": -0.000403
+    },
+    {
+      "originalTriangle": 82,
+      "centroidIndex": 118,
+      "offsetY": 0.000028
+    },
+    {
+      "originalTriangle": 83,
+      "centroidIndex": 119,
+      "offsetY": 0.000032
+    },
+    {
+      "originalTriangle": 84,
+      "centroidIndex": 120,
+      "offsetY": 0.000001
+    },
+    {
+      "originalTriangle": 98,
+      "centroidIndex": 121,
+      "offsetY": 0.005023
+    },
+    {
+      "originalTriangle": 99,
+      "centroidIndex": 122,
+      "offsetY": 0.001699
+    },
+    {
+      "originalTriangle": 100,
+      "centroidIndex": 123,
+      "offsetY": -0.001563
+    },
+    {
+      "originalTriangle": 101,
+      "centroidIndex": 124,
+      "offsetY": -0.000094
+    },
+    {
+      "originalTriangle": 102,
+      "centroidIndex": 125,
+      "offsetY": 0.000052
+    },
+    {
+      "originalTriangle": 103,
+      "centroidIndex": 126,
+      "offsetY": 0.000011
+    },
+    {
+      "originalTriangle": 104,
+      "centroidIndex": 127,
+      "offsetY": 0
+    },
+    {
+      "originalTriangle": 118,
+      "centroidIndex": 128,
+      "offsetY": 0.000994
+    },
+    {
+      "originalTriangle": 119,
+      "centroidIndex": 129,
+      "offsetY": -0.000398
+    },
+    {
+      "originalTriangle": 140,
+      "centroidIndex": 130,
+      "offsetY": 0.000002
+    },
+    {
+      "originalTriangle": 141,
+      "centroidIndex": 131,
+      "offsetY": 0.000023
+    },
+    {
+      "originalTriangle": 142,
+      "centroidIndex": 132,
+      "offsetY": 0.000056
+    },
+    {
+      "originalTriangle": 143,
+      "centroidIndex": 133,
+      "offsetY": -0.000032
+    },
+    {
+      "originalTriangle": 144,
+      "centroidIndex": 134,
+      "offsetY": -0.000788
+    },
+    {
+      "originalTriangle": 145,
+      "centroidIndex": 135,
+      "offsetY": 0.003834
+    },
+    {
+      "originalTriangle": 146,
+      "centroidIndex": 136,
+      "offsetY": 0.005668
+    },
+    {
+      "originalTriangle": 160,
+      "centroidIndex": 137,
+      "offsetY": 0.000001
+    },
+    {
+      "originalTriangle": 161,
+      "centroidIndex": 138,
+      "offsetY": 0.000005
+    },
+    {
+      "originalTriangle": 162,
+      "centroidIndex": 139,
+      "offsetY": 0.000046
+    },
+    {
+      "originalTriangle": 163,
+      "centroidIndex": 140,
+      "offsetY": -0.000053
+    },
+    {
+      "originalTriangle": 164,
+      "centroidIndex": 141,
+      "offsetY": -0.002364
+    },
+    {
+      "originalTriangle": 165,
+      "centroidIndex": 142,
+      "offsetY": -0.000179
+    },
+    {
+      "originalTriangle": 166,
+      "centroidIndex": 143,
+      "offsetY": 0.003688
+    }
+  ]
+}
