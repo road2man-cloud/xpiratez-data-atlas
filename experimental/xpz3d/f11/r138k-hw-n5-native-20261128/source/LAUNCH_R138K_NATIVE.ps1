@@ -19,7 +19,11 @@ $source=Join-Path $root 'stage35-r23n-f11-small-save-20261107\scene\source-snaps
 $state=Join-Path $bm 'r24bm-original-intact.s2state'
 $manifest=Join-Path $bm 'R24BM_NATIVE_SOURCE_LOFT_COLLISION_MANIFEST.json'
 $expectedPacket='ef2f059134920c694d030621d1dba8d1c8bae7a92fe19a6361d150d8a5fcd64b'
-$expectedExe='0c5be39e30351fcca3823748f649c5b5797c73ccdd1a874d46cc958cc31a75b2'
+$buildReceipt=Join-Path $stage 'R138J_BUILD_RECEIPT.json'
+if(-not(Test-Path -LiteralPath $buildReceipt)){throw 'Missing isolated native build receipt'}
+$br=Get-Content -LiteralPath $buildReceipt -Raw -Encoding UTF8|ConvertFrom-Json
+$expectedExe=[string]$br.nativeExeSha256
+if($br.sourceEngineOriginalsUntouched -ne $true -or $br.packetTriangles -ne 2076){throw 'Unexpected underlying native R138J build receipt'}
 foreach($p in @($exe,$packet,$runtime,$act,$bm,$state,$source,$manifest)){if(-not(Test-Path -LiteralPath $p)){throw "Native S2 dependency not present: $p"}}
 function Hash([string]$p){return (Get-FileHash -LiteralPath $p -Algorithm SHA256).Hash.ToLowerInvariant()}
 if((Hash $exe) -ne $expectedExe){throw 'R138J isolated native EXE hash mismatch'}
