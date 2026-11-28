@@ -237,10 +237,10 @@ function protectedInsertion(before,after,future){
  const lost=[...before.researched].filter(k=>active(before,k)&&future.has(k)&&!active(after,k));
  if(lost.length)throw Error('inserted-action-closed-future-research:'+lost.join(','));
 }
-function ensure(p,n,goals,future){
+function ensure(p,n,goals,future,preferredAwards={}){
  const missing=goals.filter(k=>!active(n.world,k));if(!missing.length)return n;
  if(n.world.pendingFree)throw Error('pending-free-before-inserted-research');
- const r=p.ensure(missing,n);if(!r.ok)throw Error('research-unresolved:'+r.unresolved+':'+r.reason);
+ const r=p.ensure(missing,n,preferredAwards);if(!r.ok)throw Error('research-unresolved:'+r.unresolved+':'+r.reason);
  protectedInsertion(n.world,r.node.world,future);return r.node;
 }
 function supplied(p,n,step,future){
@@ -303,7 +303,9 @@ function produce(q){
    // A legitimate free/event award can complete a topic without its physical
    // sample; forcing supply first creates circular purchase dependencies.
    if(s.type==='research'&&!labVerdict(n.world,s.id,d).ok){
-    n=ensure(p,n,[s.id],future);
+    const next=a[index+1];
+    const preferred=next?.type==='freeResearch'&&next.source===s.id?{[s.id]:next.research}:{};
+    n=ensure(p,n,[s.id],future,preferred);
     continue;
    }
    let trial=supplied(p,n,s,future);
