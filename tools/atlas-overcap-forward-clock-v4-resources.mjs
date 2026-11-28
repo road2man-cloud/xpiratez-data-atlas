@@ -11,7 +11,7 @@ const qty=(w,id)=>Number(w.items[id]||0);
 export function createResourceClock(data,{labCapacity=12,quarters=20,budget=325000,facilityFields,itemFields}={}){
  const engine=createForwardResearch(data),rules=data.researchRules;
  const stamp=s=>new Date(rootsStart+s.elapsedHours*3600000).toISOString();
- const record=(s,type,details)=>s.trace.push({type,date:stamp(s),elapsedHours:s.elapsedHours,...details});
+ const record=(s,type,details)=>s.trace.push({...details,type,date:stamp(s),elapsedHours:s.elapsedHours});
  const start=()=>{
   const b=data.forwardStartingBase,world=engine.start();world.funds=budget;
   return {world,firstRoot:null,elapsedHours:0,scientists:b.scientists,engineers:b.engineers,soldiers:b.randomSoldiers,labCapacity,quarters,budget,fixedCosts:{},projects:[],trace:[],deliveryDue:[],construction:[],transfers:[],grid:b.facilities.map(f=>({...f,size:facilityFields[f.id]?.size||1}))};
@@ -48,7 +48,7 @@ export function createResourceClock(data,{labCapacity=12,quarters=20,budget=3250
   // actual starting population/quarters remain conditional in the manifest.
   const cost=200000*count;checkFunds(s,cost);s.world.funds-=cost;
   const p={type:"scientist",count,due:s.elapsedHours+72,cost};s.transfers.push(p);
-  record(s,"hireOrder",{...p,funds:s.world.funds});
+  record(s,"hireOrder",{...p,transferType:p.type,funds:s.world.funds});
  }
  function buy(s,id){
   const o=options(s).find(o=>o.action.type==="sourceBuySample"&&o.action.id===id);
@@ -61,7 +61,7 @@ export function createResourceClock(data,{labCapacity=12,quarters=20,budget=3250
   engine.apply(s.world,o.action,s.firstRoot);
   s.world.funds-=cost;
   const p={type:"item",id,count:o.action.count,due:s.elapsedHours+hours,cost,transferHours:hours};s.transfers.push(p);
-  record(s,"purchaseOrder",{...p,funds:s.world.funds});
+  record(s,"purchaseOrder",{...p,transferType:p.type,funds:s.world.funds});
  }
  function resourceArrivals(s,until){
   for(const p of [...s.transfers].sort((a,b)=>a.due-b.due)){
@@ -69,7 +69,7 @@ export function createResourceClock(data,{labCapacity=12,quarters=20,budget=3250
    s.elapsedHours=Math.max(s.elapsedHours,p.due);
    if(p.type==="scientist")s.scientists+=p.count;else s.world.items[p.id]=qty(s.world,p.id)+p.count;
    s.transfers=s.transfers.filter(x=>x!==p);
-   record(s,"transferArrival",{...p,scientists:s.scientists,stock:p.id?qty(s.world,p.id):null,stateHash:exactStateHash(s.world)});
+   record(s,"transferArrival",{...p,transferType:p.type,scientists:s.scientists,stock:p.id?qty(s.world,p.id):null,stateHash:exactStateHash(s.world)});
   }
  }
  function constructionDay(s){
@@ -155,7 +155,12 @@ export function createResourceClock(data,{labCapacity=12,quarters=20,budget=3250
   // Deliveries and personnel at the same midnight are handled after daily work.
   // Research-grant deliveries in the predecessor must be strictly before midnight.
   assert(!t.deliveryDue.some(d=>d===next),"MIDNIGHT_LAB_DELIVERY_ORDER_UNMODELED");
-  deliver(t,next-1);resourceArrivals(t,next-1);t.elapsedHours=next;constructionDay(t);
+  while(true){
+   const due=Math.min(t.deliveryDue[0]??Infinity,...t.transfers.map(p=>p.due));
+   if(due>=next)break;
+   deliver(t,due);resourceArrivals(t,due);
+  }
+  t.elapsedHours=next;constructionDay(t);
   for(const p of t.projects)p.spent+=p.assigned;
   record(t,"researchDay",{projects:structuredClone(t.projects)});
   const finished=t.projects.filter(p=>p.spent>=p.cost);
