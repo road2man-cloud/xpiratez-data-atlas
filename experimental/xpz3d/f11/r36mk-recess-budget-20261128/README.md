@@ -1,0 +1,18 @@
+# R36MK — 함몰부 전용 삼각형 예산 우선 분배
+
+R36MJ의 신규 조형 정점에서 관측된 돌출 11 : 함몰 1 불균형을 개선하기 위해 작성한 후속 생산기. 사용자 목표 사진의 2D 윤곽은 깊이를 측정한 것이 아니므로 실제 깊이값은 조형 가설이다.
+
+## 코드·실행
+
+- `source/build_r36mk.cjs`: R36MH의 실제 물리 에지 축약 + 정점 보간 + 1→3 삼각형 분할 로직을 이어받아 **전체 분할 대상의 최소 절반을 recess 범위에 우선 예약**한다. 변경된 삼각형의 노멀맵도 다시 베이크한다.
+- `.github/workflows/xpz3d-r36mk-recess-budget.yml`: GitHub Actions Node.js 22, ART/SUBTLE × DENSE/GUARDED 네 조합. 기준 입력 R36MJ, 전신 GLB 4종과 CLAY 4종 및 PNG·보고서 생성.
+- `preview/index.html`: R36MJ와 R36MK의 같은 카메라·조명 CLAY 비교.
+- `output/<variant>/R36MK_<STRONG|GUARDED>.report.json`: `recessRecipientTriangles`, `ridgeRecipientTriangles`, `donorEdgeCollapses`, 변경 픽셀, 출력 해시 기록.
+
+## 모델 불변 조건
+
+전체 2,100삼각형, 몸체 1,132, 얼굴·헤어 968, 63본 스킨 계층, 기존 UV 이미지 자산 유지. 안전한 내부 에지 하나를 축약할 때 두 삼각형을 회수하고, 대상 삼각형 하나를 중심 분할할 때 두 삼각형을 추가한다. 새 정점의 본 가중치는 보간해 재정규화한다.
+
+완전 리토폴로지·사진의 3D 깊이 역산·목표 이미지와의 육안 합치 판정은 포함하지 않는다. 구조 깊이는 기존 R36MJ에서 이어지며 이번 우선 개선은 **함몰부에 실제 기하 정점을 더 확보**하는 것이다.
+
+빌드 시 분배 비율이 유지되지 않거나 실제 삼각형 수가 달라지면 실패한다. GLB 생산과 GitHub `main` 게시, 외관 승인을 별도로 보고한다.
