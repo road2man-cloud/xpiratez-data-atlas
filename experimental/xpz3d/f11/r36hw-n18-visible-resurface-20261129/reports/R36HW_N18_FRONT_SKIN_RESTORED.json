@@ -1,0 +1,29 @@
+{
+  "version": "R36HW N18",
+  "inputSHA256": "56af097238c2b562f98330648b2e8a9782c64b3cef4e7320f2c9a03e38029e6f",
+  "outputSHA256": "cbf436a41905d1278697ad1520b8000318ea1130485ed1c325d87341483516a9",
+  "trianglesBefore": 2099,
+  "trianglesAfter": 2099,
+  "pelvisTriangles": 363,
+  "pelvisVertices": 240,
+  "rigJoints": 63,
+  "boundaryLocked": 45,
+  "candidates": 98,
+  "changedVertices": 95,
+  "meanVertexMoveMeters": 0.008984434836942293,
+  "maxVertexMoveMeters": 0.03709044122291659,
+  "operations": 207,
+  "failedIncrementAttempts": 5,
+  "minFaceAreaSqMeters": 0.000001907918186257542,
+  "sourceFaceHairUnmodified": true,
+  "sourceUVAndBoneWeightsUnmodified": true,
+  "otherPrimitivesUntouched": true,
+  "imageProjected": false,
+  "previewApproved": false,
+  "nativeS2Rendered": false,
+  "limitations": [
+    "Central silhouette and photo similarity not yet artist approved",
+    "Inherited former shorts geometry and open waist/leg seams still remain",
+    "Model uses no extracted depth from a single perspective photo"
+  ]
+}
