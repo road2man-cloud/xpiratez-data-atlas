@@ -84,7 +84,7 @@ function raster(meshes,view,mode,bbox,focus='full'){
     const weights=[u,v,w];
     const smoothed=unit(ids.reduce((a,i,k)=>add(a,mul(normals[i],weights[k])),[0,0,0]));
     const geometric=faceN;
-    const normal=mode==='clay'?geometric:smoothed;
+    const normal=smoothed; // N7B clay now respects actual GLB vertex normals; face-normal diagnostic is not representative of the smoothed native model.
     const lit=Math.max(0,dot(normal,light)),base=material[0].map((_,k)=>material.reduce((s,c,j)=>s+weights[j]*c[k],0));
     const i=pixel*4;
     for(let k=0;k<3;k++)px[i+k]=Math.round(255*clamp(base[k]*(ambient[k]+direct[k]*lit)));
