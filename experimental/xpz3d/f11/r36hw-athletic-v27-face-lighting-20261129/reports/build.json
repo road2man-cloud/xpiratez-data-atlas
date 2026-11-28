@@ -1,0 +1,60 @@
+{
+  "schema": "r36hw-v27-face-lighting-v1",
+  "sourceBlob": "a432d2693e9a5d3953f9f391bb9a3f26fd0a91da",
+  "sourceBytes": 307964,
+  "outputBytes": 307976,
+  "triangles": 2100,
+  "joints": 63,
+  "faceVertices": 352,
+  "weldedFaceGroups": 352,
+  "changedFaceNormals": 162,
+  "affectedGroups": 162,
+  "protectedBoundary": 51,
+  "protectedCrease": 122,
+  "protectedEye": 17,
+  "skipped": 0,
+  "maxNormalTurnDegrees": 8.00649315821473,
+  "angularRmsToLocalTargetBefore": 4.301641052575956,
+  "angularRmsToLocalTargetAfter": 1.2140952464188228,
+  "materials": [
+    {
+      "id": 0,
+      "name": "face",
+      "before": 0.9,
+      "after": 0.84
+    },
+    {
+      "id": 8,
+      "name": "skin",
+      "before": 0.9,
+      "after": 0.84
+    },
+    {
+      "id": 1,
+      "name": "hair",
+      "before": 0.9,
+      "after": 0.74
+    },
+    {
+      "id": 11,
+      "name": "eye_white",
+      "before": 0.9,
+      "after": 0.52
+    },
+    {
+      "id": 12,
+      "name": "eye",
+      "before": 0.9,
+      "after": 0.36
+    }
+  ],
+  "changedViews": [
+    23
+  ],
+  "unchangedViews": 45,
+  "positionsRigWeightsTexturesUnchanged": true,
+  "garmentUnchanged": true,
+  "renderPerformed": false,
+  "nativeS2": false,
+  "viewerBrowserTested": false
+}
