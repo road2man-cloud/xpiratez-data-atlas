@@ -1,0 +1,2433 @@
+{
+  "version": 145,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "2ded008c16ca6ae8cc8e6d272b1f09e46ad3671c5a40883af82715decca2910c",
+  "convergence": {
+    "policy": "branch-local-pre-crown-v145",
+    "lanes": [
+      {
+        "lane": "gold-occult",
+        "start": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+        "end": "d89a78b12cb388976f71be2e4873d792767b642fc0f61b1accccc5db9c6dd9b5",
+        "initialVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 176
+        },
+        "finalVector": {
+          "tu": 84,
+          "stamina": 154,
+          "health": 91,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 176
+        },
+        "initialSum": 1277,
+        "finalSum": 1277,
+        "accepted": 7,
+        "completed": [
+          "STR_SIVALINGA"
+        ],
+        "missing": [
+          "STR_PSI_LAB",
+          "STR_SIVALINGA_RESURRECTION"
+        ],
+        "stock": {
+          "STR_GNOME": 1,
+          "STR_HUMAN_NOBLEWOMAN": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0,
+          "STR_MUTANT_BLESSINGS": 5,
+          "STR_SIVALINGA": 1,
+          "STR_SKULL": 0,
+          "STR_JUNK_PILE": 16,
+          "STR_SC_WIRE": 0,
+          "STR_GLAMOUR": 0,
+          "STR_PORN": 5
+        },
+        "fixedEvents": [
+          {
+            "event": "STR_SAKURA_SIVALINGA_EVENT",
+            "month": 29,
+            "trigger": "STR_OFFERING_TO_PURPLE_BLOOM",
+            "reward": {
+              "STR_SIVALINGA": 1
+            },
+            "executionOdds": 100,
+            "capacity": []
+          }
+        ],
+        "preCrownBlessings": [],
+        "junkExtractions": [],
+        "history": [
+          [
+            "STR_NEPOTISM",
+            1
+          ],
+          [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            1
+          ],
+          [
+            "STR_BASIC_FIREARMS_TRAINING",
+            1
+          ],
+          [
+            "STR_BREAD_AND_FISHES_TRAINING",
+            1
+          ],
+          [
+            "STR_OFFICER_TRAINING",
+            1
+          ],
+          [
+            "STR_PERSONAL_ATTENTION",
+            1
+          ]
+        ],
+        "gameCertified": false,
+        "registered": false
+      },
+      {
+        "lane": "reject-power-priestess",
+        "start": "4e5d6dd8fb2073bfd707aa9263d894ff5f8780f0245dd14a368303e6087a9146",
+        "end": "f7e6ae0721642b37161f5eb5bdcfd01b017cfb9f2ec126ba7c97ab34d64e003a",
+        "initialVector": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "finalVector": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 169
+        },
+        "initialSum": 1130,
+        "finalSum": 1185,
+        "accepted": 129,
+        "completed": [
+          "STR_REJECT_THE_POWER",
+          "STR_HERO",
+          "STR_NEPOTISM",
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          "STR_BASIC_FIREARMS_TRAINING",
+          "STR_BREAD_AND_FISHES_TRAINING",
+          "STR_PSI_LAB",
+          "STR_SHADOWS",
+          "STR_CLOAKING_DEVICE",
+          "STR_SHADOWTECH",
+          "STR_GODS_E2",
+          "STR_LIBRARY",
+          "STR_CHRONICLES_001",
+          "STR_MONSTER_HUNT",
+          "STR_MUTANT_BLESSINGS",
+          "STR_OFFERING_TO_PURPLE_BLOOM",
+          "STR_SIVALINGA",
+          "STR_SIVALINGA_RESURRECTION",
+          "STR_WASTELAND_PRIESTESS_2",
+          "STR_WASTELAND_PRIESTESS_3",
+          "STR_WASTELAND_PRIESTESS_4",
+          "STR_DARK_STAR",
+          "STR_SKULL"
+        ],
+        "missing": [
+          "STR_QUEEN_SAVAGE",
+          "STR_PARIAH_TRAINING"
+        ],
+        "stock": {
+          "STR_GNOME": 7,
+          "STR_HUMAN_NOBLEWOMAN": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0,
+          "STR_MUTANT_BLESSINGS": 7,
+          "STR_SIVALINGA": 1,
+          "STR_SKULL": 8,
+          "STR_JUNK_PILE": 7,
+          "STR_SC_WIRE": 0,
+          "STR_GLAMOUR": 0,
+          "STR_PORN": 0
+        },
+        "fixedEvents": [
+          {
+            "event": "STR_SCHOOLBUS_EVENT",
+            "month": 2,
+            "trigger": "STR_REJECT_THE_POWER",
+            "reward": {
+              "STR_SCHOOLBUS_ITEM": 1,
+              "STR_GNOME": 7,
+              "STR_HUMAN_NOBLEWOMAN": 1,
+              "STR_OLD_BOOKS": 1,
+              "STR_SCHOOL_BOOKS_ITEM": 1,
+              "STR_LONGEVITY_SERUM": 3
+            },
+            "executionOdds": 75,
+            "capacity": [
+              {
+                "prisonType": 0,
+                "capacity": 15,
+                "used": 0,
+                "need": 8
+              }
+            ]
+          },
+          {
+            "event": "STR_SAKURA_SIVALINGA_EVENT",
+            "month": 15,
+            "trigger": "STR_OFFERING_TO_PURPLE_BLOOM",
+            "reward": {
+              "STR_SIVALINGA": 1
+            },
+            "executionOdds": 100,
+            "capacity": []
+          }
+        ],
+        "preCrownBlessings": [
+          {
+            "month": 7,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 8,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 9,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 10,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 11,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 12,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 13,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          },
+          {
+            "month": 14,
+            "event": "STR_DUMBLAZY_BLESSINGS",
+            "count": 9,
+            "executionOdds": 23
+          }
+        ],
+        "junkExtractions": [
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          },
+          {
+            "recipe": "STR_JUNK_PILE_EX",
+            "bundleIndex": 30,
+            "month": 15,
+            "required": {
+              "STR_JUNK_PILE": 1
+            },
+            "reward": {
+              "STR_SCRAP_METAL": 15,
+              "STR_CHEMICALS": 10,
+              "STR_SC_WIRE": 2,
+              "STR_SKULL": 1
+            },
+            "weight": 5,
+            "totalWeight": 609,
+            "hours": 360
+          }
+        ],
+        "history": [
+          [
+            "STR_NEPOTISM",
+            1
+          ],
+          [
+            "STR_SCHOOL_OF_HARD_KNOCKS",
+            1
+          ],
+          [
+            "STR_BASIC_FIREARMS_TRAINING",
+            1
+          ]
+        ],
+        "gameCertified": false,
+        "registered": false
+      }
+    ],
+    "traces": [
+      {
+        "lane": "gold-occult",
+        "from": "e399d5a0daf47fd650518503364175e6d9f4b670ce52959c5077034e6e851ffd",
+        "to": "32fec7190f0273cc54fde4746960de6e5868ad8c212c27228e263fe0eeb5b952",
+        "action": {
+          "type": "conditionalOneTimeFixedItems",
+          "event": "STR_SAKURA_SIVALINGA_EVENT",
+          "script": "STR_SAKURA_SIVALINGA_EVENT",
+          "month": 29,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "32fec7190f0273cc54fde4746960de6e5868ad8c212c27228e263fe0eeb5b952",
+        "to": "bb96911814eb329b8c81924a3fbc608234e5ddc254f993ef1c5e037c50bf12db",
+        "action": {
+          "type": "research",
+          "id": "STR_SIVALINGA"
+        },
+        "added": [
+          "STR_SIVALINGA"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "bb96911814eb329b8c81924a3fbc608234e5ddc254f993ef1c5e037c50bf12db",
+        "to": "8ab4cd43b5576753bb1da93f7001adff12c3a9b856738a574beee288279d2eae",
+        "action": {
+          "type": "repeatResearch",
+          "id": "STR_SOCIALIZING",
+          "assumeAvailability": true
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "8ab4cd43b5576753bb1da93f7001adff12c3a9b856738a574beee288279d2eae",
+        "to": "bcb5830bcf5fe59f5400298c4fb059ada2d78c6dc1196a071db70e89c789b3d8",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_SOCIALIZING",
+          "research": "STR_BEASTMEN",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_BEASTMEN"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "bcb5830bcf5fe59f5400298c4fb059ada2d78c6dc1196a071db70e89c789b3d8",
+        "to": "d56e10303f60e64da7c2624608ca0e456eba5596f4093f52e72d81913a233402",
+        "action": {
+          "type": "repeatResearch",
+          "id": "STR_GNOME",
+          "assumeAvailability": true
+        },
+        "added": []
+      },
+      {
+        "lane": "gold-occult",
+        "from": "d56e10303f60e64da7c2624608ca0e456eba5596f4093f52e72d81913a233402",
+        "to": "081ede6a650a5e5ed6bb4ba5460dfe0b78030717d6c4de191bc51816400f2505",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_GNOME_TOME_9",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_CINDERELLA_PROJECT_PREQ",
+          "STR_GNOME_TOME_9"
+        ]
+      },
+      {
+        "lane": "gold-occult",
+        "from": "081ede6a650a5e5ed6bb4ba5460dfe0b78030717d6c4de191bc51816400f2505",
+        "to": "d89a78b12cb388976f71be2e4873d792767b642fc0f61b1accccc5db9c6dd9b5",
+        "action": {
+          "type": "research",
+          "id": "STR_MONSTER_HUNT"
+        },
+        "added": [
+          "STR_MEGASCORPION_CORPSE",
+          "STR_MEGASCORPION_STING",
+          "STR_MONSTER_HUNT"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4e5d6dd8fb2073bfd707aa9263d894ff5f8780f0245dd14a368303e6087a9146",
+        "to": "ab6b450e4fba6bd2605db84174be001d0bc0588c54fb9f6aa0e43a881df624cb",
+        "action": {
+          "type": "conditionalOneTimeFixedItems",
+          "event": "STR_SCHOOLBUS_EVENT",
+          "script": "STR_SCHOOLBUS_EVENT",
+          "month": 2,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ab6b450e4fba6bd2605db84174be001d0bc0588c54fb9f6aa0e43a881df624cb",
+        "to": "3154f52765452ea8b104aae21587bc6ef7f9dca2bda59f1bf544328e940d5490",
+        "action": {
+          "type": "research",
+          "id": "STR_HUMAN_NOBLEWOMAN"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "3154f52765452ea8b104aae21587bc6ef7f9dca2bda59f1bf544328e940d5490",
+        "to": "7932931cb1e6416d7f3e358588910789c910e66648828723b2cfc4b7d1a09fc4",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_HUMAN_NOBLEWOMAN",
+          "research": "STR_PSI_LAB",
+          "assumeOutcome": true
+        },
+        "added": [
+          "HUMAN_ARMOR_F11",
+          "STR_HIDDEN_DESIRES_PREQ",
+          "STR_HUMAN_NOBLEWOMAN",
+          "STR_PSI_LAB"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7932931cb1e6416d7f3e358588910789c910e66648828723b2cfc4b7d1a09fc4",
+        "to": "df24a6961d87036d057387de9b014a2b3ed5036acfa208534cc056ea5c274f6c",
+        "action": {
+          "type": "research",
+          "id": "STR_GNOME"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "df24a6961d87036d057387de9b014a2b3ed5036acfa208534cc056ea5c274f6c",
+        "to": "aa03ae4695829771a74c9c367155139d825fcf43a8e174c8494ac6818d586835",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_SHADOWS",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_GNOME",
+          "STR_SHADOWS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "aa03ae4695829771a74c9c367155139d825fcf43a8e174c8494ac6818d586835",
+        "to": "fa1cc2b1bab93682c5ff6b9a81d73deefe8775d1a4f0bd699156cab3cd07fd5e",
+        "action": {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "fa1cc2b1bab93682c5ff6b9a81d73deefe8775d1a4f0bd699156cab3cd07fd5e",
+        "to": "ad1c73528a6ad5917f0a95a054ff1f24c56f82ea14805d3d88ef1fdca66cc888",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_NEPOTISM",
+          "STR_TRAININGS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ad1c73528a6ad5917f0a95a054ff1f24c56f82ea14805d3d88ef1fdca66cc888",
+        "to": "bb212745ee042793e0edd94f83409f317a8821411e24e2822f0766a30ced260a",
+        "action": {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 1,
+          "assumption": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "bb212745ee042793e0edd94f83409f317a8821411e24e2822f0766a30ced260a",
+        "to": "d5421c1a2301a0fe08bc60d48837fdadfffb0c9642852b6d1113c051e6a64ba7",
+        "action": {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 2,
+          "assumption": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d5421c1a2301a0fe08bc60d48837fdadfffb0c9642852b6d1113c051e6a64ba7",
+        "to": "8973481cfff5b83fedec5d1c688d77a7c813cb1f5fe51ecfeda488abc4326afb",
+        "action": {
+          "type": "conditionalPromotion",
+          "soldier": "origin",
+          "rank": 3,
+          "assumption": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8973481cfff5b83fedec5d1c688d77a7c813cb1f5fe51ecfeda488abc4326afb",
+        "to": "e728eab75dd613e39099075921b02e981d4b9292381ae5d6868518214b136c7a",
+        "action": {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_NEPOTISM"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e728eab75dd613e39099075921b02e981d4b9292381ae5d6868518214b136c7a",
+        "to": "ff7fc295692de4746aac3466b52141e8c157ded759ac7936b7b425fa0d5121d8",
+        "action": {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        "added": [
+          "STR_KNUCKLES_SPIKED",
+          "STR_MELEE_SUMMARY",
+          "STR_UNARMED_GAUNTLET",
+          "STR_UNARMED_WRESTLING"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ff7fc295692de4746aac3466b52141e8c157ded759ac7936b7b425fa0d5121d8",
+        "to": "142f0886d3d96579274df1069ca5c0413248b60b9de3f53d388b959a9cb440b3",
+        "action": {
+          "type": "research",
+          "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        "added": [
+          "STR_SCHOOL_OF_HARD_KNOCKS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "142f0886d3d96579274df1069ca5c0413248b60b9de3f53d388b959a9cb440b3",
+        "to": "efe80f7dbf76783870300b7159ceef2aa56483021d1017f5c0dfc6f9b8e5dd5a",
+        "action": {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "efe80f7dbf76783870300b7159ceef2aa56483021d1017f5c0dfc6f9b8e5dd5a",
+        "to": "d79e42870dd58ea50659bb3a09a0adeeeefdce456a3eaa8efd1ff428fcdccf25",
+        "action": {
+          "type": "conditionalDistressWithCaptive",
+          "encounter": {
+            "type": "conditionalDistressRecovery",
+            "script": "recurringTerrorNoPenalty",
+            "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+            "race": "STR_NAZIS",
+            "ufo": "STR_VESSEL_PROBE_DISTRESS",
+            "deployment": "STR_ATTACK_NAZI_RAID",
+            "rowIndex": 2,
+            "item": "STR_NEWSPAPER",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "assumeMissionGeneration": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "unit": "STR_NAZI_LEADER",
+          "item": "STR_NAZI_LEADER",
+          "armor": "NAZI_ARMOR_P4",
+          "prisonType": 0,
+          "count": 1,
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true,
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d79e42870dd58ea50659bb3a09a0adeeeefdce456a3eaa8efd1ff428fcdccf25",
+        "to": "aa7384dc114e737ed2118bc8665bbf5a00aedb4c583adab1f0dd5a3c5870ba87",
+        "action": {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        "added": [
+          "STR_BALLISTICS",
+          "STR_BALLISTICS_ZZZ",
+          "STR_NEWSPAPER"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "aa7384dc114e737ed2118bc8665bbf5a00aedb4c583adab1f0dd5a3c5870ba87",
+        "to": "8cac5ae05410d117d1f3e8badadf1abb04dc719ac969c381f6ed78f235d1dcc0",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_01",
+          "script": "STR_CAPTAINS_RANK_01",
+          "research": "STR_CAPTAINS_RANK_01",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 2000,
+            "firstMonth": 1,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        "added": [
+          "STR_CAPTAINS_RANK_01"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8cac5ae05410d117d1f3e8badadf1abb04dc719ac969c381f6ed78f235d1dcc0",
+        "to": "bbf911c0d3d5a9198201c5e1806e59db0f234fa590ed64cabbbac542b4a16685",
+        "action": {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING"
+        },
+        "added": [
+          "STR_BOUNTY_HUNTING",
+          "STR_BOUNTY_HUNTING_PRIZE_BLACK_ADDER_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_DURATHREAD_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_EAGLE_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_HARPOON_CARBINE_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_MINI_SHOTGUN_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_PEACEMAKER_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_PIRANHA_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_SILENCED_PISTOL_PREQ",
+          "STR_TROPHIES"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "bbf911c0d3d5a9198201c5e1806e59db0f234fa590ed64cabbbac542b4a16685",
+        "to": "c8c6ac9d80e12fa46292e97a37912d32d68764e3ab4cc703a5e120c005d5b07d",
+        "action": {
+          "type": "conditionalBountyWithCaptives",
+          "encounter": {
+            "type": "conditionalBountyRecovery",
+            "script": "CrackHouse",
+            "mission": "STR_LOC_CRACKHOUSE",
+            "region": "REGION_CRACKHOUSE",
+            "texture": -122,
+            "race": "STR_BANDIT_TOWN",
+            "rowIndex": 3,
+            "item": "STR_TROPHY_TARGET_200_JACK",
+            "count": 1,
+            "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+            "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+            "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+            "assumeMissionGeneration": true,
+            "assumeTransport": true,
+            "assumeEncounterAndVictory": true,
+            "assumePhysicalRecovery": true
+          },
+          "captives": [
+            {
+              "rowIndex": 2,
+              "item": "STR_HUMAN_MALE_3",
+              "count": 1,
+              "armor": "HUMAN_ARMOR_M3",
+              "prisonType": 0
+            },
+            {
+              "rowIndex": 3,
+              "item": "STR_HUMAN_SHARP_GUY",
+              "count": 1,
+              "armor": "HUMAN_ARMOR_M9",
+              "prisonType": 0
+            }
+          ],
+          "assumeSurrenderOrNonlethalCapture": true,
+          "assumeLiveRecovery": true,
+          "assumeNativeUnitItemMapping": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "c8c6ac9d80e12fa46292e97a37912d32d68764e3ab4cc703a5e120c005d5b07d",
+        "to": "a6fa2d822e039e001126e792f9b92503a19803ca1a6a96635cdf9b1b9e99a6e1",
+        "action": {
+          "type": "research",
+          "id": "STR_TROPHY_TARGET_200_JACK"
+        },
+        "added": [
+          "STR_ANY_BASIC_TROPHY_UNLOCKED",
+          "STR_TROPHY_TARGET_200_JACK"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a6fa2d822e039e001126e792f9b92503a19803ca1a6a96635cdf9b1b9e99a6e1",
+        "to": "aeb2fe0ae3a5f620f2dd8b797003e0916f350ac3afb94c5642b71108026f7bff",
+        "action": {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        "added": [
+          "STR_BONDING_CEREMONY",
+          "STR_CEREMONY_DEP",
+          "STR_PARTY_DEP",
+          "STR_RECRUITMENT_DEP"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "aeb2fe0ae3a5f620f2dd8b797003e0916f350ac3afb94c5642b71108026f7bff",
+        "to": "50dadc37f0426fad3265097573db2d71d20d1ec0cb01fa999bb4622ae13a5fe6",
+        "action": {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "50dadc37f0426fad3265097573db2d71d20d1ec0cb01fa999bb4622ae13a5fe6",
+        "to": "b024fb509090dcc4c326304dd4c3971a4f15b979fcf82f107dc2db3ae9df4f92",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_CAMOUFLAGE",
+          "STR_CAMO_PAINT",
+          "STR_PEASANT_CAMO_UC"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b024fb509090dcc4c326304dd4c3971a4f15b979fcf82f107dc2db3ae9df4f92",
+        "to": "84e57f73cfdf3c966435e7f0e83d309c24343d13c66534b09ab8a45b0dcf3d39",
+        "action": {
+          "type": "research",
+          "id": "STR_LOKNAR_RECRUITMENT"
+        },
+        "added": [
+          "STR_LOKNAR_RECRUITMENT",
+          "STR_LOKNAR_RECRUITMENT_ZZZ",
+          "STR_TANKP_PREQ"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "84e57f73cfdf3c966435e7f0e83d309c24343d13c66534b09ab8a45b0dcf3d39",
+        "to": "127af4d1a1286db8ad538ea3228ff8cd5e719d8f501d680f258222459406d7a0",
+        "action": {
+          "type": "research",
+          "id": "STR_LOKNAR_ORIGINS"
+        },
+        "added": [
+          "STR_LOKNAR_ORIGINS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "127af4d1a1286db8ad538ea3228ff8cd5e719d8f501d680f258222459406d7a0",
+        "to": "97c4a8adb0fa01cafa32805e23b2570d1824ca14d5f94d9ebbccbe6bc80d0b84",
+        "action": {
+          "type": "research",
+          "id": "STR_NAZI_LEADER"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "97c4a8adb0fa01cafa32805e23b2570d1824ca14d5f94d9ebbccbe6bc80d0b84",
+        "to": "ee3896e42dacf8f1905ac6a5f2aeb1ed1449fc22c3d7e0d3981aca4db587f3ab",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_NAZI_LEADER",
+          "research": "STR_OLD_BOOKS",
+          "assumeOutcome": true
+        },
+        "added": [
+          "NAZI_ARMOR_P4",
+          "STR_GYM_ADVANCE_PREQ",
+          "STR_MILITARY_DRILL_TRAINING_PREQ",
+          "STR_NAZIS",
+          "STR_NAZI_LEADER",
+          "STR_OLD_BOOKS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ee3896e42dacf8f1905ac6a5f2aeb1ed1449fc22c3d7e0d3981aca4db587f3ab",
+        "to": "a92eccda9b6129cced13ad1bbf80b77c0abf85df9d865887d274ce58e4a7f8d3",
+        "action": {
+          "type": "research",
+          "id": "STR_ALIEN_ORIGINS"
+        },
+        "added": [
+          "STR_ALIEN_ORIGINS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a92eccda9b6129cced13ad1bbf80b77c0abf85df9d865887d274ce58e4a7f8d3",
+        "to": "aeb128b35b16b8e138fd1796713b834e5689a468cec3b4bfb5ef564b465f6393",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_02",
+          "script": "STR_CAPTAINS_RANK_02",
+          "research": "STR_CAPTAINS_RANK_02",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 3000,
+            "firstMonth": 2,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        "added": [
+          "STR_CAPTAINS_RANK_02"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "aeb128b35b16b8e138fd1796713b834e5689a468cec3b4bfb5ef564b465f6393",
+        "to": "89bd9d7b7298b515cd204e0f0e225be82f6f5626b5e8b2184298b5093afb4494",
+        "action": {
+          "type": "advanceMonth",
+          "month": 3,
+          "assumeContinuity": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "89bd9d7b7298b515cd204e0f0e225be82f6f5626b5e8b2184298b5093afb4494",
+        "to": "93af80bdf47c50bb7159d6363b9d8cc5b8abe1cebea68013246e70c54cab9339",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_03",
+          "script": "STR_CAPTAINS_RANK_03",
+          "research": "STR_CAPTAINS_RANK_03",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 4000,
+            "firstMonth": 3,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        "added": [
+          "STR_CAPTAINS_RANK_03"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "93af80bdf47c50bb7159d6363b9d8cc5b8abe1cebea68013246e70c54cab9339",
+        "to": "c2239f259f65bd89b2ab5b452d7c0061d5eade84fabb8edb636b1874722d9f35",
+        "action": {
+          "type": "advanceMonth",
+          "month": 4,
+          "assumeContinuity": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "c2239f259f65bd89b2ab5b452d7c0061d5eade84fabb8edb636b1874722d9f35",
+        "to": "582e07b21d6d183d91d706007df18b02a6d5434af3886dc580e2dadcf297aaee",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_CAPTAINS_RANK_04",
+          "script": "STR_CAPTAINS_RANK_04",
+          "research": "STR_CAPTAINS_RANK_04",
+          "assumeOutcome": true,
+          "conditionalScoreThreshold": {
+            "minScore": 5000,
+            "firstMonth": 4,
+            "achievementAssumed": true,
+            "nativeScoreHistoryProven": false,
+            "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+          }
+        },
+        "added": [
+          "STR_CAPTAINS_RANK_04"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "582e07b21d6d183d91d706007df18b02a6d5434af3886dc580e2dadcf297aaee",
+        "to": "eefb236a47470492cdae5907e2b629c49eda72e3195d574d3e6d04f8fd354aef",
+        "action": {
+          "type": "research",
+          "id": "STR_HUMAN_MALE_3"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "eefb236a47470492cdae5907e2b629c49eda72e3195d574d3e6d04f8fd354aef",
+        "to": "565f6efbedde7d42bd5dea09bb4056506958e7aa837a09dd56ccf30e41415e34",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_HUMAN_MALE_3",
+          "research": "STR_COLT45",
+          "assumeOutcome": true
+        },
+        "added": [
+          "HUMAN_ARMOR_M3",
+          "STR_COLT45",
+          "STR_HUMAN_MALE_3"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "565f6efbedde7d42bd5dea09bb4056506958e7aa837a09dd56ccf30e41415e34",
+        "to": "5bba536e313efbccc5d6214d4d6929a1d6dc8feb32eebeb1c5d4fcd4606047fe",
+        "action": {
+          "type": "research",
+          "id": "STR_HUMAN_SHARP_GUY"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "5bba536e313efbccc5d6214d4d6929a1d6dc8feb32eebeb1c5d4fcd4606047fe",
+        "to": "151e78d10960598d19b81b1c60e3d7d2b2b07be4ab53de42973af9a67bdb815b",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_HUMAN_SHARP_GUY",
+          "research": "STR_SPORTS_RIFLE",
+          "assumeOutcome": true
+        },
+        "added": [
+          "HUMAN_ARMOR_M9",
+          "STR_GUN_SCOPE",
+          "STR_HUMAN_SHARP_GUY",
+          "STR_SPORTS_RIFLE"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "151e78d10960598d19b81b1c60e3d7d2b2b07be4ab53de42973af9a67bdb815b",
+        "to": "ff95bdb68d8fc261980a72656013dc7dad5330c60453ee417081bfa489712ba9",
+        "action": {
+          "type": "research",
+          "id": "STR_PISTOLS_SUMMARY"
+        },
+        "added": [
+          "STR_FIREARMS_SUMMARY",
+          "STR_PISTOLS_SUMMARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ff95bdb68d8fc261980a72656013dc7dad5330c60453ee417081bfa489712ba9",
+        "to": "961181a0eb0f75428618b4cc9dd1e8445dff42117bd34c82f1ae07309b0ef480",
+        "action": {
+          "type": "research",
+          "id": "STR_HARDWARE_SHOPPING"
+        },
+        "added": [
+          "STR_HARDWARE_SHOPPING"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "961181a0eb0f75428618b4cc9dd1e8445dff42117bd34c82f1ae07309b0ef480",
+        "to": "03230de3be96459f2190753141cb188c9479e8a4c223397b96e4741211b8e6a6",
+        "action": {
+          "type": "research",
+          "id": "STR_SCHOOLING_1"
+        },
+        "added": [
+          "STR_JUNK_PILE",
+          "STR_PINUP_001",
+          "STR_SCHOOLING_1"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "03230de3be96459f2190753141cb188c9479e8a4c223397b96e4741211b8e6a6",
+        "to": "983e67ffb6dcc9bb27c4f6413e17b1d602936ace98bc5e83cefa1d9926558dad",
+        "action": {
+          "type": "research",
+          "id": "STR_THE_PHARMACIST"
+        },
+        "added": [
+          "STR_THE_PHARMACIST"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "983e67ffb6dcc9bb27c4f6413e17b1d602936ace98bc5e83cefa1d9926558dad",
+        "to": "f050888ce5237cde63c7fcaf8abe57a7e34b0918e860d302e3d3c4f5be97c94e",
+        "action": {
+          "type": "research",
+          "id": "STR_GUN_SHOPPING"
+        },
+        "added": [
+          "STR_GUN_SHOPPING"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "f050888ce5237cde63c7fcaf8abe57a7e34b0918e860d302e3d3c4f5be97c94e",
+        "to": "08c5c65d2a8280009a6e6fa4df33cca538838ad2fb870c7efb8f5d80fc6a2b2f",
+        "action": {
+          "type": "research",
+          "id": "STR_CONTACT_GENERAL_SUPPLIES"
+        },
+        "added": [
+          "STR_CONTACT_GENERAL_SUPPLIES",
+          "STR_CONTACT_GENERAL_SUPPLIES_ZZZ"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "08c5c65d2a8280009a6e6fa4df33cca538838ad2fb870c7efb8f5d80fc6a2b2f",
+        "to": "f6b4b43e65521ad967e8870d367ee6ffaf7684e1f9b143f204d4cbd6f51dbd83",
+        "action": {
+          "type": "research",
+          "id": "STR_BOW_H"
+        },
+        "added": [
+          "STR_BOW_H"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "f6b4b43e65521ad967e8870d367ee6ffaf7684e1f9b143f204d4cbd6f51dbd83",
+        "to": "8b491b1c4af6998b74363f62d093dc1939cc5c050a3fde1256d1346d04bea723",
+        "action": {
+          "type": "research",
+          "id": "STR_BOWS_SUMMARY"
+        },
+        "added": [
+          "STR_BOWS_SUMMARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8b491b1c4af6998b74363f62d093dc1939cc5c050a3fde1256d1346d04bea723",
+        "to": "4e1cbf73fa98fe424229224770e615381e8e128e1d242ec26c5edce0ac043565",
+        "action": {
+          "type": "research",
+          "id": "STR_PRIMITIVE_WEAPONS"
+        },
+        "added": [
+          "STR_PRIMITIVE_WEAPONS",
+          "STR_PRIMITIVE_WEAPONS_ZZZ"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4e1cbf73fa98fe424229224770e615381e8e128e1d242ec26c5edce0ac043565",
+        "to": "b6db55d1df9f4a48639cbc4f1cd0d1893460d7d35c253279f8ff814183b30240",
+        "action": {
+          "type": "research",
+          "id": "STR_TACTICS"
+        },
+        "added": [
+          "STR_TACTICS",
+          "STR_TACTICS_ZZZ"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b6db55d1df9f4a48639cbc4f1cd0d1893460d7d35c253279f8ff814183b30240",
+        "to": "e8e3f10d80acb24bb3d638e16fa6f58eb3d1f3ee9013a347cef3da32dd99c429",
+        "action": {
+          "type": "research",
+          "id": "STR_SMGS_SUMMARY"
+        },
+        "added": [
+          "STR_SMGS_SUMMARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e8e3f10d80acb24bb3d638e16fa6f58eb3d1f3ee9013a347cef3da32dd99c429",
+        "to": "6bd50d7b63fddd6592df2445438cbbda37da6fadcfa38216984aaa7f377b58e8",
+        "action": {
+          "type": "research",
+          "id": "STR_SCI_REP"
+        },
+        "added": [
+          "STR_SCI_REP"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "6bd50d7b63fddd6592df2445438cbbda37da6fadcfa38216984aaa7f377b58e8",
+        "to": "6552af47ddbf307834c1d9d25cf5498e956c73d009629c0123006522a379ef43",
+        "action": {
+          "type": "research",
+          "id": "STR_GUNS_N_AMMO"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "6552af47ddbf307834c1d9d25cf5498e956c73d009629c0123006522a379ef43",
+        "to": "2206a7ddf5397a4d685ca3c848251fd947c6ca3390de020f38d0488e761ad6d4",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GUNS_N_AMMO",
+          "research": "STR_AUTO_RIFLE",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_AMMO_MANUFACTURING_2_PREQ",
+          "STR_AUTO_RIFLE",
+          "STR_GUNS_N_AMMO",
+          "STR_RIFLE_CLIP"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "2206a7ddf5397a4d685ca3c848251fd947c6ca3390de020f38d0488e761ad6d4",
+        "to": "e8a13ce413f9cc169a0c20727407811fdcfd2fae25bf35e8fed7c1911ad3f23d",
+        "action": {
+          "type": "research",
+          "id": "STR_RIFLES_SUMMARY"
+        },
+        "added": [
+          "STR_RIFLES_SUMMARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e8a13ce413f9cc169a0c20727407811fdcfd2fae25bf35e8fed7c1911ad3f23d",
+        "to": "71d0acbd1500dbf6b5d3c68199c9b7b84cf79e4cf1cffaf0f9940613339fba00",
+        "action": {
+          "type": "research",
+          "id": "STR_BASIC_FIREARMS_TRAINING"
+        },
+        "added": [
+          "STR_BASIC_FIREARMS_TRAINING"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "71d0acbd1500dbf6b5d3c68199c9b7b84cf79e4cf1cffaf0f9940613339fba00",
+        "to": "0268b8e49230a57f2a637393db5ec8b1f268b965c11de09eedcae3151b652e32",
+        "action": {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_BASIC_FIREARMS_TRAINING"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "0268b8e49230a57f2a637393db5ec8b1f268b965c11de09eedcae3151b652e32",
+        "to": "458fa7669c4abf8fec65ac579b6f715bd0f4c16dc25a1215b7571e315f53221e",
+        "action": {
+          "type": "research",
+          "id": "STR_SNIPER_SUMMARY"
+        },
+        "added": [
+          "STR_SNIPER_SUMMARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "458fa7669c4abf8fec65ac579b6f715bd0f4c16dc25a1215b7571e315f53221e",
+        "to": "4223fda78b81df5def028f369e8ddb71209816b37ac64d6aea8825bdb38a540b",
+        "action": {
+          "type": "manufacture",
+          "item": "STR_DATA_DISK_B",
+          "recipe": "STR_DATA_DISK_B",
+          "count": 1
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4223fda78b81df5def028f369e8ddb71209816b37ac64d6aea8825bdb38a540b",
+        "to": "83439c88914d3c3d689f2b8f367a7e77a67339622cb9c04f8e3686b91003df8d",
+        "action": {
+          "type": "research",
+          "id": "STR_DATA_DISK_B"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "83439c88914d3c3d689f2b8f367a7e77a67339622cb9c04f8e3686b91003df8d",
+        "to": "98925611fedf3d88aa9ab74315f4b8776fb56586406b6eecbf70621308e322fe",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_DATA_DISK_B",
+          "research": "STR_MUTANT_ORIGINS",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_DATA_DISK_B",
+          "STR_MUTANT_ORIGINS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "98925611fedf3d88aa9ab74315f4b8776fb56586406b6eecbf70621308e322fe",
+        "to": "fc520e265699d2ce445dc9311fdf63fa09f4737917b8ea3e1428b4b17a030b00",
+        "action": {
+          "type": "research",
+          "id": "STR_EXPLORE_TUNNELS"
+        },
+        "added": [
+          "STR_EXPLORE_TUNNELS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "fc520e265699d2ce445dc9311fdf63fa09f4737917b8ea3e1428b4b17a030b00",
+        "to": "39093671076ef1d02a2ff785fdeaf3a4c6cba9311f872cfcdef10c465fa7765e",
+        "action": {
+          "type": "conditionalMedicalEventBundle",
+          "event": "STR_SECRET_DOOR_MEDICAL_SUPPLIES",
+          "script": "STR_SECRET_DOOR_VERY_EARLY",
+          "bundleIndex": null,
+          "scoreRange": null,
+          "assumeEventSelection": true,
+          "assumeBundleSelection": false,
+          "assumeDelivery": true,
+          "assumeMonthlyScore": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "39093671076ef1d02a2ff785fdeaf3a4c6cba9311f872cfcdef10c465fa7765e",
+        "to": "3d8d89fb3088a874dafacde2762c787d491bb695991ff7afb4af797a64e36c3c",
+        "action": {
+          "type": "research",
+          "id": "STR_MEDICAL_SUPPLIES"
+        },
+        "added": [
+          "STR_MEDICAL_SUPPLIES"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "3d8d89fb3088a874dafacde2762c787d491bb695991ff7afb4af797a64e36c3c",
+        "to": "e345eb0202eb7bae2cbc0c3f613ad7cb8ea00506d59003804f3ba7600b5292e4",
+        "action": {
+          "type": "advanceMonth",
+          "month": 5,
+          "assumeContinuity": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e345eb0202eb7bae2cbc0c3f613ad7cb8ea00506d59003804f3ba7600b5292e4",
+        "to": "d437546650b1a6bfc173733e52ac550a6ac04d26430fe54fde51418da11bf371",
+        "action": {
+          "type": "conditionalMedicalEventBundle",
+          "event": "STR_DELINQUENT_SPORTS_BAD",
+          "script": "STR_DELINQUENT_SCORE",
+          "bundleIndex": 3,
+          "scoreRange": {
+            "min": -300,
+            "max": 999
+          },
+          "assumeEventSelection": true,
+          "assumeBundleSelection": true,
+          "assumeDelivery": true,
+          "assumeMonthlyScore": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d437546650b1a6bfc173733e52ac550a6ac04d26430fe54fde51418da11bf371",
+        "to": "640823bc621c307f0c2b2187916a3e4c583d101a2875f62e1d7135d7838a8728",
+        "action": {
+          "type": "research",
+          "id": "STR_SECTOWEED"
+        },
+        "added": [
+          "STR_SECTOWEED"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "640823bc621c307f0c2b2187916a3e4c583d101a2875f62e1d7135d7838a8728",
+        "to": "29aae671f88f4d5570a7a8233dc764ad098671b5d53f0ea8263e500d7040a103",
+        "action": {
+          "type": "research",
+          "id": "STR_CRACK"
+        },
+        "added": [
+          "STR_CRACK"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "29aae671f88f4d5570a7a8233dc764ad098671b5d53f0ea8263e500d7040a103",
+        "to": "d69bc0f52d2963ef7d2894bf1c46b599a8b9d3e817eed91cf9e2954f05e309e3",
+        "action": {
+          "type": "research",
+          "id": "STR_MEDICINE"
+        },
+        "added": [
+          "STR_CS_GAS",
+          "STR_MEDICINE"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d69bc0f52d2963ef7d2894bf1c46b599a8b9d3e817eed91cf9e2954f05e309e3",
+        "to": "bc592a5f28b2af0766ef81ee3bb97005d65006f961f1ffea2f11cd0fe7863836",
+        "action": {
+          "type": "research",
+          "id": "STR_SOLDIER_TYPE_SS"
+        },
+        "added": [
+          "STR_SOLDIER_TYPE_SS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "bc592a5f28b2af0766ef81ee3bb97005d65006f961f1ffea2f11cd0fe7863836",
+        "to": "6038f11c452c1d4d92f2aa60cc8562383285853ed9059755b69fa465d46836eb",
+        "action": {
+          "type": "research",
+          "id": "STR_SOLDIER_TYPE_PEA"
+        },
+        "added": [
+          "STR_SOLDIER_TYPE_PEA"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "6038f11c452c1d4d92f2aa60cc8562383285853ed9059755b69fa465d46836eb",
+        "to": "b6b13ef4dd0514fe9499c1a790d833f0a1f24124026f463e6b1cafa837595341",
+        "action": {
+          "type": "research",
+          "id": "STR_SHOTGUNS_SUMMARY"
+        },
+        "added": [
+          "STR_BUCKSHOT_HV",
+          "STR_SHOTGUNS_SUMMARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b6b13ef4dd0514fe9499c1a790d833f0a1f24124026f463e6b1cafa837595341",
+        "to": "49e24664435f9d074ccb7bff66201b79e11df96ec8c6a4b3de7eaaf13a7572cb",
+        "action": {
+          "type": "research",
+          "id": "STR_BEER"
+        },
+        "added": [
+          "STR_BEER"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "49e24664435f9d074ccb7bff66201b79e11df96ec8c6a4b3de7eaaf13a7572cb",
+        "to": "a50610634aa44494858e950528dd0a2ceede7fdd146429393e3f1ac862f75df4",
+        "action": {
+          "type": "research",
+          "id": "STR_SKINNING"
+        },
+        "added": [
+          "STR_SKINNING"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a50610634aa44494858e950528dd0a2ceede7fdd146429393e3f1ac862f75df4",
+        "to": "8e2ed6521b78f5977f9fa8eb3ef5688186d278b7f797d20264d768debeae77e6",
+        "action": {
+          "type": "research",
+          "id": "STR_UBER_WHEAT"
+        },
+        "added": [
+          "STR_UBER_WHEAT"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8e2ed6521b78f5977f9fa8eb3ef5688186d278b7f797d20264d768debeae77e6",
+        "to": "4c814904093cd5dbc0178815d9a93cf72ddea6912a8f2444512233e524b51849",
+        "action": {
+          "type": "research",
+          "id": "STR_FARMING"
+        },
+        "added": [
+          "STR_FARMING",
+          "STR_HYDROPONICS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4c814904093cd5dbc0178815d9a93cf72ddea6912a8f2444512233e524b51849",
+        "to": "916942ca9cd9ed46a03c7397f46f17d660bf9c6a5aaf3d68a7fca0e7fa01b0f8",
+        "action": {
+          "type": "research",
+          "id": "STR_MUTANT_ABILITIES"
+        },
+        "added": [
+          "STR_MUTANT_ABILITIES"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "916942ca9cd9ed46a03c7397f46f17d660bf9c6a5aaf3d68a7fca0e7fa01b0f8",
+        "to": "b8b0b0abe600124bccfa7e55ebfaa722a6ed8a682845fec80ac9484f4a7a2759",
+        "action": {
+          "type": "research",
+          "id": "STR_GYMNASTICS"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b8b0b0abe600124bccfa7e55ebfaa722a6ed8a682845fec80ac9484f4a7a2759",
+        "to": "b3aba89a437f6f347fe12ef12c6039052fb70941c7048fc300bdcb41f8790173",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GYMNASTICS",
+          "research": "STR_GYM_OUTFIT",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_GYMNASTICS",
+          "STR_GYM_OUTFIT",
+          "STR_KUNG_FU"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b3aba89a437f6f347fe12ef12c6039052fb70941c7048fc300bdcb41f8790173",
+        "to": "2a71a42b0d6d1d13e17ef389a03cb5d6cfc2aaa2ad42eb949703c6425c8b7c83",
+        "action": {
+          "type": "research",
+          "id": "STR_MUTANT_BLESSINGS"
+        },
+        "added": [
+          "STR_MUTANT_BLESSINGS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "2a71a42b0d6d1d13e17ef389a03cb5d6cfc2aaa2ad42eb949703c6425c8b7c83",
+        "to": "d35d3961c22a579ad6a76725d96b69628d666f76ad88caedcbeb025420932a79",
+        "action": {
+          "type": "research",
+          "id": "STR_MESS_HALL"
+        },
+        "added": [
+          "STR_MESS_HALL"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d35d3961c22a579ad6a76725d96b69628d666f76ad88caedcbeb025420932a79",
+        "to": "3aded88291aad4185ec75235fc33a409eddc417a40a6f5ee2fb4db02ec9547cb",
+        "action": {
+          "type": "acquireFacility",
+          "id": "STR_MESS_HALL"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "3aded88291aad4185ec75235fc33a409eddc417a40a6f5ee2fb4db02ec9547cb",
+        "to": "6ceabd9ad85153359ab8a23a4e29934ccb0c0abfa03e3833c2059dd584151960",
+        "action": {
+          "type": "research",
+          "id": "STR_BREAD_AND_FISHES_TRAINING"
+        },
+        "added": [
+          "STR_BREAD_AND_FISHES_TRAINING"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "6ceabd9ad85153359ab8a23a4e29934ccb0c0abfa03e3833c2059dd584151960",
+        "to": "dd238ef17b99fb7ddafaadc4fbd536e4a7a5ccb50d12f898a85a3054ffe8c43a",
+        "action": {
+          "type": "research",
+          "id": "STR_CLOAKING_DEVICE"
+        },
+        "added": [
+          "STR_CLOAKING_DEVICE"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "dd238ef17b99fb7ddafaadc4fbd536e4a7a5ccb50d12f898a85a3054ffe8c43a",
+        "to": "8b36e5caf09f2a0809488d3ef794cffcb815bc690af4118c2838ec85ff868733",
+        "action": {
+          "type": "repeatResearch",
+          "id": "STR_GNOME",
+          "assumeAvailability": true
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8b36e5caf09f2a0809488d3ef794cffcb815bc690af4118c2838ec85ff868733",
+        "to": "fa67984c4430fb45337dfc3bef007ec1802b028a065b05c895409b24f5b9fbe0",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_GNOME",
+          "research": "STR_SHADOWTECH",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_SHADOWTECH"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "fa67984c4430fb45337dfc3bef007ec1802b028a065b05c895409b24f5b9fbe0",
+        "to": "b93caafdd4418ab4cef4844716d8a3d7f33154b6dc39b7e552073d1187ea52e3",
+        "action": {
+          "type": "conditionalOccultAward",
+          "event": "STR_GREEN_PRAYERS",
+          "script": "STR_CAPTAIN_GREEN_EVENTS_1",
+          "research": "STR_GODS_E2",
+          "month": 6,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "assumeResearchSelection": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": [
+          "STR_GODS_E2",
+          "STR_GODS_SUMMARY_PREQ2"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "b93caafdd4418ab4cef4844716d8a3d7f33154b6dc39b7e552073d1187ea52e3",
+        "to": "824d4d9ea46488a400589512fe08d43fa267c47678c79060795fc983ef23d8b8",
+        "action": {
+          "type": "research",
+          "id": "STR_CONTACT_TIGER_TRANSPORT"
+        },
+        "added": [
+          "STR_CONTACT_TIGER_TRANSPORT"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "824d4d9ea46488a400589512fe08d43fa267c47678c79060795fc983ef23d8b8",
+        "to": "ee2daa4c872549b364e63a290cf171ee507da1430862749ffa5f4050b0f777aa",
+        "action": {
+          "type": "research",
+          "id": "STR_EXPEDITIONS"
+        },
+        "added": [
+          "STR_EXPEDITION",
+          "STR_EXPEDITIONS",
+          "STR_EXPEDITION_RESEARCH",
+          "STR_EXPEDITION_RESEARCH_INCOMPLETE"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ee2daa4c872549b364e63a290cf171ee507da1430862749ffa5f4050b0f777aa",
+        "to": "7fd4856c1b2b06a40f68a79555bd3ea516e5c25cb93d7e8e5ad94621b920beea",
+        "action": {
+          "type": "research",
+          "id": "STR_BIKES"
+        },
+        "added": [
+          "STR_BIKES"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7fd4856c1b2b06a40f68a79555bd3ea516e5c25cb93d7e8e5ad94621b920beea",
+        "to": "4e7dbbbb854aaabca7c506dd8c14c4af9e335d2cb33edba08ab3a1d4d9d865fd",
+        "action": {
+          "type": "research",
+          "id": "STR_MONSTER_HUNT"
+        },
+        "added": [
+          "STR_MEGASCORPION_CORPSE",
+          "STR_MEGASCORPION_STING",
+          "STR_MONSTER_HUNT"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4e7dbbbb854aaabca7c506dd8c14c4af9e335d2cb33edba08ab3a1d4d9d865fd",
+        "to": "98432918beadf6d1eca7b58cc156bdf080d56fb2362bcb87c42c3a27c53bb17a",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 7,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "98432918beadf6d1eca7b58cc156bdf080d56fb2362bcb87c42c3a27c53bb17a",
+        "to": "fc72cb15183e5f96569542cb9030cfa7547058e05b0866491f3aa1cf864f0753",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 8,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "fc72cb15183e5f96569542cb9030cfa7547058e05b0866491f3aa1cf864f0753",
+        "to": "4350f1c838e2c5909e6428b27a0b424af41304b543c5ab5a47199db341f7b8d6",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 9,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4350f1c838e2c5909e6428b27a0b424af41304b543c5ab5a47199db341f7b8d6",
+        "to": "a0706be4c2e5ff75199438e37f1332d7540ea479851aeb64d72079eed13894cb",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 10,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a0706be4c2e5ff75199438e37f1332d7540ea479851aeb64d72079eed13894cb",
+        "to": "2128b721f145c56e3fb94a271d7b4513f4fddac9d08d22ef91348858586f22f4",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 11,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "2128b721f145c56e3fb94a271d7b4513f4fddac9d08d22ef91348858586f22f4",
+        "to": "7259847803e3725465be0a21fc7564db45b726117818f5a3451b2966d2038f96",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 12,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7259847803e3725465be0a21fc7564db45b726117818f5a3451b2966d2038f96",
+        "to": "59f2f6283b13cfbb923330ccb16036134f94e12b5f1d98a753aa39785b799adc",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 13,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "59f2f6283b13cfbb923330ccb16036134f94e12b5f1d98a753aa39785b799adc",
+        "to": "9441ec22aa51554294735af9061e1c847d025ba18833393b5cc92cf48e8df149",
+        "action": {
+          "type": "conditionalPreCrownBlessings",
+          "event": "STR_DUMBLAZY_BLESSINGS",
+          "script": "STR_DUMBLAZY_BLESSINGS",
+          "month": 14,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "9441ec22aa51554294735af9061e1c847d025ba18833393b5cc92cf48e8df149",
+        "to": "e0d7f1a1fa9a64892cf3cb1e98e57c412b24e042627638c64ada92c1aaed7c63",
+        "action": {
+          "type": "conditionalBountyExchange",
+          "recipe": "STR_OFFERING_TO_PURPLE_BLOOM",
+          "count": 1,
+          "assumeProductionTime": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e0d7f1a1fa9a64892cf3cb1e98e57c412b24e042627638c64ada92c1aaed7c63",
+        "to": "64692a1b14668c654ced178dc578abe403e6e1105c31e367fe93a4f5422bd5a4",
+        "action": {
+          "type": "research",
+          "id": "STR_OFFERING_TO_PURPLE_BLOOM"
+        },
+        "added": [
+          "STR_OFFERING_TO_PURPLE_BLOOM"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "64692a1b14668c654ced178dc578abe403e6e1105c31e367fe93a4f5422bd5a4",
+        "to": "eb74617b47133ac963b0cc18c5f65aa20598ff18f35b7b145e6d47e107a8d789",
+        "action": {
+          "type": "conditionalOneTimeFixedItems",
+          "event": "STR_SAKURA_SIVALINGA_EVENT",
+          "script": "STR_SAKURA_SIVALINGA_EVENT",
+          "month": 15,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "eb74617b47133ac963b0cc18c5f65aa20598ff18f35b7b145e6d47e107a8d789",
+        "to": "c0036ed3bfd39fd1c2f85be3bd4c0bcb48e11e2f1dfa8f40c09356e36fee5267",
+        "action": {
+          "type": "conditionalBountyExchange",
+          "recipe": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+          "count": 1,
+          "assumeProductionTime": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "c0036ed3bfd39fd1c2f85be3bd4c0bcb48e11e2f1dfa8f40c09356e36fee5267",
+        "to": "06c158aecebefbf37c27fdfe50845416a4ccf8b79f7ec000845f93af6fa82282",
+        "action": {
+          "type": "research",
+          "id": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+        },
+        "added": [
+          "STR_BOUNTY_HUNTING_PRIZE_ALLIANCE_FAVORS_PREQ",
+          "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+          "STR_ONE_TROPHY_MA",
+          "STR_SOLDIER_TYPE_BASIC_PREQ_A",
+          "STR_SOLDIER_TYPE_BASIC_PREQ_B"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "06c158aecebefbf37c27fdfe50845416a4ccf8b79f7ec000845f93af6fa82282",
+        "to": "9ebcdb0b95f13dc979067a81079f5837c233a6fef611b59f15db0812a4ac1cbf",
+        "action": {
+          "type": "research",
+          "id": "STR_SOLDIER_TYPE_BASIC"
+        },
+        "added": [
+          "STR_SOLDIER_TYPE_BASIC"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "9ebcdb0b95f13dc979067a81079f5837c233a6fef611b59f15db0812a4ac1cbf",
+        "to": "d8c44795a7800661ff2b4a7afad8825c4fcc5388b03c695a42d925cf8b4c37cf",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d8c44795a7800661ff2b4a7afad8825c4fcc5388b03c695a42d925cf8b4c37cf",
+        "to": "98273d4da64646a8669f0cc631b1576373d400da6ca3cce4a4f859f2877cd865",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "98273d4da64646a8669f0cc631b1576373d400da6ca3cce4a4f859f2877cd865",
+        "to": "74df98b46ceed27fa6623c6c775b35110d52c3406694833bbdedbd232e970dce",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "74df98b46ceed27fa6623c6c775b35110d52c3406694833bbdedbd232e970dce",
+        "to": "df227be6bac366cba79f9a8d695feb24624d1b01ccfb757d4ff0ada4de136af8",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "df227be6bac366cba79f9a8d695feb24624d1b01ccfb757d4ff0ada4de136af8",
+        "to": "e6ceed6e3f4eacb12be3a7f20d90b970bef7f00ab5edc0f60e2ed62e22ebb883",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e6ceed6e3f4eacb12be3a7f20d90b970bef7f00ab5edc0f60e2ed62e22ebb883",
+        "to": "709c275c90207a408ebf243fe3ed17d0edbe980e4f0016c54bbcbad40c1c91d9",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "709c275c90207a408ebf243fe3ed17d0edbe980e4f0016c54bbcbad40c1c91d9",
+        "to": "120035d087823439107fb6bf2eb25eb18dba298c9274e7989613c0d842a3aa82",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "120035d087823439107fb6bf2eb25eb18dba298c9274e7989613c0d842a3aa82",
+        "to": "2b819cc579d2125e724ed0de00adffce5da8df3a63cbdbad90be72059357ba4a",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "2b819cc579d2125e724ed0de00adffce5da8df3a63cbdbad90be72059357ba4a",
+        "to": "a82262c871b076c6ead91339e78c24f61ed86cfc27f44a481a74c867fd19e1ef",
+        "action": {
+          "type": "conditionalJunkExtraction",
+          "recipe": "STR_JUNK_PILE_EX",
+          "bundleIndex": 30,
+          "count": 1,
+          "assumeProductionTime": true,
+          "assumeWeightedOutcome": true,
+          "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a82262c871b076c6ead91339e78c24f61ed86cfc27f44a481a74c867fd19e1ef",
+        "to": "449171776c153ebe4837ca3d324c6330c6a52ae323cc8aef5101de408e86425c",
+        "action": {
+          "type": "research",
+          "id": "STR_SKULL"
+        },
+        "added": [
+          "STR_SKULL"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "449171776c153ebe4837ca3d324c6330c6a52ae323cc8aef5101de408e86425c",
+        "to": "41f05aeb7705a49e9269e190a8bbf9b980ec7da98c867aa55499c5c1a808d379",
+        "action": {
+          "type": "research",
+          "id": "STR_SC_WIRE"
+        },
+        "added": [
+          "STR_SC_WIRE"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "41f05aeb7705a49e9269e190a8bbf9b980ec7da98c867aa55499c5c1a808d379",
+        "to": "1d63ae54e984bbd44fb8afa8147f70e5a2c50548a0a9b5f193c48541fbb94189",
+        "action": {
+          "type": "sourceBoundBaseFunctions",
+          "assumeSameBase": true,
+          "assumeCompleteFacilityState": true,
+          "geographyProvides": [],
+          "geographyForbids": [],
+          "sourceSetSha256": "66fd2e55611ef8c81268793425ce4d5b2ed6bc01a504e991788688758b49f1fe",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "1d63ae54e984bbd44fb8afa8147f70e5a2c50548a0a9b5f193c48541fbb94189",
+        "to": "d5d614e63ed2a96eafdc0e7d118eaa0f3ac188eefce7d3a6aef3540fe69024ba",
+        "action": {
+          "type": "acquirePurchase",
+          "item": "STR_SC_WIRE",
+          "count": 8
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d5d614e63ed2a96eafdc0e7d118eaa0f3ac188eefce7d3a6aef3540fe69024ba",
+        "to": "e8ad5d7f4d24a869bbcae1a13bc6952db885b0ed30aa191436ceec90a6e53b4b",
+        "action": {
+          "type": "research",
+          "id": "STR_PERSONAL_LABS"
+        },
+        "added": [
+          "STR_PERSONAL_LABS"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "e8ad5d7f4d24a869bbcae1a13bc6952db885b0ed30aa191436ceec90a6e53b4b",
+        "to": "7bd39be62d38e1de4445afe3ed6002d0b2e91180056e2255a14ba34d0b3d2983",
+        "action": {
+          "type": "acquireFacility",
+          "id": "STR_PERSONAL_LABS"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7bd39be62d38e1de4445afe3ed6002d0b2e91180056e2255a14ba34d0b3d2983",
+        "to": "d8dda7d61701202985332cf6759e3b71512ee1534e8c215600be42a3eeff1773",
+        "action": {
+          "type": "research",
+          "id": "STR_SCHOOL_BOOKS_ITEM"
+        },
+        "added": [
+          "STR_PERSONAL_LABS_EXIST",
+          "STR_SCHOOL_BOOKS",
+          "STR_SCHOOL_BOOKS_ITEM"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "d8dda7d61701202985332cf6759e3b71512ee1534e8c215600be42a3eeff1773",
+        "to": "4f93cb0b031146baaeffda535c19cd509d11fa366cfa94db0bd3260a077b733f",
+        "action": {
+          "type": "research",
+          "id": "STR_LIBRARY"
+        },
+        "added": [
+          "STR_LIBRARY"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4f93cb0b031146baaeffda535c19cd509d11fa366cfa94db0bd3260a077b733f",
+        "to": "9ad702dda115f467378f7ffbc8dac94711ce4b93dfbf3326784d04a913f9cd0d",
+        "action": {
+          "type": "acquireFacility",
+          "id": "STR_LIBRARY"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "9ad702dda115f467378f7ffbc8dac94711ce4b93dfbf3326784d04a913f9cd0d",
+        "to": "ea26dff2a1ce63040394e63c52b22a66cc0e731c0b1ca708d618302a1afc2c6c",
+        "action": {
+          "type": "research",
+          "id": "STR_SCHOOLING_2"
+        },
+        "added": [
+          "STR_SCHOOLING_2"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "ea26dff2a1ce63040394e63c52b22a66cc0e731c0b1ca708d618302a1afc2c6c",
+        "to": "18d846d345f02e7016d37e3b3d1119ff14ed822cd0503a2f975aaa6fcb86beb1",
+        "action": {
+          "type": "research",
+          "id": "STR_CHRONICLES_001"
+        },
+        "added": [
+          "STR_CHRONICLES_001"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "18d846d345f02e7016d37e3b3d1119ff14ed822cd0503a2f975aaa6fcb86beb1",
+        "to": "8df0f8148aca2f57d280be9ba80bddedbe428d91532d01b7b3ae2baa2f329b7f",
+        "action": {
+          "type": "research",
+          "id": "STR_SIVALINGA"
+        },
+        "added": [
+          "STR_SIVALINGA"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "8df0f8148aca2f57d280be9ba80bddedbe428d91532d01b7b3ae2baa2f329b7f",
+        "to": "4865edfbae3d1a8c375a9a6d2de620687b43be68b8991be78a06067fede98269",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_SIVALINGA_RESURRECTION_EVENT",
+          "script": "STR_SIVALINGA_RESURRECTION_EVENT",
+          "research": "STR_SIVALINGA_RESURRECTION",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_SIVALINGA_RESURRECTION"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4865edfbae3d1a8c375a9a6d2de620687b43be68b8991be78a06067fede98269",
+        "to": "a080d80975e9f85956719494f97d73eee8e80b36c00bea60bf267e5969431f55",
+        "action": {
+          "type": "eventResearch",
+          "event": "STR_WASTELAND_PRIESTESS_2",
+          "script": "STR_BLESSINGS_2B",
+          "research": "STR_WASTELAND_PRIESTESS_2",
+          "assumeOutcome": true
+        },
+        "added": [
+          "STR_WASTELAND_PRIESTESS_2"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "a080d80975e9f85956719494f97d73eee8e80b36c00bea60bf267e5969431f55",
+        "to": "fd9129f978fae255ec1fee861bb8dbbe3897ad3c8b9bb641f7f14e69fc132eec",
+        "action": {
+          "type": "research",
+          "id": "STR_WASTELAND_PRIESTESS_3"
+        },
+        "added": []
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "fd9129f978fae255ec1fee861bb8dbbe3897ad3c8b9bb641f7f14e69fc132eec",
+        "to": "cc9fcd615ed5870ace816295154be7a5fb7284bf0efbdc89de74831e40117446",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_WASTELAND_PRIESTESS_3",
+          "research": "STR_WASTELAND_PRIESTESS_4",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_WASTELAND_PRIESTESS_3",
+          "STR_WASTELAND_PRIESTESS_4"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "cc9fcd615ed5870ace816295154be7a5fb7284bf0efbdc89de74831e40117446",
+        "to": "7a214827830b6e122e68625d4eb44180dce532e7fea64e79310431f244ba444e",
+        "action": {
+          "type": "research",
+          "id": "STR_DARK_STAR"
+        },
+        "added": [
+          "STR_DARK_STAR",
+          "STR_SHADOW_CHASING_DEP"
+        ]
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "7a214827830b6e122e68625d4eb44180dce532e7fea64e79310431f244ba444e",
+        "to": "f7e6ae0721642b37161f5eb5bdcfd01b017cfb9f2ec126ba7c97ab34d64e003a",
+        "action": {
+          "type": "acquirePurchase",
+          "item": "STR_MUTANT_FISH",
+          "count": 5
+        },
+        "added": []
+      }
+    ],
+    "rejected": [
+      {
+        "lane": "reject-power-priestess",
+        "from": "49e24664435f9d074ccb7bff66201b79e11df96ec8c6a4b3de7eaaf13a7572cb",
+        "action": {
+          "type": "research",
+          "id": "STR_MUTANT_EGG"
+        },
+        "reason": "sample-missing"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "4c814904093cd5dbc0178815d9a93cf72ddea6912a8f2444512233e524b51849",
+        "action": {
+          "type": "research",
+          "id": "STR_CUISINE"
+        },
+        "reason": "dependencies-unmet"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "9ebcdb0b95f13dc979067a81079f5837c233a6fef611b59f15db0812a4ac1cbf",
+        "action": {
+          "type": "research",
+          "id": "STR_GYM_ADVANCE"
+        },
+        "reason": "dependencies-unmet"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "9ebcdb0b95f13dc979067a81079f5837c233a6fef611b59f15db0812a4ac1cbf",
+        "action": {
+          "type": "research",
+          "id": "STR_SC_WIRE"
+        },
+        "reason": "sample-missing"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "f7e6ae0721642b37161f5eb5bdcfd01b017cfb9f2ec126ba7c97ab34d64e003a",
+        "action": {
+          "type": "manufacture",
+          "item": "STR_LEEK",
+          "recipe": "STR_LEEK_SACK_XXX",
+          "count": 1
+        },
+        "reason": "필수 제조 재료 부족: STR_LEEK_SACK"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "f7e6ae0721642b37161f5eb5bdcfd01b017cfb9f2ec126ba7c97ab34d64e003a",
+        "action": {
+          "type": "manufacture",
+          "item": "STR_CABBAGE",
+          "recipe": "STR_CABBAGE_SACK_XXX",
+          "count": 1
+        },
+        "reason": "필수 제조 재료 부족: STR_CABBAGE_SACK"
+      },
+      {
+        "lane": "reject-power-priestess",
+        "from": "f7e6ae0721642b37161f5eb5bdcfd01b017cfb9f2ec126ba7c97ab34d64e003a",
+        "action": {
+          "type": "transform",
+          "soldier": "origin",
+          "transform": "STR_BREAD_AND_FISHES_TRAINING"
+        },
+        "reason": "재료 부족: STR_LEEK ×5; 재료 부족: STR_CABBAGE ×5"
+      }
+    ],
+    "accepted": 136,
+    "gameCertified": false,
+    "registered": false
+  },
+  "gameCertified": false,
+  "registered": false
+}
