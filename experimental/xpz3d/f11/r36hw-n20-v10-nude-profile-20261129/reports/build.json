@@ -1,0 +1,25 @@
+{
+  "profile": "R36HW N20 V10-BODY N19-CENTER",
+  "baseSha256": "4f3459f4a9e9f79cb78e5f3573ea6c16c7c5e045b4075e621de4215a279ae230",
+  "v9Sha256": "dfbfe04fa89c20fa9f7d01b75d4f859357bfdec709d4686e868be5a87a55cc72",
+  "v10Sha256": "61d79ffac9a6966ec57efbf3ad5ca63d09b391308b71ba04c8218e24f242d63c",
+  "sourceBodyPrimitive": 6,
+  "protectedCenterPrimitive": 3,
+  "originalTriangles": 2099,
+  "rigJoints": 63,
+  "changedVertices": 88,
+  "maxMoveMeters": 0.0017767301629467067,
+  "meanMoveMeters": 0.0006579944303838286,
+  "unmatchedVertices": 31,
+  "unchangedPelvis": true,
+  "clothGeometryNotCopied": true,
+  "method": "four-nearest inverse-distance V9-to-V10 offsets; bounded anatomy-region transfer",
+  "outputSHA256": "ad4b40635460f2be7df0596a865bb867a28d4a648101f02289c65779a3b950e7",
+  "outputBytes": 1089300,
+  "limitations": [
+    "N19 pelvic topology and V-shaped inherited artifacts remain; separate patch required",
+    "V10 garment contours are artistic estimates, not a nude anatomy ground truth",
+    "No new skin UV/texture bake; normal re-bake and native S2 render pending",
+    "Body primitive only; pose-dependent clipping not tested"
+  ]
+}
