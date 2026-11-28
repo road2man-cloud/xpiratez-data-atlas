@@ -102,7 +102,7 @@ for(let i=0;i<pos.length;i++){
  const d=fade*(.0022*core-.0011*borderL-.0011*borderR);
  pos[i][1]+=d;if(Math.abs(d)>1e-6)foldVertices++;
 }
-function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[1],a[0]*b[1]-a[1]*b[0]]}
+function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
 function unit(v){const s=Math.hypot(...v)||1;return v.map(x=>x/s)}
 const acc=pos.map(()=>[0,0,0]);let minArea=Infinity;
 for(let k=0;k<index.length;k+=3){
