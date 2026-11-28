@@ -1,0 +1,50 @@
+{
+  "sourceBlob": "a4166d5e6ac6b6b86053cf431bfda99c2b646a0e",
+  "triangles": 2096,
+  "garmentTriangles": 1024,
+  "originalGarmentVertices": 514,
+  "uvSplitGarmentVertices": 718,
+  "uvSeamDuplicates": 204,
+  "charts": {
+    "torso": 192,
+    "capTorso": 16,
+    "joinArmL": 24,
+    "armL": 144,
+    "capArmL": 12,
+    "joinArmR": 24,
+    "armR": 144,
+    "capArmR": 12,
+    "joinLegL": 24,
+    "legL": 192,
+    "capLegL": 12,
+    "joinLegR": 24,
+    "legR": 192,
+    "capLegR": 12
+  },
+  "uvGutterPixels": 4,
+  "uvRasterCoveredPixels": 209494,
+  "uvRasterOverlapPixels": 0,
+  "minUVTriangleArea": 0.00044012069702148156,
+  "normalAtlasSize": [
+    512,
+    512
+  ],
+  "normalAtlasBytes": 167703,
+  "normalAtlasReliefPixels": 200135,
+  "peakNormalSlope": 0.035545146065349656,
+  "tangents": 718,
+  "normalScale": 0.85,
+  "rigJoints": 63,
+  "geometryAndSkinPreserved": true,
+  "protectedPrimitivesPreserved": true,
+  "sourceBufferPreserved": true,
+  "opaqueMaterial": true,
+  "outputBytes": 619972,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "UV overlap is raster sampled, not an exact polygon intersection proof.",
+    "Normal map is procedural and intended for subtle opaque textile drape; engine import and native shading not verified.",
+    "No posed clipping test; source unused buffers retained."
+  ]
+}
