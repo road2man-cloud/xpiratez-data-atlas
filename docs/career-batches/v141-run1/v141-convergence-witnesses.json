@@ -1,0 +1,318 @@
+{
+  "version": 141,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "b6baa21a535ea455882a69442203a61e62266845009e5ef20a251febb11300bb",
+  "convergence": {
+    "policy": "branch-local-source-gated-v141",
+    "lanes": [
+      {
+        "lane": "priest",
+        "start": "0cfbea8a7827286930edb0aad7615a2a249c12a38591e5138608024e51003dc4",
+        "end": "5c03873794ad55c95d501e75d8310c38a1c365ee7d71950d39348d27a3ca6755",
+        "attempts": 9,
+        "accepted": 9,
+        "initialVector": {
+          "tu": 80,
+          "stamina": 154,
+          "health": 89,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 175
+        },
+        "finalVector": {
+          "tu": 80,
+          "stamina": 154,
+          "health": 89,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 125,
+          "throwing": 95,
+          "strength": 74,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 175
+        },
+        "initialSum": 1264,
+        "finalSum": 1264,
+        "goals": [
+          "STR_SMITHING",
+          "STR_SS_OPERATIONS",
+          "STR_PEASANT_MILITIA",
+          "STR_SARGEANT_TRAINING",
+          "STR_REVOLUTIONARY_TRAINING",
+          "STR_CONTACT_SCAVENGERS",
+          "STR_PEASANT_PARTY",
+          "STR_OFFICER_TRAINING_PREQ",
+          "STR_GLAMOUR",
+          "STR_PORN",
+          "STR_BOOK_OF_SERMONS",
+          "STR_CHAPLAIN_TRAINING",
+          "STR_SCHOOL_BOOKS",
+          "STR_LIBRARY",
+          "STR_SCHOOLING_2",
+          "STR_OFFICER_TRAINING",
+          "STR_PERSONAL_ATTENTION",
+          "STR_HERO_GOLD_TRAINING"
+        ],
+        "completed": [
+          "STR_SMITHING",
+          "STR_SS_OPERATIONS",
+          "STR_PEASANT_MILITIA",
+          "STR_SARGEANT_TRAINING",
+          "STR_OFFICER_TRAINING_PREQ",
+          "STR_GLAMOUR",
+          "STR_PORN"
+        ],
+        "missing": [
+          "STR_REVOLUTIONARY_TRAINING",
+          "STR_CONTACT_SCAVENGERS",
+          "STR_PEASANT_PARTY",
+          "STR_BOOK_OF_SERMONS",
+          "STR_CHAPLAIN_TRAINING",
+          "STR_SCHOOL_BOOKS",
+          "STR_LIBRARY",
+          "STR_SCHOOLING_2",
+          "STR_OFFICER_TRAINING",
+          "STR_PERSONAL_ATTENTION",
+          "STR_HERO_GOLD_TRAINING"
+        ],
+        "stock": {
+          "STR_GLAMOUR": 6,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0,
+          "STR_CRACK": 0
+        },
+        "gameCertified": false,
+        "registered": false
+      },
+      {
+        "lane": "officer",
+        "start": "3f452d020689eabc9a3834dfbf9bf8e1d1c4d0603bd7d054b1dee624ea6a0cc6",
+        "end": "80b2f6a6e5f8e0894a24f1be2859a6bd1b0d30a8c6a0a8220a05838f44236c90",
+        "attempts": 2,
+        "accepted": 2,
+        "initialVector": {
+          "tu": 84,
+          "stamina": 123,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 169
+        },
+        "finalVector": {
+          "tu": 84,
+          "stamina": 123,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 125,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 169
+        },
+        "initialSum": 1197,
+        "finalSum": 1197,
+        "goals": [
+          "STR_PERSONAL_ATTENTION",
+          "STR_HERO_GOLD_TRAINING"
+        ],
+        "completed": [],
+        "missing": [
+          "STR_PERSONAL_ATTENTION",
+          "STR_HERO_GOLD_TRAINING"
+        ],
+        "stock": {
+          "STR_GLAMOUR": 6,
+          "STR_BOOK_OF_SERMONS": 0,
+          "STR_SCHOOL_BOOKS_ITEM": 0,
+          "STR_CRACK": 0
+        },
+        "gameCertified": false,
+        "registered": false
+      }
+    ],
+    "traces": [
+      {
+        "lane": "priest",
+        "from": "0cfbea8a7827286930edb0aad7615a2a249c12a38591e5138608024e51003dc4",
+        "to": "8b772803b46e7dcb5086e6d0ae9ce16bbc93514da72d175ede8271f2c12d2cc7",
+        "action": {
+          "type": "research",
+          "id": "STR_SMITHING"
+        },
+        "added": [
+          "STR_SMITHING",
+          "STR_SMITHING_ZZZ"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "8b772803b46e7dcb5086e6d0ae9ce16bbc93514da72d175ede8271f2c12d2cc7",
+        "to": "6df3cdb1738b3e60ff8b97a477783d5487cb5e1707ea4e68facd029aaf63b39c",
+        "action": {
+          "type": "research",
+          "id": "STR_SS_OPERATIONS"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "6df3cdb1738b3e60ff8b97a477783d5487cb5e1707ea4e68facd029aaf63b39c",
+        "to": "2c04cec4ba33a0949e27641fd67b8df9becdf73f37dabf357a28510c568f1309",
+        "action": {
+          "type": "freeResearch",
+          "source": "STR_SS_OPERATIONS",
+          "research": "STR_LOOTBOX_PREPPER",
+          "assumeOutcome": false
+        },
+        "added": [
+          "STR_LOOTBOX_PREPPER",
+          "STR_OPERATOR_ARMOR_BUY_PREQ1",
+          "STR_SS_OPERATIONS"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "2c04cec4ba33a0949e27641fd67b8df9becdf73f37dabf357a28510c568f1309",
+        "to": "bf06454b48161fb8c0a702b5c6e4c0fae78f9a845698ba8725307e58a70d8799",
+        "action": {
+          "type": "research",
+          "id": "STR_PEASANT_MILITIA"
+        },
+        "added": [
+          "STR_PEASANT_ARMOR_MILITIA",
+          "STR_PEASANT_MILITIA",
+          "STR_QUARTERSTAFF"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "bf06454b48161fb8c0a702b5c6e4c0fae78f9a845698ba8725307e58a70d8799",
+        "to": "82c0189dc8ea0d77e2c6d266b494bf3544508ef2eaa89bfb7069dc9c6557ec0b",
+        "action": {
+          "type": "research",
+          "id": "STR_SARGEANT_TRAINING"
+        },
+        "added": [
+          "STR_OFFICER_TRAINING_PREQ",
+          "STR_SARGEANT_TRAINING"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "82c0189dc8ea0d77e2c6d266b494bf3544508ef2eaa89bfb7069dc9c6557ec0b",
+        "to": "8179f8c6635623f6a3c341d81102b4768d35a087d5d4df08dc95e41db41190f4",
+        "action": {
+          "type": "conditionalBookEvent",
+          "event": "STR_VOLLEYBALL_MATCH",
+          "script": "STR_VOLLEYBALL_MATCH",
+          "month": 21,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "priest",
+        "from": "8179f8c6635623f6a3c341d81102b4768d35a087d5d4df08dc95e41db41190f4",
+        "to": "558dde9cea89f5a116888b975093c9de12535be471eeb6b050ee5b5517f80a2c",
+        "action": {
+          "type": "research",
+          "id": "STR_GLAMOUR"
+        },
+        "added": [
+          "STR_GLAMOUR"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "558dde9cea89f5a116888b975093c9de12535be471eeb6b050ee5b5517f80a2c",
+        "to": "9e28592fb62b28eccc1c3aeaa6abdb6f1171619c35364ad0923f5f00979fa496",
+        "action": {
+          "type": "research",
+          "id": "STR_PORN"
+        },
+        "added": [
+          "STR_PORN"
+        ]
+      },
+      {
+        "lane": "priest",
+        "from": "9e28592fb62b28eccc1c3aeaa6abdb6f1171619c35364ad0923f5f00979fa496",
+        "to": "5c03873794ad55c95d501e75d8310c38a1c365ee7d71950d39348d27a3ca6755",
+        "action": {
+          "type": "conditionalBookEvent",
+          "event": "STR_VOLLEYBALL_MATCH",
+          "script": "STR_VOLLEYBALL_MATCH",
+          "month": 22,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "officer",
+        "from": "3f452d020689eabc9a3834dfbf9bf8e1d1c4d0603bd7d054b1dee624ea6a0cc6",
+        "to": "c560415152fa6665964ddc8f8ad69e1508ebb1370282a99a11f7e7ddb9a07da3",
+        "action": {
+          "type": "conditionalBookEvent",
+          "event": "STR_VOLLEYBALL_MATCH",
+          "script": "STR_VOLLEYBALL_MATCH",
+          "month": 24,
+          "item": null,
+          "assumeContinuity": true,
+          "assumeEventSelection": true,
+          "assumeRandomItem": false,
+          "assumeDeliveryWithinMonth": true,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "added": []
+      },
+      {
+        "lane": "officer",
+        "from": "c560415152fa6665964ddc8f8ad69e1508ebb1370282a99a11f7e7ddb9a07da3",
+        "to": "80b2f6a6e5f8e0894a24f1be2859a6bd1b0d30a8c6a0a8220a05838f44236c90",
+        "action": {
+          "type": "research",
+          "id": "STR_PORN"
+        },
+        "added": [
+          "STR_PORN"
+        ]
+      }
+    ],
+    "rejected": [],
+    "accepted": 11,
+    "gameCertified": false,
+    "registered": false
+  },
+  "gameCertified": false,
+  "registered": false
+}
