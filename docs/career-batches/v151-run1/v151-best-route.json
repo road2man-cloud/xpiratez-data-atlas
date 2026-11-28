@@ -1,0 +1,3877 @@
+{
+  "version": 151,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "cbf51346ac16ea59fc4846caaf156a38ef29d23c5931e0e0666047401d2a4bea",
+  "scope": "research-only source reachability, legal lab/free-award sequencing and training eligibility; quantities, economy, calendar and combat abstracted",
+  "conditionalModel": true,
+  "gameCertified": false,
+  "registered": false,
+  "permanentSum": 1395,
+  "permanentStats": {
+    "tu": 99,
+    "stamina": 179,
+    "health": 102,
+    "bravery": 160,
+    "reactions": 98,
+    "firing": 128,
+    "throwing": 105,
+    "strength": 93,
+    "psiStrength": 83,
+    "psiSkill": 32,
+    "melee": 127,
+    "mana": 189
+  },
+  "terminal": "1ff45a81b4c644b0087fef2b4afcc5f9a161b0473ef9c884a1a37d1e57cfa7f2",
+  "actionCount": 402,
+  "actionHash": "a306bc54693f5ed47ea32472c5e456032117c74f2ca426d3e5039189aaafcb7e",
+  "witness": {
+    "from": "4cc77562324e44d5d0928adcbd6af0d958be99c56f8942f8bc55c1f8b5760d17",
+    "to": "1ff45a81b4c644b0087fef2b4afcc5f9a161b0473ef9c884a1a37d1e57cfa7f2",
+    "action": {
+      "type": "transform",
+      "soldier": "origin",
+      "transform": "STR_HOLY_WARRIOR_TRAINING"
+    },
+    "evidence": {
+      "originProfile": "manufacture:STR_HERO_RECRUITMENT",
+      "body": "STR_SOLDIER_HERO",
+      "transformation": "STR_HOLY_WARRIOR_TRAINING",
+      "before": {
+        "raw": {
+          "tu": 80,
+          "stamina": 145,
+          "health": 81,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 127,
+          "throwing": 95,
+          "strength": 70,
+          "psiStrength": 77,
+          "psiSkill": 50,
+          "melee": 108,
+          "mana": 160
+        },
+        "bonus": {
+          "tu": 14,
+          "stamina": 34,
+          "health": 21,
+          "bravery": 10,
+          "reactions": 9,
+          "firing": 1,
+          "throwing": 10,
+          "strength": 18,
+          "psiStrength": 6,
+          "psiSkill": -3,
+          "melee": 14,
+          "mana": 29
+        },
+        "stats": {
+          "tu": 94,
+          "stamina": 179,
+          "health": 102,
+          "bravery": 160,
+          "reactions": 98,
+          "firing": 128,
+          "throwing": 105,
+          "strength": 88,
+          "psiStrength": 83,
+          "psiSkill": 47,
+          "melee": 122,
+          "mana": 189
+        },
+        "permanentBonus": {
+          "tu": 14,
+          "stamina": 34,
+          "health": 21,
+          "bravery": 10,
+          "reactions": 9,
+          "firing": 1,
+          "throwing": 10,
+          "strength": 18,
+          "psiStrength": 6,
+          "psiSkill": -3,
+          "melee": 14,
+          "mana": 29
+        },
+        "permanentStats": {
+          "tu": 94,
+          "stamina": 179,
+          "health": 102,
+          "bravery": 160,
+          "reactions": 98,
+          "firing": 128,
+          "throwing": 105,
+          "strength": 88,
+          "psiStrength": 83,
+          "psiSkill": 47,
+          "melee": 122,
+          "mana": 189
+        }
+      },
+      "after": {
+        "raw": {
+          "tu": 80,
+          "stamina": 145,
+          "health": 81,
+          "bravery": 150,
+          "reactions": 89,
+          "firing": 127,
+          "throwing": 95,
+          "strength": 70,
+          "psiStrength": 77,
+          "psiSkill": 50,
+          "melee": 108,
+          "mana": 160
+        },
+        "bonus": {
+          "tu": 19,
+          "stamina": 34,
+          "health": 21,
+          "bravery": 10,
+          "reactions": 9,
+          "firing": 1,
+          "throwing": 10,
+          "strength": 23,
+          "psiStrength": 6,
+          "psiSkill": -18,
+          "melee": 19,
+          "mana": 29
+        },
+        "stats": {
+          "tu": 99,
+          "stamina": 179,
+          "health": 102,
+          "bravery": 160,
+          "reactions": 98,
+          "firing": 128,
+          "throwing": 105,
+          "strength": 93,
+          "psiStrength": 83,
+          "psiSkill": 32,
+          "melee": 127,
+          "mana": 189
+        },
+        "permanentBonus": {
+          "tu": 19,
+          "stamina": 34,
+          "health": 21,
+          "bravery": 10,
+          "reactions": 9,
+          "firing": 1,
+          "throwing": 10,
+          "strength": 23,
+          "psiStrength": 6,
+          "psiSkill": -18,
+          "melee": 19,
+          "mana": 29
+        },
+        "permanentStats": {
+          "tu": 99,
+          "stamina": 179,
+          "health": 102,
+          "bravery": 160,
+          "reactions": 98,
+          "firing": 128,
+          "throwing": 105,
+          "strength": 93,
+          "psiStrength": 83,
+          "psiSkill": 32,
+          "melee": 127,
+          "mana": 189
+        }
+      },
+      "delta": {
+        "tu": 5,
+        "stamina": 0,
+        "health": 0,
+        "bravery": 0,
+        "reactions": 0,
+        "firing": 0,
+        "throwing": 0,
+        "strength": 5,
+        "psiStrength": 0,
+        "psiSkill": -15,
+        "melee": 5,
+        "mana": 0
+      },
+      "history": [
+        [
+          "STR_BASIC_FIREARMS_TRAINING",
+          1
+        ],
+        [
+          "STR_BREAD_AND_FISHES_TRAINING",
+          1
+        ],
+        [
+          "STR_HOLY_WARRIOR_TRAINING",
+          1
+        ],
+        [
+          "STR_OFFICER_TRAINING",
+          1
+        ],
+        [
+          "STR_PARIAH_TRAINING",
+          1
+        ],
+        [
+          "STR_PERSONAL_ATTENTION",
+          1
+        ],
+        [
+          "STR_PERSON_OF_CULTURE_TRAINING",
+          1
+        ],
+        [
+          "STR_PROUD_WARRIOR",
+          1
+        ],
+        [
+          "STR_SCHOOL_OF_HARD_KNOCKS",
+          1
+        ],
+        [
+          "STR_SUN_WARRIORS_TRAINING",
+          1
+        ]
+      ],
+      "rank": 3,
+      "activeResearch": [
+        "AUX_BAD_TOUCH",
+        "AUX_CRUSADER_SHIELD",
+        "AUX_GOOD_TOUCH",
+        "AUX_IDENT",
+        "AUX_PURR_PURR",
+        "AUX_ROMAN_SHIELD",
+        "BLACK_CAT_ARMOR",
+        "CHURCH_ARMOR_P1",
+        "CHURCH_ARMOR_P7",
+        "CIVILIAN_YOUNG_UBER",
+        "CIV_ARMOR_LOKNAR_1",
+        "HUMAN_ARMOR_F11",
+        "HUMAN_ARMOR_F4",
+        "HUMAN_ARMOR_M3",
+        "HUMAN_ARMOR_M9",
+        "NAZI_ARMOR_P4",
+        "SECTOID_ARMOR_P1",
+        "SECTOID_ARMOR_P10",
+        "SECTOID_ARMOR_P12",
+        "SHAMBLER_ARMOR",
+        "STR_ACADEMY_CORPSE",
+        "STR_ACADEMY_RECRUITMENT",
+        "STR_ACADEMY_STUDENT",
+        "STR_ALIEN_ALLOYS",
+        "STR_ALIEN_ENTERTAINMENT",
+        "STR_ALIEN_ORIGINS",
+        "STR_ALIEN_RESEARCH",
+        "STR_AMMO_MANUFACTURING_1",
+        "STR_AMMO_MANUFACTURING_2_PREQ",
+        "STR_AMPHORE",
+        "STR_ANY_BASIC_TROPHY_UNLOCKED",
+        "STR_AREAS_ANY",
+        "STR_AREAS_ASIA",
+        "STR_AREAS_EUROPE",
+        "STR_AREAS_SOUTH",
+        "STR_AUSTRALIA",
+        "STR_AUTO_RIFLE",
+        "STR_BALLISTICS",
+        "STR_BALLISTICS_ZZZ",
+        "STR_BASIC_ELECTRONICS",
+        "STR_BASIC_FIREARMS_TRAINING",
+        "STR_BASIC_INCENDIARIES",
+        "STR_BASIC_INCENDIARIES_ZZZ",
+        "STR_BEASTMEN",
+        "STR_BEER",
+        "STR_BIG_BONE",
+        "STR_BIKES",
+        "STR_BIKINI_PRODUCTION",
+        "STR_BLACK_CAT",
+        "STR_BONDING_CEREMONY",
+        "STR_BOOK_OF_SERMONS",
+        "STR_BOUNTY_HUNTING",
+        "STR_BOUNTY_HUNTING_PRIZE_ALLIANCE_FAVORS_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_BLACK_ADDER_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_DURATHREAD_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_EAGLE_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_HARPOON_CARBINE_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+        "STR_BOUNTY_HUNTING_PRIZE_MINI_SHOTGUN_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_PEACEMAKER_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_PIRANHA_PREQ",
+        "STR_BOUNTY_HUNTING_PRIZE_SILENCED_PISTOL_PREQ",
+        "STR_BOWS_SUMMARY",
+        "STR_BOW_H",
+        "STR_BRAINER_OUTFIT",
+        "STR_BRAZIL",
+        "STR_BREAD_AND_FISHES_TRAINING",
+        "STR_BUCKSHOT_HV",
+        "STR_BURA",
+        "STR_CAMOUFLAGE",
+        "STR_CAMO_PAINT",
+        "STR_CAPTAINS_LOG_01",
+        "STR_CAPTAINS_RANK_01",
+        "STR_CAPTAINS_RANK_02",
+        "STR_CAPTAINS_RANK_03",
+        "STR_CAPTAINS_RANK_04",
+        "STR_CAPTAIN_DOUBLEGREEN",
+        "STR_CAPTAIN_DUMBLAZY",
+        "STR_CAPTAIN_GOLD",
+        "STR_CAPTAIN_GREEN",
+        "STR_CAPTAIN_PERSONALITY_TEST",
+        "STR_CAPTAIN_PERSONALITY_TEST_DONE",
+        "STR_CAPTAIN_PERSONALITY_TEST_FINISHED",
+        "STR_CAPTAIN_PRIEST",
+        "STR_CAPTAIN_PUSSY",
+        "STR_CAPTAIN_PUSSY_UP",
+        "STR_CAPTAIN_RED",
+        "STR_CAPTAIN_SOREDUMB",
+        "STR_CAPTAIN_YESGREEN_NOGOLD",
+        "STR_CAPTAIN_YESGREEN_NORED",
+        "STR_CASH_BAG",
+        "STR_CEREMONY_DEP",
+        "STR_CHAPLAIN_TRAINING",
+        "STR_CHILE",
+        "STR_CHINA",
+        "STR_CHRONICLES_001",
+        "STR_CHURCH_PRIEST",
+        "STR_CHURCH_SOLDIER",
+        "STR_CINDERELLA_PROJECT_PREQ",
+        "STR_CLOAKING_DEVICE",
+        "STR_CLOCKWORK_GUN_PRODUCTION",
+        "STR_CLOTHING_UC",
+        "STR_COLT45",
+        "STR_COMMUNICATIONS",
+        "STR_CONSUMER_GOODS",
+        "STR_CONTACT_BUILDERS",
+        "STR_CONTACT_GENERAL_SUPPLIES",
+        "STR_CONTACT_GENERAL_SUPPLIES_ZZZ",
+        "STR_CONTACT_GNOME_MUSEUM",
+        "STR_CONTACT_ROMANICA",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_CRACK",
+        "STR_CREATIVITY",
+        "STR_CROWNING_UC",
+        "STR_CRUSADER_ARMOR",
+        "STR_CS_GAS",
+        "STR_CUISINE",
+        "STR_CUNNING",
+        "STR_DARK_STAR",
+        "STR_DATA_DISK_B",
+        "STR_DIVERGING_PATHS",
+        "STR_DURATHREAD_WORKING",
+        "STR_DYNAMITE",
+        "STR_EGYPT",
+        "STR_ELECTRONIC_PIECES",
+        "STR_EXCAVATION",
+        "STR_EXPEDITION",
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_EXPLORE_TUNNELS",
+        "STR_FARMING",
+        "STR_FIREARMS_SUMMARY",
+        "STR_FIRST_AID_KIT",
+        "STR_FLAK_TOWER_PREQ",
+        "STR_FLINTLOCKS_PRODUCTION",
+        "STR_FLINTLOCKS_PRODUCTION_ZZZ",
+        "STR_FRANCE",
+        "STR_GAMBLING",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GENTLE_PUSH",
+        "STR_GERMANY",
+        "STR_GLAMOUR",
+        "STR_GNOME",
+        "STR_GODS_E2",
+        "STR_GODS_G1",
+        "STR_GODS_G2",
+        "STR_GODS_G3",
+        "STR_GODS_G4",
+        "STR_GODS_G5",
+        "STR_GODS_G6",
+        "STR_GODS_G7",
+        "STR_GODS_G8",
+        "STR_GODS_SUMMARY",
+        "STR_GODS_SUMMARY_PREQ1",
+        "STR_GODS_SUMMARY_PREQ2",
+        "STR_GOLDEN_CROSS",
+        "STR_GOLDEN_CUP",
+        "STR_GOVT_AUTOPSY",
+        "STR_GOVT_CORPSE",
+        "STR_GROG_BARREL",
+        "STR_GUILD_AUTOPSY",
+        "STR_GUILD_CORPSE",
+        "STR_GUNS_N_AMMO",
+        "STR_GUN_SCOPE",
+        "STR_GUN_SHOPPING",
+        "STR_GYMNASTICS",
+        "STR_GYM_ADVANCE",
+        "STR_GYM_ADVANCE_PREQ",
+        "STR_GYM_OUTFIT",
+        "STR_HARDWARE_SHOPPING",
+        "STR_HELLERIUM_CHARM",
+        "STR_HERO",
+        "STR_HEROIC",
+        "STR_HERO_RECRUITMENT",
+        "STR_HIDDEN_DESIRES_PREQ",
+        "STR_HOLY_WARRIOR",
+        "STR_HOLY_WARRIORS",
+        "STR_HONOR",
+        "STR_HUMANS",
+        "STR_HUMAN_FEMALE_4",
+        "STR_HUMAN_MALE_3",
+        "STR_HUMAN_NOBLEWOMAN",
+        "STR_HUMAN_SHARP_GUY",
+        "STR_HUNTRESS_TRAINING",
+        "STR_HYDROPONICS",
+        "STR_INDIA",
+        "STR_INDONESIA",
+        "STR_INSPECT_MACHINERY",
+        "STR_ITALY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_JAPAN",
+        "STR_JUNK_PILE",
+        "STR_JUSTICE",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_KUNG_FU",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LAPUTA",
+        "STR_LEATHER_ARMOR",
+        "STR_LIBRARY",
+        "STR_LINGERIE",
+        "STR_LINGERIE_DEP",
+        "STR_LOKNAR_ORIGINS",
+        "STR_LOKNAR_RECRUITMENT",
+        "STR_LOKNAR_RECRUITMENT_ZZZ",
+        "STR_LOOTBOX_PREPPER",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MEDICAL_SUPPLIES",
+        "STR_MEDICINE",
+        "STR_MEGAPOL",
+        "STR_MEGASCORPION_CORPSE",
+        "STR_MEGASCORPION_STING",
+        "STR_MEIDO_OUTFIT",
+        "STR_MELEE_SUMMARY",
+        "STR_MESS_HALL",
+        "STR_METAL_ARMOR",
+        "STR_MILITARY_DRILL_TRAINING_PREQ",
+        "STR_MISSION_CHURCH_CAMP",
+        "STR_MONEY_PURSE",
+        "STR_MONSTER_HUNT",
+        "STR_MONSTER_HUNTS_PRIMAL",
+        "STR_MONSTER_HUNT_PRIMAL_BULLFROG_DONE",
+        "STR_MONSTER_HUNT_PRIMAL_COCKROACH_DONE",
+        "STR_MONSTER_HUNT_PRIMAL_SHAMBLER_DONE",
+        "STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE",
+        "STR_MOST_COMMON_POWER",
+        "STR_MUTANT_ABILITIES",
+        "STR_MUTANT_BLESSINGS",
+        "STR_MUTANT_EGG",
+        "STR_MUTANT_ORIGINS",
+        "STR_MUTANT_SAUSAGE",
+        "STR_NAZIS",
+        "STR_NAZI_LEADER",
+        "STR_NEPOTISM",
+        "STR_NEWSPAPER",
+        "STR_NIGERIA",
+        "STR_NINJA",
+        "STR_NONPROFIT_LAB_PREQ",
+        "STR_NO_CIVILIAN_TRAFFIC",
+        "STR_OFFERING_TO_PURPLE_BLOOM",
+        "STR_OFFICER_TRAINING",
+        "STR_OFFICER_TRAINING_PREQ",
+        "STR_OLD_BOOKS",
+        "STR_OLD_EARTH_VOODOO",
+        "STR_ONE_TROPHY_MA",
+        "STR_ONSEN_PREQ",
+        "STR_OPERATOR_ARMOR_BUY_PREQ1",
+        "STR_OSIRON",
+        "STR_OSIRON_LAD",
+        "STR_PADD",
+        "STR_PARIAH_TRAINING",
+        "STR_PARTY_DEP",
+        "STR_PEASANTS_ZZZ",
+        "STR_PEASANT_ARMOR_JUMPSUIT_UC",
+        "STR_PEASANT_ARMOR_MILITIA",
+        "STR_PEASANT_CAMO_UC",
+        "STR_PEASANT_MEIDO_UC",
+        "STR_PEASANT_MILITIA",
+        "STR_PEPPER_PISTOL",
+        "STR_PERSONAL_ATTENTION",
+        "STR_PERSONAL_LABS",
+        "STR_PERSONAL_LABS_EXIST",
+        "STR_PERSON_OF_CULTURE_TRAINING",
+        "STR_PERSUASION",
+        "STR_PICKAXE",
+        "STR_PILLOW_BOOK",
+        "STR_PILLOW_BOOK_REPORT",
+        "STR_PINUP_001",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_PIROMAN_ARMOR",
+        "STR_PISTOLS_SUMMARY",
+        "STR_PLOTTING",
+        "STR_PORN",
+        "STR_PRIMITIVE_WEAPONS",
+        "STR_PRIMITIVE_WEAPONS_2",
+        "STR_PRIMITIVE_WEAPONS_2_ZZZ",
+        "STR_PRIMITIVE_WEAPONS_ZZZ",
+        "STR_PROUD_WARRIOR",
+        "STR_PSI_LAB",
+        "STR_QUARTERSTAFF",
+        "STR_QUEEN_SAVAGE",
+        "STR_QUEEN_SAVAGE_RED",
+        "STR_QUESTION_OF_DRILL",
+        "STR_RAIDER_CORPSE",
+        "STR_RECRUITMENT",
+        "STR_RECRUITMENT_DEP",
+        "STR_RECRUIT_PEASANTS",
+        "STR_REJECT_THE_POWER",
+        "STR_RIBBON",
+        "STR_RIFLES_SUMMARY",
+        "STR_RIFLE_CLIP",
+        "STR_ROMANICA_HISTORY",
+        "STR_RUNT_OUTFIT",
+        "STR_RUSSIA",
+        "STR_SAILOR_UNIFORM",
+        "STR_SALVAGE",
+        "STR_SARGEANT_TRAINING",
+        "STR_SCHOOLING_1",
+        "STR_SCHOOLING_2",
+        "STR_SCHOOL_BOOKS",
+        "STR_SCHOOL_BOOKS_ITEM",
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "STR_SCI_REP",
+        "STR_SC_WIRE",
+        "STR_SECTOID",
+        "STR_SECTOID_AUTOPSY",
+        "STR_SECTOID_SOLDIER",
+        "STR_SECTOWEED",
+        "STR_SHADOWS",
+        "STR_SHADOWTECH",
+        "STR_SHADOW_CHASING_DEP",
+        "STR_SHAMBLER_CORPSE",
+        "STR_SHOTGUNS_SUMMARY",
+        "STR_SIVALINGA",
+        "STR_SIVALINGA_RESURRECTION",
+        "STR_SKINNING",
+        "STR_SKULL",
+        "STR_SLAVE_ARMOR_JUMPSUIT_UC",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SMALL_RADAR_SYSTEM",
+        "STR_SMGS_SUMMARY",
+        "STR_SMITHING",
+        "STR_SMITHING_ZZZ",
+        "STR_SNAKEMAN",
+        "STR_SNIPER_SUMMARY",
+        "STR_SOCIALIZING",
+        "STR_SOLDIER_TYPE_BASIC",
+        "STR_SOLDIER_TYPE_BASIC_PREQ_A",
+        "STR_SOLDIER_TYPE_BASIC_PREQ_B",
+        "STR_SOLDIER_TYPE_PEA",
+        "STR_SOLDIER_TYPE_SS",
+        "STR_SOULSENSE",
+        "STR_SOUTH_AFRICA",
+        "STR_SPAIN",
+        "STR_SPORTS_RIFLE",
+        "STR_SQUIRE",
+        "STR_SS_OPERATIONS",
+        "STR_STEAM_POWER",
+        "STR_STUN_BATON",
+        "STR_SUN_WARRIORS_TRAINING",
+        "STR_SUN_WARRIORS_TRAINING_PREQ",
+        "STR_SUPER_STAPLER",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_SWIMSUIT",
+        "STR_SWIMSUIT_PEASANT_UC",
+        "STR_SWIMSUIT_PRODUCTION",
+        "STR_TACTICS",
+        "STR_TACTICS_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TANKP_PREQ",
+        "STR_THE_PHARMACIST",
+        "STR_TRAININGS",
+        "STR_TROPHIES",
+        "STR_TROPHY_TARGET_200_JACK",
+        "STR_TROPHY_TARGET_50_JACK",
+        "STR_TURAN",
+        "STR_UBER_WHEAT",
+        "STR_UFO_POWER_SOURCE_SMALL",
+        "STR_UK",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_VODKA",
+        "STR_WARRIOR_CULTURE",
+        "STR_WARRIOR_CULTURE_PREQ",
+        "STR_WASTELAND_PRIESTESS",
+        "STR_WASTELAND_PRIESTESS_2",
+        "STR_WASTELAND_PRIESTESS_3",
+        "STR_WASTELAND_PRIESTESS_4",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WENCH_OUTFIT",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WITCH_CAVE",
+        "STR_WORKSHOP",
+        "STR_WORLDLY_MORALITY",
+        "STR_WRENCH",
+        "STR_YOUNG_UBER_RECRUITMENT"
+      ],
+      "evidenceTier": "conditional-model-replay",
+      "registered": false
+    },
+    "gameCertified": false,
+    "registered": false,
+    "actions": [
+      {
+        "type": "research",
+        "id": "STR_JACKSTOWN_SCOUTING"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_JACKSTOWN_SCOUTING",
+        "research": "CIV_ARMOR_LOKNAR_1",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_WAT_DO"
+      },
+      {
+        "type": "research",
+        "id": "STR_PIRATE_STYLE"
+      },
+      {
+        "type": "research",
+        "id": "STR_KULTUR"
+      },
+      {
+        "type": "research",
+        "id": "STR_WEIRDNESS"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_WEIRDNESS",
+        "research": "STR_LABORATORY",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_VIOLENCE"
+      },
+      {
+        "type": "research",
+        "id": "STR_CUNNING"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_CUNNING",
+        "research": "STR_GROG_BARREL",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_SURVIVAL"
+      },
+      {
+        "type": "research",
+        "id": "STR_INSPECT_MACHINERY"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_INSPECT_MACHINERY",
+        "research": "STR_WELL",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_QUESTION_OF_DRILL"
+      },
+      {
+        "type": "research",
+        "id": "STR_REJECT_THE_POWER"
+      },
+      {
+        "type": "conditionalOccultAward",
+        "event": "STR_BLESSINGS",
+        "script": "STR_BLESSINGS",
+        "research": "STR_WASTELAND_PRIESTESS",
+        "month": 1,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "assumeResearchSelection": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_RECRUIT_PEASANTS"
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAPTAIN_PERSONALITY_TEST",
+        "script": "STR_CAPTAIN_PERSONALITY_TEST",
+        "research": "STR_CAPTAIN_PERSONALITY_TEST",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_CAPTAIN_PUSSY"
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAPTAIN_PERSONALITY_TEST2",
+        "script": "STR_CAPTAIN_PERSONALITY_TEST2",
+        "research": "STR_CAPTAIN_PUSSY_UP",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_CAPTAIN_PRIEST"
+      },
+      {
+        "type": "research",
+        "id": "STR_LOOT_DISTRIBUTION"
+      },
+      {
+        "type": "research",
+        "id": "STR_RECRUITMENT"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_RECRUITMENT",
+        "research": "STR_DIVERGING_PATHS",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "research": "STR_SLAVE_SOLDIERS",
+        "assumeOutcome": false
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_KNOCK_KNOCK_PENITENT",
+        "script": "STR_KNOCK_KNOCK_0",
+        "research": "STR_HERO",
+        "assumeOutcome": true,
+        "fixedEventBundle": {
+          "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+          "item": "STR_HERO",
+          "count": 1
+        }
+      },
+      {
+        "type": "recruit",
+        "soldier": "origin",
+        "profile": "manufacture:STR_HERO_RECRUITMENT",
+        "band": "min"
+      },
+      {
+        "type": "conditionalCapGrowth",
+        "soldier": "origin",
+        "assumption": true
+      },
+      {
+        "type": "conditionalOneTimeFixedItems",
+        "event": "STR_SCHOOLBUS_EVENT",
+        "script": "STR_SCHOOLBUS_EVENT",
+        "month": 2,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_HUMAN_NOBLEWOMAN"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_NOBLEWOMAN",
+        "research": "STR_PSI_LAB",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_GNOME"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GNOME",
+        "research": "STR_SHADOWS",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_NEPOTISM"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_NEPOTISM",
+        "research": "STR_TRAININGS",
+        "assumeOutcome": false
+      },
+      {
+        "type": "conditionalPromotion",
+        "soldier": "origin",
+        "rank": 1,
+        "assumption": true
+      },
+      {
+        "type": "conditionalPromotion",
+        "soldier": "origin",
+        "rank": 2,
+        "assumption": true
+      },
+      {
+        "type": "conditionalPromotion",
+        "soldier": "origin",
+        "rank": 3,
+        "assumption": true
+      },
+      {
+        "type": "research",
+        "id": "STR_MELEE_SUMMARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_SCHOOL_OF_HARD_KNOCKS"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_SCHOOL_OF_HARD_KNOCKS"
+      },
+      {
+        "type": "conditionalDistressWithCaptive",
+        "encounter": {
+          "type": "conditionalDistressRecovery",
+          "script": "recurringTerrorNoPenalty",
+          "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+          "race": "STR_NAZIS",
+          "ufo": "STR_VESSEL_PROBE_DISTRESS",
+          "deployment": "STR_ATTACK_NAZI_RAID",
+          "rowIndex": 2,
+          "item": "STR_NEWSPAPER",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "assumeMissionGeneration": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        "unit": "STR_NAZI_LEADER",
+        "item": "STR_NAZI_LEADER",
+        "armor": "NAZI_ARMOR_P4",
+        "prisonType": 0,
+        "count": 1,
+        "assumeSurrenderOrNonlethalCapture": true,
+        "assumeLiveRecovery": true,
+        "assumeNativeUnitItemMapping": true,
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95"
+      },
+      {
+        "type": "research",
+        "id": "STR_BALLISTICS"
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAPTAINS_RANK_01",
+        "script": "STR_CAPTAINS_RANK_01",
+        "research": "STR_CAPTAINS_RANK_01",
+        "assumeOutcome": true,
+        "conditionalScoreThreshold": {
+          "minScore": 2000,
+          "firstMonth": 1,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      },
+      {
+        "type": "research",
+        "id": "STR_BOUNTY_HUNTING"
+      },
+      {
+        "type": "conditionalBountyWithCaptives",
+        "encounter": {
+          "type": "conditionalBountyRecovery",
+          "script": "CrackHouse",
+          "mission": "STR_LOC_CRACKHOUSE",
+          "region": "REGION_CRACKHOUSE",
+          "texture": -122,
+          "race": "STR_BANDIT_TOWN",
+          "rowIndex": 3,
+          "item": "STR_TROPHY_TARGET_200_JACK",
+          "count": 1,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "planetSha256": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+          "assumeMissionGeneration": true,
+          "assumeTransport": true,
+          "assumeEncounterAndVictory": true,
+          "assumePhysicalRecovery": true
+        },
+        "captives": [
+          {
+            "rowIndex": 2,
+            "item": "STR_HUMAN_MALE_3",
+            "count": 1,
+            "armor": "HUMAN_ARMOR_M3",
+            "prisonType": 0
+          },
+          {
+            "rowIndex": 3,
+            "item": "STR_HUMAN_SHARP_GUY",
+            "count": 1,
+            "armor": "HUMAN_ARMOR_M9",
+            "prisonType": 0
+          }
+        ],
+        "assumeSurrenderOrNonlethalCapture": true,
+        "assumeLiveRecovery": true,
+        "assumeNativeUnitItemMapping": true
+      },
+      {
+        "type": "research",
+        "id": "STR_TROPHY_TARGET_200_JACK"
+      },
+      {
+        "type": "research",
+        "id": "STR_BONDING_CEREMONY"
+      },
+      {
+        "type": "research",
+        "id": "STR_CAMOUFLAGE"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_CAMOUFLAGE",
+        "research": "STR_CAMO_PAINT",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_LOKNAR_RECRUITMENT"
+      },
+      {
+        "type": "research",
+        "id": "STR_LOKNAR_ORIGINS"
+      },
+      {
+        "type": "research",
+        "id": "STR_NAZI_LEADER"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_NAZI_LEADER",
+        "research": "STR_OLD_BOOKS",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_ALIEN_ORIGINS"
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAPTAINS_RANK_02",
+        "script": "STR_CAPTAINS_RANK_02",
+        "research": "STR_CAPTAINS_RANK_02",
+        "assumeOutcome": true,
+        "conditionalScoreThreshold": {
+          "minScore": 3000,
+          "firstMonth": 2,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      },
+      {
+        "type": "advanceMonth",
+        "month": 3,
+        "assumeContinuity": true
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAPTAINS_RANK_03",
+        "script": "STR_CAPTAINS_RANK_03",
+        "research": "STR_CAPTAINS_RANK_03",
+        "assumeOutcome": true,
+        "conditionalScoreThreshold": {
+          "minScore": 4000,
+          "firstMonth": 3,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      },
+      {
+        "type": "advanceMonth",
+        "month": 4,
+        "assumeContinuity": true
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAPTAINS_RANK_04",
+        "script": "STR_CAPTAINS_RANK_04",
+        "research": "STR_CAPTAINS_RANK_04",
+        "assumeOutcome": true,
+        "conditionalScoreThreshold": {
+          "minScore": 5000,
+          "firstMonth": 4,
+          "achievementAssumed": true,
+          "nativeScoreHistoryProven": false,
+          "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6"
+        }
+      },
+      {
+        "type": "research",
+        "id": "STR_HUMAN_MALE_3"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_MALE_3",
+        "research": "STR_COLT45",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_HUMAN_SHARP_GUY"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_SPORTS_RIFLE",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_PISTOLS_SUMMARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_HARDWARE_SHOPPING"
+      },
+      {
+        "type": "research",
+        "id": "STR_SCHOOLING_1"
+      },
+      {
+        "type": "research",
+        "id": "STR_THE_PHARMACIST"
+      },
+      {
+        "type": "research",
+        "id": "STR_GUN_SHOPPING"
+      },
+      {
+        "type": "research",
+        "id": "STR_CONTACT_GENERAL_SUPPLIES"
+      },
+      {
+        "type": "research",
+        "id": "STR_BOW_H"
+      },
+      {
+        "type": "research",
+        "id": "STR_BOWS_SUMMARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_PRIMITIVE_WEAPONS"
+      },
+      {
+        "type": "research",
+        "id": "STR_TACTICS"
+      },
+      {
+        "type": "research",
+        "id": "STR_SMGS_SUMMARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_SCI_REP"
+      },
+      {
+        "type": "research",
+        "id": "STR_GUNS_N_AMMO"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GUNS_N_AMMO",
+        "research": "STR_AUTO_RIFLE",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_RIFLES_SUMMARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_BASIC_FIREARMS_TRAINING"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_BASIC_FIREARMS_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_SNIPER_SUMMARY"
+      },
+      {
+        "type": "manufacture",
+        "item": "STR_DATA_DISK_B",
+        "recipe": "STR_DATA_DISK_B",
+        "count": 1
+      },
+      {
+        "type": "research",
+        "id": "STR_DATA_DISK_B"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_MUTANT_ORIGINS",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_EXPLORE_TUNNELS"
+      },
+      {
+        "type": "conditionalMedicalEventBundle",
+        "event": "STR_SECRET_DOOR_MEDICAL_SUPPLIES",
+        "script": "STR_SECRET_DOOR_VERY_EARLY",
+        "bundleIndex": null,
+        "scoreRange": null,
+        "assumeEventSelection": true,
+        "assumeBundleSelection": false,
+        "assumeDelivery": true,
+        "assumeMonthlyScore": false,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_MEDICAL_SUPPLIES"
+      },
+      {
+        "type": "advanceMonth",
+        "month": 5,
+        "assumeContinuity": true
+      },
+      {
+        "type": "conditionalMedicalEventBundle",
+        "event": "STR_DELINQUENT_SPORTS_BAD",
+        "script": "STR_DELINQUENT_SCORE",
+        "bundleIndex": 3,
+        "scoreRange": {
+          "min": -300,
+          "max": 999
+        },
+        "assumeEventSelection": true,
+        "assumeBundleSelection": true,
+        "assumeDelivery": true,
+        "assumeMonthlyScore": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_SECTOWEED"
+      },
+      {
+        "type": "research",
+        "id": "STR_CRACK"
+      },
+      {
+        "type": "research",
+        "id": "STR_MEDICINE"
+      },
+      {
+        "type": "research",
+        "id": "STR_SOLDIER_TYPE_SS"
+      },
+      {
+        "type": "research",
+        "id": "STR_SOLDIER_TYPE_PEA"
+      },
+      {
+        "type": "research",
+        "id": "STR_SHOTGUNS_SUMMARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_BEER"
+      },
+      {
+        "type": "research",
+        "id": "STR_SKINNING"
+      },
+      {
+        "type": "research",
+        "id": "STR_UBER_WHEAT"
+      },
+      {
+        "type": "research",
+        "id": "STR_FARMING"
+      },
+      {
+        "type": "research",
+        "id": "STR_MUTANT_ABILITIES"
+      },
+      {
+        "type": "research",
+        "id": "STR_GYMNASTICS"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GYMNASTICS",
+        "research": "STR_GYM_OUTFIT",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_MUTANT_BLESSINGS"
+      },
+      {
+        "type": "research",
+        "id": "STR_MESS_HALL"
+      },
+      {
+        "type": "acquireFacility",
+        "id": "STR_MESS_HALL"
+      },
+      {
+        "type": "research",
+        "id": "STR_BREAD_AND_FISHES_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_CLOAKING_DEVICE"
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_GNOME",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GNOME",
+        "research": "STR_SHADOWTECH",
+        "assumeOutcome": true
+      },
+      {
+        "type": "conditionalOccultAward",
+        "event": "STR_GREEN_PRAYERS",
+        "script": "STR_CAPTAIN_GREEN_EVENTS_1",
+        "research": "STR_GODS_E2",
+        "month": 6,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "assumeResearchSelection": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_CONTACT_TIGER_TRANSPORT"
+      },
+      {
+        "type": "research",
+        "id": "STR_EXPEDITIONS"
+      },
+      {
+        "type": "research",
+        "id": "STR_BIKES"
+      },
+      {
+        "type": "research",
+        "id": "STR_MONSTER_HUNT"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 7,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 8,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 9,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 10,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 11,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 12,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 13,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPreCrownBlessings",
+        "event": "STR_DUMBLAZY_BLESSINGS",
+        "script": "STR_DUMBLAZY_BLESSINGS",
+        "month": 14,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBountyExchange",
+        "recipe": "STR_OFFERING_TO_PURPLE_BLOOM",
+        "count": 1,
+        "assumeProductionTime": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_OFFERING_TO_PURPLE_BLOOM"
+      },
+      {
+        "type": "conditionalOneTimeFixedItems",
+        "event": "STR_SAKURA_SIVALINGA_EVENT",
+        "script": "STR_SAKURA_SIVALINGA_EVENT",
+        "month": 15,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBountyExchange",
+        "recipe": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS",
+        "count": 1,
+        "assumeProductionTime": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_BOUNTY_HUNTING_PRIZE_MARTIAL_ARTS"
+      },
+      {
+        "type": "research",
+        "id": "STR_SOLDIER_TYPE_BASIC"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalJunkExtraction",
+        "recipe": "STR_JUNK_PILE_EX",
+        "bundleIndex": 30,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_SKULL"
+      },
+      {
+        "type": "research",
+        "id": "STR_SC_WIRE"
+      },
+      {
+        "type": "sourceBoundBaseFunctions",
+        "assumeSameBase": true,
+        "assumeCompleteFacilityState": true,
+        "geographyProvides": [],
+        "geographyForbids": [],
+        "sourceSetSha256": "66fd2e55611ef8c81268793425ce4d5b2ed6bc01a504e991788688758b49f1fe",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "acquirePurchase",
+        "item": "STR_SC_WIRE",
+        "count": 8
+      },
+      {
+        "type": "research",
+        "id": "STR_PERSONAL_LABS"
+      },
+      {
+        "type": "acquireFacility",
+        "id": "STR_PERSONAL_LABS"
+      },
+      {
+        "type": "research",
+        "id": "STR_SCHOOL_BOOKS_ITEM"
+      },
+      {
+        "type": "research",
+        "id": "STR_LIBRARY"
+      },
+      {
+        "type": "acquireFacility",
+        "id": "STR_LIBRARY"
+      },
+      {
+        "type": "research",
+        "id": "STR_SCHOOLING_2"
+      },
+      {
+        "type": "research",
+        "id": "STR_CHRONICLES_001"
+      },
+      {
+        "type": "research",
+        "id": "STR_SIVALINGA"
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_SIVALINGA_RESURRECTION_EVENT",
+        "script": "STR_SIVALINGA_RESURRECTION_EVENT",
+        "research": "STR_SIVALINGA_RESURRECTION",
+        "assumeOutcome": true
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_WASTELAND_PRIESTESS_2",
+        "script": "STR_BLESSINGS_2B",
+        "research": "STR_WASTELAND_PRIESTESS_2",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_WASTELAND_PRIESTESS_3"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_WASTELAND_PRIESTESS_3",
+        "research": "STR_WASTELAND_PRIESTESS_4",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_DARK_STAR"
+      },
+      {
+        "type": "acquirePurchase",
+        "item": "STR_MUTANT_FISH",
+        "count": 5
+      },
+      {
+        "type": "research",
+        "id": "STR_MONSTER_HUNTS_PRIMAL"
+      },
+      {
+        "type": "conditionalPrimalTransport",
+        "craft": "STR_HUNTING_PARTY",
+        "recipe": "STR_HUNTING_PARTY",
+        "hours": 200,
+        "assumeProductionCapacity": true,
+        "assumeProductionTime": true,
+        "assumeFreeHangarSlot": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPrimalVictory",
+        "name": "Werewolf",
+        "script": "monsterHuntPrimalWerewolf",
+        "deployment": "STR_LOC_MONSTER_HUNT_PRIMAL_WEREWOLF",
+        "research": "STR_MONSTER_HUNT_PRIMAL_WEREWOLF_DONE",
+        "region": "REGION_MONSTER_HUNT_PRIMAL_WEREWOLF",
+        "craft": "STR_HUNTING_PARTY",
+        "startingCondition": "STR_STARCON_STONEAGE",
+        "month": 16,
+        "assumeContinuity": true,
+        "assumeMissionGeneration": true,
+        "assumeTransportAndEligibleLoadout": true,
+        "assumeBattleVictory": true,
+        "assumeDebriefing": true,
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startingConditionSha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPrimalVictory",
+        "name": "Bullfrog",
+        "script": "monsterHuntPrimalBullfrog",
+        "deployment": "STR_LOC_MONSTER_HUNT_PRIMAL_BULLFROG",
+        "research": "STR_MONSTER_HUNT_PRIMAL_BULLFROG_DONE",
+        "region": "REGION_MONSTER_HUNT_PRIMAL_BULLFROG",
+        "craft": "STR_HUNTING_PARTY",
+        "startingCondition": "STR_STARCON_STONEAGE",
+        "month": 17,
+        "assumeContinuity": true,
+        "assumeMissionGeneration": true,
+        "assumeTransportAndEligibleLoadout": true,
+        "assumeBattleVictory": true,
+        "assumeDebriefing": true,
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startingConditionSha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPrimalCorpseVictory",
+        "victory": {
+          "type": "conditionalPrimalVictory",
+          "name": "Shambler",
+          "script": "monsterHuntPrimalShambler",
+          "deployment": "STR_LOC_MONSTER_HUNT_PRIMAL_SHAMBLER",
+          "research": "STR_MONSTER_HUNT_PRIMAL_SHAMBLER_DONE",
+          "region": "REGION_MONSTER_HUNT_PRIMAL_SHAMBLER",
+          "craft": "STR_HUNTING_PARTY",
+          "startingCondition": "STR_STARCON_STONEAGE",
+          "month": 18,
+          "assumeContinuity": true,
+          "assumeMissionGeneration": true,
+          "assumeTransportAndEligibleLoadout": true,
+          "assumeBattleVictory": true,
+          "assumeDebriefing": true,
+          "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+          "startingConditionSha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+          "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+        },
+        "race": "STR_MONSTER_RACE",
+        "unit": "STR_SHAMBLER_TERRORIST",
+        "armor": "SHAMBLER_ARMOR",
+        "battleCorpse": "SHAMBLER_CORPSE_1",
+        "item": "STR_SHAMBLER_CORPSE",
+        "count": 1,
+        "assumeIntactCorpseRecovery": true,
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "armorSourceSha256": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPrimalVictory",
+        "name": "Cockroach",
+        "script": "monsterHuntPrimalCockroach",
+        "deployment": "STR_LOC_MONSTER_HUNT_PRIMAL_COCKROACH",
+        "research": "STR_MONSTER_HUNT_PRIMAL_COCKROACH_DONE",
+        "region": "REGION_MONSTER_HUNT_PRIMAL_SCARABS",
+        "craft": "STR_HUNTING_PARTY",
+        "startingCondition": "STR_STARCON_STONEAGE",
+        "month": 19,
+        "assumeContinuity": true,
+        "assumeMissionGeneration": true,
+        "assumeTransportAndEligibleLoadout": true,
+        "assumeBattleVictory": true,
+        "assumeDebriefing": true,
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startingConditionSha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalPrimalVictory",
+        "name": "Finale",
+        "script": "monsterHuntPrimalFinale",
+        "deployment": "STR_LOC_MONSTER_HUNT_PRIMAL_FINALE",
+        "research": "STR_QUEEN_SAVAGE",
+        "region": "REGION_MONSTER_HUNT_PRIMAL_FINALE",
+        "craft": "STR_HUNTING_PARTY",
+        "startingCondition": "STR_STARCON_STONEAGE",
+        "month": 20,
+        "assumeContinuity": true,
+        "assumeMissionGeneration": true,
+        "assumeTransportAndEligibleLoadout": true,
+        "assumeBattleVictory": true,
+        "assumeDebriefing": true,
+        "sourceFileSha256": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+        "startingConditionSha256": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalMonthlyHarvest",
+        "month": 21,
+        "event": "STR_SACRIFICES",
+        "script": "STR_SACRIFICES",
+        "bundleIndex": 0,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeBundleSelection": true,
+        "assumeDelivery": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "manufacture",
+        "item": "STR_LEEK",
+        "recipe": "STR_LEEK_SACK_XXX",
+        "count": 1
+      },
+      {
+        "type": "manufacture",
+        "item": "STR_CABBAGE",
+        "recipe": "STR_CABBAGE_SACK_XXX",
+        "count": 1
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_BREAD_AND_FISHES_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_MUTANT_EGG"
+      },
+      {
+        "type": "research",
+        "id": "STR_CUISINE"
+      },
+      {
+        "type": "research",
+        "id": "STR_GYM_ADVANCE"
+      },
+      {
+        "type": "research",
+        "id": "STR_SMITHING"
+      },
+      {
+        "type": "research",
+        "id": "STR_SS_OPERATIONS"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_SS_OPERATIONS",
+        "research": "STR_LOOTBOX_PREPPER",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_PEASANT_MILITIA"
+      },
+      {
+        "type": "research",
+        "id": "STR_SARGEANT_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_PARIAH_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_SHAMBLER_CORPSE"
+      },
+      {
+        "type": "acquirePurchase",
+        "item": "STR_EXPEDITION_RESEARCH",
+        "count": 1
+      },
+      {
+        "type": "conditionalExpeditionManufacture",
+        "recipe": "STR_EXPEDITION_DEBRIEF",
+        "bundleIndex": 0,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalExpeditionManufacture",
+        "recipe": "STR_LOOTBOX_EXPEDITION_EX",
+        "bundleIndex": 6,
+        "count": 1,
+        "assumeProductionTime": true,
+        "assumeWeightedOutcome": true,
+        "sourceFileSha256": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_BOOK_OF_SERMONS"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 22,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 23,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 24,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 25,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 26,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 27,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 28,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 29,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 30,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 31,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "conditionalBookEvent",
+        "event": "STR_VOLLEYBALL_MATCH",
+        "script": "STR_VOLLEYBALL_MATCH",
+        "month": 32,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_GLAMOUR"
+      },
+      {
+        "type": "research",
+        "id": "STR_PORN"
+      },
+      {
+        "type": "research",
+        "id": "STR_CHAPLAIN_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_OFFICER_TRAINING"
+      },
+      {
+        "type": "conditionalPriestSupply",
+        "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+        "script": "STR_NORED_YESGREEN_EVENTS_PRIEST",
+        "month": 33,
+        "item": "STR_GUILD_SOLDIER",
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": true,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_GOVT_CORPSE"
+      },
+      {
+        "type": "conditionalPriestSupply",
+        "event": "STR_KNOCK_KNOCK_ATTACKED_IN_BED",
+        "script": "STR_NOGOLD_YESGREEN_EVENTS_PRIEST",
+        "month": 34,
+        "item": null,
+        "assumeContinuity": true,
+        "assumeEventSelection": true,
+        "assumeRandomItem": false,
+        "assumeDeliveryWithinMonth": true,
+        "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+      },
+      {
+        "type": "research",
+        "id": "STR_LINGERIE"
+      },
+      {
+        "type": "research",
+        "id": "STR_VODKA"
+      },
+      {
+        "type": "research",
+        "id": "STR_SOCIALIZING"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_SOCIALIZING",
+        "research": "STR_SWIMSUIT",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_CONTACT_BUILDERS"
+      },
+      {
+        "type": "research",
+        "id": "STR_EXCAVATION"
+      },
+      {
+        "type": "research",
+        "id": "STR_PRIMITIVE_WEAPONS_2"
+      },
+      {
+        "type": "research",
+        "id": "STR_BASIC_INCENDIARIES"
+      },
+      {
+        "type": "research",
+        "id": "STR_FLINTLOCKS_PRODUCTION"
+      },
+      {
+        "type": "research",
+        "id": "STR_CLOCKWORK_GUN_PRODUCTION"
+      },
+      {
+        "type": "eventResearch",
+        "event": "STR_CAP_LOG_1_AWFUL",
+        "script": "STR_CAP_LOG_1_AWFUL",
+        "research": "STR_CAPTAINS_LOG_01",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_PERSONAL_ATTENTION"
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_BIG_BONE",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_BIG_BONE",
+          "kind": "manufacture",
+          "recipe": "STR_LOOTBOX_EXPEDITION_EX",
+          "output": "weighted",
+          "bundleIndex": 1,
+          "inputs": [
+            {
+              "item": "STR_LOOTBOX_EXPEDITION",
+              "kind": "manufacture",
+              "recipe": "STR_EXPEDITION_DEBRIEF",
+              "output": "fixed",
+              "inputs": [
+                {
+                  "item": "STR_EXPEDITION_RESEARCH",
+                  "kind": "purchase",
+                  "access": "unlocked-purchase"
+                }
+              ],
+              "access": "unlocked-manufacture"
+            }
+          ],
+          "access": "unlocked-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "research",
+        "id": "STR_BIG_BONE"
+      },
+      {
+        "type": "research",
+        "id": "STR_WARRIOR_CULTURE"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_WARRIOR_CULTURE",
+        "research": "STR_PROUD_WARRIOR",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_HUMANS"
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_SOCIALIZING",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_SOCIALIZING",
+        "research": "STR_HUMAN_FEMALE_4",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_UFO_POWER_SOURCE_SMALL",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_UFO_POWER_SOURCE_SMALL",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "research",
+        "id": "STR_UFO_POWER_SOURCE_SMALL"
+      },
+      {
+        "type": "research",
+        "id": "STR_NO_CIVILIAN_TRAFFIC"
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_AMPHORE",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_AMPHORE",
+          "kind": "manufacture",
+          "recipe": "STR_LOOTBOX_EXPEDITION_EX",
+          "output": "weighted",
+          "bundleIndex": 5,
+          "inputs": [
+            {
+              "item": "STR_LOOTBOX_EXPEDITION",
+              "kind": "manufacture",
+              "recipe": "STR_EXPEDITION_DEBRIEF",
+              "output": "fixed",
+              "inputs": [
+                {
+                  "item": "STR_EXPEDITION_RESEARCH",
+                  "kind": "purchase",
+                  "access": "unlocked-purchase"
+                }
+              ],
+              "access": "unlocked-manufacture"
+            }
+          ],
+          "access": "unlocked-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "research",
+        "id": "STR_AMPHORE"
+      },
+      {
+        "type": "research",
+        "id": "STR_CONTACT_GNOME_MUSEUM"
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_GUILD_CORPSE",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_GUILD_CORPSE",
+          "kind": "mission",
+          "script": "watchTower",
+          "mission": "STR_LOC_HT_HOUSE",
+          "deployment": "STR_LOC_HT_HOUSE",
+          "race": "STR_FLOATER_NONCOM",
+          "route": "corpse",
+          "unit": "STR_GUILD_SOLDIER",
+          "access": "unlocked-mission"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "research",
+        "id": "STR_GUILD_CORPSE"
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_GNOME",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GNOME",
+        "research": "STR_SUPER_STAPLER",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_DURATHREAD_WORKING"
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_WRENCH",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_WRENCH",
+          "kind": "manufacture",
+          "recipe": "STR_JUNK_PILE_EX",
+          "output": "weighted",
+          "bundleIndex": 13,
+          "inputs": [
+            {
+              "kind": "stock",
+              "item": "STR_JUNK_PILE"
+            }
+          ],
+          "access": "unlocked-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "research",
+        "id": "STR_WRENCH"
+      },
+      {
+        "type": "research",
+        "id": "STR_STEAM_POWER"
+      },
+      {
+        "type": "research",
+        "id": "STR_WORKSHOP"
+      },
+      {
+        "type": "research",
+        "id": "STR_AMMO_MANUFACTURING_1"
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_ALIEN_ALLOYS",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_ALIEN_ALLOYS",
+          "kind": "event",
+          "script": "STR_SECRET_DOOR_VERY_EARLY",
+          "event": "STR_SECRET_DOOR_EMPTY",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_GNOME",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GNOME",
+        "research": "STR_ALIEN_ALLOYS",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_LEATHER_ARMOR"
+      },
+      {
+        "type": "research",
+        "id": "STR_METAL_ARMOR"
+      },
+      {
+        "type": "research",
+        "id": "STR_OLD_EARTH_VOODOO"
+      },
+      {
+        "type": "researchSupply",
+        "item": "CIVILIAN_YOUNG_UBER",
+        "minimum": 1,
+        "proof": {
+          "item": "CIVILIAN_YOUNG_UBER",
+          "kind": "event",
+          "script": "STR_CAPTAIN_DUMBLAZY_EVENTS_1",
+          "event": "STR_DUMBLAZY_AT_SEANS_RABID_FANS",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "research",
+        "id": "CIVILIAN_YOUNG_UBER"
+      },
+      {
+        "type": "freeResearch",
+        "source": "CIVILIAN_YOUNG_UBER",
+        "research": "STR_BEASTMEN",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_RIBBON"
+      },
+      {
+        "type": "research",
+        "id": "STR_MOST_COMMON_POWER"
+      },
+      {
+        "type": "research",
+        "id": "STR_SWIMSUIT_PRODUCTION"
+      },
+      {
+        "type": "research",
+        "id": "STR_BIKINI_PRODUCTION"
+      },
+      {
+        "type": "research",
+        "id": "STR_PERSON_OF_CULTURE_TRAINING"
+      },
+      {
+        "type": "researchSupply",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true,
+        "researchOnly": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_ITALY",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_HUNTRESS_TRAINING"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_PROUD_WARRIOR"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_OFFICER_TRAINING"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_PERSONAL_ATTENTION"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_PERSON_OF_CULTURE_TRAINING"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_PARIAH_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_SMALL_RADAR_SYSTEM"
+      },
+      {
+        "type": "research",
+        "id": "STR_COMMUNICATIONS"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_CHURCH_SOLDIER",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_CHURCH_SOLDIER",
+          "kind": "event",
+          "script": "STR_NORED_YESGREEN_EVENTS",
+          "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_CHURCH_SOLDIER"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_CHURCH_SOLDIER",
+        "research": "STR_LAPUTA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_CHURCH_PRIEST",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_CHURCH_PRIEST",
+          "kind": "event",
+          "script": "STR_NORED_YESGREEN_EVENTS",
+          "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_CHURCH_PRIEST"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_CHURCH_PRIEST",
+        "research": "STR_DYNAMITE",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_MISSION_CHURCH_CAMP"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_GOLDEN_CROSS",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_GOLDEN_CROSS",
+          "kind": "map",
+          "route": "custom-ufo",
+          "script": "churchAtrium",
+          "mission": "STR_LOC_ATRIUM_CHURCH",
+          "deployment": "STR_LOC_ATRIUM_CHURCH",
+          "ufo": "STR_LOC_ATRIUM_CHURCH",
+          "block": "D_ATRIUM",
+          "placement": "random",
+          "poolIndex": 11,
+          "draws": 3,
+          "occurrences": 1,
+          "poolSize": 3,
+          "access": "conditional-generated-map"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_GOLDEN_CROSS"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_GOLDEN_CUP",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_GOLDEN_CUP",
+          "kind": "map",
+          "route": "custom-ufo",
+          "script": "churchAtrium",
+          "mission": "STR_LOC_ATRIUM_CHURCH",
+          "deployment": "STR_LOC_ATRIUM_CHURCH",
+          "ufo": "STR_LOC_ATRIUM_CHURCH",
+          "block": "D_ATRIUM",
+          "placement": "random",
+          "poolIndex": 11,
+          "draws": 3,
+          "occurrences": 1,
+          "poolSize": 3,
+          "access": "conditional-generated-map"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_GOLDEN_CUP"
+      },
+      {
+        "type": "research",
+        "id": "STR_CONTACT_ROMANICA"
+      },
+      {
+        "type": "research",
+        "id": "STR_WENCH_OUTFIT"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_CONSUMER_GOODS",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_MONEY_PURSE",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_MONEY_PURSE",
+          "kind": "map",
+          "route": "custom-ufo",
+          "script": "prepperBunkerLate",
+          "mission": "STR_LOC_PREPPERS",
+          "deployment": "STR_LOC_PREPPERS",
+          "ufo": "STR_LOC_PREPPERS",
+          "block": "ENEMYBUNKER_01",
+          "placement": "fixed",
+          "count": 3,
+          "access": "conditional-generated-map"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_MONEY_PURSE"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_CASH_BAG",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_CASH_BAG",
+          "kind": "map",
+          "route": "indexed-terrain",
+          "script": "HotPursuits",
+          "mission": "STR_LOC_HOT_PURSUITS",
+          "deployment": "STR_LOC_HOT_PURSUITS",
+          "terrain": "CHEMTOWNHOTPURSUITS",
+          "mapScript": "CHEMTOWNFIRE",
+          "block": "CHEMTOWN01B",
+          "blockSelection": "soleCandidateForAddBlock",
+          "placement": "random",
+          "poolIndex": 0,
+          "draws": 1,
+          "occurrences": 2,
+          "poolSize": 8,
+          "access": "conditional-generated-map"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_CASH_BAG"
+      },
+      {
+        "type": "research",
+        "id": "STR_GAMBLING"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GAMBLING",
+        "research": "STR_TROPHY_TARGET_50_JACK",
+        "assumeOutcome": false
+      },
+      {
+        "type": "research",
+        "id": "STR_PLOTTING"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_GERMANY",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_SPAIN",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_DATA_DISK_B",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_DATA_DISK_B",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_DATA_DISK_B",
+          "inputs": [
+            {
+              "quantity": 1,
+              "proof": {
+                "item": "STR_DATA_DISK",
+                "kind": "mission",
+                "script": "recurringTerrorNoPenalty",
+                "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+                "deployment": "STR_ATTACK_KKK_RAID",
+                "race": "STR_MIXED_KKK",
+                "route": "recoverable-equipment",
+                "access": "unlocked-mission"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_DATA_DISK_B",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_EGYPT",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_FRANCE",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_UK",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_RUSSIA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_AREAS_EUROPE"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_DATA_DISK_B",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_DATA_DISK_B",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_DATA_DISK_B",
+          "inputs": [
+            {
+              "quantity": 1,
+              "proof": {
+                "item": "STR_DATA_DISK",
+                "kind": "mission",
+                "script": "recurringTerrorNoPenalty",
+                "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+                "deployment": "STR_ATTACK_KKK_RAID",
+                "race": "STR_MIXED_KKK",
+                "route": "recoverable-equipment",
+                "access": "unlocked-mission"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_DATA_DISK_B",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_TURAN",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_JAPAN",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_CHINA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_INDIA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_DATA_DISK_B",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_DATA_DISK_B",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_DATA_DISK_B",
+          "inputs": [
+            {
+              "quantity": 1,
+              "proof": {
+                "item": "STR_DATA_DISK",
+                "kind": "mission",
+                "script": "recurringTerrorNoPenalty",
+                "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+                "deployment": "STR_ATTACK_KKK_RAID",
+                "race": "STR_MIXED_KKK",
+                "route": "recoverable-equipment",
+                "access": "unlocked-mission"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_DATA_DISK_B",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_INDONESIA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_AREAS_ASIA"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_NIGERIA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_DATA_DISK_B",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_DATA_DISK_B",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_DATA_DISK_B",
+          "inputs": [
+            {
+              "quantity": 1,
+              "proof": {
+                "item": "STR_DATA_DISK",
+                "kind": "mission",
+                "script": "recurringTerrorNoPenalty",
+                "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+                "deployment": "STR_ATTACK_KKK_RAID",
+                "race": "STR_MIXED_KKK",
+                "route": "recoverable-equipment",
+                "access": "unlocked-mission"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_DATA_DISK_B",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_SOUTH_AFRICA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_CHILE",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_DATA_DISK_B",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_DATA_DISK_B",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_DATA_DISK_B",
+          "inputs": [
+            {
+              "quantity": 1,
+              "proof": {
+                "item": "STR_DATA_DISK",
+                "kind": "mission",
+                "script": "recurringTerrorNoPenalty",
+                "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+                "deployment": "STR_ATTACK_KKK_RAID",
+                "race": "STR_MIXED_KKK",
+                "route": "recoverable-equipment",
+                "access": "unlocked-mission"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_DATA_DISK_B",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_BRAZIL",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_HUMAN_SHARP_GUY",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_HUMAN_SHARP_GUY",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_BRAD_AND_JANET",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_HUMAN_SHARP_GUY",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_HUMAN_SHARP_GUY",
+        "research": "STR_AUSTRALIA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_AREAS_SOUTH"
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_GNOME",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_GNOME",
+        "research": "STR_NINJA",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_SUN_WARRIORS_TRAINING"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_SUN_WARRIORS_TRAINING"
+      },
+      {
+        "type": "research",
+        "id": "STR_PIROMAN_ARMOR"
+      },
+      {
+        "type": "research",
+        "id": "STR_CRUSADER_ARMOR"
+      },
+      {
+        "type": "research",
+        "id": "STR_SOULSENSE"
+      },
+      {
+        "type": "research",
+        "id": "STR_RAIDER_CORPSE"
+      },
+      {
+        "type": "research",
+        "id": "STR_HELLERIUM_CHARM"
+      },
+      {
+        "type": "research",
+        "id": "STR_WITCH_CAVE"
+      },
+      {
+        "type": "research",
+        "id": "STR_SALVAGE"
+      },
+      {
+        "type": "research",
+        "id": "STR_PERSUASION"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_ACADEMY_CORPSE",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_ACADEMY_CORPSE",
+          "kind": "mission",
+          "script": "watchTower",
+          "mission": "STR_LOC_HT_HOUSE",
+          "deployment": "STR_LOC_HT_HOUSE",
+          "race": "STR_SECTOID_NONCOM",
+          "route": "corpse",
+          "unit": "STR_SECTOID_SOLDIER",
+          "access": "unlocked-mission"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_ACADEMY_CORPSE"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_STUN_BATON",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_STUN_BATON",
+          "kind": "mission",
+          "script": "churchAtrium",
+          "mission": "STR_LOC_ATRIUM_CHURCH",
+          "deployment": "STR_LOC_ATRIUM_CHURCH",
+          "race": "STR_CHURCH_NONCOM",
+          "route": "recoverable-equipment",
+          "access": "unlocked-mission"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_STUN_BATON"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PADD",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PADD",
+          "kind": "map",
+          "route": "indexed-terrain",
+          "script": "monsterHunt1a",
+          "mission": "STR_LOC_MONSTER_HUNT_MEGASCORPION",
+          "deployment": "STR_LOC_MONSTER_HUNT_MEGASCORPION",
+          "terrain": "URBANJUNKUFO",
+          "mapScript": "STANDARDROADS6",
+          "block": "URBANJUNK31",
+          "blockSelection": "conditional",
+          "placement": "fixed",
+          "count": 1,
+          "access": "conditional-generated-map"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_PADD"
+      },
+      {
+        "type": "research",
+        "id": "STR_BASIC_ELECTRONICS"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_ELECTRONIC_PIECES",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_ELECTRONIC_PIECES",
+          "kind": "manufacture",
+          "recipe": "STR_PADD_DA",
+          "output": "fixed",
+          "inputs": [
+            {
+              "item": "STR_PADD",
+              "kind": "mission",
+              "script": "govtAgentRescue",
+              "mission": "STR_LOC_GOVT_CAR",
+              "deployment": "STR_LOC_GOVT_CAR",
+              "race": "STR_BANDIT_ROBBERS",
+              "route": "recoverable-equipment",
+              "access": "unlocked-mission"
+            }
+          ],
+          "access": "unlocked-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_ELECTRONIC_PIECES"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_ALIEN_ENTERTAINMENT",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_ALIEN_ENTERTAINMENT",
+          "kind": "manufacture",
+          "recipe": "STR_JUNK_PILE_EX",
+          "output": "weighted",
+          "bundleIndex": 38,
+          "inputs": [
+            {
+              "kind": "stock",
+              "item": "STR_JUNK_PILE"
+            }
+          ],
+          "access": "unlocked-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_DATA_DISK_B",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_DATA_DISK_B",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_DATA_DISK_B",
+          "inputs": [
+            {
+              "quantity": 1,
+              "proof": {
+                "item": "STR_DATA_DISK",
+                "kind": "mission",
+                "script": "recurringTerrorNoPenalty",
+                "mission": "STR_MUTANT_POGROM_DISTRESS_NO_PENALTY",
+                "deployment": "STR_ATTACK_KKK_RAID",
+                "race": "STR_MIXED_KKK",
+                "route": "recoverable-equipment",
+                "access": "unlocked-mission"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_DATA_DISK_B",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_DATA_DISK_B",
+        "research": "STR_ALIEN_ENTERTAINMENT",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_PILLOW_BOOK"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_MEIDO_OUTFIT",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_BLACK_CAT",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G1",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G2",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G3",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G4",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G5",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G6",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G7",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_PILLOW_BOOK",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_PILLOW_BOOK",
+          "kind": "implicit-manufacture",
+          "recipe": "STR_PILLOW_BOOK",
+          "inputs": [
+            {
+              "quantity": 3,
+              "proof": {
+                "kind": "stock",
+                "item": "STR_PORN"
+              }
+            }
+          ],
+          "access": "unlocked-implicit-manufacture"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "repeatResearch",
+        "id": "STR_PILLOW_BOOK",
+        "assumeAvailability": true
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_PILLOW_BOOK",
+        "research": "STR_GODS_G8",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_GODS_SUMMARY"
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_ACADEMY_STUDENT",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_ACADEMY_STUDENT",
+          "kind": "event",
+          "script": "STR_KNOCK_KNOCK_0",
+          "event": "STR_KNOCK_KNOCK_STUDENT",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_ACADEMY_STUDENT"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_ACADEMY_STUDENT",
+        "research": "STR_ACADEMY_RECRUITMENT",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_SECTOID_SOLDIER",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_SECTOID_SOLDIER",
+          "kind": "event",
+          "script": "STR_NORED_YESGREEN_EVENTS",
+          "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_SECTOID_SOLDIER"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_SECTOID_SOLDIER",
+        "research": "STR_ALIEN_RESEARCH",
+        "assumeOutcome": true
+      },
+      {
+        "type": "researchEventV151",
+        "research": "STR_SQUIRE",
+        "event": "STR_GOLD_AT_SEANS_NEW_FACES",
+        "script": "STR_CAPTAIN_GOLD_EVENTS_1",
+        "month": 34,
+        "assumeOutcome": true,
+        "assumeEventSelection": true,
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true
+      },
+      {
+        "type": "researchSupplyV150",
+        "item": "STR_OSIRON_LAD",
+        "minimum": 1,
+        "proof": {
+          "item": "STR_OSIRON_LAD",
+          "kind": "event",
+          "script": "STR_NORED_YESGREEN_EVENTS",
+          "event": "STR_CAPTAIN_YESGREEN_NORED_AMONG_US",
+          "oneTime": false,
+          "access": "eligible-event"
+        },
+        "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+        "researchOnly": true,
+        "assumeSourceAccess": true,
+        "assumeRequiredQuantity": true
+      },
+      {
+        "type": "research",
+        "id": "STR_OSIRON_LAD"
+      },
+      {
+        "type": "freeResearch",
+        "source": "STR_OSIRON_LAD",
+        "research": "STR_MEGAPOL",
+        "assumeOutcome": true
+      },
+      {
+        "type": "research",
+        "id": "STR_HOLY_WARRIORS"
+      },
+      {
+        "type": "transform",
+        "soldier": "origin",
+        "transform": "STR_HOLY_WARRIOR_TRAINING"
+      }
+    ],
+    "actionHash": "a306bc54693f5ed47ea32472c5e456032117c74f2ca426d3e5039189aaafcb7e",
+    "actionCount": 402
+  }
+}
