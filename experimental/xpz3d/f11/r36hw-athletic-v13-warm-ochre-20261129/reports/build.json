@@ -1,0 +1,77 @@
+{
+  "sourceBlob": "0f85e995f9541a59545df14822b2c33eb650bcae",
+  "inputBytes": 402756,
+  "outputBytes": 402884,
+  "triangles": 2100,
+  "joints": 63,
+  "garmentVertices": 706,
+  "changedColorVertices": 706,
+  "changedBinaryBytes": 2108,
+  "uniqueWeldedPoints": 527,
+  "paletteCount": {
+    "main": 453,
+    "transition": 133,
+    "sidePanel": 0,
+    "binding": 120
+  },
+  "palette": {
+    "main": [
+      239,
+      231,
+      218,
+      255
+    ],
+    "transition": [
+      224,
+      207,
+      185,
+      255
+    ],
+    "sidePanel": [
+      189,
+      165,
+      139,
+      255
+    ],
+    "binding": [
+      155,
+      133,
+      110,
+      255
+    ]
+  },
+  "skinReferenceBaseColor": [
+    0.56,
+    0.37,
+    0.19,
+    1
+  ],
+  "garmentBaseColorBefore": [
+    0.66,
+    0.53,
+    0.39,
+    1
+  ],
+  "garmentBaseColorAfter": [
+    0.63,
+    0.45,
+    0.255,
+    1
+  ],
+  "roughnessBefore": 1,
+  "roughnessAfter": 0.93,
+  "normalScaleBefore": 0.85,
+  "normalScaleAfter": 0.22,
+  "geometryPreserved": true,
+  "skinWeightsPreserved": true,
+  "nonColorBinaryPreserved": true,
+  "normalImagePreserved": true,
+  "opaqueMaterial": true,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Warm ochre palette is an artistic choice based on existing material values, not a calibrated color match to the GIF.",
+    "Existing normal image is retained with reduced strength; no new high-resolution texture was generated.",
+    "S2 material import, lighting and appearance remain unverified."
+  ]
+}
