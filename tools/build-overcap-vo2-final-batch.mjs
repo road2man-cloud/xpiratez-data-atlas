@@ -13,9 +13,9 @@ import {createBodyCareerScope} from "./atlas-body-career-scope-v5-vo2-irreversib
 import {createShadeResetProof} from "./atlas-shade-reset-dominance-v2-vo2.mjs";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const body=process.argv.find(x=>x.startsWith("--body="))?.slice(7)||"POD_REPAIR";
-const fast=process.argv.includes("--fast-pass"),staticPass=process.argv.includes("--static-pass"),next=process.argv.includes("--next"),offset=Number(process.argv.find(x=>x.startsWith("--offset="))?.slice(9)||0),limit=Number(process.argv.find(x=>x.startsWith("--limit="))?.slice(8)||(fast||staticPass?2000:6));
+const fast=process.argv.includes("--fast-pass"),staticPass=process.argv.includes("--static-pass"),closureFirst=process.argv.includes("--closure-first"),next=process.argv.includes("--next"),offset=Number(process.argv.find(x=>x.startsWith("--offset="))?.slice(9)||0),limit=Number(process.argv.find(x=>x.startsWith("--limit="))?.slice(8)||(fast||staticPass?2000:6));
 assert(/^[A-Z0-9_]+$/.test(body)&&Number.isSafeInteger(offset)&&offset>=0&&Number.isSafeInteger(limit)&&limit>0);
-assert(Number(fast)+Number(staticPass)+Number(next)<=1,"Choose one automatic selection mode");
+assert(Number(fast)+Number(staticPass)+Number(closureFirst)+Number(next)<=1,"Choose one automatic selection mode");
 const stage="tools/data/overcap-intake-stage-"+body+"/";
 const prep=decode(stage+"vo2-full-prepared.json.gz"),manifest=read("tools/data/overcap-vo2-full-prepared-manifest-"+body+".json");
 assert.equal(prep.schema,"ATLAS_VO2_FULL_PREPARED_V1");assert.equal(key(prep),manifest.preparedHash);assert.equal(key(prep.plan),manifest.planHash);
@@ -36,8 +36,8 @@ for(const name of fs.readdirSync(stage).filter(n=>/^vo2-final-(?:batch-\d+-\d+|(
  assert.deepEqual(ix.map(i=>prep.plan[i].id),d.pairIds);
  for(const i of ix){assert(!already.has(i),"Overlapping existing batches "+i);already.add(i);}
 }
-let indices;
-if(fast||staticPass){
+let indices,scheduling=null;
+if(fast||staticPass||closureFirst){
  const known=new Set(prep.materialBudget.checkedRouteIds),children=new Map();
  const relevant=a=>["research","repeatResearch","freeResearch","eventResearch","missionResearch","transform","conditionalCapGrowth","conditionalPromotion","conditionalMedal"].includes(a.type);
  for(const [gid,g] of Object.entries(ledger.graphs)){
@@ -58,7 +58,8 @@ if(fast||staticPass){
  // to its closure decision. Projection is a scheduling hint only. The
  // authoritative gate independently classifies the selected complete pairs.
  let canSkipReplay=immediate;
- if(staticPass){
+ const scores=new Map();
+ if(staticPass||closureFirst){
   const replay=createSharedCareerReplay(data,ledger.summary),first=createBodyCareerScope(data,db.branches,replay,catalog),shade=createShadeResetProof(data,replay,first);
   const profiles=new Map(data.profiles.map(p=>[p.id,p])),rules=new Map(data.transformations.map(r=>[r.id,r])),branches=new Map(db.branches.map(b=>[b.id,b])),histories=new Map();
   function projectHistory(previous,actions){
@@ -92,12 +93,28 @@ if(fast||staticPass){
     const inputs={body:p.body,history:h,historyKnown:!!h,active:new Set(path.active),raw:n.raw,capRaw:n.capRaw,finite:prep.materialBudget.finite,consumed};
     assert([...inputs.active].every(k=>typeof k==="string"));
     const q=first.assess(inputs,b),possibleIrreversible=inputs.historyKnown&&!q.openGrowth&&!q.unknownRules.length&&q.missingResearch.length>0&&Array.isArray(path.disabled)&&path.disabled.length>0;
-    safe=!q.possibleExact&&!shade.canAttempt(q,inputs)&&!possibleIrreversible;
+    const shadePossible=shade.canAttempt(q,inputs);
+    safe=!q.possibleExact&&!shadePossible&&!possibleIrreversible;
+    if(!safe)scores.set(id,{tier:q.closed?0:q.possibleExact?1:shadePossible?2:3,missing:q.missingResearch.length,open:q.open.length,unknown:q.unknownRules.length,graph:raw.sourceGraph});
    }
    memo.set(id,safe);return safe;
   };
  }
- indices=prep.plan.map((p,i)=>({p,i})).filter(({p,i})=>!already.has(i)&&p.routes.every(canSkipReplay)).slice(0,limit).map(x=>x.i);
+ if(closureFirst){
+  // Rank the remaining pairs by a best nontrivial witness. This is ONLY
+  // scheduling: the final gate still replays all witnesses of each pair.
+  const compare=(a,b)=>a.tier-b.tier||a.missing-b.missing||a.open-b.open||a.unknown-b.unknown;
+  const pending=prep.plan.map((p,i)=>({p,i})).filter(({i})=>!already.has(i)).map(({p,i})=>{
+   const candidates=p.routes.filter(id=>!canSkipReplay(id)).map(id=>scores.get(id));
+   assert(candidates.every(Boolean));
+   candidates.sort(compare);
+   return {i,best:candidates[0]||{tier:4,missing:0,open:0,unknown:0,graph:""},replayCount:candidates.length,witnesses:p.routes.length};
+  }).sort((a,b)=>compare(a.best,b.best)||a.replayCount-b.replayCount||a.best.graph.localeCompare(b.best.graph)||a.witnesses-b.witnesses||a.i-b.i);
+  indices=pending.slice(0,limit).map(x=>x.i);
+  const tiers={};for(const r of pending)tiers[r.best.tier]=(tiers[r.best.tier]||0)+1;
+  scheduling={strategy:"CLOSURE_FIRST_HINT_V1",remaining:pending.length,tiers,selected:pending.slice(0,limit).map(({i,best,replayCount,witnesses})=>({i,tier:best.tier,missing:best.missing,open:best.open,replayCount,witnesses}))};
+  console.log(JSON.stringify({phase:"closure-first scheduling",...scheduling}));
+ }else indices=prep.plan.map((p,i)=>({p,i})).filter(({p,i})=>!already.has(i)&&p.routes.every(canSkipReplay)).slice(0,limit).map(x=>x.i);
 }else if(next){
  indices=prep.plan.map((_,i)=>i).filter(i=>!already.has(i)).slice(0,limit);
 }else{
@@ -125,7 +142,7 @@ for(const [id,v] of Object.entries(witnesses)){
 if(fast)assert(Object.values(witnesses).every(v=>["KNOWN_CONTINUATION","UNRESOLVED_FINITE_MATERIAL"].includes(v.status)),"Fast-pass selected a nontrivial witness");
 if(staticPass){assert.equal(final.summary.incremental.fresh,0,"Static pass unexpectedly required independent replay");assert(Object.values(witnesses).every(v=>["KNOWN_CONTINUATION","UNRESOLVED_FINITE_MATERIAL","OPEN_RESEARCH_OR_GROWTH","OPEN_TRANSFORMATION"].includes(v.status)),"Static pass may never admit a final pair");}
 const summary={attemptedPairs:lines.length,attemptedWitnesses:ids.size,localClosedPairs:final.rows.length,localEquivalentPairs:final.equivalent.length,unresolved:Object.values(witnesses).filter(v=>v.status.startsWith("UNRESOLVED")).length,counts:final.summary.counts,officialFinalAdded:0};
-const out={schema:"ATLAS_VO2_FULL_FINAL_BATCH_V1",sourceMetadataSha256:prep.sourceMetadataSha256,sourceGraphSha256:prep.sourceGraphSha256,preparedHash:manifest.preparedHash,planHash:prep.planHash,sourceHashes:final.sourceHashes,materialBudgetHash:prep.materialBudget.sha256,batch:{offset,limit,total:prep.plan.length,...((fast||staticPass||next)?{indices,selection:fast?"immediate-nonfinal":staticPass?"static-open":"next-unprocessed"}:{})},pairIds:lines.map(r=>r.id),summary,witnesses,ogreRegression:final.summary.ogreRegression,scope:"Local classification; final cross-batch quotient and all-pair coverage required before registry replacement."};
-const file=stage+(fast||staticPass||next?"vo2-final-"+(fast?"fast":staticPass?"static":"next")+"-batch-"+key(indices).slice(0,16):"vo2-final-batch-"+offset+"-"+limit)+".json.gz";
+const out={schema:"ATLAS_VO2_FULL_FINAL_BATCH_V1",sourceMetadataSha256:prep.sourceMetadataSha256,sourceGraphSha256:prep.sourceGraphSha256,preparedHash:manifest.preparedHash,planHash:prep.planHash,sourceHashes:final.sourceHashes,materialBudgetHash:prep.materialBudget.sha256,batch:{offset,limit,total:prep.plan.length,...((fast||staticPass||closureFirst||next)?{indices,selection:fast?"immediate-nonfinal":staticPass?"static-open":closureFirst?"closure-first-hint":"next-unprocessed"}:{})},pairIds:lines.map(r=>r.id),...(scheduling?{scheduling}:{}),summary,witnesses,ogreRegression:final.summary.ogreRegression,scope:"Local classification; final cross-batch quotient and all-pair coverage required before registry replacement."};
+const file=stage+(fast||staticPass||closureFirst||next?"vo2-final-"+(fast?"fast":staticPass?"static":"next")+"-batch-"+key(indices).slice(0,16):"vo2-final-batch-"+offset+"-"+limit)+".json.gz";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(out),{level:4}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({file,summary,byBody:final.summary.byFinalBody,metrics:final.summary.incremental,hash:key(out)}));
