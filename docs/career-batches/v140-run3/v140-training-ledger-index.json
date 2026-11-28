@@ -1,0 +1,32 @@
+{
+  "version": 140,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "ledgerSha256": "f71b6a6998c5eaf1fa713a0a78b907f807a2a45a275add770e086e34c15360bf",
+  "graphSha256": "4dc6412759006df03fed04f19dbeda240f0322c53c09bd2feba8dd2eeef9c362",
+  "summary": {
+    "witnesses": 60,
+    "previousWitnesses": 58,
+    "newWitnesses": 2,
+    "uniqueVectors": 6,
+    "newVectors": [
+      {
+        "tu": 84,
+        "stamina": 123,
+        "health": 68,
+        "bravery": 150,
+        "reactions": 91,
+        "firing": 125,
+        "throwing": 90,
+        "strength": 60,
+        "psiStrength": 78,
+        "psiSkill": 50,
+        "melee": 109,
+        "mana": 169
+      }
+    ],
+    "bestPermanentSum": 1264,
+    "bestTU": 84,
+    "registered": 0,
+    "gameCertified": 0
+  }
+}
