@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {mergeTrainingReceipts} from './overcap-training-resume-core.mjs';
+import {publishTrainingLedger} from './overcap-training-ledger-store.mjs';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const terminal=read('public/data/soldier-overcap-terminal-continuations.json'),life=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),source=read('tools/data/overcap-terminal-source-v1.json');
 assert.equal(terminal.sourceHash,hash(next));assert.equal(terminal.baseSourceHash,hash(life));assert.equal(terminal.terminalSourceHash,hash(source));
@@ -31,4 +32,4 @@ for(const r of results){const b=byBody[r.body];b.successors++;b.maxCapGain=Math.
 }
 const summary={inputSeeds:jobs.size,attemptedSeeds:receipts.length,replayedSeeds:receipts.filter(r=>r.seedReplayVerified).length,productiveSeeds:receipts.filter(r=>r.produced.length).length,uniqueActionWitnesses:results.length,displayGroups:groups.size,firstInventoryClosed:results.filter(r=>r.firstSuccessorInventory.firstInventoryClosed).length,byBody,byTarget,replayErrors:receipts.filter(r=>r.error).length,finalAdmission:0};
 const report={schema:'ATLAS_OVERCAP_TERMINAL_TRAINING_LEDGER_V1',sourceMetadataSha256:terminal.sourceMetadataSha256,sourceLedgerHash:terminal.sourceLedgerHash,sourceHash:hash(terminal),terminalSourceHash:hash(source),scope:'Productive conditional training retaining terminal research; bounded search, first-action inventory and display groups do not establish final closure.',summary,batches,coverage:receipts,displayGroups:Object.fromEntries(groups),rows:results};
-fs.writeFileSync('public/data/soldier-overcap-terminal-training.json',JSON.stringify(report)+'\n');console.log(JSON.stringify(summary));
+publishTrainingLedger(report);console.log(JSON.stringify(summary));

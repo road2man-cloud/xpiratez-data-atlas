@@ -1,10 +1,11 @@
 // Consolidate fixed-body closure certificates and prepare exact intake
 // witnesses for the existing shared career producer; no registry mutation.
 import fs from 'node:fs';
+import {readTrainingLedger} from './overcap-training-ledger-store.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8')),hash=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
-const life=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),term=read('public/data/soldier-overcap-terminal-continuations.json'),training=read('public/data/soldier-overcap-terminal-training.json');
+const life=read('public/data/soldier-overcap-expanded-lifecycle.json'),next=read('public/data/soldier-overcap-direct-successors.json'),term=read('public/data/soldier-overcap-terminal-continuations.json'),training=readTrainingLedger(process.argv[2]?read(process.argv[2]).trainingSourceHash:null);
 const parents=new Map(life.results.map(r=>[r.id,r])),children=new Map(next.rows.map(r=>[r.id,r])),terms=new Map(term.rows.map(r=>[r.id,r])),seeds=new Map([...term.rows,...training.rows].map(r=>[r.id,r]));
 const files=process.argv.slice(2);assert(files.length);
 const records=new Map(),closed=new Map(),errors=[],batches=[];let meta=null;
