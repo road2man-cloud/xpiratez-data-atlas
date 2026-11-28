@@ -1,0 +1,2452 @@
+{
+  "schema": "ATLAS_FORWARD_RESEARCH_WITNESSES_V2",
+  "graphSha256": "d6acc3d4b6345365b45f1739fa5822ce007a431c414ea04f7cb9d3a03a104df7",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "scope": "Representative deep conditional witnesses from the forward graph, not optimal or final paths.",
+  "witnesses": [
+    {
+      "label": "근처 마을 방문",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "nodeId": 4466,
+      "stateHash": "b21c1fc0069b1c76af2165ed1c53e854e8da9a8973a14bfd8ef5c3cfa7c3563a",
+      "labDepth": 18,
+      "actions": [
+        {
+          "type": "externalInputs",
+          "items": {},
+          "functions": [
+            "SHOP"
+          ],
+          "funds": 0,
+          "reason": "Observed campaign start: Inspect Machinery requires SHOP",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_DOGE_PROCUREMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_PROTECTIVE_GEAR"
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "research",
+          "id": "STR_FIRST_AID_KIT_SMALL"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_CONTACT_TIGER_TRANSPORT"
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPEDITIONS"
+        }
+      ],
+      "path": [
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "choices": [
+              "CIV_ARMOR_LOKNAR_1"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_DOGE_PROCUREMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_PIRATE_LIFE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_PIRATE_STYLE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PROTECTIVE_GEAR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MELEE_SUMMARY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CUNNING",
+            "choices": [
+              "STR_GROG_BARREL"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_WEIRDNESS",
+            "choices": [
+              "STR_LABORATORY"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CAMOUFLAGE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CAMOUFLAGE",
+            "research": "STR_CAMO_PAINT",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CAMOUFLAGE",
+            "choices": [
+              "STR_CAMO_PAINT"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BALLISTICS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_FIRST_AID_KIT_SMALL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_WAT_DO"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_EXPEDITIONS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_TIGER_TRANSPORT",
+              "STR_RECRUIT_PEASANTS",
+              "STR_WAT_DO"
+            ]
+          }
+        }
+      ],
+      "completedResearch": [
+        "AUX_DOGE_BARK",
+        "AUX_DOGG_WEAPON",
+        "AUX_SMELL_SCANNER",
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BALLISTICS",
+        "STR_BALLISTICS_ZZZ",
+        "STR_CAMOUFLAGE",
+        "STR_CAMO_PAINT",
+        "STR_CLOTHING_UC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_CUNNING",
+        "STR_DOGE_COLLAR",
+        "STR_DOGE_NAMED",
+        "STR_DOGE_PROCUREMENT",
+        "STR_DOGE_UNARMORED_UC",
+        "STR_DUST_MASK",
+        "STR_EXPEDITION",
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_FIRST_AID_KIT",
+        "STR_FIRST_AID_KIT_SMALL",
+        "STR_GROG_BARREL",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_PEASANTS_ZZZ",
+        "STR_PEASANT_CAMO_UC",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_PROTECTIVE_GEAR",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHAWL",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ"
+      ],
+      "disabledResearch": [],
+      "nextLab": [
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_LOOT_DISTRIBUTION"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUITMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_LOOT_DISTRIBUTION"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_TIGER_TOURS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_TIGER_TRANSPORT",
+              "STR_LOOT_DISTRIBUTION",
+              "STR_PIRATE_STYLE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_TIGER_TRANSPORT"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_THE_PHARMACIST"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_ANIMAL_TAMING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CUNNING",
+              "STR_DOGE_PROCUREMENT",
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_WAT_DO"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SKINNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MUTANT_ABILITIES"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MISSION_SEA_ADVENTURE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_EXPEDITIONS",
+              "STR_VIOLENCE",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_RECRUIT_PEASANTS"
+            ]
+          }
+        }
+      ],
+      "nextFree": [],
+      "normalizationComplete": false,
+      "actualGameCertified": false
+    },
+    {
+      "label": "회의 소집",
+      "root": "STR_WAT_DO",
+      "nodeId": 4637,
+      "stateHash": "4a417cd459e36ed78ccbce1f68b6d1461843d3540a715eabb41d208ce02e9dd8",
+      "labDepth": 15,
+      "actions": [
+        {
+          "type": "externalInputs",
+          "items": {},
+          "functions": [
+            "SHOP"
+          ],
+          "funds": 0,
+          "reason": "Observed campaign start: Inspect Machinery requires SHOP",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_DOGE_PROCUREMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_PROTECTIVE_GEAR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_FIRST_AID_KIT_SMALL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        }
+      ],
+      "path": [
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "choices": [
+              "CIV_ARMOR_LOKNAR_1"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_DOGE_PROCUREMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_PIRATE_LIFE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_PIRATE_STYLE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PROTECTIVE_GEAR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_WEIRDNESS",
+            "choices": [
+              "STR_LABORATORY"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MELEE_SUMMARY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BALLISTICS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CUNNING",
+            "choices": [
+              "STR_GROG_BARREL"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_FIRST_AID_KIT_SMALL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_INSPECT_MACHINERY",
+            "choices": [
+              "STR_WELL"
+            ],
+            "phase": "before-source"
+          }
+        }
+      ],
+      "completedResearch": [
+        "AUX_DOGE_BARK",
+        "AUX_DOGG_WEAPON",
+        "AUX_SMELL_SCANNER",
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BALLISTICS",
+        "STR_BALLISTICS_ZZZ",
+        "STR_CLOTHING_UC",
+        "STR_CUNNING",
+        "STR_DOGE_COLLAR",
+        "STR_DOGE_NAMED",
+        "STR_DOGE_PROCUREMENT",
+        "STR_DOGE_UNARMORED_UC",
+        "STR_DUST_MASK",
+        "STR_FIRST_AID_KIT",
+        "STR_FIRST_AID_KIT_SMALL",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_MELEE_SUMMARY",
+        "STR_PEASANTS_ZZZ",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_PROTECTIVE_GEAR",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHAWL",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL"
+      ],
+      "disabledResearch": [],
+      "nextLab": [],
+      "nextFree": [],
+      "normalizationComplete": false,
+      "actualGameCertified": false
+    },
+    {
+      "label": "지역 농부 고용",
+      "root": "STR_RECRUIT_PEASANTS",
+      "nodeId": 4578,
+      "stateHash": "73a860de6c3520e5ad5344c98b430c5c26286c5dc92e995580b38449647dc40f",
+      "labDepth": 18,
+      "actions": [
+        {
+          "type": "externalInputs",
+          "items": {},
+          "functions": [
+            "SHOP"
+          ],
+          "funds": 0,
+          "reason": "Observed campaign start: Inspect Machinery requires SHOP",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_DOGE_PROCUREMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_PROTECTIVE_GEAR"
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "research",
+          "id": "STR_FIRST_AID_KIT_SMALL"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_CONTACT_TIGER_TRANSPORT"
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPEDITIONS"
+        }
+      ],
+      "path": [
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "choices": [
+              "CIV_ARMOR_LOKNAR_1"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_DOGE_PROCUREMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_PIRATE_LIFE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_PIRATE_STYLE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PROTECTIVE_GEAR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MELEE_SUMMARY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CUNNING",
+            "choices": [
+              "STR_GROG_BARREL"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_WEIRDNESS",
+            "choices": [
+              "STR_LABORATORY"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CAMOUFLAGE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CAMOUFLAGE",
+            "research": "STR_CAMO_PAINT",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CAMOUFLAGE",
+            "choices": [
+              "STR_CAMO_PAINT"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BALLISTICS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_FIRST_AID_KIT_SMALL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_WAT_DO"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CONTACT_TIGER_TRANSPORT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_EXPEDITIONS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_TIGER_TRANSPORT",
+              "STR_RECRUIT_PEASANTS",
+              "STR_WAT_DO"
+            ]
+          }
+        }
+      ],
+      "completedResearch": [
+        "AUX_DOGE_BARK",
+        "AUX_DOGG_WEAPON",
+        "AUX_SMELL_SCANNER",
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BALLISTICS",
+        "STR_BALLISTICS_ZZZ",
+        "STR_CAMOUFLAGE",
+        "STR_CAMO_PAINT",
+        "STR_CLOTHING_UC",
+        "STR_CONTACT_TIGER_TRANSPORT",
+        "STR_CUNNING",
+        "STR_DOGE_COLLAR",
+        "STR_DOGE_NAMED",
+        "STR_DOGE_PROCUREMENT",
+        "STR_DOGE_UNARMORED_UC",
+        "STR_DUST_MASK",
+        "STR_EXPEDITION",
+        "STR_EXPEDITIONS",
+        "STR_EXPEDITION_RESEARCH",
+        "STR_EXPEDITION_RESEARCH_INCOMPLETE",
+        "STR_FIRST_AID_KIT",
+        "STR_FIRST_AID_KIT_SMALL",
+        "STR_GROG_BARREL",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_PEASANTS_ZZZ",
+        "STR_PEASANT_CAMO_UC",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_PROTECTIVE_GEAR",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHAWL",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ"
+      ],
+      "disabledResearch": [],
+      "nextLab": [
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_LOOT_DISTRIBUTION"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUITMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_LOOT_DISTRIBUTION"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_TIGER_TOURS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_TIGER_TRANSPORT",
+              "STR_LOOT_DISTRIBUTION",
+              "STR_PIRATE_STYLE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CADILLAC"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CONTACT_TIGER_TRANSPORT"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_THE_PHARMACIST"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_HARDWARE_SHOPPING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_GUN_SHOPPING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_ANIMAL_TAMING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CUNNING",
+              "STR_DOGE_PROCUREMENT",
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_WAT_DO"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SKINNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MUTANT_ABILITIES"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MISSION_SEA_ADVENTURE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_EXPEDITIONS",
+              "STR_VIOLENCE",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BOW_H"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_UBER_WHEAT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_RECRUIT_PEASANTS"
+            ]
+          }
+        }
+      ],
+      "nextFree": [],
+      "normalizationComplete": false,
+      "actualGameCertified": false
+    },
+    {
+      "label": "기계류 조사",
+      "root": "STR_INSPECT_MACHINERY",
+      "nodeId": 4639,
+      "stateHash": "e129a1318395d46d2466f437a4c1b8cf4249240179b61935a4866d60f9a9e8d5",
+      "labDepth": 26,
+      "actions": [
+        {
+          "type": "externalInputs",
+          "items": {},
+          "functions": [
+            "SHOP"
+          ],
+          "funds": 0,
+          "reason": "Observed campaign start: Inspect Machinery requires SHOP",
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "sourceResearchDelivery",
+          "index": 0,
+          "source": "STR_INSPECT_MACHINERY",
+          "item": "STR_CIGS",
+          "count": 1,
+          "assumption": true
+        },
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_DOGE_PROCUREMENT"
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_PROTECTIVE_GEAR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CAMOUFLAGE"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CAMOUFLAGE",
+          "research": "STR_CAMO_PAINT",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_MELEE_SUMMARY"
+        },
+        {
+          "type": "research",
+          "id": "STR_BASIC_INCENDIARIES"
+        },
+        {
+          "type": "research",
+          "id": "STR_BALLISTICS"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_FIRST_AID_KIT_SMALL"
+        },
+        {
+          "type": "missionResearch",
+          "research": "STR_LOC_RATLING_VILLAGE_DONE",
+          "deployment": "STR_LOC_RATLING_VILLAGE",
+          "script": "ratlingVillage",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_EXPLORE_TUNNELS"
+        },
+        {
+          "type": "research",
+          "id": "STR_LOOT_DISTRIBUTION"
+        },
+        {
+          "type": "research",
+          "id": "STR_NEPOTISM"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_NEPOTISM",
+          "research": "STR_TRAININGS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_RECRUITMENT"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_RECRUITMENT",
+          "research": "STR_DIVERGING_PATHS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+          "research": "STR_SLAVE_SOLDIERS",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_BONDING_CEREMONY"
+        },
+        {
+          "type": "research",
+          "id": "STR_SMALL_RADAR_SYSTEM"
+        },
+        {
+          "type": "research",
+          "id": "STR_COMMUNICATIONS"
+        },
+        {
+          "type": "research",
+          "id": "STR_SS_OPERATIONS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_SS_OPERATIONS",
+          "research": "STR_LOOTBOX_PREPPER",
+          "assumeOutcome": false
+        }
+      ],
+      "path": [
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_INSPECT_MACHINERY",
+            "choices": [
+              "STR_WELL"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "sourceResearchDelivery",
+            "index": 0,
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "assumption": true
+          },
+          "evidence": {
+            "kind": "DIRECT_LAB_SPAWNED_ITEM_TRANSFER",
+            "source": "STR_INSPECT_MACHINERY",
+            "item": "STR_CIGS",
+            "count": 1,
+            "transferHours": 1
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "choices": [
+              "CIV_ARMOR_LOKNAR_1"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_DOGE_PROCUREMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUIT_PEASANTS"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "evidence": {
+            "kind": "START_CHOICE",
+            "requires": []
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_PIRATE_LIFE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_PIRATE_STYLE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_PROTECTIVE_GEAR"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_WEIRDNESS",
+            "choices": [
+              "STR_LABORATORY"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CAMOUFLAGE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CAMOUFLAGE",
+            "research": "STR_CAMO_PAINT",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CAMOUFLAGE",
+            "choices": [
+              "STR_CAMO_PAINT"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_MELEE_SUMMARY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BASIC_INCENDIARIES"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_INSPECT_MACHINERY",
+              "STR_VIOLENCE"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BALLISTICS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_VIOLENCE",
+              "STR_WEIRDNESS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_KULTUR"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_CUNNING",
+            "choices": [
+              "STR_GROG_BARREL"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_FIRST_AID_KIT_SMALL"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_SURVIVAL"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "missionResearch",
+            "research": "STR_LOC_RATLING_VILLAGE_DONE",
+            "deployment": "STR_LOC_RATLING_VILLAGE",
+            "script": "ratlingVillage",
+            "assumeOutcome": true
+          },
+          "evidence": {
+            "kind": "MISSION_VICTORY_CONDITIONAL",
+            "source": "MISSION:STR_LOC_RATLING_VILLAGE",
+            "script": "ratlingVillage",
+            "requires": [],
+            "forbids": [],
+            "pending": [
+              "실행 확률 28%의 무작위 통과 필요"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_EXPLORE_TUNNELS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_INSPECT_MACHINERY"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_LOOT_DISTRIBUTION"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_WAT_DO"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_NEPOTISM"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_LOOT_DISTRIBUTION"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_NEPOTISM",
+            "research": "STR_TRAININGS",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_NEPOTISM",
+            "choices": [
+              "STR_TRAININGS"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_RECRUITMENT"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_JACKSTOWN_SCOUTING",
+              "STR_LOOT_DISTRIBUTION"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_RECRUITMENT",
+            "research": "STR_DIVERGING_PATHS",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_RECRUITMENT",
+            "choices": [
+              "STR_DIVERGING_PATHS"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_WE_NEED_MALE_TOUCH_PREQ"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_DIVERGING_PATHS"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+            "research": "STR_SLAVE_SOLDIERS",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_WE_NEED_MALE_TOUCH_PREQ",
+            "choices": [
+              "STR_SLAVE_SOLDIERS"
+            ],
+            "phase": "before-source"
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_BONDING_CEREMONY"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CUNNING",
+              "STR_SURVIVAL",
+              "STR_WE_NEED_MALE_TOUCH"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SMALL_RADAR_SYSTEM"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_INSPECT_MACHINERY"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_COMMUNICATIONS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_CUNNING",
+              "STR_SMALL_RADAR_SYSTEM"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "research",
+            "id": "STR_SS_OPERATIONS"
+          },
+          "evidence": {
+            "kind": "DEPENDENCIES",
+            "requires": [
+              "STR_WE_NEED_MALE_TOUCH"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_SS_OPERATIONS",
+            "research": "STR_LOOTBOX_PREPPER",
+            "assumeOutcome": false
+          },
+          "evidence": {
+            "kind": "PENDING_FREE",
+            "source": "STR_SS_OPERATIONS",
+            "choices": [
+              "STR_LOOTBOX_PREPPER"
+            ],
+            "phase": "before-source"
+          }
+        }
+      ],
+      "completedResearch": [
+        "AUX_DOGE_BARK",
+        "AUX_DOGG_WEAPON",
+        "AUX_SMELL_SCANNER",
+        "CIV_ARMOR_LOKNAR_1",
+        "STR_BALLISTICS",
+        "STR_BALLISTICS_ZZZ",
+        "STR_BASIC_INCENDIARIES",
+        "STR_BASIC_INCENDIARIES_ZZZ",
+        "STR_BONDING_CEREMONY",
+        "STR_CAMOUFLAGE",
+        "STR_CAMO_PAINT",
+        "STR_CEREMONY_DEP",
+        "STR_CLOTHING_UC",
+        "STR_COMMUNICATIONS",
+        "STR_CUNNING",
+        "STR_DIVERGING_PATHS",
+        "STR_DOGE_COLLAR",
+        "STR_DOGE_NAMED",
+        "STR_DOGE_PROCUREMENT",
+        "STR_DOGE_UNARMORED_UC",
+        "STR_DUST_MASK",
+        "STR_EXPLORE_TUNNELS",
+        "STR_FIRST_AID_KIT",
+        "STR_FIRST_AID_KIT_SMALL",
+        "STR_GENERAL_STORES_ARMORED",
+        "STR_GROG_BARREL",
+        "STR_INSPECT_MACHINERY",
+        "STR_JACKSTOWN_SCOUTING",
+        "STR_JACKSTOWN_ZZZ",
+        "STR_KNUCKLES_SPIKED",
+        "STR_KULTUR",
+        "STR_LABORATORY",
+        "STR_LAMIA_RECRUITMENT_PREQ",
+        "STR_LOC_RATLING_VILLAGE_DONE",
+        "STR_LOOTBOX_PREPPER",
+        "STR_LOOT_DISTRIBUTION",
+        "STR_MELEE_SUMMARY",
+        "STR_NEPOTISM",
+        "STR_PARTY_DEP",
+        "STR_PEASANTS_ZZZ",
+        "STR_PEASANT_CAMO_UC",
+        "STR_PIRATE_FLAG",
+        "STR_PIRATE_LIFE",
+        "STR_PIRATE_STYLE",
+        "STR_PROTECTIVE_GEAR",
+        "STR_RATMEN_ANGRY",
+        "STR_RECRUITMENT",
+        "STR_RECRUITMENT_DEP",
+        "STR_RECRUIT_PEASANTS",
+        "STR_SAILOR_UNIFORM",
+        "STR_SHAWL",
+        "STR_SLAVE_ARMOR_PIRATE_UC",
+        "STR_SLAVE_ARMOR_TAC_VEST_UC",
+        "STR_SLAVE_ARMOR_TUNIC_UC",
+        "STR_SLAVE_SOLDIERS",
+        "STR_SLAVE_SOLDIERS_ZZZ",
+        "STR_SMALL_RADAR_SYSTEM",
+        "STR_SS_OPERATIONS",
+        "STR_SURVIVAL",
+        "STR_SURVIVAL_ZZZ",
+        "STR_TAC_VEST_PEASANT_UC",
+        "STR_TRAININGS",
+        "STR_UNARMED_GAUNTLET",
+        "STR_UNARMED_WRESTLING",
+        "STR_VIOLENCE",
+        "STR_VIOLENCE_ZZZ",
+        "STR_WAT_DO",
+        "STR_WEIRDNESS",
+        "STR_WEIRDNESS_ZZZ",
+        "STR_WELL",
+        "STR_WE_NEED_MALE_TOUCH",
+        "STR_WE_NEED_MALE_TOUCH_PREQ",
+        "STR_WORLDLY_MORALITY"
+      ],
+      "disabledResearch": [
+        "STR_CAT_PATH",
+        "STR_CAT_PATH_PREQ",
+        "STR_GALS_ARE_SUPERIOR",
+        "STR_GALS_ARE_SUPERIOR_PREQ",
+        "STR_HYBRID_PATH",
+        "STR_HYBRID_PATH_PREQ",
+        "STR_NEKOMIMI_NETWORK",
+        "STR_PEASANT_REVOLUTION",
+        "STR_PEASANT_REVOLUTION_PREQ"
+      ],
+      "nextLab": [],
+      "nextFree": [],
+      "normalizationComplete": false,
+      "actualGameCertified": false
+    }
+  ]
+}

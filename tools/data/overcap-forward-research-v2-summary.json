@@ -1,0 +1,93 @@
+{
+  "schema": "ATLAS_FORWARD_CAMPAIGN_RESEARCH_V2",
+  "artifact": "tools/data/overcap-forward-research-v2.json.gz",
+  "artifactSha256": "d6acc3d4b6345365b45f1739fa5822ce007a431c414ea04f7cb9d3a03a104df7",
+  "inputs": {
+    "rulesSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
+    "supplySha256": "09f5b1e496e4b5354fdbb63f26050b4654318aa8132f02ec5a9137a7949cbb2d",
+    "engineFiles": {
+      "tools/atlas-overcap-forward-research-v2.mjs": "533dfbc273ae31b46115257fe2fa5ea149a63b93da47602652760400ecc0bc58",
+      "tools/atlas-overcap-forward-supply-v2.mjs": "bfd3344156f3c82b5f5062f76a9d2eacf6235602c4c2c95c25df85e702885bad",
+      "tools/build-overcap-forward-supply-catalog-v2.mjs": "9798cdbaa7b637e16a60faafb810dcf2fd3a05423d4bbc205c2bfc6d802d67ca",
+      "tools/atlas-overcap-rooted-early-research.mjs": "995671628f388f76d3473cd8fedfabd2824733f904299576d72420a94005bfc2",
+      "tools/origin-pair-exact-prefix-checkpoint.mjs": "a569fa2651f658c573417f60370349933aecd1e036fc87cf5dae91c18366a113",
+      "tools/population-research-career-core.mjs": "4a2adc75ddcf74974479c44e4bd22ec46320f97e1735d77e7c8478422b39e373",
+      "public/soldiers/modern/origin-witness.js": "d5b87f0d91d9f3b285f291187bdf1b5aff616180b0ddb5886df7ba33dcdc0af1",
+      "public/soldiers/modern/campaign-proof.js": "add07136ecb621d4ce2c085a60b0da73848e66f4144db1bf0e7486b740b383d7",
+      "public/soldiers/modern/event-chronology.js": "2af4c9d106f85ab0ecfa5726b1b887922715fd186581ce1edca065dec79e7d0f",
+      "public/soldiers/modern/auto-zero-cascade.js": "827f213c024e1580801469533920ba24d93244eb7d6025b0cd3e6222b6ea6ade",
+      "public/soldiers/modern/eligibility.js": "518d0f2b129d4fe431cc18b5499a5edad3fcc945eddab1277313568bdb697612",
+      "public/soldiers/modern/origin-campaign-context.js": "0cadb7a741d4000e36a87c2e04704dcd1e9633f313f567907bfc77a71d90cd71"
+    },
+    "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb"
+  },
+  "roots": {
+    "근처 마을 방문": "STR_JACKSTOWN_SCOUTING",
+    "회의 소집": "STR_WAT_DO",
+    "지역 농부 고용": "STR_RECRUIT_PEASANTS",
+    "기계류 조사": "STR_INSPECT_MACHINERY"
+  },
+  "budget": {
+    "maxExpanded": 285,
+    "maxNodes": 32000,
+    "maxMonth": 12
+  },
+  "nodes": 4640,
+  "edges": 10545,
+  "expanded": 285,
+  "openUnexpanded": 4355,
+  "openNoSupportedSuccessor": 0,
+  "distinctResearch": 132,
+  "byRoot": {
+    "STR_JACKSTOWN_SCOUTING": {
+      "states": 1031,
+      "expanded": 71,
+      "open": 960,
+      "maxLabDepth": 18,
+      "distinctResearch": 95
+    },
+    "STR_WAT_DO": {
+      "states": 928,
+      "expanded": 71,
+      "open": 857,
+      "maxLabDepth": 15,
+      "distinctResearch": 89
+    },
+    "STR_RECRUIT_PEASANTS": {
+      "states": 1027,
+      "expanded": 71,
+      "open": 956,
+      "maxLabDepth": 18,
+      "distinctResearch": 95
+    },
+    "STR_INSPECT_MACHINERY": {
+      "states": 1653,
+      "expanded": 71,
+      "open": 1582,
+      "maxLabDepth": 26,
+      "distinctResearch": 126
+    }
+  },
+  "byAction": {
+    "research": 1079,
+    "freeResearch": 96,
+    "sourceEventItems": 2781,
+    "eventResearch": 6081,
+    "missionResearch": 292,
+    "advanceMonth": 80,
+    "sourceResearchDelivery": 108,
+    "sourceBuildFacility": 28
+  },
+  "failed": 0,
+  "previous": {
+    "nodes": 1714,
+    "edges": 4007,
+    "expanded": 105
+  },
+  "unsupported": {
+    "SAMPLE_SOURCE_REQUIRED": 34346
+  },
+  "normalizationComplete": false,
+  "actualGameCertified": false,
+  "firstFailures": []
+}
