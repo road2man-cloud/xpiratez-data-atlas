@@ -1,0 +1,5 @@
+# R36HW Athletic V19 — adaptive N19 microrelief in V14 suit
+
+This is a continuous single-piece V14 athletic garment, not underwear or a second clothing layer. Based on V18, V19 subdivides only N19-relevant garment triangles *a second time*, propagating edge splits across neighboring faces and UV seams to avoid T-junctions. It then resamples N19 source geometry and vertex tonal residuals at the finer locations. Two spatial scales separate shallow N19 ridges and marks from broad anatomy/coverage so the inherited V14 ochre fabric retains its appearance. Max geometric relief is locally bounded (6 mm) and color modulation is limited to 5.5%; both softly fade without sharp boundary seams. V14 rig (63 joints), material 18, UVs, and all other body/face primitives remain intact; no donor mesh copied.
+
+Build: Node.js `source/build.cjs` with exact pinned V14 and N20 inputs. Output: `output/R36HW_F11_ATHLETIC_SUIT_V19_N19_ADAPTIVE.glb` and `reports/build.json`. Native S2 pose/render evaluation remains pending.
