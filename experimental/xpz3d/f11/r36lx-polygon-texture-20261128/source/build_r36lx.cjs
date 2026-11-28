@@ -55,7 +55,7 @@ function build(input,dir,opt={}){
  const field=loadResidual(),w=2048,h=2048;
  // Physical axis in this model: -Y anterior, +Z up, +/-X lateral
  const cfg={xMin:-.085,xMax:.085,zMin:.78,zMax:.94,frontMax:-.035,
-  edgeX:.022,edgeZ:.024,alpha:.31,normalGain:.075,...opt};
+  edgeX:.022,edgeZ:.024,alpha:.78,normalGain:.12,...opt};
  ok(cfg.xMin<cfg.xMax&&cfg.zMin<cfg.zMax&&cfg.alpha>=0&&cfg.alpha<=1,'invalid region');
  const col=Buffer.from(color.pix),nm=Buffer.from(normal.pix),hit=new Uint8Array(w*h);
  const covered=new Set(),influenced=new Set(),cells=new Map(),regionTri=[];
@@ -102,7 +102,7 @@ function build(input,dir,opt={}){
    triCells.add(key);cells.set(key,(cells.get(key)||0)+1);
    const residual=sample(field,u,v);
    const detail=clip(residual/45,-1,1);
-   const j=ix*4,delta=cfg.alpha*g*detail*14;
+   const j=ix*4,delta=cfg.alpha*g*detail*28;
    let deltaSum=0,nonzero=false;
    for(let ch=0;ch<3;ch++){
      const orig=col[j+ch],next=Math.round(clip(orig+delta*(ch===0?1:ch===1?.87:.73),0,255));
@@ -113,10 +113,24 @@ function build(input,dir,opt={}){
    sumColor+=deltaSum/3;maxColor=Math.max(maxColor,deltaSum/3);
    // Depth gradient from the same residual image, but very low amplitude.
    const du=.6/field.w,dv=.6/field.h;
-   const gradX=(sample(field,clip(u+du),v)-sample(field,clip(u-du),v))/80;
-   const gradY=(sample(field,u,clip(v+dv))-sample(field,u,clip(v-dv)))/80;
+   // Transfer the source-image gradient through EACH triangle's actual
+   // UV-to-bind-space Jacobian, rather than assuming every UV tile has
+   // the same orientation. Y in the PNG atlas points downward.
+   const gradU=(sample(field,clip(u+du),v)-sample(field,clip(u-du),v))/(2*du);
+   const gradV=(sample(field,u,clip(v+dv))-sample(field,u,clip(v-dv)))/(2*dv);
+   const daX=(uv[1][1]-uv[2][1])/den,dbX=(uv[2][1]-uv[0][1])/den;
+   const daY=(uv[2][0]-uv[1][0])/den,dbY=(uv[0][0]-uv[2][0])/den;
+   const dxX=(P[0][0]-P[2][0])*daX+(P[1][0]-P[2][0])*dbX;
+   const dxZ=(P[0][2]-P[2][2])*daX+(P[1][2]-P[2][2])*dbX;
+   const dyX=(P[0][0]-P[2][0])*daY+(P[1][0]-P[2][0])*dbY;
+   const dyZ=(P[0][2]-P[2][2])*daY+(P[1][2]-P[2][2])*dbY;
+   const gradTexX=gradU*dxX/(cfg.xMax-cfg.xMin)-gradV*dxZ/(cfg.zMax-cfg.zMin);
+   const gradTexY=gradU*dyX/(cfg.xMax-cfg.xMin)-gradV*dyZ/(cfg.zMax-cfg.zMin);
    const oldNx=(normal.pix[j]/127.5)-1,oldNy=(normal.pix[j+1]/127.5)-1;
-   let nx=oldNx-cfg.normalGain*g*gradX,ny=oldNy-cfg.normalGain*g*gradY;
+   // Source field has 80x104 texels; image-space gradients are strictly
+   // bounded so that isolated residual samples cannot flip surface normals.
+   let nx=oldNx-cfg.normalGain*g*clip(gradTexX,-.42,.42);
+   let ny=oldNy+cfg.normalGain*g*clip(gradTexY,-.42,.42);
    const len=Math.hypot(nx,ny);if(len>.94){nx*=.94/len;ny*=.94/len}
    const nz=Math.sqrt(Math.max(0,1-nx*nx-ny*ny));
    const nn=[Math.round((nx*.5+.5)*255),Math.round((ny*.5+.5)*255),Math.round((nz*.5+.5)*255)];
@@ -128,7 +142,6 @@ function build(input,dir,opt={}){
   }
   if(active)influenced.add(fi);
   for(const key of triCells){
-   const label=(cellX=>String(cellX))(key);
    covered.add(key);
   }
  }
@@ -154,6 +167,7 @@ function build(input,dir,opt={}){
   candidateRegionTriangles:regionTri.length,touchedTriangles:influenced.size,
   touchedTriangleIds:[...influenced].sort((a,b)=>a-b),coveragePixels:changedPixels,
   changedColorPixels,changedNormalPixels,meanAbsRGB8Delta:sumColor/changedPixels,
+  normalConversion:'per-triangle UV-to-bind-position Jacobian; Y-inverted texture coordinate',
   maxAbsRGB8Delta:maxColor,sourceCoordRange:{x:[minX,maxX],z:[minZ,maxZ]},
   pixelsPerSection:Object.fromEntries([...cells].sort((a,b)=>a[0]-b[0])),
   maps,visualQA:'not run',S2EngineQA:'not run',
