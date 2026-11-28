@@ -14,7 +14,7 @@ const prep=decode(stage+"vo2-full-prepared.json.gz"),manifest=read("tools/data/o
 assert.equal(key(prep),manifest.preparedHash);assert.equal(key(prep.plan),manifest.planHash);
 const ledger=decode(stage+"soldier-population-missing-origin-career.json.gz");
 assert.equal(key(ledger.graphs),prep.sourceGraphSha256);
-const files=fs.readdirSync(stage).filter(n=>/^vo2-final-(?:batch-\d+-\d+|(?:fast|next)-batch-[a-f0-9]+)\.json\.gz$/.test(n)).sort();
+const files=fs.readdirSync(stage).filter(n=>/^vo2-final-(?:batch-\d+-\d+|(?:fast|static|next)-batch-[a-f0-9]+)\.json\.gz$/.test(n)).sort();
 assert(files.length,"No completed batches");
 const witnesses={},seen=new Set(),sourceBatches=[],regressions=new Map(),rows=[];
 let sourceHashes=null;
@@ -27,6 +27,7 @@ for(const name of files){
  assert(indices.length&&indices.every(i=>Number.isSafeInteger(i)&&i>=0&&i<prep.plan.length));assert.equal(new Set(indices).size,indices.length);
  const expected=indices.map(i=>prep.plan[i]);assert.deepEqual(d.pairIds,expected.map(x=>x.id));assert(expected.length);
  if(name.startsWith("vo2-final-fast-batch-"))assert(Object.values(d.witnesses).every(v=>["KNOWN_CONTINUATION","UNRESOLVED_FINITE_MATERIAL"].includes(v.status)));
+ if(name.startsWith("vo2-final-static-batch-"))assert(Object.values(d.witnesses).every(v=>["KNOWN_CONTINUATION","UNRESOLVED_FINITE_MATERIAL","OPEN_RESEARCH_OR_GROWTH","OPEN_TRANSFORMATION"].includes(v.status)));
  for(const p of expected){assert(!seen.has(p.id),"Overlapping batch pair "+p.id);seen.add(p.id);}
  const refs=expected.flatMap(x=>x.routes);assert.deepEqual(Object.keys(d.witnesses).sort(),refs.slice().sort());
  if(sourceHashes)assert.deepEqual(d.sourceHashes,sourceHashes);else sourceHashes=d.sourceHashes;
