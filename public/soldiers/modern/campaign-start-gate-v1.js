@@ -1,6 +1,7 @@
 // Campaign-start gate. Legacy hypothetical witnesses remain unchanged.
 import {foundationWorld,applyOriginWitnessStep} from './origin-witness.js';
 import {resolveConditionalRoll} from './campaign-start-roll-v1.js';
+import {claimManufacturedOrigin} from './campaign-start-manufactured-origin-v1.js';
 import {researchStep,eventScriptVerdict} from './event-chronology.js';
 import {applyReachabilityAction} from './campaign-start-reachability-v1.js';
 import {applyFacilityAction} from './campaign-start-construction-v1.js';
@@ -72,6 +73,7 @@ function applyCampaignStartCore(input,step,data){
   const world=structuredClone(input);world.month=1;world.score=0;world.conditionalMonthScenario={month:1,rating:0};
   return {ok:true,world,assumed:true,notes:['conditional-month-one-rating-zero','monthly-rating-is-assumed-not-achieved','calendar-economy-and-intervening-events-not-simulated']};
  }
+ if(step.type==='conditionalManufacturedArrival')return claimManufacturedOrigin(input,step,data);
  if(CAREER_ACTIONS.has(step.type))return applyConditionalCareerAction(input,step,data);
  if(step.type==='conditionalTransformRoll'){
   try{
@@ -112,7 +114,9 @@ function applyCampaignStartCore(input,step,data){
   try{
    const r=data.campaignAssets?.deterministicManufacture?.[step.recipe];
    if(!r||data.campaignAssets.sourceFingerprint!==input.sourceFingerprint)throw Error('manufacture-bundle-source-mismatch');
-   if(step.count!==1||input.forwardManufactureCounts?.[step.recipe])throw Error('bounded-one-batch-per-recipe');
+   const used=input.forwardManufactureCounts?.[step.recipe]||0;
+   const cap=data.campaignAssets.repeatManufactureLimits?.[step.recipe]??1;
+   if(step.count!==1||!Number.isSafeInteger(used)||used<0||!Number.isSafeInteger(cap)||cap<1||used>=cap||(step.batchOrdinal??1)!==used+1)throw Error(cap===1?'bounded-one-batch-per-recipe':'bounded-manufacture-batch-limit');
    if(!r.requires.every(k=>input.researched.has(k)&&!input.disabled.has(k))||!r.functions.every(k=>input.baseFunctions.has(k)))throw Error('manufacture-bundle-prerequisite');
    if(!Number.isSafeInteger(r.cost)||r.cost<0||(step.financeMode!=='unlimited'&&input.funds<r.cost))throw Error('manufacture-bundle-funds');
    if(!Number.isSafeInteger(r.time)||r.time<0||!Number.isSafeInteger(r.space)||r.space<0)throw Error('manufacture-bundle-work-rule');
@@ -129,13 +133,13 @@ function applyCampaignStartCore(input,step,data){
     const limit=data.campaignAssets.forwardRecruitmentLimit;
     if(!limit)throw Error('recruitment-quarters-unresolved');
     const hires=w.forwardRecruitments??=[];
-    if(limit.initialPersonnel+hires.length>=limit.initialCapacity)throw Error('recruitment-quarters-full');
+    if(limit.initialPersonnel+w.soldiers.length+hires.filter(h=>h.status==='conditional-transfer-not-simulated').length>=limit.initialCapacity)throw Error('recruitment-quarters-full');
     hires.push({recipe:step.recipe,profile:r.recruitment.profile,soldierType:r.recruitment.soldierType,status:'conditional-transfer-not-simulated'});
    }
    if(step.financeMode!=='unlimited')w.funds-=r.cost;
-   (w.forwardManufactureCounts??={})[step.recipe]=1;
+   (w.forwardManufactureCounts??={})[step.recipe]=used+1;
    w.forwardManufactureHours=(w.forwardManufactureHours||0)+r.time;
-   return {ok:true,world:w,assumed:true,notes:['deterministic-manufacture:'+step.recipe,'source-work-hours:'+r.time,'engineer-space-and-calendar-not-native-certified','one-batch-bound-not-a-game-limit']};
+   return {ok:true,world:w,assumed:true,notes:['deterministic-manufacture:'+step.recipe,'source-work-hours:'+r.time,'engineer-space-and-calendar-not-native-certified',...(cap===1?['one-batch-bound-not-a-game-limit']:['bounded-repeat-batch:'+(used+1)+'/'+cap,'batch-bound-not-a-game-limit'])]};
   }catch(e){return {ok:false,world:input,reason:e.message};}
  }
  if(['buildFacility','finishFacility'].includes(step.type)){

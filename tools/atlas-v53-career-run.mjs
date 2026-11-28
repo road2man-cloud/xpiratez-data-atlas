@@ -139,7 +139,8 @@ if(scenarioCountry){
  Object.keys(s.eventWeights||{}).length!==1||!equal(s.eventWeights[0],{[eventId]:100}))throw Error('start-country-reward-source-mismatch:'+scenarioCountry);
 }
 const deterministicManufacture={};
-const recruitmentManufactureIds=new Set(['STR_SPY_DAMSEL_RECRUITMENT','STR_HYBRID_OF_TWILIGHT_RECRUITMENT']);
+const {HYBRID_RECIPES,configureHybridRecipes}=await import('./atlas-v64-hybrid-recipes.mjs');
+const recruitmentManufactureIds=new Set(['STR_SPY_DAMSEL_RECRUITMENT','STR_HYBRID_OF_TWILIGHT_RECRUITMENT',...(args.manufacturedOrigins==='1'?HYBRID_RECIPES:[])]);
 if(args.forwardManufacture==='1'){
  const allowed=new Set(['name','type','category','requires','requiresBaseFunc','space','time','cost','requiredItems','producedItems','listOrder']);
  for(const [id,r] of Object.entries(manufacture)){
@@ -165,6 +166,7 @@ if(args.forwardManufacture==='1'){
  }
 }
 d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents,deterministicManufacture};
+if(args.manufacturedOrigins==='1')configureHybridRecipes(d,manufacture,files);
 if(args.defaultRankEvidence==='1'){
  const archiveSha256='4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb';
  const archive=fs.readFileSync(path.join(repo,'tools/headless-simulator/native/oxce-source.tar.gz'));
@@ -239,7 +241,7 @@ if(args.careerOut){
  let result;
  if(args.growthSearch==='1'){
   const {produceCareerGrowthSearch}=await import('./atlas-v59-career-growth-search.mjs');
-  result=produceCareerGrowthSearch({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256,profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??5000),financeMode:args.financeMode||'unlimited',conditionalPromotion:args.conditionalPromotion==='1',rollBand:args.rollBand??null});
+  result=produceCareerGrowthSearch({data:d,snapshot,graph,graphFile:path.basename(args.graph),graphSha256,profileIds:args.profiles?.split(','),targetStates:args.states?.split(',').map(Number),maxTrainings:Number(args.maxTrainings??4),maxAttempts:Number(args.maxAttempts??5000),financeMode:args.financeMode||'unlimited',conditionalPromotion:args.conditionalPromotion==='1',rollBand:args.rollBand??null,manufacturedOrigins:args.manufacturedOrigins==='1'});
  }else if(args.growthSeed){
   const {produceCareerGrowth}=await import('./atlas-v58-career-growth.mjs');
   const seedBytes=fs.readFileSync(args.growthSeed);

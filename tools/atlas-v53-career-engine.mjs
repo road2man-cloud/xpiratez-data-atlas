@@ -14,7 +14,7 @@ function apply(w,a,data,{funded=false}={}){
  if(!r.ok)throw Error(r.reason);
  return r;
 }
-export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min',financeMode='unlimited',conditionalPromotion=false,growthSlots=[],prefixCache=null,rollBand=null}){
+export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min',financeMode='unlimited',conditionalPromotion=false,growthSlots=[],prefixCache=null,rollBand=null,manufacturedOrigins=false}){
  if(graph.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||graph.sourceMetadataSha256!==snapshot.sourceFingerprint||graph.difficulty!==snapshot.difficulty||JSON.stringify(graph.regions)!==JSON.stringify(snapshot.regions??null)||JSON.stringify(graph.countries)!==JSON.stringify(snapshot.countries??null))throw Error('graph-source-mismatch');
  if(!['unlimited','funded'].includes(financeMode))throw Error('invalid-finance-mode');
  const funded=financeMode==='funded';
@@ -24,7 +24,9 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
  if(!Array.isArray(growthSlots)||growthSlots.some((n,i)=>!Number.isSafeInteger(n)||n<0||n>trainingIds.length||(i>0&&n<=growthSlots[i-1])))throw Error('invalid-growth-slots');
  if(rollBand!==null&&!['min','max'].includes(rollBand))throw Error('invalid-roll-band');
  const trainings=trainingIds.map(id=>data.transformations.find(x=>x.id===id));
- if(!profile||profile.sourceType!=='direct'||trainings.some(t=>!t))throw Error('unsupported-profile-or-training');
+ const manufactured=profile?.sourceType==='manufacture'&&manufacturedOrigins&&data.campaignAssets?.manufacturedCareerOrigins?.[profileId];
+ if(!profile||(!manufactured&&profile.sourceType!=='direct')||trainings.some(t=>!t))throw Error('unsupported-profile-or-training');
+ if(manufactured&&funded)throw Error('manufactured-career-funded-not-modeled');
  const costs=[profile.cost,...trainings.map(t=>t.cost)];
  if(costs.some(n=>!Number.isSafeInteger(n)||n<0)||!Number.isSafeInteger(costs.reduce((a,b)=>a+b,0)))throw Error('cost-unresolved');
  const totalCost=costs.reduce((a,b)=>a+b,0);
@@ -76,10 +78,37 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
  }
  if(funded&&world.funds<totalCost)throw Error('funded-career-budget-unresolved');
  const cap=data.campaignAssets?.forwardRecruitmentLimit;
- if(!cap||cap.initialCapacity<=cap.initialPersonnel+world.soldiers.length+(world.forwardRecruitmentOrders||[]).length)throw Error('initial-quarters-unresolved-or-full');
+ const pendingOrders=(world.forwardRecruitments||[]).filter(r=>r.status==='conditional-transfer-not-simulated').length;
+ if(!cap||cap.initialCapacity<=cap.initialPersonnel+world.soldiers.length+pendingOrders)throw Error('initial-quarters-unresolved-or-full');
+ let acquisition=null;
  const fundsBeforeRecruit=world.funds;
- step({type:'recruit',profile:profileId,soldier:'origin',band:'min'},{funded});
- if(funded&&world.funds!==fundsBeforeRecruit-profile.cost)throw Error('recruitment-cost-not-debited');
+ if(manufactured){
+  const recipe=manufactured.recipe,r=data.campaignAssets.deterministicManufacture[recipe];
+  if(!r||world.forwardManufactureCounts?.[recipe])throw Error('manufactured-origin-order-already-exists');
+  const start=trace.length,stockBefore={...world.items},hoursBefore=world.forwardManufactureHours||0;
+  let supplyListCost=0;
+  if(recipe==='STR_HYBRID_LONER_RECRUITMENT'){
+   while((world.items.STR_MOONSHINE||0)<r.materials.STR_MOONSHINE){
+    const ordinal=(world.forwardManufactureCounts?.STR_MOONSHINE_XXX||0)+1;
+    step({type:'manufactureBundle',recipe:'STR_MOONSHINE_XXX',count:1,...(ordinal===1?{}:{batchOrdinal:ordinal}),financeMode:'unlimited'});
+   }
+  }else if(recipe==='STR_HYBRID_HIVER_RECRUITMENT'){
+   const missing=r.materials.STR_SECTOWEED-(world.items.STR_SECTOWEED||0);
+   if(missing>0){
+    const price=data.campaignAssets.items.STR_SECTOWEED?.costBuy;
+    if(!Number.isSafeInteger(price)||price<=0||!Number.isSafeInteger(price*missing))throw Error('manufactured-supply-price-unresolved');
+    step({type:'acquireFundedPurchase',item:'STR_SECTOWEED',count:missing,financeMode:'unlimited'});
+    supplyListCost=price*missing;
+   }
+  }else throw Error('manufactured-supply-recipe-unsupported');
+  step({type:'manufactureBundle',recipe,count:1,financeMode:'unlimited'});
+  step({type:'conditionalManufacturedArrival',profile:profileId,soldier:'origin',band:'min',transferHours:manufactured.transferHours,assumption:true});
+  const itemDelta=Object.fromEntries([...new Set([...Object.keys(stockBefore),...Object.keys(world.items)])].sort().map(k=>[k,(world.items[k]||0)-(stockBefore[k]||0)]).filter(([,v])=>v!==0));
+  acquisition={kind:'conditional-manufactured-origin',recipe,sourceSha256:manufactured.sourceSha256,traceStart:start,traceEnd:trace.length,recipeCost:r.cost,supplyListCost,materials:r.materials,outputs:r.outputs,itemDelta,manufactureHours:(world.forwardManufactureHours||0)-hoursBefore,transferHours:manufactured.transferHours};
+ }else{
+  step({type:'recruit',profile:profileId,soldier:'origin',band:'min'},{funded});
+  if(funded&&world.funds!==fundsBeforeRecruit-profile.cost)throw Error('recruitment-cost-not-debited');
+ }
  const member=()=>world.soldiers.find(s=>s.id==='origin');
  const before=careerStatVectors(member(),data),trainingResults=[],growthResults=[];
  const growAt=slot=>{
@@ -110,5 +139,5 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
  growAt(trainings.length);
  const after=careerStatVectors(member(),data);
  const delta=Object.fromEntries(Object.keys(after.stats).map(k=>[k,after.stats[k]-before.stats[k]]));
- return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,growthSlots:[...growthSlots],growthResults,body:member().state.soldierType,finalRank:member().state.rank,conditionalPromotion,rollBand,conditionalRolls:member().conditionalRolls||[],birthBand,prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,financeMode,totalCost,finalFunds:funded?world.funds:null,history:canon(member().state.history),status:funded?'conditional-funded-career-model':'conditional-unlimited-finance-career-model',gameCertified:false,globalMaximum:false,limitations:[funded?'initial funding model zero; event outcome and scheduling conditional':'funds excluded for career actions; historical graph prefix replay unchanged','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification',...(conditionalPromotion?['promotion achievements and timing are conditional, not native verified']:[]),...(growthSlots.length?['selected battle growth checkpoints assume reachable raw caps; actual opportunities, RNG and duration not simulated']:[]),...(member().conditionalRolls?.length?['joint transformation random endpoints are explicit conditional scenarios, not verified native RNG outcomes']:[])]};
+ return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,growthSlots:[...growthSlots],growthResults,body:member().state.soldierType,finalRank:member().state.rank,conditionalPromotion,rollBand,conditionalRolls:member().conditionalRolls||[],birthBand,...(acquisition?{acquisition}:{}),prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,financeMode,totalCost:totalCost+(acquisition?.supplyListCost||0),finalFunds:funded?world.funds:null,history:canon(member().state.history),status:funded?'conditional-funded-career-model':'conditional-unlimited-finance-career-model',gameCertified:false,globalMaximum:false,limitations:[funded?'initial funding model zero; event outcome and scheduling conditional':'funds excluded for career actions; historical graph prefix replay unchanged','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification',...(acquisition?['manufactured origin: recipe materials and outputs applied once; personnel arrival conditional; list-price supply cost excludes price modifiers']:[]),...(conditionalPromotion?['promotion achievements and timing are conditional, not native verified']:[]),...(growthSlots.length?['selected battle growth checkpoints assume reachable raw caps; actual opportunities, RNG and duration not simulated']:[]),...(member().conditionalRolls?.length?['joint transformation random endpoints are explicit conditional scenarios, not verified native RNG outcomes']:[])]};
 }
