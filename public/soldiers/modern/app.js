@@ -1,5 +1,6 @@
 // Read-only, source-first Soldier DB. Local save comparison never modifies a save.
 import {loadRuntime} from '../../db-runtime.js';
+import {mountCareerLedger} from './forward-career-ledger.js?v=40';
 import {mountRouteTable} from '../../branch-soldier-atlas-career.js?v=111-overcap-successors';
 import {loadExplorationRows,statKeys,exactCareerUrl,branchUrl,completionSummaryText} from '../../branch-soldier-atlas-career-core.js?v=111-overcap-successors';
 import {bodyCareerSummary} from '../../branch-soldier-atlas-table-core.js?v=49-economy';
@@ -1021,6 +1022,8 @@ function unresolvedChronologyHtml(profileId){
 }
 
 function showBirthTech(profile){
+  const forwardHost=$('#originDetails [data-forward-career-ledger]');
+  if(forwardHost&&profile)mountCareerLedger(forwardHost,{kind:'profile',id:profile.id,rule:profile,source:DATA.meta.source.metadataSha256,name});
   const box=$('#originDetails .origin-tree-result');
   if(!box||!profile)return;
   activeBirthViewer?.dispose();
@@ -1194,7 +1197,7 @@ async function openOrigin(id,candidateId=null,{sharedTerminal=false,originCapRou
   activeBirthViewer?.dispose();activeBirthViewer=null;
   const record=REPORT.records.find(r=>r.profileId===id);if(!record)return;
   const profile=DATA.profiles.find(p=>p.id===id);
-  const birthPaths='<section class="origin-tree-action"><strong>이 병사는 어떻게 얻나요?</strong><button type="button" data-expand-origin-tree="'+esc(profile.id)+'" aria-expanded="true">테크뷰어 접기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
+  const birthPaths='<section class="scope-note" data-forward-career-ledger></section><section class="origin-tree-action"><strong>기존 획득 조건 참조 (정방향 인증 아님)</strong><button type="button" data-expand-origin-tree="'+esc(profile.id)+'" aria-expanded="true">테크뷰어 접기</button><div class="origin-tree-result" data-origin-tree-result="'+esc(profile.id)+'"></div></section>'+
     '<details class="origin-source-expansion"><summary>원본 출생·공급 기록 전체 보기 (기술 자료)</summary>'+
     '<p class="fine">이곳에는 연구 ID, 공급 스크립트, 다른 출생처와의 상세 연결을 원본 단위로 보존합니다.</p>'+
     renderAcquisitionPaths(profile,DATA,{esc,fmt,name,node})+'</details>';
@@ -1316,7 +1319,8 @@ function showResearch(id){
 function showTraining(id){
   const t=DATA.transformations.find(t=>t.id===id);if(!t)return;
   $('#researchDetail').innerHTML='<p class="eyebrow">병종 DB · 훈련 원본 근거</p><h2>'+esc(t.koName)+'</h2><p>'+esc(id)+'</p><h3>무조건 필요</h3><p>'+t.requires.map(node).join(' ')+'</p><h3>필수 이전 훈련</h3><p>'+t.requiredPreviousTransformations.map(esc).join(' · ')+'</p><h3>금지 이전 훈련</h3><p>'+t.forbiddenPreviousTransformations.map(esc).join(' · ')+'</p><p>이 정보는 병종 경로의 근거입니다. 별도 훈련 조합기나 저장 파일 입력 화면은 없습니다.</p><h3>직접 변화 / 영구 특성</h3><div class="stat-grid">'+DISPLAY_STATS.map(k=>'<div><small>'+esc(DATA.statLabels[k])+'</small><strong>'+fmt(t.flatOverallStatChange?.[k])+' / '+fmt(t.traitStats?.[k])+'</strong></div>').join('')+'</div>';
-  mountAtlasForwardEvidence($('#researchDetail'),t.requires,'연구 공동 도달만 판정합니다. 병종·이전 훈련·능력치·재료 등 시술 조건은 별도입니다.');
+  const forwardHost=document.createElement('section');forwardHost.className='scope-note';$('#researchDetail').append(forwardHost);
+  mountCareerLedger(forwardHost,{kind:'training',id:t.id,rule:t,source:DATA.meta.source.metadataSha256,name});
   if(!$('#researchDialog').open)$('#researchDialog').showModal();
 }
 async function init(){try{
