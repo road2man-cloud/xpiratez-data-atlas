@@ -13,11 +13,15 @@ function apply(w,a,data,{funded=false}={}){
  if(!r.ok)throw Error(r.reason);
  return r;
 }
-export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId}){
+export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,targetState,profileId,trainingId,trainingIds=trainingId?[trainingId]:[],birthBand='min'}){
  if(graph.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||graph.sourceMetadataSha256!==snapshot.sourceFingerprint||graph.difficulty!==snapshot.difficulty||JSON.stringify(graph.regions)!==JSON.stringify(snapshot.regions??null)||JSON.stringify(graph.countries)!==JSON.stringify(snapshot.countries??null))throw Error('graph-source-mismatch');
- const profile=data.profiles.find(x=>x.id===profileId),training=data.transformations.find(x=>x.id===trainingId);
- if(!profile||profile.sourceType!=='direct'||!training||!training.allowedSoldierTypes.includes(profile.soldierType))throw Error('unsupported-profile-or-training');
- if(!Number.isSafeInteger(profile.cost)||profile.cost<0||!Number.isSafeInteger(training.cost)||training.cost<0)throw Error('cost-unresolved');
+ const profile=data.profiles.find(x=>x.id===profileId);
+ if(birthBand!=='min'||!Array.isArray(trainingIds)||!trainingIds.length||trainingIds.some(k=>typeof k!=='string'))throw Error('unsupported-birth-or-training-sequence');
+ const trainings=trainingIds.map(id=>data.transformations.find(x=>x.id===id));
+ if(!profile||profile.sourceType!=='direct'||trainings.some(t=>!t))throw Error('unsupported-profile-or-training');
+ const costs=[profile.cost,...trainings.map(t=>t.cost)];
+ if(costs.some(n=>!Number.isSafeInteger(n)||n<0)||!Number.isSafeInteger(costs.reduce((a,b)=>a+b,0)))throw Error('cost-unresolved');
+ const totalCost=costs.reduce((a,b)=>a+b,0);
  const byId=new Map();
  for(const e of graph.edges)if(e.from<e.to&&!byId.has(e.to))byId.set(e.to,e);
  let v=targetState,chain=[];
@@ -43,31 +47,38 @@ export function produceForwardCareer({data,snapshot,graph,graphFile,graphSha256,
    step({type:'freeResearch',source:p.source,research:choices[0],assumeOutcome:!p.sequential&&choices.length>1});
   }
  }
- if(!training.requires.every(k=>active(world,k)))throw Error('training-research-missing');
+ if(trainings.some(t=>!t.requires.every(k=>active(world,k))))throw Error('training-research-missing');
  // The initial funding in the bounded model is zero. Use only a legal indexed
  // fixed event from the same state; reject failed trigger tests transactionally.
- if(world.funds<profile.cost+training.cost){
+ if(world.funds<totalCost){
   const routes=Object.values(data.campaignAssets?.fixedItemEvents||{}).flat().filter(r=>r.funds>0).sort((a,b)=>b.funds-a.funds);
   const seen=new Set();
   for(const route of routes){
    const key=route.event+'|'+route.script.script;if(seen.has(key))continue;seen.add(key);
    const item=Object.keys(route.items).sort()[0];
    const a={type:'acquireEventItems',event:route.event,script:route.script.script,item,count:route.items[item],assumeOutcome:true};
-   try{step(a);if(world.funds>=profile.cost+training.cost)break;}catch(e){blocked.push({action:a,reason:e.message});}
+   try{step(a);if(world.funds>=totalCost)break;}catch(e){blocked.push({action:a,reason:e.message});}
   }
  }
- if(world.funds<profile.cost+training.cost)throw Error('funded-career-budget-unresolved');
+ if(world.funds<totalCost)throw Error('funded-career-budget-unresolved');
  const cap=data.campaignAssets?.forwardRecruitmentLimit;
  if(!cap||cap.initialCapacity<=cap.initialPersonnel+world.soldiers.length+(world.forwardRecruitmentOrders||[]).length)throw Error('initial-quarters-unresolved-or-full');
  const fundsBeforeRecruit=world.funds;
  step({type:'recruit',profile:profileId,soldier:'origin',band:'min'},{funded:true});
  if(world.funds!==fundsBeforeRecruit-profile.cost)throw Error('recruitment-cost-not-debited');
  const member=()=>world.soldiers.find(s=>s.id==='origin');
- const before=careerStatVectors(member(),data),fundsBeforeTraining=world.funds;
- step({type:'transform',transform:trainingId,soldier:'origin'},{funded:true});
- if(world.funds!==fundsBeforeTraining-training.cost)throw Error('training-cost-not-debited');
+ const before=careerStatVectors(member(),data),trainingResults=[];
+ for(const training of trainings){
+  if(!training.allowedSoldierTypes.includes(member().state.soldierType))throw Error('training-body-not-allowed:'+training.id);
+  if(!training.requires.every(k=>active(world,k)))throw Error('training-research-missing:'+training.id);
+  const beforeStep=careerStatVectors(member(),data),fundsBeforeTraining=world.funds;
+  step({type:'transform',transform:training.id,soldier:'origin'},{funded:true});
+  if(world.funds!==fundsBeforeTraining-training.cost)throw Error('training-cost-not-debited:'+training.id);
+  if(!member().state.history.has(training.id))throw Error('training-history-missing:'+training.id);
+  const afterStep=careerStatVectors(member(),data);
+  trainingResults.push({id:training.id,before:beforeStep,after:afterStep,cost:training.cost,recoveryTime:training.recoveryTime??null,fundsAfter:world.funds});
+ }
  const after=careerStatVectors(member(),data);
- if(!member().state.history.has(trainingId))throw Error('training-history-missing');
  const delta=Object.fromEntries(Object.keys(after.stats).map(k=>[k,after.stats[k]-before.stats[k]]));
- return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId,body:member().state.soldierType,birthBand:'min',prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,finalFunds:world.funds,history:canon(member().state.history),status:'conditional-funded-career-model',gameCertified:false,globalMaximum:false,limitations:['initial funding model zero; event outcome and scheduling conditional','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification']};
+ return {schema:'ATLAS_FORWARD_CAREER_REPLAY_V1',sourceMetadataSha256:snapshot.sourceFingerprint,graphFile,graphSha256,targetState,scenario:{difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null},profileId,trainingId:trainingIds.length===1?trainingIds[0]:null,trainingIds:[...trainingIds],trainingResults,body:member().state.soldierType,birthBand,prefixLength,trace,blocked,finalStateHash:digest(world),before,after,delta,finalFunds:world.funds,history:canon(member().state.history),status:'conditional-funded-career-model',gameCertified:false,globalMaximum:false,limitations:['initial funding model zero; event outcome and scheduling conditional','birth minimum vector, not sampled native RNG','transfer and recovery calendar not advanced; salaries and upkeep not modeled','no native engine replay or complete career certification']};
 }
