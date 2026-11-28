@@ -1,0 +1,27 @@
+{
+  "name": "V11_NCENTER_CONTINUOUS",
+  "sourceV11GitBlob": "dc0579cd8691234a06daadbd2593d1dd9166e514",
+  "V11SHA256": "67e1963969eeafd006812f5b3f5bccc921913d5bf25f42379bfbb5bc83beb0e4",
+  "N21SHA256": "b91082912fc1e5554b48f7db1cd2ecd777c9366f63bc25dbbd2a5251a7562229",
+  "outputSHA256": "9ca163de357c8d838604e94afd81bf7e1620eb9d7ab33b254a432b2e43e9db8d",
+  "outputBytes": 431788,
+  "triangles": 2100,
+  "rigJoints": 63,
+  "bodySource": "V11 compact",
+  "NSeriesBodyCopied": false,
+  "centerPrimitive": "N21 3 reference field only",
+  "centerMatchedVertices": 24,
+  "displacedVertices": 24,
+  "protectedUnchangedVertices": 682,
+  "guardRejectedVertices": 0,
+  "maxDisplacementMeters": 0.010000000000000002,
+  "meanDisplacementMeters": 0.003115191931205258,
+  "topologyCut": false,
+  "openPatchCreated": false,
+  "originalV11BodyIndicesExactlyPreserved": true,
+  "limitations": [
+    "V11 garment-derived silhouette not a complete anatomical retopology",
+    "N center relief sampled to existing V11 vertices; limited by local mesh resolution",
+    "S2 renderer and posed anatomy not verified"
+  ]
+}
