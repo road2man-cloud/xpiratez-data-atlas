@@ -125,8 +125,25 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
       facilityStack.add(f);
       let solved=null;
       try{
-        for(const [id,r] of Object.entries(facilityRules(data))){
-          if(!arr(r.provideBaseFunc).includes(f)||arr(r.requiresBaseFunc).includes(f)||arr(r.buildOverFacilities).length)continue;
+        // Search cheaper and already-unlocked providers before late-game ones.
+        // Source iteration order previously exhausted the bounded search on
+        // e.g. ONSEN before considering an early MESS_HALL or MASH.
+        const providerCost=([id,r])=>{
+          const missing=arr(r.requires).filter(k=>!active(n.world,k));
+          const directCycle=missing.some(k=>arr(rules[k]?.requiresBaseFunc).includes(f));
+          if(directCycle||missing.some(k=>forbidden.has(k)||n.world.disabled.has(k)))return Infinity;
+          const mats=facilityMaterials(r);
+          const missingItems=Object.entries(mats).reduce((s,[k,v])=>s+Math.max(0,v-(n.world.items[k]||0)),0);
+          return missing.reduce((s,k)=>s+(distance.get(k)??1e8),0)
+            +arr(r.requiresBaseFunc).filter(k=>!n.world.baseFunctions.has(k)).length*30
+            +missingItems*3+Number(r.buildTime||0)/10;
+        };
+        const providers=Object.entries(facilityRules(data)).filter(([id,r])=>
+          arr(r.provideBaseFunc).includes(f)&&!arr(r.requiresBaseFunc).includes(f)&&!arr(r.buildOverFacilities).length)
+          .map(entry=>({entry,cost:providerCost(entry)}))
+          .filter(x=>Number.isFinite(x.cost))
+          .sort((a,b)=>a.cost-b.cost||a.entry[0].localeCompare(b.entry[0],'en'));
+        for(const {entry:[id,r]} of providers){
           if(++budget.attempts>maxAttempts)break;
           let trial=clone(n);
           try{
