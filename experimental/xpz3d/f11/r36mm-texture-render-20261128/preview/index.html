@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R36MM · 실제 GLB 텍스처 렌더 비교</title><style>
+:root{color-scheme:dark;font-family:system-ui,'Malgun Gothic',sans-serif;background:#111821;color:#ebeff4}
+*{box-sizing:border-box}body{margin:0}header{position:sticky;top:0;z-index:5;background:#182430;padding:14px 24px;border-bottom:1px solid #44505f}
+h1{font-size:22px;margin:0 0 5px}p{margin:5px 0;color:#b7c6d2;line-height:1.55}
+.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:14px}
+label{display:flex;align-items:center;gap:8px}select{background:#2c4051;color:white;border:1px solid #526879;border-radius:7px;padding:8px 12px;font-size:15px}
+main{max-width:1320px;padding:24px;margin:auto}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+figure{margin:0;background:#1d2a36;border:1px solid #435568;border-radius:9px;overflow:hidden}
+figure img{display:block;width:100%;height:auto;aspect-ratio:900/1120;object-fit:contain}
+figcaption{padding:12px 15px;font-weight:600}
+details{margin-top:16px;color:#b7c6d2}a{color:#6edce6}.note{font-size:13px}
+@media(max-width:780px){main{padding:12px}.grid{grid-template-columns:1fr}header{position:static}}
+</style></head><body>
+<header><h1>R36MM · 실제 GLB 텍스처 렌더</h1>
+<p>R36MK 2,100삼각형 · 방향광·앰비언트 S2 유사 조명 · 2048 컬러/노멀 이미지 샘플링 · 네이티브 S2 엔진 아님</p>
+<div class="controls"><label>모델 <select id="variant"><option>ART_DENSE</option><option>ART_GUARDED</option><option>SUBTLE_DENSE</option><option>SUBTLE_GUARDED</option></select></label>
+<label>시점 <select id="angle"><option value="FRONT">정면</option><option value="OBLIQUE">사선</option><option value="SIDE">측면</option></select></label></div></header>
+<main><div class="grid" id="grid"></div>
+<details><summary>기술적 범위와 주의 사항</summary>
+<p>이미지는 R36MK GLB의 실제 POSITION/NORMAL/UV/소재 텍스처 데이터를 기반으로 Node.js CPU에서 생성되었습니다. 원본 glTF의 베이스 컬러 및 노멀 텍스처를 실제로 읽지만 S2 게임의 정확한 GPU 파이프라인, 원래 게임의 조명·그림자·카메라·스키닝 애니메이션은 재현하지 않습니다. CLAY는 미세 텍스처를 제외한 폴리곤 형상만 비교하기 위한 도구입니다.</p>
+</details><p class="note"><a href="../source/render_r36mm.cjs">렌더링 코드</a> · <a id="report" href="../output/ART_DENSE/R36MM_RENDER.report.json">정량 보고서</a></p>
+</main>
+<script>
+const root='../output/';
+const panels=[['CLAY','기하(면법선)'],['TEXTURED','컬러 텍스처'],['TEXTURED_NORMAL','컬러 + 노멀맵']];
+const byId=id=>document.getElementById(id);
+function update(){const v=byId('variant').value,a=byId('angle').value;
+  byId('report').href=root+v+'/R36MM_RENDER.report.json';
+  byId('grid').replaceChildren(...panels.map(([m,label])=>{
+    const f=document.createElement('figure'),i=document.createElement('img'),c=document.createElement('figcaption');
+    i.loading='eager';i.alt=v+' '+label+' '+a;i.src=root+v+'/R36MM_'+m+'_'+a+'.png';
+    c.textContent=label;f.append(i,c);return f;
+  }));
+}
+byId('variant').addEventListener('change',update);byId('angle').addEventListener('change',update);update();
+</script></body></html>
