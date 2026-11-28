@@ -1,0 +1,280 @@
+{
+  "version": "R36MC-LANDMARKS-v1",
+  "reference": "user-provided single oblique photo; depths are sculpt hypotheses, not measured",
+  "sourcePhotoPublished": false,
+  "mapping": {
+    "sourceRect": {
+      "left": 122,
+      "top": 158,
+      "right": 244,
+      "bottom": 412
+    },
+    "targetBindRegion": {
+      "xMin": -0.091,
+      "xMax": 0.091,
+      "zBottom": 0.754,
+      "zTop": 0.962
+    },
+    "frontYMax": -0.022,
+    "frontAxis": "-Y",
+    "upAxis": "+Z"
+  },
+  "features": [
+    {
+      "id": "outer-left",
+      "kind": "raised_ridge",
+      "depth": -0.008,
+      "width": 0.018,
+      "points": [
+        [
+          179,
+          191
+        ],
+        [
+          163,
+          222
+        ],
+        [
+          145,
+          264
+        ],
+        [
+          135,
+          307
+        ],
+        [
+          143,
+          348
+        ],
+        [
+          163,
+          383
+        ],
+        [
+          183,
+          401
+        ]
+      ]
+    },
+    {
+      "id": "inner-left",
+      "kind": "raised_ridge",
+      "depth": -0.013,
+      "width": 0.011,
+      "points": [
+        [
+          184,
+          206
+        ],
+        [
+          177,
+          237
+        ],
+        [
+          160,
+          277
+        ],
+        [
+          157,
+          315
+        ],
+        [
+          164,
+          346
+        ],
+        [
+          179,
+          377
+        ]
+      ]
+    },
+    {
+      "id": "inner-right",
+      "kind": "raised_ridge",
+      "depth": -0.009,
+      "width": 0.012,
+      "points": [
+        [
+          193,
+          207
+        ],
+        [
+          200,
+          240
+        ],
+        [
+          211,
+          282
+        ],
+        [
+          220,
+          323
+        ],
+        [
+          212,
+          356
+        ],
+        [
+          200,
+          380
+        ]
+      ]
+    },
+    {
+      "id": "outer-right",
+      "kind": "raised_ridge",
+      "depth": -0.005,
+      "width": 0.018,
+      "points": [
+        [
+          201,
+          200
+        ],
+        [
+          212,
+          245
+        ],
+        [
+          227,
+          281
+        ],
+        [
+          235,
+          329
+        ],
+        [
+          226,
+          372
+        ],
+        [
+          210,
+          392
+        ]
+      ]
+    },
+    {
+      "id": "upper-bridge",
+      "kind": "transition_ridge",
+      "depth": -0.006,
+      "width": 0.015,
+      "points": [
+        [
+          173,
+          224
+        ],
+        [
+          179,
+          198
+        ],
+        [
+          187,
+          178
+        ],
+        [
+          198,
+          208
+        ],
+        [
+          204,
+          234
+        ]
+      ]
+    },
+    {
+      "id": "lower-asymmetric-fold",
+      "kind": "transverse_ridge",
+      "depth": -0.012,
+      "width": 0.016,
+      "points": [
+        [
+          154,
+          350
+        ],
+        [
+          163,
+          374
+        ],
+        [
+          179,
+          390
+        ],
+        [
+          194,
+          399
+        ],
+        [
+          210,
+          393
+        ],
+        [
+          226,
+          368
+        ]
+      ]
+    },
+    {
+      "id": "central-recess",
+      "kind": "recess",
+      "depth": 0.016,
+      "width": 0.019,
+      "points": [
+        [
+          187,
+          211
+        ],
+        [
+          184,
+          247
+        ],
+        [
+          182,
+          282
+        ],
+        [
+          188,
+          319
+        ],
+        [
+          193,
+          354
+        ],
+        [
+          194,
+          374
+        ]
+      ]
+    },
+    {
+      "id": "lower-recess",
+      "kind": "recess",
+      "depth": 0.007,
+      "width": 0.017,
+      "points": [
+        [
+          178,
+          338
+        ],
+        [
+          180,
+          355
+        ],
+        [
+          190,
+          371
+        ],
+        [
+          203,
+          375
+        ]
+      ]
+    }
+  ],
+  "budget": {
+    "triangles": 2100,
+    "body": 1132,
+    "faceHair": 968,
+    "joints": 63,
+    "topologyPreserved": true
+  },
+  "qualityCriterion": "texturing must not stand in for basic untextured clay shape, approve only after front and 35 degree views"
+}
