@@ -24,7 +24,7 @@ export function createTimedCareerClock(data,config){
   // The inherited monthly residual is held fixed, but add exact salary for
   // this newly modeled recruit (including a soldier in transfer).
  }
- function order(s,id){
+ function order(s,id,{birthPsiStrength}={}){
   midnight(s);assert(!s.career.hire&&!member(s));
   const p=profile(id),b=data.soldiers.find(x=>x.id===p?.soldierType);
   assert(p?.sourceType==="direct"&&b&&p.cost===b.costBuy&&p.time===b.transferTime&&p.salary===b.costSalary);
@@ -36,10 +36,16 @@ export function createTimedCareerClock(data,config){
   // Native purchase pays and creates the soldier before transfer; preserve
   // the exact selected birth, but do not expose a recruit to training yet.
   const m=r.world.soldiers.pop();assert(m?.id==="origin"&&m.state.exactStats);
+  // Select a conditional native integer birth roll at creation, never on an existing or arrived soldier.
+  if(birthPsiStrength!==undefined){
+   assert(Number.isSafeInteger(birthPsiStrength)&&birthPsiStrength>=p.initialStatsBeforeTraits.min.psiStrength&&birthPsiStrength<=p.initialStatsBeforeTraits.max.psiStrength,"BIRTH_PSI_OUT_OF_RANGE");
+   assert(!p.initialStatsOverride&&!p.currentStatsOverride&&!p.traits?.length&&p.initialStatsBeforeTraits.min.psiStrength===b.minStats.psiStrength&&p.initialStatsBeforeTraits.max.psiStrength===b.maxStats.psiStrength,"BIRTH_PSI_PROFILE_UNSUPPORTED");
+   m.state.initialStats.psiStrength=birthPsiStrength;m.state.currentStats.psiStrength=birthPsiStrength;
+  }
   s.world=r.world;s.soldiers++;s.career.salary=p.salary;
   for(const row of Object.values(config.monthlyInput))row.otherMaintenance+=p.salary;
   s.career.hire={profile:id,body:p.soldierType,ordered:s.elapsedHours,due:s.elapsedHours+p.time,cost:p.cost,salary:p.salary,transferHours:p.time,member:m,arrived:false};
-  record(s,"careerHireOrder",{profile:id,body:p.soldierType,cost:p.cost,salary:p.salary,transferHours:p.time,due:s.career.hire.due,funds:s.world.funds,conditionalBirth:"MINIMUM_VECTOR"});
+  record(s,"careerHireOrder",{profile:id,body:p.soldierType,cost:p.cost,salary:p.salary,transferHours:p.time,due:s.career.hire.due,funds:s.world.funds,conditionalBirth:birthPsiStrength===undefined?"MINIMUM_VECTOR":"MINIMUM_VECTOR_EXCEPT_SELECTED_PSI_ROLL",...(birthPsiStrength===undefined?{}:{birthPsiStrength})});
  }
  function verdict(s,id){
   const m=member(s),r=data.transformations.find(t=>t.id===id);assert(m&&r);

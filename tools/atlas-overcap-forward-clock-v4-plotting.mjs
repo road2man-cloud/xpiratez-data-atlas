@@ -9,11 +9,12 @@ import {createElectronicsMissionSupply} from "./atlas-overcap-forward-electronic
 import {createGdxBridge} from "./atlas-overcap-forward-gdx-bridge-v3.mjs";
 import {applyOriginWitnessStep} from "../public/soldiers/modern/origin-witness.js";
 import {exactStateHash} from "./origin-pair-exact-prefix-checkpoint.mjs";
-const rootsStart=Date.UTC(2601,0,1,12),boundary=Date.UTC(2603,0,1)-rootsStart;
-const limitHours=boundary/3600000;
+const rootsStart=Date.UTC(2601,0,1,12);
 const qty=(w,id)=>Number(w.items[id]||0);
-export function createPlottingClock(data,{labCapacity=12,quarters=50,budget=325000,facilityFields,itemFields,manufactureFields,sellCoefficient=100,economy,monthlyInput,eventScenario=false,missionSource,missionTiming,missionMode='none',bridgeSource,bridgeTiming,nurseEvent,bridgeMode='none',captainSource,orderMode='strict',persuasionSource,prisonSource,prisonMode='recover',hierarchyMode='control'}={}){
- const engine=createForwardResearch(data,{maxMonth:24}),rules=data.researchRules,recipe=data.forwardJunk.recipe;
+export function createPlottingClock(data,{labCapacity=12,quarters=50,budget=325000,facilityFields,itemFields,manufactureFields,sellCoefficient=100,economy,monthlyInput,eventScenario=false,missionSource,missionTiming,missionMode='none',bridgeSource,bridgeTiming,nurseEvent,bridgeMode='none',captainSource,orderMode='strict',persuasionSource,prisonSource,prisonMode='recover',hierarchyMode='control',maxMonth=24}={}){
+ assert(Number.isSafeInteger(maxMonth)&&maxMonth>=24&&maxMonth<=120,"CAMPAIGN_HORIZON_RANGE");
+ const limitHours=(Date.UTC(2601,maxMonth,1)-rootsStart)/3600000;
+ const engine=createForwardResearch(data,{maxMonth}),rules=data.researchRules,recipe=data.forwardJunk.recipe;
  const missionSupply=createElectronicsMissionSupply(data,engine,missionSource),packRecipe=missionSource.recipe;
  const bridge=createGdxBridge(data,engine,bridgeSource);
  const extraRecipes=new Map(persuasionSource.recipes.map(r=>[r.id,r]));
