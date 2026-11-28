@@ -1,0 +1,16 @@
+{
+  "baseSha256": "b774b264dfef15c88fb919dff936dcfcec87320385203dd74864f3a8b2b19121",
+  "donorSha256": "ad4b40635460f2be7df0596a865bb867a28d4a648101f02289c65779a3b950e7",
+  "baseTriangles": 2100,
+  "triangles": 2528,
+  "addedTriangles": 428,
+  "panelVertices": 642,
+  "sourceFaces": 107,
+  "donorCenterVertices": 240,
+  "opaque": true,
+  "originalV14PrimitivesRetained": true,
+  "rigJoints": 63,
+  "outputSha256": "d4f9fc8d235de995f7a5842a475d276893e11087ab283537fc103c9a19dfdc2f",
+  "nativeS2Rendered": false,
+  "visualAcceptance": false
+}
