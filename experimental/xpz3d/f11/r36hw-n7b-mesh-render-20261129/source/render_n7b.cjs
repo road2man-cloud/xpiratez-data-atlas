@@ -96,6 +96,8 @@ function raster(meshes,view,mode,bbox,focus='full'){
 }
 function main(file,out){
  assert(fs.existsSync(file),'R36HW-N7B GLB must exist in Actions checkout');
+ const expected='4964f36cf81f6fba4009b75a4813cb08e18469988475301aadccecb089be4ceb';
+ assert(sha(fs.readFileSync(file))===expected,'N7B corrected hem geometry SHA required (not the 72mm prototype)');
  assert(!fs.existsSync(out),'Output directory exists; refusing overwrite');
  const q=load(file),meshes=[];
  let body=0,other=0;
