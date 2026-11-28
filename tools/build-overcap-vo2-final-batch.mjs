@@ -11,8 +11,9 @@ import {unpackBodyScopeWitness} from "../public/branch-soldier-final-scope-codec
 import {classifyFinalCareers} from "./atlas-final-career-admission-v10-vo2-irreversible.mjs";
 const read=p=>JSON.parse(fs.readFileSync(p)),decode=p=>JSON.parse(gunzipSync(fs.readFileSync(p)));
 const body=process.argv.find(x=>x.startsWith("--body="))?.slice(7)||"POD_REPAIR";
-const fast=process.argv.includes("--fast-pass"),offset=Number(process.argv.find(x=>x.startsWith("--offset="))?.slice(9)||0),limit=Number(process.argv.find(x=>x.startsWith("--limit="))?.slice(8)||(fast?2000:6));
+const fast=process.argv.includes("--fast-pass"),next=process.argv.includes("--next"),offset=Number(process.argv.find(x=>x.startsWith("--offset="))?.slice(9)||0),limit=Number(process.argv.find(x=>x.startsWith("--limit="))?.slice(8)||(fast?2000:6));
 assert(/^[A-Z0-9_]+$/.test(body)&&Number.isSafeInteger(offset)&&offset>=0&&Number.isSafeInteger(limit)&&limit>0);
+assert(!(fast&&next),"Choose one automatic selection mode");
 const stage="tools/data/overcap-intake-stage-"+body+"/";
 const prep=decode(stage+"vo2-full-prepared.json.gz"),manifest=read("tools/data/overcap-vo2-full-prepared-manifest-"+body+".json");
 assert.equal(prep.schema,"ATLAS_VO2_FULL_PREPARED_V1");assert.equal(key(prep),manifest.preparedHash);assert.equal(key(prep.plan),manifest.planHash);
@@ -27,7 +28,7 @@ assert.equal(data.meta.source.metadataSha256,prep.sourceMetadataSha256);assert.e
 // supplies a final certificate, and the original gate still classifies
 // every selected witness. A complete pair must be in ONE batch.
 const already=new Set();
-for(const name of fs.readdirSync(stage).filter(n=>/^vo2-final-(?:batch-\d+-\d+|fast-batch-[a-f0-9]+)\.json\.gz$/.test(n))){
+for(const name of fs.readdirSync(stage).filter(n=>/^vo2-final-(?:batch-\d+-\d+|(?:fast|next)-batch-[a-f0-9]+)\.json\.gz$/.test(n))){
  const d=decode(stage+name);assert.equal(d.preparedHash,manifest.preparedHash);assert.equal(d.planHash,prep.planHash);
  const ix=d.batch.indices||Array.from({length:d.pairIds.length},(_,i)=>d.batch.offset+i);
  assert.deepEqual(ix.map(i=>prep.plan[i].id),d.pairIds);
@@ -52,6 +53,8 @@ if(fast){
   assert(n&&s?.goals?.length&&s.stateHash===n.stateHash&&s.actionHash===r.fullActionHash);
   return !known.has(id)||v?.hard?.length||v?.uncertain?.length||children.get(r.sourceGraph)[r.sourceNode]!==null;};
  indices=prep.plan.map((p,i)=>({p,i})).filter(({p,i})=>!already.has(i)&&p.routes.every(immediate)).slice(0,limit).map(x=>x.i);
+}else if(next){
+ indices=prep.plan.map((_,i)=>i).filter(i=>!already.has(i)).slice(0,limit);
 }else{
  indices=Array.from({length:Math.min(limit,Math.max(0,prep.plan.length-offset))},(_,i)=>offset+i);
  for(const i of indices)assert(!already.has(i),"Batch overlaps existing result "+i);
@@ -76,7 +79,7 @@ for(const [id,v] of Object.entries(witnesses)){
 }
 if(fast)assert(Object.values(witnesses).every(v=>["KNOWN_CONTINUATION","UNRESOLVED_FINITE_MATERIAL"].includes(v.status)),"Fast-pass selected a nontrivial witness");
 const summary={attemptedPairs:lines.length,attemptedWitnesses:ids.size,localClosedPairs:final.rows.length,localEquivalentPairs:final.equivalent.length,unresolved:Object.values(witnesses).filter(v=>v.status.startsWith("UNRESOLVED")).length,counts:final.summary.counts,officialFinalAdded:0};
-const out={schema:"ATLAS_VO2_FULL_FINAL_BATCH_V1",sourceMetadataSha256:prep.sourceMetadataSha256,sourceGraphSha256:prep.sourceGraphSha256,preparedHash:manifest.preparedHash,planHash:prep.planHash,sourceHashes:final.sourceHashes,materialBudgetHash:prep.materialBudget.sha256,batch:{offset,limit,total:prep.plan.length,...(fast?{indices}:{} )},pairIds:lines.map(r=>r.id),summary,witnesses,ogreRegression:final.summary.ogreRegression,scope:"Local classification; final cross-batch quotient and all-pair coverage required before registry replacement."};
-const file=stage+(fast?"vo2-final-fast-batch-"+key(indices).slice(0,16):"vo2-final-batch-"+offset+"-"+limit)+".json.gz";
+const out={schema:"ATLAS_VO2_FULL_FINAL_BATCH_V1",sourceMetadataSha256:prep.sourceMetadataSha256,sourceGraphSha256:prep.sourceGraphSha256,preparedHash:manifest.preparedHash,planHash:prep.planHash,sourceHashes:final.sourceHashes,materialBudgetHash:prep.materialBudget.sha256,batch:{offset,limit,total:prep.plan.length,...((fast||next)?{indices,selection:fast?"immediate-nonfinal":"next-unprocessed"}:{})},pairIds:lines.map(r=>r.id),summary,witnesses,ogreRegression:final.summary.ogreRegression,scope:"Local classification; final cross-batch quotient and all-pair coverage required before registry replacement."};
+const file=stage+(fast||next?"vo2-final-"+(fast?"fast":"next")+"-batch-"+key(indices).slice(0,16):"vo2-final-batch-"+offset+"-"+limit)+".json.gz";
 fs.writeFileSync(file+".tmp",gzipSync(JSON.stringify(out),{level:4}));fs.renameSync(file+".tmp",file);
 console.log(JSON.stringify({file,summary,byBody:final.summary.byFinalBody,metrics:final.summary.incremental,hash:key(out)}));
