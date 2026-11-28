@@ -1,0 +1,27 @@
+{
+  "stage": "N15 regional curvature smoothing of connected N14 center only",
+  "inputSHA256": "4b11da809e8df858b3f70e74d8088dbefee3f1058a9a3f5a2da0798bf359e59e",
+  "outputSHA256": "7e151c13a8011c334c1b22f73dcccaba3420098bef7812417b9b4e564a0cd05b",
+  "triangles": 2099,
+  "skinJoints": 63,
+  "pelvisVertices": 240,
+  "pelvisTriangles": 363,
+  "editedVertices": 89,
+  "boundaryProtected": 45,
+  "maximumDisplacementMeters": 0.0040000000000000036,
+  "minimumTriangleAreaSqMeters": 0.000001907918186257542,
+  "faceInversions": 0,
+  "initialInversions": 1,
+  "dampingFactor": 0.5,
+  "faceHairUntouched": true,
+  "sourceUVSkinWeightsUntouched": true,
+  "fullBodyUntouched": true,
+  "referenceImageProjected": false,
+  "visualApproval": false,
+  "nativeS2Rendered": false,
+  "limitations": [
+    "No rendered review yet",
+    "N14 clothing-derived side and lower silhouette remains",
+    "Existing external skin seams are not welded"
+  ]
+}
