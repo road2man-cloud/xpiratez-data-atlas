@@ -1,0 +1,98 @@
+name: XPZ3D R36MJ sculpted ridge and recess depth layers
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36mj-depth-layers-20261128/source/**'
+      - '.github/workflows/xpz3d-r36mj-depth-layers.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36mj-depth-layers
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+            experimental/xpz3d/f11/r36mc-landmark-sculpt-20261128
+            experimental/xpz3d/f11/r36mf-integrated-20261128
+            experimental/xpz3d/f11/r36mh-budget-transfer-20261128
+            experimental/xpz3d/f11/r36mi-contour-control-20261128
+            experimental/xpz3d/f11/r36mj-depth-layers-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce R36MJ real sculpted ridge recess depth layer
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36mj-depth-layers-20261128
+          SRC=$ROOT/source/build_r36mj.cjs
+          CLAY=$BASE/r36mf-integrated-20261128/source/create_clay.cjs
+          COMPACT=$BASE/r36ls-illustrated-skin-20261128/source/compact_glb.cjs
+          node --check "$SRC"
+          rm -rf "$ROOT/output"
+          mkdir -p "$ROOT/output/compact"
+          for V in ART SUBTLE; do
+            for STYLE in DENSE GUARDED; do
+              NAME="${V}_${STYLE}"
+              OLD="$BASE/r36mh-budget-transfer-20261128/output/compact/R36MH_${NAME}_2100_COMPACT_FULL.glb"
+              SOURCE="$BASE/r36mi-contour-control-20261128/output/compact/R36MI_${NAME}_2100_COMPACT_FULL.glb"
+              OUT="$ROOT/output/$NAME"
+              SCALE=1.0
+              [ "$STYLE" = GUARDED ] && SCALE=0.58 || true
+              node --max-old-space-size=4096 "$SRC" "$OLD" "$SOURCE" "$OUT" "$SCALE"
+              node "$CLAY" "$OUT/R36MJ_DEPTH_LAYERS_2100_FULL.glb" "$OUT/R36MJ_CLAY_2100_FULL.glb"
+              node "$COMPACT" "$OUT/R36MJ_DEPTH_LAYERS_2100_FULL.glb" "$ROOT/output/compact/R36MJ_${NAME}_2100_COMPACT_FULL.glb"
+              node "$COMPACT" "$OUT/R36MJ_CLAY_2100_FULL.glb" "$ROOT/output/compact/R36MJ_${NAME}_CLAY_2100_COMPACT_FULL.glb"
+            done
+          done
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.argv[2];
+          for(const v of ['ART','SUBTLE'])for(const s of ['DENSE','GUARDED']){
+            const k=v+'_'+s,r=JSON.parse(fs.readFileSync(path.join(root,k,'R36MJ_DEPTH_LAYERS.report.json')));
+            if(r.totalTriangles!==2100||r.bones!==63||r.geometry.acceptedControlVertices<4||
+               r.geometry.minTriangleAreaRatio<.59||r.normalTexture.changedNormalPixels<100)throw Error('invalid physical depth output '+k);
+            for(const suf of ['','_CLAY']){
+              const file=path.join(root,'compact','R36MJ_'+k+suf+'_2100_COMPACT_FULL.glb');
+              const b=fs.readFileSync(file);
+              if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('bad glb '+file);
+            }
+            console.log(k,r.geometry.acceptedControlVertices,r.geometry.frontRidgeControls,r.geometry.recessControls,r.normalTexture.changedNormalPixels);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36MJ-depth-relief-mesh-and-clay
+          path: experimental/xpz3d/f11/r36mj-depth-layers-20261128/output/
+          retention-days: 90
+      - name: Publish R36MJ compact GLBs and texture
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36mj-depth-layers-20261128/output
+          for V in ART SUBTLE; do for S in DENSE GUARDED; do rm -f "$ROOT/${V}_${S}"/*.glb; done; done
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36MJ physical ridge and recess layer models"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
