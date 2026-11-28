@@ -30,6 +30,12 @@
       "edges": 1260,
       "sha256": "2c4e2553375f744712dea3161fbf93ca7cae49029b88031758bd2d015c3bad0d",
       "gitBlob": "78a66346a37f728ac2f669112f2363ecf94924b0"
+    },
+    {
+      "file": "campaign-forward-tree-v9-career-focus-d20.json",
+      "states": 1400,
+      "edges": 2599,
+      "sha256": "c729fde1a4bab10ed79b7983a21089665bf5a69db6c6609d89bd828378a910b2"
     }
   ],
   "summary": {
@@ -50,9 +56,9 @@
       "careerCertified": 0
     },
     "missingResearchTopics": 140,
-    "gameCertified": 0,
     "ordinaryExpansionTopics": 139,
-    "specialGateTopics": 1
+    "specialGateTopics": 1,
+    "gameCertified": 0
   },
   "runtimeSha256": "3ccbe328f5dcc574ef2f9c40ae044b1efbdf6b7ec804b81460eb3765cca36971",
   "profiles": [
