@@ -102,6 +102,11 @@ for(let i=0;i<pos.length;i++){
  const d=fade*(.0022*core-.0011*borderL-.0011*borderR);
  pos[i][1]+=d;if(Math.abs(d)>1e-6)foldVertices++;
 }
+// Preserve R36HW N10 proportions; clamp accumulated relaxation, not only each sub-pass.
+for(let i=0;i<pos.length;i++){
+ const delta=pos[i].map((v,k)=>v-previous[i][k]),length=Math.hypot(...delta),limit=.015;
+ if(length>limit)for(let k=0;k<3;k++)pos[i][k]=previous[i][k]+delta[k]*limit/length;
+}
 function cross(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
 function unit(v){const s=Math.hypot(...v)||1;return v.map(x=>x/s)}
 const acc=pos.map(()=>[0,0,0]);let minArea=Infinity;
