@@ -2,6 +2,7 @@
 // Every edge is an action selected from the current state, then actually applied.
 // This is a bounded model graph, NOT a native campaign or exhaustive tree.
 import {createHash} from 'node:crypto';
+import {createSupplyPlanner} from './campaign-forward-supply-v1.mjs';
 import {campaignStartWorld,availableResearch,applyCampaignStartStep,START_RESEARCH,labVerdict} from '../public/soldiers/modern/campaign-start-gate-v1.js';
 import {eventScriptVerdict} from '../public/soldiers/modern/event-chronology.js';
 import {purchaseVerdict} from '../public/soldiers/modern/campaign-start-reachability-v1.js';
@@ -10,17 +11,19 @@ const arr=x=>Array.isArray(x)?x:[];
 const canon=x=>x instanceof Set?[...x].sort().map(canon):x instanceof Map?Object.fromEntries([...x.entries()].sort(([a],[b])=>String(a).localeCompare(String(b))).map(([k,v])=>[k,canon(v)])):Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>createHash('sha256').update(JSON.stringify(canon(x))).digest('hex');
 const diff=(a,b)=>[...a].filter(x=>!b.has(x)).sort();
-export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null,focusNodes=null,priorityResearch=[],priorityOnly=false}={}){
+export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false,fixedItems=false,construction=false,manufacturing=false,missions=false,manufactureFocus='all',fixedEventFilter=null,focusNodes=null,priorityResearch=[],priorityOnly=false,supplyTargets=[]}={}){
  if(!Number.isSafeInteger(maxDepth)||maxDepth<1||maxDepth>50||!Number.isSafeInteger(maxNodes)||maxNodes<5||maxNodes>100000)throw Error('invalid-forward-bounds');
  const initial=campaignStartWorld(data,snapshot);
  if(initial.researched.size||initial.disabled.size||initial.pendingFree)throw Error('nonempty-forward-root');
  const nodes=[],worlds=[],edges=[],index=new Map();
  const sampleRules=samplePurchases?Object.entries(data.researchRules).filter(([,r])=>r.needItem&&r.cost>0&&!arr(r.requires).length):[];
- if(!['all','research'].includes(manufactureFocus))throw Error('unknown-manufacture-focus');
- const policy={eventRoutes,samplePurchases,fixedItems,construction,manufacturing,missions,manufactureFocus,fixedEventFilter};
+ if(!['all','research','supply'].includes(manufactureFocus))throw Error('unknown-manufacture-focus');
+ const policy={eventRoutes,samplePurchases,fixedItems,construction,manufacturing,missions,manufactureFocus,fixedEventFilter,supplyTargets};
  const sampleTargets=Object.entries(data.researchRules).filter(([,r])=>r.needItem&&r.cost>0&&!arr(r.requires).length);
  const sampleIds=new Set(sampleTargets.map(([id,r])=>r.neededItem||id));
  const recipes=manufacturing?Object.entries(data.campaignAssets?.deterministicManufacture||{}).sort(([a],[b])=>a.localeCompare(b)):[];
+ const supplyPlanner=manufactureFocus==='supply'?createSupplyPlanner(recipes,data,supplyTargets):null;
+ if(supplyPlanner&&(!manufacturing||!supplyTargets.length))throw Error('supply-targets-required');
  const lootRoutes=missions?Object.entries(data.campaignAssets?.missionLoot||{}).flatMap(([item,routes])=>routes.map(route=>({item,route}))):[];
  // Deduplicate bundle routes: one event pays the entire bundle once.
  const bundles=new Map();
@@ -53,7 +56,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  if(resume){
   if(resume.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||resume.sourceMetadataSha256!==snapshot.sourceFingerprint||
    resume.difficulty!==snapshot.difficulty||!eq(resume.regions,snapshot.regions??null)||!eq(resume.countries,snapshot.countries??null)||
-   !eq(resume.limits?.captainEvent??null,captainEvent)||!eq({eventRoutes:[],samplePurchases:false,fixedItems:false,construction:false,manufacturing:false,missions:false,manufactureFocus:'all',fixedEventFilter:null,...resume.limits?.policy},policy)||maxDepth<resume.limits.maxDepth||maxNodes<resume.nodes.length)
+   !eq(resume.limits?.captainEvent??null,captainEvent)||!eq({eventRoutes:[],samplePurchases:false,fixedItems:false,construction:false,manufacturing:false,missions:false,manufactureFocus:'all',fixedEventFilter:null,supplyTargets:[],...resume.limits?.policy},policy)||maxDepth<resume.limits.maxDepth||maxNodes<resume.nodes.length)
    throw Error('forward-resume-identity-mismatch');
   if(!Array.isArray(resume.nodes)||!Array.isArray(resume.edges)||!resume.nodes.length)throw Error('forward-resume-invalid');
   const parents=new Map();
@@ -94,7 +97,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  if(!Array.isArray(priorityResearch)||priorityResearch.some(id=>!data.researchRules[id]))throw Error('invalid-forward-priority-research');
  const priority=new Set(priorityResearch);
  if(priorityOnly&&(!focusNodes||!priority.size))throw Error('priority-only-requires-focused-research');
- const preferred=a=>priority.has(a.id||a.research)||a.type==='freeResearch'&&priority.has(a.source);
+ const preferred=a=>priority.has(a.id||a.research)||a.type==='freeResearch'&&priority.has(a.source)||!!supplyPlanner&&['manufactureBundle','acquireFundedPurchase'].includes(a.type);
  const queue=focusNodes===null?null:[...new Set(focusNodes)];
  const queued=new Set(queue||[]);
  const oldOutgoing=new Map();
@@ -144,7 +147,8 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
    }
    // The full deterministic raw recipe is applied atomically. One batch per
    // recipe is a declared finite exploration bound, not an engine restriction.
-   if(manufacturing)for(const [recipe,r] of recipes){
+   if(supplyPlanner)actions.push(...supplyPlanner(w));
+   if(manufacturing&&!supplyPlanner)for(const [recipe,r] of recipes){
     if(w.forwardManufactureCounts?.[recipe]||!r.requires.every(k=>active(w,k))||!r.functions.every(k=>w.baseFunctions.has(k))||w.funds<r.cost)continue;
     if(Object.entries(r.materials).some(([k,v])=>(w.items[k]||0)<v))continue;
     if(manufactureFocus==='research'&&!Object.keys(r.outputs).some(item=>sampleIds.has(item)&&!(w.items[item]>0)))continue;
@@ -199,8 +203,8 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  return {schema:'ATLAS_CAMPAIGN_FORWARD_TREE_V1',scope,
   difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null,sourceMetadataSha256:snapshot.sourceFingerprint,
   limits:{maxDepth,maxNodes,depthUnit:'actions',captainEvent:captainEvent??null,policy},
-  excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants',construction?'alternative facility placements, replacements, funding and full calendar':'facility construction',fixedItems?'events outside selected fixed bundles and research routes':'events outside selected routes',missions?'missions outside indexed fixed loot; tactical victory, transport and recovery':'mission rewards',manufacturing?'repeat batches, special/random recipes and manufacturing workforce/calendar':'manufacturing','native research duration and event scheduler','economy and full base simulation',...(manufactureFocus==='research'?['manufacturing without a currently missing research sample; intermediate material chains not exhaustive']:[]),...(fixedEventFilter?['fixed events outside selected filter']:[])],
+  excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants',construction?'alternative facility placements, replacements, funding and full calendar':'facility construction',fixedItems?'events outside selected fixed bundles and research routes':'events outside selected routes',missions?'missions outside indexed fixed loot; tactical victory, transport and recovery':'mission rewards',manufacturing?'repeat batches, special/random recipes and manufacturing workforce/calendar':'manufacturing','native research duration and event scheduler','economy and full base simulation',...(manufactureFocus==='research'?['manufacturing without a currently missing research sample; intermediate material chains not exhaustive']:[]),...(fixedEventFilter?['fixed events outside selected filter']:[]),...(supplyPlanner?['supply exploration limited to declared targets and six intermediate recipe levels; one batch per recipe']:[])],
   initialMenu:nodes[0].availableResearch,firstBranches,nodes,edges,
   continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume),focusNodes,priorityResearch,priorityOnly,visitedThisRun,deferredPreviousStates:queue?previousStates-[...queued].filter(id=>id<previousStates).length:0}:null,
-  summary:{manufactureResearchUnlockEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&e.newlyAvailable.length).length,indexedDeterministicRecipes:recipes.length,indexedMissionLootRoutes:lootRoutes.length,actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
+  summary:{supplyTargetRecipes:supplyTargets,supplyTargetManufactureEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&supplyTargets.includes(e.action.recipe)).length,fundedPurchaseEdges:edges.filter(e=>e.action.type==='acquireFundedPurchase').length,manufactureResearchUnlockEdges:edges.filter(e=>e.action.type==='manufactureBundle'&&e.newlyAvailable.length).length,indexedDeterministicRecipes:recipes.length,indexedMissionLootRoutes:lootRoutes.length,actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
 }
