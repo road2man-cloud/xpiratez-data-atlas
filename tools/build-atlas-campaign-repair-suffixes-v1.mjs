@@ -172,7 +172,7 @@ if(args.forwardOut){
    eventRoutes.push({event,research:id,script:indexed,sourceSha256:files['Piratez_Events.rul'],timer:e.timer??null,timerRandom:e.timerRandom??null,points:e.points??0});
   }
  }
- const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
+ const result=buildCampaignForwardTree(d,snapshot,{resume,eventRoutes,samplePurchases:args.forwardPurchases==='1',fixedItems:args.forwardFixedItems==='1',construction:args.forwardConstruction==='1',maxDepth:Number(args.forwardDepth??5),maxNodes:Number(args.forwardNodes??600),captainEvent:args.forwardCaptain==='1'?{event:'STR_CAPTAIN_PERSONALITY_TEST',script:'STR_CAPTAIN_PERSONALITY_TEST',research:'STR_CAPTAIN_PERSONALITY_TEST'}:null});
  const content=JSON.stringify({...result,sourceCommit:ref,sourceFiles:files});
  fs.writeFileSync(args.forwardOut+'.tmp',content);fs.renameSync(args.forwardOut+'.tmp',args.forwardOut);
  console.log(JSON.stringify(result.summary));process.exit(0);
