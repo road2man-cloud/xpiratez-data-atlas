@@ -1,7 +1,7 @@
 {
   "stage": "R36HW N7 continuous hem-to-leg fit and localized fold cleanup",
   "inputSha256": "f03169cc12dc53e8304238543dc5f8f5d28274f76ad64102cfa91d44e7a9e041",
-  "outputSha256": "04fb0b02772868a9993bace691c79bac54fe484f8f933a3b4dec14b4f7436f1e",
+  "outputSha256": "4964f36cf81f6fba4009b75a4813cb08e18469988475301aadccecb089be4ceb",
   "trianglesBefore": 2080,
   "trianglesAfter": 2098,
   "sourceBareLegLoops": 2,
@@ -43,7 +43,7 @@
     172,
     173
   ],
-  "hemMaxMovementMeters": 0.07235780857202374,
+  "hemMaxMovementMeters": 0.011500000000000054,
   "originalPantsVertices": 174,
   "outputPantsVertices": 183,
   "frontCoreTrianglesSplit": [
@@ -58,12 +58,12 @@
     274
   ],
   "extraTriangles": 18,
-  "allPantsVertexMaxMovementMeters": 0.07235780857202374,
+  "allPantsVertexMaxMovementMeters": 0.017100961763511738,
   "faceTrianglesUnchanged": 644,
   "hairTrianglesUnchanged": 294,
   "skinJoints": 63,
-  "triangleAreaMinSqMeters": 0,
-  "triangleAreaMaxSqMeters": 0.0032160776449528363,
+  "triangleAreaMinSqMeters": 0.000010195004162345673,
+  "triangleAreaMaxSqMeters": 0.0027357539744289057,
   "originalEmbeddedBINBytes": 948376,
   "limitations": [
     "Still a clothing-derived closed pelvic shell; full surface replacement not claimed",
