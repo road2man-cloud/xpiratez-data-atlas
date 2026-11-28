@@ -26,7 +26,7 @@ const read=p=>JSON.parse(bytes(p));const gz=f=>JSON.parse(gunzipSync(bytes('publ
 const d=read('public/data/soldiers-modern-index.json'),catalog=read('public/data/soldier-source-catalog.json');
 if(d.meta.mod.version!=='v.o2')throw Error('wrong-game-version');
 d.sourceItemIds=new Set(catalog.itemIds);
-const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={},events={},eventScripts={},regions={},countries={},manufacture={};
+const rules=path.join(game,'user/mods/Piratez/Ruleset'),files={},facilities={},items={},research={},terrains={},mapScripts={},alienDeployments={},missionScripts={},startingConditions={},crafts={},events={},eventScripts={},regions={},countries={},manufacture={},soldierRules={};
 let base,date,initialFundingRule=null;
 function load(p,expected){
  const bytes=fs.readFileSync(p),h=createHash('sha256').update(bytes).digest('hex');
@@ -36,7 +36,7 @@ function load(p,expected){
  if(doc.startingBase)base=doc.startingBase;
  if(doc.startingTime)date=doc.startingTime;
  if(doc.initialFunding!==undefined)initialFundingRule=doc.initialFunding;
- for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts,events,eventScripts,regions,countries,manufacture}))for(const row of doc[key]||[]){
+ for(const [key,target] of Object.entries({facilities,items,research,terrains,mapScripts,alienDeployments,missionScripts,startingConditions,crafts,events,eventScripts,regions,countries,manufacture,soldiers:soldierRules}))for(const row of doc[key]||[]){
   if(row.delete){delete target[row.delete];continue;}
   const id=row.type||row.name;if(id)target[id]={...target[id],...row};
  }
@@ -165,6 +165,16 @@ if(args.forwardManufacture==='1'){
  }
 }
 d.campaignAssets={sourceFingerprint:d.meta.source.metadataSha256,facilities,items,researchGrants,missionLoot,fixedItemEvents,deterministicManufacture};
+if(args.defaultRankEvidence==='1'){
+ const archiveSha256='4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb';
+ const archive=fs.readFileSync(path.join(repo,'tools/headless-simulator/native/oxce-source.tar.gz'));
+ if(createHash('sha256').update(archive).digest('hex')!==archiveSha256)throw Error('default-rank-engine-source-mismatch');
+ const standardBytes=fs.readFileSync(path.join(game,'standard/xcom1/soldiers.rul'));
+ const standard=yaml.load(standardBytes.toString('utf8'),{json:true})||{};
+ const id='STR_SOLDIER_S',raw=soldierRules[id],indexed=d.soldiers.find(b=>b.id===id);
+ if(!raw||raw.refNode!=null||raw.rankStrings!=null||raw.allowPromotion===false||indexed?.allowPromotion!==true||indexed.raw?.rankStrings?.length||(standard.soldiers||[]).some(r=>r.type===id))throw Error('default-rank-body-source-mismatch:'+id);
+ d.campaignAssets.defaultRankEvidence={[id]:{maxRank:5,archiveSha256,standardSoldiersSha256:createHash('sha256').update(standardBytes).digest('hex'),ruleSha256:files['Piratez.rul'],source:'OXCE 8.7.1 archived source: SoldierRank and SavedGame::handlePromotions; absent custom rankStrings'}};
+}
 const layout=base.facilities.map(f=>({id:f.type,x:f.x,y:f.y,complete:!(f.buildTime>0),readyDay:f.buildTime||0}));
 const complete=layout.filter(f=>f.complete),functions=[...new Set(complete.flatMap(f=>facilities[f.id]?.provideBaseFunc||[]))].sort();
 if(args.forwardRecruitment==='1'){

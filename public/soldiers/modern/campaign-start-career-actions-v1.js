@@ -29,10 +29,15 @@ export function applyConditionalCareerAction(input,step,data){
    notes=['conditional-battle-cap-growth','growth-opportunities-duration-and-rng-not-native-certified'];
   }else if(step.type==='conditionalPromotion'){
    const ranks=body.raw?.rankStrings;
-   if(body.allowPromotion!==true||!Array.isArray(ranks)||!ranks.length)throw Error('promotion-rank-list-unindexed');
-   if(!Number.isSafeInteger(step.rank)||step.rank!==state.rank+1||step.rank>=ranks.length)throw Error('invalid-promotion-rank');
+   const evidence=data.campaignAssets?.sourceFingerprint===input.sourceFingerprint?data.campaignAssets?.defaultRankEvidence?.[body.id]:null;
+   if(body.allowPromotion!==true)throw Error('promotion-disabled');
+   const custom=Array.isArray(ranks)&&ranks.length>0;
+   const fallback=!custom&&Number.isSafeInteger(evidence?.maxRank)&&evidence.maxRank===5&&evidence.archiveSha256==='4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb';
+   if(!custom&&!fallback)throw Error('promotion-rank-list-unindexed');
+   const maxRank=custom?ranks.length-1:evidence.maxRank;
+   if(!Number.isSafeInteger(step.rank)||step.rank!==state.rank+1||step.rank>maxRank)throw Error('invalid-promotion-rank');
    state.rank=step.rank;
-   notes=['conditional-promotion','promotion-achievement-not-native-certified'];
+   notes=['conditional-promotion','promotion-achievement-not-native-certified',...(fallback?['engine-default-rank-bound:'+maxRank,'engine-source-sha256:'+evidence.archiveSha256,'rank-rule-sha256:'+evidence.ruleSha256]:[])];
   }else{
    const def=data.commendationIndex?.[step.medal];
    if(!def||step.medal==='STR_MEDAL_WEAPON_PROFICIENCY_NAME')throw Error('medal-rule-unindexed');
