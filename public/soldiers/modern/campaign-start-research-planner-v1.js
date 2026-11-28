@@ -4,6 +4,7 @@
 // actions; origin-witness -> campaign-proof owns all research state changes.
 import {applyOriginWitnessStep,originEventScript} from './origin-witness.js';
 import {campaignStartWorld,labVerdict,availableResearch,applyCampaignStartStep} from './campaign-start-gate-v1.js';
+import {facilityRules,facilityMaterials,freeFacilityPosition} from './campaign-start-construction-v1.js';
 import {eventItemRoutes} from './campaign-start-event-rules-v1.js';
 import {auditOriginCampaignContext} from './origin-campaign-context.js';
 const arr=x=>Array.isArray(x)?x:[];
@@ -14,7 +15,7 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
   const forbidden=new Set(forbiddenResearch),commitments=new Set(preserveResearch);
   if(difficulty!==snapshot.difficulty)throw Error('snapshot-difficulty-mismatch');
   const initial=campaignStartWorld(data,snapshot);
-  const supplyStack=new Set();
+  const supplyStack=new Set(),facilityStack=new Set();
   if(difficulty!=null&&(!Number.isInteger(difficulty)||difficulty<0||difficulty>4))
     throw Error('Fixed campaign difficulty must be an integer from 0 through 4');
   if(!Number.isInteger(methodLimit)||methodLimit<1||methodLimit>200)
@@ -112,12 +113,46 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
     n.world=world;n.steps.push(step);return n;
   }
   // Supply is an actual sequence of manufacture actions, never a resource grant.
-  // Selected fixed event bundles supported; construction, salaries and market purchase remain gaps.
+  // Selected fixed event bundles, research grants and conditional construction supported; salaries and market purchase remain gaps.
   function supply(n,{items={},functions=[],funds=0},reason,budget=null,goalSet=new Set(),depth=0){
     budget ||= {attempts:0,last:null,failures:[],deadEnds:[]};
     if(depth>maxDepth)throw Error('SUPPLY_DEPTH_LIMIT');
     const checkFunctions=()=>functions.filter(f=>!n.world.baseFunctions.has(f));
-    if(checkFunctions().length)throw Error('UNRESOLVED_FUNCTION: '+checkFunctions().join(','));
+    for(const f of checkFunctions()){
+      if(n.world.baseFunctions.has(f))continue;
+      if(facilityStack.has(f))throw Error('FACILITY_CYCLE:'+f);
+      facilityStack.add(f);
+      let solved=null;
+      try{
+        for(const [id,r] of Object.entries(facilityRules(data))){
+          if(!arr(r.provideBaseFunc).includes(f)||arr(r.requiresBaseFunc).includes(f)||arr(r.buildOverFacilities).length)continue;
+          if(++budget.attempts>maxAttempts)break;
+          let trial=clone(n);
+          try{
+            for(const dep of arr(r.requires)){
+              const next=solve(dep,trial,new Set(),depth+1,budget,goalSet);
+              if(!next)throw Error('FACILITY_RESEARCH_UNRESOLVED:'+dep);
+              trial=next;
+            }
+            if(trial.world.baseFunctions.has(f)){solved=trial;break;}
+            const pending=trial.world.baseLayout?.find(q=>q.id===id&&!q.complete);
+            if(pending){
+              append(trial,{type:'finishFacility',id,x:pending.x,y:pending.y,waitDays:Math.max(0,pending.readyDay-trial.world.elapsedBuildDays)});
+            }else{
+              supply(trial,{items:facilityMaterials(r),functions:arr(r.requiresBaseFunc),funds:r.buildCost},'facility '+id,budget,goalSet,depth+1);
+              const pos=freeFacilityPosition(trial.world,id,data);
+              if(!pos)throw Error('FACILITY_NO_POSITION:'+id);
+              append(trial,{type:'buildFacility',id,...pos});
+              append(trial,{type:'finishFacility',id,...pos,waitDays:r.buildTime});
+            }
+            if(!trial.world.baseFunctions.has(f))throw Error('FACILITY_FUNCTION_SHORTFALL:'+f);
+            solved=trial;break;
+          }catch(e){budget.last=e.message;}
+        }
+      }finally{facilityStack.delete(f);}
+      if(!solved)throw Error('UNRESOLVED_FUNCTION:'+f+' / '+(budget.last||'no provider'));
+      Object.assign(n,solved);
+    }
     for(const [id,qty] of Object.entries(items)){
       if(!Number.isSafeInteger(qty)||qty<0)throw Error('INVALID_SUPPLY_QUANTITY: '+id);
       if(Number(n.world.items[id]||0)>=qty)continue;
@@ -125,7 +160,15 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
       supplyStack.add(id);
       let solved=null;
       try{
-        for(const route of eventItemRoutes(id)){
+        for(const [research,grants] of Object.entries(data.campaignAssets?.researchGrants||{})){
+          if(!(grants[id]>0)||active(n.world,research)||n.world.paidResearchGrants?.has(research))continue;
+          if(++budget.attempts>maxAttempts)break;
+          try{
+            const trial=solve(research,clone(n),new Set(),depth+1,budget,goalSet);
+            if(trial&&Number(trial.world.items[id]||0)>=qty){solved=trial;break;}
+          }catch(e){budget.last=e.message;}
+        }
+        for(const route of solved?[]:eventItemRoutes(id)){
           if(++budget.attempts>maxAttempts)break;
           if(n.world.generatedEvents?.[route.event])continue;
           let trial=clone(n);
