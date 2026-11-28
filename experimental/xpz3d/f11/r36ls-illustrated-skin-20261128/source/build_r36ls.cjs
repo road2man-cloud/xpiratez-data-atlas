@@ -3,7 +3,7 @@
  * R36LS full-character 2048 secondary brush painting production.
  * Draws directed strokes onto inherited skin textures, without altering
  * face/hair primitives, shape, UVs, rig, or polygon count.
- * Builds from R36LS ART GLB using Node.js only.
+ * Builds from R36LR ART GLB using Node.js only.
  */
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const {load,extract,Builder}=require('../../r36kz-chest-center-shape-20261128/source/glb_io.cjs');
@@ -58,7 +58,7 @@ function paintPixels(mesh,maps,variant){
      if(changed)colored++;
      // Very low-amplitude sculpted relief in tangent texture, retaining the
      // donor high-poly bake. Do not replace existing baked normals.
-     const gx=paint.gradient[0],gz=paint.gradient[1],normalGain=variant==='art'?.28:.17;
+     const gx=paint.grad[0],gz=paint.grad[1],normalGain=variant==='art'?.28:.17;
      const nx=(srcNormal[i]/127.5)-1,ny=(srcNormal[i+1]/127.5)-1;
      let tx=clamp(nx-normalGain*gx,-.91,.91),ty=clamp(ny-normalGain*gz,-.91,.91);
      const len=Math.hypot(tx,ty);if(len>.91){tx*=.91/len;ty*=.91/len}
@@ -110,7 +110,7 @@ function build(input,outDir,variant='art'){
  dmat.normalTexture={...dmat.normalTexture,index:tNor};
  if(dmat.occlusionTexture)dmat.occlusionTexture={...dmat.occlusionTexture,index:tORM};
  dest.asset.generator='R36LS secondary authored brush details on full character / original 2100 triangle mesh';
- dest.extras={...(dest.extras||{}),r36lr:{variant,sourceSHA256:q.sha,
+ dest.extras={...(dest.extras||{}),r36ls:{variant,sourceSHA256:q.sha,
    artStyle:'directed contour/brush strokes plus source skin palette and high-poly relief',
    sourceRigPreserved:63,sourceMeshTrianglesPreserved:2100,originalHeadHairPreserved:true,
    metrics:result.metrics,maps:outputMaps}};
@@ -125,7 +125,7 @@ function build(input,outDir,variant='art'){
  return report;
 }
 if(require.main===module){
- try{const [input,outDir,variant='art']=process.argv.slice(2);need(input&&outDir,'usage: node build_r36lr.cjs input.glb outputDir [art|subtle]');build(input,outDir,variant)}
+ try{const [input,outDir,variant='art']=process.argv.slice(2);need(input&&outDir,'usage: node build_r36ls.cjs input.glb outputDir [art|subtle]');build(input,outDir,variant)}
  catch(e){console.error(e.stack||e);process.exitCode=1}
 }
 module.exports={build,paintPixels};
