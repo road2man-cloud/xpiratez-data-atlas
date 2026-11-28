@@ -1,0 +1,251 @@
+{
+  "sourceBytes": 272868,
+  "outputBytes": 273004,
+  "triangles": 1936,
+  "joints": 63,
+  "changedPositions": 448,
+  "newDegenerate": 0,
+  "protectedAccessors": 51,
+  "faceHairEyesNeckHandsUnchanged": true,
+  "rigAndWeightsUnchanged": true,
+  "metrics": [
+    {
+      "accessor": 101,
+      "groups": [
+        "torso",
+        "shoulder",
+        "shoulder"
+      ],
+      "vertices": 96,
+      "changed": 92,
+      "triangles": 160,
+      "acceptedBlend": 1,
+      "before": {
+        "min": [
+          -0.220329,
+          -0.135238,
+          1.205
+        ],
+        "max": [
+          0.223458,
+          0.1084,
+          1.526
+        ]
+      },
+      "after": {
+        "min": [
+          -0.234329,
+          -0.124022,
+          1.205
+        ],
+        "max": [
+          0.237458,
+          0.1039,
+          1.526
+        ]
+      },
+      "maxDisplacement": 0.030731,
+      "normalReversals": 0,
+      "newDegenerate": 0
+    },
+    {
+      "accessor": 0,
+      "groups": [
+        "shorts"
+      ],
+      "vertices": 92,
+      "changed": 75,
+      "triangles": 180,
+      "acceptedBlend": 0.75,
+      "before": {
+        "min": [
+          -0.168386,
+          -0.106522,
+          0.803
+        ],
+        "max": [
+          0.168386,
+          0.10868,
+          1.045
+        ]
+      },
+      "after": {
+        "min": [
+          -0.182517,
+          -0.113473,
+          0.803
+        ],
+        "max": [
+          0.182517,
+          0.10868,
+          1.045
+        ]
+      },
+      "maxDisplacement": 0.014848,
+      "normalReversals": 0,
+      "newDegenerate": 0
+    },
+    {
+      "accessor": 7,
+      "groups": [
+        "boot",
+        "boot"
+      ],
+      "vertices": 74,
+      "changed": 74,
+      "triangles": 140,
+      "acceptedBlend": 1,
+      "before": {
+        "min": [
+          -0.151166,
+          -0.186891,
+          0.034
+        ],
+        "max": [
+          0.1579,
+          0.060217,
+          0.443
+        ]
+      },
+      "after": {
+        "min": [
+          -0.14998,
+          -0.174121,
+          0.034
+        ],
+        "max": [
+          0.156558,
+          0.050747,
+          0.443
+        ]
+      },
+      "maxDisplacement": 0.012827,
+      "normalReversals": 0,
+      "newDegenerate": 0
+    },
+    {
+      "accessor": 14,
+      "groups": [
+        "cuff",
+        "cuff"
+      ],
+      "vertices": 28,
+      "changed": 28,
+      "triangles": 48,
+      "acceptedBlend": 1,
+      "before": {
+        "min": [
+          -0.769947,
+          -0.036255,
+          1.374143
+        ],
+        "max": [
+          0.769947,
+          0.053866,
+          1.448825
+        ]
+      },
+      "after": {
+        "min": [
+          -0.769947,
+          -0.041134,
+          1.365123
+        ],
+        "max": [
+          0.769947,
+          0.064246,
+          1.456707
+        ]
+      },
+      "maxDisplacement": 0.017545,
+      "normalReversals": 0,
+      "newDegenerate": 0
+    },
+    {
+      "accessor": 21,
+      "groups": [
+        "seam"
+      ],
+      "vertices": 24,
+      "changed": 24,
+      "triangles": 24,
+      "acceptedBlend": 1,
+      "before": {
+        "min": [
+          -0.146923,
+          -0.098782,
+          1.02249
+        ],
+        "max": [
+          0.146923,
+          0.114782,
+          1.03551
+        ]
+      },
+      "after": {
+        "min": [
+          -0.145454,
+          -0.096706,
+          1.02542
+        ],
+        "max": [
+          0.145454,
+          0.112586,
+          1.032581
+        ]
+      },
+      "maxDisplacement": 0.003661,
+      "normalReversals": 0,
+      "newDegenerate": 0
+    },
+    {
+      "accessor": 34,
+      "groups": [
+        "torso",
+        "leg",
+        "arm",
+        "leg",
+        "arm"
+      ],
+      "vertices": 166,
+      "changed": 155,
+      "triangles": 312,
+      "acceptedBlend": 1,
+      "before": {
+        "min": [
+          -0.680947,
+          -0.120596,
+          0.43
+        ],
+        "max": [
+          0.680947,
+          0.101252,
+          1.462013
+        ]
+      },
+      "after": {
+        "min": [
+          -0.690886,
+          -0.127973,
+          0.43
+        ],
+        "max": [
+          0.690886,
+          0.101252,
+          1.476141
+        ]
+      },
+      "maxDisplacement": 0.021255,
+      "normalReversals": 0,
+      "newDegenerate": 0
+    }
+  ],
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Existing disconnected mesh topology retained; visual pose/seam inspection remains necessary.",
+    "Muscle-volume profile is an artistic approximation of the sprite, not a measured 3D reconstruction."
+  ],
+  "sourceBlob": "5c23527f2776776492486624361d4e9f2c1dcc7a",
+  "parentCommit": "a4fbae824de53988f4626e2014a92d963733b0ab"
+}
