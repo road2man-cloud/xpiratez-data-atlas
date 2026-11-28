@@ -50,7 +50,7 @@ module.exports=function retess({positions,triangles,innerIds,oldNormals}){
      const w=bary(xz(k),...f);
      if(w&&Math.min(...w)>1e-7)overlap++;
     }
-    const q=score(f)-overlap*1e3;
+    const q=quality(f)-overlap*1e3;
     if(!fallback||q>fallback.q)fallback={i,f,q};
    }
    if(!fallback)throw Error('No forward nondegenerate ear at '+polygon.length);
