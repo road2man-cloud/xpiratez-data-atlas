@@ -1,0 +1,85 @@
+import {createHash} from 'node:crypto';
+import {campaignStartWorld,availableResearch,applyCampaignStartStep,labVerdict} from '../public/soldiers/modern/campaign-start-gate-v1.js';
+function canonical(v){
+ if(v===undefined)return ['undefined'];
+ if(v===null||typeof v!=='object')return [typeof v,String(v)];
+ if(v instanceof Set)return ['set',[...v].map(canonical).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)))];
+ if(v instanceof Map)return ['map',[...v].map(canonical).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)))];
+ if(Array.isArray(v))return ['array',v.map(canonical)];
+ return ['object',Object.keys(v).sort().map(k=>[k,canonical(v[k])])];
+}
+const key=w=>createHash('sha256').update(JSON.stringify(canonical(w))).digest('hex');
+const diff=(a,b)=>[...b].filter(x=>!a.has(x)).sort();
+const delta=(a={},b={})=>Object.fromEntries([...new Set([...Object.keys(a),...Object.keys(b)])].sort().filter(k=>(a[k]||0)!==(b[k]||0)).map(k=>[k,(b[k]||0)-(a[k]||0)]));
+export function produceGraph(data,snapshot,{maxStates=200,maxDepth=8,extraActions=()=>[],seeds=[]}={}){
+ if(!Number.isSafeInteger(maxStates)||maxStates<5||!Number.isSafeInteger(maxDepth)||maxDepth<1)throw Error('invalid-budget');
+ const root=campaignStartWorld(data,snapshot),nodes=[],edges=[],frontier=[],rejected=[],queue=[],seen=new Map(),seedResults=[],edgeKeys=new Set();
+ function register(w,depth,parent){
+  const id=key(w);if(seen.has(id))return seen.get(id);
+  const n={id,depth,parent,available:availableResearch(w,data),researched:[...w.researched].sort(),disabled:[...w.disabled].sort(),pendingFree:w.pendingFree??null,gameCertified:false};
+  nodes.push(n);seen.set(id,n);queue.push({w,n});return n;
+ }
+ const initial=register(root,0,null);
+ function candidates(w,n){
+  const p=w.pendingFree;
+  return p?(p.sequential?p.choices.slice(0,1):p.choices).map(research=>({type:'freeResearch',source:p.source,research,assumeOutcome:!p.sequential&&p.choices.length>1})):
+    [...n.available.map(id=>w.researched.has(id)?{type:'repeatResearch',id,assumeAvailability:true}:{type:'research',id}),...extraActions(w,data)];
+ }
+ function transition(w,n,action,{seed=false}={}){
+  if(!seed&&n.depth>=maxDepth){frontier.push({from:n.id,action,reason:'depth-budget'});return {ok:false,reason:'depth-budget'};}
+  if(['externalInputs','campaignContext'].includes(action.type))return {ok:false,reason:'external-state-forbidden'};
+  if(['research','repeatResearch'].includes(action.type)){
+   const v=labVerdict(w,action.id,data,{repeat:action.type==='repeatResearch'});
+   if(!v.ok)return {ok:false,reason:v.reason};
+  }
+  const result=applyCampaignStartStep(structuredClone(w),action,data);
+  if(!result.ok)return {ok:false,reason:result.reason};
+  const z=result.world,id=key(z);
+  if(!seen.has(id)&&nodes.length>=maxStates){frontier.push({from:n.id,action,reason:'state-budget'});return {ok:false,reason:'state-budget'};}
+  const next=register(z,n.depth+1,n.id);
+  const ek=JSON.stringify([n.id,canonical(action),next.id]);
+  if(!edgeKeys.has(ek)){
+   edgeKeys.add(ek);
+   edges.push({from:n.id,to:next.id,action,availableBefore:n.available,availableAfter:next.available,unlocked:next.available.filter(k=>!n.available.includes(k)),added:diff(w.researched,z.researched),disabled:diff(w.disabled,z.disabled),reopened:diff(z.disabled,w.disabled),itemsDelta:delta(w.items,z.items),functionsAdded:diff(w.baseFunctions,z.baseFunctions),functionsRemoved:diff(z.baseFunctions,w.baseFunctions),conditional:!!result.assumed,notes:result.notes||[],gameCertified:false});
+  }
+  return {ok:true,w:z,n:next};
+ }
+ // Preserve all four first research choices before using supplied witnesses.
+ for(const a of candidates(root,initial))transition(root,initial,a);
+ for(const seed of seeds){
+  let w=root,n=initial,applied=0,reason=null;
+  const stateIds=[n.id];
+  for(const a of seed.actions){
+   if(applied===0&&!(a.type==='research'&&initial.available.includes(a.id))){reason='invalid-seed-root';break;}
+   const res=transition(w,n,a,{seed:true});
+   if(!res.ok){reason=res.reason;break;}
+   w=res.w;n=res.n;applied++;stateIds.push(n.id);
+  }
+  seedResults.push({id:seed.id,applied,total:seed.actions.length,reason,stateIds,finalState:n.id,gameCertified:false,ok:!reason&&!w.pendingFree,unresolvedFree:!!w.pendingFree});
+ }
+ // Expand shallow states first, including independently replayed witness nodes.
+ const expanded=new Set();
+ while(true){
+  const entry=queue.filter(e=>!expanded.has(e.n.id)).sort((a,b)=>a.n.depth-b.n.depth)[0];
+  if(!entry)break;
+  const {w,n}=entry;expanded.add(n.id);
+  const unique=new Map(candidates(w,n).map(a=>[JSON.stringify(canonical(a)),a]));
+  for(const action of unique.values()){
+   const res=transition(w,n,action);
+   if(!res.ok&&!['state-budget','depth-budget'].includes(res.reason))rejected.push({from:n.id,action,reason:res.reason});
+  }
+ }
+ // Seed insertion order must not be confused with shortest graph distance.
+ const adj=new Map();
+ for(const e of edges){if(!adj.has(e.from))adj.set(e.from,[]);adj.get(e.from).push(e);}
+ for(const n of nodes){n.depth=Infinity;n.parent=null;}
+ initial.depth=0;const bfs=[initial];
+ for(let i=0;i<bfs.length;i++)for(const e of adj.get(bfs[i].id)||[]){
+  const n=seen.get(e.to);
+  if(n.depth===Infinity){n.depth=bfs[i].depth+1;n.parent=bfs[i].id;bfs.push(n);}
+ }
+ if(bfs.length!==nodes.length)throw Error('disconnected-graph');
+ const realized=new Set(edges.map(e=>JSON.stringify([e.from,canonical(e.action)])));
+ const remaining=frontier.filter(e=>!realized.has(JSON.stringify([e.from,canonical(e.action)])));
+ return {version:121,sourceFingerprint:snapshot.sourceFingerprint,initial:initial.id,nodes,edges,frontier:remaining,rejected,seedResults,coverage:'bounded-model-research-resource-actions-and-replayed-seeds',complete:false,gameCertified:false};
+}
