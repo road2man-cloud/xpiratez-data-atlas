@@ -159,6 +159,10 @@ async function openDetail(id){
   '<div class="detail-grid"><div class="box"><strong>탑승 병력 / 조종사</strong>'+fmt(x.soldiers)+' / '+fmt(x.pilots)+'</div><div class="box"><strong>속도 / 연료</strong>'+fmt(x.speedMax)+' / '+fmt(x.fuelMax)+'</div><div class="box"><strong>내구 / 장비 슬롯</strong>'+fmt(x.damageMax)+' / '+fmt(x.weapons)+'</div><div class="box"><strong>슬롯 성격</strong>'+roleBadges(craftRoles(x))+'</div><div class="box"><strong>레이더</strong>'+fmt(x.radarRange)+' @ '+fmt(x.radarChance)+'%</div><div class="box"><strong>구매 / 판매</strong>'+fmt(x.costBuy)+' / '+fmt(x.costSell)+'</div><div class="box"><strong>임대·유지비</strong>'+fmt(x.costRent)+'</div><div class="box"><strong>명목 누적 연구량*</strong>'+fmt(x.summary?.nominalMinResearch)+'</div><div class="box"><strong>공통 분기</strong>'+gates+'</div></div>'+
   '<h3>장비 슬롯·무장 용도 상세</h3><div class="weapon-note"><b>읽는 법:</b> Ruleset의 <code>weapons</code>는 현재 장착 무기 수가 아니라 장비 슬롯 수입니다. 아래는 각 슬롯이 허용하는 <code>weaponType</code> 계열의 용도와 v.o1.1.1 기체장비 정의에서의 수치 범위입니다. 공격 수치가 없는 계열은 방어·기동·탐지 같은 지원용입니다.</div>'+slotTypeTable(x)+
   '<h3>획득·구매·제조 방식</h3><div class="routes">'+paths+'</div><p class="muted">* 명목 연구량은 dependencies+requires 중복 제거 합계입니다. 이벤트/무료해금으로 실제 최소는 더 작을 수 있습니다.</p>';
+  const forwardHost=document.createElement('div');$("#detailBody").append(forwardHost);
+  const forwardSpecs=[...new Set((x.acquisitionPaths||[]).map(p=>p.recipeId).filter(Boolean))].map(id=>({kind:'recipe',id,label:'기존 기체 관련 제조 ID'}));
+  if(!forwardSpecs.length)forwardHost.textContent='2.1 정방향 기체 획득 근거: 대응 제조 ID 없음. 실제 기체 획득 미확인.';
+  else import('../campaign-forward-evidence-v1.js').then(m=>{if(forwardHost.isConnected)m.mountForwardAssetEvidence(forwardHost,forwardSpecs,{legacy:true});}).catch(e=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 근거 로드 실패: '+e.message;});
   $("#detailDialog").showModal();
 }
 ["search"].forEach(id=>$("#"+id).addEventListener("input",debounce(render)));["route","capacity"].forEach(id=>$("#"+id).addEventListener("change",render));
