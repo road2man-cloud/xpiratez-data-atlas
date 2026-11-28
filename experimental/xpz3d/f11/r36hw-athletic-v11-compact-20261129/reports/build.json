@@ -1,0 +1,31 @@
+{
+  "sourceBlob": "d23f79e3c725758c3e4c25a911fae9c15ef0a5ea",
+  "inputBytes": 680908,
+  "outputBytes": 402668,
+  "savedBytes": 278240,
+  "reductionPercent": 40.863082824698786,
+  "oldBufferBytes": 641248,
+  "newBufferBytes": 382276,
+  "accessorsBefore": 162,
+  "accessorsAfter": 42,
+  "bufferViewsBefore": 166,
+  "bufferViewsAfter": 46,
+  "retainedViewBytes": 382274,
+  "byteComparisonCount": 382274,
+  "byteExactLiveViews": true,
+  "accessorMetadataPreserved": true,
+  "triangles": 2100,
+  "joints": 63,
+  "images": 4,
+  "geometryPreserved": true,
+  "skinWeightsPreserved": true,
+  "materialPreserved": true,
+  "normalTexturePreserved": true,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Unused whole bufferViews removed; unused subranges inside retained views are not pruned.",
+    "No changes to skin weighting or posed deformation.",
+    "Native S2 import/render not verified."
+  ]
+}
