@@ -1,0 +1,27 @@
+{
+  "version": "R138H",
+  "sourceGLB": "R36MK_ART_DENSE_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "f587771e1998810e59ce23f6a4aca04173f31da7216bdee97221e09c9e5b5bf3",
+  "patchedGLBSHA256": "9b8e98cc88ee4cd78ec1394674c8fdd96efaad4d362b1588a9c4ba8bf11ef524",
+  "originalHairPNGSHA256": "b42b7007abdae3b2c404ef5af78a539c57768da6e01e695376e950a88e1b3d26",
+  "newHairPNGSHA256": "fabd55f5985929980587def77305bead7002d513ec26a6d8bb3151d6c2a05e39",
+  "originalMeanRGB": [
+    44,
+    84,
+    17
+  ],
+  "newMeanRGB": [
+    136,
+    92,
+    62
+  ],
+  "triangles": 2100,
+  "joints": 63,
+  "sourceGeometryPreserved": true,
+  "updatedImageIndex": 1,
+  "imageRes": [
+    256,
+    256
+  ],
+  "nativeS2Rendered": false
+}
