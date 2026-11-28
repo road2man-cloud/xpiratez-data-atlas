@@ -1,0 +1,19 @@
+{
+  "schema": "xpz3d.r138j.hw_native_build/v1",
+  "buildHost": "authorized Windows bridge / MSVC 2022 Win32 toolchain",
+  "buildDateUTC": "2026-11-28",
+  "engine": "Native Silent Storm / Nival S2, existing local source",
+  "glbSHA256": "82e085bd91e8e48d2d6e6794047b54d39d47c2abe5940c184e12c45a25114482",
+  "nativePacketSHA256": "31b1c7e62573413fc3ef3a8ea9511954c2ecc315ced754d837ce204d111f9ad5",
+  "nativePacketTriangles": 2076,
+  "nativePacketGroups": 9,
+  "nativeBuildResult": "MSVC compile and native linker exit code 0",
+  "nativeExeSHA256": "7de00f74de64203af6819a87a6eb826766fa4d2bc0954f778c41ec69e6f0daa7",
+  "nativeExeBytes": 7367680,
+  "originalEngineFilesUnchanged": true,
+  "nativeGraphicsFrameConfirmed": false,
+  "nativeScreenshotProduced": false,
+  "animatedSkinningImplemented": false,
+  "uvPbrRenderingImplemented": false,
+  "gitHubBinaryDisclosure": "Engine executable, object files and third-party engine sources deliberately NOT published"
+}
