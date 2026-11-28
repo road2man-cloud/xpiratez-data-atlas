@@ -148,7 +148,7 @@ function applyLayer(){
   const mats=Array.isArray(o.material)?o.material:[o.material],src=Array.isArray(o.userData.originalMaterial)?o.userData.originalMaterial:[o.userData.originalMaterial];
   for(let k=0;k<mats.length;k++){const m=mats[k],s=src[k];m.wireframe=$('wire').checked;
    m.side=THREE.DoubleSide;m.normalMap=$('normal').checked?s.normalMap:null;
-   if(m.normalMap)m.normalScale.set(Number($('detail').value)/100,Number($('detail').value)/100);
+   if(m.normalMap){const gain=Number($('detail').value)/100;const baseline=s.normalScale||{x:1,y:1};m.normalScale.set(baseline.x*gain,baseline.y*gain);}
    if(cat==='core'){m.transparent=Number($('opacity').value)<100||s.transparent;m.opacity=Number($('opacity').value)/100;}
    else{m.transparent=s.transparent;m.opacity=s.opacity;}
    m.needsUpdate=true;
@@ -186,7 +186,7 @@ function focus(name){currentView=name;const root=active();if(!root)return;
  ctl.target.copy(c);ctl.update();
  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===name));
 }
-const names={low:'R36KZ · 체형 보정 + 골반 스킨',soft:'R36KZ · 강화형 체형',legacy:'R36KY · 이전 중심부',high:'고밀도 편집 원본',original:'R36HW 의복 원본'};
+const names={low:'R36LO · FRONT DEFINED',soft:'R36LO · FRONT SOFT',legacy:'R36LN · 전 단계 원본',high:'고밀도 편집 원본',original:'R36HW 의복 원본'};
 function updateMode(){
  mode=$('modelMode').value;
  for(const obj of Object.values(assets))if(obj)obj.visible=false;

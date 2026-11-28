@@ -1,0 +1,77 @@
+name: XPZ3D R36LP 2048 atlas production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36lp-skin-rebake-20261128/source/**'
+      - '.github/workflows/xpz3d-r36lp-production.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36lp-production
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lo-adaptive-curvature-20261128
+            experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Repaint original UV atlases and build full characters
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36lp-skin-rebake-20261128
+          INPUT=experimental/xpz3d/f11/r36lo-adaptive-curvature-20261128/output/R36LO_FRONT_DEFINED_2100_FULL.glb
+          node --check "$ROOT/source/build_r36lp.cjs"
+          test -s "$INPUT"
+          node "$ROOT/source/build_r36lp.cjs" "$INPUT" "$ROOT/output/balanced" balanced
+          node "$ROOT/source/build_r36lp.cjs" "$INPUT" "$ROOT/output/gentle" gentle
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          for(const mode of ['balanced','gentle']){
+            const dir=path.join(process.argv[2],mode),n='R36LP_'+mode.toUpperCase()+'_2100_FULL';
+            const b=fs.readFileSync(path.join(dir,n+'.glb'));
+            const r=JSON.parse(fs.readFileSync(path.join(dir,n+'.report.json')));
+            if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length||
+              r.totalTriangles!==2100||r.joints!==63||r.changedPixels<1000)throw Error('invalid R36LP '+mode);
+            console.log(n,b.length,r.sha256,r.changedPixels);
+          }
+          NODE
+      - name: Preserve production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: R36LP-2048-atlas-full-GLB
+          path: experimental/xpz3d/f11/r36lp-skin-rebake-20261128/output/
+          retention-days: 90
+      - name: Publish original new GLB and PNG assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experimental/xpz3d/f11/r36lp-skin-rebake-20261128/output
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DIR"
+          if git diff --cached --quiet; then echo "Artifacts unchanged"; exit 0; fi
+          git commit -m "xpz3d: publish R36LP body texture re-bake and GLBs"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then
+              echo "R36LP published"
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1

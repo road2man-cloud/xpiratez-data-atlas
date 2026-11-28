@@ -1,0 +1,34 @@
+{
+  "version": "R36LP",
+  "mode": "balanced",
+  "input": "R36LO_FRONT_DEFINED_2100_FULL.glb",
+  "sourceSHA256": "018dca2e6b59daf659449a2940d3a1fbd38015e5db2cd101a60777b133a6d629",
+  "glb": "experimental/xpz3d/f11/r36lp-skin-rebake-20261128/output/balanced/R36LP_BALANCED_2100_FULL.glb",
+  "bytes": 6868356,
+  "sha256": "126d099f07f5e5636c48764402b6abe73aeb2a19ca66bccc10ab10a60805151f",
+  "colorBytes": 1005531,
+  "normalBytes": 1737873,
+  "totalTriangles": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "joints": 63,
+  "skinPixels": 451996,
+  "changedPixels": 451996,
+  "degenerateUVTriangles": 0,
+  "meanColorChangeRGB8": [
+    0.6820126726785193,
+    0.4914291276913955,
+    0.338795033584368
+  ],
+  "maxColorChangeRGB8": [
+    3,
+    2,
+    2
+  ],
+  "worldSpaceShading": true,
+  "sourceColorMostlyPreserved": true,
+  "normalFlattening": true,
+  "triangleBudgetUnchanged": true,
+  "renderQA": "not run",
+  "s2EngineQA": "not run"
+}
