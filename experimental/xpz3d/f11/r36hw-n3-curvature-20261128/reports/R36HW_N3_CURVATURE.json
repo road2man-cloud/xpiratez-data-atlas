@@ -1,0 +1,628 @@
+{
+  "stage": "R36HW N3 direct edit — distributed height displacement, improved normals and original garment shell retouch",
+  "inputSha256": "a0780ab8995e68036388754449cfb66891c8bbbb160ef18b04a730d3294db732",
+  "outputSha256": "87295d5b09b735110838f4bdbad4729b07b632ea7c4e11c4d01216f0ea412424",
+  "originalTriangles": 2098,
+  "removedTriangles": 186,
+  "selectedTriangles": 82,
+  "candidateTriangles": 82,
+  "addedTriangles": 164,
+  "resultTriangles": 2076,
+  "originalPantsVertices": 92,
+  "editedPantsVertices": 174,
+  "selectedTriangleIDs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    128,
+    129,
+    138,
+    139,
+    140,
+    141,
+    142,
+    143,
+    144,
+    145,
+    146,
+    147,
+    157,
+    158,
+    159,
+    160,
+    161,
+    162,
+    163,
+    164,
+    165,
+    166,
+    167,
+    173,
+    174,
+    175,
+    176,
+    177,
+    178
+  ],
+  "offsetSummaryMeters": {
+    "min": -0.0027,
+    "max": 0.005547,
+    "originalVerticesWithRelief": 31
+  },
+  "retouchedPrimitives": [
+    {
+      "primitive": "jacket",
+      "vertexCount": 96,
+      "maxDisplacementMeters": 0.005927,
+      "originalAccessor": 101
+    },
+    {
+      "primitive": "boots",
+      "vertexCount": 74,
+      "maxDisplacementMeters": 0.005884,
+      "originalAccessor": 7
+    },
+    {
+      "primitive": "gloves",
+      "vertexCount": 28,
+      "maxDisplacementMeters": 0.003155,
+      "originalAccessor": 14
+    }
+  ],
+  "retainedSkinJoints": 63,
+  "unchangedFaceTriangles": 644,
+  "unchangedHairTriangles": 294,
+  "originalBINbytes": 239648,
+  "retainedOriginalBinaryBytes": 239648,
+  "limitations": [
+    "Original outfit-shaped shells were conservatively slimmed but not fully retopologized",
+    "Not a photogrammetric depth reconstruction",
+    "Image reference is a low-resolution nonliteral cue",
+    "No native S2 run",
+    "Visual aesthetics unapproved"
+  ],
+  "triangles": [
+    {
+      "originalTriangle": 0,
+      "centroidIndex": 92,
+      "totalOffsetY": -0.000034,
+      "residualY": -0.000587
+    },
+    {
+      "originalTriangle": 1,
+      "centroidIndex": 93,
+      "totalOffsetY": -0.00047,
+      "residualY": -0.001012
+    },
+    {
+      "originalTriangle": 2,
+      "centroidIndex": 94,
+      "totalOffsetY": 0.000023,
+      "residualY": 0.000035
+    },
+    {
+      "originalTriangle": 3,
+      "centroidIndex": 95,
+      "totalOffsetY": 0.00004,
+      "residualY": 0.000051
+    },
+    {
+      "originalTriangle": 4,
+      "centroidIndex": 96,
+      "totalOffsetY": -0.000007,
+      "residualY": -0.000007
+    },
+    {
+      "originalTriangle": 5,
+      "centroidIndex": 97,
+      "totalOffsetY": -0.000002,
+      "residualY": -0.000002
+    },
+    {
+      "originalTriangle": 6,
+      "centroidIndex": 98,
+      "totalOffsetY": -0.000001,
+      "residualY": -0.000001
+    },
+    {
+      "originalTriangle": 25,
+      "centroidIndex": 99,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 26,
+      "centroidIndex": 100,
+      "totalOffsetY": -0.000008,
+      "residualY": -0.000008
+    },
+    {
+      "originalTriangle": 27,
+      "centroidIndex": 101,
+      "totalOffsetY": 0.000018,
+      "residualY": 0.000003
+    },
+    {
+      "originalTriangle": 28,
+      "centroidIndex": 102,
+      "totalOffsetY": -0.000003,
+      "residualY": -0.000018
+    },
+    {
+      "originalTriangle": 29,
+      "centroidIndex": 103,
+      "totalOffsetY": 0.000004,
+      "residualY": 0.000034
+    },
+    {
+      "originalTriangle": 30,
+      "centroidIndex": 104,
+      "totalOffsetY": -0.000312,
+      "residualY": -0.000266
+    },
+    {
+      "originalTriangle": 31,
+      "centroidIndex": 105,
+      "totalOffsetY": -0.000625,
+      "residualY": -0.001132
+    },
+    {
+      "originalTriangle": 32,
+      "centroidIndex": 106,
+      "totalOffsetY": 0.000274,
+      "residualY": -0.002383
+    },
+    {
+      "originalTriangle": 33,
+      "centroidIndex": 107,
+      "totalOffsetY": -0.002233,
+      "residualY": -0.004222
+    },
+    {
+      "originalTriangle": 34,
+      "centroidIndex": 108,
+      "totalOffsetY": 0.000114,
+      "residualY": 0.00024
+    },
+    {
+      "originalTriangle": 35,
+      "centroidIndex": 109,
+      "totalOffsetY": 0.000072,
+      "residualY": 0.000181
+    },
+    {
+      "originalTriangle": 36,
+      "centroidIndex": 110,
+      "totalOffsetY": 0.000006,
+      "residualY": -0.000001
+    },
+    {
+      "originalTriangle": 37,
+      "centroidIndex": 111,
+      "totalOffsetY": 0.000003,
+      "residualY": -0.000003
+    },
+    {
+      "originalTriangle": 38,
+      "centroidIndex": 112,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 57,
+      "centroidIndex": 113,
+      "totalOffsetY": 0,
+      "residualY": -0.000001
+    },
+    {
+      "originalTriangle": 58,
+      "centroidIndex": 114,
+      "totalOffsetY": 0.000006,
+      "residualY": -0.00001
+    },
+    {
+      "originalTriangle": 59,
+      "centroidIndex": 115,
+      "totalOffsetY": 0.000025,
+      "residualY": -0.000001
+    },
+    {
+      "originalTriangle": 60,
+      "centroidIndex": 116,
+      "totalOffsetY": 0.000068,
+      "residualY": 0.000089
+    },
+    {
+      "originalTriangle": 61,
+      "centroidIndex": 117,
+      "totalOffsetY": 0.000034,
+      "residualY": 0.000179
+    },
+    {
+      "originalTriangle": 62,
+      "centroidIndex": 118,
+      "totalOffsetY": -0.001628,
+      "residualY": -0.002026
+    },
+    {
+      "originalTriangle": 63,
+      "centroidIndex": 119,
+      "totalOffsetY": -0.001868,
+      "residualY": -0.004428
+    },
+    {
+      "originalTriangle": 80,
+      "centroidIndex": 120,
+      "totalOffsetY": -0.002124,
+      "residualY": -0.003445
+    },
+    {
+      "originalTriangle": 81,
+      "centroidIndex": 121,
+      "totalOffsetY": -0.000396,
+      "residualY": 0.000371
+    },
+    {
+      "originalTriangle": 82,
+      "centroidIndex": 122,
+      "totalOffsetY": 0.000005,
+      "residualY": 0.000087
+    },
+    {
+      "originalTriangle": 83,
+      "centroidIndex": 123,
+      "totalOffsetY": 0.000028,
+      "residualY": -0.000008
+    },
+    {
+      "originalTriangle": 84,
+      "centroidIndex": 124,
+      "totalOffsetY": 0.000003,
+      "residualY": -0.000006
+    },
+    {
+      "originalTriangle": 85,
+      "centroidIndex": 125,
+      "totalOffsetY": 0,
+      "residualY": -0.000003
+    },
+    {
+      "originalTriangle": 86,
+      "centroidIndex": 126,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 87,
+      "centroidIndex": 127,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 98,
+      "centroidIndex": 128,
+      "totalOffsetY": 0.005224,
+      "residualY": 0.001389
+    },
+    {
+      "originalTriangle": 99,
+      "centroidIndex": 129,
+      "totalOffsetY": 0.003112,
+      "residualY": 0.000623
+    },
+    {
+      "originalTriangle": 100,
+      "centroidIndex": 130,
+      "totalOffsetY": -0.000797,
+      "residualY": -0.000133
+    },
+    {
+      "originalTriangle": 101,
+      "centroidIndex": 131,
+      "totalOffsetY": -0.000029,
+      "residualY": -0.000044
+    },
+    {
+      "originalTriangle": 102,
+      "centroidIndex": 132,
+      "totalOffsetY": 0.000051,
+      "residualY": 0.00002
+    },
+    {
+      "originalTriangle": 103,
+      "centroidIndex": 133,
+      "totalOffsetY": 0.000012,
+      "residualY": 0.000008
+    },
+    {
+      "originalTriangle": 104,
+      "centroidIndex": 134,
+      "totalOffsetY": 0.000001,
+      "residualY": -0.000002
+    },
+    {
+      "originalTriangle": 105,
+      "centroidIndex": 135,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 106,
+      "centroidIndex": 136,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 107,
+      "centroidIndex": 137,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 117,
+      "centroidIndex": 138,
+      "totalOffsetY": 0.000275,
+      "residualY": -0.000782
+    },
+    {
+      "originalTriangle": 118,
+      "centroidIndex": 139,
+      "totalOffsetY": 0.000336,
+      "residualY": -0.000045
+    },
+    {
+      "originalTriangle": 119,
+      "centroidIndex": 140,
+      "totalOffsetY": -0.000565,
+      "residualY": 0.000119
+    },
+    {
+      "originalTriangle": 120,
+      "centroidIndex": 141,
+      "totalOffsetY": 0,
+      "residualY": 0.000012
+    },
+    {
+      "originalTriangle": 121,
+      "centroidIndex": 142,
+      "totalOffsetY": 0.000001,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 122,
+      "centroidIndex": 143,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 123,
+      "centroidIndex": 144,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 128,
+      "centroidIndex": 145,
+      "totalOffsetY": -0.000023,
+      "residualY": -0.00003
+    },
+    {
+      "originalTriangle": 129,
+      "centroidIndex": 146,
+      "totalOffsetY": -0.00002,
+      "residualY": -0.000015
+    },
+    {
+      "originalTriangle": 138,
+      "centroidIndex": 147,
+      "totalOffsetY": 0,
+      "residualY": -0.000001
+    },
+    {
+      "originalTriangle": 139,
+      "centroidIndex": 148,
+      "totalOffsetY": 0,
+      "residualY": -0.000001
+    },
+    {
+      "originalTriangle": 140,
+      "centroidIndex": 149,
+      "totalOffsetY": 0.000011,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 141,
+      "centroidIndex": 150,
+      "totalOffsetY": 0.000029,
+      "residualY": -0.000003
+    },
+    {
+      "originalTriangle": 142,
+      "centroidIndex": 151,
+      "totalOffsetY": 0.000039,
+      "residualY": 0.000116
+    },
+    {
+      "originalTriangle": 143,
+      "centroidIndex": 152,
+      "totalOffsetY": -0.000058,
+      "residualY": 0.000591
+    },
+    {
+      "originalTriangle": 144,
+      "centroidIndex": 153,
+      "totalOffsetY": -0.0027,
+      "residualY": -0.004144
+    },
+    {
+      "originalTriangle": 145,
+      "centroidIndex": 154,
+      "totalOffsetY": 0.001395,
+      "residualY": -0.001408
+    },
+    {
+      "originalTriangle": 146,
+      "centroidIndex": 155,
+      "totalOffsetY": 0.005547,
+      "residualY": 0.001513
+    },
+    {
+      "originalTriangle": 147,
+      "centroidIndex": 156,
+      "totalOffsetY": 0.003069,
+      "residualY": 0.000568
+    },
+    {
+      "originalTriangle": 157,
+      "centroidIndex": 157,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 158,
+      "centroidIndex": 158,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 159,
+      "centroidIndex": 159,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 160,
+      "centroidIndex": 160,
+      "totalOffsetY": 0.000006,
+      "residualY": -0.000016
+    },
+    {
+      "originalTriangle": 161,
+      "centroidIndex": 161,
+      "totalOffsetY": 0.00001,
+      "residualY": -0.000013
+    },
+    {
+      "originalTriangle": 162,
+      "centroidIndex": 162,
+      "totalOffsetY": 0.000057,
+      "residualY": 0.000597
+    },
+    {
+      "originalTriangle": 163,
+      "centroidIndex": 163,
+      "totalOffsetY": -0.00007,
+      "residualY": 0.000502
+    },
+    {
+      "originalTriangle": 164,
+      "centroidIndex": 164,
+      "totalOffsetY": -0.00155,
+      "residualY": -0.002227
+    },
+    {
+      "originalTriangle": 165,
+      "centroidIndex": 165,
+      "totalOffsetY": 0.000131,
+      "residualY": -0.001126
+    },
+    {
+      "originalTriangle": 166,
+      "centroidIndex": 166,
+      "totalOffsetY": 0.002364,
+      "residualY": 0.000513
+    },
+    {
+      "originalTriangle": 167,
+      "centroidIndex": 167,
+      "totalOffsetY": 0.000706,
+      "residualY": 0.000095
+    },
+    {
+      "originalTriangle": 173,
+      "centroidIndex": 168,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 174,
+      "centroidIndex": 169,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 175,
+      "centroidIndex": 170,
+      "totalOffsetY": 0,
+      "residualY": 0
+    },
+    {
+      "originalTriangle": 176,
+      "centroidIndex": 171,
+      "totalOffsetY": 0.000001,
+      "residualY": 0.000011
+    },
+    {
+      "originalTriangle": 177,
+      "centroidIndex": 172,
+      "totalOffsetY": -0.00003,
+      "residualY": -0.000037
+    },
+    {
+      "originalTriangle": 178,
+      "centroidIndex": 173,
+      "totalOffsetY": -0.000028,
+      "residualY": -0.000056
+    }
+  ]
+}
