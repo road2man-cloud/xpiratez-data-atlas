@@ -1,10 +1,16 @@
 // Generic, source-backed row comparison for all registered soldier origins.
 // This does not synthesize an optimal route from unrelated candidates.
 export const ROUTE_METRICS = Object.freeze(["growth", "provisional", "birth", "certified"]);
-export function routeCandidate(record, metric, preferredId=null) {
-  if (!record || metric === "birth" || metric === "certified") return null;
-  const qualified=(record.candidates||[]).filter(candidate=>
-    metric !== "growth" || candidate.growth?.kind==="conditional-upper-envelope");
+export function routeCandidate(record, metric, preferredId=null, keys=[]) {
+  if (!record || !["growth","provisional"].includes(metric)) return null;
+  const projection=c=>c?.[metric==="growth"?"growth":"display"];
+  const qualified=(record.candidates||[]).filter(candidate=>{
+    if (!candidate || (metric==="growth" && candidate.growth?.kind!=="conditional-upper-envelope")) return false;
+    const p=projection(candidate);
+    if (!Number.isSafeInteger(p?.total)) return false;
+    return !keys.length || (p.stats && keys.every(key=>Number.isSafeInteger(p.stats[key])) &&
+      keys.reduce((sum,key)=>sum+p.stats[key],0)===p.total);
+  });
   if (preferredId) {
     const selected=qualified.find(candidate=>candidate.id===preferredId);
     if (selected) return selected;
@@ -14,7 +20,7 @@ export function routeCandidate(record, metric, preferredId=null) {
 }
 export function routeNumbers(record, metric, preferredId=null, keys=[]) {
   if (!ROUTE_METRICS.includes(metric) || !record || metric==="certified") return null;
-  const candidate=routeCandidate(record,metric,preferredId);
+  const candidate=routeCandidate(record,metric,preferredId,keys);
   const stats=metric==="birth"?record.displayBirth:candidate?.[metric==="growth"?"growth":"display"]?.stats;
   if (!stats || !keys.length || !keys.every(key=>Number.isSafeInteger(stats[key]))) return null;
   const values=Object.fromEntries(keys.map(key=>[key,stats[key]]));
