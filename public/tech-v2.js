@@ -4,6 +4,8 @@
   if(!['research','manufacture'].includes(kind)) return;
   const $=id=>document.getElementById(id);
   const state={entries:[],limit:100,reverse:false};
+  let forwardEvidencePromise;
+  const forwardEvidence=()=>forwardEvidencePromise??=import('./campaign-forward-evidence-v1.js').then(m=>m.loadForwardEvidence().then(e=>({m,e})));
   const elt=(parent,tag,text,className)=>{
     const e=document.createElement(tag);
     if(className)e.className=className;
@@ -91,6 +93,15 @@
       }
       if(refs.length>100)elt(wrap,'span','외 '+(refs.length-100)+'개','note');
     }
+    const forwardHost=elt($('detail-links'),'section','정방향 연구 자료 불러오는 중…','relation');
+    const targets=kind==='research'?[row.id]:Array.isArray(row.fields.requires)?row.fields.requires:null;
+    if(targets===null){forwardHost.textContent='제조 선행 연구 필드 미확인: 정방향 판정 보류.';}
+    else forwardEvidence().then(({m,e})=>{
+      if(forwardHost.isConnected){
+        m.renderForwardEvidence(forwardHost,e,targets);
+        if(kind==='manufacture')elt(forwardHost,'p','연구 도달만 표시합니다. 제조 재료·시설·비용 및 실제 생산은 별도 조건입니다.');
+      }
+    }).catch(err=>{if(forwardHost.isConnected)forwardHost.textContent='정방향 자료 오류: '+err.message;});
     $('detail').scrollIntoView({behavior:'smooth',block:'start'});
   }
   const change=()=>{state.limit=100;rows();};
