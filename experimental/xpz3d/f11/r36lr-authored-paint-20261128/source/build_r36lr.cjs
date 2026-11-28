@@ -58,9 +58,9 @@ function paintPixels(mesh,maps,variant){
      if(changed)colored++;
      // Very low-amplitude sculpted relief in tangent texture, retaining the
      // donor high-poly bake. Do not replace existing baked normals.
-     const gx=paint.gradient[0],gz=paint.gradient[1],a=variant==='art'?.28:.17;
+     const gx=paint.gradient[0],gz=paint.gradient[1],normalGain=variant==='art'?.28:.17;
      const nx=(srcNormal[i]/127.5)-1,ny=(srcNormal[i+1]/127.5)-1;
-     let tx=clamp(nx-a*gx,-.91,.91),ty=clamp(ny-a*gz,-.91,.91);
+     let tx=clamp(nx-normalGain*gx,-.91,.91),ty=clamp(ny-normalGain*gz,-.91,.91);
      const len=Math.hypot(tx,ty);if(len>.91){tx*=.91/len;ty*=.91/len}
      normal[i]=Math.round((tx*.5+.5)*255);
      normal[i+1]=Math.round((ty*.5+.5)*255);
