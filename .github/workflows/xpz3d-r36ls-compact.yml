@@ -1,0 +1,73 @@
+name: XPZ3D R36LS compact published full-character GLBs
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/source/compact_glb.cjs'
+      - '.github/workflows/xpz3d-r36ls-compact.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36ls-compact
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce losslessly compact R36LS full character models
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36ls-illustrated-skin-20261128
+          node --check "$ROOT/source/compact_glb.cjs"
+          mkdir -p "$ROOT/output/compact"
+          for V in ART SUBTLE; do
+            MODE=$(echo "$V" | tr '[:upper:]' '[:lower:]')
+            node "$ROOT/source/compact_glb.cjs" "$ROOT/output/$MODE/R36LS_${V}_2100_FULL.glb" "$ROOT/output/compact/R36LS_${V}_2100_COMPACT_FULL.glb"
+          done
+          node - "$ROOT/output/compact" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          for(const v of ['ART','SUBTLE']){
+            const p=path.join(process.argv[2],'R36LS_'+v+'_2100_COMPACT_FULL');
+            const r=JSON.parse(fs.readFileSync(p+'.report.json'));
+            const b=fs.readFileSync(p+'.glb');
+            if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length||r.reducedBytes<500000)throw Error('compact artifact invalid '+v);
+            console.log(v,r.inputBytes,r.outputBytes,r.reducedBytes,r.outputSHA256);
+          }
+          NODE
+      - name: Preserve compact full-body GLBs
+        uses: actions/upload-artifact@v4
+        with:
+          name: R36LS-compact-full-GLB
+          path: experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/output/compact/
+          retention-days: 90
+      - name: Publish compact GLBs without force
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR=experimental/xpz3d/f11/r36ls-illustrated-skin-20261128/output/compact
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$DIR"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish compact R36LS painted full GLBs"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
