@@ -1,0 +1,83 @@
+name: XPZ3D R36LY physical curvature GLB production
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental/xpz3d/f11/r36ly-curvature-20261128/source/**'
+      - '.github/workflows/xpz3d-r36ly-curvature.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-r36ly-curvature
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+          sparse-checkout: |
+            experimental/xpz3d/f11/r36kz-chest-center-shape-20261128
+            experimental/xpz3d/f11/r36lx-polygon-texture-20261128
+            experimental/xpz3d/f11/r36ly-curvature-20261128
+          sparse-checkout-cone-mode: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Produce new 3D mesh geometries for ART and SUBTLE
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36ly-curvature-20261128
+          SCRIPT=$ROOT/source/build_r36ly.cjs
+          node --check "$SCRIPT"
+          rm -rf "$ROOT/output"
+          mkdir -p "$ROOT/output/models"
+          for V in ART SUBTLE; do
+            SOURCE="$BASE/r36lx-polygon-texture-20261128/output/compact/R36LX_${V}_POLYGON_DETAIL_2100_COMPACT_FULL.glb"
+            for STYLE in flow guarded; do
+              OUT="$ROOT/output/${V}_$STYLE"
+              node "$SCRIPT" "$SOURCE" "$OUT" "$STYLE"
+              UPPER=$(echo "$STYLE" | tr '[:lower:]' '[:upper:]')
+              cp "$OUT/R36LY_${UPPER}_2100_FULL.glb" "$ROOT/output/models/R36LY_${V}_${UPPER}_2100_FULL.glb"
+            done
+          done
+          node - "$ROOT/output" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const root=process.argv[2];
+          for(const v of ['ART','SUBTLE'])for(const s of ['flow','guarded']){
+            const r=JSON.parse(fs.readFileSync(path.join(root,v+'_'+s,'R36LY_'+s.toUpperCase()+'.report.json')));
+            const file=path.join(root,'models','R36LY_'+v+'_'+s.toUpperCase()+'_2100_FULL.glb');
+            const b=fs.readFileSync(file);
+            if(r.totalTriangles!==2100||r.skinJoints!==63||r.movedPhysicalVertexGroups<30||r.minFaceNormalDot<=.62||r.minAreaRatio<=.48||b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('R36LY failed geometry contract '+v+' '+s);
+            console.log(v,s,r.movedPhysicalVertexGroups,r.movedUVSplitVertices,r.maxVertexDisplacement,b.length);
+          }
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R36LY-physical-curvature-all-meshes
+          path: experimental/xpz3d/f11/r36ly-curvature-20261128/output/
+          retention-days: 90
+      - name: Commit produced GLBs to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=experimental/xpz3d/f11/r36ly-curvature-20261128/output
+          rm -f "$ROOT"/ART_flow/*.glb "$ROOT"/ART_guarded/*.glb "$ROOT"/SUBTLE_flow/*.glb "$ROOT"/SUBTLE_guarded/*.glb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$ROOT"
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "xpz3d: publish R36LY 3D curvature models and measurements"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if git rebase origin/main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 2
+          done
+          exit 1
