@@ -2,16 +2,21 @@
 // Every edge is an action selected from the current state, then actually applied.
 // This is a bounded model graph, NOT a native campaign or exhaustive tree.
 import {createHash} from 'node:crypto';
-import {campaignStartWorld,availableResearch,applyCampaignStartStep,START_RESEARCH} from '../public/soldiers/modern/campaign-start-gate-v1.js';
+import {campaignStartWorld,availableResearch,applyCampaignStartStep,START_RESEARCH,labVerdict} from '../public/soldiers/modern/campaign-start-gate-v1.js';
+import {eventScriptVerdict} from '../public/soldiers/modern/event-chronology.js';
+import {purchaseVerdict} from '../public/soldiers/modern/campaign-start-reachability-v1.js';
 const arr=x=>Array.isArray(x)?x:[];
 const canon=x=>x instanceof Set?[...x].sort().map(canon):x instanceof Map?Object.fromEntries([...x.entries()].sort(([a],[b])=>String(a).localeCompare(String(b))).map(([k,v])=>[k,canon(v)])):Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>createHash('sha256').update(JSON.stringify(canon(x))).digest('hex');
 const diff=(a,b)=>[...a].filter(x=>!b.has(x)).sort();
-export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null}={}){
+export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,captainEvent=null,resume=null,eventRoutes=[],samplePurchases=false}={}){
  if(!Number.isSafeInteger(maxDepth)||maxDepth<1||maxDepth>50||!Number.isSafeInteger(maxNodes)||maxNodes<5||maxNodes>100000)throw Error('invalid-forward-bounds');
  const initial=campaignStartWorld(data,snapshot);
  if(initial.researched.size||initial.disabled.size||initial.pendingFree)throw Error('nonempty-forward-root');
  const nodes=[],worlds=[],edges=[],index=new Map();
+ const sampleRules=samplePurchases?Object.entries(data.researchRules).filter(([,r])=>r.needItem&&r.cost>0&&!arr(r.requires).length):[];
+ const policy={eventRoutes,samplePurchases};
+ const scope=eventRoutes.length||samplePurchases?'BOUNDED_FORWARD_LAB_FREE_AWARD_EVENTS_AND_ELIGIBLE_PURCHASES; NO_LEGACY_ACTIONS; NO_NATIVE_CERTIFICATION':'BOUNDED_FORWARD_LAB_FREE_AWARD_AND_OPTIONAL_CAPTAIN_EVENT; NO_LEGACY_ACTIONS; NO_NATIVE_CERTIFICATION';
  function register(world,depth){
   const hash=digest(world);
   if(index.has(hash))return index.get(hash);
@@ -33,7 +38,7 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
  if(resume){
   if(resume.schema!=='ATLAS_CAMPAIGN_FORWARD_TREE_V1'||resume.sourceMetadataSha256!==snapshot.sourceFingerprint||
    resume.difficulty!==snapshot.difficulty||!eq(resume.regions,snapshot.regions??null)||!eq(resume.countries,snapshot.countries??null)||
-   !eq(resume.limits?.captainEvent??null,captainEvent)||maxDepth<resume.limits.maxDepth||maxNodes<resume.nodes.length)
+   !eq(resume.limits?.captainEvent??null,captainEvent)||!eq(resume.limits?.policy??{eventRoutes:[],samplePurchases:false},policy)||maxDepth<resume.limits.maxDepth||maxNodes<resume.nodes.length)
    throw Error('forward-resume-identity-mismatch');
   if(!Array.isArray(resume.nodes)||!Array.isArray(resume.edges)||!resume.nodes.length)throw Error('forward-resume-invalid');
   const parents=new Map();
@@ -76,6 +81,30 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
   // topic. Its native scheduling is not modeled. Never grant it at the root.
   if(!pending&&i!==0&&captainEvent&&!w.researched.has(captainEvent.research)&&!w.generatedEvents?.[captainEvent.event])
    actions.push({type:'eventResearch',event:captainEvent.event,script:captainEvent.script,research:captainEvent.research,assumeOutcome:true});
+  if(!pending&&i!==0){
+   for(const route of eventRoutes){
+    if(w.researched.has(route.research)||w.disabled.has(route.research)||w.generatedEvents?.[route.event])continue;
+    const triggerItems={...w.otherItems};
+    for(const [k,v] of Object.entries(w.items))triggerItems[k]=(triggerItems[k]||0)+v;
+    const v=eventScriptVerdict({...route.script,eventId:route.event},{...w,triggerItems,triggerFacilities:w.globalFacilities},{mode:'current'});
+    if(v.blocked.length||v.unknown.length)continue;
+    const action={type:'eventResearch',event:route.event,script:route.script.script,research:route.research,assumeOutcome:true};
+    if(!actions.some(a=>edgeKey(a)===edgeKey(action)))actions.push(action);
+   }
+   // Only acquire a missing sample if it would immediately enable an otherwise
+   // legal project and the source-backed purchase gate already passes.
+   const wanted=new Set();
+   for(const [id,r] of sampleRules){
+    const item=r.neededItem||id;
+    if(wanted.has(item)||w.researched.has(id)||w.disabled.has(id)||(w.items[item]||0)>0)continue;
+    if(arr(r.requiresBaseFunc).some(k=>!w.baseFunctions.has(k)))continue;
+    const hypothetical={...w,items:{...w.items,[item]:1}};
+    if(!labVerdict(hypothetical,id,data).ok)continue;
+    try{purchaseVerdict(w,item,1,data);}catch{continue;}
+    wanted.add(item);
+    actions.push({type:'acquirePurchase',item,count:1});
+   }
+  }
   const seen=processed.get(i)||new Set();
   const remaining=actions.filter(a=>!seen.has(edgeKey(a)));
   n.candidateCount=actions.length;
@@ -95,11 +124,11 @@ export function buildCampaignForwardTree(data,snapshot,{maxDepth=5,maxNodes=600,
   n.expanded=n.omitted===0;n.frontierReason=n.omitted?'node-bound':null;
  }
  const incomplete=nodes.filter(n=>!n.expanded).length;
- return {schema:'ATLAS_CAMPAIGN_FORWARD_TREE_V1',scope:'BOUNDED_FORWARD_LAB_FREE_AWARD_AND_OPTIONAL_CAPTAIN_EVENT; NO_LEGACY_ACTIONS; NO_NATIVE_CERTIFICATION',
+ return {schema:'ATLAS_CAMPAIGN_FORWARD_TREE_V1',scope,
   difficulty:snapshot.difficulty,regions:snapshot.regions??null,countries:snapshot.countries??null,sourceMetadataSha256:snapshot.sourceFingerprint,
-  limits:{maxDepth,maxNodes,depthUnit:'actions',captainEvent:captainEvent??null},
-  excluded:['physical sample acquisition beyond starting inventory and research grants','facility construction','other events and missions','native research duration and event scheduler','economy and full base simulation'],
+  limits:{maxDepth,maxNodes,depthUnit:'actions',captainEvent:captainEvent??null,policy},
+  excluded:[samplePurchases?'non-purchase sample acquisition and purchase cost/delivery':'physical sample acquisition beyond starting inventory and research grants','facility construction','events outside selected routes and missions','native research duration and event scheduler','economy and full base simulation'],
   initialMenu:nodes[0].availableResearch,firstBranches,nodes,edges,
   continuation:resume?{previousStates,previousEdges,newStates:nodes.length-previousStates,newEdges:edges.length-previousEdges,previousGraphHash:digest(resume)}:null,
-  summary:{states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
+  summary:{actionTypes:edges.reduce((a,e)=>(a[e.action.type]=(a[e.action.type]||0)+1,a),{}),states:nodes.length,edges:edges.length,initialBranches:Object.keys(firstBranches).length,distinctCompletedResearch:valid.size,researchIds:[...valid].sort(),expandedStates:nodes.length-incomplete,frontierStates:incomplete,omittedActions:nodes.reduce((s,n)=>s+n.omitted,0),rejectedActions:nodes.reduce((s,n)=>s+n.blocked.length,0),rejectedTopics:[...blocked].filter(Boolean).sort(),maxReachedDepth:Math.max(...nodes.map(n=>n.depth)),gameCertified:0,exhaustive:false}};
 }
