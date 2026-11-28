@@ -1,0 +1,2500 @@
+{
+  "schema": "V115_HERO_GOLD_GATE_CONTINUATIONS",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFilesHash": "e1871394e488e3e174172db5edc384571f6558563b335aa66382c56585ddb1ed",
+  "snapshotHash": "046ee4b3759ea356a9c631ad847b455c195485496c359312f79e5259991a058f",
+  "initialResearch": [
+    "STR_INSPECT_MACHINERY",
+    "STR_JACKSTOWN_SCOUTING",
+    "STR_RECRUIT_PEASANTS",
+    "STR_WAT_DO"
+  ],
+  "eventSource": {
+    "event": "STR_KNOCK_KNOCK_PENITENT",
+    "script": "STR_KNOCK_KNOCK_0",
+    "weights": [
+      {
+        "month": 0,
+        "weight": 50,
+        "totalWeight": 1580
+      },
+      {
+        "month": 4,
+        "weight": 50,
+        "totalWeight": 1665
+      },
+      {
+        "month": 12,
+        "weight": 50,
+        "totalWeight": 1618
+      }
+    ],
+    "executionOdds": 23,
+    "bundle": {
+      "policy": "V112_FIXED_MIXED_EVENT_BUNDLE",
+      "sourceFileSha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+      "item": "STR_HERO",
+      "count": 1
+    }
+  },
+  "legacyBranchHint": "branch-d71ceae0871151ca775d049a",
+  "scope": "CONDITIONAL_STAT_GATE_AND_RESEARCH_PRODUCTION_NOT_CAMPAIGN_OR_FINAL_CERTIFICATION",
+  "seedHash": "ddc7302b3b2aa561a03035ea51581a89dff2a64f1cc7026e4f7fb675c0d16620",
+  "seedSchema": "V114_HERO_ORDERED_TRAINING_LANES",
+  "target": "STR_HERO_GOLD_TRAINING",
+  "targetMinStats": {
+    "tu": 90,
+    "stamina": 0,
+    "health": 0,
+    "bravery": 0,
+    "reactions": 0,
+    "firing": 0,
+    "throwing": 0,
+    "strength": 0,
+    "psiStrength": 0,
+    "psiSkill": 0,
+    "melee": 0,
+    "mana": 0
+  },
+  "medalPolicy": "OXCE_871_STAT_GAIN_DEBRIEF_GATE_V1",
+  "researchResults": [
+    {
+      "id": "STR_HERO",
+      "status": "CONDITIONAL_RESEARCH_PRODUCED",
+      "addedActions": [],
+      "actionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff"
+    },
+    {
+      "id": "STR_PSI_LAB",
+      "status": "REPAIR_PENDING",
+      "reason": "STR_PSI_LAB: UNRESOLVED_ITEM: STR_HUMAN_MASTER x1 (���� ǥ�������� ���: STR_HUMAN_MASTER) / PURCHASE_RESEARCH_UNRESOLVED:STR_CONTACT_MERCENARIES",
+      "prefixActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff"
+    },
+    {
+      "id": "STR_GODS_E1",
+      "status": "CONDITIONAL_RESEARCH_PRODUCED",
+      "addedActions": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        }
+      ],
+      "actionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9"
+    },
+    {
+      "id": "STR_DARK_STAR",
+      "status": "REPAIR_PENDING",
+      "reason": "STR_DARK_STAR: UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER) / UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER) / UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER) / UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER)",
+      "prefixActionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9"
+    },
+    {
+      "id": "STR_CODEX_GOLD_AWAKENED",
+      "status": "REPAIR_PENDING",
+      "reason": "STR_CODEX_GOLD_AWAKENED: UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER) / UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER) / UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER) / UNRESOLVED_ITEM: STR_NEWSPAPER x1 (���� ǥ�������� ���: STR_NEWSPAPER)",
+      "prefixActionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9"
+    },
+    {
+      "id": "STR_DOOM_HUMAN_CORPSE",
+      "status": "REPAIR_PENDING",
+      "reason": "STR_DOOM_HUMAN_CORPSE: UNRESOLVED_FUNCTION:STUDY / FACILITY_RESEARCH_UNRESOLVED:STR_PERSONAL_LABS",
+      "prefixActionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9"
+    },
+    {
+      "id": "STR_GLAMOUR_USE",
+      "status": "REPAIR_PENDING",
+      "reason": "STR_GLAMOUR_USE: UNRESOLVED_ITEM: STR_ACADEMY_COUNSELLOR x1 (���� ǥ�������� ���: STR_ACADEMY_COUNSELLOR) / PURCHASE_RESEARCH_UNRESOLVED:STR_CONTACT_MERCENARIES",
+      "prefixActionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9"
+    },
+    {
+      "id": "STR_HERO_GOLD_TRAINING",
+      "status": "REPAIR_PENDING",
+      "reason": "STR_HERO_GOLD_TRAINING: UNRESOLVED_ITEM: STR_HUMAN_MASTER x1 (���� ǥ�������� ���: STR_HUMAN_MASTER) / PURCHASE_RESEARCH_UNRESOLVED:STR_CONTACT_MERCENARIES",
+      "prefixActionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9"
+    }
+  ],
+  "routes": [
+    {
+      "stage": "MODELED_STAT_GAIN_MEDAL",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "59df91feac6622cb7598df7e16e5e155a7ea061f6a9d2e8ac4d277b435b28d0f",
+      "actionCount": 52,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 2,
+          "stamina": 5,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 3,
+          "psiSkill": 0,
+          "melee": 3,
+          "mana": 20
+        },
+        "stats": {
+          "tu": 82,
+          "stamina": 125,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 88,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 170
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8
+      },
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 82,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 393,
+          "debriefAssumed": true
+        }
+      ],
+      "statThresholdOnly": true
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "07944af23f9ac0ca3b81dcfd93dac936f52bd2dc3e4c07ddbca7dcf696d680b7",
+      "actionCount": 53,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 5,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 3,
+          "psiSkill": 0,
+          "melee": 3,
+          "mana": 20
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 125,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 88,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 170
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 7
+      },
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 393,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "criterion": "totalMissions",
+          "threshold": 8,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "b02a560c5514cef9df86981b0249906264b935d1984afcc992dff5d685f7934c",
+      "actionCount": 54,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 5,
+          "health": 3,
+          "bravery": 0,
+          "reactions": 11,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 6,
+          "psiSkill": 0,
+          "melee": 6,
+          "mana": 11
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 125,
+          "health": 69,
+          "bravery": 150,
+          "reactions": 97,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 81,
+          "psiSkill": 50,
+          "melee": 112,
+          "mana": 161
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_CARREER_SCORE_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 4
+      },
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 393,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "criterion": "totalScore",
+          "threshold": 150000,
+          "achievementAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "criterion": "totalMissions",
+          "threshold": 5,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "MODELED_STAT_GAIN_MEDAL",
+      "seedActionHash": "b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+      "seedSequence": [
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "b11768e3ee7b39dd9a61ea351c6e0ff26f7aa67b74c803807c891199317f6894",
+      "actionCount": 47,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 2,
+          "stamina": 5,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 3,
+          "psiSkill": 0,
+          "melee": 3,
+          "mana": 5
+        },
+        "stats": {
+          "tu": 82,
+          "stamina": 125,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 88,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 155
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 3
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 153
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8
+      },
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 82,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 393,
+          "debriefAssumed": true
+        }
+      ],
+      "statThresholdOnly": true
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+      "seedSequence": [
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "47ddb50a441114f3299db33e3cb39ed0967bcce9548b0e7afe38fc6e31ecc31b",
+      "actionCount": 48,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 5,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 3,
+          "psiSkill": 0,
+          "melee": 3,
+          "mana": 5
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 125,
+          "health": 68,
+          "bravery": 150,
+          "reactions": 88,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 109,
+          "mana": 155
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 3
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 153
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 7
+      },
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 393,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "criterion": "totalMissions",
+          "threshold": 8,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "b26eeecd859c98be3bb7370a68cad0208a906f1847c27b90dc25cacf437829e0",
+      "seedSequence": [
+        "GROWTH",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "810e0b8275b201b399990eb135a114c51bf64fe7e149faecba6a83f16316d8f3",
+      "actionCount": 49,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 5,
+          "health": 3,
+          "bravery": 0,
+          "reactions": 11,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 6,
+          "psiSkill": 0,
+          "melee": 6,
+          "mana": -4
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 125,
+          "health": 69,
+          "bravery": 150,
+          "reactions": 97,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 81,
+          "psiSkill": 50,
+          "melee": 112,
+          "mana": 146
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 3
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 153
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_CARREER_SCORE_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 4
+      },
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 393,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "criterion": "totalScore",
+          "threshold": 150000,
+          "achievementAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "criterion": "totalMissions",
+          "threshold": 5,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "MODELED_STAT_GAIN_MEDAL",
+      "seedActionHash": "3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+      "seedSequence": [
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "GROWTH",
+        "STR_NEPOTISM"
+      ],
+      "actionHash": "28a388cc0963c8c1904cd750ae766c87b89c93bb0be280c744435761a0f682ee",
+      "actionCount": 52,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 2,
+          "stamina": 5,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 3,
+          "psiSkill": 0,
+          "melee": 3,
+          "mana": 20
+        },
+        "stats": {
+          "tu": 82,
+          "stamina": 125,
+          "health": 62,
+          "bravery": 150,
+          "reactions": 82,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 103,
+          "mana": 170
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 82,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        }
+      ],
+      "statThresholdOnly": true
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+      "seedSequence": [
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "GROWTH",
+        "STR_NEPOTISM"
+      ],
+      "actionHash": "a0279bb31892b0816c6c27ed1620c5b558159add8ea5f47f6ed2dddf1b646b89",
+      "actionCount": 53,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 5,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 3,
+          "psiSkill": 0,
+          "melee": 3,
+          "mana": 20
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 125,
+          "health": 62,
+          "bravery": 150,
+          "reactions": 82,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 78,
+          "psiSkill": 50,
+          "melee": 103,
+          "mana": 170
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 7
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "criterion": "totalMissions",
+          "threshold": 8,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "3b88d0254de8e6610c02c674b7eedad0b1a3f1a95c9e1041b5022ae4b7382e30",
+      "seedSequence": [
+        "STR_SCHOOL_OF_HARD_KNOCKS",
+        "GROWTH",
+        "STR_NEPOTISM"
+      ],
+      "actionHash": "c7d305b1bc3db79d459345685df92dcf2bb64afe438c1ccb77ab776306d43fe0",
+      "actionCount": 54,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 5,
+          "health": 3,
+          "bravery": 0,
+          "reactions": 11,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 6,
+          "psiSkill": 0,
+          "melee": 6,
+          "mana": 11
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 125,
+          "health": 63,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 81,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 161
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 101,
+          "mana": 168
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_CARREER_SCORE_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 4
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "criterion": "totalScore",
+          "threshold": 150000,
+          "achievementAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "criterion": "totalMissions",
+          "threshold": 5,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "MODELED_STAT_GAIN_MEDAL",
+      "seedActionHash": "2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM"
+      ],
+      "actionHash": "73e5f80efb944d17654ad14bbdda904ca7be9b3539af0a3dc41cf40d5c59f2c8",
+      "actionCount": 49,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 2,
+          "stamina": 2,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 2,
+          "psiSkill": 0,
+          "melee": 2,
+          "mana": 17
+        },
+        "stats": {
+          "tu": 82,
+          "stamina": 122,
+          "health": 62,
+          "bravery": 150,
+          "reactions": 82,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 77,
+          "psiSkill": 50,
+          "melee": 102,
+          "mana": 167
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 15
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 165
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 82,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        }
+      ],
+      "statThresholdOnly": true
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM"
+      ],
+      "actionHash": "38359dd9f2f304c15cbff1b2355cb1e262c2d0cfa11679938e7d2787d0357652",
+      "actionCount": 50,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 2,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 2,
+          "psiSkill": 0,
+          "melee": 2,
+          "mana": 17
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 122,
+          "health": 62,
+          "bravery": 150,
+          "reactions": 82,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 77,
+          "psiSkill": 50,
+          "melee": 102,
+          "mana": 167
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 15
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 165
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 7
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "criterion": "totalMissions",
+          "threshold": 8,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "2fe99091c3979b1cd1df3dfa304771d06b28f2969431c5b04b4d7fda8a593ad5",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM"
+      ],
+      "actionHash": "3631361f04d7e27a53116558a531967b59c862549b4ea7e85e5ba0dbe4db62ee",
+      "actionCount": 51,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 2,
+          "health": 3,
+          "bravery": 0,
+          "reactions": 11,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 5,
+          "psiSkill": 0,
+          "melee": 5,
+          "mana": 8
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 122,
+          "health": 63,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 80,
+          "psiSkill": 50,
+          "melee": 105,
+          "mana": 158
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 15
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 165
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_CARREER_SCORE_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 4
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "criterion": "totalScore",
+          "threshold": 150000,
+          "achievementAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "criterion": "totalMissions",
+          "threshold": 5,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "MODELED_STAT_GAIN_MEDAL",
+      "seedActionHash": "68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+      "seedSequence": [
+        "GROWTH"
+      ],
+      "actionHash": "c4b447f18be45a3ba7e56ca1da2fa4c04b768d0335b9e27d14335d3e1c0126ef",
+      "actionCount": 43,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 2,
+          "stamina": 2,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 2,
+          "psiSkill": 0,
+          "melee": 2,
+          "mana": 2
+        },
+        "stats": {
+          "tu": 82,
+          "stamina": 122,
+          "health": 62,
+          "bravery": 150,
+          "reactions": 82,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 77,
+          "psiSkill": 50,
+          "melee": 102,
+          "mana": 152
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 82,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        }
+      ],
+      "statThresholdOnly": true
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+      "seedSequence": [
+        "GROWTH"
+      ],
+      "actionHash": "9fc5472639f7eaef0801f5274638e217e9cbf5109140c0ddca38f59ae6cfd8af",
+      "actionCount": 44,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 2,
+          "health": 2,
+          "bravery": 0,
+          "reactions": 2,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 2,
+          "psiSkill": 0,
+          "melee": 2,
+          "mana": 2
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 122,
+          "health": 62,
+          "bravery": 150,
+          "reactions": 82,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 77,
+          "psiSkill": 50,
+          "melee": 102,
+          "mana": 152
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 7
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 7,
+          "criterion": "totalMissions",
+          "threshold": 8,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "CONDITIONAL_TU_GATE",
+      "seedActionHash": "68f91d600ebdb103af2a37d60a1556af2eb18876bfedaa649deeb98e0fbe699e",
+      "seedSequence": [
+        "GROWTH"
+      ],
+      "actionHash": "f5b7d30798a5992fd94f62f001e525400e915b45542a817067df8932e7465a1a",
+      "actionCount": 45,
+      "suffix": [
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "assumption": true
+        },
+        {
+          "type": "conditionalMedal",
+          "soldier": "origin",
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "assumption": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 10,
+          "stamina": 2,
+          "health": 3,
+          "bravery": 0,
+          "reactions": 11,
+          "firing": 0,
+          "throwing": 2,
+          "strength": 2,
+          "psiStrength": 5,
+          "psiSkill": 0,
+          "melee": 5,
+          "mana": -7
+        },
+        "stats": {
+          "tu": 90,
+          "stamina": 122,
+          "health": 63,
+          "bravery": 150,
+          "reactions": 91,
+          "firing": 115,
+          "throwing": 92,
+          "strength": 62,
+          "psiStrength": 80,
+          "psiSkill": 50,
+          "melee": 105,
+          "mana": 143
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 0,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 0,
+          "psiSkill": 0,
+          "melee": 0,
+          "mana": 0
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 60,
+          "bravery": 150,
+          "reactions": 80,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 100,
+          "mana": 150
+        }
+      },
+      "medals": {
+        "STR_MEDAL_STATGAIN_NAME": 8,
+        "STR_MEDAL_CARREER_SCORE_NAME": 8,
+        "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME": 4
+      },
+      "rawStatGain": 375,
+      "permanentTU": 80,
+      "gateTU": 90,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false,
+      "assumptions": [
+        {
+          "medal": "STR_MEDAL_STATGAIN_NAME",
+          "level": 8,
+          "criterion": "totalStatGain",
+          "threshold": 366,
+          "modeledValue": 375,
+          "debriefAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_CARREER_SCORE_NAME",
+          "level": 8,
+          "criterion": "totalScore",
+          "threshold": 150000,
+          "achievementAssumed": true
+        },
+        {
+          "medal": "STR_MEDAL_ALIEN_BASE_ASSAULT_NAME",
+          "level": 4,
+          "criterion": "totalMissions",
+          "threshold": 5,
+          "missionTypeFilter": [
+            "STR_ALIEN_BASE_ASSAULT",
+            "STR_ALIEN_BASE_ASSAULT_ACADEMY",
+            "STR_ALIEN_BASE_ASSAULT_GUILD",
+            "STR_ALIEN_BASE_ASSAULT_CHURCH",
+            "STR_ALIEN_BASE_ASSAULT_ETHEREAL",
+            "STR_NINJA_BASE_1_ASSAULT",
+            "STR_NINJA_BASE_2_UNDERGROUND_ASSAULT",
+            "STR_NINJA_BASE_HQ_UNDERGROUND_ASSAULT",
+            "STR_TLETH_BASE_ASSAULT_MAIN",
+            "STR_TLETH_BASE_ASSAULT_MAIN_TASOTH"
+          ],
+          "achievementAssumed": true,
+          "missionAvailabilityProven": false
+        }
+      ],
+      "statGateSatisfied": true,
+      "missionAndScoreAchievementsProven": false
+    },
+    {
+      "stage": "RESEARCH:STR_HERO",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "actionCount": 51,
+      "suffix": [],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false
+    },
+    {
+      "stage": "RESEARCH:STR_GODS_E1",
+      "seedActionHash": "a3cf205e141787ae814eb15e99631254d7b59cafda34fe6e1b3a2cbe5eca18ff",
+      "seedSequence": [
+        "GROWTH",
+        "STR_NEPOTISM",
+        "STR_SCHOOL_OF_HARD_KNOCKS"
+      ],
+      "actionHash": "d1329d2a3ff32d057626e16b672d77c875dfa3564b5283a3f339d3182ebeade9",
+      "actionCount": 53,
+      "suffix": [
+        {
+          "type": "repeatResearch",
+          "id": "STR_CODEX_GOLD",
+          "assumeAvailability": true
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_GODS_E1",
+          "assumeOutcome": true
+        }
+      ],
+      "stats": {
+        "raw": {
+          "tu": 80,
+          "stamina": 120,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 75,
+          "psiSkill": 50,
+          "melee": 106,
+          "mana": 150
+        },
+        "bonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "stats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        },
+        "permanentBonus": {
+          "tu": 0,
+          "stamina": 3,
+          "health": 0,
+          "bravery": 0,
+          "reactions": 0,
+          "firing": 0,
+          "throwing": 0,
+          "strength": 0,
+          "psiStrength": 1,
+          "psiSkill": 0,
+          "melee": 1,
+          "mana": 18
+        },
+        "permanentStats": {
+          "tu": 80,
+          "stamina": 123,
+          "health": 66,
+          "bravery": 150,
+          "reactions": 86,
+          "firing": 115,
+          "throwing": 90,
+          "strength": 60,
+          "psiStrength": 76,
+          "psiSkill": 50,
+          "melee": 107,
+          "mana": 168
+        }
+      },
+      "medals": {},
+      "rawStatGain": 393,
+      "permanentTU": 80,
+      "gateTU": 80,
+      "missingResearch": [
+        "STR_HERO_GOLD_TRAINING"
+      ],
+      "missingItems": {
+        "STR_CRACK": 36,
+        "STR_GLAMOUR": 36
+      },
+      "branchCommitmentsComplete": true,
+      "gameCertified": false,
+      "registered": false,
+      "finalAdmission": false
+    }
+  ],
+  "blockers": [],
+  "registered": false,
+  "finalAdmission": false,
+  "gameCertified": false,
+  "summary": {
+    "seedStates": 5,
+    "statGainMedalWitnesses": 5,
+    "conditionalStatGateWitnesses": 10,
+    "researchWitnesses": 2,
+    "researchBlockers": 6,
+    "blockers": 0,
+    "ascensionCompleted": 0
+  }
+}
