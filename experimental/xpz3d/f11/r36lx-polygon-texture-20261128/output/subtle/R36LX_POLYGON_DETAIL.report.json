@@ -3,8 +3,8 @@
   "input": "R36LV_SUBTLE_IMAGE_DETAIL_2100_COMPACT_FULL.glb",
   "sourceSHA256": "cbba3935f354e9d0754ed1eec9ecb622418e8e4f9f391e22bc266be9a55ae586",
   "model": "R36LX_POLYGON_DETAIL_2100_FULL.glb",
-  "modelSHA256": "d3869b90f1ad2fbea9c579a6b3fa9b1aaee82919fcf2397e570d43ece1f25a93",
-  "modelBytes": 8989616,
+  "modelSHA256": "f7b0654e4535237afb5fa3a8aec8b774a8a9338d38b558c9c85098c18a4b7463",
+  "modelBytes": 9138432,
   "bodyTriangles": 1132,
   "headHairTriangles": 968,
   "totalTriangles": 2100,
@@ -27,8 +27,8 @@
     "frontMax": -0.035,
     "edgeX": 0.022,
     "edgeZ": 0.024,
-    "alpha": 0.31,
-    "normalGain": 0.075
+    "alpha": 0.78,
+    "normalGain": 0.12
   },
   "imageSections": {
     "columns": 4,
@@ -251,10 +251,11 @@
     1075
   ],
   "coveragePixels": 203696,
-  "changedColorPixels": 79445,
-  "changedNormalPixels": 67811,
-  "meanAbsRGB8Delta": 0.42167085591605075,
-  "maxAbsRGB8Delta": 3.6666666666666665,
+  "changedColorPixels": 173410,
+  "changedNormalPixels": 142863,
+  "meanAbsRGB8Delta": 2.5636651349733106,
+  "normalConversion": "per-triangle UV-to-bind-position Jacobian; Y-inverted texture coordinate",
+  "maxAbsRGB8Delta": 19,
   "sourceCoordRange": {
     "x": [
       -0.08408206014859457,
@@ -302,13 +303,13 @@
   "maps": {
     "COLOR": {
       "file": "R36LX_POLYGON_COLOR_2048.png",
-      "sha256": "0d9d044a71968ae725197dba062414092c3661de0d4d0ace1b59e06f56e6379d",
-      "bytes": 1890004
+      "sha256": "d362f8f5fd4471c26111d6a1c1eb6b99f3de47e715d0829a4c91f90606b48e26",
+      "bytes": 1957515
     },
     "NORMAL": {
       "file": "R36LX_POLYGON_NORMAL_2048.png",
-      "sha256": "c9f804a187f8cb2450b52c6af617b870e06c90cb62065db356cee6edec1ce17c",
-      "bytes": 1756647
+      "sha256": "d7ae2cd1dda9231ee9c8ab6136e9821467f743b166b22c96aa998af152701ded",
+      "bytes": 1837952
     }
   },
   "visualQA": "not run",
