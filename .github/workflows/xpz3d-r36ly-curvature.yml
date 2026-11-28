@@ -58,6 +58,32 @@ jobs:
             console.log(v,s,r.movedPhysicalVertexGroups,r.movedUVSplitVertices,r.maxVertexDisplacement,b.length);
           }
           NODE
+      - name: Export real editable center cage meshes
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=experimental/xpz3d/f11
+          ROOT=$BASE/r36ly-curvature-20261128
+          SCRIPT=$ROOT/source/export_edit_cage.cjs
+          node --check "$SCRIPT"
+          for V in ART SUBTLE; do
+            SOURCE="$BASE/r36lx-polygon-texture-20261128/output/compact/R36LX_${V}_POLYGON_DETAIL_2100_COMPACT_FULL.glb"
+            for STYLE in FLOW GUARDED; do
+              GLB="$ROOT/output/models/R36LY_${V}_${STYLE}_2100_FULL.glb"
+              OUT="$ROOT/output/cage/${V}_${STYLE}"
+              node "$SCRIPT" "$SOURCE" "$GLB" "$OUT" "${V}_${STYLE}"
+            done
+          done
+          node - "$ROOT/output/cage" <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const dir=process.argv[2];
+          for(const v of ['ART','SUBTLE'])for(const s of ['FLOW','GUARDED']){
+            const stem='R36LY_'+v+'_'+s+'_EDIT_CAGE.json';
+            const f=path.join(dir,v+'_'+s,stem);
+            const data=JSON.parse(fs.readFileSync(f,'utf8'));
+            if(data.originalTriangleCount!==1132||data.originalSkinJoints!==63||data.movedVertexCount<80||data.trianglesIncluded<30)throw Error('Incomplete editing cage '+f);
+          }
+          NODE
       - uses: actions/upload-artifact@v4
         with:
           name: R36LY-physical-curvature-all-meshes
