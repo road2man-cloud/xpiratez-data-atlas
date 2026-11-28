@@ -1,0 +1,695 @@
+{
+  "schema": "ATLAS_CAMPAIGN_RESEARCH_PREFIX_V1",
+  "scope": "RESEARCH_ONLY_NO_ECONOMY_NO_START_SOLDIER_RNG",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "sourceFiles": {
+    "vars.rul": "aba93297c5d2aa82da08f6fb2f9d4d2f98c5f435c308fbe0594a36c5b77e168c",
+    "startingBase.rul": "33a40741e6e900e02db03248be793b6f5db91e3e298d654964fa91ba5874dbab",
+    "facilities.rul": "74620b743ede27f27e2863d073ad989cb463c23e3e7fea6e0d5d40ad92b5f5ec",
+    "items.rul": "d1cdc6021ee5ad27033a3471de53ca1807b7bf8f992cd5f38f626eb640d016ec",
+    "research.rul": "99d57c91d7fa3146449680c1c5b1c54eba595b99df8286dfbff4f2d8c51def5e",
+    "HitFX-basic.rul": "bd166fb81b7a140ea67310c15cafaf9b4716fef2bdd0896f6025e8295f511ecf",
+    "Piratez_Armors.rul": "4c8956ae97ea267a6545cc2456fb677373a9148a951a6a154db3829ceac294bc",
+    "Piratez_BaseNames.rul": "d2d3c491dcb137a64950e7ecf0c31a29144f12420c01d6ff1262720905c2ecff",
+    "Piratez_Bonuses.rul": "8566d58e82482a948bf2d5bc89651e7a82c852b6583ca94de10f3f8f94e85f23",
+    "Piratez_Events.rul": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+    "Piratez_Factions.rul": "c9f8952071a43777b6530cf5fd204d8cb9d4dd5138ee03d31cb85479307a7f95",
+    "Piratez_Globals.rul": "edb8bcb32e37592bade81150e2cc7b42f3ec8b85b9a892cc015698a5168f2104",
+    "Piratez_Mapscripts.rul": "3671b65f24753432cdde6955a68a013b3028bb37cc3c2b0f9f0253607ef48a9b",
+    "Piratez_Planet.rul": "8cd028edf619dae7513673266de69550007a72b0c3738c992159df2fd9411f0a",
+    "Piratez_Resources.rul": "c9d76d02fe0bde44dda89d98fe8af017700fbb8e6f1fd4fad30727b47487e79c",
+    "Piratez_Transformations.rul": "de399e11b6eb17fc2b40c7c6f1a823063d497991ef50a83800dd5ceb8e55b6ba",
+    "Piratez_Wardrobe.rul": "2fd217f762570eaa67dba1d7ef53f6f4727b590cce223d4b4f5e8949f991a503",
+    "Piratez.rul": "ac42ed92d3f86f8414e5a1451dc207b0f3eee9e15bac0b949e93371e172b32f6",
+    "Recolr.rul": "d1b8b6187fc630b9905a4411ce2b070ce03ec2e6bc268f6098be428832da25c0",
+    "Shotguns_Rebalance.rul": "2d14a888bfb9535f21c2dfe18feed3df66b45215fa01af4c229a14f99243751b",
+    "Yankes_Scripts.rul": "3371c170d9196397c500f87cfdd7b88fffff03c33f1d85e5ad0f9910ca22da3f"
+  },
+  "snapshot": {
+    "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+    "items": {
+      "STR_RAYGUN": 1,
+      "STR_RAYGUN_CLIP": 3,
+      "STR_SHIV": 5,
+      "STR_NOOSE": 3,
+      "STR_FLINTLOCK_BALLS": 30,
+      "STR_SHOTGUN_G_SHELLS": 5,
+      "STR_PIR_CANNONBALL": 20,
+      "STR_MOLOTOV": 4,
+      "STR_ANARCHY_BOMB": 2,
+      "STR_TINY_DRILL": 1,
+      "STR_ELERIUM_115": 5,
+      "STR_JUNK_PILE": 16,
+      "STR_BIG_ROCK": 169,
+      "STR_SCRAP_METAL": 100,
+      "STR_MENACING_HULL": 1,
+      "STR_RAIDER_CORPSE": 6,
+      "STR_MUTANT_MEAT": 6,
+      "STR_LAND_DEED": 1
+    },
+    "facilities": [
+      "STR_ACCESS_LIFT",
+      "STR_HANGAR",
+      "STR_HANGAR",
+      "STR_LIVING_QUARTERS",
+      "STR_BURROW",
+      "STR_CORRIDOR",
+      "STR_CORRIDOR",
+      "STR_WELL",
+      "STR_STILL",
+      "STR_GENERAL_STORES",
+      "STR_JAIL",
+      "STR_GENERAL_STORES_ARMORED",
+      "STR_LABORATORY",
+      "STR_SMALL_RADAR_SYSTEM",
+      "STR_RUBBLE",
+      "STR_RUBBLE",
+      "STR_RUBBLE",
+      "STR_RUBBLE"
+    ],
+    "functions": [
+      "ALKO",
+      "CPU",
+      "LAB",
+      "SHOP",
+      "WELL"
+    ],
+    "baseLayout": [
+      {
+        "id": "STR_ACCESS_LIFT",
+        "x": 2,
+        "y": 2,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_HANGAR",
+        "x": 0,
+        "y": 0,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_HANGAR",
+        "x": 2,
+        "y": 0,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_LIVING_QUARTERS",
+        "x": 2,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_BURROW",
+        "x": 3,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_CORRIDOR",
+        "x": 3,
+        "y": 2,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_CORRIDOR",
+        "x": 2,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_WELL",
+        "x": 3,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_STILL",
+        "x": 0,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_GENERAL_STORES",
+        "x": 3,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_JAIL",
+        "x": 1,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_GENERAL_STORES_ARMORED",
+        "x": 1,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_LABORATORY",
+        "x": 2,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_SMALL_RADAR_SYSTEM",
+        "x": 4,
+        "y": 5,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 0,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 0,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 1,
+        "y": 3,
+        "complete": true,
+        "readyDay": 0
+      },
+      {
+        "id": "STR_RUBBLE",
+        "x": 4,
+        "y": 4,
+        "complete": true,
+        "readyDay": 0
+      }
+    ],
+    "funds": 0,
+    "difficulty": 1,
+    "researched": [],
+    "disabled": [],
+    "soldiers": [],
+    "startDate": {
+      "second": 0,
+      "minute": 0,
+      "hour": 12,
+      "weekday": 5,
+      "day": 1,
+      "month": 1,
+      "year": 2601
+    }
+  },
+  "initialResearch": [
+    "STR_INSPECT_MACHINERY",
+    "STR_JACKSTOWN_SCOUTING",
+    "STR_RECRUIT_PEASANTS",
+    "STR_WAT_DO"
+  ],
+  "records": [
+    {
+      "goal": "STR_CODEX_GOLD",
+      "status": "conditional-replay",
+      "actions": [
+        {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "research": "CIV_ARMOR_LOKNAR_1",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        {
+          "type": "research",
+          "id": "STR_PIRATE_STYLE"
+        },
+        {
+          "type": "research",
+          "id": "STR_KULTUR"
+        },
+        {
+          "type": "research",
+          "id": "STR_WEIRDNESS"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_WEIRDNESS",
+          "research": "STR_LABORATORY",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_VIOLENCE"
+        },
+        {
+          "type": "research",
+          "id": "STR_CUNNING"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CUNNING",
+          "research": "STR_GROG_BARREL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_SURVIVAL"
+        },
+        {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_INSPECT_MACHINERY",
+          "research": "STR_WELL",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_QUESTION_OF_DRILL"
+        },
+        {
+          "type": "research",
+          "id": "STR_EMBRACE_THE_POWER"
+        },
+        {
+          "type": "research",
+          "id": "STR_MENACING_HULL"
+        },
+        {
+          "type": "research",
+          "id": "STR_TINY_DRILL_INVESTIGATION"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_TINY_DRILL_INVESTIGATION",
+          "research": "STR_CODEX_CHOICE",
+          "assumeOutcome": false
+        },
+        {
+          "type": "research",
+          "id": "STR_CHOOSE_GOLD_QUERY"
+        },
+        {
+          "type": "manufacture",
+          "item": "STR_FUEGO_ANOMALY",
+          "recipe": "STR_USE_DRILL_GOLD",
+          "count": 1
+        },
+        {
+          "type": "research",
+          "id": "STR_FUEGO_ANOMALY"
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+          "research": "STR_ANOMALY_DEP",
+          "assumeOutcome": true
+        },
+        {
+          "type": "eventResearch",
+          "event": "STR_FUEGO_ANOMALY_EVENT",
+          "script": "STR_FUEGO_ANOMALY_EVENT",
+          "research": "STR_ANOMALY_DEP2",
+          "assumeOutcome": true
+        },
+        {
+          "type": "research",
+          "id": "STR_CODEX_GOLD"
+        },
+        {
+          "type": "freeResearch",
+          "source": "STR_CODEX_GOLD",
+          "research": "STR_SHADOW_PLOT",
+          "assumeOutcome": false
+        }
+      ],
+      "attempts": 21,
+      "trace": [
+        {
+          "index": 0,
+          "action": {
+            "type": "research",
+            "id": "STR_JACKSTOWN_SCOUTING"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_JACKSTOWN_SCOUTING",
+            "research": "CIV_ARMOR_LOKNAR_1",
+            "assumeOutcome": false
+          },
+          "added": [
+            "CIV_ARMOR_LOKNAR_1",
+            "STR_JACKSTOWN_SCOUTING",
+            "STR_JACKSTOWN_ZZZ"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 2,
+          "action": {
+            "type": "research",
+            "id": "STR_WAT_DO"
+          },
+          "added": [
+            "STR_WAT_DO",
+            "STR_PIRATE_LIFE"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 3,
+          "action": {
+            "type": "research",
+            "id": "STR_PIRATE_STYLE"
+          },
+          "added": [
+            "STR_PIRATE_STYLE",
+            "STR_SAILOR_UNIFORM"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 4,
+          "action": {
+            "type": "research",
+            "id": "STR_KULTUR"
+          },
+          "added": [
+            "STR_KULTUR",
+            "STR_CLOTHING_UC",
+            "STR_PIRATE_FLAG"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 5,
+          "action": {
+            "type": "research",
+            "id": "STR_WEIRDNESS"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 6,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_WEIRDNESS",
+            "research": "STR_LABORATORY",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_LABORATORY",
+            "STR_WEIRDNESS",
+            "STR_WEIRDNESS_ZZZ"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 7,
+          "action": {
+            "type": "research",
+            "id": "STR_VIOLENCE"
+          },
+          "added": [
+            "STR_VIOLENCE",
+            "STR_VIOLENCE_ZZZ"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 8,
+          "action": {
+            "type": "research",
+            "id": "STR_CUNNING"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 9,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CUNNING",
+            "research": "STR_GROG_BARREL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_GROG_BARREL",
+            "STR_CUNNING"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 10,
+          "action": {
+            "type": "research",
+            "id": "STR_SURVIVAL"
+          },
+          "added": [
+            "STR_SURVIVAL",
+            "STR_FIRST_AID_KIT",
+            "STR_SURVIVAL_ZZZ"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 11,
+          "action": {
+            "type": "research",
+            "id": "STR_INSPECT_MACHINERY"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 12,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_INSPECT_MACHINERY",
+            "research": "STR_WELL",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_WELL",
+            "STR_INSPECT_MACHINERY",
+            "STR_GENERAL_STORES_ARMORED"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 13,
+          "action": {
+            "type": "research",
+            "id": "STR_QUESTION_OF_DRILL"
+          },
+          "added": [
+            "STR_QUESTION_OF_DRILL"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 14,
+          "action": {
+            "type": "research",
+            "id": "STR_EMBRACE_THE_POWER"
+          },
+          "added": [
+            "STR_EMBRACE_THE_POWER"
+          ],
+          "disabled": [
+            "STR_REJECT_THE_POWER"
+          ]
+        },
+        {
+          "index": 15,
+          "action": {
+            "type": "research",
+            "id": "STR_MENACING_HULL"
+          },
+          "added": [
+            "STR_MENACING_HULL"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 16,
+          "action": {
+            "type": "research",
+            "id": "STR_TINY_DRILL_INVESTIGATION"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 17,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_TINY_DRILL_INVESTIGATION",
+            "research": "STR_CODEX_CHOICE",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_CODEX_CHOICE",
+            "STR_TINY_DRILL_INVESTIGATION",
+            "STR_TINY_DRILL_INVESTIGATION_DEP",
+            "STR_TINY_DRILL_INVESTIGATION_ZZZ"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 18,
+          "action": {
+            "type": "research",
+            "id": "STR_CHOOSE_GOLD_QUERY"
+          },
+          "added": [
+            "STR_CHOOSE_GOLD_QUERY"
+          ],
+          "disabled": [
+            "STR_CHOOSE_GREEN_QUERY",
+            "STR_CHOOSE_GRAY_QUERY",
+            "STR_CHOOSE_RED_QUERY"
+          ]
+        },
+        {
+          "index": 19,
+          "action": {
+            "type": "manufacture",
+            "item": "STR_FUEGO_ANOMALY",
+            "recipe": "STR_USE_DRILL_GOLD",
+            "count": 1
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 20,
+          "action": {
+            "type": "research",
+            "id": "STR_FUEGO_ANOMALY"
+          },
+          "added": [
+            "STR_FUEGO_ANOMALY"
+          ],
+          "disabled": [
+            "STR_TINY_DRILL_INVESTIGATION_DEP"
+          ]
+        },
+        {
+          "index": 21,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+            "script": "STR_FUEGO_ANOMALY_TENSION_EVENT",
+            "research": "STR_ANOMALY_DEP",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_ANOMALY_DEP"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 22,
+          "action": {
+            "type": "eventResearch",
+            "event": "STR_FUEGO_ANOMALY_EVENT",
+            "script": "STR_FUEGO_ANOMALY_EVENT",
+            "research": "STR_ANOMALY_DEP2",
+            "assumeOutcome": true
+          },
+          "added": [
+            "STR_ANOMALY_DEP2"
+          ],
+          "disabled": []
+        },
+        {
+          "index": 23,
+          "action": {
+            "type": "research",
+            "id": "STR_CODEX_GOLD"
+          },
+          "added": [],
+          "disabled": []
+        },
+        {
+          "index": 24,
+          "action": {
+            "type": "freeResearch",
+            "source": "STR_CODEX_GOLD",
+            "research": "STR_SHADOW_PLOT",
+            "assumeOutcome": false
+          },
+          "added": [
+            "STR_SHADOW_PLOT",
+            "STR_CODEX_GOLD",
+            "STR_CODEX_GOLD_EXP",
+            "STR_CODEX_GRAY_EXP",
+            "STR_CODEX_GREEN_EXP",
+            "STR_CODEX_GR_GD",
+            "STR_CODEX_GY_GD",
+            "STR_CODEX_REDGOLD",
+            "STR_CROWNING_UC",
+            "STR_FLAME_CANNON_REPORT",
+            "STR_OFFICERS_BATON",
+            "STR_QUEEN_GOLD"
+          ],
+          "disabled": [
+            "STR_CODEX_GRAY",
+            "STR_CODEX_GREEN",
+            "STR_CODEX_RED",
+            "STR_BERSERKER_ARMOR",
+            "STR_POWERED_BY_RAGE",
+            "STR_AGGRESSOR_ARMOR_PRODUCTION",
+            "STR_ZOMBIE_MEDICINE",
+            "STR_MUSHROOM_MEDICINE",
+            "STR_ASTROSENSORIUM",
+            "STR_MUTANT_MAGIC",
+            "STR_GRIMOIRE",
+            "STR_QUEEN_SAVAGE",
+            "STR_QUEEN_GRAY",
+            "STR_QUEEN_GREEN",
+            "STR_QUEEN_RED"
+          ]
+        }
+      ],
+      "gameCertified": false
+    }
+  ],
+  "summary": {
+    "targets": 1,
+    "produced": 1
+  }
+}
