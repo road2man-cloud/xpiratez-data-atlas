@@ -180,6 +180,30 @@ export function createCampaignStartResearchPlanner(data,snapshot,{maxAttempts=65
             solved=trial;break;
           }catch(e){budget.last=e.message;}
         }
+        // A fixed map item requires an actual indexed mission victory. The
+        // research award and item recovery are recorded as one action.
+        for(const route of solved?[]:arr(data.campaignAssets?.missionLoot?.[id])){
+          if(++budget.attempts>maxAttempts)break;
+          if(n.world.completedMissions?.has(route.deployment)||!fits(route.script))continue;
+          let trial=clone(n);
+          try{
+            if(Number(trial.world.items[id]||0)+route.count<qty)throw Error('MISSION_FIXED_LOOT_SHORTFALL:'+id);
+            for(const dep of uniq([...arr(route.craftResearch),...arr(route.script.researchPositive)])){
+              const next=solve(dep,trial,new Set(),depth+1,budget,goalSet);
+              if(!next)throw Error('MISSION_PREREQUISITE_UNRESOLVED:'+dep);
+              trial=next;
+            }
+            supply(trial,{items:Object.fromEntries(arr(route.script.itemPositive).map(k=>[k,1]))},'mission trigger '+route.deployment,budget,goalSet,depth+1);
+            const first=Math.max(0,Number(route.script.firstMonth)||0);
+            if(trial.world.month<first)append(trial,{type:'advanceMonth',month:first,assumeContinuity:true});
+            append(trial,{type:'missionResearch',deployment:route.deployment,script:route.script.script,
+              research:route.research,assumeOutcome:true,recoverFixedItem:{item:id,count:route.count,
+              terrain:route.terrain,block:route.block,craft:route.craft,assumeTransport:true,assumeRecovery:true}});
+            finish(trial,route.research,goalSet);
+            if(Number(trial.world.items[id]||0)<qty)throw Error('MISSION_FIXED_LOOT_SHORTFALL:'+id);
+            solved=trial;break;
+          }catch(e){budget.last=e.message;}
+        }
         const purchase=purchaseRequirements(data,id);
         if(!solved&&purchase&&++budget.attempts<=maxAttempts){
           let trial=clone(n);
