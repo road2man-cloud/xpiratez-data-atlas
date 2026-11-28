@@ -1,0 +1,329 @@
+{
+  "schema": "ATLAS_FORWARD_CAPTAIN_MONTHLY_SOURCES_V3",
+  "sourceMetadataSha256": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "nativeArchiveSha256": "4319b0ee922adf9b97ecdc8984b881a6b351b60ca5f3ea921839fb4c30aa02fb",
+  "events": [
+    {
+      "id": "STR_CAPTAIN_PERSONALITY_TEST",
+      "research": [
+        "STR_CAPTAIN_PERSONALITY_TEST"
+      ],
+      "pool": [],
+      "interruptResearch": null,
+      "points": 0,
+      "timer": 33000,
+      "timerRandom": 3000,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 2422,
+        "endLine": 2428,
+        "blockSha256": "82164fd1fb9d4755e72f023936c85e4b64b982ecd6a7c0021c7ea7b8f00b52ec"
+      }
+    },
+    {
+      "id": "STR_TROUBLESEEKING_ENEMY",
+      "research": [],
+      "pool": [
+        "STR_HUMAN_SHARP_GUY",
+        "STR_HUMAN_NOBLEWOMAN",
+        "STR_NAZI_SOLDIER",
+        "STR_NAZI_SS",
+        "STR_NAZI_LEADER",
+        "STR_NAZI_KKK",
+        "STR_HUMAN_NOMAD",
+        "STR_SMUGGLER_GOON",
+        "STR_SMUGGLER_CATGIRL",
+        "STR_SMUGGLER_CAPTAIN",
+        "STR_NINJA_GAL",
+        "STR_NINJA_WARRIOR",
+        "STR_BANDIT_RATMAN_LEADER",
+        "STR_BANDIT_BOY",
+        "STR_BANDIT_HIGHWAYMAN",
+        "STR_BANDIT_DRIFTER",
+        "STR_BANDIT_RUFFIAN",
+        "STR_BANDIT_TROUBLEMAKER",
+        "STR_BANDIT_DUDE",
+        "STR_BANDIT_FUSSBALLER",
+        "STR_BANDIT_PUNK",
+        "STR_BANDIT_HITMAN",
+        "STR_BANDIT_TOMB_RUNNER",
+        "STR_OGRE_KONVIKT",
+        "STR_BANDIT_GHOUL",
+        "STR_RET_HYBRID",
+        "STR_RET_SECTOGRE",
+        "STR_RAIDER_SCOUT",
+        "STR_RAIDER_THUG",
+        "STR_RAIDER_HUMONGOUS",
+        "STR_SPARTAN_SCOUT",
+        "STR_SPARTAN_RIFLEMAN",
+        "STR_GOVT_AGENT",
+        "STR_GUILD_ATTENDANT",
+        "STR_GUILD_EXTERMINATOR",
+        "STR_GUILD_PILOT",
+        "STR_GUILD_SOLDIER",
+        "STR_GUILD_TEAM_LEADER",
+        "STR_OSIRON_LAD",
+        "STR_ACADEMY_STUDENT",
+        "STR_ACADEMY_NURSE",
+        "STR_SECTOID_SOLDIER",
+        "STR_SECTOID_EXPLORER",
+        "STR_CHURCH_SOLDIER",
+        "STR_ACADEMY_THRALL",
+        "STR_CHURCH_BOY",
+        "STR_CHURCH_HANDMAID",
+        "STR_CHURCH_MAIDEN",
+        "STR_MUTON_SOLDIER",
+        "STR_GOVT_MP",
+        "STR_RCF_TROOPER",
+        "STR_RCF_VETERAN",
+        "STR_GUILD_GUARD",
+        "STR_MARSEC_SECURITY",
+        "STR_SECTOID_NAVIGATOR",
+        "STR_CHURCH_NAVIGATOR",
+        "STR_RAIDER_BUZZARD",
+        "STR_SPARTAN_HEAVY",
+        "STR_SECTOID_MEDIC",
+        "STR_GUILD_MEDIC",
+        "STR_CHURCH_ENGINEER",
+        "STR_GUILD_ENGINEER",
+        "STR_SECTOID_ENGINEER",
+        "STR_SMUGGLER_ENGINEER",
+        "STR_HUMAN_SOLDIER_COMMANDO",
+        "STR_MEGAPOL_DETECTIVE",
+        "STR_RAIDER_BOSS",
+        "STR_RAIDER_MISTRESS",
+        "STR_GUILD_LEADER",
+        "STR_ACADEMY_COUNSELLOR",
+        "STR_SECTOID_LEADER",
+        "STR_CHURCH_PRIEST",
+        "STR_CHURCH_LEADER"
+      ],
+      "interruptResearch": null,
+      "points": 0,
+      "timer": 60,
+      "timerRandom": 43400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 5873,
+        "endLine": 5879,
+        "blockSha256": "d320aafb84d5940912fa188b87c0b16f886e97ade66c117bdae463cac37ead74"
+      }
+    },
+    {
+      "id": "STR_GDX_EVENT_ORDERS_1",
+      "research": [
+        "STR_GDX_001"
+      ],
+      "pool": [],
+      "interruptResearch": "STR_GDX_001",
+      "points": -100,
+      "timer": 60,
+      "timerRandom": 43400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 4017,
+        "endLine": 4024,
+        "blockSha256": "bd6564636c9e1c791c77afc2f89314165976d512c18800efa9b81801fc1a6c57"
+      }
+    },
+    {
+      "id": "STR_GDX_EVENT_ORDERS_2",
+      "research": [
+        "STR_GDX_002"
+      ],
+      "pool": [],
+      "interruptResearch": "STR_GDX_002",
+      "points": -100,
+      "timer": 60,
+      "timerRandom": 43400,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 4025,
+        "endLine": 4032,
+        "blockSha256": "59a4158c0f807b6468773fab5278305e449f9cccec10bdae1305ccc40d0e1f2e"
+      }
+    }
+  ],
+  "scripts": [
+    {
+      "script": "STR_CAPTAIN_PERSONALITY_TEST",
+      "event": "STR_CAPTAIN_PERSONALITY_TEST",
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 100,
+      "researchPositive": [],
+      "researchNegative": [
+        "STR_CAPTAIN_PERSONALITY_TEST"
+      ],
+      "weight": 100,
+      "totalWeight": 100,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7465,
+        "endLine": 7471,
+        "blockSha256": "960a2847ea6d2b2957751c3333453fd8714fbea8d187d22c3832624fe49a6bda"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7465,
+        "endLine": 7471,
+        "blockSha256": "960a2847ea6d2b2957751c3333453fd8714fbea8d187d22c3832624fe49a6bda"
+      }
+    },
+    {
+      "script": "STR_CAPTAIN_JACKDUMB_EVENTS_1",
+      "event": "STR_TROUBLESEEKING_ENEMY",
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 20,
+      "researchPositive": [
+        "STR_CAPTAIN_JACKDUMB"
+      ],
+      "researchNegative": [],
+      "weight": 50,
+      "totalWeight": 1335,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9669,
+        "endLine": 9692,
+        "blockSha256": "bfb745aed776ea3365d4025df846de48605b971b0571da47a5d9a28a7bb30f88"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9669,
+        "endLine": 9692,
+        "blockSha256": "bfb745aed776ea3365d4025df846de48605b971b0571da47a5d9a28a7bb30f88"
+      }
+    },
+    {
+      "script": "STR_CAPTAIN_JACKDUMB_EVENTS_2",
+      "event": "STR_TROUBLESEEKING_ENEMY",
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 20,
+      "researchPositive": [
+        "STR_CAPTAIN_JACKDUMB"
+      ],
+      "researchNegative": [],
+      "weight": 50,
+      "totalWeight": 1335,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9693,
+        "endLine": 9697,
+        "blockSha256": "a29758ef6079714a0af35876c782dea2060b9c2acd7f1711cb0449577db83586"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9669,
+        "endLine": 9692,
+        "blockSha256": "bfb745aed776ea3365d4025df846de48605b971b0571da47a5d9a28a7bb30f88"
+      }
+    },
+    {
+      "script": "STR_CAPTAIN_JACKDUMB_EVENTS_3",
+      "event": "STR_TROUBLESEEKING_ENEMY",
+      "firstMonth": 0,
+      "lastMonth": -1,
+      "executionOdds": 20,
+      "researchPositive": [
+        "STR_CAPTAIN_JACKDUMB"
+      ],
+      "researchNegative": [],
+      "weight": 50,
+      "totalWeight": 1335,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9698,
+        "endLine": 9702,
+        "blockSha256": "04a4a74776a0cce574e9419ac44f357114fc5b2732d6d4c454e5126731ec2f5b"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 9669,
+        "endLine": 9692,
+        "blockSha256": "bfb745aed776ea3365d4025df846de48605b971b0571da47a5d9a28a7bb30f88"
+      }
+    },
+    {
+      "script": "STR_GDX_EVENT_ORDERS_1",
+      "event": "STR_GDX_EVENT_ORDERS_1",
+      "firstMonth": 4,
+      "lastMonth": -1,
+      "executionOdds": 50,
+      "researchPositive": [
+        "STR_SECTOID_MEDIC",
+        "STR_SECTOID_SOLDIER",
+        "STR_ACADEMY_NURSE",
+        "STR_SCHOOLING_1",
+        "STR_GOVT_CORPSE"
+      ],
+      "researchNegative": [
+        "STR_GDX_001"
+      ],
+      "weight": 100,
+      "totalWeight": 100,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7963,
+        "endLine": 7975,
+        "blockSha256": "f30cdb11fe748b3acccf006910a45b01ebaabf28062ffff6b01882e8a29e2941"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7963,
+        "endLine": 7975,
+        "blockSha256": "f30cdb11fe748b3acccf006910a45b01ebaabf28062ffff6b01882e8a29e2941"
+      }
+    },
+    {
+      "script": "STR_GDX_EVENT_ORDERS_2",
+      "event": "STR_GDX_EVENT_ORDERS_2",
+      "firstMonth": 9,
+      "lastMonth": -1,
+      "executionOdds": 50,
+      "researchPositive": [
+        "STR_GDX_001",
+        "STR_SECTOID_MEDIC",
+        "STR_SECTOID_SOLDIER",
+        "STR_ACADEMY_NURSE",
+        "STR_SCHOOLING_1",
+        "STR_GOVT_CORPSE"
+      ],
+      "researchNegative": [
+        "STR_GDX_002"
+      ],
+      "weight": 100,
+      "totalWeight": 100,
+      "anchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7976,
+        "endLine": 7989,
+        "blockSha256": "3c647c19fe33c07c7697f903baee0ba73400fe9e9e3ecb1d53db91ef3b2cc7bd"
+      },
+      "weightsAnchor": {
+        "file": "Piratez_Events.rul",
+        "sha256": "00ab639389dbb3dbed360575882e958f57e08e0e1393fa69ba9626010ccb53a6",
+        "startLine": 7976,
+        "endLine": 7989,
+        "blockSha256": "3c647c19fe33c07c7697f903baee0ba73400fe9e9e3ecb1d53db91ef3b2cc7bd"
+      }
+    }
+  ],
+  "scope": "Source-matched monthly script eligibility and one randomItemList roll per event. Native schedule at month start, countdown in 30-minute units, event interruption at expiry, immediate or one-hour transfer. Other monthly events, calendar duration of lab/build work and full economy remain outside this projection."
+}

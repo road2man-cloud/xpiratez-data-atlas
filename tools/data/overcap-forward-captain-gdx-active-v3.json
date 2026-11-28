@@ -1,0 +1,273 @@
+{
+  "schema": "ATLAS_FORWARD_CAPTAIN_GDX_ACTIVE_V3",
+  "sources": {
+    "base": "fa8bf4ff3add073a234b8203787b13ee1549b57a57799a3240610bd2982d3294",
+    "monthly": "1a92e26eafd6c84f171b7e5b285039747789d5e8a3fe73412ffe1d902be39fbc",
+    "electronics": "a95744bbdd8b2df14e69a1c375ee7c8c851eb2fc148b387ba46d042f20394ecf",
+    "gdx": "cd68d35cde57bb28e4a9c17768430f276898db4141f5d7bd362cd026ae04e02f"
+  },
+  "producers": {
+    "tools/build-overcap-forward-captain-gdx-v3.mjs": "a7b2a058553d00713237abb730d53ea8c79dfb7111a0b8657c22214119d551c5",
+    "tools/build-overcap-forward-captain-monthly-sources-v3.mjs": "f4b041ff713f889dca40ead7ca9b50bc7b9c588f2240ad5b11eb787229230238",
+    "tools/atlas-overcap-forward-captain-monthly-v3.mjs": "35775000e72bc7ffafb97902908f66403f225b488507575c36e32ef596d9f837"
+  },
+  "scenarios": [
+    {
+      "scenario": "baseline",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-captain-gdx-v3-baseline-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-captain-gdx-v3-baseline-str_inspect_machinery-summary.json",
+      "sha256": "5e833962dc544a417a64ff9134b4d33e3953b3aa058ade77ab0d869f45be11d7",
+      "reproduced": 154,
+      "priorActions": 154,
+      "sharedSteps": 167,
+      "failure": null,
+      "branches": [
+        {
+          "award": "STR_GDX_001",
+          "steps": 11,
+          "failure": null,
+          "month": 9,
+          "researchCount": 231,
+          "stateHash": "288d801adf5ee2903fa502ef454c7515210f4b57e0694f7fdad3d6aa895941d3",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 90
+        },
+        {
+          "award": "STR_BEASTMEN",
+          "steps": 12,
+          "failure": null,
+          "month": 9,
+          "researchCount": 232,
+          "stateHash": "71ff703d3deb364ade98c6b84b79321d4609b687e741b682edac39f890443d01",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 90
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_INSPECT_MACHINERY",
+      "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_inspect_machinery.json.gz",
+      "summary": "tools/data/overcap-forward-captain-gdx-v3-uk-str_inspect_machinery-summary.json",
+      "sha256": "1300d5cf0168818cecd1c6effee57788b771ac76051ed9a4ec5374ee3ef03506",
+      "reproduced": 92,
+      "priorActions": 92,
+      "sharedSteps": 108,
+      "failure": null,
+      "branches": [
+        {
+          "award": "STR_GDX_001",
+          "steps": 11,
+          "failure": null,
+          "month": 9,
+          "researchCount": 157,
+          "stateHash": "a689edea9ab10abbe1f3606eebc31ba85c194726f1b1be2e23b1796aa843df55",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        },
+        {
+          "award": "STR_BEASTMEN",
+          "steps": 12,
+          "failure": null,
+          "month": 9,
+          "researchCount": 158,
+          "stateHash": "4b8d2b6be3b077025036060d2f25e8c02c3296a30a1bf4fc850ec8a34cdbf488",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_JACKSTOWN_SCOUTING",
+      "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_jackstown_scouting.json.gz",
+      "summary": "tools/data/overcap-forward-captain-gdx-v3-uk-str_jackstown_scouting-summary.json",
+      "sha256": "38d601629e6ac8d06c041d4bdcd09e1bb4f9e09643572df183323ec927347768",
+      "reproduced": 92,
+      "priorActions": 92,
+      "sharedSteps": 108,
+      "failure": null,
+      "branches": [
+        {
+          "award": "STR_GDX_001",
+          "steps": 11,
+          "failure": null,
+          "month": 9,
+          "researchCount": 157,
+          "stateHash": "7bda37d326b27a2f7aa269f2ed45c9fa4dca16ef897bccaa0b0fcefc9ffd906a",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        },
+        {
+          "award": "STR_BEASTMEN",
+          "steps": 12,
+          "failure": null,
+          "month": 9,
+          "researchCount": 158,
+          "stateHash": "099d1cf46aefd3ca2114b5b18c3fc77064710f6f3fca61eab1ff08facb578401",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_RECRUIT_PEASANTS",
+      "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_recruit_peasants.json.gz",
+      "summary": "tools/data/overcap-forward-captain-gdx-v3-uk-str_recruit_peasants-summary.json",
+      "sha256": "5b6b5a56dd3a3a1f4f41531eebed8e0a61766843a2f2e640275ee16f9dcd826f",
+      "reproduced": 92,
+      "priorActions": 92,
+      "sharedSteps": 108,
+      "failure": null,
+      "branches": [
+        {
+          "award": "STR_GDX_001",
+          "steps": 11,
+          "failure": null,
+          "month": 9,
+          "researchCount": 157,
+          "stateHash": "16427df9b9b67e48de2b539edae651a7dd82e0bb0359651d84cb7e8972de1ff5",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        },
+        {
+          "award": "STR_BEASTMEN",
+          "steps": 12,
+          "failure": null,
+          "month": 9,
+          "researchCount": 158,
+          "stateHash": "3d3a5f42950a0bcd6dd13eb36555f370ffda8ab7297d36a8c5d7ce73bd58991c",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        }
+      ]
+    },
+    {
+      "scenario": "uk",
+      "root": "STR_WAT_DO",
+      "path": "tools/data/overcap-forward-captain-gdx-v3-uk-str_wat_do.json.gz",
+      "summary": "tools/data/overcap-forward-captain-gdx-v3-uk-str_wat_do-summary.json",
+      "sha256": "d8944c50ce0e8169948954ce931bea9f38171b339166f04d81e305757efcba69",
+      "reproduced": 92,
+      "priorActions": 92,
+      "sharedSteps": 108,
+      "failure": null,
+      "branches": [
+        {
+          "award": "STR_GDX_001",
+          "steps": 11,
+          "failure": null,
+          "month": 9,
+          "researchCount": 157,
+          "stateHash": "7f169ec00dde0550139b558fea05e719297aee19f5e2f7d8f4b95f80590d9753",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        },
+        {
+          "award": "STR_BEASTMEN",
+          "steps": 12,
+          "failure": null,
+          "month": 9,
+          "researchCount": 158,
+          "stateHash": "2cef175aebc34bb190f510f624aeac9051dc3e251d853f308c9cef9a914457b2",
+          "leaderStock": 1,
+          "reached": [
+            "STR_CAPTAIN_JACKDUMB",
+            "STR_SECTOID_MEDIC",
+            "STR_ACADEMY_NURSE",
+            "STR_MUTANT_ORIGINS",
+            "STR_GDX_001",
+            "STR_GDX_002",
+            "STR_GDX_000"
+          ],
+          "deferredOptions": 94
+        }
+      ]
+    }
+  ],
+  "normalizationComplete": false,
+  "actualGameCertified": false
+}
