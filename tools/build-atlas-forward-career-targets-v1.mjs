@@ -66,5 +66,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1]
  const args=Object.fromEntries(process.argv.slice(2).filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>x.slice(2).split(/=(.*)/s).slice(0,2)));
  if(!args.out)throw Error('--out is required');
  const result=produce(args.repo||process.cwd(),args.graphs?args.graphs.split(','):GRAPH_FILES);
- fs.writeFileSync(args.out,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result.summary));
+ fs.writeFileSync(args.out,JSON.stringify(result,null,2)+String.fromCharCode(10));console.log(JSON.stringify(result.summary));
 }
