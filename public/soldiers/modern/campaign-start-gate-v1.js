@@ -9,18 +9,34 @@ export const START_RESEARCH=Object.freeze({
 });
 const arr=x=>Array.isArray(x)?x:[];
 const same=(a,b)=>JSON.stringify([...a].sort())===JSON.stringify([...b].sort());
-export function labVerdict(world,id,data,{repeat=false}={}){
+// Derive unlocked IDs once per immutable state. Avoid scanning 4654 rules
+// for every unavailable topic. The accepted candidates still use researchStep.
+function unlockedTopics(world,data){
+ const ids=new Set();
+ for(const src of world.researched)for(const id of arr(data.researchRules[src]?.unlocks))ids.add(id);
+ return ids;
+}
+export function labVerdict(world,id,data,{repeat=false,unlocked=null}={}){
  const r=data.researchRules[id];
  if(!r||id==='STR_UNAVAILABLE')return {ok:false,reason:'missing-or-unavailable-rule'};
  if(world.pendingFree)return {ok:false,reason:'pending-free-award'};
  if(!(world.activeResearch instanceof Set)||world.activeResearch.has(id))return {ok:false,reason:'active-or-unknown-project'};
- if(!(r.cost>0))return {ok:false,reason:'nonpositive-or-unknown-cost'};
- if(world.researched.has(id)!==repeat)return {ok:false,reason:'completion-state-mismatch'};
- const v=researchStep(world,id,data.researchRules,{method:'research',repeatableProof:repeat});
+ if(!(r.cost>0)||arr(r.requires).length)return {ok:false,reason:'not-lab-research'};
+ if(world.disabled.has(id)||world.researched.has(id)!==repeat)return {ok:false,reason:'completion-state-mismatch'};
+ if(!(unlocked||unlockedTopics(world,data)).has(id)&&arr(r.dependencies).some(k=>!world.researched.has(k)))return {ok:false,reason:'dependencies-unmet'};
+ if(r.needItem&&!(Number(world.items?.[r.neededItem||id])>0))return {ok:false,reason:'sample-missing'};
+ if(arr(r.requiresBaseFunc).some(k=>!world.baseFunctions.has(k)))return {ok:false,reason:'facility-function-missing'};
+ if(repeat){
+  const candidates=[...arr(r.getOneFree),...Object.entries(r.getOneFreeProtected||{}).filter(([k])=>world.researched.has(k)).flatMap(([,a])=>arr(a))];
+  if(!r.repeatable&&!candidates.some(k=>!world.researched.has(k)&&!world.disabled.has(k)))return {ok:false,reason:'repeat-award-missing'};
+ }
+ const v=researchStep(world,id,data.researchRules,{method:'research',unlocked:true,repeatableProof:repeat});
  return {ok:v.kind==='applied',reason:v.reason?.join('; ')||null};
 }
 export function availableResearch(world,data){
- return Object.keys(data.researchRules).filter(id=>labVerdict(world,id,data,{repeat:world.researched.has(id)}).ok).sort();
+ if(world.pendingFree)return [];
+ const unlocked=unlockedTopics(world,data);
+ return Object.keys(data.researchRules).filter(id=>labVerdict(world,id,data,{repeat:world.researched.has(id),unlocked}).ok).sort();
 }
 // Snapshot must be built from source-backed startingBase and facility definitions.
 // No fallback to an empty inventory, zero cash, or fabricated facilities.
@@ -37,7 +53,7 @@ export function campaignStartWorld(data,snapshot){
   baseLayout:structuredClone(snapshot.baseLayout),elapsedBuildDays:0,
   countries:snapshot.countries?new Set(snapshot.countries):undefined,
   regions:snapshot.regions?new Set(snapshot.regions):undefined,
-  researchOnly:true,
+  researchOnly:true,globalFacilities:new Set(snapshot.facilities),otherItems:{...snapshot.otherItems},
   autoZeroScenario:false,autoZeroEvidence:true,sourceFingerprint:snapshot.sourceFingerprint};
  for(const [id,n] of Object.entries(world.items))if(!Number.isSafeInteger(n)||n<0)throw Error('invalid-start-item:'+id);
  for(const [id,cost] of Object.entries(START_RESEARCH))if(data.researchRules[id]?.cost!==cost)throw Error('start-cost-mismatch:'+id);
