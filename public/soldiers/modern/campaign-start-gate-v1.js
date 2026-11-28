@@ -113,8 +113,13 @@ function applyCampaignStartCore(input,step,data){
     if(!Number.isSafeInteger(n)||n<1)throw Error('invalid-fixed-event-grant');
     world.items[id]=(world.items[id]||0)+n;
    }
+   const funds=route.funds??0,points=route.points??0;
+   if(!Number.isSafeInteger(funds)||!Number.isSafeInteger(points))throw Error('fixed-event-economic-rule-invalid');
+   if(!Number.isSafeInteger(world.funds+funds)||world.funds+funds<0)throw Error('fixed-event-funds-unresolved');
+   world.funds+=funds;
+   if(Number.isFinite(world.score))world.score+=points;
    world.generatedEvents[step.event]=(world.generatedEvents[step.event]||0)+1;
-   return {ok:true,world,assumed:true,notes:[...verdict.pending,'fixed-item-only-event:'+step.event,'event-scheduler-and-receipt-not-native-certified']};
+   return {ok:true,world,assumed:true,notes:[...verdict.pending,'fixed-item-only-event:'+step.event,'fixed-event-funds:'+funds,'fixed-event-points:'+points,'event-scheduler-and-receipt-not-native-certified']};
   }catch(e){return {ok:false,world:input,reason:e.message};}
  }
  const e=START_EVENT_RULES[step.event];
