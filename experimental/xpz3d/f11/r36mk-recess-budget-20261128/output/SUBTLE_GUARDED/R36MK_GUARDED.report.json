@@ -1,0 +1,222 @@
+{
+  "version": "R36MK",
+  "source": "R36MJ_SUBTLE_GUARDED_2100_COMPACT_FULL.glb",
+  "sourceSHA256": "42c33c846394b8fb58890e48d040f01ad550f57410756a8d922dba1bc6be4d37",
+  "variant": "guarded",
+  "trianglesBefore": 2100,
+  "trianglesAfter": 2100,
+  "bodyTriangles": 1132,
+  "headHairTriangles": 968,
+  "joints": 63,
+  "trueBudgetTransfer": true,
+  "recessQuotaFraction": 0.5,
+  "donorEdgeCollapses": 9,
+  "donorFacesRemoved": 18,
+  "recipientFacesAdded": 18,
+  "recipientTrianglesSplit": 9,
+  "recessRecipientTriangles": 5,
+  "ridgeRecipientTriangles": 4,
+  "netFaceChange": 0,
+  "bodyVertexEntriesBefore": 3396,
+  "bodyVertexEntriesAfter": 3396,
+  "geometry": {
+    "changedPhysicalGroups": 70,
+    "updatedNormalCorners": 449
+  },
+  "areas": {
+    "before": 1.6828073309661264,
+    "after": 1.6823899555184012
+  },
+  "donorOperations": [
+    {
+      "edge": [
+        "-856:975:80130",
+        "-992:558:78319"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.01863862412775797,
+      "worstAreaRatio": 1.072152414023809,
+      "worstFaceDot": 0.9977493311776157
+    },
+    {
+      "edge": [
+        "1728:-1468:80042",
+        "1943:-540:78436"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.01868075079067661,
+      "worstAreaRatio": 0.8779716583377423,
+      "worstFaceDot": 0.9990496544622627
+    },
+    {
+      "edge": [
+        "-9965:-12281:127747",
+        "-9991:-10269:127850"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.02015180512385359,
+      "worstAreaRatio": 1.0019766693020005,
+      "worstFaceDot": 0.9608687183785513
+    },
+    {
+      "edge": [
+        "-1344:2534:79104",
+        "-924:767:79224"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.01820180110432306,
+      "worstAreaRatio": 0.8623103420615532,
+      "worstFaceDot": 0.9876908284358052
+    },
+    {
+      "edge": [
+        "1063:326:87018",
+        "251:-507:85606"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.018301544339489637,
+      "worstAreaRatio": 0.7399340396189223,
+      "worstFaceDot": 0.9403248280373631
+    },
+    {
+      "edge": [
+        "1781:75:82174",
+        "2085:2138:82362"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.020942695699650397,
+      "worstAreaRatio": 0.9288679120891724,
+      "worstFaceDot": 0.9920524015517427
+    },
+    {
+      "edge": [
+        "1301:-1043:84514",
+        "1414:-1725:82299"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.023203462103395536,
+      "worstAreaRatio": 0.9777227547021397,
+      "worstFaceDot": 0.9931050447549907
+    },
+    {
+      "edge": [
+        "15623:-11708:141249",
+        "16733:-10872:143225"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.02415181570491223,
+      "worstAreaRatio": 1.001312082994077,
+      "worstFaceDot": 0.9922438634186512
+    },
+    {
+      "edge": [
+        "1824:1689:84455",
+        "1933:1106:82268"
+      ],
+      "oldFacesRemoved": 2,
+      "edgeLength": 0.022658382652753866,
+      "worstAreaRatio": 1.0427008396046504,
+      "worstFaceDot": 0.9959674806967352
+    }
+  ],
+  "recipientOperations": [
+    {
+      "sourceTriangle": 360,
+      "feature": "reserved-recess",
+      "recessAssigned": true,
+      "distanceToContour": 0.00024663631226848717,
+      "extraDepthY": 0.0015,
+      "areaBefore": 0.00028364120308688125,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 907,
+      "feature": "upper-bridge",
+      "recessAssigned": false,
+      "distanceToContour": 0.000783516534735424,
+      "extraDepthY": -0.0014763197494035382,
+      "areaBefore": 0.0003725804741113556,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 913,
+      "feature": "reserved-recess",
+      "recessAssigned": true,
+      "distanceToContour": 0.008003348827416594,
+      "extraDepthY": 0.0015,
+      "areaBefore": 0.00037147516000060355,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 956,
+      "feature": "outer-left",
+      "recessAssigned": false,
+      "distanceToContour": 0.006982331126294094,
+      "extraDepthY": -0.0006485650396650519,
+      "areaBefore": 0.000536697795180221,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 962,
+      "feature": "reserved-recess",
+      "recessAssigned": true,
+      "distanceToContour": 0.005096779185403207,
+      "extraDepthY": 0.0015,
+      "areaBefore": 0.00043494087995677767,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 963,
+      "feature": "lower-asymmetric-fold",
+      "recessAssigned": false,
+      "distanceToContour": 0.003854499314432037,
+      "extraDepthY": -0.0016750930364790608,
+      "areaBefore": 0.0003913177883319909,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 970,
+      "feature": "reserved-recess",
+      "recessAssigned": true,
+      "distanceToContour": 0.011276044703923484,
+      "extraDepthY": 0.0015,
+      "areaBefore": 0.0004734299058649253,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 992,
+      "feature": "reserved-recess",
+      "recessAssigned": true,
+      "distanceToContour": 0.0072258645606957895,
+      "extraDepthY": 0.0015,
+      "areaBefore": 0.0003248538931281093,
+      "facesAdded": 2
+    },
+    {
+      "sourceTriangle": 1068,
+      "feature": "inner-right",
+      "recessAssigned": false,
+      "distanceToContour": 0.0028208932891656325,
+      "extraDepthY": -0.0007611230637965616,
+      "areaBefore": 0.00040666012434197426,
+      "facesAdded": 2
+    }
+  ],
+  "normalTexture": {
+    "file": "R36MK_REALLOCATED_NORMAL_2048.png",
+    "sha256": "8a96036cbba78c74b681fbe43750f35bf3ef12ffddde8eeb208f37e994ce4fce",
+    "bytes": 3380364,
+    "changedTexels": 69525,
+    "processedTexels": 69534,
+    "affectedUvFaces": 67
+  },
+  "model": "R36MK_GUARDED_2100_FULL.glb",
+  "modelBytes": 22094376,
+  "modelSHA256": "b94840eb9fcf692ad8adf4c1f6a74c0658aaeaa942830c139363ff585da98246",
+  "sourceUVPixelsReused": true,
+  "sourcePBRColorPreserved": true,
+  "skinJointWeightsInterpolated": true,
+  "visualQA": "not run",
+  "S2EngineQA": "not run",
+  "limitation": "Existing source UV image color retained; relief is a conservative 2D landmark-driven sculpt hypothesis"
+}
