@@ -1,0 +1,48 @@
+name: XPZ3D V11 body plus N center
+on:
+  push:
+    paths:
+      - 'experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/source/**'
+      - '.github/workflows/xpz3d-v11-body-ncenter.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: xpz3d-v11-body-ncenter
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 1
+      - name: Recover exact immutable V11 body source
+        run: |
+          git fetch --no-tags --depth=1 origin bde014a9f29ab4751bbe63394164b5d633c9af3b
+          mkdir -p experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output
+          git show bde014a9f29ab4751bbe63394164b5d633c9af3b:experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb > experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb
+      - name: Build V11 full-body source plus N21 center
+        run: |
+          test -s experimental/xpz3d/f11/r36hw-n21-center-surface-20261129/output/R36HW_N21_V10_BODY_LOCAL_CENTER.glb
+          node experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/source/build.cjs \
+            experimental/xpz3d/f11/r36hw-athletic-v11-compact-20261129/output/R36HW_F11_ATHLETIC_SUIT_V11_COMPACT.glb \
+            experimental/xpz3d/f11/r36hw-n21-center-surface-20261129/output/R36HW_N21_V10_BODY_LOCAL_CENTER.glb \
+            experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/output/R36HW_V11_BODY_NCENTER.glb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: r36hw-v11-body-ncenter
+          path: |
+            experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/output/*.glb
+            experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/reports/*.json
+      - name: Commit actual GLB to main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/output experimental/xpz3d/f11/r36hw-v11-body-ncenter-20261129/reports
+          if ! git diff --cached --quiet; then
+            git commit -m "build(xpz3d): publish V11 body with N-series center"
+            git push origin HEAD:main
+          fi
