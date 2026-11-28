@@ -45,5 +45,48 @@ export function renderCareerLedger(host,d,{kind,id,rule,source,name=x=>x}){
 export function mountCareerLedger(host,opts){
  if(!host)return;
  host.textContent='정방향 육성 목표 원장 불러오는 중…';
- loadCareerLedger().then(d=>{if(host.isConnected)renderCareerLedger(host,d,opts);}).catch(e=>{if(host.isConnected)host.textContent='정방향 육성 원장 로딩 실패: '+e.message;});
+ loadCareerLedger().then(d=>{if(!host.isConnected)return;renderCareerLedger(host,d,opts);if(d.sourceMetadataSha256!==opts.source)return;const panel=append(host,'section','육성 비교 자료 불러오는 중…');loadCareerComparison().then(c=>{if(panel.isConnected)renderCareerComparison(panel,c,opts);}).catch(e=>{if(panel.isConnected)panel.textContent='육성 비교 자료 로딩 실패: '+e.message;});}).catch(e=>{if(host.isConnected)host.textContent='정방향 육성 원장 로딩 실패: '+e.message;});
+}
+
+let comparisonRequest;
+const STAT_KEYS=['tu','stamina','health','bravery','reactions','firing','throwing','strength','psiStrength','psiSkill','melee','mana'];
+const STAT_NAMES=['행동력','기력','체력','용기','반응','사격','투척','근력','정신력','정신기술','근접','마나'];
+const vectorOk=v=>v&&STAT_KEYS.every(k=>Number.isSafeInteger(v[k]));
+const total=v=>STAT_KEYS.reduce((s,k)=>s+v[k],0);
+export function loadCareerComparison(){
+ return comparisonRequest??=fetch(new URL('../../data/campaign-forward-career-comparison-v1.json',import.meta.url),{cache:'no-cache'}).then(async r=>{
+  if(!r.ok)throw Error('HTTP '+r.status);
+  const d=await r.json();
+  if(!['ATLAS_FUNDED_CAREER_COMPARISON_V1','ATLAS_FORWARD_CAREER_COMPARISON_V2'].includes(d.schema)||!Array.isArray(d.rows))throw Error('비교 원장 형식 불일치');
+  return d;
+ }).catch(e=>{comparisonRequest=null;throw e;});
+}
+export function renderCareerComparison(host,d,{kind,id,source,name=x=>x}){
+ host.replaceChildren();
+ append(host,'h3','실제 정방향 육성 모델 비교');
+ const rows=d.rows.filter(r=>r.sourceMetadataSha256===source&&r.gameCertified===false&&Array.isArray(r.trainingIds)&&r.trainingIds.every(t=>typeof t==='string')&&vectorOk(r.before)&&vectorOk(r.stats)&&vectorOk(r.delta)&&STAT_KEYS.every(k=>r.stats[k]-r.before[k]===r.delta[k])&&(kind==='profile'?r.profileId===id:r.trainingIds.includes(id)));
+ append(host,'p','출생 최소 능력치 기준의 조건부 모델 결과입니다. 전역 최대치 또는 실제 게임 인증으로 해석하지 않습니다.');
+ if(!rows.length){append(host,'p','해당 병종·훈련의 실제 재생 결과는 아직 없습니다.');return;}
+ const scroll=append(host,'div','');scroll.style.overflowX='auto';
+ const table=append(scroll,'table','');
+ const head=append(append(table,'thead',''),'tr','');
+ const th=s=>{const e=append(head,'th',s);e.scope='col';};
+ ['훈련 순서','금융 모드','행동 수',...STAT_NAMES,'합계','증가량','비용','잔액','재생 기록'].forEach(th);
+ const body=append(table,'tbody','');
+ for(const r of [...rows].sort((a,b)=>total(b.stats)-total(a.stats))){
+  const tr=append(body,'tr',''),td=s=>append(tr,'td',String(s));
+  const unlimited=r.financeMode==='unlimited';
+  td(r.trainingIds.map(k=>name(k)||k).join(' → '));
+  td(unlimited?'자금 제한 없음':r.financeMode==='funded'||d.schema==='ATLAS_FUNDED_CAREER_COMPARISON_V1'?'기존 자금 차감':'미확인');
+  td(r.steps??'—');
+  STAT_KEYS.forEach(k=>td(r.stats[k]));
+  td(total(r.stats));td('+'+total(r.delta));
+  td(Number.isSafeInteger(r.totalCost)?r.totalCost.toLocaleString('ko-KR'):'미기록');
+  td(unlimited?'해당 없음':Number.isSafeInteger(r.finalFunds)?r.finalFunds.toLocaleString('ko-KR'):'미기록');
+  const cell=td('');
+  if(typeof r.file==='string'&&/^campaign-forward-career-replay-[a-zA-Z0-9_-]+\.json$/.test(r.file)){
+   const link=append(cell,'a','원본 재생');link.href=new URL('../../data/'+r.file,import.meta.url).href;link.target='_blank';link.rel='noopener noreferrer';
+  }
+ }
+ append(host,'p','비교 대상 '+rows.length+'개 · 현재 기록 중 최고 합계 '+Math.max(...rows.map(r=>total(r.stats)))+'점. 기존 최대치 표와 별개의 실제 모델 재생 결과입니다.');
 }
