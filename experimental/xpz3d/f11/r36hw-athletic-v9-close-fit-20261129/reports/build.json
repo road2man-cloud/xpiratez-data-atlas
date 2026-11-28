@@ -1,0 +1,78 @@
+{
+  "sourceBlob": "055ad6cf2758cd0830fc362845146d1a5f265b72",
+  "trianglesBefore": 2096,
+  "trianglesAfter": 2036,
+  "garmentVerticesBefore": 718,
+  "garmentVerticesAfter": 674,
+  "nominalInwardOffset": 0.0075,
+  "requestedInwardOffset": 0.0075,
+  "offsetUnit": "model units, estimated because complete underlying body absent",
+  "regions": {
+    "legs": {
+      "vertices": 187,
+      "meanInward": 0.0075000000000000075,
+      "meanDisplacement": 0.007500000000000008
+    },
+    "torso": {
+      "vertices": 90,
+      "meanInward": 0.007499999999999991,
+      "meanDisplacement": 0.007499999999999992
+    },
+    "collar": {
+      "vertices": 16,
+      "meanInward": 0.004048246694591873,
+      "meanDisplacement": 0.008686180026140616
+    },
+    "arms": {
+      "vertices": 120,
+      "meanInward": 0.007499999999999997,
+      "meanDisplacement": 0.007499999999999997
+    },
+    "wrist": {
+      "vertices": 48,
+      "meanInward": 0.0056122032461175505,
+      "meanDisplacement": 0.013225989259679336
+    },
+    "feet": {
+      "vertices": 50,
+      "meanInward": 0.007500000000000004,
+      "meanDisplacement": 0.007500000000000004
+    }
+  },
+  "removedSleeveCaps": 24,
+  "removedNeckCaps": 16,
+  "removedCollapsedSleeveFaces": 16,
+  "removedHandCaps": 4,
+  "wristSeams": [
+    {
+      "side": "L",
+      "oldSleeveX": 0.768,
+      "newSleeveX": 0.7559999823570251,
+      "handCorners": 4,
+      "matchedEdges": 4
+    },
+    {
+      "side": "R",
+      "oldSleeveX": -0.768,
+      "newSleeveX": -0.7559999823570251,
+      "handCorners": 4,
+      "matchedEdges": 4
+    }
+  ],
+  "neckCrossSectionPoints": 16,
+  "minOriginalFaceNormalCos": 0.9487853004876724,
+  "minTriangleArea": 0.00037336295843067724,
+  "joints": 63,
+  "opaqueMaterialPreserved": true,
+  "normalTexturePreserved": true,
+  "originalHandPositionsPreserved": true,
+  "rigPreserved": true,
+  "outputBytes": 619620,
+  "nativeS2Rendered": false,
+  "visualAcceptance": false,
+  "limitations": [
+    "Global nominal thickness is estimated, not exact clearance to a complete body.",
+    "Wrist endpoints match hand boundary corners and weights; neck matches reference neck section but retains the underlying neck geometry.",
+    "Posed clipping, full self-intersection and native rendering not checked; unused binary ranges retained."
+  ]
+}
