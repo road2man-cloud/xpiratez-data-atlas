@@ -1,0 +1,21 @@
+{
+  "version": "R36LS-COMPACT",
+  "input": "R36LS_ART_2100_FULL.glb",
+  "inputBytes": 18518060,
+  "output": "R36LS_ART_2100_COMPACT_FULL.glb",
+  "outputBytes": 5546716,
+  "sourceSHA256": "be062bd32b86b7ca555993bfe498ca3cda479e68da5905f573d45c75b1110079",
+  "outputSHA256": "c899da4b31d6a560ef03e2b67b1e6e6325d9228651ebfdd5edd12ec5163f64d1",
+  "reducedBytes": 12971344,
+  "ratio": 0.29953,
+  "textureObjectsBefore": 16,
+  "textureObjectsAfter": 6,
+  "imageObjectsBefore": 16,
+  "imageObjectsAfter": 6,
+  "bufferViewsBefore": 137,
+  "bufferViewsAfter": 127,
+  "geometryAccessorValuesLossless": true,
+  "skinAccessorsUnchanged": true,
+  "embeddedPngBytesLossless": true,
+  "caveat": "GPU image look unchanged intended; browser visual test still required"
+}
