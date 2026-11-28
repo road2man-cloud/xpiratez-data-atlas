@@ -1,0 +1,48 @@
+{
+  "schema": "r36hw-v26-sleeve-skinning-v1",
+  "sourceBlob": "fbf17ceef7188f26d7eb270d66c14d43a1a58487",
+  "sourceBytes": 307972,
+  "outputBytes": 307964,
+  "triangles": 2100,
+  "joints": 63,
+  "eligibleGroups": 86,
+  "changedGroups": 57,
+  "changedVertices": 86,
+  "acceptedSteps": 154,
+  "activeEdges": 356,
+  "maxL1WeightChange": 0.2,
+  "maxWeightSumError": 3.259629011154175e-8,
+  "poseStretch": [
+    {
+      "pose": "V25 default",
+      "rmsBefore": 0.1284694240571569,
+      "rmsAfter": 0.11540000288504189,
+      "maxAbsRelativeStretchBefore": 0.4107691684231751,
+      "maxAbsRelativeStretchAfter": 0.37522396811775816
+    },
+    {
+      "pose": "arm lower 36 deg",
+      "rmsBefore": 0.07944007308079594,
+      "rmsAfter": 0.07565627757333504,
+      "maxAbsRelativeStretchBefore": 0.24476865231624578,
+      "maxAbsRelativeStretchAfter": 0.21194495232755228
+    },
+    {
+      "pose": "arm lower 78 deg",
+      "rmsBefore": 0.1567700876419516,
+      "rmsAfter": 0.13918357736139822,
+      "maxAbsRelativeStretchBefore": 0.48112753117300455,
+      "maxAbsRelativeStretchAfter": 0.44258175904641983
+    }
+  ],
+  "changedViews": [
+    40,
+    41
+  ],
+  "unchangedViews": 44,
+  "geometryPoseTexturesAndMaterialsUnchanged": true,
+  "opaqueOutfit": true,
+  "rendered": false,
+  "collisionTest": false,
+  "nativeS2": false
+}
