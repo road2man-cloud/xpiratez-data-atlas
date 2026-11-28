@@ -1,6 +1,7 @@
 // Resumable full-registry v10 admission. Every batch sees ALL descendants of
 // its source graphs; no limited batch is allowed to declare a global final table.
 import fs from "node:fs";
+import {requireNormalizedResearch} from "./atlas-overcap-research-normalization-gate.mjs";
 import assert from "node:assert/strict";
 import {gunzipSync,gzipSync} from "node:zlib";
 import {key} from "./population-research-career-core.mjs";
@@ -20,6 +21,7 @@ const stage="tools/data/overcap-intake-stage-"+body+"/";
 const prep=decode(stage+"vo2-full-prepared.json.gz"),manifest=read("tools/data/overcap-vo2-full-prepared-manifest-"+body+".json");
 assert.equal(prep.schema,"ATLAS_VO2_FULL_PREPARED_V1");assert.equal(key(prep),manifest.preparedHash);assert.equal(key(prep.plan),manifest.planHash);
 const ledger=decode(stage+"soldier-population-missing-origin-career.json.gz");
+requireNormalizedResearch({stage,ledger});
 assert.equal(key(ledger.graphs),prep.sourceGraphSha256);assert.equal(ledger.sourceGraphSha256,prep.sourceGraphSha256);
 const db=hydrateSharedCareerSections(hydrateResearchPaths(decode("public/data/branch-soldier-results.json.gz")));
 assert.equal(db.sourceMetadataSha256,prep.sourceMetadataSha256);assert.equal(db.careerCompletion.researchTraitSets.sourceGraphSha256,prep.baseGraphHash);

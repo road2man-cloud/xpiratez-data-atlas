@@ -3,6 +3,7 @@
 // Existing public assets are input only; this producer writes a release candidate
 // into tools/data. The public loader is exercised on the actual assembled bytes.
 import fs from "node:fs";
+import {requireNormalizedResearch} from "./atlas-overcap-research-normalization-gate.mjs";
 import assert from "node:assert/strict";
 import {execFileSync} from "node:child_process";
 import {gunzipSync,gzipSync} from "node:zlib";
@@ -33,6 +34,7 @@ assert.equal(merge.preparedHash,manifest.preparedHash);assert.equal(merge.planHa
 assert.equal(merge.materialBudgetHash,prep.materialBudget.sha256);assert.equal(merge.sourceMetadataSha256,metadata);assert.equal(modern.meta.source.metadataSha256,metadata);
 for(const [p,h] of Object.entries(merge.sourceHashes))assert.equal(key(fs.readFileSync(p,"utf8").replace(/\r\n/g,"\n")),h);
 const ledgerFile=stage+"soldier-population-missing-origin-career.json.gz",ledgerBytes=fs.readFileSync(ledgerFile),ledger=JSON.parse(gunzipSync(ledgerBytes));
+requireNormalizedResearch({stage,ledger});
 const ixBytes=fs.readFileSync(stage+"soldier-population-missing-origin-career-index.json.gz"),ix=JSON.parse(gunzipSync(ixBytes));
 assert.equal(key(ledger.graphs),prep.sourceGraphSha256);assert.equal(ledger.sourceGraphSha256,ix.sourceGraphSha256);
 assert.equal(key(ledger.indexRoutes),key(ix.routes));assert.equal(key(ledger.nodes),key(ix.nodes));assert.equal(key(ledger.actionNodes),key(ix.actionNodes));

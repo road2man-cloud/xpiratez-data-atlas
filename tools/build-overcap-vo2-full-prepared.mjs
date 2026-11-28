@@ -1,6 +1,7 @@
 // Produce a scoped v10 admission receipt on the actual staged canonical ledger.
 // A focused result is deliberately NOT installed in the published registry.
 import fs from "node:fs";
+import {requireNormalizedResearch} from "./atlas-overcap-research-normalization-gate.mjs";
 import assert from "node:assert/strict";
 import {gunzipSync,gzipSync} from "node:zlib";
 import {execFileSync} from "node:child_process";
@@ -19,6 +20,7 @@ const body=process.argv.find(x=>x.startsWith("--body="))?.slice(7)||"POD_REPAIR"
 assert(/^[A-Z0-9_]+$/.test(body));
 const stage="tools/data/overcap-intake-stage-"+body+"/";
 const ledger=decode(stage+"soldier-population-missing-origin-career.json.gz"),index=decode(stage+"soldier-population-missing-origin-career-index.json.gz");
+requireNormalizedResearch({stage,ledger});
 const patch=read("tools/data/overcap-canonical-graph-patch-"+body+".json"),receipt=read("tools/data/overcap-staged-intake-receipt-"+body+".json");
 const db=hydrateSharedCareerSections(hydrateResearchPaths(decode("public/data/branch-soldier-results.json.gz")));
 const data=read("public/data/soldiers-modern-index.json");
