@@ -1,0 +1,343 @@
+{
+  "version": "R36LT-UV-ISLANDS-V2",
+  "sourceSHA256": "c899da4b31d6a560ef03e2b67b1e6e6325d9228651ebfdd5edd12ec5163f64d1",
+  "sourceAtlas": [
+    2048,
+    2048
+  ],
+  "minPixels": 256,
+  "maxIslands": 12,
+  "output": [
+    {
+      "direction": "negative",
+      "selectedPixels": 323145,
+      "connectedComponents": 232,
+      "exportedIslands": 12,
+      "exportedPixelCount": 17820,
+      "islands": [
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_01",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1737,
+            "y": 537,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_01_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_01_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_01_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_02",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 717,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_02_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_02_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_02_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_03",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 777,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_03_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_03_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_03_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_04",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 837,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_04_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_04_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_04_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_05",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 897,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_05_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_05_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_05_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_06",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 957,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_06_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_06_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_06_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_07",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1017,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_07_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_07_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_07_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_08",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 237,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_08_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_08_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_08_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_09",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 297,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_09_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_09_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_09_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_10",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 357,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_10_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_10_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_10_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_11",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 597,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_11_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_11_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_11_WIRE.png"
+        },
+        {
+          "stem": "R36LT_NEGATIVE_UV_ISLAND_12",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1437,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_NEGATIVE_UV_ISLAND_12_SOURCE.png",
+          "maskFile": "R36LT_NEGATIVE_UV_ISLAND_12_MASK.png",
+          "wireFile": "R36LT_NEGATIVE_UV_ISLAND_12_WIRE.png"
+        }
+      ]
+    },
+    {
+      "direction": "positive",
+      "selectedPixels": 120865,
+      "connectedComponents": 96,
+      "exportedIslands": 12,
+      "exportedPixelCount": 17820,
+      "islands": [
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_01",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1677,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_01_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_01_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_01_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_02",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1737,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_02_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_02_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_02_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_03",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1797,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_03_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_03_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_03_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_04",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1857,
+            "y": 597,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_04_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_04_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_04_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_05",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1137,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_05_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_05_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_05_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_06",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1197,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_06_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_06_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_06_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_07",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 1257,
+            "y": 657,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_07_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_07_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_07_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_08",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 117,
+            "y": 717,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_08_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_08_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_08_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_09",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 357,
+            "y": 717,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_09_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_09_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_09_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_10",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 417,
+            "y": 717,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_10_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_10_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_10_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_11",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 477,
+            "y": 717,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_11_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_11_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_11_WIRE.png"
+        },
+        {
+          "stem": "R36LT_POSITIVE_UV_ISLAND_12",
+          "pixels": 1485,
+          "atlasBounds": {
+            "x": 537,
+            "y": 717,
+            "width": 66,
+            "height": 66
+          },
+          "sourceFile": "R36LT_POSITIVE_UV_ISLAND_12_SOURCE.png",
+          "maskFile": "R36LT_POSITIVE_UV_ISLAND_12_MASK.png",
+          "wireFile": "R36LT_POSITIVE_UV_ISLAND_12_WIRE.png"
+        }
+      ]
+    }
+  ],
+  "origin": "measured R36LS UV texture pixels"
+}
