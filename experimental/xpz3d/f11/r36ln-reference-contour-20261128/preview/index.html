@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>R36LN · 전신 곡면/피부 명암 비교</title>
+<style>
+:root{color-scheme:dark;--bg:#08131b;--panel:#122332;--card:#193344;--line:#2d4e61;--muted:#a6bbc7;--accent:#77d7b7}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;font:13px system-ui,"Malgun Gothic",sans-serif;color:#ecf5f7;background:var(--bg)}
+header{min-height:76px;background:linear-gradient(100deg,#143349,#102331);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:12px 22px}
+.logo{background:#254a54;color:#96eccd;width:45px;height:45px;display:grid;place-items:center;border-radius:12px;font-size:17px;font-weight:800}
+header h1{font-size:19px;margin:0 0 4px}header small{color:var(--muted)}
+header .status{margin-left:auto;border:1px solid #427a68;color:#89dbc0;border-radius:40px;padding:7px 12px;font-size:11px}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);height:calc(100vh - 76px);min-height:540px}
+aside{padding:18px;overflow:auto;background:#102536;border-right:1px solid var(--line)}
+section{border-bottom:1px solid #30495b;padding-bottom:17px;margin-bottom:16px}
+section h2{font-size:12px;color:#a5dccc;font-weight:750;letter-spacing:1px;margin:0 0 12px}
+label{display:block;color:#b6cdd9;font-weight:550;margin:10px 0 7px}
+button,select{cursor:pointer;border:1px solid #43677a;border-radius:7px;padding:9px 10px;color:#edf6fb;background:#244759;font:inherit}
+button:hover{background:#356b80}button.selected{background:#1c6e69;border-color:#64bca8}
+select{width:100%}.buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0;color:#c5d6df}
+.row strong{color:#f5fbfd}
+.check{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 3px;font-size:12px}
+.check input{accent-color:#66d4af;width:16px;height:16px;margin-right:8px}
+.check span{display:flex;align-items:center}
+.check small{color:#86b7ca}
+input[type=range]{accent-color:var(--accent);width:100%}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.kpi{border:1px solid #2b5567;border-radius:9px;background:#173548;padding:10px}
+.kpi small{display:block;color:#a1bbca;font-size:11px}.kpi strong{display:block;font-size:19px;margin-top:4px;font-variant-numeric:tabular-nums}
+.note{color:#b4c9d3;font-size:11px;line-height:1.6;margin:9px 0 0}.warning{color:#e3ba85}
+#status{font-size:11px;white-space:pre-wrap;color:#a6d8ca;line-height:1.6;word-break:break-all}
+.viewer{min-width:0;min-height:0;position:relative;background:radial-gradient(ellipse at center,#243d4a,#08131b 80%)}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.hud{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;gap:9px;pointer-events:none}
+.hud .pane{background:#102330dd;border:1px solid #376176;border-radius:8px;padding:8px 10px;font-size:12px}
+.pane small{display:block;color:#abced7;margin-bottom:5px}
+.bottom{position:absolute;bottom:12px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:end;gap:10px;pointer-events:none}
+.bottom .tip{font-size:11px;background:#0a2230c9;border-radius:8px;padding:9px;color:#aec8d7;line-height:1.6}
+.bottom button{pointer-events:auto;background:#2b6c73}
+.split-labels{display:none;position:absolute;left:0;right:0;top:14px;justify-content:space-around;pointer-events:none;color:#e9f2f7;font-size:11px}
+.split-labels span{background:#112836ce;border:1px solid #396577;padding:8px 13px;border-radius:7px}
+@media(max-width:800px){main{display:block;height:auto}aside{max-height:none}.viewer{height:68vh;min-height:430px}header h1{font-size:16px}header .status{display:none}}
+</style>
+<script type="importmap">{"imports":{"three":"../../r36kp/preview/vendor/three.module.js","three/addons/":"../../r36kp/preview/vendor/"}}</script>
+</head>
+<body><header><div class="logo">F11</div><div><h1>R36LN · 2,088△ FULL CHARACTER</h1><small>R36KZ 원형 보존 · 중심부 곡면 및 노멀 개선 · 2,088△</small></div><div class="status">R36LN BALANCED vs R36KZ BASE · 동일 카메라 확대 비교</div></header>
+<main><aside>
+<section><h2>01 / 모델 모드</h2>
+<select id="modelMode"><option value="low">R36LN · BALANCED 중심부 개선</option><option value="soft">R36LN · SOFT 피부 완화형</option><option value="legacy">R36KZ · 원본 안정형</option><option value="high">고밀도 기하학 참조</option><option value="original">R36HW 의복 원본</option></select>
+<div class="check"><span><input id="split" type="checkbox" checked>좌우 동기화 비교</span></div>
+<label for="compare">오른쪽 비교 대상</label>
+<select id="compare"><option value="legacy">R36KZ 원형</option><option value="soft">R36LN SOFT</option><option value="low">R36LN BALANCED</option><option value="high">고밀도 원본</option></select>
+<p class="note">R36KZ 전체 캐릭터를 유지하고, 통합 중심부 곡면과 노멀맵 강도를 변경했습니다. 좌우 비교 및 0°·35° 포즈를 지원합니다.</p></section>
+<section><h2>02 / 카메라 및 형태</h2>
+<div class="buttons"><button data-view="front">정면</button><button data-view="three" class="selected">3/4 사선</button><button data-view="back">후면</button>
+<button data-view="side">측면</button><button data-view="chest">흉부 확대</button><button data-view="pelvis">골반부 확대</button><button data-view="head">얼굴 확대</button></div>
+<div class="check"><span><input id="spin" type="checkbox">자동 회전</span><span><input id="wire" type="checkbox">와이어</span></div>
+</section>
+<section><h2>03 / 편집 레이어</h2>
+<div class="check"><span><input id="body" type="checkbox" checked>중심부 일체형 전신 피부</span><small>1,120△</small></div>
+<div class="check"><span><input id="core" type="checkbox" checked disabled>중심해부학: 피부 메시 내장</span><small>별도 면 0△</small></div>
+<div class="check"><span><input id="head" type="checkbox" checked>R36HW 원본 얼굴·헤어</span><small>968△</small></div>
+<div class="check"><span><input id="clothing" type="checkbox">고밀도 의복 오버레이</span><small>참조 전용</small></div>
+<div class="check"><span><input id="normal" type="checkbox" checked>베이크 노멀맵 활성화</span><small>2048²</small></div>
+<div class="check"><span><input id="colorOnly" type="checkbox">컬러 텍스처 단독 보기</span><small>조명·노멀 제외</small></div>
+<label for="opacity">중심부 투명도 (겹침 확인)</label><div class="row"><span>20–100%</span><strong id="opacityText">100%</strong></div>
+<input id="opacity" type="range" min="20" max="100" value="100">
+</section>
+<section><h2>04 / 포즈 및 명암</h2>
+<label for="spread">허벅지 벌림 <span id="spreadText" style="float:right;color:#e9f3f6">0°</span></label>
+<input type="range" id="spread" min="0" max="35" value="0">
+<div class="buttons" style="margin-top:8px"><button type="button" data-spread="0" class="selected">0° 기본</button><button type="button" data-spread="18">18° 벌림</button><button type="button" data-spread="35">35° 벌림</button></div>
+<div class="row" style="align-items:baseline"><span style="white-space:nowrap">무릎 간격</span><strong id="spreadDistance" style="white-space:nowrap;font-variant-numeric:tabular-nums">로딩 중</strong></div>
+<p class="note">허벅지 벌림을 높이면 실제 무릎 사이의 거리가 증가합니다. 0°는 원본 포즈입니다.</p>
+<label for="exposure">렌더 노출 <span id="exposureText" style="float:right;color:#e9f3f6">1.00</span></label>
+<input id="exposure" type="range" min="55" max="180" value="100">
+<label for="detail">노멀맵 강도 <span id="detailText" style="float:right;color:#e9f3f6">100%</span></label>
+<input id="detail" type="range" min="0" max="180" value="100">
+</section>
+<section><h2>05 / 실물 2048 텍스처 맵</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+<a href="../../r36kz-chest-center-shape-20261128/output/body_color_2048.png" target="_blank" style="color:#b3e3d4;text-decoration:none"><img src="../../r36kz-chest-center-shape-20261128/output/body_color_2048.png" style="width:100%;aspect-ratio:1;object-fit:cover;border:1px solid #487183;border-radius:5px"><small>Color · 피부색 / 회화 명암</small></a>
+<a href="../../r36kz-chest-center-shape-20261128/output/body_normal_2048.png" target="_blank" style="color:#b3e3d4;text-decoration:none"><img src="../../r36kz-chest-center-shape-20261128/output/body_normal_2048.png" style="width:100%;aspect-ratio:1;object-fit:cover;border:1px solid #487183;border-radius:5px"><small>Normal · 고밀도 표면</small></a>
+<a href="../../r36kz-chest-center-shape-20261128/output/body_orm_2048.png" target="_blank" style="color:#b3e3d4;text-decoration:none"><img src="../../r36kz-chest-center-shape-20261128/output/body_orm_2048.png" style="width:100%;aspect-ratio:1;object-fit:cover;border:1px solid #487183;border-radius:5px"><small>ORM · 피부 거칠기</small></a>
+<a href="../../r36kz-chest-center-shape-20261128/output/body_relief_2048.png" target="_blank" style="color:#b3e3d4;text-decoration:none"><img src="../../r36kz-chest-center-shape-20261128/output/body_relief_2048.png" style="width:100%;aspect-ratio:1;object-fit:cover;border:1px solid #487183;border-radius:5px"><small>Height · 미세 요철</small></a>
+</div>
+<p class="note">2048 텍스처 이미지는 원본 R36KZ의 자료입니다. R36LN은 GLB 내 원본 텍스처를 그대로 보존하고 메시/노멀 및 노멀맵 강도를 변경했습니다.</p>
+<p class="note">형상 조정 전후의 차이는 좌우 GLB 비교와 와이어 모드에서 확인하세요.</p>
+</section>
+<section><h2>06 / 생산 기준</h2><div class="kpis"><div class="kpi"><small>가시 삼각형 한도</small><strong>2,100△</strong></div><div class="kpi"><small>제작 메시</small><strong>2,088△</strong></div>
+<div class="kpi"><small>색상/노멀/재질 맵</small><strong>2048²</strong></div><div class="kpi"><small>고밀도 원본</small><strong>19,908△</strong></div></div>
+<p class="note warning">첨부 사진은 형상 참조로만 활용했습니다. 2,088△·63본 유지, 피부 메시 외 별도 부품 없음. 중심부는 아직 사진과 동일한 정밀 형상을 재현했다고 볼 수 없습니다.</p></section>
+<section><h2>07 / 런타임</h2><div id="status">모델 로딩 준비 중…</div></section>
+</aside>
+<div class="viewer"><canvas id="view"></canvas>
+<div class="hud"><div class="pane"><small>표시 모델</small><strong id="modelLabel">저폴리곤 + 디테일 텍스처</strong></div><div class="pane"><small>GPU 삼각형 / 호출</small><strong id="gpu">—</strong></div></div>
+<div id="splitLabels" class="split-labels"><span id="leftLabel">왼쪽 · 균형형</span><span id="rightLabel">오른쪽 · 기존 R36KP</span></div>
+<div class="bottom"><div class="tip">드래그: 회전 · 휠: 확대 · 우클릭: 이동<br>실제 노멀 텍스처 활성/해제로 고밀도 디테일 보전 상태 비교</div><button id="save">PNG 화면 저장</button></div>
+</div>
+</main>
+<script type="module">
+import * as THREE from 'three';import{GLTFLoader}from'three/addons/loaders/GLTFLoader.js';import{OrbitControls}from'three/addons/controls/OrbitControls.js';
+import {applyThighSpread} from '../../r36kp/preview/pose-spread.mjs';
+const $=id=>document.getElementById(id),canvas=$('view');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setClearColor(0x09131c);
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(36,1,.001,70);camera.up.set(0,1,0);
+scene.add(new THREE.HemisphereLight(0xffffff,0x3c627a,2.4));
+const key=new THREE.DirectionalLight(0xffffff,2);key.position.set(3,5,6);scene.add(key);
+const rim=new THREE.DirectionalLight(0xc7d8ff,.9);rim.position.set(-4,2,-3);scene.add(rim);
+const ctl=new OrbitControls(camera,canvas);ctl.enableDamping=true;ctl.minDistance=.11;ctl.maxDistance=35;
+const assets={low:null,soft:null,legacy:null,high:null,original:null},boneBases=new WeakMap();
+const rootMap=new Map(),status={},triangles={};let mode='low',currentView='pelvis',layerMap={};
+const source=[
+ {name:'low',url:'../output/R36LN_BALANCED_2088_FULL.glb',editorIndex:0},
+ {name:'soft',url:'../output/R36LN_SOFT_2088_FULL.glb',editorIndex:0},
+ {name:'legacy',url:'../../r36kz-chest-center-shape-20261128/output/R36KZ_STABLE_2088_TORSO_CENTER.glb',editorIndex:0},
+ {name:'high',url:'../../r36kp/reference/R36KO_R36HW_HEAD_R36JB_BODY_CORE.glb',editorIndex:3},
+ {name:'original',url:'../../r36kp/reference/R36HW_F11_CLOTHED.glb',editorIndex:0}
+];
+function category(o,asset){
+ if(asset==='original')return 'original';
+ const s=((o.name||'')+' '+(o.parent?.name||'')).toLowerCase();
+ if(s.includes('editor_central_anatomy')||s.includes('game_anatomy')||s.includes('r36kf_only_center_anatomy'))return 'core';
+ if(s.includes('editor_optional_outfit')||s.includes('optional_r36hw_garments'))return 'clothing';
+ if(s.includes('editor_nude_body')||s.includes('game_skin')||s.includes('bare_body'))return 'body';
+ return 'head';
+}
+function prep(name,obj){
+ obj.traverse(o=>{if(o.isBone)boneBases.set(o,o.quaternion.clone());
+ if(!o.isMesh)return;o.userData.r36cat=category(o,name);
+ o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();
+ o.userData.standardMaterial=o.material;
+ o.userData.originalMaterial=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();
+ o.frustumCulled=false;
+ });
+}
+function applyLayer(){
+ for(const [name,obj]of Object.entries(assets)){if(!obj)continue;obj.traverse(o=>{if(!o.isMesh)return;
+  const cat=o.userData.r36cat;const opt=cat==='original'?true:cat==='clothing'?$('clothing').checked:$(cat)?.checked??true;
+  o.visible=opt;
+  if(cat==='body'&&$('colorOnly').checked){
+   if(!o.userData.flatAlbedo){const source=Array.isArray(o.userData.originalMaterial)?o.userData.originalMaterial[0]:o.userData.originalMaterial;
+    o.userData.flatAlbedo=new THREE.MeshBasicMaterial({map:source?.map||null,color:0xffffff,side:THREE.DoubleSide});}
+   o.material=o.userData.flatAlbedo;o.material.wireframe=$('wire').checked;return;
+  }
+  if(o.userData.standardMaterial&&o.material!==o.userData.standardMaterial)o.material=o.userData.standardMaterial;
+  const mats=Array.isArray(o.material)?o.material:[o.material],src=Array.isArray(o.userData.originalMaterial)?o.userData.originalMaterial:[o.userData.originalMaterial];
+  for(let k=0;k<mats.length;k++){const m=mats[k],s=src[k];m.wireframe=$('wire').checked;
+   m.side=THREE.DoubleSide;m.normalMap=$('normal').checked?s.normalMap:null;
+   if(m.normalMap)m.normalScale.set(Number($('detail').value)/100,Number($('detail').value)/100);
+   if(cat==='core'){m.transparent=Number($('opacity').value)<100||s.transparent;m.opacity=Number($('opacity').value)/100;}
+   else{m.transparent=s.transparent;m.opacity=s.opacity;}
+   m.needsUpdate=true;
+  }
+ });}
+}
+function applyPose(){
+ const angle=Number($('spread').value);
+ $('spreadText').textContent=angle+'°';
+ const measurements={};
+ for(const [assetName,root]of Object.entries(assets)){
+  if(!root)continue;
+  const data=applyThighSpread(root,boneBases,THREE,angle);
+  if(data)measurements[assetName]=data;
+ }
+ const value=measurements[mode]||measurements.low||Object.values(measurements)[0];
+ const indicator=$('spreadDistance');
+ if(value){
+  indicator.textContent=value.neutralSpan.toFixed(3)+' → '+value.kneeSpan.toFixed(3)+' (+'+Math.max(0,value.extraSpan).toFixed(3)+')';
+  indicator.style.color=value.outward?'#83e0c2':'#f3a38a';
+  indicator.title=value.outward?'좌·우 무릎이 실제로 바깥쪽으로 이동 중':'관절 움직임을 확인하세요';
+ }else{indicator.textContent='로딩 중';}
+ document.querySelectorAll('[data-spread]').forEach(b=>
+  b.classList.toggle('selected',Number(b.dataset.spread)===angle));
+}
+function active(){return assets[mode]||assets.low||assets.high||assets.original;}
+function focus(name){currentView=name;const root=active();if(!root)return;
+ const box=new THREE.Box3().setFromObject(root),c=box.getCenter(new THREE.Vector3()),sz=box.getSize(new THREE.Vector3()),h=Math.max(sz.y,1);
+ let dist=Math.max(2.1,sz.length()*1.13);
+ if(name==='pelvis'){c.y=box.min.y+sz.y*.46;dist=Math.max(.54,h*.37);}
+ if(name==='chest'){c.y=box.min.y+sz.y*.61;dist=Math.max(.76,h*.45);}
+ if(name==='head'){c.y=box.max.y-sz.y*.08;dist=Math.max(.42,h*.29);}
+ const direction=name==='side'?[1,.05,0]:name==='back'?[0,.1,-1]:name==='three'?[.7,.12,1]:[0,.08,1];
+ camera.position.copy(c).add(new THREE.Vector3(...direction).normalize().multiplyScalar(dist));camera.lookAt(c);
+ ctl.target.copy(c);ctl.update();
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===name));
+}
+const names={low:'R36KZ · 체형 보정 + 골반 스킨',soft:'R36KZ · 강화형 체형',legacy:'R36KY · 이전 중심부',high:'고밀도 편집 원본',original:'R36HW 의복 원본'};
+function updateMode(){
+ mode=$('modelMode').value;
+ for(const obj of Object.values(assets))if(obj)obj.visible=false;
+ const split=$('split').checked,other=$('compare').value;
+ if(assets[mode])assets[mode].visible=true;
+ $('leftLabel').textContent='왼쪽 · '+names[mode];$('rightLabel').textContent='오른쪽 · '+names[other];
+ $('modelLabel').textContent=split?names[mode]+' ↔ '+names[other]:names[mode];
+ $('splitLabels').style.display=split?'flex':'none';
+ focus(currentView);applyLayer();applyPose();
+}
+for(const x of source){const loader=new GLTFLoader();
+ loader.load(x.url,g=>{const root=g.scenes[x.editorIndex];if(!root)throw Error('GLB scene not found '+x.name);
+  root.userData.assetName=x.name;root.visible=false;assets[x.name]=root;prep(x.name,root);
+  let n=0;root.traverse(o=>{if(o.isMesh)for(const geom of [o.geometry]){const ix=geom.index;n+=(ix?ix.count:geom.attributes.position.count)/3}});
+  triangles[x.name]=n;status[x.name]=n+' triangles';scene.add(root);if(x.name==='low'&&!$ ('split').checked)root.visible=true;
+  applyLayer();applyPose();updateMode();$('status').textContent=JSON.stringify(status,null,2);
+ },undefined,e=>{status[x.name]='로드 실패: '+e.message;$('status').textContent=JSON.stringify(status,null,2);console.error(e)});
+}
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>focus(b.dataset.view)));
+$('modelMode').addEventListener('change',updateMode);$('split').addEventListener('change',updateMode);$('compare').addEventListener('change',updateMode);
+for(const k of ['body','core','head','clothing','normal','colorOnly','wire','detail','opacity'])$(k).addEventListener('input',()=>{
+ $('opacityText').textContent=$('opacity').value+'%';$('detailText').textContent=$('detail').value+'%';applyLayer();
+});
+$('spin').addEventListener('change',()=>ctl.autoRotate=$('spin').checked);
+$('spread').addEventListener('input',applyPose);
+document.querySelectorAll('[data-spread]').forEach(b=>b.addEventListener('click',()=>{$('spread').value=b.dataset.spread;applyPose();}));
+$('exposure').addEventListener('input',()=>{renderer.toneMappingExposure=Number($('exposure').value)/100;$('exposureText').textContent=renderer.toneMappingExposure.toFixed(2)});
+$('save').addEventListener('click',()=>{const a=document.createElement('a');a.download='R36KZ_CHEST_PELVIS_COMPARE.png';a.href=canvas.toDataURL('image/png');a.click()});
+if(location.protocol==='file:')$('status').textContent='file:// 실행은 차단될 수 있습니다. OPEN_DASHBOARD.cmd를 사용하세요.';
+function render(){
+ requestAnimationFrame(render);
+ const w=canvas.clientWidth,h=canvas.clientHeight;
+ if(w<=0||h<=0)return;
+ renderer.setSize(w,h,false);
+ const left=assets[mode]||assets.low,right=assets[$('compare').value]||assets.legacy;
+ const split=!!($('split').checked&&left&&right&&left!==right);
+ camera.aspect=(split?w/2:w)/h;camera.updateProjectionMatrix();ctl.update();
+ renderer.setScissorTest(split);renderer.info.autoReset=false;renderer.info.reset();
+ if(split){
+  for(let i=0;i<2;i++){
+   const on=i===0?left:right;
+   for(const obj of Object.values(assets))if(obj)obj.visible=false;
+   on.visible=true;const pw=w/2,x=i?pw:0;
+   renderer.setViewport(x,0,pw,h);renderer.setScissor(x,0,pw,h);renderer.render(scene,camera);
+  }
+ }else{
+  for(const obj of Object.values(assets))if(obj)obj.visible=false;
+  if(left)left.visible=true;
+  renderer.setViewport(0,0,w,h);renderer.setScissor(0,0,w,h);renderer.render(scene,camera);
+ }
+ $('gpu').textContent=renderer.info.render.triangles.toLocaleString('ko-KR')+' △ / '+renderer.info.render.calls+' calls';
+ renderer.setScissorTest(false);
+}
+render();
+window.R36KZ={THREE,assets,renderer,camera,scene,status,triangles,focus,updateMode,get ready(){return !!assets.low&&!!assets.soft&&!!assets.legacy},get model(){return mode}};
+</script></body></html>
