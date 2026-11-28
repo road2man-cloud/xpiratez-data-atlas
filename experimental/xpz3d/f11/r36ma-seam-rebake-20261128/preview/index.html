@@ -1,0 +1,135 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>R36MA · UV 경계 재베이크 비교</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0e1822;color:#edf3f7;font:13px/1.5 system-ui,"Malgun Gothic",sans-serif}
+header{padding:15px 20px;background:#162b3b;border-bottom:1px solid #345668;display:flex;justify-content:space-between;gap:15px}
+header h1{font-size:17px;margin:0 0 5px}header p{margin:0;color:#a9c2cf}
+#app{display:grid;grid-template-columns:310px 1fr;height:calc(100vh - 80px);min-height:570px}
+aside{background:#102333;border-right:1px solid #36566a;padding:17px;overflow:auto}
+h2{margin:13px 0 9px;font-size:12px;color:#86d6bd}
+label{display:block;margin:8px 0 5px;color:#a7cfdd}
+select,button{padding:8px 10px;border:1px solid #46697b;border-radius:6px;background:#233e50;color:#f1f5f6;font:inherit}
+select{width:100%}button{cursor:pointer}button.selected{border-color:#8ad2bd;background:#28685c}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0}
+.row button{font-size:12px}
+input[type=range]{width:100%}
+.controls{display:grid;gap:6px}
+.controls label{display:flex;gap:8px;align-items:center}
+.note{color:#a7c0cd;font-size:12px;line-height:1.6}
+.viewer{min-width:0;min-height:400px;position:relative}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#hud{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;pointer-events:none;font-size:12px;gap:10px}
+#hud span{background:#0b1b2bd9;border:1px solid #446474;border-radius:6px;padding:7px}
+#status{white-space:pre-wrap;color:#90d9bf;word-break:break-word;font-size:11px}
+a{color:#85d9c5}
+@media(max-width:850px){#app{display:block;height:auto}aside{border-right:0}.viewer{height:65vh}}
+</style>
+<script type="importmap">{"imports":{"three":"../../r36kp/preview/vendor/three.module.js","three/addons/":"../../r36kp/preview/vendor/"}}</script>
+</head><body>
+<header><div><h1>R36MA · 실제 메시 연결 기반 UV 컬러·노멀 경계 재베이크</h1><p>2,100△ · 63본 · R36LZ 원본과 R36MA 텍스처 경계 개선 모델 동일 카메라·조명 비교</p></div><a href="../output/compact/" target="_blank">전체 GLB 확인</a></header>
+<div id="app"><aside>
+<h2>01 / 새로운 메시</h2>
+<label for="variant">텍스처</label><select id="variant"><option value="ART">ART</option><option value="SUBTLE">SUBTLE</option></select>
+<label for="style">곡률 강도</label><select id="style"><option value="FLOW">FLOW (원형 변화)</option><option value="GUARDED">GUARDED (55% 변화)</option></select>
+<div class="controls"><label><input type="checkbox" id="split" checked> 원본(R36LX)과 좌우 비교</label>
+<label><input type="checkbox" id="wire"> 삼각형 와이어</label>
+<label><input type="checkbox" id="normal" checked> 기존 노멀 텍스처 사용</label>
+<label><input type="checkbox" id="albedo"> 컬러맵 단독</label></div>
+<h2>02 / 같은 카메라</h2>
+<div class="row">
+<button data-view="full">전신</button><button data-view="front">정면 중심부</button>
+<button data-view="three" class="selected">35° 사선</button><button data-view="side">측면</button>
+<button data-view="back">후면</button><button data-view="head">얼굴 보존</button>
+</div>
+<label for="exposure">노출</label><input type="range" id="exposure" min="65" max="160" value="100">
+<p class="note">두 모델의 메시 및 골격은 같습니다. R36MA는 동일한 3D 모서리에 연결된 서로 다른 UV 섬의 경계 컬러와 탄젠트 노멀만 연결했습니다. 목표 이미지 수준의 외관 품질은 별도 확인이 필요합니다.</p>
+<h2>03 / 로딩 상태</h2><div id="status">모델 로딩 준비</div>
+</aside>
+<div class="viewer"><canvas id="view"></canvas>
+<div id="hud"><span id="leftName">왼쪽 · R36LZ 기준</span><span id="rightName">오른쪽 · R36MA FLOW</span></div></div></div>
+<script type="module">
+import * as THREE from 'three';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const $=id=>document.getElementById(id),can=$('view');
+const renderer=new THREE.WebGLRenderer({canvas:can,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0e1c28);
+scene.add(new THREE.HemisphereLight(0xffffff,0x48647b,2.1));
+const light=new THREE.DirectionalLight(0xffffff,1.85);light.position.set(3,6,5);scene.add(light);
+const rim=new THREE.DirectionalLight(0xd1e4fa,.75);rim.position.set(-4,3,-2);scene.add(rim);
+const camera=new THREE.PerspectiveCamera(35,1,.005,60),control=new OrbitControls(camera,can);
+control.enableDamping=true;control.minDistance=.11;control.maxDistance=20;
+let currentView='three';const roots=new Map(),pending=new Set();
+function makeUrl(type,v,s){
+ if(type==='base')return '../../r36lz-cage-roundtrip-20261128/output/compact/R36LZ_'+v+'_'+s+'_2100_COMPACT_FULL.glb';
+ return '../output/compact/R36MA_'+v+'_'+s+'_2100_COMPACT_FULL.glb';
+}
+function prep(root){
+ root.traverse(o=>{if(!o.isMesh)return;o.frustumCulled=false;
+ const mats=Array.isArray(o.material)?o.material:[o.material];o.userData.orig=mats.map(x=>x.clone());});
+}
+function load(type,v,s){
+ const key=[type,v,s].join(':');if(roots.has(key)||pending.has(key))return;
+ pending.add(key);$('status').textContent='불러오는 중: '+key;
+ new GLTFLoader().load(makeUrl(type,v,s),g=>{
+  const root=g.scene||g.scenes[0];root.visible=false;prep(root);scene.add(root);roots.set(key,root);pending.delete(key);update();
+ },undefined,e=>{pending.delete(key);$('status').textContent='로드 실패 '+key+': '+e.message;console.error(e)});
+}
+function names(){const v=$('variant').value,s=$('style').value;
+ return {left:'base:'+v+':'+s,right:'ly:'+v+':'+s,variant:v,style:s};}
+function updateMaterials(){
+ for(const root of roots.values())root.traverse(o=>{
+  if(!o.isMesh)return;
+  const m=o.userData.orig||[],set=m.map(src=>{
+   if($('albedo').checked)return new THREE.MeshBasicMaterial({map:src.map||null,color:0xffffff,wireframe:$('wire').checked,side:THREE.DoubleSide});
+   const d=src.clone();d.wireframe=$('wire').checked;
+   d.side=THREE.DoubleSide;
+   if(!$('normal').checked)d.normalMap=null;
+   return d;
+  });
+  o.material=set.length===1?set[0]:set;
+ });
+}
+function focus(){
+ const {left,right}=names(),root=roots.get(right)||roots.get(left);if(!root)return;
+ const box=new THREE.Box3().setFromObject(root),sz=box.getSize(new THREE.Vector3()),c=box.getCenter(new THREE.Vector3());
+ const isFull=currentView==='full',dist=isFull?Math.max(.9,sz.y*1.26):Math.max(.42,sz.y*.39);
+ if(!isFull)c.y=currentView==='head'?box.max.y-sz.y*.075:box.min.y+sz.y*.435;
+ const off=currentView==='side'?[1,.02,0]:currentView==='back'?[0,.05,-1]:currentView==='three'?[.65,.09,1]:[0,.06,1];
+ camera.position.copy(c).add(new THREE.Vector3(...off).normalize().multiplyScalar(dist));
+ camera.lookAt(c);control.target.copy(c);control.update();
+}
+function update(){
+ const {left,right,variant,style}=names(),l=roots.get(left),r=roots.get(right);
+ load('base',variant,style);load('ly',variant,style);
+ $('leftName').textContent='R36LZ '+variant+' '+style+' (기준)';
+ $('rightName').textContent='R36MA '+variant+' '+style+' (경계 보정)';
+ if(l&&r){$('status').textContent='두 전신 모델 로드됨 · 드래그 회전 / 휠 확대';updateMaterials();focus()}
+}
+$('variant').addEventListener('change',update);$('style').addEventListener('change',update);
+for(const id of ['albedo','normal','wire'])$(id).addEventListener('change',updateMaterials);
+$('exposure').addEventListener('input',()=>renderer.toneMappingExposure=Number($('exposure').value)/100);
+document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>{
+ currentView=button.dataset.view;
+ document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('selected',x===button));focus();
+}));
+function frame(){
+ requestAnimationFrame(frame);const w=can.clientWidth,h=can.clientHeight;if(w<1||h<1)return;
+ renderer.setSize(w,h,false);
+ const {left,right}=names(),l=roots.get(left),r=roots.get(right),split=$('split').checked&&l&&r;
+ camera.aspect=(split?w/2:w)/h;camera.updateProjectionMatrix();control.update();
+ const models=[...(l?[l]:[]),...(r?[r]:[])];
+ models.forEach(o=>o.visible=false);
+ if(split){
+  renderer.setScissorTest(true);
+  const pw=w/2;for(let i=0;i<2;i++){
+   const obj=i===0?l:r;obj.visible=true;
+   renderer.setViewport(i*pw,0,pw,h);renderer.setScissor(i*pw,0,pw,h);renderer.render(scene,camera);obj.visible=false;
+  }
+  renderer.setScissorTest(false);
+ }else{
+  if(r)r.visible=true;else if(l)l.visible=true;
+  renderer.setViewport(0,0,w,h);renderer.render(scene,camera);
+ }
+}
+$('split').addEventListener('change',()=>{});update();frame();
+</script></body></html>
