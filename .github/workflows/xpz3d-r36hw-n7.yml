@@ -35,9 +35,9 @@ jobs:
           node - <<'NODE'
           const fs=require('fs');
           const p='experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128';
-          const r=JSON.parse(fs.readFileSync(p+'/reports/R36HW_N7_REBASED_SURFACE.json','utf8'));
+          const r=JSON.parse(fs.readFileSync(p+'/reports/R36HW_N7_SOFT_HEM.json','utf8'));
           if(r.triangles!==2080||r.originalSourcePantsVertices!==92||r.centroidVerticesReconstructed!==82||r.totalPantsVertices!==174||r.unchangedSourceSkeletonJoints!==63||!r.faceAndHairGeometryUnchanged||r.modifiedVertices<80)throw Error(JSON.stringify(r));
-          const b=fs.readFileSync(p+'/output/R36HW_N7_REBASED_SURFACE.glb');
+          const b=fs.readFileSync(p+'/output/R36HW_N7_SOFT_HEM.glb');
           if(b.toString('ascii',0,4)!=='glTF'||b.readUInt32LE(8)!==b.length)throw Error('Invalid N7');
           console.log(JSON.stringify({triangles:r.triangles,reconstructed:r.centroidVerticesReconstructed,shift:r.deltaFromN5MaxMeters,sha256:r.outputSha256}));
           NODE
@@ -45,7 +45,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/output/R36HW_N7_REBASED_SURFACE.glb experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/reports/R36HW_N7_REBASED_SURFACE.json
+          git add experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/output/R36HW_N7_SOFT_HEM.glb experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/reports/R36HW_N7_SOFT_HEM.json
           if ! git diff --cached --quiet; then
             git commit -m "build(f11): publish N7 original-surface rebase GLB"
             for attempt in 1 2 3 4; do
@@ -60,5 +60,5 @@ jobs:
         with:
           name: R36HW-N7-surface-rebase
           path: |
-            experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/output/R36HW_N7_REBASED_SURFACE.glb
-            experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/reports/R36HW_N7_REBASED_SURFACE.json
+            experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/output/R36HW_N7_SOFT_HEM.glb
+            experimental/xpz3d/f11/r36hw-n7-continuous-hem-20261128/reports/R36HW_N7_SOFT_HEM.json
