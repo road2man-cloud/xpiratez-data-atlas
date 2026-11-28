@@ -1,0 +1,289 @@
+{
+  "version": 120,
+  "sourceFingerprint": "a16408dc92af6f7377511843533c12749fbb43c79508b8c194f9680ca49c751e",
+  "graphSha256": "970da5e79d02eb7e979566bc9173a1763585167e49ce23ae09bac40ee8547472",
+  "initial": "89a94a535215e7d42e4ea15bc22726e7186cf5316dc4edda492ec5d27a783e4b",
+  "summary": {
+    "states": 250,
+    "transitions": 451,
+    "frontier": 1127,
+    "rejected": 0,
+    "distinctCompleted": 40,
+    "maxDepth": 5,
+    "rootActions": [
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_INSPECT_MACHINERY"
+        },
+        "added": [],
+        "availableAfter": [],
+        "pendingFree": {
+          "source": "STR_INSPECT_MACHINERY",
+          "choices": [
+            "STR_WELL"
+          ],
+          "sequential": false,
+          "phase": "before-source"
+        }
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_JACKSTOWN_SCOUTING"
+        },
+        "added": [],
+        "availableAfter": [],
+        "pendingFree": {
+          "source": "STR_JACKSTOWN_SCOUTING",
+          "choices": [
+            "CIV_ARMOR_LOKNAR_1"
+          ],
+          "sequential": false,
+          "phase": "before-source"
+        }
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_RECRUIT_PEASANTS"
+        },
+        "added": [
+          "STR_PEASANTS_ZZZ",
+          "STR_RECRUIT_PEASANTS"
+        ],
+        "availableAfter": [
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_UBER_WHEAT",
+          "STR_WAT_DO"
+        ],
+        "pendingFree": null
+      },
+      {
+        "action": {
+          "type": "research",
+          "id": "STR_WAT_DO"
+        },
+        "added": [
+          "STR_PIRATE_LIFE",
+          "STR_WAT_DO"
+        ],
+        "availableAfter": [
+          "STR_INSPECT_MACHINERY",
+          "STR_JACKSTOWN_SCOUTING",
+          "STR_LOOT_DISTRIBUTION",
+          "STR_PIRATE_STYLE",
+          "STR_QUESTION_OF_DRILL",
+          "STR_RECRUIT_PEASANTS"
+        ],
+        "pendingFree": null
+      }
+    ],
+    "gameCertified": 0,
+    "complete": false,
+    "scope": "lab-and-free-research-only; no economy, native clock, facility, event or combat expansion"
+  },
+  "byResearch": {
+    "STR_PEASANTS_ZZZ": {
+      "firstDepth": 1,
+      "firstState": "87e008de93f64d82a3fa98bedf40fb9404a739a6f9fa6fac3665d1b45c17b66f",
+      "transitionCount": 41
+    },
+    "STR_RECRUIT_PEASANTS": {
+      "firstDepth": 1,
+      "firstState": "87e008de93f64d82a3fa98bedf40fb9404a739a6f9fa6fac3665d1b45c17b66f",
+      "transitionCount": 41
+    },
+    "STR_PIRATE_LIFE": {
+      "firstDepth": 1,
+      "firstState": "d85f7f83cdf9685bfe9bb73b5ec9d53255a7878ce10c552712964efb7593d9de",
+      "transitionCount": 32
+    },
+    "STR_WAT_DO": {
+      "firstDepth": 1,
+      "firstState": "d85f7f83cdf9685bfe9bb73b5ec9d53255a7878ce10c552712964efb7593d9de",
+      "transitionCount": 32
+    },
+    "STR_GENERAL_STORES_ARMORED": {
+      "firstDepth": 2,
+      "firstState": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "transitionCount": 26
+    },
+    "STR_INSPECT_MACHINERY": {
+      "firstDepth": 2,
+      "firstState": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "transitionCount": 26
+    },
+    "STR_WELL": {
+      "firstDepth": 2,
+      "firstState": "44dfa728a3ed7dcef4f5151da8634d17f4aa34b0a00c5ac3730ebc48993e6cb3",
+      "transitionCount": 26
+    },
+    "CIV_ARMOR_LOKNAR_1": {
+      "firstDepth": 2,
+      "firstState": "70054d347815188839358dacc8831415c23bcac59e41391ac86734258735f622",
+      "transitionCount": 13
+    },
+    "STR_JACKSTOWN_SCOUTING": {
+      "firstDepth": 2,
+      "firstState": "70054d347815188839358dacc8831415c23bcac59e41391ac86734258735f622",
+      "transitionCount": 13
+    },
+    "STR_JACKSTOWN_ZZZ": {
+      "firstDepth": 2,
+      "firstState": "70054d347815188839358dacc8831415c23bcac59e41391ac86734258735f622",
+      "transitionCount": 13
+    },
+    "STR_UBER_WHEAT": {
+      "firstDepth": 2,
+      "firstState": "028ad69e9838b423f6c061654b5c2bbb3dd480486f4562762149d5e82e4fbdd0",
+      "transitionCount": 12
+    },
+    "STR_LOOT_DISTRIBUTION": {
+      "firstDepth": 2,
+      "firstState": "c2e6747d925ec6724b85f8f3be10865a9b188f8f5278e03089fee92afc24a823",
+      "transitionCount": 18
+    },
+    "STR_PIRATE_STYLE": {
+      "firstDepth": 2,
+      "firstState": "0da4e61433e96d82879d026c5f3bf0db96a35f2f49e73adf01770fb14209e80b",
+      "transitionCount": 18
+    },
+    "STR_SAILOR_UNIFORM": {
+      "firstDepth": 2,
+      "firstState": "0da4e61433e96d82879d026c5f3bf0db96a35f2f49e73adf01770fb14209e80b",
+      "transitionCount": 18
+    },
+    "STR_QUESTION_OF_DRILL": {
+      "firstDepth": 2,
+      "firstState": "32a9505a2f99dc5b44e7b1e1350f468f7f5a48e4fea7f666763dae4eb9062774",
+      "transitionCount": 16
+    },
+    "STR_EXPLORE_TUNNELS": {
+      "firstDepth": 3,
+      "firstState": "52e6a13fbf1ca0653d0057894183059458451bc1ac49dfccc76b733c82f06a7e",
+      "transitionCount": 12
+    },
+    "STR_SMALL_RADAR_SYSTEM": {
+      "firstDepth": 3,
+      "firstState": "61740c8c7188fe4819078e8d4b38a14fbdb347d1ee4ccf7cfeebfc656ad86e54",
+      "transitionCount": 12
+    },
+    "STR_BOW_H": {
+      "firstDepth": 3,
+      "firstState": "10443e00aef243cb12e275f1474e3056932dc9babbc31a5f6c951966c4f1c002",
+      "transitionCount": 35
+    },
+    "STR_CONTACT_TIGER_TRANSPORT": {
+      "firstDepth": 3,
+      "firstState": "1577d4d8ae5ef916f834dbc2e57b9d07be8e2d53a674f0588898e3532266d6f8",
+      "transitionCount": 31
+    },
+    "AUX_DOGE_BARK": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "AUX_DOGG_WEAPON": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "AUX_SMELL_SCANNER": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "STR_DOGE_COLLAR": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "STR_DOGE_NAMED": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "STR_DOGE_PROCUREMENT": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "STR_DOGE_UNARMORED_UC": {
+      "firstDepth": 3,
+      "firstState": "ebc458d0337aacf2f4b46680e0ea43de5c1a69e40e6c5460c46b92a8bbcc93fe",
+      "transitionCount": 21
+    },
+    "STR_GUN_SHOPPING": {
+      "firstDepth": 3,
+      "firstState": "b5898da2e3dfd6f556b670338a5564da1e2a105289be81984abc00fb4e271fae",
+      "transitionCount": 21
+    },
+    "STR_HARDWARE_SHOPPING": {
+      "firstDepth": 3,
+      "firstState": "75e51537c0fc23eee359d3cacfae5be319e6f2552e7be2ca4e5d6b353c279ba3",
+      "transitionCount": 21
+    },
+    "STR_TAC_VEST_PEASANT_UC": {
+      "firstDepth": 3,
+      "firstState": "b2721a8f431cbadbcda1fd4ca43cfcc0e1ed18f30d21324e22ed434b490579ab",
+      "transitionCount": 25
+    },
+    "STR_FIRST_AID_KIT": {
+      "firstDepth": 3,
+      "firstState": "fb2a193ea27f213975002dcd34bcb38574c1d306b5a5b41b0395f0f8fc8c22cf",
+      "transitionCount": 21
+    },
+    "STR_THE_PHARMACIST": {
+      "firstDepth": 3,
+      "firstState": "fb2a193ea27f213975002dcd34bcb38574c1d306b5a5b41b0395f0f8fc8c22cf",
+      "transitionCount": 21
+    },
+    "STR_EMBRACE_THE_POWER": {
+      "firstDepth": 3,
+      "firstState": "3b5a0e16cc2c5e893ea8c10d7124b2f59ff14c91dea86aaa6223b25a19b892df",
+      "transitionCount": 5
+    },
+    "STR_CINDERELLA_PROJECT_PREQ": {
+      "firstDepth": 3,
+      "firstState": "f3cf2b6020a19482dee60242f23c791785fa5eeb309df5c2cc93328a0c7d5983",
+      "transitionCount": 5
+    },
+    "STR_REJECT_THE_POWER": {
+      "firstDepth": 3,
+      "firstState": "f3cf2b6020a19482dee60242f23c791785fa5eeb309df5c2cc93328a0c7d5983",
+      "transitionCount": 5
+    },
+    "STR_CADILLAC": {
+      "firstDepth": 4,
+      "firstState": "e34773e566b38436802a0854a8a20a9f5c07365a36c1c167c8bebe31fee1abed",
+      "transitionCount": 8
+    },
+    "STR_NEPOTISM": {
+      "firstDepth": 4,
+      "firstState": "c04e80f778b155fa5a4056c25dd86a3051f30f90117472e6297504e186580c4a",
+      "transitionCount": 1
+    },
+    "STR_TRAININGS": {
+      "firstDepth": 4,
+      "firstState": "c04e80f778b155fa5a4056c25dd86a3051f30f90117472e6297504e186580c4a",
+      "transitionCount": 1
+    },
+    "STR_FARMING": {
+      "firstDepth": 5,
+      "firstState": "1ea112bc2ef23da731ee1b2a47d071bfc4443498f535da0b8577f89edbf8a668",
+      "transitionCount": 1
+    },
+    "STR_HYDROPONICS": {
+      "firstDepth": 5,
+      "firstState": "1ea112bc2ef23da731ee1b2a47d071bfc4443498f535da0b8577f89edbf8a668",
+      "transitionCount": 1
+    },
+    "STR_BIG_BIRD": {
+      "firstDepth": 5,
+      "firstState": "6f20579c61d246003e8ebd540a82c9654e98b1aaa4e3c8932e3f17f2dd9fe157",
+      "transitionCount": 1
+    }
+  }
+}
